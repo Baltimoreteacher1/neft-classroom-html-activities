@@ -802,6 +802,100 @@
         font-weight: 800;
       }
 
+      /* student name field in My Work */
+      .codes-name {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        padding: 10px 12px;
+        margin-bottom: 12px;
+        background: #eafaf7;
+        border: 1px solid #bfe9e0;
+        border-radius: 12px;
+      }
+      .codes-name label {
+        font-weight: 800;
+        color: var(--navy);
+        font-size: 14px;
+      }
+      .codes-name input {
+        flex: 1;
+        min-width: 140px;
+        font-family: "Nunito", sans-serif;
+        font-weight: 700;
+        font-size: 15px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 8px 12px;
+      }
+      .codes-name-flag {
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--teal);
+      }
+
+      /* class save codes viewer (teacher) */
+      .cc-list {
+        overflow: auto;
+        flex: 1;
+        display: grid;
+        gap: 14px;
+        align-content: start;
+        padding: 2px;
+      }
+      .cc-group {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        overflow: hidden;
+      }
+      .cc-group > h4 {
+        margin: 0;
+        padding: 10px 14px;
+        background: #f2f6fb;
+        font-family: "Nunito", sans-serif;
+        font-weight: 900;
+        color: var(--navy);
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+      }
+      .cc-group > h4 .cc-n {
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--ink-soft);
+      }
+      .cc-row {
+        display: grid;
+        grid-template-columns: 1fr auto auto auto;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 14px;
+        border-top: 1px solid var(--line);
+      }
+      .cc-row .cc-who {
+        font-weight: 800;
+        color: var(--navy);
+      }
+      .cc-row .cc-code {
+        font-family: "SFMono-Regular", ui-monospace, monospace;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        background: #eef3f9;
+        border-radius: 8px;
+        padding: 3px 10px;
+      }
+      .cc-row .cc-when {
+        font-size: 12px;
+        color: var(--ink-soft);
+      }
+      .cc-empty {
+        color: var(--ink-soft);
+        font-style: italic;
+        padding: 20px;
+        text-align: center;
+      }
+
       /* aleks tracker */
       .aleks-top {
         display: flex;
@@ -2138,6 +2232,13 @@
               <button class="mini" id="myCodesBtn">🎒 My saved codes</button>
               <button
                 class="mini edit-only"
+                id="classCodesBtn"
+                title="See every student's save code for this section"
+              >
+                🎒 Class save codes
+              </button>
+              <button
+                class="mini edit-only"
                 id="setLessonBtn"
                 title="Pick today's lesson — fills the assignment + Today's Target from the curriculum"
               >
@@ -2263,8 +2364,20 @@
         </div>
         <p class="modal-help">
           Everything you need in one place: this week's assignments, your save codes, and your
-          Canvas course. Save codes live on this device only — no one else sees them.
+          Canvas course. Add your name so Mr. Neft can pull up your work — then your codes are
+          shared with your teacher (only your first name and code, nothing else).
         </p>
+        <div class="codes-name">
+          <label for="codesName">👋 Your first name</label>
+          <input
+            type="text"
+            id="codesName"
+            placeholder="e.g. Ava"
+            autocomplete="off"
+            maxlength="40"
+          />
+          <span class="codes-name-flag" id="codesNameFlag" hidden>✓ shared with teacher</span>
+        </div>
         <div class="codes-assigns" id="codesAssigns" hidden>
           <h4>📋 This week's assignments</h4>
           <div class="codes-list" id="codesAssignsList"></div>
@@ -2285,6 +2398,28 @@
         <div class="overlay-actions">
           <button class="btn ghost" id="codesCloseBtn">Close</button>
         </div>
+      </div>
+    </div>
+
+    <!-- Class Save Codes — teacher: every student's submitted code for a section -->
+    <div class="overlay" id="classCodesOverlay" hidden>
+      <div class="overlay-box big" role="dialog" aria-modal="true" aria-label="Class save codes">
+        <div class="big-head">
+          <h3>🎒 Class Save Codes — <span id="ccSection">All Classes</span></h3>
+          <span class="grow"></span>
+          <button class="btn ghost" id="ccRefreshBtn" title="Reload from the server">
+            🔄 Refresh
+          </button>
+          <button class="btn ghost" id="ccCsvBtn" title="Copy all as spreadsheet rows">
+            ⬇ Copy CSV
+          </button>
+          <button class="btn ghost" id="ccClearBtn" title="Delete all codes for this section">
+            🗑 Clear all
+          </button>
+          <button class="btn ghost" id="ccCloseBtn">Done</button>
+        </div>
+        <p class="gb-hint" id="ccStatus">Students' codes appear here as they save them.</p>
+        <div class="cc-list" id="ccList"></div>
       </div>
     </div>
 
@@ -3167,6 +3302,43 @@
             .toLowerCase()
         );
       }
+
+      // ---- class-wide save codes --------------------------------------
+      // A student names themselves once (device-local) so their codes can be
+      // shared with the teacher's Class Save Codes view. Only first name + code
+      // leave the device; submits are debounced and best-effort (failures never
+      // block the local save).
+      function myName() {
+        return (store.get("nt-board-myname") || "").trim();
+      }
+      const _codeTimers = {};
+      function submitClassCode(assignment, code) {
+        const student = myName();
+        const asg = String(assignment || "").trim();
+        const val = String(code || "")
+          .trim()
+          .toUpperCase();
+        if (!student || !asg || !val) return;
+        const k = boardId + "::" + asg;
+        clearTimeout(_codeTimers[k]);
+        _codeTimers[k] = setTimeout(() => {
+          fetch("/api/board/codes?board=" + encodeURIComponent(boardId), {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ board: boardId, student, assignment: asg, code: val }),
+          }).catch(() => {});
+        }, 600);
+      }
+      // When a student first adds their name, back-fill every code they've
+      // already saved for this section so nothing is missed.
+      function submitAllMyCodes() {
+        if (!myName()) return;
+        const codes = loadCodes();
+        ((state.assignments && state.assignments.items) || []).forEach((a) => {
+          const c = codes[codeKey(a.name)];
+          if (c) submitClassCode(a.name, c);
+        });
+      }
       function renderAssignments() {
         const host = $("#assigns");
         if (!host) return;
@@ -3259,6 +3431,7 @@
               if (val) c[codeKey(items[i].name)] = val;
               else delete c[codeKey(items[i].name)];
               saveCodes(c);
+              if (val) submitClassCode(items[i].name, val);
               const copyBtn = host.querySelector(`[data-copycode="${i}"]`);
               const flag = host.querySelector(`[data-savedflag="${i}"]`);
               if (copyBtn) copyBtn.hidden = !val;
@@ -3279,6 +3452,7 @@
               const c = loadCodes();
               c[codeKey(items[i].name)] = b.dataset.sugcode;
               saveCodes(c);
+              submitClassCode(items[i].name, b.dataset.sugcode);
               renderAssignments();
             };
           });
@@ -3428,6 +3602,7 @@
             if (val) c[codeKey(items[i].name)] = val;
             else delete c[codeKey(items[i].name)];
             saveCodes(c);
+            if (val) submitClassCode(items[i].name, val);
             renderCodesList();
             renderAssignments();
           };
@@ -3438,6 +3613,7 @@
             const c = loadCodes();
             c[codeKey(items[i].name)] = b.dataset.cwsugcode;
             saveCodes(c);
+            submitClassCode(items[i].name, b.dataset.cwsugcode);
             renderMyWorkAssigns();
             renderCodesList();
             renderAssignments();
@@ -3446,9 +3622,92 @@
       }
       function openMyCodes() {
         renderMyWorkHeader();
+        const nameInp = $("#codesName");
+        if (nameInp) {
+          nameInp.value = myName();
+          $("#codesNameFlag").hidden = !myName();
+        }
         renderMyWorkAssigns();
         renderCodesList();
         $("#codesOverlay").hidden = false;
+      }
+
+      // Teacher view: every student's submitted save code for this section,
+      // grouped by assignment. Teacher-gated read.
+      let classCodesCache = [];
+      function renderClassCodes() {
+        const host = $("#ccList");
+        if (!host) return;
+        if (!classCodesCache.length) {
+          host.innerHTML =
+            '<p class="cc-empty">No codes yet. Students add them from 🎒 My Work once they type their name.</p>';
+          return;
+        }
+        const byA = {};
+        classCodesCache.forEach((c) => (byA[c.assignment] || (byA[c.assignment] = [])).push(c));
+        host.innerHTML = Object.keys(byA)
+          .map((a) => {
+            const rows = byA[a]
+              .map(
+                (c) => `<div class="cc-row">
+                  <span class="cc-who">${esc(c.student)}</span>
+                  <span class="cc-code">${esc(c.code)}</span>
+                  <span class="cc-when">${esc(c.updatedAt ? relTime(c.updatedAt) : "")}</span>
+                  <button class="mini copy" data-cccopy="${esc(c.code)}">Copy</button>
+                </div>`,
+              )
+              .join("");
+            return `<div class="cc-group"><h4>${esc(a)} <span class="cc-n">${byA[a].length} student${byA[a].length === 1 ? "" : "s"}</span></h4>${rows}</div>`;
+          })
+          .join("");
+        $$("#ccList [data-cccopy]").forEach(
+          (b) => (b.onclick = () => copyText(b.dataset.cccopy, b)),
+        );
+      }
+      async function loadClassCodes() {
+        const status = $("#ccStatus");
+        status.textContent = "Loading…";
+        try {
+          const r = await fetch("/api/board/codes?board=" + encodeURIComponent(boardId), {
+            headers: { "x-teacher-key": teacherKey() },
+            cache: "no-store",
+          });
+          const d = await r.json();
+          if (!d.ok) {
+            classCodesCache = [];
+            renderClassCodes();
+            status.textContent =
+              d.error === "unauthorized"
+                ? "Publish once to unlock teacher access, then Refresh."
+                : "Couldn't load codes.";
+            return;
+          }
+          classCodesCache = d.codes || [];
+          renderClassCodes();
+          status.textContent = classCodesCache.length
+            ? classCodesCache.length + " code(s) submitted by students."
+            : "No codes submitted yet.";
+        } catch {
+          status.textContent = "Couldn't reach the server.";
+        }
+      }
+      function openClassCodes() {
+        $("#ccSection").textContent = sectionLabel(boardId);
+        $("#classCodesOverlay").hidden = false;
+        loadClassCodes();
+      }
+      function classCodesCsv() {
+        const rows = [["Assignment", "Student", "Code", "Updated"]].concat(
+          classCodesCache.map((c) => [
+            c.assignment,
+            c.student,
+            c.code,
+            c.updatedAt ? new Date(c.updatedAt).toLocaleString() : "",
+          ]),
+        );
+        return rows
+          .map((r) => r.map((x) => `"${String(x).replace(/"/g, '""')}"`).join(","))
+          .join("\n");
       }
 
       function renderVocab() {
@@ -3908,41 +4167,58 @@
         renderGroupBuilder();
         $("#groupBuilderOverlay").hidden = false;
       }
-      async function syncRosterFromCurriculum() {
-        const section = String(boardId || "").toLowerCase();
-        if (!SECTIONS[section] || section === "main") {
-          gbMsg("Pick a period (601 / 602 / 603) to sync its roster.");
-          return;
-        }
-        const key = teacherKey();
-        if (!key) {
-          gbMsg("Publish once to unlock teacher sync, then try again.");
-          return;
-        }
-        gbMsg("Syncing roster from curriculum…");
+      async function fetchSupportsRoster(section, key) {
         try {
           const r = await fetch("/api/supports/roster?section=" + encodeURIComponent(section), {
             headers: { "x-teacher-key": key },
             cache: "no-store",
           });
           const d = await r.json();
-          if (!d.ok || !Array.isArray(d.roster)) {
-            gbMsg("Couldn't reach the curriculum roster.");
-            return;
-          }
-          const names = d.roster.map((e) => (e.initials || "").trim()).filter(Boolean);
-          const added = addRosterNames(names.join("\n"));
-          renderGroupBuilder();
-          gbMsg(
-            added
-              ? "Added " + added + " student(s) from curriculum."
-              : names.length
-                ? "Roster already up to date (" + names.length + " on file)."
-                : "No students on file for this period yet.",
-          );
+          if (!d.ok || !Array.isArray(d.roster)) return null;
+          return d.roster.map((e) => (e.initials || "").trim()).filter(Boolean);
         } catch {
-          gbMsg("Couldn't reach the curriculum roster.");
+          return null;
         }
+      }
+      async function syncRosterFromCurriculum() {
+        const section = String(boardId || "").toLowerCase();
+        const key = teacherKey();
+        if (!key) {
+          gbMsg("Publish once to unlock teacher sync, then try again.");
+          return;
+        }
+        gbMsg("Syncing roster from curriculum…");
+        // "All Classes" has no single backing section — union every period so
+        // the master board can be built from all rosters at once.
+        const sections =
+          section === "main"
+            ? Object.keys(SECTIONS).filter((s) => s !== "main")
+            : SECTIONS[section]
+              ? [section]
+              : [];
+        if (!sections.length) {
+          gbMsg("Pick a period (601 / 602 / 603) to sync its roster.");
+          return;
+        }
+        const results = await Promise.all(sections.map((s) => fetchSupportsRoster(s, key)));
+        if (results.every((r) => r === null)) {
+          gbMsg("Couldn't reach the curriculum roster.");
+          return;
+        }
+        const names = [];
+        results.forEach((r) => (r || []).forEach((n) => names.push(n)));
+        const added = addRosterNames(names.join("\n"));
+        renderGroupBuilder();
+        gbMsg(
+          added
+            ? "Added " +
+                added +
+                " student(s) from curriculum" +
+                (section === "main" ? " (all periods)." : ".")
+            : names.length
+              ? "Roster already up to date (" + names.length + " on file)."
+              : "No students on file yet.",
+        );
       }
 
       // ---- groups on the board (student-facing big display) -----------
@@ -4656,6 +4932,26 @@
       const myWorkEmbedBtn = $("#myWorkBtnEmbed");
       if (myWorkEmbedBtn) myWorkEmbedBtn.onclick = openMyCodes;
       $("#codesCloseBtn").onclick = () => ($("#codesOverlay").hidden = true);
+      // Teacher: Class Save Codes viewer.
+      $("#classCodesBtn").onclick = openClassCodes;
+      $("#ccCloseBtn").onclick = () => ($("#classCodesOverlay").hidden = true);
+      $("#ccRefreshBtn").onclick = loadClassCodes;
+      $("#ccCsvBtn").onclick = () => {
+        if (!classCodesCache.length) return;
+        copyText(classCodesCsv(), $("#ccCsvBtn"));
+      };
+      $("#ccClearBtn").onclick = async () => {
+        if (!classCodesCache.length) return;
+        if (!confirm("Delete ALL submitted save codes for " + sectionLabel(boardId) + "?")) return;
+        try {
+          await fetch("/api/board/codes?board=" + encodeURIComponent(boardId), {
+            method: "DELETE",
+            headers: { "content-type": "application/json", "x-teacher-key": teacherKey() },
+            body: "{}",
+          });
+        } catch {}
+        loadClassCodes();
+      };
       $("#codeAddBtn").onclick = () => {
         const label = $("#codeLabel").value.trim();
         const val = $("#codeValue").value.trim().toUpperCase();
@@ -4664,8 +4960,10 @@
           return;
         }
         const c = loadCodes();
-        c[boardId + "::" + (label || "code " + (Object.keys(c).length + 1)).toLowerCase()] = val;
+        const asg = label || "code " + (Object.keys(c).length + 1);
+        c[boardId + "::" + asg.toLowerCase()] = val;
         saveCodes(c);
+        submitClassCode(asg, val);
         $("#codeLabel").value = "";
         $("#codeValue").value = "";
         renderCodesList();
@@ -4673,6 +4971,14 @@
       };
       $("#codeValue").addEventListener("keydown", (e) => {
         if (e.key === "Enter") $("#codeAddBtn").click();
+      });
+      // Student names themselves (device-local) so codes reach the teacher.
+      $("#codesName").addEventListener("input", (e) => {
+        const had = !!myName();
+        const v = e.target.value.trim().slice(0, 40);
+        store.set("nt-board-myname", v);
+        $("#codesNameFlag").hidden = !v;
+        if (v && !had) submitAllMyCodes();
       });
 
       // Classroom tools
@@ -4736,7 +5042,13 @@
       };
       // Click the dark backdrop (outside the box) to close an overlay. A
       // running timer keeps going and docks instead of being cancelled.
-      ["#pickOverlay", "#timerOverlay", "#codesOverlay", "#groupsPresentOverlay"].forEach((sel) => {
+      [
+        "#pickOverlay",
+        "#timerOverlay",
+        "#codesOverlay",
+        "#groupsPresentOverlay",
+        "#classCodesOverlay",
+      ].forEach((sel) => {
         const ov = $(sel);
         ov.addEventListener("click", (e) => {
           if (e.target === ov) {
@@ -4775,6 +5087,7 @@
       document.addEventListener("keydown", (e) => {
         if (e.key === "Escape") {
           if (!$("#aleksModal").hidden) closeAleksModal();
+          else if (!$("#classCodesOverlay").hidden) $("#classCodesOverlay").hidden = true;
           else if (!$("#groupBuilderOverlay").hidden) $("#groupBuilderOverlay").hidden = true;
           else if (!$("#groupsPresentOverlay").hidden) $("#groupsPresentOverlay").hidden = true;
           else if (!$("#codesOverlay").hidden) $("#codesOverlay").hidden = true;
@@ -4831,8 +5144,5 @@
         if (!editing) loadBoard();
       }, 25000);
     </script>
-    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-    <script src="/assets/math-workbench-launcher.js" defer></script>
-    <!-- mwb-injected:end -->
   </body>
 </html>
