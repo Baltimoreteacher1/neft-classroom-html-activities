@@ -70,6 +70,41 @@ test.describe("small-group guided math studio", () => {
     expect(order[parent + 2].text).toContain("1.1 Small Group: Group 2");
   });
 
+  test("visible lesson dropdowns place small groups directly after their main lesson", async ({ page }) => {
+    await page.goto("/curriculum/");
+    const dropdowns = page.locator(".lesson-select");
+    await expect(dropdowns).toHaveCount(10);
+
+    function expectGuidedGroupsAfterMain(labels: string[]) {
+      const mainLessons = labels.filter((label) => /^Lesson \d+-\d+ ·/.test(label));
+
+      for (const mainLesson of mainLessons) {
+        const lessonId = mainLesson.match(/^Lesson (\d+)-(\d+) ·/)?.slice(1).join(".");
+        expect(lessonId, mainLesson).toBeTruthy();
+        const parent = labels.indexOf(mainLesson);
+        expect(labels[parent + 1], `${lessonId} Group 1 position`).toContain(
+          `${lessonId} Small Group: Group 1`,
+        );
+        expect(labels[parent + 2], `${lessonId} Group 2 position`).toContain(
+          `${lessonId} Small Group: Group 2`,
+        );
+      }
+    }
+
+    for (let dropdownIndex = 0; dropdownIndex < 10; dropdownIndex += 1) {
+      const labels = await dropdowns.nth(dropdownIndex).locator("option").allTextContents();
+      expectGuidedGroupsAfterMain(labels);
+    }
+
+    const topPicker = page.locator(".top1-picker").first();
+    const topUnit = topPicker.locator("select").nth(1);
+    const topLesson = topPicker.locator("select").nth(2);
+    for (let unitIndex = 0; unitIndex < 10; unitIndex += 1) {
+      await topUnit.selectOption(String(unitIndex));
+      expectGuidedGroupsAfterMain(await topLesson.locator("option").allTextContents());
+    }
+  });
+
   test("student studio has no serious or critical accessibility violations", async ({ page }) => {
     await page.goto("/lessons/1-1-group1/");
     const results = await new AxeBuilder({ page })

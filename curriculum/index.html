@@ -10968,13 +10968,16 @@
           return 2;
         }
 
-        // Sort key for a lessonId like "1-5" or "1-1-flagship": unit, then
-        // lesson, then flagship variants immediately after their base lesson.
+        // Sort key for a lessonId like "1-5", "1-5-group1", or
+        // "1-1-flagship": unit, lesson, guided groups, then flagship variant.
         function lessonRank(lessonId) {
           var m = String(lessonId || "").match(/(\d+)\s*-\s*(\d+)/);
           if (!m) return 9999999;
-          var flagship = /flagship/i.test(lessonId) ? 1 : 0;
-          return parseInt(m[1], 10) * 10000 + parseInt(m[2], 10) * 100 + flagship;
+          var variant = 0;
+          if (/group1/i.test(lessonId)) variant = 1;
+          if (/group2/i.test(lessonId)) variant = 2;
+          if (/flagship/i.test(lessonId)) variant = 3;
+          return parseInt(m[1], 10) * 10000 + parseInt(m[2], 10) * 100 + variant;
         }
 
         var units = Array.prototype.slice.call(document.querySelectorAll("details.unit"));
@@ -11035,7 +11038,16 @@
             });
 
             var dataSearch = l.getAttribute("data-search") || "";
-            var lessonIdMatch = head.match(/Lesson\s+([0-9\-a-zA-Z]+)/);
+            var lessonPath = activities
+              .map(function (activity) {
+                return activity.href || "";
+              })
+              .find(function (href) {
+                return /^\/lessons\/\d+-\d+(?:-(?:group[12]|flagship))?\/$/i.test(href);
+              });
+            var lessonIdMatch = lessonPath
+              ? lessonPath.match(/^\/lessons\/([^/]+)\/$/)
+              : head.match(/Lesson\s+([0-9\-a-zA-Z]+)/);
             var lessonId = lessonIdMatch ? lessonIdMatch[1] : "";
             var baseLessonId = lessonId.replace("-flagship", "");
 
@@ -11104,9 +11116,8 @@
             });
           });
 
-          // Order lessons by their lesson number (1-1, 1-2, … 1-7), not the
-          // alphabetical-by-title DOM order. Flagship variants sort right after
-          // their base lesson (e.g. 1-1 then 1-1-flagship).
+          // Order lessons by lesson number, with Group 1 and Group 2 directly
+          // below their base lesson. Flagship variants follow the guided groups.
           lessonsData.sort(function (a, b) {
             return lessonRank(a.lessonId) - lessonRank(b.lessonId);
           });
