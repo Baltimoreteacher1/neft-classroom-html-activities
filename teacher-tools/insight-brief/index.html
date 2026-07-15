@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Insight Brief · Neft Teacher</title>
+    <meta
+      name="description"
+      content="One click turns live student lesson work into a sorted class brief: priorities, tiers, small groups, and planning ideas."
+    />
+    <link rel="stylesheet" href="insight-brief.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#brief">Skip to brief</a>
+    <header class="ib-header">
+      <nav aria-label="Breadcrumb">
+        <ol class="crumbs">
+          <li><a href="/teacher-tools/">Teacher Tools</a></li>
+          <li aria-current="page">Insight Brief</li>
+        </ol>
+      </nav>
+      <h1>Insight Brief</h1>
+      <p class="lede">
+        One click reads your students' live lesson work — progress, scores, struggle signals,
+        misconceptions, mastery — and turns it into a sorted brief with planning ideas. Data stays
+        in your browser; nothing is stored or sent anywhere else.
+      </p>
+    </header>
+
+    <main>
+      <section class="ib-controls" aria-label="Generate controls">
+        <div id="key-gate" class="key-gate" hidden>
+          <label for="teacher-key">Teacher key</label>
+          <input
+            id="teacher-key"
+            type="password"
+            autocomplete="off"
+            placeholder="Paste teacher key"
+          />
+          <button id="key-save" type="button" class="btn">Save key</button>
+          <p class="hint">
+            Same key as the Gradebook, Radar, and Heatmap — saved on this device only.
+          </p>
+        </div>
+        <div class="controls-row">
+          <label>
+            Window
+            <select id="window-select">
+              <option value="1">Today</option>
+              <option value="7" selected>This week</option>
+              <option value="30">This month</option>
+              <option value="365">This year</option>
+            </select>
+          </label>
+          <label>
+            Class
+            <select id="section-select">
+              <option value="">All classes</option>
+            </select>
+          </label>
+          <button id="generate" type="button" class="btn solid">⚡ Generate brief</button>
+          <span id="status" class="status" role="status" aria-live="polite"></span>
+        </div>
+      </section>
+
+      <section id="brief" class="ib-brief" hidden>
+        <div class="brief-meta">
+          <span id="generated-at"></span>
+          <span class="brief-actions no-print">
+            <button id="print" type="button" class="btn">🖨 Print</button>
+            <button id="csv" type="button" class="btn">⬇ CSV</button>
+            <button id="copy" type="button" class="btn">📋 Copy summary</button>
+          </span>
+        </div>
+
+        <div id="headline" class="headline" aria-label="Headline stats"></div>
+
+        <h2>Priority actions</h2>
+        <div id="priorities" class="priorities"></div>
+
+        <h2>Students</h2>
+        <div id="tier-chips" class="tier-chips"></div>
+        <div class="table-wrap">
+          <table id="students-table" aria-label="Students, sorted by need">
+            <thead>
+              <tr>
+                <th><button data-sort="name" type="button">Student</button></th>
+                <th><button data-sort="section" type="button">Class</button></th>
+                <th><button data-sort="tier" type="button">Tier</button></th>
+                <th><button data-sort="avgScore" type="button">Avg score</button></th>
+                <th><button data-sort="activities" type="button">Activities</button></th>
+                <th><button data-sort="struggles" type="button">Struggles</button></th>
+                <th><button data-sort="misconceptions" type="button">Misconceptions</button></th>
+                <th>Focus standard</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <h2>Standards</h2>
+        <div class="table-wrap">
+          <table id="standards-table" aria-label="Standards, sorted by need">
+            <thead>
+              <tr>
+                <th><button data-sort="standard" type="button">Standard</button></th>
+                <th>Lesson</th>
+                <th><button data-sort="section" type="button">Class</button></th>
+                <th><button data-sort="correctRate" type="button">Correct</button></th>
+                <th><button data-sort="struggles" type="button">Struggles</button></th>
+                <th><button data-sort="misconceptions" type="button">Misconceptions</button></th>
+                <th><button data-sort="mastery" type="button">Mastery</button></th>
+                <th>Next move</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <h2>Small groups (auto-built)</h2>
+        <div id="groups" class="groups"></div>
+
+        <h2>Planning ideas</h2>
+        <div id="planning" class="planning"></div>
+
+        <footer class="cross-links no-print">
+          <span>Go deeper:</span>
+          <a href="/teacher-tools/intervention-radar/">Intervention Radar</a>
+          <a href="/teacher-tools/standards-heatmap/">Standards Heatmap</a>
+          <a href="/teacher-tools/gradebook/">Gradebook</a>
+          <a href="/teacher-tools/lesson-plan-generator/">Lesson Plan Generator</a>
+        </footer>
+      </section>
+
+      <section id="empty-state" class="empty-state" hidden>
+        <p>
+          No signals in this window yet. Widen the window, or have students play a Practice Arcade
+          round — scores and signals appear here within a minute.
+        </p>
+      </section>
+    </main>
+
+    <script src="insight-engine.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
