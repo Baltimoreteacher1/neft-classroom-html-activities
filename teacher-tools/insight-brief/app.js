@@ -56,6 +56,46 @@
     });
   }
 
+  // Auto-persist the diagnosis to the trend log (second-brain substrate).
+  // Fire-and-forget: the brief must render fine even if this fails, and only
+  // fresh generations post — the cached restore on load never does. Server
+  // dedupes to one snapshot per class per day, so repeated Generate is safe.
+  function saveSnapshot(brief) {
+    if (!brief || !brief.students || !brief.students.length) return;
+    var students = brief.students.map(function (s) {
+      return {
+        name: s.name,
+        section: s.section,
+        tier: s.tier,
+        risk: s.risk,
+        activities: s.activities,
+        struggles: s.struggles,
+        misconceptions: s.misconceptions,
+        avg: s.avgScore,
+        weakStandards: s.weakStandards,
+        mastery: s.mastery,
+      };
+    });
+    fetch("/api/progress/insight", {
+      method: "POST",
+      headers: { "content-type": "application/json", "x-teacher-key": getKey() },
+      body: JSON.stringify({
+        section: brief.section || "",
+        generatedAt: new Date().toISOString(),
+        students: students,
+      }),
+    })
+      .then(function (r) {
+        return r.ok ? r.json() : null;
+      })
+      .then(function (res) {
+        if (res && res.ok) setStatus("Saved to trend log (" + res.saved + " students).");
+      })
+      .catch(function () {
+        /* trend log is best-effort; the brief already rendered */
+      });
+  }
+
   function loadLessonRegistry() {
     if (window.REVEAL_MATH_LESSONS) return Promise.resolve(window.REVEAL_MATH_LESSONS);
     return new Promise(function (resolve) {
@@ -112,6 +152,7 @@
         fillSections(res[0], res[3]);
         render(brief);
         setStatus("");
+        saveSnapshot(brief);
       })
       .catch(function (err) {
         var msg =
