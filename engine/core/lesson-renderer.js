@@ -669,6 +669,45 @@ function buildVisual(v) {
           "Interactive powers and exponents builder. Turn on JavaScript to type a base and exponent and expand the power.",
       });
     }
+    case "distributive-builder": {
+      return interactiveVisualHost(v, {
+        ariaLabel:
+          "Interactive distributive property lab. Type a, b, and c to see an area model of a times the quantity b plus c and how it equals a·b plus a·c.",
+        fallback:
+          "Interactive distributive property builder. Turn on JavaScript to model a(b + c) = a·b + a·c.",
+      });
+    }
+    case "percent-builder": {
+      return interactiveVisualHost(v, {
+        ariaLabel:
+          "Interactive percent-of-a-number lab. Type a percent and a whole to find that part on a double number line.",
+        fallback:
+          "Interactive percent-of-a-number builder. Turn on JavaScript to find a percent of a number.",
+      });
+    }
+    case "unit-rate-builder": {
+      return interactiveVisualHost(v, {
+        ariaLabel:
+          "Interactive unit-rate lab. Type two quantities and divide to find each per-one rate.",
+        fallback: "Interactive unit-rate builder. Turn on JavaScript to find the unit rate.",
+      });
+    }
+    case "long-division-builder": {
+      return interactiveVisualHost(v, {
+        ariaLabel:
+          "Interactive long-division lab. Type a dividend and divisor to work the division with partial quotients and find the quotient and remainder.",
+        fallback:
+          "Interactive long-division builder. Turn on JavaScript to divide with partial quotients.",
+      });
+    }
+    case "ratio-table-builder": {
+      return interactiveVisualHost(v, {
+        ariaLabel:
+          "Interactive ratio-table lab. Type a ratio to build a table of equivalent ratios and read the unit rate.",
+        fallback:
+          "Interactive ratio-table builder. Turn on JavaScript to build a table of equivalent ratios.",
+      });
+    }
     default:
       return "";
   }
@@ -2461,6 +2500,18 @@ function renderPracticePhase(el, state, ctx, config) {
     "🎯",
     "<strong>Adaptive practice:</strong> Pick <strong>Level 1</strong> for step-by-step hints, <strong>Level 2</strong> for a stretch challenge, or <strong>Adaptive</strong> to let the activity adjust. Wrong answers teach — read the feedback and try again.",
   );
+
+  // Optional interactive "practice lab" (factor-tree-lab, power-builder,
+  // distributive-builder, percent-builder, …) — a put-your-own-numbers-in tool
+  // mounted at the top of Practice so students can rehearse the skill before the
+  // adaptive items. `practice.diagram` accepts any interactive/static visual kind.
+  if (config.practice?.diagram) {
+    const labCard = document.createElement("div");
+    labCard.className = "card";
+    labCard.innerHTML = buildVisual(config.practice.diagram);
+    el.append(labCard);
+    mountInteractiveVisuals(labCard);
+  }
 
   renderWorkedExamplePanel(el, config);
   renderCommonMistakeCallout(el, config);
