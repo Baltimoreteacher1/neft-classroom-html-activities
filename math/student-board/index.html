@@ -3664,9 +3664,20 @@
           (b) => (b.onclick = () => copyText(b.dataset.cccopy, b)),
         );
       }
-      async function loadClassCodes() {
+      // Poll while the viewer is open so new student codes appear on their own.
+      // Background polls are SILENT: no "Loading…" flicker, and the list only
+      // re-renders when the data actually changed (so a mid-scroll teacher
+      // isn't yanked around).
+      let classCodesTimer = null;
+      function stopClassCodesPolling() {
+        if (classCodesTimer) {
+          clearInterval(classCodesTimer);
+          classCodesTimer = null;
+        }
+      }
+      async function loadClassCodes(silent) {
         const status = $("#ccStatus");
-        status.textContent = "Loading…";
+        if (!silent) status.textContent = "Loading…";
         try {
           const r = await fetch("/api/board/codes?board=" + encodeURIComponent(boardId), {
             headers: { "x-teacher-key": teacherKey() },
@@ -3674,27 +3685,41 @@
           });
           const d = await r.json();
           if (!d.ok) {
-            classCodesCache = [];
-            renderClassCodes();
-            status.textContent =
-              d.error === "unauthorized"
-                ? "Publish once to unlock teacher access, then Refresh."
-                : "Couldn't load codes.";
+            if (!silent) {
+              classCodesCache = [];
+              renderClassCodes();
+              status.textContent =
+                d.error === "unauthorized"
+                  ? "Publish once to unlock teacher access, then Refresh."
+                  : "Couldn't load codes.";
+            }
             return;
           }
-          classCodesCache = d.codes || [];
-          renderClassCodes();
-          status.textContent = classCodesCache.length
-            ? classCodesCache.length + " code(s) submitted by students."
-            : "No codes submitted yet.";
+          const next = d.codes || [];
+          const changed = JSON.stringify(next) !== JSON.stringify(classCodesCache);
+          classCodesCache = next;
+          if (changed || !silent) renderClassCodes();
+          status.textContent =
+            (classCodesCache.length
+              ? classCodesCache.length + " code(s) submitted by students"
+              : "No codes submitted yet") + (classCodesTimer ? " · auto-updating" : "");
         } catch {
-          status.textContent = "Couldn't reach the server.";
+          if (!silent) status.textContent = "Couldn't reach the server.";
         }
       }
       function openClassCodes() {
         $("#ccSection").textContent = sectionLabel(boardId);
         $("#classCodesOverlay").hidden = false;
         loadClassCodes();
+        stopClassCodesPolling();
+        classCodesTimer = setInterval(() => {
+          // Self-stop on any close path (button, Esc, backdrop).
+          if ($("#classCodesOverlay").hidden) {
+            stopClassCodesPolling();
+            return;
+          }
+          loadClassCodes(true);
+        }, 10000);
       }
       function classCodesCsv() {
         const rows = [["Assignment", "Student", "Code", "Updated"]].concat(
@@ -4934,7 +4959,10 @@
       $("#codesCloseBtn").onclick = () => ($("#codesOverlay").hidden = true);
       // Teacher: Class Save Codes viewer.
       $("#classCodesBtn").onclick = openClassCodes;
-      $("#ccCloseBtn").onclick = () => ($("#classCodesOverlay").hidden = true);
+      $("#ccCloseBtn").onclick = () => {
+        $("#classCodesOverlay").hidden = true;
+        stopClassCodesPolling();
+      };
       $("#ccRefreshBtn").onclick = loadClassCodes;
       $("#ccCsvBtn").onclick = () => {
         if (!classCodesCache.length) return;
@@ -5087,8 +5115,10 @@
       document.addEventListener("keydown", (e) => {
         if (e.key === "Escape") {
           if (!$("#aleksModal").hidden) closeAleksModal();
-          else if (!$("#classCodesOverlay").hidden) $("#classCodesOverlay").hidden = true;
-          else if (!$("#groupBuilderOverlay").hidden) $("#groupBuilderOverlay").hidden = true;
+          else if (!$("#classCodesOverlay").hidden) {
+            $("#classCodesOverlay").hidden = true;
+            stopClassCodesPolling();
+          } else if (!$("#groupBuilderOverlay").hidden) $("#groupBuilderOverlay").hidden = true;
           else if (!$("#groupsPresentOverlay").hidden) $("#groupsPresentOverlay").hidden = true;
           else if (!$("#codesOverlay").hidden) $("#codesOverlay").hidden = true;
           else if (!$("#pickOverlay").hidden) $("#pickOverlay").hidden = true;
