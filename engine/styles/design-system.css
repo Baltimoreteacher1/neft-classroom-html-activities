@@ -95,6 +95,18 @@ h4 {
   min-height: 100vh;
 }
 
+/* Grid and flex descendants default to min-width:auto, which lets a long
+   equation, control row, or visual silently widen the lesson at browser zoom.
+   Keep every shared shell region shrinkable so content reflows inside the
+   available column instead of being pushed off-screen. */
+.app > *,
+.main,
+.phase-container,
+.phase,
+.card {
+  min-width: 0;
+}
+
 /* ── Sidebar ──
    Scoped to .app: cssCodeSplit:false ships this bundle to every Vite entry,
    and the root dashboard has its own unrelated .sidebar (drawer, position:
@@ -325,6 +337,7 @@ h4 {
   padding: var(--sp-7);
   max-width: 1600px;
   width: 100%;
+  justify-self: center;
 }
 
 /* Phase container */
@@ -1238,17 +1251,31 @@ body.obj-popup-open {
     padding: var(--sp-3) var(--sp-4);
     gap: var(--sp-3);
   }
+  .prelesson-nav,
+  .phase-nav,
+  .bonus-nav {
+    flex: 1 1 100%;
+    width: 100%;
+    min-width: 0;
+  }
+  .prelesson-nav,
   .phase-nav {
-    flex-direction: row;
-    overflow-x: auto;
-    flex-wrap: nowrap;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--sp-2);
+    overflow: visible;
   }
   .phase-btn {
-    grid-template-columns: 28px auto;
+    grid-template-columns: 28px minmax(0, 1fr);
     padding: 8px 10px;
     font-size: 0.78rem;
-    white-space: nowrap;
-    min-width: max-content;
+    white-space: normal;
+    min-width: 0;
+    width: 100%;
+    overflow-wrap: anywhere;
+  }
+  .phase-nav .phase-subtab {
+    margin-left: 0 !important;
   }
   .phase-stars {
     display: none;
@@ -4724,6 +4751,35 @@ body.has-nt-utility-menu #nsr-launcher {
 }
 body.has-nt-utility-menu .ewl-supports-tools-dock.is-collapsed .ewl-supports-dock-reopen {
   display: none;
+}
+
+/* At phone widths and high browser zoom, fixed lesson chrome must not cover
+   navigation or reading content. The phase grid already provides progress and
+   next-step controls, so remove the redundant floating HUD/buttons and reserve
+   a compact toolbar row above the lesson heading. */
+@media (max-width: 640px) {
+  body.has-nt-utility-menu .app .sidebar {
+    padding-top: calc(var(--sp-3) + 48px);
+  }
+  .nt-utility-menu {
+    position: absolute !important;
+    top: 8px;
+    right: 8px;
+  }
+  .nt-utility-btn {
+    width: 44px;
+    height: 44px;
+    justify-content: center;
+    gap: 0;
+    padding: 0;
+  }
+  .nt-utility-btn > span:nth-child(n + 2) {
+    display: none;
+  }
+  .minimap-hud,
+  .nt-next-phase-btn {
+    display: none !important;
+  }
 }
 
 /* Objective vocab terms: keep trailing punctuation glued to the term button
