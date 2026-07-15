@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Family Connections helps Mr. Neft prepare family messages, share curriculum supports, and create home-to-class engagement routines."
+    />
+    <title>Family Connections | EduWonderLab</title>
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <link
+      rel="stylesheet"
+      href="/curriculum/family-connections/styles.css"
+    />
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to Family Connections</a>
+
+    <header class="site-header">
+      <div class="shell header-inner">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/">EduWonderLab</a>
+          <span aria-hidden="true">/</span>
+          <a href="/curriculum/">Curriculum</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Family Connections</span>
+        </nav>
+        <a class="header-link" href="/teacher-tools/">Teacher Tools</a>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <section class="hero">
+        <div class="shell hero-grid">
+          <div>
+            <p class="eyebrow">Teacher workspace · Family partnership</p>
+            <h1>Family Connections</h1>
+            <p class="hero-copy">
+              Prepare one warm, useful message. Connect it to the right lesson
+              support. Move it into Outlook, ClassDojo, or the family's preferred
+              channel.
+            </p>
+            <div class="hero-actions" aria-label="Primary actions">
+              <a class="button primary" href="#message-studio">Prepare a message</a>
+              <a class="button secondary" href="#resource-navigator"
+                >Find family support</a
+              >
+            </div>
+          </div>
+          <aside class="privacy-card" aria-labelledby="privacy-title">
+            <p class="privacy-icon" aria-hidden="true">🔒</p>
+            <h2 id="privacy-title">Private by design</h2>
+            <p>
+              No family email addresses, phone numbers, Outlook logins, or message
+              history are stored by EduWonderLab. You choose recipients inside
+              Outlook or ClassDojo.
+            </p>
+          </aside>
+        </div>
+      </section>
+
+      <nav class="section-nav" aria-label="Family Connections sections">
+        <div class="shell section-nav-inner">
+          <a href="#quick-start">Quick Start</a>
+          <a href="#message-studio">Message Studio</a>
+          <a href="#resource-navigator">Resources</a>
+          <a href="#engagement-lab">Engagement Lab</a>
+          <a href="#connection-planner">Planner</a>
+        </div>
+      </nav>
+
+      <div class="shell page-stack">
+        <section id="quick-start" class="panel" aria-labelledby="quick-start-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Start in seconds</p>
+              <h2 id="quick-start-title">What kind of connection do you need?</h2>
+            </div>
+            <p>Choose a goal. Message Studio will set up the right starting point.</p>
+          </div>
+          <div class="quick-grid" data-quick-start></div>
+        </section>
+
+        <section
+          id="message-studio"
+          class="panel message-panel"
+          aria-labelledby="message-studio-title"
+        >
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Compose once · Use anywhere</p>
+              <h2 id="message-studio-title">Message Studio</h2>
+            </div>
+            <p>
+              Use a first name or initials only. Every generated message stays
+              editable until you deliberately open another service.
+            </p>
+          </div>
+
+          <div class="studio-grid">
+            <form id="message-form" class="composer" novalidate>
+              <div class="field-grid two">
+                <div class="field">
+                  <label for="purpose">Connection goal</label>
+                  <select id="purpose" name="purpose"></select>
+                </div>
+                <div class="field">
+                  <label for="language">Language style</label>
+                  <select id="language" name="language"></select>
+                </div>
+              </div>
+
+              <div class="field-grid two">
+                <div class="field">
+                  <label for="student">Student first name or initials</label>
+                  <input
+                    id="student"
+                    name="student"
+                    maxlength="40"
+                    autocomplete="off"
+                    placeholder="Example: Jordan or J."
+                  />
+                </div>
+                <div class="field">
+                  <label for="class-label">Class or period <span>(optional)</span></label>
+                  <input
+                    id="class-label"
+                    name="classLabel"
+                    maxlength="40"
+                    autocomplete="off"
+                    placeholder="Example: Period 2"
+                  />
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="lesson">Lesson connection <span>(optional)</span></label>
+                <div class="inline-control">
+                  <select id="lesson" name="lesson">
+                    <option value="">Loading curriculum lessons…</option>
+                  </select>
+                  <button id="retry-lessons" class="button compact" type="button" hidden>
+                    Retry
+                  </button>
+                </div>
+                <p id="lesson-status" class="field-help">
+                  Family homework and supports will appear after you choose a lesson.
+                </p>
+              </div>
+
+              <div class="field-grid two">
+                <div class="field">
+                  <label for="resource">Helpful resource <span>(optional)</span></label>
+                  <select id="resource" name="resource">
+                    <option value="">No resource attached</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="due-date">Suggested check-in <span>(optional)</span></label>
+                  <input id="due-date" name="dueDate" type="date" />
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="context">Specific observation <span>(optional)</span></label>
+                <textarea
+                  id="context"
+                  name="context"
+                  maxlength="500"
+                  rows="4"
+                  placeholder="Describe observable work or learning evidence—not character or intent."
+                ></textarea>
+                <p class="field-help">
+                  Example: “The model is complete, but the written explanation still
+                  needs one reason.”
+                </p>
+              </div>
+            </form>
+
+            <article class="preview-card" aria-labelledby="preview-title">
+              <div class="preview-heading">
+                <div>
+                  <p class="eyebrow">Editable preview</p>
+                  <h3 id="preview-title">Prepared family message</h3>
+                </div>
+                <span class="status-pill" data-message-category>Positive</span>
+              </div>
+              <div class="field">
+                <label for="message-subject">Subject</label>
+                <input id="message-subject" data-message-subject />
+              </div>
+              <div class="field">
+                <label for="message-body">Message</label>
+                <textarea id="message-body" rows="16" data-message-body></textarea>
+              </div>
+              <label id="review-row" class="review-check" hidden>
+                <input id="review-message" type="checkbox" />
+                <span>
+                  I reviewed names, dates, tone, links, and any bilingual copy. This
+                  message describes evidence and offers a realistic next step.
+                </span>
+              </label>
+              <div class="delivery-actions">
+                <button id="copy-message" class="button secondary" type="button">
+                  Copy message
+                </button>
+                <button id="open-outlook" class="button outlook" type="button">
+                  Open in Outlook
+                </button>
+                <button id="open-classdojo" class="button dojo" type="button">
+                  Copy + open ClassDojo
+                </button>
+                <button id="print-message" class="button quiet" type="button">
+                  Print / save PDF
+                </button>
+              </div>
+              <p class="delivery-note">
+                “Open” does not mean sent. You will choose the recipient and review
+                the message again in Outlook or ClassDojo.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section
+          id="resource-navigator"
+          class="panel"
+          aria-labelledby="resource-title"
+        >
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Use what already exists</p>
+              <h2 id="resource-title">Family Resource Navigator</h2>
+            </div>
+            <p>
+              Search the live Grade 6 curriculum instead of hunting through lesson
+              folders. Only available resources are shown.
+            </p>
+          </div>
+          <div class="resource-controls" role="search">
+            <div class="field grow">
+              <label for="resource-search">Search resources</label>
+              <input
+                id="resource-search"
+                type="search"
+                placeholder="Try lesson 3-2, ratios, AI, notes, or homework"
+              />
+            </div>
+            <div class="field">
+              <label for="resource-type">Resource type</label>
+              <select id="resource-type">
+                <option value="all">All family resources</option>
+                <option value="family-homework">Family homework</option>
+                <option value="family-support">Family support</option>
+                <option value="guided-notes">Guided notes</option>
+                <option value="student-help">Student help</option>
+                <option value="ai-support">AI support</option>
+                <option value="learning-tool">Learning tools</option>
+              </select>
+            </div>
+          </div>
+          <p id="resource-results-status" class="results-status" aria-live="polite"></p>
+          <div id="resource-grid" class="resource-grid"></div>
+          <div id="resource-empty" class="empty-state" hidden>
+            <h3>No matching resources</h3>
+            <p>Try a lesson number, a broader word, or “All family resources.”</p>
+          </div>
+        </section>
+
+        <section
+          id="engagement-lab"
+          class="panel"
+          aria-labelledby="engagement-title"
+        >
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Families as contributors</p>
+              <h2 id="engagement-title">Home-to-Class Engagement Lab</h2>
+            </div>
+            <p>
+              These short routines ask families to listen, contribute, or encourage—not
+              reteach the lesson. Every routine includes an in-school alternative.
+            </p>
+          </div>
+          <div id="engagement-grid" class="engagement-grid"></div>
+        </section>
+
+        <section
+          id="connection-planner"
+          class="panel"
+          aria-labelledby="planner-title"
+        >
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Plan the next human touchpoint</p>
+              <h2 id="planner-title">Connection Planner</h2>
+            </div>
+            <p>
+              Track only the next action—not family contact information or full
+              message history. Saving is optional and stays on this device.
+            </p>
+          </div>
+          <div class="planner-grid">
+            <form id="planner-form" class="planner-form">
+              <div class="field-grid two">
+                <div class="field">
+                  <label for="planner-student">First name or initials</label>
+                  <input id="planner-student" maxlength="40" required />
+                </div>
+                <div class="field">
+                  <label for="planner-purpose">Connection goal</label>
+                  <select id="planner-purpose"></select>
+                </div>
+              </div>
+              <div class="field-grid two">
+                <div class="field">
+                  <label for="planner-date">Next contact date</label>
+                  <input id="planner-date" type="date" required />
+                </div>
+                <div class="field">
+                  <label for="planner-note">Short next step</label>
+                  <input
+                    id="planner-note"
+                    maxlength="240"
+                    placeholder="Example: Share one positive update"
+                  />
+                </div>
+              </div>
+              <div class="planner-actions">
+                <button class="button primary" type="submit">Add to planner</button>
+                <button id="save-planner" class="button secondary" type="button">
+                  Save on this device
+                </button>
+                <button id="clear-planner" class="button quiet danger" type="button">
+                  Clear saved planning
+                </button>
+              </div>
+              <p id="storage-status" class="storage-status">
+                Current session only. Nothing is saved after you leave.
+              </p>
+            </form>
+            <aside class="balance-card" aria-labelledby="balance-title">
+              <h3 id="balance-title">Connection balance</h3>
+              <div id="balance-counts" class="balance-counts"></div>
+              <p id="balance-prompt"></p>
+            </aside>
+          </div>
+          <div id="planner-list" class="planner-list"></div>
+          <div id="planner-empty" class="empty-state">
+            <h3>No planned follow-ups yet</h3>
+            <p>Add the next small connection you want to make.</p>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="shell">
+        <p>
+          Family participation supports learning, but it never determines a
+          student's grade. An equivalent in-school option should always be available.
+        </p>
+      </div>
+    </footer>
+
+    <div
+      id="app-status"
+      class="toast"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+      hidden
+    ></div>
+
+    <script
+      type="module"
+      src="/curriculum/family-connections/app.js"
+    ></script>
+  </body>
+</html>

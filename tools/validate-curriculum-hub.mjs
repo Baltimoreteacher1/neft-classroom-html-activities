@@ -47,6 +47,14 @@ check(
 );
 check(/id="curr-search"/.test(html), "missing the lesson search control (#curr-search)");
 check(/mailbox-feature/.test(html), "missing the Student Digital Mailbox featured card");
+check(
+  /id="family-connections-feature-title"/.test(html),
+  "missing the Family Connections featured card",
+);
+check(
+  (html.match(/href="\/curriculum\/family-connections\/"/g) || []).length >= 2,
+  "missing Family Connections featured or Teacher Tools link",
+);
 
 // Review-game link integrity — locks the 2026-06-29 regression where the
 // End-of-Unit entry (lessonId "") produced /practice-arcade/?lesson= (empty),
