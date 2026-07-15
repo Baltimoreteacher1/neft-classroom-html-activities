@@ -398,6 +398,11 @@
           esc(s.idea) +
           "<br>" +
           linkRow(s.links) +
+          '<a class="rf-link" href="/teacher-tools/resource-finder/?standard=' +
+          encodeURIComponent(s.standard) +
+          '" target="_blank" rel="noopener">🧭 All my resources for ' +
+          esc(s.standard) +
+          "</a>" +
           "</td></tr>"
         );
       })
