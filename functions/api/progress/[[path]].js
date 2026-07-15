@@ -421,6 +421,50 @@ async function upsert(db, body, isCreate) {
   return nowIso;
 }
 
+// --- Insight Signal (second-brain substrate) -------------------------------
+// Persists Insight Brief's per-student diagnosis as a timestamped snapshot so
+// the signal becomes longitudinal + joinable instead of ephemeral. Stores only
+// DERIVED signal (tier + counts + weak standards), never raw student work.
+async function ensureInsightSchema(db) {
+  await db
+    .prepare(
+      `CREATE TABLE IF NOT EXISTS insight_signal (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        captured_at TEXT NOT NULL,
+        section TEXT,
+        student_name TEXT,
+        tier TEXT,
+        risk INTEGER DEFAULT 0,
+        activities INTEGER DEFAULT 0,
+        struggles INTEGER DEFAULT 0,
+        misconceptions INTEGER DEFAULT 0,
+        avg_score INTEGER,
+        weak_standards_json TEXT,
+        mastery_standards_json TEXT,
+        source TEXT DEFAULT 'insight-brief'
+      )`,
+    )
+    .run();
+  await db
+    .prepare(
+      `CREATE INDEX IF NOT EXISTS idx_insight_signal_section ON insight_signal (section, captured_at)`,
+    )
+    .run();
+  await db
+    .prepare(
+      `CREATE INDEX IF NOT EXISTS idx_insight_signal_student ON insight_signal (student_name, captured_at)`,
+    )
+    .run();
+}
+
+function parseJsonOr(text, fallback) {
+  try {
+    return JSON.parse(text || "");
+  } catch (e) {
+    return fallback;
+  }
+}
+
 export async function onRequest(context) {
   const { request, env, params } = context;
   const method = request.method.toUpperCase();
@@ -556,6 +600,130 @@ export async function onRequest(context) {
         };
       });
       return json({ ok: true, activity, count: exemplars.length, exemplars });
+    } catch (err) {
+      return json({ ok: false, error: "server-error", message: String(err) }, 500);
+    }
+  }
+
+  // --- Insight Signal (second-brain substrate) -----------------------------
+  // Teacher-gated read/write of Insight Brief's per-student diagnosis, captured
+  // as timestamped snapshots so the signal becomes longitudinal + joinable
+  // (student -> standard/misconception -> over time) instead of ephemeral.
+  //   POST { section, generatedAt, students:[{ name, section, tier, risk,
+  //          activities, struggles, misconceptions, avg, weakStandards, mastery }] }
+  //        -> saves one snapshot row per student
+  //   GET  ?section=&student=&since=ISO&limit=N  -> snapshot history
+  if (seg === "insight") {
+    const auth = teacherAuthorized(env, request, url);
+    if (auth === "not-configured")
+      return json(
+        {
+          ok: false,
+          error: "not-configured",
+          message: "Set the TEACHER_KEY env var to enable Insight Signal persistence.",
+        },
+        503,
+      );
+    if (auth === "unauthorized") return json({ ok: false, error: "unauthorized" }, 401);
+    if (!env.DB) return json({ ok: false, error: "backend-not-configured" }, 503);
+
+    try {
+      await ensureInsightSchema(env.DB);
+
+      if (method === "POST") {
+        const body = await request.json().catch(() => null);
+        const students = (body && Array.isArray(body.students) && body.students) || [];
+        if (!students.length) return json({ ok: false, error: "no-students" }, 400);
+        const capturedAt =
+          (body && typeof body.generatedAt === "string" && body.generatedAt.slice(0, 30)) ||
+          new Date().toISOString();
+        const stmt = env.DB.prepare(
+          `INSERT INTO insight_signal
+             (captured_at, section, student_name, tier, risk, activities,
+              struggles, misconceptions, avg_score, weak_standards_json,
+              mastery_standards_json, source)
+           VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`,
+        );
+        const rows = students.slice(0, 300).map((s) => {
+          const avg = s && Number.isFinite(s.avg) ? Math.round(s.avg) : null;
+          return stmt.bind(
+            capturedAt,
+            clamp((s && (s.section || body.section)) || "", 60),
+            clamp((s && s.name) || "", 120),
+            clamp((s && s.tier) || "", 20),
+            Math.max(0, Math.round((s && s.risk) || 0)),
+            Math.max(0, Math.round((s && s.activities) || 0)),
+            Math.max(0, Math.round((s && s.struggles) || 0)),
+            Math.max(0, Math.round((s && s.misconceptions) || 0)),
+            avg,
+            JSON.stringify((s && s.weakStandards) || {}),
+            JSON.stringify((s && s.mastery) || []),
+            "insight-brief",
+          );
+        });
+        // Dedupe: one snapshot per section per calendar day (latest open wins),
+        // so the trend log is a daily pulse — not one row per tab-open.
+        const day = capturedAt.slice(0, 10);
+        const sectionSet = {};
+        students.forEach((s) => {
+          sectionSet[clamp((s && (s.section || body.section)) || "", 60)] = true;
+        });
+        const del = env.DB.prepare(
+          `DELETE FROM insight_signal
+             WHERE substr(captured_at, 1, 10) = ? AND section = ? AND source = 'insight-brief'`,
+        );
+        const dels = Object.keys(sectionSet).map((sec) => del.bind(day, sec));
+        await env.DB.batch(dels.concat(rows));
+        return json({ ok: true, saved: rows.length, capturedAt });
+      }
+
+      if (method === "GET") {
+        const section = clamp(url.searchParams.get("section") || "", 60);
+        const student = clamp(url.searchParams.get("student") || "", 120);
+        const since = clamp(url.searchParams.get("since") || "", 30);
+        const limit = Math.min(Number(url.searchParams.get("limit")) || 1000, 5000);
+        const where = [];
+        const binds = [];
+        if (section) {
+          where.push("section = ?");
+          binds.push(section);
+        }
+        if (student) {
+          where.push("student_name = ?");
+          binds.push(student);
+        }
+        if (since) {
+          where.push("captured_at >= ?");
+          binds.push(since);
+        }
+        const sql =
+          `SELECT captured_at, section, student_name, tier, risk, activities,
+                  struggles, misconceptions, avg_score, weak_standards_json,
+                  mastery_standards_json
+             FROM insight_signal` +
+          (where.length ? " WHERE " + where.join(" AND ") : "") +
+          " ORDER BY captured_at DESC, id DESC LIMIT ?";
+        binds.push(limit);
+        const res = await env.DB.prepare(sql)
+          .bind(...binds)
+          .all();
+        const snapshots = (res.results || []).map((r) => ({
+          capturedAt: r.captured_at,
+          section: r.section || "",
+          student: r.student_name || "",
+          tier: r.tier || "",
+          risk: r.risk || 0,
+          activities: r.activities || 0,
+          struggles: r.struggles || 0,
+          misconceptions: r.misconceptions || 0,
+          avg: r.avg_score,
+          weakStandards: parseJsonOr(r.weak_standards_json, {}),
+          mastery: parseJsonOr(r.mastery_standards_json, []),
+        }));
+        return json({ ok: true, count: snapshots.length, snapshots });
+      }
+
+      return json({ ok: false, error: "method-not-allowed" }, 405);
     } catch (err) {
       return json({ ok: false, error: "server-error", message: String(err) }, 500);
     }
@@ -833,25 +1001,27 @@ export async function onRequest(context) {
         const since = Number.isFinite(sinceMs)
           ? new Date(sinceMs).toISOString()
           : new Date(Date.now() - 7 * 86400000).toISOString(); // default: last 7 days
-        const prog = await (section
-          ? env.DB.prepare(
-              `SELECT * FROM student_progress WHERE updated_at >= ? AND section = ?
+        const prog = await (
+          section
+            ? env.DB.prepare(
+                `SELECT * FROM student_progress WHERE updated_at >= ? AND section = ?
                 ORDER BY section, student_name`,
-            ).bind(since, section)
-          : env.DB.prepare(
-              `SELECT * FROM student_progress WHERE updated_at >= ?
+              ).bind(since, section)
+            : env.DB.prepare(
+                `SELECT * FROM student_progress WHERE updated_at >= ?
                 ORDER BY section, student_name`,
-            ).bind(since)
+              ).bind(since)
         ).all();
-        const tel = await (section
-          ? env.DB.prepare(
-              `SELECT standard, student_name, section, event_type FROM lesson_telemetry
+        const tel = await (
+          section
+            ? env.DB.prepare(
+                `SELECT standard, student_name, section, event_type FROM lesson_telemetry
                 WHERE created_at >= ? AND section = ? ORDER BY id DESC LIMIT 5000`,
-            ).bind(since, section)
-          : env.DB.prepare(
-              `SELECT standard, student_name, section, event_type FROM lesson_telemetry
+              ).bind(since, section)
+            : env.DB.prepare(
+                `SELECT standard, student_name, section, event_type FROM lesson_telemetry
                 WHERE created_at >= ? ORDER BY id DESC LIMIT 5000`,
-            ).bind(since)
+              ).bind(since)
         ).all();
 
         const students = new Map();
@@ -916,15 +1086,16 @@ export async function onRequest(context) {
             });
           return groups.get(k);
         };
-        const tel = await (section
-          ? env.DB.prepare(
-              `SELECT standard, section, event_type, payload_json FROM lesson_telemetry
+        const tel = await (
+          section
+            ? env.DB.prepare(
+                `SELECT standard, section, event_type, payload_json FROM lesson_telemetry
                 WHERE section = ? ORDER BY id DESC LIMIT 10000`,
-            ).bind(section)
-          : env.DB.prepare(
-              `SELECT standard, section, event_type, payload_json FROM lesson_telemetry
+              ).bind(section)
+            : env.DB.prepare(
+                `SELECT standard, section, event_type, payload_json FROM lesson_telemetry
                 ORDER BY id DESC LIMIT 10000`,
-            )
+              )
         ).all();
         for (const r of tel.results || []) {
           if (!r.standard) continue;
@@ -939,21 +1110,22 @@ export async function onRequest(context) {
           }
         }
         try {
-          const scores = await (section
-            ? env.DB.prepare(
-                `SELECT gs.standard AS standard, gs.correct AS correct,
+          const scores = await (
+            section
+              ? env.DB.prepare(
+                  `SELECT gs.standard AS standard, gs.correct AS correct,
                         gs.misconception_tag AS tag, sp.section AS section
                    FROM game_scores gs
                    LEFT JOIN student_progress sp ON sp.save_code = gs.save_code
                   WHERE sp.section = ? ORDER BY gs.id DESC LIMIT 10000`,
-              ).bind(section)
-            : env.DB.prepare(
-                `SELECT gs.standard AS standard, gs.correct AS correct,
+                ).bind(section)
+              : env.DB.prepare(
+                  `SELECT gs.standard AS standard, gs.correct AS correct,
                         gs.misconception_tag AS tag, sp.section AS section
                    FROM game_scores gs
                    LEFT JOIN student_progress sp ON sp.save_code = gs.save_code
                   ORDER BY gs.id DESC LIMIT 10000`,
-              )
+                )
           ).all();
           for (const r of scores.results || []) {
             if (!r.standard) continue;
@@ -994,23 +1166,24 @@ export async function onRequest(context) {
       const minutes = Math.min(Math.max(Number(url.searchParams.get("minutes")) || 30, 5), 1440);
       const since = new Date(Date.now() - minutes * 60000).toISOString();
       const rows = [];
-      const tel = await (section
-        ? env.DB.prepare(
-            `SELECT lesson_slug, lesson_title, standard, student_name, section,
+      const tel = await (
+        section
+          ? env.DB.prepare(
+              `SELECT lesson_slug, lesson_title, standard, student_name, section,
                     event_type, payload_json, created_at
                FROM lesson_telemetry
               WHERE created_at >= ? AND section = ?
                 AND event_type IN ('struggle', 'misconception', 'hint-exhausted')
               ORDER BY id DESC LIMIT 200`,
-          ).bind(since, section)
-        : env.DB.prepare(
-            `SELECT lesson_slug, lesson_title, standard, student_name, section,
+            ).bind(since, section)
+          : env.DB.prepare(
+              `SELECT lesson_slug, lesson_title, standard, student_name, section,
                     event_type, payload_json, created_at
                FROM lesson_telemetry
               WHERE created_at >= ?
                 AND event_type IN ('struggle', 'misconception', 'hint-exhausted')
               ORDER BY id DESC LIMIT 200`,
-          ).bind(since)
+            ).bind(since)
       ).all();
       for (const r of tel.results || []) {
         rows.push({
@@ -1028,9 +1201,10 @@ export async function onRequest(context) {
       try {
         // Recent low performance: per (game, save code, standard) within the
         // window, ≥2 attempts with under 60% correct. Named via the roster join.
-        const low = await (section
-          ? env.DB.prepare(
-              `SELECT gs.game_id AS game_id, gs.standard AS standard,
+        const low = await (
+          section
+            ? env.DB.prepare(
+                `SELECT gs.game_id AS game_id, gs.standard AS standard,
                       gs.save_code AS save_code,
                       COUNT(*) AS attempts, SUM(gs.correct) AS correct_sum,
                       MAX(gs.created_at) AS last_at, MAX(gs.misconception_tag) AS tag,
@@ -1041,9 +1215,9 @@ export async function onRequest(context) {
                 GROUP BY gs.game_id, gs.save_code, gs.standard
                HAVING COUNT(*) >= 2 AND (SUM(gs.correct) * 1.0) / COUNT(*) < 0.6
                 ORDER BY last_at DESC LIMIT 100`,
-            ).bind(since, section)
-          : env.DB.prepare(
-              `SELECT gs.game_id AS game_id, gs.standard AS standard,
+              ).bind(since, section)
+            : env.DB.prepare(
+                `SELECT gs.game_id AS game_id, gs.standard AS standard,
                       gs.save_code AS save_code,
                       COUNT(*) AS attempts, SUM(gs.correct) AS correct_sum,
                       MAX(gs.created_at) AS last_at, MAX(gs.misconception_tag) AS tag,
@@ -1054,7 +1228,7 @@ export async function onRequest(context) {
                 GROUP BY gs.game_id, gs.save_code, gs.standard
                HAVING COUNT(*) >= 2 AND (SUM(gs.correct) * 1.0) / COUNT(*) < 0.6
                 ORDER BY last_at DESC LIMIT 100`,
-            ).bind(since)
+              ).bind(since)
         ).all();
         for (const r of low.results || []) {
           rows.push({
