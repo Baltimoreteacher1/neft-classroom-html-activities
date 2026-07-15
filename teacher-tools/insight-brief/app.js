@@ -512,6 +512,125 @@
     URL.revokeObjectURL(a.href);
   });
 
+  // ---- AI narrative (optional layer) -----------------------------------------
+  // Sends ONLY an anonymized aggregate snapshot to /api/tutor mode:"plan" —
+  // standards, counts, tags, tier sizes. Student names never leave the page.
+  function anonSnapshot(brief) {
+    var h = brief.headline;
+    var t = brief.tiers;
+    var L = [];
+    L.push(
+      "Window: last " +
+        brief.windowDays +
+        " day(s)" +
+        (brief.section ? ", one class section" : ", all class sections") +
+        ".",
+    );
+    L.push(
+      h.activeStudents +
+        " active students, " +
+        h.activitiesTouched +
+        " activities, average score " +
+        (h.avgScore == null ? "unknown" : h.avgScore + "%") +
+        ", " +
+        h.masteryEvents +
+        " mastery signals, " +
+        h.struggleSignals +
+        " struggle signals, " +
+        h.misconceptions +
+        " misconception events.",
+    );
+    L.push(
+      "Tiers: " +
+        t.support.length +
+        " need support, " +
+        t.watch.length +
+        " watch, " +
+        t.onTrack.length +
+        " on track, " +
+        t.enrichment.length +
+        " enrichment-ready.",
+    );
+    brief.standards.slice(0, 5).forEach(function (st) {
+      L.push(
+        "Standard " +
+          st.standard +
+          (st.lessonTitle ? " (" + st.lessonTitle + ")" : "") +
+          (st.section ? " in section " + st.section : "") +
+          ": " +
+          st.attempts +
+          " attempts, " +
+          (st.correctRate == null ? "no rate" : Math.round(st.correctRate * 100) + "% correct") +
+          ", " +
+          st.struggles +
+          " struggles, " +
+          st.misconceptions +
+          " misconceptions, " +
+          st.mastery +
+          " mastery" +
+          (st.topTag ? ", top misconception tag '" + st.topTag + "'" : "") +
+          ".",
+      );
+    });
+    return L.join("\n").slice(0, 1900);
+  }
+  $("#ai-nar").addEventListener("click", function () {
+    if (!state.brief) {
+      setStatus("Generate a brief first.", true);
+      return;
+    }
+    var btn = $("#ai-nar");
+    btn.disabled = true;
+    setStatus("Writing narrative…");
+    fetch("/api/tutor", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ mode: "plan", itemText: anonSnapshot(state.brief) }),
+    })
+      .then(function (r) {
+        return r.json();
+      })
+      .then(function (data) {
+        if (!data || !data.ok || !data.reply)
+          throw new Error(data && data.error ? data.error : "no-reply");
+        $("#ai-narrative-text").textContent = data.reply;
+        $("#ai-narrative").hidden = false;
+        setStatus("");
+      })
+      .catch(function (err) {
+        setStatus(
+          "AI narrative unavailable (" +
+            err.message +
+            ") — the brief above is complete without it.",
+          true,
+        );
+      })
+      .finally(function () {
+        btn.disabled = false;
+      });
+  });
+
+  // ---- Monday auto-brief -------------------------------------------------------
+  // On Mondays, a fresh brief generates itself on page open (once per Monday,
+  // per device) so the week starts with current data instead of the cache.
+  (function mondayAutoBrief() {
+    if (!getKey()) return;
+    var now = new Date();
+    if (now.getDay() !== 1) return;
+    var stamp = now.toISOString().slice(0, 10);
+    var LS_AUTO = "neft.insight.autobrief";
+    try {
+      if (localStorage.getItem(LS_AUTO) === stamp) return;
+      localStorage.setItem(LS_AUTO, stamp);
+    } catch (e) {
+      return;
+    }
+    setTimeout(function () {
+      setStatus("Monday auto-brief…");
+      generate();
+    }, 400);
+  })();
+
   // ---- restore last brief ------------------------------------------------------
   try {
     var cached = JSON.parse(localStorage.getItem(LS_BRIEF) || "null");

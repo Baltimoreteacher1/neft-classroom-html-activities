@@ -69,6 +69,9 @@ const MODES = new Set([
   "solve",
   "translate",
   "recognize",
+  // Teacher-facing: Insight Brief narrative over an ANONYMIZED class snapshot
+  // (standards, counts, misconception tags — never student names).
+  "plan",
 ]);
 
 // Media types Claude's vision API accepts.
@@ -200,6 +203,20 @@ function modeSystemPrompt(mode, standard, lang, hintLevel) {
       `no romanization.`
     );
   }
+  if (mode === "plan") {
+    return (
+      `You are an experienced Grade 6 math instructional coach writing a short note to the ` +
+      `classroom teacher. You receive an anonymized snapshot of recent class work: standards ` +
+      `with attempt/struggle/misconception/mastery counts, misconception tags, and how many ` +
+      `students sit in each support tier. Student names are never included — never invent any. ` +
+      `Write a planning narrative in 4-7 short sentences, plain text, no headings: ` +
+      `(1) one sentence on the overall picture, ` +
+      `(2) the single highest-leverage reteach move and why the data says so, ` +
+      `(3) one concrete Do Now or Turn-and-Talk idea aimed at the top misconception tag, ` +
+      `(4) one idea for the enrichment-ready group. ` +
+      `Stay strictly inside the numbers given; format math as plain text (/ for division, ^ for exponents).`
+    );
+  }
   const stdLine = standard ? `The problem targets math standard ${standard}. ` : "";
   const base =
     `You are a warm, patient Grade 6 math tutor for a multilingual classroom. ${stdLine}` +
@@ -319,6 +336,7 @@ function modeSystemPrompt(mode, standard, lang, hintLevel) {
 
 function userPrompt(v) {
   if (v.mode === "translate") return v.itemText;
+  if (v.mode === "plan") return `Anonymized class data snapshot:\n${v.itemText}`;
   if (v.mode === "recognize")
     return "Read the math I wrote by hand in this image, then solve or check it.";
   const lines = [];
