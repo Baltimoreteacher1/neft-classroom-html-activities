@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#102f3a" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>Teacher Mode | Family Connections</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./teacher.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#teacher-main">Skip to publishing workspace</a>
+
+    <header class="teacher-header">
+      <div>
+        <a class="back-link" href="/curriculum/family-connections/">← View Family Mode</a>
+        <p class="eyebrow">EduWonderLab · Teacher Mode</p>
+        <h1>Family Connections Publisher</h1>
+        <p class="header-note">Sign-in protected · Family-safe content only</p>
+      </div>
+      <div class="publish-panel">
+        <div>
+          <span class="status-dot" aria-hidden="true"></span>
+          <strong id="publish-status">Loading draft…</strong>
+          <small id="publish-detail">Draft → Preview → Publish</small>
+        </div>
+        <div class="header-actions">
+          <button class="button button-quiet" id="save-draft" type="button">Save draft</button>
+          <button class="button button-preview" id="preview-draft" type="button">Preview</button>
+          <button class="button button-publish" id="publish-draft" type="button">Publish live</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="workspace">
+      <aside class="workspace-nav" aria-label="Publishing sections">
+        <p class="nav-label">Build the family update</p>
+        <a href="#weekly-plan"><span>01</span> Weekly overview</a>
+        <a href="#homework-plan"><span>02</span> Family homework</a>
+        <a href="#updates-plan"><span>03</span> Updates & resources</a>
+        <a href="#connections-plan"><span>04</span> ClassDojo & Canvas</a>
+        <a href="#preview-plan"><span>05</span> Preview & history</a>
+        <p class="privacy-note">No family contacts, student records, private messages, or grades are stored here.</p>
+      </aside>
+
+      <main id="teacher-main">
+        <section class="editor-section" id="weekly-plan" aria-labelledby="weekly-title">
+          <div class="section-heading">
+            <div>
+              <p class="step-label">01 · Weekly overview</p>
+              <h2 id="weekly-title">Post lesson numbers for the week.</h2>
+              <p>Choose a public class section, then assign lessons or schedule notes for each weekday.</p>
+            </div>
+            <div class="section-actions">
+              <label for="section-editor">Editing section</label>
+              <select id="section-editor"></select>
+              <button class="text-button" id="add-section" type="button">+ Add section</button>
+            </div>
+          </div>
+
+          <div class="form-grid three-up">
+            <label>
+              Public class label
+              <input id="section-label" maxlength="80" autocomplete="off" />
+            </label>
+            <label>
+              Week label
+              <input id="week-label" maxlength="80" placeholder="September 8-12" autocomplete="off" />
+            </label>
+            <label>
+              Week begins
+              <input id="week-start" type="date" />
+            </label>
+          </div>
+          <label class="full-field">
+            Short note for families
+            <textarea id="week-note" maxlength="500" rows="3" placeholder="What should families know this week?"></textarea>
+          </label>
+          <div class="weekday-editors" id="weekday-editors"></div>
+        </section>
+
+        <section class="editor-section" id="homework-plan" aria-labelledby="homework-editor-title">
+          <div class="section-heading">
+            <div>
+              <p class="step-label">02 · Family homework</p>
+              <h2 id="homework-editor-title">Edit every lesson's family-facing copy.</h2>
+              <p>All current and future curriculum lessons flow in automatically. Your edits stay attached to the lesson number.</p>
+            </div>
+          </div>
+          <div class="homework-workbench">
+            <div class="lesson-picker">
+              <label for="homework-editor-search">Find a lesson</label>
+              <input id="homework-editor-search" type="search" placeholder="Search 3-2, ratios, equations…" autocomplete="off" />
+              <div class="lesson-list" id="homework-editor" role="listbox" aria-label="Curriculum lessons"></div>
+            </div>
+            <form class="homework-form" id="homework-form">
+              <div class="form-title-row">
+                <div>
+                  <span id="selected-lesson-number">Choose a lesson</span>
+                  <h3 id="selected-lesson-title">Family homework details</h3>
+                </div>
+                <label class="switch-label">
+                  <input id="homework-visible" type="checkbox" checked />
+                  Visible to families
+                </label>
+              </div>
+              <label>
+                Family-facing title
+                <input id="homework-title" maxlength="120" autocomplete="off" />
+              </label>
+              <label>
+                Directions
+                <textarea id="homework-directions" maxlength="600" rows="4"></textarea>
+              </label>
+              <div class="form-grid two-up">
+                <label>
+                  Estimated time
+                  <input id="homework-time" maxlength="40" placeholder="15-20 minutes" autocomplete="off" />
+                </label>
+                <label>
+                  Materials
+                  <input id="homework-materials" maxlength="180" placeholder="Paper, pencil, lesson notes" autocomplete="off" />
+                </label>
+              </div>
+              <label>
+                Language support or sentence frame
+                <textarea id="homework-language" maxlength="500" rows="3"></textarea>
+              </label>
+              <div class="form-grid two-up">
+                <label>
+                  Supplemental link label
+                  <input id="homework-link-label" maxlength="80" autocomplete="off" />
+                </label>
+                <label>
+                  Secure supplemental link
+                  <input id="homework-link-url" type="url" maxlength="400" placeholder="https://…" autocomplete="off" />
+                </label>
+              </div>
+              <button class="button button-quiet" id="apply-homework" type="submit">Apply lesson edits</button>
+            </form>
+          </div>
+        </section>
+
+        <section class="editor-section" id="updates-plan" aria-labelledby="updates-title">
+          <div class="section-heading">
+            <div>
+              <p class="step-label">03 · Updates & resources</p>
+              <h2 id="updates-title">Share the information families need.</h2>
+              <p>Keep updates short, specific, and useful on a phone.</p>
+            </div>
+          </div>
+          <div class="split-editor">
+            <div class="collection-editor">
+              <h3>Family updates</h3>
+              <label>Title <input id="announcement-title" maxlength="100" autocomplete="off" /></label>
+              <label>Message <textarea id="announcement-body" maxlength="600" rows="4"></textarea></label>
+              <button class="button button-quiet" id="add-announcement" type="button">Add update</button>
+              <div id="announcement-editor" class="collection-list"></div>
+            </div>
+            <div class="collection-editor">
+              <h3>Supplemental resources</h3>
+              <label>Title <input id="resource-title" maxlength="100" autocomplete="off" /></label>
+              <label>Description <textarea id="resource-description" maxlength="300" rows="2"></textarea></label>
+              <label>Link <input id="resource-url" maxlength="400" placeholder="/curriculum/… or https://…" autocomplete="off" /></label>
+              <button class="button button-quiet" id="add-resource" type="button">Add resource</button>
+              <div id="resource-editor" class="collection-list"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="editor-section" id="connections-plan" aria-labelledby="connections-title">
+          <div class="section-heading">
+            <div>
+              <p class="step-label">04 · ClassDojo & Canvas</p>
+              <h2 id="connections-title">Publish once. Share where families already are.</h2>
+              <p>Links work now; the versioned export keeps the same structure ready for later Canvas synchronization.</p>
+            </div>
+          </div>
+          <div class="integration-grid">
+            <article class="integration-card">
+              <span class="integration-kicker">Conversation</span>
+              <h3>ClassDojo</h3>
+              <label for="classdojo-url">ClassDojo family destination</label>
+              <input id="classdojo-url" type="url" maxlength="400" placeholder="https://www.classdojo.com/…" autocomplete="off" />
+              <a class="text-button" id="open-classdojo" href="https://teach.classdojo.com/" target="_blank" rel="noopener">Open ClassDojo ↗</a>
+            </article>
+            <article class="integration-card canvas-card">
+              <span class="integration-kicker">LMS-ready</span>
+              <h3>Canvas</h3>
+              <label for="canvas-url">Canvas course or observer destination</label>
+              <input id="canvas-url" type="url" maxlength="400" placeholder="https://…instructure.com/courses/…" autocomplete="off" />
+              <div class="canvas-actions">
+                <button class="text-button" id="copy-canvas-announcement" type="button">Copy announcement</button>
+                <button class="text-button" id="copy-canvas-modules" type="button">Copy module links</button>
+                <button class="text-button" id="download-canvas-json" type="button">Download JSON</button>
+                <a class="text-button" id="open-canvas" href="#" target="_blank" rel="noopener">Open Canvas ↗</a>
+              </div>
+              <textarea id="canvas-copy-output" class="copy-output" rows="7" readonly aria-label="Canvas-ready copy"></textarea>
+            </article>
+          </div>
+        </section>
+
+        <section class="editor-section" id="preview-plan" aria-labelledby="preview-title">
+          <div class="section-heading">
+            <div>
+              <p class="step-label">05 · Preview & history</p>
+              <h2 id="preview-title">See what families will see.</h2>
+              <p>Preview is always marked as not live. Publish only when the full week is ready.</p>
+            </div>
+          </div>
+          <div class="preview-banner">Preview — not live</div>
+          <div id="family-preview" class="family-preview" aria-live="polite"></div>
+          <details class="history-panel">
+            <summary>Publication history</summary>
+            <ol id="publication-history"></ol>
+          </details>
+        </section>
+      </main>
+    </div>
+
+    <p class="status-region" id="teacher-status" role="status" aria-live="polite"></p>
+    <script type="module" src="./teacher-app.js"></script>
+  </body>
+</html>
