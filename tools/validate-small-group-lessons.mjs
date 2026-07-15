@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
@@ -27,35 +27,57 @@ function assertPair(parent, pair) {
   }
 }
 
+function matchingDetailsEnd(html, start) {
+  const tagRe = /<details\b[^>]*>|<\/details>/g;
+  tagRe.lastIndex = start;
+  let depth = 0;
+  let match;
+  while ((match = tagRe.exec(html))) {
+    if (match[0].startsWith("<details")) depth++;
+    else if (--depth === 0) return tagRe.lastIndex;
+  }
+  fail(`unclosed curriculum dropdown at byte ${start}`);
+}
+
+function lessonBlock(html, lessonId) {
+  const href = `href="/lessons/${lessonId}/"`;
+  let at = -1;
+  while ((at = html.indexOf(href, at + 1)) !== -1) {
+    const start = html.lastIndexOf("<details", at);
+    if (start === -1) continue;
+    const openEnd = html.indexOf(">", start);
+    const classes =
+      html
+        .slice(start, openEnd + 1)
+        .match(/class="([^"]*)"/)?.[1]
+        ?.split(/\s+/) || [];
+    if (!classes.includes("lesson")) continue;
+    const end = matchingDetailsEnd(html, start);
+    if (at < end) return { start, end, at, classes };
+  }
+  fail(`${lessonId} curriculum dropdown is missing`);
+}
+
 function assertCurriculumOrder(html, parent, pair) {
   const group1 = pair.find((row) => row.group === 1);
   const group2 = pair.find((row) => row.group === 2);
-  const parentHref = `href="/lessons/${parent}/"`;
   const group1Href = `href="/lessons/${group1.id}/"`;
   const group2Href = `href="/lessons/${group2.id}/"`;
-  const parentAt = html.indexOf(parentHref);
-  const group1At = html.indexOf(group1Href);
-  const group2At = html.indexOf(group2Href);
-
-  if (parentAt < 0 || group1At < 0 || group2At < 0)
-    fail(`${parent} is missing a curriculum link`);
+  const parentBlock = lessonBlock(html, parent);
+  const group1Block = lessonBlock(html, group1.id);
+  const group2Block = lessonBlock(html, group2.id);
   if (count(html, group1Href) !== 1 || count(html, group2Href) !== 1)
     fail(`${parent} small-group links must each appear once`);
-  if (!(parentAt < group1At && group1At < group2At))
+  if (!(parentBlock.start < group1Block.start && group1Block.start < group2Block.start))
     fail(`${parent} must appear in parent, Group 1, Group 2 order`);
-
-  const parentClose = html.indexOf("</details>", parentAt);
-  const group1Start = html.lastIndexOf("<details", group1At);
-  const group1Close = html.indexOf("</details>", group1At);
-  const group2Start = html.lastIndexOf("<details", group2At);
-  if (html.indexOf("<details", parentClose + 10) !== group1Start)
+  if (html.indexOf("<details", parentBlock.end) !== group1Block.start)
     fail(`${parent} Group 1 must sit directly below its parent lesson`);
-  if (html.indexOf("<details", group1Close + 10) !== group2Start)
+  if (html.indexOf("<details", group1Block.end) !== group2Block.start)
     fail(`${parent} Group 2 must sit directly below Group 1`);
 
   const dotted = parent.replace("-", ".");
-  const firstSummary = html.slice(group1Start, group1At);
-  const secondSummary = html.slice(group2Start, group2At);
+  const firstSummary = html.slice(group1Block.start, group1Block.at);
+  const secondSummary = html.slice(group2Block.start, group2Block.at);
   if (!firstSummary.includes(`${dotted} Small Group: Group 1`))
     fail(`${group1.id} heading must start with ${dotted}`);
   if (!secondSummary.includes(`${dotted} Small Group: Group 2`))
@@ -71,7 +93,8 @@ function assertConfig(root, parent, row) {
   const config = JSON.parse(readFileSync(configPath, "utf8"));
   const dotted = parent.replace("-", ".");
   if (config.lessonId !== row.id) fail(`${row.id} config lessonId does not match`);
-  if (config.variant !== `group${row.group}`) fail(`${row.id} variant does not match Group ${row.group}`);
+  if (config.variant !== `group${row.group}`)
+    fail(`${row.id} variant does not match Group ${row.group}`);
   if (!String(config.title || "").startsWith(`${dotted} Small Group`))
     fail(`${row.id} title must begin with ${dotted} Small Group`);
   if (config.smallGroup?.group !== row.group) fail(`${row.id} smallGroup metadata does not match`);
@@ -117,7 +140,9 @@ function main() {
   const html = readFileSync(join(ROOT, "curriculum", "index.html"), "utf8");
   const rows = JSON.parse(readFileSync(join(ROOT, "tools", "small-group-rows.json"), "utf8"));
   const result = validateSmallGroups({ html, rows });
-  console.log(`✓ Small-group lessons: ${result.parents} parents, ${result.variants} variants, hierarchy and content valid`);
+  console.log(
+    `✓ Small-group lessons: ${result.parents} parents, ${result.variants} variants, hierarchy and content valid`,
+  );
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) main();

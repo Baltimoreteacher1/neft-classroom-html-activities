@@ -6,7 +6,7 @@
 // Also injects a one-time CSS block for the indented small-group styling.
 // No re-serialization; same approach as splice-catchup-curriculum.mjs.
 import { readFileSync, writeFileSync } from "node:fs";
-import { join, dirname, resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = process.env.REPO || resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -14,7 +14,11 @@ const FILE = join(ROOT, "curriculum", "index.html");
 const rows = JSON.parse(readFileSync(new URL("./small-group-rows.json", import.meta.url)));
 
 const esc = (s) =>
-  String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 
 let html = readFileSync(FILE, "utf8");
 const before = html;
@@ -77,25 +81,45 @@ function blockFor(r) {
           </details>`;
 }
 
+function matchingDetailsEnd(start) {
+  const tagRe = /<details\b[^>]*>|<\/details>/g;
+  tagRe.lastIndex = start;
+  let depth = 0;
+  let match;
+  while ((match = tagRe.exec(html))) {
+    if (match[0].startsWith("<details")) depth++;
+    else if (--depth === 0) return tagRe.lastIndex;
+  }
+  throw new Error(`unclosed <details> at byte ${start}`);
+}
+
+function parentDetailsEnd(parent) {
+  const href = `href="/lessons/${parent}/"`;
+  let at = -1;
+  while ((at = html.indexOf(href, at + 1)) !== -1) {
+    const start = html.lastIndexOf("<details", at);
+    if (start === -1) continue;
+    const openEnd = html.indexOf(">", start);
+    const openTag = html.slice(start, openEnd + 1);
+    const classes = openTag.match(/class="([^"]*)"/)?.[1]?.split(/\s+/) || [];
+    if (!classes.includes("lesson") || classes.includes("lesson-smallgroup")) continue;
+    const end = matchingDetailsEnd(start);
+    if (at < end) return end;
+  }
+  throw new Error(`parent lesson dropdown not found: ${parent}`);
+}
+
 // --refresh: strip existing small-group blocks first so they are re-inserted
 // with the current heading format (idempotent upgrade path).
 if (process.argv.includes("--refresh")) {
-  html = html.replace(
-    /\n?\s*<details\s+class="lesson lesson-smallgroup[\s\S]*?<\/details>/g,
-    "",
-  );
+  html = html.replace(/\n?\s*<details\s+class="lesson lesson-smallgroup[\s\S]*?<\/details>/g, "");
 }
 
 let inserted = 0;
 for (const [parent, group] of byParent) {
   const pending = group.filter((r) => !html.includes(`href="/lessons/${r.id}/"`));
   if (!pending.length) continue;
-  const anchor = `href="/lessons/${parent}/"`;
-  const ai = html.indexOf(anchor);
-  if (ai === -1) throw new Error(`anchor not found: ${anchor}`);
-  const ci = html.indexOf("</details>", ai);
-  if (ci === -1) throw new Error(`no closing details after ${anchor}`);
-  const end = ci + "</details>".length;
+  const end = parentDetailsEnd(parent);
   const block = pending.map(blockFor).join("");
   html = html.slice(0, end) + block + html.slice(end);
   inserted += pending.length;

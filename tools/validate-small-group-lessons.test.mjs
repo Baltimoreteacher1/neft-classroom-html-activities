@@ -20,9 +20,9 @@ const second = rows[1];
 const group1Link = `href="/lessons/${first.id}/"`;
 const group2Link = `href="/lessons/${second.id}/"`;
 const outOfOrder = html
-  .replace(group1Link, "href=\"/lessons/__swap__/\"")
+  .replace(group1Link, 'href="/lessons/__swap__/"')
   .replace(group2Link, group1Link)
-  .replace("href=\"/lessons/__swap__/\"", group2Link);
+  .replace('href="/lessons/__swap__/"', group2Link);
 assert.throws(
   () => validateSmallGroups({ html: outOfOrder, rows }),
   /must appear in parent, Group 1, Group 2 order/,
