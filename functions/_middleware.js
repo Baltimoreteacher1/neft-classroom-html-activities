@@ -37,7 +37,8 @@ export async function onRequest(context) {
 
   // APIs and lesson config JSON have their own auth / are fetched by external
   // automation (e.g. the Apps Script slide generator). Never gate them here.
-  if ((p.startsWith("/api/") && !isFamilyPublishingApi) || p.endsWith("/config.json")) return next();
+  if ((p.startsWith("/api/") && !isFamilyPublishingApi) || p.endsWith("/config.json"))
+    return next();
 
   // Static bundles under /assets/ and curriculum data under /data/ are shared
   // code/content, not teacher pages. Some are named for the feature they serve

@@ -1,12 +1,15 @@
 import {
+  createDefaultSnapshot,
   DAYS,
   SNAPSHOT_SCHEMA_VERSION,
-  WEEK_STATUSES,
-  createDefaultSnapshot,
   safeExternalUrl,
+  WEEK_STATUSES,
 } from "../../../curriculum/family-connections/shared/model.js";
 
-const text = (value, maximum) => String(value ?? "").trim().slice(0, maximum);
+const text = (value, maximum) =>
+  String(value ?? "")
+    .trim()
+    .slice(0, maximum);
 const lessonId = (value) => {
   const clean = text(value, 24);
   return /^\d{1,2}-\d{1,2}(?:-flagship)?$/.test(clean) ? clean : "";
@@ -26,15 +29,18 @@ function fail(message) {
 
 function normalizeLinks(input, limit = 5) {
   if (!Array.isArray(input)) return [];
-  return input.slice(0, limit).map((item, index) => {
-    const url = localOrSecureUrl(item?.url);
-    if (url === null) fail("Links must use a local path or secure web address.");
-    return {
-      id: text(item?.id, 40) || `link-${index + 1}`,
-      label: text(item?.label, 80),
-      url,
-    };
-  }).filter((item) => item.label && item.url);
+  return input
+    .slice(0, limit)
+    .map((item, index) => {
+      const url = localOrSecureUrl(item?.url);
+      if (url === null) fail("Links must use a local path or secure web address.");
+      return {
+        id: text(item?.id, 40) || `link-${index + 1}`,
+        label: text(item?.label, 80),
+        url,
+      };
+    })
+    .filter((item) => item.label && item.url);
 }
 
 function normalizeDay(input, expectedDay) {
@@ -50,7 +56,9 @@ function normalizeDay(input, expectedDay) {
 }
 
 function normalizeSection(input, index) {
-  const id = text(input?.id, 40).toLowerCase().replace(/[^a-z0-9-]/g, "");
+  const id = text(input?.id, 40)
+    .toLowerCase()
+    .replace(/[^a-z0-9-]/g, "");
   if (!id) fail(`Section ${index + 1} needs an ID.`);
   const daysByName = new Map((input?.week?.days ?? []).map((day) => [day?.day, day]));
   return {
@@ -100,7 +108,8 @@ function normalizeResource(item, index) {
 }
 
 export function normalizeSnapshot(input) {
-  if (!input || typeof input !== "object" || Array.isArray(input)) fail("A complete draft is required.");
+  if (!input || typeof input !== "object" || Array.isArray(input))
+    fail("A complete draft is required.");
   const allowedFields = new Set([
     "schemaVersion",
     "revision",
@@ -124,7 +133,9 @@ export function normalizeSnapshot(input) {
   const visible = sections.filter((section) => section.visible);
   if (!visible.length) fail("At least one class section must be public.");
   if (!visible.some((section) => section.isDefault)) {
-    sections.forEach((section) => { section.isDefault = false; });
+    sections.forEach((section) => {
+      section.isDefault = false;
+    });
     visible[0].isDefault = true;
   } else {
     let defaultSeen = false;
@@ -137,7 +148,8 @@ export function normalizeSnapshot(input) {
 
   const classDojoUrl = localOrSecureUrl(input.integrations?.classDojoUrl);
   const canvasUrl = localOrSecureUrl(input.integrations?.canvasUrl);
-  if (classDojoUrl === null || canvasUrl === null) fail("Integration links must use secure web addresses.");
+  if (classDojoUrl === null || canvasUrl === null)
+    fail("Integration links must use secure web addresses.");
 
   return {
     schemaVersion: SNAPSHOT_SCHEMA_VERSION,

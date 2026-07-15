@@ -105,7 +105,9 @@ function createD1Store(db) {
         .prepare("SELECT draft_json, published_json FROM family_connections_state WHERE id = 1")
         .first();
       const historyRows = await db
-        .prepare("SELECT snapshot_json FROM family_connections_history ORDER BY revision DESC LIMIT ?")
+        .prepare(
+          "SELECT snapshot_json FROM family_connections_history ORDER BY revision DESC LIMIT ?",
+        )
         .bind(HISTORY_LIMIT)
         .all();
       return {

@@ -12,9 +12,9 @@
  * If you intentionally change the hub in a way that trips an invariant (e.g.,
  * remove the mailbox card), update the matching threshold/landmark below.
  */
-import { readFileSync, existsSync, statSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { existsSync, readFileSync, statSync } from "node:fs";
 import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const HUB = resolve(ROOT, "curriculum/index.html");
