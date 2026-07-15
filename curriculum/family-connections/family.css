@@ -722,3 +722,154 @@ footer a {
     box-shadow: none;
   }
 }
+
+/* ---------- Edit mode ---------- */
+
+.edit-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.edit-toggle.edit-active {
+  border-color: var(--coral);
+  background: var(--coral);
+  color: #fff;
+}
+
+.edit-badge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  padding: 0 0.3rem;
+  border-radius: 999px;
+  background: var(--coral);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+.edit-toggle.edit-active .edit-badge {
+  background: #fff;
+  color: var(--coral-dark);
+}
+
+body.is-editing [data-i18n] {
+  outline: 2px dashed color-mix(in srgb, var(--teal) 55%, transparent);
+  outline-offset: 4px;
+  border-radius: 6px;
+  cursor: text;
+  transition:
+    outline-color 0.15s ease,
+    background 0.15s ease;
+}
+
+body.is-editing [data-i18n]:hover {
+  outline-color: var(--teal);
+  background: color-mix(in srgb, var(--teal) 8%, transparent);
+}
+
+body.is-editing [data-i18n]:focus {
+  outline: 2px solid var(--teal);
+  background: color-mix(in srgb, var(--teal) 12%, transparent);
+}
+
+.edit-bar {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 40;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: min(calc(100% - 1.5rem), var(--content));
+  margin: 0 auto 1rem;
+  padding: 0.9rem 1.15rem;
+  border-radius: var(--radius);
+  background: var(--ink-deep);
+  box-shadow: 0 1.25rem 3rem rgb(13 41 50 / 32%);
+  color: var(--paper-bright);
+  transform: translateY(140%);
+  opacity: 0;
+  transition:
+    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.28s ease;
+}
+
+.edit-bar.is-open {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.edit-bar-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.edit-bar-text strong {
+  font-size: 1rem;
+}
+
+.edit-bar-text span {
+  color: color-mix(in srgb, var(--paper-bright) 78%, transparent);
+  font-size: 0.86rem;
+}
+
+.edit-bar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.edit-btn {
+  min-height: 2.6rem;
+  padding: 0.5rem 0.95rem;
+  border: 1px solid rgb(255 255 255 / 38%);
+  border-radius: 0.7rem;
+  background: rgb(255 255 255 / 10%);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.edit-btn:hover,
+.edit-btn:focus-visible {
+  background: rgb(255 255 255 / 20%);
+}
+
+.edit-btn.ghost {
+  background: transparent;
+}
+
+.edit-btn.solid {
+  border-color: var(--teal);
+  background: var(--teal);
+}
+
+.edit-btn.solid:hover,
+.edit-btn.solid:focus-visible {
+  background: color-mix(in srgb, var(--teal) 82%, #000);
+}
+
+@media (max-width: 40rem) {
+  .edit-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .edit-bar-actions .edit-btn {
+    flex: 1;
+  }
+}
+
+@media print {
+  .edit-bar,
+  .edit-toggle {
+    display: none !important;
+  }
+}
