@@ -6208,7 +6208,7 @@ Due May 31"></textarea>
       key: "morning",
       label: "Morning",
       start: 6 * 60,
-      end: 8 * 60,
+      end: 9 * 60 + 30,
       weekday: ["Morning Launch", "Morning Launchpad"],
       weekend: ["Weekend Launch", "Morning Launch", "Morning Launchpad"],
     },
