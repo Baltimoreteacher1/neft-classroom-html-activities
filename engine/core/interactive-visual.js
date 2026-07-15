@@ -107,6 +107,31 @@ const REGISTRY = {
     const { renderPowerBuilder } = await import("../components/power-builder.js");
     return renderPowerBuilder(host, cfg);
   },
+  // Distributive-property area (box) model: a(b + c) = a·b + a·c.
+  "distributive-builder": async (host, cfg) => {
+    const { renderDistributiveBuilder } = await import("../components/distributive-builder.js");
+    return renderDistributiveBuilder(host, cfg);
+  },
+  // "Percent of a number" double-number-line lab.
+  "percent-builder": async (host, cfg) => {
+    const { renderPercentBuilder } = await import("../components/percent-builder.js");
+    return renderPercentBuilder(host, cfg);
+  },
+  // Unit-rate lab: divide a quantity pair to find each "per 1" rate.
+  "unit-rate-builder": async (host, cfg) => {
+    const { renderUnitRateBuilder } = await import("../components/unit-rate-builder.js");
+    return renderUnitRateBuilder(host, cfg);
+  },
+  // Partial-quotients / long-division lab.
+  "long-division-builder": async (host, cfg) => {
+    const { renderLongDivisionBuilder } = await import("../components/long-division-builder.js");
+    return renderLongDivisionBuilder(host, cfg);
+  },
+  // Scalable ratio-table lab of equivalent ratios.
+  "ratio-table-builder": async (host, cfg) => {
+    const { renderRatioTableBuilder } = await import("../components/ratio-table-builder.js");
+    return renderRatioTableBuilder(host, cfg);
+  },
   // 3D data towers: mean as "level the towers", MAD as distance from the line.
   "stat-towers": async (host, cfg) => {
     const { renderStatTowers } = await import("../components/stat-towers.js");
