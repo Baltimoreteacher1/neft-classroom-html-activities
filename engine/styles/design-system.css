@@ -4603,10 +4603,10 @@ html.nt-extra-fullpage-open body {
 
 /* ── Utility menu — the top-right "Tools" dropdown (utility-menu.js) ─────────
    Bottom-right dock contract (2026-07-14 visual audit): the ONLY floating
-   controls bottom-right are the Save/Resume pill (#nsr-root, bottom:16) and
-   the next-phase button (bottom:64). Everything else lives in this menu
-   (export toolbar, mode pill, Math Workbench, supports-dock trigger) or
-   bottom-left (minimap HUD). */
+   control bottom-right is the next-phase button (bottom:16). Everything else
+   lives in this menu (Save/Resume, export toolbar, mode pill, Math Workbench,
+   supports-dock trigger) or bottom-left (minimap HUD). The save-resume PANEL
+   still opens from its own corner; only its launcher pill is hidden here. */
 .nt-utility-menu {
   position: fixed;
   top: 12px;
@@ -4715,6 +4715,11 @@ body.has-nt-utility-menu .app {
 }
 /* The menu is the single entry point for these on lesson pages. */
 body.has-nt-utility-menu #mwb-launcher {
+  display: none !important;
+}
+/* Save/Resume moves into the menu too (Joel 2026-07-14): hide the floating
+   pill but leave #nsr-root mounted so the panel/toasts keep working. */
+body.has-nt-utility-menu #nsr-launcher {
   display: none !important;
 }
 body.has-nt-utility-menu .ewl-supports-tools-dock.is-collapsed .ewl-supports-dock-reopen {

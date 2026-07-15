@@ -1325,9 +1325,9 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     nextBtn.className = "nt-next-phase-btn";
     nextBtn.setAttribute("aria-label", "Go to the next part of the lesson");
     nextBtn.style.cssText =
-      // bottom:64 clears the Save/Resume pill (bottom:16, ~36px tall) with a
-      // 12px gap; the old 84px landed on the Math Workbench FAB.
-      "position:fixed; right:16px; bottom:64px; z-index:9997; display:inline-flex; " +
+      // The lone bottom-right control (dock contract in design-system.css):
+      // Save/Resume and the workbench live in the top-right Tools menu.
+      "position:fixed; right:16px; bottom:16px; z-index:9997; display:inline-flex; " +
       "align-items:center; gap:8px; min-height:48px; padding:0 22px; border:0; " +
       "border-radius:99px; background:#12355b; color:#fff; font-weight:800; " +
       "font-size:1rem; cursor:pointer; box-shadow:0 4px 14px rgba(12,27,42,.28);";

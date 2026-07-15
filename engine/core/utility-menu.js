@@ -7,8 +7,8 @@
 // dropdown — rather than reimplemented, so every behavior keeps its single
 // canonical implementation. Adoption re-runs on every open (and on two late
 // passes) because the mode pill and shared widgets can (re)mount after us.
-// The Save/Resume pill deliberately stays as the one floating control
-// bottom-right: lessons instruct students to tap the 💾 button.
+// Save/Resume also lives here (per Joel 2026-07-14): the menu item drives the
+// hidden #nsr-launcher, whose panel still opens in its usual spot.
 
 export function mountUtilityMenu() {
   if (document.querySelector(".nt-utility-menu")) return;
@@ -36,6 +36,19 @@ export function mountUtilityMenu() {
     '<div class="nt-utility-section" data-slot="mode"></div>';
 
   const actions = pop.querySelector('[data-slot="actions"]');
+
+  // Save / Resume — drives the save-resume engine's launcher (hidden by the
+  // menu's CSS on lesson pages); its panel opens in its usual corner.
+  const saveResume = document.createElement("button");
+  saveResume.type = "button";
+  saveResume.className = "nt-utility-item";
+  saveResume.innerHTML = '<span aria-hidden="true">💾</span><span>Save / Resume</span>';
+  saveResume.addEventListener("click", () => {
+    const launcher = document.getElementById("nsr-launcher");
+    if (launcher) launcher.click();
+    close();
+  });
+  actions.appendChild(saveResume);
 
   // Math Workbench — resolves to the lesson-aware launcher's deep link when
   // that shared script is on the page (its FAB is hidden by the menu's CSS).
@@ -80,6 +93,7 @@ export function mountUtilityMenu() {
     const modeSlot = pop.querySelector('[data-slot="mode"]');
     if (pill && pill.parentElement !== modeSlot) modeSlot.appendChild(pill);
     supports.style.display = document.querySelector(".ewl-supports-tools-dock") ? "" : "none";
+    saveResume.style.display = document.getElementById("nsr-launcher") ? "" : "none";
   }
 
   function open() {
