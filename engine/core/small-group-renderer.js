@@ -317,6 +317,7 @@ function fillControls(item, key, scaffold, fb, onSolved) {
   input.type = "text";
   input.setAttribute("aria-label", "Your answer");
   input.placeholder = "?";
+  if (numOf(key) != null) input.inputMode = "decimal"; // mobile number keypad
 
   if (eq) {
     box.appendChild(el("div", "eqcap", `${esc(eq.a)} ${esc(eq.op)} ${esc(eq.b)} = ?`));
@@ -387,6 +388,9 @@ function fillControls(item, key, scaffold, fb, onSolved) {
       }
     }
   };
+  input.onkeydown = (e) => {
+    if (e.key === "Enter") check.onclick();
+  };
   row.appendChild(check);
   box.appendChild(row);
   return box;
@@ -414,6 +418,7 @@ function guidedSteps(item, scaffold) {
       line.innerHTML = `<span class="sn">${i + 1}</span>${esc(m[1])}`;
       const inp = el("input", "stepfill");
       inp.type = "text";
+      inp.inputMode = "decimal";
       inp.setAttribute("aria-label", `Step ${i + 1} blank`);
       inp.oninput = () => {
         inp.classList.toggle("ok", isRight(inp.value, m[2]));
@@ -436,6 +441,7 @@ function mcCard(item, index, onSolved) {
   const stem = item.stem || item.title || "Try this.";
   card.appendChild(el("p", "q", `<span class="pn">${index + 1}</span><span>${esc(stem)}</span>`));
   const fb = el("div", "fb");
+  fb.setAttribute("aria-live", "polite");
   const wrap = el("div", "choices");
   let done = false;
   item.choices.forEach((c, i) => {
@@ -479,6 +485,7 @@ function errorCard(item, index, onSolved) {
     ),
   );
   const fb = el("div", "fb");
+  fb.setAttribute("aria-live", "polite");
   const box = el("div", "we-steps");
   const ol = el("ol", "steps");
   item.workedExample.forEach((w) =>
@@ -520,13 +527,16 @@ function errorCard(item, index, onSolved) {
 
 // Fill-in-the-blank problem: equation (vertical + horizontal) or answer blank,
 // word-bank scaffold on support/review, hints, and guided step parts.
-function fillCard(item, index, variant, onSolved) {
+function fillCard(item, index, variant, onSolved, scaffold) {
   const card = el("div", "prob");
   const stem = item.stem || item.title || item.instructions || item.prompt || "Try this problem.";
   card.appendChild(el("p", "q", `<span class="pn">${index + 1}</span><span>${esc(stem)}</span>`));
   const fb = el("div", "fb");
+  fb.setAttribute("aria-live", "polite");
   const key = answerKeyOf(item);
-  const scaffold = variant !== "group2";
+  // scaffold = show the tap-to-fill word bank. Passed per-problem so each small
+  // group has a MIX of scaffolded blanks and pure type-in blanks (no choices).
+  if (scaffold === undefined) scaffold = variant !== "group2";
 
   if (key != null) {
     card.appendChild(fillControls(item, key, scaffold, fb, onSolved));
@@ -585,6 +595,7 @@ function guidedSolveCard(item, index, variant, onSolved) {
   const steps = numberedSteps(item);
   const list = el("div", "gs-list");
   const fb = el("div", "fb");
+  fb.setAttribute("aria-live", "polite");
   const rows = [];
   let unlocked = 0;
   const fillable = steps.filter((s) => s.ans).length;
@@ -615,6 +626,7 @@ function guidedSolveCard(item, index, variant, onSolved) {
       row.appendChild(el("span", null, esc(s.pre)));
       const input = el("input", "stepfill");
       input.type = "text";
+      input.inputMode = "decimal";
       input.setAttribute("aria-label", `Step ${i + 1}`);
       let tries = 0,
         got = false;
@@ -666,11 +678,11 @@ function guidedSolveCard(item, index, variant, onSolved) {
 }
 
 // Router.
-function problemCard(item, index, variant, onSolved, guided) {
+function problemCard(item, index, variant, onSolved, guided, scaffold) {
   if (item.type === "error-analysis" && Array.isArray(item.workedExample))
     return errorCard(item, index, onSolved);
   if (guided && qualifiesGuided(item)) return guidedSolveCard(item, index, variant, onSolved);
-  return fillCard(item, index, variant, onSolved);
+  return fillCard(item, index, variant, onSolved, scaffold);
 }
 
 function appendHints(card, item, fb) {
@@ -696,7 +708,7 @@ function appendHints(card, item, fb) {
   card.appendChild(box);
 }
 
-function practiceSection(config, markDone) {
+function practiceSection(config, markDone, tally) {
   const items = collectItems(config);
   const sec = el("section", "sg-sec");
   sec.id = "sg-practice";
@@ -712,9 +724,20 @@ function practiceSection(config, markDone) {
   // Small groups get 1–2 progressive "type as you go" guided-solve problems.
   const wantGuided = config.variant === "group1" || config.variant === "group2";
   let guidedLeft = wantGuided ? 2 : 0;
+  // Mix of blanks: some with the tap-to-fill word bank, some pure type-in (no
+  // choices). Group 1 alternates; Group 2 stays pure; Catch-Up keeps the bank.
+  let fillIdx = 0;
   items.forEach((it, i) => {
     const useGuided = guidedLeft > 0 && it.type !== "error-analysis" && qualifiesGuided(it);
     if (useGuided) guidedLeft--;
+    let scaffold;
+    if (config.variant === "group1")
+      scaffold = fillIdx % 2 === 0; // mix: on, off, on…
+    else if (config.variant === "group2")
+      scaffold = false; // pure type-in
+    else scaffold = true; // catch-up review keeps the word bank
+    if (!useGuided && it.type !== "error-analysis") fillIdx++;
+    if (tally) tally.total++;
     sec.appendChild(
       problemCard(
         it,
@@ -723,8 +746,10 @@ function practiceSection(config, markDone) {
         () => {
           solved++;
           if (solved >= Math.ceil(total * 0.6)) markDone("sg-practice");
+          tally?.bump();
         },
         useGuided,
+        scaffold,
       ),
     );
   });
@@ -740,16 +765,21 @@ function practiceSection(config, markDone) {
   return sec;
 }
 
-function checkSection(config, markDone) {
+function checkSection(config, markDone, tally) {
   const et = config.reflect?.exitTicket;
   if (!et) return null;
   const sec = el("section", "sg-sec");
   sec.id = "sg-check";
   sec.appendChild(el("div", "sg-h", `<span class="n">4</span><h2>Quick check</h2>`));
+  if (tally) tally.total++;
+  const onDone = () => {
+    markDone("sg-check");
+    tally?.bump();
+  };
   sec.appendChild(
     Array.isArray(et.choices)
-      ? mcCard({ ...et, type: "multiple-choice" }, 0, () => markDone("sg-check"))
-      : fillCard(et, 0, config.variant, () => markDone("sg-check")),
+      ? mcCard({ ...et, type: "multiple-choice" }, 0, onDone)
+      : fillCard(et, 0, config.variant, onDone),
   );
   return sec;
 }
@@ -765,6 +795,15 @@ export function bootSmallGroup(config) {
   const app = document.getElementById("app");
   if (!app) return;
   app.innerHTML = "";
+
+  // Teacher vs student view: the facilitation panel and curriculum back-link are
+  // teacher-only (canonical nt-teacher-mode key). Students get a clean activity.
+  let isTeacher = false;
+  try {
+    isTeacher = localStorage.getItem("nt-teacher-mode") === "1";
+  } catch {
+    isTeacher = false;
+  }
 
   // Hero
   const hero = el("div", "sg-hero");
@@ -783,9 +822,9 @@ export function bootSmallGroup(config) {
   hero.appendChild(chips);
   app.appendChild(hero);
 
-  // Teacher facilitation (collapsed) — for the small groups
+  // Teacher facilitation (collapsed) — teacher mode only.
   const sg = config.smallGroup;
-  if (sg && (sg.moves || sg.who)) {
+  if (isTeacher && sg && (sg.moves || sg.who)) {
     const wrap = el("div", "sg-teacher");
     const moves = (sg.moves || []).map((m) => `<li>${esc(m)}</li>`).join("");
     const frames = (sg.frames || []).map((f) => `<span class="sg-frame">${esc(f)}</span>`).join("");
@@ -830,22 +869,47 @@ export function bootSmallGroup(config) {
   if (vocab) app.appendChild(vocab);
   else stepEls["sg-vocab"].classList.add("done");
   if (vocab) markDone("sg-vocab");
-  app.appendChild(practiceSection(config, markDone));
-  const check = checkSection(config, markDone);
-  if (check) app.appendChild(check);
+  // Completion tally — celebrate + reveal a summary when every problem is done.
+  const done = el("div", "sg-done");
+  done.hidden = true;
+  const tally = {
+    total: 0,
+    solved: 0,
+    bump() {
+      this.solved++;
+      if (this.solved >= this.total && done.hidden) {
+        done.hidden = false;
+        done.innerHTML = `<h2>🎉 You finished this small group!</h2><p>You worked through all ${this.total} problems. Nice thinking — you're ready for what's next.</p>`;
+        celebrate();
+        done.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    },
+  };
 
-  // Footer — navigation + Print + SCORM (Canvas) download.
+  app.appendChild(practiceSection(config, markDone, tally));
+  const check = checkSection(config, markDone, tally);
+  if (check) app.appendChild(check);
+  app.appendChild(done);
+
+  // Footer — Print for everyone; the curriculum back-link and the Canvas SCORM
+  // download are teacher-only actions.
   const foot = el("div", "sg-foot");
-  const back = el("a", "btn ghost");
-  back.href = "/curriculum/";
-  back.textContent = "← Back to all lessons";
+  if (isTeacher) {
+    const back = el("a", "btn ghost");
+    back.href = "/curriculum/";
+    back.textContent = "← Back to all lessons";
+    foot.appendChild(back);
+  }
   const print = el("button", "btn ghost", "🖨️ Print");
   print.type = "button";
   print.onclick = () => window.print();
-  const scorm = el("a", "btn ghost", "⬇️ Download for Canvas (SCORM)");
-  scorm.href = `/api/scorm?activity=${encodeURIComponent(config.lessonId)}&title=${encodeURIComponent(config.title || "")}`;
-  scorm.setAttribute("rel", "nofollow");
-  foot.append(back, print, scorm);
+  foot.appendChild(print);
+  if (isTeacher) {
+    const scorm = el("a", "btn ghost", "⬇️ Download for Canvas (SCORM)");
+    scorm.href = `/api/scorm?activity=${encodeURIComponent(config.lessonId)}&title=${encodeURIComponent(config.title || "")}`;
+    scorm.setAttribute("rel", "nofollow");
+    foot.appendChild(scorm);
+  }
   app.appendChild(foot);
 }
 
