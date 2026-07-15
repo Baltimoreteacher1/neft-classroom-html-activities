@@ -122,4 +122,34 @@ assert.match(app, /https:\/\/teach\.classdojo\.com\//);
 assert.match(app, /function openOutlook/);
 assert.match(app, /neft\.familyConnections\.planner\.v1/);
 
+const curriculumHub = readFileSync(
+  new URL("../index.html", import.meta.url),
+  "utf8",
+);
+assert.ok(
+  (curriculumHub.match(/href="\/curriculum\/family-connections\/"/g) || [])
+    .length >= 2,
+  "curriculum hub needs featured and Teacher Tools Family Connections links",
+);
+assert.match(curriculumHub, /id="family-connections-feature-title"/);
+
+const teacherTools = readFileSync(
+  new URL("../../teacher-tools/index.html", import.meta.url),
+  "utf8",
+);
+assert.ok(
+  (teacherTools.match(/href="\/curriculum\/family-connections\/"/g) || [])
+    .length >= 2,
+  "Teacher Tools needs Start Here and directory Family Connections cards",
+);
+assert.match(teacherTools, /data-title="Family Connections"/);
+
+const routes = JSON.parse(
+  readFileSync(new URL("../../data/routes.json", import.meta.url), "utf8"),
+);
+const familyRoute = routes.routes.find((route) => route.id === "family-connections");
+assert.equal(familyRoute?.path, "/curriculum/family-connections/");
+assert.equal(familyRoute?.audience, "teacher");
+assert.equal(familyRoute?.visibility, "teacher");
+
 console.log("Family Connections tests passed.");
