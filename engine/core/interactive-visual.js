@@ -101,6 +101,12 @@ const REGISTRY = {
     const { renderFactorTree } = await import("../components/factor-tree.js");
     return renderFactorTree(host, cfg);
   },
+  // Interactive powers & exponents lab: type a base and exponent, expand into
+  // repeated multiplication, and evaluate — the sibling of the factor-tree lab.
+  "power-builder": async (host, cfg) => {
+    const { renderPowerBuilder } = await import("../components/power-builder.js");
+    return renderPowerBuilder(host, cfg);
+  },
   // 3D data towers: mean as "level the towers", MAD as distance from the line.
   "stat-towers": async (host, cfg) => {
     const { renderStatTowers } = await import("../components/stat-towers.js");
