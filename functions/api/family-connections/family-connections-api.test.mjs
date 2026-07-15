@@ -42,6 +42,14 @@ const unsafe = createDefaultSnapshot();
 unsafe.integrations.classDojoUrl = "javascript:alert(1)";
 assert.equal((await invoke("PUT", "draft", unsafe, true)).status, 400);
 
+const unsafeResource = createDefaultSnapshot();
+unsafeResource.resources = [{ id: "bad", title: "Unsafe", url: "javascript:alert(1)", visible: true }];
+assert.equal((await invoke("PUT", "draft", unsafeResource, true)).status, 400);
+
+const unknownFields = createDefaultSnapshot();
+unknownFields.studentRecords = [{ name: "Must not persist" }];
+assert.equal((await invoke("PUT", "draft", unknownFields, true)).status, 400);
+
 const draft = createDefaultSnapshot();
 draft.sections[0].week.label = "September 8-12";
 draft.sections[0].week.days[0] = {

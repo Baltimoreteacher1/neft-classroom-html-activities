@@ -87,8 +87,33 @@ function normalizeHomework(input) {
   return output;
 }
 
+function normalizeResource(item, index) {
+  const url = localOrSecureUrl(item?.url);
+  if (url === null) fail("Resource links must use a local path or secure web address.");
+  return {
+    id: text(item?.id, 40) || `resource-${index + 1}`,
+    title: text(item?.title, 100),
+    description: text(item?.description, 300),
+    url,
+    visible: item?.visible !== false,
+  };
+}
+
 export function normalizeSnapshot(input) {
   if (!input || typeof input !== "object" || Array.isArray(input)) fail("A complete draft is required.");
+  const allowedFields = new Set([
+    "schemaVersion",
+    "revision",
+    "publishedAt",
+    "sections",
+    "homeworkOverrides",
+    "announcements",
+    "resources",
+    "integrations",
+  ]);
+  if (Object.keys(input).some((key) => !allowedFields.has(key))) {
+    fail("The draft contains unsupported fields.");
+  }
   const sections = (Array.isArray(input.sections) ? input.sections : [])
     .slice(0, 12)
     .map(normalizeSection);
@@ -131,13 +156,7 @@ export function normalizeSnapshot(input) {
       .filter((item) => item.title && item.body),
     resources: (Array.isArray(input.resources) ? input.resources : [])
       .slice(0, 12)
-      .map((item, index) => ({
-        id: text(item?.id, 40) || `resource-${index + 1}`,
-        title: text(item?.title, 100),
-        description: text(item?.description, 300),
-        url: localOrSecureUrl(item?.url),
-        visible: item?.visible !== false,
-      }))
+      .map(normalizeResource)
       .filter((item) => item.title && item.url),
     integrations: { classDojoUrl, canvasUrl },
   };
