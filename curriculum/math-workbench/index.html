@@ -133,6 +133,11 @@
         gap: 7px;
         flex-wrap: wrap;
       }
+      /* Magic Ink is turned off (2026-07-15): .tbtn display beats the UA
+         [hidden] rule, so hide the button explicitly. */
+      #magicBtn[hidden] {
+        display: none !important;
+      }
       .tbtn {
         display: inline-flex;
         align-items: center;
@@ -2661,6 +2666,7 @@
           <button
             class="tbtn"
             id="magicBtn"
+            hidden
             title="Magic Ink — rough circles, lines, triangles and boxes snap into clean shapes"
             aria-pressed="false"
           >
@@ -3762,10 +3768,11 @@
       // When the Magic Ink toggle is on, a rough hand-drawn line / circle /
       // triangle / rectangle snaps to the clean figure the student meant.
       // Point timestamps are re-spread evenly so Replay still animates it.
+      // Magic Ink is turned OFF (2026-07-15, Joel): the saved mw_magic
+      // preference is ignored and the #magicBtn toolbar button carries
+      // [hidden]. To bring it back, restore the localStorage read below and
+      // un-hide the button.
       let magicInkOn = false;
-      try {
-        magicInkOn = localStorage.getItem("mw_magic") === "1";
-      } catch (e) {}
       function setMagicInk(on) {
         magicInkOn = !!on;
         const b = $("#magicBtn");
