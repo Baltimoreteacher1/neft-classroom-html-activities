@@ -55,7 +55,9 @@ const SKIP_TOPLEVEL = new Set([
   "focus-school",
 ]);
 
-const SKIP_FILE_RE = /(^|[/\\])(404|sitemap|robots)\b/i;
+// student-board is a teacher-authored class display (not a lesson/activity), so
+// it opts out of the global floating launcher — Joel asked to keep it link-free.
+const SKIP_FILE_RE = /(^|[/\\])(404|sitemap|robots)\b|(^|[/\\])math[/\\]student-board[/\\]/i;
 
 const args = new Set(process.argv.slice(2));
 const DRY = args.has("--dry-run");
