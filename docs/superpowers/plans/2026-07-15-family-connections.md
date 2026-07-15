@@ -61,7 +61,7 @@ assert.deepEqual(getLessonResources({ id: "3-2", resources: {} })[0], {
 
 - [ ] **Step 2: Run the test and verify the missing module failure**
 
-Run: `node curriculum/family-connections/family-connections.test.mjs`  
+Run: `node curriculum/family-connections/family-connections.test.mjs`
 Expected: FAIL with `ERR_MODULE_NOT_FOUND` for `templates.js`.
 
 - [ ] **Step 3: Commit the red test**
@@ -117,7 +117,7 @@ export function buildOutlookUrl({ subject, body }) {
 
 - [ ] **Step 3: Run the targeted test**
 
-Run: `node curriculum/family-connections/family-connections.test.mjs`  
+Run: `node curriculum/family-connections/family-connections.test.mjs`
 Expected: PASS and print `Family Connections tests passed.`
 
 - [ ] **Step 4: Commit the business rules**
@@ -140,7 +140,7 @@ Read `index.html` in the Node test and assert it contains `<!doctype html>`, `<h
 
 - [ ] **Step 2: Run the test and verify the missing-file failure**
 
-Run: `node curriculum/family-connections/family-connections.test.mjs`  
+Run: `node curriculum/family-connections/family-connections.test.mjs`
 Expected: FAIL reading `index.html`.
 
 - [ ] **Step 3: Build the semantic page**
@@ -153,7 +153,7 @@ Define a warm navy/teal/coral design with 16px+ body copy, 44px minimum controls
 
 - [ ] **Step 5: Run the static test and diff check**
 
-Run: `node curriculum/family-connections/family-connections.test.mjs && git diff --check`  
+Run: `node curriculum/family-connections/family-connections.test.mjs && git diff --check`
 Expected: PASS with no whitespace errors.
 
 - [ ] **Step 6: Commit the shell**
@@ -187,7 +187,7 @@ Resource search filters global and lesson resources by title, lesson, standard, 
 
 - [ ] **Step 5: Run targeted and aggregate tests**
 
-Run: `node curriculum/family-connections/family-connections.test.mjs && npm test`  
+Run: `node curriculum/family-connections/family-connections.test.mjs && npm test`
 Expected: Family Connections PASS and aggregate runner reports all discovered assertion scripts passing.
 
 - [ ] **Step 6: Commit the connected application**
@@ -218,7 +218,7 @@ Show counts for positive, support, and concern plans. If concern exceeds positiv
 
 - [ ] **Step 4: Run tests and commit**
 
-Run: `node curriculum/family-connections/family-connections.test.mjs`  
+Run: `node curriculum/family-connections/family-connections.test.mjs`
 Expected: PASS.
 
 ```bash
@@ -241,7 +241,7 @@ Assert the curriculum hub contains `href="/curriculum/family-connections/"` at l
 
 - [ ] **Step 2: Run the test and verify the missing-link failure**
 
-Run: `node curriculum/family-connections/family-connections.test.mjs`  
+Run: `node curriculum/family-connections/family-connections.test.mjs`
 Expected: FAIL on the curriculum entry-point count.
 
 - [ ] **Step 3: Add curriculum entry points**
@@ -258,7 +258,7 @@ Add the route registry object and extend `tools/validate-curriculum-hub.mjs` wit
 
 - [ ] **Step 6: Run integration checks and commit**
 
-Run: `node curriculum/family-connections/family-connections.test.mjs && npm run validate:hub && npm run validate:static`  
+Run: `node curriculum/family-connections/family-connections.test.mjs && npm run validate:hub && npm run validate:static`
 Expected: all commands exit 0; static validation may report pre-existing warnings but no errors.
 
 ```bash
@@ -293,7 +293,7 @@ Search the changed files for email/phone storage fields, recipient query paramet
 
 - [ ] **Step 4: Review the final diff**
 
-Run: `git diff --check && git status --short && git diff --stat HEAD~6..HEAD`  
+Run: `git diff --check && git status --short && git diff --stat HEAD~6..HEAD`
 Expected: only Family Connections, hub entry points, route metadata, tests, and documentation are changed.
 
 - [ ] **Step 5: Commit any QA repairs**

@@ -1,7 +1,7 @@
 # Family Connections — Design Specification
 
-**Date:** 2026-07-15  
-**Branch:** `feature/family-connections-hub`  
+**Date:** 2026-07-15
+**Branch:** `feature/family-connections-hub`
 **Goal:** Add a privacy-first Family Connections workspace to the EduWonderLab curriculum that helps Mr. Neft communicate with families, connect them to existing supports, and turn family participation into useful classroom momentum.
 
 ## Product position
