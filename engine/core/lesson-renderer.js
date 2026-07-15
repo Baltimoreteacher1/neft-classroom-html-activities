@@ -659,6 +659,16 @@ function buildVisual(v) {
         fallback: `Interactive factor tree builder. Turn on JavaScript to type a number and build its factor tree.`,
       });
     }
+    case "power-builder": {
+      // Interactive powers & exponents lab: type a base and exponent, expand
+      // into repeated multiplication, and evaluate.
+      return interactiveVisualHost(v, {
+        ariaLabel:
+          "Interactive powers and exponents lab. Type a base and an exponent to expand the power into repeated multiplication and evaluate it.",
+        fallback:
+          "Interactive powers and exponents builder. Turn on JavaScript to type a base and exponent and expand the power.",
+      });
+    }
     default:
       return "";
   }
