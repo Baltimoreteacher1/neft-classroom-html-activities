@@ -796,6 +796,15 @@ export function bootSmallGroup(config) {
   if (!app) return;
   app.innerHTML = "";
 
+  // Teacher vs student view: the facilitation panel and curriculum back-link are
+  // teacher-only (canonical nt-teacher-mode key). Students get a clean activity.
+  let isTeacher = false;
+  try {
+    isTeacher = localStorage.getItem("nt-teacher-mode") === "1";
+  } catch {
+    isTeacher = false;
+  }
+
   // Hero
   const hero = el("div", "sg-hero");
   const badge = config.launch?.badge || `Small Group · ${a.name}`;
@@ -813,9 +822,9 @@ export function bootSmallGroup(config) {
   hero.appendChild(chips);
   app.appendChild(hero);
 
-  // Teacher facilitation (collapsed) — for the small groups
+  // Teacher facilitation (collapsed) — teacher mode only.
   const sg = config.smallGroup;
-  if (sg && (sg.moves || sg.who)) {
+  if (isTeacher && sg && (sg.moves || sg.who)) {
     const wrap = el("div", "sg-teacher");
     const moves = (sg.moves || []).map((m) => `<li>${esc(m)}</li>`).join("");
     const frames = (sg.frames || []).map((f) => `<span class="sg-frame">${esc(f)}</span>`).join("");
@@ -882,18 +891,25 @@ export function bootSmallGroup(config) {
   if (check) app.appendChild(check);
   app.appendChild(done);
 
-  // Footer — navigation + Print + SCORM (Canvas) download.
+  // Footer — Print for everyone; the curriculum back-link and the Canvas SCORM
+  // download are teacher-only actions.
   const foot = el("div", "sg-foot");
-  const back = el("a", "btn ghost");
-  back.href = "/curriculum/";
-  back.textContent = "← Back to all lessons";
+  if (isTeacher) {
+    const back = el("a", "btn ghost");
+    back.href = "/curriculum/";
+    back.textContent = "← Back to all lessons";
+    foot.appendChild(back);
+  }
   const print = el("button", "btn ghost", "🖨️ Print");
   print.type = "button";
   print.onclick = () => window.print();
-  const scorm = el("a", "btn ghost", "⬇️ Download for Canvas (SCORM)");
-  scorm.href = `/api/scorm?activity=${encodeURIComponent(config.lessonId)}&title=${encodeURIComponent(config.title || "")}`;
-  scorm.setAttribute("rel", "nofollow");
-  foot.append(back, print, scorm);
+  foot.appendChild(print);
+  if (isTeacher) {
+    const scorm = el("a", "btn ghost", "⬇️ Download for Canvas (SCORM)");
+    scorm.href = `/api/scorm?activity=${encodeURIComponent(config.lessonId)}&title=${encodeURIComponent(config.title || "")}`;
+    scorm.setAttribute("rel", "nofollow");
+    foot.appendChild(scorm);
+  }
   app.appendChild(foot);
 }
 
