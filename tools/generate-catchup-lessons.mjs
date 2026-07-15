@@ -6,6 +6,12 @@
 import { readFileSync, writeFileSync, readdirSync, mkdirSync, existsSync } from "node:fs";
 import { join, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { shellHtml, LESSON_JS } from "./lib/compact-shell.mjs";
+
+// Order items so the compact renderer's rich interactions come first.
+const RICH = new Set(["multiple-choice", "error-analysis", "open-response"]);
+const preferRich = (arr) =>
+  [...(arr || [])].sort((x, y) => (RICH.has(y.type) ? 1 : 0) - (RICH.has(x.type) ? 1 : 0));
 
 const ROOT = process.env.REPO || resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const LESSONS = join(ROOT, "lessons");
@@ -61,15 +67,29 @@ for (const band of bands) {
 
   const out = base;
   out.lessonId = id;
+  out.variant = "catchup";
   out.title = `${range} Catch-Up`;
   out.themeEmoji = "\u{1F9ED}";
-  out.timeEstimate = "~25 min";
+  out.timeEstimate = "~20 min";
   out.readiness = false;
   delete out.googleForms;
   delete out.printables;
   delete out.graphicNovel;
   delete out.familyNotes;
   delete out.flagship;
+  // Compact review only — strip discovery scaffolding (no notice/wonder, no
+  // reveal word problem, no turn & talk). The compact renderer shows only
+  // skills review → vocabulary → practice → quick check.
+  delete out.noticeAndWonder;
+  delete out.revealWordProblem;
+  delete out.turnAndTalk;
+  if (out.launch) {
+    delete out.launch.beCurious;
+    delete out.launch.noticePrompts;
+    delete out.launch.wonderPrompts;
+    delete out.launch.contextImage;
+    delete out.launch.visual;
+  }
 
   out.contentObjective = `I can show I am caught up on Lessons ${range} by using each lesson's big idea in mixed practice.`;
   out.languageObjective = `I can explain which lesson's big idea I used and how, using key vocabulary from Lessons ${range}.`;
@@ -115,16 +135,11 @@ for (const band of bands) {
     },
   };
 
-  if (out.noticeAndWonder?.context)
-    out.noticeAndWonder.context = `Quick review from Lesson ${dots(u, last)}: ${out.noticeAndWonder.context}`;
-  if (out.revealWordProblem?.title)
-    out.revealWordProblem.title = `(Review from ${dots(u, last)}) ${out.revealWordProblem.title}`;
-  if (out.explore?.instructions)
-    out.explore.instructions = `Review from Lesson ${dots(u, last)}: ${out.explore.instructions}`;
-
   const sample = (tier, per) =>
     srcs.flatMap((s) =>
-      (s.c.practice?.[tier] || []).slice(0, per).map((it) => tagItem(it, dots(u, s.n))),
+      preferRich(s.c.practice?.[tier] || [])
+        .slice(0, per)
+        .map((it) => tagItem(it, dots(u, s.n))),
     );
   out.practice.approaching = sample("approaching", 2);
   out.practice.onLevel = sample("onLevel", 2);
@@ -154,17 +169,11 @@ for (const band of bands) {
   if (!DRY) {
     mkdirSync(join(LESSONS, id), { recursive: true });
     writeFileSync(join(LESSONS, id, "config.json"), JSON.stringify(out, null, 2) + "\n");
-    // Shell: copy base lesson's index.html, patch identity strings.
-    let html = readFileSync(join(LESSONS, baseId, "index.html"), "utf8");
-    html = html.replace(`data-ewl-supports-lesson="${baseId}"`, `data-ewl-supports-lesson="${id}"`);
-    html = html.replace(/<title>[^<]*<\/title>/, `<title>${range} Catch-Up — Neft Teacher</title>`);
-    html = html.replace(
-      /(<meta name="description" content=")[^"]*(")/,
-      `$1Grade 6 Reveal Math catch-up review — Lessons ${range}$2`,
+    writeFileSync(
+      join(LESSONS, id, "index.html"),
+      shellHtml(id, `${range} Catch-Up`, `Grade 6 Reveal Math catch-up review — Lessons ${range}`),
     );
-    html = html.replace(`Lesson ${baseId}:`, `Lesson ${id} (catch-up covering ${range}):`);
-    writeFileSync(join(LESSONS, id, "index.html"), html);
-    writeFileSync(join(LESSONS, id, "lesson.js"), readFileSync(join(LESSONS, baseId, "lesson.js")));
+    writeFileSync(join(LESSONS, id, "lesson.js"), LESSON_JS);
   }
 
   rows.push({
