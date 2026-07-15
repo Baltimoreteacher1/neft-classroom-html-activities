@@ -21,15 +21,23 @@ export async function onRequest(context) {
   const { request, env, next } = context;
   const password = env.SITE_PASSWORD;
 
-  // No password configured -> leave the site fully open (no behavior change).
-  if (!password) return next();
-
   const url = new URL(request.url);
   const p = url.pathname.toLowerCase();
+  const isFamilyPublishingApi =
+    p.startsWith("/api/family-connections/") && !p.endsWith("/published");
+
+  // Public pages remain open when the gate is unavailable. Publishing edits
+  // are the exception and fail closed instead of becoming publicly writable.
+  if (!password) {
+    if (isFamilyPublishingApi) {
+      return new Response("Teacher access is not configured.", { status: 503 });
+    }
+    return next();
+  }
 
   // APIs and lesson config JSON have their own auth / are fetched by external
   // automation (e.g. the Apps Script slide generator). Never gate them here.
-  if (p.startsWith("/api/") || p.endsWith("/config.json")) return next();
+  if ((p.startsWith("/api/") && !isFamilyPublishingApi) || p.endsWith("/config.json")) return next();
 
   // Static bundles under /assets/ and curriculum data under /data/ are shared
   // code/content, not teacher pages. Some are named for the feature they serve
@@ -48,6 +56,7 @@ export async function onRequest(context) {
   //   teacher-data-dashboard, dashboard, */dashboard (class/curriculum/games),
   //   math/unit-N/projects/answer-key, and any /admin surface.
   const isTeacherSurface =
+    isFamilyPublishingApi ||
     p.includes("teacher") ||
     p.includes("dashboard") ||
     p.includes("answer-key") ||
@@ -62,7 +71,11 @@ export async function onRequest(context) {
   if (scheme === "Basic" && encoded) {
     const decoded = atob(encoded);
     const supplied = decoded.slice(decoded.indexOf(":") + 1);
-    if (supplied === password) return next(); // correct password -> allow
+    if (supplied === password) {
+      context.data.teacherAccessConfigured = true;
+      context.data.teacherAuthorized = true;
+      return next();
+    }
   }
 
   return new Response("Authentication required.", {
