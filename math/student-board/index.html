@@ -514,6 +514,293 @@
         font-size: 13px;
         font-weight: 700;
       }
+      .pod .empty-note {
+        margin-top: 10px;
+        font-size: 12.5px;
+        opacity: 0.85;
+        font-style: italic;
+      }
+      .groups-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .groups-head .btn.tiny {
+        padding: 7px 12px;
+        font-size: 13px;
+      }
+
+      /* ---------- near-fullscreen overlay boxes ---------- */
+      .overlay-box.big {
+        width: min(1320px, 97vw);
+        max-height: 94vh;
+        padding: 18px 20px 16px;
+        text-align: left;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .big-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .big-head h3 {
+        font-family: "Nunito", sans-serif;
+        font-weight: 900;
+        font-size: clamp(20px, 3vw, 28px);
+        color: var(--navy);
+        margin: 0;
+      }
+      .big-head .grow {
+        flex: 1;
+      }
+
+      /* ---------- group builder (teacher, drag + tap to move) ---------- */
+      .gb-tools {
+        display: flex;
+        align-items: center;
+        gap: 8px 12px;
+        flex-wrap: wrap;
+        padding: 10px 12px;
+        background: #f2f6fb;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+      }
+      .gb-tools label {
+        font-size: 13px;
+        font-weight: 800;
+        color: var(--ink-soft);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .gb-tools input[type="number"] {
+        width: 62px;
+        font-family: "Nunito", sans-serif;
+        font-weight: 800;
+        font-size: 14px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 6px 8px;
+      }
+      .gb-tools .sep {
+        width: 1px;
+        align-self: stretch;
+        background: var(--line);
+      }
+      .gb-hint {
+        font-size: 12.5px;
+        color: var(--ink-soft);
+        margin: 0;
+      }
+      .gb-board {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
+        gap: 12px;
+        overflow: auto;
+        padding: 2px 2px 4px;
+        flex: 1;
+        min-height: 180px;
+      }
+      .gb-col {
+        border-radius: 16px;
+        border: 2px solid var(--line);
+        background: #fff;
+        display: flex;
+        flex-direction: column;
+        min-height: 150px;
+        transition:
+          border-color 0.15s ease,
+          background 0.15s ease;
+      }
+      .gb-col.tray {
+        border-style: dashed;
+        background: #f7fafd;
+      }
+      .gb-col.over {
+        border-color: var(--teal);
+        background: #eafaf7;
+        box-shadow: 0 0 0 3px rgba(43, 190, 168, 0.18);
+      }
+      .gb-col-head {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 9px 11px;
+        border-radius: 14px 14px 0 0;
+        color: #fff;
+        font-family: "Nunito", sans-serif;
+        font-weight: 900;
+      }
+      .gb-col.tray .gb-col-head {
+        color: var(--navy);
+        background: transparent;
+        border-bottom: 1px dashed var(--line);
+      }
+      .gb-col-head .gb-emoji,
+      .gb-col-head .gb-name {
+        outline: none;
+      }
+      .gb-col-head .gb-name {
+        flex: 1;
+        min-width: 40px;
+      }
+      .gb-col-head .gb-count {
+        font-size: 12px;
+        font-weight: 800;
+        background: rgba(255, 255, 255, 0.28);
+        border-radius: 999px;
+        padding: 2px 8px;
+      }
+      .gb-col.tray .gb-col-head .gb-count {
+        background: #e6edf5;
+        color: var(--ink-soft);
+      }
+      .gb-col-task {
+        font-size: 12px;
+        color: var(--ink-soft);
+        padding: 6px 11px 0;
+        outline: none;
+      }
+      .gb-col-body {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        padding: 9px 11px 11px;
+        align-content: flex-start;
+        flex: 1;
+      }
+      .gb-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: #eef3f9;
+        color: var(--navy);
+        border: 1px solid transparent;
+        border-radius: 999px;
+        padding: 6px 11px;
+        font-size: 14px;
+        font-weight: 800;
+        cursor: grab;
+        user-select: none;
+        touch-action: none;
+      }
+      .gb-chip:hover {
+        background: #e2ebf5;
+      }
+      .gb-chip.picked {
+        background: linear-gradient(135deg, var(--teal), var(--navy));
+        color: #fff;
+        box-shadow: 0 3px 10px rgba(16, 35, 61, 0.25);
+      }
+      .gb-chip.dragging {
+        opacity: 0.4;
+      }
+      .gb-chip .gb-x {
+        cursor: pointer;
+        opacity: 0.5;
+        font-weight: 900;
+      }
+      .gb-chip .gb-x:hover {
+        opacity: 1;
+        color: var(--red, #e2554e);
+      }
+      .gb-col-foot {
+        padding: 0 11px 10px;
+      }
+      .gb-col-foot .mini.danger {
+        width: 100%;
+      }
+      .gb-roster {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        padding: 10px 12px;
+        background: #f2f6fb;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+      }
+      .gb-roster textarea {
+        flex: 1;
+        min-width: 220px;
+        min-height: 44px;
+        max-height: 120px;
+        font-family: "Nunito", sans-serif;
+        font-size: 14px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 8px 10px;
+        resize: vertical;
+      }
+      .gb-move-hint {
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--teal);
+        padding: 4px 2px;
+        min-height: 18px;
+      }
+
+      /* ---------- groups present (student-facing, projector) ---------- */
+      .gp-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(340px, 90vw), 1fr));
+        gap: 18px;
+        overflow: auto;
+        flex: 1;
+        padding: 2px;
+        align-content: start;
+      }
+      .gp-card {
+        border-radius: 22px;
+        padding: 20px 22px;
+        color: #fff;
+        box-shadow: var(--shadow-lg);
+        position: relative;
+        overflow: hidden;
+      }
+      .gp-card::after {
+        content: "";
+        position: absolute;
+        right: -40px;
+        top: -40px;
+        width: 130px;
+        height: 130px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.14);
+      }
+      .gp-card h4 {
+        font-family: "Nunito", sans-serif;
+        font-weight: 900;
+        font-size: clamp(26px, 3.4vw, 40px);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0;
+      }
+      .gp-card .gp-task {
+        font-size: clamp(15px, 1.8vw, 22px);
+        opacity: 0.95;
+        margin-top: 4px;
+        font-weight: 700;
+      }
+      .gp-card .gp-members {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 16px;
+      }
+      .gp-card .gp-name {
+        background: rgba(255, 255, 255, 0.24);
+        border-radius: 999px;
+        padding: 8px 18px;
+        font-size: clamp(18px, 2.1vw, 30px);
+        font-weight: 800;
+      }
 
       /* aleks tracker */
       .aleks-top {
@@ -1784,7 +2071,25 @@
 
           <!-- Groups -->
           <section class="card">
-            <h2><span class="ico">👥</span> Work Groups Today</h2>
+            <div class="groups-head">
+              <h2><span class="ico">👥</span> Work Groups Today</h2>
+              <div class="row-tools" style="margin: 0">
+                <button
+                  class="btn ghost tiny"
+                  id="showGroupsBtn"
+                  title="Show the groups big on the board for everyone"
+                >
+                  ⛶ Show on board
+                </button>
+                <button
+                  class="btn primary tiny edit-only"
+                  id="buildGroupsBtn"
+                  title="Add students, move them between groups, and auto-make groups"
+                >
+                  🧩 Build groups
+                </button>
+              </div>
+            </div>
             <p class="hint">Find your name. Your group and your job for today are on your card.</p>
             <p class="privacy-hint edit-only">
               🔒 First names or initials only — the whole class sees this board.
@@ -1869,6 +2174,13 @@
             <div class="bars" id="aleksBars"></div>
             <div class="row-tools edit-only">
               <button class="mini" id="addAleksBtn">+ Add student</button>
+              <button
+                class="mini"
+                id="aleksFromRosterBtn"
+                title="Add every student on your class roster to the minutes tracker"
+              >
+                👥 Add roster students
+              </button>
               <button class="mini" id="importAleksBtn">⬆ Import ALEKS CSV</button>
               <p class="privacy-hint">
                 🔒 This board is visible to the whole class. Use first names or initials only — no
@@ -1876,31 +2188,11 @@
               </p>
             </div>
           </section>
-
-          <!-- Announcements -->
-          <section class="card">
-            <h2><span class="ico">📣</span> Announcements</h2>
-            <div class="stack" id="notes"></div>
-            <div class="row-tools edit-only">
-              <button class="mini" id="addNoteBtn">+ Announcement</button>
-            </div>
-          </section>
-
-          <!-- Shout-outs -->
-          <section class="card">
-            <h2><span class="ico">🌟</span> Shout-Outs</h2>
-            <p class="hint">Great work this week — keep it up!</p>
-            <div class="stack" id="shouts"></div>
-            <div class="row-tools edit-only">
-              <button class="mini" id="addShoutBtn">+ Shout-out</button>
-            </div>
-          </section>
         </div>
       </div>
 
       <div class="foot">
-        The Class Board · <a href="/math/">Math Home</a> · <a href="/curriculum/">Curriculum Hub</a
-        ><br />
+        The Class Board<br />
         <span id="footStamp"></span>
       </div>
     </div>
@@ -1993,6 +2285,94 @@
         <div class="overlay-actions">
           <button class="btn ghost" id="codesCloseBtn">Close</button>
         </div>
+      </div>
+    </div>
+
+    <!-- Group Builder — teacher: roster + drag/tap move + auto-group (near-fullscreen) -->
+    <div class="overlay" id="groupBuilderOverlay" hidden>
+      <div class="overlay-box big" role="dialog" aria-modal="true" aria-label="Build work groups">
+        <div class="big-head">
+          <h3>🧩 Build Work Groups — <span id="gbSection">All Classes</span></h3>
+          <span class="grow"></span>
+          <button class="btn primary" id="gbPublishBtn" title="Save these groups for students">
+            ✅ Save &amp; Publish
+          </button>
+          <button class="btn ghost" id="gbCloseBtn">Done</button>
+        </div>
+
+        <div class="gb-roster">
+          <label style="flex: 1; min-width: 220px">
+            <span
+              style="
+                display: block;
+                font-size: 13px;
+                font-weight: 800;
+                color: var(--ink-soft);
+                margin-bottom: 4px;
+              "
+            >
+              Add students (one per line, or comma-separated)
+            </span>
+            <textarea
+              id="gbRosterInput"
+              placeholder="Ava&#10;Marcus&#10;Lena, Diego, Sofia…"
+            ></textarea>
+          </label>
+          <button class="btn ghost" id="gbAddNamesBtn">➕ Add to class</button>
+          <button
+            class="btn ghost"
+            id="gbSyncBtn"
+            title="Pull this section's student list from the Learning Supports roster"
+          >
+            🔄 Sync from curriculum
+          </button>
+        </div>
+
+        <div class="gb-tools">
+          <label
+            >Auto-make:
+            <select id="gbAutoMode">
+              <option value="size">groups of</option>
+              <option value="count">number of groups</option>
+            </select>
+          </label>
+          <input type="number" id="gbAutoN" min="1" max="12" step="1" value="4" />
+          <label
+            >Mix:
+            <select id="gbAutoStrategy">
+              <option value="random">Random</option>
+              <option value="balanced">Even sizes</option>
+            </select>
+          </label>
+          <button class="btn primary" id="gbAutoBtn">✨ Make groups</button>
+          <span class="sep"></span>
+          <button class="btn ghost" id="gbShuffleBtn" title="Re-mix current members">
+            🔀 Shuffle
+          </button>
+          <button class="btn ghost" id="gbAddGroupBtn">＋ Group</button>
+          <button class="btn ghost" id="gbClearBtn" title="Move everyone back to Unassigned">
+            ♻︎ Clear groups
+          </button>
+        </div>
+        <p class="gb-hint">
+          Drag a name to a group — or tap a name, then tap the group to move it. Names live in your
+          class roster; assign as many or as few as you like.
+        </p>
+        <div class="gb-move-hint" id="gbMoveHint" aria-live="polite"></div>
+
+        <div class="gb-board" id="gbBoard"></div>
+      </div>
+    </div>
+
+    <!-- Groups on the board — student-facing big display (near-fullscreen) -->
+    <div class="overlay" id="groupsPresentOverlay" hidden>
+      <div class="overlay-box big" role="dialog" aria-modal="true" aria-label="Work groups">
+        <div class="big-head">
+          <h3>👥 Work Groups — <span id="gpSection">All Classes</span></h3>
+          <span class="grow"></span>
+          <button class="btn ghost" id="gpCloseBtn">✕ Close</button>
+        </div>
+        <div class="gp-grid" id="gpGrid"></div>
       </div>
     </div>
 
@@ -2169,6 +2549,26 @@
               members: ["Leo", "Zoe", "Amir", "Nina"],
             },
           ],
+          // Master class list for this section. Group members are drawn from
+          // here; a student can be on the roster without being in a group.
+          roster: [
+            "Ava",
+            "Marcus",
+            "Lena",
+            "Diego",
+            "Sofia",
+            "Isaiah",
+            "Priya",
+            "Noah",
+            "Kai",
+            "Maya",
+            "Omar",
+            "Ella",
+            "Leo",
+            "Zoe",
+            "Amir",
+            "Nina",
+          ],
           aleks: {
             goal: 60,
             note: "Log your minutes at home and in class. We celebrate effort, not just answers.",
@@ -2181,21 +2581,6 @@
               { name: "Priya", minutes: 60 },
             ],
           },
-          notes: [
-            {
-              emoji: "📝",
-              text: "Unit 1 vocab quiz is Thursday — flashcards are on the Curriculum Hub.",
-            },
-            { emoji: "🏠", text: "Homework: ALEKS 3 topics + Lesson 1-1 reflection." },
-            {
-              emoji: "🤝",
-              text: "Reminder: help your group before you ask me. Be a first responder!",
-            },
-          ],
-          shouts: [
-            { name: "Sofia", text: "hit her ALEKS goal 3 weeks in a row! 🔥" },
-            { name: "Table 2", text: "for an amazing math argument during the Number Talk." },
-          ],
           vocab: {
             note: "This week's math words. Read them, say them, use them in your talk and writing.",
             words: [
@@ -2457,6 +2842,7 @@
       }
 
       function render() {
+        normalizeRoster();
         bindEditables();
         renderVoice();
         renderWeek();
@@ -2466,9 +2852,26 @@
         renderLessonSync();
         renderAssignments();
         renderAleks();
-        renderNotes();
-        renderShouts();
         renderLessonChip();
+      }
+
+      // The roster is the section's master student list. Older published boards
+      // (and freshly copied sections) may not carry one yet — derive it from
+      // whoever is already named on the board so nothing is ever lost.
+      function normalizeRoster() {
+        if (!Array.isArray(state.roster)) state.roster = [];
+        const seen = new Set(state.roster.map((n) => n.toLowerCase()));
+        const absorb = (name) => {
+          const n = (name || "").trim();
+          if (n && !seen.has(n.toLowerCase())) {
+            seen.add(n.toLowerCase());
+            state.roster.push(n);
+          }
+        };
+        (state.groups || []).forEach((g) => (g.members || []).forEach(absorb));
+        (state.aleks && state.aleks.students ? state.aleks.students : []).forEach((s) =>
+          absorb(s.name),
+        );
       }
 
       // ---- today's lesson (curriculum pointer) ------------------------
@@ -2738,11 +3141,10 @@
           "🔄 Synced from this device: " +
           [
             work ? `<b>${work}</b> lesson save code${work === 1 ? "" : "s"}` : "",
-            done ? `<b>${done}</b> Curriculum Hub check-off${done === 1 ? "" : "s"}` : "",
+            done ? `<b>${done}</b> check-off${done === 1 ? "" : "s"}` : "",
           ]
             .filter(Boolean)
-            .join(" · ") +
-          ` · <a href="/curriculum/" target="_blank" rel="noopener">Curriculum Hub ↗</a>`;
+            .join(" · ");
       }
 
       // Per-device, per-section save codes: { "board::assignment": "CODE" }.
@@ -3171,6 +3573,7 @@
                   <span ${editing ? `contenteditable="true" data-grp="${i}" data-name="1"` : ""}>${esc(g.name)}</span></h3>
               <div class="task" ${editing ? `contenteditable="true" data-grp="${i}" data-task="1"` : ""}>${esc(g.task || "")}</div>
               <div class="members">${members}</div>
+              ${(g.members || []).length ? "" : '<div class="empty-note">No names yet</div>'}
               ${editing ? `<div class="row-tools"><button class="mini" data-addmem="${i}">+ name</button><button class="mini danger" data-delgrp="${i}">✕ group</button></div>` : ""}
             </div>`;
           })
@@ -3256,79 +3659,318 @@
         }
       }
 
-      function renderNotes() {
-        const host = $("#notes");
-        if (!host) return;
-        host.innerHTML = (state.notes || [])
-          .map(
-            (n, i) =>
-              `<div class="note"><span class="e" ${editing ? `contenteditable="true" data-note="${i}" data-ne="1"` : ""}>${esc(n.emoji || "•")}</span>
-             <p ${editing ? `contenteditable="true" data-note="${i}" data-nt="1"` : ""}>${esc(n.text)}</p>
-             ${editing ? `<button class="mini danger" data-delnote="${i}">✕</button>` : ""}</div>`,
-          )
+      // ---- roster + group builder -------------------------------------
+      // The roster is the master class list; groups draw from it. The builder
+      // is a near-fullscreen surface where a teacher pastes/syncs names, moves
+      // students between groups (drag OR tap-to-move), and auto-makes groups.
+      function shuffleArr(a) {
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+      }
+      function assignedNames() {
+        const set = new Set();
+        (state.groups || []).forEach((g) =>
+          (g.members || []).forEach((m) => set.add(m.toLowerCase())),
+        );
+        return set;
+      }
+      function unassignedRoster() {
+        const set = assignedNames();
+        return (state.roster || []).filter((n) => !set.has(n.toLowerCase()));
+      }
+      function removeFromGroups(name) {
+        const key = name.toLowerCase();
+        (state.groups || []).forEach((g) => {
+          g.members = (g.members || []).filter((m) => m.toLowerCase() !== key);
+        });
+      }
+      // col: "tray" (unassigned) or a group index string. Moving to the tray
+      // just pulls the student out of every group; the roster is untouched.
+      function moveStudent(name, toCol) {
+        if (!name) return;
+        removeFromGroups(name);
+        if (toCol !== "tray") {
+          const g = state.groups[+toCol];
+          if (g) {
+            g.members = g.members || [];
+            if (!g.members.some((m) => m.toLowerCase() === name.toLowerCase()))
+              g.members.push(name);
+          }
+        }
+        markDirty();
+        renderGroupBuilder();
+        renderPods();
+      }
+      function addRosterNames(raw) {
+        const seen = new Set((state.roster || []).map((n) => n.toLowerCase()));
+        let added = 0;
+        String(raw || "")
+          .split(/[\n,]+/)
+          .map((s) => s.trim())
+          .filter(Boolean)
+          .forEach((n) => {
+            if (!seen.has(n.toLowerCase())) {
+              seen.add(n.toLowerCase());
+              (state.roster || (state.roster = [])).push(n);
+              added++;
+            }
+          });
+        if (added) markDirty();
+        return added;
+      }
+
+      let gbSelected = null; // name tapped for tap-to-move
+      function gbMsg(t) {
+        const el = $("#gbMoveHint");
+        if (el) el.textContent = t || "";
+      }
+      function renderGroupBuilder() {
+        const board = $("#gbBoard");
+        if (!board) return;
+        const tray = unassignedRoster();
+        const chip = (name, from) =>
+          `<span class="gb-chip ${gbSelected && gbSelected.toLowerCase() === name.toLowerCase() ? "picked" : ""}"
+             draggable="true" data-name="${esc(name)}" data-from="${from}">
+             <span class="gb-label">${esc(name)}</span><span class="gb-x" data-remove="${esc(name)}" title="Remove from class">✕</span></span>`;
+        const trayCol = `<div class="gb-col tray" data-col="tray">
+            <div class="gb-col-head">🪑 Unassigned <span class="gb-count">${tray.length}</span></div>
+            <div class="gb-col-body">${tray.map((n) => chip(n, "tray")).join("")}</div>
+          </div>`;
+        const groupCols = (state.groups || [])
+          .map((g, i) => {
+            const color = POD_COLORS[i % POD_COLORS.length];
+            const members = (g.members || []).map((n) => chip(n, String(i))).join("");
+            return `<div class="gb-col" data-col="${i}">
+              <div class="gb-col-head" style="background:${color}">
+                <span class="gb-emoji" contenteditable="true" data-grp="${i}" data-gemoji="1">${esc(g.emoji || "•")}</span>
+                <span class="gb-name" contenteditable="true" data-grp="${i}" data-gname="1">${esc(g.name || "Group")}</span>
+                <span class="gb-count">${(g.members || []).length}</span>
+              </div>
+              <div class="gb-col-task" contenteditable="true" data-grp="${i}" data-gtask="1">${esc(g.task || "Task…")}</div>
+              <div class="gb-col-body">${members}</div>
+              <div class="gb-col-foot"><button class="mini danger" data-delgrp="${i}">✕ Remove group</button></div>
+            </div>`;
+          })
           .join("");
-        if (editing) {
-          $$("#notes [data-ne]").forEach(
-            (el) =>
-              (el.oninput = () => {
-                state.notes[+el.dataset.note].emoji = el.textContent.trim();
-                markDirty();
-              }),
+        board.innerHTML = trayCol + groupCols;
+        wireGroupBuilder();
+      }
+      function wireGroupBuilder() {
+        // Editable group meta.
+        $$("#gbBoard [data-gname]").forEach(
+          (el) =>
+            (el.oninput = () => (
+              (state.groups[+el.dataset.grp].name = el.textContent.trim()),
+              markDirty()
+            )),
+        );
+        $$("#gbBoard [data-gemoji]").forEach(
+          (el) =>
+            (el.oninput = () => (
+              (state.groups[+el.dataset.grp].emoji = el.textContent.trim()),
+              markDirty()
+            )),
+        );
+        $$("#gbBoard [data-gtask]").forEach(
+          (el) =>
+            (el.oninput = () => (
+              (state.groups[+el.dataset.grp].task = el.textContent.trim()),
+              markDirty()
+            )),
+        );
+        $$("#gbBoard [data-delgrp]").forEach(
+          (b) =>
+            (b.onclick = (e) => {
+              e.stopPropagation();
+              state.groups.splice(+b.dataset.delgrp, 1);
+              markDirty();
+              renderGroupBuilder();
+              renderPods();
+            }),
+        );
+        // Remove a student from the whole class roster.
+        $$("#gbBoard [data-remove]").forEach(
+          (x) =>
+            (x.onclick = (e) => {
+              e.stopPropagation();
+              const name = x.dataset.remove;
+              if (!confirm('Remove "' + name + '" from the class roster?')) return;
+              removeFromGroups(name);
+              state.roster = (state.roster || []).filter(
+                (n) => n.toLowerCase() !== name.toLowerCase(),
+              );
+              if (gbSelected && gbSelected.toLowerCase() === name.toLowerCase()) gbSelected = null;
+              markDirty();
+              renderGroupBuilder();
+              renderPods();
+            }),
+        );
+        // Tap-to-move: tap a name to pick it up, tap a column to drop it.
+        $$("#gbBoard .gb-chip").forEach((c) => {
+          c.onclick = (e) => {
+            if (e.target.classList.contains("gb-x")) return;
+            e.stopPropagation();
+            const name = c.dataset.name;
+            gbSelected =
+              gbSelected && gbSelected.toLowerCase() === name.toLowerCase() ? null : name;
+            gbMsg(gbSelected ? "“" + gbSelected + "” picked — tap a group to move" : "");
+            renderGroupBuilder();
+          };
+          // Native drag (mouse/trackpad).
+          c.ondragstart = (e) => {
+            gbSelected = null;
+            e.dataTransfer.setData("text/plain", c.dataset.name);
+            e.dataTransfer.effectAllowed = "move";
+            c.classList.add("dragging");
+          };
+          c.ondragend = () => c.classList.remove("dragging");
+        });
+        $$("#gbBoard .gb-col").forEach((col) => {
+          col.onclick = () => {
+            if (!gbSelected) return;
+            moveStudent(gbSelected, col.dataset.col);
+            gbSelected = null;
+            gbMsg("");
+          };
+          col.ondragover = (e) => {
+            e.preventDefault();
+            col.classList.add("over");
+          };
+          col.ondragleave = () => col.classList.remove("over");
+          col.ondrop = (e) => {
+            e.preventDefault();
+            col.classList.remove("over");
+            const name = e.dataTransfer.getData("text/plain");
+            if (name) moveStudent(name, col.dataset.col);
+          };
+        });
+      }
+      // Deal the whole roster into groups. "size" = groups of N, "count" = N
+      // groups. Existing group names/emoji/tasks are reused where they line up.
+      function autoGroup() {
+        const roster = (state.roster || []).slice();
+        if (roster.length < 2) {
+          gbMsg("Add at least two students first.");
+          return;
+        }
+        const mode = $("#gbAutoMode").value;
+        const n = Math.max(1, Math.min(12, parseInt($("#gbAutoN").value, 10) || 4));
+        let count = mode === "size" ? Math.ceil(roster.length / n) : n;
+        count = Math.max(1, Math.min(roster.length, count));
+        const pool = shuffleArr(roster.slice());
+        const buckets = Array.from({ length: count }, () => []);
+        // Round-robin deal → even sizes (±1). "Random" and "even" both shuffle
+        // first; even guarantees the tightest size spread.
+        pool.forEach((name, i) => buckets[i % count].push(name));
+        const palette = ["🐦", "🦊", "🦉", "🐺", "🐢", "🦋", "🐝", "🐬", "🦁", "🐙", "🦄", "🐳"];
+        const labels = [
+          "Team 1",
+          "Team 2",
+          "Team 3",
+          "Team 4",
+          "Team 5",
+          "Team 6",
+          "Team 7",
+          "Team 8",
+          "Team 9",
+          "Team 10",
+          "Team 11",
+          "Team 12",
+        ];
+        const next = [];
+        for (let i = 0; i < count; i++) {
+          const prev = state.groups[i] || {};
+          next.push({
+            name: prev.name || labels[i] || "Team " + (i + 1),
+            emoji: prev.emoji || palette[i % palette.length],
+            task: prev.task || "",
+            members: buckets[i],
+          });
+        }
+        state.groups = next;
+        gbSelected = null;
+        markDirty();
+        renderGroupBuilder();
+        renderPods();
+        gbMsg("Made " + count + " groups from " + pool.length + " students.");
+      }
+      function openGroupBuilder() {
+        normalizeRoster();
+        if (!state.groups || !state.groups.length)
+          state.groups = [{ name: "Team 1", emoji: "🐦", task: "", members: [] }];
+        gbSelected = null;
+        gbMsg("");
+        const lab = $("#gbSection");
+        if (lab) lab.textContent = sectionLabel(boardId);
+        renderGroupBuilder();
+        $("#groupBuilderOverlay").hidden = false;
+      }
+      async function syncRosterFromCurriculum() {
+        const section = String(boardId || "").toLowerCase();
+        if (!SECTIONS[section] || section === "main") {
+          gbMsg("Pick a period (601 / 602 / 603) to sync its roster.");
+          return;
+        }
+        const key = teacherKey();
+        if (!key) {
+          gbMsg("Publish once to unlock teacher sync, then try again.");
+          return;
+        }
+        gbMsg("Syncing roster from curriculum…");
+        try {
+          const r = await fetch("/api/supports/roster?section=" + encodeURIComponent(section), {
+            headers: { "x-teacher-key": key },
+            cache: "no-store",
+          });
+          const d = await r.json();
+          if (!d.ok || !Array.isArray(d.roster)) {
+            gbMsg("Couldn't reach the curriculum roster.");
+            return;
+          }
+          const names = d.roster.map((e) => (e.initials || "").trim()).filter(Boolean);
+          const added = addRosterNames(names.join("\n"));
+          renderGroupBuilder();
+          gbMsg(
+            added
+              ? "Added " + added + " student(s) from curriculum."
+              : names.length
+                ? "Roster already up to date (" + names.length + " on file)."
+                : "No students on file for this period yet.",
           );
-          $$("#notes [data-nt]").forEach(
-            (el) =>
-              (el.oninput = () => {
-                state.notes[+el.dataset.note].text = el.textContent.trim();
-                markDirty();
-              }),
-          );
-          $$("#notes [data-delnote]").forEach(
-            (b) =>
-              (b.onclick = () => {
-                state.notes.splice(+b.dataset.delnote, 1);
-                markDirty();
-                renderNotes();
-              }),
-          );
+        } catch {
+          gbMsg("Couldn't reach the curriculum roster.");
         }
       }
 
-      function renderShouts() {
-        const host = $("#shouts");
-        if (!host) return;
-        host.innerHTML = (state.shouts || [])
-          .map(
-            (s, i) =>
-              `<div class="note shout"><span class="e">🌟</span>
-             <p><span class="name" ${editing ? `contenteditable="true" data-sh="${i}" data-shn="1"` : ""}>${esc(s.name)}</span>
-                <span ${editing ? `contenteditable="true" data-sh="${i}" data-sht="1"` : ""}>${esc(s.text)}</span></p>
-             ${editing ? `<button class="mini danger" data-delsh="${i}">✕</button>` : ""}</div>`,
-          )
-          .join("");
-        if (editing) {
-          $$("#shouts [data-shn]").forEach(
-            (el) =>
-              (el.oninput = () => {
-                state.shouts[+el.dataset.sh].name = el.textContent.trim();
-                markDirty();
-              }),
-          );
-          $$("#shouts [data-sht]").forEach(
-            (el) =>
-              (el.oninput = () => {
-                state.shouts[+el.dataset.sh].text = el.textContent.trim();
-                markDirty();
-              }),
-          );
-          $$("#shouts [data-delsh]").forEach(
-            (b) =>
-              (b.onclick = () => {
-                state.shouts.splice(+b.dataset.delsh, 1);
-                markDirty();
-                renderShouts();
-              }),
-          );
-        }
+      // ---- groups on the board (student-facing big display) -----------
+      function renderGroupsPresent() {
+        const grid = $("#gpGrid");
+        if (!grid) return;
+        const lab = $("#gpSection");
+        if (lab) lab.textContent = sectionLabel(boardId);
+        const groups = (state.groups || []).filter((g) => (g.members || []).length || g.name);
+        grid.innerHTML = groups.length
+          ? groups
+              .map((g, i) => {
+                const color = POD_COLORS[i % POD_COLORS.length];
+                const members = (g.members || [])
+                  .map((m) => `<span class="gp-name">${esc(m)}</span>`)
+                  .join("");
+                return `<div class="gp-card" style="background:${color}">
+                  <h4><span>${esc(g.emoji || "•")}</span> ${esc(g.name || "Group")}</h4>
+                  ${g.task ? `<div class="gp-task">${esc(g.task)}</div>` : ""}
+                  <div class="gp-members">${members || '<span class="gp-name">—</span>'}</div>
+                </div>`;
+              })
+              .join("")
+          : '<p class="gb-hint" style="font-size:18px">No groups set yet. Tap “🧩 Build groups” in edit mode.</p>';
+      }
+      function openGroupsPresent() {
+        renderGroupsPresent();
+        $("#groupsPresentOverlay").hidden = false;
       }
 
       // ---- teacher mode ------------------------------------------------
@@ -3377,7 +4019,6 @@
         if (f.target) parts.push("Today's goal: " + f.target + ".");
         const vl = state.voice && VOICE_LEVELS[Number(state.voice.level)];
         if (vl) parts.push("Voice level: " + vl.label + ".");
-        (state.notes || []).forEach((n) => parts.push(n.text));
         speak(parts.filter(Boolean).join(". "));
       }
 
@@ -3834,6 +4475,28 @@
         markDirty();
         renderAleks();
       };
+      // Pull the class roster into the ALEKS tracker (skips names already there).
+      $("#aleksFromRosterBtn").onclick = () => {
+        normalizeRoster();
+        state.aleks = state.aleks || { goal: 60, students: [] };
+        state.aleks.students = state.aleks.students || [];
+        const have = new Set(state.aleks.students.map((s) => (s.name || "").toLowerCase()));
+        let added = 0;
+        (state.roster || []).forEach((n) => {
+          if (!have.has(n.toLowerCase())) {
+            state.aleks.students.push({ name: n, minutes: 0 });
+            have.add(n.toLowerCase());
+            added++;
+          }
+        });
+        if (added) markDirty();
+        renderAleks();
+        setSaveState(
+          added
+            ? "Added " + added + " roster student(s) to ALEKS — enter minutes, then Publish"
+            : "ALEKS already has your whole roster",
+        );
+      };
       $("#importAleksBtn").onclick = openAleksModal;
       $("#aleksCancel").onclick = closeAleksModal;
       $("#aleksPreviewBtn").onclick = previewAleks;
@@ -3851,16 +4514,57 @@
       $("#aleksModal").addEventListener("click", (e) => {
         if (e.target === $("#aleksModal")) closeAleksModal();
       });
-      $("#addNoteBtn").onclick = () => {
-        state.notes.push({ emoji: "📌", text: "New announcement" });
-        markDirty();
-        renderNotes();
+      // Group builder + present (student board) wiring.
+      $("#buildGroupsBtn").onclick = openGroupBuilder;
+      $("#showGroupsBtn").onclick = openGroupsPresent;
+      $("#gbCloseBtn").onclick = () => ($("#groupBuilderOverlay").hidden = true);
+      $("#gbPublishBtn").onclick = () => {
+        $("#groupBuilderOverlay").hidden = true;
+        publish().then(celebrate);
       };
-      $("#addShoutBtn").onclick = () => {
-        state.shouts.push({ name: "Name", text: "for great work!" });
-        markDirty();
-        renderShouts();
+      $("#gbAddNamesBtn").onclick = () => {
+        const ta = $("#gbRosterInput");
+        const added = addRosterNames(ta.value);
+        ta.value = "";
+        renderGroupBuilder();
+        gbMsg(added ? "Added " + added + " student(s)." : "No new names to add.");
       };
+      $("#gbSyncBtn").onclick = syncRosterFromCurriculum;
+      $("#gbAutoBtn").onclick = autoGroup;
+      $("#gbAddGroupBtn").onclick = () => {
+        state.groups = state.groups || [];
+        state.groups.push({
+          name: "Team " + (state.groups.length + 1),
+          emoji: "✨",
+          task: "",
+          members: [],
+        });
+        markDirty();
+        renderGroupBuilder();
+        renderPods();
+      };
+      $("#gbClearBtn").onclick = () => {
+        (state.groups || []).forEach((g) => (g.members = []));
+        markDirty();
+        renderGroupBuilder();
+        renderPods();
+        gbMsg("Everyone moved back to Unassigned.");
+      };
+      $("#gbShuffleBtn").onclick = () => {
+        const groups = state.groups || [];
+        const names = shuffleArr(groups.flatMap((g) => g.members || []).filter(Boolean));
+        if (groups.length < 1 || names.length < 2) {
+          gbMsg("Assign at least two students first.");
+          return;
+        }
+        groups.forEach((g) => (g.members = []));
+        names.forEach((n, i) => groups[i % groups.length].members.push(n));
+        markDirty();
+        renderGroupBuilder();
+        renderPods();
+        gbMsg("Shuffled " + names.length + " students.");
+      };
+      $("#gpCloseBtn").onclick = () => ($("#groupsPresentOverlay").hidden = true);
       $("#addVocabBtn").onclick = () => {
         (state.vocab.words = state.vocab.words || []).push({
           term: "word",
@@ -4032,7 +4736,7 @@
       };
       // Click the dark backdrop (outside the box) to close an overlay. A
       // running timer keeps going and docks instead of being cancelled.
-      ["#pickOverlay", "#timerOverlay", "#codesOverlay"].forEach((sel) => {
+      ["#pickOverlay", "#timerOverlay", "#codesOverlay", "#groupsPresentOverlay"].forEach((sel) => {
         const ov = $(sel);
         ov.addEventListener("click", (e) => {
           if (e.target === ov) {
@@ -4071,6 +4775,8 @@
       document.addEventListener("keydown", (e) => {
         if (e.key === "Escape") {
           if (!$("#aleksModal").hidden) closeAleksModal();
+          else if (!$("#groupBuilderOverlay").hidden) $("#groupBuilderOverlay").hidden = true;
+          else if (!$("#groupsPresentOverlay").hidden) $("#groupsPresentOverlay").hidden = true;
           else if (!$("#codesOverlay").hidden) $("#codesOverlay").hidden = true;
           else if (!$("#pickOverlay").hidden) $("#pickOverlay").hidden = true;
           else if (!$("#timerOverlay").hidden) {
@@ -4125,8 +4831,8 @@
         if (!editing) loadBoard();
       }, 25000);
     </script>
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
   </body>
 </html>
