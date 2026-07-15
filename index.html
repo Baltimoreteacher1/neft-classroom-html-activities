@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&display=swap"
       rel="stylesheet"
     />
     <script>
@@ -22,25 +22,32 @@
     <script src="/assets/neft-theme.js" defer></script>
     <style>
       :root {
-        --navy: #12355b;
-        --teal: #1fa6a2;
-        --amber: #f2c15b;
-        --cream: #f7f4ec;
-        --ink: #21313f;
-        --line: #d7e2ed;
-        --coral: #d9795d;
-        --green: #0fa958;
+        /* "Graph Paper Studio" palette — ink frame, primary-blue accent,
+           sticky-note brights. Legacy token NAMES kept so every downstream
+           rule (and the dark theme block) keeps working. */
+        --navy: #12263a;
+        --teal: #2667ff;
+        --amber: #ffd23f;
+        --cream: #fbfdff;
+        --ink: #12263a;
+        --line: #dbe7f0;
+        --coral: #ff5c4d;
+        --green: #2ec4a6;
         --sidebar-w: 260px;
         --card-bg: #ffffff;
-        --card-border: var(--line);
-        --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+        --card-border: #c6d6e4;
+        --card-shadow: 4px 4px 0 rgba(18, 38, 58, 0.12);
         --sidebar-bg: var(--navy);
         --sidebar-border: rgba(255, 255, 255, 0.1);
         --sidebar-text: rgba(255, 255, 255, 0.75);
-        --meta-color: #5f6f80;
+        --meta-color: #4a6076;
+        --grid-line: #dbe7f0;
+        --font-display: "Bricolage Grotesque", "Outfit", system-ui, sans-serif;
       }
 
       :root[data-theme="dark"] {
+        --grid-line: rgba(255, 255, 255, 0.045);
+        --card-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
         --navy: #fdd663; /* Pastel yellow gold for highlights/headers */
         --teal: #8ab4f8; /* Pastel blue for active highlights */
         --amber: #fdd663;
@@ -64,9 +71,19 @@
         padding: 0;
       }
       body {
-        font-family: "Outfit", system-ui, sans-serif;
+        font-family: "Atkinson Hyperlegible", "Outfit", system-ui, sans-serif;
         background: var(--cream);
+        background-image: linear-gradient(var(--grid-line) 1px, transparent 1px),
+          linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+        background-size: 32px 32px;
         color: var(--ink);
+      }
+      h1,
+      h2,
+      h3,
+      .content-header h2,
+      .sb-brand h1 {
+        font-family: var(--font-display);
       }
 
       /* ── Layout ── */
@@ -284,16 +301,16 @@
         gap: 12px;
         padding: 12px 16px;
         background: var(--card-bg);
-        border: 1px solid var(--card-border);
-        border-radius: 12px;
+        border: 2px solid var(--card-border);
+        border-radius: 14px;
         text-decoration: none;
         color: var(--ink);
         transition: all 0.15s;
       }
       .card:hover {
-        border-color: var(--teal);
+        border-color: var(--ink);
         box-shadow: var(--card-shadow);
-        transform: translateY(-1px);
+        transform: translate(-2px, -2px);
       }
       .card .icon {
         width: 44px;
@@ -976,22 +993,23 @@
             position: sticky;
             top: 0;
             z-index: 30;
-            padding: 12px 0 12px;
-            background: var(--bg, #f7f8fa);
+            padding: 12px 0 14px;
+            background: var(--cream, #fbfdff);
           }
           .hub-search input {
             width: 100%;
             box-sizing: border-box;
             padding: 13px 18px;
             font-size: 1rem;
-            border: 2px solid var(--line, #d9dee5);
-            border-radius: 12px;
+            border: 3px solid var(--ink, #12263a);
+            border-radius: 14px;
             outline: none;
             background: #fff;
+            box-shadow: 5px 5px 0 rgba(18, 38, 58, 0.9);
           }
           .hub-search input:focus {
-            border-color: var(--accent, #0f766e);
-            box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.18);
+            border-color: var(--teal, #2667ff);
+            box-shadow: 5px 5px 0 var(--teal, #2667ff);
           }
           .hub-search-count {
             display: block;
@@ -1068,6 +1086,186 @@
           @media (max-width: 560px) {
             .teach-today .tt-grid {
               grid-template-columns: 1fr;
+            }
+          }
+        </style>
+
+        <!-- ═══ HOME HERO — front door for students / families / educators ═══ -->
+        <section class="home-hero" aria-label="Welcome">
+          <h1 class="hh-headline">
+            Math that <span class="hh-mark">saves your work</span>, speaks your
+            language, and <span class="hh-blue">actually plays fair.</span>
+          </h1>
+          <p class="hh-sub">
+            208 activities and 64 supported lessons built by Mr. Neft — hints
+            that coach (never spoil), zero timers, and supports that follow you
+            to every page.
+          </p>
+          <div class="hh-doors">
+            <a class="hh-door hh-s" href="/curriculum/">
+              <span class="hh-tag">Students</span>
+              <span class="hh-door-title">Jump back in</span>
+              <span class="hh-door-sub"
+                >Your lessons and games are waiting — your save code picks up
+                right where you stopped.</span
+              >
+              <span class="hh-go">Open my lessons →</span>
+            </a>
+            <a class="hh-door hh-f" href="/curriculum/">
+              <span class="hh-tag">Families</span>
+              <span class="hh-door-title">See what we're learning</span>
+              <span class="hh-door-sub"
+                >Letters and homework help in English and Spanish, inside every
+                lesson — no login needed.</span
+              >
+              <span class="hh-go">Family resources →</span>
+            </a>
+            <a class="hh-door hh-r" href="/about/">
+              <span class="hh-tag">Educators</span>
+              <span class="hh-door-title">Peek under the hood</span>
+              <span class="hh-door-sub"
+                >One teacher, a platform with per-student IEP &amp; WIDA
+                supports. Here's how.</span
+              >
+              <span class="hh-go">Read the story →</span>
+            </a>
+          </div>
+          <div class="hh-chips" aria-label="Platform facts">
+            <span class="hh-chip"><b>64</b> supported lessons</span>
+            <span class="hh-chip"><b>1,997</b> pages that auto-save</span>
+            <span class="hh-chip"><b>33</b> games, zero timers</span>
+            <span class="hh-chip"><b>4</b> home languages</span>
+          </div>
+        </section>
+        <style>
+          .home-hero {
+            margin: 18px 0 30px;
+          }
+          .hh-headline {
+            font-family: var(--font-display, inherit);
+            font-weight: 800;
+            font-size: clamp(1.9rem, 3.6vw, 2.9rem);
+            line-height: 1.04;
+            letter-spacing: -0.02em;
+            margin: 6px 0 12px;
+          }
+          .hh-mark {
+            background: linear-gradient(transparent 62%, var(--amber) 62%);
+          }
+          :root[data-theme="dark"] .hh-mark {
+            background: none;
+            color: var(--amber);
+          }
+          .hh-blue {
+            color: var(--teal);
+          }
+          .hh-sub {
+            font-size: 1.05rem;
+            color: var(--meta-color);
+            max-width: 42em;
+            margin: 0 0 22px;
+          }
+          .hh-doors {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+          }
+          .hh-door {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            border: 2.5px solid var(--ink);
+            border-radius: 16px;
+            padding: 18px 18px 16px;
+            text-decoration: none;
+            color: var(--ink);
+            box-shadow: 6px 6px 0 var(--ink);
+            transition: transform 0.15s;
+          }
+          .hh-door:hover {
+            transform: translate(-3px, -3px) rotate(0deg) !important;
+          }
+          .hh-s {
+            background: #e9fbf5;
+            transform: rotate(-1deg);
+          }
+          .hh-f {
+            background: #fff4e8;
+            transform: rotate(0.7deg);
+          }
+          .hh-r {
+            background: #f1edff;
+            transform: rotate(-0.5deg);
+          }
+          :root[data-theme="dark"] .hh-s,
+          :root[data-theme="dark"] .hh-f,
+          :root[data-theme="dark"] .hh-r {
+            background: var(--card-bg);
+            border-color: var(--card-border);
+            box-shadow: var(--card-shadow);
+          }
+          .hh-tag {
+            align-self: flex-start;
+            font-size: 0.68rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #fff;
+            padding: 3px 11px;
+            border-radius: 999px;
+          }
+          .hh-s .hh-tag {
+            background: var(--green);
+          }
+          .hh-f .hh-tag {
+            background: var(--coral);
+          }
+          .hh-r .hh-tag {
+            background: #7b5ea7;
+          }
+          .hh-door-title {
+            font-family: var(--font-display, inherit);
+            font-weight: 800;
+            font-size: 1.25rem;
+          }
+          .hh-door-sub {
+            font-size: 0.86rem;
+            color: var(--meta-color);
+            flex: 1;
+          }
+          .hh-go {
+            font-weight: 700;
+            font-size: 0.88rem;
+          }
+          .hh-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+          }
+          .hh-chip {
+            font-family: var(--font-display, inherit);
+            font-weight: 700;
+            font-size: 0.86rem;
+            border: 2px solid var(--ink);
+            border-radius: 999px;
+            background: var(--card-bg);
+            padding: 6px 14px;
+          }
+          .hh-chip b {
+            color: var(--teal);
+            font-size: 1rem;
+            margin-right: 4px;
+          }
+          @media (max-width: 900px) {
+            .hh-doors {
+              grid-template-columns: 1fr;
+            }
+          }
+          @media (prefers-reduced-motion: reduce) {
+            .hh-door,
+            .hh-door:hover {
+              transform: none !important;
             }
           }
         </style>
@@ -4496,24 +4694,17 @@
        section headings, and gives the dense list more breathing room. No :root
        token changes (those clashed with hardcoded tile colors). -->
     <style id="ds-skin">
-      @import url("https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=DM+Serif+Display&display=swap");
-
       body {
-        font-family:
-          "DM Sans",
-          "Outfit",
-          system-ui,
-          -apple-system,
-          sans-serif;
+        font-family: "Atkinson Hyperlegible", "Outfit", system-ui, -apple-system, sans-serif;
       }
 
-      /* Elegant serif for the big section titles (card titles are .title — untouched). */
+      /* Display face for the big section titles (card titles are .title — untouched). */
       .content-header h2,
       .teach-today h2 {
-        font-family: "DM Serif Display", Georgia, serif;
-        font-weight: 400;
-        letter-spacing: -0.01em;
-        font-size: 1.7rem;
+        font-family: var(--font-display, system-ui);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        font-size: 1.55rem;
       }
 
       /* Unit tiles: soft tint + same-hue glyph instead of loud solid fills. */
