@@ -57,6 +57,11 @@ assert.ok(
   (teacherTools.match(/href="\/curriculum\/family-connections\/teacher\/"/g) ?? []).length >= 2,
   "teacher hub entry points should open protected Teacher Mode",
 );
+const curriculumHub = await readFile(new URL("../index.html", root), "utf8");
+assert.match(curriculumHub, /class="tt-link tt-card family-mode-card"[^>]+href="\/curriculum\/family-connections\/"/i);
+assert.match(curriculumHub, /class="tt-link tt-card teacher-mode-card"[^>]+href="\/curriculum\/family-connections\/teacher\/"/i);
+assert.match(curriculumHub, /Public family page/i);
+assert.match(curriculumHub, /Sign-in protected publisher/i);
 const routes = JSON.parse(await readFile(new URL("../../data/routes.json", root), "utf8"));
 assert.ok(routes.routes.some((route) => route.id === "family-connections" && route.audience === "family"));
 assert.ok(routes.routes.some((route) => route.id === "family-connections-publisher" && route.path.endsWith("/teacher/")));
