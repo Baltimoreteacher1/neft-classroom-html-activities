@@ -657,3 +657,79 @@ button.ctw-ql-card {
     height: 120px;
   }
 }
+
+/* --- Tools dropdown menu (2026-07-15): the drawer is a compact menu of the
+   featured/teacher cards instead of the full card wall. Cards stay in the DOM
+   as the source of truth; .ctw-cards-hidden hides them until a panel item is
+   revealed or "Show full cards" is toggled. --- */
+.ctw-menu-mode > summary::after {
+  content: "▾";
+  margin-left: auto;
+  opacity: 0.7;
+}
+.ctw-menu-mode[open] > summary::after {
+  content: "▴";
+}
+.ctw-menu {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
+  gap: 8px;
+  padding: 12px 2px;
+}
+.ctw-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid rgba(22, 24, 37, 0.16);
+  border-radius: 10px;
+  background: #fff;
+  color: #161825;
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.93rem;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+.ctw-menu-item:hover {
+  border-color: #161825;
+  background: #f6f4ef;
+}
+.ctw-menu-item:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 2px;
+}
+.ctw-menu-item[aria-expanded="true"] {
+  background: #161825;
+  color: #f8fafc;
+}
+.ctw-menu-ic {
+  font-size: 1.15rem;
+  line-height: 1;
+}
+.ctw-show-all {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px dashed rgba(22, 24, 37, 0.35);
+  border-radius: 10px;
+  background: transparent;
+  color: #161825;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.ctw-show-all:hover {
+  border-style: solid;
+}
+.ctw-menu-mode .curriculum-tools-bar.ctw-cards-hidden > section {
+  display: none;
+}
+.ctw-menu-mode .curriculum-tools-bar.ctw-cards-hidden > section.ctw-reveal {
+  display: block;
+}

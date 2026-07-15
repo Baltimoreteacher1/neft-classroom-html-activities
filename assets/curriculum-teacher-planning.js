@@ -375,16 +375,103 @@
     var tools = document.querySelector(".curriculum-tools-bar");
     if (!tools || tools.closest(".ctw-tools-drawer")) return;
     var details = document.createElement("details");
-    details.className = "ctw-tools-drawer";
-    // Expanded by default so all featured resource + teacher-tool cards are
-    // visible at the top (their long-standing home) rather than hidden behind a
-    // collapsed summary. The summary still lets anyone collapse the row.
-    details.open = true;
+    details.className = "ctw-tools-drawer ctw-menu-mode";
+    // Compact dropdown: collapsed by default (2026-07-15, Joel's ask — the
+    // giant cards overwhelmed the top of the page). The open/closed choice is
+    // remembered per device.
+    var OPEN_LS = "nt-hub-tools-open";
+    var savedOpen = "";
+    try {
+      savedOpen = localStorage.getItem(OPEN_LS) || "";
+    } catch (_e) {
+      savedOpen = "";
+    }
+    details.open = savedOpen === "1";
+    details.addEventListener("toggle", function () {
+      try {
+        localStorage.setItem(OPEN_LS, details.open ? "1" : "0");
+      } catch (_e) {
+        /* private mode */
+      }
+    });
     var summary = document.createElement("summary");
-    summary.textContent = "Teacher Tools & Featured Resources";
+    summary.textContent = "🧰 Teacher Tools & Featured Resources";
     tools.parentNode.insertBefore(details, tools);
     details.appendChild(summary);
+
+    // Keep the student "continue where you left off" strip ALWAYS visible:
+    // lift it out of the bar so collapsing the drawer never hides it.
+    var resume = tools.querySelector(".resume-strip");
+
+    // Compact menu derived from the existing cards — the card markup stays the
+    // single source of truth. Items copy hub-teacher-only so the existing
+    // class-based student-mode gating applies to them unchanged.
+    var menu = document.createElement("nav");
+    menu.className = "ctw-menu";
+    menu.setAttribute("aria-label", "Teacher tools and featured resources");
+    function revealCard(card, item) {
+      var wasOn = card.classList.contains("ctw-reveal");
+      tools.querySelectorAll("section.ctw-reveal").forEach(function (c) {
+        c.classList.remove("ctw-reveal");
+      });
+      menu.querySelectorAll(".ctw-menu-item[aria-expanded]").forEach(function (b) {
+        b.setAttribute("aria-expanded", "false");
+      });
+      if (!wasOn) {
+        card.classList.add("ctw-reveal");
+        item.setAttribute("aria-expanded", "true");
+        card.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      }
+    }
+    tools.querySelectorAll("section").forEach(function (card) {
+      var titleEl = card.querySelector("h2");
+      if (!titleEl) return;
+      var iconEl = card.querySelector(".mf-icon");
+      var link = card.querySelector(".mf-actions a");
+      var item;
+      if (link) {
+        item = document.createElement("a");
+        item.href = link.getAttribute("href");
+      } else {
+        // Interactive panel cards (AI Hub, Class Brain, Futures Lab) have no
+        // single destination — the menu item reveals that one card in place.
+        item = document.createElement("button");
+        item.type = "button";
+        item.setAttribute("aria-expanded", "false");
+        item.addEventListener("click", function () {
+          revealCard(card, item);
+        });
+      }
+      item.className =
+        "ctw-menu-item" + (card.classList.contains("hub-teacher-only") ? " hub-teacher-only" : "");
+      var ic = document.createElement("span");
+      ic.className = "ctw-menu-ic";
+      ic.setAttribute("aria-hidden", "true");
+      ic.textContent = (iconEl && iconEl.textContent.trim()) || (link ? "🔗" : "▦");
+      var label = document.createElement("span");
+      label.textContent = titleEl.textContent.trim();
+      item.appendChild(ic);
+      item.appendChild(label);
+      menu.appendChild(item);
+    });
+    details.appendChild(menu);
     details.appendChild(tools);
+    tools.classList.add("ctw-cards-hidden");
+    if (resume) details.parentNode.insertBefore(resume, details);
+
+    // Escape hatch: the classic full-card wall, one toggle away.
+    var showAll = document.createElement("button");
+    showAll.type = "button";
+    showAll.className = "ctw-show-all";
+    showAll.textContent = "Show full cards ▾";
+    showAll.setAttribute("aria-expanded", "false");
+    showAll.addEventListener("click", function () {
+      var showing = tools.classList.toggle("ctw-cards-hidden");
+      showAll.textContent = showing ? "Show full cards ▾" : "Hide full cards ▴";
+      showAll.setAttribute("aria-expanded", showing ? "false" : "true");
+    });
+    menu.appendChild(showAll);
+
     // Fold the standalone "🧰 Teacher Tools (for Mr. Neft)" links group into the
     // same drawer so every teacher-facing tool lives at the top of the page
     // instead of being stranded at the bottom below the units grid.
@@ -400,6 +487,7 @@
     var topAnchor =
       document.getElementById("curriculum-teacher-workflow") || document.querySelector(".wrap");
     if (topAnchor && topAnchor.parentNode) topAnchor.parentNode.insertBefore(details, topAnchor);
+    if (resume && details.parentNode) details.parentNode.insertBefore(resume, details);
   }
 
   function render(view, stage, context) {
