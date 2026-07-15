@@ -121,6 +121,6 @@ assert.match(appJs, /Open source/);
 assert.match(appJs, /rel="noopener"/);
 assert.match(appJs, /Workload forecast/);
 assert.match(appJs, /Move earlier/);
-assert.match(serviceWorker, /focus-school-v51/);
+assert.match(serviceWorker, /focus-school-v52/);
 
 console.log("focus-school-smart-planning: 30/30 checks passed");
