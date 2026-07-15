@@ -370,16 +370,23 @@
     ],
   };
 
+  // Starter routines shown ONLY to a brand-new user who has no routines of
+  // their own yet. They carry `seeded: true` and stable ids so they can never
+  // accumulate across devices, and `pruneDefaultRoutines` drops them the moment
+  // the user has any real (time-bound) routine of their own. Historically these
+  // were seeded with random ids and unioned by id on every sync, so each fresh
+  // browser/device appended 3 more orphaned copies that then out-ranked the
+  // user's real routines on the Now screen (they have days:[] = every day).
   const DEFAULT_ROUTINES = () =>
     [
       {
-        id: uid("r"),
+        id: "r_seed_morning",
         name: "Morning Launch",
         emoji: "🌅",
         items: ["Check today's plan", "Pack my bag", "Water + charger", "Pick my first task"],
       },
       {
-        id: uid("r"),
+        id: "r_seed_afterschool",
         name: "After-School Reset",
         emoji: "🎒",
         items: [
@@ -390,7 +397,7 @@
         ],
       },
       {
-        id: uid("r"),
+        id: "r_seed_nighttime",
         name: "Nighttime Shutdown",
         emoji: "🌙",
         items: [
@@ -402,9 +409,32 @@
       },
     ].map((r) => ({
       ...r,
+      seeded: true,
       days: [],
       items: r.items.map((t) => ({ id: uid("i"), text: t })),
     }));
+
+  // Names the app has ever auto-generated as starter routines. Used (alongside
+  // the `seeded` flag) to recognize a generic default even on legacy data that
+  // predates the flag, so it can be pruned once real routines exist.
+  const DEFAULT_ROUTINE_NAMES = new Set([
+    "Morning Launch",
+    "After-School Reset",
+    "Nighttime Shutdown",
+  ]);
+  function isDefaultRoutine(r) {
+    if (!r) return false;
+    if (r.seeded === true) return true;
+    // Legacy generics (random id, no flag): exact starter name + no day scope.
+    return DEFAULT_ROUTINE_NAMES.has(r.name) && (!r.days || !r.days.length);
+  }
+  // Once the user has any real, self-created routine, the generic starters are
+  // just clutter (and used to hijack the Now screen). Drop every default; keep
+  // the starters only while the list is 100% defaults (a truly new user).
+  function pruneDefaultRoutines(list) {
+    if (!Array.isArray(list)) return list;
+    return list.some((r) => !isDefaultRoutine(r)) ? list.filter((r) => !isDefaultRoutine(r)) : list;
+  }
 
   function seed() {
     const c = (name, color) => ({
@@ -586,7 +616,7 @@
       ],
       routines:
         Array.isArray(x.routines) && x.routines.length
-          ? x.routines.map(normalizeRoutine)
+          ? pruneDefaultRoutines(x.routines.map(normalizeRoutine))
           : base.routines,
       routineLog: normalizeRoutineLog(x.routineLog),
       activity: x.activity && typeof x.activity === "object" ? x.activity : {},
@@ -892,9 +922,7 @@
       // Actual focus minutes logged against this assignment (summed as focus
       // sessions run). Powers the estimate-vs-actual "time guess" feedback.
       actualMin: Number(a.actualMin) || 0,
-      supportStyle: ["hint", "example", "check"].includes(a.supportStyle)
-        ? a.supportStyle
-        : "",
+      supportStyle: ["hint", "example", "check"].includes(a.supportStyle) ? a.supportStyle : "",
       supportAt: Number(a.supportAt) || 0,
       supportCredited: !!a.supportCredited,
       steps: Array.isArray(a.steps)
@@ -936,14 +964,21 @@
   }
 
   function importCandidateKey(item) {
-    const title = String((item && item.title) || "").trim().replace(/\s+/g, " ").toLowerCase();
-    const classId = String((item && item.classId) || "").trim().toLowerCase();
+    const title = String((item && item.title) || "")
+      .trim()
+      .replace(/\s+/g, " ")
+      .toLowerCase();
+    const classId = String((item && item.classId) || "")
+      .trim()
+      .toLowerCase();
     const due = DATE_RE.test((item && item.due) || "") ? item.due : "";
     return [title, classId, due].join("|");
   }
 
   function safeSourceUrl(value) {
-    const raw = String(value || "").trim().slice(0, 1000);
+    const raw = String(value || "")
+      .trim()
+      .slice(0, 1000);
     if (!raw) return "";
     try {
       const url = new URL(raw);
@@ -954,7 +989,9 @@
   }
 
   function matchImportClass(line, classes) {
-    const text = String(line || "").trim().toLowerCase();
+    const text = String(line || "")
+      .trim()
+      .toLowerCase();
     if (!text) return "";
     const aliases = {
       ela: ["ela", "english", "language arts"],
@@ -1084,14 +1121,7 @@
     });
   }
 
-  const CHANGE_KINDS = new Set([
-    "assignment",
-    "import",
-    "reminder",
-    "sync",
-    "schedule",
-    "other",
-  ]);
+  const CHANGE_KINDS = new Set(["assignment", "import", "reminder", "sync", "schedule", "other"]);
 
   function normalizeChangeEvent(event) {
     event = event || {};
@@ -1193,7 +1223,12 @@
           (entry) => entry.date < day.date && projected.get(entry.date) + minutes <= capacity,
         );
         if (!target) continue;
-        suggestions.push({ assignmentId: item.id, title: item.title, moveTo: target.date, minutes });
+        suggestions.push({
+          assignmentId: item.id,
+          title: item.title,
+          moveTo: target.date,
+          minutes,
+        });
         projected.set(target.date, projected.get(target.date) + minutes);
         excess -= minutes;
         if (excess <= 0) break;
@@ -1261,6 +1296,7 @@
           }))
         : [],
       updatedAt: r.updatedAt || Date.now(),
+      ...(r.seeded === true ? { seeded: true } : {}),
     };
   }
   let state = seed();
@@ -3470,8 +3506,7 @@
   }
 
   function renderTabbar() {
-    const compact =
-      typeof matchMedia !== "undefined" && matchMedia("(max-width: 700px)").matches;
+    const compact = typeof matchMedia !== "undefined" && matchMedia("(max-width: 700px)").matches;
     const visibleTabs = compact ? rankNavigation(readNavUsage()) : TABS;
     $("#tabbar").innerHTML = visibleTabs
       .map(([id, label, ic]) => {
@@ -4379,13 +4414,15 @@
     }
     if (Number(assignment?.estimateMin) > 0)
       parts.push(`It is estimated to take ${Number(assignment.estimateMin)} minutes.`);
-    const notes = String(assignment?.notes || "").trim().slice(0, 500);
+    const notes = String(assignment?.notes || "")
+      .trim()
+      .slice(0, 500);
     if (notes) parts.push(`The directions or notes say: “${notes}”`);
     const steps = includeSteps
       ? (assignment?.steps || [])
-      .filter((step) => !step.done && step.text)
-      .slice(0, 4)
-      .map((step) => String(step.text).trim().slice(0, 120))
+          .filter((step) => !step.done && step.text)
+          .slice(0, 4)
+          .map((step) => String(step.text).trim().slice(0, 120))
       : [];
     if (steps.length) parts.push(`The unfinished steps are: ${steps.join("; ")}.`);
     return parts.join(" ");
@@ -4408,7 +4445,8 @@
   const SUPPORT_STYLE_PROMPTS = {
     hint: "Please give me one hint at a time without giving away the answer.",
     example: "Please show me one similar example, then let me try mine.",
-    check: "Please check my thinking, point out the first place it goes off track, and let me fix it.",
+    check:
+      "Please check my thinking, point out the first place it goes off track, and let me fix it.",
   };
 
   function buildGuidedHelpPrompt(assignment, className, stuckPoint, style = "hint") {
@@ -4440,10 +4478,22 @@
   function offlineStrategies(assignment) {
     const next = (assignment?.steps || []).find((step) => !step.done)?.text;
     return [
-      { title: "Read the directions once more", prompt: "Read the directions slowly and underline the action words." },
-      { title: "Name what you know", prompt: "Write down the facts, numbers, or clues you already understand." },
-      { title: next ? "Try the next small step" : "Try one small example", prompt: next || "Work one simple example before returning to the full problem." },
-      { title: "Take a two-minute reset", prompt: "Stand up, breathe, get water, and return to only the first step." },
+      {
+        title: "Read the directions once more",
+        prompt: "Read the directions slowly and underline the action words.",
+      },
+      {
+        title: "Name what you know",
+        prompt: "Write down the facts, numbers, or clues you already understand.",
+      },
+      {
+        title: next ? "Try the next small step" : "Try one small example",
+        prompt: next || "Work one simple example before returning to the full problem.",
+      },
+      {
+        title: "Take a two-minute reset",
+        prompt: "Stand up, breathe, get water, and return to only the first step.",
+      },
     ];
   }
 
@@ -4456,7 +4506,10 @@
     const todayNumber = dayNumber(todayIso);
     return (assignments || [])
       .filter((item) => item && item.status !== "done" && dayNumber(item.due) <= todayNumber)
-      .sort((a, b) => dayNumber(a.due) - dayNumber(b.due) || String(a.title).localeCompare(String(b.title)))
+      .sort(
+        (a, b) =>
+          dayNumber(a.due) - dayNumber(b.due) || String(a.title).localeCompare(String(b.title)),
+      )
       .slice(0, 3)
       .map((item) => ({
         id: item.id,
@@ -4469,7 +4522,11 @@
   function rankNavigation(usage = {}) {
     const pinned = TABS.filter((tab) => ["home", "homework"].includes(tab[0]));
     const candidates = TABS.filter((tab) => !["home", "homework", "more"].includes(tab[0]))
-      .sort((a, b) => (Number(usage[b[0]]) || 0) - (Number(usage[a[0]]) || 0) || TABS.indexOf(a) - TABS.indexOf(b))
+      .sort(
+        (a, b) =>
+          (Number(usage[b[0]]) || 0) - (Number(usage[a[0]]) || 0) ||
+          TABS.indexOf(a) - TABS.indexOf(b),
+      )
       .slice(0, 3);
     return [...pinned, ...candidates, TABS.find((tab) => tab[0] === "more")];
   }
@@ -4478,7 +4535,8 @@
     const assignments = Array.isArray(source?.assignments) ? source.assignments : [];
     const classes = Array.isArray(source?.classes) ? source.classes : [];
     const finished = assignments.filter(
-      (item) => item.status === "done" && Number(item.estimateMin) > 0 && Number(item.actualMin) > 0,
+      (item) =>
+        item.status === "done" && Number(item.estimateMin) > 0 && Number(item.actualMin) > 0,
     );
     const ratio = finished.length
       ? finished.reduce((sum, item) => sum + item.actualMin / item.estimateMin, 0) / finished.length
@@ -4492,7 +4550,9 @@
           : "Your time estimates are usually close to the actual work time.";
     const overdueByClass = {};
     assignments
-      .filter((item) => item.status !== "done" && DATE_RE.test(item.due || "") && item.due < todayKey())
+      .filter(
+        (item) => item.status !== "done" && DATE_RE.test(item.due || "") && item.due < todayKey(),
+      )
       .forEach((item) => {
         overdueByClass[item.classId] = (overdueByClass[item.classId] || 0) + 1;
       });
@@ -5305,15 +5365,17 @@
             helpAssignments
               .map((a) => {
                 const c = cls(a.classId);
-                return '<button class="btn" data-act="ai-assignment" data-id="' +
+                return (
+                  '<button class="btn" data-act="ai-assignment" data-id="' +
                   esc(a.id) +
                   '"><span aria-hidden="true">' +
                   esc(c?.emoji || "📚") +
-                  '</span><span><b>' +
+                  "</span><span><b>" +
                   esc(a.title) +
-                  '</b><small>' +
+                  "</b><small>" +
                   esc(c?.name || "Assignment") +
-                  '</small></span></button>';
+                  "</small></span></button>"
+                );
               })
               .join("") +
             "</div></section>"
@@ -5321,7 +5383,7 @@
         (selectedAssignment
           ? '<section class="ai-guide" aria-labelledby="aiGuideTitle"><h3 id="aiGuideTitle">Let’s figure out where you’re stuck</h3><p><b>' +
             esc(selectedAssignment.title) +
-            '</b> · ' +
+            "</b> · " +
             esc(selectedClass?.name || "Assignment") +
             '</p><div class="ai-guide-options" role="group" aria-label="Where are you stuck?">' +
             [
@@ -5402,7 +5464,7 @@
                   esc(strategy.prompt) +
                   '"><b>' +
                   esc(strategy.title) +
-                  '</b><small>' +
+                  "</b><small>" +
                   esc(strategy.prompt) +
                   "</small></button>",
               )
@@ -5461,11 +5523,19 @@ Due May 31"></textarea>
       return (
         backHeader("Import Inbox", "more") +
         `<p class="view-intro">Review work captured from Classroom or School Mail before it reaches your assignment list.</p>
-        ${pending.length ? `<div class="row"><button class="btn primary" data-act="inbox-import-all">Import all new</button><span class="pill">${pending.length} waiting</span></div>${pending
-          .map(
-            (item) => `<section class="card import-candidate"><div class="head"><div><h3>${esc(item.title)}</h3><p class="meta">${esc(item.origin)} · ${esc(cls(item.classId).name)} · ${esc(dueLabel(item.due, item.dueTime))}</p>${item.teacher || item.assignmentType ? `<p class="import-details">${item.assignmentType ? esc(item.assignmentType) : "Assignment"}${item.teacher ? ` · ${esc(item.teacher)}` : ""}</p>` : ""}</div>${item.duplicate ? '<span class="pill amber">Possible duplicate</span>' : '<span class="pill green">Ready</span>'}</div><div class="row"><button class="btn primary sm" data-act="inbox-import" data-id="${esc(item.id)}" ${item.duplicate ? "disabled" : ""}>Add assignment</button><button class="btn sm" data-act="inbox-edit" data-id="${esc(item.id)}">Edit</button>${sourceLinkHTML(item)}<button class="btn sm" data-act="inbox-dismiss" data-id="${esc(item.id)}">Dismiss</button></div></section>`,
-          )
-          .join("")}` : emptyState("📥", "Import Inbox is clear. Paste Classroom work or capture a School Mail message to review it here.")}`
+        ${
+          pending.length
+            ? `<div class="row"><button class="btn primary" data-act="inbox-import-all">Import all new</button><span class="pill">${pending.length} waiting</span></div>${pending
+                .map(
+                  (item) =>
+                    `<section class="card import-candidate"><div class="head"><div><h3>${esc(item.title)}</h3><p class="meta">${esc(item.origin)} · ${esc(cls(item.classId).name)} · ${esc(dueLabel(item.due, item.dueTime))}</p>${item.teacher || item.assignmentType ? `<p class="import-details">${item.assignmentType ? esc(item.assignmentType) : "Assignment"}${item.teacher ? ` · ${esc(item.teacher)}` : ""}</p>` : ""}</div>${item.duplicate ? '<span class="pill amber">Possible duplicate</span>' : '<span class="pill green">Ready</span>'}</div><div class="row"><button class="btn primary sm" data-act="inbox-import" data-id="${esc(item.id)}" ${item.duplicate ? "disabled" : ""}>Add assignment</button><button class="btn sm" data-act="inbox-edit" data-id="${esc(item.id)}">Edit</button>${sourceLinkHTML(item)}<button class="btn sm" data-act="inbox-dismiss" data-id="${esc(item.id)}">Dismiss</button></div></section>`,
+                )
+                .join("")}`
+            : emptyState(
+                "📥",
+                "Import Inbox is clear. Paste Classroom work or capture a School Mail message to review it here.",
+              )
+        }`
       );
     },
 
@@ -6176,7 +6246,11 @@ Due May 31"></textarea>
   // hardcoded name list is a legacy fallback for routines with no slot at all.
   function routineForWindow(win, when) {
     const pool = scheduledRoutinePool(when);
-    const bySlot = pool.find((r) => r.slot === win.key);
+    // A real, user-set routine for this slot always beats a generic starter,
+    // even if a stray default is still in the list on this device.
+    const bySlot =
+      pool.find((r) => r.slot === win.key && !isDefaultRoutine(r)) ||
+      pool.find((r) => r.slot === win.key);
     if (bySlot) return bySlot;
     const isWeekend = when.getDay() === 0 || when.getDay() === 6;
     return routineByName(isWeekend ? win.weekend : win.weekday, when);
@@ -6727,10 +6801,13 @@ Due May 31"></textarea>
     }
     el.classList.add("show");
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => {
-      el.classList.remove("show");
-      undoRecord = null;
-    }, typeof undo === "function" ? 10000 : 2200);
+    toastTimer = setTimeout(
+      () => {
+        el.classList.remove("show");
+        undoRecord = null;
+      },
+      typeof undo === "function" ? 10000 : 2200,
+    );
   }
 
   function logChange(kind, label, itemId = "") {
@@ -6765,7 +6842,8 @@ Due May 31"></textarea>
     const suggestions = forecast.suggestions.length
       ? `<div class="forecast-suggestions">${forecast.suggestions
           .map(
-            (item) => `<div class="item"><div><h4>Move ${esc(item.title)} earlier?</h4><p class="meta">Try ${esc(niceDate(item.moveTo))} to balance the week.</p></div><button class="btn sm" data-act="forecast-move" data-id="${esc(item.assignmentId)}" data-arg="${esc(item.moveTo)}">Move earlier</button></div>`,
+            (item) =>
+              `<div class="item"><div><h4>Move ${esc(item.title)} earlier?</h4><p class="meta">Try ${esc(niceDate(item.moveTo))} to balance the week.</p></div><button class="btn sm" data-act="forecast-move" data-id="${esc(item.assignmentId)}" data-arg="${esc(item.moveTo)}">Move earlier</button></div>`,
           )
           .join("")}</div>`
       : '<p class="sub">Your next seven days fit your current pace.</p>';
@@ -7805,7 +7883,10 @@ Due May 31"></textarea>
         mergedRoutines.push(chosen);
       }
     }
-    merged.routines = mergedRoutines;
+    // Drop generic starter routines once any real routine survives the merge,
+    // so fresh devices that seeded their own defaults can never re-introduce
+    // them across sync (the accumulation bug this whole layer guards against).
+    merged.routines = pruneDefaultRoutines(mergedRoutines);
 
     // 5. Merge reminders
     const localRemindersMap = new Map((local.reminders || []).map((r) => [r.id, r]));
@@ -9198,7 +9279,10 @@ Due May 31"></textarea>
       state.importInbox,
     );
     state.importInbox.push(...candidates);
-    logChange("import", `Queued ${candidates.length} item${candidates.length === 1 ? "" : "s"} for review`);
+    logChange(
+      "import",
+      `Queued ${candidates.length} item${candidates.length === 1 ? "" : "s"} for review`,
+    );
     save();
     setView("inbox");
   }
@@ -9331,7 +9415,9 @@ Due May 31"></textarea>
     "inbox-save": (id) => {
       const item = state.importInbox.find((candidate) => candidate.id === id);
       if (!item) return;
-      item.title = String($("#inboxTitle")?.value || item.title).trim().slice(0, 200);
+      item.title = String($("#inboxTitle")?.value || item.title)
+        .trim()
+        .slice(0, 200);
       item.due = DATE_RE.test($("#inboxDue")?.value || "") ? $("#inboxDue").value : "";
       item.updatedAt = Date.now();
       item.duplicate = state.assignments.some(
@@ -9375,13 +9461,16 @@ Due May 31"></textarea>
       save();
       closeModal();
       render();
-      toast("Planned for tomorrow 📅", added
-        ? () => {
-            state.todos = state.todos.filter((todo) => todo.id !== added.id);
-            save();
-            render();
-          }
-        : undefined);
+      toast(
+        "Planned for tomorrow 📅",
+        added
+          ? () => {
+              state.todos = state.todos.filter((todo) => todo.id !== added.id);
+              save();
+              render();
+            }
+          : undefined,
+      );
     },
     "water-plant": () => {
       if (state.garden && state.garden.waterReservoir > 0) {
@@ -10231,7 +10320,8 @@ Due May 31"></textarea>
       if (!assignment || !steps.length) return;
       const existing = new Set(assignment.steps.map((step) => step.text.toLowerCase()));
       steps.forEach((text) => {
-        if (!existing.has(text.toLowerCase())) assignment.steps.push({ id: uid("s"), text, done: false });
+        if (!existing.has(text.toLowerCase()))
+          assignment.steps.push({ id: uid("s"), text, done: false });
       });
       state.supportStats.appliedSteps += 1;
       assignment.updatedAt = Date.now();
@@ -10243,7 +10333,11 @@ Due May 31"></textarea>
     "support-preview-focus": () => {
       const assignment = state.assignments.find((item) => item.id === selectedAcademicAssignmentId);
       if (!assignment) return toast("Choose an assignment first.");
-      const minutes = clamp(Number(assignment.estimateMin) || state.settings.defaultFocusMin, 5, 45);
+      const minutes = clamp(
+        Number(assignment.estimateMin) || state.settings.defaultFocusMin,
+        5,
+        45,
+      );
       openModal(
         "Start a focus block?",
         `<p class="sub">Start <b>${minutes} focused minutes</b> on “${esc(assignment.title)}.” Nothing changes until you confirm.</p><div class="row"><button class="btn primary" data-act="support-confirm-focus" data-id="${esc(assignment.id)}">Start focus</button><button class="btn" data-act="close-modal">Cancel</button></div>`,
