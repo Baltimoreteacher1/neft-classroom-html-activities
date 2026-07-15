@@ -4781,5 +4781,36 @@
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
   <!-- nsr-injected:end -->
+  <style id="gp-tokens">
+    /* MUST STAY LAST. The Vite build injects the lesson-engine bundle
+       (assets/style-*.css) into this page's head AFTER the inline theme, and
+       that bundle re-declares :root tokens (--teal:#1fa6a2, --cream:#f7f4ec…)
+       plus a body radial-gradient — silently repainting any homepage retheme
+       at runtime (this is what broke the 2026-06 restyle). Reassert the
+       Graph Paper Studio tokens here so source order wins. Light only —
+       the dark block above is [data-theme="dark"]-scoped and outranks the
+       bundle's bare :root already. */
+    :root:not([data-theme="dark"]) {
+      --navy: #12263a;
+      --teal: #2667ff;
+      --amber: #ffd23f;
+      --cream: #fbfdff;
+      --ink: #12263a;
+      --line: #dbe7f0;
+      --coral: #ff5c4d;
+      --green: #2ec4a6;
+      --card-bg: #ffffff;
+      --card-border: #c6d6e4;
+      --card-shadow: 4px 4px 0 rgba(18, 38, 58, 0.12);
+      --meta-color: #4a6076;
+      --grid-line: #dbe7f0;
+    }
+    body {
+      background: var(--cream);
+      background-image: linear-gradient(var(--grid-line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+  </style>
   </body>
 </html>
