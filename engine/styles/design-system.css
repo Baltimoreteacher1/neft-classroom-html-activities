@@ -3426,6 +3426,19 @@ body:has(.identity-screen) .export-toolbar {
   white-space: nowrap;
 }
 
+/* ── Teacher mode: hide student-only "save your work" affordances ──
+   Save/Resume and "Save to Google Docs" are only meaningful for students, so
+   they are hidden when a teacher is viewing the lesson. Autosave still runs
+   in the background; only the buttons are hidden. */
+.teacher-mode #nsr-launcher,
+.teacher-mode #nsr-panel,
+.teacher-mode #nsr-toast {
+  display: none !important;
+}
+.teacher-mode .export-toolbar .export-btn-primary {
+  display: none !important;
+}
+
 /* ── Teacher mode panel ── */
 .teacher-mode .teacher-panel {
   position: fixed;

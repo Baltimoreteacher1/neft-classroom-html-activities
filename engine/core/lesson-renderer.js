@@ -645,6 +645,20 @@ function buildVisual(v) {
         fallback: `Interactive ${name} manipulative. Turn on JavaScript to use it.`,
       });
     }
+    case "factor-tree-lab": {
+      // Interactive prime-factorization lab: students type a number and build
+      // its factor tree; "gcf" / "lcm" modes compare two numbers.
+      const modeLabel =
+        v.mode === "gcf"
+          ? "find the greatest common factor of two numbers"
+          : v.mode === "lcm"
+            ? "find the least common multiple of two numbers"
+            : "break a number into its prime factors";
+      return interactiveVisualHost(v, {
+        ariaLabel: `Interactive factor tree lab. Type a number and build its prime factor tree to ${modeLabel}.`,
+        fallback: `Interactive factor tree builder. Turn on JavaScript to type a number and build its factor tree.`,
+      });
+    }
     default:
       return "";
   }

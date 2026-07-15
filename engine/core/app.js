@@ -74,6 +74,10 @@ export function createApp(config) {
 
   // Easy teacher-mode access: sticky per-device toggle + Alt+Shift+T + badge.
   initTeacherAccess();
+  // Flag teacher mode on the root so CSS can hide student-only affordances
+  // (Save/Resume, Save to Google Docs). Formerly set by the teacher panel,
+  // which was removed; keep the class so those hooks still work.
+  if (isTeacherMode()) document.documentElement.classList.add("teacher-mode");
   // Browser tab / SEO title (the engine shell ships a generic <title>).
   if (config.title) {
     const bits = [config.title];
