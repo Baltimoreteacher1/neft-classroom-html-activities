@@ -95,6 +95,12 @@ const REGISTRY = {
     const { renderAreaMorph } = await import("../components/area-morph.js");
     return renderAreaMorph(host, cfg);
   },
+  // Interactive prime-factorization lab: type a number and build its factor
+  // tree; extra modes derive GCF / LCM from two numbers' shared primes.
+  "factor-tree-lab": async (host, cfg) => {
+    const { renderFactorTree } = await import("../components/factor-tree.js");
+    return renderFactorTree(host, cfg);
+  },
   // 3D data towers: mean as "level the towers", MAD as distance from the line.
   "stat-towers": async (host, cfg) => {
     const { renderStatTowers } = await import("../components/stat-towers.js");
