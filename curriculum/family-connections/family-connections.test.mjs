@@ -50,4 +50,16 @@ assert.match(app + renderer, /mergeHomework/);
 assert.match(app, /speechSynthesis/);
 assert.doesNotMatch(app, /localStorage.*(?:student|family|message)/i);
 
+const teacherTools = await readFile(new URL("../../teacher-tools/index.html", root), "utf8");
+assert.ok(
+  (teacherTools.match(/href="\/curriculum\/family-connections\/teacher\/"/g) ?? []).length >= 2,
+  "teacher hub entry points should open protected Teacher Mode",
+);
+const routes = JSON.parse(await readFile(new URL("../../data/routes.json", root), "utf8"));
+assert.ok(routes.routes.some((route) => route.id === "family-connections" && route.audience === "family"));
+assert.ok(routes.routes.some((route) => route.id === "family-connections-publisher" && route.path.endsWith("/teacher/")));
+const legacyFamily = await readFile(new URL("family/index.html", root), "utf8");
+assert.match(legacyFamily, /url=\/curriculum\/family-connections\//i);
+assert.match(legacyFamily, /rel="canonical" href="https:\/\/eduwonderlab\.com\/curriculum\/family-connections\/"/i);
+
 console.log("Family Mode static contracts passed.");

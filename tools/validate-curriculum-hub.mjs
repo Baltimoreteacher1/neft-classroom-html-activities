@@ -52,8 +52,9 @@ check(
   "missing the Family Connections featured card",
 );
 check(
-  (html.match(/href="\/curriculum\/family-connections\/"/g) || []).length >= 2,
-  "missing Family Connections featured or Teacher Tools link",
+  /href="\/curriculum\/family-connections\/"/.test(html) &&
+    /href="\/curriculum\/family-connections\/teacher\/"/.test(html),
+  "missing public Family Mode or protected Teacher Mode link",
 );
 
 // Review-game link integrity — locks the 2026-06-29 regression where the
