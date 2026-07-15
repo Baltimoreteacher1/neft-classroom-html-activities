@@ -24,6 +24,7 @@ for (const expected of [
   'href="/curriculum/ai-hub/#parents"',
   'href="/curriculum/family-connections/teacher/"',
   'href="./family.css"',
+  'href="./family-foundation.css"',
   'src="./family-app.js"',
 ]) {
   assert.ok(html.toLowerCase().includes(expected.toLowerCase()), `Missing public contract: ${expected}`);
@@ -34,8 +35,9 @@ assert.match(html, /family participation is never graded/i);
 assert.doesNotMatch(html, /answer[ -]?key/i);
 assert.doesNotMatch(html, /id="message-studio"/i);
 assert.doesNotMatch(html, /name=".*(?:token|password|secret)/i);
+assert.doesNotMatch(html, /fonts\.googleapis\.com|fonts\.gstatic\.com/i);
 
-const css = await readFile(new URL("family.css", root), "utf8");
+const css = `${await readFile(new URL("family-foundation.css", root), "utf8")}\n${await readFile(new URL("family.css", root), "utf8")}`;
 assert.match(css, /min-width:\s*0/);
 assert.match(css, /overflow-wrap:\s*anywhere/);
 assert.match(css, /@media\s*\(max-width:\s*40rem\)/);

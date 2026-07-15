@@ -158,11 +158,11 @@ function addResource() {
   renderCollections();
 }
 
-function renderPreview() {
+function renderPreview(scroll = true) {
   renderFamilyPreview(byId("family-preview"), state.draft, state.lessons, state.sectionId);
   state.previewed = true;
   byId("publish-status").textContent = "Preview ready — not live";
-  byId("preview-plan").scrollIntoView({ behavior: "smooth", block: "start" });
+  if (scroll) byId("preview-plan").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function renderHistory() {
@@ -284,7 +284,7 @@ async function initialize() {
     renderHomeworkPicker();
     if (state.lessonId) selectLesson(state.lessonId);
     renderCollections();
-    renderPreview();
+    renderPreview(false);
     state.previewed = false;
     renderHistory();
     updatePublicationStatus();
