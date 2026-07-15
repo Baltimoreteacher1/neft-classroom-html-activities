@@ -54,7 +54,9 @@ function blockFor(r) {
   const sg = r.group === 1 ? "sg1" : "sg2";
   const emoji = r.group === 1 ? "\u{1F91D}" : "\u{1F680}"; // 🤝 / 🚀
   const badgeClass = r.group === 1 ? "badge-support" : "badge-challenge";
-  const heading = `Small Group: Group ${r.group}`;
+  // Lesson number first (e.g. "1.3"), then the small-group info.
+  const dotted = String(r.afterLesson).replace("-", ".");
+  const heading = `${dotted} Small Group: Group ${r.group}`;
   return `
           <details
             class="lesson lesson-smallgroup lesson-${sg}"
@@ -73,6 +75,15 @@ function blockFor(r) {
               </div>
             </div>
           </details>`;
+}
+
+// --refresh: strip existing small-group blocks first so they are re-inserted
+// with the current heading format (idempotent upgrade path).
+if (process.argv.includes("--refresh")) {
+  html = html.replace(
+    /\n?\s*<details\s+class="lesson lesson-smallgroup[\s\S]*?<\/details>/g,
+    "",
+  );
 }
 
 let inserted = 0;
