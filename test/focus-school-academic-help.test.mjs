@@ -3,12 +3,14 @@ import { readFileSync } from "node:fs";
 import vm from "node:vm";
 
 const appJs = readFileSync("focus-school/app.js", "utf8");
+const stylesCss = readFileSync("focus-school/styles.css", "utf8");
 const sandbox = {
   console,
+  AbortController,
   setInterval() { return 0; },
   clearInterval() {},
-  setTimeout() { return 0; },
-  clearTimeout() {},
+  setTimeout,
+  clearTimeout,
   location: { protocol: "https:", search: "" },
   navigator: {},
   localStorage: { getItem() { return null; }, setItem() {} },
@@ -55,4 +57,79 @@ assert.equal(
   "Academic Help should still create a useful request without class or step data",
 );
 
-console.log("focus-school-academic-help: 2/2 checks passed");
+assert.equal(
+  typeof api.setAcademicHelpMode,
+  "function",
+  "Academic Help should expose its mode switch behavior for regression testing",
+);
+
+const draftInput = { value: "This draft must survive a mode change." };
+const modeButtons = [
+  {
+    dataset: { arg: "hint" },
+    setAttribute(name, value) {
+      this[name] = value;
+    },
+  },
+  {
+    dataset: { arg: "solve" },
+    setAttribute(name, value) {
+      this[name] = value;
+    },
+  },
+];
+const modeRoot = {
+  querySelectorAll(selector) {
+    assert.equal(selector, '[data-act="ai-mode"]');
+    return modeButtons;
+  },
+  querySelector(selector) {
+    assert.equal(selector, "#aiInput");
+    return draftInput;
+  },
+};
+
+api.setAcademicHelpMode("solve", modeRoot);
+
+assert.equal(draftInput.value, "This draft must survive a mode change.");
+assert.equal(modeButtons[0]["aria-pressed"], "false");
+assert.equal(modeButtons[1]["aria-pressed"], "true");
+
+assert.equal(
+  typeof api.requestAcademicHelp,
+  "function",
+  "Academic Help should expose its bounded network request for regression testing",
+);
+
+const neverResponds = (_url, options) =>
+  new Promise((_resolve, reject) => {
+    options.signal.addEventListener("abort", () => {
+      const error = new Error("aborted");
+      error.name = "AbortError";
+      reject(error);
+    });
+  });
+
+await assert.rejects(
+  () => api.requestAcademicHelp({ messages: [] }, { fetchImpl: neverResponds, timeoutMs: 5 }),
+  { name: "TimeoutError" },
+  "Academic Help should stop waiting when the AI service stalls",
+);
+
+assert.match(
+  appJs,
+  /class="seg ai-mode-seg"/,
+  "Academic Help should give the mode selector a dedicated layout hook",
+);
+assert.match(
+  stylesCss,
+  /\.ai-mode-seg\s*{[^}]*flex-direction:\s*row;/s,
+  "Academic Help mode choices should stay side by side",
+);
+assert.match(
+  appJs,
+  /class="ai-scroll" id="aiScroll" role="log" aria-live="polite"/,
+  "Academic Help should announce new replies to assistive technology",
+);
+
+console.log("focus-school-academic-help: 11/11 checks passed");

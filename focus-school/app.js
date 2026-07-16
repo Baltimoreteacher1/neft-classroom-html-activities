@@ -4381,6 +4381,7 @@
   let aiImage = null; // { dataUrl, mime, base64, name }
   let selectedAcademicAssignmentId = "";
   let aiOffline = false;
+  const AI_REQUEST_TIMEOUT_MS = 30_000;
   const AI_PROMPT_GROUPS = [
     [
       "I'm stuck",
@@ -4451,6 +4452,44 @@
     check:
       "Please check my thinking, point out the first place it goes off track, and let me fix it.",
   };
+
+  function setAcademicHelpMode(mode, root = document) {
+    const nextMode = mode === "solve" ? "solve" : "hint";
+    window._aiMode = nextMode;
+    root.querySelectorAll('[data-act="ai-mode"]').forEach((button) => {
+      button.setAttribute("aria-pressed", button.dataset.arg === nextMode ? "true" : "false");
+    });
+    return nextMode;
+  }
+
+  async function requestAcademicHelp(
+    payload,
+    { fetchImpl = fetch, timeoutMs = AI_REQUEST_TIMEOUT_MS } = {},
+  ) {
+    const controller = new AbortController();
+    let timedOut = false;
+    const timeoutId = setTimeout(() => {
+      timedOut = true;
+      controller.abort();
+    }, timeoutMs);
+    try {
+      return await fetchImpl("/api/ai", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        signal: controller.signal,
+      });
+    } catch (error) {
+      if (timedOut) {
+        const timeoutError = new Error("Academic Help request timed out");
+        timeoutError.name = "TimeoutError";
+        throw timeoutError;
+      }
+      throw error;
+    } finally {
+      clearTimeout(timeoutId);
+    }
+  }
 
   function buildGuidedHelpPrompt(assignment, className, stuckPoint, style = "hint") {
     const title = String(assignment?.title || "this assignment").trim();
@@ -5453,7 +5492,7 @@
             aiImage.dataUrl +
             '" alt="picture to send"><button class="btn sm" data-act="ai-remove-image">✕ Remove picture</button></div>'
           : "") +
-        '<div class="seg" id="aiModeSeg" style="margin-bottom: 12px; display: flex; gap: 8px;">' +
+        '<div class="seg ai-mode-seg" id="aiModeSeg">' +
         '<button class="btn block" data-act="ai-mode" data-arg="hint" aria-pressed="' +
         (mode !== "solve") +
         '">🧭 Hints Mode</button>' +
@@ -5466,7 +5505,9 @@
         '><button class="btn primary" data-act="ai-send" ' +
         (aiBusy ? "disabled" : "") +
         ">Send</button></div>" +
-        '<div class="ai-scroll" id="aiScroll">' +
+        '<div class="ai-scroll" id="aiScroll" role="log" aria-live="polite" aria-label="Academic Help conversation" aria-busy="' +
+        aiBusy +
+        '">' +
         msgs +
         (aiBusy
           ? '<div class="ai-msg bot"><span class="ai-ic">🤖</span><span class="ai-bubble typing">Thinking…</span></div>'
@@ -10410,8 +10451,7 @@ Due May 31"></textarea>
       render();
     },
     "ai-mode": (_, arg) => {
-      window._aiMode = arg;
-      render();
+      setAcademicHelpMode(arg);
     },
     "study-pack": () => {
       openStudyPack();
@@ -10477,18 +10517,14 @@ Due May 31"></textarea>
       if (inp) inp.value = "";
       render();
       try {
-        const res = await fetch("/api/ai", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            mode: window._aiMode || "hint",
-            messages: AI_CHAT.slice(-12).map((m) => ({
-              role: m.role,
-              text: m.text,
-            })),
-            image: sentImg ? { mime: sentImg.mime, data: sentImg.base64 } : null,
-            name: state.settings.studentName || "",
-          }),
+        const res = await requestAcademicHelp({
+          mode: window._aiMode || "hint",
+          messages: AI_CHAT.slice(-12).map((m) => ({
+            role: m.role,
+            text: m.text,
+          })),
+          image: sentImg ? { mime: sentImg.mime, data: sentImg.base64 } : null,
+          name: state.settings.studentName || "",
         });
         if (!res.ok) {
           aiOffline = true;
@@ -10507,11 +10543,14 @@ Due May 31"></textarea>
             text: (j.reply || "Hmm, I didn't catch that.").slice(0, 4000),
           });
         }
-      } catch {
+      } catch (error) {
         aiOffline = true;
         AI_CHAT.push({
           role: "model",
-          text: "I can't reach the internet right now. Check your connection and try again. 📶",
+          text:
+            error?.name === "TimeoutError"
+              ? "The helper took too long to answer. Please try again in a moment. ⏱️"
+              : "I can't reach the internet right now. Check your connection and try again. 📶",
         });
       }
       aiBusy = false;
@@ -12013,7 +12052,9 @@ ${name}`;
       parseImportText,
       pickRoutineForNow,
       rankNavigation,
+      requestAcademicHelp,
       safeSourceUrl,
+      setAcademicHelpMode,
       routineForHome,
       seed,
       teacherHelpDraft,
