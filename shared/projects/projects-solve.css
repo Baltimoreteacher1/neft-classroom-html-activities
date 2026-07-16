@@ -1,0 +1,310 @@
+/* ==========================================================================
+   Projects SOLVE-ALONG — styles for the guided worked-example card.
+   Companion to projects-solve.js. Scoped under body.pro-projects, reuses each
+   unit's accent vars (--navy/--blue/--teal/--gold/--green). Additive,
+   reduced-motion aware, and hidden in print (it is a practice aid, and its
+   "Your Turn" solution must never leak into a submitted report).
+   ========================================================================== */
+
+body.pro-projects .sa-card {
+  margin: 18px 0 6px;
+  border: 2px solid var(--teal, #0f766e);
+  border-radius: 18px;
+  background:
+    radial-gradient(120% 90% at 100% 0%, rgba(15, 118, 110, 0.09), transparent 60%),
+    linear-gradient(180deg, rgba(15, 118, 110, 0.05), rgba(255, 255, 255, 0.65));
+  padding: 15px 17px 16px;
+  box-shadow: 0 10px 26px -20px rgba(15, 118, 110, 0.65);
+}
+
+body.pro-projects .sa-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  margin-bottom: 8px;
+}
+body.pro-projects .sa-icon {
+  font-size: 1.55rem;
+  line-height: 1.1;
+}
+body.pro-projects .sa-titles {
+  display: grid;
+  gap: 1px;
+}
+body.pro-projects .sa-kicker {
+  color: var(--teal, #0f766e);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+body.pro-projects .sa-title {
+  margin: 0;
+  font-size: 1.06rem;
+  color: var(--navy, #10243e);
+}
+body.pro-projects .sa-badge {
+  margin-left: auto;
+  align-self: center;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--teal, #0f766e);
+  border: 1.5px solid currentColor;
+  border-radius: 999px;
+  padding: 3px 10px;
+  white-space: nowrap;
+}
+body.pro-projects .sa-prompt {
+  margin: 2px 0 12px;
+  padding: 10px 13px;
+  border-left: 4px solid var(--gold, #d69e2e);
+  border-radius: 4px 12px 12px 4px;
+  background: rgba(214, 158, 46, 0.09);
+  color: var(--navy, #10243e);
+  font-size: 0.97rem;
+}
+
+body.pro-projects .sa-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+body.pro-projects .sa-step {
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  gap: 11px;
+  align-items: start;
+  padding: 11px 13px;
+  border: 1px solid rgba(15, 118, 110, 0.28);
+  border-radius: 13px;
+  background: #fff;
+}
+body.pro-projects .sa-step-num {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--teal, #0f766e);
+  color: #fff;
+  font-weight: 900;
+  font-size: 0.92rem;
+}
+body.pro-projects .sa-step-body {
+  display: grid;
+  gap: 4px;
+}
+body.pro-projects .sa-do {
+  margin: 0;
+  font-weight: 700;
+  color: var(--navy, #10243e);
+  font-size: 0.95rem;
+}
+body.pro-projects .sa-math {
+  margin: 1px 0;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(23, 99, 199, 0.08);
+  color: var(--blue, #1763c7);
+  font-family: "Courier New", ui-monospace, monospace;
+  font-size: 1.02rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  overflow-x: auto;
+}
+body.pro-projects .sa-why {
+  margin: 0;
+  color: var(--muted, #54677c);
+  font-size: 0.9rem;
+}
+
+body.pro-projects .sa-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+body.pro-projects .sa-answer {
+  margin: 12px 0 4px;
+  padding: 11px 13px;
+  border-radius: 12px;
+  background: linear-gradient(120deg, rgba(22, 163, 74, 0.12), rgba(22, 163, 74, 0.04));
+  border: 1px solid rgba(22, 163, 74, 0.4);
+  color: var(--navy, #10243e);
+  font-weight: 700;
+  font-size: 0.98rem;
+}
+
+body.pro-projects .sa-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin: 13px 0 4px;
+}
+body.pro-projects .sa-btn {
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  border-radius: 10px;
+  padding: 9px 16px;
+  border: 1.5px solid var(--teal, #0f766e);
+  background: var(--teal, #0f766e);
+  color: #fff;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    background 0.12s ease;
+}
+body.pro-projects .sa-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px -12px rgba(15, 118, 110, 0.9);
+}
+body.pro-projects .sa-btn:focus-visible {
+  outline: 3px solid rgba(15, 118, 110, 0.35);
+  outline-offset: 2px;
+}
+body.pro-projects .sa-btn:disabled {
+  opacity: 0.55;
+  cursor: default;
+  transform: none;
+  box-shadow: none;
+}
+body.pro-projects .sa-btn-ghost {
+  background: transparent;
+  color: var(--teal, #0f766e);
+}
+body.pro-projects .sa-note {
+  margin: 8px 0 0;
+  font-size: 0.78rem;
+  color: var(--muted, #54677c);
+  font-style: italic;
+}
+
+/* ---- Your Turn self-check --------------------------------------------- */
+body.pro-projects .sa-yt {
+  margin-top: 14px;
+  padding: 13px 14px;
+  border-radius: 14px;
+  border: 1.5px dashed var(--blue, #1763c7);
+  background: rgba(23, 99, 199, 0.05);
+}
+body.pro-projects .sa-yt-kicker {
+  margin: 0 0 6px;
+  color: var(--blue, #1763c7);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+body.pro-projects .sa-yt-ask {
+  margin: 0 0 10px;
+  color: var(--navy, #10243e);
+  font-size: 0.96rem;
+  font-weight: 600;
+}
+body.pro-projects .sa-yt-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+body.pro-projects .sa-yt-input {
+  flex: 1 1 150px;
+  min-width: 120px;
+  font: inherit;
+  padding: 9px 11px;
+  border: 1.5px solid #b9c8dd;
+  border-radius: 10px;
+  background: #fff;
+  color: #172033;
+}
+body.pro-projects .sa-yt-input:focus-visible {
+  outline: 3px solid rgba(23, 99, 199, 0.25);
+  border-color: var(--blue, #1763c7);
+}
+body.pro-projects .sa-yt-input.is-correct {
+  border-color: var(--green, #16a34a);
+  background: rgba(22, 163, 74, 0.08);
+}
+body.pro-projects .sa-btn-check {
+  border-color: var(--blue, #1763c7);
+  background: var(--blue, #1763c7);
+}
+body.pro-projects .sa-btn-check:hover {
+  box-shadow: 0 8px 18px -12px rgba(23, 99, 199, 0.9);
+}
+body.pro-projects .sa-yt-feedback {
+  margin: 10px 0 0;
+  font-size: 0.94rem;
+  font-weight: 700;
+  min-height: 1.2em;
+}
+body.pro-projects .sa-yt-feedback.is-correct {
+  color: var(--green, #16a34a);
+}
+body.pro-projects .sa-yt-feedback.is-close {
+  color: var(--gold, #b7791f);
+}
+body.pro-projects .sa-yt-feedback.is-wrong {
+  color: #c0392b;
+}
+body.pro-projects .sa-solution {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 9px;
+}
+body.pro-projects .sa-solution .sa-step {
+  border-color: rgba(23, 99, 199, 0.3);
+}
+body.pro-projects .sa-solution .sa-step-num {
+  background: var(--blue, #1763c7);
+}
+
+/* Reveal animation (motion-safe). */
+@keyframes saReveal {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+body.pro-projects .sa-step.is-revealing {
+  animation: saReveal 0.32s ease both;
+}
+@media (prefers-reduced-motion: reduce) {
+  body.pro-projects .sa-step.is-revealing {
+    animation: none;
+  }
+  body.pro-projects .sa-btn {
+    transition: none;
+  }
+}
+
+@media (max-width: 620px) {
+  body.pro-projects .sa-badge {
+    display: none;
+  }
+  body.pro-projects .sa-yt-input {
+    flex-basis: 100%;
+  }
+}
+
+/* Practice aid only — never printed (keeps the student's report clean and
+   never exposes a worked answer). */
+@media print {
+  body.pro-projects .sa-card {
+    display: none !important;
+  }
+}
