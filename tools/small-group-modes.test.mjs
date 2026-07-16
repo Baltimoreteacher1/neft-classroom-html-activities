@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { onRequest as middleware } from "../functions/_middleware.js";
 import { onRequest as teacherRouteHandler } from "../functions/teacher-small-group/[[path]].js";
 
@@ -31,6 +31,18 @@ const generator = readFileSync(
 );
 assert.match(generator, /MINIMUM_PRACTICE = 10/);
 
+for (const lessonId of readdirSync(new URL("../lessons", import.meta.url)).filter((name) =>
+  /^\d+-\d+-group[12]$/.test(name),
+)) {
+  const configText = readFileSync(
+    new URL(`../lessons/${lessonId}/config.json`, import.meta.url),
+    "utf8",
+  );
+  const config = JSON.parse(configText);
+  assert.equal(config.smallGroup, undefined, `${lessonId} public config leaked teacher moves`);
+  assert.equal(configText.includes('"listenFor"'), false, `${lessonId} leaked listen-for notes`);
+}
+
 const publicConfig = {
   lessonId: "1-1-group1",
   smallGroup: { moves: ["private move"] },
@@ -59,15 +71,11 @@ assert.equal(closedResponse.status, 503, "teacher access must fail closed when u
 
 const teacherResponse = await teacherRouteHandler({
   request: new Request("https://example.test/teacher-small-group/1-1-group1/data"),
-  env: {
-    ASSETS: {
-      fetch: async () => Response.json(publicConfig),
-    },
-  },
   params: { path: ["1-1-group1", "data"] },
 });
 const teacherPayload = await teacherResponse.json();
-assert.deepEqual(teacherPayload.facilitation.moves, ["private move"]);
-assert.deepEqual(teacherPayload.facilitation.listenFor, ["private checkpoint"]);
+assert.equal(teacherPayload.facilitation.label, "Extra Support");
+assert.ok(teacherPayload.facilitation.moves.length >= 3);
+assert.ok(teacherPayload.facilitation.listenFor.length >= 1);
 
 console.log("small-group mode, structure, and practice contracts passed");

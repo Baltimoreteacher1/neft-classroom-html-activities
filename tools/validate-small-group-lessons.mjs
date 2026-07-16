@@ -2,6 +2,7 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { FACILITATION_BY_LESSON } from "../functions/teacher-small-group/_facilitation-data.js";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const BASE_RE = /^\d+-\d+$/;
@@ -97,7 +98,10 @@ function assertConfig(root, parent, row) {
     fail(`${row.id} variant does not match Group ${row.group}`);
   if (!String(config.title || "").startsWith(`${dotted} Small Group`))
     fail(`${row.id} title must begin with ${dotted} Small Group`);
-  if (config.smallGroup?.group !== row.group) fail(`${row.id} smallGroup metadata does not match`);
+  if (config.smallGroup || JSON.stringify(config).includes('"listenFor"'))
+    fail(`${row.id} public config contains facilitation data`);
+  if (FACILITATION_BY_LESSON[row.id]?.group !== row.group)
+    fail(`${row.id} protected facilitation metadata does not match`);
   for (const key of REQUIRED) if (!config[key]) fail(`${row.id} missing required ${key} section`);
   if (!config.noticeAndWonder?.context) fail(`${row.id} missing lesson-specific mission context`);
   if (!Array.isArray(config.turnAndTalk) || config.turnAndTalk.length === 0)

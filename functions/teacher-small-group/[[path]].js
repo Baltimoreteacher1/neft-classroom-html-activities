@@ -1,3 +1,5 @@
+import { FACILITATION_BY_LESSON } from "./_facilitation-data.js";
+
 const LESSON_ID = /^\d{1,2}-\d{1,2}-(?:group[12]|catchup)$/;
 
 function json(body, status = 200) {
@@ -11,23 +13,7 @@ function json(body, status = 200) {
   });
 }
 
-function collectListenFor(value, found = []) {
-  if (Array.isArray(value)) {
-    for (const child of value) collectListenFor(child, found);
-    return found;
-  }
-  if (!value || typeof value !== "object") return found;
-  for (const [key, child] of Object.entries(value)) {
-    if (key === "listenFor" && typeof child === "string" && !found.includes(child)) {
-      found.push(child);
-    } else {
-      collectListenFor(child, found);
-    }
-  }
-  return found;
-}
-
-export async function onRequest({ request, env, params }) {
+export async function onRequest({ request, params }) {
   if (request.method !== "GET") return json({ ok: false, error: "method-not-allowed" }, 405);
   const path = Array.isArray(params.path) ? params.path : [params.path].filter(Boolean);
   const lessonId = path[0] || "";
@@ -38,19 +24,11 @@ export async function onRequest({ request, env, params }) {
   if (path.length !== 2 || path[1] !== "data") {
     return json({ ok: false, error: "not-found" }, 404);
   }
-  if (!env.ASSETS?.fetch) return json({ ok: false, error: "assets-unavailable" }, 503);
-  const configResponse = await env.ASSETS.fetch(
-    new Request(new URL(`/lessons/${lessonId}/config.json`, request.url)),
-  );
-  if (!configResponse.ok) return json({ ok: false, error: "lesson-not-found" }, 404);
-  const config = await configResponse.json();
-  if (!config.smallGroup) return json({ ok: false, error: "facilitation-not-found" }, 404);
+  const facilitation = FACILITATION_BY_LESSON[lessonId];
+  if (!facilitation) return json({ ok: false, error: "facilitation-not-found" }, 404);
   return json({
     ok: true,
     lessonId,
-    facilitation: {
-      ...config.smallGroup,
-      listenFor: collectListenFor(config),
-    },
+    facilitation,
   });
 }
