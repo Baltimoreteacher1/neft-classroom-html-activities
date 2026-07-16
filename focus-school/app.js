@@ -3464,6 +3464,9 @@
     associateLabels($("#main"));
     renderTabbar();
     updateHeaderStatus();
+    for (const id of ["hero", "main", "tabbar"]) {
+      document.getElementById(id)?.removeAttribute("aria-busy");
+    }
     // The floating ＋ is context-aware: on the Health page it adds a custom
     // movement (editable), everywhere else it quick-adds an assignment.
     const fab = $("#fab");
@@ -4625,10 +4628,18 @@
             : emptyState("📭", "Nothing due in the next week."),
         ),
       };
-      const order = state.settings.homeOrder.filter((k) => !state.settings.hiddenCards.includes(k));
+      const personalizedOrder = state.settings.homeOrder.filter(
+        (key) => !state.settings.hiddenCards.includes(key),
+      );
+      const focusedFirstRunOrder = ["routine", "plan", "assignments"].filter(
+        (key) => !state.settings.hiddenCards.includes(key),
+      );
+      const showingWelcome =
+        state.assignments.length === 0 && !state.settings.welcomeDismissed;
+      const order = showingWelcome ? focusedFirstRunOrder : personalizedOrder;
 
       let welcomeBanner = "";
-      if (state.assignments.length === 0 && !state.settings.welcomeDismissed) {
+      if (showingWelcome) {
         welcomeBanner = `
           <div class="card feature welcome-card" style="margin-bottom: 16px;">
             <div class="head">
