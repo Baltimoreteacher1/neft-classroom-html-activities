@@ -8,7 +8,9 @@ const FORMATS = new Set(["phone", "video", "in-person"]);
 const ACTIVE_SLOT_STATUSES = new Set(["open", "held", "booked"]);
 
 function clean(value, maximum) {
-  return String(value ?? "").trim().slice(0, maximum);
+  return String(value ?? "")
+    .trim()
+    .slice(0, maximum);
 }
 
 function fail(message, status = 400) {
@@ -31,16 +33,13 @@ function randomValue(prefix) {
 
 async function tokenHash(token) {
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(token));
-  return [...new Uint8Array(digest)]
-    .map((item) => item.toString(16).padStart(2, "0"))
-    .join("");
+  return [...new Uint8Array(digest)].map((item) => item.toString(16).padStart(2, "0")).join("");
 }
 
 export function normalizeSlot(input, now = new Date()) {
   const startAt = iso(input?.startAt, "Start time");
   const durationMinutes = Math.floor(Number(input?.durationMinutes));
-  if (![15, 20, 30, 45, 60].includes(durationMinutes))
-    fail("Choose a supported meeting duration.");
+  if (![15, 20, 30, 45, 60].includes(durationMinutes)) fail("Choose a supported meeting duration.");
   if (new Date(startAt).getTime() <= now.getTime() + 5 * 60_000)
     fail("Meeting times must be in the future.");
   const format = clean(input?.format, 20);
@@ -288,8 +287,7 @@ export async function handleSchedulerRequest(context, store, access) {
       const body = await readJson(context.request);
       return json({ ok: true, ...(await store.respond(body.meeting, body.action)) });
     }
-    if (!access?.accessConfigured)
-      return json({ ok: false, error: "access-not-configured" }, 503);
+    if (!access?.accessConfigured) return json({ ok: false, error: "access-not-configured" }, 503);
     if (!access?.hasTeacherAccess) return json({ ok: false, error: "unauthorized" }, 401);
     if (path === "schedule-dashboard" && method === "GET")
       return json({ ok: true, ...(await store.dashboard()) });
@@ -307,8 +305,7 @@ export async function handleSchedulerRequest(context, store, access) {
       return json({ ok: true, slot: await store.createSlot(await readJson(context.request)) }, 201);
     if (path === "schedule-decision" && method === "POST") {
       const body = await readJson(context.request);
-      if (body.slotId)
-        return json({ ok: true, slot: await store.cancelSlot(body.slotId) });
+      if (body.slotId) return json({ ok: true, slot: await store.cancelSlot(body.slotId) });
       return json({
         ok: true,
         request: await store.decide(body.requestId, body.action),

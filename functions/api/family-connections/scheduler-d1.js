@@ -13,7 +13,10 @@ async function ensureSchema(db) {
     .prepare(
       "INSERT OR IGNORE INTO family_meeting_scheduler_state (id,state_json,revision,updated_at) VALUES (1,?,0,?)",
     )
-    .bind(JSON.stringify({ availabilityRules: [], slots: [], requests: [] }), new Date().toISOString())
+    .bind(
+      JSON.stringify({ availabilityRules: [], slots: [], requests: [] }),
+      new Date().toISOString(),
+    )
     .run();
 }
 
