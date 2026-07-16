@@ -28,6 +28,7 @@ async function invoke(method, path, body, hasTeacherAccess = false) {
 
 const publicResponse = await invoke("GET", "published");
 assert.equal(publicResponse.status, 200);
+assert.equal(publicResponse.headers.get("cache-control"), "no-store");
 const publicBody = await publicResponse.json();
 assert.deepEqual(Object.keys(publicBody).sort(), ["ok", "published"]);
 assert.equal("draft" in publicBody, false);

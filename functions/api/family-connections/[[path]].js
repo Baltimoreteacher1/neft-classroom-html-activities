@@ -188,11 +188,7 @@ export async function handleFamilyConnectionsRequest(context, suppliedStore, acc
   if (!store) return json({ ok: false, error: "publishing-unavailable" }, 503);
   if (path === "published" && method === "GET") {
     const state = await store.read();
-    return json(
-      { ok: true, published: state.published },
-      200,
-      "public, max-age=60, must-revalidate",
-    );
+    return json({ ok: true, published: state.published });
   }
   if (path === "canvas-feed" && method === "GET") {
     const state = await store.read();

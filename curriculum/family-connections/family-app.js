@@ -20,6 +20,7 @@ const state = {
   snapshot: createDefaultSnapshot(),
   sectionId: "all-families",
   visibleHomework: 12,
+  refreshing: false,
   preferences: { language: "en", largeText: false, highContrast: false },
 };
 
@@ -66,7 +67,7 @@ function applyPreferences() {
 function renderIntegrations() {
   const { classDojoUrl, canvasUrl } = state.snapshot.integrations ?? {};
   const dojo = byId("classdojo-link");
-  dojo.hidden = !isConfiguredDestination(classDojoUrl);
+  dojo.hidden = !safeExternalUrl(classDojoUrl);
   if (!dojo.hidden) dojo.href = classDojoUrl;
   const canvas = byId("canvas-link");
   canvas.hidden = !isConfiguredDestination(canvasUrl);
@@ -128,9 +129,31 @@ function populateUnits() {
 }
 
 async function getJson(url) {
-  const response = await fetch(url, { headers: { accept: "application/json" } });
+  const response = await fetch(url, {
+    cache: "no-store",
+    headers: { accept: "application/json" },
+  });
   if (!response.ok) throw new Error(`${url} returned ${response.status}`);
   return response.json();
+}
+
+async function refreshPublication() {
+  if (state.refreshing || document.visibilityState !== "visible") return;
+  state.refreshing = true;
+  try {
+    const result = await getJson(`${PUBLISHED_URL}?refresh=${Date.now()}`);
+    const next = result.published;
+    if (next && Number(next.revision) > Number(state.snapshot.revision)) {
+      state.snapshot = next;
+      renderExperience();
+      applyPreferences();
+      announce("Family page updated with the teacher's latest changes.");
+    }
+  } catch {
+    // Keep the current family view stable during a temporary refresh failure.
+  } finally {
+    state.refreshing = false;
+  }
 }
 
 async function load() {
@@ -212,3 +235,5 @@ function bindEvents() {
 loadPreferences();
 bindEvents();
 load();
+setInterval(refreshPublication, 30_000);
+document.addEventListener("visibilitychange", refreshPublication);
