@@ -83,6 +83,18 @@ export async function syncCanvasAvailability(
   fetchImpl = fetch,
 ) {
   const mappings = { ...existing };
+  const activeSlotIds = new Set(slots.map((slot) => slot.id));
+  for (const [slotId, eventId] of Object.entries(existing)) {
+    if (activeSlotIds.has(slotId)) continue;
+    await canvasRequest(
+      target,
+      accessToken,
+      `/api/v1/calendar_events/${encodeURIComponent(eventId)}`,
+      { method: "DELETE" },
+      fetchImpl,
+    );
+    delete mappings[slotId];
+  }
   for (const slot of slots.slice(0, 40)) {
     const form = new URLSearchParams({
       "calendar_event[context_code]": `course_${target.courseId}`,
@@ -136,14 +148,17 @@ async function loadMappings(db) {
 }
 
 async function saveMappings(db, mappings) {
-  const statements = Object.entries(mappings).map(([slotId, eventId]) =>
-    db
-      .prepare(
-        "INSERT OR REPLACE INTO family_canvas_meeting_sync (slot_id, canvas_event_id, updated_at) VALUES (?,?,?)",
-      )
-      .bind(slotId, eventId, new Date().toISOString()),
-  );
-  if (statements.length) await db.batch(statements);
+  const statements = [db.prepare("DELETE FROM family_canvas_meeting_sync")];
+  for (const [slotId, eventId] of Object.entries(mappings)) {
+    statements.push(
+      db
+        .prepare(
+          "INSERT INTO family_canvas_meeting_sync (slot_id, canvas_event_id, updated_at) VALUES (?,?,?)",
+        )
+        .bind(slotId, eventId, new Date().toISOString()),
+    );
+  }
+  await db.batch(statements);
 }
 
 export async function handleCanvasDirectRequest(context, services, access) {

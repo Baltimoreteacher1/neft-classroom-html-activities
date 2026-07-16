@@ -53,6 +53,16 @@ const mappings = await syncCanvasAvailability(
 );
 assert.deepEqual(mappings, { "slot-1": "909" });
 assert.match(calls[2].init.body.toString(), /calendar_event%5Bcontext_code%5D=course_2468/);
+const clearedMappings = await syncCanvasAvailability(
+  target,
+  "session-token",
+  [],
+  { stale: "808" },
+  fakeFetch,
+);
+assert.deepEqual(clearedMappings, {});
+assert.equal(calls.at(-1).init.method, "DELETE");
+assert.match(calls.at(-1).url, /calendar_events\/808$/);
 assert.doesNotMatch(JSON.stringify({ connected, mappings }), /session-token/);
 
 const connectResponse = await handleCanvasDirectRequest(
