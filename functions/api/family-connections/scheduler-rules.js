@@ -13,7 +13,9 @@ function fail(message) {
 }
 
 function clean(value, maximum) {
-  return String(value ?? "").trim().slice(0, maximum);
+  return String(value ?? "")
+    .trim()
+    .slice(0, maximum);
 }
 
 function dateValue(value, label) {
