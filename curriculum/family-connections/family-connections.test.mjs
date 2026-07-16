@@ -36,6 +36,9 @@ for (const expected of [
   'id="meeting-request-form"',
   'id="meeting-student-first-name"',
   'id="meeting-consent"',
+  'id="meeting-confirmation"',
+  'id="add-meeting-calendar"',
+  'data-scheduler-key="bookedTitle"',
   'data-scheduler-key="title"',
   'class="compact-intro"',
   'href="/curriculum/ai-hub/#parents"',
@@ -51,7 +54,7 @@ for (const expected of [
 
 assert.match(html, /equivalent school option/i);
 assert.match(html, /family participation is never graded/i);
-assert.match(html, /request is not confirmed until/i);
+assert.match(html, /booked immediately/i);
 assert.match(html, /student.+first name only/i);
 assert.match(html, /optional family practice/i);
 assert.match(html, /separate from (?:your student's )?regular homework/i);

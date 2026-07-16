@@ -119,9 +119,9 @@
 
         <div class="meeting-request-panel" id="meeting-request-panel" hidden>
           <div>
-            <p class="eyebrow">Request this time</p>
+            <p class="eyebrow">Book this time</p>
             <h3 id="selected-meeting-time">Meeting time</h3>
-            <p>Your request is not confirmed until Mr. Neft approves it.</p>
+            <p>Your meeting is booked immediately when you submit this form.</p>
           </div>
           <form id="meeting-request-form">
             <input id="meeting-slot-id" name="slotId" type="hidden" />
@@ -132,12 +132,23 @@
               <label class="meeting-note"><span data-scheduler-key="note">Anything you would like Mr. Neft to know? (optional)</span><textarea name="note" maxlength="400" rows="3"></textarea></label>
             </div>
             <label class="meeting-honeypot" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off" /></label>
-            <label class="meeting-consent"><input id="meeting-consent" name="consent" type="checkbox" required /> <span data-scheduler-key="consent">I understand this is a request and that meeting details will be shared after confirmation.</span></label>
+            <label class="meeting-consent"><input id="meeting-consent" name="consent" type="checkbox" required /> <span data-scheduler-key="consent">I am booking this time and will use only the student's first name.</span></label>
             <div class="meeting-form-actions">
-              <button class="button" type="submit" data-scheduler-key="send">Send meeting request</button>
+              <button class="button" type="submit" data-scheduler-key="send">Book meeting</button>
               <button class="text-link meeting-cancel" type="button" id="meeting-request-cancel" data-scheduler-key="chooseAnother">Choose another time</button>
             </div>
           </form>
+        </div>
+
+        <div class="meeting-confirmation" id="meeting-confirmation" hidden>
+          <p class="eyebrow">Confirmed</p>
+          <h3 id="meeting-confirmation-title" tabindex="-1" data-scheduler-key="bookedTitle">Meeting booked</h3>
+          <p id="meeting-confirmation-detail"></p>
+          <p>Confirmation: <strong id="meeting-confirmation-reference"></strong></p>
+          <div class="meeting-form-actions">
+            <button class="button" id="add-meeting-calendar" type="button" data-scheduler-key="addCalendar">Add to calendar</button>
+            <button class="button button-secondary" id="meeting-confirmation-close" type="button" data-scheduler-key="backToTimes">View other times</button>
+          </div>
         </div>
 
         <div class="meeting-response-panel" id="meeting-response-panel" hidden>

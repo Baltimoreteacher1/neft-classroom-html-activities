@@ -25,6 +25,21 @@ for (const expected of [
   'src="./section-manager.js"',
 ]) assert.ok(html.includes(expected), `Missing section manager contract: ${expected}`);
 
+for (const expected of [
+  'id="availability-rule-form"',
+  'name="weekdays"',
+  'name="activeStartDate"',
+  'name="activeEndDate"',
+  'name="startTime"',
+  'name="endTime"',
+  'name="bufferMinutes"',
+  'id="availability-rules"',
+  'id="refresh-generated-slots"',
+  'id="meeting-upcoming"',
+  'id="meeting-open"',
+  'id="meeting-history"',
+]) assert.ok(html.includes(expected), `Missing scheduling secretary contract: ${expected}`);
+
 for (const contract of [
   "<!doctype html>",
   'class="skip-link"',
@@ -82,6 +97,7 @@ assert.doesNotMatch(html, /canvasAccessToken/);
 assert.doesNotMatch(html, /fonts\.googleapis\.com|fonts\.gstatic\.com/i);
 
 const app = await readFile(new URL("teacher-app.js", root), "utf8");
+const schedulerAdmin = await readFile(new URL("scheduler-admin.js", root), "utf8");
 const editors = await readFile(new URL("editors.js", root), "utf8");
 const apiClient = await readFile(new URL("../shared/api-client.js", root), "utf8");
 assert.match(app + apiClient, /family-connections/);
@@ -96,6 +112,8 @@ assert.match(app, /canvas-feed/);
 assert.match(app, /searchParams\.set\("v", "1"\)/);
 assert.match(app, /beforeunload/);
 assert.match(app, /revision-conflict/);
+assert.match(schedulerAdmin, /downloadCalendarEvent/);
+assert.match(schedulerAdmin, /Add to calendar/);
 assert.match(app, /\["week-label", "weekLabel"\]/, "week label must not overwrite the class label");
 assert.match(app, /renderPreview\(false\)/, "initialization must not move the teacher away from the first editor");
 assert.match(editors, /weekHasMeaningfulContent/);
