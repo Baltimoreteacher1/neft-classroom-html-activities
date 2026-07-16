@@ -3,6 +3,14 @@ import { readFile } from "node:fs/promises";
 
 const root = new URL("./", import.meta.url);
 const html = await readFile(new URL("index.html", root), "utf8");
+for (const expected of [
+  'id="meeting-scheduler-tools"',
+  'id="teacher-slot-form"',
+  'id="teacher-meeting-dashboard"',
+  'id="teacher-invitation-form"',
+  'src="./scheduler-admin.js"',
+  'href="./scheduler-admin.css"',
+]) assert.ok(html.includes(expected), `Missing teacher scheduler contract: ${expected}`);
 
 for (const contract of [
   "<!doctype html>",

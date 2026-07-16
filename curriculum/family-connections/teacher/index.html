@@ -7,6 +7,7 @@
     <meta name="robots" content="noindex,nofollow" />
     <title>Teacher Mode | Family Connections</title>
     <link rel="stylesheet" href="./teacher.css" />
+    <link rel="stylesheet" href="./scheduler-admin.css" />
   </head>
   <body>
     <a class="skip-link" href="#teacher-main">Skip to publishing workspace</a>
@@ -191,6 +192,55 @@
           </section>
         </details>
 
+        <details class="tool-disclosure" id="meeting-scheduler-tools">
+          <summary>
+            <span><strong>Availability &amp; family meetings</strong><small>Post times, review requests, and invite a family</small></span>
+            <span aria-hidden="true">+</span>
+          </summary>
+          <section class="tool-body schedule-admin" aria-labelledby="schedule-admin-title">
+            <div class="tool-intro">
+              <p class="step-label">Scheduling</p>
+              <h2 id="schedule-admin-title">A clear path from available to confirmed.</h2>
+              <p>Families see only open times. Contact details and decisions stay in this protected workspace.</p>
+            </div>
+            <div class="schedule-admin-grid">
+              <form class="schedule-card" id="teacher-slot-form">
+                <span class="integration-kicker">Add availability</span>
+                <h3>Post a meeting time</h3>
+                <div class="schedule-fields">
+                  <label>Date<input name="date" type="date" required /></label>
+                  <label>Start time<input name="time" type="time" required /></label>
+                  <label>Length<select name="durationMinutes"><option value="15">15 minutes</option><option value="20" selected>20 minutes</option><option value="30">30 minutes</option><option value="45">45 minutes</option><option value="60">60 minutes</option></select></label>
+                  <label>Format<select name="format"><option value="video">Video meeting</option><option value="phone">Phone call</option><option value="in-person">In person</option></select></label>
+                  <label class="schedule-wide">Family-safe label<input name="locationLabel" maxlength="80" value="Online meeting" required /></label>
+                </div>
+                <button class="button button-preview" type="submit">Post available time</button>
+              </form>
+
+              <form class="schedule-card" id="teacher-invitation-form">
+                <span class="integration-kicker">Teacher invitation</span>
+                <h3>Propose a time to a family</h3>
+                <label>Available time<select name="slotId" id="teacher-invitation-slot" required></select></label>
+                <label>Parent or guardian name<input name="guardianName" maxlength="80" required /></label>
+                <label>Student first name only<input name="studentFirstName" maxlength="40" required /></label>
+                <label>Family email<input name="email" type="email" maxlength="160" required /></label>
+                <label>Short note<textarea name="note" rows="2" maxlength="400"></textarea></label>
+                <button class="button button-preview" type="submit">Create private response link</button>
+                <div class="invitation-result" id="teacher-invitation-result" hidden>
+                  <label>Copy into ClassDojo or email<input id="teacher-invitation-link" readonly /></label>
+                  <button class="text-button" id="copy-teacher-invitation" type="button">Copy invitation link</button>
+                </div>
+              </form>
+            </div>
+            <div class="schedule-dashboard-heading">
+              <div><span class="integration-kicker">Meeting desk</span><h3>Requests and scheduled meetings</h3></div>
+              <button class="text-button" id="refresh-meeting-dashboard" type="button">Refresh</button>
+            </div>
+            <p id="teacher-meeting-status" role="status" aria-live="polite">Loading meetings…</p>
+            <div id="teacher-meeting-dashboard" class="teacher-meeting-dashboard"></div>
+          </section>
+        </details>
+
         <details class="tool-disclosure" id="sharing-tools">
           <summary>
             <span><strong>Canvas sync &amp; sharing</strong><small>Automatic announcements, weekly copy, and family links</small></span>
@@ -272,11 +322,12 @@
             <ol id="publication-history"></ol>
           </details>
         </section>
-        <p class="privacy-note">No family contacts, student records, private messages, or grades are stored here.</p>
+        <p class="privacy-note">Scheduling contact details stay protected and separate from the public family page. No grades or student IDs are collected.</p>
       </aside>
     </main>
 
     <p class="status-region" id="teacher-status" role="status" aria-live="polite"></p>
     <script type="module" src="./teacher-app.js"></script>
+    <script type="module" src="./scheduler-admin.js"></script>
   </body>
 </html>

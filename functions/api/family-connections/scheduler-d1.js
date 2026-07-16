@@ -57,6 +57,7 @@ export function createD1SchedulerStore(db) {
     createSlot: (input) => mutate("createSlot", input),
     requestSlot: (input) => mutate("requestSlot", input),
     decide: (id, action) => mutate("decide", id, action),
+    cancelSlot: (id) => mutate("cancelSlot", id),
     invite: (input) => mutate("invite", input),
     respond: (meeting, action) => mutate("respond", meeting, action),
   };

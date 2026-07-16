@@ -143,6 +143,12 @@ export function createMemorySchedulerStore(options = {}) {
       } else fail("Choose a valid meeting decision.");
       return structuredClone(request);
     },
+    async cancelSlot(slotId) {
+      const slot = findSlot(slotId);
+      if (!slot || slot.status !== "open") fail("Only an open time can be cancelled.", 409);
+      slot.status = "cancelled";
+      return structuredClone(slot);
+    },
     async invite(input) {
       const slot = findSlot(clean(input?.slotId, 80));
       if (!slot || slot.status !== "open") fail("That meeting time is no longer available.", 409);
@@ -238,6 +244,8 @@ export async function handleSchedulerRequest(context, store, access) {
       return json({ ok: true, slot: await store.createSlot(await readJson(context.request)) }, 201);
     if (path === "schedule-decision" && method === "POST") {
       const body = await readJson(context.request);
+      if (body.slotId)
+        return json({ ok: true, slot: await store.cancelSlot(body.slotId) });
       return json({
         ok: true,
         request: await store.decide(body.requestId, body.action),
