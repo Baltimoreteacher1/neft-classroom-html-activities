@@ -9,11 +9,16 @@ for (const expected of [
   '<html lang="en">',
   'class="skip-link"',
   'id="family-week"',
+  'class="family-quick-nav"',
+  'href="#family-week"',
+  'href="#homework-library"',
+  'href="#family-support"',
   'id="section-select"',
   'id="week-grid"',
   'id="homework-search"',
   'id="unit-filter"',
   'id="homework-grid"',
+  'id="clear-homework-filters"',
   'id="all-homework-panel"',
   'id="read-week"',
   'id="language-toggle"',
@@ -23,9 +28,11 @@ for (const expected of [
   'id="classdojo-link"',
   'id="canvas-link"',
   'id="family-status"',
+  'id="family-support"',
   'class="compact-intro"',
   'href="/curriculum/ai-hub/#parents"',
   'href="./family.css"',
+  'href="./family-polish.css"',
   'href="./family-foundation.css"',
   'src="./family-app.js"',
 ]) {
@@ -52,7 +59,13 @@ assert.doesNotMatch(html, /editor\.js|edit-toggle|contenteditable/i);
 assert.doesNotMatch(html, /name=".*(?:token|password|secret)/i);
 assert.doesNotMatch(html, /fonts\.googleapis\.com|fonts\.gstatic\.com/i);
 
-const css = `${await readFile(new URL("family-foundation.css", root), "utf8")}\n${await readFile(new URL("family.css", root), "utf8")}`;
+const css = (
+  await Promise.all(
+    ["family-foundation.css", "family.css", "family-polish.css"].map((path) =>
+      readFile(new URL(path, root), "utf8"),
+    ),
+  )
+).join("\n");
 assert.match(css, /min-width:\s*0/);
 assert.match(css, /overflow-wrap:\s*anywhere/);
 assert.match(css, /@media\s*\(max-width:\s*40rem\)/);
@@ -65,7 +78,16 @@ assert.match(app, /curriculum-manifest\.json/);
 assert.match(app, /api\/family-connections\/published/);
 assert.match(app + renderer, /mergeHomework/);
 assert.match(renderer, /homework-details-disclosure/);
-assert.match(renderer, /Open optional practice/);
+assert.match(renderer, /week-empty-state/);
+assert.match(renderer, /today-badge/);
+assert.match(renderer, /Learning focus/);
+assert.match(renderer, /Start optional practice/);
+assert.match(renderer, /Open family help/);
+assert.match(renderer, /Play lesson arcade/);
+assert.match(renderer, /arcadePath/);
+assert.match(app, /isConfiguredDestination/);
+assert.match(app, /matching lessons/);
+assert.match(app, /lessons available/);
 assert.doesNotMatch(app + renderer, /family homework|homework library/i);
 assert.match(app, /speechSynthesis/);
 assert.doesNotMatch(app, /localStorage.*(?:student|family|message)/i);

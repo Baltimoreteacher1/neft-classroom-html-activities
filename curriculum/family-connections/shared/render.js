@@ -1,4 +1,9 @@
-import { mergeHomework, normalizeLessons, resolveSection } from "./model.js";
+import {
+  mergeHomework,
+  normalizeLessons,
+  resolveSection,
+  weekHasMeaningfulContent,
+} from "./model.js";
 
 function element(tag, className, text) {
   const node = document.createElement(tag);
@@ -37,10 +42,34 @@ export function renderWeek(root, snapshot, inputLessons, sectionId) {
   const byId = new Map(lessons.map((lesson) => [lesson.id, lesson]));
   const section = resolveSection(snapshot, sectionId);
   root.replaceChildren();
+  const meaningful = weekHasMeaningfulContent(section);
+  root.classList.toggle("is-empty", !meaningful);
+  if (!meaningful) {
+    const empty = element("article", "week-empty-state");
+    empty.append(
+      element("span", "week-empty-icon", "Calendar ready"),
+      element("h3", "", "The weekly plan is being prepared."),
+      element(
+        "p",
+        "",
+        "Check back soon for this week's lessons. Optional practice is still available below whenever it works for your family.",
+      ),
+      link("Browse optional practice", "#homework-library"),
+    );
+    root.append(empty);
+    return section;
+  }
   for (const entry of section.week?.days ?? []) {
     const lesson = byId.get(entry.lessonId);
-    const card = element("article", `day-card${entry.day === todayName() ? " current" : ""}`);
-    card.append(element("p", "day-name", entry.day));
+    const isToday = entry.day === todayName();
+    const card = element("article", `day-card${isToday ? " current" : ""}`);
+    const dayHeading = element("div", "day-heading");
+    dayHeading.append(element("p", "day-name", entry.day));
+    if (isToday) {
+      dayHeading.append(element("span", "today-badge", "Today"));
+      card.setAttribute("aria-label", `${entry.day}, today`);
+    }
+    card.append(dayHeading);
     if (entry.status === "lesson" && lesson) {
       card.append(element("strong", "lesson-number", `Lesson ${lesson.id.replace("-flagship", " · Spotlight")}`));
       card.append(element("p", "lesson-title", lesson.title));
@@ -107,9 +136,19 @@ export function renderHomework(root, inputLessons, overrides, options = {}) {
     const meta = element("div", "homework-meta");
     meta.append(element("span", "", `Lesson ${item.id}`), element("span", "", item.estimatedTime));
     card.append(meta, element("h3", "", item.title));
+    if (item.objective) {
+      const focus = element("p", "homework-focus");
+      focus.append(element("strong", "", "Learning focus: "), item.objective);
+      card.append(focus);
+    }
     const actions = element("div", "homework-actions");
-    actions.append(link("Open optional practice", item.homeworkPath));
+    actions.append(link("Start optional practice", item.homeworkPath));
     if (item.familyPath) actions.append(link("Open family help", item.familyPath));
+    if (item.arcadePath) {
+      const arcade = link("Play lesson arcade", item.arcadePath, "arcade-link");
+      arcade.setAttribute("aria-label", `Play ${item.arcadeTitle || "lesson arcade"}`);
+      actions.append(arcade);
+    }
     for (const extra of item.supplementalLinks) actions.append(link(extra.label, extra.url));
     card.append(actions);
     const disclosure = element("details", "homework-details-disclosure");

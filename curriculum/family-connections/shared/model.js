@@ -65,6 +65,8 @@ export function normalizeLessons(input) {
     const hasHomework = Boolean(raw?.homeworkPath || raw?.resources?.homework?.exists);
     if (!/^\d{1,2}-\d{1,2}(?:-flagship)?$/.test(id) || !hasHomework) continue;
     const [unit, lesson] = lessonNumber(raw);
+    const arcadePath = cleanText(raw?.arcade?.path, 240);
+    const safeArcadePath = /^\/(?!\/)[^\\\s]*$/.test(arcadePath) ? arcadePath : "";
     byId.set(id, {
       id,
       unit,
@@ -81,6 +83,9 @@ export function normalizeLessons(input) {
       familyPath: raw.resources?.familyPage?.exists
         ? cleanText(raw.resources.familyPage.path, 240)
         : "",
+      arcadePath: safeArcadePath,
+      arcadeTitle: safeArcadePath ? cleanText(raw?.arcade?.title, 120) || "Lesson arcade" : "",
+      arcadeDescription: safeArcadePath ? cleanText(raw?.arcade?.description, 240) : "",
       vocabulary: Array.isArray(raw.supports?.vocabulary)
         ? raw.supports.vocabulary
             .map((word) => cleanText(word, 60))
@@ -96,6 +101,15 @@ export function normalizeLessons(input) {
     });
   }
   return [...byId.values()].sort((a, b) => a.unit - b.unit || a.lesson - b.lesson);
+}
+
+export function weekHasMeaningfulContent(section) {
+  return (section?.week?.days ?? []).some(
+    (day) =>
+      day?.status !== "no-class" ||
+      Boolean(day?.lessonId) ||
+      Boolean(String(day?.note ?? "").trim()),
+  );
 }
 
 function normalizeSupplementalLinks(links) {

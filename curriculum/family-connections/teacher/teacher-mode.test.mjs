@@ -61,6 +61,7 @@ assert.doesNotMatch(html, /canvasAccessToken/);
 assert.doesNotMatch(html, /fonts\.googleapis\.com|fonts\.gstatic\.com/i);
 
 const app = await readFile(new URL("teacher-app.js", root), "utf8");
+const editors = await readFile(new URL("editors.js", root), "utf8");
 const apiClient = await readFile(new URL("../shared/api-client.js", root), "utf8");
 assert.match(app + apiClient, /family-connections/);
 assert.match(apiClient, /call\("draft"/);
@@ -76,6 +77,9 @@ assert.match(app, /beforeunload/);
 assert.match(app, /revision-conflict/);
 assert.match(app, /\["week-label", "weekLabel"\]/, "week label must not overwrite the class label");
 assert.match(app, /renderPreview\(false\)/, "initialization must not move the teacher away from the first editor");
+assert.match(editors, /weekHasMeaningfulContent/);
+assert.match(editors, /preview-empty-week/);
+assert.match(editors, /preview-summary/);
 
 const css = await readFile(new URL("teacher.css", root), "utf8");
 assert.match(css, /min-width:\s*0/);

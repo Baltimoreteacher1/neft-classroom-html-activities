@@ -31,6 +31,25 @@ const snapshot = createDefaultSnapshot();
 assert.equal(snapshot.sections.length, 1);
 assert.equal(snapshot.sections[0].isDefault, true);
 assert.equal(snapshot.sections[0].week.days.length, 5);
+assert.equal(
+  typeof familyModel.weekHasMeaningfulContent,
+  "function",
+  "family and teacher views need one canonical meaningful-week rule",
+);
+assert.equal(familyModel.weekHasMeaningfulContent(snapshot.sections[0]), false);
+const meaningfulWeek = structuredClone(snapshot.sections[0]);
+meaningfulWeek.week.days[0] = {
+  day: "Monday",
+  status: "review",
+  lessonId: "",
+  note: "Review together.",
+};
+assert.equal(familyModel.weekHasMeaningfulContent(meaningfulWeek), true);
+
+const lessonWithArcade = lessons.find((item) => item.id === "1-1");
+assert.equal(lessonWithArcade.arcadePath, "/math/unit-1/games/unit1-factor-frenzy.html");
+assert.match(lessonWithArcade.arcadeTitle, /Factor Frenzy/i);
+assert.equal(lessons.find((item) => item.id === "2-1").arcadePath, "");
 
 const future = {
   id: "12-9",

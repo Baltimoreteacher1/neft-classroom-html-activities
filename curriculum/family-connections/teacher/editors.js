@@ -1,5 +1,11 @@
 import { COPY_FIELDS } from "../shared/copy-defaults.js";
-import { DAYS, mergeHomework, normalizeLessons, resolveSection } from "../shared/model.js";
+import {
+  DAYS,
+  mergeHomework,
+  normalizeLessons,
+  resolveSection,
+  weekHasMeaningfulContent,
+} from "../shared/model.js";
 
 const node = (tag, className, text) => {
   const item = document.createElement(tag);
@@ -142,38 +148,57 @@ export function renderFamilyPreview(root, snapshot, inputLessons, sectionId) {
     node("h3", "", section.week.label),
     node("p", "", section.week.note),
   );
-  const week = node("div", "preview-week");
-  for (const entry of section.week.days) {
-    const lesson = byId.get(entry.lessonId);
-    const card = node("article", "preview-day");
-    card.append(node("strong", "", entry.day));
-    card.append(
-      node(
-        "span",
-        "",
-        lesson
-          ? `Lesson ${lesson.id} · ${lesson.title}`
-          : entry.note || entry.status.replace("-", " "),
-      ),
-    );
-    week.append(card);
-  }
-  const homeworkTitle = node("h3", "", "Optional family practice preview");
-  homeworkTitle.style.marginTop = "1rem";
-  const homeworkGrid = node("div", "preview-homework");
   const assigned = new Set(section.week.days.map((day) => day.lessonId).filter(Boolean));
   const homework = mergeHomework(inputLessons, snapshot.homeworkOverrides)
     .filter((item) => assigned.has(item.id))
     .slice(0, 5);
+  const plannedDays = section.week.days.filter(
+    (day) => day.status !== "no-class" || day.lessonId || String(day.note ?? "").trim(),
+  ).length;
+  const summary = node(
+    "p",
+    "preview-summary",
+    `Families will see ${plannedDays} planned ${plannedDays === 1 ? "day" : "days"} and ${homework.length} optional practice ${homework.length === 1 ? "lesson" : "lessons"}.`,
+  );
+  const week = node("div", "preview-week");
+  if (!weekHasMeaningfulContent(section)) {
+    week.append(
+      node(
+        "article",
+        "preview-empty-week",
+        "The public page will show one short 'weekly plan is being prepared' message.",
+      ),
+    );
+  } else {
+    for (const entry of section.week.days) {
+      const lesson = byId.get(entry.lessonId);
+      const card = node("article", "preview-day");
+      card.append(node("strong", "", entry.day));
+      card.append(
+        node(
+          "span",
+          "",
+          lesson
+            ? `Lesson ${lesson.id} · ${lesson.title}`
+            : entry.note || entry.status.replace("-", " "),
+        ),
+      );
+      week.append(card);
+    }
+  }
+  const homeworkTitle = node("h3", "", "Optional family practice preview");
+  homeworkTitle.style.marginTop = "1rem";
+  const homeworkGrid = node("div", "preview-homework");
   for (const item of homework) {
     const card = node("article");
     card.append(
       node("strong", "", `Lesson ${item.id} · ${item.title}`),
       node("p", "", item.directions),
     );
+    if (item.arcadePath) card.append(node("p", "", `Arcade included · ${item.arcadeTitle}`));
     homeworkGrid.append(card);
   }
   if (!homework.length)
-    homeworkGrid.append(node("p", "", "Assign a lesson to preview this week's homework."));
-  root.replaceChildren(title, week, homeworkTitle, homeworkGrid);
+    homeworkGrid.append(node("p", "", "Assign a lesson to preview this week's optional practice."));
+  root.replaceChildren(title, summary, week, homeworkTitle, homeworkGrid);
 }

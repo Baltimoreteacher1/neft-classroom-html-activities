@@ -66,11 +66,17 @@ function applyPreferences() {
 function renderIntegrations() {
   const { classDojoUrl, canvasUrl } = state.snapshot.integrations ?? {};
   const dojo = byId("classdojo-link");
-  dojo.hidden = !safeExternalUrl(classDojoUrl);
+  dojo.hidden = !isConfiguredDestination(classDojoUrl);
   if (!dojo.hidden) dojo.href = classDojoUrl;
   const canvas = byId("canvas-link");
-  canvas.hidden = !safeExternalUrl(canvasUrl);
+  canvas.hidden = !isConfiguredDestination(canvasUrl);
   if (!canvas.hidden) canvas.href = canvasUrl;
+}
+
+function isConfiguredDestination(value) {
+  if (!safeExternalUrl(value)) return false;
+  const url = new URL(value);
+  return url.pathname !== "/" || Boolean(url.search || url.hash);
 }
 
 function renderHomeworkLibrary(resetLimit = false) {
@@ -85,7 +91,11 @@ function renderHomeworkLibrary(resetLimit = false) {
       limit: state.visibleHomework,
     },
   );
-  byId("homework-count").textContent = `${result.filtered.length} of ${result.all.length} lessons`;
+  const hasFilters = Boolean(byId("homework-search").value.trim() || byId("unit-filter").value);
+  byId("homework-count").textContent = hasFilters
+    ? `${result.filtered.length} matching lessons`
+    : `${result.all.length} lessons available`;
+  byId("clear-homework-filters").hidden = !hasFilters;
   byId("load-more").hidden = result.visible >= result.filtered.length;
 }
 
@@ -163,6 +173,13 @@ function bindEvents() {
   byId("load-more").addEventListener("click", () => {
     state.visibleHomework += 12;
     renderHomeworkLibrary();
+  });
+  byId("clear-homework-filters").addEventListener("click", () => {
+    byId("homework-search").value = "";
+    byId("unit-filter").value = "";
+    renderHomeworkLibrary(true);
+    byId("homework-search").focus();
+    announce("Practice filters cleared. All lessons are available.");
   });
   byId("read-week").addEventListener("click", () => {
     if (!("speechSynthesis" in window))

@@ -57,6 +57,27 @@ export const COPY_FIELDS = Object.freeze([
     en: "This week in math",
     es: "Esta semana en matemáticas",
   },
+  {
+    key: "quickWeek",
+    group: "Navigation",
+    label: "This week link",
+    en: "This week",
+    es: "Esta semana",
+  },
+  {
+    key: "quickPractice",
+    group: "Navigation",
+    label: "Optional practice link",
+    en: "Optional practice",
+    es: "Práctica opcional",
+  },
+  {
+    key: "quickHelp",
+    group: "Navigation",
+    label: "Ways to help link",
+    en: "Ways to help",
+    es: "Maneras de ayudar",
+  },
   { key: "classLabel", group: "This week", label: "Class picker label", en: "Class", es: "Clase" },
   {
     key: "readWeek",

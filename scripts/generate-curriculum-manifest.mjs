@@ -13,7 +13,7 @@
  * It never writes into a lesson folder and never deletes anything.
  */
 
-import { existsSync, readFileSync, readdirSync, statSync, writeFileSync, mkdirSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -137,6 +137,32 @@ function vocabTerms(cfg) {
   return cfg.vocabulary.map((v) => v.term).filter(Boolean);
 }
 
+function arcadeFor(cfg) {
+  const projects = Array.isArray(cfg.projects) ? cfg.projects : [];
+  const project = projects.find((item) => {
+    const href = String(item?.href ?? "").split(/[?#]/)[0];
+    return (
+      /^\/(?!\/)/.test(href) &&
+      /\/(?:games?(?:\/|$)|[^/]*game(?:\/|\.html|$))/i.test(href) &&
+      !/graphic-novels|\/games\/3d\//i.test(href) &&
+      present(href.slice(1))
+    );
+  });
+  if (!project) return null;
+  return {
+    title: String(project.title ?? "Lesson arcade")
+      .trim()
+      .slice(0, 120),
+    description: String(project.desc ?? "")
+      .trim()
+      .slice(0, 240),
+    path: String(project.href).trim().slice(0, 240),
+    emoji: String(project.emoji ?? "🎮")
+      .trim()
+      .slice(0, 8),
+  };
+}
+
 const DEFAULT_SENTENCE_FRAMES = [
   "I know ___ because ___.",
   "First, I ___. Then, I ___.",
@@ -179,6 +205,7 @@ function buildEntry(id, cfg) {
     objective: cfg.contentObjective || "",
     languageObjective: cfg.languageObjective || "",
     lessonPath: `/lessons/${id}/`,
+    arcade: arcadeFor(cfg),
     timeEstimate: cfg.timeEstimate || "",
     resources: resolved,
     supports: {
