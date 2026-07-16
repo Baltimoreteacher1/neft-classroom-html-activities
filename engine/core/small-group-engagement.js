@@ -51,24 +51,10 @@ function speak(text, button, lang = "en-US") {
   window.speechSynthesis.speak(utterance);
 }
 
-function starterButtons(starters, textarea) {
-  const row = el("div", "sg-toolrow");
-  (starters || []).slice(0, 3).forEach((starter) => {
-    const button = el("button", "btn ghost", esc(starter));
-    button.type = "button";
-    button.onclick = () => {
-      textarea.value = `${starter} `;
-      textarea.focus();
-    };
-    row.appendChild(button);
-  });
-  return row;
-}
-
 export function createMissionSection(config, variant, state, onDone) {
-  const notice = config.noticeAndWonder || {};
+  const missionContent = config.noticeAndWonder || {};
   const context =
-    notice.context ||
+    missionContent.context ||
     config.launch?.narrative ||
     config.contentObjective ||
     "Let's build this skill together.";
@@ -95,11 +81,11 @@ export function createMissionSection(config, variant, state, onDone) {
   copy.appendChild(el("p", "block-lab", "Private readiness pulse"));
   copy.appendChild(makePulse(state, "before"));
 
-  const visual = el("div", `sg-mission-visual${notice.image ? "" : " no-image"}`);
-  if (notice.image) {
+  const visual = el("div", `sg-mission-visual${missionContent.image ? "" : " no-image"}`);
+  if (missionContent.image) {
     const image = document.createElement("img");
-    image.src = notice.image;
-    image.alt = notice.imageAlt || "Visual for this lesson's math mission";
+    image.src = missionContent.image;
+    image.alt = missionContent.imageAlt || "Visual for this lesson's math mission";
     image.loading = "eager";
     visual.appendChild(image);
   } else {
@@ -108,35 +94,6 @@ export function createMissionSection(config, variant, state, onDone) {
   }
   mission.append(copy, visual);
   section.appendChild(mission);
-
-  const writeGrid = el("div", "sg-write-grid");
-  const noticeBox = el("div", "sg-write");
-  const noticeInput = el("textarea", "sg-ta");
-  noticeInput.id = `${config.lessonId}-notice`;
-  noticeInput.placeholder =
-    variant === "group2" ? "Make a prediction or spot a pattern…" : "Write one thing you notice…";
-  const noticeLabel = document.createElement("label");
-  noticeLabel.htmlFor = noticeInput.id;
-  noticeLabel.textContent = variant === "group2" ? "Predict" : "Notice";
-  noticeBox.appendChild(noticeLabel);
-  noticeBox.appendChild(starterButtons(notice.noticeStarters, noticeInput));
-  noticeBox.appendChild(noticeInput);
-
-  const wonderBox = el("div", "sg-write");
-  const wonderInput = el("textarea", "sg-ta");
-  wonderInput.id = `${config.lessonId}-wonder`;
-  wonderInput.placeholder =
-    variant === "group2"
-      ? "What would you test or try to disprove?"
-      : "Write one question you wonder…";
-  const wonderLabel = document.createElement("label");
-  wonderLabel.htmlFor = wonderInput.id;
-  wonderLabel.textContent = variant === "group2" ? "Test" : "Wonder";
-  wonderBox.appendChild(wonderLabel);
-  wonderBox.appendChild(starterButtons(notice.wonderStarters, wonderInput));
-  wonderBox.appendChild(wonderInput);
-  writeGrid.append(noticeBox, wonderBox);
-  section.appendChild(writeGrid);
 
   const launchRow = el("div", "row");
   const launch = el(

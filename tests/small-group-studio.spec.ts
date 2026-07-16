@@ -6,6 +6,9 @@ test.describe("small-group guided math studio", () => {
     await page.goto("/lessons/1-1-group1/");
     await expect(page.getByRole("heading", { name: "Launch the mission" })).toBeVisible();
     await expect(page.getByText(/Engineers on Station Helios/)).toBeVisible();
+    await expect(page.getByLabel("Notice", { exact: true })).toHaveCount(0);
+    await expect(page.getByLabel("Wonder", { exact: true })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: /^I (notice|wonder)/i })).toHaveCount(0);
 
     await page.getByRole("button", { name: "I can try with support" }).first().click();
     await page.getByRole("button", { name: "Build it together →" }).click();
@@ -37,6 +40,8 @@ test.describe("small-group guided math studio", () => {
     await expect(page.getByRole("heading", { name: "Defend it to a skeptic" })).toBeVisible();
     await expect(page.getByText(/Conjecturer: make the claim/)).toBeVisible();
     await expect(page.getByText(/Teacher studio guide|Listen for during team talk/)).toHaveCount(0);
+    await expect(page.getByLabel("Predict", { exact: true })).toHaveCount(0);
+    await expect(page.getByLabel("Test", { exact: true })).toHaveCount(0);
 
     const equation = page.getByRole("button", { name: "Equation: open definition" }).first();
     await equation.click();
