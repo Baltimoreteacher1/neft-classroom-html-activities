@@ -1,4 +1,5 @@
 import { el } from "./small-group-ui.js";
+import { configureVocabImage } from "./vocab-images.js";
 
 const FORBIDDEN_SELECTION =
   "button, input, textarea, select, dialog, .sg-annotation-tools, .sg-teacher, .sg-facilitation, .sg-evidence-card";
@@ -134,6 +135,7 @@ function createVocabularyDialog() {
     </div>
     <h2 id="sg-vocab-dialog-title"></h2>
     <div class="sg-vocab-dialog-grid">
+      <img alt="" width="320" height="220" />
       <div>
         <div class="sg-vocab-language" lang="en">
           <div class="sg-vocab-simple">English</div>
@@ -172,6 +174,7 @@ function openVocabulary(dialog, word, trigger) {
   dialog.querySelector(".sg-vocab-term-es").textContent = word.termEs || "";
   const example = dialog.querySelector(".sg-vocab-example");
   example.textContent = word.visual || `Look for ${word.term.toLowerCase()} in the lesson model.`;
+  configureVocabImage(dialog.querySelector("img"), word, { eager: true });
   dialog.addEventListener("close", () => trigger.focus(), { once: true });
   dialog.showModal();
   dialog.querySelector(".sg-vocab-close").focus();

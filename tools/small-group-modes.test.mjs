@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { JSDOM } from "jsdom";
 import { isRight } from "../engine/core/small-group-answers.js";
+import { resolveVocabImage } from "../engine/core/vocab-images.js";
 import { onRequest as middleware } from "../functions/_middleware.js";
 import { onRequest as teacherRouteHandler } from "../functions/teacher-small-group/[[path]].js";
 
@@ -87,6 +88,13 @@ for (const lessonId of readdirSync(new URL("../lessons", import.meta.url)).filte
     assert.doesNotMatch(String(item.answer), /NaN|undefined|Infinity/);
     assert.ok(item.visual?.kind, `${lessonId}/${item.id} needs a visual model`);
     assert.ok(item.steps?.length >= 2, `${lessonId}/${item.id} needs guided steps`);
+  }
+  for (const word of config.vocabulary || []) {
+    const imagePath = resolveVocabImage(word.term, word.image);
+    assert.ok(
+      existsSync(new URL(`..${imagePath}`, import.meta.url)),
+      `${lessonId}/${word.term} is missing ${imagePath}`,
+    );
   }
   if (parentId === "10-3") {
     assert.ok(
@@ -183,11 +191,18 @@ assert.ok(
   firstGuided?.querySelector(".sg-clear-model"),
   "the math tool needs a clear/retry control",
 );
-// Images are removed by design: only problem-related SVG models may render.
+// Vocabulary keeps its illustrations (word + definition + image); everywhere
+// else, only problem-related SVG models may render — no photos or decor.
+const vocabCardImages = [...document.querySelectorAll("#sg-vocab .sg-vcard img")];
+assert.equal(vocabCardImages.length, 4, "every vocabulary card needs an illustration");
+for (const image of vocabCardImages) {
+  assert.match(image.getAttribute("src"), /^\/assets\/vocab-images\/[a-z0-9-]+\.svg$/);
+  assert.ok(image.getAttribute("alt"), "vocabulary images need useful alternative text");
+}
 assert.equal(
-  document.querySelectorAll("#app img, dialog img").length,
+  [...document.querySelectorAll("#app img")].filter((image) => !image.closest(".sg-vcard")).length,
   0,
-  "no raster/illustration images anywhere in the student studio",
+  "no images outside vocabulary cards (mission photos stay removed)",
 );
 assert.ok(
   document.querySelector(".sg-meter-fill"),

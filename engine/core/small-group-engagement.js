@@ -8,6 +8,7 @@ import {
   studentVoice,
   VOCAB_LANGS,
 } from "./small-group-ui.js";
+import { configureVocabImage } from "./vocab-images.js";
 
 const confidenceOptions = [
   { value: 1, emoji: "🌱", label: "I need a model" },
@@ -199,6 +200,13 @@ export function createVocabularySection(config, onDone, store = null) {
     grid.innerHTML = "";
     words.forEach((word) => {
       const card = el("article", "sg-vcard");
+      // Vocabulary keeps its illustration (Joel directive 2026-07-16: word +
+      // definition + image); the resolver supplies loading/fallback states.
+      const picture = el("div", "sg-vcard-picture");
+      const image = document.createElement("img");
+      configureVocabImage(image, word);
+      picture.appendChild(image);
+      card.appendChild(picture);
       card.appendChild(el("div", "sg-vterm", esc(word.term)));
       const secondaryTerm = currentLang && word[`term${currentLang.suffix}`];
       if (secondaryTerm) {

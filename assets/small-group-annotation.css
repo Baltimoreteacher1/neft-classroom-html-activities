@@ -193,9 +193,29 @@
 
 .sg-vocab-dialog-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(210px, 0.8fr) minmax(250px, 1.2fr);
   gap: 22px;
   align-items: center;
+}
+
+.sg-vocab-dialog img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--sg-line);
+  border-radius: 18px;
+  background: var(--sg-soft);
+  object-fit: contain;
+  transition: opacity 0.18s ease;
+}
+
+.sg-vocab-dialog img[data-image-state="loading"] {
+  opacity: 0.35;
+}
+
+.sg-vocab-dialog img[data-image-state="ready"],
+.sg-vocab-dialog img[data-image-state="fallback"] {
+  opacity: 1;
 }
 
 .sg-vocab-definition {
@@ -245,6 +265,11 @@
 
   .sg-vocab-dialog-grid {
     grid-template-columns: 1fr;
+  }
+
+  .sg-vocab-dialog img {
+    max-height: 230px;
+    object-fit: contain;
   }
 }
 
