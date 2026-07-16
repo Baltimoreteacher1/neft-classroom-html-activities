@@ -1,0 +1,267 @@
+.sg-annotation-tools {
+  position: sticky;
+  top: 68px;
+  z-index: 24;
+  display: grid;
+  grid-template-columns: minmax(190px, 1fr) auto;
+  gap: 8px 18px;
+  align-items: center;
+  margin: -15px 0 28px;
+  padding: 12px 14px;
+  border: 2px solid color-mix(in srgb, var(--sg) 55%, white);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 9px 24px rgba(23, 32, 51, 0.12);
+  backdrop-filter: blur(12px);
+}
+
+.sg-annotation-copy {
+  display: grid;
+  line-height: 1.25;
+}
+
+.sg-annotation-copy strong {
+  color: var(--sg-deep);
+  font-family: "Nunito", sans-serif;
+  font-size: 16px;
+}
+
+.sg-annotation-copy span,
+.sg-annotation-status {
+  color: var(--sg-muted);
+  font-size: 13px;
+}
+
+.sg-annotation-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.sg-annotation-btn {
+  min-height: 44px;
+  padding: 7px 11px;
+  border: 2px solid var(--sg-line);
+  border-radius: 10px;
+  color: var(--sg-text);
+  background: #fff;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.sg-annotation-btn:hover:not(:disabled) {
+  border-color: var(--sg);
+  transform: translateY(-1px);
+}
+
+.sg-annotation-btn.highlight {
+  border-color: #d09b00;
+  background: #fff3a6;
+}
+
+.sg-annotation-btn.bold b {
+  display: inline-grid;
+  width: 23px;
+  height: 23px;
+  place-items: center;
+  border-radius: 6px;
+  color: #fff;
+  background: var(--sg-deep);
+}
+
+.sg-annotation-btn.quiet {
+  color: var(--sg-muted);
+  background: #f7f8fa;
+}
+
+.sg-annotation-btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.sg-annotation-status {
+  grid-column: 1 / -1;
+  min-height: 18px;
+  font-weight: 700;
+}
+
+.sg-student-highlight {
+  padding: 0.04em 0.12em;
+  border-radius: 0.2em;
+  color: inherit;
+  background: #ffe36d;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.sg-student-bold {
+  color: var(--sg-deep);
+  font-weight: 900;
+}
+
+.sg-vocab-inline {
+  display: inline;
+  margin: 0;
+  padding: 0 0.08em;
+  border: 0;
+  border-radius: 4px;
+  color: inherit;
+  background: color-mix(in srgb, var(--sg-soft) 72%, white);
+  font: inherit;
+  font-weight: 800;
+  line-height: inherit;
+  text-align: inherit;
+  text-decoration: underline 3px var(--sg-pop);
+  text-underline-offset: 0.18em;
+  cursor: help;
+}
+
+.sg-vocab-inline:hover {
+  color: var(--sg-deep);
+  background: color-mix(in srgb, var(--sg-pop) 25%, white);
+}
+
+.sg-hero .sg-vocab-inline {
+  color: var(--sg-deep);
+  background: #fff;
+}
+
+.sg-vocab-dialog {
+  width: min(720px, calc(100% - 28px));
+  max-height: calc(100vh - 28px);
+  overflow: auto;
+  padding: 22px;
+  border: 3px solid var(--sg);
+  border-radius: 22px;
+  color: var(--sg-text);
+  background: #fff;
+  box-shadow: 0 24px 70px rgba(10, 25, 50, 0.32);
+}
+
+.sg-vocab-dialog::backdrop {
+  background: rgba(10, 20, 35, 0.68);
+  backdrop-filter: blur(3px);
+}
+
+.sg-vocab-dialog-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+}
+
+.sg-vocab-dialog-kicker,
+.sg-vocab-simple {
+  color: var(--sg);
+  font-family: "Nunito", sans-serif;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sg-vocab-close {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border: 2px solid var(--sg-line);
+  border-radius: 50%;
+  color: var(--sg-deep);
+  background: #fff;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.sg-vocab-dialog h2 {
+  margin: 4px 0 18px;
+  color: var(--sg-deep);
+  font-size: clamp(28px, 5vw, 42px);
+}
+
+.sg-vocab-dialog-grid {
+  display: grid;
+  grid-template-columns: minmax(210px, 0.8fr) minmax(250px, 1.2fr);
+  gap: 22px;
+  align-items: center;
+}
+
+.sg-vocab-dialog img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--sg-line);
+  border-radius: 18px;
+  background: var(--sg-soft);
+}
+
+.sg-vocab-definition {
+  margin: 5px 0 0;
+  color: var(--sg-deep);
+  font-size: 21px;
+  font-weight: 800;
+  line-height: 1.38;
+}
+
+.sg-vocab-language {
+  margin-bottom: 14px;
+  padding: 11px 13px;
+  border: 1px solid var(--sg-line);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.sg-vocab-language[lang="es"] {
+  background: var(--sg-soft);
+}
+
+.sg-vocab-example-wrap {
+  padding: 12px 14px;
+  border-left: 5px solid var(--sg-pop);
+  border-radius: 9px;
+  background: var(--sg-soft);
+}
+
+.sg-vocab-example-wrap p {
+  margin: 4px 0 0;
+}
+
+@media (max-width: 760px) {
+  .sg-annotation-tools {
+    position: static;
+    grid-template-columns: 1fr;
+    margin-top: -14px;
+  }
+
+  .sg-annotation-status {
+    grid-column: auto;
+  }
+
+  .sg-vocab-dialog-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sg-vocab-dialog img {
+    max-height: 230px;
+    object-fit: contain;
+  }
+}
+
+@media (max-width: 420px) {
+  .sg-annotation-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .sg-annotation-btn {
+    width: 100%;
+  }
+}
+
+@media print {
+  .sg-annotation-tools,
+  .sg-vocab-dialog {
+    display: none !important;
+  }
+}

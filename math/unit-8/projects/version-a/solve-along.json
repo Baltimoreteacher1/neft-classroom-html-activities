@@ -1,0 +1,184 @@
+{
+  "version": 1,
+  "solves": [
+    {
+      "step": "step-3",
+      "title": {
+        "en": "Crack the Lock Equation",
+        "es": "Descifra la ecuación del candado"
+      },
+      "prompt": {
+        "en": "The clue says x + 7 = 20. Solve for x to reveal the lock code.",
+        "es": "La pista dice x + 7 = 20. Resuelve para x y revela el código del candado."
+      },
+      "steps": [
+        {
+          "do": {
+            "en": "Write the equation.",
+            "es": "Escribe la ecuación."
+          },
+          "math": "x + 7 = 20",
+          "why": {
+            "en": "You want x alone on one side.",
+            "es": "Quieres x sola en un lado."
+          }
+        },
+        {
+          "do": {
+            "en": "Undo +7 on both sides.",
+            "es": "Deshaz +7 en ambos lados."
+          },
+          "math": "x + 7 − 7 = 20 − 7",
+          "why": {
+            "en": "Subtract 7 — the inverse of adding 7 — from both sides.",
+            "es": "Resta 7 — la inversa de sumar 7 — en ambos lados."
+          }
+        },
+        {
+          "do": {
+            "en": "Read the answer.",
+            "es": "Lee la respuesta."
+          },
+          "math": "x = 13",
+          "why": {
+            "en": "The scale stays balanced, so x = 13.",
+            "es": "La balanza queda equilibrada, así que x = 13."
+          }
+        }
+      ],
+      "answer": {
+        "en": "The lock code is x = 13.",
+        "es": "El código del candado es x = 13."
+      },
+      "yourTurn": {
+        "items": [
+          {
+            "ask": {
+              "en": "Solve x + 9 = 25. What is x?",
+              "es": "Resuelve x + 9 = 25. ¿Cuánto vale x?"
+            },
+            "unit": {
+              "en": "",
+              "es": ""
+            },
+            "answer": 16,
+            "expr": "25 - 9",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Subtract 9 from both sides.",
+                  "es": "Resta 9 en ambos lados."
+                },
+                "math": "x = 25 − 9",
+                "why": {
+                  "en": "Undo the +9.",
+                  "es": "Deshaz el +9."
+                }
+              },
+              {
+                "do": {
+                  "en": "Simplify.",
+                  "es": "Simplifica."
+                },
+                "math": "x = 16",
+                "why": {
+                  "en": "x is 16.",
+                  "es": "x es 16."
+                }
+              }
+            ]
+          },
+          {
+            "ask": {
+              "en": "Solve x + 5 = 12. What is x?",
+              "es": "Resuelve x + 5 = 12. ¿Cuánto vale x?"
+            },
+            "unit": {
+              "en": "",
+              "es": ""
+            },
+            "answer": 7,
+            "expr": "12 - 5",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Subtract 5 from both sides.",
+                  "es": "Resta 5 en ambos lados."
+                },
+                "math": "x = 12 − 5 = 7",
+                "why": {
+                  "en": "Undo the + 5.",
+                  "es": "Deshaz el + 5."
+                }
+              }
+            ]
+          },
+          {
+            "ask": {
+              "en": "Solve x + 11 = 20. What is x?",
+              "es": "Resuelve x + 11 = 20. ¿Cuánto vale x?"
+            },
+            "unit": {
+              "en": "",
+              "es": ""
+            },
+            "answer": 9,
+            "expr": "20 - 11",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Subtract 11 from both sides.",
+                  "es": "Resta 11 en ambos lados."
+                },
+                "math": "x = 20 − 11 = 9",
+                "why": {
+                  "en": "Undo the + 11.",
+                  "es": "Deshaz el + 11."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "errorChecks": [
+    {
+      "step": "step-3",
+      "title": {
+        "en": "Which inverse undoes + 7?",
+        "es": "¿Qué inversa deshace + 7?"
+      },
+      "prompt": {
+        "en": "Someone solved x + 7 = 20 for the lock code:",
+        "es": "Alguien resolvió x + 7 = 20 para el código del candado:"
+      },
+      "work": [
+        {
+          "math": "x + 7 = 20"
+        },
+        {
+          "math": "x + 7 + 7 = 20 + 7"
+        },
+        {
+          "math": "x = 27"
+        }
+      ],
+      "flawIndex": 1,
+      "explanation": {
+        "en": "To undo + 7, SUBTRACT 7 from both sides (the inverse operation): x = 20 − 7 = 13.",
+        "es": "Para deshacer + 7, RESTA 7 en ambos lados (la operación inversa): x = 20 − 7 = 13."
+      },
+      "fix": {
+        "math": "x = 20 − 7 = 13",
+        "why": {
+          "en": "Use the opposite operation.",
+          "es": "Usa la operación opuesta."
+        }
+      }
+    }
+  ]
+}

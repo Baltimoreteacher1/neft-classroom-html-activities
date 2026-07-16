@@ -1,3 +1,4 @@
+import { normalizeCopyOverrides } from "../../../curriculum/family-connections/shared/copy-defaults.js";
 import {
   createDefaultSnapshot,
   DAYS,
@@ -119,6 +120,7 @@ export function normalizeSnapshot(input) {
     "announcements",
     "resources",
     "integrations",
+    "copy",
   ]);
   if (Object.keys(input).some((key) => !allowedFields.has(key))) {
     fail("The draft contains unsupported fields.");
@@ -171,6 +173,7 @@ export function normalizeSnapshot(input) {
       .map(normalizeResource)
       .filter((item) => item.title && item.url),
     integrations: { classDojoUrl, canvasUrl },
+    copy: normalizeCopyOverrides(input.copy),
   };
 }
 

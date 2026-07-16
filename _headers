@@ -44,6 +44,14 @@
 /assets/*
   Cache-Control: public, max-age=0, must-revalidate
 
+# Curriculum Hub HTML: never reuse a stored document. The hub's lesson menus
+# are assembled from inline page data, so serving fresh HTML is the cache-bust
+# boundary that guarantees newly organized lessons appear on every visit.
+/curriculum/
+  Cache-Control: no-store
+/curriculum/index.html
+  Cache-Control: no-store
+
 # ACCESS Practice Lab HTML shell: NEVER cache the entry pages, so a deploy is
 # seen immediately (the versioned ?v= app.js/data underneath still cache fine).
 # This is the SPA hub + the clean activity/test URLs served by the Pages Function.

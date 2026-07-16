@@ -1,3 +1,4 @@
+import { translationsEs } from "./shared/copy-defaults.js";
 import { createDefaultSnapshot, resolveSection, safeExternalUrl } from "./shared/model.js";
 import {
   familyWeekSpeech,
@@ -12,42 +13,7 @@ const MANIFEST_URL = "/data/curriculum-manifest.json";
 const PUBLISHED_URL = "/api/family-connections/published";
 const PREFERENCE_KEY = "eduwonder.familyConnections.preferences.v1";
 
-const translations = {
-  es: {
-    eyebrow: "Conexión con las familias",
-    title: "Esta semana, de un vistazo.",
-    lede: "Vea lo que su estudiante está aprendiendo y elija una manera sencilla de practicar juntos.",
-    promiseTitle: "No necesita enseñar la lección.",
-    promiseBody: "Pregunte qué nota su estudiante, escuche la estrategia y anime su esfuerzo.",
-    weekEyebrow: "Empiece aquí",
-    weekTitle: "Esta semana en matemáticas",
-    classLabel: "Clase",
-    readWeek: "Escuchar",
-    updatesEyebrow: "Desde el salón",
-    updatesTitle: "Noticias para las familias",
-    homeworkEyebrow: "Opcional y sin calificación",
-    homeworkTitle: "Práctica familiar opcional",
-    homeworkIntro: "Esto es aparte de la tarea regular de su estudiante. Úselo solo cuando funcione para su familia, como una oportunidad para repasar o practicar juntos. No se califica.",
-    browsePractice: "Ver la práctica familiar opcional",
-    browsePracticeHint: "Busque cualquier lección por número o tema",
-    searchLabel: "Buscar lecciones",
-    unitLabel: "Unidad",
-    supportEyebrow: "Tres maneras de ayudar",
-    supportTitle: "Pregunte. Escuche. Anime.",
-    askTitle: "Pregunte",
-    askBody: "“¿Qué notas?”",
-    listenTitle: "Escuche",
-    listenBody: "Deje que su estudiante explique una estrategia.",
-    encourageTitle: "Anime",
-    encourageBody: "Elogie el esfuerzo. Revisaremos las matemáticas en la escuela.",
-    aiLink: "Abrir la guía familiar de IA →",
-    schoolOptionBody: "Opción equivalente en la escuela: Los estudiantes pueden usar la misma práctica con un adulto de confianza en la escuela.",
-    gradingTitle: "La participación familiar no se califica.",
-    connectEyebrow: "Sus preguntas son bienvenidas",
-    connectTitle: "Sigamos conversando.",
-    connectBody: "Use el canal familiar de su escuela para preguntar o compartir lo que notó su estudiante.",
-  },
-};
+const translations = { es: translationsEs };
 
 const state = {
   lessons: [],
@@ -64,7 +30,10 @@ const announce = (message) => {
 
 function loadPreferences() {
   try {
-    state.preferences = { ...state.preferences, ...JSON.parse(localStorage.getItem(PREFERENCE_KEY)) };
+    state.preferences = {
+      ...state.preferences,
+      ...JSON.parse(localStorage.getItem(PREFERENCE_KEY)),
+    };
   } catch {}
   applyPreferences();
 }
@@ -83,12 +52,14 @@ function applyPreferences() {
   byId("contrast-toggle").setAttribute("aria-pressed", String(state.preferences.highContrast));
   byId("language-toggle").setAttribute("aria-pressed", String(state.preferences.language === "es"));
   byId("language-toggle").textContent = state.preferences.language === "es" ? "English" : "Español";
+  const publishedEdits = state.snapshot?.copy;
+  const lang = state.preferences.language;
   document.querySelectorAll("[data-i18n]").forEach((node) => {
+    const key = node.dataset.i18n;
     const original = node.dataset.en ?? node.textContent.trim();
     node.dataset.en = original;
-    node.textContent = state.preferences.language === "es"
-      ? translations.es[node.dataset.i18n] ?? original
-      : original;
+    const base = lang === "es" ? (translations.es[key] ?? original) : original;
+    node.textContent = publishedEdits?.[lang]?.[key] ?? base;
   });
 }
 
@@ -161,7 +132,8 @@ async function load() {
     state.lessons = manifestResult.value.lessons ?? [];
     populateUnits();
   } else {
-    byId("week-data-status").textContent = "Lesson links are temporarily unavailable. Please refresh to try again.";
+    byId("week-data-status").textContent =
+      "Lesson links are temporarily unavailable. Please refresh to try again.";
   }
   if (publicationResult.status === "fulfilled" && publicationResult.value.published) {
     state.snapshot = publicationResult.value.published;
@@ -174,6 +146,8 @@ async function load() {
       : "Family resources are temporarily unavailable. Please refresh to try again.";
   }
   renderExperience();
+  // Re-apply wording now that published copy overrides have loaded.
+  applyPreferences();
 }
 
 function bindEvents() {
@@ -182,16 +156,21 @@ function bindEvents() {
     renderExperience();
   });
   for (const id of ["homework-search", "unit-filter"]) {
-    byId(id).addEventListener(id === "homework-search" ? "input" : "change", () => renderHomeworkLibrary(true));
+    byId(id).addEventListener(id === "homework-search" ? "input" : "change", () =>
+      renderHomeworkLibrary(true),
+    );
   }
   byId("load-more").addEventListener("click", () => {
     state.visibleHomework += 12;
     renderHomeworkLibrary();
   });
   byId("read-week").addEventListener("click", () => {
-    if (!("speechSynthesis" in window)) return announce("Read aloud is not available in this browser.");
+    if (!("speechSynthesis" in window))
+      return announce("Read aloud is not available in this browser.");
     window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(familyWeekSpeech(state.snapshot, state.lessons, state.sectionId));
+    const utterance = new SpeechSynthesisUtterance(
+      familyWeekSpeech(state.snapshot, state.lessons, state.sectionId),
+    );
     utterance.lang = state.preferences.language === "es" ? "es-US" : "en-US";
     window.speechSynthesis.speak(utterance);
     announce("Reading this week aloud.");

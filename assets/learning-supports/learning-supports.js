@@ -141,7 +141,7 @@
       // Force-student always wins; there is no URL backdoor INTO teacher mode.
       if (params.get("student") === "1" || params.get("teacher") === "0") return false;
       return localStorage.getItem(TEACHER_MODE_KEY) === "1";
-    } catch (e) {
+    } catch (_e) {
       return false;
     }
   }
@@ -156,7 +156,7 @@
   function isOverlaysCompact() {
     try {
       return localStorage.getItem(OVERLAYS_COMPACT_KEY) === "1";
-    } catch (e) {
+    } catch (_e) {
       return false;
     }
   }
@@ -176,7 +176,7 @@
   function setOverlaysCompact(on) {
     try {
       localStorage.setItem(OVERLAYS_COMPACT_KEY, on ? "1" : "0");
-    } catch (e) {
+    } catch (_e) {
       /* storage blocked — applies for this page only */
     }
     applyOverlaysCompact(on);
@@ -985,7 +985,7 @@
       studentTools.classList.toggle("is-collapsed", collapsed);
       try {
         localStorage.setItem(DOCK_COLLAPSE_KEY, collapsed ? "1" : "0");
-      } catch (e) {
+      } catch (_e) {
         /* private mode — non-fatal */
       }
     }
@@ -998,7 +998,7 @@
     try {
       if (localStorage.getItem(DOCK_COLLAPSE_KEY) !== "0")
         studentTools.classList.add("is-collapsed");
-    } catch (e) {
+    } catch (_e) {
       studentTools.classList.add("is-collapsed");
     }
 
@@ -1247,6 +1247,11 @@
     const hasAnyActive = Object.values(activeProfiles).some(Boolean);
     const toolsDock = document.querySelector("[data-ewl-supports-tools]");
     if (!toolsDock) return;
+
+    // A personalized launch is an explicit request for these controls. Open
+    // the rail so the assigned supports are immediately usable; ordinary
+    // lesson visits still keep the compact, non-blocking default above.
+    if (hasAnyActive) toolsDock.classList.remove("is-collapsed");
 
     PROFILE_KEYS.forEach((key) => {
       const checkbox = document.getElementById(`ewl-profile-${key}`);
@@ -1950,7 +1955,7 @@
   }
 
   // High-contrast mode: boost text/background contrast on the lesson content.
-  function toggleHighContrast(e) {
+  function _toggleHighContrast(e) {
     highContrast = !highContrast;
     document.body.classList.toggle("ewl-supports-contrast-active", highContrast);
     const btn = e.currentTarget;
@@ -3107,6 +3112,10 @@
     dock.style.right = isTeacherMode() ? "52px" : "";
     v2EnsureIdentityChip(dock, meLabel);
     v2EnsureMyLessonsChip(dock, lessons);
+    // Roster and LMS assignments are personalized launches too. Keep their
+    // tools and lesson chip exposed instead of trapping them behind the
+    // generic collapsed state chosen for an unassigned lesson visit.
+    if (anyInteractive || meLabel) dock.classList.remove("is-collapsed");
     // Keep the rail visible whenever an identity is applied — even a
     // passive-only (or empty) assignment must leave the "👤" switch chip
     // reachable, or a shared-device student inherits the wrong identity with
@@ -3227,7 +3236,7 @@
 
   // Small "who am I" chip at the top of the student rail: shows the picked
   // initials and lets a student on a shared Chromebook switch identity.
-  function v2EnsureIdentityChip(dock, meLabel) {
+  function v2EnsureIdentityChip(_dock, _meLabel) {
     return; // Completely disabled face restart chip
   }
 

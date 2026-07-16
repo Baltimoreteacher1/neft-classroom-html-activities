@@ -1,0 +1,184 @@
+{
+  "version": 1,
+  "solves": [
+    {
+      "step": "step-2",
+      "title": {
+        "en": "How Much Is Left to Raise?",
+        "es": "¿Cuánto falta por recaudar?"
+      },
+      "prompt": {
+        "en": "The goal is $150 and you have raised $90. Solve 90 + x = 150 to find how much is left.",
+        "es": "La meta es $150 y has recaudado $90. Resuelve 90 + x = 150 para hallar cuánto falta."
+      },
+      "steps": [
+        {
+          "do": {
+            "en": "Write the equation.",
+            "es": "Escribe la ecuación."
+          },
+          "math": "90 + x = 150",
+          "why": {
+            "en": "x is the amount still needed.",
+            "es": "x es la cantidad que aún falta."
+          }
+        },
+        {
+          "do": {
+            "en": "Subtract 90 from both sides.",
+            "es": "Resta 90 en ambos lados."
+          },
+          "math": "x = 150 − 90",
+          "why": {
+            "en": "Undo the +90 to isolate x.",
+            "es": "Deshaz el +90 para despejar x."
+          }
+        },
+        {
+          "do": {
+            "en": "Simplify.",
+            "es": "Simplifica."
+          },
+          "math": "x = 60",
+          "why": {
+            "en": "You still need $60.",
+            "es": "Aún necesitas $60."
+          }
+        }
+      ],
+      "answer": {
+        "en": "You still need $60.",
+        "es": "Aún necesitas $60."
+      },
+      "yourTurn": {
+        "items": [
+          {
+            "ask": {
+              "en": "Goal $200, raised $130. Solve 130 + x = 200. How much is left?",
+              "es": "Meta $200, recaudado $130. Resuelve 130 + x = 200. ¿Cuánto falta?"
+            },
+            "unit": {
+              "en": "$",
+              "es": "$"
+            },
+            "answer": 70,
+            "expr": "200 - 130",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Subtract 130 from both sides.",
+                  "es": "Resta 130 en ambos lados."
+                },
+                "math": "x = 200 − 130",
+                "why": {
+                  "en": "Isolate x.",
+                  "es": "Despeja x."
+                }
+              },
+              {
+                "do": {
+                  "en": "Simplify.",
+                  "es": "Simplifica."
+                },
+                "math": "x = 70",
+                "why": {
+                  "en": "$70 is left to raise.",
+                  "es": "Faltan $70 por recaudar."
+                }
+              }
+            ]
+          },
+          {
+            "ask": {
+              "en": "Solve 90 + x = 140. What is x?",
+              "es": "Resuelve 90 + x = 140. ¿Cuánto vale x?"
+            },
+            "unit": {
+              "en": "$",
+              "es": "$"
+            },
+            "answer": 50,
+            "expr": "140 - 90",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Subtract 90 from both sides.",
+                  "es": "Resta 90 en ambos lados."
+                },
+                "math": "x = 140 − 90 = 50",
+                "why": {
+                  "en": "Undo the + 90.",
+                  "es": "Deshaz el + 90."
+                }
+              }
+            ]
+          },
+          {
+            "ask": {
+              "en": "Solve 125 + x = 300. What is x?",
+              "es": "Resuelve 125 + x = 300. ¿Cuánto vale x?"
+            },
+            "unit": {
+              "en": "$",
+              "es": "$"
+            },
+            "answer": 175,
+            "expr": "300 - 125",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Subtract 125 from both sides.",
+                  "es": "Resta 125 en ambos lados."
+                },
+                "math": "x = 300 − 125 = 175",
+                "why": {
+                  "en": "Undo the + 125.",
+                  "es": "Deshaz el + 125."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "errorChecks": [
+    {
+      "step": "step-2",
+      "title": {
+        "en": "Which number gets subtracted?",
+        "es": "¿Qué número se resta?"
+      },
+      "prompt": {
+        "en": "Someone solved 90 + x = 150 for how much is left to raise:",
+        "es": "Alguien resolvió 90 + x = 150 para cuánto falta recaudar:"
+      },
+      "work": [
+        {
+          "math": "90 + x = 150"
+        },
+        {
+          "math": "x = 90 − 150"
+        },
+        {
+          "math": "x = −60"
+        }
+      ],
+      "flawIndex": 1,
+      "explanation": {
+        "en": "Subtract 90 from the GOAL: x = 150 − 90 = 60. A fundraiser can't need −$60.",
+        "es": "Resta 90 de la META: x = 150 − 90 = 60. Una recaudación no puede necesitar −$60."
+      },
+      "fix": {
+        "math": "x = 150 − 90 = 60",
+        "why": {
+          "en": "Subtract the known part from the total.",
+          "es": "Resta la parte conocida del total."
+        }
+      }
+    }
+  ]
+}

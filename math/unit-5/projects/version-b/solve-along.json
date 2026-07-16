@@ -1,0 +1,159 @@
+{
+  "version": 1,
+  "solves": [
+    {
+      "step": "step-2",
+      "title": {
+        "en": "Cost of the Flooring",
+        "es": "Costo del piso"
+      },
+      "prompt": {
+        "en": "Flooring costs $2.50 per square foot. A room needs 12 square feet. What is the cost?",
+        "es": "El piso cuesta $2.50 por pie cuadrado. Una habitación necesita 12 pies cuadrados. ¿Cuál es el costo?"
+      },
+      "steps": [
+        {
+          "do": {
+            "en": "Multiply area by price per sq ft.",
+            "es": "Multiplica el área por el precio por pie²."
+          },
+          "math": "12 × 2.50",
+          "why": {
+            "en": "Cost is the area times the price of each square foot.",
+            "es": "El costo es el área por el precio de cada pie cuadrado."
+          }
+        },
+        {
+          "do": {
+            "en": "Compute the total.",
+            "es": "Calcula el total."
+          },
+          "math": "= 30.00",
+          "why": {
+            "en": "Twelve square feet at $2.50 each is $30.",
+            "es": "Doce pies cuadrados a $2.50 cada uno son $30."
+          }
+        }
+      ],
+      "answer": {
+        "en": "The flooring costs $30.00.",
+        "es": "El piso cuesta $30.00."
+      },
+      "yourTurn": {
+        "items": [
+          {
+            "ask": {
+              "en": "Paint costs $1.50 per square foot. A wall is 20 square feet. What is the cost?",
+              "es": "La pintura cuesta $1.50 por pie cuadrado. Una pared tiene 20 pies cuadrados. ¿Cuál es el costo?"
+            },
+            "unit": {
+              "en": "$",
+              "es": "$"
+            },
+            "answer": 30,
+            "expr": "20*1.50",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Multiply area by unit price.",
+                  "es": "Multiplica el área por el precio unitario."
+                },
+                "math": "20 × 1.50 = 30",
+                "why": {
+                  "en": "Square feet times price each.",
+                  "es": "Pies cuadrados por precio de cada uno."
+                }
+              }
+            ]
+          },
+          {
+            "ask": {
+              "en": "$3.00 per sq ft, 15 sq ft — total cost?",
+              "es": "$3.00 por pie², 15 pies² — ¿costo total?"
+            },
+            "unit": {
+              "en": "$",
+              "es": "$"
+            },
+            "answer": 45,
+            "expr": "3*15",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Multiply area by price.",
+                  "es": "Multiplica área por precio."
+                },
+                "math": "15 × 3.00 = 45",
+                "why": {
+                  "en": "Square feet times price each.",
+                  "es": "Pies cuadrados por precio de cada uno."
+                }
+              }
+            ]
+          },
+          {
+            "ask": {
+              "en": "$2.25 per sq ft, 8 sq ft — total cost?",
+              "es": "$2.25 por pie², 8 pies² — ¿costo total?"
+            },
+            "unit": {
+              "en": "$",
+              "es": "$"
+            },
+            "answer": 18,
+            "expr": "2.25*8",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Multiply area by price.",
+                  "es": "Multiplica área por precio."
+                },
+                "math": "8 × 2.25 = 18",
+                "why": {
+                  "en": "Area times unit price.",
+                  "es": "Área por precio unitario."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "errorChecks": [
+    {
+      "step": "step-2",
+      "title": {
+        "en": "Check the decimal place",
+        "es": "Revisa el lugar decimal"
+      },
+      "prompt": {
+        "en": "Someone found the cost of 12 sq ft of flooring at $2.50 per sq ft:",
+        "es": "Alguien calculó el costo de 12 pies² de piso a $2.50 por pie²:"
+      },
+      "work": [
+        {
+          "math": "Cost = 12 × 2.50"
+        },
+        {
+          "math": "= 3.00"
+        }
+      ],
+      "flawIndex": 1,
+      "explanation": {
+        "en": "12 × 2.50 = 30.00, not 3.00 — estimate to check: 12 × 2.5 is about 30.",
+        "es": "12 × 2.50 = 30.00, no 3.00 — estima para revisar: 12 × 2.5 es cerca de 30."
+      },
+      "fix": {
+        "math": "12 × 2.50 = $30.00",
+        "why": {
+          "en": "Estimate to catch a misplaced decimal.",
+          "es": "Estima para detectar un decimal mal colocado."
+        }
+      }
+    }
+  ]
+}

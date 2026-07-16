@@ -1,0 +1,184 @@
+{
+  "version": 1,
+  "solves": [
+    {
+      "step": "step-2",
+      "title": {
+        "en": "Cut-List Pieces",
+        "es": "Piezas de la lista de corte"
+      },
+      "prompt": {
+        "en": "A board is 10 ft long. Each shelf needs 5/4 ft. How many shelves can you cut?",
+        "es": "Una tabla mide 10 pies. Cada estante necesita 5/4 de pie. ¿Cuántos estantes puedes cortar?"
+      },
+      "steps": [
+        {
+          "do": {
+            "en": "Write it as a division.",
+            "es": "Escríbelo como división."
+          },
+          "math": "10 ÷ 5/4",
+          "why": {
+            "en": "Board length divided by the length per shelf.",
+            "es": "Largo de la tabla dividido entre el largo por estante."
+          }
+        },
+        {
+          "do": {
+            "en": "Multiply by the reciprocal.",
+            "es": "Multiplica por el recíproco."
+          },
+          "math": "10 × 4/5",
+          "why": {
+            "en": "Flip the divisor to divide by a fraction.",
+            "es": "Invierte el divisor para dividir entre una fracción."
+          }
+        },
+        {
+          "do": {
+            "en": "Multiply and simplify.",
+            "es": "Multiplica y simplifica."
+          },
+          "math": "40/5 = 8",
+          "why": {
+            "en": "The board yields 8 shelves.",
+            "es": "La tabla da 8 estantes."
+          }
+        }
+      ],
+      "answer": {
+        "en": "You can cut 8 shelves.",
+        "es": "Puedes cortar 8 estantes."
+      },
+      "yourTurn": {
+        "items": [
+          {
+            "ask": {
+              "en": "A 9 ft board is cut into 3/4 ft pieces. How many pieces?",
+              "es": "Una tabla de 9 pies se corta en piezas de 3/4 de pie. ¿Cuántas piezas?"
+            },
+            "unit": {
+              "en": "pieces",
+              "es": "piezas"
+            },
+            "answer": 12,
+            "expr": "9/(3/4)",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Set up the division.",
+                  "es": "Plantea la división."
+                },
+                "math": "9 ÷ 3/4",
+                "why": {
+                  "en": "Length ÷ length per piece.",
+                  "es": "Largo ÷ largo por pieza."
+                }
+              },
+              {
+                "do": {
+                  "en": "Multiply by the reciprocal.",
+                  "es": "Multiplica por el recíproco."
+                },
+                "math": "9 × 4/3 = 36/3 = 12",
+                "why": {
+                  "en": "Flip and multiply.",
+                  "es": "Invierte y multiplica."
+                }
+              }
+            ]
+          },
+          {
+            "ask": {
+              "en": "A 12 ft board, each piece 3/2 ft — how many pieces?",
+              "es": "Tabla de 12 pies, cada pieza 3/2 pies — ¿cuántas piezas?"
+            },
+            "unit": {
+              "en": "pieces",
+              "es": "piezas"
+            },
+            "answer": 8,
+            "expr": "12/(3/2)",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Divide by the fraction.",
+                  "es": "Divide entre la fracción."
+                },
+                "math": "12 ÷ 3/2 = 12 × 2/3 = 8",
+                "why": {
+                  "en": "Multiply by the reciprocal.",
+                  "es": "Multiplica por el recíproco."
+                }
+              }
+            ]
+          },
+          {
+            "ask": {
+              "en": "A 6 ft board, each piece 2/3 ft — how many pieces?",
+              "es": "Tabla de 6 pies, cada pieza 2/3 pies — ¿cuántas piezas?"
+            },
+            "unit": {
+              "en": "pieces",
+              "es": "piezas"
+            },
+            "answer": 9,
+            "expr": "6/(2/3)",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Divide by the fraction.",
+                  "es": "Divide entre la fracción."
+                },
+                "math": "6 ÷ 2/3 = 6 × 3/2 = 9",
+                "why": {
+                  "en": "Flip and multiply.",
+                  "es": "Invierte y multiplica."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "errorChecks": [
+    {
+      "step": "step-2",
+      "title": {
+        "en": "Did they flip the fraction?",
+        "es": "¿Invirtieron la fracción?"
+      },
+      "prompt": {
+        "en": "Someone found how many 5/4-ft shelves fit in a 10 ft board:",
+        "es": "Alguien calculó cuántos estantes de 5/4 pies caben en una tabla de 10 pies:"
+      },
+      "work": [
+        {
+          "math": "10 ÷ 5/4"
+        },
+        {
+          "math": "= 10 × 5/4"
+        },
+        {
+          "math": "= 50/4 = 12.5 shelves"
+        }
+      ],
+      "flawIndex": 1,
+      "explanation": {
+        "en": "Dividing by a fraction means multiplying by its RECIPROCAL: 10 × 4/5, not 10 × 5/4.",
+        "es": "Dividir entre una fracción es multiplicar por su RECÍPROCO: 10 × 4/5, no 10 × 5/4."
+      },
+      "fix": {
+        "math": "10 × 4/5 = 40/5 = 8 shelves",
+        "why": {
+          "en": "Flip the divisor.",
+          "es": "Invierte el divisor."
+        }
+      }
+    }
+  ]
+}

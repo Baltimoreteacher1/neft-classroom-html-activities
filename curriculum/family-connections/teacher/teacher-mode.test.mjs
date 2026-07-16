@@ -30,6 +30,9 @@ for (const contract of [
   'id="publication-history"',
   'id="homework-tools"',
   'id="updates-tools"',
+  'id="wording-tools"',
+  'id="copy-lang"',
+  'id="copy-editor"',
   'id="sharing-tools"',
   'class="teacher-edit-column"',
   'class="teacher-preview-column"',
@@ -41,6 +44,7 @@ for (const contract of [
 assert.match(html, /Draft → Preview → Publish/);
 assert.match(html, /sign-in protected/i);
 assert.match(html, /separate from regular homework/i);
+assert.match(html, /families cannot edit/i);
 assert.match(html, /<meta name="robots" content="noindex,nofollow"\s*\/>/i);
 assert.doesNotMatch(html, /name=".*(?:token|password|secret)/i);
 assert.doesNotMatch(html, /canvasAccessToken/);

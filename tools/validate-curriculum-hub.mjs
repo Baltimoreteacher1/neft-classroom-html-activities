@@ -18,6 +18,7 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const HUB = resolve(ROOT, "curriculum/index.html");
+const HEADERS = resolve(ROOT, "_headers");
 
 const MIN_BYTES = 150000; // hub is ~286KB; a clobber/stub is far smaller
 const MIN_UNITS = 10; // all 10 math units must be present
@@ -34,6 +35,7 @@ if (!existsSync(HUB)) {
 }
 
 const html = readFileSync(HUB, "utf8");
+const headers = readFileSync(HEADERS, "utf8");
 const bytes = statSync(HUB).size;
 const units = (html.match(/class="unit"/g) || []).length;
 const lessonLinks = (html.match(/\/lessons\//g) || []).length;
@@ -89,6 +91,10 @@ check(
   "missing the per-lesson Canvas (SCORM) download button (scorm-lesson-btn)",
 );
 check(/\/api\/scorm\?activity=/.test(html), "missing /api/scorm download link construction");
+check(
+  /(?:^|\n)\/curriculum\/\s*\n\s+Cache-Control:\s*no-store\b/i.test(headers),
+  "curriculum HTML must use Cache-Control: no-store so new lesson ordering appears immediately",
+);
 
 if (failures.length) {
   console.error("✗ Curriculum Hub lock FAILED — the hub looks clobbered/stripped:");

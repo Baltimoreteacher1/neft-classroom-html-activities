@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
+import { COPY_KEYS, translationsEs } from "./copy-defaults.js";
 import {
   buildCanvasAnnouncement,
   buildCanvasExport,
@@ -14,6 +15,12 @@ const manifest = JSON.parse(
   await readFile(new URL("../../../data/curriculum-manifest.json", import.meta.url), "utf8"),
 );
 const lessons = normalizeLessons(manifest.lessons);
+
+assert.ok(COPY_KEYS.includes("browsePractice"));
+assert.ok(COPY_KEYS.includes("askTitle"));
+assert.equal(COPY_KEYS.includes("findHomework"), false);
+assert.match(translationsEs.homeworkTitle, /Práctica familiar opcional/i);
+assert.match(translationsEs.homeworkIntro, /aparte de la tarea regular/i);
 
 assert.equal(lessons.length, 74, "every curriculum lesson should be available");
 assert.equal(lessons[0].id, "1-1");

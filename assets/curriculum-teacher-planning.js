@@ -449,7 +449,11 @@
       ic.setAttribute("aria-hidden", "true");
       ic.textContent = (iconEl && iconEl.textContent.trim()) || (link ? "🔗" : "▦");
       var label = document.createElement("span");
-      label.textContent = titleEl.textContent.trim();
+      // The compact menu and its source card coexist in the DOM. Give the
+      // Gradebook shortcut a concise, distinct label so text locators and
+      // assistive technology do not encounter duplicate names.
+      var title = titleEl.textContent.trim();
+      label.textContent = title === "Gradebook & Save Codes" ? "Gradebook + Save Codes" : title;
       item.appendChild(ic);
       item.appendChild(label);
       menu.appendChild(item);

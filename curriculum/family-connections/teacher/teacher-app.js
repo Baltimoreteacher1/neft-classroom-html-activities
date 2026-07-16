@@ -10,6 +10,7 @@ import {
 import { loadDraft, loadHistory, publishDraft, saveDraft } from "../shared/api-client.js";
 import {
   renderCollection,
+  renderCopyEditor,
   renderFamilyPreview,
   renderLessonPicker,
   renderSectionEditor,
@@ -22,12 +23,14 @@ const state = {
   history: [],
   sectionId: "all-families",
   lessonId: "",
+  copyLang: "en",
   dirty: false,
   previewed: false,
 };
 
 const byId = (id) => document.getElementById(id);
-const section = () => state.draft.sections.find((item) => item.id === state.sectionId) ?? state.draft.sections[0];
+const section = () =>
+  state.draft.sections.find((item) => item.id === state.sectionId) ?? state.draft.sections[0];
 const lesson = () => state.lessons.find((item) => item.id === state.lessonId);
 
 function notify(message) {
@@ -42,12 +45,15 @@ function markDirty(message = "Draft has unpublished changes") {
   state.dirty = true;
   state.previewed = false;
   byId("publish-status").textContent = message;
-  byId("publish-detail").textContent = `Draft revision ${state.draft.revision} · Preview before publishing`;
+  byId("publish-detail").textContent =
+    `Draft revision ${state.draft.revision} · Preview before publishing`;
 }
 
 function updatePublicationStatus() {
   const date = state.draft.publishedAt ? new Date(state.draft.publishedAt) : null;
-  byId("publish-status").textContent = state.dirty ? "Draft has unpublished changes" : "Draft saved";
+  byId("publish-status").textContent = state.dirty
+    ? "Draft has unpublished changes"
+    : "Draft saved";
   byId("publish-detail").textContent = date
     ? `Live version ${state.draft.revision} · ${date.toLocaleString()}`
     : `Draft revision ${state.draft.revision} · Not published yet`;
@@ -135,6 +141,18 @@ function renderCollections() {
   });
 }
 
+function renderCopyPanel() {
+  renderCopyEditor(byId("copy-editor"), state.draft, state.copyLang, setCopyValue);
+}
+
+function setCopyValue(key, value) {
+  const lane = state.draft.copy[state.copyLang];
+  const clean = value.trim();
+  if (clean) lane[key] = clean;
+  else delete lane[key];
+  markDirty(`Page wording updated (${state.copyLang === "es" ? "Español" : "English"})`);
+}
+
 function addAnnouncement() {
   const title = byId("announcement-title").value.trim();
   const body = byId("announcement-body").value.trim();
@@ -152,7 +170,13 @@ function addResource() {
   const url = byId("resource-url").value.trim();
   const valid = /^\/(?!\/)/.test(url) || safeExternalUrl(url);
   if (!title || !valid) return notify("Add a title and a local or https:// resource link.");
-  state.draft.resources.push({ id: `resource-${Date.now()}`, title, description, url, visible: true });
+  state.draft.resources.push({
+    id: `resource-${Date.now()}`,
+    title,
+    description,
+    url,
+    visible: true,
+  });
   for (const id of ["resource-title", "resource-description", "resource-url"]) byId(id).value = "";
   markDirty();
   renderCollections();
@@ -173,7 +197,10 @@ function renderHistory() {
     entry.textContent = `Version ${item.revision} · ${item.publishedAt ? new Date(item.publishedAt).toLocaleString() : "Initial version"}`;
     root.append(entry);
   }
-  if (!state.history.length) root.append(Object.assign(document.createElement("li"), { textContent: "No earlier publications yet." }));
+  if (!state.history.length)
+    root.append(
+      Object.assign(document.createElement("li"), { textContent: "No earlier publications yet." }),
+    );
 }
 
 async function persist() {
@@ -185,7 +212,9 @@ async function persist() {
     return true;
   } catch (error) {
     if (error.code === "revision-conflict") {
-      notify("A newer draft exists. Your edits are still here; reload in another tab before replacing anything.");
+      notify(
+        "A newer draft exists. Your edits are still here; reload in another tab before replacing anything.",
+      );
     } else notify(error.message);
     return false;
   }
@@ -237,35 +266,71 @@ function downloadCanvasExport() {
 }
 
 function bindEvents() {
-  byId("section-editor").addEventListener("change", (event) => { state.sectionId = event.target.value; renderWeekEditor(); });
+  byId("section-editor").addEventListener("change", (event) => {
+    state.sectionId = event.target.value;
+    renderWeekEditor();
+  });
   byId("add-section").addEventListener("click", () => {
     const next = state.draft.sections.length + 1;
     const base = createDefaultSnapshot().sections[0];
-    const added = { ...structuredClone(base), id: `class-${next}`, label: `Class ${next}`, isDefault: false };
+    const added = {
+      ...structuredClone(base),
+      id: `class-${next}`,
+      label: `Class ${next}`,
+      isDefault: false,
+    };
     state.draft.sections.push(added);
     state.sectionId = added.id;
     markDirty();
     renderWeekEditor();
   });
-  for (const [id, key] of [["section-label", "label"], ["week-label", "weekLabel"], ["week-start", "startDate"], ["week-note", "note"]]) {
+  for (const [id, key] of [
+    ["section-label", "label"],
+    ["week-label", "weekLabel"],
+    ["week-start", "startDate"],
+    ["week-note", "note"],
+  ]) {
     byId(id).addEventListener("input", (event) => setSectionValue(key, event.target.value));
   }
   byId("homework-editor-search").addEventListener("input", renderHomeworkPicker);
   byId("homework-form").addEventListener("submit", applyHomework);
   byId("add-announcement").addEventListener("click", addAnnouncement);
   byId("add-resource").addEventListener("click", addResource);
+  byId("copy-lang").addEventListener("change", (event) => {
+    state.copyLang = event.target.value === "es" ? "es" : "en";
+    renderCopyPanel();
+  });
   byId("save-draft").addEventListener("click", persist);
   byId("preview-draft").addEventListener("click", renderPreview);
   byId("publish-draft").addEventListener("click", publish);
-  byId("classdojo-url").addEventListener("input", (event) => { state.draft.integrations.classDojoUrl = event.target.value.trim(); markDirty(); });
-  byId("canvas-url").addEventListener("input", (event) => { state.draft.integrations.canvasUrl = event.target.value.trim(); byId("open-canvas").href = event.target.value || "#"; markDirty(); });
-  byId("copy-canvas-announcement").addEventListener("click", () => copyText(canvasAnnouncement().text, "Canvas announcement"));
+  byId("classdojo-url").addEventListener("input", (event) => {
+    state.draft.integrations.classDojoUrl = event.target.value.trim();
+    markDirty();
+  });
+  byId("canvas-url").addEventListener("input", (event) => {
+    state.draft.integrations.canvasUrl = event.target.value.trim();
+    byId("open-canvas").href = event.target.value || "#";
+    markDirty();
+  });
+  byId("copy-canvas-announcement").addEventListener("click", () =>
+    copyText(canvasAnnouncement().text, "Canvas announcement"),
+  );
   byId("copy-canvas-modules").addEventListener("click", () => {
     const links = buildCanvasModuleLinks(state.draft, state.lessons, state.sectionId);
-    copyText(links.map((item) => `${item.day}: ${item.title}\nLesson: ${item.lessonUrl}\nOptional family practice: ${item.homeworkUrl}`).join("\n\n"), "Canvas module links");
+    copyText(
+      links
+        .map(
+          (item) =>
+            `${item.day}: ${item.title}\nLesson: ${item.lessonUrl}\nOptional family practice: ${item.homeworkUrl}`,
+        )
+        .join("\n\n"),
+      "Canvas module links",
+    );
   });
   byId("download-canvas-json").addEventListener("click", downloadCanvasExport);
-  window.addEventListener("beforeunload", (event) => { if (state.dirty) event.preventDefault(); });
+  window.addEventListener("beforeunload", (event) => {
+    if (state.dirty) event.preventDefault();
+  });
 }
 
 async function initialize() {
@@ -275,7 +340,10 @@ async function initialize() {
     if (!manifestResponse.ok) throw new Error("The curriculum catalog is unavailable.");
     state.lessons = normalizeLessons((await manifestResponse.json()).lessons);
     [state.draft, state.history] = await Promise.all([loadDraft(), loadHistory()]);
-    state.sectionId = state.draft.sections.find((item) => item.isDefault)?.id ?? state.draft.sections[0].id;
+    // Older drafts predate the copy field — ensure both language lanes exist.
+    state.draft.copy = { en: { ...state.draft.copy?.en }, es: { ...state.draft.copy?.es } };
+    state.sectionId =
+      state.draft.sections.find((item) => item.isDefault)?.id ?? state.draft.sections[0].id;
     state.lessonId = state.lessons[0]?.id ?? "";
     byId("classdojo-url").value = state.draft.integrations.classDojoUrl;
     byId("canvas-url").value = state.draft.integrations.canvasUrl;
@@ -284,6 +352,7 @@ async function initialize() {
     renderHomeworkPicker();
     if (state.lessonId) selectLesson(state.lessonId);
     renderCollections();
+    renderCopyPanel();
     renderPreview(false);
     state.previewed = false;
     renderHistory();
