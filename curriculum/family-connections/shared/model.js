@@ -264,7 +264,7 @@ export function buildCanvasRss(snapshot, sectionId) {
   const section = resolveSection(snapshot, sectionId);
   const weekLabel = cleanText(section.week?.label, 80) || "This Week";
   const familyUrl = `${PUBLIC_ORIGIN}/curriculum/family-connections/`;
-  const feedUrl = `${PUBLIC_ORIGIN}/api/family-connections/canvas-feed?section=${encodeURIComponent(section.id)}`;
+  const feedUrl = `${PUBLIC_ORIGIN}/api/family-connections/canvas-feed?section=${encodeURIComponent(section.id)}&v=1`;
   const weekKey = section.week?.startDate || weekLabel.toLowerCase().replace(/[^a-z0-9]+/g, "-");
   const publishedDate = new Date(snapshot?.publishedAt || 0);
   const pubDate = Number.isNaN(publishedDate.getTime())

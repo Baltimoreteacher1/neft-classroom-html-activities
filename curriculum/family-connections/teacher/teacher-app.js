@@ -265,6 +265,7 @@ function canvasAnnouncement() {
 function canvasFeedUrl() {
   const url = new URL("/api/family-connections/canvas-feed", window.location.origin);
   url.searchParams.set("section", state.sectionId);
+  url.searchParams.set("v", "1");
   return url.href;
 }
 

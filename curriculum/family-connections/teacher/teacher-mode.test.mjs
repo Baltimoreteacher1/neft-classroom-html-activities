@@ -71,6 +71,7 @@ assert.match(app, /buildCanvasExport/);
 assert.match(app, /buildCanvasSyncBundle/);
 assert.match(app, /parseCanvasCourseUrl/);
 assert.match(app, /canvas-feed/);
+assert.match(app, /searchParams\.set\("v", "1"\)/);
 assert.match(app, /beforeunload/);
 assert.match(app, /revision-conflict/);
 assert.match(app, /\["week-label", "weekLabel"\]/, "week label must not overwrite the class label");

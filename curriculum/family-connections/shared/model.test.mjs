@@ -100,6 +100,7 @@ assert.match(canvasRss, /<rss version="2\.0"/);
 assert.match(canvasRss, /Family Connections — September 8-12/);
 assert.match(canvasRss, /Optional family practice/);
 assert.match(canvasRss, /https:\/\/eduwonderlab\.com\/curriculum\/family-connections\//);
+assert.match(canvasRss, /canvas-feed\?section=all-families&amp;v=1/);
 assert.doesNotMatch(canvasRss, /<script/i);
 
 console.log("Family publication model tests passed.");
