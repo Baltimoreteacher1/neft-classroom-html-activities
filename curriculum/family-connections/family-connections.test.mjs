@@ -8,6 +8,7 @@ for (const expected of [
   "<!doctype html>",
   '<html lang="en">',
   'class="skip-link"',
+  '<strong>6th-Grade Math</strong>',
   'id="family-week"',
   'class="family-quick-nav"',
   'href="#family-week"',
