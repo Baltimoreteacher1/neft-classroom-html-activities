@@ -35,6 +35,17 @@ Object.assign(sandbox.window, {
 vm.runInNewContext(appJs, sandbox, { filename: "focus-school/app.js" });
 const api = sandbox.window.__FOCUS_SCHOOL_TEST__;
 
+const savedHomeOrder = ["routine", "calendar", "plan", "assignments", "momentum"];
+assert.deepEqual(
+  Array.from(api.focusedHomeOrder(savedHomeOrder, ["plan"], true)),
+  ["routine", "assignments"],
+);
+assert.deepEqual(
+  Array.from(api.focusedHomeOrder(savedHomeOrder, ["plan"], false)),
+  ["routine", "calendar", "assignments", "momentum"],
+);
+assert.deepEqual(savedHomeOrder, ["routine", "calendar", "plan", "assignments", "momentum"]);
+
 assert.equal(api.safeSourceUrl("https://classroom.google.com/c/abc/a/123"), "https://classroom.google.com/c/abc/a/123");
 assert.equal(api.safeSourceUrl("javascript:alert(1)"), "");
 assert.equal(api.safeSourceUrl("http://example.com/work"), "");

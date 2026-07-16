@@ -4534,6 +4534,17 @@
     return [...pinned, ...candidates, TABS.find((tab) => tab[0] === "more")];
   }
 
+  function focusedHomeOrder(homeOrder, hiddenCards, showingWelcome) {
+    const hidden = new Set(Array.isArray(hiddenCards) ? hiddenCards : []);
+    const personalizedOrder = (Array.isArray(homeOrder) ? homeOrder : []).filter(
+      (key) => !hidden.has(key),
+    );
+    const focusedFirstRunOrder = ["routine", "plan", "assignments"].filter(
+      (key) => !hidden.has(key),
+    );
+    return showingWelcome ? focusedFirstRunOrder : personalizedOrder;
+  }
+
   function buildSupportInsights(source) {
     const assignments = Array.isArray(source?.assignments) ? source.assignments : [];
     const classes = Array.isArray(source?.classes) ? source.classes : [];
@@ -4628,15 +4639,13 @@
             : emptyState("📭", "Nothing due in the next week."),
         ),
       };
-      const personalizedOrder = state.settings.homeOrder.filter(
-        (key) => !state.settings.hiddenCards.includes(key),
-      );
-      const focusedFirstRunOrder = ["routine", "plan", "assignments"].filter(
-        (key) => !state.settings.hiddenCards.includes(key),
-      );
       const showingWelcome =
         state.assignments.length === 0 && !state.settings.welcomeDismissed;
-      const order = showingWelcome ? focusedFirstRunOrder : personalizedOrder;
+      const order = focusedHomeOrder(
+        state.settings.homeOrder,
+        state.settings.hiddenCards,
+        showingWelcome,
+      );
 
       let welcomeBanner = "";
       if (showingWelcome) {
@@ -11988,6 +11997,7 @@ ${name}`;
       buildSupportInsights,
       cloud,
       extractActionSteps,
+      focusedHomeOrder,
       live,
       ledgerDayKey,
       mergeAssignmentSteps,
