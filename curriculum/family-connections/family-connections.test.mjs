@@ -38,6 +38,11 @@ assert.match(html, /separate from (?:your student's )?regular homework/i);
 assert.doesNotMatch(html, /answer[ -]?key/i);
 assert.doesNotMatch(html, /id="message-studio"/i);
 assert.doesNotMatch(html, /family-connections\/teacher/i);
+assert.doesNotMatch(
+  html,
+  /href=["']\/curriculum\/?["']/i,
+  "Family Mode must not link families back to the protected curriculum hub",
+);
 assert.doesNotMatch(html, /editor\.js|edit-toggle|contenteditable/i);
 assert.doesNotMatch(html, /name=".*(?:token|password|secret)/i);
 assert.doesNotMatch(html, /fonts\.googleapis\.com|fonts\.gstatic\.com/i);

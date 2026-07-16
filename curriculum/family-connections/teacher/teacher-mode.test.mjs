@@ -11,6 +11,7 @@ for (const contract of [
   'id="save-draft"',
   'id="preview-draft"',
   'id="publish-draft"',
+  'id="teacher-navigation"',
   'id="section-editor"',
   'id="week-label"',
   'id="week-start"',
@@ -43,6 +44,9 @@ for (const contract of [
 
 assert.match(html, /Draft → Preview → Publish/);
 assert.match(html, /sign-in protected/i);
+assert.match(html, />Edit Family Connections</i);
+assert.match(html, /href="\/curriculum\/"[^>]*>[^<]*Curriculum Hub/i);
+assert.match(html, /href="\/curriculum\/family-connections\/"[^>]*>[^<]*View live family page/i);
 assert.match(html, /separate from regular homework/i);
 assert.match(html, /families cannot edit/i);
 assert.match(html, /<meta name="robots" content="noindex,nofollow"\s*\/>/i);
