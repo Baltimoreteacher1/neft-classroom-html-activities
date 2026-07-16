@@ -4,6 +4,8 @@ import { validateSmallGroups } from "./validate-small-group-lessons.mjs";
 
 const html = readFileSync(new URL("../curriculum/index.html", import.meta.url), "utf8");
 const rows = JSON.parse(readFileSync(new URL("./small-group-rows.json", import.meta.url), "utf8"));
+const readLessonConfig = (lessonId) =>
+  JSON.parse(readFileSync(new URL(`../lessons/${lessonId}/config.json`, import.meta.url), "utf8"));
 
 const ok = validateSmallGroups({ html, rows });
 assert.equal(ok.parents, 64);
@@ -28,5 +30,19 @@ assert.throws(
   /must appear in parent, Group 1, Group 2 order/,
   "reordered variants must fail",
 );
+
+for (const lessonId of ["2-3", "2-3-group1", "2-3-group2"]) {
+  const config = readLessonConfig(lessonId);
+  const exitTicket = config.reflect.exitTicket;
+  assert.match(config.connect.scenario, /5\/6/);
+  assert.match(config.connect.scenario, /1\/12/);
+  assert.match(exitTicket.stem, /5\/6 ÷ 1\/12/, `${lessonId} problem must match its scenario`);
+  assert.match(
+    exitTicket.explanation,
+    /5\/6 ÷ 1\/12 = 10/,
+    `${lessonId} explanation must match its scenario`,
+  );
+  assert.equal(exitTicket.choices[exitTicket.correctIndex], "10");
+}
 
 console.log("small-group validator contracts passed");
