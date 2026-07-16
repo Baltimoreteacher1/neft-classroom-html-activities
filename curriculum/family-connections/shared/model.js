@@ -27,7 +27,7 @@ export function createDefaultSnapshot() {
         week: {
           label: "This Week",
           startDate: "",
-          note: "Check back for this week's lesson plan and family practice.",
+          note: "Check back for this week's lesson plan and optional family practice.",
           days: DAYS.map((day) => ({ day, status: "no-class", lessonId: "", note: "" })),
         },
       },
@@ -190,12 +190,14 @@ export function buildCanvasAnnouncement(snapshot, lessons, sectionId) {
     section.label,
     note,
     "",
-    ...links.map((link) => `${link.day}: ${link.title}\nHomework: ${link.homeworkUrl}`),
+    ...links.map(
+      (link) => `${link.day}: ${link.title}\nOptional family practice: ${link.homeworkUrl}`,
+    ),
   ].filter((line, index, array) => line || (index > 0 && array[index - 1]));
   const htmlItems = links
     .map(
       (link) =>
-        `<li><strong>${escapeHtml(link.day)}:</strong> <a href="${escapeHtml(link.lessonUrl)}">${escapeHtml(link.title)}</a> · <a href="${escapeHtml(link.homeworkUrl)}">Family homework</a></li>`,
+        `<li><strong>${escapeHtml(link.day)}:</strong> <a href="${escapeHtml(link.lessonUrl)}">${escapeHtml(link.title)}</a> · <a href="${escapeHtml(link.homeworkUrl)}">Optional family practice</a></li>`,
     )
     .join("");
   return {

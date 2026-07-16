@@ -158,7 +158,7 @@ export function renderFamilyPreview(root, snapshot, inputLessons, sectionId) {
     );
     week.append(card);
   }
-  const homeworkTitle = node("h3", "", "Family homework preview");
+  const homeworkTitle = node("h3", "", "Optional family practice preview");
   homeworkTitle.style.marginTop = "1rem";
   const homeworkGrid = node("div", "preview-homework");
   const assigned = new Set(section.week.days.map((day) => day.lessonId).filter(Boolean));

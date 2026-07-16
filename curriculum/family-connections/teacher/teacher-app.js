@@ -321,7 +321,7 @@ function bindEvents() {
       links
         .map(
           (item) =>
-            `${item.day}: ${item.title}\nLesson: ${item.lessonUrl}\nHomework: ${item.homeworkUrl}`,
+            `${item.day}: ${item.title}\nLesson: ${item.lessonUrl}\nOptional family practice: ${item.homeworkUrl}`,
         )
         .join("\n\n"),
       "Canvas module links",

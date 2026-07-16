@@ -1,5 +1,4 @@
 import { translationsEs } from "./shared/copy-defaults.js";
-import { copyOverrideFor, readCopyEdits } from "./shared/copy-overrides.js";
 import { createDefaultSnapshot, resolveSection, safeExternalUrl } from "./shared/model.js";
 import {
   familyWeekSpeech,
@@ -53,7 +52,6 @@ function applyPreferences() {
   byId("contrast-toggle").setAttribute("aria-pressed", String(state.preferences.highContrast));
   byId("language-toggle").setAttribute("aria-pressed", String(state.preferences.language === "es"));
   byId("language-toggle").textContent = state.preferences.language === "es" ? "English" : "Español";
-  const localEdits = readCopyEdits();
   const publishedEdits = state.snapshot?.copy;
   const lang = state.preferences.language;
   document.querySelectorAll("[data-i18n]").forEach((node) => {
@@ -61,9 +59,7 @@ function applyPreferences() {
     const original = node.dataset.en ?? node.textContent.trim();
     node.dataset.en = original;
     const base = lang === "es" ? (translations.es[key] ?? original) : original;
-    // Precedence: this device's live edits > published copy (everyone) > default.
-    node.textContent =
-      copyOverrideFor(localEdits, lang, key) ?? copyOverrideFor(publishedEdits, lang, key) ?? base;
+    node.textContent = publishedEdits?.[lang]?.[key] ?? base;
   });
 }
 
@@ -97,6 +93,8 @@ function renderExperience() {
   const section = resolveSection(state.snapshot, state.sectionId);
   state.sectionId = section.id;
   renderSectionOptions(byId("section-select"), state.snapshot, state.sectionId);
+  byId("class-control").hidden =
+    (state.snapshot.sections ?? []).filter((item) => item.visible !== false).length < 2;
   renderWeek(byId("week-grid"), state.snapshot, state.lessons, state.sectionId);
   byId("published-week-label").textContent = section.week.label;
   byId("published-week-note").textContent = section.week.note;
@@ -144,7 +142,7 @@ async function load() {
       : "The weekly plan is ready for the first teacher update.";
   } else {
     byId("week-data-status").textContent = state.lessons.length
-      ? "The weekly plan is temporarily unavailable. The full homework library is ready below."
+      ? "The weekly plan is temporarily unavailable. The optional family practice library is ready below."
       : "Family resources are temporarily unavailable. Please refresh to try again.";
   }
   renderExperience();
@@ -193,10 +191,6 @@ function bindEvents() {
     savePreferences();
   });
 }
-
-// Edit mode (editor.js) writes copy overrides, then asks the page to re-render
-// the static wording for the current language.
-window.addEventListener("fc:apply-copy", applyPreferences);
 
 loadPreferences();
 bindEvents();

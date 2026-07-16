@@ -1,0 +1,135 @@
+.practice-heading {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.practice-heading .section-intro {
+  max-width: 62rem;
+}
+
+.homework-library-panel {
+  overflow: clip;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper-bright);
+  box-shadow: 0 10px 30px rgb(23 59 71 / 7%);
+}
+
+.homework-library-panel > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 4rem;
+  padding: 0.85rem 1.1rem;
+  color: var(--ink-deep);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.homework-library-panel > summary::marker {
+  color: var(--teal);
+}
+
+.homework-library-panel > summary small {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.homework-library-panel[open] > summary {
+  border-bottom: 1px solid var(--line);
+  background: var(--teal-pale);
+}
+
+.homework-panel-body {
+  padding: 1rem;
+}
+
+.homework-details-disclosure {
+  margin-top: 0.85rem;
+  border-top: 1px solid var(--line);
+}
+
+.homework-details-disclosure summary {
+  padding-top: 0.7rem;
+  color: var(--muted);
+  font-size: 0.84rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.homework-support-content {
+  padding-top: 0.35rem;
+}
+
+.homework-directions {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.support-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+.support-steps article {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 0.85rem;
+  background: var(--paper-bright);
+}
+
+.support-steps article > span {
+  display: grid;
+  flex: 0 0 2rem;
+  height: 2rem;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--teal);
+  color: white;
+  font-weight: 800;
+}
+
+.support-steps p {
+  margin: 0.15rem 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.support-note {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.8rem;
+  padding: 0.9rem 1rem;
+  border-radius: 0.85rem;
+  background: var(--teal-pale);
+}
+
+.support-note p {
+  margin: 0.1rem 0 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+@media (max-width: 40rem) {
+  .practice-heading,
+  .support-note,
+  .homework-library-panel > summary {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .support-steps {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

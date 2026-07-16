@@ -28,6 +28,14 @@ for (const contract of [
   'id="open-canvas"',
   'id="family-preview"',
   'id="publication-history"',
+  'id="homework-tools"',
+  'id="updates-tools"',
+  'id="wording-tools"',
+  'id="copy-lang"',
+  'id="copy-editor"',
+  'id="sharing-tools"',
+  'class="teacher-edit-column"',
+  'class="teacher-preview-column"',
   'src="./teacher-app.js"',
 ]) {
   assert.ok(html.toLowerCase().includes(contract.toLowerCase()), `Missing Teacher Mode contract: ${contract}`);
@@ -35,6 +43,9 @@ for (const contract of [
 
 assert.match(html, /Draft → Preview → Publish/);
 assert.match(html, /sign-in protected/i);
+assert.match(html, /separate from regular homework/i);
+assert.match(html, /families cannot edit/i);
+assert.match(html, /<meta name="robots" content="noindex,nofollow"\s*\/>/i);
 assert.doesNotMatch(html, /name=".*(?:token|password|secret)/i);
 assert.doesNotMatch(html, /canvasAccessToken/);
 assert.doesNotMatch(html, /fonts\.googleapis\.com|fonts\.gstatic\.com/i);
@@ -57,5 +68,10 @@ assert.match(css, /min-width:\s*0/);
 assert.match(css, /overflow-wrap:\s*anywhere/);
 assert.match(css, /@media\s*\(max-width:/);
 assert.match(css, /:focus-visible/);
+assert.match(
+  css,
+  /\.section-actions\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)/s,
+  "section controls must keep the Editing section label readable",
+);
 
 console.log("Teacher Mode static contracts passed.");

@@ -47,7 +47,7 @@ export function renderWeek(root, snapshot, inputLessons, sectionId) {
       if (entry.note) card.append(element("p", "day-note", entry.note));
       const actions = element("div", "day-links");
       actions.append(link("Open lesson", lesson.lessonPath));
-      actions.append(link("Family homework", lesson.homeworkPath));
+      actions.append(link("Optional family practice", lesson.homeworkPath));
       card.append(actions);
     } else {
       const labels = {
@@ -106,17 +106,23 @@ export function renderHomework(root, inputLessons, overrides, options = {}) {
     const card = element("article", "homework-card");
     const meta = element("div", "homework-meta");
     meta.append(element("span", "", `Lesson ${item.id}`), element("span", "", item.estimatedTime));
-    card.append(meta, element("h3", "", item.title), element("p", "", item.directions));
+    card.append(meta, element("h3", "", item.title));
+    const actions = element("div", "homework-actions");
+    actions.append(link("Open optional practice", item.homeworkPath));
+    if (item.familyPath) actions.append(link("Open family help", item.familyPath));
+    for (const extra of item.supplementalLinks) actions.append(link(extra.label, extra.url));
+    card.append(actions);
+    const disclosure = element("details", "homework-details-disclosure");
+    disclosure.append(element("summary", "", "Directions & ways to help"));
+    const support = element("div", "homework-support-content");
+    support.append(element("p", "homework-directions", item.directions));
     const details = element("ul", "homework-details");
     details.append(element("li", "", `Materials: ${item.materials}`));
     details.append(element("li", "", item.languageSupport));
     details.append(element("li", "", item.schoolAlternative));
-    card.append(details);
-    const actions = element("div", "homework-actions");
-    actions.append(link("Open homework", item.homeworkPath));
-    if (item.familyPath) actions.append(link("Family support", item.familyPath));
-    for (const extra of item.supplementalLinks) actions.append(link(extra.label, extra.url));
-    card.append(actions);
+    support.append(details);
+    disclosure.append(support);
+    card.append(disclosure);
     root.append(card);
   }
   if (!filtered.length) {

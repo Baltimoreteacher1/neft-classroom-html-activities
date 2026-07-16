@@ -46,16 +46,16 @@ div {
   min-width: 0;
 }
 
-.hero {
+.compact-intro {
   display: grid;
-  grid-template-columns: minmax(0, 1.55fr) minmax(17rem, 0.75fr);
-  gap: clamp(1.5rem, 4vw, 5rem);
-  align-items: end;
+  grid-template-columns: minmax(0, 1.35fr) minmax(17rem, 0.65fr);
+  gap: clamp(1rem, 3vw, 2.5rem);
+  align-items: center;
   width: min(calc(100% - 2rem), var(--content));
-  margin: clamp(2rem, 6vw, 6rem) auto clamp(4rem, 9vw, 8rem);
+  margin: clamp(1.25rem, 3vw, 2.5rem) auto 1.5rem;
 }
 
-.hero-copy {
+.compact-intro > div {
   max-width: 48rem;
 }
 
@@ -84,12 +84,12 @@ h2 {
 }
 
 h1 {
-  max-width: 13ch;
-  font-size: clamp(2.8rem, 7vw, 6rem);
+  max-width: 18ch;
+  font-size: clamp(2.3rem, 5vw, 4.2rem);
 }
 
 h2 {
-  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-size: clamp(1.7rem, 3vw, 2.7rem);
 }
 
 h3 {
@@ -98,14 +98,13 @@ h3 {
   line-height: 1.3;
 }
 
-.hero-lede {
+.intro-lede {
   max-width: 42rem;
-  margin: 1.4rem 0 0;
+  margin: 0.8rem 0 0;
   color: var(--muted);
-  font-size: clamp(1.08rem, 2vw, 1.3rem);
+  font-size: clamp(1rem, 1.6vw, 1.18rem);
 }
 
-.hero-actions,
 .connect-actions {
   display: flex;
   flex-wrap: wrap;
@@ -143,26 +142,20 @@ h3 {
 
 .partnership-note {
   position: relative;
-  padding: 2rem;
-  border-top: 0.25rem solid var(--gold);
+  padding: 1rem 1.15rem;
+  border-left: 0.25rem solid var(--gold);
   background: var(--paper-bright);
-  box-shadow: var(--shadow);
+  box-shadow: 0 8px 24px rgb(23 59 71 / 8%);
 }
 
-.note-number {
-  display: block;
-  margin-bottom: 2rem;
-  color: var(--coral);
-  font: 700 1rem/1 "Fraunces", serif;
-}
-
-.partnership-note h2 {
-  font-size: 1.75rem;
+.partnership-note strong {
+  font-size: 1rem;
 }
 
 .partnership-note p {
-  margin: 1rem 0 0;
+  margin: 0.25rem 0 0;
   color: var(--muted);
+  font-size: 0.92rem;
 }
 
 .week-section,
@@ -171,13 +164,13 @@ h3 {
 .support-section {
   width: min(calc(100% - 2rem), var(--content));
   margin-inline: auto;
-  padding-block: clamp(3.5rem, 7vw, 6rem);
+  padding-block: clamp(2rem, 4vw, 3.5rem);
 }
 
 .week-section {
   width: auto;
   max-width: none;
-  padding-inline: max(1rem, calc((100vw - var(--content)) / 2));
+  padding: clamp(1.5rem, 3vw, 2.5rem) max(1rem, calc((100vw - var(--content)) / 2));
   background: var(--ink-deep);
   color: white;
 }
@@ -187,7 +180,7 @@ h3 {
   align-items: end;
   justify-content: space-between;
   gap: 2rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.25rem;
 }
 
 .section-heading.compact {
@@ -206,21 +199,26 @@ h3 {
 }
 
 .week-controls {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.class-control {
   display: grid;
   grid-template-columns: auto minmax(9rem, 1fr);
   gap: 0.45rem 0.65rem;
   align-items: center;
-  min-width: min(100%, 20rem);
 }
 
-.week-controls label {
+.class-control label {
   font-size: 0.78rem;
   font-weight: 800;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
 }
 
-.week-controls select {
+.class-control select {
   width: 100%;
   border: 1px solid rgb(255 255 255 / 35%);
   border-radius: 0.65rem;
@@ -230,8 +228,7 @@ h3 {
 }
 
 .icon-button {
-  grid-column: 1 / -1;
-  justify-self: end;
+  flex: 0 0 auto;
   border-color: rgb(255 255 255 / 35%);
   color: white;
   padding: 0.45rem 0.9rem;
@@ -242,8 +239,8 @@ h3 {
   align-items: start;
   justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 1.25rem;
-  padding: 1.2rem 1.4rem;
+  margin-bottom: 0.65rem;
+  padding: 0.9rem 1rem;
   border: 1px solid rgb(255 255 255 / 18%);
   border-radius: var(--radius);
   background: rgb(255 255 255 / 6%);
@@ -281,14 +278,14 @@ h3 {
 .week-grid {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 0.75rem;
+  gap: 0.6rem;
 }
 
 .day-card {
   display: flex;
   flex-direction: column;
-  min-height: 14rem;
-  padding: 1.2rem;
+  min-height: 10.5rem;
+  padding: 0.9rem;
   border: 1px solid rgb(255 255 255 / 18%);
   border-radius: var(--radius);
   background: rgb(255 255 255 / 8%);
@@ -300,7 +297,7 @@ h3 {
 }
 
 .day-name {
-  margin: 0 0 1rem;
+  margin: 0 0 0.55rem;
   color: #a6c5ca;
   font-size: 0.76rem;
   font-weight: 800;
@@ -310,7 +307,7 @@ h3 {
 
 .lesson-number {
   color: #fff;
-  font: 700 1.75rem/1.05 "Fraunces", serif;
+  font: 700 1.25rem/1.1 "Fraunces", serif;
 }
 
 .lesson-title {
@@ -410,7 +407,7 @@ h3 {
 .homework-card {
   display: flex;
   flex-direction: column;
-  padding: 1.35rem;
+  padding: 1rem;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--paper-bright);
@@ -429,13 +426,8 @@ h3 {
   text-transform: uppercase;
 }
 
-.homework-card p {
-  margin: 0.65rem 0;
-  color: var(--muted);
-}
-
 .homework-details {
-  margin: 0.5rem 0 1rem;
+  margin: 0.5rem 0 0;
   padding-left: 1.1rem;
   color: var(--muted);
   font-size: 0.88rem;
@@ -482,39 +474,7 @@ h3 {
 
 .support-heading {
   max-width: 50rem;
-  margin-bottom: 2rem;
-}
-
-.support-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1rem;
-}
-
-.support-card {
-  padding: 1.5rem;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--paper-bright);
-}
-
-.support-featured {
-  background: var(--teal-pale);
-}
-
-.support-icon {
-  display: grid;
-  width: 2.5rem;
-  height: 2.5rem;
-  margin-bottom: 1rem;
-  place-items: center;
-  border-radius: 50%;
-  background: var(--coral);
-  color: white;
-}
-
-.support-card p {
-  color: var(--muted);
+  margin-bottom: 1.25rem;
 }
 
 .resource-grid {
@@ -624,7 +584,7 @@ footer a {
     justify-content: flex-start;
   }
 
-  .hero,
+  .compact-intro,
   .connect-section {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -636,7 +596,7 @@ footer a {
 
 @media (max-width: 40rem) {
   .site-header,
-  .hero,
+  .compact-intro,
   .week-section,
   .announcement-section,
   .homework-section,
@@ -647,28 +607,37 @@ footer a {
     padding-inline: 1rem;
   }
 
-  .hero {
-    margin-block: 2.25rem 3rem;
+  .compact-intro {
+    margin-block: 1rem 1.25rem;
   }
 
   h1 {
     font-size: clamp(2.65rem, 15vw, 4rem);
   }
 
-  .hero-actions .button,
   .connect-actions .button {
     width: 100%;
   }
 
   .week-grid,
   .homework-grid,
-  .support-grid,
   .filter-bar {
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .week-heading,
   .week-controls {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .week-controls,
+  .class-control {
     width: 100%;
+  }
+
+  .class-control {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .week-banner {
@@ -697,7 +666,7 @@ footer a {
 
 @media print {
   .site-header,
-  .hero,
+  .compact-intro,
   .filter-bar,
   .load-more,
   .support-section,
@@ -720,156 +689,5 @@ footer a {
     background: white;
     color: black;
     box-shadow: none;
-  }
-}
-
-/* ---------- Edit mode ---------- */
-
-.edit-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-}
-
-.edit-toggle.edit-active {
-  border-color: var(--coral);
-  background: var(--coral);
-  color: #fff;
-}
-
-.edit-badge {
-  display: inline-grid;
-  place-items: center;
-  min-width: 1.15rem;
-  height: 1.15rem;
-  padding: 0 0.3rem;
-  border-radius: 999px;
-  background: var(--coral);
-  color: #fff;
-  font-size: 0.68rem;
-  font-weight: 800;
-}
-
-.edit-toggle.edit-active .edit-badge {
-  background: #fff;
-  color: var(--coral-dark);
-}
-
-body.is-editing [data-i18n] {
-  outline: 2px dashed color-mix(in srgb, var(--teal) 55%, transparent);
-  outline-offset: 4px;
-  border-radius: 6px;
-  cursor: text;
-  transition:
-    outline-color 0.15s ease,
-    background 0.15s ease;
-}
-
-body.is-editing [data-i18n]:hover {
-  outline-color: var(--teal);
-  background: color-mix(in srgb, var(--teal) 8%, transparent);
-}
-
-body.is-editing [data-i18n]:focus {
-  outline: 2px solid var(--teal);
-  background: color-mix(in srgb, var(--teal) 12%, transparent);
-}
-
-.edit-bar {
-  position: fixed;
-  inset-inline: 0;
-  bottom: 0;
-  z-index: 40;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  width: min(calc(100% - 1.5rem), var(--content));
-  margin: 0 auto 1rem;
-  padding: 0.9rem 1.15rem;
-  border-radius: var(--radius);
-  background: var(--ink-deep);
-  box-shadow: 0 1.25rem 3rem rgb(13 41 50 / 32%);
-  color: var(--paper-bright);
-  transform: translateY(140%);
-  opacity: 0;
-  transition:
-    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 0.28s ease;
-}
-
-.edit-bar.is-open {
-  transform: translateY(0);
-  opacity: 1;
-}
-
-.edit-bar-text {
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-  min-width: 0;
-}
-
-.edit-bar-text strong {
-  font-size: 1rem;
-}
-
-.edit-bar-text span {
-  color: color-mix(in srgb, var(--paper-bright) 78%, transparent);
-  font-size: 0.86rem;
-}
-
-.edit-bar-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.edit-btn {
-  min-height: 2.6rem;
-  padding: 0.5rem 0.95rem;
-  border: 1px solid rgb(255 255 255 / 38%);
-  border-radius: 0.7rem;
-  background: rgb(255 255 255 / 10%);
-  color: #fff;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.edit-btn:hover,
-.edit-btn:focus-visible {
-  background: rgb(255 255 255 / 20%);
-}
-
-.edit-btn.ghost {
-  background: transparent;
-}
-
-.edit-btn.solid {
-  border-color: var(--teal);
-  background: var(--teal);
-}
-
-.edit-btn.solid:hover,
-.edit-btn.solid:focus-visible {
-  background: color-mix(in srgb, var(--teal) 82%, #000);
-}
-
-@media (max-width: 40rem) {
-  .edit-bar {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .edit-bar-actions .edit-btn {
-    flex: 1;
-  }
-}
-
-@media print {
-  .edit-bar,
-  .edit-toggle {
-    display: none !important;
   }
 }
