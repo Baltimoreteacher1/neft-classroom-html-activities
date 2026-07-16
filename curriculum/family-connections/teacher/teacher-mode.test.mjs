@@ -18,6 +18,13 @@ for (const expected of [
   'src="./canvas-direct.js"',
 ]) assert.ok(html.includes(expected), `Missing teacher scheduler contract: ${expected}`);
 
+for (const expected of [
+  'id="section-manager"',
+  'id="new-section-name"',
+  'for="new-section-name"',
+  'src="./section-manager.js"',
+]) assert.ok(html.includes(expected), `Missing section manager contract: ${expected}`);
+
 for (const contract of [
   "<!doctype html>",
   'class="skip-link"',

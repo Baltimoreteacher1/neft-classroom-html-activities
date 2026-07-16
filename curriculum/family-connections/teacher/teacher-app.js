@@ -18,6 +18,13 @@ import {
   renderSectionEditor,
   renderWeekdayEditors,
 } from "./editors.js";
+import {
+  addSection,
+  deleteSection,
+  renameSection,
+  renderSectionManager,
+  setDefaultSection,
+} from "./section-manager.js";
 
 const state = {
   draft: createDefaultSnapshot(),
@@ -71,6 +78,41 @@ function setSectionValue(key, value) {
 function renderWeekEditor() {
   const current = section();
   renderSectionEditor(byId("section-editor"), state.draft, current.id);
+  renderSectionManager(byId("section-manager"), state.draft.sections, current.id, {
+    select(id) {
+      state.sectionId = id;
+      renderWeekEditor();
+    },
+    rename(id, name) {
+      try {
+        state.draft.sections = renameSection(state.draft.sections, id, name);
+        markDirty();
+        renderWeekEditor();
+      } catch (error) {
+        notify(error.message);
+        renderWeekEditor();
+      }
+    },
+    setDefault(id) {
+      state.draft.sections = setDefaultSection(state.draft.sections, id);
+      markDirty();
+      renderWeekEditor();
+    },
+    remove(id) {
+      const target = state.draft.sections.find((item) => item.id === id);
+      if (!target) return;
+      if (!window.confirm(`Delete “${target.label}”? Publishing will remove this section and its Canvas feed.`)) return;
+      try {
+        const result = deleteSection(state.draft.sections, id, state.sectionId);
+        state.draft.sections = result.sections;
+        state.sectionId = result.activeId;
+        markDirty();
+        renderWeekEditor();
+      } catch (error) {
+        notify(error.message);
+      }
+    },
+  });
   byId("section-label").value = current.label;
   byId("week-label").value = current.week.label;
   byId("week-start").value = current.week.startDate;
@@ -327,18 +369,18 @@ function bindEvents() {
     renderWeekEditor();
   });
   byId("add-section").addEventListener("click", () => {
-    const next = state.draft.sections.length + 1;
     const base = createDefaultSnapshot().sections[0];
-    const added = {
-      ...structuredClone(base),
-      id: `class-${next}`,
-      label: `Class ${next}`,
-      isDefault: false,
-    };
-    state.draft.sections.push(added);
-    state.sectionId = added.id;
-    markDirty();
-    renderWeekEditor();
+    try {
+      const result = addSection(state.draft.sections, byId("new-section-name").value, base);
+      state.draft.sections = result.sections;
+      state.sectionId = result.section.id;
+      byId("new-section-name").value = "";
+      markDirty();
+      renderWeekEditor();
+    } catch (error) {
+      notify(error.message);
+      byId("new-section-name").focus();
+    }
   });
   for (const [id, key] of [
     ["section-label", "label"],
