@@ -414,9 +414,7 @@
           "When a half has an even number of values, the quartile is the average of its two middle values.",
           "Lower half 4, 8, 10, 14: the two middle values are 8 and 10, so Q1 = (8 + 10) ÷ 2 = 9."
         ]
-      }
-    ],
-    "extending": [
+      },
       {
         "type": "error-analysis",
         "title": "Find the Box Plot Error",
@@ -465,37 +463,9 @@
           "For each team: Min = 1st value, Max = 9th, Median = 5th. Q1 = middle of the first four, Q3 = middle of the last four. Then IQR = Q3 − Q1.",
           "Team A first: Min = 40, Max = 56, Median = 48 (the 5th value). Now average 42 and 44 for Q1, and 52 and 54 for Q3."
         ]
-      },
-      {
-        "type": "matching-game",
-        "label": "Match each box plot feature with what it tells you about the data.",
-        "columns": 2,
-        "pairs": [
-          {
-            "term": "Long right whisker, short left whisker",
-            "match": "Skewed right — some high values stretch far from the box"
-          },
-          {
-            "term": "Median line centered in the box",
-            "match": "Approximately symmetric in the middle 50%"
-          },
-          {
-            "term": "Very small box (small IQR)",
-            "match": "Middle 50% is tightly clustered — consistent"
-          },
-          {
-            "term": "Very large box (large IQR)",
-            "match": "Middle 50% is widely spread — high variability"
-          }
-        ],
-        "hints": [
-          "Each feature is about shape: whisker length shows skew, box size shows how spread out the middle 50% is.",
-          "Split the cards into two groups: the two about whiskers or the median line (symmetry vs skew), and the two about box size (small vs large IQR).",
-          "Start with 'Very small box': a small box means a small IQR, so the middle 50% barely spreads. Find the card that says that, then match the rest."
-        ]
       }
     ],
-    "optional": [
+    "extending": [
       {
         "type": "multiple-choice",
         "stem": "The Hawks' points per quarter are 2, 4, 5, 7, 8, 10, 12. Resting on the scoreboard, what are the minimum, median, and maximum?",
@@ -549,8 +519,129 @@
           "Q1 to median is 25%, median to Q3 is 25%—together?",
           "Q3 to max covers another 25%—is that the middle 50%?"
         ]
+      },
+      {
+        "type": "error-analysis",
+        "title": "Level 2 Extension — The Skipped Ordering Mistake",
+        "workedExample": [
+          {
+            "label": "Data (as recorded)",
+            "work": "Falcons' scores: 17, 5, 21, 9, 29, 13, 25"
+          },
+          {
+            "label": "Minimum and maximum",
+            "work": "Min = 5, Max = 29 ✓"
+          },
+          {
+            "label": "Median",
+            "work": "The middle value of the list is 9, so Median = 9"
+          },
+          {
+            "label": "Q1 and Q3",
+            "work": "Lower half = 17, 5, 21 → Q1 = 5. Upper half = 13, 25 → Q3 = 25"
+          }
+        ],
+        "errorStep": 2,
+        "correctWork": "The data must be ordered from least to greatest FIRST: 5, 9, 13, 17, 21, 25, 29. There are 7 values, so the median is the 4th value, which is 17 (not 9). The lower half is 5, 9, 13, so Q1 = 9, and the upper half is 21, 25, 29, so Q3 = 25. The student found the 'middle of the list' without ordering the data first, which gave the wrong median and quartiles.",
+        "hints": [
+          "You can never find the median or quartiles until the data is in order from least to greatest.",
+          "After ordering (5, 9, 13, 17, 21, 25, 29), the true middle value is 17, not the number that happened to sit in the middle of the unsorted list."
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "A box plot shows: Min = 10, Q1 = 15, Median = 20, Q3 = 28, Max = 35. What is the interquartile range (IQR)?",
+        "choices": [
+          "13",
+          "25",
+          "10",
+          "20"
+        ],
+        "correctIndex": 0,
+        "explanation": "IQR = Q3 − Q1 = 28 − 15 = 13.",
+        "choiceFeedback": [
+          "",
+          "This is the spread, but IQR is Q3 − Q1 only.",
+          "Full range from min to max is 25, but IQR is different.",
+          "IQR only uses the quartiles, not min and max."
+        ],
+        "hints": [
+          "You're given five numbers, but IQR only uses two of them: Q1 and Q3. Ignore the min, median, and max.",
+          "IQR = Q3 − Q1. Find Q3 (28) and Q1 (15) in the summary — the IQR is their difference, the width of the box.",
+          "Set up the subtraction Q3 − Q1: that's 28 − 15. The difference you get is the IQR."
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "On a box plot, what does the line inside the box represent?",
+        "choices": [
+          "The median",
+          "The mean",
+          "The mode",
+          "The range"
+        ],
+        "correctIndex": 0,
+        "explanation": "The line inside the box of a box plot always represents the median.",
+        "choiceFeedback": [
+          "",
+          "The line shows center—but mean is a different measure.",
+          "The line is always the middle value, not an average.",
+          ""
+        ],
+        "hints": [
+          "Picture a box plot: a box with whiskers, and a line cutting through the box. That line marks the CENTER of the data.",
+          "The box runs from Q1 to Q3, so the line inside splits the middle 50% in half. Think about which measure splits ordered data into halves.",
+          "First step: recall which measure means 'the middle value of the ordered data.' The line inside the box always marks that exact measure."
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "What percentage of data falls between Q1 and Q3 on a box plot?",
+        "choices": [
+          "50%",
+          "25%",
+          "75%",
+          "100%"
+        ],
+        "correctIndex": 0,
+        "explanation": "The box in a box plot contains the middle 50% of the data (from Q1 to Q3).",
+        "choiceFeedback": [
+          "",
+          "The box shows the inner half—is it 25%?",
+          "Q1 to Q3 is the middle section—what fraction is that?",
+          "Each quarter is 25%—Q1 to Q3 is two quarters."
+        ],
+        "hints": [
+          "Quartiles cut the data into 4 equal parts — 'quart' like 'quarter.' Each part holds the same share of the data.",
+          "Each quarter of the data is 25%. Count how many quarters sit between Q1 and Q3: Q1 to the median, then the median to Q3.",
+          "First step: Q1 to the median is one quarter — 25%. Add the quarter from the median up to Q3 to get the box's total share."
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "Find the range of: 14, 22, 8, 31, 17",
+        "choices": [
+          "23",
+          "31",
+          "8",
+          "18"
+        ],
+        "correctIndex": 0,
+        "explanation": "Range = max − min = 31 − 8 = 23.",
+        "choiceFeedback": [
+          "",
+          "Find max and min—is range the minimum?",
+          "Max is 31, min is 8—range is the difference.",
+          "Range is spread—subtract max from min, don't add."
+        ],
+        "hints": [
+          "Range = how far the data stretches: the gap between the biggest and smallest values only. The middle values don't matter.",
+          "Scan the list 14, 22, 8, 31, 17: find the maximum and the minimum, then subtract the min from the max.",
+          "First step: the max is 31 and the min is 8. Set up 31 − 8 — that difference is the range."
+        ]
       }
     ],
+    "optional": [],
     "commonMistake": "A common mistake in Display Data: Box Plots is treating a quartile as just one data point instead of the median of a half — for the lower half 4, 8, 10, 14, some students pick 10 (the last value) as Q1 instead of finding the median of that half: Q1 = (8 + 10) ÷ 2 = 9. A second common slip is finding IQR by adding the quartiles instead of subtracting, writing IQR = Q3 + Q1 (like 30 + 18 = 48) instead of IQR = Q3 − Q1 (30 − 18 = 12) — always order the data first, then subtract Q1 from Q3 to find the spread of the middle 50%.",
     "optionalActivity": {
       "name": "Box Plot Stadium Bridge",
@@ -613,6 +704,10 @@
   "readiness": false,
   "timeEstimate": "~15–20 min",
   "variant": "group2",
+  "smallGroupPractice": {
+    "guidedCount": 3,
+    "minimum": 10
+  },
   "smallGroup": {
     "group": 2,
     "label": "Challenge",

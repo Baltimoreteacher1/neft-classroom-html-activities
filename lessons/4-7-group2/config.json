@@ -455,9 +455,31 @@
           "Divide widgets by hours for the unit rate, then multiply that rate by 12.",
           "Step 1: 360 ÷ 8 = 45 widgets each hour. Step 2: multiply that rate by 12 hours."
         ]
-      }
-    ],
-    "extending": [
+      },
+      {
+        "type": "error-analysis",
+        "title": "onLevel — Spot the Common Mistake",
+        "workedExample": [
+          {
+            "label": "Read",
+            "work": "A vending machine dispenses 24 tokens in 3 minutes. How many tokens per minute is that?"
+          },
+          {
+            "label": "Attempt",
+            "work": "A student writes: 3 ÷ 24 = 0.125, so the machine dispenses 0.125 tokens per minute."
+          },
+          {
+            "label": "Check",
+            "work": "The student divided minutes by tokens, which gives minutes per token, not tokens per minute."
+          }
+        ],
+        "errorStep": 1,
+        "correctWork": "For tokens per minute, divide the tokens by the minutes: 24 ÷ 3 = 8 tokens per minute. The student divided in the wrong order, so they got the rate upside down.",
+        "hints": [
+          "The phrase after \"per\" tells you what goes on the bottom — here it is minutes.",
+          "Set it up as tokens ÷ minutes: 24 ÷ 3, not 3 ÷ 24."
+        ]
+      },
       {
         "type": "error-analysis",
         "title": "Find the Unit Rate Error",
@@ -485,7 +507,9 @@
           "The student divided quantity by price instead of price by quantity.",
           "For 'cost per pound,' divide dollars by pounds: $8.75 ÷ 5 = $1.75/lb."
         ]
-      },
+      }
+    ],
+    "extending": [
       {
         "type": "open-response",
         "prompt": "Two arcade supply companies offer token deals. Company X: 300 tokens for $36. Company Y: 500 tokens for $55. The arcade needs 1,000 tokens. Find the unit rate for each company, determine which is cheaper per token, and calculate the total cost of buying 1,000 tokens from the better deal.",
@@ -507,62 +531,6 @@
           "Company X: $36 ÷ 300 tokens = $0.12 per token. Now compute $55 ÷ 500 for Company Y and compare before scaling to 1,000."
         ]
       },
-      {
-        "type": "fill-table",
-        "instructions": "Two delivery drones fly at different rates. Drone A travels 9 miles in 12 minutes. Drone B travels 7 miles in 10 minutes. Complete the table and determine which drone delivers faster.",
-        "headers": [
-          "Drone",
-          "Distance",
-          "Time",
-          "Miles per Minute",
-          "Faster?"
-        ],
-        "rows": [
-          [
-            "Drone A",
-            "9 miles",
-            "12 min",
-            "",
-            ""
-          ],
-          [
-            "Drone B",
-            "7 miles",
-            "10 min",
-            "",
-            ""
-          ]
-        ],
-        "editableCells": [
-          {
-            "row": 0,
-            "col": 3,
-            "answer": "0.75"
-          },
-          {
-            "row": 0,
-            "col": 4,
-            "answer": "Yes"
-          },
-          {
-            "row": 1,
-            "col": 3,
-            "answer": "0.70"
-          },
-          {
-            "row": 1,
-            "col": 4,
-            "answer": "No"
-          }
-        ],
-        "hints": [
-          "The table wants miles per MINUTE, so miles get divided by minutes for each drone.",
-          "Turn each drone into a decimal rate (miles ÷ minutes), then the bigger decimal is the faster drone.",
-          "Drone A: divide 9 by 12 to get its miles per minute. Then divide 7 by 10 for Drone B and compare."
-        ]
-      }
-    ],
-    "optional": [
       {
         "type": "multiple-choice",
         "stem": "The snack bar compares two popcorn deals: 12 oz for $3.00 or 20 oz for $4.00. Which is the better buy?",
@@ -616,8 +584,102 @@
           "Compare unit rates.",
           ""
         ]
+      },
+      {
+        "type": "error-analysis",
+        "title": "Level 2 Extension — Which Water Deal Wins?",
+        "workedExample": [
+          {
+            "label": "Which is the better buy: 4 bottles for $5.00 or 6 bottles for $7.20?",
+            "work": "Compare two water deals for the snack bar"
+          },
+          {
+            "label": "Compare the deals",
+            "work": "$5.00 is less than $7.20, so the 4-bottle deal is the better buy."
+          },
+          {
+            "label": "Conclusion",
+            "work": "Buy the 4 bottles for $5.00."
+          }
+        ],
+        "errorStep": 1,
+        "correctWork": "You must compare the unit rate (cost per bottle), not the totals. 4 for $5.00: $5.00 ÷ 4 = $1.25 per bottle. 6 for $7.20: $7.20 ÷ 6 = $1.20 per bottle. $1.20 < $1.25, so the 6-bottle deal for $7.20 is actually the better buy.",
+        "hints": [
+          "A smaller total price does not mean a better buy when the quantities are different.",
+          "Find the cost per bottle for each deal by dividing price by the number of bottles, then compare those unit rates."
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "Which is the better buy: 6 bouncy balls for $4.50 or 10 bouncy balls for $8.00?",
+        "choices": [
+          "6 for $4.50 — $0.75 each",
+          "10 for $8.00 — $0.80 each",
+          "They cost the same per ball",
+          "Not enough information"
+        ],
+        "correctIndex": 0,
+        "explanation": "$4.50 ÷ 6 = $0.75 each. $8.00 ÷ 10 = $0.80 each. $0.75 < $0.80, so 6 for $4.50 is the better buy.",
+        "choiceFeedback": [
+          "",
+          "Find the price per ball for each: divide cost by quantity.",
+          "Compare the unit prices.",
+          "Make sure you're dividing cost by quantity for each option."
+        ],
+        "hints": [
+          "You can't compare $4.50 and $8.00 straight across — the packs hold different numbers of balls.",
+          "Find each pack's price for ONE ball (cost ÷ number of balls), then compare the two unit prices.",
+          "Start with the first deal: $4.50 ÷ 6. Then compute $8.00 ÷ 10 and see which per-ball price is lower."
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "A faucet drips 15 ounces of water in 5 minutes. What is the unit rate?",
+        "choices": [
+          "3 ounces per minute",
+          "5 ounces per minute",
+          "15 ounces per minute",
+          "0.33 ounces per minute"
+        ],
+        "correctIndex": 0,
+        "explanation": "15 ÷ 5 = 3 ounces per minute.",
+        "choiceFeedback": [
+          "",
+          "Divide: 15 ounces ÷ 5 minutes.",
+          "Find the rate per minute.",
+          "Check: how much per one minute?"
+        ],
+        "hints": [
+          "The unit rate here is ounces per ONE minute — 15 ounces spread across 5 minutes.",
+          "Divide the ounces by the minutes so the time becomes 1 minute.",
+          "Set up 15 ÷ 5 ounces per minute."
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "A printer prints 42 pages in 6 minutes. How many pages does it print in 15 minutes at the same rate?",
+        "choices": [
+          "105 pages",
+          "90 pages",
+          "70 pages",
+          "120 pages"
+        ],
+        "correctIndex": 0,
+        "explanation": "Unit rate: 42 ÷ 6 = 7 pages per minute. In 15 minutes: 7 × 15 = 105 pages.",
+        "choiceFeedback": [
+          "",
+          "Divide: 42 pages ÷ 6 minutes.",
+          "Find the rate per minute.",
+          "Check: how many pages in one minute?"
+        ],
+        "hints": [
+          "This takes two steps: first find pages per ONE minute, then scale up to 15 minutes.",
+          "Divide to get the unit rate, then multiply that rate by the new time.",
+          "Step 1: 42 ÷ 6 = 7 pages each minute. Step 2: multiply that rate by 15 minutes."
+        ]
       }
     ],
+    "optional": [],
     "commonMistake": "A common mistake in Solve Problems with Unit Rates is comparing the total prices instead of the cost per item — the deal with the smaller total can still cost more per unit. Always reduce each option to its unit rate before you decide, then pick the lower one.",
     "optionalActivity": {
       "name": "Best Buy Unit Rate Hunt",
@@ -682,6 +744,10 @@
   "readiness": false,
   "timeEstimate": "~15–20 min",
   "variant": "group2",
+  "smallGroupPractice": {
+    "guidedCount": 3,
+    "minimum": 10
+  },
   "smallGroup": {
     "group": 2,
     "label": "Challenge",

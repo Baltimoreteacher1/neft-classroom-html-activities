@@ -239,9 +239,9 @@ function addVocabularyTriggers(app, words, dialog) {
 }
 
 export function installSmallGroupAnnotation(app, config) {
-  const rail = app.querySelector(".sg-rail");
+  const progress = app.querySelector(".sg-tabs, .sg-rail");
   const tools = createAnnotationTools(app);
-  if (rail) rail.after(tools);
+  if (progress) progress.after(tools);
   else app.prepend(tools);
   const dialog = createVocabularyDialog();
   addVocabularyTriggers(app, (config.vocabulary || []).slice(0, 4), dialog);

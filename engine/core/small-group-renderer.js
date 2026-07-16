@@ -19,8 +19,14 @@ import {
   createTeacherEvidenceConsole,
 } from "./small-group-innovation.js";
 import { createApplyLab, createExploreLab, createModelLab } from "./small-group-labs.js";
-import { createCheckSection, createPracticeSection } from "./small-group-practice.js";
+import {
+  collectPracticeItems,
+  createCheckSection,
+  createPracticeSection,
+} from "./small-group-practice.js";
 import { createStudioStore } from "./small-group-state.js";
+import { mountSmallGroupTabs } from "./small-group-tabs.js";
+import { mountSmallGroupTeacherAccess } from "./small-group-teacher-access.js";
 import {
   ACCENTS,
   el,
@@ -29,14 +35,6 @@ import {
   sectionHeading,
   studentVoice,
 } from "./small-group-ui.js";
-
-function teacherMode() {
-  try {
-    return localStorage.getItem("nt-teacher-mode") === "1";
-  } catch {
-    return false;
-  }
-}
 
 // One Build stage rendered as an interactive player instead of a static list.
 // "ido" and "wedo" reveal one step at a time; "wedo" also converts a trailing
@@ -182,6 +180,7 @@ function teacherPanel(config, accent, talk) {
   const frames = (group.frames || [])
     .map((frame) => `<span class="sg-frame">${esc(frame)}</span>`)
     .join("");
+  const listenFor = (group.listenFor || []).map((item) => `<li>${esc(item)}</li>`).join("");
   wrapper.innerHTML = `<details>
     <summary>👩‍🏫 Teacher studio guide · ${esc(group.label || accent.name)}</summary>
     <div class="sg-tbody">
@@ -190,13 +189,14 @@ function teacherPanel(config, accent, talk) {
       ${moves ? `<p><b>High-leverage moves:</b></p><ul>${moves}</ul>` : ""}
       ${frames ? `<p><b>Reusable frames:</b></p><div class="sg-frames">${frames}</div>` : ""}
       ${talk?.listenFor ? `<p><b>Listen for during team talk:</b> ${esc(talk.listenFor)}</p>` : ""}
+      ${listenFor ? `<p><b>Listen-for checkpoints:</b></p><ul>${listenFor}</ul>` : ""}
     </div>
   </details>`;
   return wrapper;
 }
 
 function hero(config, accent) {
-  const container = el("header", "sg-hero");
+  const container = el("div", "sg-hero");
   const grid = el("div", "sg-hero-grid");
   const copy = el("div");
   const badge = config.launch?.badge || `Small Group · ${accent.name}`;
@@ -216,106 +216,12 @@ function hero(config, accent) {
   return container;
 }
 
-// What each step is for, in student language, with a realistic minute
-// estimate — the scope-and-sequence layer of the learning map and rail.
-const STEP_GUIDE = {
-  "sg-launch": ["Meet today's mission and rate how ready you feel.", 2],
-  "sg-build": ["See the math worked out, then try it one step at a time.", 4],
-  "sg-explore": ["Get hands-on with a live math model.", 3],
-  "sg-vocab": ["Unlock the math words — English + Español.", 2],
-  "sg-talk": ["Say your thinking out loud — solo or with a partner.", 2],
-  "sg-practice": ["Solve problems with hints on standby.", 5],
-  "sg-model": ["Connect the idea to a picture you can explain.", 2],
-  "sg-apply": ["Use the math in a real situation.", 3],
-  "sg-check": ["Show what you know — this one is all you.", 2],
-  "sg-reflect": ["Check off your goals and name your growth.", 1],
-};
-
-// Learning map — the up-front "what am I learning, and what's my path?"
-// panel. Everything is derived from the config + the sections this lesson
-// actually mounted, so catch-ups and both groups stay accurate automatically.
-function learningMap(config, phases) {
-  const map = el("section", "sg-map");
-  map.setAttribute("aria-label", "Today's goal and learning path");
-  map.appendChild(el("div", "sg-eyebrow", "Today at a glance"));
-  if (config.contentObjective)
-    map.appendChild(el("p", "sg-map-goal", `🎯 ${esc(studentVoice(config.contentObjective))}`));
-  if (config.languageObjective)
-    map.appendChild(el("p", "sg-map-lang", `🗣️ ${esc(studentVoice(config.languageObjective))}`));
-  const keyIdea = config.launch?.conceptIntro?.keyIdea;
-  if (keyIdea) map.appendChild(el("div", "sg-map-key", `<b>Key idea:</b> ${esc(keyIdea)}`));
-  const path = el("ol", "sg-path");
-  let total = 0;
-  phases.forEach(([id, label], index) => {
-    const [why, minutes] = STEP_GUIDE[id] || ["", 2];
-    total += minutes;
-    path.appendChild(
-      el(
-        "li",
-        null,
-        `<span class="pn">${index + 1}</span><b>${esc(label)}</b><span class="why">${esc(why)}</span><span class="min">~${minutes} min</span>`,
-      ),
-    );
-  });
-  map.appendChild(el("p", "block-lab", `Your path today · about ${total} minutes`));
-  map.appendChild(path);
-  return map;
-}
-
-// The rail is data-driven: it lists exactly the sections this lesson actually
-// mounted (labs are config-dependent), numbered in visual order.
-function progressRail(phases) {
-  const rail = el("nav", "sg-rail");
-  rail.setAttribute("aria-label", "Small-group lesson progress");
-  const controls = {};
-  phases.forEach(([id, label], index) => {
-    const button = el(
-      "button",
-      "sg-step",
-      `<span class="dot">${index + 1}</span><span class="lbl">${esc(label)}</span>`,
-    );
-    button.type = "button";
-    button.onclick = () =>
-      document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-    controls[id] = button;
-    rail.appendChild(button);
-  });
-  const meter = el(
-    "div",
-    "sg-meter",
-    `<div class="sg-meter-track"><div class="sg-meter-fill"></div></div><span class="sg-meter-lab">0 of ${phases.length} steps done</span>`,
-  );
-  rail.appendChild(meter);
-  const done = new Set();
-  const mark = (id) => {
-    if (!controls[id] || done.has(id)) return;
-    controls[id].classList.add("done");
-    done.add(id);
-    meter.querySelector(".sg-meter-fill").style.width =
-      `${Math.round((done.size / phases.length) * 100)}%`;
-    meter.querySelector(".sg-meter-lab").textContent =
-      done.size >= phases.length
-        ? "All steps complete 🎉"
-        : `${done.size} of ${phases.length} steps done`;
-  };
-  return { rail, mark, controls };
-}
-
-function footer(config, isTeacher) {
-  const foot = el("footer", "sg-foot");
+function footer() {
+  const foot = el("div", "sg-foot");
   const print = el("button", "btn ghost", "🖨 Print / save as PDF");
   print.type = "button";
   print.onclick = () => window.print();
   foot.appendChild(print);
-  if (isTeacher) {
-    const back = el("a", "btn ghost", "← Curriculum");
-    back.href = "/curriculum/";
-    const scorm = el("a", "btn ghost", "⬇ Canvas package");
-    scorm.href = `/api/scorm?activity=${encodeURIComponent(config.lessonId)}&title=${encodeURIComponent(config.title || "")}`;
-    scorm.rel = "nofollow";
-    foot.prepend(back);
-    foot.appendChild(scorm);
-  }
   return foot;
 }
 
@@ -329,7 +235,7 @@ export function bootSmallGroup(config) {
   const app = document.getElementById("app");
   if (!app) return;
   app.innerHTML = "";
-  const isTeacher = teacherMode();
+  app.setAttribute("role", "main");
   const talkData = selectedTalk(config, variant);
   const store = createStudioStore(config.lessonId);
   const state = {
@@ -353,17 +259,16 @@ export function bootSmallGroup(config) {
     },
   };
 
-  // Rail marks can fire while sections are still being composed (restores,
-  // fallbacks) — buffer them until the data-driven rail exists, then replay.
+  // Restored interactions can finish before the tabs mount, so buffer marks.
   const pendingMarks = new Set();
-  let rail = null;
+  let tabs = null;
   const mark = (id) => {
     pendingMarks.add(id);
-    rail?.mark(id);
+    tabs?.markDone(id);
   };
-  const phaseDone = (railId, storeKey) => () => {
+  const phaseDone = (tabId, storeKey) => () => {
     if (storeKey) store.set(storeKey, true);
-    mark(railId);
+    mark(tabId);
   };
 
   const completion = el("div", "sg-done");
@@ -382,7 +287,7 @@ export function bootSmallGroup(config) {
     state,
     () => {
       store.set("reflectDone", true);
-      mark("sg-reflect");
+      mark("sg-tab-check");
       completion.hidden = false;
       completion.innerHTML = `<h2>Studio complete 🎉</h2><p>You finished the mission and named your growth. That is what mathematicians do.</p>`;
       evidence.reveal();
@@ -390,85 +295,144 @@ export function bootSmallGroup(config) {
     store,
   );
   const revealReflection = () => {
-    mark("sg-check");
+    mark("sg-tab-check");
     reflection.reveal();
   };
 
-  // ── Compose the studio: [id, rail label, section element (or null to skip)] ──
-  const check = createCheckSection(config, revealReflection, tally, events, store);
-  const sections = [
-    [
-      "sg-launch",
-      "Launch",
-      createMissionSection(config, variant, state, phaseDone("sg-launch", "launchDone"), store),
-    ],
-    [
-      "sg-build",
-      "Build",
-      conceptSection(
-        config,
-        phaseDone("sg-build", "buildDone"),
-        createProofPathLab(variant, state),
-      ),
-    ],
-    [
-      "sg-explore",
-      "Lab",
-      createExploreLab(config, variant, {
-        store,
-        events,
-        onDone: phaseDone("sg-explore"),
-      }),
-    ],
-    [
-      "sg-vocab",
-      "Words",
-      createVocabularySection(config, phaseDone("sg-vocab", "vocabDone"), store),
-    ],
-    [
-      "sg-talk",
-      "Talk",
-      (() => {
-        const talk = createTalkSection(config, variant, phaseDone("sg-talk", "talkDone"));
-        if (talk) talk.appendChild(createConsensusLab(config, variant, state));
-        return talk;
-      })(),
-    ],
-    [
-      "sg-practice",
-      "Practice",
-      createPracticeSection(
-        config,
-        () => {
-          phaseDone("sg-practice", "practiceDone")();
-          if (!check) reflection.reveal();
-        },
-        tally,
-        events,
-        store,
-      ),
-    ],
-    [
-      "sg-model",
-      "Model",
-      createModelLab(config, variant, { store, events, onDone: phaseDone("sg-model") }),
-    ],
-    [
-      "sg-apply",
-      "Apply",
-      createApplyLab(config, variant, { store, events, onDone: phaseDone("sg-apply") }),
-    ],
-    ["sg-check", "Show it", check],
-    ["sg-reflect", "Reflect", reflection.section],
-  ];
-  const present = sections.filter(([, , section]) => section);
+  const allPractice = collectPracticeItems(config);
+  const preferredGuided =
+    Number(config.smallGroupPractice?.guidedCount) || (variant === "group2" ? 3 : 4);
+  const guidedCount =
+    allPractice.length <= 2
+      ? Math.min(1, allPractice.length)
+      : Math.min(preferredGuided, allPractice.length - 2);
+  const remaining = allPractice.slice(guidedCount);
+  const independentCount = Math.ceil(remaining.length / 2);
+  const guidedItems = allPractice.slice(0, guidedCount);
+  const independentItems = remaining.slice(0, independentCount);
+  const moreItems = remaining.slice(independentCount);
 
-  app.appendChild(hero(config, accent));
-  if (isTeacher) {
-    app.appendChild(createTeacherEvidenceConsole(config, state));
-    const panel = teacherPanel(config, accent, talkData);
-    if (panel) app.appendChild(panel);
-  }
+  const check = createCheckSection(config, revealReflection, tally, events, store);
+  const mission = createMissionSection(
+    config,
+    variant,
+    state,
+    phaseDone("sg-tab-learn", "launchDone"),
+    store,
+  );
+  const build = conceptSection(
+    config,
+    phaseDone("sg-tab-learn", "buildDone"),
+    createProofPathLab(variant, state),
+  );
+  const explore = createExploreLab(config, variant, {
+    store,
+    events,
+    onDone: phaseDone("sg-tab-learn", "exploreDone"),
+  });
+  const model = createModelLab(config, variant, {
+    store,
+    events,
+    onDone: phaseDone("sg-tab-learn", "modelDone"),
+  });
+  const vocab = createVocabularySection(config, phaseDone("sg-tab-vocab", "vocabDone"), store);
+  const talk = createTalkSection(config, variant, phaseDone("sg-tab-guided", "talkDone"));
+  if (talk) talk.appendChild(createConsensusLab(config, variant, state));
+  const guided = createPracticeSection(
+    config,
+    phaseDone("sg-tab-guided", "guidedDone"),
+    tally,
+    events,
+    store,
+    {
+      items: guidedItems,
+      id: "sg-guided-practice",
+      title: "Let’s solve together",
+      eyebrow: "Guided practice",
+      directions:
+        "Work one problem at a time. Use the step guide and hints whenever you need them.",
+      scaffold: "all",
+      showMistake: true,
+    },
+  );
+  const practice = createPracticeSection(
+    config,
+    phaseDone("sg-tab-practice", "practiceDone"),
+    tally,
+    events,
+    store,
+    {
+      items: independentItems,
+      id: "sg-independent-practice",
+      title: "Try it on your own",
+      eyebrow: "Independent practice",
+      directions: "Solve each problem, check your answer, and revise when needed.",
+      scaffold: variant === "group2" ? "none" : "default",
+      showMistake: false,
+      indexOffset: guidedCount,
+    },
+  );
+  const morePractice = createPracticeSection(
+    config,
+    phaseDone("sg-tab-more", "moreDone"),
+    tally,
+    events,
+    store,
+    {
+      items: moreItems,
+      id: "sg-more-practice",
+      title: "More practice",
+      eyebrow: "Build fluency",
+      directions: "Keep going until the steps feel familiar. Explain one answer out loud.",
+      scaffold: variant === "group2" ? "none" : "default",
+      showMistake: false,
+      includeOptional: true,
+      indexOffset: guidedCount + independentItems.length,
+    },
+  );
+  const apply = createApplyLab(config, variant, {
+    store,
+    events,
+    onDone: phaseDone("sg-tab-more", "applyDone"),
+  });
+
+  const makePanel = (id, children) => {
+    const panel = el("div", "sg-panel");
+    panel.id = id;
+    for (const child of children) if (child) panel.appendChild(child);
+    return panel;
+  };
+  const tabSteps = [
+    { id: "sg-tab-vocab", label: "Vocabulary", panel: makePanel("sg-tab-vocab", [vocab]) },
+    {
+      id: "sg-tab-learn",
+      label: "Learn It",
+      panel: makePanel("sg-tab-learn", [mission, build, explore, model]),
+    },
+    {
+      id: "sg-tab-guided",
+      label: "Guided",
+      panel: makePanel("sg-tab-guided", [talk, guided, createAdaptiveCoach(variant, state)]),
+    },
+    {
+      id: "sg-tab-practice",
+      label: "Practice",
+      panel: makePanel("sg-tab-practice", [practice, createChallengeLab(config, variant, state)]),
+    },
+    {
+      id: "sg-tab-check",
+      label: "Check",
+      panel: makePanel("sg-tab-check", [check, reflection.section, evidence.section]),
+    },
+    {
+      id: "sg-tab-more",
+      label: "More Practice",
+      panel: makePanel("sg-tab-more", [morePractice, apply, completion]),
+    },
+  ];
+
+  const heroNode = hero(config, accent);
+  app.appendChild(heroNode);
   if (store.isReturning()) {
     const welcome = el("div", "sg-welcome");
     welcome.appendChild(
@@ -484,43 +448,55 @@ export function bootSmallGroup(config) {
     app.appendChild(welcome);
   }
 
-  app.appendChild(
-    learningMap(
-      config,
-      present.map(([id, label]) => [id, label]),
-    ),
-  );
-  rail = progressRail(present.map(([id, label]) => [id, label]));
-  app.appendChild(rail.rail);
-  present.forEach(([id, , section]) => {
-    app.appendChild(section);
-    // The adaptive coach and design lab live right where they act: after practice.
-    if (id === "sg-practice")
-      app.append(createAdaptiveCoach(variant, state), createChallengeLab(config, variant, state));
-  });
-  app.append(completion, evidence.section, footer(config, isTeacher));
+  for (const step of tabSteps) app.appendChild(step.panel);
+  const foot = footer();
+  app.appendChild(foot);
+  tabs = mountSmallGroupTabs(app, tabSteps);
+  pendingMarks.forEach((id) => tabs.markDone(id));
 
-  // Renumber the visible section headings to match their actual order, and
-  // mark phases the lesson doesn't have so the rail never looks stuck.
-  present.forEach(([, , section], index) => {
-    const number = section.querySelector(".sg-h .n");
-    if (number) number.textContent = String(index + 1);
+  tabSteps.forEach((step, index) => {
+    for (const number of step.panel.querySelectorAll(".sg-h .n")) {
+      number.textContent = String(index + 1);
+    }
   });
   const RESTORE_MARKS = {
-    launchDone: "sg-launch",
-    buildDone: "sg-build",
-    exploreDone: "sg-explore",
-    vocabDone: "sg-vocab",
-    talkDone: "sg-talk",
-    practiceDone: "sg-practice",
-    modelDone: "sg-model",
-    applyDone: "sg-apply",
-    checkSolved: "sg-check",
-    reflectDone: "sg-reflect",
+    vocabDone: "sg-tab-vocab",
+    launchDone: "sg-tab-learn",
+    buildDone: "sg-tab-learn",
+    exploreDone: "sg-tab-learn",
+    modelDone: "sg-tab-learn",
+    talkDone: "sg-tab-guided",
+    guidedDone: "sg-tab-guided",
+    practiceDone: "sg-tab-practice",
+    checkSolved: "sg-tab-check",
+    reflectDone: "sg-tab-check",
+    moreDone: "sg-tab-more",
+    applyDone: "sg-tab-more",
   };
-  for (const [storeKey, railId] of Object.entries(RESTORE_MARKS))
-    if (store.get(storeKey)) mark(railId);
-  pendingMarks.forEach((id) => rail.mark(id));
+  for (const [storeKey, tabId] of Object.entries(RESTORE_MARKS))
+    if (store.get(storeKey)) mark(tabId);
+
+  let teacherToolsAdded = false;
+  void mountSmallGroupTeacherAccess({
+    app,
+    lessonId: config.lessonId,
+    renderTeacher(facilitation) {
+      if (teacherToolsAdded) return;
+      teacherToolsAdded = true;
+      const teacherConfig = { ...config, smallGroup: facilitation };
+      const evidenceConsole = createTeacherEvidenceConsole(teacherConfig, state);
+      const panel = teacherPanel(teacherConfig, accent, talkData);
+      if (panel) heroNode.after(panel);
+      if (evidenceConsole) heroNode.after(evidenceConsole);
+      const back = el("a", "btn ghost", "← Curriculum");
+      back.href = "/curriculum/";
+      const scorm = el("a", "btn ghost", "⬇ Canvas package");
+      scorm.href = `/api/scorm?activity=${encodeURIComponent(config.lessonId)}&title=${encodeURIComponent(config.title || "")}`;
+      scorm.rel = "nofollow";
+      foot.prepend(back);
+      foot.appendChild(scorm);
+    },
+  });
 
   tally.update();
   installSmallGroupAnnotation(app, config);

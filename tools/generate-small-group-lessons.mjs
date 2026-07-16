@@ -14,16 +14,19 @@
 //   node tools/generate-small-group-lessons.mjs            # all base lessons
 //   node tools/generate-small-group-lessons.mjs --dry      # report only
 //   node tools/generate-small-group-lessons.mjs --only 1-3 # single lesson (PoC)
-import { readFileSync, writeFileSync, readdirSync, mkdirSync, existsSync } from "node:fs";
-import { join, dirname, resolve } from "node:path";
+//   node tools/generate-small-group-lessons.mjs --configs-only # preserve generated shells
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { shellHtml, LESSON_JS } from "./lib/compact-shell.mjs";
+import { LESSON_JS, shellHtml } from "./lib/compact-shell.mjs";
 
 const ROOT = process.env.REPO || resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const LESSONS = join(ROOT, "lessons");
 const DRY = process.argv.includes("--dry");
+const CONFIGS_ONLY = process.argv.includes("--configs-only");
 const onlyIx = process.argv.indexOf("--only");
 const ONLY = onlyIx !== -1 ? process.argv[onlyIx + 1] : null;
+const MINIMUM_PRACTICE = 10;
 
 const BASE_RE = /^(\d+)-(\d+)$/;
 const clone = (o) => JSON.parse(JSON.stringify(o));
@@ -33,7 +36,9 @@ const cfg = (id) => JSON.parse(readFileSync(join(LESSONS, id, "config.json"), "u
 // Derive the bare skill phrase from a "I can …" objective.
 function skillPhrase(obj, fallback) {
   if (!obj) return fallback;
-  let s = String(obj).trim().replace(/^I can\s+/i, "");
+  let s = String(obj)
+    .trim()
+    .replace(/^I can\s+/i, "");
   s = s.replace(/[.]\s*$/, "");
   return s || fallback;
 }
@@ -60,6 +65,16 @@ function firstLine(x) {
 const RICH = new Set(["multiple-choice", "error-analysis", "open-response"]);
 function preferRich(arr) {
   return [...(arr || [])].sort((x, y) => (RICH.has(y.type) ? 1 : 0) - (RICH.has(x.type) ? 1 : 0));
+}
+
+function uniquePractice(...tiers) {
+  const seen = new Set();
+  return preferRich(tiers.flat()).filter((item) => {
+    const key = item.stem || item.title || JSON.stringify(item);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
 // ---------------------------------------------------------------- Group 1
@@ -98,10 +113,7 @@ function buildGroup1(base, u, m) {
     iDo: ci.iDo || { title: "Watch me", lines: [] },
     weDo: {
       title: ci.weDo?.title || "Let's try together",
-      lines: [
-        ...(ci.weDo?.lines || []),
-        `Sentence frame — say it with me: "${frames[0]}"`,
-      ],
+      lines: [...(ci.weDo?.lines || []), `Sentence frame — say it with me: "${frames[0]}"`],
     },
     youDo: {
       title: "Now you try — with support",
@@ -113,9 +125,15 @@ function buildGroup1(base, u, m) {
   };
 
   const p = base.practice || {};
+  const practice = uniquePractice(
+    p.approaching || [],
+    p.onLevel || [],
+    p.optional || [],
+    p.extending || [],
+  ).slice(0, 12);
   out.practice = {
-    approaching: preferRich(p.approaching || p.onLevel || []).slice(0, 5),
-    onLevel: preferRich(p.onLevel || []).slice(0, 2),
+    approaching: practice.slice(0, 6),
+    onLevel: practice.slice(6),
     extending: [],
     optional: [],
     commonMistake: p.commonMistake,
@@ -128,6 +146,7 @@ function buildGroup1(base, u, m) {
         }
       : undefined,
   };
+  out.smallGroupPractice = { guidedCount: 4, minimum: MINIMUM_PRACTICE };
 
   if (out.explore?.instructions)
     out.explore.instructions = `Quick warm-up together: ${out.explore.instructions}`;
@@ -182,8 +201,7 @@ function buildGroup2(base, u, m) {
 
   out.launch = out.launch || {};
   out.launch.badge = "Small Group · Challenge";
-  out.launch.narrative =
-    `This is your challenge small group for Lesson ${dm}. You've got the basics — now let's push on it: harder cases, a second strategy, and always the question "how do you KNOW?"`;
+  out.launch.narrative = `This is your challenge small group for Lesson ${dm}. You've got the basics — now let's push on it: harder cases, a second strategy, and always the question "how do you KNOW?"`;
   out.launch.conceptIntro = {
     heading: `Push further — ${ci.heading || base.title}`,
     intro:
@@ -195,7 +213,9 @@ function buildGroup2(base, u, m) {
     weDo: {
       title: "Generalize it",
       lines: [
-        richWe ? `Start from what you know: ${richWe}` : "Let's take today's idea one step further.",
+        richWe
+          ? `Start from what you know: ${richWe}`
+          : "Let's take today's idea one step further.",
         "Now predict: what happens with much bigger numbers, or numbers that share no common factors? Make a prediction, then check it.",
       ],
     },
@@ -208,13 +228,17 @@ function buildGroup2(base, u, m) {
     },
   };
 
-  const ext = preferRich(p.extending || []).slice(0, 4);
-  const opt = preferRich(p.optional || []).slice(0, 3);
+  const practice = uniquePractice(
+    p.onLevel || [],
+    p.extending || [],
+    p.optional || [],
+    p.approaching || [],
+  ).slice(0, 12);
   out.practice = {
     approaching: [],
-    onLevel: preferRich(p.onLevel || []).slice(0, 2),
-    extending: ext.length ? ext : preferRich(p.onLevel || []).slice(0, 3),
-    optional: opt,
+    onLevel: practice.slice(0, 4),
+    extending: practice.slice(4),
+    optional: [],
     commonMistake: p.commonMistake,
     optionalActivity: p.optionalActivity
       ? {
@@ -226,6 +250,7 @@ function buildGroup2(base, u, m) {
         }
       : undefined,
   };
+  out.smallGroupPractice = { guidedCount: 3, minimum: MINIMUM_PRACTICE };
 
   if (out.explore?.instructions)
     out.explore.instructions = `Go deeper: ${out.explore.instructions} As you work, ask yourself WHY it works.`;
@@ -262,12 +287,20 @@ function assertValid(id, out) {
     throw new Error(`${id}: all practice tiers empty`);
   if (!out.reflect?.exitTicket) throw new Error(`${id}: no exit ticket`);
   if ((out.vocabulary || []).length < 2) throw new Error(`${id}: thin vocab`);
+  const practiceCount = ["approaching", "onLevel", "extending", "optional"].reduce(
+    (sum, tier) => sum + (t[tier] || []).length,
+    0,
+  );
+  if (practiceCount < MINIMUM_PRACTICE) {
+    throw new Error(`${id}: only ${practiceCount} practice items (need ${MINIMUM_PRACTICE})`);
+  }
 }
 
 // ---------------------------------------------------------------- Write
-function writeLesson(id, baseId, out) {
+function writeLesson(id, out) {
   mkdirSync(join(LESSONS, id), { recursive: true });
   writeFileSync(join(LESSONS, id, "config.json"), JSON.stringify(out, null, 2) + "\n");
+  if (CONFIGS_ONLY) return;
   writeFileSync(
     join(LESSONS, id, "index.html"),
     shellHtml(id, out.title, `Grade 6 Reveal Math small-group lesson — ${out.title}`),
@@ -292,7 +325,7 @@ for (const baseId of bases) {
   for (const build of [buildGroup1, buildGroup2]) {
     const { id, out } = build(base, u, m);
     assertValid(id, out);
-    if (!DRY) writeLesson(id, baseId, out);
+    if (!DRY) writeLesson(id, out);
     const group = out.smallGroup.group;
     rows.push({
       id,
@@ -317,9 +350,14 @@ for (const baseId of bases) {
 }
 
 if (!DRY)
-  writeFileSync(new URL("./small-group-rows.json", import.meta.url), JSON.stringify(rows, null, 2) + "\n");
+  writeFileSync(
+    new URL("./small-group-rows.json", import.meta.url),
+    JSON.stringify(rows, null, 2) + "\n",
+  );
 
-console.log(`${DRY ? "[dry] " : ""}base lessons: ${bases.length}  small-group lessons: ${rows.length}`);
+console.log(
+  `${DRY ? "[dry] " : ""}base lessons: ${bases.length}  small-group lessons: ${rows.length}`,
+);
 for (const r of rows)
   console.log(
     `${r.id.padEnd(16)} after ${r.afterLesson.padEnd(6)} g${r.group} ${r.label.padEnd(14)} v${r.counts.vocab} a${r.counts.approaching} o${r.counts.onLevel} e${r.counts.extending} opt${r.counts.optional}`,

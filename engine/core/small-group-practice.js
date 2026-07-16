@@ -380,7 +380,7 @@ function responseCard(item, index, variant, onSolved, scaffold, events = {}) {
   return card;
 }
 
-function collectItems(config) {
+export function collectPracticeItems(config) {
   const tiers = ["approaching", "onLevel", "extending", "optional"];
   const seen = new Set();
   const items = [];
@@ -392,7 +392,7 @@ function collectItems(config) {
       items.push(item);
     }
   }
-  return items.slice(0, 6);
+  return items;
 }
 
 function problemCard(item, index, variant, onSolved, scaffold, events = {}) {
@@ -403,44 +403,96 @@ function problemCard(item, index, variant, onSolved, scaffold, events = {}) {
   return responseCard(item, index, variant, onSolved, scaffold, events);
 }
 
-export function createPracticeSection(config, onPhaseDone, tally, events = {}, store = null) {
+function paginateProblems(section) {
+  const cards = [...section.querySelectorAll(":scope > .prob")];
+  if (cards.length < 2) return;
+  let index = 0;
+  const controls = el("div", "sg-problem-nav");
+  const previous = el("button", "btn ghost", "← Previous");
+  const status = el("span", "sg-problem-count");
+  const next = el("button", "btn", "Next problem →");
+  previous.type = next.type = "button";
+  const show = (nextIndex) => {
+    index = Math.max(0, Math.min(cards.length - 1, nextIndex));
+    cards.forEach((card, cardIndex) => {
+      card.hidden = cardIndex !== index;
+    });
+    previous.disabled = index === 0;
+    next.disabled = index === cards.length - 1;
+    status.textContent = `Problem ${index + 1} of ${cards.length}`;
+    cards[index].scrollIntoView?.({ behavior: "smooth", block: "start" });
+  };
+  previous.onclick = () => show(index - 1);
+  next.onclick = () => show(index + 1);
+  controls.append(previous, status, next);
+  section.appendChild(controls);
+  show(0);
+}
+
+export function createPracticeSection(
+  config,
+  onPhaseDone,
+  tally,
+  events = {},
+  store = null,
+  options = {},
+) {
+  const items = options.items || collectPracticeItems(config);
+  if (!items.length) return null;
   const section = el("section", "sg-sec");
-  section.id = "sg-practice";
+  section.id = options.id || "sg-practice";
   const title =
-    config.variant === "group2"
+    options.title ||
+    (config.variant === "group2"
       ? "Challenge, justify, generalize"
-      : "Practice with hints on standby";
+      : "Practice with hints on standby");
   section.appendChild(
     el(
       "div",
       "sg-h",
-      `<span class="n">5</span><div><div class="sg-eyebrow">Try · revise · explain</div><h2>${title}</h2></div>`,
+      `<span class="n">${options.number || 3}</span><div><div class="sg-eyebrow">${esc(options.eyebrow || "Try · revise · explain")}</div><h2>${esc(title)}</h2></div>`,
     ),
   );
+  if (options.directions) section.appendChild(el("p", "sg-directions", esc(options.directions)));
   const mistake = config.practice?.commonMistake;
   const mistakeText = typeof mistake === "string" ? mistake : mistake?.text || mistake?.mistake;
-  if (mistakeText && config.variant !== "group2")
-    section.appendChild(el("div", "mistake", `<b>⚠️ Thinking trap:</b> ${esc(mistakeText)}`));
-  const items = collectItems(config);
+  if (mistakeText && config.variant !== "group2" && options.showMistake !== false) {
+    section.appendChild(
+      el(
+        "details",
+        "mistake",
+        `<summary>⚠️ Before you start: common mistake</summary><p>${esc(mistakeText)}</p>`,
+      ),
+    );
+  }
   let solved = 0;
   // Count each item at most once so a restored-then-resolved card can't
   // double-credit the tally.
   const counted = new Set();
   const solveItem = (index) => {
-    if (counted.has(index)) return;
-    counted.add(index);
+    const storeIndex = (options.indexOffset || 0) + index;
+    if (counted.has(storeIndex)) return;
+    counted.add(storeIndex);
     solved++;
     tally.solved++;
     events.onSolved?.();
     tally.update?.();
-    store?.addTo("solvedPractice", index);
+    store?.addTo("solvedPractice", storeIndex);
     if (solved >= Math.ceil(items.length * 0.6)) onPhaseDone();
   };
   items.forEach((item, index) => {
     tally.total++;
-    const scaffold = config.variant === "group2" ? false : index % 2 === 0;
+    const scaffold =
+      options.scaffold === "all"
+        ? true
+        : options.scaffold === "none"
+          ? false
+          : config.variant === "group2"
+            ? false
+            : index % 2 === 0;
     const card = problemCard(item, index, config.variant, () => solveItem(index), scaffold, events);
-    if (store?.has("solvedPractice", index)) {
+    const storeIndex = (options.indexOffset || 0) + index;
+    if (store?.has("solvedPractice", storeIndex)) {
       card.prepend(
         el("div", "sg-donechip", "✓ Solved last session — explain your reasoning again, out loud."),
       );
@@ -449,7 +501,7 @@ export function createPracticeSection(config, onPhaseDone, tally, events = {}, s
     section.appendChild(card);
   });
   const optional = config.practice?.optionalActivity;
-  if (optional)
+  if (optional && options.includeOptional)
     section.appendChild(
       el(
         "div",
@@ -457,6 +509,7 @@ export function createPracticeSection(config, onPhaseDone, tally, events = {}, s
         `<div class="sg-eyebrow">Bonus move</div><h3>${esc(optional.emoji || "⭐")} ${esc(optional.name || "Try one more")}</h3><p>${esc(optional.intro || "Use this if you are ready to keep going.")}</p>`,
       ),
     );
+  paginateProblems(section);
   return section;
 }
 

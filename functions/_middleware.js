@@ -7,8 +7,7 @@
 //
 // The password is NOT stored in this (public) repo — it is read from the
 // Cloudflare environment variable SITE_PASSWORD. If that variable is not set,
-// the whole site is open (including teacher pages), so deploying this file
-// changes nothing until SITE_PASSWORD is configured in the dashboard.
+// protected small-group routes fail closed rather than exposing facilitation.
 //
 //   Cloudflare dashboard -> Workers & Pages -> your Pages project
 //   -> Settings -> Variables and Secrets -> add for Production:
@@ -16,6 +15,17 @@
 //
 // Teachers sign in with ANY username plus the shared password. This is a casual
 // gate to keep students/public out of teacher material, not strong security.
+
+function toStudentConfig(value) {
+  if (Array.isArray(value)) return value.map(toStudentConfig);
+  if (!value || typeof value !== "object") return value;
+  const clean = {};
+  for (const [key, child] of Object.entries(value)) {
+    if (key === "smallGroup" || key === "listenFor") continue;
+    clean[key] = toStudentConfig(child);
+  }
+  return clean;
+}
 
 export async function onRequest(context) {
   const { request, env, next } = context;
@@ -35,10 +45,22 @@ export async function onRequest(context) {
     !isFamilyPublishedFeed &&
     !isPublicFamilySchedulingApi;
 
+  // Student small-group configs never include facilitation fields. The
+  // authenticated teacher route reads the original asset directly.
+  if (/^\/lessons\/\d{1,2}-\d{1,2}-(?:group[12]|catchup)\/config\.json$/.test(p)) {
+    const asset = await next();
+    if (!asset.ok) return asset;
+    const config = toStudentConfig(await asset.json());
+    const headers = new Headers(asset.headers);
+    headers.set("content-type", "application/json; charset=utf-8");
+    headers.set("x-content-type-options", "nosniff");
+    return new Response(JSON.stringify(config), { status: asset.status, headers });
+  }
+
   // Public pages remain open when the gate is unavailable. Publishing edits
   // are the exception and fail closed instead of becoming publicly writable.
   if (!password) {
-    if (isFamilyPublishingApi) {
+    if (isFamilyPublishingApi || p.startsWith("/teacher-small-group/")) {
       return new Response("Teacher access is not configured.", { status: 503 });
     }
     return next();

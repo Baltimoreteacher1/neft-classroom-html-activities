@@ -448,76 +448,6 @@
         ]
       },
       {
-        "type": "fill-table",
-        "headers": [
-          "Figure",
-          "Shape 1 Area",
-          "Shape 2 Area",
-          "Operation",
-          "Total Area"
-        ],
-        "rows": [
-          [
-            "L-shaped deck",
-            "48 sq ft",
-            "20 sq ft",
-            "Add",
-            ""
-          ],
-          [
-            "Floor with alcove",
-            "90 sq ft",
-            "15 sq ft",
-            "Add",
-            ""
-          ],
-          [
-            "Wall with window cutout",
-            "120 sq ft",
-            "18 sq ft",
-            "Subtract",
-            ""
-          ],
-          [
-            "Courtyard with fountain cutout",
-            "200 sq ft",
-            "36 sq ft",
-            "Subtract",
-            ""
-          ]
-        ],
-        "editableCells": [
-          {
-            "row": 0,
-            "col": 4,
-            "answer": "68 sq ft"
-          },
-          {
-            "row": 1,
-            "col": 4,
-            "answer": "105 sq ft"
-          },
-          {
-            "row": 2,
-            "col": 4,
-            "answer": "102 sq ft"
-          },
-          {
-            "row": 3,
-            "col": 4,
-            "answer": "164 sq ft"
-          }
-        ],
-        "hint": "After scaling, calculate new area and compare to original.",
-        "hints": [
-          "The Operation column already tells you whether to add or subtract — no deciding needed, just computing.",
-          "Add rows: Shape 1 + Shape 2. Subtract rows: Shape 1 − Shape 2 (the big shape comes first).",
-          "L-shaped deck row: add 48 + 20. Wall row: subtract 18 from 120."
-        ]
-      }
-    ],
-    "extending": [
-      {
         "type": "error-analysis",
         "title": "Find the Area Error",
         "workedExample": [
@@ -567,61 +497,6 @@
         ]
       },
       {
-        "type": "fill-table",
-        "instructions": "This composite figure is a house shape: a rectangle topped with a triangle. Find each area and the total.",
-        "headers": [
-          "Part",
-          "Shape",
-          "Dimensions",
-          "Area"
-        ],
-        "rows": [
-          [
-            "Walls",
-            "Rectangle",
-            "10 ft × 8 ft",
-            ""
-          ],
-          [
-            "Roof",
-            "Triangle",
-            "b = 10 ft, h = 4 ft",
-            ""
-          ],
-          [
-            "Total",
-            "—",
-            "—",
-            ""
-          ]
-        ],
-        "editableCells": [
-          {
-            "row": 0,
-            "col": 3,
-            "answer": "80 sq ft"
-          },
-          {
-            "row": 1,
-            "col": 3,
-            "answer": "20 sq ft"
-          },
-          {
-            "row": 2,
-            "col": 3,
-            "answer": "100 sq ft"
-          }
-        ],
-        "hint": "Calculate area using A = l x w.",
-        "hints": [
-          "The house has two parts with different rules: rectangle walls (10 × 8) and a triangle roof (b = 10, h = 4).",
-          "Walls use l × w; the roof uses ½ × b × h; the Total row adds the two parts.",
-          "Compute 10 × 8 for the walls, then ½ × 10 × 4 for the roof, and add them in the Total row."
-        ]
-      }
-    ],
-    "optional": [
-      {
         "type": "multiple-choice",
         "stem": "A 7 ft by 5 ft rectangle has a triangle (base 7 ft, height 4 ft) on top. Add the two areas. What is the total area?",
         "choices": [
@@ -638,7 +513,9 @@
           "Scale both: area scales by the product.",
           "Try: if both double, area goes × 4."
         ]
-      },
+      }
+    ],
+    "extending": [
       {
         "type": "multiple-choice",
         "stem": "Plan 2 — L-shaped lobby: decompose the L into two rectangles, one 9 ft by 6 ft and one 7 ft by 3 ft, then ADD. What is the total floor area?",
@@ -674,8 +551,153 @@
           "You added the closet — it's removed, so subtract its area.",
           "20 is just the closet — subtract it from the whole floor."
         ]
+      },
+      {
+        "type": "error-analysis",
+        "title": "Level 2 Extension — Catch the Architect's Area Mistake",
+        "workedExample": [
+          {
+            "label": "Identify the shapes",
+            "work": "A clubhouse wall is a 18 ft by 11 ft rectangle with a triangular gable (base 18 ft, height 6 ft) joined on top."
+          },
+          {
+            "label": "Find the rectangle area",
+            "work": "A = 18 x 11 = 198 sq ft"
+          },
+          {
+            "label": "Find the triangle area",
+            "work": "A = 1/2 x 18 x 6 = 54 sq ft"
+          },
+          {
+            "label": "Add the areas for the total",
+            "work": "Total = 198 + 198 + 54 = 450 sq ft"
+          }
+        ],
+        "errorStep": 3,
+        "correctWork": "The architect used the rectangle's area twice (198 + 198). Each region's area is counted only once. Total = 198 + 54 = 252 sq ft.",
+        "hints": [
+          "Look at Step 4. How many regions are in this figure, and how many areas should you add?",
+          "There are only two pieces: one rectangle (198) and one triangle (54). Adding 198 twice double-counts the rectangle."
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "An L-shaped room is made of two rectangles: 10 ft × 6 ft and 4 ft × 3 ft. What is the total area?",
+        "choices": [
+          "72 sq ft",
+          "60 sq ft",
+          "12 sq ft",
+          "72 ft"
+        ],
+        "correctIndex": 0,
+        "explanation": "Area 1 = 10 × 6 = 60 sq ft. Area 2 = 4 × 3 = 12 sq ft. Total = 60 + 12 = 72 sq ft.",
+        "choiceFeedback": [
+          "",
+          "Double one side: area doubles.",
+          "Double both sides: area × 4.",
+          "Test: 10 × 4 vs. 10 × 8."
+        ],
+        "hints": [
+          "The L-shape is already split into two rectangles for you: 10 × 6 and 4 × 3.",
+          "Find each rectangle's area separately with A = l × w, then combine — joined shapes mean adding.",
+          "Compute 10 × 6 and 4 × 3, then add the two results. Label your answer in sq ft."
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "A rectangular patio is 15 ft × 10 ft with a 5 ft × 4 ft rectangular flower bed cut out. What is the remaining area?",
+        "choices": [
+          "130 sq ft",
+          "150 sq ft",
+          "20 sq ft",
+          "170 sq ft"
+        ],
+        "correctIndex": 0,
+        "explanation": "Patio = 15 × 10 = 150 sq ft. Cutout = 5 × 4 = 20 sq ft. Remaining = 150 − 20 = 130 sq ft.",
+        "choiceFeedback": [
+          "",
+          "Test: same perimeter, different areas?",
+          "A thin rectangle and a square can differ.",
+          "Perimeter does not determine area."
+        ],
+        "hints": [
+          "The flower bed is CUT OUT of the patio — that phrase tells you which operation to use.",
+          "Find the full patio area (15 × 10) and the cutout area (5 × 4), then remove the cutout.",
+          "Compute 15 × 10 and 5 × 4, then subtract the flower bed's area from the patio's area."
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "Find the area of an L-shape made of a 5×3 rectangle and a 2×4 rectangle.",
+        "choices": [
+          "23 sq units",
+          "15 sq units",
+          "8 sq units",
+          "20 sq units"
+        ],
+        "correctIndex": 0,
+        "explanation": "5 × 3 = 15. 2 × 4 = 8. Total = 15 + 8 = 23 sq units.",
+        "choiceFeedback": [
+          "",
+          "Area and perimeter are not linked.",
+          "A thin shape can have big perimeter, small area.",
+          "You must use both to describe a shape."
+        ],
+        "hints": [
+          "Two rectangles make this L: one is 5 × 3 and the other is 2 × 4.",
+          "Joined pieces mean you add their areas after computing each one with length × width.",
+          "Find 5 × 3, then 2 × 4, and add the two products together."
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "When should you subtract areas instead of adding them to find the area of a composite figure?",
+        "choices": [
+          "When a piece is cut out or removed from a larger shape",
+          "When the shapes overlap",
+          "When one shape is larger than the other",
+          "Always subtract — never add"
+        ],
+        "correctIndex": 0,
+        "explanation": "Subtract when a piece is removed from a larger shape (like a window cut from a wall). Add when two shapes are joined together (like an L-shape).",
+        "choiceFeedback": [
+          "",
+          "Overlap is different — subtracting is for a piece removed.",
+          "Size alone doesn't decide — subtract only when part is removed.",
+          "Not always — you add pieces that are joined together."
+        ],
+        "hints": [
+          "Think of real examples: a window in a wall versus two rooms joined into an L-shape.",
+          "Ask for each choice: is material missing from the shape, or are pieces being combined?",
+          "Picture a wall with a window: you can't paint the glass, so its area comes OFF the wall's area. Match that idea to a choice."
+        ]
+      },
+      {
+        "type": "error-analysis",
+        "title": "approaching — Spot the Common Mistake",
+        "workedExample": [
+          {
+            "label": "Identify the shapes",
+            "work": "An L-shaped room is made of two joined rectangles: 8 ft × 5 ft and 4 ft × 3 ft."
+          },
+          {
+            "label": "Find each area",
+            "work": "First rectangle = 8 × 5 = 40 sq ft. Second rectangle = 4 × 3 = 12 sq ft."
+          },
+          {
+            "label": "Combine the areas",
+            "work": "Total = 40 × 12 = 480 sq ft."
+          }
+        ],
+        "errorStep": 2,
+        "correctWork": "The two rectangles are joined, so add their areas — do not multiply them. Total = 40 + 12 = 52 sq ft.",
+        "hints": [
+          "Look at the last step. When two pieces are joined, do you add or multiply their areas?",
+          "Joined pieces are added: 40 + 12 = 52 sq ft, not 40 × 12."
+        ]
       }
     ],
+    "optional": [],
     "commonMistake": "A common mistake in Area of Composite Figures is adding every piece even when a piece has been cut out of the figure. For a 10 ft by 8 ft rectangle with a 3 ft by 2 ft rectangular notch cut from one corner, students compute the full rectangle 10 × 8 = 80 sq ft and stop, or they add the notch instead of removing it (80 + 6 = 86 sq ft) instead of subtracting it: 80 − (3 × 2) = 80 − 6 = 74 sq ft. Before submitting, check whether each piece is part of the figure (add it) or missing from the figure (subtract it).",
     "optionalActivity": {
       "name": "Composite Figure Architect Project",
@@ -771,6 +793,10 @@
   ],
   "timeEstimate": "~15–20 min",
   "variant": "group2",
+  "smallGroupPractice": {
+    "guidedCount": 3,
+    "minimum": 10
+  },
   "smallGroup": {
     "group": 2,
     "label": "Challenge",
