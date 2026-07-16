@@ -77,6 +77,17 @@ h3 { margin: 0; }
 .step-label { margin-top: 0; }
 .section-actions { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.35rem; align-items: center; min-width: min(100%, 12rem); }
 .section-actions .text-button { grid-column: 1 / -1; justify-self: end; }
+.section-manager-panel { display: grid; gap: 0.85rem; margin: 1rem 0; padding: 1rem; border: 1px solid var(--line); border-radius: 0.85rem; background: #f7fbfa; }
+.section-manager-panel h3, .section-manager-panel p { margin: 0.2rem 0; }
+.section-manager-list { display: grid; gap: 0.65rem; }
+.section-manager-row { display: grid; grid-template-columns: minmax(10rem, 1fr) auto; gap: 0.75rem; align-items: end; padding: 0.75rem; border: 1px solid var(--line); border-radius: 0.65rem; background: #fff; }
+.section-manager-row[data-active="true"] { border-color: var(--teal); box-shadow: 0 0 0 2px color-mix(in srgb, var(--teal) 18%, transparent); }
+.section-manager-actions { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.section-manager-actions .text-button { min-height: 2.5rem; }
+.section-manager-actions [aria-pressed="true"] { background: var(--teal); color: #fff; }
+.section-manager-actions .section-delete { border-color: #a33a32; color: #8d2d26; }
+.section-add-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.45rem 0.65rem; align-items: end; }
+.section-add-row label { grid-column: 1 / -1; }
 label { display: grid; gap: 0.35rem; color: var(--ink); font-size: 0.82rem; font-weight: 800; }
 input, select, textarea { width: 100%; border: 1px solid var(--line); border-radius: 0.55rem; background: white; color: var(--deep); padding: 0.65rem 0.75rem; font-weight: 400; }
 textarea { resize: vertical; }
@@ -190,3 +201,7 @@ textarea { resize: vertical; }
 .copy-field .copy-label { color: var(--muted); font-weight: 800; }
 .copy-field input, .copy-field textarea { font-weight: 400; }
 @media (max-width: 40rem) { .copy-editor { grid-template-columns: 1fr; } }
+@media (max-width: 40rem) {
+  .section-manager-row, .section-add-row { grid-template-columns: 1fr; }
+  .section-manager-actions { display: grid; grid-template-columns: 1fr; }
+}
