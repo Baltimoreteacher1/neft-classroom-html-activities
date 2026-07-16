@@ -19,6 +19,7 @@ for (const expected of [
   'id="language-toggle"',
   'id="contrast-toggle"',
   'id="text-size-toggle"',
+  'id="teacher-access"',
   'id="classdojo-link"',
   'id="canvas-link"',
   'id="family-status"',
@@ -35,9 +36,13 @@ assert.match(html, /equivalent school option/i);
 assert.match(html, /family participation is never graded/i);
 assert.match(html, /optional family practice/i);
 assert.match(html, /separate from (?:your student's )?regular homework/i);
+assert.match(
+  html,
+  /id="teacher-access"[^>]+href="\/curriculum\/family-connections\/teacher\/"[^>]*>[^<]*<span[^>]*>[^<]*<\/span>\s*Teacher sign in/i,
+  "Family Mode should link to the password-protected teacher page",
+);
 assert.doesNotMatch(html, /answer[ -]?key/i);
 assert.doesNotMatch(html, /id="message-studio"/i);
-assert.doesNotMatch(html, /family-connections\/teacher/i);
 assert.doesNotMatch(
   html,
   /href=["']\/curriculum\/?["']/i,
