@@ -12264,6 +12264,75 @@
       .mult-foot {
         padding: 4px 12px 12px;
       }
+      .mult-class-controls {
+        margin-bottom: 10px;
+        padding: 10px;
+        border: 1px solid #cbd9e8;
+        border-radius: 12px;
+        background: #f8fbff;
+      }
+      .mult-class-title {
+        margin: 0;
+        color: #12355b;
+        font-size: 14px;
+        font-weight: 800;
+      }
+      .mult-class-help,
+      .mult-class-status {
+        margin: 3px 0 8px;
+        color: #40566e;
+        font-size: 12px;
+        line-height: 1.4;
+      }
+      .mult-class-status {
+        min-height: 17px;
+        margin: 8px 0 0;
+        font-weight: 700;
+      }
+      .mult-class-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr auto;
+        gap: 7px;
+      }
+      .mult-class-btn {
+        min-height: 44px;
+        padding: 7px 10px;
+        border: 2px solid #9fb2c8;
+        border-radius: 10px;
+        background: #fff;
+        color: #12355b;
+        font-size: 13px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+      .mult-class-btn:hover,
+      .mult-class-btn:focus-visible {
+        border-color: #205fa6;
+        outline: 3px solid #ffd23f;
+        outline-offset: 1px;
+      }
+      #multPrimeBtn[aria-pressed="true"] {
+        border-color: #2673b8;
+        background: #d9edff;
+        color: #0b3f70;
+      }
+      #multCompositeBtn[aria-pressed="true"] {
+        border-color: #b85c00;
+        background: #f6dfc2;
+        color: #633209;
+      }
+      table.mult-grid td.is-prime {
+        background: #d9edff;
+        color: #0b3f70;
+        font-weight: 900;
+        box-shadow: inset 0 0 0 2px #2673b8;
+      }
+      table.mult-grid td.is-composite {
+        background: #f6dfc2;
+        color: #633209;
+        font-weight: 900;
+        box-shadow: inset 0 0 0 2px #b85c00;
+      }
       .mult-mode {
         width: 100%;
         min-height: 42px;
@@ -12280,6 +12349,14 @@
       .mult-mode:focus-visible {
         background: #dce9f7;
         outline: 2px solid #ffd23f;
+      }
+      @media (max-width: 430px) {
+        .mult-class-actions {
+          grid-template-columns: 1fr 1fr;
+        }
+        #multClassClearBtn {
+          grid-column: 1 / -1;
+        }
       }
       @media (prefers-reduced-motion: reduce) {
         .mult-panel {
@@ -12322,6 +12399,49 @@
         Hover or tap a square to see the multiplication fact and light up its row and column.
       </p>
       <div class="mult-foot">
+        <section
+          id="multClassControls"
+          class="mult-class-controls"
+          role="group"
+          aria-labelledby="multClassTitle"
+        >
+          <p class="mult-class-title" id="multClassTitle">Number highlights</p>
+          <p class="mult-class-help">
+            A prime number has exactly 2 factors. A composite number has more than 2 factors.
+            The number 1 is neither.
+          </p>
+          <div class="mult-class-actions">
+            <button
+              type="button"
+              id="multPrimeBtn"
+              class="mult-class-btn"
+              aria-pressed="false"
+              aria-label="Highlight prime products in the multiplication table"
+            >
+              Prime numbers
+            </button>
+            <button
+              type="button"
+              id="multCompositeBtn"
+              class="mult-class-btn"
+              aria-pressed="false"
+              aria-label="Highlight composite products in the multiplication table"
+            >
+              Composite numbers
+            </button>
+            <button
+              type="button"
+              id="multClassClearBtn"
+              class="mult-class-btn"
+              aria-label="Clear prime and composite highlights"
+            >
+              Clear highlights
+            </button>
+          </div>
+          <p id="multClassStatus" class="mult-class-status" aria-live="polite">
+            Choose a number type to highlight its products.
+          </p>
+        </section>
         <button type="button" id="multModeBtn" class="mult-mode" aria-pressed="false">
           ➗ Show Division Table
         </button>
@@ -12388,6 +12508,50 @@
         var hint = document.getElementById("multHint");
         var clearBtn = document.getElementById("multClearBtn");
         var modeBtn = document.getElementById("multModeBtn");
+        var classControls = document.getElementById("multClassControls");
+        var primeBtn = document.getElementById("multPrimeBtn");
+        var compositeBtn = document.getElementById("multCompositeBtn");
+        var classClearBtn = document.getElementById("multClassClearBtn");
+        var classStatus = document.getElementById("multClassStatus");
+
+        function isPrime(value) {
+          if (value < 2) return false;
+          for (var factor = 2; factor * factor <= value; factor++) {
+            if (value % factor === 0) return false;
+          }
+          return true;
+        }
+
+        function clearClassification() {
+          for (var i = 0; i < cells.length; i++) {
+            cells[i].classList.remove("is-prime", "is-composite");
+          }
+          if (primeBtn) primeBtn.setAttribute("aria-pressed", "false");
+          if (compositeBtn) compositeBtn.setAttribute("aria-pressed", "false");
+          if (classStatus)
+            classStatus.textContent = "Choose a number type to highlight its products.";
+        }
+
+        function applyClassification(nextMode) {
+          var matches = 0;
+          for (var i = 0; i < cells.length; i++) {
+            var value = Number(cells[i].textContent);
+            var prime = isPrime(value);
+            var selected = nextMode === "prime" ? prime : value > 1 && !prime;
+            cells[i].classList.toggle("is-prime", selected && nextMode === "prime");
+            cells[i].classList.toggle("is-composite", selected && nextMode === "composite");
+            if (selected) matches++;
+          }
+          if (primeBtn) primeBtn.setAttribute("aria-pressed", nextMode === "prime" ? "true" : "false");
+          if (compositeBtn)
+            compositeBtn.setAttribute("aria-pressed", nextMode === "composite" ? "true" : "false");
+          if (classStatus)
+            classStatus.textContent =
+              matches +
+              " table squares show " +
+              (nextMode === "prime" ? "prime" : "composite") +
+              " products. Repeated products are highlighted each time they appear.";
+        }
 
         function factText(r, c) {
           if (mode === "div") {
@@ -12401,6 +12565,8 @@
 
         function applyMode() {
           var div = mode === "div";
+          clearClassification();
+          if (classControls) classControls.hidden = div;
           if (corner) corner.textContent = div ? "÷" : "×";
           if (title) title.textContent = div ? "Division Table" : "Times Table";
           if (modeBtn) {
@@ -12499,6 +12665,15 @@
             mode = mode === "div" ? "mult" : "div";
             applyMode();
           });
+        if (primeBtn)
+          primeBtn.addEventListener("click", function () {
+            applyClassification("prime");
+          });
+        if (compositeBtn)
+          compositeBtn.addEventListener("click", function () {
+            applyClassification("composite");
+          });
+        if (classClearBtn) classClearBtn.addEventListener("click", clearClassification);
         document.addEventListener("keydown", function (e) {
           if (e.key === "Escape" && !panel.hidden) close();
         });
