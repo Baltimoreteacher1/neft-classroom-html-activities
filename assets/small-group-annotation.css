@@ -1,17 +1,29 @@
 .sg-annotation-tools {
   position: static;
   z-index: 24;
-  display: grid;
-  grid-template-columns: minmax(190px, 1fr) auto;
-  gap: 8px 18px;
-  align-items: center;
-  margin: 0 0 28px;
-  padding: 12px 14px;
+  margin: 0 0 22px;
   border: 2px solid color-mix(in srgb, var(--sg) 55%, white);
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.96);
   box-shadow: 0 9px 24px rgba(23, 32, 51, 0.12);
   backdrop-filter: blur(12px);
+}
+
+.sg-annotation-shell > summary {
+  min-height: 44px;
+  padding: 10px 14px;
+  color: var(--sg-deep);
+  font-family: "Nunito", sans-serif;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.sg-annotation-inner {
+  display: grid;
+  grid-template-columns: minmax(190px, 1fr) auto;
+  gap: 8px 18px;
+  align-items: center;
+  padding: 0 14px 12px;
 }
 
 .sg-annotation-copy {
@@ -181,29 +193,9 @@
 
 .sg-vocab-dialog-grid {
   display: grid;
-  grid-template-columns: minmax(210px, 0.8fr) minmax(250px, 1.2fr);
+  grid-template-columns: 1fr;
   gap: 22px;
   align-items: center;
-}
-
-.sg-vocab-dialog img {
-  display: block;
-  width: 100%;
-  height: auto;
-  border: 1px solid var(--sg-line);
-  border-radius: 18px;
-  background: var(--sg-soft);
-  object-fit: contain;
-  transition: opacity 0.18s ease;
-}
-
-.sg-vocab-dialog img[data-image-state="loading"] {
-  opacity: 0.35;
-}
-
-.sg-vocab-dialog img[data-image-state="ready"],
-.sg-vocab-dialog img[data-image-state="fallback"] {
-  opacity: 1;
 }
 
 .sg-vocab-definition {
@@ -240,8 +232,11 @@
 @media (max-width: 760px) {
   .sg-annotation-tools {
     position: static;
-    grid-template-columns: 1fr;
     margin-top: -14px;
+  }
+
+  .sg-annotation-inner {
+    grid-template-columns: 1fr;
   }
 
   .sg-annotation-status {
@@ -250,11 +245,6 @@
 
   .sg-vocab-dialog-grid {
     grid-template-columns: 1fr;
-  }
-
-  .sg-vocab-dialog img {
-    max-height: 230px;
-    object-fit: contain;
   }
 }
 

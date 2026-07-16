@@ -133,7 +133,7 @@ function buildGroup1(base, u, m) {
     `I know because ___ .`,
   ];
   out.launch = out.launch || {};
-  out.launch.badge = "Small Group · Extra Support";
+  out.launch.badge = "Small Group · Foundations";
   out.launch.narrative =
     `This is your support small group for Lesson ${dm}. We're going to slow this down and build it together, one step at a time. ` +
     `You can ask a question any time — that's what this group is for.`;
@@ -240,9 +240,9 @@ function buildGroup2(base, u, m) {
     heading: `Push further — ${ci.heading || base.title}`,
     intro:
       "You already can do this. In this group we go deeper: trickier numbers, a second way to see it, and explaining why it works — not just getting the answer.",
-    keyIdea:
-      (ci.keyIdea ? ci.keyIdea + " " : "") +
-      "— and you can explain WHY, and predict when it gets tricky.",
+    keyIdea: ci.keyIdea
+      ? `${String(ci.keyIdea).replace(/[.\s]+$/, "")} — and you can explain why it works, even when it gets tricky.`
+      : "You can explain why today's idea works, even when it gets tricky.",
     iDo: ci.iDo || { title: "A trickier case", lines: [] },
     weDo: {
       title: "Generalize it",

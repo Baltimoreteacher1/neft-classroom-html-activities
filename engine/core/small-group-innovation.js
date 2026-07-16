@@ -75,9 +75,22 @@ function labelFor(pathId) {
   return PROOF_PATHS[pathId]?.label || "Not selected yet";
 }
 
-function printOnly(target) {
+function printOnly(target, node) {
+  // The print stylesheet shows only direct children of #app, but the card
+  // being printed lives inside a tab panel — lift it out for the print run
+  // and put it back exactly where it was afterwards.
   const className = `sg-print-${target}`;
-  const cleanup = () => document.body.classList.remove(className);
+  const app = document.getElementById("app");
+  const needsLift = node && app && node.parentElement !== app;
+  const marker = needsLift ? document.createComment("sg-print-slot") : null;
+  if (marker) {
+    node.before(marker);
+    app.appendChild(node);
+  }
+  const cleanup = () => {
+    document.body.classList.remove(className);
+    if (marker) marker.replaceWith(node);
+  };
   document.body.classList.add(className);
   window.addEventListener("afterprint", cleanup, { once: true });
   window.print();
@@ -273,7 +286,7 @@ export function createEvidenceCard(config, state) {
     section.innerHTML = `<div class="sg-evidence-top"><div><div class="sg-innovation-kicker">Printable learning artifact</div><h2>Studio Evidence Card</h2></div><span>Evidence over points</span></div><p class="sg-evidence-title"><b>${esc(config.title || "Small-Group Math Studio")}</b>${config.standard ? ` · ${esc(config.standard)}` : ""}</p><div class="sg-evidence-grid"><div><span>Confidence journey</span><b>${before || "—"} → ${after || "—"}${change > 0 ? ` (+${change})` : ""}</b></div><div><span>Proof path</span><b>${esc(labelFor(state.proofPath))}</b></div><div><span>Math language</span><b>${esc(vocabulary)}</b></div><div><span>Discussion move</span><b>${state.revision === "revised" ? "Revised after discussion" : state.revision === "kept" ? "Kept after testing the evidence" : "Talked through out loud"}</b></div><div><span>Adaptive move</span><b>${esc(PATHS[state.adaptivePath]?.label || "Student choice")}</b></div></div><div class="sg-evidence-original"><span>Original challenge</span><p>${esc(state.challenge || "The challenge was talked through out loud.")}</p><span>Verification</span><p>${esc(state.verification || "The reasoning was checked step by step.")}</p></div>`;
     const print = el("button", "btn ghost", "Print Studio Evidence Card");
     print.type = "button";
-    print.onclick = () => printOnly("evidence");
+    print.onclick = () => printOnly("evidence", section);
     section.appendChild(print);
   };
   return {
@@ -330,7 +343,7 @@ export function createTeacherEvidenceConsole() {
   });
   const print = el("button", "btn ghost", "Print observation summary");
   print.type = "button";
-  print.onclick = () => printOnly("facilitation");
+  print.onclick = () => printOnly("facilitation", section);
   section.append(
     checks,
     count,

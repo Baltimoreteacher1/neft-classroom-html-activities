@@ -1,5 +1,4 @@
 import { el } from "./small-group-ui.js";
-import { configureVocabImage } from "./vocab-images.js";
 
 const FORBIDDEN_SELECTION =
   "button, input, textarea, select, dialog, .sg-annotation-tools, .sg-teacher, .sg-facilitation, .sg-evidence-card";
@@ -29,10 +28,17 @@ function unwrap(node) {
 }
 
 function createAnnotationTools(app) {
+  // Collapsed by default so the actual lesson — not the toolbar — is the
+  // first thing under the tab rail; the selection listener attaches lazily.
   const tools = el("aside", "sg-annotation-tools");
   tools.setAttribute("role", "region");
   tools.setAttribute("aria-label", "Study mark-up tools");
-  tools.innerHTML = `
+  const shell = el("details", "sg-annotation-shell");
+  shell.appendChild(el("summary", null, "🖍️ Mark up this page"));
+  tools.appendChild(shell);
+  const inner = el("div", "sg-annotation-inner");
+  shell.appendChild(inner);
+  inner.innerHTML = `
     <div class="sg-annotation-copy">
       <strong>Make the lesson yours</strong>
       <span>Select words in the lesson, then highlight or bold them.</span>
@@ -61,7 +67,7 @@ function createAnnotationTools(app) {
   status.setAttribute("role", "status");
   status.setAttribute("aria-live", "polite");
   actions.append(highlight, bold, undo, clear);
-  tools.append(actions, status);
+  inner.append(actions, status);
 
   let savedRange = null;
   const history = [];
@@ -73,7 +79,12 @@ function createAnnotationTools(app) {
       status.textContent = `Ready to mark “${range.toString().trim().slice(0, 48)}${range.toString().trim().length > 48 ? "…" : ""}”`;
     }
   };
-  document.addEventListener("selectionchange", rememberSelection);
+  let listening = false;
+  shell.addEventListener("toggle", () => {
+    if (!shell.open || listening) return;
+    listening = true;
+    document.addEventListener("selectionchange", rememberSelection);
+  });
 
   const applyMark = (tag, className, verb) => {
     if (!rangeIsStudentText(savedRange, app)) {
@@ -123,7 +134,6 @@ function createVocabularyDialog() {
     </div>
     <h2 id="sg-vocab-dialog-title"></h2>
     <div class="sg-vocab-dialog-grid">
-      <img alt="" width="320" height="220" />
       <div>
         <div class="sg-vocab-language" lang="en">
           <div class="sg-vocab-simple">English</div>
@@ -162,8 +172,6 @@ function openVocabulary(dialog, word, trigger) {
   dialog.querySelector(".sg-vocab-term-es").textContent = word.termEs || "";
   const example = dialog.querySelector(".sg-vocab-example");
   example.textContent = word.visual || `Look for ${word.term.toLowerCase()} in the lesson model.`;
-  const image = dialog.querySelector("img");
-  configureVocabImage(image, word, { eager: true });
   dialog.addEventListener("close", () => trigger.focus(), { once: true });
   dialog.showModal();
   dialog.querySelector(".sg-vocab-close").focus();

@@ -37,9 +37,20 @@ function fraction(numerator, denominator) {
 }
 
 const fractionText = ({ n, d }) => (d === 1 ? String(n) : `${n}/${d}`);
+// Grade-6 display form: improper fractions read as mixed numbers ("2 1/2").
+const mixedText = ({ n, d }) => {
+  if (d === 1) return String(n);
+  const whole = Math.trunc(n / d);
+  const rest = Math.abs(n % d);
+  if (!whole) return `${n}/${d}`;
+  return rest ? `${whole} ${rest}/${d}` : String(whole);
+};
 const divideFractions = (left, right) => fraction(left.n * right.d, left.d * right.n);
 
 function makeItem(context, index, { stem, answer, visual, steps, hint, explanation }) {
+  // Hints ladder nudge → strategy → worked first step, never the answer.
+  const strategy = hint || "Use the visual model, then complete one step at a time.";
+  const firstStep = steps[0] ? String(steps[0][0]).replace("___", String(steps[0][1])) : null;
   return {
     id: `${context.lessonId}-parallel-${String(index + 1).padStart(2, "0")}`,
     type: "guided-fill",
@@ -47,7 +58,11 @@ function makeItem(context, index, { stem, answer, visual, steps, hint, explanati
     answer: String(answer),
     visual,
     steps: steps.map(([prompt, stepAnswer]) => ({ prompt, answer: String(stepAnswer) })),
-    hints: [hint || "Use the visual model, then complete one step at a time."],
+    hints: [
+      "Re-read the question. What exactly is it asking you to find?",
+      strategy,
+      ...(firstStep ? [`Start like this: ${firstStep}`] : []),
+    ],
     explanation:
       explanation || steps.map(([prompt, value]) => prompt.replace("___", value)).join(" "),
   };
@@ -107,9 +122,9 @@ function unit1(context) {
                 ["Choose the greatest factor in both lists: ___.", answer],
               ]
             : [
-                [`Write multiples of ${a} until the first match: ___.`, answer],
-                [`Check: ${answer} ÷ ${a} is a whole number: ___.`, answer / a],
-                [`Check: ${answer} ÷ ${b} is a whole number: ___.`, answer / b],
+                [`The smallest multiple that ${a} and ${b} share is ___.`, answer],
+                [`Check: ${answer} ÷ ${a} = ___.`, answer / a],
+                [`Check: ${answer} ÷ ${b} = ___.`, answer / b],
               ],
       });
     });
@@ -132,20 +147,19 @@ function unit1(context) {
       });
     });
   }
-  const decimals = Array.from({ length: 12 }, (_, index) => ({
-    a: tidy(4.25 + index * 0.7 + context.group * 0.13),
-    b: tidy(1.2 + (index % 5) * 0.25),
-  }));
-  return decimals.map(({ a, b }, index) => {
+  return Array.from({ length: 12 }, (_, index) => {
     const operation = lesson === 5 ? (index % 2 ? "−" : "+") : lesson === 6 ? "×" : "÷";
-    const answer =
-      operation === "+"
-        ? tidy(a + b)
-        : operation === "−"
-          ? tidy(a - b)
-          : operation === "×"
-            ? tidy(a * b)
-            : tidy(a / b);
+    const b = tidy(1.2 + (index % 5) * 0.25);
+    let a = tidy(4.25 + index * 0.7 + context.group * 0.13);
+    let answer;
+    if (operation === "÷") {
+      // Build the dividend from a clean quotient so every hand-worked
+      // division terminates instead of grading a rounded value wrong.
+      answer = tidy(2 + (index % 4) + (index % 2 ? 0.5 : 0.2) + (context.group === 2 ? 1 : 0));
+      a = tidy(b * answer);
+    } else {
+      answer = operation === "+" ? tidy(a + b) : operation === "−" ? tidy(a - b) : tidy(a * b);
+    }
     return makeItem(context, index, {
       stem: `Solve the new decimal problem: ${a} ${operation} ${b}.`,
       answer,
@@ -155,7 +169,7 @@ function unit1(context) {
           "Line up or rewrite the place values: ___ decimal places in the first number.",
           String(a).split(".")[1]?.length || 0,
         ],
-        [`Estimate the answer before calculating: about ___.`, Math.round(answer)],
+        [`Round ${a} to the nearest whole number: ___.`, Math.round(a)],
         ["Calculate and place the decimal: ___.", answer],
       ],
     });
@@ -183,7 +197,7 @@ function unit2(context) {
     } else if (lesson === 4) {
       left = fraction((2 + (index % 4)) * 2 + 1, 2);
       right = fraction((1 + (index % 3)) * 3 + 1, 3);
-      stem = `Divide the mixed-number amounts: ${fractionText(left)} ÷ ${fractionText(right)}.`;
+      stem = `Divide the mixed-number amounts: ${mixedText(left)} ÷ ${mixedText(right)}.`;
     } else {
       stem =
         lesson === 5
@@ -192,12 +206,16 @@ function unit2(context) {
     }
     const answer = divideFractions(left, right);
     const reciprocal = fraction(right.d, right.n);
+    const firstStep =
+      lesson === 4
+        ? [`Rewrite ${mixedText(left)} as an improper fraction: ___.`, fractionText(left)]
+        : [`Keep the first number: ___.`, fractionText(left)];
     return makeItem(context, index, {
       stem,
       answer: fractionText(answer),
       visual: { kind: "fraction-bars", left, right },
       steps: [
-        [`Keep the first number: ___.`, fractionText(left)],
+        firstStep,
         [`Use the reciprocal of ${fractionText(right)}: ___.`, fractionText(reciprocal)],
         ["Multiply and simplify: ___.", fractionText(answer)],
       ],
@@ -237,12 +255,12 @@ function unit3(context) {
       const otherLeft = left + 1;
       const otherRight = right + 2;
       const otherRate = tidy(otherRight / otherLeft);
-      answer = unitRate < otherRate ? "first ratio" : "second ratio";
-      stem = `Compare the new ratios ${left}:${right} and ${otherLeft}:${otherRight}. Which has the smaller unit rate?`;
+      answer = unitRate < otherRate ? "first" : "second";
+      stem = `Compare gold tiles per blue tile for ${left}:${right} and ${otherLeft}:${otherRight}. Which ratio gives fewer gold tiles per blue tile? Type first or second.`;
       steps = [
-        [`First unit rate: ${right} ÷ ${left} = ___.`, unitRate],
-        [`Second unit rate: ${otherRight} ÷ ${otherLeft} = ___.`, otherRate],
-        ["The smaller unit rate belongs to the ___.", answer],
+        [`First rate — gold per blue: ${right} ÷ ${left} = ___.`, unitRate],
+        [`Second rate — gold per blue: ${otherRight} ÷ ${otherLeft} = ___.`, otherRate],
+        ["The smaller rate belongs to the ___ ratio (type first or second).", answer],
       ];
       visual = { kind: "double-rate-bars", values: [left, right, otherLeft, otherRight] };
     } else if (lesson === 6) {
@@ -324,16 +342,25 @@ function unit4(context) {
       });
     }
     if (lesson === 6) {
-      const factor = [12, 3, 16, 100, 1000][index % 5];
+      // Real unit pairs, not abstract "conversion factors" — meaning first.
+      const [factor, bigUnit, smallUnit] = [
+        [12, "feet", "inches"],
+        [3, "yards", "feet"],
+        [16, "pounds", "ounces"],
+        [100, "meters", "centimeters"],
+        [1000, "kilograms", "grams"],
+      ][index % 5];
       const answer = n * factor;
+      const oneBig = bigUnit.replace(/s$/, "");
       return makeItem(context, index, {
-        stem: `Use the conversion factor ${factor}. Convert ${n} larger units to smaller units.`,
+        stem: `1 ${oneBig} = ${factor} ${smallUnit}. Convert ${n} ${bigUnit} to ${smallUnit}.`,
         answer,
         visual: { kind: "conversion-table", values: [n, factor] },
         steps: [
-          ["Choose multiply because the target units are ___.", "smaller"],
+          [`Each ${oneBig} is worth ___ ${smallUnit}.`, factor],
           [`${n} × ${factor} = ___.`, answer],
         ],
+        hint: `${smallUnit} are smaller than ${bigUnit}, so the number gets bigger — multiply.`,
       });
     }
     const quantity = 3 + (index % 7);

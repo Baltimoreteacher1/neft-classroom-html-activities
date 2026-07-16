@@ -157,7 +157,7 @@ export function createExploreLab(config, variant, { number, store, events, onDon
   );
   if (store.get("exploreDone"))
     section.appendChild(
-      doneChip("You finished this lab last time — beat your reasoning, not the clock."),
+      doneChip("You finished this lab last time — try to explain it even better today."),
     );
   if (explore.instructions) section.appendChild(el("p", "sg-lab-note", esc(explore.instructions)));
 

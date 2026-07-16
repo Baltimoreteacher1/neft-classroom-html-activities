@@ -7,7 +7,7 @@
 //
 // Save/Resume refs + sentinels are imported from the injector's own config so
 // this shell can never drift out of sync with tools/audit-save-resume-integration.js.
-import { LINK_TAG, SCRIPT_TAG, BEGIN, END } from "../save-resume-config.js";
+import { BEGIN, END, LINK_TAG, SCRIPT_TAG } from "../save-resume-config.js";
 
 const SUPPORTS_V = "20260714-supports-v28";
 
@@ -22,16 +22,23 @@ export function shellHtml(id, label, desc) {
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Hanken+Grotesk:ital,wght@0,400;0,500;0,700;1,400&display=swap"
+      id="sg-fonts"
+      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Nunito:wght@700;800;900&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/assets/learning-supports/learning-supports.css?v=${SUPPORTS_V}" />
+    <style>
+      .sg-boot{display:grid;place-items:center;min-height:60vh;margin:0;color:#536174;font:700 18px/1.5 system-ui,sans-serif;text-align:center;animation:sg-boot-pulse 1.2s ease-in-out infinite alternate}
+      @keyframes sg-boot-pulse{from{opacity:.45}to{opacity:1}}
+      @media(prefers-reduced-motion:reduce){.sg-boot{animation:none}}
+    </style>
     ${BEGIN}
     ${LINK_TAG}
     ${END}
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app"><p class="sg-boot">Loading your math studio…</p></div>
+    <noscript><p style="margin:24px auto;max-width:640px;font:700 17px/1.5 system-ui,sans-serif;text-align:center">This math studio needs JavaScript. Ask your teacher for the paper version if your device blocks it.</p></noscript>
     <script>window.NT_ACTIVITY = false;</script>
     <script type="module" src="./lesson.js"></script>
     <script src="/assets/math-workbench-launcher.js" defer></script>

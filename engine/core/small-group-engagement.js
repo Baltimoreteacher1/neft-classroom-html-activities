@@ -8,7 +8,6 @@ import {
   studentVoice,
   VOCAB_LANGS,
 } from "./small-group-ui.js";
-import { configureVocabImage } from "./vocab-images.js";
 
 const confidenceOptions = [
   { value: 1, emoji: "🌱", label: "I need a model" },
@@ -16,12 +15,13 @@ const confidenceOptions = [
   { value: 3, emoji: "✨", label: "I can explain a step" },
 ];
 
-export function isImageSource(value) {
-  const source = typeof value === "string" ? value.trim() : "";
-  return (
-    /^(?:https?:\/\/|\/\/|data:image\/|blob:|\/|\.\.?\/)/i.test(source) ||
-    /\.(?:avif|gif|jpe?g|png|svg|webp)(?:[?#].*)?$/i.test(source)
-  );
+// Unbiased in-place shuffle for answer-option rows.
+function shuffle(list) {
+  for (let index = list.length - 1; index > 0; index--) {
+    const swap = Math.floor(Math.random() * (index + 1));
+    [list[index], list[swap]] = [list[swap], list[index]];
+  }
+  return list;
 }
 
 function makePulse(state, key, onSelect, initial) {
@@ -87,20 +87,11 @@ export function createMissionSection(config, variant, state, onDone, store = nul
     ),
   );
 
-  const imageCandidate = missionContent.image || config.launch?.contextImage;
-  const imageSrc = isImageSource(imageCandidate) ? imageCandidate : null;
-  const missionFigure = imageSrc ? null : figureBlock(config.launch?.visual);
-  const visual = el(
-    "div",
-    `sg-mission-visual${imageSrc || missionFigure ? "" : " no-image"}${missionFigure ? " has-figure" : ""}`,
-  );
-  if (imageSrc) {
-    const image = document.createElement("img");
-    image.src = imageSrc;
-    image.alt = missionContent.imageAlt || "Visual for this lesson's math mission";
-    image.loading = "eager";
-    visual.appendChild(image);
-  } else if (missionFigure) {
+  // Photos and screenshots are gone by design: the mission panel shows the
+  // lesson's math figure when one exists, otherwise a quiet emoji tile.
+  const missionFigure = figureBlock(config.launch?.visual);
+  const visual = el("div", `sg-mission-visual${missionFigure ? " has-figure" : " no-image"}`);
+  if (missionFigure) {
     visual.appendChild(missionFigure);
   } else {
     visual.textContent = variant === "group2" ? "🔎" : "🧩";
@@ -145,7 +136,8 @@ function definitionLine(label, text, lang, dir = "ltr") {
 }
 
 export function createVocabularySection(config, onDone, store = null) {
-  const words = (config.vocabulary || []).slice(0, 4);
+  // Catch-ups span several lessons, so they keep more of their word list.
+  const words = (config.vocabulary || []).slice(0, config.variant === "catchup" ? 6 : 4);
   if (!words.length) return null;
   const section = el("section", "sg-sec");
   section.id = "sg-vocab";
@@ -207,11 +199,6 @@ export function createVocabularySection(config, onDone, store = null) {
     grid.innerHTML = "";
     words.forEach((word) => {
       const card = el("article", "sg-vcard");
-      const picture = el("div", "sg-vcard-picture");
-      const image = document.createElement("img");
-      configureVocabImage(image, word);
-      picture.appendChild(image);
-      card.appendChild(picture);
       card.appendChild(el("div", "sg-vterm", esc(word.term)));
       const secondaryTerm = currentLang && word[`term${currentLang.suffix}`];
       if (secondaryTerm) {
@@ -251,9 +238,21 @@ export function createVocabularySection(config, onDone, store = null) {
         );
       if (Array.isArray(word.examples) && word.examples.length) {
         const examples = el("div", "sg-vexamples");
-        word.examples
-          .slice(0, 3)
-          .forEach((example) => examples.appendChild(el("span", "sg-vexample", esc(example))));
+        // Examples are authored as strings or {text, isExample} objects;
+        // non-examples render with a ✗ so the contrast teaches too.
+        word.examples.slice(0, 3).forEach((example) => {
+          const isObject = typeof example === "object" && example !== null;
+          const text = isObject ? example.text : example;
+          if (text == null || text === "") return;
+          const isExample = isObject ? example.isExample !== false : true;
+          examples.appendChild(
+            el(
+              "span",
+              `sg-vexample${isExample ? "" : " not"}`,
+              `${isExample ? "✓" : "✗"} ${esc(String(text))}`,
+            ),
+          );
+        });
         definition.appendChild(examples);
       }
       definition.hidden = true;
@@ -269,7 +268,7 @@ export function createVocabularySection(config, onDone, store = null) {
   section.appendChild(grid);
 
   const match = el("div", "sg-match");
-  match.appendChild(el("div", "sg-eyebrow", "60-second word match"));
+  match.appendChild(el("div", "sg-eyebrow", "Quick word match"));
   const prompt = el("p", "sg-talk-q");
   const options = el("div", "sg-match-options");
   const status = el("div", "sg-match-status");
@@ -280,7 +279,8 @@ export function createVocabularySection(config, onDone, store = null) {
     const word = words[index];
     prompt.textContent = word.definition || word.visual || `Choose the term for word ${index + 1}.`;
     options.innerHTML = "";
-    words.forEach((candidate, optionIndex) => {
+    // Shuffled every round so the answer position never becomes a pattern.
+    shuffle([...words]).forEach((candidate) => {
       const button = el("button", "sg-match-btn", esc(candidate.term));
       button.type = "button";
       button.onclick = () => {
@@ -302,8 +302,7 @@ export function createVocabularySection(config, onDone, store = null) {
         }
         window.setTimeout(renderRound, 450);
       };
-      if (optionIndex === (index + 1) % words.length) options.prepend(button);
-      else options.appendChild(button);
+      options.appendChild(button);
     });
   };
   match.append(prompt, options, status);
@@ -329,7 +328,7 @@ export function createVocabularySection(config, onDone, store = null) {
       sentence.appendChild(blank);
       sentence.appendChild(document.createTextNode(rest.join("___")));
       chipRow.innerHTML = "";
-      words.forEach((candidate) => {
+      shuffle([...words]).forEach((candidate) => {
         const chip = el("button", "sg-match-btn", esc(candidate.term));
         chip.type = "button";
         chip.onclick = () => {
@@ -447,12 +446,13 @@ export function createTalkSection(config, variant, onDone) {
 
   const timer = el("div", "sg-timer");
   const clock = el("div", "sg-clock", "1:00");
+  // role=timer without aria-live: a per-second countdown must not narrate
+  // sixty updates to a screen reader.
   clock.setAttribute("role", "timer");
-  clock.setAttribute("aria-live", "polite");
   const track = el("div", "sg-timer-track");
   const fill = el("div", "sg-timer-fill");
   track.appendChild(fill);
-  const start = el("button", "btn", "Start talk timer");
+  const start = el("button", "btn", "Start optional talk timer");
   start.type = "button";
   let remaining = 60;
   let interval = 0;
@@ -465,7 +465,7 @@ export function createTalkSection(config, variant, onDone) {
       window.clearInterval(interval);
       interval = 0;
       remaining = 60;
-      start.textContent = "Start talk timer";
+      start.textContent = "Start optional talk timer";
       draw();
       return;
     }

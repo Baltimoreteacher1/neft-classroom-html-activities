@@ -1,20 +1,6 @@
+import { isRight, numberOf } from "./small-group-answers.js";
 import { celebrate, el, esc } from "./small-group-ui.js";
 import { appendVisualPractice } from "./small-group-visual-practice.js";
-
-const norm = (value) =>
-  String(value == null ? "" : value)
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, " ")
-    .replace(/[.,;:]+$/, "")
-    .replace(/,(?=\d)/g, "");
-
-const numberOf = (value) => {
-  const match = String(value)
-    .replace(/[$,\s]/g, "")
-    .match(/-?\d+(?:\.\d+)?/);
-  return match ? Number.parseFloat(match[0]) : null;
-};
 
 function answerOf(item) {
   if (
@@ -28,12 +14,11 @@ function answerOf(item) {
   return null;
 }
 
-function isRight(input, answer) {
-  if (answer == null || !norm(input)) return false;
-  if (norm(input) === norm(answer)) return true;
-  const left = numberOf(input);
-  const right = numberOf(answer);
-  return left != null && right != null && Math.abs(left - right) < 1e-9;
+// Momentum note for consecutive-correct answers. Quiet by design: it only
+// ever appears on a correct answer and resets silently after a miss.
+function streakNote(events) {
+  const streak = events.streak?.() || 0;
+  return streak >= 2 ? `🔥 <b>${streak} in a row — your method is working.</b> ` : "";
 }
 
 function itemStem(item) {
@@ -114,16 +99,16 @@ function multipleChoiceCard(item, index, onSolved, events = {}) {
       showFeedback(
         status,
         "ok",
-        `✅ <b>Your reasoning landed.</b> ${esc(item.explanation || "Say out loud why this choice works — teaching it proves you own it.")}`,
+        `${streakNote(events)}✅ <b>Correct.</b> ${esc(item.explanation || "Say out loud why this choice works.")}`,
       );
-      celebrate("✓");
+      celebrate((events.streak?.() || 0) >= 3 ? "🔥" : "✓");
       onSolved();
     };
     choices.appendChild(button);
   });
   card.appendChild(choices);
-  appendHints(card, item, events);
   card.appendChild(status);
+  appendHints(card, item, events);
   return card;
 }
 
@@ -150,15 +135,12 @@ function errorAnalysisCard(item, index, onSolved, events = {}) {
     button.type = "button";
     button.onclick = () => {
       if (complete) return;
-      events.onAttempt?.({ correct: optionIndex + 1 === item.errorStep });
-      if (optionIndex + 1 !== item.errorStep) {
+      // Configs author errorStep as a 0-based index into workedExample.
+      events.onAttempt?.({ correct: optionIndex === item.errorStep });
+      if (optionIndex !== item.errorStep) {
         button.classList.add("wrong");
         button.disabled = true;
-        showFeedback(
-          status,
-          "no",
-          "That step may be okay. Test what it does and inspect another step.",
-        );
+        showFeedback(status, "no", "That step looks correct. Check the math in a different step.");
         return;
       }
       complete = true;
@@ -175,8 +157,8 @@ function errorAnalysisCard(item, index, onSolved, events = {}) {
     options.appendChild(button);
   });
   card.appendChild(options);
-  appendHints(card, item, events);
   card.appendChild(status);
+  appendHints(card, item, events);
   return card;
 }
 
@@ -270,9 +252,9 @@ function answerControl(item, answer, scaffold, status, onSolved, events = {}, on
     showFeedback(
       status,
       "ok",
-      `✅ <b>Correct.</b> ${esc(item.explanation || "Explain the step that convinced you.")}`,
+      `${streakNote(events)}✅ <b>Correct.</b> ${esc(item.explanation || "Explain the step that convinced you.")}`,
     );
-    celebrate("✓");
+    celebrate((events.streak?.() || 0) >= 3 ? "🔥" : "✓");
     onSolved();
   };
   input.onkeydown = (event) => {
@@ -375,22 +357,39 @@ function responseCard(item, index, variant, onSolved, scaffold, events = {}) {
     card.append(response, el("div", "row"));
     card.lastElementChild.appendChild(ready);
   }
+  // Feedback lands directly under the answer control so it is on-screen the
+  // moment it appears; the step guide and hints render below it.
+  card.appendChild(status);
   revealGuide = appendStepGuide(card, item, scaffold);
   appendHints(card, item, events);
-  card.appendChild(status);
   return card;
 }
 
+const itemKey = (item) => item.stem || item.title || JSON.stringify(item).slice(0, 60);
+
 export function collectPracticeItems(config) {
   if (Array.isArray(config.parallelPractice) && config.parallelPractice.length) {
-    return config.parallelPractice;
+    const items = [...config.parallelPractice];
+    // Group 2's authored enrichment (justify, error-analysis, challenge
+    // panels) is real content — append it after the parallel set instead of
+    // dropping it, so mastery students get genuine extension work.
+    if (config.variant === "group2") {
+      const seen = new Set(items.map(itemKey));
+      for (const item of config.practice?.extending || []) {
+        const key = itemKey(item);
+        if (seen.has(key)) continue;
+        seen.add(key);
+        items.push(item);
+      }
+    }
+    return items;
   }
   const tiers = ["approaching", "onLevel", "extending", "optional"];
   const seen = new Set();
   const items = [];
   for (const tier of tiers) {
     for (const item of config.practice?.[tier] || []) {
-      const key = item.stem || item.title || JSON.stringify(item).slice(0, 60);
+      const key = itemKey(item);
       if (seen.has(key)) continue;
       seen.add(key);
       items.push(item);
@@ -414,6 +413,7 @@ function paginateProblems(section) {
   const controls = el("div", "sg-problem-nav");
   const previous = el("button", "btn ghost", "← Previous");
   const status = el("span", "sg-problem-count");
+  status.setAttribute("aria-live", "polite");
   const next = el("button", "btn", "Next problem →");
   previous.type = next.type = "button";
   const show = (nextIndex) => {
@@ -501,6 +501,10 @@ export function createPracticeSection(
       card.prepend(
         el("div", "sg-donechip", "✓ Solved last session — explain your reasoning again, out loud."),
       );
+      // Freeze the restored card so an already-counted problem reads as
+      // finished instead of inviting a confusing re-solve.
+      for (const control of card.querySelectorAll("input, textarea, .choice, .btn:not(.ghost)"))
+        control.disabled = true;
       solveItem(index);
     }
     section.appendChild(card);
@@ -537,6 +541,12 @@ export function createCheckSection(config, onSolved, tally, events = {}, store =
       "Try this one on your own first. You can still use a hint—that is a learning tool, not a penalty.",
     ),
   );
+  const revisitRow = el("div", "row");
+  const revisit = el("button", "btn ghost", "↩ Revisit the worked example in Learn It");
+  revisit.type = "button";
+  revisit.onclick = () => document.getElementById("sg-tab-sg-tab-learn")?.click();
+  revisitRow.appendChild(revisit);
+  section.appendChild(revisitRow);
   tally.total++;
   let counted = false;
   const finish = () => {

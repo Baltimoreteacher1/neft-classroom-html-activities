@@ -1,6 +1,6 @@
 import { el } from "./small-group-ui.js";
 
-export function mountSmallGroupTabs(app, steps) {
+export function mountSmallGroupTabs(app, steps, { store = null } = {}) {
   const tabs = el("nav", "sg-tabs");
   tabs.setAttribute("role", "tablist");
   tabs.setAttribute("aria-label", "Lesson steps");
@@ -19,11 +19,13 @@ export function mountSmallGroupTabs(app, steps) {
       button.setAttribute("aria-selected", String(active));
       button.tabIndex = active ? 0 : -1;
     }
+    store?.set("lastTab", id);
     if (moveFocus) {
-      activeSteps
-        .find((step) => step.id === id)
-        ?.panel.querySelector("h2")
-        ?.focus?.();
+      const heading = activeSteps.find((step) => step.id === id)?.panel.querySelector("h2");
+      if (heading) {
+        heading.tabIndex = -1;
+        heading.focus();
+      }
       window.scrollTo({ top: tabs.offsetTop, behavior: "smooth" });
     }
   }
@@ -43,10 +45,15 @@ export function mountSmallGroupTabs(app, steps) {
     button.setAttribute("aria-controls", step.id);
     button.addEventListener("click", () => activate(step.id));
     button.addEventListener("keydown", (event) => {
-      if (!["ArrowLeft", "ArrowRight"].includes(event.key)) return;
+      if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
       event.preventDefault();
-      const delta = event.key === "ArrowRight" ? 1 : -1;
-      const next = (index + delta + activeSteps.length) % activeSteps.length;
+      const next =
+        event.key === "Home"
+          ? 0
+          : event.key === "End"
+            ? activeSteps.length - 1
+            : (index + (event.key === "ArrowRight" ? 1 : -1) + activeSteps.length) %
+              activeSteps.length;
       buttons.get(activeSteps[next].id).focus();
       activate(activeSteps[next].id);
     });
@@ -57,16 +64,34 @@ export function mountSmallGroupTabs(app, steps) {
       const nextWrap = el("div", "sg-next");
       const nextButton = el("button", "btn", `Next: ${activeSteps[index + 1].label} →`);
       nextButton.type = "button";
-      nextButton.addEventListener("click", () => {
-        markDone(step.id);
-        activate(activeSteps[index + 1].id, true);
-      });
+      // Navigation only — the done checkmark is earned by finishing the
+      // phase's work, not by clicking past it.
+      nextButton.addEventListener("click", () => activate(activeSteps[index + 1].id, true));
       nextWrap.appendChild(nextButton);
       step.panel.appendChild(nextWrap);
     }
   });
 
+  // Always-visible momentum meter inside the sticky rail. Fed by the
+  // renderer's tally so students see progress without hunting for it.
+  const meter = el("div", "sg-meter");
+  const track = el("div", "sg-meter-track");
+  const fill = el("div", "sg-meter-fill");
+  track.appendChild(fill);
+  const label = el("span", "sg-meter-lab", "Let’s get started");
+  meter.append(track, label);
+  tabs.appendChild(meter);
+
+  function setProgress(solved, total) {
+    if (!total) return;
+    const percent = Math.round((solved / total) * 100);
+    fill.style.width = `${percent}%`;
+    label.textContent = `${solved} of ${total} checks complete`;
+  }
+
   app.querySelector(".sg-hero")?.after(tabs);
-  activate(activeSteps[0].id);
-  return { activate, markDone };
+  const savedTab = store?.get("lastTab");
+  const initial = activeSteps.find((step) => step.id === savedTab) || activeSteps[0];
+  activate(initial.id);
+  return { activate, markDone, setProgress };
 }

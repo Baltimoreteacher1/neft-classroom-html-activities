@@ -1,8 +1,7 @@
 import assert from "node:assert/strict";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { JSDOM } from "jsdom";
-import { isImageSource } from "../engine/core/small-group-engagement.js";
-import { resolveVocabImage } from "../engine/core/vocab-images.js";
+import { isRight } from "../engine/core/small-group-answers.js";
 import { onRequest as middleware } from "../functions/_middleware.js";
 import { onRequest as teacherRouteHandler } from "../functions/teacher-small-group/[[path]].js";
 
@@ -32,15 +31,27 @@ const smallGroupUi = readFileSync(
   "utf8",
 );
 assert.match(smallGroupUi, /\.sg-fill-step\[hidden\]\{display:none/);
-assert.match(smallGroupUi, /\.sg-apply-step\.locked\{display:none/);
+// Locked apply steps stay visible as a dimmed roadmap instead of vanishing.
+assert.match(smallGroupUi, /\.sg-apply-step\.locked\{opacity:\.35/);
+// Whole-lesson print must expose paginated problems and later fill-in steps.
+assert.match(smallGroupUi, /\.prob\[hidden\]\{display:block!important\}/);
 
 const generator = readFileSync(
   new URL("./generate-small-group-lessons.mjs", import.meta.url),
   "utf8",
 );
 assert.match(generator, /MINIMUM_PRACTICE = 10/);
-assert.equal(isImageSource("Space station cargo bay with robots"), false);
-assert.equal(isImageSource("/assets/mission.png"), true);
+
+// Answer checker: tolerant of real grade-6 input, strict about wrong answers.
+assert.equal(isRight("$2.25", "2.25"), true, "dollar signs must not fail a correct answer");
+assert.equal(isRight("1/2", "0.5"), true, "fraction vs decimal equivalence");
+assert.equal(isRight("1 7/8", "15/8"), true, "mixed number vs improper fraction");
+assert.equal(isRight("2x3x7", "2 × 3 × 7"), true, "keyboard × equivalence");
+assert.equal(isRight("1,2,3,6", "1, 2, 3, 6"), true, "list spacing equivalence");
+assert.equal(isRight("3.50", "3.5"), true, "trailing zero equivalence");
+assert.equal(isRight("2", "2 × 3 × 7"), false, "first digit must not pass a product answer");
+assert.equal(isRight("2", "x + 2 = 4"), false, "a digit must not pass an equation answer");
+assert.equal(isRight("4", "3.5"), false, "close is not correct");
 
 for (const lessonId of readdirSync(new URL("../lessons", import.meta.url)).filter((name) =>
   /^\d+-\d+-group[12]$/.test(name),
@@ -93,13 +104,6 @@ for (const lessonId of readdirSync(new URL("../lessons", import.meta.url)).filte
     assert.ok(
       config.parallelPractice.every((item) => /base edge.*slant height/i.test(item.stem)),
       `${lessonId} pyramid practice needs explicit base and slant height`,
-    );
-  }
-  for (const word of config.vocabulary || []) {
-    const imagePath = resolveVocabImage(word.term, word.image);
-    assert.ok(
-      existsSync(new URL(`..${imagePath}`, import.meta.url)),
-      `${lessonId}/${word.term} is missing ${imagePath}`,
     );
   }
 }
@@ -179,11 +183,15 @@ assert.ok(
   firstGuided?.querySelector(".sg-clear-model"),
   "the math tool needs a clear/retry control",
 );
-const vocabCardImages = [...document.querySelectorAll("#sg-vocab .sg-vcard img")];
-assert.equal(vocabCardImages.length, 4, "every vocabulary card needs an illustration");
-for (const image of vocabCardImages) {
-  assert.match(image.getAttribute("src"), /^\/assets\/vocab-images\/[a-z0-9-]+\.svg$/);
-  assert.ok(image.getAttribute("alt"), "vocabulary images need useful alternative text");
-}
+// Images are removed by design: only problem-related SVG models may render.
+assert.equal(
+  document.querySelectorAll("#app img, dialog img").length,
+  0,
+  "no raster/illustration images anywhere in the student studio",
+);
+assert.ok(
+  document.querySelector(".sg-meter-fill"),
+  "the sticky rail needs the always-visible progress meter",
+);
 
 console.log("small-group mode, structure, and practice contracts passed");

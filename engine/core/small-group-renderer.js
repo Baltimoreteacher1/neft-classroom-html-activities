@@ -249,7 +249,12 @@ export function bootSmallGroup(config) {
   const events = {
     onAttempt({ correct }) {
       state.attempts++;
-      if (!correct) state.incorrectAttempts++;
+      if (correct) state.streak = (state.streak || 0) + 1;
+      else {
+        state.incorrectAttempts++;
+        // Streaks reset silently — momentum is celebrated, never mourned.
+        state.streak = 0;
+      }
     },
     onHint() {
       state.hints++;
@@ -257,6 +262,7 @@ export function bootSmallGroup(config) {
     onSolved() {
       state.solved++;
     },
+    streak: () => state.streak || 0,
   };
 
   // Restored interactions can finish before the tabs mount, so buffer marks.
@@ -278,6 +284,7 @@ export function bootSmallGroup(config) {
     solved: 0,
     update() {
       completion.innerHTML = `<b>${this.solved} of ${this.total}</b> practice checks complete. Keep using hints, revisions, and group questions.`;
+      tabs?.setProgress(this.solved, this.total);
     },
   };
 
@@ -425,12 +432,14 @@ export function bootSmallGroup(config) {
     {
       id: "sg-tab-check",
       label: "Check",
-      panel: makePanel("sg-tab-check", [check, reflection.section, evidence.section]),
+      // The completion celebration lives here so it appears in the tab the
+      // student is actually on when they finish the reflection.
+      panel: makePanel("sg-tab-check", [check, reflection.section, evidence.section, completion]),
     },
     {
       id: "sg-tab-more",
       label: "More Practice",
-      panel: makePanel("sg-tab-more", [morePractice, apply, completion]),
+      panel: makePanel("sg-tab-more", [morePractice, apply]),
     },
   ];
 
@@ -451,16 +460,35 @@ export function bootSmallGroup(config) {
     app.appendChild(welcome);
   }
 
-  for (const step of tabSteps) app.appendChild(step.panel);
+  const activeTabSteps = tabSteps.filter((step) => step.panel.childElementCount > 0);
+  for (const step of activeTabSteps) app.appendChild(step.panel);
   const foot = footer();
   app.appendChild(foot);
-  tabs = mountSmallGroupTabs(app, tabSteps);
+  tabs = mountSmallGroupTabs(app, activeTabSteps, { store });
   pendingMarks.forEach((id) => tabs.markDone(id));
+  tally.update();
 
-  tabSteps.forEach((step, index) => {
-    for (const number of step.panel.querySelectorAll(".sg-h .n")) {
-      number.textContent = String(index + 1);
+  // Number sections per tab: a lone section carries the tab number, multiple
+  // sections get dotted sub-numbers ("2.1", "2.2") instead of duplicates.
+  activeTabSteps.forEach((step, index) => {
+    const badges = [...step.panel.querySelectorAll(".sg-h .n")];
+    badges.forEach((number, position) => {
+      number.textContent = badges.length > 1 ? `${index + 1}.${position + 1}` : String(index + 1);
+    });
+  });
+
+  // Print must show everything: open collapsed tools/steps for the duration
+  // of the print, then restore the on-screen state.
+  const openedForPrint = new Set();
+  window.addEventListener("beforeprint", () => {
+    for (const details of app.querySelectorAll("details:not([open])")) {
+      details.open = true;
+      openedForPrint.add(details);
     }
+  });
+  window.addEventListener("afterprint", () => {
+    for (const details of openedForPrint) details.open = false;
+    openedForPrint.clear();
   });
   const RESTORE_MARKS = {
     vocabDone: "sg-tab-vocab",
