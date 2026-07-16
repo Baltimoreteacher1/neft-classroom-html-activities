@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
+import { onRequest as applySiteAccess } from "../../_middleware.js";
 import { createDefaultSnapshot } from "../../../curriculum/family-connections/shared/model.js";
 import { createMemoryStore, handleFamilyConnectionsRequest } from "./[[path]].js";
 
@@ -104,6 +105,13 @@ assert.equal(noGate.status, 503, "protected writes must fail closed without acce
 
 const middleware = await readFile(new URL("../../_middleware.js", import.meta.url), "utf8");
 assert.match(middleware, /isFamilyPublishingApi/);
+const publicFeedThroughGate = await applySiteAccess({
+  request: request("GET", "canvas-feed?section=all-families"),
+  env: {},
+  data: {},
+  next: async () => new Response("next"),
+});
+assert.equal(publicFeedThroughGate.status, 200, "Canvas must be able to poll the published feed");
 assert.match(middleware, /teacherAccessConfigured/);
 assert.match(middleware, /teacherAuthorized/);
 

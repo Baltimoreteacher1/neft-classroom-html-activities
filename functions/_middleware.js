@@ -23,8 +23,9 @@ export async function onRequest(context) {
 
   const url = new URL(request.url);
   const p = url.pathname.toLowerCase();
+  const isFamilyPublishedFeed = p === "/api/family-connections/canvas-feed";
   const isFamilyPublishingApi =
-    p.startsWith("/api/family-connections/") && !p.endsWith("/published");
+    p.startsWith("/api/family-connections/") && !p.endsWith("/published") && !isFamilyPublishedFeed;
 
   // Public pages remain open when the gate is unavailable. Publishing edits
   // are the exception and fail closed instead of becoming publicly writable.
