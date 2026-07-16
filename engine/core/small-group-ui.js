@@ -32,6 +32,14 @@ export const VOCAB_LANGS = [
   { id: "es", suffix: "Es", label: "Español", speech: "es-ES", dir: "ltr" },
 ];
 
+// Objectives are authored in facilitation voice ("With my small group, I
+// can…"). Students drive the studio themselves, so strip the group preamble
+// at render time — configs are generated and stay untouched.
+export function studentVoice(text) {
+  const cleaned = String(text || "").replace(/^with (?:my|your|the) small group,?\s*/i, "");
+  return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+}
+
 export const esc = (value) =>
   String(value == null ? "" : value)
     .replace(/&/g, "&amp;")
@@ -220,6 +228,43 @@ export function injectSmallGroupStyles(accent) {
     .sg-cloze-sentence{font-size:18px;font-weight:600;line-height:1.7}
     .sg-cloze-blank{display:inline-grid;min-width:120px;min-height:30px;place-items:center;padding:2px 10px;border-bottom:3px solid var(--sg);color:var(--sg-deep);font-weight:900}
     .sg-cloze-blank.ok{color:var(--sg-good);border-color:var(--sg-good)}
+    /* ── Learning map + progress meter ── */
+    .sg-map{margin:0 0 24px;padding:20px 22px;border:1px solid var(--sg-line);border-left:6px solid var(--sg);border-radius:18px;background:var(--sg-card);box-shadow:0 8px 24px rgba(23,32,51,.07)}
+    .sg-map-goal{margin:0 0 6px;font-size:18px;font-weight:800;color:var(--sg-deep)}
+    .sg-map-lang{color:var(--sg-muted);font-weight:600}
+    .sg-map-key{margin:12px 0;padding:11px 14px;border-radius:12px;background:var(--sg-soft);color:var(--sg-deep);font-weight:700}
+    .sg-path{margin:12px 0 0;padding:0;list-style:none;display:grid;gap:2px}
+    .sg-path li{display:grid;grid-template-columns:27px auto 1fr auto;gap:10px;align-items:baseline;padding:7px 0;border-bottom:1px dashed var(--sg-line)}
+    .sg-path li:last-child{border:0}
+    .sg-path .pn{display:grid;width:24px;height:24px;place-items:center;border-radius:8px;background:var(--sg-soft);color:var(--sg-deep);font-weight:900;font-size:13px;align-self:center}
+    .sg-path b{font-family:"Nunito",sans-serif;color:var(--sg-deep)}
+    .sg-path .why{color:var(--sg-muted);font-size:15px}
+    .sg-path .min{color:var(--sg);font-size:13px;font-weight:900;white-space:nowrap}
+    .sg-meter{grid-column:1/-1;display:flex;align-items:center;gap:10px;padding:2px 6px 4px}
+    .sg-meter-track{height:8px;flex:1;overflow:hidden;border-radius:999px;background:#e3e7ed}
+    .sg-meter-fill{height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,var(--sg),var(--sg-pop));transition:width .35s ease}
+    .sg-meter-lab{font-size:12px;font-weight:900;color:var(--sg-muted);font-family:"Nunito",sans-serif;white-space:nowrap}
+    /* ── Interactive build stepper ── */
+    .sg-stage{transition:opacity .25s}
+    .sg-stage.locked{opacity:.38;pointer-events:none}
+    .sg-stage.done{border-color:var(--sg-good)}
+    .sg-stage-steps{margin:4px 0 12px}
+    .sg-buildstep{display:flex;gap:10px;padding:9px 0;border-bottom:1px dashed var(--sg-line);animation:sg-stepin .3s ease}
+    .sg-buildstep:last-child{border:0}
+    .sg-buildstep.now{margin:0 -10px;padding-inline:10px;border-radius:10px;background:var(--sg-soft);border-bottom:0}
+    .sg-buildstep-body{font-weight:600}
+    @keyframes sg-stepin{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+    .sg-reveal{margin-left:8px;min-height:32px;padding:4px 11px;border:2px dashed var(--sg);border-radius:999px;background:#fff;color:var(--sg-deep);font-size:13px;font-weight:800;cursor:pointer}
+    .sg-reveal-answer{display:inline-block;margin-left:8px;padding:3px 10px;border-radius:8px;background:var(--sg-soft);color:var(--sg-deep);font-weight:800;animation:sg-stepin .3s ease}
+    .sg-checkstep{display:flex;width:100%;align-items:center;gap:10px;margin:0 0 7px;padding:11px 13px;border:2px solid var(--sg-line);border-radius:11px;background:#fff;font-weight:600;text-align:left;cursor:pointer}
+    .sg-checkstep:hover{border-color:var(--sg)}
+    .sg-checkstep.on{border-color:var(--sg-good);background:#e9f8f0}
+    .sg-checkstep .tick{display:grid;width:26px;height:26px;flex:none;place-items:center;border-radius:8px;background:var(--sg-soft);color:var(--sg-deep);font-weight:900}
+    .sg-checkstep.on .tick{background:var(--sg-good);color:#fff}
+    /* ── Success criteria checklist ── */
+    .sg-criteria{margin:0 0 16px;display:grid;gap:7px}
+    .sg-criteria .block-lab{margin-bottom:2px}
+    .sg-solo-note{margin:0 0 12px;padding:10px 13px;border-radius:11px;background:var(--sg-soft);color:var(--sg-deep);font-weight:600;font-size:15px}
     /* ── Welcome-back strip ── */
     .sg-welcome{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0 0 18px;padding:12px 16px;border:1px solid var(--sg-line);border-left:6px solid var(--sg);border-radius:12px;background:#fff;font-weight:700}
     .sg-welcome .btn{min-height:38px;padding:6px 12px;font-size:13px}
@@ -228,7 +273,7 @@ export function injectSmallGroupStyles(accent) {
     @media(max-width:760px){#app{padding-inline:14px}.sg-hero{margin-inline:-14px;padding:24px 18px}.sg-hero-grid{grid-template-columns:1fr}.sg-hero-mark{display:none}.sg-mission{grid-template-columns:1fr}.sg-mission-visual{order:-1;min-height:190px}.sg-rail{margin-inline:-5px}.sg-step{min-height:42px}.sg-step .lbl{display:none}.sg-match-options{grid-template-columns:1fr}}
     @media(max-width:420px){body{font-size:16px}.sg-hero h1{font-size:29px}.sg-context,.sg-talk-q{font-size:17px}.btn,.sg-pulse-btn,.sg-role-btn,.sg-match-btn,.choice{width:100%;justify-content:flex-start}.sg-timer{align-items:flex-start;flex-direction:column}.sg-timer-track{width:100%;flex:none}}
     @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.sg-burst{display:none}.btn,.choice{transition:none}}
-    @media print{body{background:#fff}.sg-rail,.sg-toolrow,.sg-pulse,.sg-timer,.sg-foot,.sg-teacher,.btn,.sg-speak,#mwb-launcher{display:none!important}#app{max-width:none;padding:0}.sg-hero{margin:0 0 16px;padding:0 0 12px;color:#111;background:#fff;border-bottom:3px solid #111}.sg-hero h1,.sg-obj,.sg-langobj{color:#111}.sg-kicker,.sg-chip{color:#111;background:#eee;border-color:#bbb}.card,.sg-mission,.sg-talk,.prob,.sg-vcard{box-shadow:none;break-inside:avoid}.sg-mission{display:block}.sg-mission-visual{display:none}.sg-sec{margin-bottom:18px}}
+    @media print{body{background:#fff}.sg-rail,.sg-meter,.sg-reveal,.sg-toolrow,.sg-pulse,.sg-timer,.sg-foot,.sg-teacher,.btn,.sg-speak,#mwb-launcher{display:none!important}#app{max-width:none;padding:0}.sg-hero{margin:0 0 16px;padding:0 0 12px;color:#111;background:#fff;border-bottom:3px solid #111}.sg-hero h1,.sg-obj,.sg-langobj{color:#111}.sg-kicker,.sg-chip{color:#111;background:#eee;border-color:#bbb}.card,.sg-mission,.sg-talk,.prob,.sg-vcard{box-shadow:none;break-inside:avoid}.sg-mission{display:block}.sg-mission-visual{display:none}.sg-sec{margin-bottom:18px}}
   `;
   document.head.appendChild(styles);
 }

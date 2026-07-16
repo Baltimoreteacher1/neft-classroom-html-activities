@@ -5,6 +5,7 @@ import {
   esc,
   sectionHeading as heading,
   speak,
+  studentVoice,
   VOCAB_LANGS,
 } from "./small-group-ui.js";
 
@@ -102,7 +103,7 @@ export function createMissionSection(config, variant, state, onDone, store = nul
   const launch = el(
     "button",
     "btn",
-    variant === "group2" ? "Enter the challenge →" : "Build it together →",
+    variant === "group2" ? "Enter the challenge →" : "Start my mission →",
   );
   launch.type = "button";
   const status = el("span", "sg-match-status");
@@ -279,7 +280,7 @@ export function createVocabularySection(config, onDone, store = null) {
         index++;
         if (index >= words.length) {
           [...options.children].forEach((child) => (child.disabled = true));
-          status.textContent = `All ${words.length} words unlocked. Use one in your team talk.`;
+          status.textContent = `All ${words.length} words unlocked. Say one out loud in your next step.`;
           celebrate("🔓");
           onDone();
           return;
@@ -370,12 +371,19 @@ export function createTalkSection(config, variant, onDone) {
   section.appendChild(
     heading(
       4,
-      "Small-group voices",
+      "Say it out loud",
       variant === "group2" ? "Defend it to a skeptic" : "Talk the math through",
     ),
   );
   const card = el("div", "sg-talk");
   card.appendChild(el("p", "sg-talk-q", esc(talk.question)));
+  card.appendChild(
+    el(
+      "p",
+      "sg-solo-note",
+      "With a partner? Rotate the roles below. On your own? Answer out loud, then switch roles and argue back at yourself — explaining is how the math sticks.",
+    ),
+  );
 
   const roles =
     variant === "group2"
@@ -461,11 +469,11 @@ export function createTalkSection(config, variant, onDone) {
   timer.append(clock, track, start);
   card.appendChild(timer);
 
-  const done = el("button", "btn ghost", "✓ We shared our thinking");
+  const done = el("button", "btn ghost", "✓ I said my thinking out loud");
   done.type = "button";
   done.onclick = () => {
     done.disabled = true;
-    done.textContent = "✓ Team talk complete";
+    done.textContent = "✓ Talk complete";
     onDone();
   };
   card.appendChild(el("div", "row")).appendChild(done);
@@ -488,6 +496,48 @@ export function createReflectionSection(config, state, onDone, store = null) {
   );
   growth.appendChild(copy);
   card.appendChild(growth);
+
+  // Success-criteria self-check — the same goals promised in the learning
+  // map, restated as claims the student can now honestly tap to own.
+  const criteria = [
+    config.contentObjective && studentVoice(config.contentObjective),
+    config.languageObjective && studentVoice(config.languageObjective),
+    config.launch?.conceptIntro?.keyIdea &&
+      `I can explain the key idea: ${config.launch.conceptIntro.keyIdea}`,
+  ].filter(Boolean);
+  if (criteria.length) {
+    const checklist = el("div", "sg-criteria");
+    checklist.appendChild(
+      el("span", "block-lab", "Check your goals — tap each one you can honestly claim"),
+    );
+    let met = 0;
+    criteria.forEach((criterion, index) => {
+      const item = el(
+        "button",
+        "sg-checkstep",
+        `<span class="tick">•</span><span>${esc(criterion)}</span>`,
+      );
+      item.type = "button";
+      item.setAttribute("aria-pressed", "false");
+      const claim = () => {
+        item.classList.add("on");
+        item.setAttribute("aria-pressed", "true");
+        item.querySelector(".tick").textContent = "✓";
+      };
+      item.onclick = () => {
+        if (item.classList.contains("on")) return;
+        claim();
+        store?.addTo("criteriaMet", index);
+        if (++met >= criteria.length) celebrate("🎯");
+      };
+      if (store?.has("criteriaMet", index)) {
+        claim();
+        met++;
+      }
+      checklist.appendChild(item);
+    });
+    card.appendChild(checklist);
+  }
   const message = el("div", "sg-match-status");
   message.setAttribute("aria-live", "polite");
   card.appendChild(

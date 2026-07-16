@@ -21,7 +21,14 @@ import {
 import { createApplyLab, createExploreLab, createModelLab } from "./small-group-labs.js";
 import { createCheckSection, createPracticeSection } from "./small-group-practice.js";
 import { createStudioStore } from "./small-group-state.js";
-import { ACCENTS, el, esc, injectSmallGroupStyles, sectionHeading } from "./small-group-ui.js";
+import {
+  ACCENTS,
+  el,
+  esc,
+  injectSmallGroupStyles,
+  sectionHeading,
+  studentVoice,
+} from "./small-group-ui.js";
 
 function teacherMode() {
   try {
@@ -31,31 +38,122 @@ function teacherMode() {
   }
 }
 
+// One Build stage rendered as an interactive player instead of a static list.
+// "ido" and "wedo" reveal one step at a time; "wedo" also converts a trailing
+// authored parenthetical ("(You might say 3 × 4.)") into a think-first reveal
+// chip; "youdo" becomes a tap-to-check launch list.
+function stageCard(stage, fallbackTitle, kind, onStageDone) {
+  const lines = stage?.lines || [];
+  if (!lines.length) return null;
+  const card = el("div", "card sg-stage");
+  card.appendChild(el("p", "block-lab", esc(stage.title || fallbackTitle)));
+  const list = el("div", "sg-stage-steps");
+  const row = el("div", "row");
+  card.append(list, row);
+  let complete = false;
+  const finish = () => {
+    if (complete) return;
+    complete = true;
+    card.classList.add("done");
+    onStageDone();
+  };
+
+  if (kind === "youdo") {
+    let checked = 0;
+    lines.forEach((line) => {
+      const item = el(
+        "button",
+        "sg-checkstep",
+        `<span class="tick">•</span><span>${esc(line)}</span>`,
+      );
+      item.type = "button";
+      item.setAttribute("aria-pressed", "false");
+      item.onclick = () => {
+        if (item.classList.contains("on")) return;
+        item.classList.add("on");
+        item.setAttribute("aria-pressed", "true");
+        item.querySelector(".tick").textContent = "✓";
+        if (++checked >= lines.length) finish();
+      };
+      list.appendChild(item);
+    });
+    return card;
+  }
+
+  const renderLine = (line, number) => {
+    const step = el("div", "sg-buildstep");
+    step.appendChild(el("span", "sn", String(number)));
+    const body = el("div", "sg-buildstep-body");
+    const reveal = kind === "wedo" ? String(line).match(/^(.*?)\s*\(([^()]{2,})\)\s*$/) : null;
+    if (reveal) {
+      body.appendChild(el("span", null, esc(reveal[1])));
+      const chip = el("button", "sg-reveal", "💭 Think first, then reveal");
+      chip.type = "button";
+      const answer = el("span", "sg-reveal-answer", esc(reveal[2]));
+      answer.hidden = true;
+      chip.onclick = () => {
+        answer.hidden = false;
+        chip.remove();
+      };
+      body.append(chip, answer);
+    } else {
+      body.appendChild(el("span", null, esc(line)));
+    }
+    step.appendChild(body);
+    return step;
+  };
+
+  let index = 0;
+  const advanceCopy = kind === "ido" ? "Next step →" : "Got it — next →";
+  const doneCopy = kind === "ido" ? "✓ I followed every step" : "✓ I worked it through";
+  const next = el("button", "btn", "Show step 1 →");
+  next.type = "button";
+  next.onclick = () => {
+    const step = renderLine(lines[index], index + 1);
+    [...list.children].forEach((previous) => previous.classList.remove("now"));
+    step.classList.add("now");
+    list.appendChild(step);
+    index++;
+    if (index >= lines.length) {
+      next.disabled = true;
+      next.textContent = doneCopy;
+      finish();
+    } else {
+      next.textContent = advanceCopy;
+    }
+  };
+  row.appendChild(next);
+  return card;
+}
+
 function conceptSection(config, onDone, proofPath) {
   const concept = config.launch?.conceptIntro || {};
   const section = el("section", "sg-sec");
   section.id = "sg-build";
-  section.appendChild(sectionHeading(2, "Model · try · release", "Build the idea together"));
+  section.appendChild(sectionHeading(2, "See it · try it · own it", "Build the idea"));
   if (concept.keyIdea)
     section.appendChild(
       el("div", "keyidea", `<span class="lab">Anchor idea</span>${esc(concept.keyIdea)}`),
     );
   if (concept.intro) section.appendChild(el("p", null, esc(concept.intro)));
 
+  // Stages unlock in order so the studio walks itself: worked example first,
+  // then the guided try, then the launch checklist.
   const stages = [
-    [concept.iDo, "👀 Watch the model", true],
-    [concept.weDo, "🤝 Solve one together", false],
-    [concept.youDo, "🧠 Take the lead", false],
+    [concept.iDo, "👀 See it worked out", "ido"],
+    [concept.weDo, "🤝 Try it with the guide", "wedo"],
+    [concept.youDo, "🧠 Take the lead", "youdo"],
   ];
-  stages.forEach(([stage, fallback, open]) => {
-    if (!stage || !(stage.lines || []).length) return;
-    const details = el("details", "card");
-    details.open = open;
-    const summary = el("summary", "block-lab", esc(stage.title || fallback));
-    const list = el("ol", "steps");
-    stage.lines.forEach((line) => list.appendChild(el("li", null, esc(line))));
-    details.append(summary, list);
-    section.appendChild(details);
+  const cards = [];
+  stages.forEach(([stage, fallback, kind]) => {
+    const card = stageCard(stage, fallback, kind, () => {
+      const position = cards.indexOf(card);
+      cards[position + 1]?.classList.remove("locked");
+    });
+    if (!card) return;
+    if (cards.length) card.classList.add("locked");
+    cards.push(card);
+    section.appendChild(card);
   });
   section.appendChild(proofPath);
 
@@ -105,9 +203,9 @@ function hero(config, accent) {
   copy.appendChild(el("div", null, `<span class="sg-kicker">${accent.emoji} ${esc(badge)}</span>`));
   copy.appendChild(el("h1", null, esc(config.title || "Small-Group Math Studio")));
   if (config.contentObjective)
-    copy.appendChild(el("p", "sg-obj", `🎯 ${esc(config.contentObjective)}`));
+    copy.appendChild(el("p", "sg-obj", `🎯 ${esc(studentVoice(config.contentObjective))}`));
   if (config.languageObjective)
-    copy.appendChild(el("p", "sg-langobj", `🗣️ ${esc(config.languageObjective)}`));
+    copy.appendChild(el("p", "sg-langobj", `🗣️ ${esc(studentVoice(config.languageObjective))}`));
   const chips = el("div", "sg-chips");
   chips.appendChild(el("span", "sg-chip", `⏱ ${esc(config.timeEstimate || "15–20 min")}`));
   if (config.standard) chips.appendChild(el("span", "sg-chip", esc(config.standard)));
@@ -116,6 +214,52 @@ function hero(config, accent) {
   grid.append(copy, el("div", "sg-hero-mark", accent.emoji));
   container.appendChild(grid);
   return container;
+}
+
+// What each step is for, in student language, with a realistic minute
+// estimate — the scope-and-sequence layer of the learning map and rail.
+const STEP_GUIDE = {
+  "sg-launch": ["Meet today's mission and rate how ready you feel.", 2],
+  "sg-build": ["See the math worked out, then try it one step at a time.", 4],
+  "sg-explore": ["Get hands-on with a live math model.", 3],
+  "sg-vocab": ["Unlock the math words — English + Español.", 2],
+  "sg-talk": ["Say your thinking out loud — solo or with a partner.", 2],
+  "sg-practice": ["Solve problems with hints on standby.", 5],
+  "sg-model": ["Connect the idea to a picture you can explain.", 2],
+  "sg-apply": ["Use the math in a real situation.", 3],
+  "sg-check": ["Show what you know — this one is all you.", 2],
+  "sg-reflect": ["Check off your goals and name your growth.", 1],
+};
+
+// Learning map — the up-front "what am I learning, and what's my path?"
+// panel. Everything is derived from the config + the sections this lesson
+// actually mounted, so catch-ups and both groups stay accurate automatically.
+function learningMap(config, phases) {
+  const map = el("section", "sg-map");
+  map.setAttribute("aria-label", "Today's goal and learning path");
+  map.appendChild(el("div", "sg-eyebrow", "Today at a glance"));
+  if (config.contentObjective)
+    map.appendChild(el("p", "sg-map-goal", `🎯 ${esc(studentVoice(config.contentObjective))}`));
+  if (config.languageObjective)
+    map.appendChild(el("p", "sg-map-lang", `🗣️ ${esc(studentVoice(config.languageObjective))}`));
+  const keyIdea = config.launch?.conceptIntro?.keyIdea;
+  if (keyIdea) map.appendChild(el("div", "sg-map-key", `<b>Key idea:</b> ${esc(keyIdea)}`));
+  const path = el("ol", "sg-path");
+  let total = 0;
+  phases.forEach(([id, label], index) => {
+    const [why, minutes] = STEP_GUIDE[id] || ["", 2];
+    total += minutes;
+    path.appendChild(
+      el(
+        "li",
+        null,
+        `<span class="pn">${index + 1}</span><b>${esc(label)}</b><span class="why">${esc(why)}</span><span class="min">~${minutes} min</span>`,
+      ),
+    );
+  });
+  map.appendChild(el("p", "block-lab", `Your path today · about ${total} minutes`));
+  map.appendChild(path);
+  return map;
 }
 
 // The rail is data-driven: it lists exactly the sections this lesson actually
@@ -136,7 +280,25 @@ function progressRail(phases) {
     controls[id] = button;
     rail.appendChild(button);
   });
-  return { rail, mark: (id) => controls[id]?.classList.add("done"), controls };
+  const meter = el(
+    "div",
+    "sg-meter",
+    `<div class="sg-meter-track"><div class="sg-meter-fill"></div></div><span class="sg-meter-lab">0 of ${phases.length} steps done</span>`,
+  );
+  rail.appendChild(meter);
+  const done = new Set();
+  const mark = (id) => {
+    if (!controls[id] || done.has(id)) return;
+    controls[id].classList.add("done");
+    done.add(id);
+    meter.querySelector(".sg-meter-fill").style.width =
+      `${Math.round((done.size / phases.length) * 100)}%`;
+    meter.querySelector(".sg-meter-lab").textContent =
+      done.size >= phases.length
+        ? "All steps complete 🎉"
+        : `${done.size} of ${phases.length} steps done`;
+  };
+  return { rail, mark, controls };
 }
 
 function footer(config, isTeacher) {
@@ -322,6 +484,12 @@ export function bootSmallGroup(config) {
     app.appendChild(welcome);
   }
 
+  app.appendChild(
+    learningMap(
+      config,
+      present.map(([id, label]) => [id, label]),
+    ),
+  );
   rail = progressRail(present.map(([id, label]) => [id, label]));
   app.appendChild(rail.rail);
   present.forEach(([id, , section]) => {

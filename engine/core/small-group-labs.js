@@ -202,7 +202,7 @@ export function createExploreLab(config, variant, { number, store, events, onDon
         el(
           "p",
           "sg-lab-note",
-          "This lab could not load right now. Talk through the warm-up with your group, then continue.",
+          "This lab could not load right now. Talk through the warm-up out loud, then continue.",
         ),
       );
       finish();
@@ -274,7 +274,7 @@ export function createModelLab(config, variant, { number, store, events, onDone 
     check.disabled = true;
     status.className = "fb show ok";
     status.innerHTML =
-      "✅ <b>You connected the model to the math.</b> Read your explanation to your group.";
+      "✅ <b>You connected the model to the math.</b> Read your explanation out loud.";
     celebrate("🔗");
     onDone();
   };
@@ -432,7 +432,7 @@ export function createApplyLab(config, variant, { number, store, events, onDone 
     finalStatus.innerHTML = message;
   };
   [
-    ["match", "✓ Mine matches", "✅ <b>Solved.</b> Explain your favorite step to your group."],
+    ["match", "✓ Mine matches", "✅ <b>Solved.</b> Explain your favorite step out loud."],
     [
       "close",
       "≈ Close — I can fix mine",
@@ -441,7 +441,7 @@ export function createApplyLab(config, variant, { number, store, events, onDone 
     [
       "help",
       "? I want this explained",
-      "🤝 <b>Smart ask.</b> Have your coach walk the sample answer aloud, one step at a time.",
+      "🤝 <b>Smart ask.</b> Open the sample answer above and walk it one line at a time.",
     ],
   ].forEach(([verdict, label, message]) => {
     const button = el("button", "btn ghost", label);

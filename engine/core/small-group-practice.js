@@ -113,7 +113,7 @@ function multipleChoiceCard(item, index, onSolved, events = {}) {
       showFeedback(
         status,
         "ok",
-        `✅ <b>Your reasoning landed.</b> ${esc(item.explanation || "Explain why this choice works to your group.")}`,
+        `✅ <b>Your reasoning landed.</b> ${esc(item.explanation || "Say out loud why this choice works — teaching it proves you own it.")}`,
       );
       celebrate("✓");
       onSolved();
@@ -166,7 +166,7 @@ function errorAnalysisCard(item, index, onSolved, events = {}) {
       showFeedback(
         status,
         "ok",
-        `✅ <b>You found the reasoning break.</b> ${item.correctWork ? `Repair: ${esc(item.correctWork)}` : "Explain the repair to your group."}`,
+        `✅ <b>You found the reasoning break.</b> ${item.correctWork ? `Repair: ${esc(item.correctWork)}` : "Say the repair out loud in your own words."}`,
       );
       celebrate("🔧");
       onSolved();
@@ -258,7 +258,7 @@ function answerControl(item, answer, scaffold, status, onSolved, events = {}, on
           ? "Not yet. Re-read the question, check one step, and try again."
           : opened
             ? "Still building — so the step guide below just opened for you. Walk it one line at a time, then revise your answer."
-            : "Still building. Open the next hint or ask your coach to question one step—then revise your answer.",
+            : "Still building. Open the next hint or re-walk the worked example in Build — then revise your answer.",
       );
       return;
     }
@@ -367,7 +367,7 @@ function responseCard(item, index, variant, onSolved, scaffold, events = {}) {
       showFeedback(
         status,
         "ok",
-        "✓ Share your reasoning aloud. Your group should ask one question about your evidence.",
+        "✓ Read your reasoning out loud, then ask yourself: what evidence makes it convincing?",
       );
       onSolved();
     };
@@ -407,7 +407,9 @@ export function createPracticeSection(config, onPhaseDone, tally, events = {}, s
   const section = el("section", "sg-sec");
   section.id = "sg-practice";
   const title =
-    config.variant === "group2" ? "Challenge, justify, generalize" : "Practice with a coach nearby";
+    config.variant === "group2"
+      ? "Challenge, justify, generalize"
+      : "Practice with hints on standby";
   section.appendChild(
     el(
       "div",
@@ -452,7 +454,7 @@ export function createPracticeSection(config, onPhaseDone, tally, events = {}, s
       el(
         "div",
         "card",
-        `<div class="sg-eyebrow">Bonus move</div><h3>${esc(optional.emoji || "⭐")} ${esc(optional.name || "Try one more")}</h3><p>${esc(optional.intro || "Use this if your group is ready to keep going.")}</p>`,
+        `<div class="sg-eyebrow">Bonus move</div><h3>${esc(optional.emoji || "⭐")} ${esc(optional.name || "Try one more")}</h3><p>${esc(optional.intro || "Use this if you are ready to keep going.")}</p>`,
       ),
     );
   return section;
