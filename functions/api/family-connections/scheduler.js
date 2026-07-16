@@ -1,3 +1,9 @@
+import {
+  normalizeAvailabilityRule,
+  normalizeSchedulerState,
+  refreshGeneratedSlots,
+} from "./scheduler-rules.js";
+
 const FORMATS = new Set(["phone", "video", "in-person"]);
 const ACTIVE_SLOT_STATUSES = new Set(["open", "held", "booked"]);
 
@@ -80,8 +86,10 @@ export function createMemorySchedulerStore(options = {}) {
   const now = options.now ?? (() => new Date());
   const id = options.id ?? randomValue;
   const makeToken = options.token ?? (() => randomValue("meeting"));
-  const slots = structuredClone(options.slots ?? []);
-  const requests = structuredClone(options.requests ?? []);
+  const initial = normalizeSchedulerState(options);
+  const availabilityRules = initial.availabilityRules;
+  let slots = initial.slots;
+  const requests = initial.requests;
 
   const findSlot = (slotId) => slots.find((slot) => slot.id === slotId);
   const findRequest = (requestId) => requests.find((item) => item.id === requestId);
@@ -89,8 +97,48 @@ export function createMemorySchedulerStore(options = {}) {
     const slot = findSlot(request.slotId);
     if (slot && new Date(slot.startAt) > now() && slot.status !== "cancelled") slot.status = "open";
   };
+  const refresh = () => {
+    const next = refreshGeneratedSlots({ availabilityRules, slots, requests }, now());
+    slots = next.slots;
+    return slots.filter((slot) => slot.generated && slot.status === "open").length;
+  };
 
   return {
+    async createRule(input) {
+      const rule = {
+        ...normalizeAvailabilityRule(input, now()),
+        id: id("rule"),
+        createdAt: now().toISOString(),
+        updatedAt: now().toISOString(),
+      };
+      availabilityRules.push(rule);
+      refresh();
+      return structuredClone(rule);
+    },
+    async updateRule(input) {
+      const ruleId = clean(input?.id, 100);
+      const index = availabilityRules.findIndex((rule) => rule.id === ruleId);
+      if (index < 0) fail("Availability rule was not found.", 404);
+      const rule = {
+        ...normalizeAvailabilityRule({ ...input, id: ruleId }, now()),
+        id: ruleId,
+        createdAt: availabilityRules[index].createdAt,
+        updatedAt: now().toISOString(),
+      };
+      availabilityRules[index] = rule;
+      refresh();
+      return structuredClone(rule);
+    },
+    async deleteRule(ruleId) {
+      const index = availabilityRules.findIndex((rule) => rule.id === clean(ruleId, 100));
+      if (index < 0) fail("Availability rule was not found.", 404);
+      const [removed] = availabilityRules.splice(index, 1);
+      refresh();
+      return structuredClone(removed);
+    },
+    async refreshSlots() {
+      return { generatedCount: refresh() };
+    },
     async createSlot(input) {
       const candidate = input.endAt ? { ...input } : normalizeSlot(input, now());
       if (slots.some((item) => ACTIVE_SLOT_STATUSES.has(item.status) && overlaps(item, candidate)))
@@ -116,12 +164,12 @@ export function createMemorySchedulerStore(options = {}) {
         slotId: slot.id,
         ...normalizeContact(input),
         source: "family",
-        status: "pending",
+        status: "confirmed",
         createdAt: now().toISOString(),
       };
-      slot.status = "held";
+      slot.status = "booked";
       requests.push(request);
-      return structuredClone(request);
+      return { ...structuredClone(request), slot: publicSlot(slot) };
     },
     async decide(requestId, action) {
       const request = findRequest(requestId);
@@ -136,7 +184,7 @@ export function createMemorySchedulerStore(options = {}) {
         reopen(request);
       } else if (action === "cancel") {
         request.status = "cancelled";
-        reopen(request);
+        if (slot) slot.status = "cancelled";
       } else if (action === "complete" && request.status === "confirmed") {
         request.status = "completed";
         if (slot) slot.status = "completed";
@@ -189,10 +237,10 @@ export function createMemorySchedulerStore(options = {}) {
       return { status: request.status, slot: publicSlot(findSlot(request.slotId)) };
     },
     async dashboard() {
-      return structuredClone({ slots, requests });
+      return structuredClone({ availabilityRules, slots, requests });
     },
     exportState() {
-      return structuredClone({ slots, requests });
+      return structuredClone({ availabilityRules, slots, requests });
     },
   };
 }
@@ -227,7 +275,12 @@ export async function handleSchedulerRequest(context, store, access) {
     if (path === "schedule-request" && method === "POST") {
       const meetingRequest = await store.requestSlot(await readJson(context.request));
       return json(
-        { ok: true, reference: meetingRequest.id, status: meetingRequest.status },
+        {
+          ok: true,
+          reference: meetingRequest.id,
+          status: meetingRequest.status,
+          slot: meetingRequest.slot,
+        },
         201,
       );
     }
@@ -240,6 +293,16 @@ export async function handleSchedulerRequest(context, store, access) {
     if (!access?.hasTeacherAccess) return json({ ok: false, error: "unauthorized" }, 401);
     if (path === "schedule-dashboard" && method === "GET")
       return json({ ok: true, ...(await store.dashboard()) });
+    if (path === "schedule-rule" && method === "POST")
+      return json({ ok: true, rule: await store.createRule(await readJson(context.request)) }, 201);
+    if (path === "schedule-rule" && method === "PUT")
+      return json({ ok: true, rule: await store.updateRule(await readJson(context.request)) });
+    if (path === "schedule-rule" && method === "DELETE") {
+      const body = await readJson(context.request);
+      return json({ ok: true, rule: await store.deleteRule(body.id) });
+    }
+    if (path === "schedule-refresh" && method === "POST")
+      return json({ ok: true, ...(await store.refreshSlots()) });
     if (path === "schedule-slot" && method === "POST")
       return json({ ok: true, slot: await store.createSlot(await readJson(context.request)) }, 201);
     if (path === "schedule-decision" && method === "POST") {
