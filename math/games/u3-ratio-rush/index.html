@@ -40,12 +40,7 @@
         z-index: 0;
         overflow: hidden;
         pointer-events: none;
-        background: radial-gradient(
-          130% 90% at 50% 0%,
-          #11484c 0%,
-          #0c2f33 55%,
-          #07201f 100%
-        );
+        background: radial-gradient(130% 90% at 50% 0%, #11484c 0%, #0c2f33 55%, #07201f 100%);
       }
       #rr-bg-layer {
         position: absolute;
@@ -126,15 +121,14 @@
     <!-- gacc-injected:end -->
     <!-- Socratic hint ladder (opt-in; reuses /api/tutor, falls back to static hints) -->
     <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
-  
-  
+
     <!-- uifr-injected:begin -->
     <!-- BCPS Instructional Framework Rubric · TEACH support. Teacher/observer reference — NOT shown to students. Interactive practice activity (math/games/u3-ratio-rush): supports Level 4 conditions on T2, T4 (students choose their approach + immediate no-fail feedback with retry). Full evidence: /teacher-tools/teaching-evidence/ · docs/uifr-teach-l4.md. -->
     <!-- uifr-injected:end -->
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2" />
+    <!-- nsr-injected:end -->
+  </head>
   <body>
     <!-- Decorative animated spark-field (behind the Phaser canvas). -->
     <div id="rr-bg" data-parallax aria-hidden="true">
@@ -146,9 +140,7 @@
       // Decorative spark-field builder (reduced-motion safe; pointer-neutral).
       (function () {
         "use strict";
-        var reduceMQ =
-          window.matchMedia &&
-          window.matchMedia("(prefers-reduced-motion: reduce)");
+        var reduceMQ = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)");
         var layer = document.getElementById("rr-bg-layer");
         if (!layer) return;
         function rnd(a, b) {
@@ -176,11 +168,7 @@
           var dx = e.clientX / (window.innerWidth || 1) - 0.5;
           var dy = e.clientY / (window.innerHeight || 1) - 0.5;
           layer.style.transform =
-            "translate3d(" +
-            (dx * 20).toFixed(2) +
-            "px," +
-            (dy * 12).toFixed(2) +
-            "px,0)";
+            "translate3d(" + (dx * 20).toFixed(2) + "px," + (dy * 12).toFixed(2) + "px,0)";
         }
         function attach() {
           if (driver || (reduceMQ && reduceMQ.matches)) return;
@@ -200,8 +188,7 @@
             if (reduceMQ.matches) detach();
             else attach();
           };
-          if (reduceMQ.addEventListener)
-            reduceMQ.addEventListener("change", onChange);
+          if (reduceMQ.addEventListener) reduceMQ.addEventListener("change", onChange);
           else if (reduceMQ.addListener) reduceMQ.addListener(onChange);
         }
         var rt;
@@ -242,11 +229,7 @@
       }
       function xToVal(x) {
         // Snap to whole-number ticks; all targets are whole numbers ≤ 10.
-        return Phaser.Math.Clamp(
-          Math.round(((x - LINE_X0) / LW) * MAXV),
-          0,
-          MAXV,
-        );
+        return Phaser.Math.Clamp(Math.round(((x - LINE_X0) / LW) * MAXV), 0, MAXV);
       }
 
       // ── Audio (tiny WebAudio blips; gracefully no-op without a context) ──
@@ -255,9 +238,7 @@
         init() {
           if (!this.ctx)
             try {
-              this.ctx = new (
-                window.AudioContext || window.webkitAudioContext
-              )();
+              this.ctx = new (window.AudioContext || window.webkitAudioContext)();
             } catch (e) {}
         },
         play(t, f, d, v = 0.18) {
@@ -339,12 +320,12 @@
       //   "full" : build a FULL equivalent ratio different from a:b — both knobs.
       //   "unit" : find the UNIT RATE — top locked at 1, slide bottom to b÷a.
       const CONTEXTS = [
-        { a: "cups berry", b: "cups mango" },
-        { a: "miles", b: "minutes" },
-        { a: "dollars", b: "tickets" },
-        { a: "red beads", b: "blue beads" },
-        { a: "scoops", b: "cups water" },
-        { a: "apples", b: "oranges" },
+        { a: "cups berry", b: "cups mango", one: "1 cup of berry" },
+        { a: "miles", b: "minutes", one: "1 mile" },
+        { a: "dollars", b: "tickets", one: "1 dollar" },
+        { a: "red beads", b: "blue beads", one: "1 red bead" },
+        { a: "scoops", b: "cups water", one: "1 scoop" },
+        { a: "apples", b: "oranges", one: "1 apple" },
       ];
       // Base ratios with both terms ≤ 5 (so doubling stays ≤ 10).
       const BASE_POOL = [
@@ -400,8 +381,8 @@
               p.b +
               " " +
               p.nameB +
-              ". You want the amount for just 1 " +
-              p.nameA +
+              ". You want the amount for just " +
+              p.oneA +
               ". What do you do to " +
               p.a +
               " to make it 1?",
@@ -454,6 +435,7 @@
             b,
             nameA: ctx.a,
             nameB: ctx.b,
+            oneA: ctx.one,
             topFixed: 1, // top knob locked at 1
             botFixed: null, // bottom knob is the action
             startTop: 1,
@@ -475,19 +457,7 @@
               " for 1 " +
               ctx.a +
               ".",
-            why:
-              a +
-              ":" +
-              b +
-              " = 1:" +
-              d +
-              ", so " +
-              d +
-              " " +
-              ctx.b +
-              " per 1 " +
-              ctx.a +
-              ".",
+            why: a + ":" + b + " = 1:" + d + ", so " + d + " " + ctx.b + " per " + ctx.one + ".",
           };
         }
         if (kind === "full") {
@@ -562,14 +532,7 @@
         parent: document.body,
         backgroundColor: "#0c2a2e",
         scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-        scene: [
-          BootScene,
-          TitleScene,
-          VocabScene,
-          PickScene,
-          GameScene,
-          ResultScene,
-        ],
+        scene: [BootScene, TitleScene, VocabScene, PickScene, GameScene, ResultScene],
       };
 
       // Chosen difficulty track: 1 = support, 2 = enrichment. Set on PickScene
@@ -747,9 +710,7 @@
           .setOrigin(0.5);
 
         // Card surface.
-        this.add
-          .rectangle(cx, 320, 560, 320, 0x0a3338)
-          .setStrokeStyle(2, 0x1f8a6b);
+        this.add.rectangle(cx, 320, 560, 320, 0x0a3338).setStrokeStyle(2, 0x1f8a6b);
 
         this.stepText = this.add
           .text(cx, 185, "", {
@@ -759,9 +720,7 @@
             color: "#7fc4b3",
           })
           .setOrigin(0.5);
-        this.emojiText = this.add
-          .text(cx, 250, "", { fontSize: "76px" })
-          .setOrigin(0.5);
+        this.emojiText = this.add.text(cx, 250, "", { fontSize: "76px" }).setOrigin(0.5);
         this.termText = this.add
           .text(cx, 330, "", {
             fontFamily: "Segoe UI, sans-serif",
@@ -826,9 +785,7 @@
       VocabScene.prototype.renderCard = function () {
         const v = RR_VOCAB[this.idx];
         const last = this.idx === RR_VOCAB.length - 1;
-        this.stepText.setText(
-          "Key word " + (this.idx + 1) + " of " + RR_VOCAB.length,
-        );
+        this.stepText.setText("Key word " + (this.idx + 1) + " of " + RR_VOCAB.length);
         this.emojiText.setText(v.emoji);
         this.termText.setText(v.term);
         this.defText.setText(v.def);
@@ -876,16 +833,11 @@
           })
           .setOrigin(0.5);
         this.add
-          .text(
-            cx,
-            130,
-            "Both teach ratios — pick the one that fits you today.",
-            {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "16px",
-              color: "#bfe6da",
-            },
-          )
+          .text(cx, 130, "Both teach ratios — pick the one that fits you today.", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "16px",
+            color: "#bfe6da",
+          })
           .setOrigin(0.5);
 
         const card = (x, accent, num, name, lines, track) => {
@@ -984,8 +936,7 @@
 
       GameScene.prototype.init = function () {
         this.reduceMotion = !!(
-          window.matchMedia &&
-          window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
         );
         this.track = rrTrack; // 1 = support, 2 = enrichment
         this.score = 0;
@@ -1023,12 +974,10 @@
           .text(W - 16, 12, "Streak: 0", { ...hudStyle, color: "#ffd24a" })
           .setOrigin(1, 0);
         this.levelText = this.add
-          .text(
-            W - 16,
-            36,
-            this.track === 1 ? "Level 1 · Support" : "Level 2 · Enrich",
-            { ...hudStyle, color: this.track === 1 ? "#8ff0d8" : "#ffd24a" },
-          )
+          .text(W - 16, 36, this.track === 1 ? "Level 1 · Support" : "Level 2 · Enrich", {
+            ...hudStyle,
+            color: this.track === 1 ? "#8ff0d8" : "#ffd24a",
+          })
           .setOrigin(1, 0);
         this.progressText = this.add
           .text(W / 2, 12, "0 / " + this.target, {
@@ -1081,9 +1030,7 @@
             strokeThickness: 5,
           })
           .setOrigin(0.5);
-        this.chipBg = this.add
-          .rectangle(W / 2, 250, 240, 30, 0x163f44)
-          .setStrokeStyle(2, 0x1f8a6b);
+        this.chipBg = this.add.rectangle(W / 2, 250, 240, 30, 0x163f44).setStrokeStyle(2, 0x1f8a6b);
         this.chipText = this.add
           .text(W / 2, 250, "", {
             fontFamily: "Segoe UI, sans-serif",
@@ -1109,12 +1056,8 @@
             color: "#ffffff",
           })
           .setOrigin(0.5);
-        this.lockBtn.on("pointerover", () =>
-          this.lockBtn.setFillStyle(0x27a883),
-        );
-        this.lockBtn.on("pointerout", () =>
-          this.lockBtn.setFillStyle(0x1f8a6b),
-        );
+        this.lockBtn.on("pointerover", () => this.lockBtn.setFillStyle(0x27a883));
+        this.lockBtn.on("pointerout", () => this.lockBtn.setFillStyle(0x1f8a6b));
         this.lockBtn.on("pointerdown", () => this.lockIn());
 
         // Hint
@@ -1174,8 +1117,7 @@
           }
         });
         this.input.on("pointermove", (p) => {
-          if (this.dragging && !this.locked)
-            this.setKnob(this.dragging, xToVal(p.x));
+          if (this.dragging && !this.locked) this.setKnob(this.dragging, xToVal(p.x));
         });
         this.input.on("pointerup", () => {
           this.dragging = null;
@@ -1234,9 +1176,7 @@
           })
           .setOrigin(0, 0.5);
         // Faint base-ratio anchor marker (shows where a / b sit).
-        const anchor = this.add
-          .circle(LINE_X0, y, 9, 0x6be0c0, 0.35)
-          .setDepth(4);
+        const anchor = this.add.circle(LINE_X0, y, 9, 0x6be0c0, 0.35).setDepth(4);
         const anchorLbl = this.add
           .text(LINE_X0, y - 24, "", {
             fontFamily: "Segoe UI, sans-serif",
@@ -1273,9 +1213,7 @@
       };
       GameScene.prototype.isMovable = function (line) {
         if (!this.problem) return false;
-        return line === "top"
-          ? this.problem.topFixed === null
-          : this.problem.botFixed === null;
+        return line === "top" ? this.problem.topFixed === null : this.problem.botFixed === null;
       };
 
       GameScene.prototype.setKnob = function (line, val) {
@@ -1322,13 +1260,8 @@
         // Subtle ring on the active movable knob (keyboard focus aid).
         [this.topLine, this.botLine].forEach((refs, i) => {
           const line = i === 0 ? "top" : "bottom";
-          if (this.isMovable(line) && this.active === line)
-            refs.knob.setStrokeStyle(4, 0xffffff);
-          else
-            refs.knob.setStrokeStyle(
-              3,
-              this.isMovable(line) ? 0xb87b1d : 0x4f5b58,
-            );
+          if (this.isMovable(line) && this.active === line) refs.knob.setStrokeStyle(4, 0xffffff);
+          else refs.knob.setStrokeStyle(3, this.isMovable(line) ? 0xb87b1d : 0x4f5b58);
         });
       };
 
@@ -1361,15 +1294,11 @@
         this.topLine.anchor.x = tickX(p.a);
         this.topLine.anchor.setAlpha(support ? 0.6 : 0.5);
         this.topLine.anchorLbl.x = tickX(p.a);
-        this.topLine.anchorLbl
-          .setText(support ? p.a + "" : "")
-          .setVisible(support);
+        this.topLine.anchorLbl.setText(support ? p.a + "" : "").setVisible(support);
         this.botLine.anchor.x = tickX(p.b);
         this.botLine.anchor.setAlpha(support ? 0.6 : 0.5);
         this.botLine.anchorLbl.x = tickX(p.b);
-        this.botLine.anchorLbl
-          .setText(support ? p.b + "" : "")
-          .setVisible(support);
+        this.botLine.anchorLbl.setText(support ? p.b + "" : "").setVisible(support);
 
         // Knob colors: fixed knobs are muted, movable knobs are gold.
         const setLook = (line, fixed) => {
@@ -1389,10 +1318,7 @@
         this.refreshActiveCue();
 
         srSay(
-          p.label +
-            ". " +
-            p.prompt +
-            " Drag the gold knob to set your answer, then lock it in.",
+          p.label + ". " + p.prompt + " Drag the gold knob to set your answer, then lock it in.",
         );
       };
 
@@ -1403,8 +1329,7 @@
           d = this.botVal;
         const equiv = p.a * d === p.b * c;
         const sameAsBase = c === p.a && d === p.b;
-        const correct =
-          c > 0 && d > 0 && equiv && !(p.kind === "full" && sameAsBase);
+        const correct = c > 0 && d > 0 && equiv && !(p.kind === "full" && sameAsBase);
         this.locked = true;
 
         if (correct) {
@@ -1417,13 +1342,7 @@
           this.score += gained;
           this.burst.setPosition(tickX(d), BOT_Y);
           this.burst.explode(16);
-          JUICE.burst(
-            this,
-            tickX(c),
-            TOP_Y,
-            [0x34d399, 0x8ff0d8, 0xffffff],
-            14,
-          );
+          JUICE.burst(this, tickX(c), TOP_Y, [0x34d399, 0x8ff0d8, 0xffffff], 14);
           JUICE.floatText(this, W / 2, 230, "+" + gained, "#8ff0d8", 34);
           JUICE.shake(this, 0.004 + Math.min(this.streak, 5) * 0.001);
           JUICE.award(gained, "u3-ratio-rush");
@@ -1444,11 +1363,7 @@
           const ghosts = [];
           const makeGhost = (line, val) => {
             const refs = line === "top" ? this.topLine : this.botLine;
-            ghosts.push(
-              this.add
-                .circle(tickX(val), refs.y, 13, 0x8ff0d8, 0.5)
-                .setDepth(6),
-            );
+            ghosts.push(this.add.circle(tickX(val), refs.y, 13, 0x8ff0d8, 0.5).setDepth(6));
           };
           const tweenTargets = [];
           if (p.topFixed === null) {
@@ -1544,9 +1459,7 @@
       GameScene.prototype.updateHUD = function () {
         this.scoreText.setText("Score: " + this.score);
         this.streakText.setText("Streak: " + this.streak);
-        this.levelText.setText(
-          this.track === 1 ? "Level 1 · Support" : "Level 2 · Enrich",
-        );
+        this.levelText.setText(this.track === 1 ? "Level 1 · Support" : "Level 2 · Enrich");
         this.progressText.setText(this.solved + " / " + this.target);
       };
 
@@ -1615,16 +1528,11 @@
           })
           .setOrigin(0.5);
         this.add
-          .text(
-            cx,
-            295,
-            "Solved " + d.solved + " of " + d.target + " problems",
-            {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "18px",
-              color: "#bfe6da",
-            },
-          )
+          .text(cx, 295, "Solved " + d.solved + " of " + d.target + " problems", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "18px",
+            color: "#bfe6da",
+          })
           .setOrigin(0.5);
         this.add
           .text(cx, 325, "High Score: " + hs, {
@@ -1719,8 +1627,8 @@
     <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
     <script src="/assets/canvas-bridge.js" defer></script>
     <!-- canvas-bridge-injected:end -->
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
-  <!-- nsr-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+    <!-- nsr-injected:end -->
   </body>
 </html>
