@@ -1,3 +1,4 @@
+import { buildCanvasRss } from "../../../curriculum/family-connections/shared/model.js";
 import { initialState, normalizeSnapshot } from "./domain.js";
 
 const HISTORY_LIMIT = 5;
@@ -9,6 +10,17 @@ function json(data, status = 200, cache = "no-store") {
     headers: {
       "content-type": "application/json; charset=utf-8",
       "cache-control": cache,
+      "x-content-type-options": "nosniff",
+    },
+  });
+}
+
+function rss(data) {
+  return new Response(data, {
+    status: 200,
+    headers: {
+      "content-type": "application/rss+xml; charset=utf-8",
+      "cache-control": "public, max-age=60, must-revalidate",
       "x-content-type-options": "nosniff",
     },
   });
@@ -181,6 +193,19 @@ export async function handleFamilyConnectionsRequest(context, suppliedStore, acc
       200,
       "public, max-age=60, must-revalidate",
     );
+  }
+  if (path === "canvas-feed" && method === "GET") {
+    const state = await store.read();
+    const sectionId = new URL(request.url).searchParams.get("section") || "";
+    if (
+      sectionId &&
+      !(state.published.sections ?? []).some(
+        (section) => section.id === sectionId && section.visible !== false,
+      )
+    ) {
+      return json({ ok: false, error: "section-not-found" }, 404);
+    }
+    return rss(buildCanvasRss(state.published, sectionId));
   }
   if (!["draft", "history", "publish"].includes(path)) {
     return json({ ok: false, error: "not-found" }, 404);

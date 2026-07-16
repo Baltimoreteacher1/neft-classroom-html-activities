@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
+import * as familyModel from "./model.js";
 import { COPY_KEYS, translationsEs } from "./copy-defaults.js";
 import {
   buildCanvasAnnouncement,
@@ -50,6 +51,16 @@ assert.equal(mergeHomework([future], { "12-9": { visible: false } }).length, 0);
 assert.equal(safeExternalUrl("https://www.classdojo.com/ul/p/addKid"), true);
 assert.equal(safeExternalUrl("javascript:alert(1)"), false);
 assert.equal(safeExternalUrl("http://example.com"), false);
+assert.equal(typeof familyModel.parseCanvasCourseUrl, "function", "Canvas course URLs need a canonical parser");
+assert.deepEqual(familyModel.parseCanvasCourseUrl("https://school.instructure.com/courses/2468/modules?view=1"), {
+  courseId: "2468",
+  courseUrl: "https://school.instructure.com/courses/2468/",
+  host: "school.instructure.com",
+  announcementsUrl: "https://school.instructure.com/courses/2468/announcements",
+  modulesUrl: "https://school.instructure.com/courses/2468/modules",
+});
+assert.equal(familyModel.parseCanvasCourseUrl("https://school.instructure.com/dashboard"), null);
+assert.equal(familyModel.parseCanvasCourseUrl("javascript:alert(1)"), null);
 
 snapshot.sections[0].week.label = "September 8-12";
 snapshot.sections[0].week.days[0] = { day: "Monday", status: "lesson", lessonId: "1-1", note: "Bring notes." };
@@ -57,6 +68,7 @@ const announcement = buildCanvasAnnouncement(snapshot, lessons, snapshot.section
 assert.match(announcement.text, /September 8-12/);
 assert.match(announcement.text, /Lesson 1-1/);
 assert.match(announcement.text, /Optional family practice:/);
+assert.match(announcement.text, /separate from regular homework/i);
 assert.match(announcement.html, /<h2>/);
 assert.match(announcement.html, />Optional family practice<\/a>/);
 assert.doesNotMatch(announcement.html, /<script/i);
@@ -75,5 +87,19 @@ assert.equal(canvasExport.schemaVersion, 1);
 assert.equal(canvasExport.platform, "canvas-ready");
 assert.equal(canvasExport.sections[0].id, "all-families");
 assert.equal("canvasAccessToken" in canvasExport, false);
+
+const syncBundle = familyModel.buildCanvasSyncBundle(snapshot, lessons, snapshot.sections[0].id);
+assert.equal(syncBundle.title, "September 8-12 — All Families");
+assert.match(syncBundle.text, /ANNOUNCEMENT/);
+assert.match(syncBundle.text, /MODULE LINKS/);
+assert.match(syncBundle.text, /Optional family practice/);
+
+snapshot.publishedAt = "2026-07-16T12:00:00.000Z";
+const canvasRss = familyModel.buildCanvasRss(snapshot, snapshot.sections[0].id);
+assert.match(canvasRss, /<rss version="2\.0"/);
+assert.match(canvasRss, /Family Connections — September 8-12/);
+assert.match(canvasRss, /Optional family practice/);
+assert.match(canvasRss, /https:\/\/eduwonderlab\.com\/curriculum\/family-connections\//);
+assert.doesNotMatch(canvasRss, /<script/i);
 
 console.log("Family publication model tests passed.");

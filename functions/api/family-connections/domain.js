@@ -2,6 +2,7 @@ import { normalizeCopyOverrides } from "../../../curriculum/family-connections/s
 import {
   createDefaultSnapshot,
   DAYS,
+  parseCanvasCourseUrl,
   SNAPSHOT_SCHEMA_VERSION,
   safeExternalUrl,
   WEEK_STATUSES,
@@ -149,9 +150,12 @@ export function normalizeSnapshot(input) {
   }
 
   const classDojoUrl = localOrSecureUrl(input.integrations?.classDojoUrl);
-  const canvasUrl = localOrSecureUrl(input.integrations?.canvasUrl);
-  if (classDojoUrl === null || canvasUrl === null)
-    fail("Integration links must use secure web addresses.");
+  const rawCanvasUrl = text(input.integrations?.canvasUrl, 400);
+  const canvasConnection = rawCanvasUrl ? parseCanvasCourseUrl(rawCanvasUrl) : null;
+  const canvasUrl = canvasConnection?.courseUrl ?? "";
+  if (classDojoUrl === null) fail("Integration links must use secure web addresses.");
+  if (rawCanvasUrl && !canvasConnection)
+    fail("Canvas needs a secure course URL ending in /courses/[course number].");
 
   return {
     schemaVersion: SNAPSHOT_SCHEMA_VERSION,

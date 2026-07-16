@@ -15,7 +15,11 @@ function request(method, path, body) {
 
 async function invoke(method, path, body, hasTeacherAccess = false) {
   return handleFamilyConnectionsRequest(
-    { request: request(method, path, body), env: {}, params: { path: [path] } },
+    {
+      request: request(method, path, body),
+      env: {},
+      params: { path: [path.split("?")[0]] },
+    },
     store,
     { accessConfigured: true, hasTeacherAccess },
   );
@@ -27,6 +31,16 @@ const publicBody = await publicResponse.json();
 assert.deepEqual(Object.keys(publicBody).sort(), ["ok", "published"]);
 assert.equal("draft" in publicBody, false);
 assert.equal("history" in publicBody, false);
+
+const canvasFeedResponse = await invoke("GET", "canvas-feed?section=all-families");
+assert.equal(canvasFeedResponse.status, 200);
+assert.match(canvasFeedResponse.headers.get("content-type"), /application\/rss\+xml/);
+const canvasFeed = await canvasFeedResponse.text();
+assert.match(canvasFeed, /<rss version="2\.0"/);
+assert.match(canvasFeed, /Family Connections/);
+assert.match(canvasFeed, /Optional family practice/);
+assert.doesNotMatch(canvasFeed, /draft|history|studentRecords/);
+assert.equal((await invoke("GET", "canvas-feed?section=missing-class")).status, 404);
 
 assert.equal((await invoke("GET", "draft")).status, 401);
 assert.equal((await invoke("GET", "history")).status, 401);

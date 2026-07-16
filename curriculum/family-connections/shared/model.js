@@ -7,6 +7,8 @@ const DEFAULT_DIRECTIONS =
   "Ask your student to show one strategy. Celebrate the thinking, even when the answer needs another try.";
 const SCHOOL_ALTERNATIVE =
   "A student may complete the same reflection with a teacher or trusted adult at school.";
+const OPTIONAL_PRACTICE_NOTE =
+  "Optional family practice is separate from regular homework. Use it only when it works for your family; it is never graded.";
 
 const cleanText = (value, maximum = 500) =>
   String(value ?? "")
@@ -138,6 +140,26 @@ export function safeExternalUrl(value) {
   }
 }
 
+export function parseCanvasCourseUrl(value) {
+  try {
+    const url = new URL(String(value ?? "").trim());
+    if (url.protocol !== "https:" || !url.hostname || url.username || url.password) return null;
+    const match = url.pathname.match(/^(.*?\/courses\/(\d+))(?:\/.*)?$/);
+    if (!match) return null;
+    const coursePath = match[1].replace(/\/+$/, "");
+    const courseUrl = `${url.origin}${coursePath}/`;
+    return {
+      courseId: match[2],
+      courseUrl,
+      host: url.hostname,
+      announcementsUrl: `${courseUrl}announcements`,
+      modulesUrl: `${courseUrl}modules`,
+    };
+  } catch {
+    return null;
+  }
+}
+
 export function absolutePublicUrl(path) {
   return new URL(path, PUBLIC_ORIGIN).href;
 }
@@ -156,6 +178,16 @@ function escapeHtml(value) {
   return String(value ?? "").replace(
     /[&<>"]/g,
     (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[character],
+  );
+}
+
+function escapeXml(value) {
+  return String(value ?? "").replace(
+    /[&<>"']/g,
+    (character) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&apos;" })[
+        character
+      ],
   );
 }
 
@@ -189,6 +221,7 @@ export function buildCanvasAnnouncement(snapshot, lessons, sectionId) {
     weekLabel,
     section.label,
     note,
+    OPTIONAL_PRACTICE_NOTE,
     "",
     ...links.map(
       (link) => `${link.day}: ${link.title}\nOptional family practice: ${link.homeworkUrl}`,
@@ -202,8 +235,74 @@ export function buildCanvasAnnouncement(snapshot, lessons, sectionId) {
     .join("");
   return {
     text: textLines.join("\n").trim(),
-    html: `<h2>${escapeHtml(weekLabel)}</h2><p><strong>${escapeHtml(section.label)}</strong></p>${note ? `<p>${escapeHtml(note)}</p>` : ""}<ul>${htmlItems}</ul>`,
+    html: `<h2>${escapeHtml(weekLabel)}</h2><p><strong>${escapeHtml(section.label)}</strong></p>${note ? `<p>${escapeHtml(note)}</p>` : ""}<p>${escapeHtml(OPTIONAL_PRACTICE_NOTE)}</p><ul>${htmlItems}</ul>`,
   };
+}
+
+export function buildCanvasSyncBundle(snapshot, lessons, sectionId) {
+  const section = resolveSection(snapshot, sectionId);
+  const announcement = buildCanvasAnnouncement(snapshot, lessons, section.id);
+  const links = buildCanvasModuleLinks(snapshot, lessons, section.id);
+  const weekLabel = cleanText(section.week?.label, 80) || "This Week";
+  const moduleText = links.length
+    ? links
+        .map(
+          (item) =>
+            `${item.day}: ${item.title}\nLesson: ${item.lessonUrl}\nOptional family practice: ${item.homeworkUrl}`,
+        )
+        .join("\n\n")
+    : "No lesson links are scheduled for this week yet.";
+  return {
+    title: `${weekLabel} — ${section.label}`,
+    announcement,
+    moduleLinks: links,
+    text: `TITLE\n${weekLabel} — ${section.label}\n\nANNOUNCEMENT\n${announcement.text}\n\nMODULE LINKS\n${moduleText}`,
+  };
+}
+
+export function buildCanvasRss(snapshot, sectionId) {
+  const section = resolveSection(snapshot, sectionId);
+  const weekLabel = cleanText(section.week?.label, 80) || "This Week";
+  const familyUrl = `${PUBLIC_ORIGIN}/curriculum/family-connections/`;
+  const feedUrl = `${PUBLIC_ORIGIN}/api/family-connections/canvas-feed?section=${encodeURIComponent(section.id)}`;
+  const weekKey = section.week?.startDate || weekLabel.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  const publishedDate = new Date(snapshot?.publishedAt || 0);
+  const pubDate = Number.isNaN(publishedDate.getTime())
+    ? new Date(0).toUTCString()
+    : publishedDate.toUTCString();
+  const dayItems = (section.week?.days ?? [])
+    .map((entry) => {
+      const day = escapeHtml(entry.day);
+      const note = escapeHtml(entry.note);
+      if (entry.status === "lesson" && entry.lessonId) {
+        const lessonId = encodeURIComponent(entry.lessonId);
+        return `<li><strong>${day}:</strong> <a href="${PUBLIC_ORIGIN}/lessons/${lessonId}/">Lesson ${escapeHtml(entry.lessonId)}</a>${note ? ` — ${note}` : ""} · <a href="${PUBLIC_ORIGIN}/lessons/${lessonId}/homework.html">Optional family practice</a></li>`;
+      }
+      const status = entry.status === "assessment" ? "Assessment" : entry.status === "review" ? "Review" : "No lesson posted";
+      return `<li><strong>${day}:</strong> ${status}${note ? ` — ${note}` : ""}</li>`;
+    })
+    .join("");
+  const note = cleanText(section.week?.note, 500);
+  const description = `${note ? `<p>${escapeHtml(note)}</p>` : ""}<ul>${dayItems}</ul><p><strong>Optional family practice is separate from regular homework.</strong> Families may use it to review or practice together when it works for them. It is never graded.</p>`;
+  const title = `Family Connections — ${weekLabel}`;
+  const guid = `${familyUrl}#${encodeURIComponent(section.id)}-${encodeURIComponent(weekKey)}`;
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>${escapeXml(`Family Connections — ${section.label}`)}</title>
+    <link>${escapeXml(familyUrl)}</link>
+    <description>Published, family-safe weekly math updates from EduWonderLab.</description>
+    <language>en-us</language>
+    <atom:link href="${escapeXml(feedUrl)}" rel="self" type="application/rss+xml" />
+    <item>
+      <title>${escapeXml(title)}</title>
+      <link>${escapeXml(familyUrl)}</link>
+      <guid isPermaLink="false">${escapeXml(guid)}</guid>
+      <pubDate>${escapeXml(pubDate)}</pubDate>
+      <description>${escapeXml(description)}</description>
+    </item>
+  </channel>
+</rss>`;
 }
 
 export function buildCanvasExport(snapshot, lessons, sectionId) {
@@ -214,6 +313,7 @@ export function buildCanvasExport(snapshot, lessons, sectionId) {
     source: PUBLIC_ORIGIN,
     revision: Number(snapshot?.revision) || 0,
     publishedAt: snapshot?.publishedAt ?? null,
+    destination: parseCanvasCourseUrl(snapshot?.integrations?.canvasUrl),
     sections: [
       {
         id: section.id,

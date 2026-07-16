@@ -23,10 +23,16 @@ for (const contract of [
   'id="resource-editor"',
   'id="classdojo-url"',
   'id="canvas-url"',
+  'id="canvas-sync-status"',
+  'id="prepare-canvas-update"',
+  'id="copy-canvas-feed"',
+  'id="canvas-feed-url"',
   'id="copy-canvas-announcement"',
   'id="copy-canvas-modules"',
   'id="download-canvas-json"',
   'id="open-canvas"',
+  'id="open-canvas-announcements"',
+  'id="open-canvas-modules"',
   'id="family-preview"',
   'id="publication-history"',
   'id="homework-tools"',
@@ -62,6 +68,9 @@ assert.match(apiClient, /call\("publish"/);
 assert.match(app, /buildCanvasAnnouncement/);
 assert.match(app, /buildCanvasModuleLinks/);
 assert.match(app, /buildCanvasExport/);
+assert.match(app, /buildCanvasSyncBundle/);
+assert.match(app, /parseCanvasCourseUrl/);
+assert.match(app, /canvas-feed/);
 assert.match(app, /beforeunload/);
 assert.match(app, /revision-conflict/);
 assert.match(app, /\["week-label", "weekLabel"\]/, "week label must not overwrite the class label");

@@ -2,9 +2,11 @@ import {
   buildCanvasAnnouncement,
   buildCanvasExport,
   buildCanvasModuleLinks,
+  buildCanvasSyncBundle,
   createDefaultSnapshot,
   mergeHomework,
   normalizeLessons,
+  parseCanvasCourseUrl,
   safeExternalUrl,
 } from "../shared/model.js";
 import { loadDraft, loadHistory, publishDraft, saveDraft } from "../shared/api-client.js";
@@ -78,6 +80,7 @@ function renderWeekEditor() {
     current.week.days[index] = entry;
     markDirty();
   });
+  updateCanvasConnection();
 }
 
 function renderHomeworkPicker() {
@@ -204,6 +207,12 @@ function renderHistory() {
 }
 
 async function persist() {
+  const canvasValue = state.draft.integrations.canvasUrl.trim();
+  if (canvasValue && !parseCanvasCourseUrl(canvasValue)) {
+    notify("Add a valid Canvas course URL before saving this draft.");
+    byId("canvas-url").focus();
+    return false;
+  }
   try {
     state.draft = await saveDraft(state.draft);
     state.dirty = false;
@@ -237,8 +246,7 @@ async function publish() {
   }
 }
 
-async function copyText(value, label) {
-  const output = byId("canvas-copy-output");
+async function copyText(value, label, output = byId("canvas-copy-output")) {
   output.value = value;
   output.focus();
   output.select();
@@ -252,6 +260,44 @@ async function copyText(value, label) {
 
 function canvasAnnouncement() {
   return buildCanvasAnnouncement(state.draft, state.lessons, state.sectionId);
+}
+
+function canvasFeedUrl() {
+  const url = new URL("/api/family-connections/canvas-feed", window.location.origin);
+  url.searchParams.set("section", state.sectionId);
+  return url.href;
+}
+
+function updateCanvasConnection() {
+  const input = byId("canvas-url");
+  const connection = parseCanvasCourseUrl(input.value);
+  const hasValue = Boolean(input.value.trim());
+  input.setAttribute("aria-invalid", String(hasValue && !connection));
+  byId("canvas-sync-status").textContent = connection
+    ? `Ready · ${connection.host} · Course ${connection.courseId}`
+    : hasValue
+      ? "Use the full secure course URL, including /courses/[course number]."
+      : "Paste the course URL to connect Canvas.";
+  byId("canvas-sync-status").classList.toggle("is-ready", Boolean(connection));
+  byId("prepare-canvas-update").disabled = !connection;
+  const destinations = {
+    "open-canvas": connection?.courseUrl,
+    "open-canvas-announcements": connection?.announcementsUrl,
+    "open-canvas-modules": connection?.modulesUrl,
+  };
+  for (const [id, href] of Object.entries(destinations)) {
+    const link = byId(id);
+    link.hidden = !href;
+    link.href = href || "#";
+  }
+  byId("canvas-feed-url").value = canvasFeedUrl();
+  return connection;
+}
+
+function prepareCanvasUpdate() {
+  if (!updateCanvasConnection()) return;
+  const bundle = buildCanvasSyncBundle(state.draft, state.lessons, state.sectionId);
+  copyText(bundle.text, "Canvas weekly update");
 }
 
 function downloadCanvasExport() {
@@ -309,9 +355,21 @@ function bindEvents() {
   });
   byId("canvas-url").addEventListener("input", (event) => {
     state.draft.integrations.canvasUrl = event.target.value.trim();
-    byId("open-canvas").href = event.target.value || "#";
+    updateCanvasConnection();
     markDirty();
   });
+  byId("canvas-url").addEventListener("blur", (event) => {
+    const connection = parseCanvasCourseUrl(event.target.value);
+    if (connection) {
+      event.target.value = connection.courseUrl;
+      state.draft.integrations.canvasUrl = connection.courseUrl;
+    }
+    updateCanvasConnection();
+  });
+  byId("prepare-canvas-update").addEventListener("click", prepareCanvasUpdate);
+  byId("copy-canvas-feed").addEventListener("click", () =>
+    copyText(canvasFeedUrl(), "Canvas sync feed", byId("canvas-feed-url")),
+  );
   byId("copy-canvas-announcement").addEventListener("click", () =>
     copyText(canvasAnnouncement().text, "Canvas announcement"),
   );
@@ -347,7 +405,6 @@ async function initialize() {
     state.lessonId = state.lessons[0]?.id ?? "";
     byId("classdojo-url").value = state.draft.integrations.classDojoUrl;
     byId("canvas-url").value = state.draft.integrations.canvasUrl;
-    byId("open-canvas").href = state.draft.integrations.canvasUrl || "#";
     renderWeekEditor();
     renderHomeworkPicker();
     if (state.lessonId) selectLesson(state.lessonId);

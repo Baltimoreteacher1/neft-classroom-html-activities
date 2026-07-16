@@ -193,14 +193,14 @@
 
         <details class="tool-disclosure" id="sharing-tools">
           <summary>
-            <span><strong>Sharing destinations</strong><small>ClassDojo and Canvas links and copy</small></span>
+            <span><strong>Canvas sync &amp; sharing</strong><small>Automatic announcements, weekly copy, and family links</small></span>
             <span aria-hidden="true">+</span>
           </summary>
           <section class="tool-body" id="connections-plan" aria-labelledby="connections-title">
             <div class="tool-intro">
               <p class="step-label">Optional tool</p>
-              <h2 id="connections-title">Share where families already are.</h2>
-              <p>Set the destination links once, then copy a ready-to-paste Canvas update when needed.</p>
+              <h2 id="connections-title">Keep Canvas and Family Connections together.</h2>
+              <p>Connect the course once, then use an automatic announcement feed or a ready-to-paste weekly update.</p>
             </div>
             <div class="integration-grid">
               <article class="integration-card">
@@ -211,17 +211,45 @@
                 <a class="text-button" id="open-classdojo" href="https://teach.classdojo.com/" target="_blank" rel="noopener">Open ClassDojo ↗</a>
               </article>
               <article class="integration-card canvas-card">
-                <span class="integration-kicker">LMS-ready</span>
-                <h3>Canvas</h3>
-                <label for="canvas-url">Canvas course or observer destination</label>
-                <input id="canvas-url" type="url" maxlength="400" placeholder="https://…instructure.com/courses/…" autocomplete="off" />
-                <div class="canvas-actions">
-                  <button class="text-button" id="copy-canvas-announcement" type="button">Copy announcement</button>
-                  <button class="text-button" id="copy-canvas-modules" type="button">Copy module links</button>
-                  <button class="text-button" id="download-canvas-json" type="button">Download JSON</button>
-                  <a class="text-button" id="open-canvas" href="#" target="_blank" rel="noopener">Open Canvas ↗</a>
+                <span class="integration-kicker">Secure LMS sync</span>
+                <h3>Canvas connection</h3>
+                <label for="canvas-url">Canvas course URL</label>
+                <input
+                  id="canvas-url"
+                  type="url"
+                  maxlength="400"
+                  placeholder="https://school.instructure.com/courses/12345"
+                  autocomplete="off"
+                  aria-describedby="canvas-sync-status"
+                />
+                <p class="canvas-sync-status" id="canvas-sync-status" role="status">Paste the course URL to connect Canvas.</p>
+                <div class="canvas-actions canvas-primary-actions">
+                  <button class="button button-preview" id="prepare-canvas-update" type="button" disabled>Copy weekly update</button>
+                  <a class="text-button" id="open-canvas-announcements" href="#" target="_blank" rel="noopener" hidden>Open Announcements ↗</a>
+                  <a class="text-button" id="open-canvas-modules" href="#" target="_blank" rel="noopener" hidden>Open Modules ↗</a>
                 </div>
+                <div class="canvas-feed-panel">
+                  <div>
+                    <strong>Automatic weekly announcements</strong>
+                    <p>If your Canvas course allows external feeds, add this RSS address once. Each newly published family week can then appear in Canvas automatically.</p>
+                  </div>
+                  <label for="canvas-feed-url">Family Connections sync feed</label>
+                  <div class="canvas-feed-row">
+                    <input id="canvas-feed-url" type="url" readonly />
+                    <button class="text-button" id="copy-canvas-feed" type="button">Copy sync feed</button>
+                  </div>
+                </div>
+                <details class="canvas-more">
+                  <summary>More Canvas options</summary>
+                  <div class="canvas-actions">
+                    <button class="text-button" id="copy-canvas-announcement" type="button">Copy announcement only</button>
+                    <button class="text-button" id="copy-canvas-modules" type="button">Copy module links only</button>
+                    <button class="text-button" id="download-canvas-json" type="button">Download JSON backup</button>
+                    <a class="text-button" id="open-canvas" href="#" target="_blank" rel="noopener" hidden>Open course ↗</a>
+                  </div>
+                </details>
                 <textarea id="canvas-copy-output" class="copy-output" rows="7" readonly aria-label="Canvas-ready copy"></textarea>
+                <p class="integration-security">Only the Canvas course address is saved here.</p>
               </article>
             </div>
           </section>
