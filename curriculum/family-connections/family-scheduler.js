@@ -162,7 +162,10 @@ byId("meeting-request-cancel").addEventListener("click", () => {
 });
 byId("meeting-accept").addEventListener("click", () => answerInvitation("accept"));
 byId("meeting-decline").addEventListener("click", () => answerInvitation("decline"));
-window.addEventListener("family-language-change", (event) => applyLanguage(event.detail));
+window.addEventListener("family-language-change", (event) => {
+  applyLanguage(event.detail);
+  loadSlots();
+});
 
 if (new URL(location.href).searchParams.has("meeting")) {
   byId("meeting-response-panel").hidden = false;

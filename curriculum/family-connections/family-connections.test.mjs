@@ -85,6 +85,7 @@ assert.match(css, /prefers-reduced-motion/);
 assert.match(css, /:focus-visible/);
 
 const app = await readFile(new URL("family-app.js", root), "utf8");
+const scheduler = await readFile(new URL("family-scheduler.js", root), "utf8");
 const renderer = await readFile(new URL("shared/render.js", root), "utf8");
 assert.match(app, /curriculum-manifest\.json/);
 assert.match(app, /api\/family-connections\/published/);
@@ -104,6 +105,7 @@ assert.match(app, /document\.visibilityState/);
 assert.match(app, /setInterval/);
 assert.match(app, /Family page updated/);
 assert.match(app, /family-language-change/);
+assert.match(scheduler, /family-language-change[\s\S]{0,160}loadSlots/);
 assert.match(app, /matching lessons/);
 assert.match(app, /lessons available/);
 assert.doesNotMatch(app + renderer, /family homework|homework library/i);
