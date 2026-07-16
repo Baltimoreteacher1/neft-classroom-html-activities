@@ -14,6 +14,7 @@ for (const expected of [
   'href="#family-week"',
   'href="#homework-library"',
   'href="#family-support"',
+  'href="#family-scheduler"',
   'id="section-select"',
   'id="week-grid"',
   'id="homework-search"',
@@ -30,18 +31,27 @@ for (const expected of [
   'id="canvas-link"',
   'id="family-status"',
   'id="family-support"',
+  'id="family-scheduler"',
+  'id="meeting-slots"',
+  'id="meeting-request-form"',
+  'id="meeting-student-first-name"',
+  'id="meeting-consent"',
   'class="compact-intro"',
   'href="/curriculum/ai-hub/#parents"',
   'href="./family.css"',
   'href="./family-polish.css"',
+  'href="./family-scheduler.css"',
   'href="./family-foundation.css"',
   'src="./family-app.js"',
+  'src="./family-scheduler.js"',
 ]) {
   assert.ok(html.toLowerCase().includes(expected.toLowerCase()), `Missing public contract: ${expected}`);
 }
 
 assert.match(html, /equivalent school option/i);
 assert.match(html, /family participation is never graded/i);
+assert.match(html, /request is not confirmed until/i);
+assert.match(html, /student.+first name only/i);
 assert.match(html, /optional family practice/i);
 assert.match(html, /separate from (?:your student's )?regular homework/i);
 assert.match(

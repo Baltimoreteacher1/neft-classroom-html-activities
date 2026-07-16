@@ -1,0 +1,158 @@
+.scheduler-section {
+  width: min(calc(100% - 2rem), var(--content));
+  margin: 0 auto;
+  padding: clamp(2rem, 6vw, 4.5rem) 0;
+}
+
+.scheduler-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  max-width: 64rem;
+  margin-bottom: 1rem;
+}
+
+.scheduler-heading p:not(.eyebrow) {
+  max-width: 48rem;
+  color: var(--muted);
+}
+
+.timezone-chip {
+  flex: 0 0 auto;
+  padding: 0.45rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--teal);
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.scheduler-status {
+  min-height: 1.5rem;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.scheduler-status[data-tone="error"] { color: #9d2c22; }
+.scheduler-status[data-tone="success"] { color: #176b5c; }
+
+.meeting-slots {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.meeting-slot-card {
+  display: grid;
+  gap: 0.35rem;
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper-bright);
+  box-shadow: var(--shadow-soft);
+}
+
+.meeting-slot-time {
+  color: var(--ink-deep);
+  font: 700 1.65rem/1.15 "Fraunces", serif;
+}
+
+.meeting-slot-detail {
+  min-height: 2.5rem;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.meeting-slot-card .button { margin-top: 0.4rem; }
+
+.meeting-request-panel,
+.meeting-response-panel {
+  display: grid;
+  grid-template-columns: minmax(14rem, 0.7fr) minmax(0, 1.3fr);
+  gap: clamp(1rem, 4vw, 2.5rem);
+  margin-top: 1rem;
+  padding: clamp(1rem, 4vw, 1.75rem);
+  border: 1px solid #8bc6bb;
+  border-radius: var(--radius);
+  background: #edf6f3;
+}
+
+.meeting-response-panel { grid-template-columns: minmax(0, 1fr); }
+
+.meeting-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.meeting-form-grid label {
+  display: grid;
+  gap: 0.3rem;
+  color: var(--ink);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.meeting-form-grid input,
+.meeting-form-grid textarea {
+  min-width: 0;
+  width: 100%;
+  padding: 0.7rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 0.55rem;
+  background: white;
+  color: var(--ink);
+  font: inherit;
+}
+
+.meeting-note { grid-column: 1 / -1; }
+.meeting-note span { color: var(--muted); font-weight: 500; }
+
+.meeting-consent {
+  display: flex;
+  gap: 0.55rem;
+  align-items: flex-start;
+  margin-top: 0.8rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.meeting-consent input { margin-top: 0.2rem; }
+
+.meeting-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: center;
+  margin-top: 0.9rem;
+}
+
+.meeting-cancel { border: 0; background: transparent; font: inherit; cursor: pointer; }
+
+.meeting-honeypot {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+body.high-contrast .meeting-slot-card,
+body.high-contrast .meeting-request-panel,
+body.high-contrast .meeting-response-panel { border: 2px solid currentColor; }
+
+@media (max-width: 48rem) {
+  .meeting-slots { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .meeting-request-panel { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 40rem) {
+  .scheduler-section { width: auto; padding-inline: 1rem; }
+  .scheduler-heading { align-items: flex-start; flex-direction: column; }
+  .meeting-slots,
+  .meeting-form-grid { grid-template-columns: minmax(0, 1fr); }
+  .meeting-note { grid-column: auto; }
+}

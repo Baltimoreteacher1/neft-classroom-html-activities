@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="./family-foundation.css" />
     <link rel="stylesheet" href="./family.css" />
     <link rel="stylesheet" href="./family-polish.css" />
+    <link rel="stylesheet" href="./family-scheduler.css" />
     <link rel="stylesheet" href="./family-components.css" />
   </head>
   <body>
@@ -45,6 +46,7 @@
 
     <nav class="family-quick-nav" aria-label="Family page sections">
       <a href="#family-week" data-i18n="quickWeek">This week</a>
+      <a href="#family-scheduler">Meet</a>
       <a href="#homework-library" data-i18n="quickPractice">Optional practice</a>
       <a href="#family-support" data-i18n="quickHelp">Ways to help</a>
     </nav>
@@ -101,6 +103,52 @@
           </div>
         </div>
         <div class="announcement-grid" id="announcement-grid"></div>
+      </section>
+
+      <section class="scheduler-section" id="family-scheduler" aria-labelledby="scheduler-title">
+        <div class="scheduler-heading">
+          <div>
+            <p class="eyebrow">Family meetings</p>
+            <h2 id="scheduler-title">Meet with Mr. Neft</h2>
+            <p>Choose an available time for a short conversation about how we can support your student.</p>
+          </div>
+          <span class="timezone-chip">Eastern Time</span>
+        </div>
+        <p class="scheduler-status" id="meeting-status" role="status" aria-live="polite">Loading available times…</p>
+        <div class="meeting-slots" id="meeting-slots"></div>
+
+        <div class="meeting-request-panel" id="meeting-request-panel" hidden>
+          <div>
+            <p class="eyebrow">Request this time</p>
+            <h3 id="selected-meeting-time">Meeting time</h3>
+            <p>Your request is not confirmed until Mr. Neft approves it.</p>
+          </div>
+          <form id="meeting-request-form">
+            <input id="meeting-slot-id" name="slotId" type="hidden" />
+            <div class="meeting-form-grid">
+              <label>Parent or guardian name<input name="guardianName" maxlength="80" autocomplete="name" required /></label>
+              <label>Student first name only<input id="meeting-student-first-name" name="studentFirstName" maxlength="40" autocomplete="off" required /></label>
+              <label>Email for the reply<input name="email" type="email" maxlength="160" autocomplete="email" required /></label>
+              <label class="meeting-note">Anything you would like Mr. Neft to know? <span>(optional)</span><textarea name="note" maxlength="400" rows="3"></textarea></label>
+            </div>
+            <label class="meeting-honeypot" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off" /></label>
+            <label class="meeting-consent"><input id="meeting-consent" name="consent" type="checkbox" required /> I understand this is a request and that meeting details will be shared after confirmation.</label>
+            <div class="meeting-form-actions">
+              <button class="button" type="submit">Send meeting request</button>
+              <button class="text-link meeting-cancel" type="button" id="meeting-request-cancel">Choose another time</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="meeting-response-panel" id="meeting-response-panel" hidden>
+          <p class="eyebrow">Meeting invitation</p>
+          <h3>Can your family meet at the proposed time?</h3>
+          <p>Choose one response. The private invitation link works only once.</p>
+          <div class="meeting-form-actions">
+            <button class="button" id="meeting-accept" type="button">Yes, this works</button>
+            <button class="button button-secondary" id="meeting-decline" type="button">No, we need another time</button>
+          </div>
+        </div>
       </section>
 
       <section class="homework-section" id="homework-library" aria-labelledby="homework-title">
@@ -203,5 +251,6 @@
 
     <p class="visually-hidden" id="family-status" role="status" aria-live="polite"></p>
     <script type="module" src="./family-app.js"></script>
+    <script type="module" src="./family-scheduler.js"></script>
   </body>
 </html>
