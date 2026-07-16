@@ -434,6 +434,9 @@ html[data-theme="dark"] .btn.primary {
 .muted {
   color: var(--muted);
 }
+#connChip {
+  min-height: 44px;
+}
 .center {
   text-align: center;
 }
@@ -549,6 +552,96 @@ html[data-theme="contrast"] .hero .now-actions .btn {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 10px;
+}
+
+/* ---- Instant calm launch ---- */
+.boot-shell {
+  position: relative;
+  z-index: 1;
+}
+.boot-shell p {
+  max-width: 40ch;
+  margin: 10px 0 0;
+  color: rgba(255, 255, 255, 0.82);
+}
+.boot-progress {
+  width: min(320px, 100%);
+  height: 8px;
+  margin-top: 20px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+}
+.boot-progress span {
+  display: block;
+  width: 42%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #ffd790, #fff, #73d7cf);
+  animation: boot-shimmer 1.4s ease-in-out infinite alternate;
+}
+.boot-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+.boot-card {
+  min-height: 170px;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper);
+  box-shadow: var(--shadow-sm);
+}
+.boot-card span {
+  display: block;
+  height: 12px;
+  margin-bottom: 14px;
+  border-radius: 999px;
+  background: var(--bg-3);
+  animation: boot-shimmer 1.4s ease-in-out infinite alternate;
+}
+.boot-card span:first-child {
+  width: 54%;
+  height: 18px;
+}
+.boot-card span:nth-child(2) {
+  width: 88%;
+}
+.boot-card span:nth-child(3) {
+  width: 68%;
+}
+.boot-nav {
+  width: 100%;
+  padding: 12px;
+  color: var(--muted);
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+@keyframes boot-shimmer {
+  from {
+    opacity: 0.45;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(12px);
+  }
+}
+@media (max-width: 820px) {
+  .boot-grid {
+    grid-template-columns: 1fr;
+  }
+  .boot-card:nth-child(n + 3) {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .boot-progress span,
+  .boot-card span {
+    animation: none;
+  }
 }
 .statbox {
   background: rgba(255, 255, 255, 0.1);
@@ -1466,7 +1559,7 @@ html[data-theme="dark"] .toast {
 .cal-day {
   position: relative;
   aspect-ratio: 1;
-  min-height: 36px;
+  min-height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;

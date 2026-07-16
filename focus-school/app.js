@@ -3464,6 +3464,9 @@
     associateLabels($("#main"));
     renderTabbar();
     updateHeaderStatus();
+    for (const id of ["hero", "main", "tabbar"]) {
+      document.getElementById(id)?.removeAttribute("aria-busy");
+    }
     // The floating ＋ is context-aware: on the Health page it adds a custom
     // movement (editable), everywhere else it quick-adds an assignment.
     const fab = $("#fab");
@@ -4531,6 +4534,17 @@
     return [...pinned, ...candidates, TABS.find((tab) => tab[0] === "more")];
   }
 
+  function focusedHomeOrder(homeOrder, hiddenCards, showingWelcome) {
+    const hidden = new Set(Array.isArray(hiddenCards) ? hiddenCards : []);
+    const personalizedOrder = (Array.isArray(homeOrder) ? homeOrder : []).filter(
+      (key) => !hidden.has(key),
+    );
+    const focusedFirstRunOrder = ["routine", "plan", "assignments"].filter(
+      (key) => !hidden.has(key),
+    );
+    return showingWelcome ? focusedFirstRunOrder : personalizedOrder;
+  }
+
   function buildSupportInsights(source) {
     const assignments = Array.isArray(source?.assignments) ? source.assignments : [];
     const classes = Array.isArray(source?.classes) ? source.classes : [];
@@ -4625,10 +4639,16 @@
             : emptyState("📭", "Nothing due in the next week."),
         ),
       };
-      const order = state.settings.homeOrder.filter((k) => !state.settings.hiddenCards.includes(k));
+      const showingWelcome =
+        state.assignments.length === 0 && !state.settings.welcomeDismissed;
+      const order = focusedHomeOrder(
+        state.settings.homeOrder,
+        state.settings.hiddenCards,
+        showingWelcome,
+      );
 
       let welcomeBanner = "";
-      if (state.assignments.length === 0 && !state.settings.welcomeDismissed) {
+      if (showingWelcome) {
         welcomeBanner = `
           <div class="card feature welcome-card" style="margin-bottom: 16px;">
             <div class="head">
@@ -11977,6 +11997,7 @@ ${name}`;
       buildSupportInsights,
       cloud,
       extractActionSteps,
+      focusedHomeOrder,
       live,
       ledgerDayKey,
       mergeAssignmentSteps,
