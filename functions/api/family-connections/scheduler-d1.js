@@ -13,7 +13,7 @@ async function ensureSchema(db) {
     .prepare(
       "INSERT OR IGNORE INTO family_meeting_scheduler_state (id,state_json,revision,updated_at) VALUES (1,?,0,?)",
     )
-    .bind(JSON.stringify({ slots: [], requests: [] }), new Date().toISOString())
+    .bind(JSON.stringify({ availabilityRules: [], slots: [], requests: [] }), new Date().toISOString())
     .run();
 }
 
@@ -54,6 +54,10 @@ export function createD1SchedulerStore(db) {
       const state = await read();
       return createMemorySchedulerStore(state).dashboard();
     },
+    createRule: (input) => mutate("createRule", input),
+    updateRule: (input) => mutate("updateRule", input),
+    deleteRule: (id) => mutate("deleteRule", id),
+    refreshSlots: () => mutate("refreshSlots"),
     createSlot: (input) => mutate("createSlot", input),
     requestSlot: (input) => mutate("requestSlot", input),
     decide: (id, action) => mutate("decide", id, action),

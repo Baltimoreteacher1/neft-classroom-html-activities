@@ -52,17 +52,24 @@ const request = await store.requestSlot({
   note: "We would like to talk about study routines.",
   consent: true,
 });
-assert.equal(request.status, "pending");
-assert.equal((await store.listPublic()).length, 0, "a held slot must disappear publicly");
+assert.equal(request.status, "confirmed");
+assert.equal(request.slot.status, undefined, "public confirmation must not expose internal slot status");
+assert.equal((await store.listPublic()).length, 0, "a booked slot must disappear publicly");
 await assert.rejects(store.requestSlot({ ...request, slotId: created.id }), /available/i);
 assert.equal("email" in publicSlot(created), false);
 
-const declined = await store.decide(request.id, "decline");
-assert.equal(declined.status, "declined");
-assert.equal((await store.listPublic()).length, 1, "declining reopens a future slot");
+const cancelled = await store.decide(request.id, "cancel");
+assert.equal(cancelled.status, "cancelled");
+assert.equal((await store.listPublic()).length, 0, "cancelling must not silently reopen a booking");
+
+const invitationSlot = await store.createSlot({
+  ...slot,
+  startAt: "2026-09-03T21:00:00.000Z",
+  endAt: "2026-09-03T21:20:00.000Z",
+});
 
 const invitation = await store.invite({
-  slotId: created.id,
+  slotId: invitationSlot.id,
   guardianName: "Taylor Family",
   studentFirstName: "Ari",
   email: "taylor@example.com",
@@ -76,7 +83,29 @@ assert.equal(JSON.stringify(await store.listPublic()).includes("taylor@example.c
 const accepted = await store.respond(invitation.token, "accept");
 assert.equal(accepted.status, "confirmed");
 await assert.rejects(store.respond(invitation.token, "accept"), /used|invalid/i);
-assert.equal((await store.dashboard()).slots[0].status, "booked");
+assert.equal((await store.dashboard()).slots[1].status, "booked");
+
+const rule = await store.createRule({
+  weekdays: [4],
+  startTime: "17:00",
+  endTime: "18:00",
+  activeStartDate: "2026-09-03",
+  activeEndDate: "2026-09-24",
+  durationMinutes: 20,
+  bufferMinutes: 10,
+  format: "video",
+  locationLabel: "Online meeting",
+  enabled: true,
+});
+assert.match(rule.id, /^rule-/);
+assert.equal((await store.dashboard()).availabilityRules.length, 1);
+const refreshed = await store.refreshSlots();
+assert.ok(refreshed.generatedCount > 0);
+const updatedRule = await store.updateRule({ ...rule, enabled: false });
+assert.equal(updatedRule.enabled, false);
+assert.equal((await store.dashboard()).slots.some((item) => item.ruleId === rule.id && item.status === "open"), false);
+await store.deleteRule(rule.id);
+assert.equal((await store.dashboard()).availabilityRules.length, 0);
 
 const apiStore = createMemorySchedulerStore({ now: () => now });
 const apiRequest = (method, path, body) => ({
@@ -93,6 +122,73 @@ assert.equal(
 assert.equal(
   (await handleSchedulerRequest(apiRequest("GET", "schedule-dashboard"), apiStore, {})).status,
   503,
+);
+
+const teacherAccess = { accessConfigured: true, hasTeacherAccess: true };
+const apiRule = {
+  weekdays: [4],
+  startTime: "16:00",
+  endTime: "17:00",
+  activeStartDate: "2026-09-03",
+  activeEndDate: "2026-09-24",
+  durationMinutes: 20,
+  bufferMinutes: 10,
+  format: "phone",
+  locationLabel: "Phone call",
+  enabled: true,
+};
+assert.equal(
+  (await handleSchedulerRequest(apiRequest("POST", "schedule-rule", apiRule), apiStore, {})).status,
+  503,
+);
+const createRuleResponse = await handleSchedulerRequest(
+  apiRequest("POST", "schedule-rule", apiRule),
+  apiStore,
+  teacherAccess,
+);
+assert.equal(createRuleResponse.status, 201);
+const createRuleBody = await createRuleResponse.json();
+assert.equal(createRuleBody.rule.locationLabel, "Phone call");
+assert.equal(
+  (await handleSchedulerRequest(apiRequest("PUT", "schedule-rule", { ...createRuleBody.rule, enabled: false }), apiStore, teacherAccess)).status,
+  200,
+);
+assert.equal(
+  (await handleSchedulerRequest(apiRequest("POST", "schedule-refresh"), apiStore, teacherAccess)).status,
+  200,
+);
+assert.equal(
+  (await handleSchedulerRequest(apiRequest("DELETE", "schedule-rule", { id: createRuleBody.rule.id }), apiStore, teacherAccess)).status,
+  200,
+);
+
+const bookingStore = createMemorySchedulerStore({ now: () => now, id: (prefix) => `${prefix}-public` });
+const bookingSlot = await bookingStore.createSlot({
+  ...slot,
+  startAt: "2026-09-04T20:00:00.000Z",
+  endAt: "2026-09-04T20:20:00.000Z",
+});
+const booking = {
+  slotId: bookingSlot.id,
+  guardianName: "Jordan Family",
+  studentFirstName: "Sam",
+  email: "family@example.com",
+  note: "Private note",
+  consent: true,
+};
+const bookingResponse = await handleSchedulerRequest(
+  apiRequest("POST", "schedule-request", booking),
+  bookingStore,
+  {},
+);
+assert.equal(bookingResponse.status, 201);
+const bookingBody = await bookingResponse.json();
+assert.equal(bookingBody.status, "confirmed");
+assert.deepEqual(Object.keys(bookingBody).sort(), ["ok", "reference", "slot", "status"]);
+assert.equal(JSON.stringify(bookingBody).includes("family@example.com"), false);
+assert.equal(
+  (await handleSchedulerRequest(apiRequest("POST", "schedule-request", booking), bookingStore, {})).status,
+  409,
 );
 
 console.log("Family meeting scheduler tests passed.");
