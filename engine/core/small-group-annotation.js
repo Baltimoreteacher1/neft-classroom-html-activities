@@ -4,7 +4,7 @@ import { resolveVocabImage, vocabImageAlt } from "./vocab-images.js";
 const FORBIDDEN_SELECTION =
   "button, input, textarea, select, dialog, .sg-annotation-tools, .sg-teacher, .sg-facilitation, .sg-evidence-card";
 const VOCAB_EXCLUSIONS =
-  "button, input, textarea, select, option, label, summary, script, style, dialog, [hidden], .sg-annotation-tools, .sg-vcard, .sg-match, .sg-teacher, .sg-facilitation, .sg-evidence-card";
+  "button, input, textarea, select, option, label, summary, script, style, dialog, [hidden], .sg-annotation-tools, .sg-vcard, .sg-match, .sg-cloze, .sg-langbar, .sg-welcome, .sg-teacher, .sg-facilitation, .sg-evidence-card";
 
 function elementFor(node) {
   return node?.nodeType === Node.ELEMENT_NODE ? node : node?.parentElement;
@@ -153,8 +153,13 @@ function openVocabulary(dialog, word, trigger) {
   const definition = word.definition || word.visual || "A useful word for today's math thinking.";
   dialog.querySelector("h2").textContent = word.term;
   dialog.querySelector(".sg-vocab-definition-en").textContent = definition;
-  dialog.querySelector(".sg-vocab-definition-es").textContent = word.definitionEs;
-  dialog.querySelector(".sg-vocab-term-es").textContent = word.termEs;
+  // English + Spanish only; hide the Spanish block when a word has no
+  // translation instead of rendering an empty (or "undefined") line.
+  const spanishBlock = dialog.querySelector('.sg-vocab-language[lang="es"]');
+  const hasSpanish = Boolean(word.definitionEs || word.termEs);
+  spanishBlock.hidden = !hasSpanish;
+  dialog.querySelector(".sg-vocab-definition-es").textContent = word.definitionEs || "";
+  dialog.querySelector(".sg-vocab-term-es").textContent = word.termEs || "";
   const example = dialog.querySelector(".sg-vocab-example");
   example.textContent = word.visual || `Look for ${word.term.toLowerCase()} in the lesson model.`;
   const image = dialog.querySelector("img");
@@ -200,6 +205,11 @@ function addVocabularyTriggers(app, words, dialog) {
 
   textNodes.forEach((textNode) => {
     const text = textNode.textContent;
+    // Cap triggers per term PER SECTION (not per page) so late sections —
+    // the Explore/Model/Apply labs — still get their vocabulary underlined
+    // instead of the whole budget being spent in Launch/Build.
+    const sectionId =
+      textNode.parentElement?.closest("section.sg-sec, .sg-hero, .sg-mission")?.id || "page";
     const fragment = document.createDocumentFragment();
     let cursor = 0;
     let changed = false;
@@ -207,9 +217,10 @@ function addVocabularyTriggers(app, words, dialog) {
     for (const match of text.matchAll(pattern)) {
       const termText = match[2];
       const word = byTerm.get(termText.toLocaleLowerCase());
-      const count = counts.get(word?.term) || 0;
+      const countKey = `${sectionId}:${word?.term}`;
+      const count = counts.get(countKey) || 0;
       const termStart = match.index + match[1].length;
-      if (!word || count >= 4) continue;
+      if (!word || count >= 2) continue;
       fragment.append(text.slice(cursor, termStart));
       const trigger = el("button", "sg-vocab-inline", termText);
       trigger.type = "button";
@@ -218,7 +229,7 @@ function addVocabularyTriggers(app, words, dialog) {
       trigger.addEventListener("click", () => openVocabulary(dialog, word, trigger));
       fragment.appendChild(trigger);
       cursor = termStart + termText.length;
-      counts.set(word.term, count + 1);
+      counts.set(countKey, count + 1);
       changed = true;
     }
     if (!changed) return;

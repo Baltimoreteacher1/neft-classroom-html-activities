@@ -1,5 +1,12 @@
 import { figureBlock } from "./small-group-labs.js";
-import { celebrate, el, esc, sectionHeading as heading, speak } from "./small-group-ui.js";
+import {
+  celebrate,
+  el,
+  esc,
+  sectionHeading as heading,
+  speak,
+  VOCAB_LANGS,
+} from "./small-group-ui.js";
 
 const confidenceOptions = [
   { value: 1, emoji: "🌱", label: "I need a model" },
@@ -116,15 +123,6 @@ export function createMissionSection(config, variant, state, onDone, store = nul
   section.appendChild(launchRow);
   return section;
 }
-
-// Language lanes available on vocabulary cards. Each entry maps a config
-// field suffix (termEs/definitionEs, …) to its label, BCP-47 speech tag, and
-// text direction. Only lanes the lesson actually authored are offered.
-const VOCAB_LANGS = [
-  { id: "es", suffix: "Es", label: "Español", speech: "es-ES", dir: "ltr" },
-  { id: "vi", suffix: "Vi", label: "Tiếng Việt", speech: "vi-VN", dir: "ltr" },
-  { id: "ar", suffix: "Ar", label: "العربية", speech: "ar-SA", dir: "rtl" },
-];
 
 function definitionLine(label, text, lang, dir = "ltr") {
   const line = el("p", "sg-vdef-line");

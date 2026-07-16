@@ -25,6 +25,13 @@ export const ACCENTS = {
   },
 };
 
+// Language lanes for vocabulary surfaces (cards + inline pop-ups). English is
+// always shown; Spanish is the only additional lane (Joel directive
+// 2026-07-16: English and Spanish only — do not add other languages).
+export const VOCAB_LANGS = [
+  { id: "es", suffix: "Es", label: "Español", speech: "es-ES", dir: "ltr" },
+];
+
 export const esc = (value) =>
   String(value == null ? "" : value)
     .replace(/&/g, "&amp;")
