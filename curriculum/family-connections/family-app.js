@@ -1,3 +1,4 @@
+import { translationsEs } from "./shared/copy-defaults.js";
 import { copyOverrideFor, readCopyEdits } from "./shared/copy-overrides.js";
 import { createDefaultSnapshot, resolveSection, safeExternalUrl } from "./shared/model.js";
 import {
@@ -13,46 +14,7 @@ const MANIFEST_URL = "/data/curriculum-manifest.json";
 const PUBLISHED_URL = "/api/family-connections/published";
 const PREFERENCE_KEY = "eduwonder.familyConnections.preferences.v1";
 
-const translations = {
-  es: {
-    eyebrow: "La escuela y el hogar, en la misma página",
-    title: "Su guía para las matemáticas de esta semana.",
-    lede: "Vea el plan, abra la tarea familiar y encuentre maneras sencillas de apoyar el aprendizaje.",
-    seeWeek: "Ver esta semana",
-    findHomework: "Buscar tarea",
-    promiseTitle: "Usted es un compañero, no el maestro de matemáticas.",
-    promiseBody:
-      "Pregunte qué nota su estudiante. Escuche la estrategia. Celebre el esfuerzo. Corregiremos juntos en la escuela.",
-    weekEyebrow: "La semana de un vistazo",
-    weekTitle: "Esta semana en matemáticas",
-    classLabel: "Clase",
-    readWeek: "Escuchar esta semana",
-    updatesEyebrow: "Desde el salón",
-    updatesTitle: "Noticias para las familias",
-    homeworkEyebrow: "Cada lección, en un lugar",
-    homeworkTitle: "Biblioteca de tarea familiar",
-    homeworkIntro:
-      "Busque por número de lección o tema. Hay una opción equivalente en la escuela cuando no hay apoyo en casa.",
-    searchLabel: "Buscar lecciones",
-    unitLabel: "Unidad",
-    supportEyebrow: "Ayuda que protege el pensamiento",
-    supportTitle: "Apoye el aprendizaje sin hacer el trabajo.",
-    aiTitle: "IA como guía de aprendizaje",
-    aiBody:
-      "Use la IA para explicar una palabra, hacer una pregunta guía o practicar un ejemplo similar.",
-    aiLink: "Abrir la guía familiar de IA →",
-    schoolOptionTitle: "Opción equivalente en la escuela",
-    schoolOptionBody:
-      "¿No hay adulto, aparato o tiempo en casa? Su estudiante puede hacer la misma reflexión con un adulto de confianza en la escuela.",
-    gradingTitle: "La participación nunca recibe nota",
-    gradingBody:
-      "La participación familiar nunca recibe nota. Estos recursos son invitaciones, no requisitos.",
-    connectEyebrow: "Sus preguntas son bienvenidas",
-    connectTitle: "Sigamos conversando.",
-    connectBody:
-      "Use el canal familiar de su escuela para preguntar o compartir lo que notó su estudiante.",
-  },
-};
+const translations = { es: translationsEs };
 
 const state = {
   lessons: [],
@@ -91,14 +53,17 @@ function applyPreferences() {
   byId("contrast-toggle").setAttribute("aria-pressed", String(state.preferences.highContrast));
   byId("language-toggle").setAttribute("aria-pressed", String(state.preferences.language === "es"));
   byId("language-toggle").textContent = state.preferences.language === "es" ? "English" : "Español";
-  const edits = readCopyEdits();
+  const localEdits = readCopyEdits();
+  const publishedEdits = state.snapshot?.copy;
   const lang = state.preferences.language;
   document.querySelectorAll("[data-i18n]").forEach((node) => {
     const key = node.dataset.i18n;
     const original = node.dataset.en ?? node.textContent.trim();
     node.dataset.en = original;
     const base = lang === "es" ? (translations.es[key] ?? original) : original;
-    node.textContent = copyOverrideFor(edits, lang, key) ?? base;
+    // Precedence: this device's live edits > published copy (everyone) > default.
+    node.textContent =
+      copyOverrideFor(localEdits, lang, key) ?? copyOverrideFor(publishedEdits, lang, key) ?? base;
   });
 }
 
@@ -183,6 +148,8 @@ async function load() {
       : "Family resources are temporarily unavailable. Please refresh to try again.";
   }
   renderExperience();
+  // Re-apply wording now that published copy overrides have loaded.
+  applyPreferences();
 }
 
 function bindEvents() {

@@ -44,7 +44,7 @@ export function writeCopyEdits(edits) {
 }
 
 export function copyOverrideFor(edits, lang, key) {
-  const lane = lang === "es" ? edits.es : edits.en;
+  const lane = lang === "es" ? edits?.es : edits?.en;
   const value = lane?.[key];
   return typeof value === "string" && value.trim() ? value : null;
 }

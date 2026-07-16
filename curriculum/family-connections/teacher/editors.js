@@ -1,3 +1,4 @@
+import { COPY_FIELDS } from "../shared/copy-defaults.js";
 import { DAYS, mergeHomework, normalizeLessons, resolveSection } from "../shared/model.js";
 
 const node = (tag, className, text) => {
@@ -31,9 +32,12 @@ export function renderWeekdayEditors(root, section, lessons, onChange) {
     const statusLabel = node("label", "", "Day type");
     const status = node("select");
     for (const [value, label] of [
-      ["lesson", "Lesson"], ["review", "Review & practice"],
-      ["assessment", "Learning check"], ["no-class", "No class / no post"],
-    ]) status.append(option(value, label, entry.status === value));
+      ["lesson", "Lesson"],
+      ["review", "Review & practice"],
+      ["assessment", "Learning check"],
+      ["no-class", "No class / no post"],
+    ])
+      status.append(option(value, label, entry.status === value));
     statusLabel.append(status);
     const lessonLabel = node("label", "", "Lesson number");
     const lesson = node("select");
@@ -50,7 +54,12 @@ export function renderWeekdayEditors(root, section, lessons, onChange) {
     noteLabel.append(note);
     const update = () => {
       lesson.disabled = status.value !== "lesson";
-      onChange(dayName, { day: dayName, status: status.value, lessonId: lesson.value, note: note.value });
+      onChange(dayName, {
+        day: dayName,
+        status: status.value,
+        lessonId: lesson.value,
+        note: note.value,
+      });
     };
     status.addEventListener("change", update);
     lesson.addEventListener("change", update);
@@ -61,9 +70,14 @@ export function renderWeekdayEditors(root, section, lessons, onChange) {
 }
 
 export function renderLessonPicker(root, lessons, query, selectedId, onSelect) {
-  const needle = String(query ?? "").trim().toLowerCase();
+  const needle = String(query ?? "")
+    .trim()
+    .toLowerCase();
   const matches = normalizeLessons(lessons).filter((lesson) =>
-    [lesson.id, lesson.title, lesson.standard, lesson.objective].join(" ").toLowerCase().includes(needle),
+    [lesson.id, lesson.title, lesson.standard, lesson.objective]
+      .join(" ")
+      .toLowerCase()
+      .includes(needle),
   );
   root.replaceChildren();
   for (const lesson of matches) {
@@ -82,7 +96,10 @@ export function renderCollection(root, items, onRemove) {
   for (const item of items) {
     const card = node("div", "collection-item");
     const copy = node("div");
-    copy.append(node("strong", "", item.title), node("p", "", item.body || item.description || item.url));
+    copy.append(
+      node("strong", "", item.title),
+      node("p", "", item.body || item.description || item.url),
+    );
     const remove = node("button", "remove-button", "Remove");
     remove.type = "button";
     remove.addEventListener("click", () => onRemove(item.id));
@@ -91,18 +108,54 @@ export function renderCollection(root, items, onRemove) {
   }
 }
 
+export function renderCopyEditor(root, draft, lang, onChange) {
+  const overrides = draft.copy?.[lang] ?? {};
+  root.replaceChildren();
+  let currentGroup = "";
+  for (const field of COPY_FIELDS) {
+    if (field.group !== currentGroup) {
+      currentGroup = field.group;
+      root.append(node("h3", "copy-group", currentGroup));
+    }
+    const defaultText = lang === "es" ? field.es : field.en;
+    const label = node("label", "copy-field");
+    label.append(node("span", "copy-label", field.label));
+    const long = defaultText.length > 60;
+    const input = node(long ? "textarea" : "input");
+    if (long) input.rows = 2;
+    input.maxLength = 600;
+    input.value = overrides[field.key] ?? "";
+    input.placeholder = defaultText;
+    input.addEventListener("input", () => onChange(field.key, input.value));
+    label.append(input);
+    root.append(label);
+  }
+}
+
 export function renderFamilyPreview(root, snapshot, inputLessons, sectionId) {
   const section = resolveSection(snapshot, sectionId);
   const lessons = normalizeLessons(inputLessons);
   const byId = new Map(lessons.map((lesson) => [lesson.id, lesson]));
   const title = node("div");
-  title.append(node("p", "step-label", section.label), node("h3", "", section.week.label), node("p", "", section.week.note));
+  title.append(
+    node("p", "step-label", section.label),
+    node("h3", "", section.week.label),
+    node("p", "", section.week.note),
+  );
   const week = node("div", "preview-week");
   for (const entry of section.week.days) {
     const lesson = byId.get(entry.lessonId);
     const card = node("article", "preview-day");
     card.append(node("strong", "", entry.day));
-    card.append(node("span", "", lesson ? `Lesson ${lesson.id} · ${lesson.title}` : entry.note || entry.status.replace("-", " ")));
+    card.append(
+      node(
+        "span",
+        "",
+        lesson
+          ? `Lesson ${lesson.id} · ${lesson.title}`
+          : entry.note || entry.status.replace("-", " "),
+      ),
+    );
     week.append(card);
   }
   const homeworkTitle = node("h3", "", "Family homework preview");
@@ -114,9 +167,13 @@ export function renderFamilyPreview(root, snapshot, inputLessons, sectionId) {
     .slice(0, 5);
   for (const item of homework) {
     const card = node("article");
-    card.append(node("strong", "", `Lesson ${item.id} · ${item.title}`), node("p", "", item.directions));
+    card.append(
+      node("strong", "", `Lesson ${item.id} · ${item.title}`),
+      node("p", "", item.directions),
+    );
     homeworkGrid.append(card);
   }
-  if (!homework.length) homeworkGrid.append(node("p", "", "Assign a lesson to preview this week's homework."));
+  if (!homework.length)
+    homeworkGrid.append(node("p", "", "Assign a lesson to preview this week's homework."));
   root.replaceChildren(title, week, homeworkTitle, homeworkGrid);
 }

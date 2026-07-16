@@ -8,7 +8,10 @@ const DEFAULT_DIRECTIONS =
 const SCHOOL_ALTERNATIVE =
   "A student may complete the same reflection with a teacher or trusted adult at school.";
 
-const cleanText = (value, maximum = 500) => String(value ?? "").trim().slice(0, maximum);
+const cleanText = (value, maximum = 500) =>
+  String(value ?? "")
+    .trim()
+    .slice(0, maximum);
 
 export function createDefaultSnapshot() {
   return {
@@ -35,12 +38,14 @@ export function createDefaultSnapshot() {
       {
         id: "ai-family-guide",
         title: "AI Learning Guide for Families",
-        description: "Use AI as a coach that explains, asks questions, and protects student thinking.",
+        description:
+          "Use AI as a coach that explains, asks questions, and protects student thinking.",
         url: "/curriculum/ai-hub/#parents",
         visible: true,
       },
     ],
     integrations: { classDojoUrl: "https://www.classdojo.com/", canvasUrl: "" },
+    copy: { en: {}, es: {} },
   };
 }
 
@@ -66,7 +71,8 @@ export function normalizeLessons(input) {
       objective: cleanText(raw.objective, 320),
       languageObjective: cleanText(raw.languageObjective, 320),
       standard: cleanText(raw.standard, 40),
-      lessonPath: cleanText(raw.lessonPath || raw.resources?.lesson?.path, 240) || `/lessons/${id}/`,
+      lessonPath:
+        cleanText(raw.lessonPath || raw.resources?.lesson?.path, 240) || `/lessons/${id}/`,
       homeworkPath:
         cleanText(raw.homeworkPath || raw.resources?.homework?.path, 240) ||
         `/lessons/${id}/homework.html`,
@@ -74,10 +80,16 @@ export function normalizeLessons(input) {
         ? cleanText(raw.resources.familyPage.path, 240)
         : "",
       vocabulary: Array.isArray(raw.supports?.vocabulary)
-        ? raw.supports.vocabulary.map((word) => cleanText(word, 60)).filter(Boolean).slice(0, 10)
+        ? raw.supports.vocabulary
+            .map((word) => cleanText(word, 60))
+            .filter(Boolean)
+            .slice(0, 10)
         : [],
       sentenceFrames: Array.isArray(raw.supports?.sentenceFrames)
-        ? raw.supports.sentenceFrames.map((frame) => cleanText(frame, 140)).filter(Boolean).slice(0, 4)
+        ? raw.supports.sentenceFrames
+            .map((frame) => cleanText(frame, 140))
+            .filter(Boolean)
+            .slice(0, 4)
         : [],
     });
   }
@@ -173,9 +185,13 @@ export function buildCanvasAnnouncement(snapshot, lessons, sectionId) {
   const links = buildCanvasModuleLinks(snapshot, lessons, section.id);
   const weekLabel = cleanText(section.week?.label, 80) || "This Week";
   const note = cleanText(section.week?.note, 500);
-  const textLines = [weekLabel, section.label, note, "", ...links.map((link) => `${link.day}: ${link.title}\nHomework: ${link.homeworkUrl}`)].filter(
-    (line, index, array) => line || (index > 0 && array[index - 1]),
-  );
+  const textLines = [
+    weekLabel,
+    section.label,
+    note,
+    "",
+    ...links.map((link) => `${link.day}: ${link.title}\nHomework: ${link.homeworkUrl}`),
+  ].filter((line, index, array) => line || (index > 0 && array[index - 1]));
   const htmlItems = links
     .map(
       (link) =>
