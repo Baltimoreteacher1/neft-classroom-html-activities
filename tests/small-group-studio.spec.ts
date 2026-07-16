@@ -38,6 +38,16 @@ test.describe("small-group guided math studio", () => {
     await expect(page.getByText(/Conjecturer: make the claim/)).toBeVisible();
     await expect(page.getByText(/Teacher studio guide|Listen for during team talk/)).toHaveCount(0);
 
+    const equation = page.getByRole("button", { name: "Equation: open definition" }).first();
+    await equation.click();
+    const definition = page.getByRole("dialog", { name: "Equation" });
+    await expect(definition.getByText(/math sentence with an equal sign/i)).toBeVisible();
+    await expect(definition.getByRole("img")).toHaveAttribute(
+      "src",
+      /\/assets\/vocab-images\/equation\.svg$/,
+    );
+    await definition.getByRole("button", { name: "Close definition" }).click();
+
     await page.setViewportSize({ width: 390, height: 844 });
     const dimensions = await page.evaluate(() => ({ width: innerWidth, scroll: document.documentElement.scrollWidth }));
     expect(dimensions.scroll).toBeLessThanOrEqual(dimensions.width);
@@ -120,6 +130,102 @@ test.describe("small-group guided math studio", () => {
     await page.goto("/lessons/7-2-group2/");
     const designLab = page.getByRole("region", { name: "Create-a-Challenge design lab" });
     await expect(designLab.getByText(/constraint, tricky case, or plausible misconception/i)).toBeVisible();
+  });
+
+  test("students can highlight and bold selected lesson words", async ({ page }) => {
+    await page.goto("/lessons/1-1-group1/");
+
+    const tools = page.getByRole("region", { name: "Study mark-up tools" });
+    await expect(tools).toBeVisible();
+    await expect(tools.getByText(/select words in the lesson/i)).toBeVisible();
+
+    const selectPhrase = async (phrase: string) => {
+      await page.locator(".keyidea").evaluate((root, selectedPhrase) => {
+        const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+        const nodes: Text[] = [];
+        let node = walker.nextNode();
+        while (node) {
+          nodes.push(node as Text);
+          node = walker.nextNode();
+        }
+        const joined = nodes.map((textNode) => textNode.data).join("");
+        const phraseStart = joined.indexOf(selectedPhrase);
+        if (phraseStart < 0) throw new Error(`Could not select phrase: ${selectedPhrase}`);
+        const phraseEnd = phraseStart + selectedPhrase.length;
+        let offset = 0;
+        let startNode: Text | null = null;
+        let endNode: Text | null = null;
+        let startOffset = 0;
+        let endOffset = 0;
+        for (const textNode of nodes) {
+          const nextOffset = offset + textNode.length;
+          if (!startNode && phraseStart >= offset && phraseStart < nextOffset) {
+            startNode = textNode;
+            startOffset = phraseStart - offset;
+          }
+          if (phraseEnd > offset && phraseEnd <= nextOffset) {
+            endNode = textNode;
+            endOffset = phraseEnd - offset;
+            break;
+          }
+          offset = nextOffset;
+        }
+        if (!startNode || !endNode) throw new Error(`Could not map phrase: ${selectedPhrase}`);
+        const range = document.createRange();
+        range.setStart(startNode, startOffset);
+        range.setEnd(endNode, endOffset);
+        const selection = window.getSelection();
+        selection?.removeAllRanges();
+        selection?.addRange(range);
+        document.dispatchEvent(new Event("selectionchange"));
+      }, phrase);
+    };
+
+    await selectPhrase("Keep breaking a number apart");
+    await tools.getByRole("button", { name: "Highlight selected words" }).click();
+    await expect(page.locator("mark.sg-student-highlight")).toHaveText(
+      "Keep breaking a number apart",
+    );
+
+    await selectPhrase("until every factor is a");
+    await tools.getByRole("button", { name: "Bold selected words" }).click();
+    await expect(page.locator("strong.sg-student-bold")).toHaveText("until every factor is a");
+    await expect(tools.getByRole("status")).toContainText(/bolded/i);
+
+    await tools.getByRole("button", { name: "Undo last mark-up" }).click();
+    await expect(page.locator("strong.sg-student-bold")).toHaveCount(0);
+    await tools.getByRole("button", { name: "Clear all mark-up" }).click();
+    await expect(page.locator("mark.sg-student-highlight")).toHaveCount(0);
+  });
+
+  test("underlined math vocabulary opens a simple definition and concept image", async ({ page }) => {
+    await page.goto("/lessons/1-1-group1/");
+
+    const term = page.getByRole("button", { name: "Prime number: open definition" }).first();
+    await expect(term).toBeVisible();
+    await expect(term).toHaveClass(/sg-vocab-inline/);
+    await term.click();
+
+    const dialog = page.getByRole("dialog", { name: "Prime number" });
+    await expect(dialog).toBeVisible();
+    await expect(dialog.getByText("A number bigger than 1 that you can only divide by 1 and itself.")).toBeVisible();
+    const image = dialog.getByRole("img");
+    await expect(image).toBeVisible();
+    await expect(image).toHaveAttribute("src", /\/assets\/vocab-images\/prime-number\.svg$/);
+    await expect(image).toHaveAttribute("alt", /Illustration of Prime number/i);
+    const results = await new AxeBuilder({ page })
+      .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
+      .analyze();
+    const blocking = results.violations.filter((violation) =>
+      violation.impact === "serious" || violation.impact === "critical",
+    );
+    expect(
+      blocking,
+      blocking.map((violation) => `${violation.id}: ${violation.help}`).join("\n"),
+    ).toEqual([]);
+    await dialog.getByRole("button", { name: "Close definition" }).click();
+    await expect(dialog).toBeHidden();
+    await expect(term).toBeFocused();
   });
 
   test("teacher mode exposes facilitation and listen-for guidance", async ({ page }) => {

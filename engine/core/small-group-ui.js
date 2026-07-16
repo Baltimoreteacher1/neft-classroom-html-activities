@@ -58,6 +58,13 @@ export function injectSmallGroupStyles(accent) {
     innovation.href = "/assets/small-group-innovation.css?v=20260715-award1";
     document.head.appendChild(innovation);
   }
+  if (!document.getElementById("sg-annotation-styles")) {
+    const annotation = document.createElement("link");
+    annotation.id = "sg-annotation-styles";
+    annotation.rel = "stylesheet";
+    annotation.href = "/assets/small-group-annotation.css?v=20260715-annotation1";
+    document.head.appendChild(annotation);
+  }
   if (document.getElementById("sg-styles")) return;
 
   if (!document.getElementById("sg-fonts")) {

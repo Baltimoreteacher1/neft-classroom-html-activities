@@ -1,6 +1,8 @@
 // Shared composition layer for differentiated 15–20 minute small-group lessons.
 // Lesson configs remain the content source of truth; focused modules own the
 // engagement interactions, math practice, and visual system.
+
+import { installSmallGroupAnnotation } from "./small-group-annotation.js";
 import {
   createMissionSection,
   createReflectionSection,
@@ -263,6 +265,7 @@ export function bootSmallGroup(config) {
   else progress.mark("sg-check");
   app.append(reflection.section, completion, evidence.section, footer(config, isTeacher));
   tally.update();
+  installSmallGroupAnnotation(app, config);
 }
 
 export default bootSmallGroup;
