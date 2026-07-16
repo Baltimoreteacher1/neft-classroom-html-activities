@@ -41,12 +41,7 @@
         z-index: 0;
         overflow: hidden;
         pointer-events: none;
-        background: radial-gradient(
-          130% 90% at 50% 0%,
-          #103048 0%,
-          #0a1c2c 55%,
-          #050d16 100%
-        );
+        background: radial-gradient(130% 90% at 50% 0%, #103048 0%, #0a1c2c 55%, #050d16 100%);
       }
       #dd-bg-layer {
         position: absolute;
@@ -126,15 +121,14 @@
     <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
     <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
     <!-- ghl-injected:end -->
-  
-  
+
     <!-- uifr-injected:begin -->
     <!-- BCPS Instructional Framework Rubric · TEACH support. Teacher/observer reference — NOT shown to students. Interactive practice activity (math/games/u8-data-dash): supports Level 4 conditions on T2, T4 (students choose their approach + immediate no-fail feedback with retry). Full evidence: /teacher-tools/teaching-evidence/ · docs/uifr-teach-l4.md. -->
     <!-- uifr-injected:end -->
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2" />
+    <!-- nsr-injected:end -->
+  </head>
   <body>
     <!-- Decorative animated chart-bar field (behind the Phaser canvas). -->
     <div id="dd-bg" data-parallax aria-hidden="true">
@@ -149,8 +143,7 @@
         var layer = document.getElementById("dd-bg-layer");
         if (!layer) return;
         var reduce =
-          window.matchMedia &&
-          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         var colors = ["#1a6fb5", "#0e8a7d", "#d4952a", "#2d874b", "#2bd1c4"];
         var frag = document.createDocumentFragment();
         var n = Math.max(14, Math.round((window.innerWidth || 900) / 60));
@@ -264,9 +257,7 @@
         init() {
           if (!this.ctx)
             try {
-              this.ctx = new (
-                window.AudioContext || window.webkitAudioContext
-              )();
+              this.ctx = new (window.AudioContext || window.webkitAudioContext)();
             } catch (e) {}
         },
         play(t, f, d, v = 0.18) {
@@ -400,8 +391,7 @@
 
       function genRound(level, lo, hi) {
         const span = hi - lo;
-        const statPool =
-          level === 1 ? ["mean"] : ["mean", "median", "range", "mad"];
+        const statPool = level === 1 ? ["mean"] : ["mean", "median", "range", "mad"];
         for (let tries = 0; tries < 400; tries++) {
           const stat = statPool[randInt(0, statPool.length - 1)];
           const gN = randInt(2, 3);
@@ -466,9 +456,7 @@
         }
         if (stat === "median") {
           // vals are already sorted (columns iterated low→high).
-          return n % 2
-            ? vals[(n - 1) / 2]
-            : (vals[n / 2 - 1] + vals[n / 2]) / 2;
+          return n % 2 ? vals[(n - 1) / 2] : (vals[n / 2 - 1] + vals[n / 2]) / 2;
         }
         if (stat === "mad") {
           // Mean absolute deviation: mean of |x − mean| (6.DS.6c).
@@ -487,14 +475,7 @@
         parent: document.body,
         backgroundColor: "#0a1c2c",
         scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-        scene: [
-          BootScene,
-          TitleScene,
-          VocabScene,
-          LevelScene,
-          GameScene,
-          ResultScene,
-        ],
+        scene: [BootScene, TitleScene, VocabScene, LevelScene, GameScene, ResultScene],
       };
 
       // ── Vocab gate state (repo rule: term + Level-1 definition + image/emoji
@@ -594,16 +575,11 @@
           )
           .setOrigin(0.5);
         this.add
-          .text(
-            cx,
-            295,
-            "Tap or ← → ↑ ↓ (A·D·W·S) · 6.DS.6 · Lessons 8.1–8.7",
-            {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "14px",
-              color: "#9ec9e2",
-            },
-          )
+          .text(cx, 295, "Tap or ← → ↑ ↓ (A·D·W·S) · 6.DS.6 · Lessons 8.1–8.7", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "14px",
+            color: "#9ec9e2",
+          })
           .setOrigin(0.5);
 
         const hs = localStorage.getItem(LS_KEY);
@@ -673,9 +649,7 @@
           })
           .setOrigin(0.5);
 
-        this.add
-          .rectangle(cx, 320, 560, 320, C.panel)
-          .setStrokeStyle(2, C.panelEdge);
+        this.add.rectangle(cx, 320, 560, 320, C.panel).setStrokeStyle(2, C.panelEdge);
 
         this.stepText = this.add
           .text(cx, 185, "", {
@@ -685,9 +659,7 @@
             color: "#9ec9e2",
           })
           .setOrigin(0.5);
-        this.emojiText = this.add
-          .text(cx, 250, "", { fontSize: "76px" })
-          .setOrigin(0.5);
+        this.emojiText = this.add.text(cx, 250, "", { fontSize: "76px" }).setOrigin(0.5);
         this.termText = this.add
           .text(cx, 330, "", {
             fontFamily: "Segoe UI, sans-serif",
@@ -750,9 +722,7 @@
       VocabScene.prototype.renderCard = function () {
         const v = DD_VOCAB[this.idx];
         const last = this.idx === DD_VOCAB.length - 1;
-        this.stepText.setText(
-          "Key word " + (this.idx + 1) + " of " + DD_VOCAB.length,
-        );
+        this.stepText.setText("Key word " + (this.idx + 1) + " of " + DD_VOCAB.length);
         this.emojiText.setText(v.emoji);
         this.termText.setText(v.term);
         this.defText.setText(v.def);
@@ -884,8 +854,7 @@
 
       GameScene.prototype.init = function () {
         this.reduceMotion = !!(
-          window.matchMedia &&
-          window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
         );
         this.score = 0;
         this.lives = 3;
@@ -997,9 +966,7 @@
           .setAlpha(0);
 
         // Plot baseline + value columns/labels.
-        this.add
-          .rectangle(AX_X0 - 16, AX_Y, AX_X1 - AX_X0 + 32, 3, C.panelEdge)
-          .setOrigin(0, 0.5);
+        this.add.rectangle(AX_X0 - 16, AX_Y, AX_X1 - AX_X0 + 32, 3, C.panelEdge).setOrigin(0, 0.5);
         this.zones = [];
         this.colLabels = [];
         for (let i = 0; i < this.n; i++) {
@@ -1055,12 +1022,8 @@
             color: "#ffffff",
           })
           .setOrigin(0.5);
-        this.lockBtn.on("pointerover", () =>
-          this.lockBtn.setFillStyle(0x1aa99e),
-        );
-        this.lockBtn.on("pointerout", () =>
-          this.lockBtn.setFillStyle(0x148f86),
-        );
+        this.lockBtn.on("pointerover", () => this.lockBtn.setFillStyle(0x1aa99e));
+        this.lockBtn.on("pointerout", () => this.lockBtn.setFillStyle(0x148f86));
         this.lockBtn.on("pointerdown", () => this.lockIn());
 
         // Controls hint
@@ -1079,9 +1042,7 @@
           .setOrigin(0.5);
 
         // FX: red flash for a wrong lock-in.
-        this.redFlash = this.add
-          .rectangle(W / 2, H / 2, W, H, 0xff3333, 0)
-          .setDepth(30);
+        this.redFlash = this.add.rectangle(W / 2, H / 2, W, H, 0xff3333, 0).setDepth(30);
 
         // Keyboard
         const mvL = () => this.moveCursor(-1);
@@ -1092,9 +1053,7 @@
         this.input.keyboard.on("keydown-D", mvR);
         this.input.keyboard.on("keydown-UP", () => this.addDot(this.cursor));
         this.input.keyboard.on("keydown-W", () => this.addDot(this.cursor));
-        this.input.keyboard.on("keydown-DOWN", () =>
-          this.removeDot(this.cursor),
-        );
+        this.input.keyboard.on("keydown-DOWN", () => this.removeDot(this.cursor));
         this.input.keyboard.on("keydown-S", () => this.removeDot(this.cursor));
         this.input.keyboard.on("keydown-ENTER", () => this.lockIn());
         this.input.keyboard.on("keydown-SPACE", () => this.lockIn());
@@ -1139,11 +1098,7 @@
           SFX.miss();
           if (this.counts[i] > 0) {
             this.flash(this.colX(i), AX_Y - 60, "Given dots stay!", "#ffcd4d");
-            srSay(
-              "The dots left at " +
-                (this.lo + i) +
-                " are given dots. They cannot be removed.",
-            );
+            srSay("The dots left at " + (this.lo + i) + " are given dots. They cannot be removed.");
           }
           return;
         }
@@ -1174,8 +1129,7 @@
             if (isGiven) d.on("pointerdown", () => this.givenDotTapped(i));
             else d.on("pointerdown", () => this.removeDot(i));
             this.dotLayer.add(d);
-            if (!this.reduceMotion && !isGiven && j === this.counts[i] - 1)
-              JUICE.tilePop(this, d);
+            if (!this.reduceMotion && !isGiven && j === this.counts[i] - 1) JUICE.tilePop(this, d);
           }
         }
       };
@@ -1184,11 +1138,7 @@
         if (this.locked) return;
         SFX.miss();
         this.flash(this.colX(i), AX_Y - 60, "Given dot — it stays!", "#ffcd4d");
-        srSay(
-          "The dot at " +
-            (this.lo + i) +
-            " is a given dot. It cannot be removed.",
-        );
+        srSay("The dot at " + (this.lo + i) + " is a given dot. It cannot be removed.");
       };
 
       GameScene.prototype.updateReadout = function () {
@@ -1206,9 +1156,7 @@
           );
         } else {
           const cur = statOf(this.counts, this.lo, stat);
-          this.bigReadout.setText(
-            STAT[stat].name + " = " + (cur === null ? "—" : numStr(cur)),
-          );
+          this.bigReadout.setText(STAT[stat].name + " = " + (cur === null ? "—" : numStr(cur)));
         }
         if (ddLevel === 1) {
           // Support tier: a LIVE step coach. It always names the next move so
@@ -1268,6 +1216,7 @@
 
       GameScene.prototype.newProblem = function () {
         this.locked = false;
+        this.attemptsThis = 0; // wrong tries on THIS problem (1st = retry, 2nd = move on)
         this.problem = genRound(ddLevel, this.lo, this.hi);
         // The immovable given dots seed the build; the student adds on top.
         this.given = this.problem.given.slice();
@@ -1286,11 +1235,7 @@
             ".";
         } else {
           goal =
-            "Add dots so the " +
-            STAT[this.problem.stat].name +
-            " is " +
-            this.problem.target +
-            ".";
+            "Add dots so the " + STAT[this.problem.stat].name + " is " + this.problem.target + ".";
         }
         this.bannerText.setText(goal);
         // Persistent procedure reminder for the support tier.
@@ -1334,20 +1279,12 @@
           const bonus = Math.min(this.streak, 5) * 5;
           const gained = 20 + bonus;
           this.score += gained;
-          JUICE.burst(
-            this,
-            W / 2,
-            AX_Y - 60,
-            [0x4fd18b, 0x2bd1c4, 0xffffff],
-            18,
-          );
+          JUICE.burst(this, W / 2, AX_Y - 60, [0x4fd18b, 0x2bd1c4, 0xffffff], 18);
           JUICE.floatText(this, W / 2, 250, "+" + gained, "#4fd18b", 36);
           JUICE.award(gained, "u8-data-dash");
           if (this.streak >= 2) JUICE.confetti(this, 1);
           this.flash(W / 2, 210, "Correct! ✓", "#4fd18b");
-          this.feedback
-            .setText("Correct! " + this.successWhy(stat, cur))
-            .setAlpha(1);
+          this.feedback.setText("Correct! " + this.successWhy(stat, cur)).setAlpha(1);
           this.subReadout.setVisible(false);
           srSay("Correct. " + this.successWhy(stat, cur));
           this.afterAttempt(true);
@@ -1355,10 +1292,22 @@
           SFX.bad();
           JUICE.audio.wrong();
           this.streak = 0;
+          this.attemptsThis = (this.attemptsThis || 0) + 1;
+          const why = this.failWhy(stat, cur);
+          if (this.attemptsThis < 2) {
+            // First miss: keep the SAME build + problem for a free retry — no
+            // life lost, nothing revealed; failWhy explains current vs target
+            // and the live readout stays on to help the adjustment.
+            this.flashRed();
+            JUICE.shake(this, 0.008);
+            this.feedback.setText(why + " Adjust your dots and lock in again!").setAlpha(1);
+            srSay("Not quite. " + why + " Adjust your dots and try again.");
+            this.locked = false;
+            return;
+          }
           this.lives--;
           this.flashRed();
           JUICE.shake(this, 0.008);
-          const why = this.failWhy(stat, cur);
           this.feedback.setText(why).setAlpha(1);
           this.subReadout.setVisible(false);
           srSay("Not quite. " + why);
@@ -1374,8 +1323,7 @@
           const sum = Math.round(cur * tot);
           return "Mean = " + sum + " ÷ " + tot + " = " + numStr(cur) + ".";
         }
-        if (stat === "median")
-          return "The middle value is " + numStr(cur) + ".";
+        if (stat === "median") return "The middle value is " + numStr(cur) + ".";
         if (stat === "mad") {
           const mean = statOf(this.counts, this.lo, "mean");
           return (
@@ -1409,14 +1357,7 @@
           );
         }
         if (stat === "median") {
-          return (
-            "Your median is " +
-            numStr(cur) +
-            ", but you need " +
-            t +
-            ". " +
-            STAT.median.hint
-          );
+          return "Your median is " + numStr(cur) + ", but you need " + t + ". " + STAT.median.hint;
         }
         if (stat === "mad") {
           const mean = statOf(this.counts, this.lo, "mean");
@@ -1433,14 +1374,7 @@
             STAT.mad.hint
           );
         }
-        return (
-          "Your range is " +
-          numStr(cur) +
-          ", but you need " +
-          t +
-          ". " +
-          STAT.range.hint
-        );
+        return "Your range is " + numStr(cur) + ", but you need " + t + ". " + STAT.range.hint;
       };
 
       GameScene.prototype.afterAttempt = function (correct) {
@@ -1611,6 +1545,7 @@
 
       // ── Launch ──
       const ddGame = new Phaser.Game(config);
+      window.ddGame = ddGame; // stable handle for automated QA harnesses
 
       // ── Canvas accessibility (additive; no gameplay change) ──
       ddGame.events.once("ready", function () {
@@ -1670,8 +1605,8 @@
     <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
     <script src="/assets/canvas-bridge.js" defer></script>
     <!-- canvas-bridge-injected:end -->
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
-  <!-- nsr-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+    <!-- nsr-injected:end -->
   </body>
 </html>

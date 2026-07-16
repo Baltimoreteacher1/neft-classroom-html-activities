@@ -1267,6 +1267,7 @@
 
       GameScene.prototype.newProblem = function () {
         this.locked = false;
+        this.attemptsThis = 0; // wrong tries on THIS problem (1st = retry, 2nd = teach)
         const p = makeProblem(this.level, this.track);
         this.problem = p;
 
@@ -1356,6 +1357,33 @@
           JUICE.audio.wrong();
           JUICE.shake(this, 0.008);
           this.streak = 0;
+          this.attemptsThis = (this.attemptsThis || 0) + 1;
+          if (this.attemptsThis < 2) {
+            // First miss: method-only diagnostic + retry the SAME problem.
+            // Knobs stay where the student put them; nothing is revealed.
+            let diag;
+            if (!(c > 0 && d > 0)) {
+              diag = "Both knobs need a value past 0. Slide each knob first.";
+            } else if (p.kind === "full" && sameAsBase) {
+              diag =
+                "That's the starting ratio itself — multiply BOTH parts by the same number to build an EQUIVALENT ratio.";
+            } else {
+              diag =
+                "Your knobs show " +
+                c +
+                ":" +
+                d +
+                ", which isn't equivalent to " +
+                p.a +
+                ":" +
+                p.b +
+                ". Whatever you multiply or divide the top by, do the SAME to the bottom.";
+            }
+            this.feedback.setText("Not quite — " + diag + " Try again!").setAlpha(1);
+            srSay("Not quite. " + diag + " Try again.");
+            this.locked = false;
+            return;
+          }
           this.feedback.setText("Not quite — " + p.why).setAlpha(1);
           srSay("Not quite. " + p.why);
           // Teach: show the correct value(s) with green ghost markers and glide
@@ -1582,6 +1610,7 @@
 
       // ── Launch ──
       const rrGame = new Phaser.Game(config);
+      window.rrGame = rrGame; // stable handle for automated QA harnesses
 
       // Canvas accessibility (additive; no gameplay change).
       rrGame.events.once("ready", function () {
