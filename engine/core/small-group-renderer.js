@@ -8,6 +8,14 @@ import {
   createVocabularySection,
   selectedTalk,
 } from "./small-group-engagement.js";
+import {
+  createAdaptiveCoach,
+  createChallengeLab,
+  createConsensusLab,
+  createEvidenceCard,
+  createProofPathLab,
+  createTeacherEvidenceConsole,
+} from "./small-group-innovation.js";
 import { createCheckSection, createPracticeSection } from "./small-group-practice.js";
 import { ACCENTS, el, esc, injectSmallGroupStyles } from "./small-group-ui.js";
 
@@ -27,7 +35,7 @@ function sectionHeading(number, eyebrow, title) {
   );
 }
 
-function conceptSection(config, onDone) {
+function conceptSection(config, onDone, proofPath) {
   const concept = config.launch?.conceptIntro || {};
   const section = el("section", "sg-sec");
   section.id = "sg-build";
@@ -53,6 +61,7 @@ function conceptSection(config, onDone) {
     details.append(summary, list);
     section.appendChild(details);
   });
+  section.appendChild(proofPath);
 
   const row = el("div", "row");
   const ready = el("button", "btn", "I can explain the next step →");
@@ -168,11 +177,31 @@ export function bootSmallGroup(config) {
   app.innerHTML = "";
   const isTeacher = teacherMode();
   const talkData = selectedTalk(config, variant);
-  const state = { before: null, after: null };
+  const state = {
+    before: null,
+    after: null,
+    attempts: 0,
+    incorrectAttempts: 0,
+    hints: 0,
+    solved: 0,
+  };
   const progress = progressRail();
+  const events = {
+    onAttempt({ correct }) {
+      state.attempts++;
+      if (!correct) state.incorrectAttempts++;
+    },
+    onHint() {
+      state.hints++;
+    },
+    onSolved() {
+      state.solved++;
+    },
+  };
 
   app.appendChild(hero(config, accent));
   if (isTeacher) {
+    app.appendChild(createTeacherEvidenceConsole(config, state));
     const panel = teacherPanel(config, accent, talkData);
     if (panel) app.appendChild(panel);
   }
@@ -188,10 +217,12 @@ export function bootSmallGroup(config) {
     },
   };
 
+  const evidence = createEvidenceCard(config, state);
   const reflection = createReflectionSection(config, state, () => {
     progress.mark("sg-reflect");
     completion.hidden = false;
     completion.innerHTML = `<h2>Studio complete 🎉</h2><p>You finished the mission and named your growth. That is what mathematicians do.</p>`;
+    evidence.reveal();
   });
   const revealReflection = () => {
     progress.mark("sg-check");
@@ -199,30 +230,38 @@ export function bootSmallGroup(config) {
   };
 
   app.appendChild(createMissionSection(config, variant, state, () => progress.mark("sg-launch")));
-  app.appendChild(conceptSection(config, () => progress.mark("sg-build")));
+  app.appendChild(
+    conceptSection(config, () => progress.mark("sg-build"), createProofPathLab(variant, state)),
+  );
 
   const vocabulary = createVocabularySection(config, () => progress.mark("sg-vocab"));
   if (vocabulary) app.appendChild(vocabulary);
   else progress.mark("sg-vocab");
 
   const talk = createTalkSection(config, variant, () => progress.mark("sg-talk"));
-  if (talk) app.appendChild(talk);
-  else progress.mark("sg-talk");
+  if (talk) {
+    talk.appendChild(createConsensusLab(config, variant, state));
+    app.appendChild(talk);
+  } else progress.mark("sg-talk");
 
-  const check = createCheckSection(config, revealReflection, tally);
-  app.appendChild(
-    createPracticeSection(
-      config,
-      () => {
-        progress.mark("sg-practice");
-        if (!check) reflection.reveal();
-      },
-      tally,
-    ),
+  const check = createCheckSection(config, revealReflection, tally, events);
+  const practice = createPracticeSection(
+    config,
+    () => {
+      progress.mark("sg-practice");
+      if (!check) reflection.reveal();
+    },
+    tally,
+    events,
+  );
+  app.append(
+    practice,
+    createAdaptiveCoach(variant, state),
+    createChallengeLab(config, variant, state),
   );
   if (check) app.appendChild(check);
   else progress.mark("sg-check");
-  app.append(reflection.section, completion, footer(config, isTeacher));
+  app.append(reflection.section, completion, evidence.section, footer(config, isTeacher));
   tally.update();
 }
 

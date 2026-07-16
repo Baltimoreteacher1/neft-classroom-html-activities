@@ -51,6 +51,13 @@ export function injectSmallGroupStyles(accent) {
   document.documentElement.style.setProperty("--sg-deep", accent.deep);
   document.documentElement.style.setProperty("--sg-soft", accent.soft);
   document.documentElement.style.setProperty("--sg-pop", accent.pop);
+  if (!document.getElementById("sg-innovation-styles")) {
+    const innovation = document.createElement("link");
+    innovation.id = "sg-innovation-styles";
+    innovation.rel = "stylesheet";
+    innovation.href = "/assets/small-group-innovation.css?v=20260715-award1";
+    document.head.appendChild(innovation);
+  }
   if (document.getElementById("sg-styles")) return;
 
   if (!document.getElementById("sg-fonts")) {

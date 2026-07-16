@@ -56,7 +56,7 @@ function showFeedback(node, type, html) {
   node.innerHTML = html;
 }
 
-function appendHints(card, item) {
+function appendHints(card, item, events = {}) {
   const hints = item.hints || (item.hint ? [item.hint] : []);
   if (!hints.length) return;
   let shown = 0;
@@ -65,6 +65,7 @@ function appendHints(card, item) {
   button.type = "button";
   const box = el("div", "hintbox");
   button.onclick = () => {
+    events.onHint?.();
     box.appendChild(el("p", null, `<b>Hint ${shown + 1}:</b> ${esc(hints[shown])}`));
     shown++;
     if (shown >= hints.length) {
@@ -78,7 +79,7 @@ function appendHints(card, item) {
   card.append(row, box);
 }
 
-function multipleChoiceCard(item, index, onSolved) {
+function multipleChoiceCard(item, index, onSolved, events = {}) {
   const card = questionCard(index, itemStem(item));
   const status = feedback();
   const choices = el("div", "choices");
@@ -92,6 +93,7 @@ function multipleChoiceCard(item, index, onSolved) {
     button.type = "button";
     button.onclick = () => {
       if (complete) return;
+      events.onAttempt?.({ correct: optionIndex === item.correctIndex });
       if (optionIndex !== item.correctIndex) {
         button.classList.add("wrong");
         button.disabled = true;
@@ -116,12 +118,12 @@ function multipleChoiceCard(item, index, onSolved) {
     choices.appendChild(button);
   });
   card.appendChild(choices);
-  appendHints(card, item);
+  appendHints(card, item, events);
   card.appendChild(status);
   return card;
 }
 
-function errorAnalysisCard(item, index, onSolved) {
+function errorAnalysisCard(item, index, onSolved, events = {}) {
   const card = questionCard(index, item.title || item.stem || "Find the reasoning break.");
   const work = el("div", "we-steps");
   const list = el("ol", "steps");
@@ -144,6 +146,7 @@ function errorAnalysisCard(item, index, onSolved) {
     button.type = "button";
     button.onclick = () => {
       if (complete) return;
+      events.onAttempt?.({ correct: optionIndex + 1 === item.errorStep });
       if (optionIndex + 1 !== item.errorStep) {
         button.classList.add("wrong");
         button.disabled = true;
@@ -168,7 +171,7 @@ function errorAnalysisCard(item, index, onSolved) {
     options.appendChild(button);
   });
   card.appendChild(options);
-  appendHints(card, item);
+  appendHints(card, item, events);
   card.appendChild(status);
   return card;
 }
@@ -184,7 +187,7 @@ function parseEquation(stem) {
   };
 }
 
-function answerControl(item, answer, scaffold, status, onSolved) {
+function answerControl(item, answer, scaffold, status, onSolved, events = {}) {
   const box = el("div");
   const equation = parseEquation(itemStem(item));
   const input = el("input", "fillin");
@@ -240,7 +243,9 @@ function answerControl(item, answer, scaffold, status, onSolved) {
   let tries = 0;
   check.onclick = () => {
     tries++;
-    if (!isRight(input.value, answer)) {
+    const correct = isRight(input.value, answer);
+    events.onAttempt?.({ correct });
+    if (!correct) {
       input.classList.add("bad");
       showFeedback(
         status,
@@ -311,11 +316,12 @@ function appendStepGuide(card, item, scaffold) {
   card.append(row, list);
 }
 
-function responseCard(item, index, variant, onSolved, scaffold) {
+function responseCard(item, index, variant, onSolved, scaffold, events = {}) {
   const card = questionCard(index, itemStem(item));
   const status = feedback();
   const answer = answerOf(item);
-  if (answer != null) card.appendChild(answerControl(item, answer, scaffold, status, onSolved));
+  if (answer != null)
+    card.appendChild(answerControl(item, answer, scaffold, status, onSolved, events));
   else {
     const response = el("textarea", "sg-ta");
     response.placeholder =
@@ -326,6 +332,7 @@ function responseCard(item, index, variant, onSolved, scaffold) {
     ready.type = "button";
     ready.onclick = () => {
       if (response.value.trim().length < 8) {
+        events.onAttempt?.({ correct: false });
         showFeedback(
           status,
           "no",
@@ -333,6 +340,7 @@ function responseCard(item, index, variant, onSolved, scaffold) {
         );
         return;
       }
+      events.onAttempt?.({ correct: true });
       response.disabled = true;
       ready.disabled = true;
       showFeedback(
@@ -346,7 +354,7 @@ function responseCard(item, index, variant, onSolved, scaffold) {
     card.lastElementChild.appendChild(ready);
   }
   appendStepGuide(card, item, scaffold);
-  appendHints(card, item);
+  appendHints(card, item, events);
   card.appendChild(status);
   return card;
 }
@@ -366,15 +374,15 @@ function collectItems(config) {
   return items.slice(0, 6);
 }
 
-function problemCard(item, index, variant, onSolved, scaffold) {
+function problemCard(item, index, variant, onSolved, scaffold, events = {}) {
   if (item.type === "multiple-choice" && item.choices?.length)
-    return multipleChoiceCard(item, index, onSolved);
+    return multipleChoiceCard(item, index, onSolved, events);
   if (item.type === "error-analysis" && item.workedExample?.length)
-    return errorAnalysisCard(item, index, onSolved);
-  return responseCard(item, index, variant, onSolved, scaffold);
+    return errorAnalysisCard(item, index, onSolved, events);
+  return responseCard(item, index, variant, onSolved, scaffold, events);
 }
 
-export function createPracticeSection(config, onPhaseDone, tally) {
+export function createPracticeSection(config, onPhaseDone, tally, events = {}) {
   const section = el("section", "sg-sec");
   section.id = "sg-practice";
   const title =
@@ -403,10 +411,12 @@ export function createPracticeSection(config, onPhaseDone, tally) {
         () => {
           solved++;
           tally.solved++;
+          events.onSolved?.();
           tally.update?.();
           if (solved >= Math.ceil(items.length * 0.6)) onPhaseDone();
         },
         scaffold,
+        events,
       ),
     );
   });
@@ -422,7 +432,7 @@ export function createPracticeSection(config, onPhaseDone, tally) {
   return section;
 }
 
-export function createCheckSection(config, onSolved, tally) {
+export function createCheckSection(config, onSolved, tally, events = {}) {
   const ticket = config.reflect?.exitTicket;
   if (!ticket) return null;
   const section = el("section", "sg-sec");
@@ -444,13 +454,14 @@ export function createCheckSection(config, onSolved, tally) {
   tally.total++;
   const finish = () => {
     tally.solved++;
+    events.onSolved?.();
     tally.update?.();
     onSolved();
   };
   section.appendChild(
     ticket.choices?.length
-      ? multipleChoiceCard({ ...ticket, type: "multiple-choice" }, 0, finish)
-      : responseCard(ticket, 0, config.variant, finish, config.variant !== "group2"),
+      ? multipleChoiceCard({ ...ticket, type: "multiple-choice" }, 0, finish, events)
+      : responseCard(ticket, 0, config.variant, finish, config.variant !== "group2", events),
   );
   return section;
 }
