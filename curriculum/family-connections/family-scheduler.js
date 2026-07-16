@@ -91,8 +91,8 @@ async function submitRequest(event) {
     const result = await api("schedule-request", { method: "POST", body: JSON.stringify(data) });
     form.reset();
     byId("meeting-request-panel").hidden = true;
-    setStatus(`Request sent. Your reference is ${result.reference}. Mr. Neft will confirm by email.`, "success");
     await loadSlots();
+    setStatus(`Request sent. Your reference is ${result.reference}. Mr. Neft will confirm by email.`, "success");
   } catch (error) {
     setStatus(error.message, "error");
   } finally {

@@ -133,8 +133,8 @@ byId("teacher-slot-form").addEventListener("submit", async (event) => {
   try {
     await api("schedule-slot", { method: "POST", body: JSON.stringify(data) });
     form.reset();
-    status("Available time posted.", "success");
     await loadDashboard();
+    status("Available time posted.", "success");
   } catch (error) {
     status(error.message, "error");
   }
@@ -150,8 +150,8 @@ byId("teacher-invitation-form").addEventListener("submit", async (event) => {
     });
     byId("teacher-invitation-link").value = new URL(result.responsePath, location.origin).href;
     byId("teacher-invitation-result").hidden = false;
-    status("Private invitation link created. Copy it into ClassDojo or email.", "success");
     await loadDashboard();
+    status("Private invitation link created. Copy it into ClassDojo or email.", "success");
   } catch (error) {
     status(error.message, "error");
   }
