@@ -1,6 +1,9 @@
+import { downloadCalendarEvent } from "./calendar-event.js";
+
 const API = "/api/family-connections";
 const byId = (id) => document.getElementById(id);
 let language = document.documentElement.lang === "es" ? "es" : "en";
+let confirmedBooking = null;
 const spanish = {
   quick: "Reunión",
   eyebrow: "Reuniones familiares",
@@ -11,10 +14,13 @@ const spanish = {
   student: "Solo el primer nombre del estudiante",
   email: "Correo electrónico para la respuesta",
   note: "¿Hay algo que quiera que el Sr. Neft sepa? (opcional)",
-  consent: "Entiendo que esta es una solicitud y que recibiré los detalles después de la confirmación.",
-  send: "Enviar solicitud",
+  consent: "Estoy reservando esta hora y usaré solo el primer nombre del estudiante.",
+  send: "Reservar reunión",
   chooseAnother: "Elegir otra hora",
-  requestTime: "Solicitar esta hora",
+  requestTime: "Reservar esta hora",
+  bookedTitle: "Reunión reservada",
+  addCalendar: "Agregar al calendario",
+  backToTimes: "Ver otros horarios",
 };
 
 function applyLanguage(next) {
@@ -120,14 +126,26 @@ async function submitRequest(event) {
   data.consent = form.elements.consent.checked;
   const button = form.querySelector('[type="submit"]');
   button.disabled = true;
-  setStatus("Sending your request…");
+  setStatus(language === "es" ? "Reservando su reunión…" : "Booking your meeting…");
   try {
     const result = await api("schedule-request", { method: "POST", body: JSON.stringify(data) });
     form.reset();
     byId("meeting-request-panel").hidden = true;
+    confirmedBooking = { slot: result.slot, reference: result.reference };
+    byId("meeting-confirmation-detail").textContent = `${slotLabel(result.slot)} · ${result.slot.durationMinutes} minutes · ${result.slot.locationLabel} · Eastern Time`;
+    byId("meeting-confirmation-reference").textContent = result.reference;
+    byId("meeting-confirmation").hidden = false;
     await loadSlots();
-    setStatus(`Request sent. Your reference is ${result.reference}. Mr. Neft will confirm by email.`, "success");
+    setStatus(language === "es" ? "Su reunión está confirmada." : "Your meeting is confirmed.", "success");
+    byId("meeting-confirmation-title").focus();
   } catch (error) {
+    if (/no longer available|just booked/i.test(error.message)) {
+      byId("meeting-request-panel").hidden = true;
+      await loadSlots();
+      byId("meeting-slots").querySelector("button")?.focus();
+      setStatus(language === "es" ? "Ese horario acaba de reservarse. Elija otro." : "That time was just booked. Please choose another.", "error");
+      return;
+    }
     setStatus(error.message, "error");
   } finally {
     button.disabled = false;
@@ -162,6 +180,17 @@ byId("meeting-request-cancel").addEventListener("click", () => {
 });
 byId("meeting-accept").addEventListener("click", () => answerInvitation("accept"));
 byId("meeting-decline").addEventListener("click", () => answerInvitation("decline"));
+byId("add-meeting-calendar").addEventListener("click", () => {
+  if (!confirmedBooking) return;
+  downloadCalendarEvent(confirmedBooking.slot, {
+    reference: confirmedBooking.reference,
+    url: `${location.origin}/curriculum/family-connections/`,
+  });
+});
+byId("meeting-confirmation-close").addEventListener("click", () => {
+  byId("meeting-confirmation").hidden = true;
+  byId("meeting-slots").querySelector("button")?.focus();
+});
 window.addEventListener("family-language-change", (event) => {
   applyLanguage(event.detail);
   loadSlots();

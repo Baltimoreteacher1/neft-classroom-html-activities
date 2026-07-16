@@ -213,22 +213,57 @@
           <section class="tool-body schedule-admin" aria-labelledby="schedule-admin-title">
             <div class="tool-intro">
               <p class="step-label">Scheduling</p>
-              <h2 id="schedule-admin-title">A clear path from available to confirmed.</h2>
-              <p>Families see only open times. Contact details and decisions stay in this protected workspace.</p>
+              <h2 id="schedule-admin-title">Set your hours. Let families book.</h2>
+              <p>Create a repeating availability rule once. Open times appear automatically for the next 42 days in Eastern Time.</p>
             </div>
+            <form class="schedule-card availability-rule-form" id="availability-rule-form">
+              <input name="id" type="hidden" />
+              <div class="schedule-card-heading">
+                <div><span class="integration-kicker">Scheduling assistant</span><h3>Availability rule</h3></div>
+                <button class="text-button" id="cancel-rule-edit" type="button" hidden>Cancel edit</button>
+              </div>
+              <fieldset class="weekday-fieldset">
+                <legend>Days available</legend>
+                <label><input name="weekdays" type="checkbox" value="1" /> Monday</label>
+                <label><input name="weekdays" type="checkbox" value="2" /> Tuesday</label>
+                <label><input name="weekdays" type="checkbox" value="3" /> Wednesday</label>
+                <label><input name="weekdays" type="checkbox" value="4" /> Thursday</label>
+                <label><input name="weekdays" type="checkbox" value="5" /> Friday</label>
+                <label><input name="weekdays" type="checkbox" value="6" /> Saturday</label>
+                <label><input name="weekdays" type="checkbox" value="0" /> Sunday</label>
+              </fieldset>
+              <div class="schedule-fields rule-fields">
+                <label>Starts on<input name="activeStartDate" type="date" required /></label>
+                <label>Ends on<input name="activeEndDate" type="date" required /></label>
+                <label>Daily start<input name="startTime" type="time" value="16:00" required /></label>
+                <label>Daily end<input name="endTime" type="time" value="18:00" required /></label>
+                <label>Meeting length<select name="durationMinutes"><option value="15">15 minutes</option><option value="20">20 minutes</option><option value="30" selected>30 minutes</option><option value="45">45 minutes</option><option value="60">60 minutes</option></select></label>
+                <label>Time between<select name="bufferMinutes"><option value="0">No buffer</option><option value="5">5 minutes</option><option value="10" selected>10 minutes</option><option value="15">15 minutes</option></select></label>
+                <label>Format<select name="format"><option value="video">Video meeting</option><option value="phone">Phone call</option><option value="in-person">In person</option></select></label>
+                <label>Family-safe location<input name="locationLabel" maxlength="80" value="Online meeting" required /></label>
+              </div>
+              <label class="rule-enabled"><input name="enabled" type="checkbox" checked /> Publish open times from this rule</label>
+              <button class="button button-preview" type="submit">Save availability rule</button>
+            </form>
+            <div class="schedule-dashboard-heading">
+              <div><span class="integration-kicker">Your hours</span><h3>Availability rules</h3></div>
+              <button class="text-button" id="refresh-generated-slots" type="button">Refresh next 42 days</button>
+            </div>
+            <div id="availability-rules" class="availability-rules"></div>
             <div class="schedule-admin-grid">
-              <form class="schedule-card" id="teacher-slot-form">
-                <span class="integration-kicker">Add availability</span>
-                <h3>Post a meeting time</h3>
-                <div class="schedule-fields">
-                  <label>Date<input name="date" type="date" required /></label>
-                  <label>Start time<input name="time" type="time" required /></label>
-                  <label>Length<select name="durationMinutes"><option value="15">15 minutes</option><option value="20" selected>20 minutes</option><option value="30">30 minutes</option><option value="45">45 minutes</option><option value="60">60 minutes</option></select></label>
-                  <label>Format<select name="format"><option value="video">Video meeting</option><option value="phone">Phone call</option><option value="in-person">In person</option></select></label>
-                  <label class="schedule-wide">Family-safe label<input name="locationLabel" maxlength="80" value="Online meeting" required /></label>
-                </div>
-                <button class="button button-preview" type="submit">Post available time</button>
-              </form>
+              <details class="schedule-card one-off-card">
+                <summary><strong>Advanced: add one time</strong><span>Use this for an exception outside your regular hours.</span></summary>
+                <form id="teacher-slot-form">
+                  <div class="schedule-fields">
+                    <label>Date<input name="date" type="date" required /></label>
+                    <label>Start time<input name="time" type="time" required /></label>
+                    <label>Length<select name="durationMinutes"><option value="15">15 minutes</option><option value="20" selected>20 minutes</option><option value="30">30 minutes</option><option value="45">45 minutes</option><option value="60">60 minutes</option></select></label>
+                    <label>Format<select name="format"><option value="video">Video meeting</option><option value="phone">Phone call</option><option value="in-person">In person</option></select></label>
+                    <label class="schedule-wide">Family-safe label<input name="locationLabel" maxlength="80" value="Online meeting" required /></label>
+                  </div>
+                  <button class="button button-preview" type="submit">Post one available time</button>
+                </form>
+              </details>
 
               <form class="schedule-card" id="teacher-invitation-form">
                 <span class="integration-kicker">Teacher invitation</span>
@@ -250,7 +285,11 @@
               <button class="text-button" id="refresh-meeting-dashboard" type="button">Refresh</button>
             </div>
             <p id="teacher-meeting-status" role="status" aria-live="polite">Loading meetings…</p>
-            <div id="teacher-meeting-dashboard" class="teacher-meeting-dashboard"></div>
+            <div id="teacher-meeting-dashboard" class="meeting-desk">
+              <section class="meeting-desk-group" aria-labelledby="meeting-upcoming-title"><h4 id="meeting-upcoming-title">Upcoming confirmed</h4><div id="meeting-upcoming" class="teacher-meeting-dashboard"></div></section>
+              <section class="meeting-desk-group" aria-labelledby="meeting-open-title"><h4 id="meeting-open-title">Open availability</h4><div id="meeting-open" class="teacher-meeting-dashboard"></div></section>
+              <section class="meeting-desk-group" aria-labelledby="meeting-history-title"><h4 id="meeting-history-title">Past and closed</h4><div id="meeting-history" class="teacher-meeting-dashboard"></div></section>
+            </div>
           </section>
         </details>
 
