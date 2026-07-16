@@ -956,6 +956,22 @@ const EXTRAS = {
   },
 };
 
+/* Human-readable math strand per unit — used to label the device-local teacher
+   "Signal Board" so misconception counts group by topic. */
+const STRAND = {
+  "unit-1": "GCF & LCM",
+  "unit-2": "Dividing Fractions",
+  "unit-3": "Ratios & Rates",
+  "unit-4": "Percents",
+  "unit-5": "Area & Decimals",
+  "unit-6": "Expressions",
+  "unit-7": "Coordinate Plane & Integers",
+  "unit-8": "One-Step Equations",
+  "unit-9": "Rates & Proportional Relationships",
+  "unit-10": "Volume & Surface Area",
+  statistics: "Statistics: Center & Spread",
+};
+
 let written = 0;
 for (const s of SPECS) {
   const outDir = path.join(ROOT, "math", s.unit, "projects", s.ver);
@@ -963,6 +979,7 @@ for (const s of SPECS) {
     console.warn(`  ! missing dir: ${outDir}`);
     continue;
   }
+  const strand = STRAND[s.unit] || "Math";
   const extra = EXTRAS[`${s.unit}/${s.ver}`] || {};
   const primaryItem = {
     ask: s.yt.ask,
@@ -977,6 +994,7 @@ for (const s of SPECS) {
   const solves = [
     {
       step: s.mount,
+      strand,
       title: s.title,
       prompt: s.prompt,
       steps: s.steps,
@@ -988,6 +1006,7 @@ for (const s of SPECS) {
     const s2 = extra.solve2;
     solves.push({
       step: s2.mount,
+      strand,
       title: s2.title,
       prompt: s2.prompt,
       steps: s2.steps,
@@ -997,7 +1016,7 @@ for (const s of SPECS) {
   }
 
   const cfg = { version: 1, solves };
-  if (extra.error) cfg.errorChecks = [extra.error];
+  if (extra.error) cfg.errorChecks = [{ ...extra.error, strand }];
 
   fs.writeFileSync(path.join(outDir, "solve-along.json"), JSON.stringify(cfg, null, 2) + "\n");
   written++;

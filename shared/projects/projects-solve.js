@@ -144,6 +144,52 @@
     }
   }
 
+  /* ----------------------------------------------------------------------
+     Signal Board — a lightweight, DEVICE-LOCAL misconception log for teachers.
+
+     As a student works, each formative event (a practice miss, a hint used, a
+     wrong error-analysis pick, a mastered set) increments a counter grouped by
+     math strand in one localStorage key. No names, no network, nothing leaves
+     the device — the same privacy model as the Award/Save-Resume interactive
+     layers. A teacher (with teacher mode ON) can open a summary to see which
+     strands are tripping students up on this device/station, attributed to the
+     save code + name when the page's Save/Resume has one.
+     ---------------------------------------------------------------------- */
+  var SIGNAL_KEY = "nt-solve-signals";
+
+  function readSignals() {
+    try {
+      return JSON.parse(localStorage.getItem(SIGNAL_KEY) || "{}") || {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function recordSignal(strand, type) {
+    try {
+      var label = typeof strand === "string" && strand.trim() ? strand.trim() : "Math";
+      if (["miss", "hint", "errorMiss", "mastered"].indexOf(type) === -1) return;
+      var s = readSignals();
+      if (!s.strands) s.strands = {};
+      var row = s.strands[label] || { miss: 0, hint: 0, errorMiss: 0, mastered: 0 };
+      row[type] += 1;
+      s.strands[label] = row;
+      s.updated = Date.now();
+      localStorage.setItem(SIGNAL_KEY, JSON.stringify(s));
+    } catch (e) {
+      /* signals are best-effort; never let one break a student's work */
+    }
+  }
+
+  function isTeacherMode() {
+    try {
+      var v = (localStorage.getItem("nt-teacher-mode") || "").toLowerCase();
+      return v === "1" || v === "true" || v === "on" || v === "yes";
+    } catch (e) {
+      return false;
+    }
+  }
+
   /* A single worked step: instruction · equation · reasoning. */
   function stepItem(spec, ordinal) {
     var li = document.createElement("li");
@@ -178,7 +224,7 @@
 
   /* One self-checking practice problem. onSolved() fires the first time the
      student answers it correctly. Returns { node, focus }. */
-  function buildOneCheck(item, onSolved) {
+  function buildOneCheck(item, onSolved, strand) {
     var box = document.createElement("div");
     box.className = "sa-item";
     if (item.ask) box.appendChild(bi("p", "sa-yt-ask", pick(item.ask, "en"), pick(item.ask, "es")));
@@ -259,6 +305,7 @@
         feedback.className = "sa-yt-feedback is-wrong";
         feedback.appendChild(bi("span", null, COPY.notYet.en, COPY.notYet.es));
         if (attempts >= 2) revealSolution();
+        recordSignal(strand, "miss");
       }
     }
 
@@ -281,6 +328,7 @@
           COPY.answerWas.es + " " + (Number.isFinite(target) ? target : ""),
         ),
       );
+      recordSignal(strand, "hint");
     });
 
     return {
@@ -297,7 +345,7 @@
 
   /* Your Turn: one or more practice problems with a mastery meter. A single
      yourTurn object is treated as a one-item set (backward compatible). */
-  function buildYourTurn(yt, step, saved) {
+  function buildYourTurn(yt, step, saved, strand) {
     var items = Array.isArray(yt.items) && yt.items.length ? yt.items : [yt];
     var wrap = document.createElement("div");
     wrap.className = "sa-yt";
@@ -355,26 +403,34 @@
       stage.textContent = "";
       footer.textContent = "";
       var advanced = false;
-      var check = buildOneCheck(items[i], function () {
-        if (advanced) return;
-        advanced = true;
-        solvedCount = Math.max(solvedCount, i + 1);
-        updateMeter();
-        if (i < items.length - 1) {
-          var nextBtn = document.createElement("button");
-          nextBtn.type = "button";
-          nextBtn.className = "sa-btn sa-btn-next";
-          nextBtn.appendChild(bi("span", null, COPY.next.en, COPY.next.es));
-          nextBtn.addEventListener("click", function () {
-            persist(i + 1);
-            showItem(i + 1);
-          });
-          footer.appendChild(nextBtn);
-        } else {
-          footer.appendChild(bi("p", "sa-alldone", COPY.allDone.en, COPY.allDone.es));
-        }
-        persist(i);
-      });
+      var check = buildOneCheck(
+        items[i],
+        function () {
+          if (advanced) return;
+          advanced = true;
+          solvedCount = Math.max(solvedCount, i + 1);
+          updateMeter();
+          if (i < items.length - 1) {
+            var nextBtn = document.createElement("button");
+            nextBtn.type = "button";
+            nextBtn.className = "sa-btn sa-btn-next";
+            nextBtn.appendChild(bi("span", null, COPY.next.en, COPY.next.es));
+            nextBtn.addEventListener("click", function () {
+              persist(i + 1);
+              showItem(i + 1);
+            });
+            footer.appendChild(nextBtn);
+          } else {
+            footer.appendChild(bi("p", "sa-alldone", COPY.allDone.en, COPY.allDone.es));
+            if (!saved._masteredLogged) {
+              saved._masteredLogged = true;
+              recordSignal(strand, "mastered");
+            }
+          }
+          persist(i);
+        },
+        strand,
+      );
       stage.appendChild(check.node);
     }
 
@@ -441,7 +497,7 @@
 
     var yt =
       spec.yourTurn && typeof spec.yourTurn === "object"
-        ? buildYourTurn(spec.yourTurn, spec.step, saved)
+        ? buildYourTurn(spec.yourTurn, spec.step, saved, spec.strand)
         : null;
     if (yt) {
       yt.hidden = true;
@@ -655,6 +711,7 @@
           feedback.className = "ea-feedback is-wrong";
           feedback.textContent = "";
           feedback.appendChild(bi("span", null, COPY.eaWrong.en, COPY.eaWrong.es));
+          recordSignal(spec.strand, "errorMiss");
         }
       });
     });
@@ -664,12 +721,226 @@
     return true;
   }
 
+  /* ----------------------------------------------------------------------
+     Teacher Signal Board — a floating readout shown ONLY when teacher mode is
+     on (localStorage nt-teacher-mode). Students never see it. It summarizes the
+     device-local misconception counts recorded above, grouped by strand and
+     sorted by struggle, attributed to the Save/Resume save code + name when one
+     exists. Everything is device-local — nothing is sent anywhere.
+     ---------------------------------------------------------------------- */
+  function attribution() {
+    try {
+      if (window.NeftSaveResume && typeof window.NeftSaveResume.getTeacherSummary === "function") {
+        var t = window.NeftSaveResume.getTeacherSummary();
+        if (t) {
+          var who = [];
+          if (t.studentName && t.studentName !== "(unnamed)") who.push(t.studentName);
+          if (t.saveCode) who.push("code " + t.saveCode);
+          if (t.section) who.push(t.section);
+          return who.join(" · ");
+        }
+      }
+    } catch (e) {
+      /* attribution is optional */
+    }
+    return "";
+  }
+
+  function signalRows() {
+    var s = readSignals();
+    var strands = s.strands || {};
+    return Object.keys(strands)
+      .map(function (name) {
+        var r = strands[name];
+        return {
+          name: name,
+          miss: r.miss || 0,
+          hint: r.hint || 0,
+          errorMiss: r.errorMiss || 0,
+          mastered: r.mastered || 0,
+          struggle: (r.miss || 0) + (r.errorMiss || 0),
+        };
+      })
+      .sort(function (a, b) {
+        return b.struggle - a.struggle;
+      });
+  }
+
+  function signalReportText(rows, who) {
+    var lines = ["Neft Teacher — Project Signals (this device)"];
+    if (who) lines.push(who);
+    lines.push("");
+    if (!rows.length) {
+      lines.push("No signals recorded yet.");
+    } else {
+      rows.forEach(function (r) {
+        lines.push(
+          r.name +
+            " — misses " +
+            r.miss +
+            ", error-analysis misses " +
+            r.errorMiss +
+            ", hints " +
+            r.hint +
+            ", mastered " +
+            r.mastered,
+        );
+      });
+    }
+    return lines.join("\n");
+  }
+
+  function openSignalPanel() {
+    var existing = document.querySelector(".sig-overlay");
+    if (existing) {
+      existing.parentNode.removeChild(existing);
+      return;
+    }
+    var rows = signalRows();
+    var who = attribution();
+
+    var overlay = document.createElement("div");
+    overlay.className = "sig-overlay";
+    overlay.addEventListener("click", function (e) {
+      if (e.target === overlay) overlay.parentNode.removeChild(overlay);
+    });
+
+    var modal = document.createElement("div");
+    modal.className = "sig-modal";
+    modal.setAttribute("role", "dialog");
+    modal.setAttribute("aria-label", "Project signals for teachers");
+
+    var head = document.createElement("div");
+    head.className = "sig-head";
+    var h = document.createElement("strong");
+    h.className = "sig-title";
+    h.textContent = "📊 Project Signals";
+    head.appendChild(h);
+    var scope = document.createElement("span");
+    scope.className = "sig-scope";
+    scope.textContent = "this device only";
+    head.appendChild(scope);
+    modal.appendChild(head);
+
+    if (who) {
+      var attr = document.createElement("p");
+      attr.className = "sig-attr";
+      attr.textContent = who;
+      modal.appendChild(attr);
+    }
+
+    if (!rows.length) {
+      var empty = document.createElement("p");
+      empty.className = "sig-empty";
+      empty.textContent =
+        "No signals recorded yet. As students work the practice sets and Spot-the-Mistake cards, misconceptions by strand will appear here.";
+      modal.appendChild(empty);
+    } else {
+      var table = document.createElement("table");
+      table.className = "sig-table";
+      var thead = document.createElement("thead");
+      thead.innerHTML =
+        "<tr><th>Strand</th><th title='Practice misses'>Miss</th><th title='Error-analysis wrong picks'>Err</th><th title='Hints used'>Hint</th><th title='Practice sets mastered'>✓</th></tr>";
+      table.appendChild(thead);
+      var tbody = document.createElement("tbody");
+      rows.forEach(function (r) {
+        var tr = document.createElement("tr");
+        if (r.struggle >= 3) tr.className = "sig-hot";
+        tr.innerHTML =
+          "<td>" +
+          r.name.replace(/[<>&]/g, "") +
+          "</td><td>" +
+          r.miss +
+          "</td><td>" +
+          r.errorMiss +
+          "</td><td>" +
+          r.hint +
+          "</td><td>" +
+          r.mastered +
+          "</td>";
+        tbody.appendChild(tr);
+      });
+      table.appendChild(tbody);
+      modal.appendChild(table);
+    }
+
+    var actions = document.createElement("div");
+    actions.className = "sig-actions";
+    var copyBtn = document.createElement("button");
+    copyBtn.type = "button";
+    copyBtn.className = "sa-btn sa-btn-ghost";
+    copyBtn.textContent = "Copy report";
+    copyBtn.addEventListener("click", function () {
+      var text = signalReportText(rows, who);
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text);
+          copyBtn.textContent = "Copied ✓";
+          setTimeout(function () {
+            copyBtn.textContent = "Copy report";
+          }, 1500);
+        } else {
+          window.prompt("Copy the report:", text);
+        }
+      } catch (e) {
+        window.prompt("Copy the report:", text);
+      }
+    });
+    actions.appendChild(copyBtn);
+
+    var clearBtn = document.createElement("button");
+    clearBtn.type = "button";
+    clearBtn.className = "sa-btn sa-btn-ghost";
+    clearBtn.textContent = "Clear";
+    clearBtn.addEventListener("click", function () {
+      if (window.confirm("Clear all recorded signals on this device?")) {
+        try {
+          localStorage.removeItem(SIGNAL_KEY);
+        } catch (e) {
+          /* ignore */
+        }
+        overlay.parentNode.removeChild(overlay);
+      }
+    });
+    actions.appendChild(clearBtn);
+
+    var closeBtn = document.createElement("button");
+    closeBtn.type = "button";
+    closeBtn.className = "sa-btn";
+    closeBtn.textContent = "Close";
+    closeBtn.addEventListener("click", function () {
+      overlay.parentNode.removeChild(overlay);
+    });
+    actions.appendChild(closeBtn);
+    modal.appendChild(actions);
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+  }
+
+  function mountSignalBoard() {
+    if (!isTeacherMode()) return;
+    if (document.querySelector(".sig-fab")) return;
+    var fab = document.createElement("button");
+    fab.type = "button";
+    fab.className = "sig-fab no-print";
+    fab.textContent = "📊 Signals";
+    fab.title = "Project misconception signals (teacher only, this device)";
+    fab.addEventListener("click", openSignalPanel);
+    document.body.appendChild(fab);
+  }
+
   ready(function () {
     try {
       var body = document.body;
       if (!body || !body.classList.contains("pro-projects")) return;
       if (body.dataset.solveInit === "1") return;
       body.dataset.solveInit = "1";
+      try {
+        mountSignalBoard();
+      } catch (e) {
+        /* the teacher board never blocks the student experience */
+      }
       if (typeof fetch !== "function") return;
 
       fetch("./solve-along.json", { cache: "no-cache" })
