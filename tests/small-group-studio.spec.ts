@@ -206,6 +206,15 @@ test.describe("small-group guided math studio", () => {
   test("underlined math vocabulary opens a simple definition and concept image", async ({ page }) => {
     await page.goto("/lessons/1-1-group1/");
 
+    const firstCard = page.locator(".sg-vcard").first();
+    await expect(firstCard.getByText(/ES:\s*Número primo/)).toBeVisible();
+    await expect(firstCard.getByText(/VI:|AR:/)).toHaveCount(0);
+    await firstCard.getByRole("button", { name: "Reveal meaning" }).click();
+    await expect(firstCard.getByText("A number bigger than 1 that you can only divide by 1 and itself.")).toBeVisible();
+    await expect(
+      firstCard.getByText("Un número mayor que 1 que solo se puede dividir entre 1 y sí mismo."),
+    ).toBeVisible();
+
     const term = page.getByRole("button", { name: "Prime number: open definition" }).first();
     await expect(term).toBeVisible();
     await expect(term).toHaveClass(/sg-vocab-inline/);
@@ -214,6 +223,10 @@ test.describe("small-group guided math studio", () => {
     const dialog = page.getByRole("dialog", { name: "Prime number" });
     await expect(dialog).toBeVisible();
     await expect(dialog.getByText("A number bigger than 1 that you can only divide by 1 and itself.")).toBeVisible();
+    await expect(
+      dialog.getByText("Un número mayor que 1 que solo se puede dividir entre 1 y sí mismo."),
+    ).toBeVisible();
+    await expect(dialog.getByText(/Vietnamese|Arabic|Số nguyên tố|عدد أولي/)).toHaveCount(0);
     const image = dialog.getByRole("img");
     await expect(image).toBeVisible();
     await expect(image).toHaveAttribute("src", /\/assets\/vocab-images\/prime-number\.svg$/);

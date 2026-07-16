@@ -122,11 +122,15 @@ export function createMissionSection(config, variant, state, onDone) {
 }
 
 function translationsFor(word) {
-  return [
-    word.termEs ? `<span lang="es"><b>ES:</b> ${esc(word.termEs)}</span>` : "",
-    word.termVi ? `<span lang="vi"><b>VI:</b> ${esc(word.termVi)}</span>` : "",
-    word.termAr ? `<span lang="ar" dir="rtl"><b>AR:</b> ${esc(word.termAr)}</span>` : "",
-  ].filter(Boolean);
+  return word.termEs ? [`<span lang="es"><b>ES:</b> ${esc(word.termEs)}</span>`] : [];
+}
+
+function definitionLine(label, text, lang) {
+  const line = el("p", "sg-vdef-line");
+  line.lang = lang;
+  const language = el("strong", "sg-vdef-language", esc(label));
+  line.append(language, document.createTextNode(text));
+  return line;
 }
 
 export function createVocabularySection(config, onDone) {
@@ -157,11 +161,17 @@ export function createVocabularySection(config, onDone) {
     card.appendChild(speaker);
     const reveal = el("button", "btn ghost", "Reveal meaning");
     reveal.type = "button";
-    const definition = el(
-      "div",
-      "sg-vdef",
-      esc(word.definition || word.visual || "Use this word in today's math talk."),
+    const definition = el("div", "sg-vdef");
+    definition.appendChild(
+      definitionLine(
+        "English",
+        word.definition || word.visual || "Use this word in today's math talk.",
+        "en",
+      ),
     );
+    if (word.definitionEs) {
+      definition.appendChild(definitionLine("Español", word.definitionEs, "es"));
+    }
     definition.hidden = true;
     reveal.onclick = () => {
       definition.hidden = !definition.hidden;

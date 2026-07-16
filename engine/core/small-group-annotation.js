@@ -125,13 +125,18 @@ function createVocabularyDialog() {
     <div class="sg-vocab-dialog-grid">
       <img alt="" width="320" height="220" />
       <div>
-        <div class="sg-vocab-simple">In simple words</div>
-        <p class="sg-vocab-definition"></p>
+        <div class="sg-vocab-language" lang="en">
+          <div class="sg-vocab-simple">English</div>
+          <p class="sg-vocab-definition sg-vocab-definition-en"></p>
+        </div>
+        <div class="sg-vocab-language" lang="es">
+          <div class="sg-vocab-simple">Español · <span class="sg-vocab-term-es"></span></div>
+          <p class="sg-vocab-definition sg-vocab-definition-es"></p>
+        </div>
         <div class="sg-vocab-example-wrap">
           <strong>Picture it</strong>
           <p class="sg-vocab-example"></p>
         </div>
-        <p class="sg-vocab-translation"></p>
       </div>
     </div>
   `;
@@ -147,15 +152,14 @@ function createVocabularyDialog() {
 function openVocabulary(dialog, word, trigger) {
   const definition = word.definition || word.visual || "A useful word for today's math thinking.";
   dialog.querySelector("h2").textContent = word.term;
-  dialog.querySelector(".sg-vocab-definition").textContent = definition;
+  dialog.querySelector(".sg-vocab-definition-en").textContent = definition;
+  dialog.querySelector(".sg-vocab-definition-es").textContent = word.definitionEs;
+  dialog.querySelector(".sg-vocab-term-es").textContent = word.termEs;
   const example = dialog.querySelector(".sg-vocab-example");
   example.textContent = word.visual || `Look for ${word.term.toLowerCase()} in the lesson model.`;
   const image = dialog.querySelector("img");
   image.src = resolveVocabImage(word.term, typeof word.image === "string" ? word.image : undefined);
   image.alt = vocabImageAlt(word.term, definition);
-  const translation = dialog.querySelector(".sg-vocab-translation");
-  translation.textContent = word.termEs ? `Spanish connection: ${word.termEs}` : "";
-  translation.hidden = !word.termEs;
   dialog.addEventListener("close", () => trigger.focus(), { once: true });
   dialog.showModal();
   dialog.querySelector(".sg-vocab-close").focus();
