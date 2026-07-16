@@ -42,12 +42,7 @@
         z-index: 0;
         overflow: hidden;
         pointer-events: none;
-        background: radial-gradient(
-          130% 90% at 50% 0%,
-          #34204f 0%,
-          #221636 55%,
-          #140c20 100%
-        );
+        background: radial-gradient(130% 90% at 50% 0%, #34204f 0%, #221636 55%, #140c20 100%);
       }
       #ee-bg-layer {
         position: absolute;
@@ -129,15 +124,14 @@
     <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
     <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
     <!-- ghl-injected:end -->
-  
-  
+
     <!-- uifr-injected:begin -->
     <!-- BCPS Instructional Framework Rubric · TEACH support. Teacher/observer reference — NOT shown to students. Interactive practice activity (math/games/u6-expression-express): supports Level 4 conditions on T2, T4 (students choose their approach + immediate no-fail feedback with retry). Full evidence: /teacher-tools/teaching-evidence/ · docs/uifr-teach-l4.md. -->
     <!-- uifr-injected:end -->
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2" />
+    <!-- nsr-injected:end -->
+  </head>
   <body>
     <!-- Decorative animated star-field (behind the Phaser canvas). -->
     <div id="ee-bg" data-parallax aria-hidden="true">
@@ -149,9 +143,7 @@
       // Decorative star-field builder (reduced-motion safe; pointer-neutral).
       (function () {
         "use strict";
-        var reduceMQ =
-          window.matchMedia &&
-          window.matchMedia("(prefers-reduced-motion: reduce)");
+        var reduceMQ = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)");
         var layer = document.getElementById("ee-bg-layer");
         if (!layer) return;
         function rnd(a, b) {
@@ -179,11 +171,7 @@
           var dx = e.clientX / (window.innerWidth || 1) - 0.5;
           var dy = e.clientY / (window.innerHeight || 1) - 0.5;
           layer.style.transform =
-            "translate3d(" +
-            (dx * 20).toFixed(2) +
-            "px," +
-            (dy * 12).toFixed(2) +
-            "px,0)";
+            "translate3d(" + (dx * 20).toFixed(2) + "px," + (dy * 12).toFixed(2) + "px,0)";
         }
         function attach() {
           if (driver || (reduceMQ && reduceMQ.matches)) return;
@@ -203,8 +191,7 @@
             if (reduceMQ.matches) detach();
             else attach();
           };
-          if (reduceMQ.addEventListener)
-            reduceMQ.addEventListener("change", onChange);
+          if (reduceMQ.addEventListener) reduceMQ.addEventListener("change", onChange);
           else if (reduceMQ.addListener) reduceMQ.addListener(onChange);
         }
         var rt;
@@ -224,8 +211,9 @@
       // from the tray into ordered slots to ASSEMBLE an expression that equals
       // the target — respecting order of operations (× before + and −). A live
       // readout evaluates the build as tiles land, so the math IS the action.
-      // Lock In checks it. A wrong build (wrong math) costs a life and the game
-      // shows one correct assembly to teach, then continues. Every generated
+      // Lock In checks it. A wrong build gets a diagnostic hint and a retry of
+      // the SAME problem (no reveal, no penalty); a second wrong build shows
+      // one correct assembly to teach, then continues. Every generated
       // target is guaranteed solvable because the puzzle is built from a known
       // valid arrangement plus a few distractor tiles.
 
@@ -239,9 +227,7 @@
         init() {
           if (!this.ctx)
             try {
-              this.ctx = new (
-                window.AudioContext || window.webkitAudioContext
-              )();
+              this.ctx = new (window.AudioContext || window.webkitAudioContext)();
             } catch (e) {}
         },
         play(t, f, d, v = 0.18) {
@@ -353,8 +339,7 @@
           }
         }
         let r = v[0];
-        for (let i = 0; i < o.length; i++)
-          r = o[i] === "+" ? r + v[i + 1] : r - v[i + 1];
+        for (let i = 0; i < o.length; i++) r = o[i] === "+" ? r + v[i + 1] : r - v[i + 1];
         return r;
       }
       const numTile = (v) => ({ kind: "num", label: String(v), value: v });
@@ -414,13 +399,7 @@
         const dn = distinctNum([a, b]);
         const dop = pick(["+", "−", "×"].filter((o) => o !== op));
         // A second distractor number after a few rounds keeps it fresh.
-        const tray = [
-          numTile(a),
-          numTile(b),
-          numTile(dn),
-          opTile(op),
-          opTile(dop),
-        ];
+        const tray = [numTile(a), numTile(b), numTile(dn), opTile(op), opTile(dop)];
         if (step >= 4) tray.push(numTile(distinctNum([a, b, dn])));
         return {
           goal,
@@ -493,14 +472,7 @@
         parent: document.body,
         backgroundColor: "#221636",
         scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-        scene: [
-          BootScene,
-          TitleScene,
-          LevelScene,
-          VocabScene,
-          GameScene,
-          ResultScene,
-        ],
+        scene: [BootScene, TitleScene, LevelScene, VocabScene, GameScene, ResultScene],
       };
 
       // Cross-scene choices (persist across "Play Again", reset only on reload).
@@ -654,9 +626,7 @@
         btn.on("pointerdown", start);
         this.input.keyboard.on("keydown-SPACE", start);
         this.input.keyboard.on("keydown-ENTER", start);
-        srSay(
-          "Expression Express Assembler. Press Start to choose your level.",
-        );
+        srSay("Expression Express Assembler. Press Start to choose your level.");
       };
 
       // ── LEVEL SELECT ──
@@ -808,9 +778,7 @@
           })
           .setOrigin(0.5);
 
-        this.add
-          .rectangle(cx, 318, 560, 340, 0x2e1f46)
-          .setStrokeStyle(3, 0x7a3fb0);
+        this.add.rectangle(cx, 318, 560, 340, 0x2e1f46).setStrokeStyle(3, 0x7a3fb0);
 
         this.stepText = this.add
           .text(cx, 168, "", {
@@ -820,9 +788,7 @@
             color: "#a080c0",
           })
           .setOrigin(0.5);
-        this.emojiText = this.add
-          .text(cx, 232, "", { fontSize: "84px" })
-          .setOrigin(0.5);
+        this.emojiText = this.add.text(cx, 232, "", { fontSize: "84px" }).setOrigin(0.5);
         this.termText = this.add
           .text(cx, 308, "", {
             fontFamily: "Segoe UI, sans-serif",
@@ -882,9 +848,7 @@
       VocabScene.prototype.renderTerm = function () {
         const t = VOCAB_TERMS[this.idx];
         const last = this.idx === VOCAB_TERMS.length - 1;
-        this.stepText.setText(
-          "Key word " + (this.idx + 1) + " of " + VOCAB_TERMS.length,
-        );
+        this.stepText.setText("Key word " + (this.idx + 1) + " of " + VOCAB_TERMS.length);
         this.emojiText.setText(t.emoji);
         this.termText.setText(t.term);
         this.defText.setText(t.def);
@@ -926,8 +890,7 @@
 
       GameScene.prototype.init = function () {
         this.reduceMotion = !!(
-          window.matchMedia &&
-          window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
         );
         this.score = 0;
         this.streak = 0;
@@ -1034,12 +997,8 @@
             color: "#ffffff",
           })
           .setOrigin(0.5);
-        this.lockBtn.on("pointerover", () =>
-          this.lockBtn.setFillStyle(0x36a35b),
-        );
-        this.lockBtn.on("pointerout", () =>
-          this.lockBtn.setFillStyle(0x2d874b),
-        );
+        this.lockBtn.on("pointerover", () => this.lockBtn.setFillStyle(0x36a35b));
+        this.lockBtn.on("pointerout", () => this.lockBtn.setFillStyle(0x2d874b));
         this.lockBtn.on("pointerdown", () => this.lockIn());
 
         // Hint button (Level 1 only — support tier keeps hints on).
@@ -1055,12 +1014,8 @@
               color: "#e0c8ff",
             })
             .setOrigin(0.5);
-          this.hintBtn.on("pointerover", () =>
-            this.hintBtn.setFillStyle(0x54407a),
-          );
-          this.hintBtn.on("pointerout", () =>
-            this.hintBtn.setFillStyle(0x42305f),
-          );
+          this.hintBtn.on("pointerover", () => this.hintBtn.setFillStyle(0x54407a));
+          this.hintBtn.on("pointerout", () => this.hintBtn.setFillStyle(0x42305f));
           this.hintBtn.on("pointerdown", () => this.showHint());
         }
 
@@ -1081,9 +1036,7 @@
           .setOrigin(0.5);
 
         // Brief calm amber tint for a not-yet attempt (no-fail practice).
-        this.amberTint = this.add
-          .rectangle(W / 2, H / 2, W, H, 0xf0b44a, 0)
-          .setDepth(90);
+        this.amberTint = this.add.rectangle(W / 2, H / 2, W, H, 0xf0b44a, 0).setDepth(90);
 
         // Drag plumbing (Phaser drag events at scene scope).
         this.activeDragObject = null;
@@ -1102,40 +1055,44 @@
             }
           });
         }
+        // Tap vs drag semantics (deterministic — no handler races):
+        //   • dragstart fires on EVERY pointerdown (zero drag thresholds), so it
+        //     must NOT detach the tile or mark it dragged — a pure tap is
+        //     handled solely by the container's pointerup → autoPlace toggle.
+        //   • Only real movement (≥ 8px, touch-jitter tolerant) marks the tile
+        //     as dragged, detaches it from its slot, and moves it.
+        //   • dragend runs dropTile ONLY for a real drag; taps never dropTile.
         this.input.on("dragstart", (p, g) => {
           if (this.activeDragObject) return;
           this.activeDragObject = g;
           this.tweens.killTweensOf(g); // Prevent any active tween from fighting the drag!
           g.setDepth(50);
-          JUICE.tilePop(this, g);
-          if (g._tileObj) {
-            g._tileObj._wasDragged = true; // Mark as dragged!
+        });
+        this.input.on("drag", (p, g) => {
+          if (g !== this.activeDragObject || !g._tileObj) return;
+          if (!g._tileObj._wasDragged) {
+            if (p.getDistance() < 8) return; // still a tap, not a drag
+            g._tileObj._wasDragged = true;
+            JUICE.tilePop(this, g);
             if (g._tileObj.slotIndex != null) {
               const slot = this.slots[g._tileObj.slotIndex];
-              if (slot && slot.tileId === g._tileObj.id) {
-                slot.tileId = null;
-              }
+              if (slot && slot.tileId === g._tileObj.id) slot.tileId = null;
               g._tileObj.slotIndex = null;
               this.refreshReadout();
             }
           }
-        });
-        this.input.on("drag", (p, g) => {
-          if (g !== this.activeDragObject) return;
-          // Mark as dragged HERE (not only in dragstart): Phaser fires dragstart
-          // before the tile's own pointerdown, which resets _wasDragged to false.
-          // The drag event always fires after pointerdown, so the flag sticks and
-          // the trailing pointerup won't autoPlace (and undo) a drag-placed tile.
-          if (g._tileObj) g._tileObj._wasDragged = true;
           g.x = p.worldX;
           g.y = p.worldY;
         });
         this.input.on("dragend", (p, g) => {
-          if (g === this.activeDragObject) {
-            this.activeDragObject = null;
-            g.setDepth(8);
-            if (g._tileObj) this.dropTile(g._tileObj);
-          }
+          // Never gate the drop on activeDragObject identity: the window-level
+          // pointerup safety net (above) clears it BEFORE Phaser dispatches
+          // dragend (DOM pointerup precedes the mouseup/touchend Phaser
+          // listens to), which used to skip dropTile on EVERY drag and strand
+          // the tile on the board without filling the slot.
+          if (g === this.activeDragObject) this.activeDragObject = null;
+          g.setDepth(8);
+          if (g._tileObj && g._tileObj._wasDragged) this.dropTile(g._tileObj);
         });
 
         // Keyboard: ← → move slot cursor; ↑ ↓ cycle the tile in the slot;
@@ -1174,6 +1131,7 @@
 
       GameScene.prototype.newProblem = function () {
         this.locked = false;
+        this.attempts = 0; // wrong tries on THIS problem (1st = retry, 2nd = teach)
         this.clearBoard();
         this.problem = makeProblem(this.track, this.solved);
         const p = this.problem;
@@ -1192,8 +1150,7 @@
       };
 
       GameScene.prototype.rowXs = function (widths, gap, centerX) {
-        const total =
-          widths.reduce((a, b) => a + b, 0) + gap * (widths.length - 1);
+        const total = widths.reduce((a, b) => a + b, 0) + gap * (widths.length - 1);
         let x = centerX - total / 2;
         return widths.map((w) => {
           const c = x + w / 2;
@@ -1239,16 +1196,9 @@
 
       GameScene.prototype.makeTile = function (def, id, x, y) {
         const w = def.kind === "op" ? OP_W : NUM_W;
-        const fill =
-          def.kind === "op"
-            ? 0x4a2c6e
-            : def.kind === "var"
-              ? 0x6b3fa0
-              : 0x3a2a58;
+        const fill = def.kind === "op" ? 0x4a2c6e : def.kind === "var" ? 0x6b3fa0 : 0x3a2a58;
         const stroke = def.kind === "op" ? 0xe0c8ff : 0xb06fd4;
-        const rect = this.add
-          .rectangle(0, 0, w, TILE_H, fill)
-          .setStrokeStyle(3, stroke);
+        const rect = this.add.rectangle(0, 0, w, TILE_H, fill).setStrokeStyle(3, stroke);
         const txt = this.add
           .text(0, 0, def.label, {
             fontFamily: "Segoe UI, sans-serif",
@@ -1257,10 +1207,7 @@
             color: def.kind === "var" ? "#ffe9b0" : "#ffffff",
           })
           .setOrigin(0.5);
-        const c = this.add
-          .container(x, y, [rect, txt])
-          .setSize(w, TILE_H)
-          .setDepth(8);
+        const c = this.add.container(x, y, [rect, txt]).setSize(w, TILE_H).setDepth(8);
         c.setInteractive(
           new Phaser.Geom.Rectangle(-w / 2, -TILE_H / 2, w, TILE_H),
           Phaser.Geom.Rectangle.Contains,
@@ -1360,9 +1307,7 @@
           this.refreshReadout();
           return;
         }
-        const i = this.slots.findIndex(
-          (s) => s.tileId == null && this.kindFits(tile, s),
-        );
+        const i = this.slots.findIndex((s) => s.tileId == null && this.kindFits(tile, s));
         if (i >= 0) {
           this.assign(tile, i);
           this.selectedSlot = i;
@@ -1411,26 +1356,19 @@
       // ── Keyboard cursor ──────────────────────────────────────────────────
       GameScene.prototype.moveCursor = function (dir) {
         if (this.locked || !this.slots.length) return;
-        this.selectedSlot = Phaser.Math.Clamp(
-          this.selectedSlot + dir,
-          0,
-          this.slots.length - 1,
-        );
+        this.selectedSlot = Phaser.Math.Clamp(this.selectedSlot + dir, 0, this.slots.length - 1);
         SFX.reject();
         this.updateFocus();
       };
       GameScene.prototype.updateFocus = function () {
-        this.slots.forEach((s, i) =>
-          s.focus.setVisible(i === this.selectedSlot),
-        );
+        this.slots.forEach((s, i) => s.focus.setVisible(i === this.selectedSlot));
       };
       GameScene.prototype.cycleSlot = function (dir) {
         if (this.locked || !this.slots.length) return;
         const slot = this.slots[this.selectedSlot];
         const pool = this.tiles.filter(
           (t) =>
-            this.kindFits(t, slot) &&
-            (t.slotIndex == null || t.slotIndex === this.selectedSlot),
+            this.kindFits(t, slot) && (t.slotIndex == null || t.slotIndex === this.selectedSlot),
         );
         const opts = [null, ...pool.map((t) => t.id)];
         let idx = opts.indexOf(slot.tileId);
@@ -1483,9 +1421,7 @@
         }
         const hit = st.value === this.problem.goal;
         this.readout.setColor(hit ? "#8fd6a0" : "#e0d0f0");
-        const sub = st.hasVar
-          ? "  →  " + st.parts.map((p) => p.sub).join(" ")
-          : "";
+        const sub = st.hasVar ? "  →  " + st.parts.map((p) => p.sub).join(" ") : "";
         this.readout.setText(expr + sub + "  =  " + st.value);
         srSay(
           expr +
@@ -1512,11 +1448,7 @@
           )
           .setColor("#e0c8ff")
           .setAlpha(1);
-        srSay(
-          "Hint. This expression uses the " +
-            (op ? op.label : "plus") +
-            " sign.",
-        );
+        srSay("Hint. This expression uses the " + (op ? op.label : "plus") + " sign.");
       };
 
       // ── Resolve a Lock In ────────────────────────────────────────────────
@@ -1546,37 +1478,87 @@
           this.slots.forEach((s) => s.rect.setStrokeStyle(3, 0x36a35b));
           JUICE.burst(this, W / 2, SLOT_Y, [0x34d399, 0xb06fd4, 0xffffff], 18);
           JUICE.shake(this, 0.004 + Math.min(this.streak, 5) * 0.001);
-          JUICE.floatText(
-            this,
-            W / 2,
-            SLOT_Y - 40,
-            "+" + gained,
-            "#34d399",
-            38,
-          );
+          JUICE.floatText(this, W / 2, SLOT_Y - 40, "+" + gained, "#34d399", 38);
           JUICE.award(gained, "u6-expression-express");
           if (this.streak >= 2) JUICE.confetti(this, 1);
+          // Explain the STUDENT'S build (any valid ordering counts), not just
+          // the generator's canonical one.
+          const builtWhy = st.hasVar
+            ? "x = " +
+              p.varVal +
+              ", so " +
+              st.parts.map((q) => q.sub).join(" ") +
+              " = " +
+              st.value +
+              "."
+            : st.parts.map((q) => q.label).join(" ") + " = " + st.value + ".";
           this.feedback
-            .setText("Correct!  " + p.why)
+            .setText("Correct!  " + builtWhy)
             .setColor("#8fd6a0")
             .setAlpha(1);
-          srSay("Correct. " + p.why);
+          srSay("Correct. " + builtWhy);
           this.afterAttempt();
         } else {
           SFX.bad();
           JUICE.audio.wrong();
           this.streak = 0;
+          this.attempts++;
           this.flashAmber();
           JUICE.shake(this, 0.009);
           this.slots.forEach((s) => s.rect.setStrokeStyle(3, 0xc23b3b));
+          this.updateHUD();
+          if (this.attempts < 2) {
+            // First miss: diagnostic hint + retry the SAME problem (no reveal,
+            // no penalty). Tiles stay where the student put them so they can
+            // adjust instead of starting over.
+            const diag =
+              st.value > p.goal
+                ? "your build equals " +
+                  st.value +
+                  " — too high. Try a smaller number or a different sign."
+                : "your build equals " +
+                  st.value +
+                  " — too low. Try a bigger number or a different sign.";
+            const oo = st.parts.some((q) => q.label === "×")
+              ? " Remember: × happens before + and −."
+              : "";
+            this.feedback
+              .setText("Not quite — " + diag + oo + " Adjust a tile and lock in again!")
+              .setColor("#ff8f8f")
+              .setAlpha(1);
+            srSay(
+              "Not quite. Your build equals " +
+                st.value +
+                ", the target is " +
+                p.goal +
+                ". " +
+                diag +
+                " Try again.",
+            );
+            this.time.delayedCall(this.reduceMotion ? 400 : 700, () => {
+              this.slots.forEach((s) => s.rect.setStrokeStyle(2, 0x6a4f8c));
+              this.locked = false;
+            });
+            return;
+          }
+          // Second miss: teach — show why, reveal one correct assembly, move on.
           this.feedback
             .setText(
-              "Not quite. One correct build:  " + p.exprStr + " = " + p.goal,
+              "Your build equals " +
+                st.value +
+                ", but the target is " +
+                p.goal +
+                ". One correct build:  " +
+                p.exprStr +
+                " = " +
+                p.goal,
             )
             .setColor("#ff8f8f")
             .setAlpha(1);
           srSay(
-            "Not quite. One correct build is " +
+            "Not quite. Your build equals " +
+              st.value +
+              ". One correct build is " +
               p.exprStr +
               " equals " +
               p.goal +
@@ -1584,9 +1566,7 @@
               p.why,
           );
           this.showSolution();
-          this.time.delayedCall(this.reduceMotion ? 600 : 1500, () =>
-            this.afterAttempt(),
-          );
+          this.time.delayedCall(this.reduceMotion ? 600 : 1500, () => this.afterAttempt());
         }
       };
 
@@ -1664,8 +1644,7 @@
         const d = this.data2;
         const cx = W / 2;
         this.add.rectangle(cx, H / 2, W, H, 0x221636);
-        const stars =
-          d.solved >= d.target ? 3 : d.solved >= d.target * 0.6 ? 2 : 1;
+        const stars = d.solved >= d.target ? 3 : d.solved >= d.target * 0.6 ? 2 : 1;
         let hs = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
         if (d.score > hs) {
           hs = d.score;
@@ -1699,16 +1678,11 @@
           })
           .setOrigin(0.5);
         this.add
-          .text(
-            cx,
-            295,
-            "Built " + d.solved + " of " + d.target + " expressions",
-            {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "18px",
-              color: "#e0d0f0",
-            },
-          )
+          .text(cx, 295, "Built " + d.solved + " of " + d.target + " expressions", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "18px",
+            color: "#e0d0f0",
+          })
           .setOrigin(0.5);
         this.add
           .text(cx, 325, "High Score: " + hs, {
@@ -1728,7 +1702,7 @@
               activityTitle: document.title,
               score: d.score,
               stars: stars,
-              standard: "6.AT.6",
+              standard: "6.AT.5",
               problemsAttempted: d.solved,
             });
         } catch (e) {}
@@ -1767,6 +1741,7 @@
 
       // ── Launch ──
       const eeGame = new Phaser.Game(config);
+      window.eeGame = eeGame; // stable handle for automated QA harnesses
 
       eeGame.events.once("ready", function () {
         try {
@@ -1815,9 +1790,9 @@
             sourceSelector: "#ee-sr",
             standard: "6.AT.5",
             staticHints: [
-              "What is the expression asking you to do first? Look for exponents and grouping.",
-              "Follow order of operations (PEMDAS); remember an exponent is repeated multiplication.",
-              "Set it up: substitute the values and write each step, then compute the last one yourself.",
+              "Compare the live readout to the target: do you need a bigger or a smaller value?",
+              "Order of operations: × happens before + and −, so multiply first when you check a build.",
+              "Fill every slot, read the value your build makes, then adjust one tile at a time.",
             ],
           });
       });
@@ -1826,8 +1801,8 @@
     <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
     <script src="/assets/canvas-bridge.js" defer></script>
     <!-- canvas-bridge-injected:end -->
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
-  <!-- nsr-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+    <!-- nsr-injected:end -->
   </body>
 </html>
