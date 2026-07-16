@@ -26,6 +26,7 @@ Make the published Family Connections page faster to understand, easier to navig
 - Add a **Clear filters** control that appears only when search or unit filters are active.
 - Add each lesson’s learning objective as a concise **Learning focus** line.
 - Rename actions to **Start optional practice** and **Open family help**.
+- When the lesson configuration includes a verified lesson-aligned arcade route, add **Play lesson arcade** after the homework/help actions. Omit it when no verified game exists.
 - Keep directions, materials, language support, school alternatives, supplemental links, and the clear optional/ungraded statement.
 
 ### 4. Show only meaningful communication destinations
@@ -44,6 +45,7 @@ Make the published Family Connections page faster to understand, easier to navig
 ## Architecture
 
 - Extend the shared family renderer for weekly-state detection, today labeling, objective copy, and family-facing actions.
+- Extend the generated curriculum manifest with one optional arcade metadata object derived from each lesson’s canonical projects list; do not guess or synthesize routes.
 - Keep page shell improvements in the public HTML/CSS.
 - Keep integration filtering and clear-filter behavior in the public app.
 - Reuse the weekly-state helper in the protected teacher preview so the two views do not drift.
@@ -57,7 +59,8 @@ Make the published Family Connections page faster to understand, easier to navig
 4. Today is identified in text and not only by color.
 5. Optional-practice cards explain what students are practicing and use clear family action labels.
 6. Filters can be reset with one accessible control and lesson counts read naturally.
-7. Generic ClassDojo/Canvas homepages are not presented as configured family channels.
-8. Teacher preview reports the same empty-week state and visible-practice summary.
-9. Family Mode remains read-only and contains no hidden answer keys, student data, or editing path.
-10. Canvas publication and feed contracts remain unchanged.
+7. A verified lesson arcade appears after the family-practice actions; lessons without a verified arcade show no game action.
+8. Generic ClassDojo/Canvas homepages are not presented as configured family channels.
+9. Teacher preview reports the same empty-week state and visible-practice summary.
+10. Family Mode remains read-only and contains no hidden answer keys, student data, or editing path.
+11. Canvas publication and feed contracts remain unchanged.

@@ -43,6 +43,8 @@ Run the three family test scripts directly. Expected: FAIL on the missing weekly
 ### Task 2: Implement shared weekly state and family renderer polish
 
 **Files:**
+- Modify: `scripts/generate-curriculum-manifest.mjs`
+- Regenerate: `data/curriculum-manifest.json`
 - Modify: `curriculum/family-connections/shared/model.js`
 - Modify: `curriculum/family-connections/shared/render.js`
 - Modify: `curriculum/family-connections/teacher/editors.js`
@@ -57,19 +59,23 @@ export function weekHasMeaningfulContent(section) {
 }
 ```
 
-- [ ] **Step 2: Improve the public week renderer**
+- [ ] **Step 2: Publish verified lesson arcade metadata**
+
+Select the first lesson project whose internal route identifies a 2D game/arcade and is not a graphic novel. Emit `{ title, description, path, emoji }` as optional `arcade` metadata, regenerate the curriculum manifest, and map it through `normalizeLessons` without inventing fallback routes.
+
+- [ ] **Step 3: Improve the public week renderer**
 
 When the helper returns false, render one `week-empty-state` article with a calm check-back message and leave the optional library available. Otherwise render weekday cards as before, adding a visible `today-badge` and accessible label to the current day.
 
-- [ ] **Step 3: Improve optional-practice cards**
+- [ ] **Step 4: Improve optional-practice cards**
 
-Render a `homework-focus` paragraph from `item.objective`, label the primary action `Start optional practice`, and label family support `Open family help`. Preserve directions, language supports, school alternative, and supplemental links.
+Render a `homework-focus` paragraph from `item.objective`, label the primary action `Start optional practice`, and label family support `Open family help`. When `item.arcadePath` exists, append `Play lesson arcade` after those actions. Preserve directions, language supports, school alternative, and supplemental links.
 
-- [ ] **Step 4: Improve teacher preview fidelity**
+- [ ] **Step 5: Improve teacher preview fidelity**
 
 Use the shared helper to show one `preview-empty-week` state for an untouched week. Add `preview-summary` with the number of posted days and assigned visible optional-practice lessons.
 
-- [ ] **Step 5: Verify GREEN for shared behavior**
+- [ ] **Step 6: Verify GREEN for shared behavior**
 
 Run `node curriculum/family-connections/shared/model.test.mjs` and `node curriculum/family-connections/teacher/teacher-mode.test.mjs`. Expected: PASS.
 
