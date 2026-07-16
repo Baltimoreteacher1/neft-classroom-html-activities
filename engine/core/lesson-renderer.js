@@ -1,51 +1,53 @@
-import { createApp } from "./app.js";
-import { createAdaptiveSequence } from "./adaptive.js";
-import { levelOverride, mountLevelSelector } from "./levels.js";
-import {
-  renderMultipleChoice,
-  renderDragSort,
-  renderOpenResponse,
-  renderErrorAnalysis,
-  renderFillTable,
-  renderNumberLine,
-  renderCoordinateGrid,
-  renderMatchingGame,
-  renderBarModel,
-  renderBalanceScale,
-  renderAlgebraTiles,
-  renderFractionBars,
-  renderNetFolder,
-  renderCoordinatePlane,
-  renderRemediation,
-  renderTwrWriting,
-} from "../components/index.js";
 import {
   renderActivityChooser,
   renderOptionalPracticeOptIn,
 } from "../components/activity-chooser.js";
-import { buildGradeCard } from "./grade.js";
-import { createProblemCard, problemTypeLabel } from "./problem-shell.js";
+import {
+  renderAlgebraTiles,
+  renderBalanceScale,
+  renderBarModel,
+  renderCoordinateGrid,
+  renderCoordinatePlane,
+  renderDragSort,
+  renderErrorAnalysis,
+  renderFillTable,
+  renderFractionBars,
+  renderMatchingGame,
+  renderMultipleChoice,
+  renderNetFolder,
+  renderNumberLine,
+  renderOpenResponse,
+  renderRemediation,
+  renderTwrWriting,
+} from "../components/index.js";
+import { createAdaptiveSequence } from "./adaptive.js";
 import { enableWordProblemAnnotation } from "./annotate.js";
-import { renderThemeIllustration } from "./theme-illustrations.js";
-import { deriveWorkedSteps } from "./worked-steps.js";
-import { isTeacherMode } from "./teacher-mode.js";
-import { mountStuckSupport } from "./stuck-support.js";
+import { createApp } from "./app.js";
+import { mountCertificateDownload } from "./certificate-export.js";
+import { deriveCommonMistake } from "./content-enrichment.js";
 import { mountDiscussionMoment } from "./discourse.js";
-import { mountReadingProgress } from "./reading-progress.js";
+import { buildGradeCard } from "./grade.js";
+import { recommendedNext } from "./grade-emit.js";
+import { mountHintLadder } from "./hint-ladder.js";
+import { badgeName, phaseName, stackHtml, t } from "./i18n.js";
 import { interactiveVisualHost, mountInteractiveVisuals } from "./interactive-visual.js";
+import { levelOverride, mountLevelSelector } from "./levels.js";
+import { renderMathText } from "./math-typography.js";
+import {
+  normalizeAcademicWord,
+  resolveNoticeWonderAcademicWord,
+} from "./notice-wonder-glossary.js";
 import {
   buildPhaseTransitionMeta,
   buildPrintableSummary,
   checkBadges,
   getBadgeDefs,
 } from "./premium.js";
-import { deriveCommonMistake } from "./content-enrichment.js";
-import { mountHintLadder } from "./hint-ladder.js";
-import { renderMathText } from "./math-typography.js";
-import { t, stackHtml, phaseName, badgeName } from "./i18n.js";
-import { mountCertificateDownload } from "./certificate-export.js";
-import { recommendedNext } from "./grade-emit.js";
-import resolveVocabImage, { vocabImageAlt } from "./vocab-images.js";
+import { createProblemCard, problemTypeLabel } from "./problem-shell.js";
+import { mountReadingProgress } from "./reading-progress.js";
+import { mountStuckSupport } from "./stuck-support.js";
+import { isTeacherMode } from "./teacher-mode.js";
+import { renderThemeIllustration } from "./theme-illustrations.js";
 import { stampTeachL4Meta } from "./uifr.js";
 import {
   barChartSVG,
@@ -57,6 +59,8 @@ import {
   numberLineSVG,
   tapeDiagramSVG,
 } from "./visual-figures.js";
+import resolveVocabImage, { vocabImageAlt } from "./vocab-images.js";
+import { deriveWorkedSteps } from "./worked-steps.js";
 
 export function bootLesson(config) {
   // Hidden, student-invisible BCPS UIFR (TEACH · Level 4) evidence stamp in
@@ -140,7 +144,6 @@ function instructionCallout(el, icon, html) {
   el.append(box);
   return box;
 }
-
 
 // Unified visual builder → HTML string. Returns "" for unknown/empty kinds.
 function buildVisual(v) {
@@ -767,7 +770,7 @@ export function renderComponent(container, problemDef, onAnswer, shellOpts) {
     case "open-response":
       renderOpenResponse(body, {
         ...problemDef,
-        onSubmit: (text, ok) => wrappedOnAnswer(ok),
+        onSubmit: (_text, ok) => wrappedOnAnswer(ok),
       });
       break;
     default:
@@ -947,7 +950,7 @@ function ensureLessonLightbox() {
     if (lastFocus && lastFocus.focus) {
       try {
         lastFocus.focus();
-      } catch (e) {}
+      } catch {}
     }
   };
   close.addEventListener("click", hide);
@@ -968,7 +971,7 @@ function ensureLessonLightbox() {
       setTimeout(() => {
         try {
           close.focus();
-        } catch (e) {}
+        } catch {}
       }, 0);
     },
   };
@@ -1577,8 +1580,14 @@ function renderNoticeWonderSupport(host, support, config, fieldRoot = host) {
   // Look up the lesson's vocabulary entries that carry popup content (a simple
   // definition and/or an authored visual) so an academic word can open the same
   // glossary popup used by the objectives — an image + a kid-friendly definition
-  // in English and Spanish. Words with no matching entry stay insert-only.
+  // in English and Spanish. Shared entries fill any lesson-local vocabulary gaps.
   const lessonVocab = Array.isArray(config && config.vocabulary) ? config.vocabulary : [];
+  const sharedVocabByTerm = new Map(
+    vocab.map((label) => [
+      normalizeAcademicWord(label),
+      resolveNoticeWonderAcademicWord(label, lessonVocab),
+    ]),
+  );
   const hasPopupContent = (v) => !!(v && (v.definition || v.definitionEs || v.visual || v.example));
   const normTerm = (s) =>
     String(s || "")
@@ -1621,10 +1630,11 @@ function renderNoticeWonderSupport(host, support, config, fieldRoot = host) {
   // An academic-word pill: the word (underlined) opens the definition popup with
   // an image + simple meaning; the trailing ＋ still inserts it into the answer.
   const wordPill = (it, cls) => {
-    if (!vocabByTerm.has(normTerm(it))) return insertChip(it, cls);
-    return `<span class="badge ${cls} nw-vocab" style="display:inline-flex; align-items:center; gap:6px; padding-right:4px;">
-        <button type="button" class="nw-vocab-word" data-term="${esc(it)}" aria-haspopup="dialog" title="Tap for a picture and meaning" style="cursor:pointer; border:none; background:transparent; font:inherit; color:inherit; text-decoration:underline;">${esc(it)}</button>
-        <button type="button" class="nw-vocab-add" data-insert="${esc(it)}" aria-label="Add ${esc(it)} to your answer" title="Add to your answer" style="cursor:pointer; border:none; background:transparent; font:inherit; color:inherit; font-weight:800;">＋</button>
+    const entry = vocabByTerm.get(normTerm(it)) || sharedVocabByTerm.get(normalizeAcademicWord(it));
+    if (!entry) return insertChip(it, cls);
+    return `<span class="badge ${cls} nw-vocab">
+        <button type="button" class="nw-vocab-word" data-term="${esc(it)}" aria-haspopup="dialog" aria-label="Open definition and picture for ${esc(it)}" title="Tap for a picture and meaning">${esc(it)}</button>
+        <button type="button" class="nw-vocab-add" data-insert="${esc(it)}" aria-label="Add ${esc(it)} to your answer" title="Add to your answer">＋</button>
       </span>`;
   };
 
@@ -1655,7 +1665,9 @@ function renderNoticeWonderSupport(host, support, config, fieldRoot = host) {
     }
     const word = e.target.closest(".nw-vocab-word");
     if (word && card.contains(word)) {
-      const entry = vocabByTerm.get(normTerm(word.getAttribute("data-term")));
+      const label = word.getAttribute("data-term");
+      const entry =
+        vocabByTerm.get(normTerm(label)) || sharedVocabByTerm.get(normalizeAcademicWord(label));
       if (entry) openObjectiveTermPopup(entry);
     }
   });
