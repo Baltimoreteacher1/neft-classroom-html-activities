@@ -40,12 +40,7 @@
         z-index: 0;
         overflow: hidden;
         pointer-events: none;
-        background: radial-gradient(
-          130% 90% at 50% 0%,
-          #143947 0%,
-          #0e2531 55%,
-          #08141b 100%
-        );
+        background: radial-gradient(130% 90% at 50% 0%, #143947 0%, #0e2531 55%, #08141b 100%);
       }
       #aa-bg-layer {
         position: absolute;
@@ -127,15 +122,14 @@
     <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
     <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
     <!-- ghl-injected:end -->
-  
-  
+
     <!-- uifr-injected:begin -->
     <!-- BCPS Instructional Framework Rubric · TEACH support. Teacher/observer reference — NOT shown to students. Interactive practice activity (math/games/u5-area-attack): supports Level 4 conditions on T2, T4 (students choose their approach + immediate no-fail feedback with retry). Full evidence: /teacher-tools/teaching-evidence/ · docs/uifr-teach-l4.md. -->
     <!-- uifr-injected:end -->
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2" />
+    <!-- nsr-injected:end -->
+  </head>
   <body>
     <!-- Decorative animated spark-field (behind the Phaser canvas). -->
     <div id="aa-bg" data-parallax aria-hidden="true">
@@ -147,9 +141,7 @@
       // Decorative spark-field builder (reduced-motion safe; pointer-neutral).
       (function () {
         "use strict";
-        var reduceMQ =
-          window.matchMedia &&
-          window.matchMedia("(prefers-reduced-motion: reduce)");
+        var reduceMQ = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)");
         var layer = document.getElementById("aa-bg-layer");
         if (!layer) return;
         function rnd(a, b) {
@@ -177,11 +169,7 @@
           var dx = e.clientX / (window.innerWidth || 1) - 0.5;
           var dy = e.clientY / (window.innerHeight || 1) - 0.5;
           layer.style.transform =
-            "translate3d(" +
-            (dx * 20).toFixed(2) +
-            "px," +
-            (dy * 12).toFixed(2) +
-            "px,0)";
+            "translate3d(" + (dx * 20).toFixed(2) + "px," + (dy * 12).toFixed(2) + "px,0)";
         }
         function attach() {
           if (driver || (reduceMQ && reduceMQ.matches)) return;
@@ -201,8 +189,7 @@
             if (reduceMQ.matches) detach();
             else attach();
           };
-          if (reduceMQ.addEventListener)
-            reduceMQ.addEventListener("change", onChange);
+          if (reduceMQ.addEventListener) reduceMQ.addEventListener("change", onChange);
           else if (reduceMQ.addListener) reduceMQ.addListener(onChange);
         }
         var rt;
@@ -253,12 +240,7 @@
         return GRID_Y0 + r * CELL;
       }
       function inGrid(x, y) {
-        return (
-          x >= GRID_X0 &&
-          x < GRID_X0 + GRID_W &&
-          y >= GRID_Y0 &&
-          y < GRID_Y0 + GRID_H
-        );
+        return x >= GRID_X0 && x < GRID_X0 + GRID_W && y >= GRID_Y0 && y < GRID_Y0 + GRID_H;
       }
       function colFromX(x) {
         return Phaser.Math.Clamp(Math.floor((x - GRID_X0) / CELL), 0, COLS - 1);
@@ -274,9 +256,7 @@
         init() {
           if (!this.ctx)
             try {
-              this.ctx = new (
-                window.AudioContext || window.webkitAudioContext
-              )();
+              this.ctx = new (window.AudioContext || window.webkitAudioContext)();
             } catch (e) {}
         },
         play(t, f, d, v = 0.18) {
@@ -373,8 +353,7 @@
         const oc = randInt(0, COLS - b),
           or = randInt(0, ROWS - h);
         const cells = new Set();
-        for (let r = 0; r < h; r++)
-          for (let c = 0; c < b; c++) cells.add(keyRC(oc + c, or + r));
+        for (let r = 0; r < h; r++) for (let c = 0; c < b; c++) cells.add(keyRC(oc + c, or + r));
         const area = (b * h) / 2;
         return {
           level,
@@ -418,8 +397,7 @@
           const oc = randInt(0, COLS - w),
             or = randInt(0, ROWS - h);
           const cells = new Set();
-          for (let r = 0; r < h; r++)
-            for (let c = 0; c < w; c++) cells.add(keyRC(oc + c, or + r));
+          for (let r = 0; r < h; r++) for (let c = 0; c < w; c++) cells.add(keyRC(oc + c, or + r));
           return {
             level: 1,
             kind: "rect",
@@ -431,14 +409,7 @@
             h,
             label: "Find the area",
             prompt: "Cover the rectangle with tiles, then Lock In.",
-            why:
-              "Area = base × height = " +
-              w +
-              " × " +
-              h +
-              " = " +
-              w * h +
-              " square units.",
+            why: "Area = base × height = " + w + " × " + h + " = " + w * h + " square units.",
           };
         }
         // Level 2 — an L-shape: a W×H block with one corner notched out, so it
@@ -462,8 +433,7 @@
         };
         const cells = new Set();
         for (let r = 0; r < Hc; r++)
-          for (let c = 0; c < Wc; c++)
-            if (!removed(c, r)) cells.add(keyRC(oc + c, or + r));
+          for (let c = 0; c < Wc; c++) if (!removed(c, r)) cells.add(keyRC(oc + c, or + r));
         const area = Wc * Hc - cw * ch;
         const r1 = Wc * (Hc - ch),
           r2 = (Wc - cw) * ch;
@@ -506,14 +476,7 @@
         parent: document.body,
         backgroundColor: "#0e2531",
         scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-        scene: [
-          BootScene,
-          TitleScene,
-          VocabScene,
-          LevelScene,
-          GameScene,
-          ResultScene,
-        ],
+        scene: [BootScene, TitleScene, VocabScene, LevelScene, GameScene, ResultScene],
       };
 
       // ── Vocab gate state (repo rule: term + Level-1 definition + image/emoji
@@ -695,9 +658,7 @@
           .setOrigin(0.5);
 
         // Card surface.
-        this.add
-          .rectangle(cx, 320, 560, 320, 0x0c2230)
-          .setStrokeStyle(2, 0x1f8f6e);
+        this.add.rectangle(cx, 320, 560, 320, 0x0c2230).setStrokeStyle(2, 0x1f8f6e);
 
         this.stepText = this.add
           .text(cx, 185, "", {
@@ -707,9 +668,7 @@
             color: "#6fa6b6",
           })
           .setOrigin(0.5);
-        this.emojiText = this.add
-          .text(cx, 250, "", { fontSize: "76px" })
-          .setOrigin(0.5);
+        this.emojiText = this.add.text(cx, 250, "", { fontSize: "76px" }).setOrigin(0.5);
         this.termText = this.add
           .text(cx, 330, "", {
             fontFamily: "Segoe UI, sans-serif",
@@ -774,9 +733,7 @@
       VocabScene.prototype.renderCard = function () {
         const v = AA_VOCAB[this.idx];
         const last = this.idx === AA_VOCAB.length - 1;
-        this.stepText.setText(
-          "Key word " + (this.idx + 1) + " of " + AA_VOCAB.length,
-        );
+        this.stepText.setText("Key word " + (this.idx + 1) + " of " + AA_VOCAB.length);
         this.emojiText.setText(v.emoji);
         this.termText.setText(v.term);
         this.defText.setText(v.def);
@@ -824,16 +781,11 @@
           })
           .setOrigin(0.5);
         this.add
-          .text(
-            cx,
-            145,
-            "You can pick either one. Both teach area on the grid.",
-            {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "16px",
-              color: "#bcd8e2",
-            },
-          )
+          .text(cx, 145, "You can pick either one. Both teach area on the grid.", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "16px",
+            color: "#bcd8e2",
+          })
           .setOrigin(0.5);
 
         this.makeCard(
@@ -842,11 +794,7 @@
           0x26a884,
           "Level 1",
           "Support",
-          [
-            "Rectangles & triangles",
-            "Grid + base/height",
-            "labels & extra hints",
-          ],
+          ["Rectangles & triangles", "Grid + base/height", "labels & extra hints"],
           1,
         );
         this.makeCard(
@@ -860,16 +808,11 @@
         );
 
         this.add
-          .text(
-            cx,
-            548,
-            "Click a card, or press 1 or 2.   ← Back to Math Games",
-            {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "14px",
-              color: "#6fa6b6",
-            },
-          )
+          .text(cx, 548, "Click a card, or press 1 or 2.   ← Back to Math Games", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "14px",
+            color: "#6fa6b6",
+          })
           .setOrigin(0.5);
 
         this.input.keyboard.on("keydown-ONE", () => this.choose(1));
@@ -881,15 +824,7 @@
             "Level 2 is enrichment with L-shapes to decompose and bigger triangles. Press 1 or 2.",
         );
       };
-      LevelScene.prototype.makeCard = function (
-        x,
-        fill,
-        hi,
-        title,
-        tag,
-        lines,
-        lvl,
-      ) {
+      LevelScene.prototype.makeCard = function (x, fill, hi, title, tag, lines, lvl) {
         const cardY = 350;
         const card = this.add
           .rectangle(x, cardY, 320, 290, 0x0c2230)
@@ -961,8 +896,7 @@
 
       GameScene.prototype.init = function () {
         this.reduceMotion = !!(
-          window.matchMedia &&
-          window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
         );
         this.score = 0;
         this.streak = 0;
@@ -971,6 +905,7 @@
         this.target = 10; // win condition: solve this many problems
         this.problem = null;
         this.locked = false;
+        this.tries = 0; // wrong lock-ins on the CURRENT problem
         this.dragging = false;
         this.placed = []; // list of {c0,r0,c1,r1} rectangles laid down
         this.covered = []; // ROWS×COLS boolean cover grid
@@ -1055,10 +990,8 @@
 
         // ── Right-hand control panel ──
         const px = 665;
-        this.add
-          .rectangle(px, 320, 250, 300, 0x0c2230)
-          .setStrokeStyle(2, 0x1f8f6e);
-        this.add
+        this.add.rectangle(px, 320, 250, 300, 0x0c2230).setStrokeStyle(2, 0x1f8f6e);
+        this.areaHead = this.add
           .text(px, 188, "AREA", {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "20px",
@@ -1081,6 +1014,7 @@
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "16px",
             color: "#7ee0ad",
+            align: "center",
           })
           .setOrigin(0.5);
 
@@ -1096,12 +1030,8 @@
             color: "#ffffff",
           })
           .setOrigin(0.5);
-        this.lockBtn.on("pointerover", () =>
-          this.lockBtn.setFillStyle(0x26a884),
-        );
-        this.lockBtn.on("pointerout", () =>
-          this.lockBtn.setFillStyle(0x1f8f6e),
-        );
+        this.lockBtn.on("pointerover", () => this.lockBtn.setFillStyle(0x26a884));
+        this.lockBtn.on("pointerout", () => this.lockBtn.setFillStyle(0x1f8f6e));
         this.lockBtn.on("pointerdown", () => this.lockIn());
 
         // Undo + Clear buttons (simple recovery from mistakes)
@@ -1116,12 +1046,8 @@
             color: "#ffffff",
           })
           .setOrigin(0.5);
-        this.undoBtn.on("pointerover", () =>
-          this.undoBtn.setFillStyle(0x3585c9),
-        );
-        this.undoBtn.on("pointerout", () =>
-          this.undoBtn.setFillStyle(0x2a6fae),
-        );
+        this.undoBtn.on("pointerover", () => this.undoBtn.setFillStyle(0x3585c9));
+        this.undoBtn.on("pointerout", () => this.undoBtn.setFillStyle(0x2a6fae));
         this.undoBtn.on("pointerdown", () => this.undo());
 
         this.clearBtn = this.add
@@ -1135,19 +1061,17 @@
             color: "#ffffff",
           })
           .setOrigin(0.5);
-        this.clearBtn.on("pointerover", () =>
-          this.clearBtn.setFillStyle(0x8a3d3d),
-        );
-        this.clearBtn.on("pointerout", () =>
-          this.clearBtn.setFillStyle(0x6b3030),
-        );
+        this.clearBtn.on("pointerover", () => this.clearBtn.setFillStyle(0x8a3d3d));
+        this.clearBtn.on("pointerout", () => this.clearBtn.setFillStyle(0x6b3030));
         this.clearBtn.on("pointerdown", () => this.clearTiles());
 
         // Hint
+        // y=528 keeps the directions clear of the page-fixed audio widget
+        // (game-fx) that overlaps the canvas bottom edge on desktop widths.
         this.hint = this.add
           .text(
             W / 2,
-            552,
+            528,
             "Drag across the grid to lay tiles. Keys: arrows move, F set corner, U undo, C clear, Enter lock in.",
             {
               fontFamily: "Segoe UI, sans-serif",
@@ -1159,9 +1083,7 @@
           .setOrigin(0.5);
 
         // Calm amber "try again" tint (no harsh red failure flash)
-        this.wrongTint = this.add
-          .rectangle(W / 2, H / 2, W, H, 0xffcf4d, 0)
-          .setDepth(30);
+        this.wrongTint = this.add.rectangle(W / 2, H / 2, W, H, 0xffcf4d, 0).setDepth(30);
 
         // ── Input: drag a rectangle of tiles on the grid ──
         this.input.on("pointerdown", (p) => {
@@ -1207,12 +1129,7 @@
             this.cornerA = { c: this.cur.c, r: this.cur.r };
             SFX.place();
           } else {
-            this.commitRect(
-              this.cornerA.c,
-              this.cornerA.r,
-              this.cur.c,
-              this.cur.r,
-            );
+            this.commitRect(this.cornerA.c, this.cornerA.r, this.cur.c, this.cur.r);
             this.cornerA = null;
           }
           this.drawCursor();
@@ -1239,12 +1156,7 @@
         for (let r = 0; r <= ROWS; r++) {
           g.lineBetween(GRID_X0, cellPY(r), GRID_X0 + GRID_W, cellPY(r));
         }
-        g.lineStyle(2, 0x2a4d5c, 1).strokeRect(
-          GRID_X0,
-          GRID_Y0,
-          GRID_W,
-          GRID_H,
-        );
+        g.lineStyle(2, 0x2a4d5c, 1).strokeRect(GRID_X0, GRID_Y0, GRID_W, GRID_H);
       };
 
       // Target blueprint (faint fill) + bold outline + Level-1 labels.
@@ -1266,11 +1178,9 @@
           const x = cellPX(c),
             y = cellPY(r);
           if (!p.cells.has(keyRC(c, r - 1))) out.lineBetween(x, y, x + CELL, y);
-          if (!p.cells.has(keyRC(c, r + 1)))
-            out.lineBetween(x, y + CELL, x + CELL, y + CELL);
+          if (!p.cells.has(keyRC(c, r + 1))) out.lineBetween(x, y + CELL, x + CELL, y + CELL);
           if (!p.cells.has(keyRC(c - 1, r))) out.lineBetween(x, y, x, y + CELL);
-          if (!p.cells.has(keyRC(c + 1, r)))
-            out.lineBetween(x + CELL, y, x + CELL, y + CELL);
+          if (!p.cells.has(keyRC(c + 1, r))) out.lineBetween(x + CELL, y, x + CELL, y + CELL);
         });
 
         // Triangle problems: draw the triangle in gold inside the (already
@@ -1330,23 +1240,20 @@
       GameScene.prototype.recompute = function () {
         // Rebuild the cover grid from the list of placed rectangles.
         this.covered = [];
-        for (let r = 0; r < ROWS; r++)
-          this.covered.push(new Array(COLS).fill(false));
+        for (let r = 0; r < ROWS; r++) this.covered.push(new Array(COLS).fill(false));
         this.placed.forEach((rc) => {
           const c0 = Math.min(rc.c0, rc.c1),
             c1 = Math.max(rc.c0, rc.c1);
           const r0 = Math.min(rc.r0, rc.r1),
             r1 = Math.max(rc.r0, rc.r1);
-          for (let r = r0; r <= r1; r++)
-            for (let c = c0; c <= c1; c++) this.covered[r][c] = true;
+          for (let r = r0; r <= r1; r++) for (let c = c0; c <= c1; c++) this.covered[r][c] = true;
         });
         this.drawCover();
       };
 
       GameScene.prototype.coveredCount = function () {
         let n = 0;
-        for (let r = 0; r < ROWS; r++)
-          for (let c = 0; c < COLS; c++) if (this.covered[r][c]) n++;
+        for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) if (this.covered[r][c]) n++;
         return n;
       };
 
@@ -1402,25 +1309,16 @@
         if (!this.kbActive || this.locked) return;
         if (this.cornerA) {
           g.fillStyle(0xffd24a, 0.4);
-          g.fillRect(
-            cellPX(this.cornerA.c) + 2,
-            cellPY(this.cornerA.r) + 2,
-            CELL - 4,
-            CELL - 4,
-          );
+          g.fillRect(cellPX(this.cornerA.c) + 2, cellPY(this.cornerA.r) + 2, CELL - 4, CELL - 4);
         }
         g.lineStyle(3, 0xffd24a, 1);
-        g.strokeRect(
-          cellPX(this.cur.c) + 2,
-          cellPY(this.cur.r) + 2,
-          CELL - 4,
-          CELL - 4,
-        );
+        g.strokeRect(cellPX(this.cur.c) + 2, cellPY(this.cur.r) + 2, CELL - 4, CELL - 4);
       };
 
       GameScene.prototype.commitRect = function (c0, r0, c1, r1) {
         this.placed.push({ c0, r0, c1, r1 });
         this.recompute();
+        this.gFlash.clear(); // stale miss-highlights no longer match the cover
         SFX.place();
         JUICE.audio.pop();
         const cx = cellPX((Math.min(c0, c1) + Math.max(c0, c1) + 1) / 2);
@@ -1447,12 +1345,19 @@
 
       GameScene.prototype.newProblem = function () {
         this.locked = false;
+        this.tries = 0;
         this.placed = [];
         this.cornerA = null;
         this.cur = { c: 0, r: 0 };
         this.problem = makeProblem(this.level);
         this.bannerLabel.setText(this.problem.label);
         this.bannerText.setText(this.problem.prompt);
+        // Triangle rounds count RECTANGLE tiles (the triangle is half), so the
+        // readout must not call that number the "area" — misconception guard.
+        this.areaHead.setText(this.problem.kind === "tri" ? "RECTANGLE" : "AREA");
+        this.areaUnit.setText(
+          this.problem.kind === "tri" ? "tiles (triangle = half)" : "square units",
+        );
         this.gFlash.clear();
         this.drawTarget();
         this.recompute();
@@ -1514,19 +1419,57 @@
           JUICE.audio.wrong();
           JUICE.shake(this, 0.008);
           this.streak = 0;
+          this.tries++;
           this.flashWrong();
-          // Teach: flash the gaps (amber) and overflow (red), then reveal the
-          // correct full cover so the right area is visible.
+          // Teach: flash the gaps (amber) and overflow (red).
           const g = this.gFlash;
           g.clear();
           g.fillStyle(0xffcf4d, 0.55);
-          gaps.forEach(([c, r]) =>
-            g.fillRect(cellPX(c) + 2, cellPY(r) + 2, CELL - 4, CELL - 4),
-          );
+          gaps.forEach(([c, r]) => g.fillRect(cellPX(c) + 2, cellPY(r) + 2, CELL - 4, CELL - 4));
           g.fillStyle(0xff5a5a, 0.55);
           overflow.forEach(([c, r]) =>
             g.fillRect(cellPX(c) + 2, cellPY(r) + 2, CELL - 4, CELL - 4),
           );
+          // Diagnostic: say exactly WHAT is off (counts), not the answer.
+          const diag = [
+            gaps.length
+              ? gaps.length +
+                (gaps.length === 1
+                  ? " amber square still needs a tile"
+                  : " amber squares still need tiles")
+              : "",
+            overflow.length
+              ? overflow.length +
+                (overflow.length === 1
+                  ? " red square is outside the shape"
+                  : " red squares are outside the shape")
+              : "",
+          ]
+            .filter(Boolean)
+            .join(", and ");
+          if (this.tries < 2) {
+            // First miss: diagnose + retry the SAME problem. Method
+            // scaffolding only — no answer reveal (scaffold, not giveaway).
+            const method =
+              p.kind === "tri"
+                ? "Tile every square inside the outlined rectangle around the triangle."
+                : p.kind === "ell"
+                  ? "Cover the whole L-shape — try splitting it into two rectangles."
+                  : "Cover every row of the rectangle — area = base × height.";
+            this.feedback
+              .setText(
+                "Not quite — " + diag + ". " + method + " Fix your tiles, then Lock In again.",
+              )
+              .setAlpha(1);
+            this.flash(W / 2, 320, "Check the highlights", "#ffcf4d");
+            srSay("Not quite. " + diag + ". " + method + " Fix your tiles, then lock in again.");
+            this.updateHUD();
+            this.locked = false;
+            this.drawCursor();
+            return;
+          }
+          // Second miss: full teach — reveal the correct cover + formula,
+          // then move on (calm, no fail state).
           const msg =
             (p.kind === "tri"
               ? "Not quite — tile the whole " +
@@ -1541,16 +1484,20 @@
             (gaps.length ? "  (amber = gaps)" : "") +
             (overflow.length ? "  (red = too many)" : "");
           this.feedback.setText(msg).setAlpha(1);
-          this.flash(W / 2, 320, "Area = " + p.area, "#ffcf4d");
+          this.flash(
+            W / 2,
+            320,
+            (p.kind === "tri" ? "Triangle area = " : "Area = ") + p.area,
+            "#ffcf4d",
+          );
           srSay("Not quite. " + p.why);
-          // After a beat, fill the target exactly so the correct area shows.
+          // After a beat, fill the target exactly so the correct cover shows.
           this.time.delayedCall(this.reduceMotion ? 200 : 900, () => {
             this.placed = [
               // store each target cell as a 1×1 rect so the cover renders it
             ];
             this.covered = [];
-            for (let r = 0; r < ROWS; r++)
-              this.covered.push(new Array(COLS).fill(false));
+            for (let r = 0; r < ROWS; r++) this.covered.push(new Array(COLS).fill(false));
             p.cells.forEach((k) => {
               const [c, r] = k.split(",").map(Number);
               this.covered[r][c] = true;
@@ -1639,8 +1586,7 @@
         const cx = W / 2;
         this.add.rectangle(cx, H / 2, W, H, 0x0e2531);
         // Stars from accuracy.
-        const stars =
-          d.solved >= d.target ? 3 : d.solved >= d.target * 0.6 ? 2 : 1;
+        const stars = d.solved >= d.target ? 3 : d.solved >= d.target * 0.6 ? 2 : 1;
         // High score
         let hs = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
         if (d.score > hs) {
@@ -1681,13 +1627,7 @@
           .text(
             cx,
             295,
-            "Tiled " +
-              d.solved +
-              " of " +
-              d.target +
-              " shapes (Level " +
-              d.level +
-              ")",
+            "Tiled " + d.solved + " of " + d.target + " shapes (Level " + d.level + ")",
             {
               fontFamily: "Segoe UI, sans-serif",
               fontSize: "18px",
@@ -1802,8 +1742,8 @@
     <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
     <script src="/assets/canvas-bridge.js" defer></script>
     <!-- canvas-bridge-injected:end -->
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
-  <!-- nsr-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+    <!-- nsr-injected:end -->
   </body>
 </html>

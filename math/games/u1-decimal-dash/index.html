@@ -7,7 +7,7 @@
     <title>Decimal Dash — Number-Line Placer | Math Games</title>
     <meta
       name="description"
-      content="A place-it math game for Grade 6 lessons 1.4–1.7 (6.NOS.3): drag a marker onto a number line to place a decimal, or order several decimals least-to-greatest. Calm and self-paced — a wrong placement costs a life and shows the correct spot to teach."
+      content="A place-it math game for Grade 6 lessons 1.4–1.7 (6.NOS.3): drag a marker onto a number line to place a decimal, or order several decimals least-to-greatest. Calm and self-paced — a wrong placement earns a hint and a retry, then shows the correct spot to teach."
     />
     <style>
       * {
@@ -40,12 +40,7 @@
         z-index: 0;
         overflow: hidden;
         pointer-events: none;
-        background: radial-gradient(
-          130% 90% at 50% 0%,
-          #1a3a5a 0%,
-          #102338 55%,
-          #0a1626 100%
-        );
+        background: radial-gradient(130% 90% at 50% 0%, #1a3a5a 0%, #102338 55%, #0a1626 100%);
       }
       #dd-bg-layer {
         position: absolute;
@@ -127,15 +122,14 @@
     <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
     <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
     <!-- ghl-injected:end -->
-  
-  
+
     <!-- uifr-injected:begin -->
     <!-- BCPS Instructional Framework Rubric · TEACH support. Teacher/observer reference — NOT shown to students. Interactive practice activity (math/games/u1-decimal-dash): supports Level 4 conditions on T2, T4 (students choose their approach + immediate no-fail feedback with retry). Full evidence: /teacher-tools/teaching-evidence/ · docs/uifr-teach-l4.md. -->
     <!-- uifr-injected:end -->
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2" />
+    <!-- nsr-injected:end -->
+  </head>
   <body>
     <!-- Decorative animated spark-field (behind the Phaser canvas). -->
     <div id="dd-bg" data-parallax aria-hidden="true">
@@ -147,9 +141,7 @@
       // Decorative spark-field builder (reduced-motion safe; pointer-neutral).
       (function () {
         "use strict";
-        var reduceMQ =
-          window.matchMedia &&
-          window.matchMedia("(prefers-reduced-motion: reduce)");
+        var reduceMQ = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)");
         var layer = document.getElementById("dd-bg-layer");
         if (!layer) return;
         function rnd(a, b) {
@@ -177,11 +169,7 @@
           var dx = e.clientX / (window.innerWidth || 1) - 0.5;
           var dy = e.clientY / (window.innerHeight || 1) - 0.5;
           layer.style.transform =
-            "translate3d(" +
-            (dx * 20).toFixed(2) +
-            "px," +
-            (dy * 12).toFixed(2) +
-            "px,0)";
+            "translate3d(" + (dx * 20).toFixed(2) + "px," + (dy * 12).toFixed(2) + "px,0)";
         }
         function attach() {
           if (driver || (reduceMQ && reduceMQ.matches)) return;
@@ -201,8 +189,7 @@
             if (reduceMQ.matches) detach();
             else attach();
           };
-          if (reduceMQ.addEventListener)
-            reduceMQ.addEventListener("change", onChange);
+          if (reduceMQ.addEventListener) reduceMQ.addEventListener("change", onChange);
           else if (reduceMQ.addListener) reduceMQ.addListener(onChange);
         }
         var rt;
@@ -220,8 +207,9 @@
       // that matches a decimal, then press Lock In. At higher levels you place
       // 2–3 markers and ordering least→greatest happens by placing each at its
       // value. Endpoints and tick granularity (tenths → hundredths) change every
-      // round. A wrong placement (wrong math) costs a life and the markers glide
-      // to the correct ticks to teach. Calm, self-paced, no clock.
+      // round. A wrong placement (wrong math) earns a diagnostic hint and a
+      // retry on the SAME problem; a second miss glides the markers to the
+      // correct ticks to teach, then moves on. Calm, self-paced, no clock.
       //
       // EXACTNESS: every value is generated on a tick (lo + idx*step) and the
       // marker snaps to integer tick indices. Correctness is checked by tick
@@ -244,11 +232,7 @@
         return LINE_X0 + (LINE_W * i) / TICKS;
       }
       function nearestIndex(x) {
-        return Phaser.Math.Clamp(
-          Math.round(((x - LINE_X0) / LINE_W) * TICKS),
-          0,
-          TICKS,
-        );
+        return Phaser.Math.Clamp(Math.round(((x - LINE_X0) / LINE_W) * TICKS), 0, TICKS);
       }
 
       // Resolve the shared game-feel layer; provide safe no-op fallbacks so the
@@ -288,9 +272,7 @@
         init() {
           if (!this.ctx)
             try {
-              this.ctx = new (
-                window.AudioContext || window.webkitAudioContext
-              )();
+              this.ctx = new (window.AudioContext || window.webkitAudioContext)();
             } catch (e) {}
         },
         play(t, f, d, v = 0.18) {
@@ -363,7 +345,7 @@
 
       // ── Problem generator (number line) ─────────────────────────────────
       // Returns { count, range, beads:[{targetIdx,startIdx,valStr,color}],
-      //           label, prompt, why, loStr, midStr, hiStr }.
+      //           label, prompt, why, loStr, midStr, hiStr, stepStr }.
       // Two student-chosen modes drive both the generator and the scaffolding:
       //   Mode 1 (Support)    : tenths only, small ranges, ONE marker, every
       //                         tick labeled — the gentlest path.
@@ -411,16 +393,19 @@
         const range = makeRange(level, mode);
         // Distinct target ticks in 1..9 (endpoints stay as readable labels).
         const targetIdxs = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9]).slice(0, count);
-        const beads = targetIdxs.map((ti, k) => ({
-          targetIdx: ti,
+        const beads = targetIdxs.map((ti, k) => {
           // Spread the starting positions so markers don't stack on top.
-          startIdx: Math.max(
-            0,
-            Math.min(TICKS, Math.round(((k + 1) / (count + 1)) * TICKS)),
-          ),
-          valStr: rstr(range, ti),
-          color: BEAD_COLORS[k % BEAD_COLORS.length],
-        }));
+          let startIdx = Math.max(0, Math.min(TICKS, Math.round(((k + 1) / (count + 1)) * TICKS)));
+          // Never spawn a marker already on its answer tick — every round
+          // must take at least one real move (no free "Lock In" wins).
+          if (startIdx === ti) startIdx += ti <= TICKS / 2 ? 1 : -1;
+          return {
+            targetIdx: ti,
+            startIdx,
+            valStr: rstr(range, ti),
+            color: BEAD_COLORS[k % BEAD_COLORS.length],
+          };
+        });
         const loStr = range.lo.toFixed(range.decimals);
         const midStr = rstr(range, 5);
         const hiStr = range.hi.toFixed(range.decimals);
@@ -443,7 +428,8 @@
             b.valStr +
             " is " +
             b.targetIdx +
-            " marks past " +
+            (b.targetIdx === 1 ? " mark" : " marks") +
+            " past " +
             loStr +
             ".";
         } else {
@@ -453,12 +439,7 @@
             .map((b) => b.valStr)
             .slice()
             .sort((a, c) => parseFloat(a) - parseFloat(c));
-          why =
-            "Least to greatest: " +
-            sorted.join(", ") +
-            ".  Each mark is " +
-            stepStr +
-            ".";
+          why = "Least to greatest: " + sorted.join(", ") + ".  Each mark is " + stepStr + ".";
         }
         return {
           count,
@@ -470,6 +451,7 @@
           loStr,
           midStr,
           hiStr,
+          stepStr,
         };
       }
 
@@ -480,14 +462,7 @@
         parent: document.body,
         backgroundColor: "#102338",
         scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-        scene: [
-          BootScene,
-          TitleScene,
-          VocabScene,
-          ModeScene,
-          GameScene,
-          ResultScene,
-        ],
+        scene: [BootScene, TitleScene, VocabScene, ModeScene, GameScene, ResultScene],
       };
 
       // ── Vocab gate state (repo rule: term + Level-1 definition + image/emoji
@@ -586,16 +561,11 @@
           )
           .setOrigin(0.5);
         this.add
-          .text(
-            cx,
-            292,
-            "Drag, or nudge with ← → / A·D · 6.NOS.3 · Lessons 1.4–1.7",
-            {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "14px",
-              color: "#7fa8c3",
-            },
-          )
+          .text(cx, 292, "Drag, or nudge with ← → / A·D · 6.NOS.3 · Lessons 1.4–1.7", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "14px",
+            color: "#7fa8c3",
+          })
           .setOrigin(0.5);
 
         const hs = localStorage.getItem(LS_KEY);
@@ -671,9 +641,7 @@
           .setOrigin(0.5);
 
         // Card surface.
-        this.add
-          .rectangle(cx, 320, 560, 320, 0x0a1626)
-          .setStrokeStyle(2, 0x1f4a5b);
+        this.add.rectangle(cx, 320, 560, 320, 0x0a1626).setStrokeStyle(2, 0x1f4a5b);
 
         this.stepText = this.add
           .text(cx, 185, "", {
@@ -683,9 +651,7 @@
             color: "#9fc6e0",
           })
           .setOrigin(0.5);
-        this.emojiText = this.add
-          .text(cx, 250, "", { fontSize: "76px" })
-          .setOrigin(0.5);
+        this.emojiText = this.add.text(cx, 250, "", { fontSize: "76px" }).setOrigin(0.5);
         this.termText = this.add
           .text(cx, 330, "", {
             fontFamily: "Segoe UI, sans-serif",
@@ -751,9 +717,7 @@
       VocabScene.prototype.renderCard = function () {
         const v = DD_VOCAB[this.idx];
         const last = this.idx === DD_VOCAB.length - 1;
-        this.stepText.setText(
-          "Key word " + (this.idx + 1) + " of " + DD_VOCAB.length,
-        );
+        this.stepText.setText("Key word " + (this.idx + 1) + " of " + DD_VOCAB.length);
         this.emojiText.setText(v.emoji);
         this.termText.setText(v.term);
         this.defText.setText(v.def);
@@ -804,16 +768,11 @@
           })
           .setOrigin(0.5);
         this.add
-          .text(
-            cx,
-            142,
-            "Pick the path that fits you. You can switch next time.",
-            {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "16px",
-              color: "#bfe0ff",
-            },
-          )
+          .text(cx, 142, "Pick the path that fits you. You can switch next time.", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "16px",
+            color: "#bfe0ff",
+          })
           .setOrigin(0.5);
 
         const makeCard = (x, accent, heading, lines, mode) => {
@@ -886,9 +845,7 @@
         this.input.keyboard.on("keydown-ENTER", pick1);
         this.input.keyboard.on("keydown-SPACE", pick1);
 
-        srSay(
-          "Choose your level. Press 1 for Level 1 support, or 2 for Level 2 enrichment.",
-        );
+        srSay("Choose your level. Press 1 for Level 1 support, or 2 for Level 2 enrichment.");
         this.cameras.main.fadeIn(300);
       };
 
@@ -901,8 +858,7 @@
 
       GameScene.prototype.init = function () {
         this.reduceMotion = !!(
-          window.matchMedia &&
-          window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
         );
         this.mode = ddMode; // 1 = Level 1 (support), 2 = Level 2 (enrichment)
         this.score = 0;
@@ -916,7 +872,8 @@
         this.sel = 0; // index of the currently selected marker
         this.beads = [];
         this.ghosts = [];
-        this._lastSaid = null; // debounce: last marker value announced to SR
+        this.tries = 0; // wrong attempts on the CURRENT problem (retry then teach)
+        this._srVal = null; // debounce: last marker value announced to SR
       };
 
       GameScene.prototype.create = function () {
@@ -932,16 +889,18 @@
           ...hudStyle,
           color: "#5ad1ff",
         });
+        // Right-aligned HUD sits BELOW the shared game-access chrome (the
+        // Language/Sound/Contrast/Controls buttons are page-fixed top-right
+        // and cover roughly the top 45 game-px when the canvas fills the
+        // viewport height on desktop).
         this.streakText = this.add
-          .text(W - 16, 12, "Streak: 0", { ...hudStyle, color: "#d4952a" })
+          .text(W - 16, 58, "Streak: 0", { ...hudStyle, color: "#d4952a" })
           .setOrigin(1, 0);
         this.levelText = this.add
-          .text(
-            W - 16,
-            36,
-            this.mode === 1 ? "Level 1 · Support" : "Level 2 · Enrichment",
-            { ...hudStyle, color: this.mode === 1 ? "#7fd6a0" : "#f0b44a" },
-          )
+          .text(W - 16, 82, this.mode === 1 ? "Level 1 · Support" : "Level 2 · Enrichment", {
+            ...hudStyle,
+            color: this.mode === 1 ? "#7fd6a0" : "#f0b44a",
+          })
           .setOrigin(1, 0);
         this.progressText = this.add
           .text(W / 2, 12, "0 / " + this.target, {
@@ -1004,14 +963,10 @@
           .setOrigin(0.5);
 
         // Number line track + ticks (fixed positions; labels change per round).
-        this.add
-          .rectangle(LINE_X0, LINE_Y, LINE_W, 5, 0x9fc6e0)
-          .setOrigin(0, 0.5);
+        this.add.rectangle(LINE_X0, LINE_Y, LINE_W, 5, 0x9fc6e0).setOrigin(0, 0.5);
         for (let i = 0; i <= TICKS; i++) {
           const major = i === 0 || i === 5 || i === TICKS;
-          this.add
-            .rectangle(tickX(i), LINE_Y, 3, major ? 30 : 16, 0x9fc6e0)
-            .setOrigin(0.5);
+          this.add.rectangle(tickX(i), LINE_Y, 3, major ? 30 : 16, 0x9fc6e0).setOrigin(0.5);
         }
         // One label per tick (set in newProblem). Support mode labels every
         // tick; enrichment shows only the endpoints + midpoint.
@@ -1042,12 +997,8 @@
             color: "#eaf6ff",
           })
           .setOrigin(0.5);
-        this.lockBtn.on("pointerover", () =>
-          this.lockBtn.setFillStyle(0x2080cc),
-        );
-        this.lockBtn.on("pointerout", () =>
-          this.lockBtn.setFillStyle(0x1a6fb5),
-        );
+        this.lockBtn.on("pointerover", () => this.lockBtn.setFillStyle(0x2080cc));
+        this.lockBtn.on("pointerout", () => this.lockBtn.setFillStyle(0x1a6fb5));
         this.lockBtn.on("pointerdown", () => this.lockIn());
 
         // Hint — fuller in support mode, brief in enrichment.
@@ -1069,9 +1020,7 @@
           .setOrigin(0.5);
 
         // Brief calm amber tint for a not-yet placement (no-fail practice).
-        this.amberTint = this.add
-          .rectangle(W / 2, H / 2, W, H, 0xf0b44a, 0)
-          .setDepth(30);
+        this.amberTint = this.add.rectangle(W / 2, H / 2, W, H, 0xf0b44a, 0).setDepth(30);
 
         // Input: drag/tap on or near the line; arrows / A·D nudge ±1 tick;
         // 1·2·3 pick a marker; Enter/Space lock in.
@@ -1085,11 +1034,7 @@
             this.updateReadout();
             SFX.init();
             SFX.select();
-          } else if (
-            p.worldY > LINE_Y - 120 &&
-            p.worldY < LINE_Y + 40 &&
-            this.beads.length
-          ) {
+          } else if (p.worldY > LINE_Y - 120 && p.worldY < LINE_Y + 40 && this.beads.length) {
             // Tap on/near the number line moves the selected marker there
             // (touch friendly). Band spans the markers (which sit above the
             // line) down to just below it, but stops short of the Lock In
@@ -1185,7 +1130,14 @@
       };
 
       GameScene.prototype.setBeadIndex = function (b, idx) {
-        b.idx = Phaser.Math.Clamp(idx, 0, TICKS);
+        const next = Phaser.Math.Clamp(idx, 0, TICKS);
+        // A marker flagged red on a missed Lock In turns back to its color as
+        // soon as the student moves it (fresh start for the retry).
+        if (b.misplaced && next !== b.idx) {
+          b.misplaced = false;
+          b.body.setFillStyle(b.color);
+        }
+        b.idx = next;
         b.c.x = tickX(b.idx);
         if (this.beads[this.sel] === b) {
           this.updateReadout();
@@ -1213,20 +1165,9 @@
         list.forEach((spec, i) => {
           const yOff = offs[i];
           const c = this.add.container(tickX(spec.startIdx), LINE_Y);
-          const stem = this.add.rectangle(
-            0,
-            yOff / 2,
-            4,
-            Math.abs(yOff),
-            0xcfe8ff,
-            0.55,
-          );
-          const dot = this.add
-            .circle(0, 0, 6, spec.color)
-            .setStrokeStyle(2, 0x0a1626);
-          const body = this.add
-            .rectangle(0, yOff, 78, 44, spec.color)
-            .setStrokeStyle(3, 0x6b97b3);
+          const stem = this.add.rectangle(0, yOff / 2, 4, Math.abs(yOff), 0xcfe8ff, 0.55);
+          const dot = this.add.circle(0, 0, 6, spec.color).setStrokeStyle(2, 0x0a1626);
+          const body = this.add.rectangle(0, yOff, 78, 44, spec.color).setStrokeStyle(3, 0x6b97b3);
           const txt = this.add
             .text(0, yOff, spec.valStr, {
               fontFamily: "Segoe UI, sans-serif",
@@ -1257,6 +1198,8 @@
         this.locked = false;
         this.dragging = false;
         this.sel = 0;
+        this.tries = 0;
+        this._srVal = null;
         this.problem = genProblem(this.level, this.mode);
         this.bannerLabel.setText(this.problem.label);
         this.bannerText.setText(this.problem.prompt);
@@ -1318,18 +1261,31 @@
           this.streak = 0;
           this.flashAmber();
           JUICE.shake(this, 0.006);
-          this.beads.forEach((b) => {
-            if (b.idx !== b.targetIdx) b.body.setFillStyle(0xc23b3b);
+          const wrong = this.beads.filter((b) => b.idx !== b.targetIdx);
+          wrong.forEach((b) => {
+            b.misplaced = true;
+            b.body.setFillStyle(0xc23b3b);
           });
+          this.tries++;
+          this.updateHUD();
+          if (this.tries < 2) {
+            // First miss: diagnostic hint + retry the SAME problem. The hint
+            // says what is off and which way to think — never the answer.
+            const hint = this.retryHint(wrong);
+            this.feedback.setText("Not yet — " + hint).setAlpha(1);
+            srSay("Not yet. " + hint);
+            this.time.delayedCall(this.reduceMotion ? 60 : 350, () => {
+              this.locked = false;
+            });
+            return;
+          }
+          // Second miss: teach. Explain the answer, drop a green ghost on each
+          // correct tick, glide the markers home, then move on.
           this.feedback.setText("Not quite — " + this.problem.why).setAlpha(1);
           srSay("Not quite. " + this.problem.why);
-          // Teach: drop a green ghost on each correct tick and glide each marker
-          // home, then continue.
           this.beads.forEach((b) => {
             const gx = tickX(b.targetIdx);
-            const ghost = this.add
-              .circle(gx, LINE_Y, 10, 0x7fd6a0, 0.6)
-              .setDepth(5);
+            const ghost = this.add.circle(gx, LINE_Y, 10, 0x7fd6a0, 0.6).setDepth(5);
             this.ghosts.push(ghost);
             this.tweens.add({
               targets: b.c,
@@ -1346,6 +1302,38 @@
             this.afterAttempt(false);
           });
         }
+      };
+
+      // Diagnostic hint for a first miss (retry the same problem). Scaffolds
+      // WITHOUT revealing the answer: single marker → where it sits now plus
+      // which direction to slide; multiple markers → how many (shown red) are
+      // off and what each mark is worth.
+      GameScene.prototype.retryHint = function (wrong) {
+        const p = this.problem;
+        if (this.beads.length === 1) {
+          const b = wrong[0];
+          const at = rstr(p.range, b.idx);
+          const dir =
+            b.idx < b.targetIdx
+              ? "less than " + b.valStr + " — slide RIGHT"
+              : "more than " + b.valStr + " — slide LEFT";
+          return (
+            "your marker sits at " +
+            at +
+            ". That is " +
+            dir +
+            ". Each mark is " +
+            p.stepStr +
+            ". Try again!"
+          );
+        }
+        const n = wrong.length;
+        return (
+          (n === 1 ? "1 marker (shown red) is" : n + " markers (shown red) are") +
+          " not on their value yet. Each mark is " +
+          p.stepStr +
+          " — check each red marker and try again!"
+        );
       };
 
       GameScene.prototype.afterAttempt = function (correct) {
@@ -1365,7 +1353,9 @@
           this.endGame();
           return;
         }
-        this.time.delayedCall(correct ? 900 : 1200, () => {
+        // Leave the teach explanation on screen long enough to actually read
+        // (it names the answer and the tick size) before the next problem.
+        this.time.delayedCall(correct ? 1100 : 2400, () => {
           this.feedback.setAlpha(0);
           this.newProblem();
         });
@@ -1434,13 +1424,11 @@
         const d = this.data2;
         const cx = W / 2;
         this.reduceMotion = !!(
-          window.matchMedia &&
-          window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
         );
         this.add.rectangle(cx, H / 2, W, H, 0x102338);
         // Stars from progress.
-        const stars =
-          d.solved >= d.target ? 3 : d.solved >= d.target * 0.6 ? 2 : 1;
+        const stars = d.solved >= d.target ? 3 : d.solved >= d.target * 0.6 ? 2 : 1;
         // High score
         let hs = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
         const isNewHigh = d.score > hs;
@@ -1479,16 +1467,11 @@
           })
           .setOrigin(0.5);
         this.add
-          .text(
-            cx,
-            295,
-            "Placed " + d.solved + " of " + d.target + " problems",
-            {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "18px",
-              color: "#bfe0ff",
-            },
-          )
+          .text(cx, 295, "Placed " + d.solved + " of " + d.target + " problems", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "18px",
+            color: "#bfe0ff",
+          })
           .setOrigin(0.5);
         this.add
           .text(cx, 325, "High Score: " + hs, {
@@ -1611,8 +1594,8 @@
     <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
     <script src="/assets/canvas-bridge.js" defer></script>
     <!-- canvas-bridge-injected:end -->
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
-  <!-- nsr-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+    <!-- nsr-injected:end -->
   </body>
 </html>

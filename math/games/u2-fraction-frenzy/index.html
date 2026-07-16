@@ -40,12 +40,7 @@
         z-index: 0;
         overflow: hidden;
         pointer-events: none;
-        background: radial-gradient(
-          130% 90% at 50% 0%,
-          #4a2244 0%,
-          #2a1326 55%,
-          #1c0c19 100%
-        );
+        background: radial-gradient(130% 90% at 50% 0%, #4a2244 0%, #2a1326 55%, #1c0c19 100%);
       }
       #fr-bg-layer {
         position: absolute;
@@ -127,15 +122,14 @@
     <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
     <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
     <!-- ghl-injected:end -->
-  
-  
+
     <!-- uifr-injected:begin -->
     <!-- BCPS Instructional Framework Rubric · TEACH support. Teacher/observer reference — NOT shown to students. Interactive practice activity (math/games/u2-fraction-frenzy): supports Level 4 conditions on T2, T4 (students choose their approach + immediate no-fail feedback with retry). Full evidence: /teacher-tools/teaching-evidence/ · docs/uifr-teach-l4.md. -->
     <!-- uifr-injected:end -->
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2" />
+    <!-- nsr-injected:end -->
+  </head>
   <body>
     <!-- Decorative animated mote-field (behind the Phaser canvas). -->
     <div id="fr-bg" data-parallax aria-hidden="true">
@@ -147,9 +141,7 @@
       // Decorative mote-field builder (reduced-motion safe; pointer-neutral).
       (function () {
         "use strict";
-        var reduceMQ =
-          window.matchMedia &&
-          window.matchMedia("(prefers-reduced-motion: reduce)");
+        var reduceMQ = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)");
         var layer = document.getElementById("fr-bg-layer");
         if (!layer) return;
         function rnd(a, b) {
@@ -177,11 +169,7 @@
           var dx = e.clientX / (window.innerWidth || 1) - 0.5;
           var dy = e.clientY / (window.innerHeight || 1) - 0.5;
           layer.style.transform =
-            "translate3d(" +
-            (dx * 20).toFixed(2) +
-            "px," +
-            (dy * 12).toFixed(2) +
-            "px,0)";
+            "translate3d(" + (dx * 20).toFixed(2) + "px," + (dy * 12).toFixed(2) + "px,0)";
         }
         function attach() {
           if (driver || (reduceMQ && reduceMQ.matches)) return;
@@ -201,8 +189,7 @@
             if (reduceMQ.matches) detach();
             else attach();
           };
-          if (reduceMQ.addEventListener)
-            reduceMQ.addEventListener("change", onChange);
+          if (reduceMQ.addEventListener) reduceMQ.addEventListener("change", onChange);
           else if (reduceMQ.addListener) reduceMQ.addListener(onChange);
         }
         var rt;
@@ -222,9 +209,11 @@
       // fractions, "how many 1/4 fit in 2?" and full fraction ÷ fraction,
       // "how many 2/3 are in 2?" — so the same cut-and-shade action teaches
       // modeling, equivalence, and dividing fractions (6.NOS.1).
-      // Lock In checks BOTH the cut count and the shaded count. A wrong build
-      // (wrong math) snaps the bar to the correct model to teach, and play
-      // continues — no lives, no fail state (calm, self-paced classroom mode).
+      // Lock In checks BOTH the cut count and the shaded count. The FIRST
+      // wrong build gets a diagnostic hint about the method (never the answer)
+      // and the SAME problem stays up to retry; a second wrong build snaps the
+      // bar to the correct model to teach, and play continues — no lives, no
+      // fail state (calm, self-paced classroom mode).
 
       const W = 820,
         H = 600;
@@ -243,9 +232,7 @@
         init() {
           if (!this.ctx)
             try {
-              this.ctx = new (
-                window.AudioContext || window.webkitAudioContext
-              )();
+              this.ctx = new (window.AudioContext || window.webkitAudioContext)();
             } catch (e) {}
         },
         play(t, f, d, v = 0.18) {
@@ -339,7 +326,7 @@
             ? a / b === 1
               ? "1 whole"
               : a / b + " wholes"
-            : divStr + " of the bar";
+            : "enough pieces to show " + divStr;
         return {
           kind: "fracdiv",
           label: "Divide a fraction by a fraction",
@@ -428,24 +415,10 @@
         if (stage <= 1) kind = Math.random() < 0.6 ? "model" : "equiv";
         else if (stage <= 3) {
           const r = Math.random();
-          kind =
-            r < 0.3
-              ? "model"
-              : r < 0.55
-                ? "equiv"
-                : r < 0.8
-                  ? "divide"
-                  : "fracdiv";
+          kind = r < 0.3 ? "model" : r < 0.55 ? "equiv" : r < 0.8 ? "divide" : "fracdiv";
         } else {
           const r = Math.random();
-          kind =
-            r < 0.2
-              ? "model"
-              : r < 0.4
-                ? "equiv"
-                : r < 0.65
-                  ? "divide"
-                  : "fracdiv";
+          kind = r < 0.2 ? "model" : r < 0.4 ? "equiv" : r < 0.65 ? "divide" : "fracdiv";
         }
         if (kind === "fracdiv") return fracDivProblem(tier);
 
@@ -472,14 +445,7 @@
             wholes: 1,
             targetParts: d2,
             targetShaded: n2,
-            prompt:
-              "Show a fraction equal to " +
-              n +
-              "/" +
-              d +
-              " using " +
-              d2 +
-              " equal parts.",
+            prompt: "Show a fraction equal to " + n + "/" + d + " using " + d2 + " equal parts.",
             why: n + "/" + d + " = " + n2 + "/" + d2 + ".",
           };
         }
@@ -549,14 +515,7 @@
         parent: document.body,
         backgroundColor: "#2a1326",
         scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-        scene: [
-          BootScene,
-          TitleScene,
-          VocabScene,
-          LevelScene,
-          GameScene,
-          ResultScene,
-        ],
+        scene: [BootScene, TitleScene, VocabScene, LevelScene, GameScene, ResultScene],
       };
 
       // Chosen tier (repo rule: Level 1 = support, Level 2 = enrichment; never
@@ -663,16 +622,11 @@
           )
           .setOrigin(0.5);
         this.add
-          .text(
-            cx,
-            295,
-            "Tap or ← → cut · ↑ ↓ shade · 6.NOS.1 · Lessons 2.1–2.5",
-            {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "14px",
-              color: "#c890a8",
-            },
-          )
+          .text(cx, 295, "Tap or ← → cut · ↑ ↓ shade · 6.NOS.1 · Lessons 2.1–2.5", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "14px",
+            color: "#c890a8",
+          })
           .setOrigin(0.5);
 
         const hs = localStorage.getItem(LS_KEY);
@@ -749,9 +703,7 @@
           .setOrigin(0.5);
 
         // Card surface.
-        this.add
-          .rectangle(cx, 320, 560, 320, 0x3a1834)
-          .setStrokeStyle(2, 0x6b3050);
+        this.add.rectangle(cx, 320, 560, 320, 0x3a1834).setStrokeStyle(2, 0x6b3050);
 
         this.stepText = this.add
           .text(cx, 185, "", {
@@ -761,9 +713,7 @@
             color: "#c890a8",
           })
           .setOrigin(0.5);
-        this.emojiText = this.add
-          .text(cx, 250, "", { fontSize: "76px" })
-          .setOrigin(0.5);
+        this.emojiText = this.add.text(cx, 250, "", { fontSize: "76px" }).setOrigin(0.5);
         this.termText = this.add
           .text(cx, 330, "", {
             fontFamily: "Segoe UI, sans-serif",
@@ -828,9 +778,7 @@
       VocabScene.prototype.renderCard = function () {
         const v = FF_VOCAB[this.idx];
         const last = this.idx === FF_VOCAB.length - 1;
-        this.stepText.setText(
-          "Key word " + (this.idx + 1) + " of " + FF_VOCAB.length,
-        );
+        this.stepText.setText("Key word " + (this.idx + 1) + " of " + FF_VOCAB.length);
         this.emojiText.setText(v.emoji);
         this.termText.setText(v.term);
         this.defText.setText(v.def);
@@ -877,16 +825,11 @@
           })
           .setOrigin(0.5);
         this.add
-          .text(
-            cx,
-            128,
-            "Pick the one that fits you. You can change it next time.",
-            {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "16px",
-              color: "#e7c4d4",
-            },
-          )
+          .text(cx, 128, "Pick the one that fits you. You can change it next time.", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "16px",
+            color: "#e7c4d4",
+          })
           .setOrigin(0.5);
 
         // Card factory: a big, friendly, fully-tappable choice card.
@@ -895,9 +838,7 @@
             .rectangle(x, 330, 320, 280, fill)
             .setStrokeStyle(3, 0xffd24a)
             .setInteractive({ useHandCursor: true });
-          this.add
-            .text(x, 230, tier === 1 ? "🌱" : "🚀", { fontSize: "60px" })
-            .setOrigin(0.5);
+          this.add.text(x, 230, tier === 1 ? "🌱" : "🚀", { fontSize: "60px" }).setOrigin(0.5);
           this.add
             .text(x, 300, title, {
               fontFamily: "Impact, sans-serif",
@@ -979,8 +920,7 @@
 
       GameScene.prototype.init = function () {
         this.reduceMotion = !!(
-          window.matchMedia &&
-          window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
         );
         this.tier = ffTier; // 1 = support, 2 = enrichment (from Level Select)
         this.score = 0;
@@ -988,6 +928,9 @@
         this.level = 1; // in-run difficulty stage (ramps 1→8)
         this.solved = 0; // problems answered correctly
         this.target = 10; // win condition: solve this many problems
+        this.attempted = 0; // problems attempted (each counts ONCE, on first Lock In)
+        this.firstTryCorrect = 0; // problems correct on the FIRST Lock In
+        this.tries = 0; // Lock In presses on the current problem
         this.problem = null;
         this.locked = false;
         this.wholes = 1; // how many whole-units the bar represents
@@ -1015,12 +958,10 @@
           .setOrigin(1, 0);
         // Tier badge (chosen Level 1 / Level 2) — always visible in the HUD.
         this.tierText = this.add
-          .text(
-            W - 16,
-            36,
-            this.tier === 1 ? "Level 1 · Support" : "Level 2 · Enrichment",
-            { ...hudStyle, color: this.tier === 1 ? "#8fd6a0" : "#ff9ec4" },
-          )
+          .text(W - 16, 36, this.tier === 1 ? "Level 1 · Support" : "Level 2 · Enrichment", {
+            ...hudStyle,
+            color: this.tier === 1 ? "#8fd6a0" : "#ff9ec4",
+          })
           .setOrigin(1, 0);
         this.progressText = this.add
           .text(W / 2, 12, "0 / " + this.target, {
@@ -1133,33 +1074,20 @@
             color: "#ffffff",
           })
           .setOrigin(0.5);
-        this.minusBtn.on("pointerover", () =>
-          this.minusBtn.setFillStyle(0x844066),
-        );
-        this.minusBtn.on("pointerout", () =>
-          this.minusBtn.setFillStyle(0x6b3050),
-        );
+        this.minusBtn.on("pointerover", () => this.minusBtn.setFillStyle(0x844066));
+        this.minusBtn.on("pointerout", () => this.minusBtn.setFillStyle(0x6b3050));
         this.minusBtn.on("pointerdown", () => this.setParts(this.parts - 1));
-        this.plusBtn.on("pointerover", () =>
-          this.plusBtn.setFillStyle(0x844066),
-        );
-        this.plusBtn.on("pointerout", () =>
-          this.plusBtn.setFillStyle(0x6b3050),
-        );
+        this.plusBtn.on("pointerover", () => this.plusBtn.setFillStyle(0x844066));
+        this.plusBtn.on("pointerout", () => this.plusBtn.setFillStyle(0x6b3050));
         this.plusBtn.on("pointerdown", () => this.setParts(this.parts + 1));
 
         // Below-bar shade hint
         this.add
-          .text(
-            W / 2,
-            BAR_Y + BAR_H / 2 + 22,
-            "Tap a part to shade · ↑ ↓ to change shaded",
-            {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "13px",
-              color: "#c890a8",
-            },
-          )
+          .text(W / 2, BAR_Y + BAR_H / 2 + 22, "Tap a part to shade · ↑ ↓ to change shaded", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "13px",
+            color: "#c890a8",
+          })
           .setOrigin(0.5);
 
         // Lock-in button
@@ -1174,12 +1102,8 @@
             color: "#ffffff",
           })
           .setOrigin(0.5);
-        this.lockBtn.on("pointerover", () =>
-          this.lockBtn.setFillStyle(0x36a35b),
-        );
-        this.lockBtn.on("pointerout", () =>
-          this.lockBtn.setFillStyle(0x2d874b),
-        );
+        this.lockBtn.on("pointerover", () => this.lockBtn.setFillStyle(0x36a35b));
+        this.lockBtn.on("pointerout", () => this.lockBtn.setFillStyle(0x2d874b));
         this.lockBtn.on("pointerdown", () => this.lockIn());
 
         // Hint
@@ -1209,35 +1133,17 @@
             tint: [0xffd24a, 0x8fd6a0, 0xff7ba8, 0xffffff],
           })
           .setDepth(20);
-        this.wrongTint = this.add
-          .rectangle(W / 2, H / 2, W, H, 0xffcf4d, 0)
-          .setDepth(30);
+        this.wrongTint = this.add.rectangle(W / 2, H / 2, W, H, 0xffcf4d, 0).setDepth(30);
 
         // Keyboard: ← → / A·D change the cut; ↑ ↓ / W·S change shaded; Enter/Space lock.
-        this.input.keyboard.on("keydown-LEFT", () =>
-          this.setParts(this.parts - 1),
-        );
-        this.input.keyboard.on("keydown-RIGHT", () =>
-          this.setParts(this.parts + 1),
-        );
-        this.input.keyboard.on("keydown-A", () =>
-          this.setParts(this.parts - 1),
-        );
-        this.input.keyboard.on("keydown-D", () =>
-          this.setParts(this.parts + 1),
-        );
-        this.input.keyboard.on("keydown-UP", () =>
-          this.setShaded(this.shaded + 1),
-        );
-        this.input.keyboard.on("keydown-DOWN", () =>
-          this.setShaded(this.shaded - 1),
-        );
-        this.input.keyboard.on("keydown-W", () =>
-          this.setShaded(this.shaded + 1),
-        );
-        this.input.keyboard.on("keydown-S", () =>
-          this.setShaded(this.shaded - 1),
-        );
+        this.input.keyboard.on("keydown-LEFT", () => this.setParts(this.parts - 1));
+        this.input.keyboard.on("keydown-RIGHT", () => this.setParts(this.parts + 1));
+        this.input.keyboard.on("keydown-A", () => this.setParts(this.parts - 1));
+        this.input.keyboard.on("keydown-D", () => this.setParts(this.parts + 1));
+        this.input.keyboard.on("keydown-UP", () => this.setShaded(this.shaded + 1));
+        this.input.keyboard.on("keydown-DOWN", () => this.setShaded(this.shaded - 1));
+        this.input.keyboard.on("keydown-W", () => this.setShaded(this.shaded + 1));
+        this.input.keyboard.on("keydown-S", () => this.setShaded(this.shaded - 1));
         this.input.keyboard.on("keydown-ENTER", () => this.lockIn());
         this.input.keyboard.on("keydown-SPACE", () => this.lockIn());
 
@@ -1326,9 +1232,7 @@
 
       // Cheap path: only the shade state changed, so recolor cells in place.
       GameScene.prototype.refreshFills = function () {
-        this.cellRects.forEach((r, i) =>
-          r.setFillStyle(i < this.shaded ? 0x2d874b : 0x3a1834),
-        );
+        this.cellRects.forEach((r, i) => r.setFillStyle(i < this.shaded ? 0x2d874b : 0x3a1834));
         this.updateReadout();
       };
 
@@ -1336,19 +1240,12 @@
         const total = this.wholes * this.parts;
         if (this.wholes === 1) {
           this.fracReadout.setText(this.shaded + " / " + this.parts);
-          this.shadeReadout.setText(
-            this.shaded + " of " + total + " parts shaded",
-          );
+          this.shadeReadout.setText(this.shaded + " of " + total + " parts shaded");
           this.partsLabel.setText("Cut into " + this.parts);
         } else {
           this.fracReadout.setText(this.shaded + " pieces");
           this.shadeReadout.setText(
-            this.shaded +
-              " of " +
-              total +
-              " pieces shaded  (1/" +
-              this.parts +
-              " each)",
+            this.shaded + " of " + total + " pieces shaded  (1/" + this.parts + " each)",
           );
           this.partsLabel.setText("Cut each into " + this.parts);
         }
@@ -1371,6 +1268,7 @@
 
       GameScene.prototype.newProblem = function () {
         this.locked = false;
+        this.tries = 0;
         this.problem = fracProblem(this.level, this.tier);
         this.wholes = this.problem.wholes;
         this.parts = 2;
@@ -1389,6 +1287,7 @@
         } else {
           this.tipText.setText("");
         }
+        this.tipText.setVisible(true);
         this.drawBar();
         JUICE.popIn(this, this.fracReadout);
         srSay(
@@ -1403,8 +1302,18 @@
         if (this.locked || !this.problem) return;
         this.locked = true;
         const p = this.problem;
-        const correct =
-          this.parts === p.targetParts && this.shaded === p.targetShaded;
+        this.tries++;
+        const correct = this.parts === p.targetParts && this.shaded === p.targetShaded;
+        // Progress accounting: each problem counts as attempted exactly once
+        // (on its first Lock In); it counts as correct only when that first
+        // Lock In is right. Retries still earn points but not "first try".
+        if (this.tries === 1) {
+          this.attempted++;
+          if (correct) this.firstTryCorrect++;
+        }
+        // The feedback line and the Level-1 tip share the same screen band;
+        // hide the tip while feedback is up so the two never overlap.
+        this.tipText.setVisible(false);
         if (correct) {
           SFX.good();
           this.solved++;
@@ -1422,6 +1331,20 @@
           if (this.streak >= 2) JUICE.confetti(this, 1);
           srSay("Correct. " + p.why);
           this.afterAttempt(true);
+        } else if (this.tries === 1) {
+          // First miss: a diagnostic hint about the METHOD (never the answer),
+          // then the SAME problem stays up so the student can fix their build.
+          SFX.bad();
+          this.streak = 0;
+          this.updateHUD();
+          this.flashWrong();
+          JUICE.shake(this, 0.008);
+          const hint = this.diagnosticHint(p);
+          this.feedback.setText("Not quite — " + hint).setAlpha(1);
+          srSay("Not quite. " + hint);
+          this.time.delayedCall(400, () => {
+            this.locked = false;
+          });
         } else {
           SFX.bad();
           this.streak = 0;
@@ -1443,6 +1366,36 @@
           }
           this.time.delayedCall(700, () => this.afterAttempt(false));
         }
+      };
+
+      // First-miss coaching: name WHICH part of the build to re-check (the cut
+      // count or the shade count) and the method for finding it — restating
+      // only what the prompt itself already says, never the target numbers
+      // that the student still has to reason out.
+      GameScene.prototype.diagnosticHint = function (p) {
+        const cutWord = p.wholes > 1 ? "each whole" : "the bar";
+        if (this.parts !== p.targetParts) {
+          if (p.kind === "model")
+            return (
+              "check your cuts. The BOTTOM number (denominator) tells how many equal parts to cut " +
+              cutWord +
+              " into. Fix the cuts, then Lock In again."
+            );
+          if (p.kind === "equiv")
+            return "check your cuts. The problem tells you exactly how many equal parts to use. Fix the cuts, then Lock In again.";
+          return (
+            "check your cuts. Cut " +
+            cutWord +
+            " into the number of parts named by the fraction's BOTTOM number. Fix the cuts, then Lock In again."
+          );
+        }
+        if (p.kind === "model")
+          return "your cuts are right! Now check the TOP number (numerator) — that is how many parts to shade. Try again.";
+        if (p.kind === "equiv")
+          return "your cuts are right! Now shade just enough of the smaller parts to cover the SAME amount as the original fraction. Try again.";
+        if (p.kind === "divide")
+          return "your cuts are right! Shade ALL the pieces — you are counting how many unit fractions fit in the whole amount. Try again.";
+        return "your cuts are right! Shade the starting amount (the number being divided up) — then the groups get counted for you. Try again.";
       };
 
       GameScene.prototype.afterAttempt = function (correct) {
@@ -1510,6 +1463,8 @@
             score: this.score,
             solved: this.solved,
             target: this.target,
+            attempted: this.attempted,
+            firstTry: this.firstTryCorrect,
           });
         });
       };
@@ -1527,9 +1482,11 @@
         const d = this.data2;
         const cx = W / 2;
         this.add.rectangle(cx, H / 2, W, H, 0x2a1326);
-        // Stars from accuracy/score.
-        const stars =
-          d.solved >= d.target ? 3 : d.solved >= d.target * 0.6 ? 2 : 1;
+        // Stars from first-try accuracy (attempted counts each problem once).
+        const attempted = d.attempted > 0 ? d.attempted : d.target;
+        const firstTry = typeof d.firstTry === "number" ? d.firstTry : d.solved;
+        const acc = firstTry / attempted;
+        const stars = acc >= 0.85 ? 3 : acc >= 0.6 ? 2 : 1;
         // High score
         let hs = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
         if (d.score > hs) {
@@ -1567,19 +1524,21 @@
           })
           .setOrigin(0.5);
         this.add
-          .text(
-            cx,
-            295,
-            "Built " + d.solved + " of " + d.target + " fractions",
-            {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "18px",
-              color: "#e7c4d4",
-            },
-          )
+          .text(cx, 295, "Built " + d.solved + " of " + d.target + " fractions", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "18px",
+            color: "#e7c4d4",
+          })
           .setOrigin(0.5);
         this.add
-          .text(cx, 325, "High Score: " + hs, {
+          .text(cx, 322, "Right on the first try: " + firstTry + " of " + attempted, {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "16px",
+            color: "#8fd6a0",
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 349, "High Score: " + hs, {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "16px",
             color: "#ffd24a",
@@ -1596,8 +1555,8 @@
               score: d.score,
               stars: stars,
               standard: "6.NOS.1",
-              problemsCorrect: d.solved,
-              problemsAttempted: d.target,
+              problemsCorrect: firstTry,
+              problemsAttempted: attempted,
             });
         } catch (e) {}
         srSay("You won! Final score " + d.score + ", " + stars + " stars.");
@@ -1685,8 +1644,8 @@
     <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
     <script src="/assets/canvas-bridge.js" defer></script>
     <!-- canvas-bridge-injected:end -->
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
-  <!-- nsr-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+    <!-- nsr-injected:end -->
   </body>
 </html>
