@@ -62,6 +62,7 @@ function applyPreferences() {
     const base = lang === "es" ? (translations.es[key] ?? original) : original;
     node.textContent = publishedEdits?.[lang]?.[key] ?? base;
   });
+  window.dispatchEvent(new CustomEvent("family-language-change", { detail: lang }));
 }
 
 function renderIntegrations() {

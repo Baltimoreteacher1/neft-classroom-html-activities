@@ -46,7 +46,7 @@
 
     <nav class="family-quick-nav" aria-label="Family page sections">
       <a href="#family-week" data-i18n="quickWeek">This week</a>
-      <a href="#family-scheduler">Meet</a>
+      <a href="#family-scheduler" data-scheduler-key="quick">Meet</a>
       <a href="#homework-library" data-i18n="quickPractice">Optional practice</a>
       <a href="#family-support" data-i18n="quickHelp">Ways to help</a>
     </nav>
@@ -108,11 +108,11 @@
       <section class="scheduler-section" id="family-scheduler" aria-labelledby="scheduler-title">
         <div class="scheduler-heading">
           <div>
-            <p class="eyebrow">Family meetings</p>
-            <h2 id="scheduler-title">Meet with Mr. Neft</h2>
-            <p>Choose an available time for a short conversation about how we can support your student.</p>
+            <p class="eyebrow" data-scheduler-key="eyebrow">Family meetings</p>
+            <h2 id="scheduler-title" data-scheduler-key="title">Meet with Mr. Neft</h2>
+            <p data-scheduler-key="intro">Choose an available time for a short conversation about how we can support your student.</p>
           </div>
-          <span class="timezone-chip">Eastern Time</span>
+          <span class="timezone-chip" data-scheduler-key="timezone">Eastern Time</span>
         </div>
         <p class="scheduler-status" id="meeting-status" role="status" aria-live="polite">Loading available times…</p>
         <div class="meeting-slots" id="meeting-slots"></div>
@@ -126,16 +126,16 @@
           <form id="meeting-request-form">
             <input id="meeting-slot-id" name="slotId" type="hidden" />
             <div class="meeting-form-grid">
-              <label>Parent or guardian name<input name="guardianName" maxlength="80" autocomplete="name" required /></label>
-              <label>Student first name only<input id="meeting-student-first-name" name="studentFirstName" maxlength="40" autocomplete="off" required /></label>
-              <label>Email for the reply<input name="email" type="email" maxlength="160" autocomplete="email" required /></label>
-              <label class="meeting-note">Anything you would like Mr. Neft to know? <span>(optional)</span><textarea name="note" maxlength="400" rows="3"></textarea></label>
+              <label><span data-scheduler-key="guardian">Parent or guardian name</span><input name="guardianName" maxlength="80" autocomplete="name" required /></label>
+              <label><span data-scheduler-key="student">Student first name only</span><input id="meeting-student-first-name" name="studentFirstName" maxlength="40" autocomplete="off" required /></label>
+              <label><span data-scheduler-key="email">Email for the reply</span><input name="email" type="email" maxlength="160" autocomplete="email" required /></label>
+              <label class="meeting-note"><span data-scheduler-key="note">Anything you would like Mr. Neft to know? (optional)</span><textarea name="note" maxlength="400" rows="3"></textarea></label>
             </div>
             <label class="meeting-honeypot" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off" /></label>
-            <label class="meeting-consent"><input id="meeting-consent" name="consent" type="checkbox" required /> I understand this is a request and that meeting details will be shared after confirmation.</label>
+            <label class="meeting-consent"><input id="meeting-consent" name="consent" type="checkbox" required /> <span data-scheduler-key="consent">I understand this is a request and that meeting details will be shared after confirmation.</span></label>
             <div class="meeting-form-actions">
-              <button class="button" type="submit">Send meeting request</button>
-              <button class="text-link meeting-cancel" type="button" id="meeting-request-cancel">Choose another time</button>
+              <button class="button" type="submit" data-scheduler-key="send">Send meeting request</button>
+              <button class="text-link meeting-cancel" type="button" id="meeting-request-cancel" data-scheduler-key="chooseAnother">Choose another time</button>
             </div>
           </form>
         </div>

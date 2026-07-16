@@ -36,6 +36,7 @@ for (const expected of [
   'id="meeting-request-form"',
   'id="meeting-student-first-name"',
   'id="meeting-consent"',
+  'data-scheduler-key="title"',
   'class="compact-intro"',
   'href="/curriculum/ai-hub/#parents"',
   'href="./family.css"',
@@ -102,6 +103,7 @@ assert.match(app, /cache:\s*["']no-store["']/);
 assert.match(app, /document\.visibilityState/);
 assert.match(app, /setInterval/);
 assert.match(app, /Family page updated/);
+assert.match(app, /family-language-change/);
 assert.match(app, /matching lessons/);
 assert.match(app, /lessons available/);
 assert.doesNotMatch(app + renderer, /family homework|homework library/i);

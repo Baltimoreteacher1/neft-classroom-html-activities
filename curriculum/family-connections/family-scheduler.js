@@ -1,5 +1,29 @@
 const API = "/api/family-connections";
 const byId = (id) => document.getElementById(id);
+let language = document.documentElement.lang === "es" ? "es" : "en";
+const spanish = {
+  quick: "Reunión",
+  eyebrow: "Reuniones familiares",
+  title: "Reúnase con el Sr. Neft",
+  intro: "Elija una hora disponible para conversar brevemente sobre cómo podemos apoyar a su estudiante.",
+  timezone: "Hora del Este",
+  guardian: "Nombre del padre, madre o tutor",
+  student: "Solo el primer nombre del estudiante",
+  email: "Correo electrónico para la respuesta",
+  note: "¿Hay algo que quiera que el Sr. Neft sepa? (opcional)",
+  consent: "Entiendo que esta es una solicitud y que recibiré los detalles después de la confirmación.",
+  send: "Enviar solicitud",
+  chooseAnother: "Elegir otra hora",
+  requestTime: "Solicitar esta hora",
+};
+
+function applyLanguage(next) {
+  language = next === "es" ? "es" : "en";
+  document.querySelectorAll("[data-scheduler-key]").forEach((element) => {
+    element.dataset.schedulerEn ??= element.textContent.trim();
+    element.textContent = language === "es" ? spanish[element.dataset.schedulerKey] : element.dataset.schedulerEn;
+  });
+}
 
 const dateFormat = new Intl.DateTimeFormat(undefined, {
   weekday: "long",
@@ -38,10 +62,18 @@ function renderSlots(slots) {
   const root = byId("meeting-slots");
   root.replaceChildren();
   if (!slots.length) {
-    setStatus("No meeting times are posted right now. Please use ClassDojo to suggest a time.");
+    setStatus(
+      language === "es"
+        ? "No hay horarios publicados ahora. Use ClassDojo para sugerir una hora."
+        : "No meeting times are posted right now. Please use ClassDojo to suggest a time.",
+    );
     return;
   }
-  setStatus(`${slots.length} ${slots.length === 1 ? "time is" : "times are"} available.`);
+  setStatus(
+    language === "es"
+      ? `${slots.length} ${slots.length === 1 ? "horario disponible" : "horarios disponibles"}.`
+      : `${slots.length} ${slots.length === 1 ? "time is" : "times are"} available.`,
+  );
   for (const slot of slots) {
     const card = document.createElement("article");
     card.className = "meeting-slot-card";
@@ -56,7 +88,9 @@ function renderSlots(slots) {
     const button = document.createElement("button");
     button.className = "button button-secondary";
     button.type = "button";
-    button.textContent = "Request this time";
+    button.dataset.schedulerKey = "requestTime";
+    button.dataset.schedulerEn = "Request this time";
+    button.textContent = language === "es" ? spanish.requestTime : button.dataset.schedulerEn;
     button.addEventListener("click", () => selectSlot(slot));
     card.append(date, time, detail, button);
     root.append(card);
@@ -128,9 +162,11 @@ byId("meeting-request-cancel").addEventListener("click", () => {
 });
 byId("meeting-accept").addEventListener("click", () => answerInvitation("accept"));
 byId("meeting-decline").addEventListener("click", () => answerInvitation("decline"));
+window.addEventListener("family-language-change", (event) => applyLanguage(event.detail));
 
 if (new URL(location.href).searchParams.has("meeting")) {
   byId("meeting-response-panel").hidden = false;
   byId("family-scheduler").scrollIntoView({ block: "start" });
 }
+applyLanguage(document.documentElement.lang);
 loadSlots();
