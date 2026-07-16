@@ -1,4 +1,5 @@
 import { buildCanvasRss } from "../../../curriculum/family-connections/shared/model.js";
+import { handleCanvasDirectRequest } from "./canvas-direct.js";
 import { initialState, normalizeSnapshot } from "./domain.js";
 import { createD1SchedulerStore } from "./scheduler-d1.js";
 import { handleSchedulerRequest } from "./scheduler.js";
@@ -190,6 +191,14 @@ export async function handleFamilyConnectionsRequest(context, suppliedStore, acc
   if (path.startsWith("schedule-")) {
     if (!env.DB) return json({ ok: false, error: "scheduling-unavailable" }, 503);
     return handleSchedulerRequest(context, createD1SchedulerStore(env.DB), access);
+  }
+  if (["canvas-connect", "canvas-sync"].includes(path)) {
+    if (!env.DB) return json({ ok: false, error: "canvas-sync-unavailable" }, 503);
+    return handleCanvasDirectRequest(
+      context,
+      { schedulerStore: createD1SchedulerStore(env.DB), fetchImpl: fetch },
+      access,
+    );
   }
 
   if (!store) return json({ ok: false, error: "publishing-unavailable" }, 503);

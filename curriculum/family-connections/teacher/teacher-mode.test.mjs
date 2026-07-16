@@ -10,6 +10,12 @@ for (const expected of [
   'id="teacher-invitation-form"',
   'src="./scheduler-admin.js"',
   'href="./scheduler-admin.css"',
+  'id="canvas-access-token"',
+  'id="test-canvas-connection"',
+  'id="sync-canvas-announcement"',
+  'id="sync-canvas-availability"',
+  'id="forget-canvas-token"',
+  'src="./canvas-direct.js"',
 ]) assert.ok(html.includes(expected), `Missing teacher scheduler contract: ${expected}`);
 
 for (const contract of [

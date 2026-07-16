@@ -262,6 +262,15 @@ function canvasAnnouncement() {
   return buildCanvasAnnouncement(state.draft, state.lessons, state.sectionId);
 }
 
+export function canvasDirectPayload() {
+  const bundle = buildCanvasSyncBundle(state.draft, state.lessons, state.sectionId);
+  return {
+    courseUrl: byId("canvas-url").value.trim(),
+    title: bundle.title,
+    message: bundle.announcement.html,
+  };
+}
+
 function canvasFeedUrl() {
   const url = new URL("/api/family-connections/canvas-feed", window.location.origin);
   url.searchParams.set("section", state.sectionId);

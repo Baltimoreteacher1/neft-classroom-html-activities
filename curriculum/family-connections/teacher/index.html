@@ -273,6 +273,21 @@
                   aria-describedby="canvas-sync-status"
                 />
                 <p class="canvas-sync-status" id="canvas-sync-status" role="status">Paste the course URL to connect Canvas.</p>
+                <div class="canvas-direct-panel">
+                  <span class="integration-kicker">Direct connection</span>
+                  <label for="canvas-access-token">Canvas personal access token</label>
+                  <input id="canvas-access-token" type="password" maxlength="4000" autocomplete="new-password" spellcheck="false" aria-describedby="canvas-token-note" />
+                  <p id="canvas-token-note">Used only for this protected browser session. It is never saved.</p>
+                  <div class="canvas-actions">
+                    <button class="button button-preview" id="test-canvas-connection" type="button">Test connection</button>
+                    <button class="text-button" id="forget-canvas-token" type="button">Forget token</button>
+                  </div>
+                  <div class="canvas-actions canvas-sync-actions">
+                    <button class="button button-publish" id="sync-canvas-announcement" type="button" disabled>Publish weekly update</button>
+                    <button class="button button-preview" id="sync-canvas-availability" type="button" disabled>Sync meeting availability</button>
+                  </div>
+                  <p class="canvas-direct-status" id="canvas-direct-status" role="status" aria-live="polite">Not connected.</p>
+                </div>
                 <div class="canvas-actions canvas-primary-actions">
                   <button class="button button-preview" id="prepare-canvas-update" type="button" disabled>Copy weekly update</button>
                   <a class="text-button" id="open-canvas-announcements" href="#" target="_blank" rel="noopener" hidden>Open Announcements ↗</a>
@@ -299,7 +314,7 @@
                   </div>
                 </details>
                 <textarea id="canvas-copy-output" class="copy-output" rows="7" readonly aria-label="Canvas-ready copy"></textarea>
-                <p class="integration-security">Only the Canvas course address is saved here.</p>
+                <p class="integration-security">The course address can be saved with the draft. The access token stays only in this tab and is forgotten when it closes.</p>
               </article>
             </div>
           </section>
@@ -329,5 +344,6 @@
     <p class="status-region" id="teacher-status" role="status" aria-live="polite"></p>
     <script type="module" src="./teacher-app.js"></script>
     <script type="module" src="./scheduler-admin.js"></script>
+    <script type="module" src="./canvas-direct.js"></script>
   </body>
 </html>
