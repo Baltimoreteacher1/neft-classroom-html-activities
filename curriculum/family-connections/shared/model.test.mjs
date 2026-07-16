@@ -49,7 +49,9 @@ snapshot.sections[0].week.days[0] = { day: "Monday", status: "lesson", lessonId:
 const announcement = buildCanvasAnnouncement(snapshot, lessons, snapshot.sections[0].id);
 assert.match(announcement.text, /September 8-12/);
 assert.match(announcement.text, /Lesson 1-1/);
+assert.match(announcement.text, /Optional family practice:/);
 assert.match(announcement.html, /<h2>/);
+assert.match(announcement.html, />Optional family practice<\/a>/);
 assert.doesNotMatch(announcement.html, /<script/i);
 
 const moduleLinks = buildCanvasModuleLinks(snapshot, lessons, snapshot.sections[0].id);

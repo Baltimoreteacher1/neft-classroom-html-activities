@@ -14,6 +14,7 @@ for (const expected of [
   'id="homework-search"',
   'id="unit-filter"',
   'id="homework-grid"',
+  'id="all-homework-panel"',
   'id="read-week"',
   'id="language-toggle"',
   'id="contrast-toggle"',
@@ -21,8 +22,8 @@ for (const expected of [
   'id="classdojo-link"',
   'id="canvas-link"',
   'id="family-status"',
+  'class="compact-intro"',
   'href="/curriculum/ai-hub/#parents"',
-  'href="/curriculum/family-connections/teacher/"',
   'href="./family.css"',
   'href="./family-foundation.css"',
   'src="./family-app.js"',
@@ -32,8 +33,12 @@ for (const expected of [
 
 assert.match(html, /equivalent school option/i);
 assert.match(html, /family participation is never graded/i);
+assert.match(html, /optional family practice/i);
+assert.match(html, /separate from (?:your student's )?regular homework/i);
 assert.doesNotMatch(html, /answer[ -]?key/i);
 assert.doesNotMatch(html, /id="message-studio"/i);
+assert.doesNotMatch(html, /family-connections\/teacher/i);
+assert.doesNotMatch(html, /editor\.js|edit-toggle|contenteditable/i);
 assert.doesNotMatch(html, /name=".*(?:token|password|secret)/i);
 assert.doesNotMatch(html, /fonts\.googleapis\.com|fonts\.gstatic\.com/i);
 
@@ -49,6 +54,9 @@ const renderer = await readFile(new URL("shared/render.js", root), "utf8");
 assert.match(app, /curriculum-manifest\.json/);
 assert.match(app, /api\/family-connections\/published/);
 assert.match(app + renderer, /mergeHomework/);
+assert.match(renderer, /homework-details-disclosure/);
+assert.match(renderer, /Open optional practice/);
+assert.doesNotMatch(app + renderer, /family homework|homework library/i);
 assert.match(app, /speechSynthesis/);
 assert.doesNotMatch(app, /localStorage.*(?:student|family|message)/i);
 

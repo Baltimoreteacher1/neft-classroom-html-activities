@@ -36,8 +36,8 @@ h3 { margin: 0; }
 .skip-link:focus { transform: translateY(0); }
 
 .teacher-header {
-  position: relative; display: flex; align-items: end; justify-content: space-between; gap: 2rem;
-  padding: clamp(1.5rem, 4vw, 3.5rem) max(1rem, calc((100vw - 86rem) / 2));
+  position: sticky; z-index: 8; top: 0; display: flex; align-items: end; justify-content: space-between; gap: 2rem;
+  padding: 0.85rem max(1rem, calc((100vw - 86rem) / 2));
   background: var(--deep); color: white;
 }
 .back-link { color: #9cd5ce; font-weight: 700; text-decoration: none; }
@@ -63,19 +63,17 @@ h3 { margin: 0; }
 .button-publish { background: var(--coral); color: white; }
 .text-button { min-height: 2.6rem; padding: 0.45rem 0.8rem; border: 1px solid var(--teal); background: transparent; color: var(--teal); }
 
-.workspace { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: clamp(1rem, 3vw, 3rem); max-width: 90rem; margin: 0 auto; padding: 2rem 1rem 5rem; }
-.workspace-nav { position: sticky; top: 1rem; align-self: start; padding: 1.2rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--card); }
-.workspace-nav .nav-label { margin-top: 0; }
-.workspace-nav a { display: flex; gap: 0.65rem; padding: 0.7rem 0; border-bottom: 1px solid var(--line); color: var(--ink); font-weight: 700; text-decoration: none; }
-.workspace-nav a span { color: var(--coral); font: 700 0.8rem/1.8 "Fraunces", serif; }
 .privacy-note { margin: 1.2rem 0 0; color: var(--muted); font-size: 0.78rem; }
 
-main { display: grid; gap: 1.25rem; }
+.teacher-workspace { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(21rem, 0.65fr); gap: 1rem; max-width: 90rem; margin: 0 auto; padding: 1rem 1rem 5rem; }
+.teacher-edit-column { display: grid; align-content: start; gap: 0.75rem; }
+.teacher-preview-column { position: sticky; top: 9.25rem; align-self: start; }
 .editor-section { padding: clamp(1.2rem, 3vw, 2rem); border: 1px solid var(--line); border-radius: var(--radius); background: var(--card); box-shadow: 0 10px 30px rgb(23 59 71 / 5%); }
+.primary-editor { padding: clamp(1rem, 2vw, 1.5rem); }
 .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 2rem; margin-bottom: 1.5rem; }
 .section-heading p:not(.step-label) { max-width: 48rem; margin: 0.65rem 0 0; color: var(--muted); }
 .step-label { margin-top: 0; }
-.section-actions { display: grid; grid-template-columns: auto minmax(9rem, 1fr); gap: 0.35rem 0.55rem; align-items: center; }
+.section-actions { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.35rem; align-items: center; min-width: min(100%, 12rem); }
 .section-actions .text-button { grid-column: 1 / -1; justify-self: end; }
 label { display: grid; gap: 0.35rem; color: var(--ink); font-size: 0.82rem; font-weight: 800; }
 input, select, textarea { width: 100%; border: 1px solid var(--line); border-radius: 0.55rem; background: white; color: var(--deep); padding: 0.65rem 0.75rem; font-weight: 400; }
@@ -88,6 +86,19 @@ textarea { resize: vertical; }
 .weekday-editors { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0.65rem; margin-top: 1rem; }
 .weekday-editor { display: grid; gap: 0.55rem; padding: 0.85rem; border: 1px solid var(--line); border-radius: 0.75rem; background: #f8f7f2; }
 .weekday-editor strong { font-family: "Fraunces", serif; }
+
+.tool-disclosure { overflow: clip; border: 1px solid var(--line); border-radius: var(--radius); background: var(--card); }
+.tool-disclosure > summary { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 4rem; padding: 0.8rem 1rem; cursor: pointer; }
+.tool-disclosure > summary::marker { color: var(--teal); }
+.tool-disclosure > summary span:first-child { display: grid; }
+.tool-disclosure > summary small { color: var(--muted); font-weight: 500; }
+.tool-disclosure > summary span[aria-hidden] { color: var(--teal); font-size: 1.5rem; line-height: 1; transition: transform 160ms ease; }
+.tool-disclosure[open] > summary { border-bottom: 1px solid var(--line); background: var(--teal-soft); }
+.tool-disclosure[open] > summary span[aria-hidden] { transform: rotate(45deg); }
+.tool-body { padding: 1rem; }
+.tool-intro { margin-bottom: 1rem; }
+.tool-intro h2 { font-size: clamp(1.45rem, 2vw, 2rem); }
+.tool-intro p:not(.step-label) { max-width: 50rem; margin: 0.4rem 0 0; color: var(--muted); }
 
 .homework-workbench { display: grid; grid-template-columns: minmax(13rem, 0.7fr) minmax(0, 1.5fr); gap: 1rem; }
 .lesson-picker { display: grid; align-content: start; gap: 0.45rem; }
@@ -115,11 +126,11 @@ textarea { resize: vertical; }
 
 .preview-banner { padding: 0.55rem 0.8rem; border-radius: 0.5rem 0.5rem 0 0; background: var(--gold); color: var(--deep); font-weight: 800; text-align: center; }
 .family-preview { padding: 1rem; border: 1px solid var(--line); border-top: 0; background: #fff; }
-.preview-week { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0.5rem; }
-.preview-day { padding: 0.75rem; border-radius: 0.55rem; background: var(--deep); color: white; }
+.preview-week { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.4rem; }
+.preview-day { padding: 0.6rem; border-radius: 0.55rem; background: var(--deep); color: white; }
 .preview-day strong, .preview-day span { display: block; }
 .preview-day span { margin-top: 0.3rem; color: #c6d7da; font-size: 0.8rem; }
-.preview-homework { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.5rem; margin-top: 0.75rem; }
+.preview-homework { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.5rem; margin-top: 0.75rem; }
 .preview-homework article { padding: 0.75rem; border: 1px solid var(--line); border-radius: 0.55rem; }
 .history-panel { margin-top: 1rem; }
 .history-panel summary { cursor: pointer; font-weight: 800; }
@@ -130,11 +141,12 @@ textarea { resize: vertical; }
 [hidden] { display: none !important; }
 
 @media (max-width: 72rem) {
-  .workspace { grid-template-columns: minmax(0, 1fr); }
-  .workspace-nav { position: static; display: flex; flex-wrap: wrap; gap: 0.35rem; }
-  .workspace-nav .nav-label, .privacy-note { width: 100%; }
-  .workspace-nav a { padding: 0.45rem 0.65rem; border: 1px solid var(--line); border-radius: 999px; }
+  .teacher-header { position: static; }
+  .teacher-workspace { grid-template-columns: minmax(0, 1fr); }
+  .teacher-preview-column { position: static; }
   .weekday-editors { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .preview-week { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .preview-homework { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
 @media (max-width: 48rem) {

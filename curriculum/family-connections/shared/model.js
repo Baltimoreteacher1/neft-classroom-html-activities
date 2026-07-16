@@ -24,7 +24,7 @@ export function createDefaultSnapshot() {
         week: {
           label: "This Week",
           startDate: "",
-          note: "Check back for this week's lesson plan and family practice.",
+          note: "Check back for this week's lesson plan and optional family practice.",
           days: DAYS.map((day) => ({ day, status: "no-class", lessonId: "", note: "" })),
         },
       },
@@ -173,13 +173,13 @@ export function buildCanvasAnnouncement(snapshot, lessons, sectionId) {
   const links = buildCanvasModuleLinks(snapshot, lessons, section.id);
   const weekLabel = cleanText(section.week?.label, 80) || "This Week";
   const note = cleanText(section.week?.note, 500);
-  const textLines = [weekLabel, section.label, note, "", ...links.map((link) => `${link.day}: ${link.title}\nHomework: ${link.homeworkUrl}`)].filter(
+  const textLines = [weekLabel, section.label, note, "", ...links.map((link) => `${link.day}: ${link.title}\nOptional family practice: ${link.homeworkUrl}`)].filter(
     (line, index, array) => line || (index > 0 && array[index - 1]),
   );
   const htmlItems = links
     .map(
       (link) =>
-        `<li><strong>${escapeHtml(link.day)}:</strong> <a href="${escapeHtml(link.lessonUrl)}">${escapeHtml(link.title)}</a> · <a href="${escapeHtml(link.homeworkUrl)}">Family homework</a></li>`,
+        `<li><strong>${escapeHtml(link.day)}:</strong> <a href="${escapeHtml(link.lessonUrl)}">${escapeHtml(link.title)}</a> · <a href="${escapeHtml(link.homeworkUrl)}">Optional family practice</a></li>`,
     )
     .join("");
   return {

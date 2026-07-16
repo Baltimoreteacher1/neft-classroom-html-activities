@@ -262,7 +262,7 @@ function bindEvents() {
   byId("copy-canvas-announcement").addEventListener("click", () => copyText(canvasAnnouncement().text, "Canvas announcement"));
   byId("copy-canvas-modules").addEventListener("click", () => {
     const links = buildCanvasModuleLinks(state.draft, state.lessons, state.sectionId);
-    copyText(links.map((item) => `${item.day}: ${item.title}\nLesson: ${item.lessonUrl}\nHomework: ${item.homeworkUrl}`).join("\n\n"), "Canvas module links");
+    copyText(links.map((item) => `${item.day}: ${item.title}\nLesson: ${item.lessonUrl}\nOptional family practice: ${item.homeworkUrl}`).join("\n\n"), "Canvas module links");
   });
   byId("download-canvas-json").addEventListener("click", downloadCanvasExport);
   window.addEventListener("beforeunload", (event) => { if (state.dirty) event.preventDefault(); });

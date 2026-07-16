@@ -14,33 +14,35 @@ const PREFERENCE_KEY = "eduwonder.familyConnections.preferences.v1";
 
 const translations = {
   es: {
-    eyebrow: "La escuela y el hogar, en la misma página",
-    title: "Su guía para las matemáticas de esta semana.",
-    lede: "Vea el plan, abra la tarea familiar y encuentre maneras sencillas de apoyar el aprendizaje.",
-    seeWeek: "Ver esta semana",
-    findHomework: "Buscar tarea",
-    promiseTitle: "Usted es un compañero, no el maestro de matemáticas.",
-    promiseBody: "Pregunte qué nota su estudiante. Escuche la estrategia. Celebre el esfuerzo. Corregiremos juntos en la escuela.",
-    weekEyebrow: "La semana de un vistazo",
+    eyebrow: "Conexión con las familias",
+    title: "Esta semana, de un vistazo.",
+    lede: "Vea lo que su estudiante está aprendiendo y elija una manera sencilla de practicar juntos.",
+    promiseTitle: "No necesita enseñar la lección.",
+    promiseBody: "Pregunte qué nota su estudiante, escuche la estrategia y anime su esfuerzo.",
+    weekEyebrow: "Empiece aquí",
     weekTitle: "Esta semana en matemáticas",
     classLabel: "Clase",
-    readWeek: "Escuchar esta semana",
+    readWeek: "Escuchar",
     updatesEyebrow: "Desde el salón",
     updatesTitle: "Noticias para las familias",
-    homeworkEyebrow: "Cada lección, en un lugar",
-    homeworkTitle: "Biblioteca de tarea familiar",
-    homeworkIntro: "Busque por número de lección o tema. Hay una opción equivalente en la escuela cuando no hay apoyo en casa.",
+    homeworkEyebrow: "Opcional y sin calificación",
+    homeworkTitle: "Práctica familiar opcional",
+    homeworkIntro: "Esto es aparte de la tarea regular de su estudiante. Úselo solo cuando funcione para su familia, como una oportunidad para repasar o practicar juntos. No se califica.",
+    browsePractice: "Ver la práctica familiar opcional",
+    browsePracticeHint: "Busque cualquier lección por número o tema",
     searchLabel: "Buscar lecciones",
     unitLabel: "Unidad",
-    supportEyebrow: "Ayuda que protege el pensamiento",
-    supportTitle: "Apoye el aprendizaje sin hacer el trabajo.",
-    aiTitle: "IA como guía de aprendizaje",
-    aiBody: "Use la IA para explicar una palabra, hacer una pregunta guía o practicar un ejemplo similar.",
+    supportEyebrow: "Tres maneras de ayudar",
+    supportTitle: "Pregunte. Escuche. Anime.",
+    askTitle: "Pregunte",
+    askBody: "“¿Qué notas?”",
+    listenTitle: "Escuche",
+    listenBody: "Deje que su estudiante explique una estrategia.",
+    encourageTitle: "Anime",
+    encourageBody: "Elogie el esfuerzo. Revisaremos las matemáticas en la escuela.",
     aiLink: "Abrir la guía familiar de IA →",
-    schoolOptionTitle: "Opción equivalente en la escuela",
-    schoolOptionBody: "¿No hay adulto, aparato o tiempo en casa? Su estudiante puede hacer la misma reflexión con un adulto de confianza en la escuela.",
-    gradingTitle: "La participación nunca recibe nota",
-    gradingBody: "La participación familiar nunca recibe nota. Estos recursos son invitaciones, no requisitos.",
+    schoolOptionBody: "Opción equivalente en la escuela: Los estudiantes pueden usar la misma práctica con un adulto de confianza en la escuela.",
+    gradingTitle: "La participación familiar no se califica.",
     connectEyebrow: "Sus preguntas son bienvenidas",
     connectTitle: "Sigamos conversando.",
     connectBody: "Use el canal familiar de su escuela para preguntar o compartir lo que notó su estudiante.",
@@ -120,6 +122,8 @@ function renderExperience() {
   const section = resolveSection(state.snapshot, state.sectionId);
   state.sectionId = section.id;
   renderSectionOptions(byId("section-select"), state.snapshot, state.sectionId);
+  byId("class-control").hidden =
+    (state.snapshot.sections ?? []).filter((item) => item.visible !== false).length < 2;
   renderWeek(byId("week-grid"), state.snapshot, state.lessons, state.sectionId);
   byId("published-week-label").textContent = section.week.label;
   byId("published-week-note").textContent = section.week.note;
@@ -166,7 +170,7 @@ async function load() {
       : "The weekly plan is ready for the first teacher update.";
   } else {
     byId("week-data-status").textContent = state.lessons.length
-      ? "The weekly plan is temporarily unavailable. The full homework library is ready below."
+      ? "The weekly plan is temporarily unavailable. The optional family practice library is ready below."
       : "Family resources are temporarily unavailable. Please refresh to try again.";
   }
   renderExperience();
