@@ -40,41 +40,199 @@
         "es": "El costo es $17."
       },
       "yourTurn": {
-        "ask": {
-          "en": "The cost is 6d + 2. What is the cost for d = 3?",
-          "es": "El costo es 6d + 2. ¿Cuál es el costo para d = 3?"
-        },
-        "unit": {
-          "en": "$",
-          "es": "$"
-        },
-        "answer": 20,
-        "expr": "6*3+2",
-        "tolerance": 0.01,
-        "solution": [
+        "items": [
           {
-            "do": {
-              "en": "Substitute 3 for d.",
-              "es": "Sustituye 3 por d."
+            "ask": {
+              "en": "The cost is 6d + 2. What is the cost for d = 3?",
+              "es": "El costo es 6d + 2. ¿Cuál es el costo para d = 3?"
             },
-            "math": "6(3) + 2",
-            "why": {
-              "en": "Plug in d.",
-              "es": "Reemplaza d."
-            }
+            "unit": {
+              "en": "$",
+              "es": "$"
+            },
+            "answer": 20,
+            "expr": "6*3+2",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Substitute 3 for d.",
+                  "es": "Sustituye 3 por d."
+                },
+                "math": "6(3) + 2",
+                "why": {
+                  "en": "Plug in d.",
+                  "es": "Reemplaza d."
+                }
+              },
+              {
+                "do": {
+                  "en": "Multiply, then add.",
+                  "es": "Multiplica y luego suma."
+                },
+                "math": "18 + 2 = 20",
+                "why": {
+                  "en": "Order of operations.",
+                  "es": "Orden de operaciones."
+                }
+              }
+            ]
           },
           {
-            "do": {
-              "en": "Multiply, then add.",
-              "es": "Multiplica y luego suma."
+            "ask": {
+              "en": "Cost = 4d + 6. Find the cost for d = 5.",
+              "es": "Costo = 4d + 6. Halla el costo para d = 5."
             },
-            "math": "18 + 2 = 20",
-            "why": {
-              "en": "Order of operations.",
-              "es": "Orden de operaciones."
-            }
+            "unit": {
+              "en": "$",
+              "es": "$"
+            },
+            "answer": 26,
+            "expr": "4*5+6",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Substitute, multiply, then add.",
+                  "es": "Sustituye, multiplica y luego suma."
+                },
+                "math": "4(5) + 6 = 20 + 6 = 26",
+                "why": {
+                  "en": "Order of operations.",
+                  "es": "Orden de operaciones."
+                }
+              }
+            ]
+          },
+          {
+            "ask": {
+              "en": "Cost = 7d + 3. Find the cost for d = 2.",
+              "es": "Costo = 7d + 3. Halla el costo para d = 2."
+            },
+            "unit": {
+              "en": "$",
+              "es": "$"
+            },
+            "answer": 17,
+            "expr": "7*2+3",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Substitute, multiply, then add.",
+                  "es": "Sustituye, multiplica y luego suma."
+                },
+                "math": "7(2) + 3 = 14 + 3 = 17",
+                "why": {
+                  "en": "Multiply first.",
+                  "es": "Multiplica primero."
+                }
+              }
+            ]
           }
         ]
+      }
+    },
+    {
+      "step": "step-3",
+      "title": {
+        "en": "Net Profit — revenue minus cost",
+        "es": "Ganancia neta — ingresos menos costo"
+      },
+      "prompt": {
+        "en": "An app earns $500 in revenue and has $180 in costs. What is the net profit?",
+        "es": "Una app genera $500 en ingresos y tiene $180 en costos. ¿Cuál es la ganancia neta?"
+      },
+      "steps": [
+        {
+          "do": {
+            "en": "Subtract cost from revenue.",
+            "es": "Resta el costo de los ingresos."
+          },
+          "math": "Profit = revenue − cost = 500 − 180",
+          "why": {
+            "en": "Net profit is what's left after costs.",
+            "es": "La ganancia neta es lo que queda después de los costos."
+          }
+        },
+        {
+          "do": {
+            "en": "Compute.",
+            "es": "Calcula."
+          },
+          "math": "= $320",
+          "why": {
+            "en": "That is the money kept.",
+            "es": "Ese es el dinero que se conserva."
+          }
+        }
+      ],
+      "answer": {
+        "en": "The net profit is $320.",
+        "es": "La ganancia neta es $320."
+      },
+      "yourTurn": {
+        "items": [
+          {
+            "ask": {
+              "en": "Revenue is $750 and costs are $400. What is the net profit?",
+              "es": "Los ingresos son $750 y los costos $400. ¿Cuál es la ganancia neta?"
+            },
+            "unit": {
+              "en": "$",
+              "es": "$"
+            },
+            "answer": 350,
+            "expr": "750 - 400",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Revenue minus cost.",
+                  "es": "Ingresos menos costo."
+                },
+                "math": "750 − 400 = 350",
+                "why": {
+                  "en": "Net profit.",
+                  "es": "Ganancia neta."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "errorChecks": [
+    {
+      "step": "step-1",
+      "title": {
+        "en": "Which operation comes first?",
+        "es": "¿Qué operación va primero?"
+      },
+      "prompt": {
+        "en": "Someone evaluated the cost 3d + 5 for d = 4:",
+        "es": "Alguien evaluó el costo 3d + 5 para d = 4:"
+      },
+      "work": [
+        {
+          "math": "3(4) + 5"
+        },
+        {
+          "math": "3 × 9 = 27"
+        }
+      ],
+      "flawIndex": 1,
+      "explanation": {
+        "en": "Multiply before adding: 3 × 4 = 12, then + 5 = 17. Don't add 4 + 5 first.",
+        "es": "Multiplica antes de sumar: 3 × 4 = 12, luego + 5 = 17. No sumes 4 + 5 primero."
+      },
+      "fix": {
+        "math": "3 × 4 + 5 = 12 + 5 = 17",
+        "why": {
+          "en": "Multiplication before addition.",
+          "es": "Multiplicación antes que suma."
+        }
       }
     }
   ]

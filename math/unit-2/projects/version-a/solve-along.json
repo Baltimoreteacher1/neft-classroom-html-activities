@@ -51,41 +51,133 @@
         "es": "Puedes hacer 8 tandas."
       },
       "yourTurn": {
-        "ask": {
-          "en": "Each batch uses 2/3 cup of flour. How many batches from 8 cups of flour?",
-          "es": "Cada tanda usa 2/3 de taza de harina. ¿Cuántas tandas con 8 tazas de harina?"
-        },
-        "unit": {
-          "en": "batches",
-          "es": "tandas"
-        },
-        "answer": 12,
-        "expr": "8/(2/3)",
-        "tolerance": 0.01,
-        "solution": [
+        "items": [
           {
-            "do": {
-              "en": "Set up the division.",
-              "es": "Plantea la división."
+            "ask": {
+              "en": "Each batch uses 2/3 cup of flour. How many batches from 8 cups of flour?",
+              "es": "Cada tanda usa 2/3 de taza de harina. ¿Cuántas tandas con 8 tazas de harina?"
             },
-            "math": "8 ÷ 2/3",
-            "why": {
-              "en": "Total flour ÷ flour per batch.",
-              "es": "Harina total ÷ harina por tanda."
-            }
+            "unit": {
+              "en": "batches",
+              "es": "tandas"
+            },
+            "answer": 12,
+            "expr": "8/(2/3)",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Set up the division.",
+                  "es": "Plantea la división."
+                },
+                "math": "8 ÷ 2/3",
+                "why": {
+                  "en": "Total flour ÷ flour per batch.",
+                  "es": "Harina total ÷ harina por tanda."
+                }
+              },
+              {
+                "do": {
+                  "en": "Multiply by the reciprocal.",
+                  "es": "Multiplica por el recíproco."
+                },
+                "math": "8 × 3/2 = 24/2 = 12",
+                "why": {
+                  "en": "Flip the divisor and multiply.",
+                  "es": "Invierte el divisor y multiplica."
+                }
+              }
+            ]
           },
           {
-            "do": {
-              "en": "Multiply by the reciprocal.",
-              "es": "Multiplica por el recíproco."
+            "ask": {
+              "en": "1/2 cup butter per batch, 5 cups of butter — how many batches?",
+              "es": "1/2 taza de mantequilla por tanda, 5 tazas — ¿cuántas tandas?"
             },
-            "math": "8 × 3/2 = 24/2 = 12",
-            "why": {
-              "en": "Flip the divisor and multiply.",
-              "es": "Invierte el divisor y multiplica."
-            }
+            "unit": {
+              "en": "batches",
+              "es": "tandas"
+            },
+            "answer": 10,
+            "expr": "5/(1/2)",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Divide by the fraction.",
+                  "es": "Divide entre la fracción."
+                },
+                "math": "5 ÷ 1/2 = 5 × 2 = 10",
+                "why": {
+                  "en": "Multiply by the reciprocal.",
+                  "es": "Multiplica por el recíproco."
+                }
+              }
+            ]
+          },
+          {
+            "ask": {
+              "en": "3/4 cup oats per batch, 9 cups of oats — how many batches?",
+              "es": "3/4 taza de avena por tanda, 9 tazas — ¿cuántas tandas?"
+            },
+            "unit": {
+              "en": "batches",
+              "es": "tandas"
+            },
+            "answer": 12,
+            "expr": "9/(3/4)",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Divide by the fraction.",
+                  "es": "Divide entre la fracción."
+                },
+                "math": "9 ÷ 3/4 = 9 × 4/3 = 12",
+                "why": {
+                  "en": "Flip and multiply.",
+                  "es": "Invierte y multiplica."
+                }
+              }
+            ]
           }
         ]
+      }
+    }
+  ],
+  "errorChecks": [
+    {
+      "step": "step-2",
+      "title": {
+        "en": "Did they flip the fraction?",
+        "es": "¿Invirtieron la fracción?"
+      },
+      "prompt": {
+        "en": "Someone found how many 3/4-cup batches fit in 6 cups of sugar:",
+        "es": "Alguien calculó cuántas tandas de 3/4 de taza caben en 6 tazas de azúcar:"
+      },
+      "work": [
+        {
+          "math": "6 ÷ 3/4"
+        },
+        {
+          "math": "= 6 × 3/4"
+        },
+        {
+          "math": "= 18/4 = 4.5 batches"
+        }
+      ],
+      "flawIndex": 1,
+      "explanation": {
+        "en": "To divide by a fraction, multiply by its RECIPROCAL. It should be 6 × 4/3, not 6 × 3/4.",
+        "es": "Para dividir entre una fracción, multiplica por su RECÍPROCO. Debe ser 6 × 4/3, no 6 × 3/4."
+      },
+      "fix": {
+        "math": "6 × 4/3 = 24/3 = 8 batches",
+        "why": {
+          "en": "Flip the divisor before multiplying.",
+          "es": "Invierte el divisor antes de multiplicar."
+        }
       }
     }
   ]

@@ -40,30 +40,119 @@
         "es": "El plan A cuesta $3 por GB."
       },
       "yourTurn": {
-        "ask": {
-          "en": "Plan B charges $56 for 8 GB. What is the cost per GB?",
-          "es": "El plan B cobra $56 por 8 GB. ¿Cuál es el costo por GB?"
-        },
-        "unit": {
-          "en": "$/GB",
-          "es": "$/GB"
-        },
-        "answer": 7,
-        "expr": "56/8",
-        "tolerance": 0.01,
-        "solution": [
+        "items": [
           {
-            "do": {
-              "en": "Divide to find the unit rate.",
-              "es": "Divide para hallar la tasa unitaria."
+            "ask": {
+              "en": "Plan B charges $56 for 8 GB. What is the cost per GB?",
+              "es": "El plan B cobra $56 por 8 GB. ¿Cuál es el costo por GB?"
             },
-            "math": "56 ÷ 8 = 7",
-            "why": {
-              "en": "Cost for one GB.",
-              "es": "Costo por un GB."
-            }
+            "unit": {
+              "en": "$/GB",
+              "es": "$/GB"
+            },
+            "answer": 7,
+            "expr": "56/8",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Divide to find the unit rate.",
+                  "es": "Divide para hallar la tasa unitaria."
+                },
+                "math": "56 ÷ 8 = 7",
+                "why": {
+                  "en": "Cost for one GB.",
+                  "es": "Costo por un GB."
+                }
+              }
+            ]
+          },
+          {
+            "ask": {
+              "en": "Plan: $60 for 12 GB — cost per GB?",
+              "es": "Plan: $60 por 12 GB — ¿costo por GB?"
+            },
+            "unit": {
+              "en": "$/GB",
+              "es": "$/GB"
+            },
+            "answer": 5,
+            "expr": "60/12",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Divide dollars by gigabytes.",
+                  "es": "Divide dólares entre gigabytes."
+                },
+                "math": "60 ÷ 12 = $5 per GB",
+                "why": {
+                  "en": "Unit rate.",
+                  "es": "Tasa unitaria."
+                }
+              }
+            ]
+          },
+          {
+            "ask": {
+              "en": "Plan: $36 for 6 GB — cost per GB?",
+              "es": "Plan: $36 por 6 GB — ¿costo por GB?"
+            },
+            "unit": {
+              "en": "$/GB",
+              "es": "$/GB"
+            },
+            "answer": 6,
+            "expr": "36/6",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Divide dollars by gigabytes.",
+                  "es": "Divide dólares entre gigabytes."
+                },
+                "math": "36 ÷ 6 = $6 per GB",
+                "why": {
+                  "en": "Cost for one GB.",
+                  "es": "Costo por un GB."
+                }
+              }
+            ]
           }
         ]
+      }
+    }
+  ],
+  "errorChecks": [
+    {
+      "step": "step-1",
+      "title": {
+        "en": "Which way does $/GB go?",
+        "es": "¿En qué orden va $/GB?"
+      },
+      "prompt": {
+        "en": "Someone found the cost per GB of a $45 plan with 15 GB:",
+        "es": "Alguien calculó el costo por GB de un plan de $45 con 15 GB:"
+      },
+      "work": [
+        {
+          "math": "$45 for 15 GB"
+        },
+        {
+          "math": "15 ÷ 45 = 0.33"
+        }
+      ],
+      "flawIndex": 1,
+      "explanation": {
+        "en": "Cost per GB is dollars ÷ gigabytes: 45 ÷ 15 = $3 per GB. Dividing GB by dollars gives the wrong unit.",
+        "es": "El costo por GB es dólares ÷ gigabytes: 45 ÷ 15 = $3 por GB. Dividir GB entre dólares da la unidad equivocada."
+      },
+      "fix": {
+        "math": "45 ÷ 15 = $3 per GB",
+        "why": {
+          "en": "Dollars go on top for $ per GB.",
+          "es": "Los dólares van arriba para $ por GB."
+        }
       }
     }
   ]

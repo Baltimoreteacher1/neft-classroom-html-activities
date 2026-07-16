@@ -40,6 +40,8 @@ function biOk(obj) {
 const errors = [];
 let files = 0;
 let solves = 0;
+let practiceItems = 0;
+let errorCards = 0;
 
 for (const u of UNITS) {
   for (const v of ["version-a", "version-b"]) {
@@ -86,29 +88,72 @@ for (const u of UNITS) {
         errors.push(`${at}: yourTurn required`);
         return;
       }
-      if (!biOk(yt.ask)) errors.push(`${at}.yourTurn: ask must be {en,es}`);
-      if (typeof yt.answer !== "number" || !Number.isFinite(yt.answer)) {
-        errors.push(`${at}.yourTurn: numeric answer required`);
-      }
-      const tol = typeof yt.tolerance === "number" && yt.tolerance >= 0 ? yt.tolerance : 0.01;
-      try {
-        const computed = safeEval(yt.expr);
-        if (Math.abs(computed - yt.answer) > tol) {
-          errors.push(`${at}.yourTurn: expr "${yt.expr}" = ${computed}, but answer = ${yt.answer} (Δ ${Math.abs(computed - yt.answer)} > tol ${tol})`);
+      // A single yourTurn object is treated as a one-item set.
+      const ytItems = Array.isArray(yt.items) && yt.items.length ? yt.items : [yt];
+      ytItems.forEach((item, k) => {
+        const iat = `${at}.yourTurn.items[${k}]`;
+        practiceItems++;
+        if (!biOk(item.ask)) errors.push(`${iat}: ask must be {en,es}`);
+        if (typeof item.answer !== "number" || !Number.isFinite(item.answer)) {
+          errors.push(`${iat}: numeric answer required`);
         }
-      } catch (e) {
-        errors.push(`${at}.yourTurn: ${e.message}`);
-      }
-      if (!Array.isArray(yt.solution) || !yt.solution.length) {
-        errors.push(`${at}.yourTurn: solution[] required`);
+        const tol = typeof item.tolerance === "number" && item.tolerance >= 0 ? item.tolerance : 0.01;
+        try {
+          const computed = safeEval(item.expr);
+          if (Math.abs(computed - item.answer) > tol) {
+            errors.push(`${iat}: expr "${item.expr}" = ${computed}, but answer = ${item.answer} (Δ ${Math.abs(computed - item.answer)} > tol ${tol})`);
+          }
+        } catch (e) {
+          errors.push(`${iat}: ${e.message}`);
+        }
+        if (!Array.isArray(item.solution) || !item.solution.length) {
+          errors.push(`${iat}: solution[] required`);
+        } else {
+          item.solution.forEach((w, j) => {
+            if (!biOk(w.do)) errors.push(`${iat}.solution[${j}]: do must be {en,es}`);
+            if (typeof w.math !== "string" || !w.math.trim()) errors.push(`${iat}.solution[${j}]: math string required`);
+            if (!biOk(w.why)) errors.push(`${iat}.solution[${j}]: why must be {en,es}`);
+          });
+        }
+      });
+    });
+
+    // Error-analysis "Spot the Mistake" checks.
+    if (cfg.errorChecks !== undefined) {
+      if (!Array.isArray(cfg.errorChecks)) {
+        errors.push(`${rel}: errorChecks must be an array`);
       } else {
-        yt.solution.forEach((w, j) => {
-          if (!biOk(w.do)) errors.push(`${at}.yourTurn.solution[${j}]: do must be {en,es}`);
-          if (typeof w.math !== "string" || !w.math.trim()) errors.push(`${at}.yourTurn.solution[${j}]: math string required`);
-          if (!biOk(w.why)) errors.push(`${at}.yourTurn.solution[${j}]: why must be {en,es}`);
+        cfg.errorChecks.forEach((e, i) => {
+          const eat = `${rel}.errorChecks[${i}]`;
+          errorCards++;
+          if (typeof e.step !== "string" || !/^step-\d+$/.test(e.step)) {
+            errors.push(`${eat}: missing/invalid step id`);
+          } else if (html && !new RegExp(`id="${e.step}"`).test(html)) {
+            errors.push(`${eat}: step "${e.step}" not found in index.html`);
+          }
+          if (!biOk(e.title)) errors.push(`${eat}: title must be {en,es}`);
+          if (!biOk(e.prompt)) errors.push(`${eat}: prompt must be {en,es}`);
+          if (!biOk(e.explanation)) errors.push(`${eat}: explanation must be {en,es}`);
+          if (!Array.isArray(e.work) || e.work.length < 2) {
+            errors.push(`${eat}: work[] must have at least 2 steps`);
+          } else {
+            e.work.forEach((w, j) => {
+              if (typeof w.math !== "string" || !w.math.trim()) errors.push(`${eat}.work[${j}]: math string required`);
+              if (w.note !== undefined && !biOk(w.note)) errors.push(`${eat}.work[${j}]: note must be {en,es} when present`);
+            });
+            if (!Number.isInteger(e.flawIndex) || e.flawIndex < 0 || e.flawIndex >= e.work.length) {
+              errors.push(`${eat}: flawIndex ${e.flawIndex} out of range for ${e.work.length} steps`);
+            }
+          }
+          if (!e.fix || typeof e.fix !== "object") {
+            errors.push(`${eat}: fix { math, why } required`);
+          } else {
+            if (typeof e.fix.math !== "string" || !e.fix.math.trim()) errors.push(`${eat}.fix: math string required`);
+            if (!biOk(e.fix.why)) errors.push(`${eat}.fix: why must be {en,es}`);
+          }
         });
       }
-    });
+    }
   }
 }
 
@@ -117,5 +162,7 @@ if (errors.length) {
   for (const e of errors) console.error(`  ✗ ${e}`);
   process.exit(1);
 }
-console.log(`SOLVE-ALONG validation PASSED — ${files} file(s), ${solves} solve(s), all expr↔answer checks consistent.`);
+console.log(
+  `SOLVE-ALONG validation PASSED — ${files} file(s), ${solves} solve(s), ${practiceItems} practice item(s), ${errorCards} error-analysis card(s); all expr↔answer checks consistent.`,
+);
 process.exit(0);

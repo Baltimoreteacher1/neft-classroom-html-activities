@@ -40,30 +40,119 @@
         "es": "La nueva profundidad es −75 pies."
       },
       "yourTurn": {
-        "ask": {
-          "en": "A sub at −200 ft rises 80 ft. What is its new depth?",
-          "es": "Un submarino a −200 pies asciende 80 pies. ¿Cuál es su nueva profundidad?"
-        },
-        "unit": {
-          "en": "ft",
-          "es": "pies"
-        },
-        "answer": -120,
-        "expr": "-200 + 80",
-        "tolerance": 0.01,
-        "solution": [
+        "items": [
           {
-            "do": {
-              "en": "Add the rise.",
-              "es": "Suma el ascenso."
+            "ask": {
+              "en": "A sub at −200 ft rises 80 ft. What is its new depth?",
+              "es": "Un submarino a −200 pies asciende 80 pies. ¿Cuál es su nueva profundidad?"
             },
-            "math": "−200 + 80 = −120",
-            "why": {
-              "en": "Rising is adding a positive.",
-              "es": "Ascender es sumar un positivo."
-            }
+            "unit": {
+              "en": "ft",
+              "es": "pies"
+            },
+            "answer": -120,
+            "expr": "-200 + 80",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Add the rise.",
+                  "es": "Suma el ascenso."
+                },
+                "math": "−200 + 80 = −120",
+                "why": {
+                  "en": "Rising is adding a positive.",
+                  "es": "Ascender es sumar un positivo."
+                }
+              }
+            ]
+          },
+          {
+            "ask": {
+              "en": "A sub at −80 ft rises 30 ft — new depth?",
+              "es": "Un submarino a −80 pies sube 30 pies — ¿nueva profundidad?"
+            },
+            "unit": {
+              "en": "ft",
+              "es": "pies"
+            },
+            "answer": -50,
+            "expr": "-80 + 30",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Add the rise.",
+                  "es": "Suma el ascenso."
+                },
+                "math": "−80 + 30 = −50",
+                "why": {
+                  "en": "Rising moves toward zero.",
+                  "es": "Ascender se acerca a cero."
+                }
+              }
+            ]
+          },
+          {
+            "ask": {
+              "en": "A sub at −150 ft rises 60 ft — new depth?",
+              "es": "Un submarino a −150 pies sube 60 pies — ¿nueva profundidad?"
+            },
+            "unit": {
+              "en": "ft",
+              "es": "pies"
+            },
+            "answer": -90,
+            "expr": "-150 + 60",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Add the rise.",
+                  "es": "Suma el ascenso."
+                },
+                "math": "−150 + 60 = −90",
+                "why": {
+                  "en": "Move up the number line.",
+                  "es": "Sube en la recta numérica."
+                }
+              }
+            ]
           }
         ]
+      }
+    }
+  ],
+  "errorChecks": [
+    {
+      "step": "step-1",
+      "title": {
+        "en": "Did the sign go the right way?",
+        "es": "¿El signo fue en la dirección correcta?"
+      },
+      "prompt": {
+        "en": "Someone found the new depth of a sub at −120 ft that rises 45 ft:",
+        "es": "Alguien calculó la nueva profundidad de un submarino a −120 pies que sube 45 pies:"
+      },
+      "work": [
+        {
+          "math": "−120 + 45"
+        },
+        {
+          "math": "= −165"
+        }
+      ],
+      "flawIndex": 1,
+      "explanation": {
+        "en": "Rising moves UP toward zero, so the result is closer to 0: −120 + 45 = −75, not −165.",
+        "es": "Ascender mueve HACIA ARRIBA, hacia el cero, así que el resultado está más cerca de 0: −120 + 45 = −75, no −165."
+      },
+      "fix": {
+        "math": "−120 + 45 = −75",
+        "why": {
+          "en": "Adding a positive moves toward zero.",
+          "es": "Sumar un positivo se acerca a cero."
+        }
       }
     }
   ]

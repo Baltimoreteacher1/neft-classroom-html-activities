@@ -51,41 +51,133 @@
         "es": "Necesitas 24 de cada uno — 3 paquetes de tornillos y 2 de tuercas."
       },
       "yourTurn": {
-        "ask": {
-          "en": "Wheels come in packs of 6 and motors in packs of 9. Fewest to have an equal number?",
-          "es": "Las ruedas vienen en paquetes de 6 y los motores en paquetes de 9. ¿La menor cantidad para tener igual número?"
-        },
-        "unit": {
-          "en": "of each",
-          "es": "de cada uno"
-        },
-        "answer": 18,
-        "expr": "18",
-        "tolerance": 0.01,
-        "solution": [
+        "items": [
           {
-            "do": {
-              "en": "Prime-factor each pack size.",
-              "es": "Factoriza cada tamaño de paquete."
+            "ask": {
+              "en": "Wheels come in packs of 6 and motors in packs of 9. Fewest to have an equal number?",
+              "es": "Las ruedas vienen en paquetes de 6 y los motores en paquetes de 9. ¿La menor cantidad para tener igual número?"
             },
-            "math": "6 = 2×3   9 = 3×3",
-            "why": {
-              "en": "Take the most of each prime factor.",
-              "es": "Toma la mayor cantidad de cada factor primo."
-            }
+            "unit": {
+              "en": "of each",
+              "es": "de cada uno"
+            },
+            "answer": 18,
+            "expr": "18",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Prime-factor each pack size.",
+                  "es": "Factoriza cada tamaño de paquete."
+                },
+                "math": "6 = 2×3   9 = 3×3",
+                "why": {
+                  "en": "Take the most of each prime factor.",
+                  "es": "Toma la mayor cantidad de cada factor primo."
+                }
+              },
+              {
+                "do": {
+                  "en": "Multiply for the LCM.",
+                  "es": "Multiplica para el mcm."
+                },
+                "math": "LCM = 2×3×3 = 18",
+                "why": {
+                  "en": "18 is the least common multiple.",
+                  "es": "18 es el mínimo común múltiplo."
+                }
+              }
+            ]
           },
           {
-            "do": {
-              "en": "Multiply for the LCM.",
-              "es": "Multiplica para el mcm."
+            "ask": {
+              "en": "Screws come in packs of 4, plates in packs of 6 — fewest for an equal number?",
+              "es": "Los tornillos vienen en paquetes de 4, las placas en paquetes de 6 — ¿el mínimo para igual número?"
             },
-            "math": "LCM = 2×3×3 = 18",
-            "why": {
-              "en": "18 is the least common multiple.",
-              "es": "18 es el mínimo común múltiplo."
-            }
+            "unit": {
+              "en": "of each",
+              "es": "de cada uno"
+            },
+            "answer": 12,
+            "expr": "12",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Find the LCM.",
+                  "es": "Halla el mcm."
+                },
+                "math": "4 = 2×2, 6 = 2×3 → LCM = 2×2×3 = 12",
+                "why": {
+                  "en": "Least common multiple of 4 and 6.",
+                  "es": "Mínimo común múltiplo de 4 y 6."
+                }
+              }
+            ]
+          },
+          {
+            "ask": {
+              "en": "Gears come in packs of 10, belts in packs of 15 — fewest for an equal number?",
+              "es": "Los engranajes vienen en paquetes de 10, las correas en paquetes de 15 — ¿el mínimo para igual número?"
+            },
+            "unit": {
+              "en": "of each",
+              "es": "de cada uno"
+            },
+            "answer": 30,
+            "expr": "30",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Find the LCM.",
+                  "es": "Halla el mcm."
+                },
+                "math": "10 = 2×5, 15 = 3×5 → LCM = 2×3×5 = 30",
+                "why": {
+                  "en": "Take the greatest power of each prime.",
+                  "es": "Toma la mayor potencia de cada primo."
+                }
+              }
+            ]
           }
         ]
+      }
+    }
+  ],
+  "errorChecks": [
+    {
+      "step": "step-2",
+      "title": {
+        "en": "Is this the LEAST multiple?",
+        "es": "¿Es este el MÍNIMO múltiplo?"
+      },
+      "prompt": {
+        "en": "Someone matched packs of 8 bolts and packs of 12 nuts:",
+        "es": "Alguien emparejó paquetes de 8 tornillos y de 12 tuercas:"
+      },
+      "work": [
+        {
+          "math": "8 = 2×2×2,  12 = 2×2×3"
+        },
+        {
+          "math": "Multiply the pack sizes: 8 × 12 = 96"
+        },
+        {
+          "math": "So buy 96 of each"
+        }
+      ],
+      "flawIndex": 1,
+      "explanation": {
+        "en": "Multiplying the two sizes gives A common multiple, but not the LEAST one. Take the greatest power of each prime: 2×2×2×3 = 24.",
+        "es": "Multiplicar los dos tamaños da UN múltiplo común, no el MENOR. Toma la mayor potencia de cada primo: 2×2×2×3 = 24."
+      },
+      "fix": {
+        "math": "LCM = 2 × 2 × 2 × 3 = 24",
+        "why": {
+          "en": "The LCM is usually smaller than the product.",
+          "es": "El mcm suele ser menor que el producto."
+        }
       }
     }
   ]

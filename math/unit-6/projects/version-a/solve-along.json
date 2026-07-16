@@ -40,41 +40,130 @@
         "es": "El puntaje es 120 puntos."
       },
       "yourTurn": {
-        "ask": {
-          "en": "The score is 8c + 25. What is the score for 5 coins?",
-          "es": "El puntaje es 8c + 25. ¿Cuál es el puntaje con 5 monedas?"
-        },
-        "unit": {
-          "en": "points",
-          "es": "puntos"
-        },
-        "answer": 65,
-        "expr": "8*5+25",
-        "tolerance": 0.01,
-        "solution": [
+        "items": [
           {
-            "do": {
-              "en": "Substitute 5 for c.",
-              "es": "Sustituye 5 por c."
+            "ask": {
+              "en": "The score is 8c + 25. What is the score for 5 coins?",
+              "es": "El puntaje es 8c + 25. ¿Cuál es el puntaje con 5 monedas?"
             },
-            "math": "8(5) + 25",
-            "why": {
-              "en": "Plug in the coins.",
-              "es": "Reemplaza las monedas."
-            }
+            "unit": {
+              "en": "points",
+              "es": "puntos"
+            },
+            "answer": 65,
+            "expr": "8*5+25",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Substitute 5 for c.",
+                  "es": "Sustituye 5 por c."
+                },
+                "math": "8(5) + 25",
+                "why": {
+                  "en": "Plug in the coins.",
+                  "es": "Reemplaza las monedas."
+                }
+              },
+              {
+                "do": {
+                  "en": "Multiply, then add.",
+                  "es": "Multiplica y luego suma."
+                },
+                "math": "40 + 25 = 65",
+                "why": {
+                  "en": "Order of operations.",
+                  "es": "Orden de operaciones."
+                }
+              }
+            ]
           },
           {
-            "do": {
-              "en": "Multiply, then add.",
-              "es": "Multiplica y luego suma."
+            "ask": {
+              "en": "Score = 5c + 20. Find the score for 8 coins.",
+              "es": "Puntaje = 5c + 20. Halla el puntaje con 8 monedas."
             },
-            "math": "40 + 25 = 65",
-            "why": {
-              "en": "Order of operations.",
-              "es": "Orden de operaciones."
-            }
+            "unit": {
+              "en": "points",
+              "es": "puntos"
+            },
+            "answer": 60,
+            "expr": "5*8+20",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Substitute, then multiply before adding.",
+                  "es": "Sustituye, luego multiplica antes de sumar."
+                },
+                "math": "5(8) + 20 = 40 + 20 = 60",
+                "why": {
+                  "en": "Order of operations.",
+                  "es": "Orden de operaciones."
+                }
+              }
+            ]
+          },
+          {
+            "ask": {
+              "en": "Score = 12c + 10. Find the score for 4 coins.",
+              "es": "Puntaje = 12c + 10. Halla el puntaje con 4 monedas."
+            },
+            "unit": {
+              "en": "points",
+              "es": "puntos"
+            },
+            "answer": 58,
+            "expr": "12*4+10",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Substitute, then multiply before adding.",
+                  "es": "Sustituye, luego multiplica antes de sumar."
+                },
+                "math": "12(4) + 10 = 48 + 10 = 58",
+                "why": {
+                  "en": "Multiply first.",
+                  "es": "Multiplica primero."
+                }
+              }
+            ]
           }
         ]
+      }
+    }
+  ],
+  "errorChecks": [
+    {
+      "step": "step-2",
+      "title": {
+        "en": "Which operation comes first?",
+        "es": "¿Qué operación va primero?"
+      },
+      "prompt": {
+        "en": "Someone evaluated the score 10c + 50 for c = 7:",
+        "es": "Alguien evaluó el puntaje 10c + 50 para c = 7:"
+      },
+      "work": [
+        {
+          "math": "10(7) + 50"
+        },
+        {
+          "math": "10 × 57 = 570"
+        }
+      ],
+      "flawIndex": 1,
+      "explanation": {
+        "en": "Multiply before you add (order of operations): 10 × 7 = 70, then + 50 = 120. Don't add 7 + 50 first.",
+        "es": "Multiplica antes de sumar (orden de operaciones): 10 × 7 = 70, luego + 50 = 120. No sumes 7 + 50 primero."
+      },
+      "fix": {
+        "math": "10 × 7 + 50 = 70 + 50 = 120",
+        "why": {
+          "en": "Multiplication before addition.",
+          "es": "Multiplicación antes que suma."
+        }
       }
     }
   ]

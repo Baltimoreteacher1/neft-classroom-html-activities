@@ -40,41 +40,199 @@
         "es": "El precio total es $21.20."
       },
       "yourTurn": {
-        "ask": {
-          "en": "A backpack costs $30 with 7% sales tax. What is the total price?",
-          "es": "Una mochila cuesta $30 con 7% de impuesto. ¿Cuál es el precio total?"
-        },
-        "unit": {
-          "en": "$",
-          "es": "$"
-        },
-        "answer": 32.1,
-        "expr": "30 + 0.07*30",
-        "tolerance": 0.01,
-        "solution": [
+        "items": [
           {
-            "do": {
-              "en": "Find the tax.",
-              "es": "Halla el impuesto."
+            "ask": {
+              "en": "A backpack costs $30 with 7% sales tax. What is the total price?",
+              "es": "Una mochila cuesta $30 con 7% de impuesto. ¿Cuál es el precio total?"
             },
-            "math": "0.07 × 30 = 2.10",
-            "why": {
-              "en": "7% of $30.",
-              "es": "7% de $30."
-            }
+            "unit": {
+              "en": "$",
+              "es": "$"
+            },
+            "answer": 32.1,
+            "expr": "30 + 0.07*30",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Find the tax.",
+                  "es": "Halla el impuesto."
+                },
+                "math": "0.07 × 30 = 2.10",
+                "why": {
+                  "en": "7% of $30.",
+                  "es": "7% de $30."
+                }
+              },
+              {
+                "do": {
+                  "en": "Add it on.",
+                  "es": "Súmalo."
+                },
+                "math": "30 + 2.10 = 32.10",
+                "why": {
+                  "en": "Price plus tax.",
+                  "es": "Precio más impuesto."
+                }
+              }
+            ]
           },
           {
-            "do": {
-              "en": "Add it on.",
-              "es": "Súmalo."
+            "ask": {
+              "en": "A $50 shirt with 8% sales tax — total price?",
+              "es": "Una camisa de $50 con 8% de impuesto — ¿precio total?"
             },
-            "math": "30 + 2.10 = 32.10",
-            "why": {
-              "en": "Price plus tax.",
-              "es": "Precio más impuesto."
-            }
+            "unit": {
+              "en": "$",
+              "es": "$"
+            },
+            "answer": 54,
+            "expr": "50 + 0.08*50",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Add the tax to the price.",
+                  "es": "Suma el impuesto al precio."
+                },
+                "math": "50 + 0.08×50 = 50 + 4 = 54",
+                "why": {
+                  "en": "Price plus tax.",
+                  "es": "Precio más impuesto."
+                }
+              }
+            ]
+          },
+          {
+            "ask": {
+              "en": "A $25 hat with 4% sales tax — total price?",
+              "es": "Un gorro de $25 con 4% de impuesto — ¿precio total?"
+            },
+            "unit": {
+              "en": "$",
+              "es": "$"
+            },
+            "answer": 26,
+            "expr": "25 + 0.04*25",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Add the tax to the price.",
+                  "es": "Suma el impuesto al precio."
+                },
+                "math": "25 + 0.04×25 = 25 + 1 = 26",
+                "why": {
+                  "en": "Price plus tax.",
+                  "es": "Precio más impuesto."
+                }
+              }
+            ]
           }
         ]
+      }
+    },
+    {
+      "step": "step-3",
+      "title": {
+        "en": "Unit Rate Deal — price per item",
+        "es": "Oferta por unidad — precio por artículo"
+      },
+      "prompt": {
+        "en": "A 6-pack of drinks costs $9.00. What is the price per drink?",
+        "es": "Un paquete de 6 bebidas cuesta $9.00. ¿Cuál es el precio por bebida?"
+      },
+      "steps": [
+        {
+          "do": {
+            "en": "Divide the price by the number of items.",
+            "es": "Divide el precio entre el número de artículos."
+          },
+          "math": "9.00 ÷ 6 = $1.50 each",
+          "why": {
+            "en": "Unit rate = total ÷ count.",
+            "es": "Tasa unitaria = total ÷ cantidad."
+          }
+        },
+        {
+          "do": {
+            "en": "Compare to a single drink at $2.00.",
+            "es": "Compara con una bebida suelta a $2.00."
+          },
+          "math": "$1.50 < $2.00",
+          "why": {
+            "en": "The multipack has the lower unit price.",
+            "es": "El paquete tiene el menor precio unitario."
+          }
+        }
+      ],
+      "answer": {
+        "en": "The 6-pack is $1.50 per drink — the better deal.",
+        "es": "El paquete de 6 sale a $1.50 por bebida — la mejor oferta."
+      },
+      "yourTurn": {
+        "items": [
+          {
+            "ask": {
+              "en": "A 4-pack costs $10.00. What is the price per item?",
+              "es": "Un paquete de 4 cuesta $10.00. ¿Cuál es el precio por artículo?"
+            },
+            "unit": {
+              "en": "$/item",
+              "es": "$/artículo"
+            },
+            "answer": 2.5,
+            "expr": "10/4",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Divide price by count.",
+                  "es": "Divide precio entre cantidad."
+                },
+                "math": "10 ÷ 4 = $2.50 each",
+                "why": {
+                  "en": "Unit price.",
+                  "es": "Precio unitario."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "errorChecks": [
+    {
+      "step": "step-4",
+      "title": {
+        "en": "Is the total just the tax?",
+        "es": "¿El total es solo el impuesto?"
+      },
+      "prompt": {
+        "en": "Someone found the total price of a $20 hoodie with 6% tax:",
+        "es": "Alguien calculó el precio total de una sudadera de $20 con 6% de impuesto:"
+      },
+      "work": [
+        {
+          "math": "Tax = 0.06 × 20 = 1.20"
+        },
+        {
+          "math": "Total price = $1.20"
+        }
+      ],
+      "flawIndex": 1,
+      "explanation": {
+        "en": "$1.20 is only the TAX. The customer pays the price PLUS the tax: 20 + 1.20 = 21.20.",
+        "es": "$1.20 es solo el IMPUESTO. El cliente paga el precio MÁS el impuesto: 20 + 1.20 = 21.20."
+      },
+      "fix": {
+        "math": "20 + 1.20 = $21.20",
+        "why": {
+          "en": "Add the tax back onto the price.",
+          "es": "Suma el impuesto de vuelta al precio."
+        }
       }
     }
   ]

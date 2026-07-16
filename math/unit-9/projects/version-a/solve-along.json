@@ -40,41 +40,130 @@
         "es": "El canal gana 1000 suscriptores en 20 días."
       },
       "yourTurn": {
-        "ask": {
-          "en": "A video gets 180 views every 3 hours. How many views in 12 hours?",
-          "es": "Un video recibe 180 vistas cada 3 horas. ¿Cuántas vistas en 12 horas?"
-        },
-        "unit": {
-          "en": "views",
-          "es": "vistas"
-        },
-        "answer": 720,
-        "expr": "(180/3)*12",
-        "tolerance": 0.01,
-        "solution": [
+        "items": [
           {
-            "do": {
-              "en": "Find views per hour.",
-              "es": "Halla las vistas por hora."
+            "ask": {
+              "en": "A video gets 180 views every 3 hours. How many views in 12 hours?",
+              "es": "Un video recibe 180 vistas cada 3 horas. ¿Cuántas vistas en 12 horas?"
             },
-            "math": "180 ÷ 3 = 60",
-            "why": {
-              "en": "Unit rate per hour.",
-              "es": "Tasa unitaria por hora."
-            }
+            "unit": {
+              "en": "views",
+              "es": "vistas"
+            },
+            "answer": 720,
+            "expr": "(180/3)*12",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Find views per hour.",
+                  "es": "Halla las vistas por hora."
+                },
+                "math": "180 ÷ 3 = 60",
+                "why": {
+                  "en": "Unit rate per hour.",
+                  "es": "Tasa unitaria por hora."
+                }
+              },
+              {
+                "do": {
+                  "en": "Multiply by 12 hours.",
+                  "es": "Multiplica por 12 horas."
+                },
+                "math": "60 × 12 = 720",
+                "why": {
+                  "en": "Scale up to 12 hours.",
+                  "es": "Escala a 12 horas."
+                }
+              }
+            ]
           },
           {
-            "do": {
-              "en": "Multiply by 12 hours.",
-              "es": "Multiplica por 12 horas."
+            "ask": {
+              "en": "300 subscribers in 6 days at a steady rate — how many in 18 days?",
+              "es": "300 suscriptores en 6 días a ritmo constante — ¿cuántos en 18 días?"
             },
-            "math": "60 × 12 = 720",
-            "why": {
-              "en": "Scale up to 12 hours.",
-              "es": "Escala a 12 horas."
-            }
+            "unit": {
+              "en": "subscribers",
+              "es": "suscriptores"
+            },
+            "answer": 900,
+            "expr": "(300/6)*18",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Find the daily rate, then scale.",
+                  "es": "Halla la tasa diaria y escala."
+                },
+                "math": "300 ÷ 6 = 50/day, then 50 × 18 = 900",
+                "why": {
+                  "en": "Unit rate times days.",
+                  "es": "Tasa unitaria por días."
+                }
+              }
+            ]
+          },
+          {
+            "ask": {
+              "en": "120 views in 4 minutes at a steady rate — how many in 20 minutes?",
+              "es": "120 vistas en 4 minutos a ritmo constante — ¿cuántas en 20 minutos?"
+            },
+            "unit": {
+              "en": "views",
+              "es": "vistas"
+            },
+            "answer": 600,
+            "expr": "(120/4)*20",
+            "tolerance": 0.01,
+            "solution": [
+              {
+                "do": {
+                  "en": "Find the rate per minute, then scale.",
+                  "es": "Halla la tasa por minuto y escala."
+                },
+                "math": "120 ÷ 4 = 30/min, then 30 × 20 = 600",
+                "why": {
+                  "en": "Unit rate times minutes.",
+                  "es": "Tasa unitaria por minutos."
+                }
+              }
+            ]
           }
         ]
+      }
+    }
+  ],
+  "errorChecks": [
+    {
+      "step": "step-2",
+      "title": {
+        "en": "Did they use the unit rate?",
+        "es": "¿Usaron la tasa unitaria?"
+      },
+      "prompt": {
+        "en": "Someone projected subscribers for 20 days, gaining 250 every 5 days:",
+        "es": "Alguien proyectó suscriptores para 20 días, ganando 250 cada 5 días:"
+      },
+      "work": [
+        {
+          "math": "250 subs every 5 days"
+        },
+        {
+          "math": "250 × 20 = 5000"
+        }
+      ],
+      "flawIndex": 1,
+      "explanation": {
+        "en": "Find the DAILY rate first: 250 ÷ 5 = 50 per day. Then × 20 days = 1000, not 5000.",
+        "es": "Halla primero la tasa DIARIA: 250 ÷ 5 = 50 por día. Luego × 20 días = 1000, no 5000."
+      },
+      "fix": {
+        "math": "(250 ÷ 5) × 20 = 50 × 20 = 1000",
+        "why": {
+          "en": "Scale from the unit rate, not the group total.",
+          "es": "Escala desde la tasa unitaria, no desde el total del grupo."
+        }
       }
     }
   ]
