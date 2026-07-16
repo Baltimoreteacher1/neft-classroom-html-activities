@@ -1,5 +1,7 @@
 import { buildCanvasRss } from "../../../curriculum/family-connections/shared/model.js";
 import { initialState, normalizeSnapshot } from "./domain.js";
+import { createD1SchedulerStore } from "./scheduler-d1.js";
+import { handleSchedulerRequest } from "./scheduler.js";
 
 const HISTORY_LIMIT = 5;
 const MAX_BODY_BYTES = 180_000;
@@ -184,6 +186,11 @@ export async function handleFamilyConnectionsRequest(context, suppliedStore, acc
   const method = request.method.toUpperCase();
   const access = accessOverride ?? requestAccess(context);
   const store = suppliedStore ?? (env.DB ? createD1Store(env.DB) : null);
+
+  if (path.startsWith("schedule-")) {
+    if (!env.DB) return json({ ok: false, error: "scheduling-unavailable" }, 503);
+    return handleSchedulerRequest(context, createD1SchedulerStore(env.DB), access);
+  }
 
   if (!store) return json({ ok: false, error: "publishing-unavailable" }, 503);
   if (path === "published" && method === "GET") {

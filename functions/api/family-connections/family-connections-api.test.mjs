@@ -115,5 +115,6 @@ const publicFeedThroughGate = await applySiteAccess({
 assert.equal(publicFeedThroughGate.status, 200, "Canvas must be able to poll the published feed");
 assert.match(middleware, /teacherAccessConfigured/);
 assert.match(middleware, /teacherAuthorized/);
+assert.match(middleware, /isPublicFamilySchedulingApi/);
 
 console.log("Family Connections API tests passed.");
