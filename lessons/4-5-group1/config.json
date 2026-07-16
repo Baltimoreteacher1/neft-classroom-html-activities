@@ -575,9 +575,7 @@
           "Did the student stop after finding just the tip amount?",
           "A tip is added to the bill: $20 + $2 = $22 total."
         ]
-      }
-    ],
-    "onLevel": [
+      },
       {
         "type": "multiple-choice",
         "stem": "A store marks up a $30 item by 40%, then a customer gets 10% off. What is the final price?",
@@ -600,7 +598,9 @@
           "Step 1: raise $30 by 40%. Step 2: take 10% off that new price.",
           "Start with the markup: $30 × 1.40 = $42. Now find 10% of $42 and subtract it from $42."
         ]
-      },
+      }
+    ],
+    "onLevel": [
       {
         "type": "multiple-choice",
         "stem": "A restaurant bill is $35. You want to leave a 20% tip. What is the total amount you pay?",
@@ -622,6 +622,112 @@
           "The question asks the TOTAL you pay — the bill AND the tip together, not just the tip.",
           "Find 20% of $35 first, then add it onto the $35 bill.",
           "Compute the tip: 0.20 × 35 (or take 10% of 35 and double it). Then add it to $35."
+        ]
+      },
+      {
+        "type": "error-analysis",
+        "title": "onLevel — Spot the Discount-then-Tax Mistake",
+        "workedExample": [
+          {
+            "label": "Read",
+            "work": "A $50 jacket is 20% off, then 5% tax is added. Find the final price."
+          },
+          {
+            "label": "Find the discount and sale price",
+            "work": "0.20 × 50 = 10 off, so the sale price is 50 − 10 = $40."
+          },
+          {
+            "label": "Add the tax",
+            "work": "Tax = 0.05 × 50 = $2.50, so the total is 40 + 2.50 = $42.50."
+          }
+        ],
+        "errorStep": 2,
+        "correctWork": "Tax goes on the price you actually pay ($40), not the original $50. Tax = 0.05 × 40 = $2. Final price = 40 + 2 = $42.",
+        "hints": [
+          "After the discount you pay $40, not $50. Which price should the tax be based on?",
+          "Tax = 0.05 × 40 = $2, not 0.05 × 50. Final price: 40 + 2 = $42."
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "Store 1 — Sneaker Spot: A pair of sneakers is $60 with 20% off. What is the sale price?",
+        "choices": [
+          "$48",
+          "$40",
+          "$52",
+          "$12"
+        ],
+        "correctIndex": 0,
+        "explanation": "Discount: 0.20 x 60 = 12. Sale price: 60 - 12 = $48.",
+        "choiceFeedback": [
+          "",
+          "Find 20% of $60, then subtract.",
+          "Calculate discount.",
+          ""
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "Store 2 — Tech Stop: A $25 phone case has 8% sales tax added. What is the total cost?",
+        "choices": [
+          "$27",
+          "$33",
+          "$25.08",
+          "$23"
+        ],
+        "correctIndex": 0,
+        "explanation": "Tax: 0.08 x 25 = 2. Total: 25 + 2 = $27.",
+        "choiceFeedback": [
+          "",
+          "Find 8% of $25 and add.",
+          "Calculate tax.",
+          ""
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "Store 3 — Food Court: Your lunch bill is $40. You leave a 15% tip. How much is the tip?",
+        "choices": [
+          "$6",
+          "$4",
+          "$15",
+          "$46"
+        ],
+        "correctIndex": 0,
+        "explanation": "Tip: 0.15 x 40 = $6.",
+        "choiceFeedback": [
+          "",
+          "Find 15% of $40 and add.",
+          "Calculate tip.",
+          ""
+        ]
+      },
+      {
+        "type": "error-analysis",
+        "title": "Level 2 Extension — Tax-on-Discounted-Price Mistake",
+        "workedExample": [
+          {
+            "label": "A $90 hoodie is 20% off, then 6% tax is added. Find the final price.",
+            "work": "$90 hoodie, 20% off, 6% tax"
+          },
+          {
+            "label": "Find the discount and the sale price",
+            "work": "0.20 x 90 = 18, so sale price = 90 - 18 = $72"
+          },
+          {
+            "label": "Add the tax",
+            "work": "Tax = 0.06 x 90 = 5.40"
+          },
+          {
+            "label": "Final price",
+            "work": "72 + 5.40 = $77.40"
+          }
+        ],
+        "errorStep": 2,
+        "correctWork": "Tax must be charged on the price you actually pay ($72), not the original $90. Tax = 0.06 x 72 = 4.32. Final price = 72 + 4.32 = $76.32.",
+        "hints": [
+          "After a discount, you pay the lower sale price. Which price should the tax be based on?",
+          "Tax should be 0.06 x 72 = 4.32, not 0.06 x 90. Final price: 72 + 4.32 = $76.32."
         ]
       }
     ],
@@ -695,6 +801,10 @@
   "readiness": false,
   "timeEstimate": "~15–20 min",
   "variant": "group1",
+  "smallGroupPractice": {
+    "guidedCount": 4,
+    "minimum": 10
+  },
   "smallGroup": {
     "group": 1,
     "label": "Extra Support",

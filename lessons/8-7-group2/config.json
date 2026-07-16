@@ -444,9 +444,7 @@
           "The shape call is right — check the measure-of-center choice instead.",
           "That one 40-million salary drags the mean up to ~6.75 while the median stays at 2. For skewed data, use the median."
         ]
-      }
-    ],
-    "extending": [
+      },
       {
         "type": "error-analysis",
         "title": "Find the Shape Error",
@@ -496,39 +494,9 @@
           "Plan: medians come from where MOST scores sit (near 80 vs the 60s). For means, ask what Class B's few 100s do. Then decide where mean = typical.",
           "Start with the medians: Class A's middle score sits near its 80 cluster; Class B's sits in the 60–70 pile. Compare those, then tackle the means."
         ]
-      },
-      {
-        "type": "drag-sort",
-        "instructions": "Drag each real-world data set under the distribution shape it would most likely form.",
-        "categories": [
-          {
-            "label": "Symmetric",
-            "items": [
-              "Player heights across a league"
-            ]
-          },
-          {
-            "label": "Skewed Right",
-            "items": [
-              "Career earnings of athletes"
-            ]
-          },
-          {
-            "label": "Skewed Left",
-            "items": [
-              "An experienced archer's scores out of 100"
-            ]
-          }
-        ],
-        "hints": [
-          "Symmetric: most values cluster in the middle with equal tails on both sides.",
-          "Skewed RIGHT: a few very HIGH values (e.g., superstar earnings) stretch the tail right.",
-          "Skewed LEFT: a few very LOW values (e.g., a few bad rounds) stretch the tail left."
-        ],
-        "label": "Sort each data set by its likely histogram shape."
       }
     ],
-    "optional": [
+    "extending": [
       {
         "type": "multiple-choice",
         "stem": "A histogram has a long tail of high values stretching to the right. What is its shape?",
@@ -582,8 +550,130 @@
           "This doesn't have equal halves—it's not symmetric.",
           "The tail goes low (left)—that direction shows skew direction."
         ]
+      },
+      {
+        "type": "error-analysis",
+        "title": "Level 2 Extension — Name the Skew by Its Tail",
+        "workedExample": [
+          {
+            "label": "Display",
+            "work": "Analytics screen: minutes played per game. Bar heights left to right: 12, 8, 4, 2, 1."
+          },
+          {
+            "label": "Cluster",
+            "work": "Most players are bunched on the left (low minutes)."
+          },
+          {
+            "label": "Tail",
+            "work": "The short bars trail off toward the right (high minutes)."
+          },
+          {
+            "label": "Shape claim",
+            "work": "Because the tall bars (the peak) are on the LEFT, this display is left-skewed."
+          }
+        ],
+        "errorStep": 3,
+        "correctWork": "This display is skewed RIGHT, not left. Skew is named for the direction the TAIL points, not where the peak sits. The peak is on the left, but the long tail of short bars stretches to the right, so it is skewed right. (A correct claim-evidence-reasoning answer: 'The distribution is skewed right because I see the tail stretching toward the high values on the right.')",
+        "hints": [
+          "Ask: which way does the long tail of short bars point, not where is the tallest bar?",
+          "The peak is on the left and the tail stretches right. Skew is named for the tail, so this is skewed right."
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "A histogram of basketball players' ages shows: most players are 22–28, with a long tail of older players up to age 40. What is the shape of this distribution?",
+        "choices": [
+          "Skewed right",
+          "Symmetric",
+          "Skewed left",
+          "Uniform"
+        ],
+        "correctIndex": 0,
+        "explanation": "Most data is on the left (younger ages) with a tail stretching right (older ages). This is skewed right.",
+        "choiceFeedback": [
+          "",
+          "Count dots at heights below your target height.",
+          "Dots above the line don't count—look at dots below.",
+          "Add dots at each height that's shorter."
+        ],
+        "hints": [
+          "Locate the crowd and the tail: most players are 22–28 (the left side), with a thin tail stretching out to age 40 (the right side).",
+          "Skew is named after the TAIL — the direction the long thin end stretches — not after where the big cluster sits.",
+          "First step: sketch it — tall bars at ages 22–28, shrinking bars out to 40. Point your finger along the tail and name that direction."
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "A data set is symmetric. What is likely true about the mean and median?",
+        "choices": [
+          "They are approximately equal",
+          "The mean is much higher than the median",
+          "The median is much higher than the mean",
+          "They are always exactly the same"
+        ],
+        "correctIndex": 0,
+        "explanation": "In a symmetric distribution, the mean and median are approximately equal because the data is balanced on both sides.",
+        "choiceFeedback": [
+          "",
+          "Count dots at scores below 80.",
+          "Dots at 80 or higher don't count.",
+          "Add up dots at all lower scores."
+        ],
+        "hints": [
+          "Symmetric means the left and right sides mirror each other around the center — no long tail on either side.",
+          "A tail is what PULLS the mean away from the median. Ask: with no tail at all, how far apart could the two measures drift?",
+          "First step: test a symmetric set like 2, 4, 6, 8, 10 — find its mean and median and compare. Also watch for the word 'always' in the choices."
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "Which word describes the direction of the TAIL, not the peak?",
+        "choices": [
+          "Skew — the direction of the long tail tells you the skew direction",
+          "Skew — the direction of the peak tells you the skew direction",
+          "Skew — the direction the median points",
+          "Skew — the direction of the mode"
+        ],
+        "correctIndex": 0,
+        "explanation": "The skew direction is named after the TAIL. If the tail stretches to the right, it is skewed right, even though the peak is on the left.",
+        "choiceFeedback": [
+          "",
+          "Direction of tail tells skew—where does the long thin part go?",
+          "The peak's position doesn't define skew—the tail does.",
+          "Median location is helpful, but tail direction defines skew."
+        ],
+        "hints": [
+          "All four choices start with 'Skew' — the difference is WHICH feature (tail, peak, median, or mode) names the direction.",
+          "Picture a skewed-right dot plot: its peak sits on the LEFT, yet we call it skewed RIGHT. Ask which feature must be doing the naming.",
+          "First step: since a right-skewed plot has its peak on the left, the peak can't set the name. Test tail, median, and mode against that same picture."
+        ]
+      },
+      {
+        "type": "error-analysis",
+        "title": "approaching — Spot the Common Mistake",
+        "workedExample": [
+          {
+            "label": "Data",
+            "work": "Goals per game dot plot — 0: 8 dots, 1: 6 dots, 2: 3 dots, 3: 1 dot, 4: 1 dot."
+          },
+          {
+            "label": "Look",
+            "work": "The tallest stacks of dots are on the LEFT (0 and 1 goals); the dots trail off to the right toward 4 goals."
+          },
+          {
+            "label": "Shape claim",
+            "work": "The tallest bars are on the left, so the student calls this distribution skewed LEFT."
+          }
+        ],
+        "errorStep": 2,
+        "correctWork": "This distribution is skewed RIGHT, not left. The student named the skew after where the peak sits, but skew is named for the direction the TAIL points. The peak (tallest stacks) is on the left at 0–1 goals, and the tail of short stacks stretches to the right toward 4. A tail pointing right means skewed right.",
+        "hints": [
+          "Don't name the skew after the tallest bar — name it after the long tail.",
+          "The dots pile up at 0–1 and trail off toward 4. The tail points right, so the shape is skewed right."
+        ]
       }
     ],
+    "optional": [],
     "commonMistake": "A common mistake in Shape of Data Distributions is naming the skew by looking at where the TALLEST bar (the peak) sits, instead of looking at which way the TAIL stretches. For example, given bar heights 8, 5, 3, 1 (tall on the left, trailing off to the right), students often say \"skewed left\" because the peak is on the left — but the correct name is skewed right, because skew is always named for the direction the tail points, not the peak.",
     "optionalActivity": {
       "name": "Distribution Shape Gallery Walk",
@@ -713,6 +803,10 @@
   "readiness": false,
   "timeEstimate": "~15–20 min",
   "variant": "group2",
+  "smallGroupPractice": {
+    "guidedCount": 3,
+    "minimum": 10
+  },
   "smallGroup": {
     "group": 2,
     "label": "Challenge",

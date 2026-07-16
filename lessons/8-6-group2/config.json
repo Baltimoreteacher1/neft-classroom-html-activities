@@ -508,9 +508,35 @@
           "Skew is named for the TAIL — the long, low side — not for the peak. Find the direction the bars shrink toward, then name that direction.",
           "First step: the tallest bar (9 players) is at 0–1 goals on the left, and heights fall to 1 by 6–7. Trace the tail with your finger, then name it."
         ]
-      }
-    ],
-    "extending": [
+      },
+      {
+        "type": "error-analysis",
+        "title": "onLevel — Spot the Interval Mistake",
+        "workedExample": [
+          {
+            "label": "Data (assists per game)",
+            "work": "1, 4, 6, 9, 12, 15, 18"
+          },
+          {
+            "label": "Intervals the student chose",
+            "work": "0–5, 6–10, 12–18"
+          },
+          {
+            "label": "Frequency count",
+            "work": "0–5: 2, 6–10: 2, 12–18: 3"
+          },
+          {
+            "label": "Conclusion",
+            "work": "The student drew three bars and said the histogram was complete."
+          }
+        ],
+        "errorStep": 1,
+        "correctWork": "The intervals are not equal in width and they leave a gap. 0–5 and 6–10 each cover 6 values, but 12–18 covers 7 values and the value 11 has no bin at all. Histogram intervals must be equal-width and cover every value with no gaps. Using equal intervals of 5 (0–4, 5–9, 10–14, 15–19) gives frequencies 0–4: 2 (the 1 and 4), 5–9: 2 (the 6 and 9), 10–14: 1 (the 12), and 15–19: 2 (the 15 and 18), totaling 7.",
+        "hints": [
+          "Check the width of each interval the student used. Are 0–5, 6–10, and 12–18 all the same size?",
+          "Where would a value of 11 go? Every value needs exactly one equal-width bin — there can be no gaps."
+        ]
+      },
       {
         "type": "error-analysis",
         "title": "Find the Histogram Error",
@@ -538,7 +564,9 @@
           "Symmetric means the left side mirrors the right side. Does 1, 2, 3, 4, 2 mirror evenly?",
           "The peak (4) is in the 80–89 range, which is toward the right. That means most data is on the high end."
         ]
-      },
+      }
+    ],
+    "extending": [
       {
         "type": "open-response",
         "prompt": "A teacher collected test scores and made two different histograms — one with intervals of 5 (50–54, 55–59, etc.) and one with intervals of 20 (50–69, 70–89, 90–109). Both use the same data. How might the two histograms look different? Which interval size gives you more detail about the distribution? When might the larger interval be better?",
@@ -605,9 +633,7 @@
           "Reason it out: covering the same score range with narrower buckets requires MORE buckets. Then ask what having more bars does for detail.",
           "First step: take the range 60–79. With width 20 it's ONE bar; with width 5 it becomes four bars (60–64, 65–69, 70–74, 75–79). Compare the detail."
         ]
-      }
-    ],
-    "optional": [
+      },
       {
         "type": "multiple-choice",
         "stem": "Data: 4, 8, 9, 12, 14, 15, 17, 18, 19, 22, 24, 27, 31, 33. How many values fall in the 10–19 interval?",
@@ -661,8 +687,60 @@
           "Check which interval holds the most readings.",
           "Histogram shows frequency by interval, not individual values."
         ]
+      },
+      {
+        "type": "error-analysis",
+        "title": "Level 2 Extension — The Boundary Mistake",
+        "workedExample": [
+          {
+            "label": "Data (points per game)",
+            "work": "5, 9, 10, 14, 19, 20, 22"
+          },
+          {
+            "label": "Intervals",
+            "work": "0–9, 10–19, 20–29"
+          },
+          {
+            "label": "Frequency count",
+            "work": "0–9: 3, 10–19: 4, 20–29: 2"
+          },
+          {
+            "label": "Conclusion",
+            "work": "Total = 3 + 4 + 2 = 9 values, so the histogram shows 9 players."
+          }
+        ],
+        "errorStep": 2,
+        "correctWork": "There are only 7 data values, but the count adds up to 9. The mistake is that the boundary value 10 was counted twice — once in 0–9 and again in 10–19. Each value belongs to exactly ONE bin. The value 10 fits only in 10–19, and 20 fits only in 20–29. The correct counts are 0–9: 2 (the 5 and 9), 10–19: 3 (the 10, 14, and 19), and 20–29: 2 (the 20 and 22), which totals 7.",
+        "hints": [
+          "Count the data values first: 5, 9, 10, 14, 19, 20, 22 is 7 values, but the frequencies add to 9. A value got counted twice.",
+          "A boundary value like 10 belongs to only one interval. Since 10–19 starts at 10, the value 10 goes there, not in 0–9."
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "A histogram shows these frequencies: 0–4: 3 players, 5–9: 8 players, 10–14: 12 players, 15–19: 5 players. How many players are represented in total?",
+        "choices": [
+          "20",
+          "15",
+          "28",
+          "12"
+        ],
+        "correctIndex": 2,
+        "explanation": "Add all frequencies: 3 + 8 + 12 + 5 = 28 players.",
+        "choiceFeedback": [
+          "",
+          "Did you count frequencies or find the highest value?",
+          "",
+          "Add all frequencies: 3+8+12+5."
+        ],
+        "hints": [
+          "The question asks for the TOTAL across all four intervals — not the tallest bar and not the biggest interval.",
+          "Each frequency counts the players in one interval, and no player is counted twice — so combine all four frequencies into one total.",
+          "Set up the addition: 3 + 8 + 12 + 5. The sum of all the bar heights is the total number of players."
+        ]
       }
     ],
+    "optional": [],
     "commonMistake": "A common mistake in Display Data: Histograms is counting a boundary value in two intervals at once — for example, putting the value 10 in both the '0–9' bin and the '10–19' bin. Each data value belongs to exactly ONE interval. Before you submit, add up all your frequencies and check that the total matches the number of data values you started with.",
     "optionalActivity": {
       "name": "Histogram Builder Lab",
@@ -771,6 +849,10 @@
   "readiness": false,
   "timeEstimate": "~15–20 min",
   "variant": "group2",
+  "smallGroupPractice": {
+    "guidedCount": 3,
+    "minimum": 10
+  },
   "smallGroup": {
     "group": 2,
     "label": "Challenge",

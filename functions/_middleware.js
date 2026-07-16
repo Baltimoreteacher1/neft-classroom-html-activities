@@ -21,14 +21,31 @@ export async function onRequest(context) {
   const { request, env, next } = context;
   const password = env.SITE_PASSWORD;
 
-  // No password configured -> leave the site fully open (no behavior change).
-  if (!password) return next();
-
   const url = new URL(request.url);
   const p = url.pathname.toLowerCase();
 
-  // APIs and lesson config JSON have their own auth / are fetched by external
-  // automation (e.g. the Apps Script slide generator). Never gate them here.
+  // Small-group facilitation must never ship in the student config response.
+  // The authenticated /teacher-small-group/:id/data route reads the original
+  // asset directly and returns only the teacher fields after HTTP auth.
+  if (/^\/lessons\/\d{1,2}-\d{1,2}-(?:group[12]|catchup)\/config\.json$/.test(p)) {
+    const asset = await next();
+    if (!asset.ok) return asset;
+    const config = await asset.json();
+    delete config.smallGroup;
+    const headers = new Headers(asset.headers);
+    headers.set("content-type", "application/json; charset=utf-8");
+    headers.set("x-content-type-options", "nosniff");
+    return new Response(JSON.stringify(config), { status: asset.status, headers });
+  }
+
+  // Facilitation fails closed until server-side access protection is enabled.
+  if (!password && p.startsWith("/teacher-small-group/")) {
+    return new Response("Teacher access is not configured.", { status: 503 });
+  }
+  if (!password) return next();
+
+  // APIs and other lesson config JSON have their own auth / are fetched by
+  // external automation (e.g. the Apps Script slide generator).
   if (p.startsWith("/api/") || p.endsWith("/config.json")) return next();
 
   // Static bundles under /assets/ and curriculum data under /data/ are shared

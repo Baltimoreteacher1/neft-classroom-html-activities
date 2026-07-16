@@ -10,10 +10,14 @@
 // launch{badge,narrative,conceptIntro}, vocabulary[], practice{tiers,…},
 // reflect.exitTicket, smallGroup{label,who,moves,frames}.
 
+import { mountSmallGroupMathTool } from "./small-group-math-tool.js";
+import { mountSmallGroupTabs } from "./small-group-tabs.js";
+import { mountSmallGroupTeacherAccess } from "./small-group-teacher-access.js";
+
 const ACCENT = {
-  group1: { name: "Extra Support", hue: "#2563eb", soft: "#e8f0ff", ink: "#1e3a8a", emoji: "🤝" },
-  group2: { name: "Challenge", hue: "#d97706", soft: "#fff4e0", ink: "#92400e", emoji: "🚀" },
-  catchup: { name: "Catch-Up", hue: "#0d9488", soft: "#dcf5f1", ink: "#0f766e", emoji: "🧭" },
+  group1: { name: "Guided Practice", hue: "#1859a9", soft: "#eaf2ff", ink: "#123b70", emoji: "🧭" },
+  group2: { name: "Math Challenge", hue: "#a84f0f", soft: "#fff2e8", ink: "#71320a", emoji: "🚀" },
+  catchup: { name: "Skill Check-In", hue: "#08766f", soft: "#e2f6f3", ink: "#07544f", emoji: "🔎" },
 };
 
 const esc = (s) =>
@@ -41,20 +45,22 @@ function injectStyles(a) {
   const s = document.createElement("style");
   s.id = "sg-styles";
   s.textContent = `
-  :root{--sg:${a.hue};--sg-soft:${a.soft};--sg-ink:${a.ink};--sg-line:#e6e8ec;--sg-paper:#fbfcfe;--sg-text:#1f2733;--sg-mut:#5b6673}
+  :root{--sg:${a.hue};--sg-soft:${a.soft};--sg-ink:${a.ink};--sg-line:#cfdae7;--sg-paper:#f4f7fb;--sg-text:#162536;--sg-mut:#4c6075}
   *{box-sizing:border-box}
-  body{margin:0;background:var(--sg-paper);color:var(--sg-text);font-family:"Hanken Grotesk",system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
-  #app{max-width:820px;margin:0 auto;padding:0 18px 96px}
+  body{margin:0;background:var(--sg-paper);color:var(--sg-text);font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:17px;line-height:1.65;-webkit-font-smoothing:antialiased}
+  #app{max-width:940px;margin:0 auto;padding:18px 24px 96px}
   h1,h2,h3{font-family:"Outfit","Hanken Grotesk",system-ui,sans-serif;line-height:1.15;margin:0}
-  .sg-hero{margin:0 -18px 22px;padding:26px 22px 24px;background:linear-gradient(135deg,var(--sg) 0%,color-mix(in srgb,var(--sg) 72%,#000) 100%);color:#fff}
+  button,a,input,textarea{font:inherit}
+  button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #f5b82e;outline-offset:3px}
+  .sg-hero{margin:12px 0 20px;padding:30px clamp(22px,5vw,46px);border-radius:22px;background:linear-gradient(130deg,var(--sg) 0%,color-mix(in srgb,var(--sg) 78%,#081b31) 100%);color:#fff;box-shadow:0 12px 30px rgba(16,41,67,.14)}
   .sg-kicker{display:inline-flex;align-items:center;gap:8px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:12.5px;background:rgba(255,255,255,.2);padding:5px 12px;border-radius:999px}
-  .sg-hero h1{font-size:30px;font-weight:900;margin:12px 0 6px}
-  .sg-obj{font-size:16px;font-weight:600;opacity:.97;margin:6px 0 0}
-  .sg-langobj{font-size:13.5px;opacity:.9;margin:6px 0 0}
+  .sg-hero h1{font-size:clamp(30px,5vw,46px);font-weight:900;margin:14px 0 10px;letter-spacing:-.02em}
+  .sg-obj{max-width:760px;font-size:19px;font-weight:700;opacity:.99;margin:8px 0 0}
+  .sg-langobj{max-width:760px;font-size:16px;opacity:.94;margin:8px 0 0}
   .sg-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
   .sg-chip{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:4px 12px;font-size:13px;font-weight:700}
-  .sg-teacher{margin:14px -18px 24px;padding:0 18px}
-  .sg-teacher details{background:#fff;border:1px dashed var(--sg);border-radius:12px;padding:0}
+  .sg-teacher{margin:0 0 22px}
+  .sg-teacher details{background:#fffdf2;border:2px solid #d29b21;border-radius:16px;padding:0;box-shadow:0 6px 18px rgba(78,57,11,.08)}
   .sg-teacher summary{cursor:pointer;padding:12px 16px;font-weight:800;color:var(--sg-ink);list-style:none;display:flex;align-items:center;gap:8px}
   .sg-teacher summary::-webkit-details-marker{display:none}
   .sg-teacher summary::before{content:"▸";color:var(--sg);transition:.15s}
@@ -63,16 +69,24 @@ function injectStyles(a) {
   .sg-teacher li{margin:5px 0}
   .sg-frames{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
   .sg-frame{background:var(--sg-soft);color:var(--sg-ink);border-radius:8px;padding:6px 10px;font-size:13.5px;font-weight:600}
-  .sg-rail{position:sticky;top:0;z-index:20;display:flex;gap:6px;margin:0 -18px 20px;padding:10px 18px;background:rgba(251,252,254,.9);backdrop-filter:blur(8px);border-bottom:1px solid var(--sg-line)}
-  .sg-step{flex:1;display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:800;color:var(--sg-mut);background:none;border:0;cursor:pointer;padding:6px 4px;border-radius:8px}
+  .sg-mode{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:48px;padding:9px 14px;border:1px solid var(--sg-line);border-radius:14px;background:#fff;box-shadow:0 3px 12px rgba(18,53,91,.07)}
+  .sg-mode-state{font-size:14px;font-weight:900;color:var(--sg-ink)}
+  .sg-mode-state::before{content:"●";margin-right:8px;color:#16845f}
+  .sg-mode-action{font-size:14px;font-weight:800;color:var(--sg-ink)}
+  .sg-mode-notice{margin:8px 4px 0;padding:10px 14px;border-radius:10px;background:#fff7df;color:#654713;font-size:14px}
+  .sg-tabs{position:sticky;top:0;z-index:20;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin:0 0 26px;padding:10px;background:rgba(244,247,251,.96);backdrop-filter:blur(10px);border:1px solid var(--sg-line);border-radius:16px}
+  .sg-step{display:flex;align-items:center;justify-content:center;gap:8px;min-height:48px;font-size:14px;font-weight:850;color:var(--sg-mut);background:#fff;border:1px solid var(--sg-line);cursor:pointer;padding:8px;border-radius:11px}
   .sg-step .dot{width:22px;height:22px;border-radius:50%;background:#eef0f3;color:var(--sg-mut);display:grid;place-items:center;font-size:12px;flex:none}
-  .sg-step.done .dot{background:var(--sg);color:#fff}
+  .sg-step.done .dot,.sg-step[aria-selected="true"] .dot{background:var(--sg);color:#fff}
   .sg-step.done{color:var(--sg-ink)}
-  section.sg-sec{margin:0 0 26px;scroll-margin-top:66px}
-  .sg-h{display:flex;align-items:center;gap:10px;margin:0 0 14px}
-  .sg-h .n{width:30px;height:30px;border-radius:9px;background:var(--sg);color:#fff;display:grid;place-items:center;font-weight:900;font-size:15px;flex:none}
-  .sg-h h2{font-size:21px;font-weight:800}
-  .card{background:#fff;border:1px solid var(--sg-line);border-radius:14px;padding:18px;margin:0 0 14px;box-shadow:0 1px 2px rgba(16,24,40,.04)}
+  .sg-step[aria-selected="true"]{border-color:var(--sg);background:var(--sg-soft);color:var(--sg-ink);box-shadow:inset 0 0 0 1px var(--sg)}
+  section.sg-sec{margin:0 0 26px;scroll-margin-top:84px}
+  section.sg-sec[hidden]{display:none}
+  .sg-h{display:flex;align-items:center;gap:13px;margin:0 0 18px}
+  .sg-h .n{width:38px;height:38px;border-radius:12px;background:var(--sg);color:#fff;display:grid;place-items:center;font-weight:900;font-size:17px;flex:none}
+  .sg-h h2{font-size:clamp(25px,4vw,34px);font-weight:850}
+  .sg-directions{margin:-6px 0 20px;padding:14px 17px;border-left:5px solid var(--sg);border-radius:0 12px 12px 0;background:var(--sg-soft);color:var(--sg-ink);font-weight:700}
+  .card{background:#fff;border:1px solid var(--sg-line);border-radius:16px;padding:22px;margin:0 0 16px;box-shadow:0 4px 14px rgba(18,53,91,.06)}
   .keyidea{background:var(--sg-soft);border-left:5px solid var(--sg);border-radius:12px;padding:14px 16px;margin:0 0 16px;font-weight:700;color:var(--sg-ink)}
   .keyidea .lab{display:block;font-size:12px;letter-spacing:.05em;text-transform:uppercase;opacity:.8;margin-bottom:3px}
   .block-lab{font-weight:800;color:var(--sg-ink);margin:0 0 6px;font-size:15px}
@@ -90,11 +104,11 @@ function injectStyles(a) {
   .vcloze{margin:10px 0 0;padding-top:10px;border-top:1px dashed var(--sg-line);font-size:14px}
   .vcloze .fillin{font-size:15px}
   .vcloze-lab{display:block;font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--sg-mut);margin-bottom:4px}
-  .prob{border:1px solid var(--sg-line);border-radius:14px;padding:16px 18px;margin:0 0 14px;background:#fff}
-  .prob .q{display:flex;gap:10px;font-weight:700;font-size:16px;margin:0 0 12px}
+  .prob{border:1px solid var(--sg-line);border-radius:16px;padding:22px;margin:0 0 18px;background:#fff;box-shadow:0 4px 14px rgba(18,53,91,.05)}
+  .prob .q{display:flex;gap:12px;font-weight:750;font-size:18px;margin:0 0 16px}
   .prob .q .pn{flex:none;width:26px;height:26px;border-radius:50%;background:var(--sg);color:#fff;display:grid;place-items:center;font-size:13px;font-weight:800}
   .choices{display:grid;gap:8px}
-  .choice{display:flex;align-items:center;gap:10px;text-align:left;width:100%;padding:11px 14px;border:1.5px solid var(--sg-line);border-radius:10px;background:#fff;font-size:15px;cursor:pointer;transition:.12s;font-family:inherit;color:inherit}
+  .choice{display:flex;align-items:center;gap:12px;text-align:left;width:100%;min-height:52px;padding:13px 15px;border:1.5px solid var(--sg-line);border-radius:11px;background:#fff;font-size:16px;cursor:pointer;transition:.12s;font-family:inherit;color:inherit}
   .choice:hover:not(:disabled){border-color:var(--sg);background:var(--sg-soft)}
   .choice .k{width:24px;height:24px;border-radius:6px;background:#eef0f3;display:grid;place-items:center;font-weight:800;font-size:13px;flex:none}
   .choice.correct{border-color:#16a34a;background:#eafaf0}.choice.correct .k{background:#16a34a;color:#fff}
@@ -113,8 +127,8 @@ function injectStyles(a) {
   .hintbox p{margin:6px 0;padding:8px 12px;background:var(--sg-soft);border-radius:8px}
   textarea.sg-ta{width:100%;min-height:74px;border:1.5px solid var(--sg-line);border-radius:10px;padding:10px 12px;font-family:inherit;font-size:15px;resize:vertical}
   .we-steps{border:1px solid var(--sg-line);border-radius:12px;padding:6px 16px;margin-top:10px}
-  .mistake{background:#fff7ed;border:1px solid #f59e0b;border-radius:12px;padding:12px 16px;color:#7c2d12;font-size:14.5px;margin-top:12px}
-  .mistake b{color:#b45309}
+  .mistake{background:#fff7ed;border:1px solid #e9a72c;border-radius:12px;padding:0;color:#713a0c;font-size:15px;margin:0 0 16px}
+  .mistake summary{cursor:pointer;padding:12px 16px;font-weight:850}.mistake p{margin:0;padding:0 16px 14px}
   .sg-done{text-align:center;padding:26px 18px;border:2px dashed var(--sg);border-radius:16px;background:var(--sg-soft);color:var(--sg-ink);margin-top:8px}
   .sg-done h2{font-size:22px;margin-bottom:6px}
   .sg-foot{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:20px}
@@ -151,7 +165,16 @@ function injectStyles(a) {
   .gs-row .sn{width:24px;height:24px;flex:none;border-radius:50%;background:var(--sg);color:#fff;display:inline-grid;place-items:center;font-size:12px;font-weight:800}
   .gs-check{padding:5px 12px;font-size:13px}
   .gs-tick{font-weight:900;color:#16a34a;font-size:18px}
-  @media (max-width:520px){.sg-hero h1{font-size:24px}.sg-rail .lbl{display:none}}
+  .sg-tool{margin:20px 0 0;padding:20px;border:2px solid color-mix(in srgb,var(--sg) 35%,#fff);border-radius:18px;background:#fff}
+  .sg-tool-head{display:flex;gap:12px;align-items:flex-start;margin-bottom:16px;color:var(--sg-ink)}
+  .sg-tool-head>span{font-size:28px}.sg-tool-head strong{display:block;font-size:20px}.sg-tool-head span{display:block;font-size:14px;color:var(--sg-mut)}
+  .sg-tool-stage{overflow-x:auto}
+  .sg-next{display:flex;justify-content:flex-end;margin-top:24px}
+  .sg-next .btn{min-width:180px;min-height:48px;font-size:16px}
+  .sg-problem-nav{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin-top:16px;padding:14px;border:1px solid var(--sg-line);border-radius:14px;background:#fff}
+  .sg-problem-nav .btn:last-child{justify-self:end}.sg-problem-count{font-weight:850;color:var(--sg-ink);white-space:nowrap}
+  @media (max-width:720px){#app{padding:10px 14px 72px}.sg-hero{border-radius:16px}.sg-tabs{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;padding:6px}.sg-step{min-height:44px;padding:6px;font-size:12px}.card,.prob{padding:17px}.sg-mode{margin-bottom:4px}}
+  @media (prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
   @media print{
     body{background:#fff}
     .sg-rail,.btn,.sg-teacher,.sg-foot,#mwb-launcher{display:none!important}
@@ -166,11 +189,18 @@ function injectStyles(a) {
 }
 
 // --------------------------------------------------------------- fragments
-function conceptSection(config, a) {
+function conceptSection(config) {
   const ci = config.launch?.conceptIntro || {};
   const sec = el("section", "sg-sec");
   sec.id = "sg-review";
-  sec.appendChild(el("div", "sg-h", `<span class="n">1</span><h2>Review the skill</h2>`));
+  sec.appendChild(el("div", "sg-h", `<span class="n">2</span><h2>Learn it</h2>`));
+  sec.appendChild(
+    el(
+      "p",
+      "sg-directions",
+      "Read the key idea. Follow the example. Then use the math tool to test the idea yourself.",
+    ),
+  );
   if (ci.keyIdea)
     sec.appendChild(el("div", "keyidea", `<span class="lab">Key idea</span>${esc(ci.keyIdea)}`));
   const card = el("div", "card");
@@ -189,6 +219,7 @@ function conceptSection(config, a) {
   blk(ci.weDo, "Try it together");
   blk(ci.youDo, "Now you try");
   sec.appendChild(card);
+  mountSmallGroupMathTool(sec, config);
   return sec;
 }
 
@@ -197,7 +228,14 @@ function vocabSection(config) {
   if (!vocab.length) return null;
   const sec = el("section", "sg-sec");
   sec.id = "sg-vocab";
-  sec.appendChild(el("div", "sg-h", `<span class="n">2</span><h2>Key vocabulary</h2>`));
+  sec.appendChild(el("div", "sg-h", `<span class="n">1</span><h2>Vocabulary</h2>`));
+  sec.appendChild(
+    el(
+      "p",
+      "sg-directions",
+      "Say each word. Read its meaning. Complete the short blank when you see one.",
+    ),
+  );
   const grid = el("div", "vgrid");
   vocab.forEach((v) => {
     const ex = (v.examples || []).find((e) => e.isExample);
@@ -242,7 +280,7 @@ function collectItems(config) {
       seen.add(key);
       out.push(it);
     }
-  return out.slice(0, 6);
+  return out;
 }
 
 function celebrate() {
@@ -581,7 +619,7 @@ const qualifiesGuided = (item) => numberedSteps(item).filter((s) => s.ans).lengt
 // Progressive guided-solve: the student types each number as the problem
 // progresses; a correct entry unlocks the next step, building the full worked
 // solution. This is the "type in numbers as the problem progresses" experience.
-function guidedSolveCard(item, index, variant, onSolved) {
+function guidedSolveCard(item, index, _variant, onSolved) {
   const card = el("div", "prob");
   const stem = item.stem || item.title || "Solve step by step.";
   card.appendChild(el("p", "q", `<span class="pn">${index + 1}</span><span>${esc(stem)}</span>`));
@@ -679,13 +717,16 @@ function guidedSolveCard(item, index, variant, onSolved) {
 
 // Router.
 function problemCard(item, index, variant, onSolved, guided, scaffold) {
+  if (item.type === "multiple-choice" && Array.isArray(item.choices)) {
+    return mcCard(item, index, onSolved);
+  }
   if (item.type === "error-analysis" && Array.isArray(item.workedExample))
     return errorCard(item, index, onSolved);
   if (guided && qualifiesGuided(item)) return guidedSolveCard(item, index, variant, onSolved);
   return fillCard(item, index, variant, onSolved, scaffold);
 }
 
-function appendHints(card, item, fb) {
+function appendHints(card, item, _fb) {
   const hints = item.hints || (item.hint ? [item.hint] : []);
   if (!hints.length) return;
   let shown = 0;
@@ -708,34 +749,59 @@ function appendHints(card, item, fb) {
   card.appendChild(box);
 }
 
-function practiceSection(config, markDone, tally) {
-  const items = collectItems(config);
+function paginateProblems(section) {
+  const cards = [...section.querySelectorAll(":scope > .prob")];
+  if (cards.length < 2) return;
+  let index = 0;
+  const controls = el("div", "sg-problem-nav");
+  const previous = el("button", "btn ghost", "← Previous");
+  const status = el("span", "sg-problem-count");
+  const next = el("button", "btn", "Next problem →");
+  previous.type = next.type = "button";
+
+  const show = (nextIndex) => {
+    index = Math.max(0, Math.min(cards.length - 1, nextIndex));
+    cards.forEach((card, cardIndex) => {
+      card.hidden = cardIndex !== index;
+    });
+    previous.disabled = index === 0;
+    next.disabled = index === cards.length - 1;
+    status.textContent = `Problem ${index + 1} of ${cards.length}`;
+    cards[index].scrollIntoView?.({ behavior: "smooth", block: "start" });
+  };
+  previous.onclick = () => show(index - 1);
+  next.onclick = () => show(index + 1);
+  controls.append(previous, status, next);
+  section.appendChild(controls);
+  show(0);
+}
+
+function practiceSection(config, items, options, markDone, tally) {
   const sec = el("section", "sg-sec");
-  sec.id = "sg-practice";
-  const label = config.variant === "group2" ? "Challenge practice" : "Practice";
-  sec.appendChild(el("div", "sg-h", `<span class="n">3</span><h2>${label}</h2>`));
+  sec.id = options.id;
+  sec.appendChild(
+    el("div", "sg-h", `<span class="n">${options.step}</span><h2>${options.label}</h2>`),
+  );
+  sec.appendChild(el("p", "sg-directions", options.directions));
   const cm = config.practice?.commonMistake;
-  if (config.variant === "group1" && cm) {
+  if (options.guided && cm) {
     const text = typeof cm === "string" ? cm : cm.text || cm.mistake || "";
-    if (text) sec.appendChild(el("div", "mistake", `<b>⚠️ Watch out:</b> ${esc(text)}`));
+    if (text) {
+      sec.appendChild(
+        el(
+          "details",
+          "mistake",
+          `<summary>⚠️ Before you start: common mistake</summary><p>${esc(text)}</p>`,
+        ),
+      );
+    }
   }
   let solved = 0;
   const total = items.length;
-  // Small groups get 1–2 progressive "type as you go" guided-solve problems.
-  const wantGuided = config.variant === "group1" || config.variant === "group2";
-  let guidedLeft = wantGuided ? 2 : 0;
-  // Mix of blanks: some with the tap-to-fill word bank, some pure type-in (no
-  // choices). Group 1 alternates; Group 2 stays pure; Catch-Up keeps the bank.
   let fillIdx = 0;
   items.forEach((it, i) => {
-    const useGuided = guidedLeft > 0 && it.type !== "error-analysis" && qualifiesGuided(it);
-    if (useGuided) guidedLeft--;
-    let scaffold;
-    if (config.variant === "group1")
-      scaffold = fillIdx % 2 === 0; // mix: on, off, on…
-    else if (config.variant === "group2")
-      scaffold = false; // pure type-in
-    else scaffold = true; // catch-up review keeps the word bank
+    const useGuided = options.guided && it.type !== "error-analysis";
+    const scaffold = options.guided || (config.variant === "group1" && fillIdx % 2 === 0);
     if (!useGuided && it.type !== "error-analysis") fillIdx++;
     if (tally) tally.total++;
     sec.appendChild(
@@ -745,7 +811,7 @@ function practiceSection(config, markDone, tally) {
         config.variant,
         () => {
           solved++;
-          if (solved >= Math.ceil(total * 0.6)) markDone("sg-practice");
+          if (solved >= Math.ceil(total * 0.6)) markDone(options.id);
           tally?.bump();
         },
         useGuided,
@@ -753,7 +819,7 @@ function practiceSection(config, markDone, tally) {
       ),
     );
   });
-  const oa = config.practice?.optionalActivity;
+  const oa = options.guided ? null : config.practice?.optionalActivity;
   if (oa)
     sec.appendChild(
       el(
@@ -762,6 +828,7 @@ function practiceSection(config, markDone, tally) {
         `<h3 class="block-lab">${esc(oa.emoji || "⭐")} ${esc(oa.name || "Bonus")}</h3><p class="we-line">${esc(oa.intro || "")}</p>`,
       ),
     );
+  paginateProblems(sec);
   return sec;
 }
 
@@ -770,7 +837,10 @@ function checkSection(config, markDone, tally) {
   if (!et) return null;
   const sec = el("section", "sg-sec");
   sec.id = "sg-check";
-  sec.appendChild(el("div", "sg-h", `<span class="n">4</span><h2>Quick check</h2>`));
+  sec.appendChild(el("div", "sg-h", `<span class="n">5</span><h2>Show what you know</h2>`));
+  sec.appendChild(
+    el("p", "sg-directions", "Try this one on your own. You can still use a hint if you need it."),
+  );
   if (tally) tally.total++;
   const onDone = () => {
     markDone("sg-check");
@@ -790,26 +860,18 @@ export function bootSmallGroup(config) {
     config.variant || (config.smallGroup ? `group${config.smallGroup.group}` : "catchup");
   const a = ACCENT[variant] || ACCENT.catchup;
   injectStyles(a);
-  document.title = `${config.title || "Small Group"} — Neft Teacher`;
+  document.title = `${config.title || "Small Group"} — EduWonderLab`;
 
   const app = document.getElementById("app");
   if (!app) return;
   app.innerHTML = "";
 
-  // Teacher vs student view: the facilitation panel and curriculum back-link are
-  // teacher-only (canonical nt-teacher-mode key). Students get a clean activity.
-  let isTeacher = false;
-  try {
-    isTeacher = localStorage.getItem("nt-teacher-mode") === "1";
-  } catch {
-    isTeacher = false;
-  }
-
   // Hero
   const hero = el("div", "sg-hero");
-  const badge = config.launch?.badge || `Small Group · ${a.name}`;
-  hero.appendChild(el("div", null, `<span class="sg-kicker">${a.emoji} ${esc(badge)}</span>`));
-  hero.appendChild(el("h1", null, esc(config.title || "")));
+  const [unit, lesson] = String(config.lessonId || "").split("-");
+  const lessonLabel = unit && lesson ? `Lesson ${unit}.${lesson}` : "Small-Group Math";
+  hero.appendChild(el("div", null, `<span class="sg-kicker">${a.emoji} Small-Group Math</span>`));
+  hero.appendChild(el("h1", null, `${esc(lessonLabel)} · ${esc(a.name)}`));
   if (config.contentObjective)
     hero.appendChild(el("p", "sg-obj", `🎯 ${esc(config.contentObjective)}`));
   if (config.languageObjective)
@@ -822,54 +884,8 @@ export function bootSmallGroup(config) {
   hero.appendChild(chips);
   app.appendChild(hero);
 
-  // Teacher facilitation (collapsed) — teacher mode only.
-  const sg = config.smallGroup;
-  if (isTeacher && sg && (sg.moves || sg.who)) {
-    const wrap = el("div", "sg-teacher");
-    const moves = (sg.moves || []).map((m) => `<li>${esc(m)}</li>`).join("");
-    const frames = (sg.frames || []).map((f) => `<span class="sg-frame">${esc(f)}</span>`).join("");
-    wrap.innerHTML = `<details><summary>👩‍🏫 Teacher facilitation (${esc(sg.label || a.name)})</summary>
-      <div class="sg-tbody">
-        ${sg.who ? `<p><b>Who:</b> ${esc(sg.who)}</p>` : ""}
-        ${moves ? `<p><b>Moves:</b></p><ul>${moves}</ul>` : ""}
-        ${frames ? `<p><b>Sentence frames:</b></p><div class="sg-frames">${frames}</div>` : ""}
-      </div></details>`;
-    app.appendChild(wrap);
-  }
-
-  // Progress rail
-  const steps = [
-    ["sg-review", "Review"],
-    ["sg-vocab", "Words"],
-    ["sg-practice", "Practice"],
-    ["sg-check", "Check"],
-  ];
-  const rail = el("div", "sg-rail");
-  const stepEls = {};
-  steps.forEach(([id, label], i) => {
-    const b = el(
-      "button",
-      "sg-step",
-      `<span class="dot">${i + 1}</span><span class="lbl">${label}</span>`,
-    );
-    b.type = "button";
-    b.onclick = () =>
-      document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-    stepEls[id] = b;
-    rail.appendChild(b);
-  });
-  app.appendChild(rail);
-  const markDone = (id) => stepEls[id]?.classList.add("done");
-
-  // Sections
-  const review = conceptSection(config, a);
-  app.appendChild(review);
-  stepEls["sg-review"].classList.add("done");
-  const vocab = vocabSection(config);
-  if (vocab) app.appendChild(vocab);
-  else stepEls["sg-vocab"].classList.add("done");
-  if (vocab) markDone("sg-vocab");
-  // Completion tally — celebrate + reveal a summary when every problem is done.
+  let tabsApi;
+  const markDone = (id) => tabsApi?.markDone(id);
   const done = el("div", "sg-done");
   done.hidden = true;
   const tally = {
@@ -879,38 +895,112 @@ export function bootSmallGroup(config) {
       this.solved++;
       if (this.solved >= this.total && done.hidden) {
         done.hidden = false;
-        done.innerHTML = `<h2>🎉 You finished this small group!</h2><p>You worked through all ${this.total} problems. Nice thinking — you're ready for what's next.</p>`;
+        done.innerHTML = `<h2>🎉 You finished!</h2><p>You completed all ${this.total} practice and check problems. Tell your teacher one idea that feels clearer now.</p>`;
         celebrate();
-        done.scrollIntoView({ behavior: "smooth", block: "center" });
       }
     },
   };
 
-  app.appendChild(practiceSection(config, markDone, tally));
+  const allItems = collectItems(config);
+  const guidedCount = Math.min(
+    allItems.length - 1,
+    Math.max(3, Number(config.smallGroupPractice?.guidedCount) || (variant === "group2" ? 3 : 4)),
+  );
+  const guidedItems = allItems.slice(0, guidedCount);
+  const remainingItems = allItems.slice(guidedCount);
+  const practiceCount = Math.ceil(remainingItems.length / 2);
+  const independentItems = remainingItems.slice(0, practiceCount);
+  const morePracticeItems = remainingItems.slice(practiceCount);
+
+  const vocab = vocabSection(config);
+  const review = conceptSection(config);
+  const guided = practiceSection(
+    config,
+    guidedItems,
+    {
+      id: "sg-guided",
+      step: 3,
+      label: "Guided practice",
+      directions:
+        "Solve one problem at a time. Use the word bank, hints, and steps when you need them.",
+      guided: true,
+    },
+    markDone,
+    tally,
+  );
+  const practice = practiceSection(
+    config,
+    independentItems,
+    {
+      id: "sg-practice",
+      step: 4,
+      label: "Practice",
+      directions:
+        "Now try the idea with less help. Check each answer before moving to the next problem.",
+      guided: false,
+    },
+    markDone,
+    tally,
+  );
   const check = checkSection(config, markDone, tally);
-  if (check) app.appendChild(check);
+  const morePractice = practiceSection(
+    config,
+    morePracticeItems,
+    {
+      id: "sg-more-practice",
+      step: 6,
+      label: "More practice",
+      directions:
+        "Finish with another set. Work one problem at a time and explain one answer out loud.",
+      guided: false,
+    },
+    markDone,
+    tally,
+  );
+  [vocab, review, guided, practice, check, morePractice]
+    .filter(Boolean)
+    .forEach((section) => app.appendChild(section));
   app.appendChild(done);
 
-  // Footer — Print for everyone; the curriculum back-link and the Canvas SCORM
-  // download are teacher-only actions.
+  tabsApi = mountSmallGroupTabs(app, [
+    { id: "sg-vocab", label: "Vocabulary", panel: vocab },
+    { id: "sg-review", label: "Learn it", panel: review },
+    { id: "sg-guided", label: "Guided", panel: guided },
+    { id: "sg-practice", label: "Practice", panel: practice },
+    { id: "sg-check", label: "Check", panel: check },
+    { id: "sg-more-practice", label: "More", panel: morePractice },
+  ]);
+
   const foot = el("div", "sg-foot");
-  if (isTeacher) {
+  const print = el("button", "btn ghost", "🖨️ Print this lesson");
+  print.type = "button";
+  print.onclick = () => window.print();
+  foot.appendChild(print);
+  app.appendChild(foot);
+
+  const renderTeacher = (sg) => {
+    if (!sg || document.querySelector(".sg-teacher")) return;
+    const wrap = el("div", "sg-teacher");
+    const moves = (sg.moves || []).map((m) => `<li>${esc(m)}</li>`).join("");
+    const frames = (sg.frames || []).map((f) => `<span class="sg-frame">${esc(f)}</span>`).join("");
+    wrap.innerHTML = `<details><summary>👩‍🏫 Teacher facilitation (${esc(sg.label || a.name)})</summary>
+      <div class="sg-tbody">
+        ${sg.who ? `<p><b>Who:</b> ${esc(sg.who)}</p>` : ""}
+        ${moves ? `<p><b>Moves:</b></p><ul>${moves}</ul>` : ""}
+        ${frames ? `<p><b>Sentence frames:</b></p><div class="sg-frames">${frames}</div>` : ""}
+      </div></details>`;
+    hero.after(wrap);
     const back = el("a", "btn ghost");
     back.href = "/curriculum/";
     back.textContent = "← Back to all lessons";
     foot.appendChild(back);
-  }
-  const print = el("button", "btn ghost", "🖨️ Print");
-  print.type = "button";
-  print.onclick = () => window.print();
-  foot.appendChild(print);
-  if (isTeacher) {
     const scorm = el("a", "btn ghost", "⬇️ Download for Canvas (SCORM)");
     scorm.href = `/api/scorm?activity=${encodeURIComponent(config.lessonId)}&title=${encodeURIComponent(config.title || "")}`;
     scorm.setAttribute("rel", "nofollow");
     foot.appendChild(scorm);
-  }
-  app.appendChild(foot);
+  };
+
+  mountSmallGroupTeacherAccess({ app, lessonId: config.lessonId, renderTeacher });
 }
 
 export default bootSmallGroup;

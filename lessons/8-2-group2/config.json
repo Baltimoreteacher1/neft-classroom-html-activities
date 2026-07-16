@@ -427,9 +427,7 @@
           "With an even number of values, there are two numbers in the middle — average them.",
           "The two middle values are 10 and 14: (10 + 14) ÷ 2 = 12."
         ]
-      }
-    ],
-    "extending": [
+      },
       {
         "type": "error-analysis",
         "title": "Find the Stats Error",
@@ -479,69 +477,9 @@
           "Plan: (1) mean = sum of the 5 scores ÷ 5, (2) median = middle of the ordered scores, (3) decide which lands closer to most games.",
           "Step 1: add 15 + 18 + 16 + 42 + 14 and divide by 5. Then order the scores least to greatest and circle the 3rd — compare the two results."
         ]
-      },
-      {
-        "type": "fill-table",
-        "headers": [
-          "Data Set",
-          "Mean",
-          "Median",
-          "Which is better & why?"
-        ],
-        "rows": [
-          [
-            "10, 12, 11, 13, 12",
-            "",
-            "",
-            ""
-          ],
-          [
-            "10, 12, 11, 13, 50",
-            "",
-            "",
-            ""
-          ]
-        ],
-        "editableCells": [
-          {
-            "row": 0,
-            "col": 1,
-            "answer": "11.6"
-          },
-          {
-            "row": 0,
-            "col": 2,
-            "answer": "12"
-          },
-          {
-            "row": 0,
-            "col": 3,
-            "answer": "Both work — no outlier, data is symmetric"
-          },
-          {
-            "row": 1,
-            "col": 1,
-            "answer": "19.2"
-          },
-          {
-            "row": 1,
-            "col": 2,
-            "answer": "12"
-          },
-          {
-            "row": 1,
-            "col": 3,
-            "answer": "Median — the outlier 50 pulls the mean to 19.2, which is higher than 4 of the 5 values"
-          }
-        ],
-        "hints": [
-          "The two rows are almost identical — only the last value changes from 12 to 50. Watch what that single change does to each measure.",
-          "For each row: mean = sum ÷ 5; median = middle of the ordered list. Compare the two measures within each row before choosing which is better.",
-          "Row 1 first: add 10 + 12 + 11 + 13 + 12, divide by 5, and order the list to find the middle. Save Row 2 to see how the 50 shifts things."
-        ]
       }
     ],
-    "optional": [
+    "extending": [
       {
         "type": "multiple-choice",
         "stem": "A player scored 4, 8, 6, 10, and 2 points across five quarters. What is the MEAN number of points?",
@@ -595,8 +533,124 @@
           "9 appears once—which number shows up more than once?",
           "6 is the mean—is mean the same as mode?"
         ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "One game was a 55-point outlier. Which measure of center best shows a TYPICAL game?",
+        "choices": [
+          "The median, because the outlier barely moves the middle value",
+          "The mean, because it uses every score",
+          "The mode, because it is always the typical value",
+          "The range, because it shows the spread"
+        ],
+        "correctIndex": 0,
+        "explanation": "A high outlier pulls the mean upward, making it larger than most games. The median is the middle of the ordered data, so one unusual game barely changes it — it best describes a typical game.",
+        "choiceFeedback": [
+          "",
+          "The mean is pulled higher by the outlier—how does the median respond?",
+          "Mode is the most common value—does it handle outliers better than mean?",
+          "Range is 53—does range show a typical game?"
+        ]
+      },
+      {
+        "type": "error-analysis",
+        "title": "Level 2 Extension — The Median Mistake",
+        "workedExample": [
+          {
+            "label": "Data set",
+            "work": "Points per game: 9, 4, 7, 2, 6"
+          },
+          {
+            "label": "Goal",
+            "work": "Find the median number of points."
+          },
+          {
+            "label": "Pick the middle",
+            "work": "The number in the middle of the list is 7, so the median = 7."
+          },
+          {
+            "label": "Answer",
+            "work": "Median = 7"
+          }
+        ],
+        "errorStep": 2,
+        "correctWork": "You must ORDER the data before finding the middle. Ordered least to greatest: 2, 4, 6, 7, 9. The true middle (3rd) value is 6, so the median = 6, not 7.",
+        "hints": [
+          "The median is the middle of the data ONLY after it is sorted from least to greatest.",
+          "Reorder 9, 4, 7, 2, 6 → 2, 4, 6, 7, 9. Now find the middle value."
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "Find the mean of: 10, 14, 8, 12, 16",
+        "choices": [
+          "12",
+          "14",
+          "10",
+          "60"
+        ],
+        "correctIndex": 0,
+        "explanation": "Sum = 10 + 14 + 8 + 12 + 16 = 60. Mean = 60 ÷ 5 = 12.",
+        "choiceFeedback": [
+          "",
+          "Add the numbers first—does 14 equal the sum divided by 5?",
+          "Did you forget to divide by the count of numbers?",
+          "Is 60 the mean, or the sum?"
+        ],
+        "hints": [
+          "Mean means the average of all five numbers — you'll need both a total and how many numbers there are.",
+          "Use the formula: mean = sum of the values ÷ how many values. Count first: there are 5 numbers here.",
+          "Step 1: add 10 + 14 + 8 + 12 + 16 to get the total. Then divide that total by 5 — the result is the mean."
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "Find the median of: 3, 7, 2, 9, 5",
+        "choices": [
+          "5",
+          "3",
+          "7",
+          "5.2"
+        ],
+        "correctIndex": 0,
+        "explanation": "Ordered: 2, 3, 5, 7, 9. The middle value is 5.",
+        "choiceFeedback": [
+          "",
+          "Did you order them first? What's the middle value after ordering?",
+          "The lowest is 3—is median always the lowest?",
+          "7 is not the middle value—order them first."
+        ],
+        "hints": [
+          "Median = the middle number, but only AFTER the list is in order. Don't pick the middle of the unsorted list.",
+          "Rewrite 3, 7, 2, 9, 5 from least to greatest, then count in from both ends until you reach the one value in the exact middle.",
+          "Start ordering: the smallest is 2, then 3... finish the ordered list of all five values, then circle the 3rd one — that's the median."
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "Find the mode of: 4, 7, 4, 9, 2, 4, 8",
+        "choices": [
+          "4",
+          "7",
+          "9",
+          "2"
+        ],
+        "correctIndex": 0,
+        "explanation": "4 appears three times — more than any other value. Mode = 4.",
+        "choiceFeedback": [
+          "",
+          "7 appears once—which number appears most often?",
+          "9 appears once—count how many times each number shows up.",
+          "2 appears once—is mode the smallest or most frequent?"
+        ],
+        "hints": [
+          "Mode is about repeats — which value shows up in the list more times than any other?",
+          "Make a quick tally: write each different number and count how many times it appears in 4, 7, 4, 9, 2, 4, 8.",
+          "Start your tally: 7 appears once, 9 appears once... keep counting every number and pick the one with the highest tally."
+        ]
       }
     ],
+    "optional": [],
     "commonMistake": "A common mistake in Mean, Median, and Mode is finding the median without ordering the data first — students pick the middle number straight from the list as given (for 9, 4, 7, 2, 6 they say the median is 7, the middle position in that original order) instead of sorting least to greatest (2, 4, 6, 7, 9) and finding the true middle value, 6. Before finalizing a median, always reorder the data smallest to largest, then count to the middle position — and if there is an even number of values, average the two middle numbers.",
     "optionalActivity": {
       "name": "Sports Stats Center: Mean, Median, Mode",
@@ -664,6 +718,10 @@
   "readiness": false,
   "timeEstimate": "~15–20 min",
   "variant": "group2",
+  "smallGroupPractice": {
+    "guidedCount": 3,
+    "minimum": 10
+  },
   "smallGroup": {
     "group": 2,
     "label": "Challenge",

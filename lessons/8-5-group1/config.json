@@ -480,9 +480,7 @@
           "IQR stands for InterQuartile RANGE — a range is found by subtracting, not adding.",
           "IQR = Q3 − Q1 = 30 − 18 = 12, not 48."
         ]
-      }
-    ],
-    "onLevel": [
+      },
       {
         "type": "multiple-choice",
         "stem": "Two box plots show: Team A has IQR = 8, Team B has IQR = 22. What does this tell you?",
@@ -505,7 +503,9 @@
           "Compare a narrow box (IQR 8) with a wide box (IQR 22). Ask what narrow vs wide says about consistency — not about which team is better.",
           "First step: translate each number — Team A's middle scores span only 8 points; Team B's span 22. Then choose the statement that matches."
         ]
-      },
+      }
+    ],
+    "onLevel": [
       {
         "type": "error-analysis",
         "title": "onLevel — The Quartile-Is-One-Value Mistake",
@@ -532,6 +532,116 @@
         "hints": [
           "When a half has an even number of values, the quartile is the average of its two middle values.",
           "Lower half 4, 8, 10, 14: the two middle values are 8 and 10, so Q1 = (8 + 10) ÷ 2 = 9."
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "The Hawks' points per quarter are 2, 4, 5, 7, 8, 10, 12. Resting on the scoreboard, what are the minimum, median, and maximum?",
+        "choices": [
+          "Minimum 2, median 7, maximum 12",
+          "Minimum 2, median 5, maximum 12",
+          "Minimum 0, median 7, maximum 12",
+          "Minimum 2, median 8, maximum 10"
+        ],
+        "correctIndex": 0,
+        "explanation": "The data is already in order. The smallest value is 2 and the largest is 12. There are 7 values, so the median is the 4th value, which is 7.",
+        "choiceFeedback": [
+          "",
+          "Median is the middle—with 7 values, which is in the middle?",
+          "There's no zero shown—count from the data given.",
+          "Seven values: positions 1,2,3,4,5,6,7—which is the 4th?"
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "The Comets scored 6, 10, 14, 18, 22, 26, 30, 34 across 8 games. After ordering, what are Q1 and Q3?",
+        "choices": [
+          "Q1 = 12, Q3 = 28",
+          "Q1 = 10, Q3 = 30",
+          "Q1 = 14, Q3 = 26",
+          "Q1 = 20, Q3 = 34"
+        ],
+        "correctIndex": 0,
+        "explanation": "With 8 values the median splits the data into a lower half (6, 10, 14, 18) and an upper half (22, 26, 30, 34). Q1 is the median of the lower half: (10 + 14) ÷ 2 = 12. Q3 is the median of the upper half: (26 + 30) ÷ 2 = 28.",
+        "choiceFeedback": [
+          "",
+          "First half: 6, 10, 14, 18—Q1 is the median of these.",
+          "Q1 and Q3 come from the halves—not the full data.",
+          "Split the data in half, then find median of each half."
+        ]
+      },
+      {
+        "type": "multiple-choice",
+        "stem": "A box plot for the Rockets shows Min = 8, Q1 = 15, Median = 22, Q3 = 30, Max = 38. The middle 50% of their scores falls between which two values?",
+        "choices": [
+          "Between 15 and 30",
+          "Between 8 and 38",
+          "Between 8 and 22",
+          "Between 22 and 38"
+        ],
+        "correctIndex": 0,
+        "explanation": "The box of a box plot stretches from Q1 to Q3, and that box always holds the middle 50% of the data. Here the box goes from Q1 = 15 to Q3 = 30.",
+        "choiceFeedback": [
+          "",
+          "The whiskers go to min and max—but the box is 50% of data.",
+          "Q1 to median is 25%, median to Q3 is 25%—together?",
+          "Q3 to max covers another 25%—is that the middle 50%?"
+        ]
+      },
+      {
+        "type": "error-analysis",
+        "title": "Level 2 Extension — The Skipped Ordering Mistake",
+        "workedExample": [
+          {
+            "label": "Data (as recorded)",
+            "work": "Falcons' scores: 17, 5, 21, 9, 29, 13, 25"
+          },
+          {
+            "label": "Minimum and maximum",
+            "work": "Min = 5, Max = 29 ✓"
+          },
+          {
+            "label": "Median",
+            "work": "The middle value of the list is 9, so Median = 9"
+          },
+          {
+            "label": "Q1 and Q3",
+            "work": "Lower half = 17, 5, 21 → Q1 = 5. Upper half = 13, 25 → Q3 = 25"
+          }
+        ],
+        "errorStep": 2,
+        "correctWork": "The data must be ordered from least to greatest FIRST: 5, 9, 13, 17, 21, 25, 29. There are 7 values, so the median is the 4th value, which is 17 (not 9). The lower half is 5, 9, 13, so Q1 = 9, and the upper half is 21, 25, 29, so Q3 = 25. The student found the 'middle of the list' without ordering the data first, which gave the wrong median and quartiles.",
+        "hints": [
+          "You can never find the median or quartiles until the data is in order from least to greatest.",
+          "After ordering (5, 9, 13, 17, 21, 25, 29), the true middle value is 17, not the number that happened to sit in the middle of the unsorted list."
+        ]
+      },
+      {
+        "type": "error-analysis",
+        "title": "Find the Box Plot Error",
+        "workedExample": [
+          {
+            "label": "Data",
+            "work": "3, 7, 9, 12, 15, 18, 21"
+          },
+          {
+            "label": "Min and Max",
+            "work": "Min = 3, Max = 21"
+          },
+          {
+            "label": "Median",
+            "work": "Middle value = 12 ✓"
+          },
+          {
+            "label": "Q1 and Q3",
+            "work": "Q1 = 9, Q3 = 18"
+          }
+        ],
+        "errorStep": 3,
+        "correctWork": "Q1 is the median of the lower half (3, 7, 9), which is 7. Q3 is the median of the upper half (15, 18, 21), which is 18. The student used the wrong value for Q1 — they picked 9 (the last value in the lower half) instead of the median of that half.",
+        "hints": [
+          "Q1 is not just a value in the lower half — it is the MEDIAN of the lower half.",
+          "Lower half: 3, 7, 9. The median of these three values is 7, not 9."
         ]
       }
     ],
@@ -599,6 +709,10 @@
   "readiness": false,
   "timeEstimate": "~15–20 min",
   "variant": "group1",
+  "smallGroupPractice": {
+    "guidedCount": 4,
+    "minimum": 10
+  },
   "smallGroup": {
     "group": 1,
     "label": "Extra Support",
