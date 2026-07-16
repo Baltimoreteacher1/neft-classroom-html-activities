@@ -33,6 +33,7 @@
 
   /* Whitelist — only these shared widgets may be loaded. */
   var MANIPS = {
+    "algebra-tiles": 1,
     "area-tiler": 1,
     balance: 1,
     "coord-plot": 1,
@@ -40,6 +41,7 @@
     "dot-plot": 1,
     "expr-machine": 1,
     "frac-divide": 1,
+    "fraction-bar": 1,
     "gcf-bags": 1,
     "line-grapher": 1,
     "number-line": 1,
@@ -241,7 +243,9 @@
     var summary = document.createElement("summary");
     summary.className = "mw-summary";
     summary.appendChild(biText("span", "mw-kicker", "Math Workspace", "Espacio matemático"));
-    summary.appendChild(biText("strong", "mw-title", "Estimate → Model → Explain", "Estima → Modela → Explica"));
+    summary.appendChild(
+      biText("strong", "mw-title", "Estimate → Model → Explain", "Estima → Modela → Explica"),
+    );
     card.appendChild(summary);
 
     var body = document.createElement("div");
@@ -281,7 +285,13 @@
     explain.rows = 2;
     explain.value = saved.explain || "";
     explain.placeholder = "What does this result mean in this situation?";
-    body.appendChild(workspaceLabel("Explain what the result means", "Explica lo que significa el resultado", explain));
+    body.appendChild(
+      workspaceLabel(
+        "Explain what the result means",
+        "Explica lo que significa el resultado",
+        explain,
+      ),
+    );
     card.appendChild(body);
 
     function refresh() {
@@ -292,18 +302,54 @@
       var opSymbol = operation.options[operation.selectedIndex].textContent;
       var suffix = unit.value.trim() ? " " + unit.value.trim() : "";
       if (!quantityA.value || !quantityB.value) {
-        result.innerHTML = "<strong>" + (document.querySelector("#body.es") ? "Escribe dos cantidades para crear un modelo." : "Enter two quantities to build a model.") + "</strong>";
+        result.innerHTML =
+          "<strong>" +
+          (document.querySelector("#body.es")
+            ? "Escribe dos cantidades para crear un modelo."
+            : "Enter two quantities to build a model.") +
+          "</strong>";
       } else if (answer === null) {
-        result.innerHTML = "<strong>" + (operation.value === "divide" && b === 0 ? (document.querySelector("#body.es") ? "No se puede dividir entre cero. Cambia la segunda cantidad." : "You cannot divide by zero. Change Quantity B.") : (document.querySelector("#body.es") ? "Usa números válidos para crear un modelo." : "Use valid numbers to build a model.")) + "</strong>";
+        result.innerHTML =
+          "<strong>" +
+          (operation.value === "divide" && b === 0
+            ? document.querySelector("#body.es")
+              ? "No se puede dividir entre cero. Cambia la segunda cantidad."
+              : "You cannot divide by zero. Change Quantity B."
+            : document.querySelector("#body.es")
+              ? "Usa números válidos para crear un modelo."
+              : "Use valid numbers to build a model.") +
+          "</strong>";
       } else {
-        var equation = formatNumber(a) + " " + opSymbol + " " + formatNumber(b) + " = " + formatNumber(answer) + suffix;
+        var equation =
+          formatNumber(a) +
+          " " +
+          opSymbol +
+          " " +
+          formatNumber(b) +
+          " = " +
+          formatNumber(answer) +
+          suffix;
         var check = "";
         if (estimate.value && Number.isFinite(estimateValue)) {
           var difference = Math.abs(estimateValue - answer);
           var percent = answer === 0 ? null : Math.round((difference / Math.abs(answer)) * 100);
-          check = "<small>" + (document.querySelector("#body.es") ? "Tu estimación difiere por " : "Your estimate differs by ") + formatNumber(difference) + suffix + (percent === null ? "." : " (" + percent + "%).") + "</small>";
+          check =
+            "<small>" +
+            (document.querySelector("#body.es")
+              ? "Tu estimación difiere por "
+              : "Your estimate differs by ") +
+            formatNumber(difference) +
+            suffix +
+            (percent === null ? "." : " (" + percent + "%).") +
+            "</small>";
         }
-        result.innerHTML = '<span class="mw-result-label">' + (document.querySelector("#body.es") ? "Mi modelo" : "My model") + "</span><strong>" + equation + "</strong>" + check;
+        result.innerHTML =
+          '<span class="mw-result-label">' +
+          (document.querySelector("#body.es") ? "Mi modelo" : "My model") +
+          "</span><strong>" +
+          equation +
+          "</strong>" +
+          check;
       }
       saveWorkspace(index, {
         open: card.open,
