@@ -113,6 +113,29 @@ function assertConfig(root, parent, row) {
     0,
   );
   if (practiceCount < 3) fail(`${row.id} needs at least three practice items`);
+  const parallel = config.parallelPractice || [];
+  if (parallel.length !== 12) fail(`${row.id} needs exactly 12 parallel-practice problems`);
+  const parentConfig = JSON.parse(
+    readFileSync(join(root, "lessons", parent, "config.json"), "utf8"),
+  );
+  const parentStems = new Set(
+    ["approaching", "onLevel", "extending", "optional"].flatMap((tier) =>
+      (parentConfig.practice?.[tier] || []).map(
+        (item) => item.stem || item.title || item.instructions || item.prompt,
+      ),
+    ),
+  );
+  const ids = new Set();
+  const stems = new Set();
+  for (const item of parallel) {
+    if (!item.id || ids.has(item.id)) fail(`${row.id} parallel-practice IDs must be unique`);
+    ids.add(item.id);
+    if (stems.has(item.stem)) fail(`${row.id} repeats a parallel-practice stem`);
+    stems.add(item.stem);
+    if (parentStems.has(item.stem)) fail(`${row.id} repeats a parent-lesson problem`);
+    if (item.answer == null || !item.visual?.kind || item.steps?.length < 2)
+      fail(`${row.id}/${item.id} needs an answer, visual, and guided steps`);
+  }
 }
 
 export function validateSmallGroups({ html, rows, root = ROOT }) {

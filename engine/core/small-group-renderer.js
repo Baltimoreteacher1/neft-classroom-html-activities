@@ -353,6 +353,7 @@ export function bootSmallGroup(config) {
         "Work one problem at a time. Use the step guide and hints whenever you need them.",
       scaffold: "all",
       showMistake: true,
+      mode: "guided",
     },
   );
   const practice = createPracticeSection(
@@ -370,6 +371,7 @@ export function bootSmallGroup(config) {
       scaffold: variant === "group2" ? "none" : "default",
       showMistake: false,
       indexOffset: guidedCount,
+      mode: "practice",
     },
   );
   const morePractice = createPracticeSection(
@@ -388,6 +390,7 @@ export function bootSmallGroup(config) {
       showMistake: false,
       includeOptional: true,
       indexOffset: guidedCount + independentItems.length,
+      mode: "more",
     },
   );
   const apply = createApplyLab(config, variant, {
@@ -412,7 +415,7 @@ export function bootSmallGroup(config) {
     {
       id: "sg-tab-guided",
       label: "Guided",
-      panel: makePanel("sg-tab-guided", [talk, guided, createAdaptiveCoach(variant, state)]),
+      panel: makePanel("sg-tab-guided", [guided, createAdaptiveCoach(variant, state), talk]),
     },
     {
       id: "sg-tab-practice",

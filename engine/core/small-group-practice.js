@@ -1,4 +1,5 @@
 import { celebrate, el, esc } from "./small-group-ui.js";
+import { appendVisualPractice } from "./small-group-visual-practice.js";
 
 const norm = (value) =>
   String(value == null ? "" : value)
@@ -381,6 +382,9 @@ function responseCard(item, index, variant, onSolved, scaffold, events = {}) {
 }
 
 export function collectPracticeItems(config) {
+  if (Array.isArray(config.parallelPractice) && config.parallelPractice.length) {
+    return config.parallelPractice;
+  }
   const tiers = ["approaching", "onLevel", "extending", "optional"];
   const seen = new Set();
   const items = [];
@@ -491,6 +495,7 @@ export function createPracticeSection(
             ? false
             : index % 2 === 0;
     const card = problemCard(item, index, config.variant, () => solveItem(index), scaffold, events);
+    appendVisualPractice(card, item, { mode: options.mode || "guided", events });
     const storeIndex = (options.indexOffset || 0) + index;
     if (store?.has("solvedPractice", storeIndex)) {
       card.prepend(

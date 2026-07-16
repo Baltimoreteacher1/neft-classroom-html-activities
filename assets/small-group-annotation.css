@@ -1,12 +1,11 @@
 .sg-annotation-tools {
-  position: sticky;
-  top: 68px;
+  position: static;
   z-index: 24;
   display: grid;
   grid-template-columns: minmax(190px, 1fr) auto;
   gap: 8px 18px;
   align-items: center;
-  margin: -15px 0 28px;
+  margin: 0 0 28px;
   padding: 12px 14px;
   border: 2px solid color-mix(in srgb, var(--sg) 55%, white);
   border-radius: 16px;
@@ -194,6 +193,17 @@
   border: 1px solid var(--sg-line);
   border-radius: 18px;
   background: var(--sg-soft);
+  object-fit: contain;
+  transition: opacity 0.18s ease;
+}
+
+.sg-vocab-dialog img[data-image-state="loading"] {
+  opacity: 0.35;
+}
+
+.sg-vocab-dialog img[data-image-state="ready"],
+.sg-vocab-dialog img[data-image-state="fallback"] {
+  opacity: 1;
 }
 
 .sg-vocab-definition {

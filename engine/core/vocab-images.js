@@ -314,6 +314,11 @@ function categoryFor(slug, term) {
   return "number";
 }
 
+export function resolveVocabFallback(term) {
+  const slug = slugify(term);
+  return `${BASE}/${CATEGORY[categoryFor(slug, term)]}.svg`;
+}
+
 // Slugs that have dedicated SVGs but are referenced only via the synonym map.
 const EXTRA_DEDICATED = new Set([
   "dimensions",
@@ -345,8 +350,7 @@ export function resolveVocabImage(term, override) {
     return `${BASE}/${syn}.svg`;
   }
 
-  const cat = categoryFor(slug, term);
-  return `${BASE}/${CATEGORY[cat]}.svg`;
+  return resolveVocabFallback(term);
 }
 
 export function vocabImageAlt(term, definition) {
@@ -355,6 +359,33 @@ export function vocabImageAlt(term, definition) {
   if (t && d) return `Illustration of ${t}: ${d}`;
   if (t) return `Illustration of the math term ${t}`;
   return "Math vocabulary illustration";
+}
+
+export function configureVocabImage(image, word, { eager = false } = {}) {
+  const term = word?.term || "";
+  const definition = word?.definition || word?.visual || "";
+  const primary = resolveVocabImage(term, typeof word?.image === "string" ? word.image : undefined);
+  const fallback = resolveVocabFallback(term);
+  image.width = 320;
+  image.height = 220;
+  image.loading = eager ? "eager" : "lazy";
+  image.decoding = "async";
+  image.alt = vocabImageAlt(term, definition);
+  image.dataset.imageState = "loading";
+  image.onload = () => {
+    image.dataset.imageState = "ready";
+  };
+  image.onerror = () => {
+    if (image.getAttribute("src") !== fallback) {
+      image.dataset.imageState = "fallback";
+      image.src = fallback;
+    } else {
+      image.dataset.imageState = "unavailable";
+      image.removeAttribute("src");
+    }
+  };
+  image.src = primary;
+  return image;
 }
 
 export default resolveVocabImage;

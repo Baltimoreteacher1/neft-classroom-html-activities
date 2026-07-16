@@ -19,6 +19,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { LESSON_JS, shellHtml } from "./lib/compact-shell.mjs";
+import { buildParallelPractice } from "./lib/small-group-parallel-practice.mjs";
 
 const ROOT = process.env.REPO || resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const LESSONS = join(ROOT, "lessons");
@@ -179,6 +180,7 @@ function buildGroup1(base, u, m) {
       : undefined,
   };
   out.smallGroupPractice = { guidedCount: 4, minimum: MINIMUM_PRACTICE };
+  out.parallelPractice = buildParallelPractice(base, id, 1);
 
   if (out.explore?.instructions)
     out.explore.instructions = `Quick warm-up together: ${out.explore.instructions}`;
@@ -283,6 +285,7 @@ function buildGroup2(base, u, m) {
       : undefined,
   };
   out.smallGroupPractice = { guidedCount: 3, minimum: MINIMUM_PRACTICE };
+  out.parallelPractice = buildParallelPractice(base, id, 2);
 
   if (out.explore?.instructions)
     out.explore.instructions = `Go deeper: ${out.explore.instructions} As you work, ask yourself WHY it works.`;
