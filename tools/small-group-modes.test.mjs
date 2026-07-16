@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { isImageSource } from "../engine/core/small-group-engagement.js";
 import { onRequest as middleware } from "../functions/_middleware.js";
 import { onRequest as teacherRouteHandler } from "../functions/teacher-small-group/[[path]].js";
 
@@ -30,6 +31,8 @@ const generator = readFileSync(
   "utf8",
 );
 assert.match(generator, /MINIMUM_PRACTICE = 10/);
+assert.equal(isImageSource("Space station cargo bay with robots"), false);
+assert.equal(isImageSource("/assets/mission.png"), true);
 
 for (const lessonId of readdirSync(new URL("../lessons", import.meta.url)).filter((name) =>
   /^\d+-\d+-group[12]$/.test(name),

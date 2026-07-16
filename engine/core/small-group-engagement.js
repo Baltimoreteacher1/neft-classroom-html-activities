@@ -15,6 +15,14 @@ const confidenceOptions = [
   { value: 3, emoji: "✨", label: "I can explain a step" },
 ];
 
+export function isImageSource(value) {
+  const source = typeof value === "string" ? value.trim() : "";
+  return (
+    /^(?:https?:\/\/|\/\/|data:image\/|blob:|\/|\.\.?\/)/i.test(source) ||
+    /\.(?:avif|gif|jpe?g|png|svg|webp)(?:[?#].*)?$/i.test(source)
+  );
+}
+
 function makePulse(state, key, onSelect, initial) {
   const pulse = el("div", "sg-pulse");
   pulse.setAttribute("role", "group");
@@ -78,7 +86,8 @@ export function createMissionSection(config, variant, state, onDone, store = nul
     ),
   );
 
-  const imageSrc = missionContent.image || config.launch?.contextImage;
+  const imageCandidate = missionContent.image || config.launch?.contextImage;
+  const imageSrc = isImageSource(imageCandidate) ? imageCandidate : null;
   const missionFigure = imageSrc ? null : figureBlock(config.launch?.visual);
   const visual = el(
     "div",
