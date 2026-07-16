@@ -1,4 +1,5 @@
 import { downloadCalendarEvent } from "./calendar-event.js";
+import { formatMeetingSlot } from "./family-scheduler-format.js";
 
 const API = "/api/family-connections";
 const byId = (id) => document.getElementById(id);
@@ -8,7 +9,8 @@ const spanish = {
   quick: "Reunión",
   eyebrow: "Reuniones familiares",
   title: "Reúnase con el Sr. Neft",
-  intro: "Elija una hora disponible para conversar brevemente sobre cómo podemos apoyar a su estudiante.",
+  intro:
+    "Elija una hora disponible para conversar brevemente sobre cómo podemos apoyar a su estudiante.",
   timezone: "Hora del Este",
   guardian: "Nombre del padre, madre o tutor",
   student: "Solo el primer nombre del estudiante",
@@ -17,7 +19,7 @@ const spanish = {
   consent: "Estoy reservando esta hora y usaré solo el primer nombre del estudiante.",
   send: "Reservar reunión",
   chooseAnother: "Elegir otra hora",
-  requestTime: "Reservar esta hora",
+  requestTime: "Reservar",
   bookedTitle: "Reunión reservada",
   addCalendar: "Agregar al calendario",
   backToTimes: "Ver otros horarios",
@@ -27,21 +29,10 @@ function applyLanguage(next) {
   language = next === "es" ? "es" : "en";
   document.querySelectorAll("[data-scheduler-key]").forEach((element) => {
     element.dataset.schedulerEn ??= element.textContent.trim();
-    element.textContent = language === "es" ? spanish[element.dataset.schedulerKey] : element.dataset.schedulerEn;
+    element.textContent =
+      language === "es" ? spanish[element.dataset.schedulerKey] : element.dataset.schedulerEn;
   });
 }
-
-const dateFormat = new Intl.DateTimeFormat(undefined, {
-  weekday: "long",
-  month: "short",
-  day: "numeric",
-  timeZone: "America/New_York",
-});
-const timeFormat = new Intl.DateTimeFormat(undefined, {
-  hour: "numeric",
-  minute: "2-digit",
-  timeZone: "America/New_York",
-});
 
 function setStatus(message, tone = "") {
   const status = byId("meeting-status");
@@ -61,7 +52,7 @@ async function api(path, options = {}) {
 }
 
 function slotLabel(slot) {
-  return `${dateFormat.format(new Date(slot.startAt))} at ${timeFormat.format(new Date(slot.startAt))}`;
+  return formatMeetingSlot(slot, language).label;
 }
 
 function renderSlots(slots) {
@@ -81,24 +72,33 @@ function renderSlots(slots) {
       : `${slots.length} ${slots.length === 1 ? "time is" : "times are"} available.`,
   );
   for (const slot of slots) {
+    const formatted = formatMeetingSlot(slot, language);
     const card = document.createElement("article");
     card.className = "meeting-slot-card";
+    const when = document.createElement("div");
+    when.className = "meeting-slot-when";
     const date = document.createElement("strong");
-    date.textContent = dateFormat.format(new Date(slot.startAt));
+    date.className = "meeting-slot-date";
+    date.textContent = formatted.date;
     const time = document.createElement("span");
     time.className = "meeting-slot-time";
-    time.textContent = timeFormat.format(new Date(slot.startAt));
+    time.textContent = formatted.time;
+    when.append(date, time);
     const detail = document.createElement("span");
     detail.className = "meeting-slot-detail";
-    detail.textContent = `${slot.durationMinutes} minutes · ${slot.locationLabel}`;
+    detail.textContent = slot.locationLabel;
     const button = document.createElement("button");
     button.className = "button button-secondary";
     button.type = "button";
     button.dataset.schedulerKey = "requestTime";
-    button.dataset.schedulerEn = "Request this time";
+    button.dataset.schedulerEn = "Book";
     button.textContent = language === "es" ? spanish.requestTime : button.dataset.schedulerEn;
+    button.setAttribute(
+      "aria-label",
+      language === "es" ? `Reservar ${formatted.label}` : `Request ${formatted.label}`,
+    );
     button.addEventListener("click", () => selectSlot(slot));
-    card.append(date, time, detail, button);
+    card.append(when, detail, button);
     root.append(card);
   }
 }
@@ -132,18 +132,27 @@ async function submitRequest(event) {
     form.reset();
     byId("meeting-request-panel").hidden = true;
     confirmedBooking = { slot: result.slot, reference: result.reference };
-    byId("meeting-confirmation-detail").textContent = `${slotLabel(result.slot)} · ${result.slot.durationMinutes} minutes · ${result.slot.locationLabel} · Eastern Time`;
+    byId("meeting-confirmation-detail").textContent =
+      `${slotLabel(result.slot)} · ${result.slot.durationMinutes} minutes · ${result.slot.locationLabel} · Eastern Time`;
     byId("meeting-confirmation-reference").textContent = result.reference;
     byId("meeting-confirmation").hidden = false;
     await loadSlots();
-    setStatus(language === "es" ? "Su reunión está confirmada." : "Your meeting is confirmed.", "success");
+    setStatus(
+      language === "es" ? "Su reunión está confirmada." : "Your meeting is confirmed.",
+      "success",
+    );
     byId("meeting-confirmation-title").focus();
   } catch (error) {
     if (/no longer available|just booked/i.test(error.message)) {
       byId("meeting-request-panel").hidden = true;
       await loadSlots();
       byId("meeting-slots").querySelector("button")?.focus();
-      setStatus(language === "es" ? "Ese horario acaba de reservarse. Elija otro." : "That time was just booked. Please choose another.", "error");
+      setStatus(
+        language === "es"
+          ? "Ese horario acaba de reservarse. Elija otro."
+          : "That time was just booked. Please choose another.",
+        "error",
+      );
       return;
     }
     setStatus(error.message, "error");

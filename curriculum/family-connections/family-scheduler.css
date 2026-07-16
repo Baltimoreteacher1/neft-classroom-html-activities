@@ -39,34 +39,53 @@
 
 .meeting-slots {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.8rem;
   margin-top: 1rem;
 }
 
 .meeting-slot-card {
   display: grid;
-  gap: 0.35rem;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.25rem 0.8rem;
+  align-items: center;
   min-width: 0;
-  padding: 1rem;
+  padding: 0.8rem 0.9rem;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--paper-bright);
   box-shadow: var(--shadow-soft);
 }
 
+.meeting-slot-when {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.45rem;
+  align-items: baseline;
+  min-width: 0;
+}
+
+.meeting-slot-date {
+  color: var(--ink-deep);
+  font: 700 1rem/1.25 "Fraunces", serif;
+}
+
 .meeting-slot-time {
   color: var(--ink-deep);
-  font: 700 1.65rem/1.15 "Fraunces", serif;
+  font-size: 1rem;
+  font-weight: 800;
 }
 
 .meeting-slot-detail {
-  min-height: 2.5rem;
   color: var(--muted);
   font-size: 0.88rem;
 }
 
-.meeting-slot-card .button { margin-top: 0.4rem; }
+.meeting-slot-card .button {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  min-height: 2.75rem;
+}
 
 .meeting-request-panel,
 .meeting-response-panel,
@@ -150,7 +169,7 @@ body.high-contrast .meeting-response-panel,
 body.high-contrast .meeting-confirmation { border: 2px solid currentColor; }
 
 @media (max-width: 48rem) {
-  .meeting-slots { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .meeting-slots { grid-template-columns: minmax(0, 1fr); }
   .meeting-request-panel { grid-template-columns: minmax(0, 1fr); }
 }
 

@@ -46,8 +46,8 @@
 
     <nav class="family-quick-nav" aria-label="Family page sections">
       <a href="#family-week" data-i18n="quickWeek">This week</a>
-      <a href="#family-scheduler" data-scheduler-key="quick">Meet</a>
       <a href="#homework-library" data-i18n="quickPractice">Optional practice</a>
+      <a href="#family-scheduler" data-scheduler-key="quick">Meet</a>
       <a href="#family-support" data-i18n="quickHelp">Ways to help</a>
     </nav>
 
@@ -105,6 +105,54 @@
         <div class="announcement-grid" id="announcement-grid"></div>
       </section>
 
+      <section class="homework-section" id="homework-library" aria-labelledby="homework-title">
+        <div class="practice-heading">
+          <div>
+            <p class="eyebrow" data-i18n="homeworkEyebrow">Optional and ungraded</p>
+            <h2 id="homework-title" data-i18n="homeworkTitle">Optional family practice</h2>
+            <p class="section-intro" data-i18n="homeworkIntro">
+              This is separate from your student's regular homework. Use it only when it works for your family as a chance to review or practice the learning together. It is never graded.
+            </p>
+          </div>
+          <span class="count-chip" id="homework-count">Loading lessons…</span>
+        </div>
+
+        <details class="homework-library-panel" id="all-homework-panel">
+          <summary>
+            <span data-i18n="browsePractice">Browse optional family practice</span>
+            <small data-i18n="browsePracticeHint">Find any lesson by number or topic</small>
+          </summary>
+          <div class="homework-panel-body">
+            <div class="filter-bar" role="search">
+              <div class="field-group search-field">
+                <label for="homework-search" data-i18n="searchLabel">Search lessons</label>
+                <input
+                  id="homework-search"
+                  type="search"
+                  inputmode="search"
+                  placeholder="Try 3-2, ratios, or equations"
+                  autocomplete="off"
+                />
+              </div>
+              <div class="field-group">
+                <label for="unit-filter" data-i18n="unitLabel">Unit</label>
+                <select id="unit-filter"><option value="">All units</option></select>
+              </div>
+              <div class="field-group filter-reset-group">
+                <span class="filter-reset-label">Filter tools</span>
+                <button class="button button-secondary" id="clear-homework-filters" type="button" hidden>
+                  Clear filters
+                </button>
+              </div>
+            </div>
+            <div class="homework-grid" id="homework-grid" aria-live="polite"></div>
+            <button class="button button-secondary load-more" id="load-more" type="button" hidden>
+              Show more lessons
+            </button>
+          </div>
+        </details>
+      </section>
+
       <section class="scheduler-section" id="family-scheduler" aria-labelledby="scheduler-title">
         <div class="scheduler-heading">
           <div>
@@ -160,54 +208,6 @@
             <button class="button button-secondary" id="meeting-decline" type="button">No, we need another time</button>
           </div>
         </div>
-      </section>
-
-      <section class="homework-section" id="homework-library" aria-labelledby="homework-title">
-        <div class="practice-heading">
-          <div>
-            <p class="eyebrow" data-i18n="homeworkEyebrow">Optional and ungraded</p>
-            <h2 id="homework-title" data-i18n="homeworkTitle">Optional family practice</h2>
-            <p class="section-intro" data-i18n="homeworkIntro">
-              This is separate from your student's regular homework. Use it only when it works for your family as a chance to review or practice the learning together. It is never graded.
-            </p>
-          </div>
-          <span class="count-chip" id="homework-count">Loading lessons…</span>
-        </div>
-
-        <details class="homework-library-panel" id="all-homework-panel">
-          <summary>
-            <span data-i18n="browsePractice">Browse optional family practice</span>
-            <small data-i18n="browsePracticeHint">Find any lesson by number or topic</small>
-          </summary>
-          <div class="homework-panel-body">
-            <div class="filter-bar" role="search">
-              <div class="field-group search-field">
-                <label for="homework-search" data-i18n="searchLabel">Search lessons</label>
-                <input
-                  id="homework-search"
-                  type="search"
-                  inputmode="search"
-                  placeholder="Try 3-2, ratios, or equations"
-                  autocomplete="off"
-                />
-              </div>
-              <div class="field-group">
-                <label for="unit-filter" data-i18n="unitLabel">Unit</label>
-                <select id="unit-filter"><option value="">All units</option></select>
-              </div>
-              <div class="field-group filter-reset-group">
-                <span class="filter-reset-label">Filter tools</span>
-                <button class="button button-secondary" id="clear-homework-filters" type="button" hidden>
-                  Clear filters
-                </button>
-              </div>
-            </div>
-            <div class="homework-grid" id="homework-grid" aria-live="polite"></div>
-            <button class="button button-secondary load-more" id="load-more" type="button" hidden>
-              Show more lessons
-            </button>
-          </div>
-        </details>
       </section>
 
       <section class="support-section" id="family-support" aria-labelledby="support-title">

@@ -58,6 +58,14 @@ assert.match(html, /booked immediately/i);
 assert.match(html, /student.+first name only/i);
 assert.match(html, /optional family practice/i);
 assert.match(html, /separate from (?:your student's )?regular homework/i);
+assert.ok(
+  html.indexOf('href="#homework-library"') < html.indexOf('href="#family-scheduler"'),
+  "Optional practice should appear before Meet in the quick navigation",
+);
+assert.ok(
+  html.indexOf('id="homework-library"') < html.indexOf('id="family-scheduler"'),
+  "Optional family practice should appear above Meet with Mr. Neft",
+);
 assert.match(
   html,
   /id="teacher-access"[^>]+href="\/curriculum\/family-connections\/teacher\/"[^>]*>[^<]*<span[^>]*>[^<]*<\/span>\s*Teacher sign in/i,
@@ -109,6 +117,10 @@ assert.match(app, /setInterval/);
 assert.match(app, /Family page updated/);
 assert.match(app, /family-language-change/);
 assert.match(scheduler, /family-language-change[\s\S]{0,160}loadSlots/);
+assert.match(scheduler, /formatMeetingSlot/);
+assert.match(scheduler, /meeting-slot-date/);
+assert.match(scheduler, /meeting-slot-time/);
+assert.match(scheduler, /dataset\.schedulerEn\s*=\s*["']Book["']/);
 assert.match(app, /matching lessons/);
 assert.match(app, /lessons available/);
 assert.doesNotMatch(app + renderer, /family homework|homework library/i);
