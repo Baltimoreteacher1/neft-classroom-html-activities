@@ -97,10 +97,13 @@ function multipleChoiceCard(item, index, onSolved, events = {}) {
       if (optionIndex !== item.correctIndex) {
         button.classList.add("wrong");
         button.disabled = true;
+        const targeted = item.choiceFeedback?.[optionIndex];
         showFeedback(
           status,
           "no",
-          "That choice does not fit yet. Compare it with the question, open a hint, and try again.",
+          targeted
+            ? `<b>Look closer:</b> ${esc(targeted)}`
+            : "That choice does not fit yet. Compare it with the question, open a hint, and try again.",
         );
         return;
       }
@@ -187,7 +190,7 @@ function parseEquation(stem) {
   };
 }
 
-function answerControl(item, answer, scaffold, status, onSolved, events = {}) {
+function answerControl(item, answer, scaffold, status, onSolved, events = {}, onStruggle) {
   const box = el("div");
   const equation = parseEquation(itemStem(item));
   const input = el("input", "fillin");
@@ -247,12 +250,15 @@ function answerControl(item, answer, scaffold, status, onSolved, events = {}) {
     events.onAttempt?.({ correct });
     if (!correct) {
       input.classList.add("bad");
+      const opened = tries >= 2 && onStruggle?.();
       showFeedback(
         status,
         "no",
         tries === 1
           ? "Not yet. Re-read the question, check one step, and try again."
-          : "Still building. Open the next hint or ask your coach to question one step—then revise your answer.",
+          : opened
+            ? "Still building — so the step guide below just opened for you. Walk it one line at a time, then revise your answer."
+            : "Still building. Open the next hint or ask your coach to question one step—then revise your answer.",
       );
       return;
     }
@@ -286,7 +292,7 @@ function explanationSteps(item) {
 
 function appendStepGuide(card, item, scaffold) {
   const steps = explanationSteps(item);
-  if (!steps.length) return;
+  if (!steps.length) return null;
   const row = el("div", "row");
   const button = el("button", "btn ghost", "🧩 Break it into steps");
   button.type = "button";
@@ -308,20 +314,35 @@ function appendStepGuide(card, item, scaffold) {
     }
     list.appendChild(line);
   });
+  const show = () => {
+    if (!list.hidden) return false;
+    list.hidden = false;
+    button.textContent = "Hide step guide";
+    return true;
+  };
   button.onclick = () => {
-    list.hidden = !list.hidden;
-    button.textContent = list.hidden ? "🧩 Break it into steps" : "Hide step guide";
+    if (list.hidden) show();
+    else {
+      list.hidden = true;
+      button.textContent = "🧩 Break it into steps";
+    }
   };
   row.appendChild(button);
   card.append(row, list);
+  return show;
 }
 
 function responseCard(item, index, variant, onSolved, scaffold, events = {}) {
   const card = questionCard(index, itemStem(item));
   const status = feedback();
   const answer = answerOf(item);
+  // Wired after the guide exists (it renders below the control); after two
+  // misses the control auto-opens it so support arrives without a hunt.
+  let revealGuide = null;
   if (answer != null)
-    card.appendChild(answerControl(item, answer, scaffold, status, onSolved, events));
+    card.appendChild(
+      answerControl(item, answer, scaffold, status, onSolved, events, () => revealGuide?.()),
+    );
   else {
     const response = el("textarea", "sg-ta");
     response.placeholder =
@@ -353,7 +374,7 @@ function responseCard(item, index, variant, onSolved, scaffold, events = {}) {
     card.append(response, el("div", "row"));
     card.lastElementChild.appendChild(ready);
   }
-  appendStepGuide(card, item, scaffold);
+  revealGuide = appendStepGuide(card, item, scaffold);
   appendHints(card, item, events);
   card.appendChild(status);
   return card;
@@ -382,7 +403,7 @@ function problemCard(item, index, variant, onSolved, scaffold, events = {}) {
   return responseCard(item, index, variant, onSolved, scaffold, events);
 }
 
-export function createPracticeSection(config, onPhaseDone, tally, events = {}) {
+export function createPracticeSection(config, onPhaseDone, tally, events = {}, store = null) {
   const section = el("section", "sg-sec");
   section.id = "sg-practice";
   const title =
@@ -400,25 +421,30 @@ export function createPracticeSection(config, onPhaseDone, tally, events = {}) {
     section.appendChild(el("div", "mistake", `<b>⚠️ Thinking trap:</b> ${esc(mistakeText)}`));
   const items = collectItems(config);
   let solved = 0;
+  // Count each item at most once so a restored-then-resolved card can't
+  // double-credit the tally.
+  const counted = new Set();
+  const solveItem = (index) => {
+    if (counted.has(index)) return;
+    counted.add(index);
+    solved++;
+    tally.solved++;
+    events.onSolved?.();
+    tally.update?.();
+    store?.addTo("solvedPractice", index);
+    if (solved >= Math.ceil(items.length * 0.6)) onPhaseDone();
+  };
   items.forEach((item, index) => {
     tally.total++;
     const scaffold = config.variant === "group2" ? false : index % 2 === 0;
-    section.appendChild(
-      problemCard(
-        item,
-        index,
-        config.variant,
-        () => {
-          solved++;
-          tally.solved++;
-          events.onSolved?.();
-          tally.update?.();
-          if (solved >= Math.ceil(items.length * 0.6)) onPhaseDone();
-        },
-        scaffold,
-        events,
-      ),
-    );
+    const card = problemCard(item, index, config.variant, () => solveItem(index), scaffold, events);
+    if (store?.has("solvedPractice", index)) {
+      card.prepend(
+        el("div", "sg-donechip", "✓ Solved last session — explain your reasoning again, out loud."),
+      );
+      solveItem(index);
+    }
+    section.appendChild(card);
   });
   const optional = config.practice?.optionalActivity;
   if (optional)
@@ -432,7 +458,7 @@ export function createPracticeSection(config, onPhaseDone, tally, events = {}) {
   return section;
 }
 
-export function createCheckSection(config, onSolved, tally, events = {}) {
+export function createCheckSection(config, onSolved, tally, events = {}, store = null) {
   const ticket = config.reflect?.exitTicket;
   if (!ticket) return null;
   const section = el("section", "sg-sec");
@@ -452,16 +478,29 @@ export function createCheckSection(config, onSolved, tally, events = {}) {
     ),
   );
   tally.total++;
+  let counted = false;
   const finish = () => {
+    if (counted) return;
+    counted = true;
     tally.solved++;
     events.onSolved?.();
     tally.update?.();
+    store?.set("checkSolved", true);
     onSolved();
   };
-  section.appendChild(
-    ticket.choices?.length
-      ? multipleChoiceCard({ ...ticket, type: "multiple-choice" }, 0, finish, events)
-      : responseCard(ticket, 0, config.variant, finish, config.variant !== "group2", events),
-  );
+  const card = ticket.choices?.length
+    ? multipleChoiceCard({ ...ticket, type: "multiple-choice" }, 0, finish, events)
+    : responseCard(ticket, 0, config.variant, finish, config.variant !== "group2", events);
+  if (store?.get("checkSolved")) {
+    card.prepend(
+      el(
+        "div",
+        "sg-donechip",
+        "✓ Exit ticket completed last session — prove it again if you want.",
+      ),
+    );
+    finish();
+  }
+  section.appendChild(card);
   return section;
 }

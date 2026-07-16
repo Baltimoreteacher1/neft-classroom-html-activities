@@ -1,4 +1,5 @@
-import { celebrate, el, esc } from "./small-group-ui.js";
+import { figureBlock } from "./small-group-labs.js";
+import { celebrate, el, esc, sectionHeading as heading, speak } from "./small-group-ui.js";
 
 const confidenceOptions = [
   { value: 1, emoji: "🌱", label: "I need a model" },
@@ -6,15 +7,7 @@ const confidenceOptions = [
   { value: 3, emoji: "✨", label: "I can explain a step" },
 ];
 
-function heading(number, eyebrow, title) {
-  return el(
-    "div",
-    "sg-h",
-    `<span class="n">${number}</span><div><div class="sg-eyebrow">${esc(eyebrow)}</div><h2>${esc(title)}</h2></div>`,
-  );
-}
-
-function makePulse(state, key, onSelect) {
+function makePulse(state, key, onSelect, initial) {
   const pulse = el("div", "sg-pulse");
   pulse.setAttribute("role", "group");
   pulse.setAttribute(
@@ -31,27 +24,16 @@ function makePulse(state, key, onSelect) {
       button.setAttribute("aria-pressed", "true");
       onSelect?.(option.value);
     };
+    if (initial === option.value) {
+      state[key] = option.value;
+      button.setAttribute("aria-pressed", "true");
+    }
     pulse.appendChild(button);
   });
   return pulse;
 }
 
-function speak(text, button, lang = "en-US") {
-  if (!("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") {
-    button.disabled = true;
-    button.textContent = "Read aloud unavailable";
-    return;
-  }
-  window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = lang;
-  utterance.rate = 0.92;
-  button.setAttribute("aria-pressed", "true");
-  utterance.onend = () => button.setAttribute("aria-pressed", "false");
-  window.speechSynthesis.speak(utterance);
-}
-
-export function createMissionSection(config, variant, state, onDone) {
+export function createMissionSection(config, variant, state, onDone, store = null) {
   const missionContent = config.noticeAndWonder || {};
   const context =
     missionContent.context ||
@@ -79,15 +61,29 @@ export function createMissionSection(config, variant, state, onDone) {
   tools.appendChild(read);
   copy.appendChild(tools);
   copy.appendChild(el("p", "block-lab", "Private readiness pulse"));
-  copy.appendChild(makePulse(state, "before"));
+  copy.appendChild(
+    makePulse(
+      state,
+      "before",
+      (value) => store?.set("pulseBefore", value),
+      store?.get("pulseBefore"),
+    ),
+  );
 
-  const visual = el("div", `sg-mission-visual${missionContent.image ? "" : " no-image"}`);
-  if (missionContent.image) {
+  const imageSrc = missionContent.image || config.launch?.contextImage;
+  const missionFigure = imageSrc ? null : figureBlock(config.launch?.visual);
+  const visual = el(
+    "div",
+    `sg-mission-visual${imageSrc || missionFigure ? "" : " no-image"}${missionFigure ? " has-figure" : ""}`,
+  );
+  if (imageSrc) {
     const image = document.createElement("img");
-    image.src = missionContent.image;
+    image.src = imageSrc;
     image.alt = missionContent.imageAlt || "Visual for this lesson's math mission";
     image.loading = "eager";
     visual.appendChild(image);
+  } else if (missionFigure) {
+    visual.appendChild(missionFigure);
   } else {
     visual.textContent = variant === "group2" ? "🔎" : "🧩";
     visual.setAttribute("aria-hidden", "true");
@@ -121,19 +117,25 @@ export function createMissionSection(config, variant, state, onDone) {
   return section;
 }
 
-function translationsFor(word) {
-  return word.termEs ? [`<span lang="es"><b>ES:</b> ${esc(word.termEs)}</span>`] : [];
-}
+// Language lanes available on vocabulary cards. Each entry maps a config
+// field suffix (termEs/definitionEs, …) to its label, BCP-47 speech tag, and
+// text direction. Only lanes the lesson actually authored are offered.
+const VOCAB_LANGS = [
+  { id: "es", suffix: "Es", label: "Español", speech: "es-ES", dir: "ltr" },
+  { id: "vi", suffix: "Vi", label: "Tiếng Việt", speech: "vi-VN", dir: "ltr" },
+  { id: "ar", suffix: "Ar", label: "العربية", speech: "ar-SA", dir: "rtl" },
+];
 
-function definitionLine(label, text, lang) {
+function definitionLine(label, text, lang, dir = "ltr") {
   const line = el("p", "sg-vdef-line");
   line.lang = lang;
+  line.dir = dir;
   const language = el("strong", "sg-vdef-language", esc(label));
   line.append(language, document.createTextNode(text));
   return line;
 }
 
-export function createVocabularySection(config, onDone) {
+export function createVocabularySection(config, onDone, store = null) {
   const words = (config.vocabulary || []).slice(0, 4);
   if (!words.length) return null;
   const section = el("section", "sg-sec");
@@ -147,39 +149,109 @@ export function createVocabularySection(config, onDone) {
     ),
   );
 
+  // Home-language lane picker — only shows languages this lesson carries.
+  const available = VOCAB_LANGS.filter((lang) =>
+    words.some((word) => word[`term${lang.suffix}`] || word[`definition${lang.suffix}`]),
+  );
+  let currentLang =
+    available.find((lang) => lang.id === store?.get("vocabLang")) ||
+    available.find((lang) => lang.id === "es") ||
+    available[0] ||
+    null;
   const grid = el("div", "sg-vgrid");
-  words.forEach((word) => {
-    const card = el("article", "sg-vcard");
-    card.appendChild(el("div", "sg-vterm", esc(word.term)));
-    const translations = translationsFor(word);
-    if (translations.length)
-      card.appendChild(el("div", "sg-vtranslations", translations.join(" · ")));
-    const speaker = el("button", "sg-speak", "🔊");
-    speaker.type = "button";
-    speaker.setAttribute("aria-label", `Hear ${word.term}`);
-    speaker.onclick = () => speak(word.term, speaker);
-    card.appendChild(speaker);
-    const reveal = el("button", "btn ghost", "Reveal meaning");
-    reveal.type = "button";
-    const definition = el("div", "sg-vdef");
-    definition.appendChild(
-      definitionLine(
-        "English",
-        word.definition || word.visual || "Use this word in today's math talk.",
-        "en",
-      ),
-    );
-    if (word.definitionEs) {
-      definition.appendChild(definitionLine("Español", word.definitionEs, "es"));
-    }
-    definition.hidden = true;
-    reveal.onclick = () => {
-      definition.hidden = !definition.hidden;
-      reveal.textContent = definition.hidden ? "Reveal meaning" : "Hide meaning";
+
+  if (available.length) {
+    const bar = el("div", "sg-langbar");
+    bar.appendChild(el("span", "block-lab", "Also show:"));
+    const buttons = [];
+    const choose = (lang) => {
+      currentLang = lang;
+      store?.set("vocabLang", lang ? lang.id : "en");
+      buttons.forEach(([button, id]) =>
+        button.setAttribute("aria-pressed", String(id === (lang ? lang.id : "en"))),
+      );
+      renderCards();
     };
-    card.append(reveal, definition);
-    grid.appendChild(card);
-  });
+    const englishOnly = el("button", "sg-langbtn", "English only");
+    englishOnly.type = "button";
+    englishOnly.setAttribute("aria-pressed", String(!currentLang));
+    englishOnly.onclick = () => choose(null);
+    buttons.push([englishOnly, "en"]);
+    bar.appendChild(englishOnly);
+    available.forEach((lang) => {
+      const button = el("button", "sg-langbtn", esc(lang.label));
+      button.type = "button";
+      button.lang = lang.id;
+      button.setAttribute("aria-pressed", String(currentLang?.id === lang.id));
+      button.onclick = () => choose(lang);
+      buttons.push([button, lang.id]);
+      bar.appendChild(button);
+    });
+    if (store?.get("vocabLang") === "en") currentLang = null;
+    buttons.forEach(([button, id]) =>
+      button.setAttribute("aria-pressed", String(id === (currentLang ? currentLang.id : "en"))),
+    );
+    section.appendChild(bar);
+  }
+
+  const renderCards = () => {
+    grid.innerHTML = "";
+    words.forEach((word) => {
+      const card = el("article", "sg-vcard");
+      card.appendChild(el("div", "sg-vterm", esc(word.term)));
+      const secondaryTerm = currentLang && word[`term${currentLang.suffix}`];
+      if (secondaryTerm) {
+        const translation = el(
+          "div",
+          "sg-vtranslations",
+          `<span lang="${currentLang.id}" dir="${currentLang.dir}">${esc(secondaryTerm)}</span>`,
+        );
+        if (currentLang.id === "es") {
+          const speakEs = el("button", "sg-speak-inline", "🔊");
+          speakEs.type = "button";
+          speakEs.setAttribute("aria-label", `Escuchar ${secondaryTerm}`);
+          speakEs.onclick = () => speak(secondaryTerm, speakEs, currentLang.speech);
+          translation.appendChild(speakEs);
+        }
+        card.appendChild(translation);
+      }
+      const speaker = el("button", "sg-speak", "🔊");
+      speaker.type = "button";
+      speaker.setAttribute("aria-label", `Hear ${word.term}`);
+      speaker.onclick = () => speak(word.term, speaker);
+      card.appendChild(speaker);
+      const reveal = el("button", "btn ghost", "Reveal meaning");
+      reveal.type = "button";
+      const definition = el("div", "sg-vdef");
+      definition.appendChild(
+        definitionLine(
+          "English",
+          word.definition || word.visual || "Use this word in today's math talk.",
+          "en",
+        ),
+      );
+      const secondaryDef = currentLang && word[`definition${currentLang.suffix}`];
+      if (secondaryDef)
+        definition.appendChild(
+          definitionLine(currentLang.label, secondaryDef, currentLang.id, currentLang.dir),
+        );
+      if (Array.isArray(word.examples) && word.examples.length) {
+        const examples = el("div", "sg-vexamples");
+        word.examples
+          .slice(0, 3)
+          .forEach((example) => examples.appendChild(el("span", "sg-vexample", esc(example))));
+        definition.appendChild(examples);
+      }
+      definition.hidden = true;
+      reveal.onclick = () => {
+        definition.hidden = !definition.hidden;
+        reveal.textContent = definition.hidden ? "Reveal meaning" : "Hide meaning";
+      };
+      card.append(reveal, definition);
+      grid.appendChild(card);
+    });
+  };
+  renderCards();
   section.appendChild(grid);
 
   const match = el("div", "sg-match");
@@ -223,6 +295,57 @@ export function createVocabularySection(config, onDone) {
   match.append(prompt, options, status);
   section.appendChild(match);
   renderRound();
+
+  // Bonus cloze round — put each word to work inside its authored sentence.
+  const clozeWords = words.filter((word) => word.cloze?.includes("___"));
+  if (clozeWords.length) {
+    const cloze = el("div", "sg-cloze");
+    cloze.appendChild(el("div", "sg-eyebrow", "Bonus · use the word"));
+    const sentence = el("p", "sg-cloze-sentence");
+    const chipRow = el("div", "sg-match-options");
+    const clozeStatus = el("div", "sg-match-status");
+    clozeStatus.setAttribute("aria-live", "polite");
+    let clozeIndex = 0;
+    const renderCloze = () => {
+      const word = clozeWords[clozeIndex];
+      sentence.innerHTML = "";
+      const [before, ...rest] = word.cloze.split("___");
+      sentence.appendChild(document.createTextNode(before));
+      const blank = el("span", "sg-cloze-blank", "?");
+      sentence.appendChild(blank);
+      sentence.appendChild(document.createTextNode(rest.join("___")));
+      chipRow.innerHTML = "";
+      words.forEach((candidate) => {
+        const chip = el("button", "sg-match-btn", esc(candidate.term));
+        chip.type = "button";
+        chip.onclick = () => {
+          if (candidate.term !== word.term) {
+            chip.classList.add("wrong");
+            chip.disabled = true;
+            clozeStatus.textContent =
+              "Read the whole sentence again — which word fits the meaning?";
+            return;
+          }
+          blank.textContent = word.term;
+          blank.classList.add("ok");
+          chip.classList.add("correct");
+          [...chipRow.children].forEach((child) => (child.disabled = true));
+          clozeIndex++;
+          if (clozeIndex >= clozeWords.length) {
+            clozeStatus.textContent = "Every word placed in a real sentence. That is ownership.";
+            celebrate("📚");
+            return;
+          }
+          clozeStatus.textContent = `Sentence ${clozeIndex} of ${clozeWords.length} complete.`;
+          window.setTimeout(renderCloze, 600);
+        };
+        chipRow.appendChild(chip);
+      });
+    };
+    cloze.append(sentence, chipRow, clozeStatus);
+    section.appendChild(cloze);
+    renderCloze();
+  }
   return section;
 }
 
@@ -352,7 +475,7 @@ export function createTalkSection(config, variant, onDone) {
   return section;
 }
 
-export function createReflectionSection(config, state, onDone) {
+export function createReflectionSection(config, state, onDone, store = null) {
   const section = el("section", "sg-sec");
   section.id = "sg-reflect";
   section.hidden = true;
@@ -370,15 +493,21 @@ export function createReflectionSection(config, state, onDone) {
   const message = el("div", "sg-match-status");
   message.setAttribute("aria-live", "polite");
   card.appendChild(
-    makePulse(state, "after", (value) => {
-      const change = state.before ? value - state.before : 0;
-      message.textContent =
-        change > 0
-          ? "Your confidence grew. Name the move that helped."
-          : change === 0
-            ? "Steady confidence counts. Name one idea that became clearer."
-            : "Honest reflection is smart. Name the next support you will use.";
-    }),
+    makePulse(
+      state,
+      "after",
+      (value) => {
+        store?.set("pulseAfter", value);
+        const change = state.before ? value - state.before : 0;
+        message.textContent =
+          change > 0
+            ? "Your confidence grew. Name the move that helped."
+            : change === 0
+              ? "Steady confidence counts. Name one idea that became clearer."
+              : "Honest reflection is smart. Name the next support you will use.";
+      },
+      store?.get("pulseAfter"),
+    ),
   );
   const label = document.createElement("label");
   label.htmlFor = `${config.lessonId}-growth`;
