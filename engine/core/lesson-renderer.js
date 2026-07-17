@@ -1558,6 +1558,87 @@ export function wireObjectiveTermPopups(block, vocab) {
   });
 }
 
+// Text nodes we never rewrite: interactive controls, answer inputs, rendered
+// visuals/math, and terms already turned into a glossary button. Underlining a
+// word inside a <button>/<label> would break the control; inside an <svg> or
+// interactive visual it would corrupt the figure.
+const VOCAB_BODY_EXCLUSIONS =
+  "button, a[href], input, textarea, select, option, label, summary, script, style, svg, code, kbd, .obj-term, .obj-popup-backdrop, [contenteditable], [data-no-vocab], .interactive-visual, .section-icon, .katex, .MathJax, mjx-container";
+
+// Underline EVERY lesson-vocabulary term wherever it appears in a rendered
+// phase body (not just the objectives) and wire each one to the same tap-to-open
+// glossary popup — a kid-friendly EN/ES explanation plus an illustration. This
+// mirrors the small-group renderer so English learners get the academic
+// vocabulary defined in context throughout the lesson. Idempotent per container;
+// capped at 2 hits per term per phase to stay readable. Excludes controls,
+// inputs, and visuals via VOCAB_BODY_EXCLUSIONS.
+export function underlineVocabTerms(container, vocab) {
+  if (!container) return;
+  const list = Array.isArray(vocab) ? vocab : [];
+  const hasPopupContent = (v) => !!(v && (v.definition || v.definitionEs || v.visual || v.example));
+  const entries = list
+    .map((v, i) => ({ i, term: String((v && v.term) || "").trim() }))
+    .filter((e) => e.term.length > 2 && hasPopupContent(list[e.i]));
+  if (!entries.length) return;
+  const norm = (s) => s.toLowerCase().replace(/s$/, "").trim();
+  const lookup = new Map();
+  for (const e of entries) {
+    if (!lookup.has(norm(e.term))) lookup.set(norm(e.term), e.i);
+  }
+  const alt = [...entries]
+    .sort((a, b) => b.term.length - a.term.length)
+    .map((e) => escapeRegExp(e.term))
+    .join("|");
+  const re = new RegExp(`\\b(?:${alt})(?:es|s)?\\b`, "gi");
+
+  const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, {
+    acceptNode(node) {
+      const parent = node.parentElement;
+      if (!node.textContent || !node.textContent.trim() || !parent) return NodeFilter.FILTER_REJECT;
+      if (parent.closest(VOCAB_BODY_EXCLUSIONS)) return NodeFilter.FILTER_REJECT;
+      re.lastIndex = 0;
+      return re.test(node.textContent) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+    },
+  });
+  const textNodes = [];
+  for (let n = walker.nextNode(); n; n = walker.nextNode()) textNodes.push(n);
+  if (!textNodes.length) return;
+
+  const cap = new Map();
+  for (const textNode of textNodes) {
+    const text = textNode.textContent;
+    const fragment = document.createDocumentFragment();
+    let cursor = 0;
+    let changed = false;
+    re.lastIndex = 0;
+    for (const match of text.matchAll(re)) {
+      const idx = lookup.has(norm(match[0])) ? lookup.get(norm(match[0])) : -1;
+      if (idx < 0) continue;
+      const count = cap.get(idx) || 0;
+      if (count >= 2) continue;
+      fragment.append(text.slice(cursor, match.index));
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "obj-term";
+      btn.dataset.termIdx = String(idx);
+      btn.setAttribute("aria-haspopup", "dialog");
+      btn.setAttribute(
+        "aria-label",
+        `${entries.find((e) => e.i === idx)?.term || match[0]}: open definition`,
+      );
+      btn.textContent = match[0];
+      fragment.appendChild(btn);
+      cursor = match.index + match[0].length;
+      cap.set(idx, count + 1);
+      changed = true;
+    }
+    if (!changed) continue;
+    fragment.append(text.slice(cursor));
+    textNode.replaceWith(fragment);
+  }
+  wireObjectiveTermPopups(container, list);
+}
+
 // Content / Language "I can…" objectives. Rendered AFTER the "Be Curious"
 // Notice & Wonder card so students get curious about the scenario before they
 // read the formal goals (see renderLaunchPhase ordering). Key vocabulary words
