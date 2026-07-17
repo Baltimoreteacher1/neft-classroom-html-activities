@@ -102,10 +102,10 @@ export function renderCollection(root, items, onRemove) {
   for (const item of items) {
     const card = node("div", "collection-item");
     const copy = node("div");
-    copy.append(
-      node("strong", "", item.title),
-      node("p", "", item.body || item.description || item.url),
-    );
+    const heading = node("strong", "", item.title);
+    if (item.pinned) heading.append(node("span", "collection-pin", " · Pinned"));
+    if (item.date) heading.append(node("span", "collection-date", ` · ${item.date}`));
+    copy.append(heading, node("p", "", item.body || item.description || item.url));
     const remove = node("button", "remove-button", "Remove");
     remove.type = "button";
     remove.addEventListener("click", () => onRemove(item.id));

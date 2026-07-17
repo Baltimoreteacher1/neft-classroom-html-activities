@@ -62,7 +62,9 @@
         </div>
         <aside class="partnership-note" aria-label="Family partnership promise">
           <strong data-i18n="promiseTitle">You do not need to teach the lesson.</strong>
-          <p data-i18n="promiseBody">Ask what your student notices, listen to the strategy, and encourage the effort.</p>
+          <p data-i18n="promiseBody">
+            Ask what your student notices, listen to the strategy, and encourage the effort.
+          </p>
         </aside>
       </section>
 
@@ -88,14 +90,45 @@
           <div>
             <p class="week-label" id="published-week-label">This Week</p>
             <p id="published-week-note">Loading the latest family plan…</p>
+            <p class="week-freshness" id="week-freshness" hidden></p>
           </div>
           <span class="live-badge" id="publication-badge">Family update</span>
         </div>
         <p class="data-status" id="week-data-status" role="status"></p>
+
+        <div class="week-toolbar" id="week-toolbar" aria-label="Take this week with you">
+          <span class="week-toolbar-title" data-i18n="takeTitle">Take this week with you</span>
+          <div class="week-toolbar-actions">
+            <button class="chip-button" id="print-week" type="button">
+              <span aria-hidden="true">🖨</span> <span data-i18n="printWeek">Print</span>
+            </button>
+            <button class="chip-button" id="calendar-week" type="button">
+              <span aria-hidden="true">📅</span>
+              <span data-i18n="calendarWeek">Add to calendar</span>
+            </button>
+            <a class="chip-button" id="email-week" href="#" rel="noopener">
+              <span aria-hidden="true">✉</span> <span data-i18n="emailWeek">Email</span>
+            </a>
+            <a class="chip-button" id="text-week" href="#" rel="noopener">
+              <span aria-hidden="true">💬</span> <span data-i18n="textWeek">Text</span>
+            </a>
+            <button class="chip-button" id="share-week" type="button" hidden>
+              <span aria-hidden="true">📲</span> <span data-i18n="shareWeek">Send to phone</span>
+            </button>
+          </div>
+        </div>
+
         <div class="week-grid" id="week-grid" aria-live="polite"></div>
+        <div class="week-spotlight" id="week-spotlight" aria-live="polite"></div>
+        <div class="week-vocab" id="week-vocab" aria-live="polite"></div>
       </section>
 
-      <section class="announcement-section" id="family-announcements" aria-labelledby="announcement-title" hidden>
+      <section
+        class="announcement-section"
+        id="family-announcements"
+        aria-labelledby="announcement-title"
+        hidden
+      >
         <div class="section-heading compact">
           <div>
             <p class="eyebrow" data-i18n="updatesEyebrow">From the classroom</p>
@@ -111,7 +144,9 @@
             <p class="eyebrow" data-i18n="homeworkEyebrow">Optional and ungraded</p>
             <h2 id="homework-title" data-i18n="homeworkTitle">Optional family practice</h2>
             <p class="section-intro" data-i18n="homeworkIntro">
-              This is separate from your student's regular homework. Use it only when it works for your family as a chance to review or practice the learning together. It is never graded.
+              This is separate from your student's regular homework. Use it only when it works for
+              your family as a chance to review or practice the learning together. It is never
+              graded.
             </p>
           </div>
           <span class="count-chip" id="homework-count">Loading lessons…</span>
@@ -136,11 +171,18 @@
               </div>
               <div class="field-group">
                 <label for="unit-filter" data-i18n="unitLabel">Unit</label>
-                <select id="unit-filter"><option value="">All units</option></select>
+                <select id="unit-filter">
+                  <option value="">All units</option>
+                </select>
               </div>
               <div class="field-group filter-reset-group">
                 <span class="filter-reset-label">Filter tools</span>
-                <button class="button button-secondary" id="clear-homework-filters" type="button" hidden>
+                <button
+                  class="button button-secondary"
+                  id="clear-homework-filters"
+                  type="button"
+                  hidden
+                >
                   Clear filters
                 </button>
               </div>
@@ -158,7 +200,10 @@
           <div>
             <p class="eyebrow" data-scheduler-key="eyebrow">Family meetings</p>
             <h2 id="scheduler-title" data-scheduler-key="title">Meet with Mr. Neft</h2>
-            <p data-scheduler-key="intro">Choose an available time for a short conversation about how we can support your student.</p>
+            <p data-scheduler-key="intro">
+              Choose an available time for a short conversation about how we can support your
+              student.
+            </p>
           </div>
           <span class="timezone-chip" data-scheduler-key="timezone">Eastern Time</span>
         </div>
@@ -170,8 +215,11 @@
           href="https://www.classdojo.com/"
           target="_blank"
           rel="noopener"
-        >Message Mr. Neft on ClassDojo <span aria-hidden="true">↗</span></a>
-        <p class="scheduler-status" id="meeting-status" role="status" aria-live="polite">Loading available times…</p>
+          >Message Mr. Neft on ClassDojo <span aria-hidden="true">↗</span></a
+        >
+        <p class="scheduler-status" id="meeting-status" role="status" aria-live="polite">
+          Loading available times…
+        </p>
         <div class="meeting-slots" id="meeting-slots"></div>
 
         <div class="meeting-request-panel" id="meeting-request-panel" hidden>
@@ -183,28 +231,97 @@
           <form id="meeting-request-form">
             <input id="meeting-slot-id" name="slotId" type="hidden" />
             <div class="meeting-form-grid">
-              <label><span data-scheduler-key="guardian">Parent or guardian name</span><input name="guardianName" maxlength="80" autocomplete="name" required /></label>
-              <label><span data-scheduler-key="student">Student first name only</span><input id="meeting-student-first-name" name="studentFirstName" maxlength="40" autocomplete="off" required /></label>
-              <label><span data-scheduler-key="email">Email for the reply</span><input name="email" type="email" maxlength="160" autocomplete="email" required /></label>
-              <label class="meeting-note"><span data-scheduler-key="note">Anything you would like Mr. Neft to know? (optional)</span><textarea name="note" maxlength="400" rows="3"></textarea></label>
+              <label
+                ><span data-scheduler-key="guardian">Parent or guardian name</span
+                ><input name="guardianName" maxlength="80" autocomplete="name" required
+              /></label>
+              <label
+                ><span data-scheduler-key="student">Student first name only</span
+                ><input
+                  id="meeting-student-first-name"
+                  name="studentFirstName"
+                  maxlength="40"
+                  autocomplete="off"
+                  required
+              /></label>
+              <label
+                ><span data-scheduler-key="email">Email for the reply</span
+                ><input name="email" type="email" maxlength="160" autocomplete="email" required
+              /></label>
+              <label
+                ><span data-scheduler-key="meetLanguage">Language for the meeting</span
+                ><select id="meeting-language" name="meetingLanguage">
+                  <option value="">English</option>
+                  <option value="Español">Español</option>
+                  <option value="Other">Other</option>
+                </select></label
+              >
+              <label
+                ><span data-scheduler-key="phone">Best phone number (optional)</span
+                ><input
+                  id="meeting-phone"
+                  name="meetingPhone"
+                  type="tel"
+                  maxlength="30"
+                  autocomplete="tel"
+              /></label>
+              <label class="meeting-interpreter"
+                ><input id="meeting-interpreter" name="interpreter" type="checkbox" />
+                <span data-scheduler-key="interpreter">Please arrange an interpreter</span></label
+              >
+              <label class="meeting-note"
+                ><span data-scheduler-key="note"
+                  >Anything you would like Mr. Neft to know? (optional)</span
+                ><textarea name="note" maxlength="400" rows="3"></textarea>
+              </label>
             </div>
-            <label class="meeting-honeypot" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off" /></label>
-            <label class="meeting-consent"><input id="meeting-consent" name="consent" type="checkbox" required /> <span data-scheduler-key="consent">I am booking this time and will use only the student's first name.</span></label>
+            <label class="meeting-honeypot" aria-hidden="true"
+              >Website<input name="website" tabindex="-1" autocomplete="off"
+            /></label>
+            <label class="meeting-consent"
+              ><input id="meeting-consent" name="consent" type="checkbox" required />
+              <span data-scheduler-key="consent"
+                >I am booking this time and will use only the student's first name.</span
+              ></label
+            >
             <div class="meeting-form-actions">
               <button class="button" type="submit" data-scheduler-key="send">Book meeting</button>
-              <button class="text-link meeting-cancel" type="button" id="meeting-request-cancel" data-scheduler-key="chooseAnother">Choose another time</button>
+              <button
+                class="text-link meeting-cancel"
+                type="button"
+                id="meeting-request-cancel"
+                data-scheduler-key="chooseAnother"
+              >
+                Choose another time
+              </button>
             </div>
           </form>
         </div>
 
         <div class="meeting-confirmation" id="meeting-confirmation" hidden>
           <p class="eyebrow">Confirmed</p>
-          <h3 id="meeting-confirmation-title" tabindex="-1" data-scheduler-key="bookedTitle">Meeting booked</h3>
+          <h3 id="meeting-confirmation-title" tabindex="-1" data-scheduler-key="bookedTitle">
+            Meeting booked
+          </h3>
           <p id="meeting-confirmation-detail"></p>
           <p>Confirmation: <strong id="meeting-confirmation-reference"></strong></p>
           <div class="meeting-form-actions">
-            <button class="button" id="add-meeting-calendar" type="button" data-scheduler-key="addCalendar">Add to calendar</button>
-            <button class="button button-secondary" id="meeting-confirmation-close" type="button" data-scheduler-key="backToTimes">View other times</button>
+            <button
+              class="button"
+              id="add-meeting-calendar"
+              type="button"
+              data-scheduler-key="addCalendar"
+            >
+              Add to calendar
+            </button>
+            <button
+              class="button button-secondary"
+              id="meeting-confirmation-close"
+              type="button"
+              data-scheduler-key="backToTimes"
+            >
+              View other times
+            </button>
           </div>
         </div>
 
@@ -214,7 +331,9 @@
           <p>Choose one response. The private invitation link works only once.</p>
           <div class="meeting-form-actions">
             <button class="button" id="meeting-accept" type="button">Yes, this works</button>
-            <button class="button button-secondary" id="meeting-decline" type="button">No, we need another time</button>
+            <button class="button button-secondary" id="meeting-decline" type="button">
+              No, we need another time
+            </button>
           </div>
         </div>
       </section>
@@ -227,24 +346,65 @@
         <div class="support-steps">
           <article>
             <span aria-hidden="true">1</span>
-            <div><h3 data-i18n="askTitle">Ask</h3><p data-i18n="askBody">“What do you notice?”</p></div>
+            <div>
+              <h3 data-i18n="askTitle">Ask</h3>
+              <p data-i18n="askBody">“What do you notice?”</p>
+            </div>
           </article>
           <article>
             <span aria-hidden="true">2</span>
-            <div><h3 data-i18n="listenTitle">Listen</h3><p data-i18n="listenBody">Let your student explain one strategy.</p></div>
+            <div>
+              <h3 data-i18n="listenTitle">Listen</h3>
+              <p data-i18n="listenBody">Let your student explain one strategy.</p>
+            </div>
           </article>
           <article>
             <span aria-hidden="true">3</span>
-            <div><h3 data-i18n="encourageTitle">Encourage</h3><p data-i18n="encourageBody">Praise the effort. We will check the math at school.</p></div>
+            <div>
+              <h3 data-i18n="encourageTitle">Encourage</h3>
+              <p data-i18n="encourageBody">Praise the effort. We will check the math at school.</p>
+            </div>
           </article>
         </div>
         <div class="support-note">
           <div>
             <strong data-i18n="gradingTitle">Family participation is never graded.</strong>
-            <p data-i18n="schoolOptionBody">Equivalent school option: Students can use the same practice with a trusted adult at school.</p>
+            <p data-i18n="schoolOptionBody">
+              Equivalent school option: Students can use the same practice with a trusted adult at
+              school.
+            </p>
           </div>
-          <a class="text-link" href="/curriculum/ai-hub/#parents" data-i18n="aiLink">Open the family AI guide →</a>
+          <a class="text-link" href="/curriculum/ai-hub/#parents" data-i18n="aiLink"
+            >Open the family AI guide →</a
+          >
         </div>
+
+        <div class="family-pulse" id="family-pulse">
+          <div class="pulse-copy">
+            <strong data-i18n="pulseTitle">How did practice go?</strong>
+            <p data-i18n="pulseIntro">
+              One tap, never graded. It helps Mr. Neft plan the next lesson.
+            </p>
+          </div>
+          <div class="pulse-actions" id="pulse-actions">
+            <button class="chip-button pulse-button" type="button" data-pulse="went">
+              <span aria-hidden="true">🙂</span> <span data-i18n="pulseWent">It went well</span>
+            </button>
+            <button class="chip-button pulse-button" type="button" data-pulse="stuck">
+              <span aria-hidden="true">🤔</span> <span data-i18n="pulseStuck">We got stuck</span>
+            </button>
+            <button class="chip-button pulse-button" type="button" data-pulse="skip">
+              <span aria-hidden="true">⏭</span> <span data-i18n="pulseSkip">Not this week</span>
+            </button>
+          </div>
+          <div class="pulse-thanks" id="pulse-thanks" role="status" hidden>
+            <p data-i18n="pulseThanks">Thank you. This helps Mr. Neft plan the next lesson.</p>
+            <a class="text-link" id="pulse-tell" href="#" data-i18n="pulseTell"
+              >Tell Mr. Neft more →</a
+            >
+          </div>
+        </div>
+
         <div class="resource-grid" id="resource-grid"></div>
       </section>
 
@@ -252,13 +412,28 @@
         <div>
           <p class="eyebrow light" data-i18n="connectEyebrow">Questions are welcome</p>
           <h2 id="connect-title" data-i18n="connectTitle">Keep the conversation going.</h2>
-          <p data-i18n="connectBody">Use your school's family channel to ask a question or share what your student noticed.</p>
+          <p data-i18n="connectBody">
+            Use your school's family channel to ask a question or share what your student noticed.
+          </p>
         </div>
         <div class="connect-actions">
-          <a class="button button-light" id="classdojo-link" data-classdojo-link href="https://www.classdojo.com/" target="_blank" rel="noopener">
+          <a
+            class="button button-light"
+            id="classdojo-link"
+            data-classdojo-link
+            href="https://www.classdojo.com/"
+            target="_blank"
+            rel="noopener"
+          >
             Open ClassDojo <span aria-hidden="true">↗</span>
           </a>
-          <a class="button button-outline-light" id="canvas-link" href="#" target="_blank" rel="noopener" hidden>
+          <a
+            class="button button-outline-light"
+            id="canvas-link"
+            target="_blank"
+            rel="noopener"
+            hidden
+          >
             Open Canvas <span aria-hidden="true">↗</span>
           </a>
         </div>
@@ -266,7 +441,10 @@
     </main>
 
     <footer>
-      <p><strong>EduWonderLab Family Connections</strong> · Clear, optional support for learning at home.</p>
+      <p>
+        <strong>EduWonderLab Family Connections</strong> · Clear, optional support for learning at
+        home.
+      </p>
     </footer>
 
     <p class="visually-hidden" id="family-status" role="status" aria-live="polite"></p>
