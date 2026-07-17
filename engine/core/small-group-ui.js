@@ -7,7 +7,7 @@
 const SG_PALETTE = { hue: "#33568f", deep: "#1e3358", soft: "#eef2fa" };
 export const ACCENTS = {
   group1: { name: "Foundations", ...SG_PALETTE, pop: "#2f8f7d", emoji: "🤝" },
-  group2: { name: "Challenge Lab", ...SG_PALETTE, pop: "#e0a63c", emoji: "🚀" },
+  group2: { name: "Challenge", ...SG_PALETTE, pop: "#e0a63c", emoji: "🚀" },
   catchup: { name: "Catch-Up", ...SG_PALETTE, pop: "#5a9e52", emoji: "🧭" },
 };
 
@@ -24,6 +24,26 @@ export const VOCAB_LANGS = [
 export function studentVoice(text) {
   const cleaned = String(text || "").replace(/^with (?:my|your|the) small group,?\s*/i, "");
   return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+}
+
+// Short kid-facing objective for the hero: student voice, then trimmed to the
+// core "I can ___" clause by dropping facilitation tails ("— one step at a
+// time", "so that…", ", with support"). The full objective still shows in the
+// hero's collapsible "Objectives" detail and the teacher packet.
+export function coreObjective(text) {
+  let core = studentVoice(text);
+  // Drop the enrichment framing prefix so the hero leads with the actual skill:
+  // "I can go beyond today's lesson: solve…" → "I can solve…". Full framing is
+  // preserved in the hero's "Full objectives" detail.
+  core = core.replace(
+    /^i can (?:go beyond today'?s lesson|go further|push (?:it )?further|extend today'?s (?:idea|thinking|lesson)|level up)\s*[:,]?\s*/i,
+    "I can ",
+  );
+  const cut = core.search(
+    /\s(?:—|–|-{1,2})\s|\s+so that\b|,\s+(?:one step|with support|step by step)\b/i,
+  );
+  if (cut > 24) core = core.slice(0, cut);
+  return core.replace(/[\s.,;:]+$/, "");
 }
 
 // Device-wide Spanish lane: chosen from the vocabulary language bar, read at
@@ -135,7 +155,12 @@ export function injectSmallGroupStyles(accent) {
     .sg-hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:22px;align-items:end}
     .sg-kicker{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border:1px solid rgba(255,255,255,.44);border-radius:999px;background:rgba(255,255,255,.16);font-family:"Nunito",sans-serif;font-size:13px;font-weight:900;letter-spacing:.06em;text-transform:uppercase}
     .sg-hero h1{max-width:720px;margin:12px 0 8px;font-size:clamp(30px,5vw,48px);font-weight:900;letter-spacing:-.025em}
-    .sg-obj{max-width:780px;font-size:18px;font-weight:700}
+    .sg-obj{max-width:780px;font-size:18px;font-weight:800}
+    .sg-obj-more{max-width:780px;margin-top:8px}
+    .sg-obj-more>summary{display:inline-flex;cursor:pointer;padding:3px 10px;border:1px solid rgba(255,255,255,.4);border-radius:999px;font-family:"Nunito",sans-serif;font-size:12px;font-weight:800;letter-spacing:.03em;color:rgba(255,255,255,.92);list-style:none}
+    .sg-obj-more>summary::-webkit-details-marker{display:none}
+    .sg-obj-more[open]>summary{margin-bottom:8px}
+    .sg-obj-full{max-width:780px;font-size:16px;font-weight:700}
     .sg-langobj{max-width:780px;font-size:15px;color:rgba(255,255,255,.9)}
     .sg-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
     .sg-chip{padding:5px 11px;border:1px solid rgba(255,255,255,.42);border-radius:8px;background:rgba(8,25,54,.22);font-size:13px;font-weight:700}
@@ -154,7 +179,9 @@ export function injectSmallGroupStyles(accent) {
     .sg-step .dot{display:grid;width:25px;height:25px;flex:none;place-items:center;border-radius:8px;background:#e3e7ed}
     .sg-step.done{color:var(--sg-deep);background:#fff}.sg-step.done .dot{color:#fff;background:var(--sg)}
     .sg-step[aria-selected="true"]{color:#fff;background:var(--sg)}.sg-step[aria-selected="true"] .dot{color:var(--sg-deep);background:var(--sg-pop)}
-    .sg-tabpanel[hidden]{display:none!important}.sg-panel{min-height:360px}.sg-next{display:flex;justify-content:flex-end;margin:24px 0 8px;padding-top:20px;border-top:1px solid var(--sg-line)}
+    .sg-tabpanel[hidden]{display:none!important}.sg-panel{min-height:360px}.sg-next{display:flex;justify-content:center;margin:26px 0 8px;padding-top:20px;border-top:1px solid var(--sg-line)}
+    .sg-next-btn{min-width:min(320px,100%);justify-content:center;padding:13px 24px;font-size:17px;box-shadow:0 6px 16px color-mix(in srgb,var(--sg) 34%,transparent)}
+    .sg-next-btn:hover:not(:disabled){transform:translateY(-2px)}
     section.sg-sec{margin:0 0 32px;scroll-margin-top:84px}
     .sg-h{display:flex;align-items:center;gap:12px;margin-bottom:14px}
     .sg-h .n{display:grid;width:36px;height:36px;flex:none;place-items:center;border-radius:12px 5px 12px 5px;color:#fff;background:var(--sg);font-family:"Nunito",sans-serif;font-weight:900;box-shadow:4px 4px 0 var(--sg-pop)}

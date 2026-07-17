@@ -62,7 +62,7 @@ export function mountSmallGroupTabs(app, steps, { store = null } = {}) {
 
     if (index < activeSteps.length - 1) {
       const nextWrap = el("div", "sg-next");
-      const nextButton = el("button", "btn", `Next: ${activeSteps[index + 1].label} →`);
+      const nextButton = el("button", "btn sg-next-btn", `Next: ${activeSteps[index + 1].label} →`);
       nextButton.type = "button";
       // Navigation only — the done checkmark is earned by finishing the
       // phase's work, not by clicking past it.

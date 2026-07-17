@@ -32,6 +32,7 @@ import { mountSmallGroupTabs } from "./small-group-tabs.js";
 import { mountSmallGroupTeacherAccess } from "./small-group-teacher-access.js";
 import {
   ACCENTS,
+  coreObjective,
   el,
   esc,
   injectSmallGroupStyles,
@@ -204,10 +205,17 @@ function hero(config, accent) {
   const badge = config.launch?.badge || `Small Group · ${accent.name}`;
   copy.appendChild(el("div", null, `<span class="sg-kicker">${accent.emoji} ${esc(badge)}</span>`));
   copy.appendChild(el("h1", null, esc(config.title || "Small-Group Math Studio")));
-  if (config.contentObjective)
-    copy.appendChild(el("p", "sg-obj", `🎯 ${esc(studentVoice(config.contentObjective))}`));
-  if (config.languageObjective)
-    copy.appendChild(el("p", "sg-langobj", `🗣️ ${esc(studentVoice(config.languageObjective))}`));
+  if (config.contentObjective) {
+    // One crisp kid-facing line up top; full content + language objectives fold
+    // into a collapsible detail so the hero stays readable for Level 1 students.
+    copy.appendChild(el("p", "sg-obj", `🎯 Today: ${esc(coreObjective(config.contentObjective))}`));
+    const more = el("details", "sg-obj-more");
+    more.appendChild(el("summary", null, "Full objectives"));
+    more.appendChild(el("p", "sg-obj-full", `🎯 ${esc(studentVoice(config.contentObjective))}`));
+    if (config.languageObjective)
+      more.appendChild(el("p", "sg-langobj", `🗣️ ${esc(studentVoice(config.languageObjective))}`));
+    copy.appendChild(more);
+  }
   const chips = el("div", "sg-chips");
   chips.appendChild(el("span", "sg-chip", `⏱ ${esc(config.timeEstimate || "15–20 min")}`));
   if (config.standard) chips.appendChild(el("span", "sg-chip", esc(config.standard)));
@@ -317,7 +325,7 @@ function renderStudio(config) {
     config,
     state,
     () => {
-      phaseDone("sg-tab-check", "reflectDone")();
+      phaseDone("sg-tab-practice", "reflectDone")();
       completion.hidden = false;
       completion.innerHTML = `<h2>Studio complete 🎉</h2><p>You finished the mission and named your growth. That is what mathematicians do.</p>`;
       completion.appendChild(packet.button());
@@ -337,7 +345,7 @@ function renderStudio(config) {
     store,
   );
   const revealReflection = () => {
-    mark("sg-tab-check");
+    mark("sg-tab-practice");
     reflection.reveal();
   };
 
@@ -498,16 +506,16 @@ function renderStudio(config) {
       panel: makePanel("sg-tab-guided", [guided, createAdaptiveCoach(variant, state, store)]),
     },
     {
+      // Practice and Check are one continuous "do the work, then show you've
+      // got it" step — merged into a single tab so a 15–20 min small group
+      // moves through fewer, clearer stops. The completion celebration lives
+      // here so it appears in the tab the student is actually on when they
+      // finish the reflection.
       id: "sg-tab-practice",
-      label: "Practice",
-      panel: makePanel("sg-tab-practice", [practice, talk]),
-    },
-    {
-      id: "sg-tab-check",
-      label: "Check",
-      // The completion celebration lives here so it appears in the tab the
-      // student is actually on when they finish the reflection.
-      panel: makePanel("sg-tab-check", [
+      label: "Practice & Check",
+      panel: makePanel("sg-tab-practice", [
+        practice,
+        talk,
         check,
         reflection.section,
         evidence.section,
@@ -584,8 +592,8 @@ function renderStudio(config) {
     talkDone: "sg-tab-practice",
     guidedDone: "sg-tab-guided",
     practiceDone: "sg-tab-practice",
-    checkSolved: "sg-tab-check",
-    reflectDone: "sg-tab-check",
+    checkSolved: "sg-tab-practice",
+    reflectDone: "sg-tab-practice",
     moreDone: "sg-tab-more",
     applyDone: "sg-tab-more",
     proveDone: "sg-tab-prove",
