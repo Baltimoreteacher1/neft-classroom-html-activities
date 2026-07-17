@@ -140,7 +140,7 @@ function definitionLine(label, text, lang, dir = "ltr") {
 
 export function createVocabularySection(config, onDone, store = null) {
   // Catch-ups span several lessons, so they keep more of their word list.
-  const words = (config.vocabulary || []).slice(0, config.variant === "catchup" ? 6 : 4);
+  const words = (config.vocabulary || []).slice(0, 8);
   if (!words.length) return null;
   const section = el("section", "sg-sec");
   section.id = "sg-vocab";
@@ -276,7 +276,7 @@ export function createVocabularySection(config, onDone, store = null) {
         const examples = el("div", "sg-vexamples");
         // Examples are authored as strings or {text, isExample} objects;
         // non-examples render with a ✗ so the contrast teaches too.
-        word.examples.slice(0, 3).forEach((example) => {
+        word.examples.slice(0, 4).forEach((example) => {
           const isObject = typeof example === "object" && example !== null;
           const text = isObject ? example.text : example;
           if (text == null || text === "") return;
@@ -494,7 +494,9 @@ export function createTalkSection(config, variant, onDone) {
   if (talk.wordBank?.length) {
     card.appendChild(el("p", "block-lab", "Word bank"));
     const bank = el("div", "sg-wordbank");
-    talk.wordBank.slice(0, 7).forEach((word) => bank.appendChild(el("span", "sg-word", esc(word))));
+    talk.wordBank
+      .slice(0, 10)
+      .forEach((word) => bank.appendChild(el("span", "sg-word", esc(word))));
     card.appendChild(bank);
   }
 

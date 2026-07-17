@@ -254,5 +254,5 @@ export function installSmallGroupAnnotation(app, config) {
   if (progress) progress.after(tools);
   else app.prepend(tools);
   const dialog = createVocabularyDialog();
-  addVocabularyTriggers(app, (config.vocabulary || []).slice(0, 4), dialog);
+  addVocabularyTriggers(app, (config.vocabulary || []).slice(0, 8), dialog);
 }

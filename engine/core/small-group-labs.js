@@ -275,7 +275,7 @@ export function createModelLab(config, variant, { number, store, events, onDone 
     card.appendChild(tools);
   }
 
-  const keywords = (connect.keywords || []).slice(0, 8);
+  const keywords = (connect.keywords || []).slice(0, 12);
   if (keywords.length) {
     card.appendChild(el("p", "block-lab", "Use at least one of these math words"));
     const bank = el("div", "sg-wordbank");

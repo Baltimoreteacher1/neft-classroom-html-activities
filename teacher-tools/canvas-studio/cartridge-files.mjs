@@ -48,10 +48,14 @@ const steps = `<ol style="font-size:15px;line-height:1.7;">
 const linkBtn = (url, title) =>
   `<p style="margin:14px 0;"><a href="${xml(url)}" target="_blank" rel="noopener" style="display:inline-block;background:#12355b;color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:bold;">▶ Open: ${xml(title)}</a></p>`;
 
+const descLine = (it) =>
+  it.description ? `<p style="font-size:15px;line-height:1.6;">${xml(it.description)}</p>` : "";
+
 const pageHtml = (it, url, pageId) =>
   `<!DOCTYPE html>
 <html><head><meta charset="utf-8"><title>${xml(it.title)}</title><meta name="identifier" content="${pageId}"></head><body>
 <h2>${xml(it.title)}</h2>
+${descLine(it)}
 ${it.standard ? `<p><strong>Standard:</strong> ${xml(it.standard)}</p>` : ""}
 <p><strong>Type:</strong> ${xml(it.activityType)}</p>
 ${linkBtn(url, it.title)}
@@ -62,6 +66,7 @@ const assignmentHtml = (it, url) =>
   `<!DOCTYPE html>
 <html><head><meta charset="utf-8"><title>${xml(it.title)}</title></head><body>
 <h2>${xml(it.title)}</h2>
+${descLine(it)}
 ${it.standard ? `<p><strong>Standard:</strong> ${xml(it.standard)}</p>` : ""}
 <p><strong>How to turn this in:</strong></p>
 ${steps}
@@ -89,7 +94,7 @@ const assignmentSettingsXml = (it, ident, pos, groupRef) =>
  *
  * @param {Array} items      [{ title, url, type, standard, module, moduleKey }]
  * @param {Array} moduleDefs [{ key, title }] in display order
- * @returns {Array} modules  [{ key, title, order, items:[{title,url,activityType,standard}] }]
+ * @returns {Array} modules  [{ key, title, order, items:[{title,url,activityType,standard,description?}] }]
  */
 export function buildModulesFromItems(items, moduleDefs = []) {
   const byKey = new Map();
@@ -105,6 +110,7 @@ export function buildModulesFromItems(items, moduleDefs = []) {
       url: it.url,
       activityType: it.activityType || it.type,
       standard: it.standard || null,
+      description: it.description || null,
     });
   }
   return [...byKey.values()].filter((m) => m.items.length).sort((a, b) => a.order - b.order);
@@ -113,7 +119,7 @@ export function buildModulesFromItems(items, moduleDefs = []) {
 /**
  * Build the Common Cartridge file tree from ordered modules.
  * @param {Object} opts
- * @param {Array}  opts.modules  [{ key, title, order, items:[{title,url,activityType,standard}] }]
+ * @param {Array}  opts.modules  [{ key, title, order, items:[{title,url,activityType,standard,description?}] }]
  * @param {string} opts.mode     "link" (Canvas Pages) | "graded" (text-entry assignments)
  * @param {string} opts.site     base site for relative urls
  * @returns {{ files:[{path,content}], sidecar:Array, itemCount:number, moduleCount:number }}
