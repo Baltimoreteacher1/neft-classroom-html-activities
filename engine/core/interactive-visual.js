@@ -142,6 +142,18 @@ const REGISTRY = {
       mode: cfg.mode,
     });
   },
+  // "Work It Out" step lab: line-by-line solving with per-step equivalence
+  // checking (equation mode = same solution set, expression mode = same value).
+  "step-solver": async (host, cfg) => {
+    const { renderStepSolver } = await import("../components/step-solver.js");
+    return renderStepSolver(host, cfg);
+  },
+  // Box-plot construction lab: drag the five-number summary onto a number
+  // line over a live dot plot of the data; per-stat coaching on Check.
+  "box-plot-builder": async (host, cfg) => {
+    const { renderBoxPlotBuilder } = await import("../components/box-plot-builder.js");
+    return renderBoxPlotBuilder(host, cfg);
+  },
   "dist-explorer": async (host, cfg) => {
     const { renderDistExplorer } = await import("../components/dist-explorer.js");
     return renderDistExplorer(host, { max: cfg.max, unit: cfg.unit, label: cfg.label });

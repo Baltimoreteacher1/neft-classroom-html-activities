@@ -175,6 +175,27 @@ function buildVisual(v) {
         fallback: `3D ${shapeName} model${labelText}. Turn on JavaScript to rotate it and unfold its net.`,
       });
     }
+    case "step-solver": {
+      // "Work It Out" step lab: solve line by line; every step is checked for
+      // mathematical equivalence (same solution / same value) without ever
+      // revealing the answer.
+      return interactiveVisualHost(v, {
+        ariaLabel:
+          "Work It Out step lab. Type each line of your solving work; every step is checked to make sure it stays mathematically equivalent.",
+        fallback:
+          "Step-by-step solving workspace. Turn on JavaScript to work the problem out line by line with instant feedback.",
+      });
+    }
+    case "box-plot-builder": {
+      // Box-plot construction lab: drag the five-number summary onto a number
+      // line over a dot plot of the data; each statistic is coached on Check.
+      return interactiveVisualHost(v, {
+        ariaLabel:
+          "Box plot builder. Drag the minimum, quartile, median, and maximum handles onto the number line to build the box plot from the data.",
+        fallback:
+          "Box plot construction lab. Turn on JavaScript to drag the five-number summary into place and check your plot.",
+      });
+    }
     case "line-grapher": {
       // Draggable y = kx grapher for proportional relationships / linear equations.
       const yN = v.yName || "y";
