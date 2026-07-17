@@ -1,4 +1,4 @@
-import { el, esc } from "./small-group-ui.js";
+import { celebrate, el, esc, sectionHeading } from "./small-group-ui.js";
 
 const PATHS = {
   stabilize: {
@@ -96,54 +96,218 @@ function printOnly(target, node) {
   window.print();
 }
 
-export function createProofPathLab(variant, state, store = null) {
-  const fieldset = el("fieldset", "sg-proof sg-innovation");
-  fieldset.setAttribute("aria-label", "Choose your proof path");
-  fieldset.appendChild(el("legend", "sg-innovation-title", "Choose your proof path"));
-  fieldset.appendChild(
+// Guided "Prove It & Defend It" flow — the challenge group's capstone tab.
+// Three step-cards unlock in order: solve one, show why it works (pick one of
+// three concrete moves), then defend it against a skeptic's two questions.
+// Replaces the old scattered proof-path picker + standalone talk section.
+const PROVE_MOVES = [
+  {
+    id: "model",
+    icon: "▧",
+    label: "Show a model",
+    prompt:
+      "Draw a diagram, table, or number line. Label what each part shows and point to where the answer appears.",
+  },
+  {
+    id: "explain",
+    icon: "✦",
+    label: "Explain in words",
+    prompt: "Use precise words: “I know ___ because ___, so ___.”",
+  },
+  {
+    id: "test",
+    icon: "◉",
+    label: "Test an example",
+    group2Prompt:
+      "Try a boundary case or a number that could break your answer. Show it still works — or find exactly where it would not.",
+    prompt:
+      "Put your answer back into the problem. Check every step and say what the result proves.",
+  },
+];
+
+const SKEPTIC_QUESTIONS = [
+  { q: "🤨 “How do you KNOW your answer is right?”", frame: "I know because…" },
+  {
+    q: "🤨 “When would this stop working — or how could someone doubt it?”",
+    frame: "This holds when… It would break if…",
+  },
+];
+
+function proveStep(labelText) {
+  const card = el("div", "card sg-apply-step");
+  card.appendChild(el("div", "sg-step-lab", labelText));
+  return card;
+}
+
+export function createProveItLab(config, variant, state, onDone, store = null) {
+  const section = el("section", "sg-sec sg-lab");
+  section.id = "sg-prove";
+  section.appendChild(sectionHeading(1, "Prove it & defend it", "Make your thinking bulletproof"));
+  section.appendChild(
     el(
       "p",
-      "sg-innovation-lede",
-      variant === "group2"
-        ? "Choose how you will make your claim convincing. You can switch paths as your thinking grows."
-        : "Choose how you want to make the idea visible. There is more than one smart way in.",
+      null,
+      "Solve one, show why it works, then defend it to a skeptic — one step at a time.",
     ),
   );
-  const grid = el("div", "sg-proof-grid");
-  const prompt = el("div", "sg-proof-prompt", "Choose a path to reveal your studio prompt.");
-  prompt.setAttribute("aria-live", "polite");
-  const response = el("textarea", "sg-ta");
-  response.setAttribute("aria-label", "Proof path notes");
-  response.placeholder = "Sketch, plan, or rehearse your evidence here…";
-  response.value = state.proofResponse || "";
-  response.oninput = () => {
-    state.proofResponse = response.value.trim();
-    store?.set("proofResponse", state.proofResponse);
+
+  const steps = [];
+  const unlock = (index) => steps[index]?.classList.remove("locked");
+
+  // Step 1 — Solve one challenge problem.
+  const problem = config.practice?.extending?.[0] || config.practice?.onLevel?.[0] || {};
+  const solve = proveStep("1 · Solve one");
+  solve.appendChild(
+    problem.stem
+      ? el("p", "sg-talk-q", esc(problem.stem))
+      : el(
+          "p",
+          "block-lab",
+          "Solve the hardest problem from today — the one that makes you think.",
+        ),
+  );
+  const work = el("textarea", "sg-ta");
+  work.setAttribute("aria-label", "Your answer and how you got it");
+  work.placeholder = "Write your answer and the steps you took…";
+  work.oninput = () => (state.proveWork = work.value.trim());
+  const solveBtn = el("button", "btn", "I've got an answer →");
+  solveBtn.type = "button";
+  const solveFb = el("div", "fb");
+  solveFb.setAttribute("aria-live", "polite");
+  solveBtn.onclick = () => {
+    if (work.value.trim().length < 8) {
+      solveFb.className = "fb show no";
+      solveFb.textContent = "Write your answer and at least one step first.";
+      return;
+    }
+    solveBtn.disabled = true;
+    unlock(1);
+    solveFb.className = "fb show info";
+    solveFb.textContent = "Nice — now show WHY it works below.";
   };
-  const buttons = [];
-  for (const path of proofEntries(variant)) {
+  const solveRow = el("div", "row");
+  solveRow.appendChild(solveBtn);
+  solve.append(work, solveRow, solveFb);
+  section.appendChild(solve);
+  steps.push(solve);
+
+  // Step 2 — Pick one move and write the proof.
+  const prove = proveStep("2 · Show why it works");
+  prove.classList.add("locked");
+  prove.appendChild(el("p", "block-lab", "Pick one way to prove your answer is right:"));
+  const grid = el("div", "sg-proof-grid");
+  const promptEl = el(
+    "div",
+    "sg-proof-prompt",
+    "Choose a way above to reveal your prove-it prompt.",
+  );
+  promptEl.setAttribute("aria-live", "polite");
+  const proveTa = el("textarea", "sg-ta");
+  proveTa.setAttribute("aria-label", "Your proof");
+  proveTa.placeholder = "Write, sketch a plan, or rehearse your proof here…";
+  proveTa.value = state.proveReason || "";
+  proveTa.oninput = () => {
+    state.proveReason = proveTa.value.trim();
+    store?.set("proveReason", state.proveReason);
+  };
+  const proveBtn = el("button", "btn", "This proves it →");
+  proveBtn.type = "button";
+  proveBtn.disabled = true;
+  const proveFb = el("div", "fb");
+  proveFb.setAttribute("aria-live", "polite");
+  const moveButtons = [];
+  for (const move of PROVE_MOVES) {
+    const text = variant === "group2" && move.group2Prompt ? move.group2Prompt : move.prompt;
     const button = el(
       "button",
       "sg-proof-button",
-      `<span aria-hidden="true">${path.id === "model" ? "▧" : path.id === "explain" ? "✦" : path.id === "test" ? "◉" : "↗"}</span><b>${esc(path.label)}</b>`,
+      `<span aria-hidden="true">${move.icon}</span><b>${esc(move.label)}</b>`,
     );
     button.type = "button";
     button.setAttribute("aria-pressed", "false");
     const select = (persist) => {
-      state.proofPath = path.id;
-      if (persist) store?.set("proofPath", path.id);
-      buttons.forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
-      prompt.innerHTML = `<b>${esc(path.label)} mission:</b> ${esc(path.prompt)}`;
-      response.placeholder = path.prompt;
+      state.proofPath = move.id;
+      if (persist) store?.set("proofPath", move.id);
+      moveButtons.forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
+      promptEl.innerHTML = `<b>${esc(move.label)}:</b> ${esc(text)}`;
+      proveTa.placeholder = text;
+      proveBtn.disabled = false;
     };
     button.onclick = () => select(true);
-    buttons.push(button);
+    moveButtons.push(button);
     grid.appendChild(button);
-    // Restore last session's choice so the Evidence Card stays truthful.
-    if (state.proofPath === path.id) select(false);
+    if (state.proofPath === move.id) select(false);
   }
-  fieldset.append(grid, prompt, response);
-  return fieldset;
+  proveBtn.onclick = () => {
+    if (!state.proofPath) {
+      proveFb.className = "fb show no";
+      proveFb.textContent = "Pick a way to prove it first.";
+      return;
+    }
+    if (proveTa.value.trim().length < 8) {
+      proveFb.className = "fb show no";
+      proveFb.textContent = "Write your proof before moving on.";
+      return;
+    }
+    proveBtn.disabled = true;
+    unlock(2);
+    proveFb.className = "fb show info";
+    proveFb.textContent = "Now defend it against a skeptic below.";
+  };
+  const proveRow = el("div", "row");
+  proveRow.appendChild(proveBtn);
+  prove.append(grid, promptEl, proveTa, proveRow, proveFb);
+  section.appendChild(prove);
+  steps.push(prove);
+
+  // Step 3 — Defend it to a skeptic (folds in the old talk section, guided).
+  const defend = proveStep("3 · Defend it to a skeptic");
+  defend.classList.add("locked");
+  defend.appendChild(
+    el("p", "block-lab", "A skeptic isn’t convinced yet. Answer their two questions:"),
+  );
+  const answers = [];
+  const doneBtn = el("button", "btn", "I defended it ✓");
+  doneBtn.type = "button";
+  doneBtn.disabled = true;
+  const refreshDefend = () =>
+    (doneBtn.disabled = !(answers[0]?.length >= 4 && answers[1]?.length >= 4));
+  SKEPTIC_QUESTIONS.forEach((item, index) => {
+    const wrap = el("div", "sg-defend-q");
+    wrap.appendChild(el("p", "sg-talk-q", esc(item.q)));
+    const answer = el("textarea", "sg-ta");
+    answer.setAttribute("aria-label", `Answer to skeptic question ${index + 1}`);
+    answer.placeholder = item.frame;
+    answer.oninput = () => {
+      answers[index] = answer.value.trim();
+      refreshDefend();
+    };
+    wrap.appendChild(answer);
+    defend.appendChild(wrap);
+  });
+  const defendFb = el("div", "fb");
+  defendFb.setAttribute("aria-live", "polite");
+  let complete = false;
+  doneBtn.onclick = () => {
+    if (complete) return;
+    complete = true;
+    state.defended = true;
+    store?.set("defended", true);
+    doneBtn.disabled = true;
+    doneBtn.textContent = "Proof defended ✓";
+    defendFb.className = "fb show ok";
+    defendFb.innerHTML =
+      "🏆 <b>Proof complete.</b> You solved it, proved it, and defended it to a skeptic.";
+    celebrate("🏆");
+    onDone?.();
+  };
+  const defendRow = el("div", "row");
+  defendRow.appendChild(doneBtn);
+  defend.append(defendRow, defendFb);
+  section.appendChild(defend);
+  steps.push(defend);
+
+  return section;
 }
 
 export function createConsensusLab(config, variant, state, store = null) {
@@ -306,7 +470,10 @@ export function createEvidenceCard(config, state) {
     const after = Number(state.after || 0);
     const change = after - before;
     const vocabulary = config.vocabulary?.[0]?.term || config.vocabulary?.[0] || "lesson language";
-    section.innerHTML = `<div class="sg-evidence-top"><div><div class="sg-innovation-kicker">Printable learning artifact</div><h2>Studio Evidence Card</h2></div><span>Evidence over points</span></div><p class="sg-evidence-title"><b>${esc(config.title || "Small-Group Math Studio")}</b>${config.standard ? ` · ${esc(config.standard)}` : ""}</p><div class="sg-evidence-grid"><div><span>Confidence journey</span><b>${before || "—"} → ${after || "—"}${change > 0 ? ` (+${change})` : ""}</b></div><div><span>Proof path</span><b>${esc(labelFor(state.proofPath))}</b></div><div><span>Math language</span><b>${esc(vocabulary)}</b></div><div><span>Discussion move</span><b>${state.revision === "revised" ? "Revised after discussion" : state.revision === "kept" ? "Kept after testing the evidence" : "Talked through out loud"}</b></div><div><span>Adaptive move</span><b>${esc(PATHS[state.adaptivePath]?.label || "Student choice")}</b></div></div>`;
+    const proofCell = state.proofPath
+      ? `<div><span>Proof path</span><b>${esc(labelFor(state.proofPath))}</b></div>`
+      : "";
+    section.innerHTML = `<div class="sg-evidence-top"><div><div class="sg-innovation-kicker">Printable learning artifact</div><h2>Studio Evidence Card</h2></div><span>Evidence over points</span></div><p class="sg-evidence-title"><b>${esc(config.title || "Small-Group Math Studio")}</b>${config.standard ? ` · ${esc(config.standard)}` : ""}</p><div class="sg-evidence-grid"><div><span>Confidence journey</span><b>${before || "—"} → ${after || "—"}${change > 0 ? ` (+${change})` : ""}</b></div>${proofCell}<div><span>Math language</span><b>${esc(vocabulary)}</b></div><div><span>Discussion move</span><b>${state.revision === "revised" ? "Revised after discussion" : state.revision === "kept" ? "Kept after testing the evidence" : "Talked through out loud"}</b></div><div><span>Adaptive move</span><b>${esc(PATHS[state.adaptivePath]?.label || "Student choice")}</b></div></div>`;
     const print = el("button", "btn ghost", "Print Studio Evidence Card");
     print.type = "button";
     print.onclick = () => printOnly("evidence", section);

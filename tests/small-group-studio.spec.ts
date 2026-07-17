@@ -2,7 +2,9 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
 test.describe("small-group guided math studio", () => {
-  test("Group 1 uses a mission, language lab, team talk, and retry-first practice", async ({ page }) => {
+  test("Group 1 uses a mission, language lab, team talk, and retry-first practice", async ({
+    page,
+  }) => {
     await page.goto("/lessons/1-1-group1/");
     await expect(page.getByRole("heading", { name: "Launch the mission" })).toBeVisible();
     await expect(page.getByText(/Engineers on Station Helios/)).toBeVisible();
@@ -12,10 +14,12 @@ test.describe("small-group guided math studio", () => {
 
     await page.getByRole("button", { name: "I can try with support" }).first().click();
     await page.getByRole("button", { name: "Build it together →" }).click();
-    await expect(page.locator('.sg-step').first()).toHaveClass(/done/);
+    await expect(page.locator(".sg-step").first()).toHaveClass(/done/);
 
     const match = page.locator(".sg-match");
-    await expect(match.getByText("A number bigger than 1 that you can only divide by 1 and itself.")).toBeVisible();
+    await expect(
+      match.getByText("A number bigger than 1 that you can only divide by 1 and itself."),
+    ).toBeVisible();
     await match.getByRole("button", { name: "Prime number", exact: true }).click();
     await expect(match.getByText(/1 of 4 unlocked/)).toBeVisible();
 
@@ -24,7 +28,9 @@ test.describe("small-group guided math studio", () => {
     await page.getByRole("button", { name: "Start talk timer" }).click();
     await expect(page.getByRole("timer")).not.toHaveText("1:00");
 
-    const firstProblem = page.locator(".prob").filter({ hasText: "Which of the following is a prime number?" });
+    const firstProblem = page
+      .locator(".prob")
+      .filter({ hasText: "Which of the following is a prime number?" });
     await firstProblem.getByRole("button", { name: /15/ }).click();
     await expect(firstProblem.getByText(/does not fit yet/)).toBeVisible();
     await expect(firstProblem.getByRole("button", { name: /17/ })).not.toHaveClass(/correct/);
@@ -34,7 +40,9 @@ test.describe("small-group guided math studio", () => {
     await expect(page.locator("#app").getByText(/Show a model answer|^Answer:/i)).toHaveCount(0);
   });
 
-  test("Group 2 is a distinct challenge experience and keeps teacher guidance private", async ({ page }) => {
+  test("Group 2 is a distinct challenge experience and keeps teacher guidance private", async ({
+    page,
+  }) => {
     await page.goto("/lessons/7-2-group2/");
     await expect(page.getByText("Challenge briefing")).toBeVisible();
     await expect(page.getByRole("heading", { name: "Defend it to a skeptic" })).toBeVisible();
@@ -54,26 +62,21 @@ test.describe("small-group guided math studio", () => {
     await definition.getByRole("button", { name: "Close definition" }).click();
 
     await page.setViewportSize({ width: 390, height: 844 });
-    const dimensions = await page.evaluate(() => ({ width: innerWidth, scroll: document.documentElement.scrollWidth }));
+    const dimensions = await page.evaluate(() => ({
+      width: innerWidth,
+      scroll: document.documentElement.scrollWidth,
+    }));
     expect(dimensions.scroll).toBeLessThanOrEqual(dimensions.width);
     await expect(page.locator("body")).toHaveCSS("font-size", "16px");
   });
 
-  test("Award Edition turns a Group 1 session into visible evidence of thinking", async ({ page }) => {
+  test("Award Edition turns a Group 1 session into visible evidence of thinking", async ({
+    page,
+  }) => {
     await page.addInitScript(() => {
       window.print = () => undefined;
     });
     await page.goto("/lessons/1-1-group1/");
-
-    const proof = page.getByRole("group", { name: "Choose your proof path" });
-    await expect(proof).toBeVisible();
-    await expect(proof.getByRole("button")).toHaveCount(4);
-    await proof.getByRole("button", { name: "Model it" }).click();
-    await expect(proof.getByRole("button", { name: "Model it" })).toHaveAttribute(
-      "aria-pressed",
-      "true",
-    );
-    await expect(proof.getByText(/draw, diagram, table, number line/i)).toBeVisible();
 
     const consensus = page.getByRole("group", { name: "Team consensus protocol" });
     await expect(consensus.getByText(/distribution stays hidden/i)).toBeVisible();
@@ -82,9 +85,9 @@ test.describe("small-group guided math studio", () => {
     }
     await expect(consensus.getByText("Model it · 3 voices")).toBeVisible();
     await consensus.getByRole("radio", { name: "We revised our position" }).check();
-    await consensus.getByLabel("Why did your thinking change?").fill(
-      "The diagram made every prime factor visible, so our evidence became clearer.",
-    );
+    await consensus
+      .getByLabel("Why did your thinking change?")
+      .fill("The diagram made every prime factor visible, so our evidence became clearer.");
 
     await page.getByRole("button", { name: "I can try with support" }).first().click();
     const coach = page.getByRole("region", { name: "Adaptive next-move coach" });
@@ -96,27 +99,27 @@ test.describe("small-group guided math studio", () => {
 
     const designLab = page.getByRole("region", { name: "Create-a-Challenge design lab" });
     await expect(designLab.getByText(/change one meaningful feature/i)).toBeVisible();
-    await designLab.getByLabel("Our new challenge").fill(
-      "Build a factor tree for 42 and show why every leaf is prime.",
-    );
-    await designLab.getByLabel("How we verified it").fill(
-      "We multiplied 2 × 3 × 7 to get 42 and checked that each factor is prime.",
-    );
+    await designLab
+      .getByLabel("Our new challenge")
+      .fill("Build a factor tree for 42 and show why every leaf is prime.");
+    await designLab
+      .getByLabel("How we verified it")
+      .fill("We multiplied 2 × 3 × 7 to get 42 and checked that each factor is prime.");
     await designLab.getByRole("button", { name: "Add to evidence card" }).click();
     await expect(designLab.getByText(/challenge captured/i)).toBeVisible();
 
     const practice = page.locator("#sg-practice");
     for (const answer of ["17", "2 × 3 × 5", "2 × 3 × 3", "27"]) {
-      await practice.getByRole("button", { name: new RegExp(answer.replaceAll("×", "\\×")) }).first().click();
+      await practice
+        .getByRole("button", { name: new RegExp(answer.replaceAll("×", "\\×")) })
+        .first()
+        .click();
     }
     await page
       .locator("#sg-check")
       .getByRole("button", { name: /2 × 2 × 2 × 5/ })
       .click();
-    await page
-      .locator("#sg-reflect")
-      .getByRole("button", { name: "I can explain a step" })
-      .click();
+    await page.locator("#sg-reflect").getByRole("button", { name: "I can explain a step" }).click();
     await page.locator("#sg-reflect").getByRole("button", { name: "Finish the studio" }).click();
 
     const evidence = page.getByRole("region", { name: "Studio Evidence Card" });
@@ -134,7 +137,9 @@ test.describe("small-group guided math studio", () => {
   test("Award Edition gives Group 2 an advanced creation brief", async ({ page }) => {
     await page.goto("/lessons/7-2-group2/");
     const designLab = page.getByRole("region", { name: "Create-a-Challenge design lab" });
-    await expect(designLab.getByText(/constraint, tricky case, or plausible misconception/i)).toBeVisible();
+    await expect(
+      designLab.getByText(/constraint, tricky case, or plausible misconception/i),
+    ).toBeVisible();
   });
 
   test("students can highlight and bold selected lesson words", async ({ page }) => {
@@ -203,14 +208,18 @@ test.describe("small-group guided math studio", () => {
     await expect(page.locator("mark.sg-student-highlight")).toHaveCount(0);
   });
 
-  test("underlined math vocabulary opens a simple definition and concept image", async ({ page }) => {
+  test("underlined math vocabulary opens a simple definition and concept image", async ({
+    page,
+  }) => {
     await page.goto("/lessons/1-1-group1/");
 
     const firstCard = page.locator(".sg-vcard").first();
     await expect(firstCard.getByText(/ES:\s*Número primo/)).toBeVisible();
     await expect(firstCard.getByText(/VI:|AR:/)).toHaveCount(0);
     await firstCard.getByRole("button", { name: "Reveal meaning" }).click();
-    await expect(firstCard.getByText("A number bigger than 1 that you can only divide by 1 and itself.")).toBeVisible();
+    await expect(
+      firstCard.getByText("A number bigger than 1 that you can only divide by 1 and itself."),
+    ).toBeVisible();
     await expect(
       firstCard.getByText("Un número mayor que 1 que solo se puede dividir entre 1 y sí mismo."),
     ).toBeVisible();
@@ -222,7 +231,9 @@ test.describe("small-group guided math studio", () => {
 
     const dialog = page.getByRole("dialog", { name: "Prime number" });
     await expect(dialog).toBeVisible();
-    await expect(dialog.getByText("A number bigger than 1 that you can only divide by 1 and itself.")).toBeVisible();
+    await expect(
+      dialog.getByText("A number bigger than 1 that you can only divide by 1 and itself."),
+    ).toBeVisible();
     await expect(
       dialog.getByText("Un número mayor que 1 que solo se puede dividir entre 1 y sí mismo."),
     ).toBeVisible();
@@ -234,8 +245,8 @@ test.describe("small-group guided math studio", () => {
     const results = await new AxeBuilder({ page })
       .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
       .analyze();
-    const blocking = results.violations.filter((violation) =>
-      violation.impact === "serious" || violation.impact === "critical",
+    const blocking = results.violations.filter(
+      (violation) => violation.impact === "serious" || violation.impact === "critical",
     );
     expect(
       blocking,
@@ -256,7 +267,9 @@ test.describe("small-group guided math studio", () => {
     await expect(page.getByRole("link", { name: "← Curriculum" })).toBeVisible();
   });
 
-  test("Award Edition keeps the Facilitation Console private and actionable", async ({ browser }) => {
+  test("Award Edition keeps the Facilitation Console private and actionable", async ({
+    browser,
+  }) => {
     const studentContext = await browser.newContext();
     const studentPage = await studentContext.newPage();
     await studentPage.goto("/lessons/7-2-group2/");
@@ -277,7 +290,9 @@ test.describe("small-group guided math studio", () => {
     await console.getByRole("checkbox", { name: "Students connected representations" }).check();
     await expect(console.getByText("1 of 6 evidence signals observed")).toBeVisible();
     await expect(console.getByText(/Suggested teacher move:/)).toBeVisible();
-    await expect(console.getByText(/No names or individual responses are transmitted/)).toBeVisible();
+    await expect(
+      console.getByText(/No names or individual responses are transmitted/),
+    ).toBeVisible();
     const printSummary = console.getByRole("button", { name: "Print observation summary" });
     await expect(printSummary).toBeVisible();
     await printSummary.click();
@@ -285,8 +300,8 @@ test.describe("small-group guided math studio", () => {
     const results = await new AxeBuilder({ page: teacherPage })
       .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
       .analyze();
-    const blocking = results.violations.filter((violation) =>
-      violation.impact === "serious" || violation.impact === "critical",
+    const blocking = results.violations.filter(
+      (violation) => violation.impact === "serious" || violation.impact === "critical",
     );
     expect(
       blocking,
@@ -295,12 +310,16 @@ test.describe("small-group guided math studio", () => {
     await teacherContext.close();
   });
 
-  test("curriculum keeps each small-group pair directly below its main lesson", async ({ page }) => {
+  test("curriculum keeps each small-group pair directly below its main lesson", async ({
+    page,
+  }) => {
     await page.goto("/curriculum/");
     const order = await page.evaluate(() =>
       [...document.querySelectorAll("details.lesson")].map((lesson) => ({
         text: lesson.querySelector("summary")?.textContent?.replace(/\s+/g, " ").trim() || "",
-        hrefs: [...lesson.querySelectorAll<HTMLAnchorElement>("a[href]")].map((link) => link.getAttribute("href") || ""),
+        hrefs: [...lesson.querySelectorAll<HTMLAnchorElement>("a[href]")].map(
+          (link) => link.getAttribute("href") || "",
+        ),
       })),
     );
     const parent = order.findIndex((item) => item.hrefs.includes("/lessons/1-1/"));
@@ -311,7 +330,9 @@ test.describe("small-group guided math studio", () => {
     expect(order[parent + 2].text).toContain("1.1 Small Group: Group 2");
   });
 
-  test("visible lesson dropdowns place small groups directly after their main lesson", async ({ page }) => {
+  test("visible lesson dropdowns place small groups directly after their main lesson", async ({
+    page,
+  }) => {
     await page.goto("/curriculum/");
     const dropdowns = page.locator(".lesson-select");
     await expect(dropdowns).toHaveCount(10);
@@ -320,7 +341,10 @@ test.describe("small-group guided math studio", () => {
       const mainLessons = labels.filter((label) => /^Lesson \d+-\d+ ·/.test(label));
 
       for (const mainLesson of mainLessons) {
-        const lessonId = mainLesson.match(/^Lesson (\d+)-(\d+) ·/)?.slice(1).join(".");
+        const lessonId = mainLesson
+          .match(/^Lesson (\d+)-(\d+) ·/)
+          ?.slice(1)
+          .join(".");
         expect(lessonId, mainLesson).toBeTruthy();
         const parent = labels.indexOf(mainLesson);
         expect(labels[parent + 1], `${lessonId} Group 1 position`).toContain(
@@ -346,14 +370,70 @@ test.describe("small-group guided math studio", () => {
     }
   });
 
+  test("Group 2 replaces the old build cards with a guided Prove It tab", async ({ page }) => {
+    await page.addInitScript(() => {
+      window.print = () => undefined;
+    });
+    await page.goto("/lessons/1-3-group2/");
+
+    // The vague "Generalize it" / "Take the challenge" build cards are gone,
+    // and so is the old inline proof-path picker.
+    await expect(page.getByText("Generalize it")).toHaveCount(0);
+    await expect(page.getByText("Take the challenge")).toHaveCount(0);
+    await expect(page.getByText("Choose your proof path")).toHaveCount(0);
+
+    // "Prove It" is the last tab and drives a 3-step guided flow.
+    const proveTab = page.getByRole("tab", { name: /Prove It/ });
+    await expect(proveTab).toBeVisible();
+    await proveTab.click();
+
+    const prove = page.locator("#sg-prove");
+    const steps = prove.locator(".sg-apply-step");
+    await expect(steps).toHaveCount(3);
+
+    // Steps 2 and 3 start locked and unlock in order.
+    await expect(steps.nth(1)).toHaveClass(/locked/);
+    await expect(steps.nth(2)).toHaveClass(/locked/);
+
+    await steps.nth(0).locator("textarea").fill("The machines meet again in 12 minutes.");
+    await steps
+      .nth(0)
+      .getByRole("button", { name: /I've got an answer/ })
+      .click();
+    await expect(steps.nth(1)).not.toHaveClass(/locked/);
+
+    await steps.nth(1).getByRole("button", { name: "Show a model" }).click();
+    await steps
+      .nth(1)
+      .locator("textarea")
+      .fill("A number line marks 12 as the first shared multiple.");
+    await steps
+      .nth(1)
+      .getByRole("button", { name: /This proves it/ })
+      .click();
+    await expect(steps.nth(2)).not.toHaveClass(/locked/);
+
+    const defendBoxes = steps.nth(2).locator("textarea");
+    await defendBoxes.nth(0).fill("Because 12 is the least common multiple of 4 and 6.");
+    await defendBoxes.nth(1).fill("It breaks if the machines don't start together.");
+    await steps
+      .nth(2)
+      .getByRole("button", { name: /I defended it/ })
+      .click();
+    await expect(steps.nth(2).getByText(/Proof complete/)).toBeVisible();
+  });
+
   test("student studio has no serious or critical accessibility violations", async ({ page }) => {
     await page.goto("/lessons/1-1-group1/");
     const results = await new AxeBuilder({ page })
       .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
       .analyze();
-    const blocking = results.violations.filter((violation) =>
-      violation.impact === "serious" || violation.impact === "critical",
+    const blocking = results.violations.filter(
+      (violation) => violation.impact === "serious" || violation.impact === "critical",
     );
-    expect(blocking, blocking.map((violation) => `${violation.id}: ${violation.help}`).join("\n")).toEqual([]);
+    expect(
+      blocking,
+      blocking.map((violation) => `${violation.id}: ${violation.help}`).join("\n"),
+    ).toEqual([]);
   });
 });
