@@ -656,12 +656,21 @@ function unit5or10(context) {
         const answer = 2 * threeFaceSum;
         return makeItem(context, index, {
           stem: `Find the surface area of a rectangular prism measuring ${a} by ${b} by ${c}.`,
+          stemEs: `Encuentra el área de superficie de un prisma rectangular que mide ${a} por ${b} por ${c}.`,
           answer,
           visual: { kind: "surface-prism", values: [a, b, c] },
           steps: [
-            [`Add one of each face pair: ${a * b} + ${a * c} + ${b * c} = ___.`, threeFaceSum],
-            ["Double the three-face sum: ___.", answer],
-            ["Label the answer in ___ units.", "square"],
+            [
+              `Add one of each face pair: ${a * b} + ${a * c} + ${b * c} = ___.`,
+              threeFaceSum,
+              `Suma una cara de cada par: ${a * b} + ${a * c} + ${b * c} = ___.`,
+            ],
+            ["Double the three-face sum: ___.", answer, "Duplica la suma de las tres caras: ___."],
+            [
+              "Label the answer in ___ units.",
+              "square",
+              "Etiqueta la respuesta en unidades ___ (escribe la palabra en inglés).",
+            ],
           ],
         });
       }
@@ -671,43 +680,68 @@ function unit5or10(context) {
       const answer = baseArea + lateralArea;
       return makeItem(context, index, {
         stem: `A square pyramid has base edge ${a} and slant height ${c}. Find its total surface area.`,
+        stemEs: `Una pirámide de base cuadrada tiene arista de la base ${a} y altura inclinada ${c}. Encuentra su área de superficie total.`,
         answer,
         visual: { kind: "pyramid-net", values: [a, c] },
         steps: [
-          [`Find the square base: ${a} × ${a} = ___.`, baseArea],
-          [`Find one triangular face: 1/2 × ${a} × ${c} = ___.`, oneTriangle],
-          [`Find all 4 triangular faces: 4 × ${oneTriangle} = ___.`, lateralArea],
-          ["Add the base and all side faces: ___.", answer],
+          [
+            `Find the square base: ${a} × ${a} = ___.`,
+            baseArea,
+            `Encuentra la base cuadrada: ${a} × ${a} = ___.`,
+          ],
+          [
+            `Find one triangular face: 1/2 × ${a} × ${c} = ___.`,
+            oneTriangle,
+            `Encuentra una cara triangular: 1/2 × ${a} × ${c} = ___.`,
+          ],
+          [
+            `Find all 4 triangular faces: 4 × ${oneTriangle} = ___.`,
+            lateralArea,
+            `Encuentra las 4 caras triangulares: 4 × ${oneTriangle} = ___.`,
+          ],
+          [
+            "Add the base and all side faces: ___.",
+            answer,
+            "Suma la base y todas las caras laterales: ___.",
+          ],
         ],
       });
     }
     let answer;
     let visual;
     let stem;
+    let stemEs;
     let steps;
     if (lesson === 1) {
       answer = a * b;
       stem = `Find the area of a new parallelogram with base ${a} and perpendicular height ${b}.`;
+      stemEs = `Encuentra el área de un nuevo paralelogramo con base ${a} y altura perpendicular ${b}.`;
       visual = { kind: "parallelogram-area", values: [a, b] };
       steps = [
-        ["Use the perpendicular height: ___.", b],
-        [`Area = ${a} × ${b} = ___.`, answer],
+        ["Use the perpendicular height: ___.", b, "Usa la altura perpendicular: ___."],
+        [`Area = ${a} × ${b} = ___.`, answer, `Área = ${a} × ${b} = ___.`],
       ];
     } else if (lesson === 2) {
       answer = tidy(((a + b) * c) / 2);
       stem = `Find the area of a new trapezoid with bases ${a} and ${b} and height ${c}.`;
+      stemEs = `Encuentra el área de un nuevo trapecio con bases ${a} y ${b} y altura ${c}.`;
       visual = { kind: "trapezoid-area", values: [a, b, c] };
       steps = [
-        [`Add the bases: ${a} + ${b} = ___.`, a + b],
-        [`Multiply by height, then halve: ___.`, answer],
+        [`Add the bases: ${a} + ${b} = ___.`, a + b, `Suma las bases: ${a} + ${b} = ___.`],
+        [
+          `Multiply by height, then halve: ___.`,
+          answer,
+          `Multiplica por la altura y luego divide entre 2: ___.`,
+        ],
       ];
     } else if (lesson === 3) {
       answer = tidy((a * b) / 2);
       stem = `Find the area of a new triangle with base ${a} and height ${b}.`;
+      stemEs = `Encuentra el área de un nuevo triángulo con base ${a} y altura ${b}.`;
       visual = { kind: "triangle-area", values: [a, b] };
       steps = [
-        [`Base × height: ${a} × ${b} = ___.`, a * b],
-        ["Take one half: ___.", answer],
+        [`Base × height: ${a} × ${b} = ___.`, a * b, `Base × altura: ${a} × ${b} = ___.`],
+        ["Take one half: ___.", answer, "Toma la mitad: ___."],
       ];
     } else {
       answer = lesson === 4 ? tidy((6 * a * b) / 2) : a * b + c * b;
@@ -715,20 +749,32 @@ function unit5or10(context) {
         lesson === 4
           ? `A regular hexagon splits into 6 triangles with base ${a} and height ${b}. Find its area.`
           : `A composite figure has rectangles ${a}×${b} and ${c}×${b}. Find the total area.`;
+      stemEs =
+        lesson === 4
+          ? `Un hexágono regular se divide en 6 triángulos con base ${a} y altura ${b}. Encuentra su área.`
+          : `Una figura compuesta tiene rectángulos ${a}×${b} y ${c}×${b}. Encuentra el área total.`;
       visual = { kind: lesson === 4 ? "polygon-triangles" : "composite-area", values: [a, b, c] };
       steps =
         lesson === 4
           ? [
-              ["Area of one triangle: ___.", tidy((a * b) / 2)],
-              ["Multiply by 6 triangles: ___.", answer],
+              ["Area of one triangle: ___.", tidy((a * b) / 2), "Área de un triángulo: ___."],
+              ["Multiply by 6 triangles: ___.", answer, "Multiplica por los 6 triángulos: ___."],
             ]
           : [
-              [`First rectangle: ${a} × ${b} = ___.`, a * b],
-              [`Second rectangle: ${c} × ${b} = ___.`, c * b],
-              ["Add both areas: ___.", answer],
+              [
+                `First rectangle: ${a} × ${b} = ___.`,
+                a * b,
+                `Primer rectángulo: ${a} × ${b} = ___.`,
+              ],
+              [
+                `Second rectangle: ${c} × ${b} = ___.`,
+                c * b,
+                `Segundo rectángulo: ${c} × ${b} = ___.`,
+              ],
+              ["Add both areas: ___.", answer, "Suma las dos áreas: ___."],
             ];
     }
-    return makeItem(context, index, { stem, answer, visual, steps });
+    return makeItem(context, index, { stem, stemEs, answer, visual, steps });
   });
 }
 
@@ -744,11 +790,16 @@ function unit6or7(context) {
         const answer = x ** exponent;
         return makeItem(context, index, {
           stem: `Evaluate the new power ${x}^${exponent}.`,
+          stemEs: `Evalúa la nueva potencia ${x}^${exponent}.`,
           answer,
           visual: { kind: "power-array", values: [x, exponent] },
           steps: [
-            ["Write the base as repeated factors: ___.", Array(exponent).fill(x).join(" × ")],
-            ["Multiply the factors: ___.", answer],
+            [
+              "Write the base as repeated factors: ___.",
+              Array(exponent).fill(x).join(" × "),
+              "Escribe la base como factores repetidos: ___.",
+            ],
+            ["Multiply the factors: ___.", answer, "Multiplica los factores: ___."],
           ],
         });
       }
@@ -756,11 +807,16 @@ function unit6or7(context) {
         const answer = a * x + b;
         return makeItem(context, index, {
           stem: `Evaluate ${a}x + ${b} when x = ${x}.`,
+          stemEs: `Evalúa ${a}x + ${b} cuando x = ${x}.`,
           answer,
           visual: { kind: "substitution-box", values: [a, x, b] },
           steps: [
-            [`Substitute ${x} for x: ${a}(${x}) + ${b}. First multiply: ___.`, a * x],
-            [`Add ${b}: ___.`, answer],
+            [
+              `Substitute ${x} for x: ${a}(${x}) + ${b}. First multiply: ___.`,
+              a * x,
+              `Sustituye ${x} por x: ${a}(${x}) + ${b}. Primero multiplica: ___.`,
+            ],
+            [`Add ${b}: ___.`, answer, `Suma ${b}: ___.`],
           ],
         });
       }
@@ -768,12 +824,13 @@ function unit6or7(context) {
         const answer = `${a}x + ${b}`;
         return makeItem(context, index, {
           stem: `Write an expression for ${b} more than ${a} times a number x.`,
+          stemEs: `Escribe una expresión para ${b} más que ${a} veces un número x.`,
           answer,
           visual: { kind: "expression-tiles", values: [a, b] },
           steps: [
-            [`“${a} times x” becomes ___.`, `${a}x`],
-            [`“${b} more” means add ___.`, b],
-            ["Write the full expression: ___.", answer],
+            [`“${a} times x” becomes ___.`, `${a}x`, `“${a} veces x” se convierte en ___.`],
+            [`“${b} more” means add ___.`, b, `“${b} más” significa sumar ___.`],
+            ["Write the full expression: ___.", answer, "Escribe la expresión completa: ___."],
           ],
         });
       }
@@ -781,11 +838,12 @@ function unit6or7(context) {
         const answer = `${b} + ${a}`;
         return makeItem(context, index, {
           stem: `Use the commutative property to rewrite ${a} + ${b}.`,
+          stemEs: `Usa la propiedad conmutativa para reescribir ${a} + ${b}.`,
           answer,
           visual: { kind: "operation-tiles", values: [a, b] },
           steps: [
-            ["Keep the same operation: ___.", "+"],
-            ["Switch the addends: ___.", answer],
+            ["Keep the same operation: ___.", "+", "Conserva la misma operación: ___."],
+            ["Switch the addends: ___.", answer, "Intercambia los sumandos: ___."],
           ],
         });
       }
@@ -799,20 +857,45 @@ function unit6or7(context) {
         lesson === 5
           ? `Expand ${coefficient}(x + ${constant}).`
           : `Simplify ${coefficient}x + ${a}x + ${constant}.`;
+      const stemEs =
+        lesson === 5
+          ? `Desarrolla ${coefficient}(x + ${constant}).`
+          : `Simplifica ${coefficient}x + ${a}x + ${constant}.`;
       return makeItem(context, index, {
         stem,
+        stemEs,
         answer,
         visual: { kind: "algebra-tiles", values: [coefficient, a, constant] },
         steps:
           lesson === 5
             ? [
-                [`Multiply ${coefficient} × x: ___.`, `${coefficient}x`],
-                [`Multiply ${coefficient} × ${constant}: ___.`, coefficient * constant],
-                ["Write the expanded expression: ___.", answer],
+                [
+                  `Multiply ${coefficient} × x: ___.`,
+                  `${coefficient}x`,
+                  `Multiplica ${coefficient} × x: ___.`,
+                ],
+                [
+                  `Multiply ${coefficient} × ${constant}: ___.`,
+                  coefficient * constant,
+                  `Multiplica ${coefficient} × ${constant}: ___.`,
+                ],
+                [
+                  "Write the expanded expression: ___.",
+                  answer,
+                  "Escribe la expresión desarrollada: ___.",
+                ],
               ]
             : [
-                [`Add the x-coefficients: ${coefficient} + ${a} = ___.`, coefficient + a],
-                ["Keep the constant term and write: ___.", answer],
+                [
+                  `Add the x-coefficients: ${coefficient} + ${a} = ___.`,
+                  coefficient + a,
+                  `Suma los coeficientes de x: ${coefficient} + ${a} = ___.`,
+                ],
+                [
+                  "Keep the constant term and write: ___.",
+                  answer,
+                  "Conserva el término constante y escribe: ___.",
+                ],
               ],
       });
     }
@@ -820,12 +903,13 @@ function unit6or7(context) {
       const answer = `x + ${a} = ${b}`;
       return makeItem(context, index, {
         stem: `Write an equation: a number x plus ${a} equals ${b}.`,
+        stemEs: `Escribe una ecuación: un número x más ${a} es igual a ${b}.`,
         answer,
         visual: { kind: "balance-scale", values: [a, b] },
         steps: [
-          ["Use x for the unknown: ___.", "x"],
-          [`“plus ${a}” becomes ___.`, `+ ${a}`],
-          ["Write the equation: ___.", answer],
+          ["Use x for the unknown: ___.", "x", "Usa x para el valor desconocido: ___."],
+          [`“plus ${a}” becomes ___.`, `+ ${a}`, `“más ${a}” se convierte en ___.`],
+          ["Write the equation: ___.", answer, "Escribe la ecuación: ___."],
         ],
       });
     }
@@ -835,8 +919,12 @@ function unit6or7(context) {
       const stem = mult
         ? `Solve the new equation ${a}x = ${result}.`
         : `Solve the new equation x + ${a} = ${result}.`;
+      const stemEs = mult
+        ? `Resuelve la nueva ecuación ${a}x = ${result}.`
+        : `Resuelve la nueva ecuación x + ${a} = ${result}.`;
       return makeItem(context, index, {
         stem,
+        stemEs,
         answer: x,
         visual: {
           kind: "balance-scale",
@@ -845,12 +933,16 @@ function unit6or7(context) {
         },
         steps: mult
           ? [
-              [`Divide both sides by ___.`, a],
-              [`${result} ÷ ${a} = ___.`, x],
+              [`Divide both sides by ___.`, a, `Divide ambos lados entre ___.`],
+              [`${result} ÷ ${a} = ___.`, x, `${result} ÷ ${a} = ___.`],
             ]
           : [
-              [`Subtract ${a} from both sides: ${result} − ${a} = ___.`, x],
-              ["Check by substituting x: ___.", result],
+              [
+                `Subtract ${a} from both sides: ${result} − ${a} = ___.`,
+                x,
+                `Resta ${a} de ambos lados: ${result} − ${a} = ___.`,
+              ],
+              ["Check by substituting x: ___.", result, "Comprueba sustituyendo x: ___."],
             ],
       });
     }
@@ -862,12 +954,16 @@ function unit6or7(context) {
         lesson === 4
           ? `Write an inequality: x is ${symbol === "≤" ? "at most" : "greater than"} ${boundary}.`
           : `Solve and graph the new inequality ${answer}.`,
+      stemEs:
+        lesson === 4
+          ? `Escribe una desigualdad: x es ${symbol === "≤" ? "como máximo" : "mayor que"} ${boundary}.`
+          : `Resuelve y grafica la nueva desigualdad ${answer}.`,
       answer,
       visual: { kind: "inequality-line", boundary, symbol },
       steps: [
-        [`The boundary value is ___.`, boundary],
-        [`Use the symbol ___.`, symbol],
-        ["Write the inequality: ___.", answer],
+        [`The boundary value is ___.`, boundary, `El valor de frontera es ___.`],
+        [`Use the symbol ___.`, symbol, `Usa el símbolo ___.`],
+        ["Write the inequality: ___.", answer, "Escribe la desigualdad: ___."],
       ],
     });
   });
