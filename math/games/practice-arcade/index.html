@@ -339,6 +339,18 @@
 
         let rounds = []; // rounds actually played (after tier filter)
         let allRounds = []; // every built round, before the Level-1/2 filter
+        // The CCSS standard of the round currently on screen. Kept in sync by
+        // startRound and pushed into the Socratic hint ladder so AI hints are
+        // scoped to the actual skill (the injected watch() config can only carry a
+        // single static standard, which is wrong for mixed / unit reviews).
+        let currentStandard = "";
+        // Generic, lesson-agnostic hint rungs mirrored from the injected ladder
+        // config, so a startRound-driven setProblem keeps the same 3-rung ladder.
+        const PA_HINT_STATICS = [
+          "Read the problem again slowly. What is it giving you, and what is it asking you to find?",
+          "What one idea or rule from this lesson connects what you have to what you need?",
+          "Set it up: write the first step using that rule, then work it through — you finish the last part.",
+        ];
         let lessonTitle = "Lesson";
         let activeLesson = "1-1";
         let isReviewMode = false; // true for unit / multi-lesson cumulative review
@@ -422,6 +434,18 @@
           numberLine: { en: "PLACE IT ON THE LINE", es: "COLÓCALO EN LA RECTA" },
           buildIt: { en: "BUILD THE ANSWER", es: "ARMA LA RESPUESTA" },
           balance: { en: "BALANCE THE SCALE", es: "EQUILIBRA LA BALANZA" },
+          plotPoint: { en: "PLOT THE POINT", es: "UBICA EL PUNTO" },
+          multiStep: { en: "STEP BY STEP", es: "PASO A PASO" },
+          coachPower: {
+            en: "⚡ Solve on the first try to charge this — fill it for DOUBLE POINTS!",
+            es: "⚡ ¡Acierta al primer intento para cargarla y llénala para PUNTOS DOBLES!",
+          },
+          coachDismiss: { en: "(tap to close)", es: "(toca para cerrar)" },
+          plotCue: {
+            en: "Drag the dot — or use ← → ↑ ↓ — then press CHECK.",
+            es: "Arrastra el punto — o usa ← → ↑ ↓ — y pulsa REVISAR.",
+          },
+          stepOf: { en: "Step", es: "Paso" },
           check: { en: "CHECK ✓", es: "REVISAR ✓" },
           correct: { en: "Correct! ", es: "¡Correcto! " },
           yes: { en: "Yes! ", es: "¡Sí! " },
@@ -553,9 +577,11 @@
               .map((s) => s.trim())
               .filter(Boolean);
           } else if (unit) {
-            // Probe N-1 … N-9; missing lessons 404 and are skipped.
+            // Probe N-1 … N-12; missing lessons 404 and are skipped. Upper bound
+            // is 12 (not 9) so units with a 10th/11th/12th lesson aren't silently
+            // truncated — the ?unit= review now covers the whole unit.
             ids = [];
-            for (let k = 1; k <= 9; k++) ids.push(unit + "-" + k);
+            for (let k = 1; k <= 12; k++) ids.push(unit + "-" + k);
           } else {
             ids = [params.get("lesson") || "1-1"];
             isGroup = false;
@@ -908,6 +934,74 @@
               why: it.explanation || "",
             };
           }
+          // ── Coordinate-plane "plot the point" (config type: "plot-point") ──────
+          // Built only when a config asks for it — never auto-synthesized.
+          if (it.type === "plot-point") {
+            const tx = Number(it.x),
+              ty = Number(it.y);
+            let xMin = Number(it.xMin),
+              xMax = Number(it.xMax),
+              yMin = Number(it.yMin),
+              yMax = Number(it.yMax);
+            if (![tx, ty].every(Number.isFinite)) return null;
+            // Default to a symmetric grid that comfortably contains the target.
+            if (!Number.isFinite(xMin) || !Number.isFinite(xMax)) {
+              const rx = Math.max(5, Math.ceil(Math.abs(tx)) + 2);
+              xMin = -rx;
+              xMax = rx;
+            }
+            if (!Number.isFinite(yMin) || !Number.isFinite(yMax)) {
+              const ry = Math.max(5, Math.ceil(Math.abs(ty)) + 2);
+              yMin = -ry;
+              yMax = ry;
+            }
+            if (xMin >= xMax || yMin >= yMax) return null;
+            const step = Number(it.step) > 0 ? Number(it.step) : 1;
+            return {
+              kind: "plot",
+              prompt: it.stem || "Plot the point on the grid.",
+              xMin,
+              xMax,
+              yMin,
+              yMax,
+              tx,
+              ty,
+              step,
+              tol: Number(it.tolerance) >= 0 ? Number(it.tolerance) : 0,
+              why: it.explanation || "",
+            };
+          }
+          // ── Multi-step chain (config type: "multi-step") ───────────────────────
+          // A short sequence of multiple-choice sub-steps; the whole chain counts
+          // as a first-try solve only when every step is answered correctly first
+          // time. Built only when a config asks for it — never auto-synthesized.
+          if (it.type === "multi-step") {
+            const rawSteps = Array.isArray(it.steps) ? it.steps : [];
+            const steps = rawSteps
+              .filter((s) => s && s.stem && Array.isArray(s.choices) && s.choices.length >= 2)
+              .slice(0, 3)
+              .map((s) => {
+                // Shuffle each step's choices by identity so the answer isn't
+                // always first (same approach as the multiple-choice case).
+                const ci = s.correctIndex || 0;
+                const tagged = s.choices.map((text, idx) => ({ text, idx }));
+                const shuffled = shuffle(tagged);
+                const newIndex = shuffled.findIndex((x) => x.idx === ci);
+                return {
+                  prompt: s.stem,
+                  choices: shuffled.map((x) => x.text),
+                  correctIndex: newIndex < 0 ? 0 : newIndex,
+                  why: s.explanation || "",
+                };
+              });
+            if (steps.length < 2) return null;
+            return {
+              kind: "chain",
+              prompt: stripTierLabel(it.title) || it.stem || "Work through each step.",
+              steps,
+              why: it.explanation || "",
+            };
+          }
           return null;
         }
 
@@ -960,9 +1054,16 @@
             return {
               kind: "build",
               prompt: stem,
+              // Carry the authored Spanish through synthesis: the prompt is the
+              // ORIGINAL stem (the math question), so its translation still
+              // applies — dropping promptEs/whyEs here is what regressed bilingual
+              // coverage on auto-generated rounds. The mechanic label ("ARMA LA
+              // RESPUESTA") is already localized via the mode badge / STR table.
+              promptEs: round.promptEs || "",
               tokens,
               answer: prod,
               why: round.why,
+              whyEs: round.whyEs || "",
               tier: round.tier,
             };
           }
@@ -978,16 +1079,35 @@
             const min = isInt ? Math.floor(lo - pad) : lo - pad;
             const max = isInt ? Math.ceil(hi + pad) : hi + pad;
             if (max > min) {
+              // Precision-aware snap + tolerance. Integers snap to 1 with exact
+              // (0) tolerance. Decimals snap to the target's own precision grid
+              // (0.1 for 1dp, 0.01 for 2dp …) so the answer is exactly reachable,
+              // and accept within half a grid cell — tight enough that an adjacent
+              // snap can't pass, loose enough that the snapped marker always can.
+              // Robust for negatives/zero (decimal count comes from the |value|
+              // string after rounding away float noise).
+              const decs = isInt
+                ? 0
+                : Math.min(
+                    3,
+                    (String(Math.round(Math.abs(targetN) * 1000) / 1000).split(".")[1] || "")
+                      .length,
+                  );
+              const nlStep = isInt ? 1 : Math.pow(10, -Math.max(1, decs));
+              const nlTol = isInt ? 0 : nlStep / 2;
               return {
                 kind: "numline",
                 prompt: stem,
+                // Carry the authored Spanish (see the build case above).
+                promptEs: round.promptEs || "",
                 min,
                 max,
                 target: targetN,
-                step: isInt ? 1 : (max - min) / 20,
-                tol: isInt ? 0 : (max - min) / 40,
+                step: nlStep,
+                tol: nlTol,
                 unit: "",
                 why: round.why,
+                whyEs: round.whyEs || "",
                 tier: round.tier,
               };
             }
@@ -1433,6 +1553,7 @@
 
             this.updateHUD();
             this.startRound();
+            this.maybeShowPowerCoach();
           }
 
           // Highlight the bin the carried tile is currently nearest to, so the
@@ -1700,6 +1821,29 @@
               return;
             }
             const r = rounds[this.idx];
+            // Publish this round's real standard to the Socratic hint ladder.
+            // The injected watch() auto-ingests the problem text from #pa-sr but
+            // can only attach a single static standard (""); we push the actual
+            // per-round standard via setProblem. It's scheduled in a microtask so
+            // it lands AFTER the MutationObserver's own ingest (queued earlier,
+            // during the srSay below), making ours the authoritative last write —
+            // itemText + the correct standard. Fully guarded / no-op if the ladder
+            // script is absent.
+            currentStandard = (r && r.standard) || "";
+            const hintItemText = r ? r.prompt || "" : "";
+            const publishHint = () => {
+              try {
+                if (window.NeftHintLadder && window.NeftHintLadder.setProblem) {
+                  window.NeftHintLadder.setProblem({
+                    itemText: hintItemText,
+                    standard: currentStandard,
+                    staticHints: PA_HINT_STATICS,
+                  });
+                }
+              } catch (e) {}
+            };
+            if (typeof queueMicrotask === "function") queueMicrotask(publishHint);
+            else Promise.resolve().then(publishHint);
             this.progressText.setText("Round " + (this.idx + 1) + " / " + rounds.length);
             // Prompt panel sized to text (localized when a translation exists).
             this.promptText.setText(loc(r, "prompt"));
@@ -1722,6 +1866,8 @@
               numline: { icon: "📏", key: "numberLine" },
               build: { icon: "🧱", key: "buildIt" },
               balance: { icon: "⚖️", key: "balance" },
+              plot: { icon: "📍", key: "plotPoint" },
+              chain: { icon: "🪜", key: "multiStep" },
             }[r.kind] || { icon: "✅", key: "chooseAns" };
             const accentHex = "#" + PALETTE.accent.toString(16).padStart(6, "0");
             const badge = this.add
@@ -1778,6 +1924,8 @@
             else if (kind === "numline") this.renderNumberLine(r);
             else if (kind === "build") this.renderBuild(r);
             else if (kind === "balance") this.renderBalance(r);
+            else if (kind === "plot") this.renderPlot(r);
+            else if (kind === "chain") this.renderChain(r);
             else this.renderChoose(r);
           }
 
@@ -2747,6 +2895,324 @@
             const cb = makeButton(this, cx, cy + 190, 170, 46, t("check"), check);
             this.layer.add(cb.bg);
             this.layer.add(cb.t);
+          }
+
+          // ── Renderer: PLOT (drag / arrow a marker to an (x, y) target) ────────
+          // The 2D sibling of renderNumberLine: same reliable scene-pointer drag
+          // (via this.nlOnMove) plus arrow-key nudging, snapping to the grid so the
+          // target is always exactly reachable. Built only for plot-point config
+          // items — never auto-synthesized.
+          renderPlot(r) {
+            const size = 340;
+            const bx0 = W / 2 - size / 2,
+              bx1 = W / 2 + size / 2,
+              by0 = 208,
+              by1 = 208 + size;
+            const spanX = r.xMax - r.xMin,
+              spanY = r.yMax - r.yMin;
+            const xToPx = (vx) => bx0 + (bx1 - bx0) * ((vx - r.xMin) / spanX);
+            const yToPx = (vy) => by1 - (by1 - by0) * ((vy - r.yMin) / spanY);
+            const pxToXv = (px) => r.xMin + spanX * ((px - bx0) / (bx1 - bx0));
+            const pxToYv = (py) => r.yMin + spanY * ((by1 - py) / (by1 - by0));
+            const snap = (v, lo, hi) => Math.min(hi, Math.max(lo, Math.round(v / r.step) * r.step));
+            const lbl = (v) => this.fmt(Math.round(v * 1000) / 1000);
+            // Grid + axes (gridline stride capped so a wide range stays legible).
+            const g = this.add.graphics();
+            const strideX = Math.max(1, Math.ceil(spanX / r.step / 20)) * r.step;
+            const strideY = Math.max(1, Math.ceil(spanY / r.step / 20)) * r.step;
+            g.lineStyle(1, PALETTE.panelLine, 0.28);
+            for (let vx = Math.ceil(r.xMin / strideX) * strideX; vx <= r.xMax + 1e-9; vx += strideX)
+              g.lineBetween(xToPx(vx), by0, xToPx(vx), by1);
+            for (let vy = Math.ceil(r.yMin / strideY) * strideY; vy <= r.yMax + 1e-9; vy += strideY)
+              g.lineBetween(bx0, yToPx(vy), bx1, yToPx(vy));
+            const axX = xToPx(Math.min(r.xMax, Math.max(r.xMin, 0)));
+            const axY = yToPx(Math.min(r.yMax, Math.max(r.yMin, 0)));
+            g.lineStyle(3, PALETTE.panelLine, 0.9);
+            g.lineBetween(bx0, axY, bx1, axY);
+            g.lineBetween(axX, by0, axX, by1);
+            this.layer.add(g);
+            const lblStyle = {
+              fontFamily: "Nunito, Segoe UI, sans-serif",
+              fontSize: "12px",
+              color: "#c7d2fe",
+            };
+            for (
+              let vx = Math.ceil(r.xMin / strideX) * strideX;
+              vx <= r.xMax + 1e-9;
+              vx += strideX
+            ) {
+              if (Math.abs(vx) < 1e-9) continue;
+              this.layer.add(
+                this.add.text(xToPx(vx), axY + 10, lbl(vx), lblStyle).setOrigin(0.5, 0),
+              );
+            }
+            for (
+              let vy = Math.ceil(r.yMin / strideY) * strideY;
+              vy <= r.yMax + 1e-9;
+              vy += strideY
+            ) {
+              if (Math.abs(vy) < 1e-9) continue;
+              this.layer.add(
+                this.add.text(axX - 8, yToPx(vy), lbl(vy), lblStyle).setOrigin(1, 0.5),
+              );
+            }
+            // Marker starts at the origin when it's on the grid, else grid center.
+            this.plotX = snap(
+              r.xMin <= 0 && r.xMax >= 0 ? 0 : (r.xMin + r.xMax) / 2,
+              r.xMin,
+              r.xMax,
+            );
+            this.plotY = snap(
+              r.yMin <= 0 && r.yMax >= 0 ? 0 : (r.yMin + r.yMax) / 2,
+              r.yMin,
+              r.yMax,
+            );
+            const marker = this.add.container(xToPx(this.plotX), yToPx(this.plotY));
+            const dot = this.add.circle(0, 0, 13, PALETTE.gold).setStrokeStyle(3, 0xffffff);
+            const bubble = this.add
+              .text(0, -32, "(" + this.fmt(this.plotX) + ", " + this.fmt(this.plotY) + ")", {
+                fontFamily: "Nunito, Segoe UI, sans-serif",
+                fontSize: "16px",
+                fontStyle: "bold",
+                color: "#06283f",
+                backgroundColor: "#fde047",
+                padding: { x: 7, y: 3 },
+              })
+              .setOrigin(0.5);
+            const hit = this.add
+              .rectangle(0, 0, 54, 54, 0xffffff, 0.001)
+              .setInteractive({ useHandCursor: true });
+            marker.add([hit, dot, bubble]);
+            this.layer.add(marker);
+            const refresh = () => {
+              marker.x = xToPx(this.plotX);
+              marker.y = yToPx(this.plotY);
+              bubble.setText("(" + this.fmt(this.plotX) + ", " + this.fmt(this.plotY) + ")");
+            };
+            // Reliable drag: hold the dot, a scene-level pointermove tracks it (same
+            // fix as the number line — Phaser's nested-container drag is flaky).
+            hit.on("pointerdown", () => {
+              this.nlOnMove = (p) => {
+                const cxp = Math.max(bx0, Math.min(bx1, p.worldX));
+                const cyp = Math.max(by0, Math.min(by1, p.worldY));
+                this.plotX = snap(pxToXv(cxp), r.xMin, r.xMax);
+                this.plotY = snap(pxToYv(cyp), r.yMin, r.yMax);
+                refresh();
+              };
+            });
+            const nudge = (dx, dy) => {
+              this.plotX = Math.min(r.xMax, Math.max(r.xMin, this.plotX + dx * r.step));
+              this.plotY = Math.min(r.yMax, Math.max(r.yMin, this.plotY + dy * r.step));
+              refresh();
+              srSay("Point at " + this.fmt(this.plotX) + ", " + this.fmt(this.plotY));
+            };
+            this.input.keyboard.on("keydown-LEFT", () => nudge(-1, 0));
+            this.input.keyboard.on("keydown-RIGHT", () => nudge(1, 0));
+            this.input.keyboard.on("keydown-UP", () => nudge(0, 1));
+            this.input.keyboard.on("keydown-DOWN", () => nudge(0, -1));
+            const check = () => {
+              if (this.locked || !this.settled()) return;
+              const ok =
+                Math.abs(this.plotX - r.tx) <= (r.tol || 0) &&
+                Math.abs(this.plotY - r.ty) <= (r.tol || 0);
+              dot.setFillStyle(ok ? PALETTE.good : PALETTE.bad);
+              this.resolve(
+                ok,
+                r.why || "The point is (" + this.fmt(r.tx) + ", " + this.fmt(r.ty) + ").",
+              );
+              if (!ok)
+                this.time.delayedCall(560, () => !this.locked && dot.setFillStyle(PALETTE.gold));
+            };
+            this.input.keyboard.on("keydown-ENTER", check);
+            const cb = makeButton(this, W / 2, by1 + 66, 170, 46, t("check"), check);
+            this.layer.add(cb.bg);
+            this.layer.add(cb.t);
+            const cue = this.add
+              .text(W / 2, by1 + 26, t("plotCue"), {
+                fontFamily: "Nunito, Segoe UI, sans-serif",
+                fontSize: "14px",
+                color: "#e0e7ff",
+                align: "center",
+              })
+              .setOrigin(0.5);
+            this.layer.add(cue);
+            srSay(
+              r.prompt +
+                ". " +
+                t("plotCue") +
+                " Point at " +
+                this.fmt(this.plotX) +
+                ", " +
+                this.fmt(this.plotY) +
+                ".",
+            );
+          }
+
+          // ── Renderer: CHAIN (multi-step — each step's answer unlocks the next) ─
+          // Reuses the choose tile UI per sub-step. The whole chain counts as a
+          // first-try solve ONLY when every step is right first time: a wrong
+          // sub-answer bumps this.tries so the shared resolve() withholds the
+          // first-try bonus (score/power/gem), exactly like a single-round miss.
+          // Built only for multi-step config items — never auto-synthesized.
+          renderChain(r) {
+            const stepLayer = this.add.container(0, 0);
+            this.layer.add(stepLayer);
+            const total = r.steps.length;
+            const pickChain = (i, ci, tile) => {
+              if (this.locked || !this.settled()) return;
+              const s = r.steps[i];
+              SFX.pick();
+              if (ci === s.correctIndex) {
+                tile.bg.setFillStyle(PALETTE.good);
+                if (i < total - 1) {
+                  this.mascotSay("Nice! ✔");
+                  this.feedback.setColor("#86efac").setText(t("yes")).setAlpha(1);
+                  srSay("Correct. Next step.");
+                  this.time.delayedCall(420, () => {
+                    if (!this.locked) showStep(i + 1);
+                  });
+                } else {
+                  this.resolve(true, r.why || s.why || "");
+                }
+              } else {
+                // Any wrong sub-answer disqualifies the whole-chain first-try bonus.
+                this.tries++;
+                tile.bg.setFillStyle(PALETTE.bad);
+                JUICE.audio.wrong();
+                JUICE.shake(this, 0.005);
+                this.mascotReact(false);
+                const msg = this.tries >= 2 && s.why ? t("hint") + s.why : t("tryAgain");
+                this.feedback.setColor("#fde68a").setText(msg).setAlpha(1);
+                srSay("Not quite. Try again. " + (this.tries >= 2 ? s.why : ""));
+                this.time.delayedCall(560, () => {
+                  if (!this.locked) tile.bg.setFillStyle(PALETTE.tile);
+                });
+              }
+            };
+            const showStep = (i) => {
+              stepLayer.removeAll(true);
+              // Clear the previous step's per-tile key handlers before rebinding.
+              this.input.keyboard.removeAllListeners();
+              const s = r.steps[i];
+              const prog = this.add
+                .text(W / 2, 214, t("stepOf") + " " + (i + 1) + " / " + total, {
+                  fontFamily: "Nunito, Segoe UI, sans-serif",
+                  fontSize: "15px",
+                  fontStyle: "bold",
+                  color: "#a5b4fc",
+                })
+                .setOrigin(0.5);
+              stepLayer.add(prog);
+              const q = this.add
+                .text(W / 2, 252, s.prompt, {
+                  fontFamily: "Nunito, Segoe UI, sans-serif",
+                  fontSize: "19px",
+                  fontStyle: "bold",
+                  color: "#ffffff",
+                  align: "center",
+                  wordWrap: { width: W - 220 },
+                })
+                .setOrigin(0.5);
+              stepLayer.add(q);
+              const startY = 252 + Math.max(30, q.height) + 40;
+              const tileW = Math.min(560, W - 220);
+              s.choices.forEach((c, ci) => {
+                const y = startY + ci * 62;
+                const tile = this.makeTile(W / 2, y, tileW, 50, ci + 1 + ".  " + c);
+                stepLayer.add(tile.parts);
+                tile.bg.on(
+                  "pointerover",
+                  () => !this.locked && tile.bg.setFillStyle(PALETTE.tileHi),
+                );
+                tile.bg.on("pointerout", () => !this.locked && tile.bg.setFillStyle(PALETTE.tile));
+                tile.bg.on("pointerdown", () => pickChain(i, ci, tile));
+                this.input.keyboard.on("keydown-" + keyName(ci + 1), () => pickChain(i, ci, tile));
+              });
+              srSay(
+                t("stepOf") +
+                  " " +
+                  (i + 1) +
+                  ". " +
+                  s.prompt +
+                  ". Options: " +
+                  s.choices.map((c, ci) => ci + 1 + ", " + c).join("; ") +
+                  ". Press a number to choose.",
+              );
+            };
+            showStep(0);
+          }
+
+          // First-run only: a small callout that teaches the (otherwise
+          // undiscovered) double-points power meter. Gated by a localStorage flag
+          // so it appears once ever; honors reduced motion; dismiss on tap or after
+          // ~5s. Announced via srSay for screen-reader parity.
+          maybeShowPowerCoach() {
+            let seen = false;
+            try {
+              seen = localStorage.getItem("pa-coach-power") === "1";
+            } catch (e) {}
+            if (seen) return;
+            try {
+              localStorage.setItem("pa-coach-power", "1");
+            } catch (e) {}
+            const reduce = JUICE.reduceMotion || this.reduce;
+            const boxW = 300,
+              boxH = 80,
+              bx = 118,
+              by = 150;
+            const cont = this.add.container(bx, by).setDepth(80);
+            const gfx = this.add.graphics();
+            gfx.fillStyle(0x0b1020, 0.97);
+            gfx.fillRoundedRect(0, 0, boxW, boxH, 12);
+            gfx.lineStyle(2, PALETTE.gold, 0.95);
+            gfx.strokeRoundedRect(0, 0, boxW, boxH, 12);
+            gfx.fillStyle(0x0b1020, 0.97);
+            gfx.fillTriangle(24, 0, 44, 0, 34, -11); // pointer up toward the meter
+            const body = this.add.text(14, 12, t("coachPower"), {
+              fontFamily: "Nunito, Segoe UI, sans-serif",
+              fontSize: "13px",
+              fontStyle: "bold",
+              color: "#fde68a",
+              wordWrap: { width: boxW - 28 },
+            });
+            const dismiss = this.add
+              .text(boxW - 12, boxH - 13, t("coachDismiss"), {
+                fontFamily: "Nunito, Segoe UI, sans-serif",
+                fontSize: "11px",
+                color: "#93c5fd",
+              })
+              .setOrigin(1, 0.5);
+            const hit = this.add
+              .rectangle(boxW / 2, boxH / 2, boxW, boxH, 0xffffff, 0.001)
+              .setInteractive({ useHandCursor: true });
+            cont.add([gfx, body, dismiss, hit]);
+            srSay(t("coachPower"));
+            const close = () => {
+              if (!cont || !cont.scene) return;
+              if (reduce) {
+                cont.destroy();
+                return;
+              }
+              this.tweens.add({
+                targets: cont,
+                alpha: 0,
+                y: by - 10,
+                duration: 260,
+                onComplete: () => cont.destroy(),
+              });
+            };
+            hit.on("pointerdown", close);
+            if (!reduce) {
+              cont.setAlpha(0).setScale(0.92);
+              this.tweens.add({
+                targets: cont,
+                alpha: 1,
+                scale: 1,
+                duration: 300,
+                ease: "Back.Out",
+              });
+            }
+            this.time.delayedCall(5200, close);
           }
 
           // ── Shared tile factory: returns {parts(container), bg, label} ─────
