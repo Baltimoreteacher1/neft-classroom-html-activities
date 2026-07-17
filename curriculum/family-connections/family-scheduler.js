@@ -16,6 +16,9 @@ const spanish = {
   guardian: "Nombre del padre, madre o tutor",
   student: "Solo el primer nombre del estudiante",
   email: "Correo electrónico para la respuesta",
+  meetLanguage: "Idioma para la reunión",
+  phone: "Mejor número de teléfono (opcional)",
+  interpreter: "Por favor, coordine un intérprete",
   note: "¿Hay algo que quiera que el Sr. Neft sepa? (opcional)",
   consent: "Estoy reservando esta hora y usaré solo el primer nombre del estudiante.",
   send: "Reservar reunión",
@@ -125,6 +128,21 @@ async function submitRequest(event) {
   const form = event.currentTarget;
   const data = Object.fromEntries(new FormData(form));
   data.consent = form.elements.consent.checked;
+  // Fold the accessibility preferences into the single free-text note the API
+  // forwards to Mr. Neft; they are not separate API fields.
+  const extras = [];
+  if (data.meetingLanguage) extras.push(`Preferred language: ${data.meetingLanguage}`);
+  if (form.elements.interpreter?.checked) extras.push("Interpreter requested");
+  if (data.meetingPhone) extras.push(`Phone: ${data.meetingPhone}`);
+  if (extras.length) {
+    data.note = [data.note?.trim(), `[${extras.join("; ")}]`]
+      .filter(Boolean)
+      .join("\n")
+      .slice(0, 400);
+  }
+  delete data.meetingLanguage;
+  delete data.meetingPhone;
+  delete data.interpreter;
   const button = form.querySelector('[type="submit"]');
   button.disabled = true;
   setStatus(language === "es" ? "Reservando su reunión…" : "Booking your meeting…");

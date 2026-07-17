@@ -233,6 +233,101 @@ export const COPY_FIELDS = Object.freeze([
     es: "Abrir la guía familiar de IA →",
   },
 
+  // Take this week with you
+  {
+    key: "takeTitle",
+    group: "Take this week with you",
+    label: "Toolbar heading",
+    en: "Take this week with you",
+    es: "Lleve esta semana con usted",
+  },
+  {
+    key: "printWeek",
+    group: "Take this week with you",
+    label: "Print button",
+    en: "Print",
+    es: "Imprimir",
+  },
+  {
+    key: "calendarWeek",
+    group: "Take this week with you",
+    label: "Add-to-calendar button",
+    en: "Add to calendar",
+    es: "Agregar al calendario",
+  },
+  {
+    key: "emailWeek",
+    group: "Take this week with you",
+    label: "Email button",
+    en: "Email",
+    es: "Enviar por correo",
+  },
+  {
+    key: "textWeek",
+    group: "Take this week with you",
+    label: "Text button",
+    en: "Text",
+    es: "Enviar por mensaje",
+  },
+  {
+    key: "shareWeek",
+    group: "Take this week with you",
+    label: "Send-to-phone button",
+    en: "Send to phone",
+    es: "Enviar al teléfono",
+  },
+
+  // Family check-in
+  {
+    key: "pulseTitle",
+    group: "Family check-in",
+    label: "Heading",
+    en: "How did practice go?",
+    es: "¿Cómo les fue con la práctica?",
+  },
+  {
+    key: "pulseIntro",
+    group: "Family check-in",
+    label: "Intro",
+    en: "One tap, never graded. It helps Mr. Neft plan the next lesson.",
+    es: "Un toque, nunca se califica. Ayuda al Sr. Neft a planear la próxima lección.",
+  },
+  {
+    key: "pulseWent",
+    group: "Family check-in",
+    label: "Went well button",
+    en: "It went well",
+    es: "Nos fue bien",
+  },
+  {
+    key: "pulseStuck",
+    group: "Family check-in",
+    label: "Got stuck button",
+    en: "We got stuck",
+    es: "Nos atascamos",
+  },
+  {
+    key: "pulseSkip",
+    group: "Family check-in",
+    label: "Skipped button",
+    en: "Not this week",
+    es: "Esta semana no",
+  },
+  {
+    key: "pulseThanks",
+    group: "Family check-in",
+    label: "Thank-you message",
+    en: "Thank you. This helps Mr. Neft plan the next lesson.",
+    es: "Gracias. Esto ayuda al Sr. Neft a planear la próxima lección.",
+  },
+  {
+    key: "pulseTell",
+    group: "Family check-in",
+    label: "Tell-more link",
+    en: "Tell Mr. Neft more →",
+    es: "Contarle más al Sr. Neft →",
+  },
+
   // Connect
   {
     key: "connectEyebrow",

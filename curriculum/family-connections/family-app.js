@@ -1,12 +1,16 @@
+import { downloadWeekCalendar } from "./calendar-event.js";
 import { translationsEs } from "./shared/copy-defaults.js";
 import { createDefaultSnapshot, resolveSection, safeExternalUrl } from "./shared/model.js";
 import {
+  familyWeekShare,
   familyWeekSpeech,
   renderAnnouncements,
   renderHomework,
   renderResources,
   renderSectionOptions,
+  renderSpotlight,
   renderWeek,
+  renderWeekVocab,
 } from "./shared/render.js";
 
 const MANIFEST_URL = "/data/curriculum-manifest.json";
@@ -21,8 +25,12 @@ const state = {
   sectionId: "all-families",
   visibleHomework: 12,
   refreshing: false,
-  preferences: { language: "en", largeText: false, highContrast: false },
+  preferences: { language: "en", largeText: false, highContrast: false, sectionId: "" },
 };
+
+const FAMILY_PAGE_URL = `${location.origin}/curriculum/family-connections/`;
+let weekShareData = null;
+let weekCalendarData = null;
 
 const byId = (id) => document.getElementById(id);
 const announce = (message) => {
@@ -36,6 +44,7 @@ function loadPreferences() {
       ...JSON.parse(localStorage.getItem(PREFERENCE_KEY)),
     };
   } catch {}
+  if (state.preferences.sectionId) state.sectionId = state.preferences.sectionId;
   applyPreferences();
 }
 
@@ -103,18 +112,71 @@ function renderHomeworkLibrary(resetLimit = false) {
 }
 
 function renderExperience() {
+  const lang = state.preferences.language;
   const section = resolveSection(state.snapshot, state.sectionId);
   state.sectionId = section.id;
   renderSectionOptions(byId("section-select"), state.snapshot, state.sectionId);
   byId("class-control").hidden =
     (state.snapshot.sections ?? []).filter((item) => item.visible !== false).length < 2;
-  renderWeek(byId("week-grid"), state.snapshot, state.lessons, state.sectionId);
+  renderWeek(byId("week-grid"), state.snapshot, state.lessons, state.sectionId, lang);
+  renderSpotlight(byId("week-spotlight"), state.snapshot, state.lessons, state.sectionId, lang);
+  renderWeekVocab(byId("week-vocab"), state.snapshot, state.lessons, state.sectionId, lang);
   byId("published-week-label").textContent = section.week.label;
   byId("published-week-note").textContent = section.week.note;
+  renderFreshness();
+  updateWeekActions(section, lang);
   renderAnnouncements(byId("family-announcements"), byId("announcement-grid"), state.snapshot);
   renderResources(byId("resource-grid"), state.snapshot);
   renderIntegrations();
   renderHomeworkLibrary(true);
+}
+
+function freshnessLabel(when, lang) {
+  const es = lang === "es";
+  const startOfDay = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const days = Math.round((startOfDay(new Date()) - startOfDay(when)) / 86_400_000);
+  if (days <= 0) return es ? "Actualizado hoy" : "Updated today";
+  if (days === 1) return es ? "Actualizado ayer" : "Updated yesterday";
+  if (days < 7) {
+    const weekday = new Intl.DateTimeFormat(es ? "es-US" : "en-US", { weekday: "long" }).format(
+      when,
+    );
+    return es ? `Actualizado el ${weekday}` : `Updated ${weekday}`;
+  }
+  const date = new Intl.DateTimeFormat(es ? "es-US" : "en-US", { dateStyle: "medium" }).format(
+    when,
+  );
+  return es ? `Actualizado el ${date}` : `Updated ${date}`;
+}
+
+function renderFreshness() {
+  const el = byId("week-freshness");
+  const when = state.snapshot.publishedAt ? new Date(state.snapshot.publishedAt) : null;
+  if (!when || Number.isNaN(when.getTime())) {
+    el.hidden = true;
+    return;
+  }
+  el.hidden = false;
+  el.textContent = freshnessLabel(when, state.preferences.language);
+}
+
+// Build the Email / Text / Send-to-phone / calendar payloads for the current week.
+function updateWeekActions(section, lang) {
+  const { subject, body } = familyWeekShare(state.snapshot, state.lessons, state.sectionId, lang);
+  const fullBody = `${body}\n\n${FAMILY_PAGE_URL}`;
+  byId("email-week").href =
+    `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(fullBody)}`;
+  byId("text-week").href = `sms:?&body=${encodeURIComponent(fullBody)}`;
+  const share = byId("share-week");
+  share.hidden = typeof navigator.share !== "function";
+  weekShareData = { title: subject, text: body, url: FAMILY_PAGE_URL };
+  weekCalendarData = {
+    title: `${lang === "es" ? "Matemáticas" : "Math"} · ${section.week?.label ?? ""}`.trim(),
+    dateISO: section.week?.startDate || "",
+    description: body,
+    url: FAMILY_PAGE_URL,
+    reference: `family-week-${section.id}`,
+  };
 }
 
 function populateUnits() {
@@ -188,6 +250,8 @@ async function load() {
 function bindEvents() {
   byId("section-select").addEventListener("change", (event) => {
     state.sectionId = event.target.value;
+    state.preferences.sectionId = event.target.value;
+    savePreferences();
     renderExperience();
   });
   for (const id of ["homework-search", "unit-filter"]) {
@@ -210,17 +274,21 @@ function bindEvents() {
     if (!("speechSynthesis" in window))
       return announce("Read aloud is not available in this browser.");
     window.speechSynthesis.cancel();
+    const es = state.preferences.language === "es";
     const utterance = new SpeechSynthesisUtterance(
       familyWeekSpeech(state.snapshot, state.lessons, state.sectionId),
     );
-    utterance.lang = state.preferences.language === "es" ? "es-US" : "en-US";
+    utterance.lang = es ? "es-US" : "en-US";
+    const voice = pickVoice(es ? "es" : "en");
+    if (voice) utterance.voice = voice;
     window.speechSynthesis.speak(utterance);
-    announce("Reading this week aloud.");
+    announce(es ? "Leyendo esta semana en voz alta." : "Reading this week aloud.");
   });
   byId("language-toggle").addEventListener("click", () => {
     state.preferences.language = state.preferences.language === "es" ? "en" : "es";
     applyPreferences();
     savePreferences();
+    renderExperience();
   });
   byId("text-size-toggle").addEventListener("click", () => {
     state.preferences.largeText = !state.preferences.largeText;
@@ -232,6 +300,75 @@ function bindEvents() {
     applyPreferences();
     savePreferences();
   });
+  bindWeekActions();
+  bindPulse();
+  bindScrollSpy();
+}
+
+function bindWeekActions() {
+  byId("print-week").addEventListener("click", () => window.print());
+  byId("calendar-week").addEventListener("click", () => {
+    if (weekCalendarData) downloadWeekCalendar(weekCalendarData);
+  });
+  byId("share-week").addEventListener("click", async () => {
+    if (!weekShareData || typeof navigator.share !== "function") return;
+    try {
+      await navigator.share(weekShareData);
+    } catch {
+      // Parent dismissed the share sheet — nothing to do.
+    }
+  });
+}
+
+function bindPulse() {
+  const actions = byId("pulse-actions");
+  const thanks = byId("pulse-thanks");
+  actions.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-pulse]");
+    if (!button) return;
+    for (const item of actions.querySelectorAll("[data-pulse]"))
+      item.setAttribute("aria-pressed", String(item === button));
+    const dojo = state.snapshot.integrations?.classDojoUrl;
+    const tell = byId("pulse-tell");
+    if (safeExternalUrl(dojo)) {
+      tell.href = dojo;
+      tell.target = "_blank";
+      tell.rel = "noopener";
+      tell.hidden = false;
+    } else {
+      tell.hidden = true;
+    }
+    thanks.hidden = false;
+  });
+}
+
+// Highlight the quick-nav link for whichever section is in view.
+function bindScrollSpy() {
+  const links = new Map(
+    [...document.querySelectorAll(".family-quick-nav a[href^='#']")].map((a) => [
+      a.getAttribute("href").slice(1),
+      a,
+    ]),
+  );
+  const sections = [...links.keys()].map((id) => byId(id)).filter(Boolean);
+  if (!sections.length || !("IntersectionObserver" in window)) return;
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        for (const a of links.values()) a.removeAttribute("aria-current");
+        links.get(entry.target.id)?.setAttribute("aria-current", "true");
+      }
+    },
+    { rootMargin: "-45% 0px -50% 0px", threshold: 0 },
+  );
+  for (const section of sections) observer.observe(section);
+}
+
+function pickVoice(lang) {
+  if (!("speechSynthesis" in window)) return null;
+  const voices = window.speechSynthesis.getVoices() ?? [];
+  return voices.find((voice) => voice.lang?.toLowerCase().startsWith(lang)) ?? null;
 }
 
 loadPreferences();
@@ -239,3 +376,4 @@ bindEvents();
 load();
 setInterval(refreshPublication, 30_000);
 document.addEventListener("visibilitychange", refreshPublication);
+if ("speechSynthesis" in window) window.speechSynthesis.getVoices();

@@ -101,7 +101,12 @@ function renderWeekEditor() {
     remove(id) {
       const target = state.draft.sections.find((item) => item.id === id);
       if (!target) return;
-      if (!window.confirm(`Delete “${target.label}”? Publishing will remove this section and its Canvas feed.`)) return;
+      if (
+        !window.confirm(
+          `Delete “${target.label}”? Publishing will remove this section and its Canvas feed.`,
+        )
+      )
+        return;
       try {
         const result = deleteSection(state.draft.sections, id, state.sectionId);
         state.draft.sections = result.sections;
@@ -202,9 +207,20 @@ function addAnnouncement() {
   const title = byId("announcement-title").value.trim();
   const body = byId("announcement-body").value.trim();
   if (!title || !body) return notify("Add both a title and a family update.");
-  state.draft.announcements.push({ id: `update-${Date.now()}`, title, body, visible: true });
+  const date = byId("announcement-date").value.trim();
+  const pinned = byId("announcement-pinned").checked;
+  state.draft.announcements.push({
+    id: `update-${Date.now()}`,
+    title,
+    body,
+    date,
+    pinned,
+    visible: true,
+  });
   byId("announcement-title").value = "";
   byId("announcement-body").value = "";
+  byId("announcement-date").value = "";
+  byId("announcement-pinned").checked = false;
   markDirty();
   renderCollections();
 }

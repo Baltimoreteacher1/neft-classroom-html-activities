@@ -169,6 +169,8 @@ export function normalizeSnapshot(input) {
         id: text(item?.id, 40) || `announcement-${index + 1}`,
         title: text(item?.title, 100),
         body: text(item?.body, 600),
+        date: text(item?.date, 40),
+        pinned: item?.pinned === true,
         visible: item?.visible !== false,
       }))
       .filter((item) => item.title && item.body),
