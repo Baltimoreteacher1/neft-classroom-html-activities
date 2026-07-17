@@ -13,6 +13,7 @@ import {
   resolveLanguageObjective,
   linkifyObjectiveTerms,
   wireObjectiveTermPopups,
+  underlineVocabTerms,
 } from "./lesson-renderer.js";
 import { buildLessonCoverExtras, mountCoverArt, applyPhaseAccent } from "./premium.js";
 import {
@@ -806,6 +807,11 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       el.setAttribute("aria-label", phaseConfigs[index]?.name || `Phase ${index + 1}`);
       phaseContainer.append(el);
       renderFn(el, state, this);
+      // Underline every lesson-vocabulary term in the rendered phase body and
+      // wire it to the tap-to-open glossary popup (EN/ES + illustration), so
+      // academic math words are defined in context throughout the lesson — the
+      // same treatment the small-group renderer gives (e.g. 7-2-group2).
+      underlineVocabTerms(el, config.vocabulary || []);
       el.addEventListener("animationend", () => el.classList.remove("phase-enter"), { once: true });
     },
 
