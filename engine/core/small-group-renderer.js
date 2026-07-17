@@ -227,6 +227,21 @@ function footer() {
 }
 
 export function bootSmallGroup(config) {
+  // ?group=1|2 deep-link: one shared link (e.g. a single Canvas assignment)
+  // lands each student on their assigned variant of this lesson.
+  const requestedGroup = new URLSearchParams(window.location.search).get("group");
+  if (
+    /^[12]$/.test(requestedGroup || "") &&
+    /-group[12]$/.test(String(config.lessonId)) &&
+    !String(config.lessonId).endsWith(`-group${requestedGroup}`)
+  ) {
+    window.location.replace(
+      window.location.pathname.replace(/-group[12](\/|$)/, `-group${requestedGroup}$1`) +
+        window.location.search +
+        window.location.hash,
+    );
+    return;
+  }
   const variant =
     config.variant || (config.smallGroup ? `group${config.smallGroup.group}` : "catchup");
   const accent = ACCENTS[variant] || ACCENTS.catchup;

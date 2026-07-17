@@ -3135,7 +3135,7 @@
     const inner = dock.querySelector(".ewl-supports-tools-inner");
     if (!inner) return;
     let chip = inner.querySelector(".ewl-supports-mylessons-chip");
-    const list = Array.isArray(lessons) ? lessons.filter((id) => /^\d+-\d+$/.test(id)) : [];
+    const list = Array.isArray(lessons) ? lessons.filter((id) => /^\d+-\d+(?:-group[12]|-catchup)?$/.test(id)) : [];
     if (!list.length) {
       if (chip) chip.remove();
       if (myLessonsPop) {
@@ -3828,7 +3828,7 @@
     // toggles THIS lesson in/out. The full 64-lesson picker lives in the
     // Supports Manager console.
     const curLessons = Array.isArray(current.lessons)
-      ? current.lessons.filter((id) => /^\d+-\d+$/.test(id))
+      ? current.lessons.filter((id) => /^\d+-\d+(?:-group[12]|-catchup)?$/.test(id))
       : [];
 
     if (activeLessonId) {

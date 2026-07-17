@@ -78,10 +78,11 @@ for (const band of bands) {
   delete out.familyNotes;
   delete out.flagship;
   // Compact review only — strip discovery scaffolding (no notice/wonder, no
-  // reveal word problem, no turn & talk). The compact renderer shows only
-  // skills review → vocabulary → practice → quick check.
+  // turn & talk). The reveal word problem STAYS: the compact renderer's Apply
+  // Lab turns it into the Polya workbench, giving catch-ups an apply phase.
+  // `base` is a clone of the band's last lesson, so this is that parent's
+  // authored problem — on-topic for the band it reviews.
   delete out.noticeAndWonder;
-  delete out.revealWordProblem;
   delete out.turnAndTalk;
   if (out.launch) {
     delete out.launch.beCurious;

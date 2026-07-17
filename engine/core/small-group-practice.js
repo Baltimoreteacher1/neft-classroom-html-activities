@@ -261,8 +261,11 @@ function answerControl(item, answer, scaffold, status, onSolved, events = {}, on
     if (item.unit) line.appendChild(el("span", "fillunit", esc(item.unit)));
     box.appendChild(line);
   }
-  if (scaffold && item.choices?.length) {
-    const bank = el("div", "wbank");
+  // The bank always exists (hidden when unscaffolded) so the adaptive coach's
+  // "stabilize" move can open it later without rebuilding the card.
+  let bank = null;
+  if (item.choices?.length) {
+    bank = el("div", "wbank");
     bank.appendChild(el("span", "wbank-lab", "Tap-to-try bank:"));
     item.choices.forEach((choice) => {
       const chip = el("button", "wchip", esc(choice));
@@ -273,6 +276,7 @@ function answerControl(item, answer, scaffold, status, onSolved, events = {}, on
       };
       bank.appendChild(chip);
     });
+    bank.hidden = !scaffold;
     box.appendChild(bank);
   }
   const row = el("div", "row");
@@ -319,6 +323,9 @@ function answerControl(item, answer, scaffold, status, onSolved, events = {}, on
   };
   row.appendChild(check);
   box.appendChild(row);
+  box.showBank = () => {
+    if (bank) bank.hidden = false;
+  };
   return box;
 }
 
@@ -381,20 +388,20 @@ function responseCard(item, index, variant, onSolved, scaffold, events = {}) {
   // opens the first hint — support arrives without a hunt.
   let revealGuide = null;
   let openHint = null;
-  if (answer != null)
-    card.appendChild(
-      answerControl(
-        item,
-        answer,
-        scaffold,
-        status,
-        onSolved,
-        events,
-        () => revealGuide?.(),
-        () => openHint?.(),
-      ),
+  let control = null;
+  if (answer != null) {
+    control = answerControl(
+      item,
+      answer,
+      scaffold,
+      status,
+      onSolved,
+      events,
+      () => revealGuide?.(),
+      () => openHint?.(),
     );
-  else {
+    card.appendChild(control);
+  } else {
     const response = el("textarea", "sg-ta");
     response.placeholder =
       variant === "group2"
@@ -430,6 +437,12 @@ function responseCard(item, index, variant, onSolved, scaffold, events = {}) {
   card.appendChild(status);
   revealGuide = appendStepGuide(card, item, scaffold);
   openHint = appendHints(card, item, events);
+  // Hook for the adaptive coach: "stabilize" opens this card's supports
+  // (tap-to-try bank + step guide) without rebuilding anything.
+  card.sgApplySupport = () => {
+    control?.showBank?.();
+    revealGuide?.();
+  };
   return card;
 }
 
@@ -610,6 +623,13 @@ export function createPracticeSection(
       solveItem(index);
     }
     section.appendChild(card);
+  });
+  // The adaptive coach's "stabilize" move opens real support on every
+  // unsolved problem in this set — banks and step guides appear at once.
+  document.addEventListener("sg:adaptive-path", (event) => {
+    if (event.detail !== "stabilize") return;
+    for (const card of section.querySelectorAll(":scope > .prob:not(.sg-done-all)"))
+      card.sgApplySupport?.();
   });
   const optional = config.practice?.optionalActivity;
   if (optional && options.includeOptional)

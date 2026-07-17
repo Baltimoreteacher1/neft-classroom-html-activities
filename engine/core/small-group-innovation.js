@@ -242,10 +242,34 @@ export function createAdaptiveCoach(variant, state, store = null) {
     '<div class="sg-innovation-kicker">Transparent coaching</div><h2>What should I try next?</h2><p>The coach uses only this session’s confidence, attempts, hints, and completed checks. It never labels your ability.</p>';
   const result = el("div", "sg-coach-result");
   result.setAttribute("aria-live", "polite");
+  // Tab buttons are id'd `sg-tab-<step.id>` where step.id is already
+  // `sg-tab-…`, hence the double prefix (same scheme the Check tab uses).
+  const goToTab = (tabId, targetId) => {
+    document.getElementById(`sg-tab-${tabId}`)?.click();
+    if (targetId)
+      document.getElementById(targetId)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+  const PATH_ACTIONS = {
+    stabilize: ["🧰 Supports are open — go to my problems", () => goToTab("sg-tab-practice")],
+    connect: ["🔗 Open the Model Lab", () => goToTab("sg-tab-learn", "sg-model")],
+    stretch: ["🚀 Jump to More Practice", () => goToTab("sg-tab-more")],
+  };
   const render = (path) => {
     state.adaptivePath = path.id;
     store?.set("adaptivePath", path.id);
+    // The move is real, not just displayed: practice sections listen for this
+    // and open banks/step guides on unsolved problems when stabilizing.
+    document.dispatchEvent(new CustomEvent("sg:adaptive-path", { detail: path.id }));
     result.innerHTML = `<div class="sg-path-badge">Recommended next move</div><h3>${esc(path.label)}</h3><p><b>Why:</b> ${esc(path.reason || "You chose a different path that fits you.")}</p><p>${esc(path.prompt)}</p>`;
+    const [actionLabel, go] = PATH_ACTIONS[path.id] || [];
+    if (actionLabel) {
+      const act = el("button", "btn", actionLabel);
+      act.type = "button";
+      act.onclick = go;
+      const actRow = el("div", "row");
+      actRow.appendChild(act);
+      result.appendChild(actRow);
+    }
     const choices = el("div", "sg-coach-choices");
     alternatives()
       .filter((item) => item.id !== path.id)

@@ -41,16 +41,20 @@ function dataChipsBlock(v) {
 // (factor-tree-lab, manip, …) mount live via the shared interactive-visual
 // registry; static kinds render as accessible SVG figures. Returns null when
 // the kind is unknown so callers can skip the block instead of rendering blank.
-export function figureBlock(diagram, { ariaLabel, fallback } = {}) {
+export function figureBlock(diagram, { ariaLabel, fallback, staticOnly = false } = {}) {
   if (!diagram || !diagram.kind) return null;
   let html = "";
   let interactive = false;
   if (diagram.kind === "data-chips") html = dataChipsBlock(diagram);
   else {
-    html = interactiveVisualHost(diagram, {
-      ariaLabel: ariaLabel || diagram.title || "Interactive math model",
-      fallback: fallback || "Turn on JavaScript to explore this model.",
-    });
+    // staticOnly renders reference figures as plain SVG so they never compete
+    // with the section's real manipulative (the 5.1 explore-lab directive).
+    html = staticOnly
+      ? ""
+      : interactiveVisualHost(diagram, {
+          ariaLabel: ariaLabel || diagram.title || "Interactive math model",
+          fallback: fallback || "Turn on JavaScript to explore this model.",
+        });
     interactive = Boolean(html);
     if (!html) html = FIGURES[diagram.kind]?.(diagram) || "";
   }
@@ -162,10 +166,30 @@ export function createExploreLab(config, variant, { number, store, events, onDon
   if (explore.instructions) section.appendChild(el("p", "sg-lab-note", esc(explore.instructions)));
 
   // The lab itself is the manipulative; the parent lesson's explore.diagram
-  // (e.g. an unrelated line grapher) is not mounted here.
+  // (e.g. an unrelated line grapher) is never MOUNTED here (5.1 directive).
   const mount = el("div", "sg-lab-mount");
   mount.appendChild(el("p", "sg-lab-loading", "Loading the interactive lab…"));
   section.appendChild(mount);
+
+  // The authored diagram still has value as a quiet, collapsed reference.
+  // 3D kinds (solid-3d / cross-section — the AR/3D model lane) mount LIVE:
+  // on a solids lesson the 3D explorer is the point, not a competing visual.
+  // Every other kind renders static-only so it never fights the manipulative.
+  const is3d = ["solid-3d", "cross-section"].includes(explore.diagram?.kind);
+  const reference = figureBlock(explore.diagram, { staticOnly: !is3d });
+  if (reference) {
+    const shelf = el("details", "sg-sample");
+    shelf.appendChild(
+      el(
+        "summary",
+        "block-lab",
+        is3d ? "🧊 3D model lab — explore the solid" : "📎 See the lesson's reference model",
+      ),
+    );
+    shelf.appendChild(reference);
+    if (is3d) shelf.open = true;
+    section.appendChild(shelf);
+  }
 
   const talk = discourseCard(explore.discourse);
   if (talk) section.appendChild(talk);

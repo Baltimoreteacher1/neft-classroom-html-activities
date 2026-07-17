@@ -126,6 +126,42 @@
     return node;
   }
 
+  // One-paste Canvas assignment: title, student-facing description, direct
+  // link, and the ready-to-upload SCORM package URL. Plain string building
+  // only — no network calls happen here.
+  function canvasAssignmentText(lesson, safeUrl) {
+    var kindLabel =
+      lesson.kind === "smallGroup"
+        ? lesson.group === 1
+          ? " (Foundations small group)"
+          : " (Challenge small group)"
+        : lesson.kind === "catchUp"
+          ? " (Catch-Up review)"
+          : "";
+    var scormUrl =
+      `${location.origin}/api/scorm?activity=${encodeURIComponent(lesson.id)}` +
+      `&title=${encodeURIComponent(lesson.title)}`;
+    var lines = [
+      `${lesson.id} · ${lesson.title}${kindLabel}`,
+      "",
+      lesson.objective,
+      "",
+      `Student link: ${safeUrl}`,
+      `SCORM package (upload to Canvas for automatic grade passback): ${scormUrl}`,
+      "",
+      "Setup: Canvas → Assignments → + Assignment → Submission Type “External Tool”/file upload,",
+      "or upload the SCORM zip via Settings → Import. Use “Assign To” to give this version",
+      "to specific students only.",
+    ];
+    if (lesson.kind === "smallGroup")
+      lines.push(
+        "",
+        "Tip: add ?group=1 or ?group=2 to the student link to flip a student between",
+        "the Foundations and Challenge versions of this lesson without a new assignment.",
+      );
+    return lines.join("\n");
+  }
+
   function link(label, href, className) {
     var node = el("a", `ctw-button ${className || ""}`, label);
     node.href = href;
@@ -530,6 +566,11 @@
     actions.appendChild(
       button("Copy student link", function (event) {
         copyText(safeUrl, event.currentTarget);
+      }),
+    );
+    actions.appendChild(
+      button("Copy Canvas assignment", function (event) {
+        copyText(canvasAssignmentText(lesson, safeUrl), event.currentTarget);
       }),
     );
     actions.appendChild(

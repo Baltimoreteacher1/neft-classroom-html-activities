@@ -242,7 +242,7 @@ function cleanUpdatedAt(v) {
 // Assigned lessons: canonical lesson ids only (e.g. "3-2"), de-duped, capped.
 // Lesson ids carry no accommodation information, so they may ride the public
 // /for read alongside the generic tool keys.
-const LESSON_ID_RE = /^\d+-\d+$/;
+const LESSON_ID_RE = /^\d+-\d+(?:-group[12]|-catchup)?$/;
 function cleanLessonsJson(v) {
   if (!Array.isArray(v)) return "[]";
   const seen = new Set();
