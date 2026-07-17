@@ -10,6 +10,7 @@
   var lessons = [];
   var lessonsById = {};
   var smallGroupsByParent = {};
+  var catchUpsByParent = {};
   var endOfUnitByUnit = {};
   var state = loadState();
   var panel = null;
@@ -23,6 +24,9 @@
       out.push(lesson.id);
       (smallGroupsByParent[lesson.id] || []).forEach(function (group) {
         out.push(group.id);
+      });
+      (catchUpsByParent[lesson.id] || []).forEach(function (catchUp) {
+        out.push(catchUp.id);
       });
       var next = lessons[i + 1];
       if (!next || next.unit !== lesson.unit) {
@@ -234,6 +238,10 @@
           // Group 1 / Group 2 small-group lessons, indented under their base.
           (smallGroupsByParent[lesson.id] || []).forEach(function (group) {
             addOption(group.id, `   ↳ ${group.title}`);
+          });
+          // Band-review catch-up lesson, after that band's last lesson.
+          (catchUpsByParent[lesson.id] || []).forEach(function (catchUp) {
+            addOption(catchUp.id, `   ↺ ${catchUp.title}`);
           });
         });
       // End-of-unit culminating project at the bottom of the unit.
@@ -709,6 +717,10 @@
         (DATA.launch.smallGroups || []).forEach(function (group) {
           lessonsById[group.id] = group;
           (smallGroupsByParent[group.parent] = smallGroupsByParent[group.parent] || []).push(group);
+        });
+        (DATA.launch.catchUps || []).forEach(function (catchUp) {
+          lessonsById[catchUp.id] = catchUp;
+          (catchUpsByParent[catchUp.parent] = catchUpsByParent[catchUp.parent] || []).push(catchUp);
         });
         (DATA.launch.endOfUnit || []).forEach(function (project) {
           lessonsById[project.id] = project;

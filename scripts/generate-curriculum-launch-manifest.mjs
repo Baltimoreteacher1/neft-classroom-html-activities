@@ -112,6 +112,18 @@ for (const lesson of lessons) {
   }
 }
 
+// ── Band-review catch-up lessons ────────────────────────────────────────────
+// One per 3-4 lesson band, living at /lessons/<band-end>-catchup/ (same compact
+// renderer + config shape as small groups). Also excluded from the core manifest.
+const catchUps = [];
+for (const lesson of lessons) {
+  if (!baseIds.has(lesson.id)) continue;
+  const id = `${lesson.id}-catchup`;
+  const entry = groupConfig(id);
+  if (!entry) continue;
+  catchUps.push({ kind: "catchUp", parent: lesson.id, ...entry });
+}
+
 // ── End-of-unit culminating projects ────────────────────────────────────────
 const units = Array.from(new Set(lessons.map((lesson) => lesson.unit))).sort((a, b) => a - b);
 const endOfUnit = units
@@ -137,9 +149,11 @@ const payload = {
   schemaVersion: 2,
   lessonCount: lessons.length,
   smallGroupCount: smallGroups.length,
+  catchUpCount: catchUps.length,
   endOfUnitCount: endOfUnit.length,
   lessons,
   smallGroups,
+  catchUps,
   endOfUnit,
 };
 
