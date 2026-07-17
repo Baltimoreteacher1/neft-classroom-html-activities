@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Boss-Battle Review Arcade · Grade 6 Math</title>
     <meta
       name="description"
@@ -139,12 +139,7 @@
         font-size: clamp(28px, 6vw, 52px);
         font-weight: 900;
         letter-spacing: -0.02em;
-        background: linear-gradient(
-          90deg,
-          var(--arc-glow),
-          var(--arc-gold),
-          var(--arc-pink)
-        );
+        background: linear-gradient(90deg, var(--arc-glow), var(--arc-gold), var(--arc-pink));
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -596,11 +591,7 @@
         transform: translateY(0);
       }
       .r-btn.primary {
-        background: linear-gradient(
-          135deg,
-          var(--purple) 0%,
-          var(--arc-pink) 100%
-        );
+        background: linear-gradient(135deg, var(--purple) 0%, var(--arc-pink) 100%);
         color: #fff;
       }
       .r-btn.secondary {
@@ -681,42 +672,116 @@
           transition-duration: 0.001ms !important;
         }
       }
+
+      /* ── Language toggle + read-aloud tools ── */
+      .lang-toggle {
+        background: rgba(255, 255, 255, 0.08);
+        border: 2px solid rgba(0, 255, 231, 0.3);
+        border-radius: 999px;
+        padding: 8px 18px;
+        cursor: pointer;
+        font-family: var(--font);
+        font-size: 14px;
+        font-weight: 800;
+        color: var(--arc-text);
+        transition:
+          background 0.15s,
+          border-color 0.15s;
+      }
+      .lang-toggle:hover,
+      .lang-toggle:focus-visible {
+        background: rgba(0, 255, 231, 0.14);
+        border-color: var(--arc-glow);
+        outline: none;
+      }
+      .q-tools {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 14px;
+      }
+      .tool-btn {
+        background: rgba(255, 255, 255, 0.08);
+        border: 2px solid rgba(0, 255, 231, 0.28);
+        border-radius: 999px;
+        padding: 7px 16px;
+        cursor: pointer;
+        font-family: var(--font);
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--arc-text);
+        transition:
+          background 0.15s,
+          border-color 0.15s;
+      }
+      .tool-btn:hover,
+      .tool-btn:focus-visible {
+        background: rgba(0, 255, 231, 0.14);
+        border-color: var(--arc-glow);
+        outline: none;
+      }
+      /* Best-score chips */
+      .u-best {
+        display: block;
+        margin-top: 6px;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        color: var(--arc-gold);
+      }
+      #boss-best {
+        display: inline;
+        margin-top: 0;
+      }
+      .best-line {
+        font-size: 15px;
+        font-weight: 800;
+        color: var(--arc-gold);
+        margin: 0 auto 18px;
+      }
     </style>
-  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
-  <!-- nsr-injected:end -->
-</head>
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2" />
+    <!-- nsr-injected:end -->
+    <!-- Student Passport (meta-progression: lifetime XP / streak / badges) -->
+    <link rel="stylesheet" href="/assets/lesson-passport.css" />
+  </head>
   <body>
+    <!-- Screen-reader live region (announces answer feedback) -->
+    <div id="ra-sr" class="sr-only" role="status" aria-live="polite"></div>
+
     <!-- ══════════════════════════════════════
      SCREEN A: HOME
 ══════════════════════════════════════ -->
     <section id="screen-home" class="screen" role="main">
       <div class="hero">
-        <span class="mascot" role="img" aria-label="Arcade robot mascot"
-          >🕹️</span
-        >
+        <span class="mascot" role="img" aria-label="Arcade robot mascot">🕹️</span>
         <h1>Boss-Battle<br />Review Arcade</h1>
-        <p class="sub">
-          Grade 6 Math · All 10 Units · Instant Feedback · Lives System
-        </p>
+        <p class="sub">Grade 6 Math · All 10 Units · Instant Feedback · Lives System</p>
+      </div>
+
+      <div style="text-align: center; margin-bottom: 12px">
+        <button
+          class="lang-toggle"
+          id="lang-toggle"
+          type="button"
+          onclick="toggleLang()"
+          aria-label="Switch language between English and Spanish"
+        >
+          🌐 Español
+        </button>
       </div>
 
       <div class="how-to" role="note" aria-label="How to play">
         <div class="how-to-item">
           <span class="icon">❤️</span> 3 lives — lose one per wrong answer
         </div>
-        <div class="how-to-item">
-          <span class="icon">⚡</span> Build a streak for extra glory
-        </div>
-        <div class="how-to-item">
-          <span class="icon">💡</span> Every answer explains the math
-        </div>
-        <div class="how-to-item">
-          <span class="icon">🏆</span> Earn a tier rating at the end
-        </div>
+        <div class="how-to-item"><span class="icon">⚡</span> Build a streak for extra glory</div>
+        <div class="how-to-item"><span class="icon">💡</span> Every answer explains the math</div>
+        <div class="how-to-item"><span class="icon">🏆</span> Earn a tier rating at the end</div>
       </div>
 
       <p class="unit-grid-label">Pick a unit to practice</p>
@@ -773,11 +838,7 @@
         </button>
       </div>
 
-      <button
-        class="boss-btn"
-        onclick="startGame('boss')"
-        aria-label="Boss Battle mixed mode"
-      >
+      <button class="boss-btn" onclick="startGame('boss')" aria-label="Boss Battle mixed mode">
         🔥 Boss Battle — Mixed (All Units)
       </button>
     </section>
@@ -785,17 +846,10 @@
     <!-- ══════════════════════════════════════
      SCREEN B: PLAY
 ══════════════════════════════════════ -->
-    <section
-      id="screen-play"
-      class="screen hidden"
-      role="main"
-      aria-live="polite"
-    >
+    <section id="screen-play" class="screen hidden" role="main" aria-live="polite">
       <!-- HUD -->
       <div class="hud" role="status" aria-label="Game status">
-        <div class="hud-hearts" id="hud-hearts" aria-label="Lives remaining">
-          ❤️❤️❤️
-        </div>
+        <div class="hud-hearts" id="hud-hearts" aria-label="Lives remaining">❤️❤️❤️</div>
         <div class="hud-score" id="hud-score">Score: 0</div>
         <div class="hud-streak" id="hud-streak">🔥 Streak: 0</div>
         <div class="hud-progress">
@@ -817,15 +871,24 @@
       <div class="q-card">
         <div class="q-unit-label" id="q-unit-label"></div>
         <p class="q-text" id="q-text"></p>
+        <div class="q-tools">
+          <button type="button" class="tool-btn" id="read-aloud-btn" onclick="readAloud()">
+            🔊 Read aloud
+          </button>
+          <button
+            type="button"
+            class="tool-btn"
+            id="lang-toggle-play"
+            onclick="toggleLang()"
+            aria-label="Switch language between English and Spanish"
+          >
+            🌐 Español
+          </button>
+        </div>
       </div>
 
       <!-- Choices -->
-      <div
-        class="choices"
-        id="choices"
-        role="group"
-        aria-label="Answer choices"
-      ></div>
+      <div class="choices" id="choices" role="group" aria-label="Answer choices"></div>
 
       <!-- Explanation -->
       <div class="explanation" id="explanation">
@@ -834,9 +897,7 @@
       </div>
 
       <!-- Next -->
-      <button class="next-btn" id="next-btn" onclick="nextQuestion()">
-        Next Question →
-      </button>
+      <button class="next-btn" id="next-btn" onclick="nextQuestion()">Next Question →</button>
     </section>
 
     <!-- ══════════════════════════════════════
@@ -844,14 +905,10 @@
 ══════════════════════════════════════ -->
     <section id="screen-results" class="screen hidden" role="main">
       <div class="results-hero">
-        <span
-          class="trophy"
-          id="result-trophy"
-          role="img"
-          aria-label="Trophy"
-        ></span>
+        <span class="trophy" id="result-trophy" role="img" aria-label="Trophy"></span>
         <h2 id="result-heading"></h2>
         <p class="tier-msg" id="tier-msg"></p>
+        <p class="best-line" id="best-line" aria-live="polite"></p>
       </div>
 
       <div class="stats-grid">
@@ -873,9 +930,7 @@
         <button class="r-btn primary" id="play-again-btn" onclick="playAgain()">
           🔄 Play Again
         </button>
-        <button class="r-btn secondary" onclick="goHome()">
-          🏠 Back to Home
-        </button>
+        <button class="r-btn secondary" onclick="goHome()">🏠 Back to Home</button>
       </div>
     </section>
 
@@ -893,17 +948,13 @@
       <h2>GAME OVER</h2>
       <p>You ran out of lives! Don't give up — every mistake is a lesson.</p>
       <div class="go-btns">
-        <button class="r-btn primary" onclick="playAgain()">
-          🔄 Try Again
-        </button>
+        <button class="r-btn primary" onclick="playAgain()">🔄 Try Again</button>
         <button class="r-btn secondary" onclick="goHome()">🏠 Home</button>
       </div>
     </div>
 
     <!-- Footer -->
-    <footer class="arc-footer">
-      Neft Teacher · Review Arcade · Grade 6 Math
-    </footer>
+    <footer class="arc-footer">Neft Teacher · Review Arcade · Grade 6 Math</footer>
 
     <script>
       /* ════════════════════════════════════════════════════════════════
@@ -916,58 +967,78 @@
         1: [
           {
             q: "What is the GCF of 36 and 48?",
+            q_es: "¿Cuál es el máximo común divisor (MCD) de 36 y 48?",
             choices: ["6", "12", "9", "18"],
             answer: 1,
             why: "Factors of 36: 1,2,3,4,6,9,12,18,36. Factors of 48: 1,2,3,4,6,8,12,16,24,48. The greatest common factor is 12.",
+            why_es:
+              "Factores de 36: 1,2,3,4,6,9,12,18,36. Factores de 48: 1,2,3,4,6,8,12,16,24,48. El máximo común divisor es 12.",
             topic: "Number Sense",
           },
           {
             q: "What is the LCM of 4 and 6?",
+            q_es: "¿Cuál es el mínimo común múltiplo (MCM) de 4 y 6?",
             choices: ["10", "24", "12", "8"],
             answer: 2,
             why: "Multiples of 4: 4,8,12,… Multiples of 6: 6,12,… The first common multiple is 12.",
+            why_es:
+              "Múltiplos de 4: 4,8,12,… Múltiplos de 6: 6,12,… El primer múltiplo común es 12.",
             topic: "Number Sense",
           },
           {
             q: "Calculate: 14.7 + 8.56",
+            q_es: "Calcula: 14.7 + 8.56",
             choices: ["22.26", "23.26", "21.16", "23.16"],
             answer: 1,
             why: "14.7 + 8.56: align decimal points → 14.70 + 8.56 = 23.26.",
+            why_es: "14.7 + 8.56: alinea los puntos decimales → 14.70 + 8.56 = 23.26.",
             topic: "Number Sense",
           },
           {
             q: "Calculate: 30.04 − 12.8",
+            q_es: "Calcula: 30.04 − 12.8",
             choices: ["18.44", "17.24", "17.44", "18.24"],
             answer: 1,
             why: "30.04 − 12.80 = 17.24. Borrow carefully in the hundredths: 4 − 0 = 4, then 0 − 8 requires borrowing, giving 24 − 80 across tens → 17.24.",
+            why_es:
+              "30.04 − 12.80 = 17.24. Pide prestado con cuidado: alinea los decimales y resta para obtener 17.24.",
             topic: "Number Sense",
           },
           {
             q: "252 ÷ 7 = ?",
+            q_es: "252 ÷ 7 = ?",
             choices: ["34", "36", "38", "42"],
             answer: 1,
             why: "7 × 36 = 252. Check: 7 × 30 = 210; 7 × 6 = 42; 210 + 42 = 252. ✓",
+            why_es: "7 × 36 = 252. Comprobación: 7 × 30 = 210; 7 × 6 = 42; 210 + 42 = 252. ✓",
             topic: "Number Sense",
           },
           {
             q: "What is the GCF of 24 and 60?",
+            q_es: "¿Cuál es el máximo común divisor (MCD) de 24 y 60?",
             choices: ["6", "4", "12", "8"],
             answer: 2,
             why: "Factors of 24: 1,2,3,4,6,8,12,24. Factors of 60: 1,2,3,4,5,6,10,12,15,20,30,60. GCF = 12.",
+            why_es:
+              "Factores de 24: 1,2,3,4,6,8,12,24. Factores de 60: 1,2,3,4,5,6,10,12,15,20,30,60. MCD = 12.",
             topic: "Number Sense",
           },
           {
             q: "What is the LCM of 8 and 12?",
+            q_es: "¿Cuál es el mínimo común múltiplo (MCM) de 8 y 12?",
             choices: ["16", "24", "36", "48"],
             answer: 1,
             why: "Multiples of 8: 8,16,24. Multiples of 12: 12,24. LCM = 24.",
+            why_es: "Múltiplos de 8: 8,16,24. Múltiplos de 12: 12,24. MCM = 24.",
             topic: "Number Sense",
           },
           {
             q: "A baker packs 576 cookies into boxes of 16. How many boxes does she fill?",
+            q_es: "Una panadera empaca 576 galletas en cajas de 16. ¿Cuántas cajas llena?",
             choices: ["34", "36", "38", "40"],
             answer: 1,
             why: "576 ÷ 16 = 36. Check: 16 × 36 = 16 × 30 + 16 × 6 = 480 + 96 = 576. ✓",
+            why_es: "576 ÷ 16 = 36. Comprobación: 16 × 36 = 16 × 30 + 16 × 6 = 480 + 96 = 576. ✓",
             topic: "Number Sense",
           },
         ],
@@ -976,58 +1047,77 @@
         2: [
           {
             q: "What is 3/4 ÷ 1/2?",
+            q_es: "¿Cuánto es 3/4 ÷ 1/2?",
             choices: ["3/8", "1½", "6/4", "3/2"],
             answer: 1,
             why: "Dividing by a fraction means multiply by its reciprocal: 3/4 × 2/1 = 6/4 = 3/2 = 1½.",
+            why_es:
+              "Dividir entre una fracción significa multiplicar por su recíproco: 3/4 × 2/1 = 6/4 = 3/2 = 1½.",
             topic: "Fraction Division",
           },
           {
             q: "What is 5 ÷ 1/3?",
+            q_es: "¿Cuánto es 5 ÷ 1/3?",
             choices: ["5/3", "15", "1⅔", "3/5"],
             answer: 1,
             why: "5 ÷ 1/3 = 5 × 3/1 = 15. Think: how many thirds fit in 5? Three thirds per whole × 5 = 15.",
+            why_es:
+              "5 ÷ 1/3 = 5 × 3/1 = 15. Piensa: ¿cuántos tercios caben en 5? Tres tercios por entero × 5 = 15.",
             topic: "Fraction Division",
           },
           {
             q: "What is 2/3 ÷ 4?",
+            q_es: "¿Cuánto es 2/3 ÷ 4?",
             choices: ["8/3", "2/12", "1/6", "6"],
             answer: 2,
             why: "2/3 ÷ 4 = 2/3 × 1/4 = 2/12 = 1/6.",
+            why_es: "2/3 ÷ 4 = 2/3 × 1/4 = 2/12 = 1/6.",
             topic: "Fraction Division",
           },
           {
             q: "A ribbon 3/5 m long is cut into pieces each 1/10 m. How many pieces?",
+            q_es: "Una cinta de 3/5 m de largo se corta en trozos de 1/10 m cada uno. ¿Cuántos trozos hay?",
             choices: ["3/50", "5", "6", "10"],
             answer: 2,
             why: "3/5 ÷ 1/10 = 3/5 × 10/1 = 30/5 = 6 pieces.",
+            why_es: "3/5 ÷ 1/10 = 3/5 × 10/1 = 30/5 = 6 trozos.",
             topic: "Fraction Division",
           },
           {
             q: "What is 7/8 ÷ 7/4?",
+            q_es: "¿Cuánto es 7/8 ÷ 7/4?",
             choices: ["1/2", "49/32", "2", "4/9"],
             answer: 0,
             why: "7/8 ÷ 7/4 = 7/8 × 4/7 = 28/56 = 1/2.",
+            why_es: "7/8 ÷ 7/4 = 7/8 × 4/7 = 28/56 = 1/2.",
             topic: "Fraction Division",
           },
           {
             q: "A recipe uses 2/3 cup of sugar. If you want to make 1/2 the recipe, how much sugar do you need?",
+            q_es: "Una receta usa 2/3 de taza de azúcar. Si quieres hacer 1/2 de la receta, ¿cuánta azúcar necesitas?",
             choices: ["1/3", "4/3", "3/4", "1/6"],
             answer: 0,
             why: "Half the recipe: 2/3 × 1/2 = 2/6 = 1/3 cup. (This is multiplication, a foundational step for fraction division sense.)",
+            why_es:
+              "La mitad de la receta: 2/3 × 1/2 = 2/6 = 1/3 de taza. (Esto es multiplicación, un paso fundamental para el sentido de la división de fracciones.)",
             topic: "Fraction Division",
           },
           {
             q: "What is 1/2 ÷ 3/8?",
+            q_es: "¿Cuánto es 1/2 ÷ 3/8?",
             choices: ["3/16", "1⅓", "4/3", "4"],
             answer: 1,
             why: "1/2 ÷ 3/8 = 1/2 × 8/3 = 8/6 = 4/3 = 1⅓.",
+            why_es: "1/2 ÷ 3/8 = 1/2 × 8/3 = 8/6 = 4/3 = 1⅓.",
             topic: "Fraction Division",
           },
           {
             q: "How many 2/5-cup servings are in 4 cups?",
+            q_es: "¿Cuántas porciones de 2/5 de taza hay en 4 tazas?",
             choices: ["8/5", "8", "10", "2"],
             answer: 2,
             why: "4 ÷ 2/5 = 4 × 5/2 = 20/2 = 10 servings.",
+            why_es: "4 ÷ 2/5 = 4 × 5/2 = 20/2 = 10 porciones.",
             topic: "Fraction Division",
           },
         ],
@@ -1036,58 +1126,76 @@
         3: [
           {
             q: "A car travels 150 miles in 3 hours. What is its unit rate in miles per hour?",
+            q_es: "Un carro recorre 150 millas en 3 horas. ¿Cuál es su tasa unitaria en millas por hora?",
             choices: ["30 mph", "45 mph", "50 mph", "60 mph"],
             answer: 2,
             why: "Unit rate = 150 miles ÷ 3 hours = 50 miles per hour.",
+            why_es: "Tasa unitaria = 150 millas ÷ 3 horas = 50 millas por hora.",
             topic: "Ratios & Rates",
           },
           {
             q: "A ratio of boys to girls is 3:5. If there are 15 boys, how many girls are there?",
+            q_es: "La razón de niños a niñas es 3:5. Si hay 15 niños, ¿cuántas niñas hay?",
             choices: ["9", "20", "25", "35"],
             answer: 2,
             why: "15 boys ÷ 3 = 5 groups. 5 groups × 5 girls = 25 girls.",
+            why_es: "15 niños ÷ 3 = 5 grupos. 5 grupos × 5 niñas = 25 niñas.",
             topic: "Ratios & Rates",
           },
           {
             q: "Store A: 8 oz for $2.40. Store B: 12 oz for $3.00. Which is the better deal?",
+            q_es: "Tienda A: 8 oz por $2.40. Tienda B: 12 oz por $3.00. ¿Cuál es la mejor oferta?",
             choices: ["Store A", "Store B", "They are the same", "Cannot tell"],
+            choices_es: ["Tienda A", "Tienda B", "Son iguales", "No se puede saber"],
             answer: 1,
             why: "Store A: $2.40 ÷ 8 = $0.30/oz. Store B: $3.00 ÷ 12 = $0.25/oz. Store B is cheaper per ounce.",
+            why_es:
+              "Tienda A: $2.40 ÷ 8 = $0.30/oz. Tienda B: $3.00 ÷ 12 = $0.25/oz. La Tienda B es más barata por onza.",
             topic: "Ratios & Rates",
           },
           {
             q: "A recipe uses 2 cups of flour for every 3 cups of sugar. How many cups of flour are needed for 9 cups of sugar?",
+            q_es: "Una receta usa 2 tazas de harina por cada 3 tazas de azúcar. ¿Cuántas tazas de harina se necesitan para 9 tazas de azúcar?",
             choices: ["4", "5", "6", "7"],
             answer: 2,
             why: "9 ÷ 3 = 3 groups. 3 groups × 2 cups flour = 6 cups flour.",
+            why_es: "9 ÷ 3 = 3 grupos. 3 grupos × 2 tazas de harina = 6 tazas de harina.",
             topic: "Ratios & Rates",
           },
           {
             q: "Which ratio is equivalent to 4:10?",
+            q_es: "¿Qué razón es equivalente a 4:10?",
             choices: ["1:2", "2:5", "8:16", "3:8"],
             answer: 1,
             why: "4:10 simplified by dividing both by 2 → 2:5.",
+            why_es: "4:10 simplificado dividiendo ambos entre 2 → 2:5.",
             topic: "Ratios & Rates",
           },
           {
             q: "A printer prints 48 pages in 4 minutes. How many pages per minute?",
+            q_es: "Una impresora imprime 48 páginas en 4 minutos. ¿Cuántas páginas por minuto?",
             choices: ["10", "11", "12", "14"],
             answer: 2,
             why: "48 ÷ 4 = 12 pages per minute.",
+            why_es: "48 ÷ 4 = 12 páginas por minuto.",
             topic: "Ratios & Rates",
           },
           {
             q: "The ratio of red to blue marbles is 5:3. There are 24 blue marbles. How many red marbles?",
+            q_es: "La razón de canicas rojas a azules es 5:3. Hay 24 canicas azules. ¿Cuántas canicas rojas hay?",
             choices: ["30", "40", "45", "48"],
             answer: 1,
             why: "24 ÷ 3 = 8 groups. 8 × 5 = 40 red marbles.",
+            why_es: "24 ÷ 3 = 8 grupos. 8 × 5 = 40 canicas rojas.",
             topic: "Ratios & Rates",
           },
           {
             q: "A faucet drips 6 gallons every 2 hours. At this rate, how many gallons drip in 7 hours?",
+            q_es: "Una llave gotea 6 galones cada 2 horas. A este ritmo, ¿cuántos galones gotean en 7 horas?",
             choices: ["18", "21", "24", "42"],
             answer: 1,
             why: "Unit rate = 6 ÷ 2 = 3 gal/hr. 3 × 7 = 21 gallons.",
+            why_es: "Tasa unitaria = 6 ÷ 2 = 3 gal/h. 3 × 7 = 21 galones.",
             topic: "Ratios & Rates",
           },
         ],
@@ -1096,58 +1204,74 @@
         4: [
           {
             q: "What is 25% of 80?",
+            q_es: "¿Cuánto es el 25% de 80?",
             choices: ["15", "20", "25", "40"],
             answer: 1,
             why: "25% = 0.25. 0.25 × 80 = 20. (Or: 80 ÷ 4 = 20.)",
+            why_es: "25% = 0.25. 0.25 × 80 = 20. (O: 80 ÷ 4 = 20.)",
             topic: "Percents",
           },
           {
             q: "A jacket costs $60 and is on sale 15% off. What is the sale price?",
+            q_es: "Una chaqueta cuesta $60 y tiene 15% de descuento. ¿Cuál es el precio de oferta?",
             choices: ["$45.00", "$50.00", "$51.00", "$54.00"],
             answer: 2,
             why: "Discount = 15% × $60 = 0.15 × 60 = $9. Sale price = $60 − $9 = $51.",
+            why_es: "Descuento = 15% × $60 = 0.15 × 60 = $9. Precio de oferta = $60 − $9 = $51.",
             topic: "Percents",
           },
           {
             q: "18 is what percent of 72?",
+            q_es: "¿18 es qué porcentaje de 72?",
             choices: ["4%", "18%", "25%", "40%"],
             answer: 2,
             why: "18 ÷ 72 = 0.25 = 25%.",
+            why_es: "18 ÷ 72 = 0.25 = 25%.",
             topic: "Percents",
           },
           {
             q: "A price goes from $40 to $50. What is the percent increase?",
+            q_es: "Un precio sube de $40 a $50. ¿Cuál es el porcentaje de aumento?",
             choices: ["10%", "20%", "25%", "30%"],
             answer: 2,
             why: "Increase = $10. Percent increase = 10/40 = 0.25 = 25%.",
+            why_es: "Aumento = $10. Porcentaje de aumento = 10/40 = 0.25 = 25%.",
             topic: "Percents",
           },
           {
             q: "12 oz of juice costs $1.80. What is the unit price per ounce?",
+            q_es: "12 oz de jugo cuestan $1.80. ¿Cuál es el precio unitario por onza?",
             choices: ["$0.12", "$0.15", "$0.18", "$0.20"],
             answer: 1,
             why: "$1.80 ÷ 12 = $0.15 per ounce.",
+            why_es: "$1.80 ÷ 12 = $0.15 por onza.",
             topic: "Percents",
           },
           {
             q: "A student got 36 out of 40 questions correct. What percent is that?",
+            q_es: "Un estudiante contestó 36 de 40 preguntas correctamente. ¿Qué porcentaje es eso?",
             choices: ["36%", "80%", "90%", "94%"],
             answer: 2,
             why: "36 ÷ 40 = 0.9 = 90%.",
+            why_es: "36 ÷ 40 = 0.9 = 90%.",
             topic: "Percents",
           },
           {
             q: "What is 6% sales tax on a $35 item?",
+            q_es: "¿Cuánto es el 6% de impuesto sobre un artículo de $35?",
             choices: ["$1.80", "$2.10", "$2.45", "$3.00"],
             answer: 1,
             why: "6% × $35 = 0.06 × 35 = $2.10.",
+            why_es: "6% × $35 = 0.06 × 35 = $2.10.",
             topic: "Percents",
           },
           {
             q: "30% of what number is 12?",
+            q_es: "¿El 30% de qué número es 12?",
             choices: ["3.6", "36", "40", "42"],
             answer: 2,
             why: "12 ÷ 0.30 = 40. Check: 30% × 40 = 12. ✓",
+            why_es: "12 ÷ 0.30 = 40. Comprobación: 30% × 40 = 12. ✓",
             topic: "Percents",
           },
         ],
@@ -1156,63 +1280,74 @@
         5: [
           {
             q: "A parallelogram has base 9 cm and height 5 cm. What is its area?",
+            q_es: "Un paralelogramo tiene base de 9 cm y altura de 5 cm. ¿Cuál es su área?",
             choices: ["14 cm²", "28 cm²", "40 cm²", "45 cm²"],
             answer: 3,
             why: "A = b × h = 9 × 5 = 45 cm².",
+            why_es: "A = b × h = 9 × 5 = 45 cm².",
             topic: "Area",
           },
           {
             q: "A triangle has base 10 m and height 6 m. What is its area?",
+            q_es: "Un triángulo tiene base de 10 m y altura de 6 m. ¿Cuál es su área?",
             choices: ["30 m²", "60 m²", "16 m²", "20 m²"],
             answer: 0,
             why: "A = ½ × b × h = ½ × 10 × 6 = 30 m².",
+            why_es: "A = ½ × b × h = ½ × 10 × 6 = 30 m².",
             topic: "Area",
           },
           {
             q: "A trapezoid has parallel bases 4 ft and 8 ft, and height 5 ft. What is its area?",
+            q_es: "Un trapecio tiene bases paralelas de 4 ft y 8 ft, y altura de 5 ft. ¿Cuál es su área?",
             choices: ["20 ft²", "30 ft²", "40 ft²", "60 ft²"],
             answer: 1,
             why: "A = ½(b₁ + b₂) × h = ½(4 + 8) × 5 = ½ × 12 × 5 = 30 ft².",
+            why_es: "A = ½(b₁ + b₂) × h = ½(4 + 8) × 5 = ½ × 12 × 5 = 30 ft².",
             topic: "Area",
           },
           {
             q: "A parallelogram has area 56 cm² and height 7 cm. What is its base?",
+            q_es: "Un paralelogramo tiene un área de 56 cm² y altura de 7 cm. ¿Cuál es su base?",
             choices: ["4 cm", "6 cm", "7 cm", "8 cm"],
             answer: 3,
             why: "A = b × h → b = A ÷ h = 56 ÷ 7 = 8 cm.",
+            why_es: "A = b × h → b = A ÷ h = 56 ÷ 7 = 8 cm.",
             topic: "Area",
           },
           {
             q: "A triangle has area 40 in² and base 10 in. What is its height?",
+            q_es: "Un triángulo tiene un área de 40 in² y base de 10 in. ¿Cuál es su altura?",
             choices: ["4 in", "8 in", "20 in", "400 in"],
             answer: 1,
             why: "A = ½bh → h = 2A ÷ b = 80 ÷ 10 = 8 in.",
+            why_es: "A = ½bh → h = 2A ÷ b = 80 ÷ 10 = 8 in.",
             topic: "Area",
           },
           {
             q: "A trapezoid has bases 6 m and 10 m, and area 64 m². What is its height?",
+            q_es: "Un trapecio tiene bases de 6 m y 10 m, y un área de 64 m². ¿Cuál es su altura?",
             choices: ["4 m", "8 m", "10 m", "16 m"],
             answer: 1,
             why: "A = ½(b₁+b₂)×h → 64 = ½(16)h = 8h → h = 8 m.",
+            why_es: "A = ½(b₁+b₂)×h → 64 = ½(16)h = 8h → h = 8 m.",
             topic: "Area",
           },
           {
             q: "Which formula gives the area of a triangle?",
-            choices: [
-              "A = b × h",
-              "A = ½ × b × h",
-              "A = ½(b₁+b₂)×h",
-              "A = l × w",
-            ],
+            q_es: "¿Qué fórmula da el área de un triángulo?",
+            choices: ["A = b × h", "A = ½ × b × h", "A = ½(b₁+b₂)×h", "A = l × w"],
             answer: 1,
             why: "The area formula for a triangle is A = ½ × base × height.",
+            why_es: "La fórmula del área de un triángulo es A = ½ × base × altura.",
             topic: "Area",
           },
           {
             q: "A parallelogram has base 12 cm and height 3.5 cm. What is its area?",
+            q_es: "Un paralelogramo tiene base de 12 cm y altura de 3.5 cm. ¿Cuál es su área?",
             choices: ["36 cm²", "38 cm²", "40 cm²", "42 cm²"],
             answer: 3,
             why: "A = b × h = 12 × 3.5 = 42 cm².",
+            why_es: "A = b × h = 12 × 3.5 = 42 cm².",
             topic: "Area",
           },
         ],
@@ -1221,58 +1356,75 @@
         6: [
           {
             q: "Evaluate 3²  + 4².",
+            q_es: "Evalúa 3² + 4².",
             choices: ["14", "25", "49", "7²"],
             answer: 1,
             why: "3² = 9, 4² = 16. 9 + 16 = 25.",
+            why_es: "3² = 9, 4² = 16. 9 + 16 = 25.",
             topic: "Expressions",
           },
           {
             q: "Evaluate 2³ × 5 − 10.",
+            q_es: "Evalúa 2³ × 5 − 10.",
             choices: ["30", "40", "50", "70"],
             answer: 0,
             why: "2³ = 8. 8 × 5 = 40. 40 − 10 = 30.",
+            why_es: "2³ = 8. 8 × 5 = 40. 40 − 10 = 30.",
             topic: "Expressions",
           },
           {
             q: "Use the distributive property: 4(x + 7) = ?",
+            q_es: "Usa la propiedad distributiva: 4(x + 7) = ?",
             choices: ["4x + 7", "x + 28", "4x + 28", "4x − 28"],
             answer: 2,
             why: "Distribute 4: 4 × x + 4 × 7 = 4x + 28.",
+            why_es: "Distribuye el 4: 4 × x + 4 × 7 = 4x + 28.",
             topic: "Expressions",
           },
           {
             q: "Evaluate 5n − 3 when n = 4.",
+            q_es: "Evalúa 5n − 3 cuando n = 4.",
             choices: ["7", "14", "17", "23"],
             answer: 2,
             why: "5(4) − 3 = 20 − 3 = 17.",
+            why_es: "5(4) − 3 = 20 − 3 = 17.",
             topic: "Expressions",
           },
           {
             q: "Which expression is equivalent to 3(2x − 5)?",
+            q_es: "¿Qué expresión es equivalente a 3(2x − 5)?",
             choices: ["6x − 5", "6x − 15", "2x − 15", "6x + 15"],
             answer: 1,
             why: "3 × 2x = 6x and 3 × (−5) = −15, giving 6x − 15.",
+            why_es: "3 × 2x = 6x y 3 × (−5) = −15, dando 6x − 15.",
             topic: "Expressions",
           },
           {
             q: "What is the value of 6² − 10?",
+            q_es: "¿Cuál es el valor de 6² − 10?",
             choices: ["16", "26", "32", "46"],
             answer: 1,
             why: "6² = 36. 36 − 10 = 26.",
+            why_es: "6² = 36. 36 − 10 = 26.",
             topic: "Expressions",
           },
           {
             q: "Evaluate (4 + 3)² ÷ 7.",
+            q_es: "Evalúa (4 + 3)² ÷ 7.",
             choices: ["5", "7", "49", "14"],
             answer: 1,
             why: "(4+3)² = 7² = 49. 49 ÷ 7 = 7.",
+            why_es: "(4+3)² = 7² = 49. 49 ÷ 7 = 7.",
             topic: "Expressions",
           },
           {
             q: "Which expression has a value of 64 when x = 2?",
+            q_es: "¿Qué expresión tiene un valor de 64 cuando x = 2?",
             choices: ["x⁴", "6x + 4", "x³ + 8", "2x⁵"],
             answer: 3,
             why: "2x⁵ = 2 × 2⁵ = 2 × 32 = 64. Check: x⁴ = 16, 6(2)+4 = 16, x³+8 = 16. Only 2x⁵ = 64.",
+            why_es:
+              "2x⁵ = 2 × 2⁵ = 2 × 32 = 64. Comprobación: x⁴ = 16, 6(2)+4 = 16, x³+8 = 16. Solo 2x⁵ = 64.",
             topic: "Expressions",
           },
         ],
@@ -1281,73 +1433,78 @@
         7: [
           {
             q: "What is the absolute value of −15?",
+            q_es: "¿Cuál es el valor absoluto de −15?",
             choices: ["−15", "1/15", "15", "−1/15"],
             answer: 2,
             why: "|−15| = 15. Absolute value is always the non-negative distance from 0.",
+            why_es: "|−15| = 15. El valor absoluto es siempre la distancia no negativa desde 0.",
             topic: "Integers & Coordinates",
           },
           {
             q: "Order these integers from least to greatest: −3, 5, −8, 0, 2.",
-            choices: [
-              "−8, −3, 0, 2, 5",
-              "0, 2, 5, −3, −8",
-              "5, 2, 0, −3, −8",
-              "−3, −8, 0, 2, 5",
-            ],
+            q_es: "Ordena estos enteros de menor a mayor: −3, 5, −8, 0, 2.",
+            choices: ["−8, −3, 0, 2, 5", "0, 2, 5, −3, −8", "5, 2, 0, −3, −8", "−3, −8, 0, 2, 5"],
             answer: 0,
             why: "On a number line from left (least) to right (greatest): −8, −3, 0, 2, 5.",
+            why_es:
+              "En una recta numérica de izquierda (menor) a derecha (mayor): −8, −3, 0, 2, 5.",
             topic: "Integers & Coordinates",
           },
           {
             q: "Point (−4, 3) is in which quadrant?",
-            choices: [
-              "Quadrant I",
-              "Quadrant II",
-              "Quadrant III",
-              "Quadrant IV",
-            ],
+            q_es: "¿En qué cuadrante está el punto (−4, 3)?",
+            choices: ["Quadrant I", "Quadrant II", "Quadrant III", "Quadrant IV"],
+            choices_es: ["Cuadrante I", "Cuadrante II", "Cuadrante III", "Cuadrante IV"],
             answer: 1,
             why: "Quadrant II: x is negative, y is positive. (−4, 3) fits this.",
+            why_es: "Cuadrante II: x es negativo, y es positivo. (−4, 3) cumple esto.",
             topic: "Integers & Coordinates",
           },
           {
             q: "Which is farther from 0 on a number line: −9 or 6?",
+            q_es: "¿Cuál está más lejos de 0 en una recta numérica: −9 o 6?",
             choices: ["6", "−9", "They are the same distance", "Cannot tell"],
+            choices_es: ["6", "−9", "Están a la misma distancia", "No se puede saber"],
             answer: 1,
             why: "|−9| = 9 and |6| = 6. Since 9 > 6, −9 is farther from 0.",
+            why_es: "|−9| = 9 y |6| = 6. Como 9 > 6, −9 está más lejos de 0.",
             topic: "Integers & Coordinates",
           },
           {
             q: "What are the coordinates of a point reflected over the x-axis from (3, −5)?",
+            q_es: "¿Cuáles son las coordenadas de un punto reflejado sobre el eje x desde (3, −5)?",
             choices: ["(−3, −5)", "(3, 5)", "(−3, 5)", "(5, 3)"],
             answer: 1,
             why: "Reflecting over the x-axis flips the sign of the y-coordinate: (3, −5) → (3, 5).",
+            why_es: "Reflejar sobre el eje x cambia el signo de la coordenada y: (3, −5) → (3, 5).",
             topic: "Integers & Coordinates",
           },
           {
             q: "A submarine is at −120 ft. A bird is at +45 ft. What is the difference in elevation?",
+            q_es: "Un submarino está a −120 ft. Un pájaro está a +45 ft. ¿Cuál es la diferencia de elevación?",
             choices: ["75 ft", "120 ft", "165 ft", "−165 ft"],
             answer: 2,
             why: "Difference = 45 − (−120) = 45 + 120 = 165 ft.",
+            why_es: "Diferencia = 45 − (−120) = 45 + 120 = 165 ft.",
             topic: "Integers & Coordinates",
           },
           {
             q: "Which point lies on the y-axis?",
+            q_es: "¿Qué punto está sobre el eje y?",
             choices: ["(0, 7)", "(7, 0)", "(3, 4)", "(−3, −4)"],
             answer: 0,
             why: "Points on the y-axis have x = 0, so (0, 7) is on the y-axis.",
+            why_es: "Los puntos sobre el eje y tienen x = 0, así que (0, 7) está sobre el eje y.",
             topic: "Integers & Coordinates",
           },
           {
             q: "Point (5, −2) is in which quadrant?",
-            choices: [
-              "Quadrant I",
-              "Quadrant II",
-              "Quadrant III",
-              "Quadrant IV",
-            ],
+            q_es: "¿En qué cuadrante está el punto (5, −2)?",
+            choices: ["Quadrant I", "Quadrant II", "Quadrant III", "Quadrant IV"],
+            choices_es: ["Cuadrante I", "Cuadrante II", "Cuadrante III", "Cuadrante IV"],
             answer: 3,
             why: "Quadrant IV: x is positive, y is negative. (5, −2) fits.",
+            why_es: "Cuadrante IV: x es positivo, y es negativo. (5, −2) cumple.",
             topic: "Integers & Coordinates",
           },
         ],
@@ -1356,58 +1513,75 @@
         8: [
           {
             q: "Solve: x + 9 = 23.",
+            q_es: "Resuelve: x + 9 = 23.",
             choices: ["x = 14", "x = 32", "x = 13", "x = 12"],
             answer: 0,
             why: "Subtract 9 from both sides: x = 23 − 9 = 14.",
+            why_es: "Resta 9 de ambos lados: x = 23 − 9 = 14.",
             topic: "Equations & Inequalities",
           },
           {
             q: "Solve: 4m = 52.",
+            q_es: "Resuelve: 4m = 52.",
             choices: ["m = 12", "m = 13", "m = 48", "m = 56"],
             answer: 1,
             why: "Divide both sides by 4: m = 52 ÷ 4 = 13.",
+            why_es: "Divide ambos lados entre 4: m = 52 ÷ 4 = 13.",
             topic: "Equations & Inequalities",
           },
           {
             q: "Solve: y − 7 = 15.",
+            q_es: "Resuelve: y − 7 = 15.",
             choices: ["y = 8", "y = 22", "y = 105", "y = 2"],
             answer: 1,
             why: "Add 7 to both sides: y = 15 + 7 = 22.",
+            why_es: "Suma 7 a ambos lados: y = 15 + 7 = 22.",
             topic: "Equations & Inequalities",
           },
           {
             q: "Solve: n/5 = 9.",
+            q_es: "Resuelve: n/5 = 9.",
             choices: ["n = 4", "n = 14", "n = 45", "n = 1.8"],
             answer: 2,
             why: "Multiply both sides by 5: n = 9 × 5 = 45.",
+            why_es: "Multiplica ambos lados por 5: n = 9 × 5 = 45.",
             topic: "Equations & Inequalities",
           },
           {
             q: "Which value of x makes x + 3 < 10 true?",
+            q_es: "¿Qué valor de x hace verdadera x + 3 < 10?",
             choices: ["x = 8", "x = 7", "x = 6", "x = 10"],
             answer: 2,
             why: "6 + 3 = 9 < 10. ✓  Check: 7+3=10 (not less than), 8+3=11 (too big).",
+            why_es:
+              "6 + 3 = 9 < 10. ✓  Comprobación: 7+3=10 (no es menor), 8+3=11 (demasiado grande).",
             topic: "Equations & Inequalities",
           },
           {
             q: "Solve: 6k = 42.",
+            q_es: "Resuelve: 6k = 42.",
             choices: ["k = 6", "k = 7", "k = 8", "k = 36"],
             answer: 1,
             why: "k = 42 ÷ 6 = 7.",
+            why_es: "k = 42 ÷ 6 = 7.",
             topic: "Equations & Inequalities",
           },
           {
             q: "Write an equation: A number decreased by 11 equals 25. Solve it.",
+            q_es: "Escribe una ecuación: Un número disminuido en 11 es igual a 25. Resuélvela.",
             choices: ["n = 14", "n = 36", "n = 275", "n = 44"],
             answer: 1,
             why: "n − 11 = 25 → n = 25 + 11 = 36.",
+            why_es: "n − 11 = 25 → n = 25 + 11 = 36.",
             topic: "Equations & Inequalities",
           },
           {
             q: "Solve: t/3 = 7.",
+            q_es: "Resuelve: t/3 = 7.",
             choices: ["t = 4", "t = 10", "t = 21", "t = 2.3"],
             answer: 2,
             why: "Multiply both sides by 3: t = 7 × 3 = 21.",
+            why_es: "Multiplica ambos lados por 3: t = 7 × 3 = 21.",
             topic: "Equations & Inequalities",
           },
         ],
@@ -1416,34 +1590,43 @@
         9: [
           {
             q: "A table shows: x = 1 → y = 4; x = 2 → y = 8; x = 3 → y = 12. What is the constant of proportionality k?",
+            q_es: "Una tabla muestra: x = 1 → y = 4; x = 2 → y = 8; x = 3 → y = 12. ¿Cuál es la constante de proporcionalidad k?",
             choices: ["2", "3", "4", "8"],
             answer: 2,
             why: "k = y ÷ x = 4 ÷ 1 = 4. The rule is y = 4x.",
+            why_es: "k = y ÷ x = 4 ÷ 1 = 4. La regla es y = 4x.",
             topic: "Two-Variable Relationships",
           },
           {
             q: "Using y = 4x, what is y when x = 7?",
+            q_es: "Usando y = 4x, ¿cuánto es y cuando x = 7?",
             choices: ["11", "28", "47", "74"],
             answer: 1,
             why: "y = 4(7) = 28.",
+            why_es: "y = 4(7) = 28.",
             topic: "Two-Variable Relationships",
           },
           {
             q: "A car uses 2 gallons of gas every 50 miles (y = miles, x = gallons). What is k?",
+            q_es: "Un carro usa 2 galones de gasolina cada 50 millas (y = millas, x = galones). ¿Cuánto es k?",
             choices: ["2", "25", "50", "100"],
             answer: 1,
             why: "k = y/x = 50/2 = 25 miles per gallon.",
+            why_es: "k = y/x = 50/2 = 25 millas por galón.",
             topic: "Two-Variable Relationships",
           },
           {
             q: "Using y = 25x, how many miles on 8 gallons?",
+            q_es: "Usando y = 25x, ¿cuántas millas con 8 galones?",
             choices: ["175 mi", "200 mi", "225 mi", "250 mi"],
             answer: 1,
             why: "y = 25 × 8 = 200 miles.",
+            why_es: "y = 25 × 8 = 200 millas.",
             topic: "Two-Variable Relationships",
           },
           {
             q: "Which table shows a proportional relationship y = 3x?",
+            q_es: "¿Qué tabla muestra una relación proporcional y = 3x?",
             choices: [
               "x:1,2,3 → y:3,6,9",
               "x:1,2,3 → y:4,7,10",
@@ -1452,32 +1635,48 @@
             ],
             answer: 0,
             why: "y = 3x gives y = 3, 6, 9 for x = 1, 2, 3. All other options don't maintain a constant ratio.",
+            why_es:
+              "y = 3x da y = 3, 6, 9 para x = 1, 2, 3. Las demás opciones no mantienen una razón constante.",
             topic: "Two-Variable Relationships",
           },
           {
             q: "The relationship between hours (x) and pages read (y) is y = 15x. How long to read 90 pages?",
+            q_es: "La relación entre horas (x) y páginas leídas (y) es y = 15x. ¿Cuánto tarda en leer 90 páginas?",
             choices: ["4 hours", "5 hours", "6 hours", "7 hours"],
+            choices_es: ["4 horas", "5 horas", "6 horas", "7 horas"],
             answer: 2,
             why: "90 = 15x → x = 90 ÷ 15 = 6 hours.",
+            why_es: "90 = 15x → x = 90 ÷ 15 = 6 horas.",
             topic: "Two-Variable Relationships",
           },
           {
             q: "If y = kx and the point (4, 20) is on the line, what is k?",
+            q_es: "Si y = kx y el punto (4, 20) está sobre la recta, ¿cuánto es k?",
             choices: ["4", "5", "16", "80"],
             answer: 1,
             why: "k = y ÷ x = 20 ÷ 4 = 5.",
+            why_es: "k = y ÷ x = 20 ÷ 4 = 5.",
             topic: "Two-Variable Relationships",
           },
           {
             q: "A graph passes through (0,0) and (3,12). Does it show a proportional relationship?",
+            q_es: "Una gráfica pasa por (0,0) y (3,12). ¿Muestra una relación proporcional?",
             choices: [
               "Yes, because it passes through the origin",
               "No, because 12 ≠ 3",
               "Yes, only if it's a straight line not through the origin",
               "No, proportional graphs are never straight",
             ],
+            choices_es: [
+              "Sí, porque pasa por el origen",
+              "No, porque 12 ≠ 3",
+              "Sí, solo si es una línea recta que no pasa por el origen",
+              "No, las gráficas proporcionales nunca son rectas",
+            ],
             answer: 0,
             why: "A proportional relationship is a straight line through the origin (0,0). This graph qualifies.",
+            why_es:
+              "Una relación proporcional es una línea recta que pasa por el origen (0,0). Esta gráfica cumple.",
             topic: "Two-Variable Relationships",
           },
         ],
@@ -1486,63 +1685,74 @@
         10: [
           {
             q: "A rectangular prism is 5 cm long, 3 cm wide, and 4 cm tall. What is its volume?",
+            q_es: "Un prisma rectangular mide 5 cm de largo, 3 cm de ancho y 4 cm de alto. ¿Cuál es su volumen?",
             choices: ["12 cm³", "47 cm³", "60 cm³", "94 cm³"],
             answer: 2,
             why: "V = l × w × h = 5 × 3 × 4 = 60 cm³.",
+            why_es: "V = l × w × h = 5 × 3 × 4 = 60 cm³.",
             topic: "Volume & Surface Area",
           },
           {
             q: "A box is 8 in × 6 in × 2 in. What is its surface area?",
+            q_es: "Una caja mide 8 in × 6 in × 2 in. ¿Cuál es su área de superficie?",
             choices: ["96 in²", "152 in²", "192 in²", "288 in²"],
             answer: 1,
             why: "SA = 2(lw + lh + wh) = 2(48 + 16 + 12) = 2(76) = 152 in².",
+            why_es: "SA = 2(lw + lh + wh) = 2(48 + 16 + 12) = 2(76) = 152 in².",
             topic: "Volume & Surface Area",
           },
           {
             q: "A cube has side length 4 cm. What is its volume?",
+            q_es: "Un cubo tiene lados de 4 cm. ¿Cuál es su volumen?",
             choices: ["16 cm³", "24 cm³", "48 cm³", "64 cm³"],
             answer: 3,
             why: "V = s³ = 4³ = 64 cm³.",
+            why_es: "V = s³ = 4³ = 64 cm³.",
             topic: "Volume & Surface Area",
           },
           {
             q: "A fish tank is 30 cm × 15 cm × 20 cm. How many cubic cm of water does it hold?",
+            q_es: "Una pecera mide 30 cm × 15 cm × 20 cm. ¿Cuántos cm cúbicos de agua contiene?",
             choices: ["650 cm³", "9,000 cm³", "4,500 cm³", "6,000 cm³"],
             answer: 1,
             why: "V = 30 × 15 × 20 = 9,000 cm³.",
+            why_es: "V = 30 × 15 × 20 = 9,000 cm³.",
             topic: "Volume & Surface Area",
           },
           {
             q: "A cube has side length 3 in. What is its surface area?",
+            q_es: "Un cubo tiene lados de 3 in. ¿Cuál es su área de superficie?",
             choices: ["18 in²", "27 in²", "54 in²", "81 in²"],
             answer: 2,
             why: "SA = 6s² = 6 × 9 = 54 in².",
+            why_es: "SA = 6s² = 6 × 9 = 54 in².",
             topic: "Volume & Surface Area",
           },
           {
             q: "A rectangular prism has volume 120 cm³, length 10 cm, and width 4 cm. What is its height?",
+            q_es: "Un prisma rectangular tiene un volumen de 120 cm³, largo de 10 cm y ancho de 4 cm. ¿Cuál es su altura?",
             choices: ["2 cm", "3 cm", "4 cm", "12 cm"],
             answer: 1,
             why: "V = lwh → h = V ÷ (lw) = 120 ÷ (10 × 4) = 120 ÷ 40 = 3 cm.",
+            why_es: "V = lwh → h = V ÷ (lw) = 120 ÷ (10 × 4) = 120 ÷ 40 = 3 cm.",
             topic: "Volume & Surface Area",
           },
           {
             q: "Which formula gives the surface area of a rectangular prism?",
-            choices: [
-              "SA = l × w × h",
-              "SA = 2(lw + lh + wh)",
-              "SA = l + w + h",
-              "SA = 6lw",
-            ],
+            q_es: "¿Qué fórmula da el área de superficie de un prisma rectangular?",
+            choices: ["SA = l × w × h", "SA = 2(lw + lh + wh)", "SA = l + w + h", "SA = 6lw"],
             answer: 1,
             why: "Surface area = 2(lw + lh + wh) — this accounts for all 6 faces in 3 pairs.",
+            why_es: "Área de superficie = 2(lw + lh + wh) — esto cuenta las 6 caras en 3 pares.",
             topic: "Volume & Surface Area",
           },
           {
             q: "A gift box is 12 cm × 10 cm × 5 cm. How much wrapping paper (surface area) is needed?",
+            q_es: "Una caja de regalo mide 12 cm × 10 cm × 5 cm. ¿Cuánto papel de envolver (área de superficie) se necesita?",
             choices: ["600 cm²", "700 cm²", "460 cm²", "940 cm²"],
             answer: 2,
             why: "SA = 2(12×10 + 12×5 + 10×5) = 2(120 + 60 + 50) = 2(230) = 460 cm².",
+            why_es: "SA = 2(12×10 + 12×5 + 10×5) = 2(120 + 60 + 50) = 2(230) = 460 cm².",
             topic: "Volume & Surface Area",
           },
         ],
@@ -1575,6 +1785,189 @@
         return a;
       }
 
+      /* ── Language (EN/ES) ──────────────────────────────────────────────── */
+      let lang = "en";
+      try {
+        const sv = localStorage.getItem("ra-lang");
+        if (sv === "es" || sv === "en") lang = sv;
+      } catch (e) {}
+
+      // Localized field accessor: returns the *_es field in Spanish, else English.
+      function loc(q, base) {
+        if (lang === "es" && q && q[base + "_es"]) return q[base + "_es"];
+        return q ? q[base] : "";
+      }
+      // Localized choices array (falls back to English choices).
+      function locChoices(q) {
+        return lang === "es" && q && q.choices_es ? q.choices_es : q.choices;
+      }
+
+      function updateLangButtons() {
+        const label = lang === "es" ? "🌐 English" : "🌐 Español";
+        ["lang-toggle", "lang-toggle-play"].forEach((id) => {
+          const b = document.getElementById(id);
+          if (b) b.textContent = label;
+        });
+      }
+
+      function toggleLang() {
+        lang = lang === "es" ? "en" : "es";
+        try {
+          localStorage.setItem("ra-lang", lang);
+        } catch (e) {}
+        updateLangButtons();
+        // Swap visible question text instantly if a game is in progress.
+        const playing =
+          !document.getElementById("screen-play").classList.contains("hidden") &&
+          state.queue.length;
+        if (playing) {
+          if (!state.answered) {
+            renderQuestion();
+          } else {
+            const q = state.queue[state.idx];
+            document.getElementById("q-text").textContent = loc(q, "q");
+            document.getElementById("why-text").textContent = loc(q, "why");
+          }
+        }
+      }
+
+      /* ── Screen-reader live region + read-aloud ────────────────────────── */
+      function srSay(msg) {
+        const el = document.getElementById("ra-sr");
+        if (el) el.textContent = msg;
+      }
+
+      // Read text aloud with the Web Speech API (guarded; silent if unavailable).
+      function speak(text, textLang) {
+        try {
+          if (window.NT_MUTED) return;
+          const synth = window.speechSynthesis;
+          if (!synth || !text) return;
+          synth.cancel();
+          const u = new SpeechSynthesisUtterance(String(text));
+          u.lang = (textLang || lang) === "es" ? "es-ES" : "en-US";
+          u.rate = 0.95;
+          synth.speak(u);
+        } catch (e) {}
+      }
+
+      // Read the current stem + its choices aloud in the active language.
+      function readAloud() {
+        const q = state.queue[state.idx];
+        if (!q) return;
+        const stem = loc(q, "q");
+        const choices = locChoices(q) || [];
+        speak(stem + ". " + choices.join(". "), lang);
+      }
+
+      /* ── Adaptivity: play recent-misconception topics first ────────────── */
+      // Stable partition — questions whose topic matches this device's recent
+      // top misconceptions (via NTSignal) move to the front; nothing is dropped.
+      // Falls back to the given order when NTSignal/history is absent.
+      function applyMisconceptionOrder(arr) {
+        try {
+          if (window.NTSignal && window.NTSignal.topMisconceptions) {
+            const hot = window.NTSignal.topMisconceptions(5).map((m) => m.tag);
+            if (hot.length) {
+              const hits = [];
+              const rest = [];
+              arr.forEach((q) => {
+                (hot.indexOf(q.topic) !== -1 ? hits : rest).push(q);
+              });
+              if (hits.length) return hits.concat(rest);
+            }
+          }
+        } catch (e) {}
+        return arr;
+      }
+
+      /* ── Telemetry: per-answer learning signal (device-local + /api/scores) */
+      // Mirrors practice-arcade's paSignal. Never lets a failure break gameplay.
+      function raSignal(q, correct) {
+        if (!q) return;
+        const unit = q.unit || state.unitMode;
+        try {
+          if (window.NTSignal && window.NTSignal.record) {
+            window.NTSignal.record({
+              standard: "",
+              correct: !!correct,
+              misconceptionTag: q.topic || undefined,
+              lesson: "unit-" + unit,
+            });
+          }
+        } catch (e) {}
+        try {
+          if (typeof fetch === "function") {
+            fetch("/api/scores", {
+              method: "POST",
+              keepalive: true,
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify({
+                gameId: "review-arcade",
+                standard: "",
+                level: 1,
+                points: correct ? 10 : 0,
+                correct: correct ? 1 : 0,
+                total: 1,
+                misconceptionTag: q.topic || "",
+                lesson: "unit-" + unit,
+              }),
+              credentials: "omit",
+            }).catch(() => {});
+          }
+        } catch (e) {}
+      }
+
+      /* ── Best-score persistence (localStorage, per unit / boss) ─────────── */
+      function bestKeyFor(mode) {
+        return mode === "boss" ? "ra-best-boss" : "ra-best-unit-" + mode;
+      }
+      function readBest(mode) {
+        try {
+          return parseInt(localStorage.getItem(bestKeyFor(mode)) || "0", 10) || 0;
+        } catch (e) {
+          return 0;
+        }
+      }
+      function recordBest(mode, acc) {
+        const best = Math.max(readBest(mode), acc);
+        try {
+          localStorage.setItem(bestKeyFor(mode), String(best));
+        } catch (e) {}
+        return best;
+      }
+      // Show each unit's / boss best % on the home-screen buttons.
+      function renderHomeBests() {
+        document.querySelectorAll(".unit-btn").forEach((btn) => {
+          const u = btn.getAttribute("data-unit");
+          if (!u) return;
+          const b = readBest(u);
+          let chip = btn.querySelector(".u-best");
+          if (b > 0) {
+            if (!chip) {
+              chip = document.createElement("span");
+              chip.className = "u-best";
+              btn.appendChild(chip);
+            }
+            chip.textContent = "Best: " + b + "%";
+          } else if (chip) {
+            chip.remove();
+          }
+        });
+        const bossBest = readBest("boss");
+        const bossBtn = document.querySelector(".boss-btn");
+        if (bossBtn && bossBest > 0) {
+          let bchip = document.getElementById("boss-best");
+          if (!bchip) {
+            bchip = document.createElement("span");
+            bchip.id = "boss-best";
+            bchip.className = "u-best";
+            bossBtn.appendChild(bchip);
+          }
+          bchip.textContent = " · Best: " + bossBest + "%";
+        }
+      }
+
       function showScreen(id) {
         ["screen-home", "screen-play", "screen-results"].forEach((s) => {
           document.getElementById(s).classList.add("hidden");
@@ -1588,18 +1981,31 @@
       function startGame(unit) {
         state.unitMode = unit;
 
+        const BOSS_SIZE = 12;
         let pool;
         if (unit === "boss") {
-          // Sample ~12 questions: 1–2 per unit, shuffled across all
+          // Draw a well-distributed ~12 questions across all 10 units:
+          // shuffle each unit's pool, then round-robin one per unit until we
+          // reach the target (guarantees breadth even though 12 < 2×10).
+          const perUnit = [];
+          for (let u = 1; u <= 10; u++) perUnit.push(shuffle(BANK[u]));
           const all = [];
-          for (let u = 1; u <= 10; u++) {
-            // Take up to 2 random from each unit
-            const shuffled = shuffle(BANK[u]);
-            all.push(...shuffled.slice(0, Math.ceil(12 / 10)));
+          let round = 0;
+          while (all.length < BOSS_SIZE) {
+            let added = false;
+            for (let u = 0; u < perUnit.length && all.length < BOSS_SIZE; u++) {
+              if (perUnit[u][round]) {
+                all.push(perUnit[u][round]);
+                added = true;
+              }
+            }
+            if (!added) break; // bank exhausted (safety)
+            round++;
           }
-          pool = shuffle(all).slice(0, 12);
+          // Mix unit order (round-robin groups them), then float hot topics up.
+          pool = applyMisconceptionOrder(shuffle(all));
         } else {
-          pool = shuffle(BANK[unit]);
+          pool = applyMisconceptionOrder(shuffle(BANK[unit]));
         }
 
         state.queue = pool;
@@ -1627,12 +2033,9 @@
         // HUD
         document.getElementById("hud-hearts").textContent =
           "❤️".repeat(state.lives) + "🖤".repeat(3 - state.lives);
-        document.getElementById("hud-score").textContent =
-          "Score: " + state.score;
-        document.getElementById("hud-streak").textContent =
-          "🔥 Streak: " + state.streak;
-        document.getElementById("hud-prog-text").textContent =
-          "Question " + qNum + " of " + total;
+        document.getElementById("hud-score").textContent = "Score: " + state.score;
+        document.getElementById("hud-streak").textContent = "🔥 Streak: " + state.streak;
+        document.getElementById("hud-prog-text").textContent = "Question " + qNum + " of " + total;
         const pct = Math.round(((qNum - 1) / total) * 100);
         const fill = document.getElementById("prog-fill");
         fill.style.width = pct + "%";
@@ -1643,17 +2046,18 @@
         document.getElementById("q-unit-label").textContent =
           "Unit " + (q.unit || state.unitMode) + " · " + q.topic;
 
-        // Question text
-        document.getElementById("q-text").textContent = q.q;
+        // Question text (localized)
+        document.getElementById("q-text").textContent = loc(q, "q");
 
         // Choices — keep original order (already shuffled at pool level)
         const container = document.getElementById("choices");
         container.innerHTML = "";
-        q.choices.forEach((choice, i) => {
+        const choicePrefix = lang === "es" ? "Opción " : "Choice ";
+        locChoices(q).forEach((choice, i) => {
           const btn = document.createElement("button");
           btn.className = "choice-btn";
           btn.textContent = choice;
-          btn.setAttribute("aria-label", "Choice " + (i + 1) + ": " + choice);
+          btn.setAttribute("aria-label", choicePrefix + (i + 1) + ": " + choice);
           btn.addEventListener("click", () => handleAnswer(i));
           btn.addEventListener("keydown", (e) => {
             if (e.key === "Enter" || e.key === " ") {
@@ -1710,26 +2114,40 @@
 
         // Update HUD hearts immediately
         document.getElementById("hud-hearts").textContent =
-          "❤️".repeat(Math.max(0, state.lives)) +
-          "🖤".repeat(3 - Math.max(0, state.lives));
-        document.getElementById("hud-score").textContent =
-          "Score: " + state.score;
-        document.getElementById("hud-streak").textContent =
-          "🔥 Streak: " + state.streak;
+          "❤️".repeat(Math.max(0, state.lives)) + "🖤".repeat(3 - Math.max(0, state.lives));
+        document.getElementById("hud-score").textContent = "Score: " + state.score;
+        document.getElementById("hud-streak").textContent = "🔥 Streak: " + state.streak;
 
-        // Explanation
+        // Per-answer learning signal (device-local + /api/scores). Guarded.
+        raSignal(q, correct);
+
+        // Explanation (localized)
         const expl = document.getElementById("explanation");
         const lbl = document.getElementById("result-label");
         const why = document.getElementById("why-text");
-        lbl.textContent = correct ? "✅ Correct!" : "❌ Not quite.";
+        const okLabel = lang === "es" ? "✅ ¡Correcto!" : "✅ Correct!";
+        const noLabel = lang === "es" ? "❌ No del todo." : "❌ Not quite.";
+        lbl.textContent = correct ? okLabel : noLabel;
         lbl.className = "result-label " + (correct ? "ok" : "no");
-        why.textContent = q.why;
+        const whyText = loc(q, "why");
+        why.textContent = whyText;
         expl.classList.add("show");
+
+        // Announce the result + explanation through the live region.
+        const okSay = lang === "es" ? "Correcto. " : "Correct. ";
+        const noSay = lang === "es" ? "No del todo. " : "Not quite. ";
+        srSay((correct ? okSay : noSay) + whyText);
 
         // Show next button
         const nxt = document.getElementById("next-btn");
         const lastQ = state.idx >= state.queue.length - 1;
-        nxt.textContent = lastQ ? "See Results 🏆" : "Next Question →";
+        nxt.textContent = lastQ
+          ? lang === "es"
+            ? "Ver resultados 🏆"
+            : "See Results 🏆"
+          : lang === "es"
+            ? "Siguiente →"
+            : "Next Question →";
         nxt.classList.add("show");
         nxt.focus();
 
@@ -1780,18 +2198,41 @@
             });
         } catch (e) {}
 
+        // Best-score persistence (per unit / boss) + display on results.
+        const prevBest = readBest(state.unitMode);
+        const best = recordBest(state.unitMode, acc);
+        const bestLine = document.getElementById("best-line");
+        if (bestLine) {
+          const isNew = acc >= best && acc > prevBest;
+          if (lang === "es") {
+            bestLine.textContent = isNew
+              ? "🎉 ¡Nuevo récord! Mejor: " + best + "%"
+              : "🏅 Mejor: " + best + "%";
+          } else {
+            bestLine.textContent = isNew
+              ? "🎉 New best! Best: " + best + "%"
+              : "🏅 Best: " + best + "%";
+          }
+        }
+
+        // Student Passport meta-progression payout (guarded; boots itself).
+        try {
+          if (window.NTPassport && typeof window.NTPassport.award === "function") {
+            const xp = state.correct * 10 + (acc >= 90 ? 30 : acc >= 60 ? 15 : 5);
+            window.NTPassport.award(xp, "review-arcade");
+          }
+        } catch (e) {}
+
         // Tier messages
         let trophy, heading, msg;
         if (acc >= 90) {
           trophy = "🏆";
           heading = "LEGENDARY!";
-          msg =
-            "You crushed it! You're ready to level up — seriously impressive work.";
+          msg = "You crushed it! You're ready to level up — seriously impressive work.";
         } else if (acc >= 75) {
           trophy = "🥇";
           heading = "Expert Player";
-          msg =
-            "Strong performance! A little more practice and you'll be legendary.";
+          msg = "Strong performance! A little more practice and you'll be legendary.";
         } else if (acc >= 60) {
           trophy = "🥈";
           heading = "Getting There!";
@@ -1799,28 +2240,22 @@
         } else if (acc >= 40) {
           trophy = "🥉";
           heading = "Keep Grinding";
-          msg =
-            "Don't give up! Every question you review makes you stronger. Try again!";
+          msg = "Don't give up! Every question you review makes you stronger. Try again!";
         } else {
           trophy = "💪";
           heading = "Practice Mode";
-          msg =
-            "Math takes practice — check the explanations and replay. You've got this!";
+          msg = "Math takes practice — check the explanations and replay. You've got this!";
         }
 
         document.getElementById("result-trophy").textContent = trophy;
-        document
-          .getElementById("result-trophy")
-          .setAttribute("aria-label", heading + " trophy");
+        document.getElementById("result-trophy").setAttribute("aria-label", heading + " trophy");
         document.getElementById("result-heading").textContent = heading;
         document.getElementById("tier-msg").textContent = msg;
 
         // Update "Play Again" label
         document.getElementById("play-again-btn").textContent =
           "🔄 Play " +
-          (state.unitMode === "boss"
-            ? "Boss Battle"
-            : "Unit " + state.unitMode) +
+          (state.unitMode === "boss" ? "Boss Battle" : "Unit " + state.unitMode) +
           " Again";
       }
 
@@ -1829,6 +2264,7 @@
 ════════════════════════════════════════════════════════════════ */
       function goHome() {
         document.getElementById("gameover-overlay").classList.remove("show");
+        renderHomeBests();
         showScreen("screen-home");
       }
 
@@ -1856,22 +2292,26 @@
         }
       })();
 
-      /* Count total questions for verification */
-      (function () {
-        let total = 0;
-        for (let u = 1; u <= 10; u++) total += BANK[u].length;
-        // console.log("Total questions:", total); // 80
-      })();
+      /* Initialize language buttons + home best-score chips on load */
+      updateLangButtons();
+      renderHomeBests();
     </script>
 
     <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
-<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
-  <!-- nsr-injected:end -->
+    <!-- Device-local learning signals (adaptive ordering + per-answer records) -->
+    <script src="/assets/nt-signal.js"></script>
+    <!-- Student Passport (meta-progression pill; boots itself, award() guarded) -->
+    <script src="/assets/lesson-passport.js" defer></script>
+    <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
+    <script src="/assets/canvas-bridge.js" defer></script>
+    <!-- canvas-bridge-injected:end -->
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+    <!-- nsr-injected:end -->
   </body>
 </html>
