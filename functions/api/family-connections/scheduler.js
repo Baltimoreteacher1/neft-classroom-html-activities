@@ -265,7 +265,16 @@ function json(data, status = 200) {
   });
 }
 
-export async function handleSchedulerRequest(context, store, access) {
+function notifyAfterBooking(context, notifyMeeting, meetingRequest) {
+  if (typeof notifyMeeting !== "function") return;
+  const task = Promise.resolve()
+    .then(() => notifyMeeting(meetingRequest))
+    .catch(() => undefined);
+  if (typeof context.waitUntil === "function") context.waitUntil(task);
+  else return task;
+}
+
+export async function handleSchedulerRequest(context, store, access, services = {}) {
   const path = Array.isArray(context.params?.path) ? context.params.path[0] : context.params?.path;
   const method = context.request.method.toUpperCase();
   try {
@@ -273,6 +282,7 @@ export async function handleSchedulerRequest(context, store, access) {
       return json({ ok: true, slots: await store.listPublic() });
     if (path === "schedule-request" && method === "POST") {
       const meetingRequest = await store.requestSlot(await readJson(context.request));
+      await notifyAfterBooking(context, services.notifyMeeting, meetingRequest);
       return json(
         {
           ok: true,

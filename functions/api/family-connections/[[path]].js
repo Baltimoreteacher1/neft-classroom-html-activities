@@ -1,8 +1,9 @@
 import { buildCanvasRss } from "../../../curriculum/family-connections/shared/model.js";
 import { handleCanvasDirectRequest } from "./canvas-direct.js";
 import { initialState, normalizeSnapshot } from "./domain.js";
-import { createD1SchedulerStore } from "./scheduler-d1.js";
+import { sendMeetingNotification } from "./meeting-notification.js";
 import { handleSchedulerRequest } from "./scheduler.js";
+import { createD1SchedulerStore } from "./scheduler-d1.js";
 
 const HISTORY_LIMIT = 5;
 const MAX_BODY_BYTES = 180_000;
@@ -190,7 +191,10 @@ export async function handleFamilyConnectionsRequest(context, suppliedStore, acc
 
   if (path.startsWith("schedule-")) {
     if (!env.DB) return json({ ok: false, error: "scheduling-unavailable" }, 503);
-    return handleSchedulerRequest(context, createD1SchedulerStore(env.DB), access);
+    return handleSchedulerRequest(context, createD1SchedulerStore(env.DB), access, {
+      notifyMeeting: (meetingRequest) =>
+        sendMeetingNotification(env.FAMILY_MEETING_EMAIL, meetingRequest),
+    });
   }
   if (["canvas-connect", "canvas-sync"].includes(path)) {
     if (!env.DB) return json({ ok: false, error: "canvas-sync-unavailable" }, 503);

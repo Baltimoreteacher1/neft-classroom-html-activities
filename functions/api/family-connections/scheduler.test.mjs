@@ -176,12 +176,29 @@ const booking = {
   note: "Private note",
   consent: true,
 };
+const notificationTasks = [];
+const notifications = [];
+const bookingContext = {
+  ...apiRequest("POST", "schedule-request", booking),
+  waitUntil(task) {
+    notificationTasks.push(task);
+  },
+};
 const bookingResponse = await handleSchedulerRequest(
-  apiRequest("POST", "schedule-request", booking),
+  bookingContext,
   bookingStore,
   {},
+  {
+    notifyMeeting(meetingRequest) {
+      notifications.push(meetingRequest);
+    },
+  },
 );
 assert.equal(bookingResponse.status, 201);
+await Promise.all(notificationTasks);
+assert.equal(notifications.length, 1, "a public booking should trigger one teacher notification");
+assert.equal(notifications[0].email, "family@example.com");
+assert.equal(notifications[0].studentFirstName, "Sam");
 const bookingBody = await bookingResponse.json();
 assert.equal(bookingBody.status, "confirmed");
 assert.deepEqual(Object.keys(bookingBody).sort(), ["ok", "reference", "slot", "status"]);
@@ -190,5 +207,26 @@ assert.equal(
   (await handleSchedulerRequest(apiRequest("POST", "schedule-request", booking), bookingStore, {})).status,
   409,
 );
+
+const failureStore = createMemorySchedulerStore({ now: () => now, id: (prefix) => `${prefix}-failure` });
+const failureSlot = await failureStore.createSlot({
+  ...slot,
+  startAt: "2026-09-05T20:00:00.000Z",
+  endAt: "2026-09-05T20:20:00.000Z",
+});
+const failureTasks = [];
+const failureContext = {
+  ...apiRequest("POST", "schedule-request", { ...booking, slotId: failureSlot.id }),
+  waitUntil(task) {
+    failureTasks.push(task);
+  },
+};
+const failureResponse = await handleSchedulerRequest(failureContext, failureStore, {}, {
+  async notifyMeeting() {
+    throw new Error("email provider unavailable");
+  },
+});
+assert.equal(failureResponse.status, 201, "email failure must not undo a confirmed booking");
+await assert.doesNotReject(Promise.all(failureTasks));
 
 console.log("Family meeting scheduler tests passed.");
