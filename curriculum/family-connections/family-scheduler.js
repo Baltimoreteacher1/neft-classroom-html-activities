@@ -12,6 +12,7 @@ const spanish = {
   intro:
     "Elija una hora disponible para conversar brevemente sobre cómo podemos apoyar a su estudiante.",
   timezone: "Hora del Este",
+  dojo: "Enviar un mensaje al Sr. Neft por ClassDojo ↗",
   guardian: "Nombre del padre, madre o tutor",
   student: "Solo el primer nombre del estudiante",
   email: "Correo electrónico para la respuesta",

@@ -28,6 +28,8 @@ for (const expected of [
   'id="text-size-toggle"',
   'id="teacher-access"',
   'id="classdojo-link"',
+  'id="scheduler-classdojo-link"',
+  'data-classdojo-link',
   'id="canvas-link"',
   'id="family-status"',
   'id="family-support"',
@@ -65,6 +67,11 @@ assert.ok(
 assert.ok(
   html.indexOf('id="homework-library"') < html.indexOf('id="family-scheduler"'),
   "Optional family practice should appear above Meet with Mr. Neft",
+);
+assert.ok(
+  html.indexOf('id="family-scheduler"') < html.indexOf('id="scheduler-classdojo-link"') &&
+    html.indexOf('id="scheduler-classdojo-link"') < html.indexOf('id="meeting-slots"'),
+  "The ClassDojo link should be easy to find inside the meeting section",
 );
 assert.match(
   html,
@@ -110,7 +117,7 @@ assert.match(renderer, /Open family help/);
 assert.match(renderer, /Play lesson arcade/);
 assert.match(renderer, /arcadePath/);
 assert.match(app, /isConfiguredDestination/);
-assert.match(app, /dojo\.hidden\s*=\s*!safeExternalUrl/);
+assert.match(app, /querySelectorAll\(["']\[data-classdojo-link\]["']\)/);
 assert.match(app, /cache:\s*["']no-store["']/);
 assert.match(app, /document\.visibilityState/);
 assert.match(app, /setInterval/);

@@ -67,9 +67,10 @@ function applyPreferences() {
 
 function renderIntegrations() {
   const { classDojoUrl, canvasUrl } = state.snapshot.integrations ?? {};
-  const dojo = byId("classdojo-link");
-  dojo.hidden = !safeExternalUrl(classDojoUrl);
-  if (!dojo.hidden) dojo.href = classDojoUrl;
+  document.querySelectorAll("[data-classdojo-link]").forEach((dojo) => {
+    dojo.hidden = !safeExternalUrl(classDojoUrl);
+    if (!dojo.hidden) dojo.href = classDojoUrl;
+  });
   const canvas = byId("canvas-link");
   canvas.hidden = !isConfiguredDestination(canvasUrl);
   if (!canvas.hidden) canvas.href = canvasUrl;
