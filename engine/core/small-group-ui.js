@@ -1,28 +1,14 @@
+// One calm, uniform palette across every small-group variant (Joel directive
+// 2026-07-17): shared ocean-blue primary/deep/soft so the page no longer swings
+// between blue, burnt-orange, and teal themes. The ONLY per-variant color is the
+// small `pop` accent (hero underline + focus glow), giving a quiet at-a-glance
+// cue for which group you're in without a full theme change. Name + emoji carry
+// the rest of the identity.
+const SG_PALETTE = { hue: "#33568f", deep: "#1e3358", soft: "#eef2fa" };
 export const ACCENTS = {
-  group1: {
-    name: "Foundations",
-    hue: "#1457b8",
-    deep: "#0b2f6b",
-    soft: "#e8f1ff",
-    pop: "#f5b942",
-    emoji: "🤝",
-  },
-  group2: {
-    name: "Challenge Lab",
-    hue: "#a34b08",
-    deep: "#5f2900",
-    soft: "#fff0dc",
-    pop: "#1f8a70",
-    emoji: "🚀",
-  },
-  catchup: {
-    name: "Catch-Up",
-    hue: "#0f766e",
-    deep: "#134e4a",
-    soft: "#def7f2",
-    pop: "#e09f24",
-    emoji: "🧭",
-  },
+  group1: { name: "Foundations", ...SG_PALETTE, pop: "#2f8f7d", emoji: "🤝" },
+  group2: { name: "Challenge Lab", ...SG_PALETTE, pop: "#e0a63c", emoji: "🚀" },
+  catchup: { name: "Catch-Up", ...SG_PALETTE, pop: "#5a9e52", emoji: "🧭" },
 };
 
 // Language lanes for vocabulary surfaces (cards + inline pop-ups). English is

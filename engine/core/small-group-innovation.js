@@ -142,7 +142,7 @@ function proveStep(labelText) {
 export function createProveItLab(config, variant, state, onDone, store = null) {
   const section = el("section", "sg-sec sg-lab");
   section.id = "sg-prove";
-  section.appendChild(sectionHeading(1, "Prove it & defend it", "Make your thinking bulletproof"));
+  section.appendChild(sectionHeading(1, "Prove it & defend it", "Make your thinking rock-solid"));
   section.appendChild(
     el(
       "p",
