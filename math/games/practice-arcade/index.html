@@ -110,9 +110,9 @@
     <!-- BCPS Instructional Framework Rubric · TEACH support. Teacher/observer reference — NOT shown to students. Interactive practice activity (math/games/practice-arcade): supports Level 4 conditions on T2, T4 (students choose their approach + immediate no-fail feedback with retry). Full evidence: /teacher-tools/teaching-evidence/ · docs/uifr-teach-l4.md. -->
     <!-- uifr-injected:end -->
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2" />
+    <!-- nsr-injected:end -->
+  </head>
   <body>
     <div id="loader">
       <div class="spinner"></div>
@@ -521,7 +521,15 @@
         function buildPlayList() {
           let pool = allRounds.slice();
           if (tier === "l1") pool = pool.filter((r) => r.tier !== 2);
-          else if (tier === "l2") pool = pool.filter((r) => r.tier === 2);
+          else if (tier === "l2") {
+            // Challenge rounds first, but never a 1-problem game: lessons often
+            // author a single Level 2 item, so top up with core rounds.
+            const challenge = pool.filter((r) => r.tier === 2);
+            pool =
+              challenge.length >= 4
+                ? challenge
+                : challenge.concat(pool.filter((r) => r.tier !== 2));
+          }
           if (!pool.length) pool = allRounds.slice();
           if (isReviewMode) pool = shuffle(pool);
           rounds = pool.slice(0, isReviewMode ? 12 : MAX_ROUNDS);
@@ -3230,11 +3238,11 @@
       }
     </script>
     <!-- offline-sw-injected:end -->
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+    <!-- nsr-injected:end -->
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
   </body>
 </html>

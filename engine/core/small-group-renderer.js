@@ -8,11 +8,11 @@ import {
   createReflectionSection,
   createTalkSection,
   createVocabularySection,
+  makePulse,
   selectedTalk,
 } from "./small-group-engagement.js";
 import {
   createAdaptiveCoach,
-  createChallengeLab,
   createConsensusLab,
   createEvidenceCard,
   createProofPathLab,
@@ -320,12 +320,17 @@ export function bootSmallGroup(config) {
   const moreItems = remaining.slice(independentCount);
 
   const check = createCheckSection(config, revealReflection, tally, events, store);
-  const mission = createMissionSection(
-    config,
-    variant,
-    state,
-    phaseDone("sg-tab-learn", "launchDone"),
-    store,
+  // Mission is the capstone — it renders after practice and supports.
+  const mission = createMissionSection(config, variant, phaseDone("sg-tab-more", "launchDone"));
+  const pulseCard = el("div", "card sg-pulse-card");
+  pulseCard.appendChild(el("p", "block-lab", "Private readiness pulse — how ready do you feel?"));
+  pulseCard.appendChild(
+    makePulse(
+      state,
+      "before",
+      (value) => store.set("pulseBefore", value),
+      store.get("pulseBefore"),
+    ),
   );
   const build = conceptSection(
     config,
@@ -417,7 +422,7 @@ export function bootSmallGroup(config) {
     {
       id: "sg-tab-learn",
       label: "Learn It",
-      panel: makePanel("sg-tab-learn", [mission, build, explore, model]),
+      panel: makePanel("sg-tab-learn", [pulseCard, build, explore, model]),
     },
     {
       id: "sg-tab-guided",
@@ -427,7 +432,7 @@ export function bootSmallGroup(config) {
     {
       id: "sg-tab-practice",
       label: "Practice",
-      panel: makePanel("sg-tab-practice", [practice, createChallengeLab(config, variant, state)]),
+      panel: makePanel("sg-tab-practice", [practice]),
     },
     {
       id: "sg-tab-check",
@@ -439,7 +444,7 @@ export function bootSmallGroup(config) {
     {
       id: "sg-tab-more",
       label: "More Practice",
-      panel: makePanel("sg-tab-more", [morePractice, apply]),
+      panel: makePanel("sg-tab-more", [morePractice, mission, apply]),
     },
   ];
 
@@ -492,7 +497,7 @@ export function bootSmallGroup(config) {
   });
   const RESTORE_MARKS = {
     vocabDone: "sg-tab-vocab",
-    launchDone: "sg-tab-learn",
+    launchDone: "sg-tab-more",
     buildDone: "sg-tab-learn",
     exploreDone: "sg-tab-learn",
     modelDone: "sg-tab-learn",

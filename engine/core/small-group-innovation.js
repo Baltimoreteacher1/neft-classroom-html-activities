@@ -238,41 +238,6 @@ export function createAdaptiveCoach(variant, state) {
   return section;
 }
 
-export function createChallengeLab(config, variant, state) {
-  const section = el("section", "sg-design-lab sg-innovation");
-  section.setAttribute("role", "region");
-  section.setAttribute("aria-label", "Create-a-Challenge design lab");
-  const keyIdea = config.launch?.conceptIntro?.keyIdea || config.contentObjective || "today’s idea";
-  const brief =
-    variant === "group2"
-      ? "Create a new example with a constraint, tricky case, or plausible misconception. Make a solver justify why the method works."
-      : "Remix a familiar problem. Change one meaningful feature, keep the mathematics connected, and make the solver show a model.";
-  section.innerHTML = `<div class="sg-innovation-kicker">Student designer mode</div><h2>Create-a-Challenge Design Lab</h2><p>${esc(brief)}</p><div class="sg-design-brief"><b>Design target:</b> ${esc(keyIdea)}</div>`;
-  const challengeLabel = el("label", "block-lab", "My new challenge");
-  const challenge = el("textarea", "sg-ta");
-  challengeLabel.appendChild(challenge);
-  const verifyLabel = el("label", "block-lab", "How I verified it");
-  const verify = el("textarea", "sg-ta");
-  verifyLabel.appendChild(verify);
-  const status = el("div", "sg-match-status");
-  status.setAttribute("aria-live", "polite");
-  const save = el("button", "btn", "Add to evidence card");
-  save.type = "button";
-  save.onclick = () => {
-    if (challenge.value.trim().length < 12 || verify.value.trim().length < 12) {
-      status.textContent =
-        "Add a complete challenge and a verification note before saving evidence.";
-      return;
-    }
-    state.challenge = challenge.value.trim();
-    state.verification = verify.value.trim();
-    status.textContent =
-      "Challenge captured ✓ Your original mathematics is ready for the evidence card.";
-  };
-  section.append(challengeLabel, verifyLabel, save, status);
-  return section;
-}
-
 export function createEvidenceCard(config, state) {
   const section = el("section", "sg-evidence-card sg-innovation");
   section.setAttribute("role", "region");
@@ -283,7 +248,7 @@ export function createEvidenceCard(config, state) {
     const after = Number(state.after || 0);
     const change = after - before;
     const vocabulary = config.vocabulary?.[0]?.term || config.vocabulary?.[0] || "lesson language";
-    section.innerHTML = `<div class="sg-evidence-top"><div><div class="sg-innovation-kicker">Printable learning artifact</div><h2>Studio Evidence Card</h2></div><span>Evidence over points</span></div><p class="sg-evidence-title"><b>${esc(config.title || "Small-Group Math Studio")}</b>${config.standard ? ` · ${esc(config.standard)}` : ""}</p><div class="sg-evidence-grid"><div><span>Confidence journey</span><b>${before || "—"} → ${after || "—"}${change > 0 ? ` (+${change})` : ""}</b></div><div><span>Proof path</span><b>${esc(labelFor(state.proofPath))}</b></div><div><span>Math language</span><b>${esc(vocabulary)}</b></div><div><span>Discussion move</span><b>${state.revision === "revised" ? "Revised after discussion" : state.revision === "kept" ? "Kept after testing the evidence" : "Talked through out loud"}</b></div><div><span>Adaptive move</span><b>${esc(PATHS[state.adaptivePath]?.label || "Student choice")}</b></div></div><div class="sg-evidence-original"><span>Original challenge</span><p>${esc(state.challenge || "The challenge was talked through out loud.")}</p><span>Verification</span><p>${esc(state.verification || "The reasoning was checked step by step.")}</p></div>`;
+    section.innerHTML = `<div class="sg-evidence-top"><div><div class="sg-innovation-kicker">Printable learning artifact</div><h2>Studio Evidence Card</h2></div><span>Evidence over points</span></div><p class="sg-evidence-title"><b>${esc(config.title || "Small-Group Math Studio")}</b>${config.standard ? ` · ${esc(config.standard)}` : ""}</p><div class="sg-evidence-grid"><div><span>Confidence journey</span><b>${before || "—"} → ${after || "—"}${change > 0 ? ` (+${change})` : ""}</b></div><div><span>Proof path</span><b>${esc(labelFor(state.proofPath))}</b></div><div><span>Math language</span><b>${esc(vocabulary)}</b></div><div><span>Discussion move</span><b>${state.revision === "revised" ? "Revised after discussion" : state.revision === "kept" ? "Kept after testing the evidence" : "Talked through out loud"}</b></div><div><span>Adaptive move</span><b>${esc(PATHS[state.adaptivePath]?.label || "Student choice")}</b></div></div>`;
     const print = el("button", "btn ghost", "Print Studio Evidence Card");
     print.type = "button";
     print.onclick = () => printOnly("evidence", section);

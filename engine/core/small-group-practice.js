@@ -494,7 +494,13 @@ export function createPracticeSection(
           : config.variant === "group2"
             ? false
             : index % 2 === 0;
-    const card = problemCard(item, index, config.variant, () => solveItem(index), scaffold, events);
+    // Solving reveals the whole model — the visual completes with the work.
+    let card;
+    const solve = () => {
+      card?.classList.add("sg-done-all");
+      solveItem(index);
+    };
+    card = problemCard(item, index, config.variant, solve, scaffold, events);
     appendVisualPractice(card, item, { mode: options.mode || "guided", events });
     const storeIndex = (options.indexOffset || 0) + index;
     if (store?.has("solvedPractice", storeIndex)) {

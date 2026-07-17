@@ -50,6 +50,10 @@ assert.equal(isRight("1 7/8", "15/8"), true, "mixed number vs improper fraction"
 assert.equal(isRight("2x3x7", "2 × 3 × 7"), true, "keyboard × equivalence");
 assert.equal(isRight("1,2,3,6", "1, 2, 3, 6"), true, "list spacing equivalence");
 assert.equal(isRight("3.50", "3.5"), true, "trailing zero equivalence");
+assert.equal(isRight(".5", "0.5"), true, "leading-dot decimal equivalence");
+assert.equal(isRight("$.50", "0.5"), true, "dollar + leading-dot equivalence");
+assert.equal(isRight(".50 per", "0.5"), true, "trailing 'per' must not fail a correct rate");
+assert.equal(isRight("$0.50 per token", "0.5"), true, "full rate phrasing equivalence");
 assert.equal(isRight("2", "2 × 3 × 7"), false, "first digit must not pass a product answer");
 assert.equal(isRight("2", "x + 2 = 4"), false, "a digit must not pass an equation answer");
 assert.equal(isRight("4", "3.5"), false, "close is not correct");

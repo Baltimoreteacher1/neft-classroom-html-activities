@@ -78,9 +78,15 @@ function fractionBars(visual, values) {
   return `<text x="50" y="55">Split the whole into equal parts</text><g transform="translate(55 90)">${Array.from({ length: count }, (_, i) => `<rect x="${i * (520 / count)}" width="${500 / count}" height="90" rx="7" fill="${i < Math.ceil(count / 2) ? "var(--sg-soft)" : "#fff"}" stroke="var(--sg)" stroke-width="3"/>`).join("")}</g><path class="sg-layer-3" d="M80 235h470" stroke="var(--sg-pop)" stroke-width="8" stroke-dasharray="18 12"/><text class="sg-layer-3" x="320" y="275" text-anchor="middle">count equal groups</text>`;
 }
 
-function factorTree(values) {
+// The tree is the student's workspace: branch values stay "?" until the
+// student produces them in the guided steps (sg-ans-N reveals on step N).
+function factorTree(values, steps = []) {
   const value = values[0] || "?";
-  return `<circle cx="320" cy="60" r="38" fill="var(--sg)"/><text x="320" y="72" text-anchor="middle" fill="white">${esc(value)}</text><path d="M295 92L185 150M345 92L455 150" stroke="var(--sg-deep)" stroke-width="6"/><circle class="sg-layer-2" cx="175" cy="175" r="38" fill="var(--sg-soft)" stroke="var(--sg)" stroke-width="4"/><circle class="sg-layer-2" cx="465" cy="175" r="38" fill="var(--sg-soft)" stroke="var(--sg)" stroke-width="4"/><text class="sg-layer-2" x="175" y="187" text-anchor="middle">?</text><text class="sg-layer-2" x="465" y="187" text-anchor="middle">?</text><path class="sg-layer-3" d="M440 207L380 255M490 207L550 255" stroke="var(--sg-deep)" stroke-width="5"/><text class="sg-layer-3" x="465" y="285" text-anchor="middle">keep splitting composite branches</text>`;
+  const left = steps[0]?.answer ?? "?";
+  const right = steps[1]?.answer ?? "?";
+  const node = (x, stepNumber, answer) =>
+    `<circle cx="${x}" cy="175" r="38" fill="var(--sg-soft)" stroke="var(--sg)" stroke-width="4"/><text class="sg-q-${stepNumber}" x="${x}" y="187" text-anchor="middle">?</text><text class="sg-ans sg-ans-${stepNumber}" x="${x}" y="187" text-anchor="middle">${esc(answer)}</text>`;
+  return `<circle cx="320" cy="60" r="38" fill="var(--sg)"/><text x="320" y="72" text-anchor="middle" fill="white">${esc(value)}</text><path d="M295 92L185 150M345 92L455 150" stroke="var(--sg-deep)" stroke-width="6"/>${node(175, 1, left)}${node(465, 2, right)}<path class="sg-layer-3" d="M440 207L380 255M490 207L550 255" stroke="var(--sg-deep)" stroke-width="5"/><text class="sg-layer-3" x="465" y="285" text-anchor="middle">keep splitting composite branches</text>`;
 }
 
 function bars(values, kind) {
@@ -122,23 +128,26 @@ const listFactors = (value) => {
 
 // Two labeled factor lists with the common factors highlighted — the actual
 // GCF representation (a factor tree of one number is the wrong model here).
+// Empty factor boxes are the workspace; each row's numbers appear only after
+// the student lists them correctly (step 1 → row A, step 2 → row B), and the
+// shared factors turn gold only after the GCF step.
 function factorLists(values) {
   const [a, b] = values.map(Number);
   if (!a || !b || a > 200 || b > 200) return bars(values, "factors");
   const factorsA = listFactors(a);
   const factorsB = listFactors(b);
   const common = new Set(factorsA.filter((factor) => factorsB.includes(factor)));
-  const row = (list, y) =>
+  const row = (list, y, stepNumber) =>
     list
       .slice(0, 12)
       .map((factor, index) => {
         const shared = common.has(factor);
-        return `<g transform="translate(${150 + index * 40} ${y})"><rect x="-17" y="-22" width="34" height="34" rx="9" fill="${shared ? "var(--sg-pop)" : "#fff"}" stroke="${shared ? "var(--sg-deep)" : "var(--sg)"}" stroke-width="3"/><text x="0" y="4" text-anchor="middle" style="font-size:18px">${factor}</text></g>`;
+        return `<g transform="translate(${150 + index * 40} ${y})"><rect ${shared ? 'class="sg-hl-3"' : ""} x="-17" y="-22" width="34" height="34" rx="9" fill="#fff" stroke="var(--sg)" stroke-width="3"/><text class="sg-ans sg-ans-${stepNumber}" x="0" y="4" text-anchor="middle" style="font-size:18px">${factor}</text></g>`;
       })
       .join("");
-  return `<text x="45" y="92" style="font-size:20px">${esc(a)} →</text>${row(factorsA, 90)}
-    <text x="45" y="182" style="font-size:20px">${esc(b)} →</text>${row(factorsB, 180)}
-    <text class="sg-layer-2" x="320" y="255" text-anchor="middle">Gold squares appear in both lists</text>`;
+  return `<text x="45" y="92" style="font-size:20px">${esc(a)} →</text>${row(factorsA, 90, 1)}
+    <text x="45" y="182" style="font-size:20px">${esc(b)} →</text>${row(factorsB, 180, 2)}
+    <text class="sg-layer-2" x="320" y="255" text-anchor="middle">Fill each row as you list the factors — matches turn gold</text>`;
 }
 
 // Two lanes of multiples with the first shared multiple highlighted (LCM).
@@ -149,12 +158,12 @@ function multipleLanes(values) {
     return Array.from({ length: 8 }, (_, index) => {
       const multiple = base * (index + 1);
       const shared = multiple % a === 0 && multiple % b === 0;
-      return `<g transform="translate(${105 + index * 62} ${y})"><rect x="-24" y="-22" width="48" height="34" rx="9" fill="${shared ? "var(--sg-pop)" : "#fff"}" stroke="${shared ? "var(--sg-deep)" : "var(--sg)"}" stroke-width="3"/><text x="0" y="4" text-anchor="middle" style="font-size:17px">${multiple}</text></g>`;
+      return `<g transform="translate(${105 + index * 62} ${y})"><rect ${shared ? 'class="sg-hl-1"' : ""} x="-24" y="-22" width="48" height="34" rx="9" fill="#fff" stroke="var(--sg)" stroke-width="3"/><text class="sg-ans sg-ans-1" x="0" y="4" text-anchor="middle" style="font-size:17px">${multiple}</text></g>`;
     }).join("");
   };
   return `<text x="40" y="92" style="font-size:19px">×${esc(a)}</text>${lane(a, 90)}
     <text x="40" y="182" style="font-size:19px">×${esc(b)}</text>${lane(b, 180)}
-    <text class="sg-layer-2" x="320" y="255" text-anchor="middle">The first gold match is the least common multiple</text>`;
+    <text class="sg-layer-2" x="320" y="255" text-anchor="middle">Count by ${esc(a)}s and ${esc(b)}s — your first match turns gold</text>`;
 }
 
 // Real two-column table for rate / ratio / conversion problems.
@@ -228,20 +237,6 @@ function divisionBox(values) {
     <text class="sg-layer-3" x="405" y="215" text-anchor="middle">quotient on top · remainder is what is left</text>`;
 }
 
-// Stacked place-value alignment for decimal operations.
-function placeValueModel(visual, values) {
-  const [a, b] = values;
-  const operation = visual.operation || "+";
-  return `<g style="font-size:34px" text-anchor="end">
-      <text x="430" y="95">${esc(a)}</text>
-      <text x="430" y="150">${esc(b)}</text>
-      <text x="255" y="150" fill="var(--sg)">${esc(operation)}</text>
-    </g>
-    <line x1="235" y1="172" x2="450" y2="172" stroke="var(--sg-deep)" stroke-width="5"/>
-    <text x="430" y="225" text-anchor="end" style="font-size:34px" class="sg-layer-2">?</text>
-    <text class="sg-layer-3" x="340" y="272" text-anchor="middle">Line up the decimal points before you work</text>`;
-}
-
 // Two rows of counters for a part-to-part ratio.
 function ratioDots(values) {
   const [left, right] = values.map(Number);
@@ -268,11 +263,13 @@ function inequalityLine(visual, values) {
     const value = boundary - 3 + index;
     return `<text x="${x + (value - boundary) * 70}" y="200" text-anchor="middle">${value}</text><line x1="${x + (value - boundary) * 70}" y1="140" x2="${x + (value - boundary) * 70}" y2="160" stroke="var(--sg-deep)" stroke-width="3"/>`;
   }).join("");
+  // The answer graph draws itself from the student's steps: boundary point
+  // after step 1, shaded ray after step 2, the full statement after step 3.
   return `<line x1="55" y1="150" x2="585" y2="150" stroke="var(--sg-deep)" stroke-width="6"/>
     <path d="M55 150l20-12v24zM585 150l-20-12v24z" fill="var(--sg-deep)"/>${labels}
-    <line class="sg-layer-2" x1="${x}" y1="150" x2="${rightward ? 565 : 75}" y2="150" stroke="var(--sg)" stroke-width="12" stroke-linecap="round" opacity="0.55"/>
-    <circle cx="${x}" cy="150" r="16" fill="${open ? "#fffdf8" : "var(--sg)"}" stroke="var(--sg)" stroke-width="6"/>
-    <text x="${x}" y="105" text-anchor="middle">x ${esc(symbol)} ${esc(boundary)}</text>`;
+    <line class="sg-ans sg-ans-2" x1="${x}" y1="150" x2="${rightward ? 565 : 75}" y2="150" stroke="var(--sg)" stroke-width="12" stroke-linecap="round" opacity="0.55"/>
+    <circle class="sg-ans sg-ans-1" cx="${x}" cy="150" r="16" fill="${open ? "#fffdf8" : "var(--sg)"}" stroke="var(--sg)" stroke-width="6"/>
+    <text class="sg-ans sg-ans-3" x="${x}" y="105" text-anchor="middle">x ${esc(symbol)} ${esc(boundary)}</text>`;
 }
 
 function visualMarkup(item) {
@@ -288,10 +285,9 @@ function visualMarkup(item) {
   else if (kind.includes("table")) body = tableModel(values, kind);
   else if (kind.includes("percent")) body = percentModel(visual, values, kind);
   else if (kind.includes("division-box")) body = divisionBox(values);
-  else if (kind.includes("place-value")) body = placeValueModel(visual, values);
   else if (kind.includes("ratio-dots")) body = ratioDots(values);
   else if (kind.includes("inequality")) body = inequalityLine(visual, values);
-  else if (kind.includes("factor")) body = factorTree(values);
+  else if (kind.includes("factor")) body = factorTree(values, item.steps);
   else if (kind.includes("coordinate")) body = coordinateGrid(visual);
   else if (kind.includes("number-line")) body = numberLine(values);
   else if (kind.includes("fraction")) body = fractionBars(visual, values);
@@ -412,6 +408,8 @@ function guidedSteps(item, mode, events = {}) {
       check.disabled = true;
       row.classList.remove("needs-revision");
       row.classList.add("complete");
+      // The student's correct step reveals the matching piece of the model.
+      row.closest(".prob")?.classList.add(`sg-done-${index + 1}`);
       status.textContent = "Correct. Next step unlocked.";
       const next = body.querySelectorAll(".sg-fill-step")[index + 1];
       if (next) {
@@ -430,12 +428,22 @@ function guidedSteps(item, mode, events = {}) {
 }
 
 export function appendVisualPractice(card, item, { mode = "guided", events = {} } = {}) {
-  const markup = visualMarkup(item);
+  const kind = String(item.visual?.kind || "");
   const read = el("button", "btn ghost sg-read-problem", "🔊 Read this problem");
   read.type = "button";
   read.onclick = () => speak(item.stem || item.title || "", read);
   const steps = guidedSteps(item, mode, events);
   const question = card.querySelector(".q");
+  // Place-value problems: the answer control's stacked column IS the giant
+  // workspace — students work the problem in it, so no display-only figure.
+  if (kind.includes("place-value")) {
+    card.classList.add("sg-big-work");
+    const top = el("div", "sg-problem-support-head");
+    top.append(el("div", "sg-visual-title", "Work it here"), read);
+    question?.after(top, ...(steps ? [steps] : []));
+    return card;
+  }
+  const markup = visualMarkup(item);
   if (!markup) {
     // No authored visual: keep the read-aloud and any guided steps, but skip
     // the figure and value tool — a chart of scraped numbers misleads.

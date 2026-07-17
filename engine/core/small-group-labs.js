@@ -161,9 +161,8 @@ export function createExploreLab(config, variant, { number, store, events, onDon
     );
   if (explore.instructions) section.appendChild(el("p", "sg-lab-note", esc(explore.instructions)));
 
-  const figure = figureBlock(explore.diagram);
-  if (figure) section.appendChild(figure);
-
+  // The lab itself is the manipulative; the parent lesson's explore.diagram
+  // (e.g. an unrelated line grapher) is not mounted here.
   const mount = el("div", "sg-lab-mount");
   mount.appendChild(el("p", "sg-lab-loading", "Loading the interactive lab…"));
   section.appendChild(mount);

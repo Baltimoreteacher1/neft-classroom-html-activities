@@ -25,7 +25,7 @@ function shuffle(list) {
   return list;
 }
 
-function makePulse(state, key, onSelect, initial) {
+export function makePulse(state, key, onSelect, initial) {
   const pulse = el("div", "sg-pulse");
   pulse.setAttribute("role", "group");
   pulse.setAttribute(
@@ -51,7 +51,7 @@ function makePulse(state, key, onSelect, initial) {
   return pulse;
 }
 
-export function createMissionSection(config, variant, state, onDone, store = null) {
+export function createMissionSection(config, variant, onDone) {
   const missionContent = config.noticeAndWonder || {};
   const context =
     missionContent.context ||
@@ -78,15 +78,6 @@ export function createMissionSection(config, variant, state, onDone, store = nul
   read.onclick = () => speak(context, read);
   tools.appendChild(read);
   copy.appendChild(tools);
-  copy.appendChild(el("p", "block-lab", "Private readiness pulse"));
-  copy.appendChild(
-    makePulse(
-      state,
-      "before",
-      (value) => store?.set("pulseBefore", value),
-      store?.get("pulseBefore"),
-    ),
-  );
 
   // Photos and screenshots are gone by design: the mission panel shows the
   // lesson's math figure when one exists, otherwise a quiet emoji tile.
@@ -111,16 +102,15 @@ export function createMissionSection(config, variant, state, onDone, store = nul
   const status = el("span", "sg-match-status");
   status.setAttribute("aria-live", "polite");
   let complete = false;
+  // The mission now caps the studio (after practice and supports), so it
+  // hands off to the Apply workbench rather than back to Build.
   launch.onclick = () => {
-    if (!state.before) {
-      status.textContent = "Choose the readiness pulse that fits you right now.";
-      return;
-    }
     if (!complete) {
       complete = true;
+      launch.textContent = "Mission accepted ✓";
       onDone();
     }
-    document.getElementById("sg-build")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    document.getElementById("sg-apply")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
   launchRow.append(launch, status);
   section.appendChild(launchRow);

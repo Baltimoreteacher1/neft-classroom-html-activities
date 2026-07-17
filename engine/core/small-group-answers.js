@@ -33,7 +33,8 @@ export const numberOf = (value) => {
   }
   const fraction = text.match(/^(-?\d+(?:\.\d+)?)\s*\/\s*(-?\d+(?:\.\d+)?)$/);
   if (fraction && Number(fraction[2]) !== 0) return Number(fraction[1]) / Number(fraction[2]);
-  const plain = text.match(/^-?\d+(?:\.\d+)?$/);
+  // Accept ".5" as well as "0.5" — students drop the leading zero constantly.
+  const plain = text.match(/^-?(?:\d+(?:\.\d+)?|\.\d+)$/);
   return plain ? Number.parseFloat(plain[0]) : null;
 };
 
@@ -42,7 +43,8 @@ export function isRight(input, answer) {
   if (norm(input) === norm(answer)) return true;
   const target = numberOf(answer);
   if (target == null) return false;
-  // Students often append the unit ("3.5 meters") — ignore a trailing word.
-  const typed = numberOf(String(input).replace(/[a-z°²³\s.]+$/i, ""));
+  // Students often append the unit ("3.5 meters", "$0.50 per", "0.5/item")
+  // — ignore any trailing non-numeric tail before comparing.
+  const typed = numberOf(String(input).replace(/[a-z°²³\s./]+$/i, ""));
   return typed != null && Math.abs(typed - target) < 1e-9;
 }
