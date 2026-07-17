@@ -215,6 +215,26 @@ assert.equal(
   null,
   "the Create-a-Challenge lab is removed",
 );
+// Passport bridge installs without a passport layer present and never throws.
+const { installSmallGroupPassport } = await import("../engine/core/small-group-passport.js");
+const passportStore = (() => {
+  const data = {};
+  return {
+    get: (name, fallback) => (data[name] === undefined ? fallback : data[name]),
+    set: (name, value) => {
+      data[name] = value;
+    },
+    addTo: (name, value) => {
+      data[name] = [...(data[name] || []), value];
+    },
+    has: (name, value) => Array.isArray(data[name]) && data[name].includes(value),
+  };
+})();
+assert.equal(
+  installSmallGroupPassport({ lessonId: "1-1-group1", store: passportStore, events: {} }),
+  true,
+  "passport bridge arms without throwing even when the passport layer is absent",
+);
 // Vocabulary keeps its illustrations (word + definition + image); everywhere
 // else, only problem-related SVG models may render — no photos or decor.
 const vocabCardImages = [...document.querySelectorAll("#sg-vocab .sg-vcard img")];

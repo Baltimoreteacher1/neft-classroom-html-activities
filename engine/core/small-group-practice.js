@@ -1,5 +1,5 @@
 import { isRight, numberOf } from "./small-group-answers.js";
-import { celebrate, el, esc } from "./small-group-ui.js";
+import { bi, celebrate, el, esc } from "./small-group-ui.js";
 import { appendVisualPractice } from "./small-group-visual-practice.js";
 
 function answerOf(item) {
@@ -25,9 +25,11 @@ function itemStem(item) {
   return item.stem || item.title || item.instructions || item.prompt || "Try this problem.";
 }
 
-function questionCard(index, stem) {
+function questionCard(index, stem, stemEs) {
   const card = el("div", "prob");
-  card.appendChild(el("p", "q", `<span class="pn">${index + 1}</span><span>${esc(stem)}</span>`));
+  card.appendChild(
+    el("p", "q", `<span class="pn">${index + 1}</span><span>${bi(stem, stemEs)}</span>`),
+  );
   return card;
 }
 
@@ -44,7 +46,8 @@ function showFeedback(node, type, html) {
 
 function appendHints(card, item, events = {}) {
   const hints = item.hints || (item.hint ? [item.hint] : []);
-  if (!hints.length) return;
+  if (!hints.length) return null;
+  const hintsEs = Array.isArray(item.hintsEs) ? item.hintsEs : [];
   let shown = 0;
   const row = el("div", "row");
   const button = el("button", "btn ghost", "💡 Open hint 1");
@@ -52,7 +55,7 @@ function appendHints(card, item, events = {}) {
   const box = el("div", "hintbox");
   button.onclick = () => {
     events.onHint?.();
-    box.appendChild(el("p", null, `<b>Hint ${shown + 1}:</b> ${esc(hints[shown])}`));
+    box.appendChild(el("p", null, `<b>Hint ${shown + 1}:</b> ${bi(hints[shown], hintsEs[shown])}`));
     shown++;
     if (shown >= hints.length) {
       button.disabled = true;
@@ -63,10 +66,14 @@ function appendHints(card, item, events = {}) {
   };
   row.appendChild(button);
   card.append(row, box);
+  // Auto-opener for the adaptive miss path: surfaces the first hint only.
+  return () => {
+    if (shown === 0 && !button.disabled) button.click();
+  };
 }
 
 function multipleChoiceCard(item, index, onSolved, events = {}) {
-  const card = questionCard(index, itemStem(item));
+  const card = questionCard(index, itemStem(item), item.stemEs);
   const status = feedback();
   const choices = el("div", "choices");
   let complete = false;
@@ -84,10 +91,12 @@ function multipleChoiceCard(item, index, onSolved, events = {}) {
         button.classList.add("wrong");
         button.disabled = true;
         const targeted = item.choiceFeedback?.[optionIndex];
+        // Skip generic authored filler so the engine's better default shows.
+        const useful = targeted && !/^re-?read the problem carefully/i.test(targeted.trim());
         showFeedback(
           status,
           "no",
-          targeted
+          useful
             ? `<b>Look closer:</b> ${esc(targeted)}`
             : "That choice does not fit yet. Compare it with the question, open a hint, and try again.",
         );
@@ -99,7 +108,7 @@ function multipleChoiceCard(item, index, onSolved, events = {}) {
       showFeedback(
         status,
         "ok",
-        `${streakNote(events)}✅ <b>Correct.</b> ${esc(item.explanation || "Say out loud why this choice works.")}`,
+        `${streakNote(events)}✅ <b>Correct.</b> ${bi(item.explanation || "Say out loud why this choice works.", item.explanationEs)}`,
       );
       celebrate((events.streak?.() || 0) >= 3 ? "🔥" : "✓");
       onSolved();
@@ -113,7 +122,11 @@ function multipleChoiceCard(item, index, onSolved, events = {}) {
 }
 
 function errorAnalysisCard(item, index, onSolved, events = {}) {
-  const card = questionCard(index, item.title || item.stem || "Find the reasoning break.");
+  const card = questionCard(
+    index,
+    item.title || item.stem || "Find the reasoning break.",
+    item.stemEs || item.titleEs,
+  );
   const work = el("div", "we-steps");
   const list = el("ol", "steps");
   item.workedExample.forEach((step) =>
@@ -173,7 +186,7 @@ function parseEquation(stem) {
   };
 }
 
-function answerControl(item, answer, scaffold, status, onSolved, events = {}, onStruggle) {
+function answerControl(item, answer, scaffold, status, onSolved, events = {}, onStruggle, onStuck) {
   const box = el("div");
   const equation = parseEquation(itemStem(item));
   const input = el("input", "fillin");
@@ -234,6 +247,8 @@ function answerControl(item, answer, scaffold, status, onSolved, events = {}, on
     if (!correct) {
       input.classList.add("bad");
       const opened = tries >= 2 && onStruggle?.();
+      // Third miss: bring the first hint to the student instead of waiting.
+      if (tries >= 3) onStuck?.();
       showFeedback(
         status,
         "no",
@@ -252,7 +267,7 @@ function answerControl(item, answer, scaffold, status, onSolved, events = {}, on
     showFeedback(
       status,
       "ok",
-      `${streakNote(events)}✅ <b>Correct.</b> ${esc(item.explanation || "Explain the step that convinced you.")}`,
+      `${streakNote(events)}✅ <b>Correct.</b> ${bi(item.explanation || "Explain the step that convinced you.", item.explanationEs)}`,
     );
     celebrate((events.streak?.() || 0) >= 3 ? "🔥" : "✓");
     onSolved();
@@ -316,15 +331,26 @@ function appendStepGuide(card, item, scaffold) {
 }
 
 function responseCard(item, index, variant, onSolved, scaffold, events = {}) {
-  const card = questionCard(index, itemStem(item));
+  const card = questionCard(index, itemStem(item), item.stemEs);
   const status = feedback();
   const answer = answerOf(item);
-  // Wired after the guide exists (it renders below the control); after two
-  // misses the control auto-opens it so support arrives without a hunt.
+  // Wired after the guide/hints exist (they render below the control); after
+  // two misses the control auto-opens the step guide, after three it also
+  // opens the first hint — support arrives without a hunt.
   let revealGuide = null;
+  let openHint = null;
   if (answer != null)
     card.appendChild(
-      answerControl(item, answer, scaffold, status, onSolved, events, () => revealGuide?.()),
+      answerControl(
+        item,
+        answer,
+        scaffold,
+        status,
+        onSolved,
+        events,
+        () => revealGuide?.(),
+        () => openHint?.(),
+      ),
     );
   else {
     const response = el("textarea", "sg-ta");
@@ -361,7 +387,7 @@ function responseCard(item, index, variant, onSolved, scaffold, events = {}) {
   // moment it appears; the step guide and hints render below it.
   card.appendChild(status);
   revealGuide = appendStepGuide(card, item, scaffold);
-  appendHints(card, item, events);
+  openHint = appendHints(card, item, events);
   return card;
 }
 
@@ -463,7 +489,8 @@ export function createPracticeSection(
       `<span class="n">${options.number || 3}</span><div><div class="sg-eyebrow">${esc(options.eyebrow || "Try · revise · explain")}</div><h2>${esc(title)}</h2></div>`,
     ),
   );
-  if (options.directions) section.appendChild(el("p", "sg-directions", esc(options.directions)));
+  if (options.directions)
+    section.appendChild(el("p", "sg-directions", bi(options.directions, options.directionsEs)));
   const mistake = config.practice?.commonMistake;
   const mistakeText = typeof mistake === "string" ? mistake : mistake?.text || mistake?.mistake;
   if (mistakeText && config.variant !== "group2" && options.showMistake !== false) {
@@ -505,6 +532,27 @@ export function createPracticeSection(
     const solve = () => {
       card?.classList.add("sg-done-all");
       solveItem(index);
+      // Hot streak in a Foundations lesson: offer the Challenge Lab bridge
+      // once, as an invitation — never a requirement.
+      if (
+        !section.dataset.bridgeShown &&
+        config.variant === "group1" &&
+        (events.streak?.() || 0) >= 4
+      ) {
+        section.dataset.bridgeShown = "true";
+        const bridge = el(
+          "div",
+          "card sg-bridge",
+          `<div class="sg-eyebrow">On a roll</div><h3>🔥 Ready for a bigger challenge?</h3><p>${bi(
+            "You are solving these confidently. The Challenge Lab version of this lesson pushes the same idea further.",
+            "Estás resolviendo con confianza. La versión Challenge Lab de esta lección lleva la misma idea más lejos.",
+          )}</p>`,
+        );
+        const go = el("a", "btn ghost", "Try the Challenge Lab →");
+        go.href = window.location.pathname.replace("-group1", "-group2");
+        bridge.appendChild(go);
+        card?.after(bridge);
+      }
     };
     card = problemCard(item, index, config.variant, solve, scaffold, events);
     appendVisualPractice(card, item, { mode: options.mode || "guided", events });

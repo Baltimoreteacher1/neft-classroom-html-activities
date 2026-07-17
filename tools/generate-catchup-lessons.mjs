@@ -3,10 +3,11 @@
 // Clone the band's LAST lesson config as structural base (renderer requires all
 // 5 phase sections), replace content: Big Ideas conceptIntro, merged vocab,
 // mixed practice sampled from every band lesson, middle lesson's exit ticket.
-import { readFileSync, writeFileSync, readdirSync, mkdirSync, existsSync } from "node:fs";
-import { join, dirname, resolve } from "node:path";
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { shellHtml, LESSON_JS } from "./lib/compact-shell.mjs";
+import { LESSON_JS, shellHtml } from "./lib/compact-shell.mjs";
+import { buildParallelPractice } from "./lib/small-group-parallel-practice.mjs";
 
 // Order items so the compact renderer's rich interactions come first.
 const RICH = new Set(["multiple-choice", "error-analysis", "open-response"]);
@@ -62,8 +63,7 @@ for (const band of bands) {
   const mid = srcs[Math.floor((srcs.length - 1) / 2)];
 
   const titles = srcs.map((s) => `${dots(u, s.n)} ${s.c.title}`).join(", ");
-  const keyIdeaOf = (s) =>
-    s.c.launch?.conceptIntro?.keyIdea || s.c.contentObjective || s.c.title;
+  const keyIdeaOf = (s) => s.c.launch?.conceptIntro?.keyIdea || s.c.contentObjective || s.c.title;
 
   const out = base;
   out.lessonId = id;
@@ -153,6 +153,28 @@ for (const band of bands) {
     stepLabel: "Review",
   };
 
+  // Parallel practice: 12 typed-in guided problems (same contract as the
+  // small-group lessons) drawn evenly from each band lesson's support-level
+  // builder, in band order. A lesson with no builder just yields its share to
+  // the remaining lessons — the total is always exactly 12.
+  const parallelSources = [];
+  for (const s of srcs) {
+    try {
+      parallelSources.push({ n: s.n, items: buildParallelPractice(s.c, `${u}-${s.n}`, 1) });
+    } catch {
+      // No parallel-practice builder for this lesson; skip it.
+    }
+  }
+  if (!parallelSources.length) throw new Error(`${id}: no parallel-practice builders in band`);
+  const per = Math.floor(12 / parallelSources.length);
+  const rem = 12 % parallelSources.length;
+  out.parallelPractice = parallelSources.flatMap((src, i) =>
+    src.items.slice(0, per + (i < rem ? 1 : 0)).map((it) => tagItem(it, dots(u, src.n))),
+  );
+  out.parallelPractice.forEach((it, i) => {
+    it.id = `${id}-parallel-${String(i + 1).padStart(2, "0")}`;
+  });
+
   if (mid.c.reflect?.exitTicket) {
     out.reflect = JSON.parse(JSON.stringify(mid.c.reflect));
     out.reflect.exitTicket.stem = `(Catch-up check, from Lesson ${dots(u, mid.n)}) ${out.reflect.exitTicket.stem}`;
@@ -164,6 +186,10 @@ for (const band of bands) {
   for (const t of ["approaching", "onLevel", "extending"])
     if (!out.practice[t].length) throw new Error(`${id}: empty tier ${t}`);
   if (out.vocabulary.length < 3) throw new Error(`${id}: thin vocab`);
+  if (out.parallelPractice.length !== 12)
+    throw new Error(`${id}: expected 12 parallel items, got ${out.parallelPractice.length}`);
+  if (new Set(out.parallelPractice.map((it) => it.stem)).size !== 12)
+    throw new Error(`${id}: duplicate parallel-practice stems`);
 
   const baseId = `${u}-${last}`;
   if (!DRY) {
@@ -190,16 +216,14 @@ for (const band of bands) {
       onLevel: out.practice.onLevel.length,
       extending: out.practice.extending.length,
       optional: out.practice.optional.length,
+      parallel: out.parallelPractice.length,
     },
   });
 }
 
-writeFileSync(
-  new URL("./catchup-rows.json", import.meta.url),
-  JSON.stringify(rows, null, 2),
-);
+writeFileSync(new URL("./catchup-rows.json", import.meta.url), JSON.stringify(rows, null, 2));
 console.log(`${DRY ? "[dry] " : ""}bands: ${rows.length}`);
 for (const r of rows)
   console.log(
-    `${r.id.padEnd(14)} after ${r.afterLesson.padEnd(5)} ${r.range.padEnd(9)} v${r.counts.vocab} a${r.counts.approaching} o${r.counts.onLevel} e${r.counts.extending} opt${r.counts.optional}`,
+    `${r.id.padEnd(14)} after ${r.afterLesson.padEnd(5)} ${r.range.padEnd(9)} v${r.counts.vocab} a${r.counts.approaching} o${r.counts.onLevel} e${r.counts.extending} opt${r.counts.optional} p${r.counts.parallel}`,
   );

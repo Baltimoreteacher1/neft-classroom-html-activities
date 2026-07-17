@@ -156,13 +156,37 @@ export function createVocabularySection(config, onDone, store = null) {
     const bar = el("div", "sg-langbar");
     bar.appendChild(el("span", "block-lab", "Also show:"));
     const buttons = [];
+    // The device lane is read once at render time by every section, so
+    // switching it must re-render the whole studio. We persist the studio's
+    // structural state, so a reload lands the student back in place — now in
+    // the chosen lane. Boot lane is captured so a no-op re-pick doesn't reload.
+    let bootLane = "en";
+    try {
+      bootLane = window.localStorage.getItem("nt-sg-lang") === "es" ? "es" : "en";
+    } catch {
+      /* private mode */
+    }
     const choose = (lang) => {
       currentLang = lang;
-      store?.set("vocabLang", lang ? lang.id : "en");
+      const nextLane = lang ? lang.id : "en";
+      store?.set("vocabLang", nextLane);
+      let laneChanged = false;
+      try {
+        laneChanged = window.localStorage.getItem("nt-sg-lang") !== nextLane;
+        window.localStorage.setItem("nt-sg-lang", nextLane);
+      } catch {
+        /* private mode — vocab cards still switch below */
+      }
       buttons.forEach(([button, id]) =>
-        button.setAttribute("aria-pressed", String(id === (lang ? lang.id : "en"))),
+        button.setAttribute("aria-pressed", String(id === nextLane)),
       );
       renderCards();
+      // Reload only when the Spanish lane actually flips, so problem stems,
+      // steps, and hints re-render in the chosen language.
+      if (laneChanged && (nextLane === "es" || bootLane === "es")) {
+        bootLane = nextLane;
+        window.location.reload();
+      }
     };
     const englishOnly = el("button", "sg-langbtn", "English only");
     englishOnly.type = "button";

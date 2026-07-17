@@ -40,6 +40,20 @@ export function studentVoice(text) {
   return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
 }
 
+// Device-wide Spanish lane: chosen from the vocabulary language bar, read at
+// render time anywhere student text is drawn.
+export const esLane = () => {
+  try {
+    return window.localStorage.getItem("nt-sg-lang") === "es";
+  } catch {
+    return false;
+  }
+};
+
+// Bilingual line: English always, Spanish beneath it when the lane is on.
+export const bi = (en, es) =>
+  es && esLane() ? `${esc(en)}<span class="sg-es" lang="es">${esc(es)}</span>` : esc(en);
+
 export const esc = (value) =>
   String(value == null ? "" : value)
     .replace(/&/g, "&amp;")
@@ -224,6 +238,14 @@ export function injectSmallGroupStyles(accent) {
     .sg-model-sym{min-width:56px;min-height:48px;border:2px solid var(--sg-line);border-radius:11px;background:#fff;color:var(--sg-deep);font-size:24px;font-weight:900;cursor:pointer}
     .sg-model-sym.ok{border-color:var(--sg-good);background:#e9f8f0}
     .sg-model-sym.bad{border-color:#bd3c31;background:#fff0ee;opacity:.6}
+    .sg-frac-stack{display:inline-grid;justify-items:center;gap:4px}
+    .sg-frac-bar{display:block;width:64px;height:4px;border-radius:2px;background:var(--sg-deep)}
+    .sg-plot-grid{cursor:crosshair;touch-action:manipulation}
+    .sg-tile-tray{min-height:56px;padding:9px;border:2px dashed var(--sg-line);border-radius:12px}
+    .sg-tile{min-width:44px;min-height:52px;border-radius:10px;font-family:"Nunito",sans-serif;font-size:20px;font-weight:900;cursor:pointer;border:2px solid var(--sg-deep)}
+    .sg-tile.is-x{background:var(--sg);color:#fff;min-width:64px}
+    .sg-tile.is-one{background:var(--sg-pop);color:#332000}
+    .sg-es{display:block;margin-top:3px;color:var(--sg-muted);font-weight:600;font-size:.93em}
     /* Place-value giant workspace: the stacked column math IS the visual */
     .sg-big-work .colmath{min-width:320px;padding:24px 38px;border:3px solid var(--sg);border-radius:20px;background:#fffdf8;box-shadow:0 10px 25px rgba(23,32,51,.09);font-size:44px}
     .sg-big-work .colmath .fillin{width:220px;font-size:40px}

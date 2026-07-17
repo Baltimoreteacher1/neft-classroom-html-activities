@@ -45,4 +45,35 @@ for (const lessonId of ["2-3", "2-3-group1", "2-3-group2"]) {
   assert.equal(exitTicket.choices[exitTicket.correctIndex], "10");
 }
 
+// Catch-up parity: every catch-up station carries the same 12-problem
+// parallel-practice contract as the small-group lessons (typed-in visual
+// models + guided steps, unique ids/stems, catch-up-scoped ids).
+const catchups = JSON.parse(readFileSync(new URL("./catchup-rows.json", import.meta.url), "utf8"));
+assert.equal(catchups.length, 20, "expected 20 catch-up stations");
+for (const row of catchups) {
+  const config = readLessonConfig(row.id);
+  const parallel = config.parallelPractice || [];
+  assert.equal(parallel.length, 12, `${row.id} needs 12 parallel problems`);
+  assert.equal(
+    new Set(parallel.map((item) => item.id)).size,
+    12,
+    `${row.id} parallel IDs must be unique`,
+  );
+  assert.equal(
+    new Set(parallel.map((item) => item.stem)).size,
+    12,
+    `${row.id} parallel stems must be unique`,
+  );
+  for (const item of parallel) {
+    assert.match(
+      item.id,
+      new RegExp(`^${row.id}-parallel-\\d{2}$`),
+      `${row.id} parallel IDs must be catch-up scoped`,
+    );
+    assert.ok(item.answer != null, `${row.id}/${item.id} needs a checkable answer`);
+    assert.ok(item.visual?.kind, `${row.id}/${item.id} needs a visual model`);
+    assert.ok(item.steps?.length >= 2, `${row.id}/${item.id} needs guided steps`);
+  }
+}
+
 console.log("small-group validator contracts passed");

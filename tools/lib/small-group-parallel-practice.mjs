@@ -47,17 +47,34 @@ const mixedText = ({ n, d }) => {
 };
 const divideFractions = (left, right) => fraction(left.n * right.d, left.d * right.n);
 
-function makeItem(context, index, { stem, answer, visual, steps, hint, explanation }) {
+// Spanish lane defaults — deterministic parallel templates, never runtime translation.
+const ES_REREAD_HINT = "Vuelve a leer la pregunta. ¿Qué te pide encontrar exactamente?";
+const ES_DEFAULT_STRATEGY = "Usa el modelo visual y completa un paso a la vez.";
+
+function makeItem(
+  context,
+  index,
+  { stem, stemEs, answer, visual, steps, hint, hintEs, explanation, explanationEs },
+) {
   // Hints ladder nudge → strategy → worked first step, never the answer.
+  // Steps arrive as [promptEn, answer, promptEs]; answers are shared across lanes.
+  // Spanish is emitted ONLY when this builder authored a Spanish stem — the
+  // engine's bi() helper falls back to English for every other item, so a
+  // half-translated unit never leaks "undefined" or a stray Spanish hint.
   const strategy = hint || "Use the visual model, then complete one step at a time.";
   const firstStep = steps[0] ? String(steps[0][0]).replace("___", String(steps[0][1])) : null;
-  return {
+  const hasEs = Boolean(stemEs);
+  const item = {
     id: `${context.lessonId}-parallel-${String(index + 1).padStart(2, "0")}`,
     type: "guided-fill",
     stem,
     answer: String(answer),
     visual,
-    steps: steps.map(([prompt, stepAnswer]) => ({ prompt, answer: String(stepAnswer) })),
+    steps: steps.map(([prompt, stepAnswer, promptEs]) =>
+      hasEs && promptEs
+        ? { prompt, promptEs, answer: String(stepAnswer) }
+        : { prompt, answer: String(stepAnswer) },
+    ),
     hints: [
       "Re-read the question. What exactly is it asking you to find?",
       strategy,
@@ -66,6 +83,23 @@ function makeItem(context, index, { stem, answer, visual, steps, hint, explanati
     explanation:
       explanation || steps.map(([prompt, value]) => prompt.replace("___", value)).join(" "),
   };
+  if (hasEs) {
+    item.stemEs = stemEs;
+    const firstStepEs =
+      steps[0] && steps[0][2] ? String(steps[0][2]).replace("___", String(steps[0][1])) : null;
+    item.hintsEs = [
+      ES_REREAD_HINT,
+      hintEs || ES_DEFAULT_STRATEGY,
+      ...(firstStepEs ? [`Empieza así: ${firstStepEs}`] : []),
+    ];
+    const explEs =
+      explanationEs ||
+      (steps.every((step) => step[2])
+        ? steps.map(([, value, promptEs]) => String(promptEs).replace("___", value)).join(" ")
+        : null);
+    if (explEs) item.explanationEs = explEs;
+  }
+  return item;
 }
 
 function unit1(context) {
@@ -79,14 +113,24 @@ function unit1(context) {
       const first = primes[0];
       return makeItem(context, index, {
         stem: `Build a new factor tree for ${value}. Write the prime factorization.`,
+        stemEs: `Construye un nuevo árbol de factores para ${value}. Escribe la factorización prima.`,
         answer: primes.join(" × "),
         visual: { kind: "factor-tree", value },
         steps: [
-          [`The smallest prime factor of ${value} is ___.`, first],
-          [`${value} ÷ ${first} = ___.`, value / first],
-          ["Continue until every leaf is prime: ___.", primes.join(" × ")],
+          [
+            `The smallest prime factor of ${value} is ___.`,
+            first,
+            `El factor primo más pequeño de ${value} es ___.`,
+          ],
+          [`${value} ÷ ${first} = ___.`, value / first, `${value} ÷ ${first} = ___.`],
+          [
+            "Continue until every leaf is prime: ___.",
+            primes.join(" × "),
+            "Continúa hasta que cada rama termine en un número primo: ___.",
+          ],
         ],
         hint: "Start by testing divisibility by 2, then 3, then 5.",
+        hintEs: "Empieza probando la divisibilidad entre 2, luego entre 3 y luego entre 5.",
       });
     });
   }
@@ -114,21 +158,47 @@ function unit1(context) {
       const b = right * scaleUp;
       const answer = lesson === 2 ? gcd(a, b) : lcm(a, b);
       const label = lesson === 2 ? "greatest common factor" : "least common multiple";
+      const labelEs = lesson === 2 ? "máximo común divisor" : "mínimo común múltiplo";
       return makeItem(context, index, {
         stem: `Find the ${label} of ${a} and ${b}.`,
+        stemEs: `Encuentra el ${labelEs} de ${a} y ${b}.`,
         answer,
         visual: { kind: lesson === 2 ? "factor-table" : "multiple-lanes", values: [a, b] },
         steps:
           lesson === 2
             ? [
-                [`List the factors of ${a}: ___.`, factors(a).join(", ")],
-                [`List the factors of ${b}: ___.`, factors(b).join(", ")],
-                ["Choose the greatest factor in both lists: ___.", answer],
+                [
+                  `List the factors of ${a}: ___.`,
+                  factors(a).join(", "),
+                  `Escribe los factores de ${a}: ___.`,
+                ],
+                [
+                  `List the factors of ${b}: ___.`,
+                  factors(b).join(", "),
+                  `Escribe los factores de ${b}: ___.`,
+                ],
+                [
+                  "Choose the greatest factor in both lists: ___.",
+                  answer,
+                  "Elige el factor más grande que aparece en las dos listas: ___.",
+                ],
               ]
             : [
-                [`The smallest multiple that ${a} and ${b} share is ___.`, answer],
-                [`Check: ${answer} ÷ ${a} = ___.`, answer / a],
-                [`Check: ${answer} ÷ ${b} = ___.`, answer / b],
+                [
+                  `The smallest multiple that ${a} and ${b} share is ___.`,
+                  answer,
+                  `El múltiplo más pequeño que comparten ${a} y ${b} es ___.`,
+                ],
+                [
+                  `Check: ${answer} ÷ ${a} = ___.`,
+                  answer / a,
+                  `Comprueba: ${answer} ÷ ${a} = ___.`,
+                ],
+                [
+                  `Check: ${answer} ÷ ${b} = ___.`,
+                  answer / b,
+                  `Comprueba: ${answer} ÷ ${b} = ___.`,
+                ],
               ],
       });
     });
@@ -141,12 +211,21 @@ function unit1(context) {
       const dividend = divisor * quotient + remainder;
       return makeItem(context, index, {
         stem: `Divide ${dividend} by ${divisor}. Give the quotient and remainder.`,
+        stemEs: `Divide ${dividend} entre ${divisor}. Escribe el cociente y el residuo.`,
         answer: `${quotient} R${remainder}`,
         visual: { kind: "division-box", values: [dividend, divisor] },
         steps: [
-          [`${divisor} fits into ${dividend} about ___ times.`, quotient],
-          [`Multiply back: ${divisor} × ${quotient} = ___.`, divisor * quotient],
-          ["The amount left is ___.", remainder],
+          [
+            `${divisor} fits into ${dividend} about ___ times.`,
+            quotient,
+            `${divisor} cabe en ${dividend} aproximadamente ___ veces.`,
+          ],
+          [
+            `Multiply back: ${divisor} × ${quotient} = ___.`,
+            divisor * quotient,
+            `Multiplica para comprobar: ${divisor} × ${quotient} = ___.`,
+          ],
+          ["The amount left is ___.", remainder, "La cantidad que sobra es ___."],
         ],
       });
     });
@@ -166,15 +245,25 @@ function unit1(context) {
     }
     return makeItem(context, index, {
       stem: `Solve the new decimal problem: ${a} ${operation} ${b}.`,
+      stemEs: `Resuelve el nuevo problema con decimales: ${a} ${operation} ${b}.`,
       answer,
       visual: { kind: "place-value", values: [a, b], operation },
       steps: [
         [
           "Line up or rewrite the place values: ___ decimal places in the first number.",
           String(a).split(".")[1]?.length || 0,
+          "Alinea o reescribe los valores posicionales: ___ cifras decimales en el primer número.",
         ],
-        [`Round ${a} to the nearest whole number: ___.`, Math.round(a)],
-        ["Calculate and place the decimal: ___.", answer],
+        [
+          `Round ${a} to the nearest whole number: ___.`,
+          Math.round(a),
+          `Redondea ${a} al número entero más cercano: ___.`,
+        ],
+        [
+          "Calculate and place the decimal: ___.",
+          answer,
+          "Calcula y coloca el punto decimal: ___.",
+        ],
       ],
     });
   });
@@ -190,40 +279,59 @@ function unit2(context) {
     let left = fraction(a, b);
     let right = fraction(c, d);
     let stem;
+    let stemEs;
     if (lesson === 1) {
       left = fraction(2 + (index % 4), 3 + (index % 3));
       right = fraction(1, 4 + (index % 4));
       stem = `How many groups of ${fractionText(right)} fit in ${fractionText(left)}?`;
+      stemEs = `¿Cuántos grupos de ${fractionText(right)} caben en ${fractionText(left)}?`;
     } else if (lesson === 2) {
       left = fraction(3 + index + context.group, 1);
       right = fraction(1 + (index % 3), 2 + (index % 4));
       stem = `Divide the whole number by the fraction: ${fractionText(left)} ÷ ${fractionText(right)}.`;
+      stemEs = `Divide el número entero entre la fracción: ${fractionText(left)} ÷ ${fractionText(right)}.`;
     } else if (lesson === 4) {
       left = fraction((2 + (index % 4)) * 2 + 1, 2);
       right = fraction((1 + (index % 3)) * 3 + 1, 3);
       stem = `Divide the mixed-number amounts: ${mixedText(left)} ÷ ${mixedText(right)}.`;
+      stemEs = `Divide las cantidades de números mixtos: ${mixedText(left)} ÷ ${mixedText(right)}.`;
     } else {
       stem =
         lesson === 5
           ? `A ribbon is ${fractionText(left)} meter long. Each piece is ${fractionText(right)} meter. How many pieces can be cut?`
           : `Solve the new fraction quotient: ${fractionText(left)} ÷ ${fractionText(right)}.`;
+      stemEs =
+        lesson === 5
+          ? `Una cinta mide ${fractionText(left)} de metro. Cada pedazo mide ${fractionText(right)} de metro. ¿Cuántos pedazos se pueden cortar?`
+          : `Resuelve el nuevo cociente de fracciones: ${fractionText(left)} ÷ ${fractionText(right)}.`;
     }
     const answer = divideFractions(left, right);
     const reciprocal = fraction(right.d, right.n);
     const firstStep =
       lesson === 4
-        ? [`Rewrite ${mixedText(left)} as an improper fraction: ___.`, fractionText(left)]
-        : [`Keep the first number: ___.`, fractionText(left)];
+        ? [
+            `Rewrite ${mixedText(left)} as an improper fraction: ___.`,
+            fractionText(left),
+            `Reescribe ${mixedText(left)} como fracción impropia: ___.`,
+          ]
+        : [`Keep the first number: ___.`, fractionText(left), `Conserva el primer número: ___.`];
     return makeItem(context, index, {
       stem,
+      stemEs,
       answer: fractionText(answer),
       visual: { kind: "fraction-bars", left, right },
       steps: [
         firstStep,
-        [`Use the reciprocal of ${fractionText(right)}: ___.`, fractionText(reciprocal)],
-        ["Multiply and simplify: ___.", fractionText(answer)],
+        [
+          `Use the reciprocal of ${fractionText(right)}: ___.`,
+          fractionText(reciprocal),
+          `Usa el recíproco de ${fractionText(right)}: ___.`,
+        ],
+        ["Multiply and simplify: ___.", fractionText(answer), "Multiplica y simplifica: ___."],
       ],
       hint: "Keep the first fraction, change division to multiplication, and flip the second fraction.",
+      hintEs:
+        "Conserva la primera fracción, cambia la división por multiplicación e invierte la segunda fracción.",
     });
   });
 }
@@ -236,20 +344,26 @@ function unit3(context) {
     const scale = 2 + (index % 5) + (context.group === 2 ? 2 : 0);
     const unitRate = tidy(right / left);
     let stem = `A new model has ${left} blue tiles for every ${right} gold tiles. Write the ratio blue:gold.`;
+    let stemEs = `Un nuevo modelo tiene ${left} fichas azules por cada ${right} fichas doradas. Escribe la razón azul:dorado.`;
     let answer = `${left}:${right}`;
     let steps = [
-      ["Blue tiles: ___.", left],
-      ["Gold tiles: ___.", right],
-      ["Write blue first, then gold: ___.", answer],
+      ["Blue tiles: ___.", left, "Fichas azules: ___."],
+      ["Gold tiles: ___.", right, "Fichas doradas: ___."],
+      ["Write blue first, then gold: ___.", answer, "Escribe primero azul y luego dorado: ___."],
     ];
     let visual = { kind: "ratio-dots", values: [left, right] };
     if ([2, 3, 4].includes(lesson)) {
       answer = `${left * scale}:${right * scale}`;
       stem = `Complete a new equivalent ratio: ${left}:${right} = ___:___. Use a scale factor of ${scale}.`;
+      stemEs = `Completa una nueva razón equivalente: ${left}:${right} = ___:___. Usa un factor de escala de ${scale}.`;
       steps = [
-        [`Multiply ${left} × ${scale}: ___.`, left * scale],
-        [`Multiply ${right} × ${scale}: ___.`, right * scale],
-        ["Write the equivalent ratio: ___.", answer],
+        [`Multiply ${left} × ${scale}: ___.`, left * scale, `Multiplica ${left} × ${scale}: ___.`],
+        [
+          `Multiply ${right} × ${scale}: ___.`,
+          right * scale,
+          `Multiplica ${right} × ${scale}: ___.`,
+        ],
+        ["Write the equivalent ratio: ___.", answer, "Escribe la razón equivalente: ___."],
       ];
       visual = {
         kind: lesson === 3 ? "coordinate-ratio" : "ratio-table",
@@ -261,22 +375,36 @@ function unit3(context) {
       const otherRate = tidy(otherRight / otherLeft);
       answer = unitRate < otherRate ? "first" : "second";
       stem = `Compare gold tiles per blue tile for ${left}:${right} and ${otherLeft}:${otherRight}. Which ratio gives fewer gold tiles per blue tile? Type first or second.`;
+      stemEs = `Compara las fichas doradas por cada ficha azul en ${left}:${right} y ${otherLeft}:${otherRight}. ¿Qué razón da menos fichas doradas por ficha azul? Escribe first (primera) o second (segunda).`;
       steps = [
-        [`First rate — gold per blue: ${right} ÷ ${left} = ___.`, unitRate],
-        [`Second rate — gold per blue: ${otherRight} ÷ ${otherLeft} = ___.`, otherRate],
-        ["The smaller rate belongs to the ___ ratio (type first or second).", answer],
+        [
+          `First rate — gold per blue: ${right} ÷ ${left} = ___.`,
+          unitRate,
+          `Primera tasa — doradas por azul: ${right} ÷ ${left} = ___.`,
+        ],
+        [
+          `Second rate — gold per blue: ${otherRight} ÷ ${otherLeft} = ___.`,
+          otherRate,
+          `Segunda tasa — doradas por azul: ${otherRight} ÷ ${otherLeft} = ___.`,
+        ],
+        [
+          "The smaller rate belongs to the ___ ratio (type first or second).",
+          answer,
+          "La tasa menor corresponde a la razón ___ (escribe first o second).",
+        ],
       ];
       visual = { kind: "double-rate-bars", values: [left, right, otherLeft, otherRight] };
     } else if (lesson === 6) {
       answer = left * scale;
       stem = `A drawing uses a scale of 1:${scale}. A side is ${left} cm in the drawing. Find the actual length.`;
+      stemEs = `Un dibujo usa una escala de 1:${scale}. Un lado mide ${left} cm en el dibujo. Encuentra la longitud real.`;
       steps = [
-        [`Scale factor: ___.`, scale],
-        [`Multiply ${left} × ${scale}: ___.`, answer],
+        [`Scale factor: ___.`, scale, `Factor de escala: ___.`],
+        [`Multiply ${left} × ${scale}: ___.`, answer, `Multiplica ${left} × ${scale}: ___.`],
       ];
       visual = { kind: "scale-bars", values: [left, answer] };
     }
-    return makeItem(context, index, { stem, answer, visual, steps });
+    return makeItem(context, index, { stem, stemEs, answer, visual, steps });
   });
 }
 
@@ -303,12 +431,21 @@ function unit4(context) {
       const percent = tidy(decimal * 100);
       return makeItem(context, index, {
         stem: `Complete the new equivalence: ${numerator}/${denominator} = ___ decimal = ___%.`,
+        stemEs: `Completa la nueva equivalencia: ${numerator}/${denominator} = ___ en decimal = ___%.`,
         answer: `${decimal} = ${percent}%`,
         visual: { kind: "percent-grid", percent },
         steps: [
-          [`Divide ${numerator} ÷ ${denominator}: ___.`, decimal],
-          [`Multiply the decimal by 100: ___.`, percent],
-          ["Write the percent with its symbol: ___.", `${percent}%`],
+          [
+            `Divide ${numerator} ÷ ${denominator}: ___.`,
+            decimal,
+            `Divide ${numerator} ÷ ${denominator}: ___.`,
+          ],
+          [`Multiply the decimal by 100: ___.`, percent, `Multiplica el decimal por 100: ___.`],
+          [
+            "Write the percent with its symbol: ___.",
+            `${percent}%`,
+            "Escribe el porcentaje con su símbolo: ___.",
+          ],
         ],
       });
     }
@@ -317,11 +454,12 @@ function unit4(context) {
       const decimal = tidy(percent / 100);
       return makeItem(context, index, {
         stem: `Rewrite the new percent ${percent}% as a decimal.`,
+        stemEs: `Reescribe el nuevo porcentaje ${percent}% como decimal.`,
         answer: decimal,
         visual: { kind: "percent-grid", percent },
         steps: [
-          ["Percent means divide by ___.", 100],
-          [`${percent} ÷ 100 = ___.`, decimal],
+          ["Percent means divide by ___.", 100, "Porcentaje significa dividir entre ___."],
+          [`${percent} ÷ 100 = ___.`, decimal, `${percent} ÷ 100 = ___.`],
         ],
       });
     }
@@ -334,37 +472,65 @@ function unit4(context) {
         lesson === 5
           ? `A new item costs $${base} and is ${percent}% off. Find the sale price.`
           : `Find ${percent}% of ${base} using a model or equation.`;
+      const stemEs =
+        lesson === 5
+          ? `Un artículo nuevo cuesta $${base} y tiene un ${percent}% de descuento. Encuentra el precio de oferta.`
+          : `Encuentra el ${percent}% de ${base} usando un modelo o una ecuación.`;
       return makeItem(context, index, {
         stem,
+        stemEs,
         answer,
         visual: { kind: "percent-bar", whole: base, percent },
         steps: [
-          [`Write ${percent}% as a decimal: ___.`, percent / 100],
-          [`Find the percent amount: ${base} × ${percent / 100} = ___.`, amount],
-          ...(lesson === 5 ? [[`Subtract the discount: ${base} − ${amount} = ___.`, answer]] : []),
+          [
+            `Write ${percent}% as a decimal: ___.`,
+            percent / 100,
+            `Escribe ${percent}% como decimal: ___.`,
+          ],
+          [
+            `Find the percent amount: ${base} × ${percent / 100} = ___.`,
+            amount,
+            `Encuentra la cantidad del porcentaje: ${base} × ${percent / 100} = ___.`,
+          ],
+          ...(lesson === 5
+            ? [
+                [
+                  `Subtract the discount: ${base} − ${amount} = ___.`,
+                  answer,
+                  `Resta el descuento: ${base} − ${amount} = ___.`,
+                ],
+              ]
+            : []),
         ],
       });
     }
     if (lesson === 6) {
       // Real unit pairs, not abstract "conversion factors" — meaning first.
-      const [factor, bigUnit, smallUnit] = [
-        [12, "feet", "inches"],
-        [3, "yards", "feet"],
-        [16, "pounds", "ounces"],
-        [100, "meters", "centimeters"],
-        [1000, "kilograms", "grams"],
+      // Each tuple carries the Spanish plural + singular names for the ES lane.
+      const [factor, bigUnit, smallUnit, bigUnitEs, smallUnitEs, oneBigEs] = [
+        [12, "feet", "inches", "pies", "pulgadas", "pie"],
+        [3, "yards", "feet", "yardas", "pies", "yarda"],
+        [16, "pounds", "ounces", "libras", "onzas", "libra"],
+        [100, "meters", "centimeters", "metros", "centímetros", "metro"],
+        [1000, "kilograms", "grams", "kilogramos", "gramos", "kilogramo"],
       ][index % 5];
       const answer = n * factor;
       const oneBig = bigUnit.replace(/s$/, "");
       return makeItem(context, index, {
         stem: `1 ${oneBig} = ${factor} ${smallUnit}. Convert ${n} ${bigUnit} to ${smallUnit}.`,
+        stemEs: `1 ${oneBigEs} = ${factor} ${smallUnitEs}. Convierte ${n} ${bigUnitEs} a ${smallUnitEs}.`,
         answer,
         visual: { kind: "conversion-table", values: [n, factor] },
         steps: [
-          [`Each ${oneBig} is worth ___ ${smallUnit}.`, factor],
-          [`${n} × ${factor} = ___.`, answer],
+          [
+            `Each ${oneBig} is worth ___ ${smallUnit}.`,
+            factor,
+            `Cada ${oneBigEs} equivale a ___ ${smallUnitEs}.`,
+          ],
+          [`${n} × ${factor} = ___.`, answer, `${n} × ${factor} = ___.`],
         ],
         hint: `${smallUnit} are smaller than ${bigUnit}, so the number gets bigger — multiply.`,
+        hintEs: `En ${smallUnitEs} el número será mayor que en ${bigUnitEs}, así que multiplica.`,
       });
     }
     const quantity = 3 + (index % 7);
@@ -372,11 +538,16 @@ function unit4(context) {
     const answer = tidy(cost / quantity);
     return makeItem(context, index, {
       stem: `${quantity} items cost $${cost}. Find the new unit rate per item.`,
+      stemEs: `${quantity} artículos cuestan $${cost}. Encuentra la nueva tasa unitaria por artículo.`,
       answer,
       visual: { kind: "unit-rate-table", values: [quantity, cost] },
       steps: [
-        [`Divide cost by quantity: ${cost} ÷ ${quantity} = ___.`, answer],
-        ["Write the rate for 1 item: $___.", answer],
+        [
+          `Divide cost by quantity: ${cost} ÷ ${quantity} = ___.`,
+          answer,
+          `Divide el costo entre la cantidad: ${cost} ÷ ${quantity} = ___.`,
+        ],
+        ["Write the rate for 1 item: $___.", answer, "Escribe la tasa para 1 artículo: $___."],
       ],
     });
   });
@@ -393,12 +564,17 @@ function unit5or10(context) {
         const answer = a * b * c;
         return makeItem(context, index, {
           stem: `Find the volume of a new prism with dimensions ${a} by ${b} by ${c}.`,
+          stemEs: `Encuentra el volumen de un nuevo prisma con dimensiones ${a} por ${b} por ${c}.`,
           answer,
           visual: { kind: "volume-prism", values: [a, b, c] },
           steps: [
-            [`Base area: ${a} × ${b} = ___.`, a * b],
-            [`Volume: ${a * b} × ${c} = ___.`, answer],
-            ["Label the answer in ___ units.", "cubic"],
+            [`Base area: ${a} × ${b} = ___.`, a * b, `Área de la base: ${a} × ${b} = ___.`],
+            [`Volume: ${a * b} × ${c} = ___.`, answer, `Volumen: ${a * b} × ${c} = ___.`],
+            [
+              "Label the answer in ___ units.",
+              "cubic",
+              "Etiqueta la respuesta en unidades ___ (escribe la palabra en inglés).",
+            ],
           ],
         });
       }
@@ -406,13 +582,26 @@ function unit5or10(context) {
         const answer = 2 * (a * b + a * c + b * c);
         return makeItem(context, index, {
           stem: `A rectangular prism net has length ${a}, width ${b}, and height ${c}. Find its total surface area.`,
+          stemEs: `La red de un prisma rectangular tiene longitud ${a}, ancho ${b} y altura ${c}. Encuentra su área de superficie total.`,
           answer,
           visual: { kind: "prism-net", values: [a, b, c] },
           steps: [
-            [`Find the top and bottom together: 2(${a} × ${b}) = ___.`, 2 * a * b],
-            [`Find the front and back together: 2(${a} × ${c}) = ___.`, 2 * a * c],
-            [`Find the two side faces: 2(${b} × ${c}) = ___.`, 2 * b * c],
-            ["Add all six faces: ___.", answer],
+            [
+              `Find the top and bottom together: 2(${a} × ${b}) = ___.`,
+              2 * a * b,
+              `Encuentra la cara de arriba y la de abajo juntas: 2(${a} × ${b}) = ___.`,
+            ],
+            [
+              `Find the front and back together: 2(${a} × ${c}) = ___.`,
+              2 * a * c,
+              `Encuentra el frente y la parte de atrás juntos: 2(${a} × ${c}) = ___.`,
+            ],
+            [
+              `Find the two side faces: 2(${b} × ${c}) = ___.`,
+              2 * b * c,
+              `Encuentra las dos caras laterales: 2(${b} × ${c}) = ___.`,
+            ],
+            ["Add all six faces: ___.", answer, "Suma las seis caras: ___."],
           ],
         });
       }
@@ -432,16 +621,33 @@ function unit5or10(context) {
         const answer = trianglePair + lateralArea;
         return makeItem(context, index, {
           stem: `A triangular prism is ${length} units long. Its right-triangle base has side lengths ${leg1}, ${leg2}, and ${hypotenuse}. Find the total surface area.`,
+          stemEs: `Un prisma triangular mide ${length} unidades de largo. Su base es un triángulo rectángulo con lados de ${leg1}, ${leg2} y ${hypotenuse}. Encuentra el área de superficie total.`,
           answer,
           visual: {
             kind: "triangular-prism-surface",
             values: [leg1, leg2, hypotenuse, length],
           },
           steps: [
-            [`Find both triangular ends: 2(1/2 × ${leg1} × ${leg2}) = ___.`, trianglePair],
-            [`Add the triangle side lengths: ${leg1} + ${leg2} + ${hypotenuse} = ___.`, perimeter],
-            [`Find the three rectangles together: ${perimeter} × ${length} = ___.`, lateralArea],
-            ["Add the ends and rectangles: ___.", answer],
+            [
+              `Find both triangular ends: 2(1/2 × ${leg1} × ${leg2}) = ___.`,
+              trianglePair,
+              `Encuentra los dos extremos triangulares: 2(1/2 × ${leg1} × ${leg2}) = ___.`,
+            ],
+            [
+              `Add the triangle side lengths: ${leg1} + ${leg2} + ${hypotenuse} = ___.`,
+              perimeter,
+              `Suma los lados del triángulo: ${leg1} + ${leg2} + ${hypotenuse} = ___.`,
+            ],
+            [
+              `Find the three rectangles together: ${perimeter} × ${length} = ___.`,
+              lateralArea,
+              `Encuentra los tres rectángulos juntos: ${perimeter} × ${length} = ___.`,
+            ],
+            [
+              "Add the ends and rectangles: ___.",
+              answer,
+              "Suma los extremos y los rectángulos: ___.",
+            ],
           ],
         });
       }

@@ -1,5 +1,5 @@
 import { isRight } from "./small-group-answers.js";
-import { el, esc, speak } from "./small-group-ui.js";
+import { el, esc, esLane, speak } from "./small-group-ui.js";
 
 function valuesFrom(visual, stem, steps = []) {
   const values = [];
@@ -414,6 +414,11 @@ function guidedSteps(item, mode, events = {}) {
     input.setAttribute("aria-label", `Step ${index + 1} answer`);
     prompt.appendChild(input);
     prompt.appendChild(document.createTextNode(after.join("___")));
+    if (step.promptEs && esLane()) {
+      const spanish = el("span", "sg-es", esc(String(step.promptEs).replace("___", "____")));
+      spanish.lang = "es";
+      prompt.appendChild(spanish);
+    }
     const check = el("button", "btn sg-step-check", "Check step");
     check.type = "button";
     const status = el("span", "sg-step-status");
@@ -791,6 +796,218 @@ function typedInequality(item, steps, events) {
   return shell;
 }
 
+function typedFraction(item, steps, events) {
+  const left = item.visual?.left;
+  const right = item.visual?.right;
+  if (!left?.d || !right?.d) return null;
+  const shell = modelShell(
+    "Keep · flip · multiply",
+    "Type the reciprocal of the second fraction — flip it upside down.",
+  );
+  shell.insertAdjacentHTML(
+    "beforeend",
+    svgShell("fraction bars for this problem", fractionBars(item.visual, [])),
+  );
+  const status = modelStatus();
+  const row = el("div", "sg-model-row");
+  row.appendChild(el("span", "sg-model-rowlab", `Reciprocal of ${right.n}/${right.d} =`));
+  let built = 0;
+  const finish = () => {
+    if (++built < 2) return;
+    steps?.completeMatching(`${right.d}/${right.n}`);
+    status.textContent = "Flipped ✓ — now multiply straight across.";
+  };
+  const stack = el("span", "sg-frac-stack");
+  stack.append(
+    modelCell(right.d, events, { label: "Reciprocal numerator", onCorrect: finish }),
+    el("span", "sg-frac-bar"),
+    modelCell(right.n, events, { label: "Reciprocal denominator", onCorrect: finish }),
+  );
+  row.appendChild(stack);
+  shell.append(row, status);
+  return shell;
+}
+
+function typedPlot(item, steps, events) {
+  const visual = item.visual || {};
+  let expected = visual.point || visual.points?.[0] || null;
+  if (!expected && String(visual.kind).includes("coordinate-ratio")) {
+    const x = Number(item.steps?.[0]?.answer);
+    const y = Number(item.steps?.[1]?.answer);
+    if (Number.isFinite(x) && Number.isFinite(y)) expected = [x, y];
+  }
+  if (!expected) return null;
+  const targetX = Number(expected[0]);
+  const targetY = Number(expected[1]);
+  if (!Number.isFinite(targetX) || !Number.isFinite(targetY)) return null;
+  const maxAbs = Math.max(1, Math.abs(targetX), Math.abs(targetY));
+  const stepX = Math.min(28, 260 / maxAbs);
+  const stepY = Math.min(24, 120 / maxAbs);
+  const shell = modelShell("Plot the point", "Tap the grid where the point belongs.");
+  const status = modelStatus();
+  const grid = `<g stroke="#cad5e5" stroke-width="2">${Array.from({ length: 11 }, (_, i) => `<line x1="${40 + i * 56}" y1="20" x2="${40 + i * 56}" y2="280"/><line x1="40" y1="${20 + i * 26}" x2="600" y2="${20 + i * 26}"/>`).join("")}</g><line x1="40" y1="150" x2="600" y2="150" stroke="var(--sg-deep)" stroke-width="5"/><line x1="320" y1="20" x2="320" y2="280" stroke="var(--sg-deep)" stroke-width="5"/>`;
+  shell.insertAdjacentHTML("beforeend", svgShell("coordinate grid — tap to plot", grid));
+  const svg = shell.querySelector("svg");
+  svg.classList.add("sg-plot-grid");
+  let solved = false;
+  svg.addEventListener("click", (clickEvent) => {
+    if (solved) return;
+    const box = svg.getBoundingClientRect();
+    if (!box.width || !box.height) return;
+    const viewX = ((clickEvent.clientX - box.left) / box.width) * 640;
+    const viewY = ((clickEvent.clientY - box.top) / box.height) * 300;
+    const gridX = Math.round((viewX - 320) / stepX);
+    const gridY = Math.round((150 - viewY) / stepY);
+    const correct = gridX === targetX && gridY === targetY;
+    events.onAttempt?.({ correct });
+    const marker = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    marker.setAttribute("cx", String(320 + gridX * stepX));
+    marker.setAttribute("cy", String(150 - gridY * stepY));
+    marker.setAttribute("r", "13");
+    marker.setAttribute("fill", correct ? "var(--sg-pop)" : "rgba(189,60,49,.55)");
+    marker.setAttribute("stroke", correct ? "var(--sg-deep)" : "#bd3c31");
+    marker.setAttribute("stroke-width", "4");
+    svg.appendChild(marker);
+    if (!correct) {
+      status.textContent = `You tapped (${gridX}, ${gridY}). Compare it with the point you need.`;
+      window.setTimeout(() => marker.remove(), 900);
+      return;
+    }
+    solved = true;
+    const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    label.setAttribute("x", String(332 + gridX * stepX));
+    label.setAttribute("y", String(136 - gridY * stepY));
+    label.textContent = `(${targetX}, ${targetY})`;
+    svg.appendChild(label);
+    status.textContent = `Plotted (${targetX}, ${targetY}) ✓`;
+    steps?.completeMatching(targetX);
+    steps?.completeMatching(targetY);
+  });
+  shell.appendChild(status);
+  return shell;
+}
+
+const SHAPE_LABELS = {
+  "parallelogram-area": ["base", "height"],
+  "triangle-area": ["base", "height"],
+  "trapezoid-area": ["first base", "second base", "height"],
+  "polygon-triangles": ["triangle base", "triangle height"],
+  "volume-prism": ["length", "width", "height"],
+  "surface-prism": ["length", "width", "height"],
+  "prism-net": ["length", "width", "height"],
+  "pyramid-net": ["base edge", "slant height"],
+};
+
+function typedShape(item, events, kind) {
+  const labels = SHAPE_LABELS[kind];
+  const values = (item.visual?.values || []).map(Number);
+  if (!labels || labels.length > values.length) return null;
+  const shell = modelShell(
+    "Label the figure",
+    "Find each measurement in the problem and type it where it belongs.",
+  );
+  shell.insertAdjacentHTML(
+    "beforeend",
+    svgShell(`${kind.replace(/-/g, " ")} figure`, shapeModel(values, kind)),
+  );
+  const status = modelStatus();
+  let labeled = 0;
+  labels.forEach((label, index) => {
+    const row = el("div", "sg-model-row");
+    row.append(
+      el("span", "sg-model-rowlab", `${label} =`),
+      modelCell(values[index], events, {
+        label: `Value of the ${label}`,
+        onCorrect: () => {
+          if (++labeled === labels.length)
+            status.textContent = "Every measurement labeled ✓ — now compute in the steps below.";
+        },
+      }),
+    );
+    shell.appendChild(row);
+  });
+  shell.appendChild(status);
+  return shell;
+}
+
+function typedTiles(item, steps, events) {
+  const [coefficient, constant] = (item.visual?.values || []).map(Number);
+  if (!Number.isFinite(coefficient) || !Number.isFinite(constant)) return null;
+  const shell = modelShell(
+    "Build it with tiles",
+    "Add x-tiles and 1-tiles until your build matches the expression.",
+  );
+  const status = modelStatus();
+  const tray = el("div", "sg-model-boxes sg-tile-tray");
+  tray.setAttribute("aria-label", "Your tiles");
+  const counts = { x: 0, one: 0 };
+  const addTile = (type) => {
+    counts[type]++;
+    const tile = el(
+      "button",
+      `sg-tile ${type === "x" ? "is-x" : "is-one"}`,
+      type === "x" ? "x" : "1",
+    );
+    tile.type = "button";
+    tile.setAttribute("aria-label", `Remove one ${type === "x" ? "x" : "unit"} tile`);
+    tile.onclick = () => {
+      counts[type]--;
+      tile.remove();
+    };
+    tray.appendChild(tile);
+  };
+  const controls = el("div", "sg-model-row");
+  const addX = el("button", "btn ghost", "+ x tile");
+  const addOne = el("button", "btn ghost", "+ 1 tile");
+  const checkBuild = el("button", "btn", "Check my build");
+  for (const button of [addX, addOne, checkBuild]) button.type = "button";
+  addX.onclick = () => addTile("x");
+  addOne.onclick = () => addTile("one");
+  checkBuild.onclick = () => {
+    const correct = counts.x === coefficient && counts.one === constant;
+    events.onAttempt?.({ correct });
+    if (!correct) {
+      status.textContent = `You built ${counts.x} x-tile${counts.x === 1 ? "" : "s"} and ${counts.one} unit tile${counts.one === 1 ? "" : "s"}. Re-read the expression and adjust.`;
+      return;
+    }
+    checkBuild.disabled = addX.disabled = addOne.disabled = true;
+    status.textContent = "Build matches ✓";
+    steps?.completeMatching(`${coefficient}x`);
+    steps?.completeMatching(constant);
+  };
+  controls.append(addX, addOne, checkBuild);
+  shell.append(controls, tray, status);
+  return shell;
+}
+
+function typedPower(item, steps, events) {
+  const [base, exponent] = (item.visual?.values || []).map(Number);
+  if (!base || !exponent || exponent > 6) return null;
+  const shell = modelShell(
+    "Unroll the power",
+    `Write ${base}^${exponent} as repeated multiplication — one factor per box.`,
+  );
+  const status = modelStatus();
+  const row = el("div", "sg-model-boxes");
+  let filled = 0;
+  for (let index = 0; index < exponent; index++) {
+    if (index) row.appendChild(el("span", "sg-model-rowlab", "×"));
+    row.appendChild(
+      modelCell(base, events, {
+        label: `Factor ${index + 1}`,
+        onCorrect: () => {
+          if (++filled === exponent) {
+            steps?.completeMatching(Array(exponent).fill(base).join(" × "));
+            status.textContent = "Unrolled ✓ — now multiply the factors.";
+          }
+        },
+      }),
+    );
+  }
+  shell.append(row, status);
+  return shell;
+}
+
 function typedModel(item, steps, events) {
   const kind = String(item.visual?.kind || "");
   if (!kind) return null;
@@ -803,6 +1020,11 @@ function typedModel(item, steps, events) {
       return typedTable(item, steps, events, kind);
     if (kind.includes("percent-bar")) return typedPercentBar(item, steps, events);
     if (kind.includes("inequality")) return typedInequality(item, steps, events);
+    if (kind.includes("fraction")) return typedFraction(item, steps, events);
+    if (kind.includes("coordinate")) return typedPlot(item, steps, events);
+    if (kind.includes("expression-tiles")) return typedTiles(item, steps, events);
+    if (kind.includes("power-array")) return typedPower(item, steps, events);
+    if (SHAPE_LABELS[kind]) return typedShape(item, events, kind);
   } catch (error) {
     console.warn("typed model failed; falling back to figure", error);
     return null;

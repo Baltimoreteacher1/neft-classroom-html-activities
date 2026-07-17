@@ -19,6 +19,7 @@ import {
   createTeacherEvidenceConsole,
 } from "./small-group-innovation.js";
 import { createApplyLab, createExploreLab, createModelLab } from "./small-group-labs.js";
+import { installSmallGroupPassport } from "./small-group-passport.js";
 import {
   collectPracticeItems,
   createCheckSection,
@@ -365,6 +366,8 @@ export function bootSmallGroup(config) {
       eyebrow: "Guided practice",
       directions:
         "Work one problem at a time. Use the step guide and hints whenever you need them.",
+      directionsEs:
+        "Trabaja un problema a la vez. Usa la guía de pasos y las pistas cuando las necesites.",
       scaffold: "all",
       showMistake: true,
       mode: "guided",
@@ -382,6 +385,7 @@ export function bootSmallGroup(config) {
       title: "Try it on your own",
       eyebrow: "Independent practice",
       directions: "Solve each problem, check your answer, and revise when needed.",
+      directionsEs: "Resuelve cada problema, comprueba tu respuesta y corrige si hace falta.",
       scaffold: variant === "group2" ? "none" : "default",
       showMistake: false,
       indexOffset: guidedCount,
@@ -400,6 +404,8 @@ export function bootSmallGroup(config) {
       title: "More practice",
       eyebrow: "Build fluency",
       directions: "Keep going until the steps feel familiar. Explain one answer out loud.",
+      directionsEs:
+        "Sigue practicando hasta que los pasos se sientan naturales. Explica una respuesta en voz alta.",
       scaffold: variant === "group2" ? "none" : "default",
       showMistake: false,
       includeOptional: true,
@@ -538,6 +544,10 @@ export function bootSmallGroup(config) {
 
   tally.update();
   installSmallGroupAnnotation(app, config);
+  // Bridge studio XP/streaks/completion into the site-wide Student Passport.
+  // Installed last, after restore-time marks, so prior work is baselined and
+  // never retro-awarded. Fully self-guarded: a missing passport layer no-ops.
+  installSmallGroupPassport({ lessonId: config.lessonId, store, events });
 }
 
 export default bootSmallGroup;

@@ -1,0 +1,657 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Misconception Heatmap · Neft Teacher</title>
+    <meta name="robots" content="noindex" />
+    <link rel="icon" href="/assets/favicon.svg" />
+    <style>
+      :root {
+        --bg: #0f1623;
+        --panel: #18233a;
+        --panel-2: #1f2d49;
+        --line: #2c3c5e;
+        --ink: #eaf0fb;
+        --muted: #9fb0cf;
+        --accent: #4f8bff;
+        --good: #2fbf71;
+        --warn: #e0a32e;
+        --bad: #e5564b;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.5 system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+      }
+      header {
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+      }
+      header h1 {
+        font-size: 20px;
+        margin: 0;
+      }
+      header .sub {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .spacer {
+        flex: 1;
+      }
+      main {
+        padding: 24px;
+        max-width: 1250px;
+        margin: 0 auto;
+      }
+      button,
+      select {
+        font: inherit;
+        cursor: pointer;
+        border: 1px solid var(--line);
+        background: var(--panel-2);
+        color: var(--ink);
+        border-radius: 8px;
+        padding: 8px 14px;
+      }
+      button.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+      }
+      button:focus-visible,
+      select:focus-visible {
+        outline: 3px solid var(--accent);
+        outline-offset: 2px;
+      }
+      input {
+        font: inherit;
+        background: #0c1320;
+        color: var(--ink);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 8px 12px;
+      }
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 14px;
+        margin-bottom: 24px;
+      }
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 16px;
+      }
+      .card .n {
+        font-size: 28px;
+        font-weight: 700;
+        overflow-wrap: anywhere;
+      }
+      .card .l {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      section.block {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 8px 0;
+        margin-bottom: 24px;
+        overflow-x: auto;
+      }
+      section.block h2 {
+        font-size: 15px;
+        margin: 8px 16px 4px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      section.block .blurb {
+        color: var(--muted);
+        font-size: 13px;
+        margin: 0 16px 8px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 9px 12px;
+        border-top: 1px solid var(--line);
+      }
+      th {
+        color: var(--muted);
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      td.num,
+      th.num {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+      td.heat {
+        border-left: 1px solid var(--line);
+      }
+      .pill {
+        display: inline-block;
+        padding: 1px 8px;
+        border-radius: 999px;
+        font-size: 12px;
+        background: var(--panel-2);
+        margin: 1px 2px 1px 0;
+      }
+      .trend-up {
+        color: var(--bad);
+        font-weight: 700;
+      }
+      .trend-down {
+        color: var(--good);
+        font-weight: 700;
+      }
+      .trend-flat {
+        color: var(--muted);
+      }
+      .gate {
+        max-width: 440px;
+        margin: 12vh auto;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 28px;
+      }
+      .gate h2 {
+        margin-top: 0;
+      }
+      .gate p {
+        color: var(--muted);
+      }
+      .gate .row {
+        display: flex;
+        gap: 10px;
+        margin-top: 14px;
+      }
+      .gate input {
+        flex: 1;
+      }
+      .msg {
+        color: var(--warn);
+        min-height: 20px;
+        margin-top: 10px;
+        font-size: 14px;
+      }
+      .hidden {
+        display: none !important;
+      }
+      a {
+        color: var(--accent);
+      }
+      .foot {
+        color: var(--muted);
+        font-size: 12px;
+        margin-top: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Gate -->
+    <div id="gate" class="gate">
+      <h2>🔥 Misconception Heatmap</h2>
+      <p>
+        Teacher access only. Enter the dashboard key to see which lessons students are missing most.
+      </p>
+      <div class="row">
+        <input id="keyInput" type="password" placeholder="Teacher key" autocomplete="off" />
+        <button class="primary" id="enterBtn">View</button>
+      </div>
+      <div class="msg" id="gateMsg"></div>
+      <p class="foot">
+        Set the <code>TEACHER_KEY</code> environment variable on the Pages project to enable this
+        dashboard. Data is read-only and never exposed without the key.
+      </p>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="app" class="hidden">
+      <header>
+        <h1>🔥 Misconception Heatmap</h1>
+        <span class="sub" id="meta"></span>
+        <div class="spacer"></div>
+        <label class="sub" for="sectionSel">Class</label>
+        <select id="sectionSel">
+          <option value="">All classes</option>
+        </select>
+        <label class="sub" for="daysSel">Window</label>
+        <select id="daysSel">
+          <option value="7">Last 7 days</option>
+          <option value="30" selected>Last 30 days</option>
+          <option value="90">Last 90 days</option>
+        </select>
+        <button id="refreshBtn">↻ Refresh</button>
+        <button id="lockBtn">Lock</button>
+      </header>
+      <main>
+        <div class="cards" id="summary"></div>
+
+        <section class="block">
+          <h2>Lessons by miss pressure</h2>
+          <p class="blurb">
+            One row per lesson, hottest first. Severity weighs tagged misconceptions highest, then
+            struggle signals, then wrong attempts and hint pulls. Trend compares the last 7 days
+            against the rest of the window.
+          </p>
+          <table id="lessonTable">
+            <thead>
+              <tr>
+                <th>Lesson</th>
+                <th>Standard</th>
+                <th class="num">Wrong attempts</th>
+                <th class="num">Misconceptions</th>
+                <th class="num">Struggles</th>
+                <th class="num">Hints</th>
+                <th class="num">Accuracy</th>
+                <th class="num">Students</th>
+                <th>Trend</th>
+                <th>Top misconception tags</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </section>
+
+        <section class="block">
+          <h2>Misconception tags across lessons</h2>
+          <p class="blurb">
+            The same wrong ideas showing up in more than one lesson — the reteach shortlist.
+          </p>
+          <table id="tagTable">
+            <thead>
+              <tr>
+                <th>Tag</th>
+                <th class="num">Count</th>
+                <th class="num">Lessons affected</th>
+                <th>Seen in</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </section>
+
+        <p class="foot" id="emptyNote"></p>
+        <p class="foot">
+          Counts come from live lesson telemetry (<code>/api/misconception-heatmap</code>). No
+          student names are shown or transferred — pair a hot row with the
+          <a href="/teacher-tools/intervention-radar/">Intervention Radar</a> to see who needs help
+          right now, or the <a href="/teacher-tools/mastery/">Mastery Dashboard</a> for per-student
+          detail.
+        </p>
+      </main>
+    </div>
+
+    <script>
+      "use strict";
+      var LS_KEY = "nt_teacher_key";
+      var ENDPOINT = "/api/misconception-heatmap";
+      var raw = []; // per-(lesson, section) rows from the API
+      var meta = { days: 30, recentDays: 7 };
+
+      var $ = function (s) {
+        return document.querySelector(s);
+      };
+      function esc(s) {
+        return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) {
+          return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+        });
+      }
+      function pct(n) {
+        return (n * 100).toFixed(0) + "%";
+      }
+      function accColor(a) {
+        return a >= 0.8 ? "var(--good)" : a >= 0.5 ? "var(--warn)" : "var(--bad)";
+      }
+      // Heat cell: red wash whose intensity scales against the column max.
+      function heat(v, max) {
+        var a = max > 0 ? Math.min(1, v / max) : 0;
+        var bg = a > 0 ? "rgba(229,86,75," + (0.08 + 0.5 * a).toFixed(2) + ")" : "transparent";
+        return ' class="num heat" style="background:' + bg + '"';
+      }
+      function fmtDate(s) {
+        if (!s) return "—";
+        try {
+          var d = new Date(s);
+          return d.toLocaleDateString();
+        } catch (e) {
+          return s;
+        }
+      }
+
+      async function load(key) {
+        var days = Number($("#daysSel").value) || 30;
+        var res = await fetch(ENDPOINT + "?days=" + days, {
+          headers: { "x-teacher-key": key },
+        });
+        if (res.status === 401) throw new Error("Wrong key.");
+        if (res.status === 503)
+          throw new Error("Dashboard not enabled (TEACHER_KEY not set on the server).");
+        if (!res.ok) throw new Error("Server error (" + res.status + ").");
+        var data = await res.json();
+        meta.days = (data && data.days) || days;
+        meta.recentDays = (data && data.recentDays) || 7;
+        return (data && data.rows) || [];
+      }
+
+      // Merge per-(lesson, section) rows into one row per lesson for the
+      // selected class ("" = all classes).
+      function mergeForSection(rows, section) {
+        var byLesson = {};
+        rows.forEach(function (r) {
+          if (section && r.section !== section) return;
+          var m =
+            byLesson[r.lessonSlug] ||
+            (byLesson[r.lessonSlug] = {
+              lessonSlug: r.lessonSlug,
+              lessonTitle: r.lessonTitle,
+              standard: r.standard,
+              attempts: 0,
+              misses: 0,
+              hints: 0,
+              misconceptions: 0,
+              struggles: 0,
+              mastery: 0,
+              students: 0,
+              recentMiss: 0,
+              priorMiss: 0,
+              lastAt: "",
+              tags: {},
+            });
+          m.attempts += r.attempts;
+          m.misses += r.misses;
+          m.hints += r.hints;
+          m.misconceptions += r.misconceptions;
+          m.struggles += r.struggles;
+          m.mastery += r.mastery;
+          m.students += r.students; // distinct per section; summed across sections
+          m.recentMiss += r.recentMiss;
+          m.priorMiss += r.priorMiss;
+          if (r.lastAt > m.lastAt) m.lastAt = r.lastAt;
+          (r.topTags || []).forEach(function (t) {
+            m.tags[t.tag] = (m.tags[t.tag] || 0) + t.count;
+          });
+        });
+        return Object.keys(byLesson).map(function (k) {
+          var m = byLesson[k];
+          m.topTags = Object.keys(m.tags)
+            .map(function (tag) {
+              return { tag: tag, count: m.tags[tag] };
+            })
+            .sort(function (a, b) {
+              return b.count - a.count;
+            })
+            .slice(0, 4);
+          m.severity = m.misconceptions * 3 + m.struggles * 2 + m.misses + m.hints * 0.5;
+          return m;
+        });
+      }
+
+      // Trend: recent misses/day vs the rest of the window's misses/day.
+      function trendOf(m) {
+        var priorDays = Math.max(1, meta.days - meta.recentDays);
+        var recentRate = m.recentMiss / meta.recentDays;
+        var priorRate = m.priorMiss / priorDays;
+        if (m.recentMiss >= 3 && recentRate > priorRate * 1.25)
+          return '<span class="trend-up" title="More misses per day this week">▲ rising</span>';
+        if (m.priorMiss >= 3 && recentRate < priorRate * 0.75)
+          return '<span class="trend-down" title="Fewer misses per day this week">▼ easing</span>';
+        return '<span class="trend-flat">— steady</span>';
+      }
+
+      function render() {
+        var section = $("#sectionSel").value;
+        var lessons = mergeForSection(raw, section).sort(function (a, b) {
+          return b.severity - a.severity || b.misses - a.misses;
+        });
+
+        var totalMiss = 0;
+        var totalMisc = 0;
+        var tagTotals = {};
+        var tagLessons = {};
+        lessons.forEach(function (m) {
+          totalMiss += m.misses + m.misconceptions + m.struggles;
+          totalMisc += m.misconceptions;
+          m.topTags.forEach(function (t) {
+            tagTotals[t.tag] = (tagTotals[t.tag] || 0) + t.count;
+            (tagLessons[t.tag] = tagLessons[t.tag] || {})[m.lessonTitle] = 1;
+          });
+        });
+        var topTag = Object.keys(tagTotals).sort(function (a, b) {
+          return tagTotals[b] - tagTotals[a];
+        })[0];
+
+        $("#summary").innerHTML = [
+          ["Lessons with signal", lessons.length],
+          ["Miss signals (" + meta.days + "d)", totalMiss],
+          ["Tagged misconceptions", totalMisc],
+          ["Top misconception", topTag ? topTag + " ×" + tagTotals[topTag] : "—"],
+        ]
+          .map(function (c) {
+            return (
+              '<div class="card"><div class="n">' +
+              esc(c[1]) +
+              '</div><div class="l">' +
+              esc(c[0]) +
+              "</div></div>"
+            );
+          })
+          .join("");
+
+        var maxMiss = Math.max.apply(
+          null,
+          [1].concat(
+            lessons.map(function (m) {
+              return m.misses;
+            }),
+          ),
+        );
+        var maxMisc = Math.max.apply(
+          null,
+          [1].concat(
+            lessons.map(function (m) {
+              return m.misconceptions;
+            }),
+          ),
+        );
+        var maxStr = Math.max.apply(
+          null,
+          [1].concat(
+            lessons.map(function (m) {
+              return m.struggles;
+            }),
+          ),
+        );
+        var maxHint = Math.max.apply(
+          null,
+          [1].concat(
+            lessons.map(function (m) {
+              return m.hints;
+            }),
+          ),
+        );
+
+        $("#lessonTable tbody").innerHTML =
+          lessons
+            .map(function (m) {
+              var acc = m.attempts ? (m.attempts - m.misses) / m.attempts : null;
+              return (
+                "<tr><td><strong>" +
+                esc(m.lessonTitle) +
+                '</strong><div class="foot">' +
+                esc(m.lessonSlug) +
+                " · last " +
+                esc(fmtDate(m.lastAt)) +
+                "</div></td><td>" +
+                (m.standard ? '<span class="pill">' + esc(m.standard) + "</span>" : "—") +
+                "</td><td" +
+                heat(m.misses, maxMiss) +
+                ">" +
+                m.misses +
+                "</td><td" +
+                heat(m.misconceptions, maxMisc) +
+                ">" +
+                m.misconceptions +
+                "</td><td" +
+                heat(m.struggles, maxStr) +
+                ">" +
+                m.struggles +
+                "</td><td" +
+                heat(m.hints, maxHint) +
+                ">" +
+                m.hints +
+                '</td><td class="num">' +
+                (acc == null
+                  ? "—"
+                  : '<span style="color:' + accColor(acc) + '">' + pct(acc) + "</span>") +
+                '</td><td class="num">' +
+                m.students +
+                "</td><td>" +
+                trendOf(m) +
+                "</td><td>" +
+                (m.topTags.length
+                  ? m.topTags
+                      .map(function (t) {
+                        return '<span class="pill">' + esc(t.tag) + " ×" + t.count + "</span>";
+                      })
+                      .join("")
+                  : "—") +
+                "</td></tr>"
+              );
+            })
+            .join("") ||
+          '<tr><td colspan="10" style="color:var(--muted)">No lesson telemetry in this window' +
+            (section ? " for this class" : "") +
+            ".</td></tr>";
+
+        var tagList = Object.keys(tagTotals)
+          .map(function (tag) {
+            return {
+              tag: tag,
+              count: tagTotals[tag],
+              lessons: Object.keys(tagLessons[tag] || {}),
+            };
+          })
+          .sort(function (a, b) {
+            return b.count - a.count;
+          })
+          .slice(0, 25);
+        $("#tagTable tbody").innerHTML =
+          tagList
+            .map(function (t) {
+              return (
+                '<tr><td><span class="pill">' +
+                esc(t.tag) +
+                '</span></td><td class="num">' +
+                t.count +
+                '</td><td class="num">' +
+                t.lessons.length +
+                "</td><td>" +
+                esc(t.lessons.slice(0, 4).join(", ")) +
+                (t.lessons.length > 4 ? " +" + (t.lessons.length - 4) + " more" : "") +
+                "</td></tr>"
+              );
+            })
+            .join("") ||
+          '<tr><td colspan="4" style="color:var(--muted)">No tagged misconceptions yet — tags appear as students pick tagged wrong answers in lessons.</td></tr>';
+
+        $("#meta").textContent = raw.length + " lesson-class rollups · last " + meta.days + " days";
+        $("#emptyNote").textContent = raw.length
+          ? ""
+          : "No telemetry recorded yet — data appears as students work through lessons.";
+      }
+
+      function fillSections() {
+        var sel = $("#sectionSel");
+        var keep = sel.value;
+        var seen = {};
+        raw.forEach(function (r) {
+          if (r.section) seen[r.section] = 1;
+        });
+        var sections = Object.keys(seen).sort();
+        sel.innerHTML =
+          '<option value="">All classes</option>' +
+          sections
+            .map(function (s) {
+              return '<option value="' + esc(s) + '">' + esc(s) + "</option>";
+            })
+            .join("");
+        if (sections.indexOf(keep) !== -1) sel.value = keep;
+      }
+
+      function showApp(rows) {
+        raw = rows;
+        $("#gate").classList.add("hidden");
+        $("#app").classList.remove("hidden");
+        fillSections();
+        render();
+      }
+
+      async function enter(key) {
+        $("#gateMsg").textContent = "Loading…";
+        try {
+          var rows = await load(key);
+          localStorage.setItem(LS_KEY, key);
+          $("#gateMsg").textContent = "";
+          showApp(rows);
+        } catch (err) {
+          $("#gateMsg").textContent = err.message || "Failed.";
+          localStorage.removeItem(LS_KEY);
+        }
+      }
+
+      async function refetch() {
+        var key = localStorage.getItem(LS_KEY);
+        if (!key) return;
+        try {
+          showApp(await load(key));
+        } catch (e) {
+          /* keep the last good view */
+        }
+      }
+
+      $("#enterBtn").addEventListener("click", function () {
+        enter($("#keyInput").value.trim());
+      });
+      $("#keyInput").addEventListener("keydown", function (e) {
+        if (e.key === "Enter") enter(e.target.value.trim());
+      });
+      $("#refreshBtn").addEventListener("click", refetch);
+      $("#daysSel").addEventListener("change", refetch);
+      $("#sectionSel").addEventListener("change", render);
+      $("#lockBtn").addEventListener("click", function () {
+        localStorage.removeItem(LS_KEY);
+        location.reload();
+      });
+
+      // Auto-enter if a key is remembered (shared with the Mastery Dashboard).
+      (function () {
+        var saved = localStorage.getItem(LS_KEY);
+        if (saved) enter(saved);
+      })();
+    </script>
+  </body>
+</html>
