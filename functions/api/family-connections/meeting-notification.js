@@ -82,3 +82,18 @@ export async function sendMeetingNotification(emailBinding, meetingRequest) {
   const result = await emailBinding.send(buildMeetingNotification(meetingRequest));
   return { sent: true, messageId: result.messageId };
 }
+
+export async function requestMeetingNotification(emailService, meetingRequest) {
+  if (!emailService || typeof emailService.fetch !== "function") {
+    return { sent: false, reason: "email-service-unavailable" };
+  }
+  const response = await emailService.fetch(
+    new Request("https://family-meeting-email.internal/send", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(meetingRequest),
+    }),
+  );
+  if (!response.ok) throw new Error("Meeting notification service rejected the request.");
+  return response.json();
+}

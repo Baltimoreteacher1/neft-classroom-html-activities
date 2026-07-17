@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import {
   FAMILY_MEETING_NOTIFICATION_RECIPIENT,
   buildMeetingNotification,
+  requestMeetingNotification,
   sendMeetingNotification,
 } from "./meeting-notification.js";
 
@@ -46,6 +47,26 @@ assert.equal(sent.length, 1);
 assert.deepEqual(await sendMeetingNotification(undefined, meetingRequest), {
   sent: false,
   reason: "email-binding-unavailable",
+});
+
+const serviceRequests = [];
+assert.deepEqual(
+  await requestMeetingNotification(
+    {
+      async fetch(request) {
+        serviceRequests.push(request);
+        return Response.json({ sent: true, messageId: "service-email-123" });
+      },
+    },
+    meetingRequest,
+  ),
+  { sent: true, messageId: "service-email-123" },
+);
+assert.equal(serviceRequests[0].method, "POST");
+assert.deepEqual(await serviceRequests[0].json(), meetingRequest);
+assert.deepEqual(await requestMeetingNotification(undefined, meetingRequest), {
+  sent: false,
+  reason: "email-service-unavailable",
 });
 
 console.log("Family meeting notification tests passed.");
