@@ -195,6 +195,35 @@ export function injectSmallGroupStyles(accent) {
     .prob.sg-done-1 .sg-q-1,.prob.sg-done-2 .sg-q-2,.prob.sg-done-all .sg-q-1,.prob.sg-done-all .sg-q-2{opacity:0}
     .sg-problem-visual .sg-hl-1,.sg-problem-visual .sg-hl-3{transition:fill .35s}
     .prob.sg-done-1 .sg-hl-1,.prob.sg-done-3 .sg-hl-3,.prob.sg-done-all .sg-hl-1,.prob.sg-done-all .sg-hl-3{fill:var(--sg-pop)}
+    /* Typed models: students put the numbers into the model themselves */
+    .sg-problem-model{margin:0 0 12px;padding:18px;border:3px solid var(--sg);border-radius:20px;background:#fffdf8;box-shadow:0 10px 25px rgba(23,32,51,.09)}
+    .sg-problem-model svg{display:block;width:100%;min-height:220px;height:auto}
+    .sg-problem-model svg text{fill:var(--sg-deep);font-family:"Nunito",sans-serif;font-size:22px;font-weight:900}
+    .sg-model-title{margin-bottom:4px;color:var(--sg-deep);font-family:"Nunito",sans-serif;font-size:19px;font-weight:900}
+    .sg-model-hint{margin:0 0 12px;color:var(--sg-muted);font-weight:700;font-size:15px}
+    .sg-model-status{min-height:24px;margin:10px 0 0;color:var(--sg-good);font-weight:800}
+    .sg-model-row{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin:10px 0}
+    .sg-model-rowlab{color:var(--sg-deep);font-family:"Nunito",sans-serif;font-weight:900}
+    .sg-model-boxes{display:flex;flex-wrap:wrap;gap:7px}
+    .sg-model-cell{width:64px;min-height:48px;padding:6px;border:2px dashed var(--sg);border-radius:11px;background:#fff;color:var(--sg-deep);font-size:20px;font-weight:900;text-align:center}
+    .sg-model-cell:focus{border-style:solid}
+    .sg-model-cell.ok{border:2px solid var(--sg-good);background:#e9f8f0;color:#0e5033}
+    .sg-model-cell.bad{border:2px solid #bd3c31;background:#fff0ee;color:#7c2d24}
+    .sg-model-cell.gold{border:3px solid #9b5c00;background:var(--sg-pop);color:#332000}
+    .sg-tree{display:grid;justify-items:center;gap:6px;padding:8px 0}
+    .sg-tree-root{display:grid;width:76px;height:76px;place-items:center;border-radius:50%;background:var(--sg);color:#fff;font-family:"Nunito",sans-serif;font-size:26px;font-weight:900}
+    .sg-tree-branches{color:var(--sg-deep);font-size:24px;font-weight:900;letter-spacing:8px}
+    .sg-tree-row{justify-content:center;gap:56px}
+    .sg-tree-row .sg-model-cell{width:84px;border-radius:50%;min-height:64px}
+    .sg-div-top{display:flex;justify-content:center;margin-left:56px}
+    .sg-div-bracket{text-align:center;color:var(--sg-deep);font-family:"Nunito",ui-monospace,monospace;font-size:38px;font-weight:900;border-top:4px solid var(--sg-deep);width:max-content;margin:2px auto 8px;padding:2px 14px}
+    .sg-model-table{display:grid;grid-template-columns:repeat(2,minmax(120px,220px));gap:8px;justify-content:center;margin:8px 0}
+    .sg-model-tcell{display:grid;place-items:center;min-height:54px;padding:8px;border:2px solid var(--sg);border-radius:11px;background:#fff;color:var(--sg-deep);font-size:19px;font-weight:900}
+    .sg-model-tcell.head{background:var(--sg);color:#fff;font-family:"Nunito",sans-serif}
+    .sg-model-tcell .sg-model-cell{width:100%;border-width:2px}
+    .sg-model-sym{min-width:56px;min-height:48px;border:2px solid var(--sg-line);border-radius:11px;background:#fff;color:var(--sg-deep);font-size:24px;font-weight:900;cursor:pointer}
+    .sg-model-sym.ok{border-color:var(--sg-good);background:#e9f8f0}
+    .sg-model-sym.bad{border-color:#bd3c31;background:#fff0ee;opacity:.6}
     /* Place-value giant workspace: the stacked column math IS the visual */
     .sg-big-work .colmath{min-width:320px;padding:24px 38px;border:3px solid var(--sg);border-radius:20px;background:#fffdf8;box-shadow:0 10px 25px rgba(23,32,51,.09);font-size:44px}
     .sg-big-work .colmath .fillin{width:220px;font-size:40px}

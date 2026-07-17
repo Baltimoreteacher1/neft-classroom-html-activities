@@ -106,8 +106,12 @@ function unit1(context) {
       [72, 108],
     ];
     return pairs.map(([left, right], index) => {
-      const a = left + (context.group === 2 ? 6 : 0);
-      const b = right + (context.group === 2 ? 12 : 0);
+      // Group 2 doubles the pair instead of shifting it: additive shifts made
+      // near-coprime pairs (41 & 62) whose factor/multiple models are
+      // unteachable; doubling preserves the structure at a harder scale.
+      const scaleUp = context.group === 2 ? 2 : 1;
+      const a = left * scaleUp;
+      const b = right * scaleUp;
       const answer = lesson === 2 ? gcd(a, b) : lcm(a, b);
       const label = lesson === 2 ? "greatest common factor" : "least common multiple";
       return makeItem(context, index, {

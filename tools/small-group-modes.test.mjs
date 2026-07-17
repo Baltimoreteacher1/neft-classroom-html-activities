@@ -184,16 +184,36 @@ const runtimeConfig = JSON.parse(
 const { bootSmallGroup } = await import("../engine/core/small-group-renderer.js");
 bootSmallGroup(runtimeConfig);
 const firstGuided = document.querySelector("#sg-guided-practice .prob");
-assert.ok(firstGuided?.querySelector(".sg-problem-visual"), "guided problems need a large visual");
-assert.ok(firstGuided?.querySelector(".sg-guided-steps"), "guided problems need fill-in steps");
-assert.ok(firstGuided?.querySelector(".sg-math-tool"), "guided problems need an interactive tool");
 assert.ok(
-  firstGuided?.querySelectorAll(".sg-operator-chip").length >= 4,
-  "the math tool needs operation tiles for building a model",
+  firstGuided?.querySelector(".sg-problem-visual, .sg-problem-model, .colmath"),
+  "guided problems need a model students can see or type into",
+);
+assert.ok(firstGuided?.querySelector(".sg-guided-steps"), "guided problems need fill-in steps");
+// 1-1 is a factor-tree lesson: its model must be typed-in, and a correct
+// model entry must auto-complete the matching guided step.
+const modelCells = firstGuided?.querySelectorAll(".sg-problem-model .sg-model-cell") || [];
+assert.ok(modelCells.length >= 2, "typed models need student input cells");
+const firstStepAnswer = runtimeConfig.parallelPractice[0].steps[0].answer;
+modelCells[0].value = String(firstStepAnswer);
+modelCells[0].dispatchEvent(new dom.window.Event("blur"));
+assert.ok(modelCells[0].classList.contains("ok"), "a correct model entry locks in");
+assert.ok(
+  firstGuided.querySelector(".sg-fill-step").classList.contains("complete"),
+  "a correct model entry completes the matching guided step",
+);
+// Layout contracts: mission caps More Practice; partner talk lives in Practice.
+assert.ok(
+  document.querySelector("#sg-tab-more #sg-launch"),
+  "the mission briefing belongs at the end, in More Practice",
 );
 assert.ok(
-  firstGuided?.querySelector(".sg-clear-model"),
-  "the math tool needs a clear/retry control",
+  document.querySelector("#sg-tab-practice #sg-talk"),
+  "partner talk belongs inside the Practice tab",
+);
+assert.equal(
+  document.querySelector(".sg-design-lab"),
+  null,
+  "the Create-a-Challenge lab is removed",
 );
 // Vocabulary keeps its illustrations (word + definition + image); everywhere
 // else, only problem-related SVG models may render — no photos or decor.

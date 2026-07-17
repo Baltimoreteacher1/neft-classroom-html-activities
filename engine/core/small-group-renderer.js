@@ -348,7 +348,9 @@ export function bootSmallGroup(config) {
     onDone: phaseDone("sg-tab-learn", "modelDone"),
   });
   const vocab = createVocabularySection(config, phaseDone("sg-tab-vocab", "vocabDone"), store);
-  const talk = createTalkSection(config, variant, phaseDone("sg-tab-guided", "talkDone"));
+  // Partner talk lives inside the Practice tab so discussion is part of
+  // practicing, not a detour.
+  const talk = createTalkSection(config, variant, phaseDone("sg-tab-practice", "talkDone"));
   if (talk) talk.appendChild(createConsensusLab(config, variant, state));
   const guided = createPracticeSection(
     config,
@@ -427,12 +429,12 @@ export function bootSmallGroup(config) {
     {
       id: "sg-tab-guided",
       label: "Guided",
-      panel: makePanel("sg-tab-guided", [guided, createAdaptiveCoach(variant, state), talk]),
+      panel: makePanel("sg-tab-guided", [guided, createAdaptiveCoach(variant, state)]),
     },
     {
       id: "sg-tab-practice",
       label: "Practice",
-      panel: makePanel("sg-tab-practice", [practice]),
+      panel: makePanel("sg-tab-practice", [practice, talk]),
     },
     {
       id: "sg-tab-check",
@@ -501,7 +503,7 @@ export function bootSmallGroup(config) {
     buildDone: "sg-tab-learn",
     exploreDone: "sg-tab-learn",
     modelDone: "sg-tab-learn",
-    talkDone: "sg-tab-guided",
+    talkDone: "sg-tab-practice",
     guidedDone: "sg-tab-guided",
     practiceDone: "sg-tab-practice",
     checkSolved: "sg-tab-check",

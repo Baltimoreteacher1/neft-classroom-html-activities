@@ -441,7 +441,13 @@ export function createPracticeSection(
   store = null,
   options = {},
 ) {
-  const items = options.items || collectPracticeItems(config);
+  const collected = options.items || collectPracticeItems(config);
+  // Interactive, checkable problems first; written responses close the set
+  // (stable partition — relative order inside each group is preserved).
+  const items = [
+    ...collected.filter((item) => answerOf(item) != null || item.type === "error-analysis"),
+    ...collected.filter((item) => answerOf(item) == null && item.type !== "error-analysis"),
+  ];
   if (!items.length) return null;
   const section = el("section", "sg-sec");
   section.id = options.id || "sg-practice";

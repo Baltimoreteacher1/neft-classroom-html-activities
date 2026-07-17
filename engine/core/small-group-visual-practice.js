@@ -374,9 +374,31 @@ function interactiveTool(item, open = false) {
 function guidedSteps(item, mode, events = {}) {
   const steps = item.steps || [];
   if (!steps.length) return null;
+  let body = null;
+  // Programmatic completion used by the typed models: filling the model
+  // correctly completes the matching step through its own check path.
+  const completeStep = (index, value) => {
+    const row = body?.querySelectorAll(".sg-fill-step")[index];
+    if (!row || row.classList.contains("complete")) return;
+    const input = row.querySelector("input");
+    const check = row.querySelector("button");
+    if (!input || input.disabled) return;
+    input.value = String(value);
+    check.click();
+  };
+  const completeMatching = (value) => {
+    const rows = body?.querySelectorAll(".sg-fill-step") || [];
+    for (let index = 0; index < steps.length; index++) {
+      if (rows[index]?.classList.contains("complete")) continue;
+      if (isRight(String(value), steps[index].answer)) {
+        completeStep(index, steps[index].answer);
+        return;
+      }
+    }
+  };
   const wrap = el(mode === "guided" ? "div" : "details", "sg-guided-steps");
   if (mode !== "guided") wrap.appendChild(el("summary", null, "Need the guided steps?"));
-  const body = el("div", "sg-step-sequence");
+  body = el("div", "sg-step-sequence");
   body.appendChild(
     el("p", "sg-step-intro", "Complete one small step. A correct step unlocks the next one."),
   );
@@ -424,7 +446,368 @@ function guidedSteps(item, mode, events = {}) {
     body.appendChild(row);
   });
   wrap.appendChild(body);
-  return wrap;
+  return { node: wrap, completeStep, completeMatching };
+}
+
+// ── Typed models: the model itself is the student's workspace ────────────
+// Students type values directly into the model; correct entries lock in and
+// auto-complete the matching guided step below. Wrong entries never reveal.
+
+function modelCell(expected, events, { placeholder = "?", label = "Model value", onCorrect } = {}) {
+  const input = el("input", "sg-model-cell");
+  input.type = "text";
+  input.inputMode = "decimal";
+  input.placeholder = placeholder;
+  input.setAttribute("aria-label", label);
+  const check = () => {
+    if (input.disabled || !input.value.trim()) return;
+    const correct = isRight(input.value, expected);
+    events.onAttempt?.({ correct });
+    input.classList.toggle("bad", !correct);
+    if (!correct) return;
+    input.classList.add("ok");
+    input.disabled = true;
+    onCorrect?.(input);
+  };
+  input.onkeydown = (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      check();
+    }
+  };
+  input.addEventListener("blur", check);
+  input.oninput = () => input.classList.remove("bad");
+  return input;
+}
+
+function modelShell(title, hint) {
+  const node = el("div", "sg-problem-model");
+  node.appendChild(el("div", "sg-model-title", esc(title)));
+  if (hint) node.appendChild(el("p", "sg-model-hint", esc(hint)));
+  return node;
+}
+
+function modelStatus() {
+  const status = el("p", "sg-model-status");
+  status.setAttribute("aria-live", "polite");
+  return status;
+}
+
+function typedFactorTree(item, steps, events) {
+  const value = item.visual?.value ?? valuesFrom(item.visual, item.stem)[0];
+  const left = item.steps?.[0]?.answer;
+  const right = item.steps?.[1]?.answer;
+  if (value == null || left == null || right == null) return null;
+  const shell = modelShell("Build the factor tree", "Type the two factors of the first split.");
+  const status = modelStatus();
+  const tree = el("div", "sg-tree");
+  tree.appendChild(el("div", "sg-tree-root", esc(value)));
+  tree.appendChild(el("div", "sg-tree-branches", "╱&nbsp;&nbsp;&nbsp;&nbsp;╲"));
+  const row = el("div", "sg-model-boxes sg-tree-row");
+  let built = 0;
+  const branch = (expected, placeholder, label) =>
+    modelCell(expected, events, {
+      placeholder,
+      label,
+      onCorrect: () => {
+        steps?.completeMatching(expected);
+        if (++built === 2)
+          status.textContent = "First split built ✓ — finish the prime factorization below.";
+      },
+    });
+  row.append(
+    branch(left, "prime", "Smallest prime factor"),
+    branch(right, "?", "The other factor"),
+  );
+  tree.appendChild(row);
+  shell.append(tree, status);
+  return shell;
+}
+
+function typedFactorLists(item, steps, events) {
+  const [a, b] = (item.visual?.values || []).map(Number);
+  if (!a || !b || a > 200 || b > 200) return null;
+  const lists = [listFactors(a), listFactors(b)];
+  const shell = modelShell(
+    "Build both factor lists",
+    "Type the factors in any order — factors in both lists turn gold.",
+  );
+  const status = modelStatus();
+  const found = [new Set(), new Set()];
+  const cells = [new Map(), new Map()];
+  let rowsDone = 0;
+  const row = (value, rowIndex) => {
+    const factors = lists[rowIndex];
+    const wrapRow = el("div", "sg-model-row");
+    wrapRow.appendChild(el("span", "sg-model-rowlab", `Factors of ${value}:`));
+    const boxes = el("div", "sg-model-boxes");
+    factors.forEach(() => {
+      const input = el("input", "sg-model-cell");
+      input.type = "text";
+      input.inputMode = "numeric";
+      input.placeholder = "?";
+      input.setAttribute("aria-label", `A factor of ${value}`);
+      const check = () => {
+        if (input.disabled || !input.value.trim()) return;
+        const typed = Number(input.value.trim());
+        const valid =
+          Number.isInteger(typed) && factors.includes(typed) && !found[rowIndex].has(typed);
+        events.onAttempt?.({ correct: valid });
+        if (!valid) {
+          input.classList.add("bad");
+          return;
+        }
+        input.classList.remove("bad");
+        input.classList.add("ok");
+        input.disabled = true;
+        found[rowIndex].add(typed);
+        cells[rowIndex].set(typed, input);
+        const other = 1 - rowIndex;
+        if (found[other].has(typed)) {
+          input.classList.add("gold");
+          cells[other].get(typed)?.classList.add("gold");
+        }
+        if (found[rowIndex].size === factors.length) {
+          steps?.completeStep(rowIndex, factors.join(", "));
+          status.textContent =
+            ++rowsDone === 2
+              ? "Both lists complete ✓ — the gold matches are shared. Which is greatest?"
+              : "List complete ✓ — now the other number.";
+        }
+      };
+      input.onkeydown = (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          check();
+        }
+      };
+      input.addEventListener("blur", check);
+      input.oninput = () => input.classList.remove("bad");
+      boxes.appendChild(input);
+    });
+    wrapRow.appendChild(boxes);
+    return wrapRow;
+  };
+  shell.append(row(a, 0), row(b, 1), status);
+  return shell;
+}
+
+function typedLanes(item, steps, events) {
+  const [a, b] = (item.visual?.values || []).map(Number);
+  if (!a || !b) return null;
+  let x = a;
+  let y = b;
+  while (y) [x, y] = [y, x % y];
+  const target = (a * b) / x;
+  if (target / a > 8 || target / b > 8) return null;
+  const shell = modelShell(
+    "Count up both lanes",
+    `Type the multiples of ${a} and ${b} in order. Your first match turns gold.`,
+  );
+  const status = modelStatus();
+  let matched = false;
+  const lane = (base) => {
+    const wrapRow = el("div", "sg-model-row");
+    wrapRow.appendChild(el("span", "sg-model-rowlab", `×${base}:`));
+    const boxes = el("div", "sg-model-boxes");
+    for (let index = 1; index <= target / base; index++) {
+      const expected = base * index;
+      boxes.appendChild(
+        modelCell(expected, events, {
+          label: `Multiple ${index} of ${base}`,
+          onCorrect: (cell) => {
+            if (expected !== target) return;
+            cell.classList.add("gold");
+            if (!matched) {
+              matched = true;
+              steps?.completeMatching(target);
+              status.textContent = `${target} lives in both lanes — that is the least common multiple.`;
+            }
+          },
+        }),
+      );
+    }
+    wrapRow.appendChild(boxes);
+    return wrapRow;
+  };
+  shell.append(lane(a), lane(b), status);
+  return shell;
+}
+
+function typedDivision(item, steps, events) {
+  const [dividend, divisor] = (item.visual?.values || []).map(Number);
+  if (!dividend || !divisor) return null;
+  const quotient = Math.floor(dividend / divisor);
+  const remainder = dividend % divisor;
+  const shell = modelShell(
+    "Work the division",
+    "Type the quotient on top, then what is left over.",
+  );
+  const status = modelStatus();
+  const top = el("div", "sg-div-top");
+  top.appendChild(
+    modelCell(quotient, events, {
+      label: "Quotient",
+      onCorrect: () => steps?.completeMatching(quotient),
+    }),
+  );
+  const bracket = el("div", "sg-div-bracket", `${esc(divisor)}⟌${esc(dividend)}`);
+  const leftover = el("div", "sg-model-row");
+  leftover.append(
+    el("span", "sg-model-rowlab", "Left over:"),
+    modelCell(remainder, events, {
+      label: "Remainder",
+      onCorrect: () => {
+        steps?.completeMatching(remainder);
+        status.textContent = "Division complete ✓";
+      },
+    }),
+  );
+  shell.append(top, bracket, leftover, status);
+  return shell;
+}
+
+function typedTable(item, steps, events, kind) {
+  const values = valuesFrom(item.visual, item.stem);
+  const [first, second] = values.map(Number);
+  let headers = null;
+  let rows = null;
+  if (kind.includes("unit-rate")) {
+    headers = ["Items", "Cost"];
+    rows = [
+      [first, `$${second}`],
+      [1, { expected: item.answer, label: "Cost for 1 item" }],
+    ];
+  } else if (kind.includes("conversion")) {
+    headers = ["Larger unit", "Smaller units"];
+    rows = [
+      [1, second],
+      [first, { expected: item.answer, label: "Converted amount" }],
+    ];
+  } else if (kind.includes("ratio")) {
+    const scaledFirst = item.steps?.[0]?.answer;
+    const scaledSecond = item.steps?.[1]?.answer;
+    if (scaledFirst == null || scaledSecond == null) return null;
+    headers = ["First", "Second"];
+    rows = [
+      [first, second],
+      [
+        { expected: scaledFirst, label: "Scaled first value" },
+        { expected: scaledSecond, label: "Scaled second value" },
+      ],
+    ];
+  } else return null;
+  const shell = modelShell("Complete the table", "Type the missing values to finish the model.");
+  const table = el("div", "sg-model-table");
+  const addCell = (content, isHead) => {
+    const cellNode = el("div", `sg-model-tcell${isHead ? " head" : ""}`);
+    if (content && typeof content === "object") {
+      cellNode.appendChild(
+        modelCell(content.expected, events, {
+          label: content.label,
+          onCorrect: () => steps?.completeMatching(content.expected),
+        }),
+      );
+    } else cellNode.textContent = String(content);
+    table.appendChild(cellNode);
+  };
+  headers.forEach((header) => addCell(header, true));
+  for (const rowCells of rows) for (const cellContent of rowCells) addCell(cellContent, false);
+  shell.appendChild(table);
+  return shell;
+}
+
+function typedPercentBar(item, steps, events) {
+  const visual = item.visual || {};
+  const whole = Number(visual.whole);
+  const percent = Number(visual.percent);
+  const amount = item.steps?.[1]?.answer;
+  if (!whole || !percent || amount == null) return null;
+  const shell = modelShell("Read the percent bar", `${percent}% of ${whole}`);
+  shell.insertAdjacentHTML(
+    "beforeend",
+    svgShell(
+      `${percent} percent of ${whole} bar model`,
+      percentModel(visual, [percent], "percent-bar"),
+    ),
+  );
+  const row = el("div", "sg-model-row");
+  row.append(
+    el("span", "sg-model-rowlab", "The shaded part is worth:"),
+    modelCell(amount, events, {
+      label: "Value of the shaded part",
+      onCorrect: () => steps?.completeMatching(amount),
+    }),
+  );
+  shell.appendChild(row);
+  return shell;
+}
+
+function typedInequality(item, steps, events) {
+  const visual = item.visual || {};
+  const boundary = visual.boundary;
+  const symbol = visual.symbol;
+  if (boundary == null || !symbol) return null;
+  const shell = modelShell(
+    "Build the graph",
+    "Type the boundary value, then choose the symbol — the graph draws itself.",
+  );
+  shell.insertAdjacentHTML(
+    "beforeend",
+    svgShell("inequality number line", inequalityLine(visual, [])),
+  );
+  const boundaryRow = el("div", "sg-model-row");
+  boundaryRow.append(
+    el("span", "sg-model-rowlab", "Boundary:"),
+    modelCell(boundary, events, {
+      label: "Boundary value",
+      onCorrect: (cell) => {
+        cell.closest(".prob")?.classList.add("sg-done-1");
+        steps?.completeMatching(boundary);
+      },
+    }),
+  );
+  const symbolRow = el("div", "sg-model-row");
+  symbolRow.appendChild(el("span", "sg-model-rowlab", "Symbol:"));
+  for (const candidate of ["<", "≤", ">", "≥"]) {
+    const button = el("button", "sg-model-sym", esc(candidate));
+    button.type = "button";
+    button.onclick = () => {
+      if (button.disabled) return;
+      const correct = candidate === symbol;
+      events.onAttempt?.({ correct });
+      button.classList.add(correct ? "ok" : "bad");
+      if (!correct) {
+        button.disabled = true;
+        return;
+      }
+      for (const other of symbolRow.querySelectorAll("button")) other.disabled = true;
+      button.closest(".prob")?.classList.add("sg-done-2", "sg-done-3");
+      steps?.completeMatching(symbol);
+    };
+    symbolRow.appendChild(button);
+  }
+  shell.append(boundaryRow, symbolRow);
+  return shell;
+}
+
+function typedModel(item, steps, events) {
+  const kind = String(item.visual?.kind || "");
+  if (!kind) return null;
+  try {
+    if (kind.includes("factor-table")) return typedFactorLists(item, steps, events);
+    if (kind.includes("multiple-lanes")) return typedLanes(item, steps, events);
+    if (kind.includes("factor-tree")) return typedFactorTree(item, steps, events);
+    if (kind.includes("division-box")) return typedDivision(item, steps, events);
+    if (kind.includes("unit-rate") || kind.includes("conversion") || kind.includes("ratio-table"))
+      return typedTable(item, steps, events, kind);
+    if (kind.includes("percent-bar")) return typedPercentBar(item, steps, events);
+    if (kind.includes("inequality")) return typedInequality(item, steps, events);
+  } catch (error) {
+    console.warn("typed model failed; falling back to figure", error);
+    return null;
+  }
+  return null;
 }
 
 export function appendVisualPractice(card, item, { mode = "guided", events = {} } = {}) {
@@ -432,7 +815,8 @@ export function appendVisualPractice(card, item, { mode = "guided", events = {} 
   const read = el("button", "btn ghost sg-read-problem", "🔊 Read this problem");
   read.type = "button";
   read.onclick = () => speak(item.stem || item.title || "", read);
-  const steps = guidedSteps(item, mode, events);
+  const stepsApi = guidedSteps(item, mode, events);
+  const stepsNodes = stepsApi ? [stepsApi.node] : [];
   const question = card.querySelector(".q");
   // Place-value problems: the answer control's stacked column IS the giant
   // workspace — students work the problem in it, so no display-only figure.
@@ -440,7 +824,16 @@ export function appendVisualPractice(card, item, { mode = "guided", events = {} 
     card.classList.add("sg-big-work");
     const top = el("div", "sg-problem-support-head");
     top.append(el("div", "sg-visual-title", "Work it here"), read);
-    question?.after(top, ...(steps ? [steps] : []));
+    question?.after(top, ...stepsNodes);
+    return card;
+  }
+  // Typed model first: students put the numbers into the model themselves,
+  // and correct entries auto-complete the matching guided step.
+  const typed = typedModel(item, stepsApi, events);
+  if (typed) {
+    const top = el("div", "sg-problem-support-head");
+    top.append(el("div", "sg-visual-title", "Work in the model"), read);
+    question?.after(top, typed, ...stepsNodes);
     return card;
   }
   const markup = visualMarkup(item);
@@ -449,7 +842,7 @@ export function appendVisualPractice(card, item, { mode = "guided", events = {} 
     // the figure and value tool — a chart of scraped numbers misleads.
     const top = el("div", "sg-problem-support-head");
     top.append(el("span"), read);
-    question?.after(top, ...(steps ? [steps] : []));
+    question?.after(top, ...stepsNodes);
     return card;
   }
   const visual = el("div", "sg-problem-visual", markup);
@@ -457,7 +850,7 @@ export function appendVisualPractice(card, item, { mode = "guided", events = {} 
   const top = el("div", "sg-problem-support-head");
   top.append(title, read);
   const tool = interactiveTool(item, mode === "guided");
-  question?.after(top, visual, tool, ...(steps ? [steps] : []));
+  question?.after(top, visual, tool, ...stepsNodes);
   return card;
 }
 
