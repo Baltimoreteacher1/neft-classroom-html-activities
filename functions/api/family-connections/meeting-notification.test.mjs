@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import {
   FAMILY_MEETING_NOTIFICATION_RECIPIENT,
   buildMeetingNotification,
@@ -19,7 +20,7 @@ const meetingRequest = {
 };
 
 const message = buildMeetingNotification(meetingRequest);
-assert.equal(FAMILY_MEETING_NOTIFICATION_RECIPIENT, "JdNeft@bcps.k12.md.us");
+assert.equal(FAMILY_MEETING_NOTIFICATION_RECIPIENT, "jdneft@bcps.k12.md.us");
 assert.equal(message.to, FAMILY_MEETING_NOTIFICATION_RECIPIENT);
 assert.equal(message.replyTo, "family@example.com");
 assert.match(message.subject, /Family meeting booked/);
@@ -47,5 +48,10 @@ assert.deepEqual(await sendMeetingNotification(undefined, meetingRequest), {
   sent: false,
   reason: "email-binding-unavailable",
 });
+
+const wrangler = await readFile(new URL("../../../wrangler.toml", import.meta.url), "utf8");
+assert.match(wrangler, /name\s*=\s*"FAMILY_MEETING_EMAIL"/);
+assert.match(wrangler, /destination_address\s*=\s*"jdneft@bcps\.k12\.md\.us"/);
+assert.match(wrangler, /allowed_sender_addresses\s*=\s*\[\s*"family-connections@eduwonderlab\.com"\s*\]/);
 
 console.log("Family meeting notification tests passed.");
