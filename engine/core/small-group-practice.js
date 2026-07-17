@@ -1,6 +1,8 @@
 import { isRight, numberOf } from "./small-group-answers.js";
-import { bi, celebrate, el, esc } from "./small-group-ui.js";
+import { bi, celebrate, el, esc, speak } from "./small-group-ui.js";
 import { appendVisualPractice } from "./small-group-visual-practice.js";
+
+const firstHint = (item) => item.hints?.[0] || item.hint || null;
 
 function answerOf(item) {
   if (
@@ -55,7 +57,14 @@ function appendHints(card, item, events = {}) {
   const box = el("div", "hintbox");
   button.onclick = () => {
     events.onHint?.();
-    box.appendChild(el("p", null, `<b>Hint ${shown + 1}:</b> ${bi(hints[shown], hintsEs[shown])}`));
+    const line = el("p", null, `<b>Hint ${shown + 1}:</b> ${bi(hints[shown], hintsEs[shown])}`);
+    const hintText = hints[shown];
+    const speakHint = el("button", "sg-speak-inline", "🔊");
+    speakHint.type = "button";
+    speakHint.setAttribute("aria-label", `Hear hint ${shown + 1}`);
+    speakHint.onclick = () => speak(hintText, speakHint);
+    line.appendChild(speakHint);
+    box.appendChild(line);
     shown++;
     if (shown >= hints.length) {
       button.disabled = true;
@@ -176,7 +185,14 @@ function errorAnalysisCard(item, index, onSolved, events = {}) {
       if (optionIndex !== item.errorStep) {
         button.classList.add("wrong");
         button.disabled = true;
-        showFeedback(status, "no", "That step looks correct. Check the math in a different step.");
+        const hint = firstHint(item);
+        showFeedback(
+          status,
+          "no",
+          hint
+            ? `That step looks correct. <b>Clue:</b> ${esc(hint)}`
+            : "That step looks correct. Check the math in a different step.",
+        );
         return;
       }
       complete = true;
@@ -272,11 +288,14 @@ function answerControl(item, answer, scaffold, status, onSolved, events = {}, on
       const opened = tries >= 2 && onStruggle?.();
       // Third miss: bring the first hint to the student instead of waiting.
       if (tries >= 3) onStuck?.();
+      const hint = firstHint(item);
       showFeedback(
         status,
         "no",
         tries === 1
-          ? "Not yet. Re-read the question, check one step, and try again."
+          ? hint
+            ? `Not yet. <b>Try this:</b> ${bi(hint, item.hintsEs?.[0] || item.hintEs)}`
+            : "Not yet. Re-read the question, check one step, and try again."
           : opened
             ? "Still building — so the step guide below just opened for you. Walk it one line at a time, then revise your answer."
             : "Still building. Open the next hint or re-walk the worked example in Build — then revise your answer.",
@@ -629,6 +648,16 @@ export function createCheckSection(config, onSolved, tally, events = {}, store =
   revisit.type = "button";
   revisit.onclick = () => document.getElementById("sg-tab-sg-tab-learn")?.click();
   revisitRow.appendChild(revisit);
+  // The exit ticket is the studio's one independent-evidence item — it needs
+  // the same read-aloud support every practice problem already has.
+  const ticketText = ticket.stem || ticket.title || ticket.prompt || "";
+  if (ticketText) {
+    const read = el("button", "btn ghost sg-read-problem", "🔊 Read this problem");
+    read.type = "button";
+    read.setAttribute("aria-pressed", "false");
+    read.onclick = () => speak(ticketText, read);
+    revisitRow.appendChild(read);
+  }
   section.appendChild(revisitRow);
   tally.total++;
   let counted = false;

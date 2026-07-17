@@ -96,7 +96,7 @@ function printOnly(target, node) {
   window.print();
 }
 
-export function createProofPathLab(variant, state) {
+export function createProofPathLab(variant, state, store = null) {
   const fieldset = el("fieldset", "sg-proof sg-innovation");
   fieldset.setAttribute("aria-label", "Choose your proof path");
   fieldset.appendChild(el("legend", "sg-innovation-title", "Choose your proof path"));
@@ -115,7 +115,11 @@ export function createProofPathLab(variant, state) {
   const response = el("textarea", "sg-ta");
   response.setAttribute("aria-label", "Proof path notes");
   response.placeholder = "Sketch, plan, or rehearse your evidence here…";
-  response.oninput = () => (state.proofResponse = response.value.trim());
+  response.value = state.proofResponse || "";
+  response.oninput = () => {
+    state.proofResponse = response.value.trim();
+    store?.set("proofResponse", state.proofResponse);
+  };
   const buttons = [];
   for (const path of proofEntries(variant)) {
     const button = el(
@@ -125,20 +129,24 @@ export function createProofPathLab(variant, state) {
     );
     button.type = "button";
     button.setAttribute("aria-pressed", "false");
-    button.onclick = () => {
+    const select = (persist) => {
       state.proofPath = path.id;
+      if (persist) store?.set("proofPath", path.id);
       buttons.forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
       prompt.innerHTML = `<b>${esc(path.label)} mission:</b> ${esc(path.prompt)}`;
       response.placeholder = path.prompt;
     };
+    button.onclick = () => select(true);
     buttons.push(button);
     grid.appendChild(button);
+    // Restore last session's choice so the Evidence Card stays truthful.
+    if (state.proofPath === path.id) select(false);
   }
   fieldset.append(grid, prompt, response);
   return fieldset;
 }
 
-export function createConsensusLab(config, variant, state) {
+export function createConsensusLab(config, variant, state, store = null) {
   const fieldset = el("fieldset", "sg-consensus sg-innovation");
   fieldset.setAttribute("aria-label", "Team consensus protocol");
   fieldset.appendChild(el("legend", "sg-innovation-title", "Team consensus protocol"));
@@ -152,36 +160,46 @@ export function createConsensusLab(config, variant, state) {
   const voteBoard = el("div", "sg-vote-board");
   const reveal = el("div", "sg-consensus-reveal", "🔒 0 of 3 voices ready");
   reveal.setAttribute("aria-live", "polite");
-  const votes = [];
+  const votes = Array.isArray(state.consensusVotes) ? [...state.consensusVotes] : [];
+  const updateReveal = () => {
+    const ready = votes.filter(Boolean).length;
+    if (ready < 3) reveal.textContent = `🔒 ${ready} of 3 voices ready — choices stay private`;
+    else {
+      const counts = votes.reduce((all, id) => ({ ...all, [id]: (all[id] || 0) + 1 }), {});
+      reveal.classList.add("is-revealed");
+      reveal.innerHTML = `<b>Anonymous distribution revealed</b>${Object.entries(counts)
+        .map(
+          ([id, count]) =>
+            `<span>${esc(labelFor(id))} · ${count} ${count === 1 ? "voice" : "voices"}</span>`,
+        )
+        .join("")}`;
+    }
+  };
   [1, 2, 3].forEach((voice) => {
     const row = el("div", "sg-vote-row");
     row.appendChild(el("b", null, `Voice ${voice}`));
+    const casters = new Map();
     proofEntries(variant).forEach((path) => {
       const button = el("button", "sg-vote-button", esc(path.label));
       button.type = "button";
       button.setAttribute("aria-label", `Voice ${voice} · ${path.label}`);
-      button.onclick = () => {
+      const cast = (persist) => {
         votes[voice - 1] = path.id;
         [...row.querySelectorAll("button")].forEach((item) => {
           item.disabled = true;
           item.setAttribute("aria-pressed", String(item === button));
         });
         state.consensusVotes = [...votes];
-        const ready = votes.filter(Boolean).length;
-        if (ready < 3) reveal.textContent = `🔒 ${ready} of 3 voices ready — choices stay private`;
-        else {
-          const counts = votes.reduce((all, id) => ({ ...all, [id]: (all[id] || 0) + 1 }), {});
-          reveal.classList.add("is-revealed");
-          reveal.innerHTML = `<b>Anonymous distribution revealed</b>${Object.entries(counts)
-            .map(
-              ([id, count]) =>
-                `<span>${esc(labelFor(id))} · ${count} ${count === 1 ? "voice" : "voices"}</span>`,
-            )
-            .join("")}`;
-        }
+        if (persist) store?.set("consensusVotes", [...votes]);
+        updateReveal();
       };
+      button.onclick = () => cast(true);
+      casters.set(path.id, cast);
       row.appendChild(button);
     });
+    // Restore a voice cast last session — the board stays as they left it.
+    const saved = votes[voice - 1];
+    if (saved && casters.has(saved)) casters.get(saved)(false);
     voteBoard.appendChild(row);
   });
   const revision = el("fieldset", "sg-revision");
@@ -195,20 +213,28 @@ export function createConsensusLab(config, variant, state) {
     input.type = "radio";
     input.name = `${config.lessonId}-revision`;
     input.value = value;
-    input.onchange = () => (state.revision = value);
+    input.checked = state.revision === value;
+    input.onchange = () => {
+      state.revision = value;
+      store?.set("revision", value);
+    };
     label.append(input, document.createTextNode(copy));
     revision.appendChild(label);
   });
   const reasonLabel = el("label", "block-lab", "Why did your thinking change?");
   const reason = el("textarea", "sg-ta");
   reasonLabel.appendChild(reason);
-  reason.oninput = () => (state.revisionReason = reason.value.trim());
+  reason.value = state.revisionReason || "";
+  reason.oninput = () => {
+    state.revisionReason = reason.value.trim();
+    store?.set("revisionReason", state.revisionReason);
+  };
   revision.appendChild(reasonLabel);
   fieldset.append(voteBoard, reveal, revision);
   return fieldset;
 }
 
-export function createAdaptiveCoach(variant, state) {
+export function createAdaptiveCoach(variant, state, store = null) {
   const section = el("section", "sg-coach sg-innovation");
   section.setAttribute("role", "region");
   section.setAttribute("aria-label", "Adaptive next-move coach");
@@ -218,6 +244,7 @@ export function createAdaptiveCoach(variant, state) {
   result.setAttribute("aria-live", "polite");
   const render = (path) => {
     state.adaptivePath = path.id;
+    store?.set("adaptivePath", path.id);
     result.innerHTML = `<div class="sg-path-badge">Recommended next move</div><h3>${esc(path.label)}</h3><p><b>Why:</b> ${esc(path.reason || "You chose a different path that fits you.")}</p><p>${esc(path.prompt)}</p>`;
     const choices = el("div", "sg-coach-choices");
     alternatives()
@@ -235,6 +262,13 @@ export function createAdaptiveCoach(variant, state) {
   start.type = "button";
   start.onclick = () => render(chooseAdaptivePath(state, variant));
   section.append(start, result);
+  // Restore last session's move so the coach (and Evidence Card) pick up
+  // where the student left off instead of resetting to "not chosen".
+  if (state.adaptivePath && PATHS[state.adaptivePath])
+    render({
+      ...PATHS[state.adaptivePath],
+      reason: "Restored from your last session — you can choose again any time.",
+    });
   return section;
 }
 

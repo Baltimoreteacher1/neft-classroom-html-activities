@@ -195,16 +195,22 @@ export function createExploreLab(config, variant, { number, store, events, onDon
       });
     })
     .catch((error) => {
+      // An unloaded lab is not a finished lab: keep completion honest and give
+      // the student a way back in (chunk 404s right after a deploy are
+      // transient), instead of silently marking the phase done.
       console.warn("small-group explore lab failed to load", error);
       mount.innerHTML = "";
       mount.appendChild(
         el(
           "p",
           "sg-lab-note",
-          "This lab could not load right now. Talk through the warm-up out loud, then continue.",
+          "This lab could not load right now. The rest of the studio still works — try reloading, or continue and come back.",
         ),
       );
-      finish();
+      const retry = el("button", "btn ghost", "↻ Try loading the lab again");
+      retry.type = "button";
+      retry.onclick = () => window.location.reload();
+      mount.appendChild(retry);
     });
 
   return section;
@@ -233,6 +239,16 @@ export function createModelLab(config, variant, { number, store, events, onDone 
   const card = el("div", "card");
   const question = connect.promptQuestion || connect.prompt;
   if (question) card.appendChild(el("p", "sg-talk-q", esc(question)));
+  const spoken = [connect.scenario, question].filter(Boolean).join(" ");
+  if (spoken) {
+    const tools = el("div", "sg-toolrow");
+    const read = el("button", "btn ghost", "🔊 Read the model story");
+    read.type = "button";
+    read.setAttribute("aria-pressed", "false");
+    read.onclick = () => speak(spoken, read);
+    tools.appendChild(read);
+    card.appendChild(tools);
+  }
 
   const keywords = (connect.keywords || []).slice(0, 8);
   if (keywords.length) {
@@ -248,6 +264,8 @@ export function createModelLab(config, variant, { number, store, events, onDone 
     variant === "group2"
       ? "Explain what the model proves, and how you know…"
       : "Explain what the model shows, using a math word…";
+  response.value = store.get("modelResponse") || "";
+  response.addEventListener("input", () => store.set("modelResponse", response.value));
   const status = el("div", "fb");
   status.setAttribute("aria-live", "polite");
   const check = el("button", "btn", "Check my explanation");
@@ -384,6 +402,8 @@ export function createApplyLab(config, variant, { number, store, events, onDone 
   const work = el("textarea", "sg-ta");
   work.setAttribute("aria-label", "Show your work");
   work.placeholder = "Write each step, then your answer…";
+  work.value = store.get("applyWork") || "";
+  work.addEventListener("input", () => store.set("applyWork", work.value));
   const solveRow = el("div", "row");
   const readyCheck = el("button", "btn", "I'm ready to check");
   readyCheck.type = "button";

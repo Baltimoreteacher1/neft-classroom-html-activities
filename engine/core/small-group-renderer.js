@@ -246,6 +246,14 @@ export function bootSmallGroup(config) {
     incorrectAttempts: 0,
     hints: 0,
     solved: 0,
+    // Cross-session studio evidence — rehydrated so the Evidence Card and the
+    // proof/consensus/coach labs survive a reload instead of resetting to "—".
+    proofPath: store.get("proofPath") || null,
+    proofResponse: store.get("proofResponse") || "",
+    consensusVotes: store.get("consensusVotes") || [],
+    revision: store.get("revision") || null,
+    revisionReason: store.get("revisionReason") || "",
+    adaptivePath: store.get("adaptivePath") || null,
   };
   const events = {
     onAttempt({ correct }) {
@@ -273,8 +281,18 @@ export function bootSmallGroup(config) {
     pendingMarks.add(id);
     tabs?.markDone(id);
   };
+  // Phase completions (vocab, build, labs, talk, mission, apply, reflection)
+  // feed the momentum meter alongside practice checks, so finishing early
+  // sections moves the bar instead of leaving it stuck near zero.
+  const phaseProgress = { keys: new Set(), done: new Set() };
   const phaseDone = (tabId, storeKey) => () => {
-    if (storeKey) store.set(storeKey, true);
+    if (storeKey) {
+      store.set(storeKey, true);
+      if (phaseProgress.keys.has(storeKey) && !phaseProgress.done.has(storeKey)) {
+        phaseProgress.done.add(storeKey);
+        tally.update();
+      }
+    }
     mark(tabId);
   };
 
@@ -285,7 +303,10 @@ export function bootSmallGroup(config) {
     solved: 0,
     update() {
       completion.innerHTML = `<b>${this.solved} of ${this.total}</b> practice checks complete. Keep using hints, revisions, and group questions.`;
-      tabs?.setProgress(this.solved, this.total);
+      tabs?.setProgress(
+        this.solved + phaseProgress.done.size,
+        this.total + phaseProgress.keys.size,
+      );
     },
   };
 
@@ -294,8 +315,7 @@ export function bootSmallGroup(config) {
     config,
     state,
     () => {
-      store.set("reflectDone", true);
-      mark("sg-tab-check");
+      phaseDone("sg-tab-check", "reflectDone")();
       completion.hidden = false;
       completion.innerHTML = `<h2>Studio complete 🎉</h2><p>You finished the mission and named your growth. That is what mathematicians do.</p>`;
       evidence.reveal();
@@ -336,7 +356,7 @@ export function bootSmallGroup(config) {
   const build = conceptSection(
     config,
     phaseDone("sg-tab-learn", "buildDone"),
-    createProofPathLab(variant, state),
+    createProofPathLab(variant, state, store),
   );
   const explore = createExploreLab(config, variant, {
     store,
@@ -352,7 +372,7 @@ export function bootSmallGroup(config) {
   // Partner talk lives inside the Practice tab so discussion is part of
   // practicing, not a detour.
   const talk = createTalkSection(config, variant, phaseDone("sg-tab-practice", "talkDone"));
-  if (talk) talk.appendChild(createConsensusLab(config, variant, state));
+  if (talk) talk.appendChild(createConsensusLab(config, variant, state, store));
   const guided = createPracticeSection(
     config,
     phaseDone("sg-tab-guided", "guidedDone"),
@@ -419,6 +439,26 @@ export function bootSmallGroup(config) {
     onDone: phaseDone("sg-tab-more", "applyDone"),
   });
 
+  // Register the phase checks that exist in THIS lesson (labs are optional),
+  // and restore ones finished last session, so the meter's denominator is
+  // honest and prior work still counts. Practice-driven phase marks
+  // (guided/practice/more/check) stay out — their items are already tallied.
+  const trackedPhases = [
+    [vocab, "vocabDone"],
+    [build, "buildDone"],
+    [explore, "exploreDone"],
+    [model, "modelDone"],
+    [talk, "talkDone"],
+    [mission, "launchDone"],
+    [apply, "applyDone"],
+    [reflection.section, "reflectDone"],
+  ];
+  for (const [section, storeKey] of trackedPhases) {
+    if (!section) continue;
+    phaseProgress.keys.add(storeKey);
+    if (store.get(storeKey)) phaseProgress.done.add(storeKey);
+  }
+
   const makePanel = (id, children) => {
     const panel = el("div", "sg-panel");
     panel.id = id;
@@ -435,7 +475,7 @@ export function bootSmallGroup(config) {
     {
       id: "sg-tab-guided",
       label: "Guided",
-      panel: makePanel("sg-tab-guided", [guided, createAdaptiveCoach(variant, state)]),
+      panel: makePanel("sg-tab-guided", [guided, createAdaptiveCoach(variant, state, store)]),
     },
     {
       id: "sg-tab-practice",

@@ -51,6 +51,16 @@ export function makePulse(state, key, onSelect, initial) {
   return pulse;
 }
 
+// Mission text and launch.visual are authored independently by the generator,
+// so they can drift (a "Prime factors of 60" figure beside a mission about 84).
+// If the figure's title/caption names an anchor number (≥ 10) the mission text
+// never mentions, the figure belongs to different content — skip it.
+function missionFigureMatches(visual, context) {
+  const anchors = `${visual?.title || ""} ${visual?.unit || ""}`.match(/\d+(?:\.\d+)?/g) || [];
+  const big = anchors.filter((value) => Number(value) >= 10);
+  return !big.length || big.some((value) => String(context).includes(value));
+}
+
 export function createMissionSection(config, variant, onDone) {
   const missionContent = config.noticeAndWonder || {};
   const context =
@@ -81,7 +91,9 @@ export function createMissionSection(config, variant, onDone) {
 
   // Photos and screenshots are gone by design: the mission panel shows the
   // lesson's math figure when one exists, otherwise a quiet emoji tile.
-  const missionFigure = figureBlock(config.launch?.visual);
+  const missionFigure = missionFigureMatches(config.launch?.visual, context)
+    ? figureBlock(config.launch?.visual)
+    : null;
   const visual = el("div", `sg-mission-visual${missionFigure ? " has-figure" : " no-image"}`);
   if (missionFigure) {
     visual.appendChild(missionFigure);
@@ -246,13 +258,15 @@ export function createVocabularySection(config, onDone, store = null) {
       const reveal = el("button", "btn ghost", "Reveal meaning");
       reveal.type = "button";
       const definition = el("div", "sg-vdef");
-      definition.appendChild(
-        definitionLine(
-          "English",
-          word.definition || word.visual || "Use this word in today's math talk.",
-          "en",
-        ),
-      );
+      const definitionText =
+        word.definition || word.visual || "Use this word in today's math talk.";
+      const englishLine = definitionLine("English", definitionText, "en");
+      const speakDef = el("button", "sg-speak-inline", "🔊");
+      speakDef.type = "button";
+      speakDef.setAttribute("aria-label", `Hear the meaning of ${word.term}`);
+      speakDef.onclick = () => speak(definitionText, speakDef);
+      englishLine.appendChild(speakDef);
+      definition.appendChild(englishLine);
       const secondaryDef = currentLang && word[`definition${currentLang.suffix}`];
       if (secondaryDef)
         definition.appendChild(
@@ -424,6 +438,13 @@ export function createTalkSection(config, variant, onDone) {
       ),
     );
   card.appendChild(el("p", "sg-talk-q", esc(talk.question)));
+  const talkTools = el("div", "sg-toolrow");
+  const readQuestion = el("button", "btn ghost", "🔊 Read the question");
+  readQuestion.type = "button";
+  readQuestion.setAttribute("aria-pressed", "false");
+  readQuestion.onclick = () => speak(talk.question, readQuestion);
+  talkTools.appendChild(readQuestion);
+  card.appendChild(talkTools);
   card.appendChild(
     el(
       "p",
@@ -612,6 +633,8 @@ export function createReflectionSection(config, state, onDone, store = null) {
   const response = el("textarea", "sg-ta");
   response.id = label.htmlFor;
   response.placeholder = "A model, a hint, a question, a partner explanation…";
+  response.value = store?.get("growthNote") || "";
+  response.oninput = () => store?.set("growthNote", response.value);
   const finish = el("button", "btn", "Finish the studio");
   finish.type = "button";
   let complete = false;

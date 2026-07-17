@@ -58,6 +58,12 @@ function blockFor(r) {
   const sg = r.group === 1 ? "sg1" : "sg2";
   const emoji = r.group === 1 ? "\u{1F91D}" : "\u{1F680}"; // 🤝 / 🚀
   const badgeClass = r.group === 1 ? "badge-support" : "badge-challenge";
+  // Student-facing labels: Group 1 is "Foundations" — never "Extra Support"
+  // (that stays teacher-facing only). Objectives drop the facilitation-voice
+  // "With my small group," preamble, same as the lesson renderer does.
+  const badgeLabel = r.group === 1 ? "Foundations" : r.label;
+  const cleaned = String(r.objective).replace(/^with (?:my|your|the) small group,?\s*/i, "");
+  const objective = cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
   // Lesson number first (e.g. "1.3"), then the small-group info.
   const dotted = String(r.afterLesson).replace("-", ".");
   const heading = `${dotted} Small Group: Group ${r.group}`;
@@ -69,11 +75,11 @@ function blockFor(r) {
             <summary class="lesson-sum">
               <span class="lesson-head"
                 >${emoji} ${heading}
-                <span class="badge ${badgeClass}">${esc(r.label)}</span></span
+                <span class="badge ${badgeClass}">${esc(badgeLabel)}</span></span
               >
             </summary>
             <div class="lesson-body">
-              <p class="lesson-obj">${esc(r.objective)}</p>
+              <p class="lesson-obj">${esc(objective)}</p>
               <div class="res-row">
                 <a class="res" href="/lessons/${r.id}/">Start small group</a>
               </div>
