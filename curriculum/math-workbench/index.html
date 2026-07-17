@@ -2705,9 +2705,6 @@
           <button class="tbtn danger" id="clearBtn" title="Clear the whole board">
             <span class="i">🗑</span><span class="txt">Clear</span>
           </button>
-          <button class="tbtn premium" id="handinBtn" title="Turn in your work to Mr. Neft">
-            <span class="i">📤</span><span class="txt">Turn In</span>
-          </button>
           <button class="tbtn" id="printBtn" title="Print or save your work as a PDF">
             <span class="i">⤓</span><span class="txt">Save / Print</span>
           </button>
@@ -10304,150 +10301,6 @@
       }
       $("#a11yBtn").addEventListener("click", () => toggleA11y());
 
-      /* ===================== Turn In (hand-in to teacher) ===================== */
-      // Sends the current page (plus a small snapshot image) to the classroom
-      // progress backend so it lands in Mr. Neft's gradebook and digest — the
-      // Workbench becomes assessable evidence, not just scratch paper.
-      (function () {
-        const CODE_KEY = "mw_handin_code";
-        const WHO_KEY = "mw_handin_who";
-        function handinCode() {
-          let c = "";
-          try {
-            c = localStorage.getItem(CODE_KEY) || "";
-          } catch (e) {}
-          if (/^MWB-[A-Z0-9]{5}$/.test(c)) return c;
-          const AB = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-          let s = "";
-          const a = new Uint32Array(5);
-          if (window.crypto && crypto.getRandomValues) crypto.getRandomValues(a);
-          for (let i = 0; i < 5; i++) s += AB[a[i] % AB.length];
-          c = "MWB-" + s;
-          try {
-            localStorage.setItem(CODE_KEY, c);
-          } catch (e) {}
-          return c;
-        }
-        function textFromBoard() {
-          const parts = [];
-          const els = document.querySelectorAll("#overlay .obj");
-          for (const el of els) {
-            const t = (el.textContent || "").replace(/\s+/g, " ").trim();
-            if (t) parts.push(t);
-          }
-          const joined = parts.join("  |  ");
-          return joined.length > 1500 ? joined.slice(0, 1500) + "…" : joined;
-        }
-        function inkThumb() {
-          try {
-            if (!canvas.width || !canvas.height) return null;
-            const scale = Math.min(1, 480 / Math.max(canvas.width, canvas.height));
-            const c = document.createElement("canvas");
-            c.width = Math.max(1, Math.round(canvas.width * scale));
-            c.height = Math.max(1, Math.round(canvas.height * scale));
-            const x = c.getContext("2d");
-            x.fillStyle = "#fff";
-            x.fillRect(0, 0, c.width, c.height);
-            x.drawImage(canvas, 0, 0, c.width, c.height);
-            return c.toDataURL("image/jpeg", 0.55);
-          } catch (e) {
-            return null;
-          }
-        }
-        let panel = null;
-        function buildPanel() {
-          if (panel) return panel;
-          let who = {};
-          try {
-            who = JSON.parse(localStorage.getItem(WHO_KEY)) || {};
-          } catch (e) {}
-          panel = document.createElement("div");
-          panel.id = "handinPanel";
-          panel.className = "handin-panel";
-          panel.setAttribute("role", "dialog");
-          panel.setAttribute("aria-label", "Turn in your work");
-          panel.hidden = true;
-          panel.innerHTML =
-            '<div class="a11y-head"><b>📤 Turn in to Mr. Neft</b><button type="button" class="a11y-x" id="hiClose" aria-label="Close turn in">✕</button></div>' +
-            '<label class="hi-row">First name<input id="hiName" maxlength="30" autocomplete="off" value="' +
-            String(who.name || "").replace(/["<>]/g, "") +
-            '" /></label>' +
-            '<label class="hi-row">Class period<input id="hiSection" maxlength="12" autocomplete="off" placeholder="e.g. 601" value="' +
-            String(who.section || "").replace(/["<>]/g, "") +
-            '" /></label>' +
-            '<label class="hi-row">Note to teacher (optional)<input id="hiNote" maxlength="120" autocomplete="off" placeholder="What did you work on?" /></label>' +
-            '<button type="button" class="live-btn primary" id="hiSend">Turn in this page</button>' +
-            '<p class="a11y-note" id="hiStatus" aria-live="polite"></p>';
-          document.body.appendChild(panel);
-          panel.querySelector("#hiClose").addEventListener("click", () => togglePanel(false));
-          panel.querySelector("#hiSend").addEventListener("click", submit);
-          return panel;
-        }
-        function togglePanel(show) {
-          const p = buildPanel();
-          p.hidden = show != null ? !show : !p.hidden;
-          if (!p.hidden) setTimeout(() => p.querySelector("#hiName").focus(), 40);
-        }
-        function submit() {
-          const p = panel;
-          const name = p.querySelector("#hiName").value.trim().slice(0, 30);
-          const section = p.querySelector("#hiSection").value.trim().slice(0, 12);
-          const note = p.querySelector("#hiNote").value.trim().slice(0, 120);
-          const status = p.querySelector("#hiStatus");
-          if (!name) {
-            status.textContent = "Type your first name so Mr. Neft knows whose work this is.";
-            p.querySelector("#hiName").focus();
-            return;
-          }
-          if (!state.strokes.length && !state.objects.length) {
-            status.textContent = "This page is empty — do some work first, then turn it in.";
-            return;
-          }
-          try {
-            localStorage.setItem(WHO_KEY, JSON.stringify({ name, section }));
-          } catch (e) {}
-          const code = handinCode();
-          status.textContent = "Sending…";
-          p.querySelector("#hiSend").disabled = true;
-          fetch("/api/progress/create", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              saveCode: code,
-              activityId: "math-workbench",
-              activityTitle: "Math Workbench — Turn In",
-              studentName: name,
-              section: section,
-              progressPercent: 100,
-              state: {
-                kind: "workbench-handin",
-                note: note,
-                text: textFromBoard(),
-                board: JSON.parse(snapshot()),
-                thumb: inkThumb(),
-                pageCount: notebook.boards.length,
-                page: notebook.active + 1,
-                lang: mwLang,
-              },
-            }),
-          })
-            .then((r) => (r.ok ? r.json() : Promise.reject(new Error("http " + r.status))))
-            .then(() => {
-              status.textContent =
-                "✅ Turned in! Mr. Neft can see this page now. Your code: " + code;
-              showToast("📤 Turned in to Mr. Neft — nice work!");
-            })
-            .catch(() => {
-              status.textContent =
-                "Couldn't reach the classroom server. Your work is still saved on this device — try again in a minute.";
-            })
-            .then(() => {
-              p.querySelector("#hiSend").disabled = false;
-            });
-        }
-        $("#handinBtn").addEventListener("click", () => togglePanel());
-      })();
-
       /* ===================== Portfolio print (all pages) ===================== */
       // Save / Print now offers the whole notebook as one clean packet — a
       // header per page (name, date, page number) over the ink + tools — so a
@@ -12607,11 +12460,10 @@
         });
       })();
     </script>
-    <!-- ===== Award Wave — styles for Access, Turn In, Portfolio, two-way ink ===== -->
+    <!-- ===== Award Wave — styles for Access, Portfolio, two-way ink ===== -->
     <style>
-      /* Access panel + Turn In panel share one card style */
-      .a11y-panel,
-      .handin-panel {
+      /* Access panel card style */
+      .a11y-panel {
         position: fixed;
         top: 92px;
         right: 24px;
@@ -12625,8 +12477,7 @@
         padding: 0 0 12px;
         font-family: "Atkinson Hyperlegible", "Nunito", sans-serif;
       }
-      .a11y-panel[hidden],
-      .handin-panel[hidden] {
+      .a11y-panel[hidden] {
         display: none !important;
       }
       .a11y-head {
@@ -12638,9 +12489,6 @@
         color: #fff;
         border-radius: 13px 13px 0 0;
         font-size: 0.95rem;
-      }
-      .handin-panel .a11y-head {
-        background: linear-gradient(135deg, #4338a6, #7c3aed);
       }
       .a11y-x {
         border: none;
@@ -12675,30 +12523,7 @@
         font-size: 0.78rem;
         color: #5b6b82;
       }
-      .hi-row {
-        display: block;
-        padding: 10px 14px 0;
-        font-weight: 800;
-        font-size: 0.85rem;
-        color: #14223a;
-      }
-      .hi-row input {
-        display: block;
-        width: 100%;
-        box-sizing: border-box;
-        margin-top: 4px;
-        padding: 9px 10px;
-        border: 2px solid #cdd8e3;
-        border-radius: 9px;
-        font: inherit;
-        font-weight: 600;
-      }
-      .hi-row input:focus-visible {
-        outline: 3px solid #7c3aed;
-        outline-offset: 1px;
-      }
-      .a11y-panel .live-btn,
-      .handin-panel .live-btn {
+      .a11y-panel .live-btn {
         display: block;
         width: calc(100% - 28px);
         margin: 12px 14px 0;
@@ -12790,8 +12615,7 @@
         body.pf-printing #pageTabs,
         body.pf-printing .coach-panel,
         body.pf-printing .calc-panel,
-        body.pf-printing .a11y-panel,
-        body.pf-printing .handin-panel {
+        body.pf-printing .a11y-panel {
           display: none !important;
         }
         body.pf-printing #portfolioView {
