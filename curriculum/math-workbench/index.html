@@ -2673,14 +2673,6 @@
             <span class="i">✨</span><span class="txt">Magic Ink</span>
           </button>
           <button
-            class="tbtn"
-            id="replayBtn"
-            title="Replay — watch this page being drawn, step by step"
-            aria-pressed="false"
-          >
-            <span class="i">▶</span><span class="txt">Replay</span>
-          </button>
-          <button
             class="tbtn premium"
             id="guideBtn"
             title="Open guided problem templates and support cards"
@@ -3335,15 +3327,40 @@
       document.addEventListener("visibilitychange", () => {
         if (document.visibilityState === "hidden") flushSave();
       });
-      function restore() {
+      // Whiteboard-style open: the Workbench starts on a clean board every time
+      // it's opened (teacher/projector expectation). The previous session is NOT
+      // auto-loaded, but it's captured at startup so a one-tap "Restore last
+      // session" can bring it back — nothing is silently lost.
+      function sessionHasWork(raw) {
+        if (!raw) return false;
         try {
-          const raw = localStorage.getItem(LS_KEY);
-          if (raw) {
+          const d = JSON.parse(raw);
+          const boards = Array.isArray(d.boards) && d.boards.length ? d.boards : [d];
+          return boards.some(
+            (b) =>
+              b &&
+              ((Array.isArray(b.strokes) && b.strokes.length) ||
+                (Array.isArray(b.objects) && b.objects.length)),
+          );
+        } catch (e) {
+          return false;
+        }
+      }
+      function offerRestore(raw) {
+        // Only worth interrupting for when the last session actually had work.
+        if (liveFollowing || !sessionHasWork(raw)) return;
+        showToast("Started a clean board", {
+          label: "Restore last session",
+          fn: () => {
             loadNotebook(raw);
-            return true;
-          }
-        } catch (e) {}
-        return false;
+            history.length = 0;
+            hpos = -1;
+            pushHistory();
+            updateUndoButtons();
+            updateEmpty();
+            showToast("Restored your last session");
+          },
+        });
       }
 
       /* ----------------------- Canvas sizing ----------------------- */
@@ -3591,7 +3608,7 @@
       function drawStroke(st, clipN) {
         const all = st.pts;
         if (!all.length) return;
-        // clipN (replay): draw only the first N points of the stroke.
+        // clipN: draw only the first N points of the stroke.
         const pts = clipN != null && clipN < all.length ? all.slice(0, Math.max(1, clipN)) : all;
         ctx.lineJoin = "round";
         ctx.lineCap = "round";
@@ -3670,7 +3687,7 @@
       // glass — ignore it entirely instead of starting a stray stroke.
       let lastPenAt = 0;
       // Per-point sample: document coords + when it happened (ms since the
-      // stroke began, for Replay) + pen pressure when a stylus reports one.
+      // stroke began) + pen pressure when a stylus reports one.
       function samplePt(e, r, t0) {
         const q = ptFromRect(e, r);
         q.t = Math.max(0, Math.round((e.timeStamp || performance.now()) - t0));
@@ -3767,7 +3784,7 @@
       /* ----------------------- Magic Ink (shape beautify) ----------------------- */
       // When the Magic Ink toggle is on, a rough hand-drawn line / circle /
       // triangle / rectangle snaps to the clean figure the student meant.
-      // Point timestamps are re-spread evenly so Replay still animates it.
+      // Point timestamps are re-spread evenly to keep playback timing consistent.
       // Magic Ink is turned OFF (2026-07-15, Joel): the saved mw_magic
       // preference is ignored and the #magicBtn toolbar button carries
       // [hidden]. To bring it back, restore the localStorage read below and
@@ -3877,7 +3894,7 @@
         }
       }
       // Swap a stroke's freehand points for the idealized outline, spreading
-      // timestamps evenly across the original drawing duration for Replay.
+      // timestamps evenly across the original drawing duration.
       function replacePts(st, shape, dur) {
         const out = [];
         for (let i = 0; i < shape.length; i++) {
@@ -9094,17 +9111,21 @@
         } catch (e) {}
         dock.classList.toggle("open", dockOpen);
         setDockToggle(dockOpen);
-        const had = restore();
+        // Capture (but don't load) the last saved session, then open clean.
+        let lastSessionRaw = null;
+        try {
+          lastSessionRaw = localStorage.getItem(LS_KEY);
+        } catch (e) {}
         applySheet();
-        if (!had) {
-          renderAll();
-        }
-        // seed history baseline
+        renderAll();
+        // seed history baseline (clean board)
         history.length = 0;
         hpos = -1;
         pushHistory();
         updateUndoButtons();
         updateEmpty();
+        // Offer a one-tap recovery of the previous session's work.
+        offerRestore(lastSessionRaw);
         // Open help only when explicitly deep-linked, so the top tools remain
         // immediately usable for first-time students.
         try {
@@ -10282,137 +10303,6 @@
         $("#a11yBtn").setAttribute("aria-pressed", want ? "true" : "false");
       }
       $("#a11yBtn").addEventListener("click", () => toggleA11y());
-
-      /* ===================== Replay (see your thinking) ===================== */
-      // Every ink point carries a timestamp, so a page can be replayed exactly
-      // as it was written — for the student to review, or for the teacher to
-      // see HOW a problem was solved, not just the final page.
-      (function () {
-        const btn = $("#replayBtn");
-        let bar = null,
-          playing = false,
-          raf = 0,
-          tCur = 0,
-          speed = 1,
-          lastTick = 0;
-        const GAP = 260; // pause between strokes, ms
-        function strokeDur(st) {
-          const pts = st.pts || [];
-          const t = pts.length ? pts[pts.length - 1].t : 0;
-          return typeof t === "number" && t > 0 ? Math.min(t, 20000) : 420;
-        }
-        function timeline() {
-          let total = 0;
-          const marks = [];
-          for (const st of state.strokes) {
-            const d = strokeDur(st);
-            marks.push({ st, start: total, dur: d });
-            total += d + GAP;
-          }
-          return { marks, total: Math.max(1, total - GAP) };
-        }
-        function renderAt(tl, ms) {
-          ctx.save();
-          ctx.setTransform(1, 0, 0, 1, 0, 0);
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          ctx.restore();
-          ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-          for (const m of tl.marks) {
-            if (ms >= m.start + m.dur) {
-              drawStroke(m.st);
-            } else if (ms > m.start) {
-              const local = ms - m.start;
-              const pts = m.st.pts;
-              let n = 0;
-              if (
-                pts.length &&
-                typeof pts[pts.length - 1].t === "number" &&
-                pts[pts.length - 1].t > 0
-              ) {
-                while (n < pts.length && (pts[n].t || 0) <= local) n++;
-              } else {
-                n = Math.ceil((local / m.dur) * pts.length);
-              }
-              drawStroke(m.st, Math.max(1, n));
-            }
-          }
-        }
-        let tl = null;
-        function open() {
-          if (!state.strokes.length) {
-            showToast("Draw something first, then Replay shows it being written");
-            return;
-          }
-          tl = timeline();
-          tCur = 0;
-          document.body.classList.add("wb-replaying");
-          btn.setAttribute("aria-pressed", "true");
-          if (!bar) {
-            bar = document.createElement("div");
-            bar.id = "replayBar";
-            bar.className = "replay-bar";
-            bar.setAttribute("role", "toolbar");
-            bar.setAttribute("aria-label", "Replay controls");
-            bar.innerHTML =
-              '<button type="button" id="rpPlay" class="rp-btn" aria-label="Play or pause">▶</button>' +
-              '<input type="range" id="rpSeek" min="0" max="1000" value="0" aria-label="Replay position" />' +
-              '<select id="rpSpeed" aria-label="Replay speed"><option value="1">1×</option><option value="2">2×</option><option value="4">4×</option></select>' +
-              '<button type="button" id="rpClose" class="rp-btn" aria-label="Close replay">✕</button>';
-            document.body.appendChild(bar);
-            bar
-              .querySelector("#rpPlay")
-              .addEventListener("click", () => (playing ? pause() : play()));
-            bar.querySelector("#rpClose").addEventListener("click", close);
-            bar.querySelector("#rpSpeed").addEventListener("change", (e) => {
-              speed = Number(e.target.value) || 1;
-            });
-            bar.querySelector("#rpSeek").addEventListener("input", (e) => {
-              pause();
-              tCur = (Number(e.target.value) / 1000) * tl.total;
-              renderAt(tl, tCur);
-            });
-          }
-          bar.hidden = false;
-          renderAt(tl, 0);
-          play();
-        }
-        function play() {
-          playing = true;
-          bar.querySelector("#rpPlay").textContent = "⏸";
-          lastTick = performance.now();
-          raf = requestAnimationFrame(tick);
-        }
-        function pause() {
-          playing = false;
-          if (bar) bar.querySelector("#rpPlay").textContent = "▶";
-          cancelAnimationFrame(raf);
-        }
-        function tick(now) {
-          if (!playing) return;
-          tCur += (now - lastTick) * speed;
-          lastTick = now;
-          if (tCur >= tl.total) {
-            tCur = tl.total;
-            pause();
-          }
-          bar.querySelector("#rpSeek").value = String(Math.round((tCur / tl.total) * 1000));
-          renderAt(tl, tCur);
-          if (playing) raf = requestAnimationFrame(tick);
-        }
-        function close() {
-          pause();
-          if (bar) bar.hidden = true;
-          document.body.classList.remove("wb-replaying");
-          btn.setAttribute("aria-pressed", "false");
-          renderCanvas();
-        }
-        btn.addEventListener("click", () => {
-          document.body.classList.contains("wb-replaying") ? close() : open();
-        });
-        document.addEventListener("keydown", (e) => {
-          if (e.key === "Escape" && document.body.classList.contains("wb-replaying")) close();
-        });
-      })();
 
       /* ===================== Turn In (hand-in to teacher) ===================== */
       // Sends the current page (plus a small snapshot image) to the classroom
@@ -12407,8 +12297,8 @@
         >
           <p class="mult-class-title" id="multClassTitle">Number highlights</p>
           <p class="mult-class-help">
-            A prime number has exactly 2 factors. A composite number has more than 2 factors.
-            The number 1 is neither.
+            A prime number has exactly 2 factors. A composite number has more than 2 factors. The
+            number 1 is neither.
           </p>
           <div class="mult-class-actions">
             <button
@@ -12542,7 +12432,8 @@
             cells[i].classList.toggle("is-composite", selected && nextMode === "composite");
             if (selected) matches++;
           }
-          if (primeBtn) primeBtn.setAttribute("aria-pressed", nextMode === "prime" ? "true" : "false");
+          if (primeBtn)
+            primeBtn.setAttribute("aria-pressed", nextMode === "prime" ? "true" : "false");
           if (compositeBtn)
             compositeBtn.setAttribute("aria-pressed", nextMode === "composite" ? "true" : "false");
           if (classStatus)
@@ -12716,7 +12607,7 @@
         });
       })();
     </script>
-    <!-- ===== Award Wave — styles for Access, Replay, Turn In, Portfolio, two-way ink ===== -->
+    <!-- ===== Award Wave — styles for Access, Turn In, Portfolio, two-way ink ===== -->
     <style>
       /* Access panel + Turn In panel share one card style */
       .a11y-panel,
@@ -12846,60 +12737,6 @@
         animation-duration: 0.001s !important;
         transition-duration: 0.001s !important;
       }
-      /* Replay */
-      .replay-bar {
-        position: fixed;
-        left: 50%;
-        transform: translateX(-50%);
-        bottom: 18px;
-        z-index: 10002;
-        display: flex;
-        gap: 10px;
-        align-items: center;
-        background: #14223a;
-        color: #fff;
-        padding: 10px 14px;
-        border-radius: 999px;
-        box-shadow: 0 14px 40px rgba(9, 20, 38, 0.45);
-      }
-      .replay-bar[hidden] {
-        display: none !important;
-      }
-      .rp-btn {
-        border: none;
-        background: rgba(255, 255, 255, 0.16);
-        color: #fff;
-        width: 38px;
-        height: 38px;
-        border-radius: 50%;
-        cursor: pointer;
-        font-size: 1rem;
-      }
-      .rp-btn:focus-visible,
-      .replay-bar select:focus-visible,
-      .replay-bar input:focus-visible {
-        outline: 3px solid #7dd3fc;
-        outline-offset: 2px;
-      }
-      .replay-bar input[type="range"] {
-        width: min(320px, 40vw);
-        accent-color: #38bdf8;
-      }
-      .replay-bar select {
-        border: none;
-        border-radius: 8px;
-        padding: 6px;
-        font-weight: 800;
-        background: #fff;
-        color: #14223a;
-      }
-      body.wb-replaying #workspace {
-        pointer-events: none;
-      }
-      body.wb-replaying #rail {
-        pointer-events: none;
-        opacity: 0.5;
-      }
       /* Two-way ink: teacher annotate mode */
       body.wb-annotating #workspace {
         pointer-events: auto !important;
@@ -12954,8 +12791,7 @@
         body.pf-printing .coach-panel,
         body.pf-printing .calc-panel,
         body.pf-printing .a11y-panel,
-        body.pf-printing .handin-panel,
-        body.pf-printing .replay-bar {
+        body.pf-printing .handin-panel {
           display: none !important;
         }
         body.pf-printing #portfolioView {
