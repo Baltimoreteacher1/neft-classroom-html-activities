@@ -1,4 +1,4 @@
-export const FAMILY_MEETING_NOTIFICATION_RECIPIENT = "JdNeft@bcps.k12.md.us";
+export const FAMILY_MEETING_NOTIFICATION_RECIPIENT = "jdneft@bcps.k12.md.us";
 
 const SENDER = {
   email: "family-connections@eduwonderlab.com",
