@@ -162,7 +162,7 @@
         // costs a life, and every miss shows the explanation so it teaches.
         const W = 960,
           H = 720;
-        const MAX_ROUNDS = 8;
+        const MAX_ROUNDS = 10;
         // Bright, high-contrast, kid-friendly palette. Vivid indigo/violet field
         // with saturated tiles + cyan accent so white text stays legible. A fixed
         // scheme (not the per-lesson dark theme) guarantees consistent contrast;
@@ -575,8 +575,32 @@
                 if (data.themeEmoji) mascot = data.themeEmoji;
                 gotTheme = true;
               }
-              const opt = (data.practice && data.practice.optional) || [];
-              opt.forEach((it, idx) => {
+              // Gather every checkable practice item this lesson authored — not
+              // just practice.optional. Small-group lessons carry their rich set in
+              // parallelPractice plus the differentiated practice tiers, so reading
+              // only `optional` (frequently empty) starved the arcade down to the
+              // two-item fallback pool. Order keeps the legacy optional-first
+              // behavior for lessons that populate it, then tops up from the rest.
+              const p = data.practice || {};
+              const pool = []
+                .concat(Array.isArray(p.optional) ? p.optional : [])
+                .concat(Array.isArray(p.onLevel) ? p.onLevel : [])
+                .concat(Array.isArray(p.extending) ? p.extending : [])
+                .concat(Array.isArray(p.approaching) ? p.approaching : [])
+                .concat(Array.isArray(data.parallelPractice) ? data.parallelPractice : []);
+              const seen = new Set();
+              pool.forEach((it) => {
+                if (!it || typeof it !== "object") return;
+                // One item can live in more than one bucket; keep the first copy.
+                const sig =
+                  it.id ||
+                  it.type +
+                    "|" +
+                    (it.stem || it.prompt || it.title || it.label || "") +
+                    "|" +
+                    (it.answer || "");
+                if (seen.has(sig)) return;
+                seen.add(sig);
                 let r = buildRound(it);
                 if (!r) return;
                 // Attach difficulty tier + any authored Spanish translations, then
@@ -585,7 +609,7 @@
                 r.standard = data.standard || "";
                 r.promptEs = it.stem_es || it.instructions_es || it.label_es || it.title_es || "";
                 r.whyEs = it.explanation_es || it.correctWork_es || "";
-                r = synthesizeMechanic(r, idx);
+                r = synthesizeMechanic(r, allRounds.length);
                 allRounds.push(r);
               });
             } catch (e) {
@@ -860,6 +884,27 @@
               min,
               max,
               step: Number(it.step) || 1,
+              why: it.explanation || "",
+            };
+          }
+          // Guided-fill / fill-in-the-blank (small-group parallelPractice). When the
+          // authored answer is a product of whole numbers (a prime factorization
+          // like "2 × 3 × 11"), turn it into a BUILD-THE-EXPRESSION round: the
+          // answer tiles plus a couple of non-factor prime distractors. Any other
+          // shape (single value, symbolic, or non-numeric) has no unambiguous
+          // auto-check, so it is skipped rather than mis-graded.
+          if (it.type === "guided-fill" || it.type === "fill-in-the-blank") {
+            const stem = it.stem || it.prompt || it.question || "";
+            const answer = normTokens(it.answer);
+            if (!stem || answer.length < 2 || !answer.every((t) => /^\d+$/.test(t))) return null;
+            const distractors = ["2", "3", "5", "7", "11", "13"]
+              .filter((p) => answer.indexOf(p) === -1)
+              .slice(0, 2);
+            return {
+              kind: "build",
+              prompt: stem,
+              tokens: shuffle(answer.concat(distractors)),
+              answer,
               why: it.explanation || "",
             };
           }

@@ -498,33 +498,112 @@ function modelStatus() {
   return status;
 }
 
+// Smallest-prime factor chain for the whole tree: peel the smallest prime off
+// the value, recurse on the cofactor, and keep going until the cofactor is
+// itself prime. Returns one split per level, so 66 → [{value:66,prime:2,
+// cofactor:33}, {value:33,prime:3,cofactor:11 (prime leaf)}].
+function smallestPrimeFactor(n) {
+  if (n % 2 === 0) return 2;
+  for (let p = 3; p * p <= n; p += 2) if (n % p === 0) return p;
+  return n; // n is prime
+}
+
+function factorChain(n) {
+  const splits = [];
+  let current = n;
+  while (current >= 2 && smallestPrimeFactor(current) !== current) {
+    const prime = smallestPrimeFactor(current);
+    const cofactor = current / prime;
+    splits.push({
+      value: current,
+      prime,
+      cofactor,
+      cofactorPrime: smallestPrimeFactor(cofactor) === cofactor,
+    });
+    current = cofactor;
+  }
+  return splits;
+}
+
 function typedFactorTree(item, steps, events) {
-  const value = item.visual?.value ?? valuesFrom(item.visual, item.stem)[0];
-  const left = item.steps?.[0]?.answer;
-  const right = item.steps?.[1]?.answer;
-  if (value == null || left == null || right == null) return null;
-  const shell = modelShell("Build the factor tree", "Type the two factors of the first split.");
+  const value = Number(item.visual?.value ?? valuesFrom(item.visual, item.stem)[0]);
+  if (!Number.isInteger(value) || value < 4 || value > 1000) return null;
+  const splits = factorChain(value);
+  if (!splits.length) return null; // a prime value has no tree to build
+  const shell = modelShell(
+    "Build the whole factor tree",
+    "Split each composite number all the way down. Fill in both factors at every branch until every leaf is a prime you cannot split.",
+  );
   const status = modelStatus();
   const tree = el("div", "sg-tree");
-  tree.appendChild(el("div", "sg-tree-root", esc(value)));
-  tree.appendChild(el("div", "sg-tree-branches", "╱&nbsp;&nbsp;&nbsp;&nbsp;╲"));
-  const row = el("div", "sg-model-boxes sg-tree-row");
-  let built = 0;
-  const branch = (expected, placeholder, label) =>
-    modelCell(expected, events, {
-      placeholder,
-      label,
+  // Ascending list of primes (smallest peeled first) drives the final product.
+  const primes = [...splits.map((split) => split.prime), splits[splits.length - 1].cofactor];
+  const productAnswer =
+    item.answer || item.steps?.[item.steps.length - 1]?.answer || primes.join(" × ");
+  const levels = [];
+  let branchesBuilt = 0;
+
+  splits.forEach((split, index) => {
+    const level = el("div", `sg-tree-level${index ? " locked" : ""}`);
+    if (index) level.hidden = true;
+    // The value being split is known: the root is given; a deeper value was
+    // just typed as the previous branch's cofactor, so we can name it here.
+    level.appendChild(el("div", "sg-tree-node", esc(split.value)));
+    level.appendChild(el("div", "sg-tree-branches", "╱&nbsp;&nbsp;&nbsp;&nbsp;╲"));
+    const row = el("div", "sg-model-boxes sg-tree-row");
+    let leftDone = false;
+    let rightDone = false;
+    const advance = () => {
+      if (!(leftDone && rightDone)) return;
+      const next = levels[index + 1];
+      if (next) {
+        next.hidden = false;
+        next.classList.remove("locked");
+        status.textContent = `Branch built ✓ — now split ${split.cofactor} the same way.`;
+      } else {
+        branchesBuilt = splits.length;
+        status.textContent = "Every leaf is prime ✓ — write the prime factorization below.";
+      }
+    };
+    row.append(
+      modelCell(split.prime, events, {
+        placeholder: "prime",
+        label: `Smallest prime factor of ${split.value}`,
+        onCorrect: () => {
+          leftDone = true;
+          steps?.completeMatching(split.prime);
+          advance();
+        },
+      }),
+      modelCell(split.cofactor, events, {
+        placeholder: split.cofactorPrime ? "prime" : "?",
+        label: `The other factor of ${split.value}`,
+        onCorrect: () => {
+          rightDone = true;
+          steps?.completeMatching(split.cofactor);
+          advance();
+        },
+      }),
+    );
+    level.appendChild(row);
+    levels.push(level);
+    tree.appendChild(level);
+  });
+
+  // Collect the whole factorization as a product of primes.
+  const finalWrap = el("div", "sg-tree-final");
+  finalWrap.appendChild(el("span", "sg-model-rowlab", "Prime factorization (product of primes):"));
+  finalWrap.appendChild(
+    modelCell(productAnswer, events, {
+      placeholder: primes.join("×"),
+      label: "Prime factorization written as a product of primes",
       onCorrect: () => {
-        steps?.completeMatching(expected);
-        if (++built === 2)
-          status.textContent = "First split built ✓ — finish the prime factorization below.";
+        steps?.completeMatching(productAnswer);
+        status.textContent = "Factor tree complete ✓ — every branch ends in a prime.";
       },
-    });
-  row.append(
-    branch(left, "prime", "Smallest prime factor"),
-    branch(right, "?", "The other factor"),
+    }),
   );
-  tree.appendChild(row);
+  tree.appendChild(finalWrap);
   shell.append(tree, status);
   return shell;
 }

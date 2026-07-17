@@ -408,10 +408,21 @@ export function createTalkSection(config, variant, onDone) {
     heading(
       4,
       "Say it out loud",
-      variant === "group2" ? "Defend it to a skeptic" : "Talk the math through",
+      variant === "group2" ? "Solve one — then defend it to a skeptic" : "Talk the math through",
     ),
   );
   const card = el("div", "sg-talk");
+  // Group 2's "defend" framing only makes sense once a student has an answer to
+  // defend: tell them to commit to one first, then treat the prompt as the
+  // skeptic's challenge to that answer.
+  if (variant === "group2")
+    card.appendChild(
+      el(
+        "p",
+        "sg-talk-lead",
+        "First pick a problem you just solved and commit to an answer. Then defend that answer to a skeptic who keeps asking, “How do you know it is right — and complete?”",
+      ),
+    );
   card.appendChild(el("p", "sg-talk-q", esc(talk.question)));
   card.appendChild(
     el(

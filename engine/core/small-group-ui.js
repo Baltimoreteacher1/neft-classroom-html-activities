@@ -229,6 +229,13 @@ export function injectSmallGroupStyles(accent) {
     .sg-tree-branches{color:var(--sg-deep);font-size:24px;font-weight:900;letter-spacing:8px}
     .sg-tree-row{justify-content:center;gap:56px}
     .sg-tree-row .sg-model-cell{width:84px;border-radius:50%;min-height:64px}
+    .sg-tree-level{display:grid;justify-items:center;gap:6px;position:relative}
+    .sg-tree-level+.sg-tree-level{margin-top:10px;padding-top:12px}
+    .sg-tree-level+.sg-tree-level::before{content:"↳ split the composite factor";position:absolute;top:-4px;left:50%;transform:translateX(-50%);font:800 12px/1 "Nunito",sans-serif;color:var(--sg-deep);opacity:.7;white-space:nowrap}
+    .sg-tree-level.locked{opacity:.45;filter:grayscale(.3)}
+    .sg-tree-node{display:grid;min-width:64px;height:56px;padding:0 10px;place-items:center;border-radius:16px;background:var(--sg-soft);color:var(--sg-deep);font-family:"Nunito",sans-serif;font-size:22px;font-weight:900}
+    .sg-tree-final{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:9px;margin-top:14px;padding-top:12px;border-top:2px dashed var(--sg-line)}
+    .sg-tree-final .sg-model-cell{width:auto;min-width:150px;border-radius:12px;text-align:center}
     .sg-div-top{display:flex;justify-content:center;margin-left:56px}
     .sg-div-bracket{text-align:center;color:var(--sg-deep);font-family:"Nunito",ui-monospace,monospace;font-size:38px;font-weight:900;border-top:4px solid var(--sg-deep);width:max-content;margin:2px auto 8px;padding:2px 14px}
     .sg-model-table{display:grid;grid-template-columns:repeat(2,minmax(120px,220px));gap:8px;justify-content:center;margin:8px 0}

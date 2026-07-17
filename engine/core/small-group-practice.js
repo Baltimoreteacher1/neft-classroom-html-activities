@@ -72,25 +72,48 @@ function appendHints(card, item, events = {}) {
   };
 }
 
+// Deterministic per-problem choice order so the correct answer is not always
+// choice A (authored data almost always lists it first), while staying stable
+// across re-renders and Save/Resume for a given problem.
+function seededOrder(length, seed) {
+  let hash = 2166136261;
+  for (let i = 0; i < seed.length; i++) {
+    hash ^= seed.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  const order = Array.from({ length }, (_, i) => i);
+  for (let i = length - 1; i > 0; i--) {
+    hash = (Math.imul(hash, 48271) + 1) & 0x7fffffff;
+    const j = hash % (i + 1);
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  return order;
+}
+
 function multipleChoiceCard(item, index, onSolved, events = {}) {
   const card = questionCard(index, itemStem(item), item.stemEs);
   const status = feedback();
   const choices = el("div", "choices");
   let complete = false;
-  item.choices.forEach((choice, optionIndex) => {
+  // Present choices in a shuffled order keyed to the problem text; map each
+  // rendered slot back to its authored index so correctIndex/choiceFeedback
+  // still line up.
+  const order = seededOrder(item.choices.length, itemStem(item) || String(index));
+  order.forEach((sourceIndex, slotIndex) => {
+    const choice = item.choices[sourceIndex];
     const button = el(
       "button",
       "choice",
-      `<span class="k">${String.fromCharCode(65 + optionIndex)}</span><span>${esc(choice)}</span>`,
+      `<span class="k">${String.fromCharCode(65 + slotIndex)}</span><span>${esc(choice)}</span>`,
     );
     button.type = "button";
     button.onclick = () => {
       if (complete) return;
-      events.onAttempt?.({ correct: optionIndex === item.correctIndex });
-      if (optionIndex !== item.correctIndex) {
+      events.onAttempt?.({ correct: sourceIndex === item.correctIndex });
+      if (sourceIndex !== item.correctIndex) {
         button.classList.add("wrong");
         button.disabled = true;
-        const targeted = item.choiceFeedback?.[optionIndex];
+        const targeted = item.choiceFeedback?.[sourceIndex];
         // Skip generic authored filler so the engine's better default shows.
         const useful = targeted && !/^re-?read the problem carefully/i.test(targeted.trim());
         showFeedback(

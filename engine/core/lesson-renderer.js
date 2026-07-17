@@ -1997,12 +1997,18 @@ function gradeSkillAnswer(student, correct) {
 // work to the Practice phase responses. No-op when there are no solvable items.
 function renderSkillPractice(host, config, state) {
   const p = config.practice || {};
+  // The Worked Example panel above (renderWorkedExamplePanel) reveals the I-Do
+  // problem AND its answer, derived from the first eligible practice stem item.
+  // Skip that exact item here so "Problem 1" isn't the same question the student
+  // was just handed the answer to — otherwise practice starts pre-solved.
+  const revealedStem = deriveWorkedSteps(config).iDo?.problem || null;
   const pool = []
     .concat(p.approaching || [], p.onLevel || [], p.extending || [])
     .filter(
       (it) =>
         it &&
         it.stem &&
+        it.stem !== revealedStem &&
         (Array.isArray(it.choices) || it.sampleAnswer || it.answer) &&
         (it.type === "multiple-choice" || it.type === "open-response" || !it.type),
     )
