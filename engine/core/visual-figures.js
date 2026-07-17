@@ -409,12 +409,21 @@ export function coordPlaneSVG(cfg) {
     cy = pad + m * unit;
   const X = (x) => pad + (x + m) * unit;
   const Y = (y) => pad + (m - y) * unit;
+  // Number every axis tick (stride out when the plane is large so labels never
+  // crowd). 0 is labeled once at the origin.
+  const stride = m > 8 ? 2 : 1;
+  const tick = 'style="font-size:10px;fill:#6b7688;font-weight:600"';
   let grid = "";
   for (let i = -m; i <= m; i++) {
     grid += `<line x1="${X(i)}" y1="${pad}" x2="${X(i)}" y2="${H - pad}" stroke="rgba(0,0,0,0.06)"/>`;
     grid += `<line x1="${pad}" y1="${Y(i)}" x2="${W - pad}" y2="${Y(i)}" stroke="rgba(0,0,0,0.06)"/>`;
+    if (i !== 0 && i % stride === 0) {
+      grid += `<text x="${X(i)}" y="${cy + 13}" text-anchor="middle" ${tick}>${i}</text>`;
+      grid += `<text x="${cx - 6}" y="${Y(i) + 4}" text-anchor="end" ${tick}>${i}</text>`;
+    }
   }
-  const axes = `<line x1="${pad}" y1="${cy}" x2="${W - pad}" y2="${cy}" stroke="var(--ink,#333)" stroke-width="2"/><line x1="${cx}" y1="${pad}" x2="${cx}" y2="${H - pad}" stroke="var(--ink,#333)" stroke-width="2"/>`;
+  grid += `<text x="${cx - 6}" y="${cy + 13}" text-anchor="end" ${tick}>0</text>`;
+  const axes = `<line x1="${pad}" y1="${cy}" x2="${W - pad}" y2="${cy}" stroke="var(--ink,#333)" stroke-width="2"/><line x1="${cx}" y1="${pad}" x2="${cx}" y2="${H - pad}" stroke="var(--ink,#333)" stroke-width="2"/><text x="${W - pad + 6}" y="${cy + 4}" ${tick}>x</text><text x="${cx + 6}" y="${pad + 2}" ${tick}>y</text>`;
   const rawPts = (cfg.points || []).map((p) => ({
     x: Number(p.x),
     y: Number(p.y),

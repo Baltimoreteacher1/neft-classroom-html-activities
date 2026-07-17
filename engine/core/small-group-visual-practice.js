@@ -42,19 +42,45 @@ function numberLine(values) {
   return `<line x1="55" y1="150" x2="585" y2="150" stroke="var(--sg-deep)" stroke-width="6"/><path d="M55 150l20-12v24zM585 150l-20-12v24z" fill="var(--sg-deep)"/>${points}`;
 }
 
+// Numbered coordinate plane: gridlines land on whole units at the SAME scale
+// the points plot at (so a cell = 1 unit), with tick numbers on both axes and
+// a labeled origin. Shared by the display grid and the tap-to-plot model.
+const ORIGIN_X = 320;
+const ORIGIN_Y = 150;
+const gridScale = (maxAbs) => ({
+  stepX: Math.min(28, 280 / Math.max(1, maxAbs)),
+  stepY: Math.min(24, 130 / Math.max(1, maxAbs)),
+});
+function coordinatePlane(stepX, stepY) {
+  const nx = Math.floor(280 / stepX);
+  const ny = Math.floor(130 / stepY);
+  const tick = 'style="font-size:13px;fill:#6b7688;font-weight:600"';
+  let out = "";
+  for (let n = -nx; n <= nx; n++) {
+    if (n === 0) continue;
+    const x = ORIGIN_X + n * stepX;
+    out += `<line x1="${x}" y1="20" x2="${x}" y2="280" stroke="#dbe1ea" stroke-width="1.5"/><text x="${x}" y="168" text-anchor="middle" ${tick}>${n}</text>`;
+  }
+  for (let m = -ny; m <= ny; m++) {
+    if (m === 0) continue;
+    const y = ORIGIN_Y - m * stepY;
+    out += `<line x1="40" y1="${y}" x2="600" y2="${y}" stroke="#dbe1ea" stroke-width="1.5"/><text x="311" y="${y + 4}" text-anchor="end" ${tick}>${m}</text>`;
+  }
+  // Bold axes, labeled origin, and x/y axis letters.
+  out += `<line x1="40" y1="${ORIGIN_Y}" x2="600" y2="${ORIGIN_Y}" stroke="var(--sg-deep)" stroke-width="4"/><line x1="${ORIGIN_X}" y1="20" x2="${ORIGIN_X}" y2="280" stroke="var(--sg-deep)" stroke-width="4"/><text x="311" y="168" text-anchor="end" ${tick}>0</text><text x="602" y="${ORIGIN_Y - 8}" ${tick}>x</text><text x="${ORIGIN_X + 9}" y="32" ${tick}>y</text>`;
+  return out;
+}
 function coordinateGrid(visual) {
   const points = visual.points || (visual.point ? [visual.point] : [[2, 3]]);
-  // Auto-scale so far-out points stay inside the viewBox instead of clipping.
   const maxAbs = Math.max(1, ...points.flat().map((value) => Math.abs(Number(value) || 0)));
-  const stepX = Math.min(28, 260 / maxAbs);
-  const stepY = Math.min(24, 120 / maxAbs);
+  const { stepX, stepY } = gridScale(maxAbs);
   const dots = points
     .map(
       ([x, y]) =>
-        `<circle cx="${320 + Number(x) * stepX}" cy="${150 - Number(y) * stepY}" r="13" fill="var(--sg-pop)" stroke="var(--sg-deep)" stroke-width="4"/><text x="${332 + Number(x) * stepX}" y="${136 - Number(y) * stepY}">(${esc(x)}, ${esc(y)})</text>`,
+        `<circle cx="${ORIGIN_X + Number(x) * stepX}" cy="${ORIGIN_Y - Number(y) * stepY}" r="12" fill="var(--sg-pop)" stroke="var(--sg-deep)" stroke-width="4"/><text x="${ORIGIN_X + Number(x) * stepX + 12}" y="${ORIGIN_Y - Number(y) * stepY - 12}" style="font-size:17px">(${esc(x)}, ${esc(y)})</text>`,
     )
     .join("");
-  return `<g stroke="#cad5e5" stroke-width="2">${Array.from({ length: 11 }, (_, i) => `<line x1="${40 + i * 56}" y1="20" x2="${40 + i * 56}" y2="280"/><line x1="40" y1="${20 + i * 26}" x2="600" y2="${20 + i * 26}"/>`).join("")}</g><line x1="40" y1="150" x2="600" y2="150" stroke="var(--sg-deep)" stroke-width="5"/><line x1="320" y1="20" x2="320" y2="280" stroke="var(--sg-deep)" stroke-width="5"/>${dots}`;
+  return `${coordinatePlane(stepX, stepY)}${dots}`;
 }
 
 function fractionBars(visual, values) {
@@ -920,12 +946,16 @@ function typedPlot(item, steps, events) {
   const targetY = Number(expected[1]);
   if (!Number.isFinite(targetX) || !Number.isFinite(targetY)) return null;
   const maxAbs = Math.max(1, Math.abs(targetX), Math.abs(targetY));
-  const stepX = Math.min(28, 260 / maxAbs);
-  const stepY = Math.min(24, 120 / maxAbs);
-  const shell = modelShell("Plot the point", "Tap the grid where the point belongs.");
+  const { stepX, stepY } = gridScale(maxAbs);
+  const shell = modelShell(
+    "Plot the point",
+    "Read the numbered axes, then tap where the point belongs.",
+  );
   const status = modelStatus();
-  const grid = `<g stroke="#cad5e5" stroke-width="2">${Array.from({ length: 11 }, (_, i) => `<line x1="${40 + i * 56}" y1="20" x2="${40 + i * 56}" y2="280"/><line x1="40" y1="${20 + i * 26}" x2="600" y2="${20 + i * 26}"/>`).join("")}</g><line x1="40" y1="150" x2="600" y2="150" stroke="var(--sg-deep)" stroke-width="5"/><line x1="320" y1="20" x2="320" y2="280" stroke="var(--sg-deep)" stroke-width="5"/>`;
-  shell.insertAdjacentHTML("beforeend", svgShell("coordinate grid — tap to plot", grid));
+  shell.insertAdjacentHTML(
+    "beforeend",
+    svgShell("numbered coordinate grid — tap to plot", coordinatePlane(stepX, stepY)),
+  );
   const svg = shell.querySelector("svg");
   svg.classList.add("sg-plot-grid");
   let solved = false;
