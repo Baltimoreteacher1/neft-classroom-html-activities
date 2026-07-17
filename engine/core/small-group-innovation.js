@@ -488,6 +488,55 @@ export function createEvidenceCard(config, state) {
   };
 }
 
+// One-click study packet: the Evidence Card summary PLUS the student's own
+// written work (proof plan, model explanation, apply solution, reflection),
+// bundled into a single clean printable takeaway. Reads the persisted studio
+// store so it captures everything the student did — even across sessions.
+export function createStudioPacket(config, state, store) {
+  const section = el("section", "sg-studio-packet");
+  section.setAttribute("role", "region");
+  section.setAttribute("aria-label", "Studio study packet");
+  section.hidden = true;
+  const get = (key) => (store?.get(key) || "").trim();
+  const refresh = () => {
+    const before = Number(state.before || 0);
+    const after = Number(state.after || 0);
+    const change = after - before;
+    const written = [
+      ["My plan (proof path)", get("proofResponse")],
+      ["What the model shows", get("modelResponse")],
+      ["My solution (apply)", get("applyWork")],
+      ["One move that helped me", get("growthNote")],
+    ].filter(([, value]) => value);
+    const work = written.length
+      ? written
+          .map(
+            ([label, value]) =>
+              `<div class="sg-packet-block"><span class="block-lab">${esc(label)}</span><p>${esc(value)}</p></div>`,
+          )
+          .join("")
+      : `<p class="sg-packet-empty">Written work you type into the studio will appear here.</p>`;
+    section.innerHTML = `<div class="sg-packet-head"><div class="sg-innovation-kicker">Study packet</div><h2>${esc(config.title || "Small-Group Math Studio")}</h2>${config.standard ? `<p class="sg-packet-standard">${esc(config.standard)}</p>` : ""}</div><div class="sg-evidence-grid"><div><span>Confidence journey</span><b>${before || "—"} → ${after || "—"}${change > 0 ? ` (+${change})` : ""}</b></div><div><span>Proof path</span><b>${esc(labelFor(state.proofPath))}</b></div></div><div class="sg-packet-work">${work}</div>`;
+    const print = el("button", "btn ghost", "Print study packet");
+    print.type = "button";
+    print.onclick = () => printOnly("packet", section);
+    section.appendChild(print);
+  };
+  return {
+    section,
+    button() {
+      const trigger = el("button", "btn ghost", "🖨 Print my studio packet");
+      trigger.type = "button";
+      trigger.onclick = () => {
+        refresh();
+        section.hidden = false;
+        printOnly("packet", section);
+      };
+      return trigger;
+    },
+  };
+}
+
 export function createTeacherEvidenceConsole() {
   const section = el("aside", "sg-facilitation sg-innovation");
   section.setAttribute("role", "region");

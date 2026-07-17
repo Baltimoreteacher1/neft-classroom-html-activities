@@ -16,8 +16,10 @@ import {
   createConsensusLab,
   createEvidenceCard,
   createProveItLab,
+  createStudioPacket,
   createTeacherEvidenceConsole,
 } from "./small-group-innovation.js";
+import { syncSmallGroupEvidence } from "./small-group-evidence.js";
 import { createApplyLab, createExploreLab, createModelLab } from "./small-group-labs.js";
 import { installSmallGroupPassport } from "./small-group-passport.js";
 import {
@@ -225,22 +227,7 @@ function footer() {
   return foot;
 }
 
-export function bootSmallGroup(config) {
-  // ?group=1|2 deep-link: one shared link (e.g. a single Canvas assignment)
-  // lands each student on their assigned variant of this lesson.
-  const requestedGroup = new URLSearchParams(window.location.search).get("group");
-  if (
-    /^[12]$/.test(requestedGroup || "") &&
-    /-group[12]$/.test(String(config.lessonId)) &&
-    !String(config.lessonId).endsWith(`-group${requestedGroup}`)
-  ) {
-    window.location.replace(
-      window.location.pathname.replace(/-group[12](\/|$)/, `-group${requestedGroup}$1`) +
-        window.location.search +
-        window.location.hash,
-    );
-    return;
-  }
+function renderStudio(config) {
   const variant =
     config.variant || (config.smallGroup ? `group${config.smallGroup.group}` : "catchup");
   const accent = ACCENTS[variant] || ACCENTS.catchup;
@@ -325,6 +312,7 @@ export function bootSmallGroup(config) {
   };
 
   const evidence = createEvidenceCard(config, state);
+  const packet = createStudioPacket(config, state, store);
   const reflection = createReflectionSection(
     config,
     state,
@@ -332,7 +320,19 @@ export function bootSmallGroup(config) {
       phaseDone("sg-tab-check", "reflectDone")();
       completion.hidden = false;
       completion.innerHTML = `<h2>Studio complete 🎉</h2><p>You finished the mission and named your growth. That is what mathematicians do.</p>`;
+      completion.appendChild(packet.button());
       evidence.reveal();
+      // Section-scoped, name-free evidence for the teacher mastery dashboard.
+      // Sent once, only on genuine completion, only if a class identity exists.
+      syncSmallGroupEvidence(config, {
+        variant,
+        phasesDone: phaseProgress.done.size,
+        phasesTotal: phaseProgress.keys.size,
+        practiceSolved: tally.solved,
+        practiceTotal: tally.total,
+        confidenceBefore: state.before,
+        confidenceAfter: state.after,
+      });
     },
     store,
   );
@@ -507,7 +507,13 @@ export function bootSmallGroup(config) {
       label: "Check",
       // The completion celebration lives here so it appears in the tab the
       // student is actually on when they finish the reflection.
-      panel: makePanel("sg-tab-check", [check, reflection.section, evidence.section, completion]),
+      panel: makePanel("sg-tab-check", [
+        check,
+        reflection.section,
+        evidence.section,
+        packet.section,
+        completion,
+      ]),
     },
     {
       id: "sg-tab-more",
@@ -615,6 +621,111 @@ export function bootSmallGroup(config) {
   // Installed last, after restore-time marks, so prior work is baselined and
   // never retro-awarded. Fully self-guarded: a missing passport layer no-ops.
   installSmallGroupPassport({ lessonId: config.lessonId, store, events });
+}
+
+// Base lesson id shared by a lesson's variants: "1-1-group2" → "1-1".
+function baseLessonId(id) {
+  return String(id).replace(/-(?:group[12]|catchup)$/, "");
+}
+
+// Rewrite a variant URL path to a sibling variant's path, preserving the
+// trailing slash. Exported so the redirect can be unit-tested without a
+// navigable window. "/lessons/1-1-group1/" + "1-1-group2" → "/lessons/1-1-group2/".
+export function variantPath(pathname, currentId, targetId) {
+  const suffix = targetId.slice(baseLessonId(currentId).length + 1); // "group2" | "catchup"
+  return String(pathname).replace(/-(?:group[12]|catchup)(\/|$)/, `-${suffix}$1`);
+}
+
+// Resolve which variant THIS student is assigned for the current base lesson,
+// using the learning-supports roster. Cache-first (instant, no network), then a
+// short best-effort fetch. Returns a full variant id (e.g. "1-1-group2") or null
+// when there is no identity / no assignment / anything goes wrong — every
+// failure path falls through to the teacher's default link, never blocks.
+export async function resolveAssignedVariant(config) {
+  const base = baseLessonId(config.lessonId);
+  const pick = (lessons) => {
+    if (!Array.isArray(lessons)) return null;
+    // Most-specific first: a catch-up or challenge assignment wins over the
+    // default the link points at.
+    for (const suffix of ["catchup", "group2", "group1"]) {
+      const id = `${base}-${suffix}`;
+      if (lessons.includes(id)) return id;
+    }
+    return null;
+  };
+  let me;
+  try {
+    me = JSON.parse(window.localStorage.getItem("ewl-supports:v2:me") || "null");
+  } catch {
+    me = null;
+  }
+  if (!me || me.skipped || !me.section || !me.initials) return null;
+  // 1) Instant cache the supports layer already keeps for this device.
+  try {
+    const cached = JSON.parse(
+      window.localStorage.getItem(`ewl-supports:v2:assigned:${me.section}:${me.initials}`) ||
+        "null",
+    );
+    const hit = pick(cached?.lessons);
+    if (hit) return hit;
+  } catch {
+    /* fall through to network */
+  }
+  // 2) Fresh read, bounded so a slow network never stalls the studio.
+  try {
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => controller.abort(), 1500);
+    const res = await fetch(
+      `/api/supports/for?section=${encodeURIComponent(me.section)}&initials=${encodeURIComponent(me.initials)}`,
+      { signal: controller.signal },
+    );
+    window.clearTimeout(timer);
+    const data = await res.json();
+    return pick(data?.lessons);
+  } catch {
+    return null;
+  }
+}
+
+export function bootSmallGroup(config) {
+  const params = new URLSearchParams(window.location.search);
+
+  // ?group=1|2 deep-link: one shared link lands each student on a fixed variant.
+  const requestedGroup = params.get("group");
+  if (
+    /^[12]$/.test(requestedGroup || "") &&
+    /-group[12]$/.test(String(config.lessonId)) &&
+    !String(config.lessonId).endsWith(`-group${requestedGroup}`)
+  ) {
+    window.location.replace(
+      window.location.pathname.replace(/-group[12](\/|$)/, `-group${requestedGroup}$1`) +
+        window.location.search +
+        window.location.hash,
+    );
+    return;
+  }
+
+  // ?route=auto: one assigned Canvas link sends each student to THEIR variant
+  // based on the supports roster. Resolves per-student, then renders the
+  // (possibly redirected) studio. Falls through to this page for anyone
+  // without a specific assignment.
+  if (params.get("route") === "auto" && /-(?:group[12]|catchup)$/.test(String(config.lessonId))) {
+    resolveAssignedVariant(config)
+      .then((target) => {
+        if (target && target !== config.lessonId) {
+          // drop ?route=auto so the target renders directly (no re-resolve loop)
+          window.location.replace(
+            variantPath(window.location.pathname, config.lessonId, target) + window.location.hash,
+          );
+          return;
+        }
+        renderStudio(config);
+      })
+      .catch(() => renderStudio(config));
+    return;
+  }
+
+  renderStudio(config);
 }
 
 export default bootSmallGroup;

@@ -355,6 +355,41 @@
         color: var(--teal);
         white-space: nowrap;
       }
+      .lessonpick .vchips {
+        display: inline-flex;
+        gap: 4px;
+        flex-wrap: wrap;
+        margin-left: auto;
+      }
+      .lessonpick .vchip {
+        display: inline-flex;
+        gap: 2px;
+        align-items: center;
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1;
+        padding: 2px 5px;
+        border-radius: 6px;
+        border: 1px solid var(--line);
+        background: #fff;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .lessonpick .vchip input {
+        margin: 0;
+      }
+      .lessonpick .vchip-group1 {
+        color: #1e40af;
+        border-color: #bfdbfe;
+      }
+      .lessonpick .vchip-group2 {
+        color: #92400e;
+        border-color: #fde68a;
+      }
+      .lessonpick .vchip-catchup {
+        color: #0f766e;
+        border-color: #99f6e4;
+      }
       .toolbar {
         display: flex;
         gap: 10px;
@@ -872,28 +907,70 @@
         // Sourced from the supports manifest so the picker never drifts from
         // what actually exists. Fail-soft: picker shows ids-only if titles fail.
         var lessonIndex = []; // [{id, title}]
-        function loadLessonIndex() {
-          return fetch("/assets/learning-supports/manifest.json")
+        // Per-base variant availability (Group 1/2 exist for all 64; Catch-Up
+        // only for the 20 band-review lessons). Sourced from the curriculum
+        // launch manifest so it never drifts from what actually exists.
+        var variantIndex = {}; // { "1-1": [{id, suffix, label, title}], ... }
+        function loadVariantIndex() {
+          return fetch("/data/curriculum-launch-manifest.json")
             .then(function (r) {
               return r.ok ? r.json() : {};
             })
             .then(function (m) {
-              lessonIndex = Object.keys(m)
-                .filter(function (id) {
-                  return /^\d+-\d+$/.test(id);
-                })
-                .sort(function (a, b) {
-                  var pa = a.split("-").map(Number);
-                  var pb = b.split("-").map(Number);
-                  return pa[0] !== pb[0] ? pa[0] - pb[0] : pa[1] - pb[1];
-                })
-                .map(function (id) {
-                  return { id: id, title: (m[id] && m[id].title) || "" };
+              var idx = {};
+              function add(entry, suffix, label) {
+                var base = entry.parent || String(entry.id).replace(/-(?:group[12]|catchup)$/, "");
+                (idx[base] || (idx[base] = [])).push({
+                  id: entry.id,
+                  suffix: suffix,
+                  label: label,
+                  title: entry.title || "",
                 });
+              }
+              (m.smallGroups || []).forEach(function (e) {
+                add(e, e.group === 2 ? "group2" : "group1", e.group === 2 ? "G2" : "G1");
+              });
+              (m.catchUps || []).forEach(function (e) {
+                add(e, "catchup", "CU");
+              });
+              // Stable order per base: G1, G2, CU.
+              var rank = { group1: 0, group2: 1, catchup: 2 };
+              Object.keys(idx).forEach(function (base) {
+                idx[base].sort(function (a, b) {
+                  return rank[a.suffix] - rank[b.suffix];
+                });
+              });
+              variantIndex = idx;
             })
             .catch(function () {
-              lessonIndex = [];
+              variantIndex = {};
             });
+        }
+        function loadLessonIndex() {
+          return Promise.all([
+            fetch("/assets/learning-supports/manifest.json")
+              .then(function (r) {
+                return r.ok ? r.json() : {};
+              })
+              .catch(function () {
+                return {};
+              }),
+            loadVariantIndex(),
+          ]).then(function (results) {
+            var m = results[0];
+            lessonIndex = Object.keys(m)
+              .filter(function (id) {
+                return /^\d+-\d+$/.test(id);
+              })
+              .sort(function (a, b) {
+                var pa = a.split("-").map(Number);
+                var pb = b.split("-").map(Number);
+                return pa[0] !== pb[0] ? pa[0] - pb[0] : pa[1] - pb[1];
+              })
+              .map(function (id) {
+                return { id: id, title: (m[id] && m[id].title) || "" };
+              });
+          });
         }
         function lessonTitle(id) {
           for (var i = 0; i < lessonIndex.length; i++) {
@@ -925,6 +1002,34 @@
             lab.appendChild(cb);
             lab.appendChild(lid);
             lab.appendChild(t);
+            // Differentiated variants for this base lesson (Foundations /
+            // Challenge / Catch-Up). Each is a real checkbox carrying the
+            // variant id, so the existing save/read paths pick it up unchanged.
+            var variants = variantIndex[l.id] || [];
+            if (variants.length) {
+              var chips = document.createElement("span");
+              chips.className = "vchips";
+              variants.forEach(function (v) {
+                var vlab = document.createElement("label");
+                vlab.className = "vchip vchip-" + v.suffix;
+                vlab.title =
+                  (v.suffix === "group1"
+                    ? "Foundations small group"
+                    : v.suffix === "group2"
+                      ? "Challenge small group"
+                      : "Catch-Up review") + (v.title ? " — " + v.title : "");
+                var vcb = document.createElement("input");
+                vcb.type = "checkbox";
+                vcb.value = v.id;
+                vcb.className = "lessoncb";
+                var vt = document.createElement("span");
+                vt.textContent = v.label;
+                vlab.appendChild(vcb);
+                vlab.appendChild(vt);
+                chips.appendChild(vlab);
+              });
+              lab.appendChild(chips);
+            }
             wrap.appendChild(lab);
           });
         }

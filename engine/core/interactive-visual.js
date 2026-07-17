@@ -155,6 +155,19 @@ const REGISTRY = {
       h: cfg.h,
     });
   },
+  // Fold a 2D net into a 3D solid (surface-area lessons). The component is
+  // otherwise wired only as a lesson interaction type; registering it here
+  // lets the small-group Model/Explore labs mount it declaratively too.
+  "net-folder": async (host, cfg) => {
+    const { renderNetFolder } = await import("../components/net-folder.js");
+    renderNetFolder(host, {
+      instructions: cfg.instructions || cfg.label,
+      solid: cfg.solid || cfg.shape || "cube",
+      size: cfg.size || (cfg.w || cfg.h || cfg.d ? { w: cfg.w, h: cfg.h, d: cfg.d } : undefined),
+      question: cfg.question,
+    });
+    return null;
+  },
   // Generic bridge for any shared/projects "manip-<name>.js" widget that
   // registers window.NeftManips["<name>"] = init. Config:
   //   { kind: "manip", manip: "number-line", attrs: { range: 120, unit: "m" } }

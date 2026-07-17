@@ -172,10 +172,11 @@ export function createExploreLab(config, variant, { number, store, events, onDon
   section.appendChild(mount);
 
   // The authored diagram still has value as a quiet, collapsed reference.
-  // 3D kinds (solid-3d / cross-section — the AR/3D model lane) mount LIVE:
-  // on a solids lesson the 3D explorer is the point, not a competing visual.
-  // Every other kind renders static-only so it never fights the manipulative.
-  const is3d = ["solid-3d", "cross-section"].includes(explore.diagram?.kind);
+  // 3D kinds (solid-3d / cross-section / net-folder — the AR/3D model lane)
+  // mount LIVE: on a solids lesson the 3D explorer is the point, not a
+  // competing visual. Every other kind renders static-only so it never fights
+  // the manipulative.
+  const is3d = ["solid-3d", "cross-section", "net-folder"].includes(explore.diagram?.kind);
   const reference = figureBlock(explore.diagram, { staticOnly: !is3d });
   if (reference) {
     const shelf = el("details", "sg-sample");

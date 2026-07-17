@@ -141,6 +141,10 @@
     var scormUrl =
       `${location.origin}/api/scorm?activity=${encodeURIComponent(lesson.id)}` +
       `&title=${encodeURIComponent(lesson.title)}`;
+    var differentiates = lesson.kind === "smallGroup" || lesson.kind === "catchUp";
+    var autoUrl = differentiates
+      ? safeUrl + (safeUrl.indexOf("?") === -1 ? "?" : "&") + "route=auto"
+      : null;
     var lines = [
       `${lesson.id} · ${lesson.title}${kindLabel}`,
       "",
@@ -153,11 +157,12 @@
       "or upload the SCORM zip via Settings → Import. Use “Assign To” to give this version",
       "to specific students only.",
     ];
-    if (lesson.kind === "smallGroup")
+    if (autoUrl)
       lines.push(
         "",
-        "Tip: add ?group=1 or ?group=2 to the student link to flip a student between",
-        "the Foundations and Challenge versions of this lesson without a new assignment.",
+        "Auto-differentiate (assign ONE link to the whole class): " + autoUrl,
+        "Each student is sent to the variant you assigned them in Learning Supports;",
+        "everyone else stays on this version. Or add ?group=1 / ?group=2 to force a version.",
       );
     return lines.join("\n");
   }
