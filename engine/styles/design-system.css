@@ -4608,7 +4608,12 @@ textarea.syw-input {
  * so navigating to any phase/tab removes it automatically. */
 .extra-panel.extra-panel--fullpage {
   position: fixed;
-  inset: 0;
+  /* Leave the sticky sidebar column visible: the takeover fills the content
+   * area to the RIGHT of the 260px rail (see .app grid). Without this the panel
+   * spans the full viewport, the rail paints over its left edge, and the
+   * centered iframe content ends up clipped/off-center. Left offset tracks the
+   * sidebar width per breakpoint (260 → 220 → 0 stacked on mobile). */
+  inset: 0 0 0 260px;
   z-index: 8000;
   margin: 0;
   padding: 8px clamp(8px, 1.5vw, 16px) 12px;
@@ -4651,6 +4656,19 @@ textarea.syw-input {
 @media (max-width: 640px) {
   .extra-panel--fullpage .extra-frame {
     height: calc(100vh - 88px) !important;
+  }
+}
+/* Match the takeover's left offset to the sidebar width at each breakpoint:
+ * 220px rail on tablet/small-laptop, and full-width (rail stacks in-flow) on
+ * phones — see the .app grid rules above. */
+@media (min-width: 769px) and (max-width: 1100px) {
+  .extra-panel.extra-panel--fullpage {
+    inset: 0 0 0 220px;
+  }
+}
+@media (max-width: 768px) {
+  .extra-panel.extra-panel--fullpage {
+    inset: 0;
   }
 }
 @media (prefers-reduced-motion: reduce) {
