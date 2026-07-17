@@ -231,7 +231,6 @@ function buildGroup2(base, u, m) {
 
   const ci = clone(base.launch?.conceptIntro || {});
   const p = base.practice || {};
-  const richWe = firstLine(ci.weDo) || firstLine(ci.iDo);
 
   out.launch = out.launch || {};
   out.launch.badge = "Small Group · Challenge";
@@ -243,23 +242,10 @@ function buildGroup2(base, u, m) {
     keyIdea: ci.keyIdea
       ? `${String(ci.keyIdea).replace(/[.\s]+$/, "")} — and you can explain why it works, even when it gets tricky.`
       : "You can explain why today's idea works, even when it gets tricky.",
+    // Build stays a quick "trickier case" warm-up. The real challenge —
+    // generalizing, justifying, and defending — lives in the guided
+    // "Prove It" tab (see engine/core/small-group-innovation.js).
     iDo: ci.iDo || { title: "A trickier case", lines: [] },
-    weDo: {
-      title: "Generalize it",
-      lines: [
-        richWe
-          ? `Start from what you know: ${richWe}`
-          : "Let's take today's idea one step further.",
-        "Now predict: what happens with much bigger numbers, or numbers that share no common factors? Make a prediction, then check it.",
-      ],
-    },
-    youDo: {
-      title: "Take the challenge",
-      lines: [
-        "Work the challenge problems below. For each one, be ready to justify your answer to a skeptic.",
-        "If you finish early: find a second strategy, or a case where it would break.",
-      ],
-    },
   };
 
   const practice = uniquePractice(

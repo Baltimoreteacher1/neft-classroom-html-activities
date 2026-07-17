@@ -15,7 +15,7 @@ import {
   createAdaptiveCoach,
   createConsensusLab,
   createEvidenceCard,
-  createProofPathLab,
+  createProveItLab,
   createTeacherEvidenceConsole,
 } from "./small-group-innovation.js";
 import { createApplyLab, createExploreLab, createModelLab } from "./small-group-labs.js";
@@ -125,7 +125,7 @@ function stageCard(stage, fallbackTitle, kind, onStageDone) {
   return card;
 }
 
-function conceptSection(config, onDone, proofPath) {
+function conceptSection(config, onDone) {
   const concept = config.launch?.conceptIntro || {};
   const section = el("section", "sg-sec");
   section.id = "sg-build";
@@ -154,7 +154,6 @@ function conceptSection(config, onDone, proofPath) {
     cards.push(card);
     section.appendChild(card);
   });
-  section.appendChild(proofPath);
 
   const row = el("div", "row");
   const ready = el("button", "btn", "I can explain the next step →");
@@ -333,11 +332,14 @@ export function bootSmallGroup(config) {
       store.get("pulseBefore"),
     ),
   );
-  const build = conceptSection(
-    config,
-    phaseDone("sg-tab-learn", "buildDone"),
-    createProofPathLab(variant, state),
-  );
+  const build = conceptSection(config, phaseDone("sg-tab-learn", "buildDone"));
+  // Group 2's challenge/justify work now lives in the guided "Prove It" tab,
+  // which also absorbs the "Defend it to a skeptic" talk. Group 1 keeps its
+  // supportive partner talk in Practice.
+  const proveIt =
+    variant === "group2"
+      ? createProveItLab(config, variant, state, phaseDone("sg-tab-prove", "proveDone"))
+      : null;
   const explore = createExploreLab(config, variant, {
     store,
     events,
@@ -351,7 +353,10 @@ export function bootSmallGroup(config) {
   const vocab = createVocabularySection(config, phaseDone("sg-tab-vocab", "vocabDone"), store);
   // Partner talk lives inside the Practice tab so discussion is part of
   // practicing, not a detour.
-  const talk = createTalkSection(config, variant, phaseDone("sg-tab-practice", "talkDone"));
+  const talk =
+    variant === "group2"
+      ? null
+      : createTalkSection(config, variant, phaseDone("sg-tab-practice", "talkDone"));
   if (talk) talk.appendChild(createConsensusLab(config, variant, state));
   const guided = createPracticeSection(
     config,
@@ -454,6 +459,12 @@ export function bootSmallGroup(config) {
       label: "More Practice",
       panel: makePanel("sg-tab-more", [morePractice, mission, apply]),
     },
+    // Group 2 only — panel is empty (and auto-filtered) for other variants.
+    {
+      id: "sg-tab-prove",
+      label: "Prove It",
+      panel: makePanel("sg-tab-prove", [proveIt]),
+    },
   ];
 
   const heroNode = hero(config, accent);
@@ -516,6 +527,7 @@ export function bootSmallGroup(config) {
     reflectDone: "sg-tab-check",
     moreDone: "sg-tab-more",
     applyDone: "sg-tab-more",
+    proveDone: "sg-tab-prove",
   };
   for (const [storeKey, tabId] of Object.entries(RESTORE_MARKS))
     if (store.get(storeKey)) mark(tabId);
