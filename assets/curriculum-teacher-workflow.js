@@ -9,8 +9,29 @@
   var DATA = { launch: null, supports: null, workflow: null, uifr: null };
   var lessons = [];
   var lessonsById = {};
+  var smallGroupsByParent = {};
+  var endOfUnitByUnit = {};
   var state = loadState();
   var panel = null;
+
+  // Full display/navigation order: each core lesson followed by its Group 1 /
+  // Group 2 small-group lessons, with the unit's End-of-Unit project after the
+  // last lesson of that unit. Mirrors the curriculum hub grouping.
+  function navOrderIds() {
+    var out = [];
+    lessons.forEach(function (lesson, i) {
+      out.push(lesson.id);
+      (smallGroupsByParent[lesson.id] || []).forEach(function (group) {
+        out.push(group.id);
+      });
+      var next = lessons[i + 1];
+      if (!next || next.unit !== lesson.unit) {
+        var eou = endOfUnitByUnit[lesson.unit];
+        if (eou) out.push(eou.id);
+      }
+    });
+    return out;
+  }
 
   function el(tag, className, text) {
     var node = document.createElement(tag);
@@ -65,6 +86,10 @@
   function studentUrl(lessonOrIds) {
     var base = `${location.origin}/curriculum/student-launch/`;
     if (Array.isArray(lessonOrIds)) return `${base}?playlist=${lessonOrIds.join(",")}`;
+    // Small-group and end-of-unit entries are not in the student-launch
+    // playlist manifest, so link straight to their real student-safe route.
+    if (lessonOrIds.kind && lessonOrIds.resources?.lesson)
+      return `${location.origin}${lessonOrIds.resources.lesson}`;
     return `${base}?lesson=${lessonOrIds.id}`;
   }
 
@@ -192,19 +217,29 @@
     unit.value = String(selectedLesson().unit);
 
     var lessonSelect = el("select", "ctw-select");
+    function addOption(id, label) {
+      var option = el("option", null, label);
+      option.value = id;
+      lessonSelect.appendChild(option);
+    }
     function fillLessons(unitNumber) {
       lessonSelect.replaceChildren();
+      var number = Number(unitNumber);
       lessons
         .filter(function (lesson) {
-          return lesson.unit === Number(unitNumber);
+          return lesson.unit === number;
         })
         .forEach(function (lesson) {
-          var option = el("option", null, `${lesson.id} · ${lesson.title}`);
-          option.value = lesson.id;
-          lessonSelect.appendChild(option);
+          addOption(lesson.id, `${lesson.id} · ${lesson.title}`);
+          // Group 1 / Group 2 small-group lessons, indented under their base.
+          (smallGroupsByParent[lesson.id] || []).forEach(function (group) {
+            addOption(group.id, `   ↳ ${group.title}`);
+          });
         });
-      if (lessonsById[state.selected]?.unit === Number(unitNumber))
-        lessonSelect.value = state.selected;
+      // End-of-unit culminating project at the bottom of the unit.
+      var eou = endOfUnitByUnit[number];
+      if (eou) addOption(eou.id, `   ★ ${eou.title}`);
+      if (lessonsById[state.selected]?.unit === number) lessonSelect.value = state.selected;
       else state.selected = lessonSelect.value;
     }
     fillLessons(unit.value);
@@ -427,9 +462,10 @@
     var family = familyFor(lesson);
     var readiness = DATA.workflow.families[family] || DATA.workflow.families.general;
     var support = DATA.supports.families[family] || DATA.supports.families.general;
-    var index = lessons.findIndex(function (item) {
-      return item.id === lesson.id;
-    });
+    // Prev/Next walk the full display order (core lessons + their small groups
+    // + end-of-unit projects), so navigation stays in sync with the dropdown.
+    var order = navOrderIds();
+    var index = order.indexOf(lesson.id);
     var safeUrl = studentUrl(lesson);
     stage.replaceChildren();
 
@@ -443,17 +479,23 @@
     nav.appendChild(
       button("← Previous", function () {
         if (index > 0) {
-          state.selected = lessons[index - 1].id;
+          state.selected = order[index - 1];
           updateRecent(state.selected);
           renderToday(stage);
         }
       }),
     );
-    nav.appendChild(el("span", "ctw-position", `Lesson ${index + 1} of ${lessons.length}`));
+    nav.appendChild(
+      el(
+        "span",
+        "ctw-position",
+        index >= 0 ? `Lesson ${index + 1} of ${order.length}` : lesson.title,
+      ),
+    );
     nav.appendChild(
       button("Next →", function () {
-        if (index < lessons.length - 1) {
-          state.selected = lessons[index + 1].id;
+        if (index >= 0 && index < order.length - 1) {
+          state.selected = order[index + 1];
           updateRecent(state.selected);
           renderToday(stage);
         }
@@ -663,6 +705,14 @@
         lessons = DATA.launch.lessons || [];
         lessons.forEach(function (lesson) {
           lessonsById[lesson.id] = lesson;
+        });
+        (DATA.launch.smallGroups || []).forEach(function (group) {
+          lessonsById[group.id] = group;
+          (smallGroupsByParent[group.parent] = smallGroupsByParent[group.parent] || []).push(group);
+        });
+        (DATA.launch.endOfUnit || []).forEach(function (project) {
+          lessonsById[project.id] = project;
+          endOfUnitByUnit[project.unit] = project;
         });
         if (!lessonsById[state.selected]) state.selected = lessons[0].id;
         var anchor = document.querySelector(".wrap");
