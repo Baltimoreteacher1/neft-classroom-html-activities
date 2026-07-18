@@ -558,17 +558,27 @@
           if (isReviewMode) pool = shuffle(pool);
           rounds = pool.slice(0, isReviewMode ? 12 : MAX_ROUNDS);
           // Guarantee the interactive kinds (plot / multi-step chain) actually
-          // play: tier filtering (l2 can restrict to challenge-only) or the
-          // MAX_ROUNDS slice could otherwise drop a lesson's authored
-          // arcadeExtras entirely. Pull any that were excluded to the front and
-          // re-cap. No-op for the vast majority of lessons (no interactive rounds).
-          const interactive = allRounds.filter((r) => r.kind === "plot" || r.kind === "chain");
+          // play, and place them AFTER a short warm-up round rather than always
+          // leading — spaced out so multiple don't clump. Tier filtering (l2 can
+          // restrict to challenge-only) or the MAX_ROUNDS slice could otherwise
+          // drop a lesson's authored arcadeExtras entirely. No-op for the vast
+          // majority of lessons (no interactive rounds).
+          const isInteractive = (r) => r.kind === "plot" || r.kind === "chain";
+          const interactive = allRounds.filter(isInteractive);
           if (interactive.length) {
-            const have = new Set(rounds);
-            const missing = interactive.filter((r) => !have.has(r));
-            if (missing.length) {
-              rounds = missing.concat(rounds).slice(0, isReviewMode ? 12 : MAX_ROUNDS);
-            }
+            const cap = isReviewMode ? 12 : MAX_ROUNDS;
+            // Keep the non-interactive rounds as filler (leaving room for the
+            // interactive ones), then splice the interactive rounds in starting
+            // after the first warm-up round, two slots apart.
+            const filler = rounds
+              .filter((r) => !isInteractive(r))
+              .slice(0, Math.max(1, cap - interactive.length));
+            const merged = filler.slice();
+            const startAt = Math.min(1, merged.length);
+            interactive.forEach((r, i) => {
+              merged.splice(Math.min(merged.length, startAt + i * 2), 0, r);
+            });
+            rounds = merged.slice(0, cap);
           }
           if (!rounds.length) rounds = fallbackRounds();
         }
