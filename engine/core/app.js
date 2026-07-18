@@ -563,6 +563,25 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
   const state = createState(config.lessonId, studentId);
   const engagement = createEngagement(state);
 
+  // Teacher-only "Clear answers" hook (invoked from the Tools menu item in
+  // utility-menu.js). Wipes THIS lesson's saved responses/progress on this
+  // device and drops the Save/Resume pointer so an auto-restore can't re-fill
+  // them, then reloads to re-render the lesson blank. Lets a teacher project a
+  // fresh copy without last period's (or their own demo) answers showing.
+  window.__ntClearLessonAnswers = () => {
+    try {
+      state.reset();
+    } catch (_) {
+      /* storage blocked — reload still clears in-memory answers */
+    }
+    try {
+      window.NeftSaveResume?.reset?.();
+    } catch (_) {
+      /* save/resume not present on this page */
+    }
+    window.location.reload();
+  };
+
   if (!state.get().studentName) {
     state.set({ studentName, studentPeriod });
   }

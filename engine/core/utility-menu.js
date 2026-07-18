@@ -10,6 +10,8 @@
 // Save/Resume also lives here (per Joel 2026-07-14): the menu item drives the
 // hidden #nsr-launcher, whose panel still opens in its usual spot.
 
+import { isTeacherMode } from "./teacher-mode.js";
+
 export function mountUtilityMenu() {
   if (document.querySelector(".nt-utility-menu")) return;
   document.body.classList.add("has-nt-utility-menu");
@@ -36,6 +38,37 @@ export function mountUtilityMenu() {
     '<div class="nt-utility-section" data-slot="mode"></div>';
 
   const actions = pop.querySelector('[data-slot="actions"]');
+
+  // Clear answers (teacher-only) — wipes THIS lesson's saved answers/progress on
+  // this device and reloads it blank, so a teacher can project a fresh copy
+  // without last period's (or their own demo) responses showing. Gated to
+  // teacher mode so students can never erase their own work from here.
+  const clearAnswers = document.createElement("button");
+  clearAnswers.type = "button";
+  clearAnswers.className = "nt-utility-item nt-utility-item-danger";
+  clearAnswers.innerHTML = '<span aria-hidden="true">🧹</span><span>Clear answers</span>';
+  clearAnswers.addEventListener("click", () => {
+    if (
+      !window.confirm(
+        "Clear the answers on this lesson and reload it fresh? This only affects this device.",
+      )
+    )
+      return;
+    if (typeof window.__ntClearLessonAnswers === "function") {
+      window.__ntClearLessonAnswers();
+    } else {
+      // Fallback for pages without the lesson-engine hook: at least drop the
+      // Save/Resume pointer so auto-restore can't re-fill fields, then reload.
+      try {
+        window.NeftSaveResume?.reset?.();
+      } catch (_) {
+        /* save/resume not present */
+      }
+      window.location.reload();
+    }
+    close();
+  });
+  actions.appendChild(clearAnswers);
 
   // Save / Resume — drives the save-resume engine's launcher (hidden by the
   // menu's CSS on lesson pages); its panel opens in its usual corner.
@@ -94,6 +127,8 @@ export function mountUtilityMenu() {
     if (pill && pill.parentElement !== modeSlot) modeSlot.appendChild(pill);
     supports.style.display = document.querySelector(".ewl-supports-tools-dock") ? "" : "none";
     saveResume.style.display = document.getElementById("nsr-launcher") ? "" : "none";
+    // Clear answers is a teacher affordance only — never expose it to students.
+    clearAnswers.style.display = isTeacherMode() ? "" : "none";
   }
 
   function open() {
