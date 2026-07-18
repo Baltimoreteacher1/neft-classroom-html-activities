@@ -184,7 +184,12 @@ function buildVisual(v) {
         fallback: numberLineSVG(v),
       });
     case "tape-diagram":
-      return tapeDiagramSVG(v);
+      // Interactive "count the equal parts" tape (interactive-visual bridge).
+      // The static SVG stays as the JS-off / print fallback.
+      return interactiveVisualHost(v, {
+        ariaLabel: `Interactive tape diagram: ${v.title || "count the equal parts"}. Tap each part to count how many equal parts there are in all.`,
+        fallback: tapeDiagramSVG(v),
+      });
     case "coordinate-plane":
       return coordPlaneSVG(v);
     case "factor-tree":

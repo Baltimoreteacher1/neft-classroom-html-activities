@@ -109,6 +109,12 @@ const REGISTRY = {
     const { renderFactorTreeFill } = await import("../components/factor-tree-fill.js");
     return renderFactorTreeFill(host, cfg);
   },
+  // Interactive tape diagram: the SAME config the static `tape-diagram` figure
+  // uses, rendered as a tap-to-count model (count the equal parts in all).
+  "tape-diagram": async (host, cfg) => {
+    const { renderTapeDiagram } = await import("../components/tape-diagram-lab.js");
+    return renderTapeDiagram(host, cfg);
+  },
   // Scenario simulator: drag a slider to change one quantity and watch the
   // model + result recompute live (proportional / percent / linear). Authored
   // into a lesson's `connect.simulator`, rendered via this bridge.
