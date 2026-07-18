@@ -587,7 +587,7 @@ export function createPracticeSection(
     const solve = () => {
       card?.classList.add("sg-done-all");
       solveItem(index);
-      // Hot streak in a Foundations lesson: offer the Challenge Lab bridge
+      // Hot streak in a Foundations lesson: offer the Challenge bridge
       // once, as an invitation — never a requirement.
       if (
         !section.dataset.bridgeShown &&
@@ -599,11 +599,11 @@ export function createPracticeSection(
           "div",
           "card sg-bridge",
           `<div class="sg-eyebrow">On a roll</div><h3>🔥 Ready for a bigger challenge?</h3><p>${bi(
-            "You are solving these confidently. The Challenge Lab version of this lesson pushes the same idea further.",
-            "Estás resolviendo con confianza. La versión Challenge Lab de esta lección lleva la misma idea más lejos.",
+            "You're solving these confidently. The Challenge version of this lesson takes the same idea further.",
+            "Estás resolviendo con confianza. La versión Challenge de esta lección lleva la misma idea más lejos.",
           )}</p>`,
         );
-        const go = el("a", "btn ghost", "Try the Challenge Lab →");
+        const go = el("a", "btn ghost", "Try the Challenge version →");
         go.href = window.location.pathname.replace("-group1", "-group2");
         bridge.appendChild(go);
         card?.after(bridge);

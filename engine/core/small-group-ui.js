@@ -7,7 +7,7 @@
 const SG_PALETTE = { hue: "#33568f", deep: "#1e3358", soft: "#eef2fa" };
 export const ACCENTS = {
   group1: { name: "Foundations", ...SG_PALETTE, pop: "#2f8f7d", emoji: "🤝" },
-  group2: { name: "Challenge Lab", ...SG_PALETTE, pop: "#e0a63c", emoji: "🚀" },
+  group2: { name: "Challenge", ...SG_PALETTE, pop: "#e0a63c", emoji: "🚀" },
   catchup: { name: "Catch-Up", ...SG_PALETTE, pop: "#5a9e52", emoji: "🧭" },
 };
 
