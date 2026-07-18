@@ -191,7 +191,12 @@ function buildVisual(v) {
         fallback: tapeDiagramSVG(v),
       });
     case "coordinate-plane":
-      return coordPlaneSVG(v);
+      // Interactive "plot the points" grid (interactive-visual bridge). The
+      // static SVG stays as the JS-off / print fallback.
+      return interactiveVisualHost(v, {
+        ariaLabel: `Interactive coordinate plane: ${v.title || "plot the points"}. Tap the grid to plot each listed point.`,
+        fallback: coordPlaneSVG(v),
+      });
     case "factor-tree":
       // Fill-in-the-blank factor tree (interactive-visual bridge). The static
       // SVG stays as the JS-off / print fallback so the figure never blanks.

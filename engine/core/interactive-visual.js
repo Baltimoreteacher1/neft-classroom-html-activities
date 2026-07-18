@@ -115,6 +115,12 @@ const REGISTRY = {
     const { renderTapeDiagram } = await import("../components/tape-diagram-lab.js");
     return renderTapeDiagram(host, cfg);
   },
+  // Interactive coordinate plane: the SAME config the static `coordinate-plane`
+  // figure uses, rendered as a tap-the-grid "plot the listed points" model.
+  "coordinate-plane": async (host, cfg) => {
+    const { renderCoordinatePlot } = await import("../components/coordinate-plot-lab.js");
+    return renderCoordinatePlot(host, cfg);
+  },
   // Scenario simulator: drag a slider to change one quantity and watch the
   // model + result recompute live (proportional / percent / linear). Authored
   // into a lesson's `connect.simulator`, rendered via this bridge.
