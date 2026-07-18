@@ -307,6 +307,13 @@ export function injectSmallGroupStyles(accent) {
     .sg-sample p{padding:0 14px 12px;margin:0;font-weight:600}
     .sg-mission-visual.has-figure{display:grid;place-items:center;padding:14px;background:#fff}
     .sg-mission-visual.has-figure .sg-figure{margin:0;padding:0;border:0;box-shadow:none;width:100%}
+    /* A math model in a narrow side column reads too small to help. When the
+       mission carries a figure, stack it full width below the copy and let it
+       grow (centered, capped) so students can actually read the model. */
+    .sg-mission:has(.sg-mission-visual.has-figure){grid-template-columns:1fr}
+    .sg-mission-visual.has-figure{min-height:auto;padding:16px 20px 22px}
+    .sg-mission-visual.has-figure .sg-figure{max-width:640px;margin:0 auto}
+    .sg-mission-visual.has-figure .sg-figure svg{width:100%;height:auto}
     .sg-speak-inline{margin-left:7px;border:1px solid var(--sg-line);border-radius:50%;width:44px;height:44px;background:#fff;cursor:pointer;font-size:15px}
     /* ── Vocabulary languages + cloze ── */
     .sg-langbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:12px}
