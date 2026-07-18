@@ -123,14 +123,16 @@ function ensureStyles() {
     border:1px solid ${C.line};border-left:4px solid ${C.accent};border-radius:12px;background:#f7faff;}
   .ftb-exp-title{font-weight:800;color:${C.navy};font-size:.94rem;text-align:center;}
   .ftb-exp-hint{font-size:.78rem;color:${C.muted};margin:2px 0 12px;text-align:center;line-height:1.4;}
-  .ftb-exp-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px;
-    font-size:1.35rem;font-weight:800;color:${C.ink};}
+  .ftb-exp-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:2px;
+    font-size:1.7rem;line-height:1;font-weight:800;color:${C.ink};}
   .ftb-exp-factor{display:inline-flex;align-items:flex-start;cursor:text;}
   .ftb-exp-base{line-height:1;}
-  .ftb-exp-times{margin:0 6px;color:${C.muted};}
-  .ftb-exp-input{width:30px;height:30px;margin-left:2px;border:2px dashed ${C.accent};border-radius:7px;
-    background:#fff;color:${C.ink};font-weight:800;font-size:.95rem;text-align:center;padding:0;box-sizing:border-box;
-    vertical-align:super;-moz-appearance:textfield;}
+  .ftb-exp-times{margin:0 8px;color:${C.muted};align-self:center;}
+  /* Exponent input: a small raised box that reads as a superscript. flex-start on
+     the factor tops-aligns it against the tall base digit, so it sits high like ². */
+  .ftb-exp-input{width:19px;height:19px;margin-left:1px;border:1.5px dashed ${C.accent};border-radius:5px;
+    background:#fff;color:${C.ink};font-weight:800;font-size:.72rem;line-height:1;text-align:center;padding:0;
+    box-sizing:border-box;-moz-appearance:textfield;}
   .ftb-exp-input::-webkit-outer-spin-button,.ftb-exp-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
   .ftb-exp-input:focus{outline:none;border-style:solid;box-shadow:0 0 0 3px rgba(29,78,216,.18);}
   .ftb-exp-input.correct{border-style:solid;border-color:${C.primeStroke};background:${C.primeFill};color:${C.primeInk};}
@@ -330,7 +332,7 @@ export function renderFactorTreeFill(host, cfg) {
       const factors = expCounts
         .map(
           ([p]) =>
-            `<span class="ftb-exp-factor"><span class="ftb-exp-base">${p}</span><sup><input class="ftb-exp-input" data-p="${p}" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" aria-label="exponent for prime ${p}"></sup></span>`,
+            `<span class="ftb-exp-factor"><span class="ftb-exp-base">${p}</span><input class="ftb-exp-input" data-p="${p}" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" aria-label="exponent for prime ${p}"></span>`,
         )
         .join(`<span class="ftb-exp-times">×</span>`);
       expPanel.innerHTML = `
