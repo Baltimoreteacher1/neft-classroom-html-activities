@@ -4381,7 +4381,13 @@
   let aiImage = null; // { dataUrl, mime, base64, name }
   let selectedAcademicAssignmentId = "";
   let aiOffline = false;
-  const AI_REQUEST_TIMEOUT_MS = 30_000;
+  // The full-tier Gemini Pro backend can legitimately take 20-40s for a
+  // "solve" answer with an attached worksheet photo. A 30s abort was mislabeling
+  // those slow-but-successful answers as "offline", so give the model real room.
+  const AI_REQUEST_TIMEOUT_MS = 60_000;
+  // One automatic retry on a genuine network drop (not a timeout — a timeout has
+  // already waited the full budget) before we ever show the "offline" panel.
+  const AI_RETRY_DELAY_MS = 900;
   const AI_PROMPT_GROUPS = [
     [
       "I'm stuck",
@@ -4678,8 +4684,7 @@
             : emptyState("📭", "Nothing due in the next week."),
         ),
       };
-      const showingWelcome =
-        state.assignments.length === 0 && !state.settings.welcomeDismissed;
+      const showingWelcome = state.assignments.length === 0 && !state.settings.welcomeDismissed;
       const order = focusedHomeOrder(
         state.settings.homeOrder,
         state.settings.hiddenCards,
@@ -5516,7 +5521,13 @@
         (AI_CHAT.at(-1)?.role === "model"
           ? '<section class="ai-next-actions" aria-label="Use this help"><h3>Turn help into a next step</h3><div class="row"><button class="btn sm" data-act="support-preview-steps">🧩 Preview steps</button><button class="btn sm" data-act="support-preview-focus">▶ Start a focus block</button><button class="btn sm" data-act="support-preview-reminder">🔔 Make a reminder</button><button class="btn sm" data-act="support-teacher">✉️ Ask my teacher</button></div></section>'
           : "") +
-        (aiOffline || (typeof navigator !== "undefined" && navigator.onLine === false)
+        // Only surface the offline fallback after an actual failed request
+        // (aiOffline). navigator.onLine is advisory and frequently reports
+        // `false` inside an installed PWA / flaky school Wi-Fi while /api/ai is
+        // in fact reachable — gating on it made the coach "keep saying offline"
+        // with zero failed requests. The real request outcome is the source of
+        // truth, and aiOffline clears on the next success or "online" event.
+        (aiOffline
           ? '<section class="ai-offline" aria-labelledby="offlineHelpTitle"><h3 id="offlineHelpTitle">You can keep moving offline</h3><p>Pick one small strategy while the helper reconnects.</p><div class="ai-offline-grid">' +
             offlineStrategies(selectedAssignment)
               .map(
@@ -10516,41 +10527,59 @@ Due May 31"></textarea>
       aiImage = null;
       if (inp) inp.value = "";
       render();
-      try {
-        const res = await requestAcademicHelp({
-          mode: window._aiMode || "hint",
-          messages: AI_CHAT.slice(-12).map((m) => ({
-            role: m.role,
-            text: m.text,
-          })),
-          image: sentImg ? { mime: sentImg.mime, data: sentImg.base64 } : null,
-          name: state.settings.studentName || "",
-        });
-        if (!res.ok) {
-          aiOffline = true;
-          const j = await res.json().catch(() => ({}));
-          AI_CHAT.push({
-            role: "model",
-            text: j.offline
-              ? "I'm not set up yet — ask an adult to add the AI key. 🛠️"
-              : "Sorry, I couldn't answer right now. Try again in a moment.",
-          });
-        } else {
-          aiOffline = false;
-          const j = await res.json();
-          AI_CHAT.push({
-            role: "model",
-            text: (j.reply || "Hmm, I didn't catch that.").slice(0, 4000),
-          });
+      // Clear any stale offline state up front: this is a fresh attempt, so a
+      // previous transient blip must not keep the offline panel on screen.
+      aiOffline = false;
+      const payload = {
+        mode: window._aiMode || "hint",
+        messages: AI_CHAT.slice(-12).map((m) => ({
+          role: m.role,
+          text: m.text,
+        })),
+        image: sentImg ? { mime: sentImg.mime, data: sentImg.base64 } : null,
+        name: state.settings.studentName || "",
+      };
+      // Resilient send: one automatic retry on a genuine network drop before we
+      // ever declare "offline". A timeout already waited the full budget, so we
+      // do NOT retry those (that would double the student's wait); we only retry
+      // an outright fetch failure, which is usually a momentary connection blip.
+      let res = null;
+      let sendError = null;
+      for (let attempt = 0; attempt < 2; attempt++) {
+        try {
+          res = await requestAcademicHelp(payload);
+          sendError = null;
+          break;
+        } catch (error) {
+          sendError = error;
+          if (error?.name === "TimeoutError" || attempt === 1) break;
+          await new Promise((resolve) => setTimeout(resolve, AI_RETRY_DELAY_MS));
         }
-      } catch (error) {
+      }
+      if (sendError) {
         aiOffline = true;
         AI_CHAT.push({
           role: "model",
           text:
-            error?.name === "TimeoutError"
+            sendError?.name === "TimeoutError"
               ? "The helper took too long to answer. Please try again in a moment. ⏱️"
               : "I can't reach the internet right now. Check your connection and try again. 📶",
+        });
+      } else if (!res.ok) {
+        aiOffline = true;
+        const j = await res.json().catch(() => ({}));
+        AI_CHAT.push({
+          role: "model",
+          text: j.offline
+            ? "I'm not set up yet — ask an adult to add the AI key. 🛠️"
+            : "Sorry, I couldn't answer right now. Try again in a moment.",
+        });
+      } else {
+        aiOffline = false;
+        const j = await res.json();
+        AI_CHAT.push({
+          role: "model",
+          text: (j.reply || "Hmm, I didn't catch that.").slice(0, 4000),
         });
       }
       aiBusy = false;
@@ -11627,6 +11656,15 @@ ${name}`;
     window.addEventListener("online", updateHeaderStatus);
     window.addEventListener("offline", updateHeaderStatus);
     updateHeaderStatus();
+
+    // When the device reconnects, clear the Academic Coach's offline notice so
+    // the student isn't stuck looking at the fallback panel after a blip.
+    window.addEventListener("online", () => {
+      if (aiOffline) {
+        aiOffline = false;
+        render();
+      }
+    });
 
     // Global keyboard listeners for Command Bar & Shortcuts
     window.addEventListener("keydown", (ev) => {
