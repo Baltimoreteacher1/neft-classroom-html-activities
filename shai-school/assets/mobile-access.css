@@ -1,0 +1,107 @@
+/* =========================================================================
+   Neft mobile accessibility layer  (additive, defensive — loaded site-wide)
+   Injected before </head> on every student-facing page by
+   tools/inject-mobile-access.js so lessons, activities, games, and parent
+   homework are comfortable to open and use on phones and tablets.
+
+   Design rules:
+   - ADDITIVE ONLY. These rules tighten small-screen / touch ergonomics; they
+     must not change how anything looks on a desktop.
+   - Most rules are gated behind small-screen or coarse-pointer media queries.
+   - We never force `overflow:hidden` on the page (it breaks sticky/scroll);
+     instead we stop the things that usually cause sideways scrolling.
+   ========================================================================= */
+
+/* Predictable sizing everywhere (most pages set this already — harmless). */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Media should never be wider than its column → no horizontal scrollbar. */
+img,
+svg,
+video,
+canvas,
+iframe,
+embed,
+object {
+  max-width: 100%;
+}
+img,
+svg,
+video,
+canvas {
+  height: auto;
+}
+
+@media (max-width: 760px) {
+  /* Flex/grid children and wide controls must be allowed to shrink. */
+  img,
+  svg,
+  video,
+  canvas,
+  table,
+  pre,
+  input,
+  select,
+  textarea {
+    max-width: 100%;
+  }
+
+  /* Long words, URLs, or equations shouldn't blow the layout sideways. */
+  body {
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  /* Wide data tables scroll inside themselves instead of the whole page. */
+  table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Comfortable, reliable tap targets on touch devices and small screens.
+   Apple HIG = 44px; WCAG 2.5.8 = 24px minimum. We target real action/nav
+   controls (anything with a .btn class, typed inputs, selects, summaries,
+   tabs, and nav links) — NOT bare <button> elements, so dense custom game
+   HUDs are left untouched. */
+@media (max-width: 640px), (pointer: coarse) {
+  a.btn,
+  .btn,
+  .button,
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"],
+  select,
+  summary,
+  [class*="tab-btn"],
+  nav a {
+    min-height: 44px;
+  }
+
+  a.btn,
+  .btn,
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Dense inline link rows (lesson resource strip, footers, link lists) get
+     room around each link so they're easy to tap accurately. */
+  #welcome-resource-links a,
+  .resource-links a,
+  .lesson-links a,
+  .links-row a,
+  footer nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 6px 8px;
+  }
+}
