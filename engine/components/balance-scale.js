@@ -22,11 +22,33 @@ function injectStyle() {
   document.head.append(style);
 }
 
-export function renderBalanceScale(
-  container,
-  { equation, variable, answer, tolerance, hints, label, onComplete },
-) {
+export function renderBalanceScale(container, config) {
+  const { equation, variable, answer, tolerance, hints, label, onComplete } = config;
   injectStyle();
+
+  // Adapter: some lessons author balance-scale problems in shapes the solve-for-
+  // variable renderer below does not understand. Left unhandled, `equation.split`
+  // throws and the problem renders blank. Route them to purpose-built renderers:
+  //   • `left`/`right` strings  → a "which side is greater?" comparison
+  //   • `items:[{left,right,balanced}]` → a verify-each-equation checklist
+  if (equation == null) {
+    if (Array.isArray(config.items) && config.items.length) {
+      return renderBalanceVerify(container, config);
+    }
+    if (config.left != null && config.right != null) {
+      return renderBalanceCompare(container, config);
+    }
+    // Nothing usable — show the prompt and complete so the queue never stalls.
+    const wrap = document.createElement("div");
+    wrap.className = "card";
+    const p = document.createElement("p");
+    p.className = "problem-stem";
+    p.textContent = config.instructions || label || "This balance task is unavailable.";
+    wrap.append(p);
+    container.append(wrap);
+    if (onComplete) onComplete(0, 0);
+    return;
+  }
 
   const prefersReducedMotion =
     typeof window !== "undefined" &&
@@ -351,6 +373,210 @@ export function renderBalanceScale(
       showFb(feedbackSlot, "hint", hint);
       animateTilt();
     }
+  });
+
+  container.append(wrapper);
+}
+
+// Pull the comparable numeric value out of an authored expression string such
+// as "3⁴ = 81" (→ 81) or "12 × 0.8 = 9.6" (→ 9.6). Prefers the value after the
+// last "="; falls back to the last number in the string. Returns NaN if none.
+function valueOf(expr) {
+  const s = String(expr == null ? "" : expr);
+  const afterEq = s.includes("=") ? s.slice(s.lastIndexOf("=") + 1) : s;
+  const nums = afterEq.match(/-?\d+(?:\.\d+)?/g);
+  if (nums && nums.length) return parseFloat(nums[nums.length - 1]);
+  return NaN;
+}
+
+// Draw a static balance scale with two labeled pans. Returns a setTilt(angle)
+// so the caller can lean the beam toward the heavier side on reveal.
+function drawScale(container, leftText, rightText, ariaLabel) {
+  const W = 480,
+    H = 260;
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  svg.style.cssText = "width:100%; max-width:480px; height:auto; display:block; margin:0 auto;";
+  svg.setAttribute("role", "img");
+  svg.setAttribute(
+    "aria-label",
+    ariaLabel || `Balance scale comparing ${leftText} and ${rightText}`,
+  );
+
+  const MID = W / 2;
+  const FULCRUM_Y = 210;
+  const BEAM_Y = 130;
+  const PAN_W = 150;
+
+  svgPoly(
+    svg,
+    `${MID},${FULCRUM_Y} ${MID - 22},${FULCRUM_Y + 35} ${MID + 22},${FULCRUM_Y + 35}`,
+    "#12355b",
+  );
+  svgRect(svg, MID - 55, FULCRUM_Y + 35, 110, 12, 8, "#12355b");
+  const beam = svgLine(svg, MID - 180, BEAM_Y, MID + 180, BEAM_Y, "#1fa6a2", 4);
+  beam.setAttribute("stroke-linecap", "round");
+  svgCircle(svg, MID, BEAM_Y, 8, "#f2c15b", "#12355b", 2.5);
+
+  const makePan = (cx, fill, stroke, txt) => {
+    const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    svgLine(g, cx, BEAM_Y, cx, BEAM_Y + 30, "#5f6f80", 1.5);
+    svgLine(g, cx - PAN_W / 2 + 10, BEAM_Y + 30, cx + PAN_W / 2 - 10, BEAM_Y + 30, "#5f6f80", 1.5);
+    svgRect(g, cx - PAN_W / 2, BEAM_Y + 30, PAN_W, 40, 10, fill);
+    svgRect(g, cx - PAN_W / 2, BEAM_Y + 30, PAN_W, 40, 10, "none", stroke, 1.5);
+    const label = svgText(g, cx, BEAM_Y + 55, txt, "15px", "#12355b");
+    label.setAttribute("text-anchor", "middle");
+    label.setAttribute("font-weight", "800");
+    svg.append(g);
+    return g;
+  };
+  const leftPanG = makePan(MID - 150, "#dff2ee", "#1fa6a2", leftText);
+  const rightPanG = makePan(MID + 150, "#fef7e0", "#f2c15b", rightText);
+
+  const tiltParts = [beam, leftPanG, rightPanG];
+  const setTilt = (angle) => {
+    const t = Math.abs(angle) < 0.001 ? "" : `rotate(${angle}, ${MID}, ${BEAM_Y})`;
+    tiltParts.forEach((el) => el.setAttribute("transform", t));
+  };
+  return { svg, setTilt };
+}
+
+// "Which side is greater?" comparison. Draws both expressions on the pans and
+// lets the learner choose Left / Balanced / Right, then leans the beam toward
+// the heavier side and reveals the values.
+function renderBalanceCompare(container, config) {
+  const { left, right, instructions, label, hints, onComplete } = config;
+  injectStyle();
+  const wrapper = document.createElement("div");
+  wrapper.className = "card";
+
+  if (instructions || label) {
+    const p = document.createElement("p");
+    p.style.cssText = "font-size:1rem; font-weight:600; margin:0 0 var(--sp-4); line-height:1.5;";
+    p.textContent = instructions || label;
+    wrapper.append(p);
+  }
+
+  // Show the raw expression (strip any "= value" so the answer isn't given away).
+  const face = (expr) => String(expr).split("=")[0].trim() || String(expr);
+  const lv = valueOf(left);
+  const rv = valueOf(right);
+  const correct =
+    !isNaN(lv) && !isNaN(rv) ? (lv > rv ? "left" : lv < rv ? "right" : "equal") : "equal";
+
+  const { svg, setTilt } = drawScale(container, face(left), face(right), instructions);
+  wrapper.append(svg);
+
+  const btnRow = document.createElement("div");
+  btnRow.style.cssText =
+    "display:flex; flex-wrap:wrap; gap:var(--sp-2); justify-content:center; margin:var(--sp-4) 0 0;";
+  const feedbackSlot = document.createElement("div");
+  feedbackSlot.className = "mt-4";
+
+  const choices = [
+    { key: "left", text: "◀ Left is greater" },
+    { key: "equal", text: "⚖ They are equal" },
+    { key: "right", text: "Right is greater ▶" },
+  ];
+  let done = false;
+  choices.forEach(({ key, text }) => {
+    const btn = document.createElement("button");
+    btn.className = "btn btn-secondary bs-op-btn";
+    btn.style.cssText = "padding:8px 14px; font-size:0.9rem;";
+    btn.textContent = text;
+    btn.addEventListener("click", () => {
+      if (done) return;
+      const isCorrect = key === correct;
+      if (isCorrect) {
+        done = true;
+        btnRow.querySelectorAll("button").forEach((b) => (b.disabled = true));
+        btn.classList.add("btn-primary");
+        setTilt(correct === "left" ? 8 : correct === "right" ? -8 : 0);
+        const detail =
+          correct === "equal"
+            ? `Both sides equal ${isNaN(lv) ? "" : lv}. The scale balances.`
+            : `${left} vs ${right} — the ${correct} side is greater.`;
+        showFb(feedbackSlot, "success", `Correct! ${detail}`);
+        if (onComplete) onComplete(1, 1);
+      } else {
+        const hint =
+          (hints && hints[0]) || "Evaluate each side fully, then compare the actual values.";
+        showFb(feedbackSlot, "hint", hint);
+      }
+    });
+    btnRow.append(btn);
+  });
+
+  wrapper.append(btnRow, feedbackSlot);
+  container.append(wrapper);
+}
+
+// "Is each scale balanced?" verify checklist for `items:[{left,right,balanced,
+// correction}]`. Each row is answered Balanced / Not balanced; a mismatch (or a
+// correct "unbalanced") reveals the correction.
+function renderBalanceVerify(container, config) {
+  const { items, instructions, label, onComplete } = config;
+  injectStyle();
+  const wrapper = document.createElement("div");
+  wrapper.className = "card";
+
+  if (instructions || label) {
+    const p = document.createElement("p");
+    p.style.cssText = "font-size:1rem; font-weight:600; margin:0 0 var(--sp-4); line-height:1.5;";
+    p.textContent = instructions || label;
+    wrapper.append(p);
+  }
+
+  let answered = 0;
+  let correctCount = 0;
+  const total = items.length;
+
+  items.forEach((item) => {
+    const row = document.createElement("div");
+    row.style.cssText =
+      "border:1px solid var(--line, #d9e2ec); border-radius:var(--radius-md); padding:var(--sp-3); margin-bottom:var(--sp-3);";
+
+    const expr = document.createElement("p");
+    expr.style.cssText =
+      "font-weight:700; margin:0 0 var(--sp-3); text-align:center; font-size:1.02rem;";
+    expr.innerHTML = `<span>${item.left}</span> <span style="color:var(--muted);">⚖</span> <span>${item.right}</span>`;
+    row.append(expr);
+
+    const controls = document.createElement("div");
+    controls.style.cssText = "display:flex; gap:var(--sp-2); justify-content:center;";
+    const fb = document.createElement("div");
+    fb.className = "mt-3";
+
+    let locked = false;
+    const answer = (saidBalanced, btnEls) => {
+      if (locked) return;
+      locked = true;
+      controls.querySelectorAll("button").forEach((b) => (b.disabled = true));
+      const isCorrect = saidBalanced === !!item.balanced;
+      if (isCorrect) correctCount += 1;
+      const msg = item.balanced
+        ? "Balanced — both sides are equal."
+        : item.correction || "Not balanced — the two sides are not equal.";
+      showFb(
+        fb,
+        isCorrect ? "success" : "hint",
+        `${isCorrect ? "Correct! " : "Not quite. "}${msg}`,
+      );
+      answered += 1;
+      if (answered === total && onComplete) onComplete(correctCount, total);
+    };
+
+    ["Balanced", "Not balanced"].forEach((txt, idx) => {
+      const btn = document.createElement("button");
+      btn.className = "btn btn-secondary";
+      btn.style.cssText = "padding:8px 14px; font-size:0.88rem;";
+      btn.textContent = txt;
+      btn.addEventListener("click", () => answer(idx === 0));
+      controls.append(btn);
+    });
+
+    row.append(controls, fb);
+    wrapper.append(row);
   });
 
   container.append(wrapper);

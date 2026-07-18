@@ -1,16 +1,27 @@
-export function renderNumberLine(
-  container,
-  { min, max, step, targets, snapToTick, label, onComplete },
-) {
+export function renderNumberLine(container, config) {
+  const { min, max, step, targets, snapToTick, label, onComplete } = config;
   injectNumberLineStyles();
 
-  // Guard malformed config: with no targets, the original "correct === targets.length"
-  // check is 0 === 0 on the first click and fires a false success.
+  // Adapter: some lessons author number-line tasks in shapes the draggable-dot
+  // renderer below cannot use (which would fall through to the "unavailable"
+  // stub). Route them to purpose-built renderers:
+  //   • `problems:[{inequality,boundary,circleType,direction}]` → graph-and-read
+  //     inequalities
+  //   • `totalJumps`/`jumpSize` (+ questionText/answer) → a skip-counting jumps line
   if (!Array.isArray(targets) || targets.length === 0) {
+    if (Array.isArray(config.problems) && config.problems.length) {
+      return renderInequalityGraphs(container, config);
+    }
+    if (config.totalJumps != null || config.jumpSize != null) {
+      return renderJumpNumberLine(container, config);
+    }
+    // Guard malformed config: with no targets, the original "correct === targets.length"
+    // check is 0 === 0 on the first click and fires a false success.
     const warn = document.createElement("p");
     warn.className = "problem-stem";
-    warn.textContent = label || "This number-line task is unavailable.";
+    warn.textContent = label || config.instructions || "This number-line task is unavailable.";
     container.append(warn);
+    if (onComplete) onComplete(0, 0);
     return;
   }
 
@@ -273,6 +284,286 @@ export function renderNumberLine(
   });
 
   wrapper.append(checkBtn);
+  container.append(wrapper);
+}
+
+// Normalize an inequality string for comparison: lowercase, strip spaces,
+// fold ≥/≤ to >=/<=. So "x ≥ 5", "x>=5", "X >= 5" all match.
+function normalizeIneq(s) {
+  return String(s == null ? "" : s)
+    .toLowerCase()
+    .replace(/\s+/g, "")
+    .replace(/≥/g, ">=")
+    .replace(/≤/g, "<=")
+    .replace(/⩾/g, ">=")
+    .replace(/⩽/g, "<=");
+}
+
+// Draw a single inequality graph (open/closed boundary circle + shaded ray) on
+// a fresh number line centered on the boundary. Used by renderInequalityGraphs.
+function drawInequalityLine(boundary, circleType, direction) {
+  const PAD = 40;
+  const TICK_Y = 55;
+  const W = 600;
+  const usable = W - PAD * 2;
+  const bmin = boundary - 5;
+  const bmax = boundary + 5;
+  const toX = (v) => PAD + ((v - bmin) / (bmax - bmin)) * usable;
+
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", `0 0 ${W} 100`);
+  svg.style.cssText = "width:100%; height:auto;";
+  svg.setAttribute("role", "img");
+  svg.setAttribute(
+    "aria-label",
+    `Number line: ${circleType} circle at ${boundary}, shaded ${direction}`,
+  );
+
+  line(svg, PAD, TICK_Y, W - PAD, TICK_Y, "#1fa6a2", 3);
+  poly(svg, `${PAD - 6},${TICK_Y} ${PAD + 4},${TICK_Y - 5} ${PAD + 4},${TICK_Y + 5}`, "#1fa6a2");
+  poly(
+    svg,
+    `${W - PAD + 6},${TICK_Y} ${W - PAD - 4},${TICK_Y - 5} ${W - PAD - 4},${TICK_Y + 5}`,
+    "#1fa6a2",
+  );
+
+  for (let v = bmin; v <= bmax; v += 1) {
+    const x = toX(v);
+    line(svg, x, TICK_Y - 7, x, TICK_Y + 7, "#12355b", 1.5);
+    const t = text(svg, x, TICK_Y + 22, formatNum(v), "11px", "#21313f");
+    t.setAttribute("text-anchor", "middle");
+  }
+
+  // Shaded ray from the boundary toward `direction`.
+  const bx = toX(boundary);
+  const endX = direction === "left" ? PAD + 6 : W - PAD - 6;
+  const ray = line(svg, bx, TICK_Y, endX, TICK_Y, "#d9795d", 6);
+  ray.setAttribute("stroke-linecap", "round");
+  ray.setAttribute("opacity", "0.85");
+
+  // Boundary circle: closed = filled, open = hollow.
+  const filled = circleType === "closed";
+  circle(svg, bx, TICK_Y, 9, filled ? "#12355b" : "#ffffff", "#12355b", 3);
+  return svg;
+}
+
+// "Graph and read" inequalities: for each authored problem, show the graph and
+// ask the learner to write the matching inequality. Reveals the answer after a
+// second miss so the queue never stalls.
+function renderInequalityGraphs(container, config) {
+  const { problems, instructions, label, hints, onComplete } = config;
+  const wrapper = document.createElement("div");
+  wrapper.className = "card";
+
+  if (instructions || label) {
+    const p = document.createElement("p");
+    p.style.cssText = "font-size:1rem; font-weight:600; margin:0 0 var(--sp-4); line-height:1.5;";
+    p.textContent = instructions || label;
+    wrapper.append(p);
+  }
+
+  const total = problems.length;
+  let resolved = 0;
+  let correctCount = 0;
+
+  problems.forEach((prob, idx) => {
+    const row = document.createElement("div");
+    row.style.cssText =
+      "border:1px solid var(--line, #d9e2ec); border-radius:var(--radius-md); padding:var(--sp-3); margin-bottom:var(--sp-4);";
+
+    if (prob.label) {
+      const cap = document.createElement("p");
+      cap.style.cssText = "font-weight:600; margin:0 0 var(--sp-2); font-size:0.95rem;";
+      cap.textContent = prob.label;
+      row.append(cap);
+    }
+
+    row.append(drawInequalityLine(prob.boundary, prob.circleType, prob.direction));
+
+    const controls = document.createElement("div");
+    controls.style.cssText =
+      "display:flex; gap:var(--sp-2); align-items:center; margin-top:var(--sp-2);";
+    const input = document.createElement("input");
+    input.type = "text";
+    input.className = "text-input";
+    input.style.cssText = "max-width:160px;";
+    input.placeholder = "e.g. x ≥ 5";
+    input.setAttribute("aria-label", "Write the inequality");
+    const checkBtn = document.createElement("button");
+    checkBtn.className = "btn btn-primary";
+    checkBtn.textContent = "Check";
+    controls.append(input, checkBtn);
+
+    const fb = document.createElement("div");
+    fb.className = "mt-3";
+
+    let locked = false;
+    let attempts = 0;
+    const resolve = (wasCorrect) => {
+      locked = true;
+      input.readOnly = true;
+      checkBtn.style.display = "none";
+      if (wasCorrect) correctCount += 1;
+      resolved += 1;
+      if (resolved === total && onComplete) onComplete(correctCount, total);
+    };
+
+    checkBtn.addEventListener("click", () => {
+      if (locked) return;
+      const val = input.value.trim();
+      if (!val) {
+        showFb(fb, "hint", "Type the inequality first.");
+        return;
+      }
+      if (normalizeIneq(val) === normalizeIneq(prob.inequality)) {
+        input.style.borderColor = "var(--success)";
+        input.style.background = "var(--success-bg)";
+        showFb(fb, "success", `Correct! ${prob.inequality}`);
+        resolve(true);
+      } else {
+        attempts += 1;
+        if (attempts >= 2) {
+          showFb(
+            fb,
+            "hint",
+            `The answer is ${prob.inequality}. ${(hints && hints[idx]) || ""}`.trim(),
+          );
+          resolve(false);
+        } else {
+          showFb(
+            fb,
+            "hint",
+            (hints && hints[idx]) || "Check the circle type and shading direction.",
+          );
+        }
+      }
+    });
+
+    row.append(controls, fb);
+    wrapper.append(row);
+  });
+
+  container.append(wrapper);
+}
+
+// Skip-counting jumps line for `totalJumps`/`jumpSize` configs: draws evenly
+// spaced jump arcs from min to max and asks the authored numeric question.
+function renderJumpNumberLine(container, config) {
+  const {
+    instructions,
+    label,
+    questionText,
+    answer,
+    totalJumps,
+    min,
+    max,
+    step,
+    hints,
+    onComplete,
+  } = config;
+  const wrapper = document.createElement("div");
+  wrapper.className = "card";
+
+  if (instructions || label) {
+    const p = document.createElement("p");
+    p.style.cssText = "font-size:1rem; font-weight:600; margin:0 0 var(--sp-4); line-height:1.5;";
+    p.textContent = instructions || label;
+    wrapper.append(p);
+  }
+
+  const lo = Number(min ?? 0);
+  const hi = Number(max ?? 1);
+  const jumps = Math.max(1, Number(totalJumps) || Math.round((hi - lo) / (Number(step) || 1)));
+  const PAD = 40;
+  const TICK_Y = 70;
+  const W = 600;
+  const usable = W - PAD * 2;
+  const toX = (v) => PAD + ((v - lo) / (hi - lo || 1)) * usable;
+
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", `0 0 ${W} 110`);
+  svg.style.cssText = "width:100%; height:auto;";
+  svg.setAttribute("role", "img");
+  svg.setAttribute("aria-label", `Number line from ${lo} to ${hi} with ${jumps} equal jumps`);
+
+  line(svg, PAD, TICK_Y, W - PAD, TICK_Y, "#1fa6a2", 3);
+  const st = Number(step) || (hi - lo) / jumps;
+  for (let v = lo; v <= hi + 1e-9; v = round(v + st)) {
+    const x = toX(v);
+    line(svg, x, TICK_Y - 7, x, TICK_Y + 7, "#12355b", 1.5);
+    const t = text(svg, x, TICK_Y + 22, formatNum(v), "11px", "#21313f");
+    t.setAttribute("text-anchor", "middle");
+  }
+
+  // Jump arcs above the line.
+  for (let i = 0; i < jumps; i++) {
+    const x0 = toX(lo + ((hi - lo) * i) / jumps);
+    const x1 = toX(lo + ((hi - lo) * (i + 1)) / jumps);
+    const midX = (x0 + x1) / 2;
+    const arc = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    arc.setAttribute("d", `M ${x0} ${TICK_Y} Q ${midX} ${TICK_Y - 34} ${x1} ${TICK_Y}`);
+    arc.setAttribute("fill", "none");
+    arc.setAttribute("stroke", "#d9795d");
+    arc.setAttribute("stroke-width", "2.5");
+    svg.append(arc);
+    poly(svg, `${x1},${TICK_Y} ${x1 - 5},${TICK_Y - 7} ${x1 + 1},${TICK_Y - 6}`, "#d9795d");
+  }
+  wrapper.append(svg);
+
+  const q = document.createElement("div");
+  q.className = "card-compact card-teal";
+  q.style.cssText =
+    "background:var(--teal-light); border:1px solid rgba(31,166,162,0.15); border-radius:var(--radius-md); padding:var(--sp-4); margin-top:var(--sp-3);";
+  if (questionText) {
+    const qt = document.createElement("p");
+    qt.style.cssText = "font-weight:700; margin:0 0 var(--sp-3);";
+    qt.textContent = questionText;
+    q.append(qt);
+  }
+  const controls = document.createElement("div");
+  controls.style.cssText = "display:flex; gap:var(--sp-2); align-items:center;";
+  const input = document.createElement("input");
+  input.type = "text";
+  input.className = "text-input";
+  input.style.cssText = "max-width:130px;";
+  input.placeholder = "Your answer";
+  input.setAttribute("aria-label", questionText || "Your answer");
+  const checkBtn = document.createElement("button");
+  checkBtn.className = "btn btn-primary";
+  checkBtn.textContent = "Check";
+  controls.append(input, checkBtn);
+  const fb = document.createElement("div");
+  fb.className = "mt-3";
+  q.append(controls, fb);
+  wrapper.append(q);
+
+  let done = false;
+  checkBtn.addEventListener("click", () => {
+    if (done) return;
+    const val = input.value.trim();
+    if (!val) {
+      showFb(fb, "hint", "Enter your answer first.");
+      return;
+    }
+    const nv = parseFloat(val.replace(/[,\s]/g, ""));
+    const na = parseFloat(String(answer).replace(/[,\s]/g, ""));
+    const ok =
+      !isNaN(nv) && !isNaN(na)
+        ? Math.abs(nv - na) < 1e-6
+        : val.toLowerCase() === String(answer).toLowerCase();
+    if (ok) {
+      done = true;
+      input.readOnly = true;
+      input.style.borderColor = "var(--success)";
+      input.style.background = "var(--success-bg)";
+      checkBtn.style.display = "none";
+      showFb(fb, "success", `Correct! The answer is ${answer}.`);
+      if (onComplete) onComplete(1, 1);
+    } else {
+      showFb(fb, "hint", (hints && hints[0]) || "Count the jumps one at a time from the start.");
+    }
+  });
+
   container.append(wrapper);
 }
 

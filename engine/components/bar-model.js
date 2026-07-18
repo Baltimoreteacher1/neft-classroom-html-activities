@@ -37,11 +37,20 @@ function injectBarModelStyle() {
   (document.head || document.documentElement).append(style);
 }
 
-export function renderBarModel(
-  container,
-  { bars, totalLabel, questionText, answer, tolerance, label, onComplete },
-) {
+export function renderBarModel(container, config) {
+  const { bars, totalLabel, questionText, answer, tolerance, label, onComplete } = config;
   injectBarModelStyle();
+
+  // Adapter: some lessons author a ratio/part-whole bar model as
+  // `parts:[{label,value,color}] + whole` (no `bars`, `questionText`, or
+  // `answer`), with the worked solution stored in `label`. Left unhandled,
+  // `bars.reduce` below throws ("Cannot read properties of undefined") and the
+  // whole practice problem renders blank. Route those to a static renderer that
+  // draws the model and keeps the solution behind a reveal (never at the top,
+  // which would give the answer away).
+  if (!Array.isArray(bars) || bars.length === 0) {
+    return renderRatioBarModel(container, config);
+  }
 
   const wrapper = document.createElement("div");
   wrapper.className = "card";
@@ -230,6 +239,103 @@ export function renderBarModel(
     wrapper.append(qCard);
   }
 
+  container.append(wrapper);
+}
+
+// Static "ratio / part-whole" bar model for configs authored as
+// `parts:[{label,value,color}] + whole`. Draws the segmented bar, shows the
+// task prompt (from `instructions`), and hides the worked solution (`label`)
+// behind a reveal so the answer is never leaked up front. Completes the phase
+// when the learner reveals the solution.
+function renderRatioBarModel(container, config) {
+  const { parts, whole, instructions, label, hint, hints, onComplete } = config;
+  const wrapper = document.createElement("div");
+  wrapper.className = "card";
+
+  // `parts` is authored either as objects ({label,value,color}) or as plain
+  // numbers ([80, 80, 12]); normalize both to {label,value,color}.
+  const segs = (Array.isArray(parts) ? parts : [])
+    .map((p) => (typeof p === "number" ? { value: p } : p))
+    .filter((p) => p && p.value != null);
+
+  // Graceful fallback: nothing usable to draw — show the prompt and complete so
+  // the practice queue never stalls on a blank card.
+  if (segs.length === 0) {
+    const p = document.createElement("p");
+    p.className = "problem-stem";
+    p.textContent = instructions || label || "This bar-model task is unavailable.";
+    wrapper.append(p);
+    container.append(wrapper);
+    if (onComplete) onComplete(0, 0);
+    return;
+  }
+
+  if (instructions) {
+    const prompt = document.createElement("p");
+    prompt.style.cssText =
+      "font-size:1rem; font-weight:600; margin:0 0 var(--sp-4); line-height:1.5;";
+    prompt.textContent = instructions;
+    wrapper.append(prompt);
+  }
+
+  const BAR_H = 48;
+  const GAP = 3;
+  const partSum = segs.reduce((s, p) => s + Number(p.value || 0), 0) || 1;
+  const palette = ["#1fa6a2", "#f2c15b", "#d9795d", "#2f80d1", "#0fa958", "#875f00"];
+
+  const vizWrap = document.createElement("div");
+  vizWrap.style.cssText = "position:relative; margin-bottom:var(--sp-5);";
+
+  // Whole/total bar on top when a total is given.
+  if (whole != null) {
+    const totalBar = document.createElement("div");
+    totalBar.className = "bm-total";
+    totalBar.style.cssText = `
+      height:${BAR_H}px; background:var(--navy); border-radius:var(--radius-sm);
+      display:grid; place-items:center; color:white; font-weight:800; font-size:0.95rem;
+      margin-bottom:${GAP}px;
+    `;
+    totalBar.textContent = `Total: ${whole}`;
+    vizWrap.append(totalBar);
+  }
+
+  const segBar = document.createElement("div");
+  segBar.style.cssText = `display:flex; gap:${GAP}px; height:${BAR_H}px;`;
+  segs.forEach((part, i) => {
+    const pct = (Number(part.value || 0) / partSum) * 100;
+    const seg = document.createElement("div");
+    seg.className = "bm-seg";
+    seg.style.cssText = `
+      flex:${pct}; background:${part.color || palette[i % palette.length]}; border-radius:var(--radius-sm);
+      display:grid; place-items:center; color:white; font-weight:800; font-size:0.82rem;
+      position:relative; min-width:40px; text-align:center; line-height:1.15;
+    `;
+    seg.innerHTML = `<div><div style="font-size:0.7rem; opacity:0.9;">${part.label || ""}</div></div>`;
+    segBar.append(seg);
+  });
+  vizWrap.append(segBar);
+  wrapper.append(vizWrap);
+
+  // Reveal-the-solution control (self-check). Keeps the worked answer hidden
+  // until the learner has attempted the model on paper.
+  const revealBtn = document.createElement("button");
+  revealBtn.className = "btn btn-primary";
+  revealBtn.textContent = "Show the solution";
+
+  const solutionSlot = document.createElement("div");
+  solutionSlot.className = "mt-4";
+
+  let revealed = false;
+  revealBtn.addEventListener("click", () => {
+    if (revealed) return;
+    revealed = true;
+    revealBtn.style.display = "none";
+    const solution = label || (hints && hints[hints.length - 1]) || hint || "";
+    showFb(solutionSlot, "success", solution || "Use the bar model to find each part.");
+    if (onComplete) onComplete(1, 1);
+  });
+
+  wrapper.append(revealBtn, solutionSlot);
   container.append(wrapper);
 }
 
