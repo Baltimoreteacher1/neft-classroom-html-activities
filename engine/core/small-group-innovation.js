@@ -230,7 +230,7 @@ export function createProveItLab(config, variant, state, onDone, store = null) {
       state.proofPath = move.id;
       if (persist) store?.set("proofPath", move.id);
       moveButtons.forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
-      promptEl.innerHTML = `<b>${esc(move.label)}:</b> ${esc(text)}`;
+      promptEl.innerHTML = `<b>${esc(move.label)}:</b> ${esc(text)}${guidanceCols(move.id, variant)}`;
       proveTa.placeholder = text;
       proveBtn.disabled = false;
     };
@@ -347,6 +347,23 @@ const PROOF_GUIDANCE = {
   },
 };
 
+// Two-column "Do this / Sentence frames" scaffold for one proof method, shared
+// by the consensus popovers and the group2 Prove-It flow so both give students
+// the same concrete how-to. Group 2 gets the boundary-case steps for "Test it".
+function guidanceCols(id, variant) {
+  const guide = PROOF_GUIDANCE[id] || {};
+  const steps = (variant === "group2" && guide.group2Steps) || guide.steps || [];
+  const frames = guide.frames || [];
+  if (!steps.length && !frames.length) return "";
+  const list = (items) => items.map((item) => `<li>${esc(item)}</li>`).join("");
+  return (
+    `<div class="sg-guide-cols">` +
+    `<div><b>Do this</b><ul>${list(steps)}</ul></div>` +
+    `<div><b>Sentence frames</b><ul>${list(frames)}</ul></div>` +
+    `</div>`
+  );
+}
+
 // Tap-to-open method guide: a row of chips (one per proof method) that reveal a
 // shared panel with "Do this" steps + sentence frames for the tapped method.
 // One panel open at a time; tapping the open chip again closes it.
@@ -366,19 +383,12 @@ function createConsensusGuide(variant, sample) {
   const chips = [];
   let openId = null;
   const renderPanel = (path) => {
-    const guide = PROOF_GUIDANCE[path.id] || {};
-    const steps = (variant === "group2" && guide.group2Steps) || guide.steps || [];
-    const frames = guide.frames || [];
-    const list = (items) => items.map((item) => `<li>${esc(item)}</li>`).join("");
     panel.innerHTML =
       `<div class="sg-guide-title">${esc(path.label)}</div>` +
       (sample
         ? `<p class="sg-guide-anchor">For the problem above: <i>${esc(sample)}</i></p>`
         : "") +
-      `<div class="sg-guide-cols">` +
-      `<div><b>Do this</b><ul>${list(steps)}</ul></div>` +
-      `<div><b>Sentence frames</b><ul>${list(frames)}</ul></div>` +
-      `</div>`;
+      guidanceCols(path.id, variant);
   };
   proofEntries(variant).forEach((path) => {
     const chip = el(
