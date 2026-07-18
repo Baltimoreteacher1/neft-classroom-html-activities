@@ -538,6 +538,8 @@
       // Chosen difficulty track: 1 = support, 2 = enrichment. Set on PickScene
       // before every run; drives the problem generator and on-screen scaffolding.
       let rrTrack = 1;
+      let rrAuto = false; // true when the ✨ Auto button picked the track (NTAdaptive)
+      let rrEndless = false; // true for endless (no auto-end) runs
 
       // ── Vocab gate state (repo rule: term + Level-1 definition + image/emoji
       // shown BEFORE the first round). Shown by default; skippable only on a
@@ -882,6 +884,8 @@
             .setOrigin(0.5);
           const choose = () => {
             rrTrack = track;
+            rrAuto = false;
+            rrEndless = false;
             SFX.coin();
             JUICE.audio.unlock();
             this.scene.start("Game");
@@ -921,6 +925,32 @@
         this.input.keyboard.on("keydown-TWO", chooseL2);
         this.input.keyboard.on("keydown-NUMPAD_ONE", chooseL1);
         this.input.keyboard.on("keydown-NUMPAD_TWO", chooseL2);
+
+        // ✨ Auto: let the shared adaptive helper pick a level from past runs.
+        // Geometry-safe — it only chooses the level BEFORE the run starts.
+        const pickAuto = () => {
+          SFX.coin();
+          JUICE.audio.unlock();
+          const lv = window.NTAdaptive ? window.NTAdaptive.pickLevel("u3-ratio-rush", 1, 2) : 1;
+          rrTrack = lv;
+          rrAuto = true;
+          rrEndless = false;
+          this.scene.start("Game");
+        };
+        const autoBtn = this.add
+          .text(cx, 574, "✨ Auto — picks your level", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "16px",
+            fontStyle: "bold",
+            color: "#ffd24a",
+          })
+          .setOrigin(0.5)
+          .setInteractive({ useHandCursor: true });
+        autoBtn.on("pointerover", () => autoBtn.setColor("#ffffff"));
+        autoBtn.on("pointerout", () => autoBtn.setColor("#ffd24a"));
+        autoBtn.on("pointerdown", pickAuto);
+        this.input.keyboard.on("keydown-A", pickAuto);
+
         srSay(
           "Choose your level. Press 1 for Support, small ratios with more help. " +
             "Press 2 for Enrichment, bigger and unit-rate ratios with fewer hints.",
@@ -939,11 +969,14 @@
           window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
         );
         this.track = rrTrack; // 1 = support, 2 = enrichment
+        this.auto = rrAuto; // carried into Result for adaptive recordRun
+        this.endless = rrEndless; // endless runs never auto-end
         this.score = 0;
         this.streak = 0;
         this.level = 1;
         this.solved = 0; // problems answered correctly
-        this.target = 10; // win condition: solve this many problems
+        this.attempts = 0; // graded lock-ins (for accuracy)
+        this.target = this.endless ? Infinity : 10; // win condition: solve this many problems
         this.problem = null;
         this.locked = false;
         this.dragging = null; // "top" | "bottom" | null
@@ -980,11 +1013,31 @@
           })
           .setOrigin(1, 0);
         this.progressText = this.add
-          .text(W / 2, 12, "0 / " + this.target, {
+          .text(W / 2, 12, "0 / " + (this.endless ? "∞" : this.target), {
             ...hudStyle,
             color: "#bfe6da",
           })
           .setOrigin(0.5, 0);
+
+        // Endless mode: a small "Finish ✓" HUD control that ends the run now
+        // (same Result transition the win uses, with current stats). Sits below
+        // the decorative hearts at (16, 36).
+        if (this.endless) {
+          this.finishBtn = this.add
+            .text(16, 62, "Finish ✓", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "15px",
+              fontStyle: "bold",
+              color: "#ffd24a",
+            })
+            .setInteractive({ useHandCursor: true });
+          this.finishBtn.on("pointerover", () => this.finishBtn.setColor("#ffffff"));
+          this.finishBtn.on("pointerout", () => this.finishBtn.setColor("#ffd24a"));
+          this.finishBtn.on("pointerdown", () => {
+            if (this.locked) return;
+            this.endGame();
+          });
+        }
 
         // Problem banner
         this.bannerLabel = this.add
@@ -1332,6 +1385,7 @@
         const sameAsBase = c === p.a && d === p.b;
         const correct = c > 0 && d > 0 && equiv && !(p.kind === "full" && sameAsBase);
         this.locked = true;
+        this.attempts++;
 
         if (correct) {
           SFX.good();
@@ -1488,11 +1542,11 @@
         this.scoreText.setText("Score: " + this.score);
         this.streakText.setText("Streak: " + this.streak);
         this.levelText.setText(this.track === 1 ? "Level 1 · Support" : "Level 2 · Enrich");
-        this.progressText.setText(this.solved + " / " + this.target);
+        this.progressText.setText(this.solved + " / " + (this.endless ? "∞" : this.target));
       };
 
-      // Reached only by solving all target problems (mistakes never end the
-      // game), so the Result scene is always a win.
+      // Reached by solving all target problems (mistakes never end the game),
+      // or in endless mode by tapping Finish ✓, so the Result scene is a win.
       GameScene.prototype.endGame = function () {
         this.locked = true;
         this.time.delayedCall(500, () => {
@@ -1500,6 +1554,10 @@
             score: this.score,
             solved: this.solved,
             target: this.target,
+            track: this.track,
+            auto: this.auto,
+            endless: this.endless,
+            accuracy: this.attempts ? this.solved / this.attempts : 1,
           });
         });
       };
@@ -1517,8 +1575,21 @@
         const d = this.data2;
         const cx = W / 2;
         this.add.rectangle(cx, H / 2, W, H, 0x0c2a2e);
-        // The game only ends when every problem is solved — always a full win.
-        const stars = 3;
+        // Endless runs have no finite target; grade against the standard goal
+        // of 10 so stars and the adaptive win-signal stay meaningful. Normal
+        // runs only end at solved === target, so they always earn 3 stars.
+        const endless = !!d.endless;
+        const goal = endless ? 10 : d.target;
+        const stars = d.solved >= goal ? 3 : d.solved >= goal * 0.6 ? 2 : 1;
+        // Adaptive: only record a run when the level was auto-picked.
+        if (d.auto && window.NTAdaptive) {
+          window.NTAdaptive.recordRun("u3-ratio-rush", {
+            won: d.solved >= goal,
+            accuracy: d.accuracy != null ? d.accuracy : 1,
+            min: 1,
+            max: 2,
+          });
+        }
         // High score
         let hs = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
         if (d.score > hs) {
@@ -1556,11 +1627,18 @@
           })
           .setOrigin(0.5);
         this.add
-          .text(cx, 295, "Solved " + d.solved + " of " + d.target + " problems", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "18px",
-            color: "#bfe6da",
-          })
+          .text(
+            cx,
+            295,
+            endless
+              ? "Solved " + d.solved + " problems"
+              : "Solved " + d.solved + " of " + d.target + " problems",
+            {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "18px",
+              color: "#bfe6da",
+            },
+          )
           .setOrigin(0.5);
         this.add
           .text(cx, 325, "High Score: " + hs, {
@@ -1606,6 +1684,30 @@
         btn.on("pointerdown", again);
         this.input.keyboard.on("keydown-SPACE", again);
         this.input.keyboard.on("keydown-ENTER", again);
+
+        // ♾️ Keep Playing: restart the Game at the same track in endless mode
+        // (carries the auto flag so adaptive still records the endless run).
+        const keepBtn = this.add
+          .rectangle(cx, 466, 240, 48, 0x2563a8)
+          .setStrokeStyle(2, 0x7dd3fc)
+          .setInteractive({ useHandCursor: true });
+        this.add
+          .text(cx, 466, "♾️ Keep Playing", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "18px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        const keepPlaying = () => {
+          rrTrack = d.track;
+          rrEndless = true;
+          rrAuto = d.auto;
+          this.scene.start("Game");
+        };
+        keepBtn.on("pointerover", () => keepBtn.setFillStyle(0x2f74c2));
+        keepBtn.on("pointerout", () => keepBtn.setFillStyle(0x2563a8));
+        keepBtn.on("pointerdown", keepPlaying);
       };
 
       // ── Launch ──
@@ -1646,6 +1748,8 @@
     <!-- gfx-injected:end -->
     <!-- Student Passport (meta-progression pill; boots itself, award() guarded) -->
     <script src="/assets/lesson-passport.js" defer></script>
+    <!-- Adaptive level picker (window.NTAdaptive: pickLevel / recordRun) -->
+    <script src="/assets/game-adaptive.js" defer></script>
     <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
     <script src="/assets/math-workbench-launcher.js" defer></script>
     <!-- mwb-injected:end -->

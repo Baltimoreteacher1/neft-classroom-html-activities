@@ -522,6 +522,8 @@
       // the word "ESOL"). Set on the Level Select screen; drives the generator,
       // the scaffolding hints, and the HUD badge. Defaults to support.
       let ffTier = 1;
+      let ffAuto = false; // true when the ✨ Auto button picked the level (NTAdaptive)
+      let ffEndless = false; // true for endless (no auto-end) runs
 
       // ── Vocab gate state (repo rule: term + Level-1 definition + image/emoji
       // shown BEFORE the first round). Shown by default; skippable only on a
@@ -868,6 +870,8 @@
             .setOrigin(0.5);
           const choose = () => {
             ffTier = tier;
+            ffAuto = false;
+            ffEndless = false;
             SFX.coin();
             srSay("Level " + tier + ", " + sub + " selected.");
             JUICE.burst(this, x, 330, [0xffd24a, 0xff7ba8, 0xffffff], 16);
@@ -905,6 +909,34 @@
         this.input.keyboard.on("keydown-RIGHT", chooseL2);
         this.input.keyboard.on("keydown-ENTER", chooseL1);
         this.input.keyboard.on("keydown-SPACE", chooseL1);
+
+        // ✨ Auto: let the shared adaptive helper pick a level from past runs.
+        // Geometry-safe — it only chooses the level BEFORE the run starts.
+        const pickAuto = () => {
+          const lv = window.NTAdaptive
+            ? window.NTAdaptive.pickLevel("u2-fraction-frenzy", 1, 2)
+            : 1;
+          ffTier = lv;
+          ffAuto = true;
+          ffEndless = false;
+          SFX.coin();
+          srSay("Auto picked Level " + lv + " for you.");
+          this.scene.start("Game");
+        };
+        const autoBtn = this.add
+          .text(cx, 520, "✨ Auto — picks your level", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "16px",
+            fontStyle: "bold",
+            color: "#ffd24a",
+          })
+          .setOrigin(0.5)
+          .setInteractive({ useHandCursor: true });
+        autoBtn.on("pointerover", () => autoBtn.setColor("#ffffff"));
+        autoBtn.on("pointerout", () => autoBtn.setColor("#ffd24a"));
+        autoBtn.on("pointerdown", pickAuto);
+        this.input.keyboard.on("keydown-A", pickAuto);
+
         srSay(
           "Choose your level. Level 1 is support with simpler fractions. " +
             "Level 2 is enrichment with bigger denominators and dividing fractions.",
@@ -923,11 +955,13 @@
           window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
         );
         this.tier = ffTier; // 1 = support, 2 = enrichment (from Level Select)
+        this.auto = ffAuto; // carried into Result for adaptive recordRun
+        this.endless = ffEndless; // endless runs never auto-end
         this.score = 0;
         this.streak = 0;
         this.level = 1; // in-run difficulty stage (ramps 1→8)
         this.solved = 0; // problems answered correctly
-        this.target = 10; // win condition: solve this many problems
+        this.target = this.endless ? Infinity : 10; // win condition: solve this many problems
         this.attempted = 0; // problems attempted (each counts ONCE, on first Lock In)
         this.firstTryCorrect = 0; // problems correct on the FIRST Lock In
         this.tries = 0; // Lock In presses on the current problem
@@ -964,7 +998,7 @@
           })
           .setOrigin(1, 0);
         this.progressText = this.add
-          .text(W / 2, 12, "0 / " + this.target, {
+          .text(W / 2, 12, "0 / " + (this.endless ? "∞" : this.target), {
             ...hudStyle,
             color: "#e7c4d4",
           })
@@ -977,6 +1011,25 @@
             color: "#c890a8",
           })
           .setOrigin(0.5, 0);
+
+        // Endless mode: a small "Finish ✓" HUD control that ends the run now
+        // (same Result transition the win uses, with current stats).
+        if (this.endless) {
+          this.finishBtn = this.add
+            .text(16, 40, "Finish ✓", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "15px",
+              fontStyle: "bold",
+              color: "#ffd24a",
+            })
+            .setInteractive({ useHandCursor: true });
+          this.finishBtn.on("pointerover", () => this.finishBtn.setColor("#ffffff"));
+          this.finishBtn.on("pointerout", () => this.finishBtn.setColor("#ffd24a"));
+          this.finishBtn.on("pointerdown", () => {
+            if (this.locked) return;
+            this.endGame();
+          });
+        }
 
         // Problem banner
         this.bannerLabel = this.add
@@ -1453,7 +1506,7 @@
         this.scoreText.setText("Score: " + this.score);
         this.streakText.setText("Streak: " + this.streak);
         this.stageText.setText("Stage " + this.level);
-        this.progressText.setText(this.solved + " / " + this.target);
+        this.progressText.setText(this.solved + " / " + (this.endless ? "∞" : this.target));
       };
 
       GameScene.prototype.endGame = function () {
@@ -1465,6 +1518,9 @@
             target: this.target,
             attempted: this.attempted,
             firstTry: this.firstTryCorrect,
+            tier: this.tier,
+            auto: this.auto,
+            endless: this.endless,
           });
         });
       };
@@ -1487,6 +1543,19 @@
         const firstTry = typeof d.firstTry === "number" ? d.firstTry : d.solved;
         const acc = firstTry / attempted;
         const stars = acc >= 0.85 ? 3 : acc >= 0.6 ? 2 : 1;
+        // Endless runs have no finite target; grade the adaptive win-signal
+        // against the standard goal of 10 so it stays meaningful.
+        const endless = !!d.endless;
+        const goal = endless ? 10 : d.target;
+        // Adaptive: only record a run when the level was auto-picked.
+        if (d.auto && window.NTAdaptive) {
+          window.NTAdaptive.recordRun("u2-fraction-frenzy", {
+            won: d.solved >= goal,
+            accuracy: acc,
+            min: 1,
+            max: 2,
+          });
+        }
         // High score
         let hs = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
         if (d.score > hs) {
@@ -1524,11 +1593,18 @@
           })
           .setOrigin(0.5);
         this.add
-          .text(cx, 295, "Built " + d.solved + " of " + d.target + " fractions", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "18px",
-            color: "#e7c4d4",
-          })
+          .text(
+            cx,
+            295,
+            endless
+              ? "Built " + d.solved + " fractions"
+              : "Built " + d.solved + " of " + d.target + " fractions",
+            {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "18px",
+              color: "#e7c4d4",
+            },
+          )
           .setOrigin(0.5);
         this.add
           .text(cx, 322, "Right on the first try: " + firstTry + " of " + attempted, {
@@ -1578,6 +1654,30 @@
         btn.on("pointerdown", again);
         this.input.keyboard.on("keydown-SPACE", again);
         this.input.keyboard.on("keydown-ENTER", again);
+
+        // ♾️ Keep Playing: restart the Game at the same level in endless mode
+        // (carries the auto flag so adaptive still records the endless run).
+        const keepBtn = this.add
+          .rectangle(cx, 466, 240, 48, 0x2563a8)
+          .setStrokeStyle(2, 0x7dd3fc)
+          .setInteractive({ useHandCursor: true });
+        this.add
+          .text(cx, 466, "♾️ Keep Playing", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "18px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        const keepPlaying = () => {
+          ffTier = d.tier;
+          ffEndless = true;
+          ffAuto = d.auto;
+          this.scene.start("Game");
+        };
+        keepBtn.on("pointerover", () => keepBtn.setFillStyle(0x2f74c2));
+        keepBtn.on("pointerout", () => keepBtn.setFillStyle(0x2563a8));
+        keepBtn.on("pointerdown", keepPlaying);
       };
 
       // ── Launch ──
@@ -1617,6 +1717,8 @@
     <!-- gfx-injected:end -->
     <!-- Student Passport (meta-progression layer) -->
     <script src="/assets/lesson-passport.js" defer></script>
+    <!-- Adaptive level picker (window.NTAdaptive: pickLevel / recordRun) -->
+    <script src="/assets/game-adaptive.js" defer></script>
     <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
     <script src="/assets/math-workbench-launcher.js" defer></script>
     <!-- mwb-injected:end -->

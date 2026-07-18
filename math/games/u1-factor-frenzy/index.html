@@ -39,12 +39,7 @@
         z-index: 0;
         overflow: hidden;
         pointer-events: none;
-        background: radial-gradient(
-          130% 90% at 50% 0%,
-          #134a5a 0%,
-          #0f2b3c 55%,
-          #08202c 100%
-        );
+        background: radial-gradient(130% 90% at 50% 0%, #134a5a 0%, #0f2b3c 55%, #08202c 100%);
       }
       .ff-mote {
         position: absolute;
@@ -162,6 +157,23 @@
         padding: 18px 26px;
         font-size: 1.1rem;
       }
+      .btn.keep {
+        background: #2563a8;
+        color: #fff;
+        border: 2px solid #7dd3fc;
+      }
+      .btn.keep:hover {
+        background: #2f74c2;
+      }
+      .btn.auto {
+        margin-top: 14px;
+        background: #1a3a48;
+        color: var(--gold);
+      }
+      .btn.auto:hover {
+        background: #244c5c;
+        color: #ffd98a;
+      }
       .vocab {
         display: grid;
         gap: 12px;
@@ -240,6 +252,27 @@
       .hud .pill small {
         color: var(--muted);
         font-weight: 600;
+      }
+      .hud .finish {
+        display: none;
+        font:
+          700 0.95rem "Segoe UI",
+          system-ui,
+          sans-serif;
+        cursor: pointer;
+        background: #0c2532;
+        border: 1px solid var(--gold);
+        border-radius: 999px;
+        padding: 6px 14px;
+        color: var(--gold);
+      }
+      .hud .finish:hover {
+        background: #14384a;
+        color: #ffd98a;
+      }
+      .hud .finish:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 3px;
       }
       .target {
         text-align: center;
@@ -512,15 +545,14 @@
     <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
     <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
     <!-- ghl-injected:end -->
-  
-  
+
     <!-- uifr-injected:begin -->
     <!-- BCPS Instructional Framework Rubric · TEACH support. Teacher/observer reference — NOT shown to students. Interactive practice activity (math/games/u1-factor-frenzy): supports Level 4 conditions on T2, T4 (students choose their approach + immediate no-fail feedback with retry). Full evidence: /teacher-tools/teaching-evidence/ · docs/uifr-teach-l4.md. -->
     <!-- uifr-injected:end -->
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2" />
+    <!-- nsr-injected:end -->
+  </head>
   <body>
     <div id="ff-bg" aria-hidden="true"></div>
     <div id="ff-sr" role="status" aria-live="polite"></div>
@@ -543,43 +575,30 @@
         <p class="sub">You can change this any time by playing again.</p>
         <div class="card">
           <div class="levels" id="level-list"></div>
+          <button class="btn auto" id="level-auto">✨ Auto — picks your level</button>
         </div>
       </section>
 
       <!-- PLAY -->
       <section id="screen-play" class="screen" aria-labelledby="ph">
-        <h1 id="ph" style="position: absolute; left: -9999px">
-          Factor Frenzy play
-        </h1>
+        <h1 id="ph" style="position: absolute; left: -9999px">Factor Frenzy play</h1>
         <div class="hud">
           <span class="pill"
-            ><small>Round</small> <span id="hud-round">1</span>/<span
-              id="hud-total"
-              >4</span
-            ></span
+            ><small>Round</small> <span id="hud-round">1</span>/<span id="hud-total">4</span></span
           >
-          <span class="pill"
-            ><small>Score</small> <span id="hud-score">0</span></span
-          >
+          <span class="pill"><small>Score</small> <span id="hud-score">0</span></span>
+          <button class="finish" id="hud-finish">Finish ✓</button>
         </div>
         <div class="card">
           <div class="target">
-            <div class="nums">
-              Build the prime factorization of <span id="t-n">12</span>
-            </div>
+            <div class="nums">Build the prime factorization of <span id="t-n">12</span></div>
             <div class="prompt">
-              Tap a number. Split it into factors, or mark it prime — until
-              every branch is a prime.
+              Tap a number. Split it into factors, or mark it prime — until every branch is a prime.
             </div>
           </div>
 
           <div class="tree-wrap">
-            <div
-              class="tree"
-              id="tree"
-              role="group"
-              aria-label="Factor tree"
-            ></div>
+            <div class="tree" id="tree" role="group" aria-label="Factor tree"></div>
           </div>
 
           <div
@@ -591,12 +610,7 @@
 
           <div class="readout"><span class="r" id="ro-fact">12 = …</span></div>
 
-          <div
-            class="feedback"
-            id="feedback"
-            role="status"
-            aria-live="assertive"
-          ></div>
+          <div class="feedback" id="feedback" role="status" aria-live="assertive"></div>
           <p class="hint" id="hint"></p>
         </div>
       </section>
@@ -607,18 +621,14 @@
         <div class="card">
           <div class="result-stars" id="r-stars">★★★</div>
           <div class="result-stat"><span>Score</span><b id="r-score">0</b></div>
-          <div class="result-stat">
-            <span>Correct steps</span><b id="r-correct">0</b>
-          </div>
-          <div class="result-stat">
-            <span>Numbers factored</span><b id="r-rounds">0</b>
-          </div>
+          <div class="result-stat"><span>Correct steps</span><b id="r-correct">0</b></div>
+          <div class="result-stat"><span>Numbers factored</span><b id="r-rounds">0</b></div>
           <div class="result-stat" id="r-high-row" style="display: none">
             <span>★ New high score!</span><b id="r-high">0</b>
           </div>
           <div class="row">
             <button class="btn big" id="r-again">Play again</button>
-            
+            <button class="btn big keep" id="r-keep">♾️ Keep Playing</button>
           </div>
         </div>
       </section>
@@ -630,8 +640,7 @@
         var host = document.getElementById("ff-bg");
         if (!host) return;
         var reduce =
-          window.matchMedia &&
-          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         var n = reduce ? 10 : 26;
         for (var i = 0; i < n; i++) {
           var d = document.createElement("div");
@@ -718,9 +727,7 @@
         init() {
           if (!this.ctx)
             try {
-              this.ctx = new (
-                window.AudioContext || window.webkitAudioContext
-              )();
+              this.ctx = new (window.AudioContext || window.webkitAudioContext)();
             } catch (e) {}
         },
         play(t, f, d, v = 0.2) {
@@ -841,11 +848,19 @@
           .sort((a, b) => a - b);
       }
 
+      // ✨ Auto / ♾️ Endless flags. Auto ONLY picks the starting level
+      // (NTAdaptive) before startGame; difficulty NEVER changes mid-run.
+      // Endless replays reuse the SAME level.
+      let ffAuto = false;
+      let ffEndless = false;
+
       // ── State ──
       const S = {
         level: 1,
         score: 0,
         round: 0,
+        completed: 0,
+        over: false,
         mistakes: 0,
         correctActions: 0,
         totalActions: 0,
@@ -863,9 +878,7 @@
         }
       };
       function show(screen) {
-        document
-          .querySelectorAll(".screen")
-          .forEach((s) => s.classList.remove("on"));
+        document.querySelectorAll(".screen").forEach((s) => s.classList.remove("on"));
         $("screen-" + screen).classList.add("on");
       }
       function flash(msg, cls) {
@@ -898,22 +911,20 @@
         $("level-list")
           .querySelectorAll("[data-level]")
           .forEach((el) =>
-            el.addEventListener("click", () =>
-              startGame(Number(el.dataset.level)),
-            ),
+            el.addEventListener("click", () => {
+              ffAuto = false;
+              ffEndless = false;
+              startGame(Number(el.dataset.level));
+            }),
           );
       }
 
       // ── Game flow ──
       function buildRounds(level) {
-        const picks = shuffle((POOLS[level] || POOLS[1]).slice()).slice(
-          0,
-          ROUNDS,
-        );
+        const picks = shuffle((POOLS[level] || POOLS[1]).slice()).slice(0, ROUNDS);
         // Level 3 guarantees an "already prime" round so marking the root
         // prime is sometimes the right first move.
-        if (level === 3 && !picks.some(isPrime))
-          picks[ROUNDS - 1] = shuffle(L3_PRIMES.slice())[0];
+        if (level === 3 && !picks.some(isPrime)) picks[ROUNDS - 1] = shuffle(L3_PRIMES.slice())[0];
         return shuffle(picks);
       }
 
@@ -922,16 +933,20 @@
         S.level = level;
         S.score = 0;
         S.round = 0;
+        S.completed = 0;
+        S.over = false;
         S.mistakes = 0;
         S.correctActions = 0;
         S.totalActions = 0;
         S.puzzles = buildRounds(level).map(makePuzzle);
-        $("hud-total").textContent = ROUNDS;
+        $("hud-total").textContent = ffEndless ? "∞" : ROUNDS;
+        $("hud-finish").style.display = ffEndless ? "inline-block" : "none";
         show("play");
         loadRound(0);
       }
 
       function loadRound(i) {
+        if (S.over) return;
         S.round = i;
         S.cur = S.puzzles[i];
         S.selected = null;
@@ -968,10 +983,7 @@
         } else {
           b.classList.add("composite");
           if (S.selected === node.id) b.classList.add("sel");
-          b.setAttribute(
-            "aria-label",
-            node.value + ", tap to split it or mark it prime",
-          );
+          b.setAttribute("aria-label", node.value + ", tap to split it or mark it prime");
           b.addEventListener("click", () => selectNode(node.id));
         }
         wrap.appendChild(b);
@@ -1051,8 +1063,7 @@
           S.mistakes++;
           SFX.bad();
           flash(
-            node.value +
-              " can still be split — it has factors other than 1 and itself.",
+            node.value + " can still be split — it has factors other than 1 and itself.",
             "bad",
           );
         }
@@ -1080,16 +1091,15 @@
 
       function updateReadout() {
         const lp = lockedPrimes();
-        $("ro-fact").textContent =
-          S.cur.n + " = " + (lp.length ? lp.join(" × ") : "…");
+        $("ro-fact").textContent = S.cur.n + " = " + (lp.length ? lp.join(" × ") : "…");
       }
 
       function roundWon() {
+        S.completed++;
         S.score += 25; // forge bonus
         $("hud-score").textContent = S.score;
         SFX.win();
-        $("ro-fact").textContent =
-          S.cur.n + " = " + exponentForm(lockedPrimes());
+        $("ro-fact").textContent = S.cur.n + " = " + exponentForm(lockedPrimes());
         flash(S.cur.n + " = " + exponentForm(lockedPrimes()) + " ⚒️", "good");
         // Real celebration burst (GameFX exposes burst(cx,cy) — there is no
         // successBurst(), so the old call was a silent no-op).
@@ -1097,16 +1107,25 @@
           try {
             GameFX.burst(window.innerWidth / 2, window.innerHeight / 3);
           } catch (e) {}
-        if (S.round + 1 >= ROUNDS) setTimeout(() => endGame(), 1500);
+        if (ffEndless) {
+          // Endless: never auto-end — top up the puzzle queue at the SAME level
+          // and keep going. Stats stay cumulative across rounds. Finish ✓ ends
+          // the run whenever tapped.
+          if (S.round + 1 >= S.puzzles.length)
+            S.puzzles = S.puzzles.concat(buildRounds(S.level).map(makePuzzle));
+          setTimeout(() => loadRound(S.round + 1), 1500);
+        } else if (S.round + 1 >= ROUNDS) setTimeout(() => endGame(), 1500);
         else setTimeout(() => loadRound(S.round + 1), 1500);
       }
 
       function endGame() {
+        if (S.over) return; // latch: Finish ✓ + a pending round timeout can't double-end
+        S.over = true;
         const stars = S.mistakes === 0 ? 3 : S.mistakes <= 2 ? 2 : 1;
         $("r-stars").textContent = "★".repeat(stars) + "☆".repeat(3 - stars);
         $("r-score").textContent = S.score;
         $("r-correct").textContent = S.correctActions;
-        $("r-rounds").textContent = ROUNDS;
+        $("r-rounds").textContent = S.completed;
         let high = 0;
         try {
           high = Number(localStorage.getItem(LS_KEY) || 0);
@@ -1126,15 +1145,24 @@
               stars: stars,
               problemsCorrect: S.correctActions,
               problemsAttempted: S.totalActions,
-              percent: S.totalActions
-                ? Math.round((S.correctActions / S.totalActions) * 100)
-                : 100,
+              percent: S.totalActions ? Math.round((S.correctActions / S.totalActions) * 100) : 100,
               standard: STANDARD,
             });
         } catch (e) {}
-        srSay(
-          "All numbers factored. Score " + S.score + ", " + stars + " stars.",
-        );
+        srSay("All numbers factored. Score " + S.score + ", " + stars + " stars.");
+        // Adaptive: only record a run when the level was auto-picked. This game
+        // has no lose state, so "won" = finished a full-length run (>= ROUNDS
+        // numbers factored).
+        if (ffAuto && window.NTAdaptive) {
+          try {
+            window.NTAdaptive.recordRun("u1-factor-frenzy", {
+              won: S.completed >= ROUNDS,
+              accuracy: S.totalActions ? S.correctActions / S.totalActions : 1,
+              min: 1,
+              max: 3,
+            });
+          } catch (e) {}
+        }
         show("result");
       }
 
@@ -1147,6 +1175,25 @@
         renderLevels();
         show("level");
       });
+      // ✨ Auto: the shared adaptive helper picks a whole level from past runs.
+      // Geometry-safe — it only chooses the level BEFORE the run starts.
+      $("level-auto").addEventListener("click", () => {
+        const lv = window.NTAdaptive ? window.NTAdaptive.pickLevel("u1-factor-frenzy", 1, 3) : 1;
+        ffAuto = true;
+        ffEndless = false;
+        startGame(lv);
+      });
+      // ♾️ Keep Playing: restart at the SAME level in endless mode (ffAuto
+      // carries so adaptive still records the endless run).
+      $("r-keep").addEventListener("click", () => {
+        ffEndless = true;
+        startGame(S.level);
+      });
+      // Finish ✓ (endless HUD): end the run now with current cumulative stats.
+      $("hud-finish").addEventListener("click", () => {
+        if (S.over) return;
+        endGame();
+      });
 
       renderVocab();
     </script>
@@ -1157,6 +1204,8 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
+    <!-- Adaptive level picker (window.NTAdaptive: pickLevel / recordRun) -->
+    <script src="/assets/game-adaptive.js" defer></script>
     <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
     <script src="/assets/math-workbench-launcher.js" defer></script>
     <!-- mwb-injected:end -->
@@ -1183,8 +1232,8 @@
     <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
     <script src="/assets/canvas-bridge.js" defer></script>
     <!-- canvas-bridge-injected:end -->
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
-  <!-- nsr-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+    <!-- nsr-injected:end -->
   </body>
 </html>

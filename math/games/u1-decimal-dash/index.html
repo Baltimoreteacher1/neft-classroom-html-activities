@@ -471,6 +471,8 @@
       let ddVocabSeen = false;
       // Chosen difficulty: 1 = Level 1 (support), 2 = Level 2 (enrichment).
       let ddMode = 1;
+      let ddAuto = false; // true when the ✨ Auto button picked the level (NTAdaptive)
+      let ddEndless = false; // true for endless (no auto-end) runs
 
       // Key words for THIS game's topic (decimals on a number line). Each has a
       // student-facing (Level 1) definition and an emoji so a visual always
@@ -812,6 +814,8 @@
             .setOrigin(0.5);
           const pick = () => {
             ddMode = mode;
+            ddAuto = false;
+            ddEndless = false;
             SFX.init();
             SFX.select();
             JUICE.audio.unlock();
@@ -845,7 +849,34 @@
         this.input.keyboard.on("keydown-ENTER", pick1);
         this.input.keyboard.on("keydown-SPACE", pick1);
 
-        srSay("Choose your level. Press 1 for Level 1 support, or 2 for Level 2 enrichment.");
+        // ✨ Auto: let the shared adaptive helper pick a level from past runs.
+        // Geometry-safe — it only chooses the level BEFORE the run starts.
+        const pickAuto = () => {
+          ddMode = window.NTAdaptive ? window.NTAdaptive.pickLevel("u1-decimal-dash", 1, 2) : 1;
+          ddAuto = true;
+          ddEndless = false;
+          SFX.init();
+          SFX.select();
+          JUICE.audio.unlock();
+          this.scene.start("Game");
+        };
+        const autoBtn = this.add
+          .text(cx, 550, "✨ Auto — picks your level", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "16px",
+            fontStyle: "bold",
+            color: "#f0b44a",
+          })
+          .setOrigin(0.5)
+          .setInteractive({ useHandCursor: true });
+        autoBtn.on("pointerover", () => autoBtn.setColor("#ffffff"));
+        autoBtn.on("pointerout", () => autoBtn.setColor("#f0b44a"));
+        autoBtn.on("pointerdown", pickAuto);
+        this.input.keyboard.on("keydown-A", pickAuto);
+
+        srSay(
+          "Choose your level. Press 1 for Level 1 support, or 2 for Level 2 enrichment, or press A for Auto.",
+        );
         this.cameras.main.fadeIn(300);
       };
 
@@ -861,11 +892,14 @@
           window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
         );
         this.mode = ddMode; // 1 = Level 1 (support), 2 = Level 2 (enrichment)
+        this.auto = ddAuto; // carried into Result for adaptive recordRun
+        this.endless = ddEndless; // endless runs never auto-end
         this.score = 0;
         this.streak = 0;
         this.level = 1; // internal difficulty ramp WITHIN the chosen mode
         this.solved = 0; // problems answered correctly
-        this.target = 10; // win condition: solve this many problems
+        this.attempts = 0; // graded problem resolutions (for accuracy)
+        this.target = this.endless ? Infinity : 10; // win: solve this many problems
         this.problem = null;
         this.locked = false;
         this.dragging = false;
@@ -903,11 +937,30 @@
           })
           .setOrigin(1, 0);
         this.progressText = this.add
-          .text(W / 2, 12, "0 / " + this.target, {
+          .text(W / 2, 12, "0 / " + (this.endless ? "∞" : this.target), {
             ...hudStyle,
             color: "#bfe0ff",
           })
           .setOrigin(0.5, 0);
+
+        // Endless mode: a small "Finish ✓" HUD control that ends the run now
+        // (same Result transition the win uses, with current stats).
+        if (this.endless) {
+          this.finishBtn = this.add
+            .text(16, 40, "Finish ✓", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "15px",
+              fontStyle: "bold",
+              color: "#f0b44a",
+            })
+            .setInteractive({ useHandCursor: true });
+          this.finishBtn.on("pointerover", () => this.finishBtn.setColor("#ffffff"));
+          this.finishBtn.on("pointerout", () => this.finishBtn.setColor("#f0b44a"));
+          this.finishBtn.on("pointerdown", () => {
+            if (this.locked) return;
+            this.endGame();
+          });
+        }
 
         // Problem banner
         this.bannerLabel = this.add
@@ -1337,6 +1390,9 @@
       };
 
       GameScene.prototype.afterAttempt = function (correct) {
+        // One graded resolution per problem (a first-miss retry returns before
+        // reaching here), so this is the accuracy denominator.
+        this.attempts++;
         // Internal difficulty ramp every 2 correct (caps at 5). In enrichment
         // this introduces hundredths + ordering; in support it nudges ranges
         // only. The "Step up!" cue shows in enrichment, where it changes feel.
@@ -1397,7 +1453,7 @@
         this.streakText.setText("Streak: " + this.streak);
         // levelText shows the CHOSEN level (Support / Enrichment); it is set
         // once in create() and stays fixed for the game.
-        this.progressText.setText(this.solved + " / " + this.target);
+        this.progressText.setText(this.solved + " / " + (this.endless ? "∞" : this.target));
       };
 
       GameScene.prototype.endGame = function () {
@@ -1407,6 +1463,10 @@
             score: this.score,
             solved: this.solved,
             target: this.target,
+            level: this.mode,
+            auto: this.auto,
+            endless: this.endless,
+            accuracy: this.attempts ? this.solved / this.attempts : 1,
           });
         });
       };
@@ -1427,8 +1487,21 @@
           window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
         );
         this.add.rectangle(cx, H / 2, W, H, 0x102338);
+        // Endless runs have no finite target; grade against the standard goal
+        // of 10 so stars and the adaptive win-signal stay meaningful.
+        const endless = !!d.endless;
+        const goal = endless ? 10 : d.target;
         // Stars from progress.
-        const stars = d.solved >= d.target ? 3 : d.solved >= d.target * 0.6 ? 2 : 1;
+        const stars = d.solved >= goal ? 3 : d.solved >= goal * 0.6 ? 2 : 1;
+        // Adaptive: only record a run when the level was auto-picked.
+        if (d.auto && window.NTAdaptive) {
+          window.NTAdaptive.recordRun("u1-decimal-dash", {
+            won: d.solved >= goal,
+            accuracy: d.accuracy != null ? d.accuracy : 1,
+            min: 1,
+            max: 2,
+          });
+        }
         // High score
         let hs = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
         const isNewHigh = d.score > hs;
@@ -1467,11 +1540,18 @@
           })
           .setOrigin(0.5);
         this.add
-          .text(cx, 295, "Placed " + d.solved + " of " + d.target + " problems", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "18px",
-            color: "#bfe0ff",
-          })
+          .text(
+            cx,
+            295,
+            endless
+              ? "Placed " + d.solved + " markers (Level " + d.level + ")"
+              : "Placed " + d.solved + " of " + d.target + " problems",
+            {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "18px",
+              color: "#bfe0ff",
+            },
+          )
           .setOrigin(0.5);
         this.add
           .text(cx, 325, "High Score: " + hs, {
@@ -1503,7 +1583,7 @@
               stars: stars,
               standard: STANDARD,
               problemsCorrect: d.solved,
-              problemsAttempted: d.target,
+              problemsAttempted: endless ? d.solved : d.target,
             });
         } catch (e) {}
         srSay("You won! Final score " + d.score + ", " + stars + " stars.");
@@ -1526,6 +1606,30 @@
         btn.on("pointerdown", again);
         this.input.keyboard.on("keydown-SPACE", again);
         this.input.keyboard.on("keydown-ENTER", again);
+
+        // ♾️ Keep Playing: restart the Game at the same level in endless mode
+        // (carries the auto flag so adaptive still records the endless run).
+        const keepBtn = this.add
+          .rectangle(cx, 476, 240, 48, 0x2563a8)
+          .setStrokeStyle(2, 0x7dd3fc)
+          .setInteractive({ useHandCursor: true });
+        this.add
+          .text(cx, 476, "♾️ Keep Playing", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "18px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        const keepPlaying = () => {
+          ddMode = d.level;
+          ddEndless = true;
+          ddAuto = d.auto;
+          this.scene.start("Game");
+        };
+        keepBtn.on("pointerover", () => keepBtn.setFillStyle(0x2f74c2));
+        keepBtn.on("pointerout", () => keepBtn.setFillStyle(0x2563a8));
+        keepBtn.on("pointerdown", keepPlaying);
 
         this.cameras.main.fadeIn(400);
       };
@@ -1591,6 +1695,8 @@
       });
     </script>
     <!-- ghl-injected:end -->
+    <!-- Adaptive level picker (window.NTAdaptive: pickLevel / recordRun) -->
+    <script src="/assets/game-adaptive.js" defer></script>
     <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
     <script src="/assets/canvas-bridge.js" defer></script>
     <!-- canvas-bridge-injected:end -->

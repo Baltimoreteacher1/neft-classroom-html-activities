@@ -478,6 +478,8 @@
       // Cross-scene choices (persist across "Play Again", reset only on reload).
       let eeTrack = 1; // 1 = support, 2 = enrichment
       let eeVocabSeen = false;
+      let eeAuto = false; // true when the ✨ Auto button picked the level (NTAdaptive)
+      let eeEndless = false; // true for endless (no auto-end) runs
       const TRACK_LABEL = { 1: "Level 1 · Support", 2: "Level 2 · Enrichment" };
 
       // ── Vocab gate terms (6.AT.5–4) ─────────────────────────────────────
@@ -723,6 +725,35 @@
         this.input.keyboard.on("keydown-ENTER", () => this.choose(this.sel));
         this.input.keyboard.on("keydown-SPACE", () => this.choose(this.sel));
 
+        // ✨ Auto: let the shared adaptive helper pick a level from past runs.
+        // Geometry-safe — it only chooses the level BEFORE the run starts, and
+        // still routes through the vocab gate on the first play.
+        const pickAuto = () => {
+          SFX.init();
+          JUICE.audio.unlock();
+          SFX.place();
+          const lv = window.NTAdaptive
+            ? window.NTAdaptive.pickLevel("u6-expression-express", 1, 2)
+            : 1;
+          eeTrack = lv;
+          eeAuto = true;
+          eeEndless = false;
+          this.scene.start(eeVocabSeen ? "Game" : "Vocab");
+        };
+        const autoBtn = this.add
+          .text(cx, 502, "✨ Auto — picks your level", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "16px",
+            fontStyle: "bold",
+            color: "#ffd24a",
+          })
+          .setOrigin(0.5)
+          .setInteractive({ useHandCursor: true });
+        autoBtn.on("pointerover", () => autoBtn.setColor("#ffffff"));
+        autoBtn.on("pointerout", () => autoBtn.setColor("#ffd24a"));
+        autoBtn.on("pointerdown", pickAuto);
+        this.input.keyboard.on("keydown-A", pickAuto);
+
         const back = this.add
           .text(cx, 540, "← Back", {
             fontFamily: "Segoe UI, sans-serif",
@@ -750,6 +781,8 @@
       };
       LevelScene.prototype.choose = function (i) {
         eeTrack = i + 1;
+        eeAuto = false;
+        eeEndless = false;
         SFX.init();
         JUICE.audio.unlock();
         SFX.place();
@@ -895,7 +928,10 @@
         this.score = 0;
         this.streak = 0;
         this.solved = 0;
-        this.target = 10; // win when this many expressions are assembled
+        this.auto = eeAuto; // carried into Result for adaptive recordRun
+        this.endless = eeEndless; // endless runs never auto-end
+        this.attemptsAll = 0; // cumulative graded lock-ins (for accuracy)
+        this.target = this.endless ? Infinity : 10; // win when this many expressions are assembled
         this.track = eeTrack;
         this.problem = null;
         this.locked = false;
@@ -929,11 +965,30 @@
           })
           .setOrigin(1, 0);
         this.progressText = this.add
-          .text(W / 2, 12, "0 / " + this.target, {
+          .text(W / 2, 12, "0 / " + (this.endless ? "∞" : this.target), {
             ...hudStyle,
             color: "#e0d0f0",
           })
           .setOrigin(0.5, 0);
+
+        // Endless mode: a small "Finish ✓" HUD control that ends the run now
+        // (same Result transition the win uses, with current stats).
+        if (this.endless) {
+          this.finishBtn = this.add
+            .text(16, 40, "Finish ✓", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "15px",
+              fontStyle: "bold",
+              color: "#ffd24a",
+            })
+            .setInteractive({ useHandCursor: true });
+          this.finishBtn.on("pointerover", () => this.finishBtn.setColor("#ffffff"));
+          this.finishBtn.on("pointerout", () => this.finishBtn.setColor("#ffd24a"));
+          this.finishBtn.on("pointerdown", () => {
+            if (this.locked) return;
+            this.endGame();
+          });
+        }
 
         // Target banner — the value to build toward.
         this.add
@@ -1465,6 +1520,7 @@
           return;
         }
         this.locked = true;
+        this.attemptsAll++;
         const p = this.problem;
         const correct = st.value === p.goal;
         if (correct) {
@@ -1617,7 +1673,7 @@
       GameScene.prototype.updateHUD = function () {
         this.scoreText.setText("Score: " + this.score);
         this.streakText.setText("Streak: " + this.streak);
-        this.progressText.setText(this.solved + " / " + this.target);
+        this.progressText.setText(this.solved + " / " + (this.endless ? "∞" : this.target));
       };
 
       GameScene.prototype.endGame = function () {
@@ -1627,6 +1683,10 @@
             score: this.score,
             solved: this.solved,
             target: this.target,
+            track: this.track,
+            auto: this.auto,
+            endless: this.endless,
+            accuracy: this.attemptsAll ? this.solved / this.attemptsAll : 1,
           });
         });
       };
@@ -1644,7 +1704,20 @@
         const d = this.data2;
         const cx = W / 2;
         this.add.rectangle(cx, H / 2, W, H, 0x221636);
-        const stars = d.solved >= d.target ? 3 : d.solved >= d.target * 0.6 ? 2 : 1;
+        // Endless runs have no finite target; grade against the standard goal
+        // of 10 so stars and the adaptive win-signal stay meaningful.
+        const endless = !!d.endless;
+        const goal = endless ? 10 : d.target;
+        const stars = d.solved >= goal ? 3 : d.solved >= goal * 0.6 ? 2 : 1;
+        // Adaptive: only record a run when the level was auto-picked.
+        if (d.auto && window.NTAdaptive) {
+          window.NTAdaptive.recordRun("u6-expression-express", {
+            won: d.solved >= goal,
+            accuracy: d.accuracy != null ? d.accuracy : 1,
+            min: 1,
+            max: 2,
+          });
+        }
         let hs = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
         if (d.score > hs) {
           hs = d.score;
@@ -1678,11 +1751,18 @@
           })
           .setOrigin(0.5);
         this.add
-          .text(cx, 295, "Built " + d.solved + " of " + d.target + " expressions", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "18px",
-            color: "#e0d0f0",
-          })
+          .text(
+            cx,
+            295,
+            endless
+              ? "Built " + d.solved + " expressions"
+              : "Built " + d.solved + " of " + d.target + " expressions",
+            {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "18px",
+              color: "#e0d0f0",
+            },
+          )
           .setOrigin(0.5);
         this.add
           .text(cx, 325, "High Score: " + hs, {
@@ -1719,7 +1799,12 @@
             color: "#ffffff",
           })
           .setOrigin(0.5);
-        const again = () => this.scene.start("Game");
+        // PLAY AGAIN always starts a fresh finite run at the same level, so
+        // clear endless (module flags persist across scene restarts).
+        const again = () => {
+          eeEndless = false;
+          this.scene.start("Game");
+        };
         btn.on("pointerover", () => btn.setFillStyle(0x9050c8));
         btn.on("pointerout", () => btn.setFillStyle(0x7a3fb0));
         btn.on("pointerdown", again);
@@ -1737,6 +1822,30 @@
         change.on("pointerover", () => change.setColor("#ffd24a"));
         change.on("pointerout", () => change.setColor("#c8a0e0"));
         change.on("pointerdown", () => this.scene.start("Level"));
+
+        // ♾️ Keep Playing: restart the Game at the same level in endless mode
+        // (carries the auto flag so adaptive still records the endless run).
+        const keepBtn = this.add
+          .rectangle(cx, 520, 240, 48, 0x2563a8)
+          .setStrokeStyle(2, 0x7dd3fc)
+          .setInteractive({ useHandCursor: true });
+        this.add
+          .text(cx, 520, "♾️ Keep Playing", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "18px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        const keepPlaying = () => {
+          eeTrack = d.track;
+          eeEndless = true;
+          eeAuto = d.auto;
+          this.scene.start("Game");
+        };
+        keepBtn.on("pointerover", () => keepBtn.setFillStyle(0x2f74c2));
+        keepBtn.on("pointerout", () => keepBtn.setFillStyle(0x2563a8));
+        keepBtn.on("pointerdown", keepPlaying);
       };
 
       // ── Launch ──
@@ -1775,6 +1884,8 @@
     <!-- gfx-injected:end -->
     <!-- Student Passport (meta-progression) -->
     <script src="/assets/lesson-passport.js" defer></script>
+    <!-- Adaptive level picker (window.NTAdaptive: pickLevel / recordRun) -->
+    <script src="/assets/game-adaptive.js" defer></script>
     <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
     <script src="/assets/math-workbench-launcher.js" defer></script>
     <!-- mwb-injected:end -->

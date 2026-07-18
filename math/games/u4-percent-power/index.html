@@ -45,12 +45,7 @@
         z-index: 0;
         overflow: hidden;
         pointer-events: none;
-        background: radial-gradient(
-          130% 90% at 50% 0%,
-          #1e3a22 0%,
-          #122413 55%,
-          #0a160b 100%
-        );
+        background: radial-gradient(130% 90% at 50% 0%, #1e3a22 0%, #122413 55%, #0a160b 100%);
       }
       #pp-bg-layer {
         position: absolute;
@@ -128,15 +123,14 @@
     <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
     <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
     <!-- ghl-injected:end -->
-  
-  
+
     <!-- uifr-injected:begin -->
     <!-- BCPS Instructional Framework Rubric · TEACH support. Teacher/observer reference — NOT shown to students. Interactive practice activity (math/games/u4-percent-power): supports Level 4 conditions on T2, T4 (students choose their approach + immediate no-fail feedback with retry). Full evidence: /teacher-tools/teaching-evidence/ · docs/uifr-teach-l4.md. -->
     <!-- uifr-injected:end -->
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2" />
+    <!-- nsr-injected:end -->
+  </head>
   <body>
     <!-- Decorative animated spark-field (behind the Phaser canvas). -->
     <div id="pp-bg" data-parallax aria-hidden="true">
@@ -148,9 +142,7 @@
       // Decorative spark-field builder (reduced-motion safe; pointer-neutral).
       (function () {
         "use strict";
-        var reduceMQ =
-          window.matchMedia &&
-          window.matchMedia("(prefers-reduced-motion: reduce)");
+        var reduceMQ = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)");
         var layer = document.getElementById("pp-bg-layer");
         if (!layer) return;
         function rnd(a, b) {
@@ -178,11 +170,7 @@
           var dx = e.clientX / (window.innerWidth || 1) - 0.5;
           var dy = e.clientY / (window.innerHeight || 1) - 0.5;
           layer.style.transform =
-            "translate3d(" +
-            (dx * 20).toFixed(2) +
-            "px," +
-            (dy * 12).toFixed(2) +
-            "px,0)";
+            "translate3d(" + (dx * 20).toFixed(2) + "px," + (dy * 12).toFixed(2) + "px,0)";
         }
         function attach() {
           if (driver || (reduceMQ && reduceMQ.matches)) return;
@@ -202,8 +190,7 @@
             if (reduceMQ.matches) detach();
             else attach();
           };
-          if (reduceMQ.addEventListener)
-            reduceMQ.addEventListener("change", onChange);
+          if (reduceMQ.addEventListener) reduceMQ.addEventListener("change", onChange);
           else if (reduceMQ.addListener) reduceMQ.addListener(onChange);
         }
         var rt;
@@ -244,11 +231,7 @@
       }
       function xToPct(x) {
         // Snap to 5% increments; targets are always 5% multiples → exact match.
-        return Phaser.Math.Clamp(
-          Math.round(((x - BAR_X0) / BAR_W) * 20) * 5,
-          0,
-          100,
-        );
+        return Phaser.Math.Clamp(Math.round(((x - BAR_X0) / BAR_W) * 20) * 5, 0, 100);
       }
 
       // ── Audio (tiny WebAudio blips; gracefully no-op without a context) ──
@@ -257,9 +240,7 @@
         init() {
           if (!this.ctx)
             try {
-              this.ctx = new (
-                window.AudioContext || window.webkitAudioContext
-              )();
+              this.ctx = new (window.AudioContext || window.webkitAudioContext)();
             } catch (e) {}
         },
         play(t, f, d, v = 0.18) {
@@ -350,14 +331,7 @@
           kind = r < 0.4 ? "part" : r < 0.7 ? "decimal" : "percent";
         } else {
           const r = Math.random();
-          kind =
-            r < 0.3
-              ? "part"
-              : r < 0.5
-                ? "decimal"
-                : r < 0.75
-                  ? "percent"
-                  : "sale";
+          kind = r < 0.3 ? "part" : r < 0.5 ? "decimal" : r < 0.75 ? "percent" : "sale";
         }
         if (kind === "decimal")
           return {
@@ -450,6 +424,12 @@
       // shown BEFORE the first round). Shown by default; skippable only on a
       // replay within the same page session. ──
       let ppVocabSeen = false;
+      // ── Run setup (this game has no level-select scene; difficulty ramps
+      // in-run from a STARTING level). ✨ Auto picks that starting level from
+      // past runs; ♾️ Endless removes the 10-problem cap. ──
+      let ppLevel = 1; // starting level for the next run (1..8)
+      let ppAuto = false; // true when ✨ Auto picked the starting level (NTAdaptive)
+      let ppEndless = false; // true for endless (no auto-end) runs
 
       // Key words for THIS game's topic (percent of a number, sale price,
       // percent↔decimal). Each has a student-facing (Level 1) definition and an
@@ -540,16 +520,11 @@
           )
           .setOrigin(0.5);
         this.add
-          .text(
-            cx,
-            295,
-            "Drag or ← → / A·D by 5% · 6.AT.4 · Lessons 4.1–4.5",
-            {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "14px",
-              color: "#7fae8c",
-            },
-          )
+          .text(cx, 295, "Drag or ← → / A·D by 5% · 6.AT.4 · Lessons 4.1–4.5", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "14px",
+            color: "#7fae8c",
+          })
           .setOrigin(0.5);
 
         const hs = localStorage.getItem(LS_KEY);
@@ -585,6 +560,10 @@
         const start = () => {
           SFX.init();
           SFX.coin();
+          // Manual START = a fresh Level-1 run (adaptive off).
+          ppLevel = 1;
+          ppAuto = false;
+          ppEndless = false;
           // Show the vocab gate before the first round; on a replay (already
           // seen this session) jump straight to the game.
           this.scene.start(ppVocabSeen ? "Game" : "Vocab");
@@ -594,6 +573,33 @@
         btn.on("pointerdown", start);
         this.input.keyboard.on("keydown-SPACE", start);
         this.input.keyboard.on("keydown-ENTER", start);
+
+        // ✨ Auto: let the shared adaptive helper pick a STARTING level from
+        // past runs. Geometry-safe — this game makes one problem at a time, so
+        // Auto only chooses where the difficulty ramp begins (1..8).
+        const pickAuto = () => {
+          SFX.init();
+          SFX.coin();
+          const lv = window.NTAdaptive ? window.NTAdaptive.pickLevel("u4-percent-power", 1, 8) : 1;
+          ppLevel = lv;
+          ppAuto = true;
+          ppEndless = false;
+          this.scene.start(ppVocabSeen ? "Game" : "Vocab");
+        };
+        const autoBtn = this.add
+          .text(cx, 460, "✨ Auto — picks your start level", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "16px",
+            fontStyle: "bold",
+            color: "#ffd24a",
+          })
+          .setOrigin(0.5)
+          .setInteractive({ useHandCursor: true });
+        autoBtn.on("pointerover", () => autoBtn.setColor("#ffffff"));
+        autoBtn.on("pointerout", () => autoBtn.setColor("#ffd24a"));
+        autoBtn.on("pointerdown", pickAuto);
+        this.input.keyboard.on("keydown-A", pickAuto);
+
         srSay("Percent Power Bar Model Builder. Press Start to play.");
       };
 
@@ -623,9 +629,7 @@
           .setOrigin(0.5);
 
         // Card surface.
-        this.add
-          .rectangle(cx, 320, 560, 320, 0x0c2532)
-          .setStrokeStyle(2, 0x2d874b);
+        this.add.rectangle(cx, 320, 560, 320, 0x0c2532).setStrokeStyle(2, 0x2d874b);
 
         this.stepText = this.add
           .text(cx, 185, "", {
@@ -635,9 +639,7 @@
             color: "#7fae8c",
           })
           .setOrigin(0.5);
-        this.emojiText = this.add
-          .text(cx, 250, "", { fontSize: "76px" })
-          .setOrigin(0.5);
+        this.emojiText = this.add.text(cx, 250, "", { fontSize: "76px" }).setOrigin(0.5);
         this.termText = this.add
           .text(cx, 330, "", {
             fontFamily: "Segoe UI, sans-serif",
@@ -702,9 +704,7 @@
       VocabScene.prototype.renderCard = function () {
         const v = PP_VOCAB[this.idx];
         const last = this.idx === PP_VOCAB.length - 1;
-        this.stepText.setText(
-          "Key word " + (this.idx + 1) + " of " + PP_VOCAB.length,
-        );
+        this.stepText.setText("Key word " + (this.idx + 1) + " of " + PP_VOCAB.length);
         this.emojiText.setText(v.emoji);
         this.termText.setText(v.term);
         this.defText.setText(v.def);
@@ -739,14 +739,17 @@
 
       GameScene.prototype.init = function () {
         this.reduceMotion = !!(
-          window.matchMedia &&
-          window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
         );
         this.score = 0;
         this.streak = 0;
-        this.level = 1;
+        this.level = ppLevel; // starting level (Auto may pick 1..8)
+        this.startLevel = ppLevel; // ramp baseline for this run
+        this.auto = ppAuto; // carried into Result for adaptive recordRun
+        this.endless = ppEndless; // endless runs never auto-end
+        this.attempts = 0; // graded lock-ins (accuracy denominator)
         this.solved = 0; // problems answered correctly
-        this.target = 10; // win condition: solve this many problems
+        this.target = this.endless ? Infinity : 10; // win: solve this many problems
         this.problem = null;
         this.locked = false;
         this.dragging = false;
@@ -779,14 +782,36 @@
           .text(W - 16, 12, "Streak: 0", { ...hudStyle, color: "#ffd24a" })
           .setOrigin(1, 0);
         this.levelText = this.add
-          .text(W - 16, 36, "Level 1", { ...hudStyle, color: "#bfe0c8" })
+          .text(W - 16, 36, "Level " + this.level, {
+            ...hudStyle,
+            color: "#bfe0c8",
+          })
           .setOrigin(1, 0);
         this.progressText = this.add
-          .text(W / 2, 12, "0 / " + this.target, {
+          .text(W / 2, 12, "0 / " + (this.endless ? "∞" : this.target), {
             ...hudStyle,
             color: "#bfe0c8",
           })
           .setOrigin(0.5, 0);
+
+        // Endless mode: a small "Finish ✓" HUD control that ends the run now
+        // (same Result transition the win uses, with current stats).
+        if (this.endless) {
+          this.finishBtn = this.add
+            .text(16, 60, "Finish ✓", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "15px",
+              fontStyle: "bold",
+              color: "#ffd24a",
+            })
+            .setInteractive({ useHandCursor: true });
+          this.finishBtn.on("pointerover", () => this.finishBtn.setColor("#ffffff"));
+          this.finishBtn.on("pointerout", () => this.finishBtn.setColor("#ffd24a"));
+          this.finishBtn.on("pointerdown", () => {
+            if (this.locked) return;
+            this.endGame();
+          });
+        }
 
         // Problem banner
         this.bannerLabel = this.add
@@ -862,13 +887,9 @@
           .setOrigin(0, 0.5)
           .setStrokeStyle(2, 0x2d874b);
         for (let i = 1; i < 10; i++) {
-          this.add
-            .rectangle(pctToX(i * 10), BAR_Y, 2, BAR_H, 0x1f4a2c)
-            .setOrigin(0.5);
+          this.add.rectangle(pctToX(i * 10), BAR_Y, 2, BAR_H, 0x1f4a2c).setOrigin(0.5);
         }
-        this.fill = this.add
-          .rectangle(BAR_X0, BAR_Y, BAR_W / 2, BAR_H, 0x2d874b)
-          .setOrigin(0, 0.5);
+        this.fill = this.add.rectangle(BAR_X0, BAR_Y, BAR_W / 2, BAR_H, 0x2d874b).setOrigin(0, 0.5);
         this.add
           .text(BAR_X0, BAR_Y + BAR_H / 2 + 12, "0", {
             fontFamily: "Segoe UI, sans-serif",
@@ -906,12 +927,8 @@
             color: "#ffffff",
           })
           .setOrigin(0.5);
-        this.lockBtn.on("pointerover", () =>
-          this.lockBtn.setFillStyle(0x36a35b),
-        );
-        this.lockBtn.on("pointerout", () =>
-          this.lockBtn.setFillStyle(0x2d874b),
-        );
+        this.lockBtn.on("pointerover", () => this.lockBtn.setFillStyle(0x36a35b));
+        this.lockBtn.on("pointerout", () => this.lockBtn.setFillStyle(0x2d874b));
         this.lockBtn.on("pointerdown", () => this.lockIn());
 
         // Hint
@@ -986,12 +1003,8 @@
         // unlocks, so students compute the part instead of hunting for it.
         if (this.problem && this.scaffoldTier >= 2) {
           const part = (this.problem.whole * this.markerPct) / 100;
-          const partStr = Number.isInteger(part)
-            ? String(part)
-            : part.toFixed(1);
-          this.partReadout.setText(
-            "= " + partStr + " of " + this.problem.whole,
-          );
+          const partStr = Number.isInteger(part) ? String(part) : part.toFixed(1);
+          this.partReadout.setText("= " + partStr + " of " + this.problem.whole);
         } else {
           this.partReadout.setText("");
         }
@@ -1012,8 +1025,7 @@
         this.scaffoldTier = tier;
         this.usedHelp = true;
         const hint = scaffoldHint(this.problem);
-        const note =
-          tier >= 2 ? "  ·  Now watch the part update as you move." : "";
+        const note = tier >= 2 ? "  ·  Now watch the part update as you move." : "";
         this.hintText.setText("💡 " + hint + note).setAlpha(1);
         // Tier 2 switches on the live part readout (refresh to populate it).
         if (tier >= 2) this.setMarker(this.markerPct);
@@ -1046,6 +1058,7 @@
       GameScene.prototype.lockIn = function () {
         if (this.locked || !this.problem) return;
         this.locked = true;
+        this.attempts += 1;
         const correct = this.markerPct === this.problem.targetPct;
         if (correct) {
           SFX.good();
@@ -1059,9 +1072,7 @@
             this.streak = 0;
             this.score += 10;
             this.flash(W / 2, 200, "You worked it out! ✓", "#8fd6a0");
-            this.feedback
-              .setText("Nice — you got it. " + this.problem.why)
-              .setAlpha(1);
+            this.feedback.setText("Nice — you got it. " + this.problem.why).setAlpha(1);
             srSay("Correct with help. " + this.problem.why);
           } else {
             // Clean first-try solve with no help — full points + streak bonus.
@@ -1082,9 +1093,7 @@
           if (this.wrongThisProblem >= 3) {
             // No-fail last resort: after 3 tries, teach the answer and move on.
             this.fill.setFillStyle(0xd4952a);
-            this.feedback
-              .setText("Here's how it works — " + this.problem.why)
-              .setAlpha(1);
+            this.feedback.setText("Here's how it works — " + this.problem.why).setAlpha(1);
             srSay("The answer. " + this.problem.why);
             const ghost = this.add
               .rectangle(
@@ -1125,8 +1134,8 @@
       };
 
       GameScene.prototype.afterAttempt = function (correct) {
-        // Level up every 3 correct.
-        const newLevel = Math.min(8, 1 + Math.floor(this.solved / 3));
+        // Level up every 3 correct, ramping from this run's starting level.
+        const newLevel = Math.min(8, this.startLevel + Math.floor(this.solved / 3));
         if (newLevel > this.level) {
           this.level = newLevel;
           SFX.level();
@@ -1168,7 +1177,7 @@
         this.scoreText.setText("Score: " + this.score);
         this.streakText.setText("Streak: " + this.streak);
         this.levelText.setText("Level " + this.level);
-        this.progressText.setText(this.solved + " / " + this.target);
+        this.progressText.setText(this.solved + " / " + (this.endless ? "∞" : this.target));
       };
 
       // Reached only by solving all target problems (mistakes never end the
@@ -1180,6 +1189,10 @@
             score: this.score,
             solved: this.solved,
             target: this.target,
+            level: this.level,
+            auto: this.auto,
+            endless: this.endless,
+            accuracy: this.attempts ? this.solved / this.attempts : 1,
           });
         });
       };
@@ -1197,8 +1210,21 @@
         const d = this.data2;
         const cx = W / 2;
         this.add.rectangle(cx, H / 2, W, H, 0x122413);
-        // The game only ends when every problem is solved — always a full win.
-        const stars = 3;
+        // Endless runs (or an early Finish) have no finite target; grade against
+        // the standard goal of 10 so stars and the adaptive win-signal stay
+        // meaningful. A normal run still ends only at solved == target → 3 stars.
+        const endless = !!d.endless;
+        const goal = endless ? 10 : d.target;
+        const stars = d.solved >= goal ? 3 : d.solved >= goal * 0.6 ? 2 : 1;
+        // Adaptive: only record a run when the level was auto-picked.
+        if (d.auto && window.NTAdaptive) {
+          window.NTAdaptive.recordRun("u4-percent-power", {
+            won: d.solved >= goal,
+            accuracy: d.accuracy != null ? d.accuracy : 1,
+            min: 1,
+            max: 8,
+          });
+        }
         // High score
         let hs = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
         if (d.score > hs) {
@@ -1239,7 +1265,9 @@
           .text(
             cx,
             295,
-            "Solved " + d.solved + " of " + d.target + " problems",
+            endless
+              ? "Solved " + d.solved + " problems"
+              : "Solved " + d.solved + " of " + d.target + " problems",
             {
               fontFamily: "Segoe UI, sans-serif",
               fontSize: "18px",
@@ -1281,12 +1309,42 @@
             color: "#ffffff",
           })
           .setOrigin(0.5);
-        const again = () => this.scene.start("Game");
+        const again = () => {
+          // Fresh Level-1 run (adaptive off), same as today's replay.
+          ppLevel = 1;
+          ppAuto = false;
+          ppEndless = false;
+          this.scene.start("Game");
+        };
         btn.on("pointerover", () => btn.setFillStyle(0x36a35b));
         btn.on("pointerout", () => btn.setFillStyle(0x2d874b));
         btn.on("pointerdown", again);
         this.input.keyboard.on("keydown-SPACE", again);
         this.input.keyboard.on("keydown-ENTER", again);
+
+        // ♾️ Keep Playing: restart the Game at the SAME level in endless mode
+        // (carries the auto flag so adaptive still records the endless run).
+        const keepBtn = this.add
+          .rectangle(cx, 466, 240, 48, 0x2563a8)
+          .setStrokeStyle(2, 0x7dd3fc)
+          .setInteractive({ useHandCursor: true });
+        this.add
+          .text(cx, 466, "♾️ Keep Playing", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "18px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        const keepPlaying = () => {
+          ppLevel = d.level;
+          ppEndless = true;
+          ppAuto = d.auto;
+          this.scene.start("Game");
+        };
+        keepBtn.on("pointerover", () => keepBtn.setFillStyle(0x2f74c2));
+        keepBtn.on("pointerout", () => keepBtn.setFillStyle(0x2563a8));
+        keepBtn.on("pointerdown", keepPlaying);
       };
 
       // ── Launch ──
@@ -1347,11 +1405,13 @@
       });
     </script>
     <!-- ghl-injected:end -->
+    <!-- Adaptive level picker (window.NTAdaptive: pickLevel / recordRun) -->
+    <script src="/assets/game-adaptive.js" defer></script>
     <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
     <script src="/assets/canvas-bridge.js" defer></script>
     <!-- canvas-bridge-injected:end -->
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
-  <!-- nsr-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+    <!-- nsr-injected:end -->
   </body>
 </html>
