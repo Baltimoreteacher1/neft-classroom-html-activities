@@ -44,19 +44,23 @@ export function chooseAdaptivePath(state = {}, variant = "group1") {
 const PROOF_PATHS = {
   model: {
     label: "Model it",
+    icon: "📊",
     prompt:
       "Draw, diagram, table, number line, or build a concrete model. Label what each part shows.",
   },
   explain: {
     label: "Explain it",
+    icon: "💬",
     prompt: "Use precise words: “I know ___ because ___, so ___.”",
   },
   test: {
     label: "Test it",
+    icon: "🧪",
     prompt: "Try an example, check every step, and say what the result proves.",
   },
   teach: {
     label: "Teach it",
+    icon: "🎓",
     prompt:
       "Prepare a 30-second explanation — for a partner or out loud to yourself — with one question to check understanding.",
   },
@@ -384,7 +388,7 @@ function createConsensusGuide(variant, sample) {
   let openId = null;
   const renderPanel = (path) => {
     panel.innerHTML =
-      `<div class="sg-guide-title">${esc(path.label)}</div>` +
+      `<div class="sg-guide-title"><span aria-hidden="true">${path.icon || ""}</span> ${esc(path.label)}</div>` +
       (sample
         ? `<p class="sg-guide-anchor">For the problem above: <i>${esc(sample)}</i></p>`
         : "") +
@@ -394,7 +398,7 @@ function createConsensusGuide(variant, sample) {
     const chip = el(
       "button",
       "sg-guide-chip",
-      `${esc(path.label)} <span aria-hidden="true">?</span>`,
+      `<span aria-hidden="true">${path.icon || ""}</span> ${esc(path.label)} <span aria-hidden="true">?</span>`,
     );
     chip.type = "button";
     chip.setAttribute("aria-expanded", "false");
@@ -469,7 +473,11 @@ export function createConsensusLab(config, variant, state, store = null) {
     row.appendChild(el("b", null, `Voice ${voice}`));
     const casters = new Map();
     proofEntries(variant).forEach((path) => {
-      const button = el("button", "sg-vote-button", esc(path.label));
+      const button = el(
+        "button",
+        "sg-vote-button",
+        `<span aria-hidden="true">${path.icon || ""}</span> ${esc(path.label)}`,
+      );
       button.type = "button";
       button.setAttribute("aria-label", `Voice ${voice} · ${path.label}`);
       const cast = (persist) => {
