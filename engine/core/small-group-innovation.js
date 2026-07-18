@@ -1,3 +1,4 @@
+import { selectedTalk } from "./small-group-engagement.js";
 import { celebrate, el, esc, sectionHeading } from "./small-group-ui.js";
 
 const PATHS = {
@@ -349,7 +350,7 @@ const PROOF_GUIDANCE = {
 // Tap-to-open method guide: a row of chips (one per proof method) that reveal a
 // shared panel with "Do this" steps + sentence frames for the tapped method.
 // One panel open at a time; tapping the open chip again closes it.
-function createConsensusGuide(config, variant) {
+function createConsensusGuide(variant, sample) {
   const wrap = el("div", "sg-guide");
   wrap.appendChild(
     el(
@@ -358,12 +359,6 @@ function createConsensusGuide(config, variant) {
       "Not sure what a choice means? Tap it for how-to steps and sentence frames.",
     ),
   );
-  const practice = config.practice || {};
-  const sample =
-    practice.extending?.[0]?.stem ||
-    practice.onLevel?.[0]?.stem ||
-    practice.approaching?.[0]?.stem ||
-    "";
   const chipRow = el("div", "sg-guide-chips");
   const panel = el("div", "sg-guide-panel");
   panel.hidden = true;
@@ -377,7 +372,9 @@ function createConsensusGuide(config, variant) {
     const list = (items) => items.map((item) => `<li>${esc(item)}</li>`).join("");
     panel.innerHTML =
       `<div class="sg-guide-title">${esc(path.label)}</div>` +
-      (sample ? `<p class="sg-guide-anchor">For a problem like: <i>${esc(sample)}</i></p>` : "") +
+      (sample
+        ? `<p class="sg-guide-anchor">For the problem above: <i>${esc(sample)}</i></p>`
+        : "") +
       `<div class="sg-guide-cols">` +
       `<div><b>Do this</b><ul>${list(steps)}</ul></div>` +
       `<div><b>Sentence frames</b><ul>${list(frames)}</ul></div>` +
@@ -411,11 +408,32 @@ export function createConsensusLab(config, variant, state, store = null) {
   const fieldset = el("fieldset", "sg-consensus sg-innovation");
   fieldset.setAttribute("aria-label", "Team consensus protocol");
   fieldset.appendChild(el("legend", "sg-innovation-title", "Team consensus protocol"));
+  // Anchor the vote to a real problem — the same Turn & Talk question this
+  // section is built around — so "which proof is best" is a concrete decision,
+  // not an abstract one. Falls back to the toughest practice problem, then a
+  // generic prompt, so the protocol still works for lessons without a talk.
+  const practice = config.practice || {};
+  const problem =
+    selectedTalk(config, variant)?.question ||
+    practice.extending?.[0]?.stem ||
+    practice.onLevel?.[0]?.stem ||
+    practice.approaching?.[0]?.stem ||
+    "";
+  if (problem) {
+    const problemCard = el("div", "sg-consensus-problem");
+    problemCard.appendChild(
+      el("span", "sg-consensus-problem-label", "The team is settling this problem"),
+    );
+    problemCard.appendChild(el("p", "sg-consensus-problem-stem", esc(problem)));
+    fieldset.appendChild(problemCard);
+  }
   fieldset.appendChild(
     el(
       "p",
       "sg-innovation-lede",
-      "With a group: pass the device so each voice chooses privately — the distribution stays hidden until all three respond. On your own: cast all three votes as different points of view.",
+      problem
+        ? "Each voice picks the single best way to prove the answer to the problem above. With a group, pass the device so each choice stays private until all three respond; on your own, cast all three votes as different points of view."
+        : "With a group: pass the device so each voice chooses privately — the distribution stays hidden until all three respond. On your own: cast all three votes as different points of view.",
     ),
   );
   const voteBoard = el("div", "sg-vote-board");
@@ -491,7 +509,7 @@ export function createConsensusLab(config, variant, state, store = null) {
     store?.set("revisionReason", state.revisionReason);
   };
   revision.appendChild(reasonLabel);
-  fieldset.append(createConsensusGuide(config, variant), voteBoard, reveal, revision);
+  fieldset.append(createConsensusGuide(variant, problem), voteBoard, reveal, revision);
   return fieldset;
 }
 
