@@ -75,6 +75,7 @@
   };
 
   let uploadedExtract = null; // { text, name, kind }
+  let lessonSegments = null; // [{label, text}] when an upload holds 2+ lessons
   let lastPlan = null;
   let reshuffleNonce = 0; // bumped by "Reshuffle numbers" to vary the seeded problem numbers
 
@@ -130,6 +131,12 @@
     return jszipPromise;
   }
 
+  // Zero-width and BOM chars (common in slide/notes exports) glue words and
+  // corrupt titles ("Median​" → "Median"), so strip them everywhere.
+  function stripZeroWidth(s) {
+    return s.replace(/[​-‏‪-‮⁠﻿]/g, "");
+  }
+
   // One text line per paragraph. Runs inside a paragraph are joined with NO
   // separator — PowerPoint splits runs mid-word on any formatting change, so
   // joining with spaces breaks words apart ("Objec tive"). <a:br/> is a real
@@ -138,8 +145,7 @@
     const paras = [];
     for (const p of xml.split(/<\/a:p>|<a:br\s*\/>/)) {
       const runs = [...p.matchAll(/<a:t>([\s\S]*?)<\/a:t>/g)].map((m) => decodeXml(m[1]));
-      const text = runs
-        .join("")
+      const text = stripZeroWidth(runs.join(""))
         .replace(/[ \t]+/g, " ")
         .trim();
       if (text) paras.push(text);
@@ -332,11 +338,99 @@
     }
     const out = results.filter((r) => r.txt).map((r) => `--- Page ${r.p} ---\n${r.txt}`);
     const text = out.join("\n\n");
-    if (!text)
-      throw new Error(
-        "No selectable text found in the PDF (it may be scanned images). Paste the text instead.",
+    if (!text) {
+      // No embedded text layer → a scanned/image PDF. Offer on-device OCR
+      // (nothing leaves the browser) before giving up.
+      const pages = Math.min(doc.numPages, OCR_MAX_PAGES);
+      const sure = window.confirm(
+        `This PDF has no selectable text — it looks scanned. Read it with on-device text recognition (OCR)? ` +
+          `This stays in your browser (nothing is uploaded) and reads the first ${pages} page${pages === 1 ? "" : "s"}. It can take a minute the first time.`,
       );
+      if (!sure) {
+        throw new Error(
+          "No selectable text found in the PDF (it may be scanned images). Paste the text instead, or re-run and allow OCR.",
+        );
+      }
+      const ocr = await ocrPdf(doc, pages);
+      if (!ocr.trim()) {
+        throw new Error(
+          "OCR could not read any text from this PDF. Try a clearer scan, or paste the text instead.",
+        );
+      }
+      return {
+        text: ocr,
+        summary: `${pages} page${pages === 1 ? "" : "s"} read by OCR${doc.numPages > pages ? ` (of ${doc.numPages})` : ""}`,
+      };
+    }
     return { text, summary: `${doc.numPages} page${doc.numPages === 1 ? "" : "s"}` };
+  }
+
+  /* ---------- On-device OCR (scanned PDFs) ---------- */
+  // Tesseract.js + its core wasm + English data are ~6 MB, so they load only
+  // when a scanned PDF is actually accepted for OCR — never with the page.
+  const OCR_MAX_PAGES = 15;
+  const TESS_DIR = "/teacher-tools/lesson-plan-generator/vendor/tesseract/";
+  let tesseractPromise = null;
+  function ensureTesseract() {
+    if (typeof window.Tesseract !== "undefined") return Promise.resolve(window.Tesseract);
+    if (!tesseractPromise) {
+      tesseractPromise = new Promise((resolve, reject) => {
+        const s = document.createElement("script");
+        s.src = TESS_DIR + "tesseract.min.js";
+        s.onload = () => resolve(window.Tesseract);
+        s.onerror = () => {
+          tesseractPromise = null;
+          reject(new Error("The OCR library could not load. Paste the text instead."));
+        };
+        document.head.appendChild(s);
+      });
+    }
+    return tesseractPromise;
+  }
+
+  async function renderPdfPageToCanvas(page, scale) {
+    const viewport = page.getViewport({ scale });
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.floor(viewport.width);
+    canvas.height = Math.floor(viewport.height);
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    await page.render({ canvasContext: ctx, viewport }).promise;
+    return canvas;
+  }
+
+  async function ocrPdf(doc, pages) {
+    const Tesseract = await ensureTesseract();
+    els.fileStatus.textContent = "Loading the text-recognition engine…";
+    // OEM 1 = LSTM only (matches the -lstm core we vendored). All paths are
+    // local so the worker never reaches out to a CDN.
+    const worker = await Tesseract.createWorker("eng", 1, {
+      workerPath: TESS_DIR + "worker.min.js",
+      corePath: TESS_DIR,
+      langPath: TESS_DIR,
+      gzip: true,
+    });
+    try {
+      const parts = [];
+      for (let p = 1; p <= pages; p++) {
+        els.fileStatus.textContent = `Recognizing text on page ${p} of ${pages}… (OCR)`;
+        const page = await doc.getPage(p);
+        const canvas = await renderPdfPageToCanvas(page, 2);
+        const {
+          data: { text },
+        } = await worker.recognize(canvas);
+        const clean = text
+          .replace(/[ \t]+/g, " ")
+          .replace(/\n{3,}/g, "\n\n")
+          .trim();
+        if (clean) parts.push(`--- Page ${p} (OCR) ---\n${clean}`);
+        // Free the canvas bitmap between pages.
+        canvas.width = canvas.height = 0;
+        await yieldCpu();
+      }
+      return parts.join("\n\n");
+    } finally {
+      await worker.terminate();
+    }
   }
 
   function safeChar(code) {
@@ -365,6 +459,57 @@
         requestAnimationFrame(resolve);
       }
     });
+
+  /* ---------- Multi-lesson detection ----------
+     A publisher deck or packet can hold several lessons. Detect strong
+     boundary headers ("Lesson 2", "Day 3", "Part II") and, when 2+ are
+     found, return labeled segments so the teacher can scope the plan to one
+     lesson instead of blending them all. */
+  function detectLessonSegments(text) {
+    const lines = text.split("\n");
+    const boundaries = [];
+    const BOUND =
+      /^(?:---\s*Slide \d+ · )?\s*(lesson|day|part|topic|module|unit)\s+(\d{1,2}|[ivx]{1,4})\b[:.\s-]*(.*)$/i;
+    let lastKey = null;
+    for (let i = 0; i < lines.length; i++) {
+      const m = lines[i].match(BOUND);
+      if (!m) continue;
+      const kind = m[1][0].toUpperCase() + m[1].slice(1).toLowerCase();
+      const key = `${m[1].toLowerCase()}${m[2].toLowerCase()}`;
+      // A pptx slide title and its on-slide echo produce two boundary lines
+      // for the SAME lesson (the "--- Slide 5 · Lesson 2 ---" marker and the
+      // "Lesson 2: Unit Rate" text). Collapse consecutive same-lesson hits,
+      // keeping the first (the marker) so the segment includes it.
+      if (key === lastKey) continue;
+      lastKey = key;
+      const tail = (m[3] || "").replace(/---\s*$/, "").trim();
+      boundaries.push({
+        line: i,
+        label: `${kind} ${m[2].toUpperCase()}${tail ? " — " + tail : ""}`,
+      });
+    }
+    // Need at least two DISTINCT boundaries to call it multi-lesson.
+    if (boundaries.length < 2) return null;
+    const segs = [];
+    for (let b = 0; b < boundaries.length; b++) {
+      const start = boundaries[b].line;
+      const end = b + 1 < boundaries.length ? boundaries[b + 1].line : lines.length;
+      const body = lines.slice(start, end).join("\n").trim();
+      if (body) segs.push({ label: boundaries[b].label, text: body });
+    }
+    return segs.length >= 2 ? segs : null;
+  }
+
+  function renderLessonPicker(segs) {
+    if (!segs) return "";
+    const opts = [`<option value="-1">All ${segs.length} lessons (blend)</option>`]
+      .concat(segs.map((s, i) => `<option value="${i}">${esc(s.label)}</option>`))
+      .join("");
+    return (
+      `<div class="lesson-picker"><label for="lessonPick"><strong>This file has ${segs.length} lessons.</strong> Build a plan for:</label> ` +
+      `<select id="lessonPick" class="lesson-pick-select">${opts}</select></div>`
+    );
+  }
 
   function setFileReading(reading) {
     if (reading) {
@@ -431,6 +576,9 @@
         );
       }
       uploadedExtract = { text: out.text, name, kind };
+      // Multi-lesson detection: a deck/packet with 2+ "Lesson N" boundaries
+      // gets a picker so the plan is scoped to one lesson, not blended.
+      lessonSegments = detectLessonSegments(out.text);
       els.fileStatus.className = "file-status ok";
       const detail = [out.summary, `${out.text.length.toLocaleString()} characters`]
         .filter(Boolean)
@@ -440,10 +588,21 @@
         `<span class="extract-ok">Extracted ✓ (${detail})</span> — review the text below, then click Generate.` +
         (ignoredCount
           ? `<br><span class="muted small">Only one file at a time — ${ignoredCount} other dropped file${ignoredCount === 1 ? " was" : "s were"} ignored.</span>`
-          : "");
+          : "") +
+        renderLessonPicker(lessonSegments);
       els.sourceText.value = out.text;
+      const picker = $("lessonPick");
+      if (picker) {
+        picker.addEventListener("change", () => {
+          const idx = parseInt(picker.value, 10);
+          const scoped = idx >= 0 && lessonSegments[idx] ? lessonSegments[idx].text : out.text;
+          els.sourceText.value = scoped;
+          uploadedExtract = { text: scoped, name, kind };
+        });
+      }
     } catch (e) {
       uploadedExtract = null;
+      lessonSegments = null;
       els.fileStatus.className = "file-status bad";
       els.fileStatus.innerHTML = `<strong>Could not read this file:</strong> ${esc(e.message)}`;
     } finally {
@@ -476,6 +635,23 @@
     const slideTitles = [...text.matchAll(/^--- Slide \d+ · (.+?) ---$/gm)]
       .map((m) => m[1].trim())
       .filter(Boolean);
+
+    // Parse the pptx marker stream into per-slide blocks so a slide can be
+    // read as a unit (its title + its body lines) — used for vocab-slide
+    // harvesting and multi-lesson detection.
+    const slideBlocks = [];
+    {
+      let cur = null;
+      for (const rawLine of text.split("\n")) {
+        const mk = rawLine.match(/^--- Slide (\d+)(?: · (.+?))? ---$/);
+        if (mk) {
+          cur = { n: +mk[1], title: (mk[2] || "").trim(), body: [] };
+          slideBlocks.push(cur);
+        } else if (cur && rawLine.trim()) {
+          cur.body.push(rawLine.trim());
+        }
+      }
+    }
 
     const lines = text
       .split("\n")
@@ -561,19 +737,68 @@
     if (!map.materials.length) map.materials = grabList("resources");
     map.vocabulary = grabList("vocabulary|vocab|key terms?");
 
+    // Vocab-slide harvesting: a slide TITLED "Vocabulary" / "Key Terms" /
+    // "Word Wall" whose terms are bullets (no "Vocabulary:" label) would
+    // otherwise be missed. Take its short body lines as terms.
+    if (!map.vocabulary.length && slideBlocks.length) {
+      const vocabSlide = slideBlocks.find((b) =>
+        /^(?:vocabulary|vocab|key\s*(?:terms?|vocabulary)|word\s*(?:wall|bank)|academic\s*(?:vocabulary|language)|terms?)\b/i.test(
+          b.title,
+        ),
+      );
+      if (vocabSlide) {
+        const terms = [];
+        for (const rawItem of vocabSlide.body) {
+          // A term line is short; keep the word, drop any inline definition
+          // after a dash/colon so the term column stays clean.
+          const item = rawItem.replace(/^[•\-*•\d.\s]+/, "").trim();
+          const term = item.split(/\s*[:–—-]\s|\s{2,}/)[0].trim();
+          if (term && term.length <= 40 && !/^(vocabulary|key terms?|word wall)$/i.test(term)) {
+            terms.push(term);
+          }
+        }
+        // Split any remaining comma lists (a single "ratio, rate, per" bullet).
+        map.vocabulary = terms
+          .flatMap((t) => splitList(t))
+          .filter(Boolean)
+          .slice(0, 12);
+      }
+    }
+
     map.phases.mini = grab(lbl("mini[\\- ]?lesson|modeling|direct instruction|i do")) || null;
 
+    // A line that is a section label, session marker, objective, or pure
+    // number is never the lesson title.
+    const notATitle = (t) =>
+      !t ||
+      t.length > 120 ||
+      /^(?:agenda|do now|warm[\s-]?up|objectives?|learning (?:target|goal)s?|standards?|vocabulary|essential question|exit (?:ticket|slip)|homework|review|today|welcome|bell\s?ringer|announcements?|guided practice|independent practice|closure|session\s+\d+|slide\s+\d+|name|date|table of contents)\b[\s:.!#]*$/i.test(
+        t,
+      ) ||
+      /^(?:i can|swbat|students will|we will)\b/i.test(t) ||
+      /^[\d\s.:,-]+$/.test(t);
+
     if (!map.title && slideTitles.length) {
-      // First slide title that names the lesson (skip boilerplate slides).
-      // Ranked ABOVE the loose topic/unit grab: "Understanding Unit Rate"
-      // must win over the "\bunit\b …" pattern capturing just "Rate".
-      const boilerplate =
-        /^(?:agenda|do now|warm[\s-]?up|objectives?|standards?|vocabulary|exit (?:ticket|slip)|homework|review|today|welcome|bell\s?ringer|announcements?|guided practice|independent practice|closure)\b[\s:.!]*$/i;
-      map.title = slideTitles.find((t) => t.length <= 120 && !boilerplate.test(t)) || null;
+      // Title placeholder on a slide (skip boilerplate slides). Ranked ABOVE
+      // the loose topic/unit grab: "Understanding Unit Rate" must win over the
+      // "\bunit\b …" pattern capturing just "Rate".
+      map.title = slideTitles.find((t) => !notATitle(t)) || null;
+    }
+    if (!map.title && slideBlocks.length) {
+      // Editable publisher decks (Reveal, etc.) use plain text boxes, not
+      // title placeholders — the lesson name is the first real line of slide
+      // 1. Scan the first couple of slides for the first title-like line.
+      for (const b of slideBlocks.slice(0, 2)) {
+        const cand = [b.title].concat(b.body).find((t) => !notATitle(t));
+        if (cand) {
+          map.title = cand;
+          break;
+        }
+      }
     }
     if (!map.title) map.title = grab(/\b(?:lesson on|topic|unit|teaching)\s*[:\-]?\s*(.+)/i);
     if (!map.title) {
-      const firstSeg = segments.find((s) => !/^---/.test(s) && s.length <= 120);
+      const firstSeg = segments.find((s) => !/^---/.test(s) && !notATitle(s));
       if (firstSeg) {
         const afterColon = firstSeg.match(/^[^:]{0,40}:\s*(.+)/);
         map.title = (afterColon ? afterColon[1] : firstSeg).trim();
@@ -690,6 +915,25 @@
       "Questions + answer key + reflection + tomorrow's move.",
     );
     add("Printable student version", true, "Answer-free student version included in the DOCX.");
+    add(
+      "Pacing fits the lesson length",
+      !!(plan.timing && plan.timing.totalMinutes) && !!plan.timing.doNowClock,
+      `Phase clock times sum to the ${plan.timing ? plan.timing.totalMinutes : "?"}-minute block.`,
+    );
+    if (plan.rubric) {
+      add(
+        "Instructional Framework (TEACH) alignment",
+        plan.rubric.rows.length === 7 && plan.rubric.rows.every((r) => r.move),
+        "All 7 TEACH indicators with lesson-specific evidence of a Level 4.",
+      );
+    }
+    if (plan.meta.spedApplied) {
+      add(
+        "SPED accommodations built in",
+        plan.differentiation.sped.length >= 2,
+        `${plan.meta.spedApplied} concrete accommodation${plan.meta.spedApplied === 1 ? "" : "s"} from the SPED note, embedded in the lesson.`,
+      );
+    }
     if (plan.meta.profileApplied) {
       add(
         "Profile-driven differentiation",
@@ -738,9 +982,23 @@
   // student handout renderer never calls this).
   const supportsList = (arr) =>
     arr && arr.length ? noteList("Student supports (teacher-facing)", arr) : "";
+  // Per-phase "evidence of a Level 4" callout tying the phase to the BCPS
+  // Instructional Framework (TEACH) rubric.
+  const rubricNote = (text) =>
+    text
+      ? `<p class="lp-rubric"><span class="lp-rubric-tag" aria-hidden="true">◆</span> ${esc(text)}</p>`
+      : "";
 
   function renderPlanHtml(plan) {
     const h = plan.header;
+    // Phase time chip = clock range · minutes ("0:06–0:21 · 15 min").
+    const t = plan.timing || {};
+    const pt = (key) => {
+      const clock = t[key + "Clock"];
+      const mins = t[key];
+      if (clock && mins) return `${clock} · ${mins}`;
+      return mins || "";
+    };
     // Optional 4th arg = a time chip shown on the section heading.
     const sec = (n, title, inner, time) =>
       `<section class="lp-block"><h2 class="lp-sec">${n} · ${esc(title)}` +
@@ -844,8 +1102,9 @@
             plan.doNow.items.map((it) => [it.level, it.q, it.a]),
           ) +
           note("Teacher move", plan.doNow.teacherMove) +
-          supportsList(plan.doNow.studentSupports),
-        plan.timing && plan.timing.doNow,
+          supportsList(plan.doNow.studentSupports) +
+          rubricNote(plan.doNow.rubricMove),
+        pt("doNow"),
       ),
     );
 
@@ -865,8 +1124,9 @@
           ul(m.worked.thinkAloud.map((t) => `“${t}”`)) +
           kv("Common mistake", m.worked.commonMistake) +
           kv("Correction", m.worked.correction) +
-          supportsList(m.studentSupports),
-        plan.timing && plan.timing.mini,
+          supportsList(m.studentSupports) +
+          rubricNote(m.rubricMove),
+        pt("mini"),
       ),
     );
 
@@ -882,8 +1142,9 @@
           note("Turn & Talk", plan.guided.turnAndTalk) +
           "<p><strong>Sentence starters:</strong></p>" +
           ul(plan.guided.sentenceStarters) +
-          supportsList(plan.guided.studentSupports),
-        plan.timing && plan.timing.guided,
+          supportsList(plan.guided.studentSupports) +
+          rubricNote(plan.guided.rubricMove),
+        pt("guided"),
       ),
     );
 
@@ -899,8 +1160,9 @@
           "<p><strong>Discussion prompts:</strong></p>" +
           ul(c.discussionPrompts) +
           kv("Written response (TWR)", c.twrWritten) +
-          supportsList(c.studentSupports),
-        plan.timing && plan.timing.collaborative,
+          supportsList(c.studentSupports) +
+          rubricNote(c.rubricMove),
+        pt("collaborative"),
       ),
     );
 
@@ -916,8 +1178,9 @@
           kv("Show your thinking", plan.independent.showThinking) +
           kv("Extension", plan.independent.extension) +
           (plan.independent.coreSet ? note("Core set", plan.independent.coreSet) : "") +
-          supportsList(plan.independent.studentSupports),
-        plan.timing && plan.timing.independent,
+          supportsList(plan.independent.studentSupports) +
+          rubricNote(plan.independent.rubricMove),
+        pt("independent"),
       ),
     );
 
@@ -936,8 +1199,9 @@
           kv("Expected response", w.expected) +
           (w.supports && w.supports.length
             ? noteList("Language & writing supports for this class", w.supports)
-            : ""),
-        plan.timing && plan.timing.writing,
+            : "") +
+          rubricNote(w.rubricMove),
+        pt("writing"),
       ),
     );
 
@@ -1005,8 +1269,9 @@
           (plan.exit.accommodations && plan.exit.accommodations.length
             ? noteList("Assessment accommodations", plan.exit.accommodations)
             : "") +
-          note("Tomorrow, based on results", plan.exit.tomorrow),
-        plan.timing && plan.timing.exit,
+          note("Tomorrow, based on results", plan.exit.tomorrow) +
+          rubricNote(plan.exit.rubricMove),
+        pt("exit"),
       ),
     );
 
@@ -1027,10 +1292,26 @@
       ),
     );
 
-    // 14 Printable student version (preview note)
+    // 14 Instructional Framework (TEACH) alignment
+    if (plan.rubric) {
+      const rb = plan.rubric;
+      rows.push(
+        sec(
+          14,
+          "Instructional Framework Alignment (TEACH)",
+          `<p class="muted small">${esc(rb.source)}. ${esc(rb.note)}</p>` +
+            tableHtml(
+              ["Indicator", "Highly Effective (4) looks like", "Evidence in this lesson"],
+              rb.rows.map((r) => [r.code + " — " + r.name, r.four, r.move]),
+            ),
+        ),
+      );
+    }
+
+    // 15 Printable student version (preview note)
     rows.push(
       sec(
-        14,
+        plan.rubric ? 15 : 14,
         "Printable Student Version",
         "<p>A clean, answer-free student handout (with response space) is added as part 2 of the downloaded Word doc — ready to print or post to Canvas.</p>" +
           "<p class='muted small'>Mirrors the Do Now, notes, practice, writing, and exit ticket above — no teacher notes or answer keys. See the <strong>Student Handout</strong> tab to preview it.</p>",
@@ -1249,6 +1530,8 @@ xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-
   .lp-flow{margin-top:8px;font-size:9.5pt;font-weight:bold;}
   .lp-time{float:right;font-size:9pt;font-weight:bold;color:#115e59;}
   .lp-note{background:#f1f5f9;border-left:3px solid #0f766e;padding:6px 10px;margin:8px 0;}
+  .lp-rubric{background:#fffbeb;border-left:3px solid #d97706;padding:6px 10px;margin:8px 0;font-size:10pt;}
+  .lp-rubric-tag{color:#b45309;font-weight:bold;}
 </style></head><body>${body}</body></html>`;
   }
 
@@ -1273,6 +1556,12 @@ xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-
     );
     const flowStr = (h.pacing || []).map(([name, t]) => `${name} ${t}`).join(" → ");
     if (flowStr) L.push(`**At a glance:** ${flowStr}`, "");
+    if (plan.timing && plan.timing.totalMinutes) {
+      const clocks = ["doNow", "mini", "guided", "collaborative", "independent", "writing", "exit"]
+        .map((key, i) => `${(h.pacing[i] || [])[0]} ${plan.timing[key + "Clock"] || ""}`.trim())
+        .join(" · ");
+      L.push(`**Pacing (${plan.timing.totalMinutes} min):** ${clocks}`, "");
+    }
     L.push("## Lesson Header");
     L.push(
       `- Standards: ${h.standards.map((s) => (s.code ? s.code + " — " : "") + (s.desc || "")).join("; ")}`,
@@ -1308,6 +1597,11 @@ xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-
     plan.exit.items.forEach((it, i) => L.push(`${i + 1}. ${it.q}  →  ${it.a}`));
     (plan.exit.accommodations || []).forEach((x) => L.push(`- (Accommodation) ${x}`));
     L.push(`- Tomorrow: ${plan.exit.tomorrow}`);
+    if (plan.rubric) {
+      L.push("", "## Instructional Framework Alignment (TEACH)");
+      L.push(`*${plan.rubric.source}*`);
+      plan.rubric.rows.forEach((r) => L.push(`- **${r.code} — ${r.name}:** ${r.move}`));
+    }
     return L.map((x) => strip(String(x))).join("\n");
   }
 
@@ -1344,6 +1638,7 @@ Mini-lesson: Model finding miles per hour from a ratio of miles to hours; think-
       els.fStandards.value = "6.AT.A.2 — unit rate";
       els.fWida.value = "Level 2 (Emerging)";
       uploadedExtract = null;
+      lessonSegments = null;
       reshuffleNonce = 0;
       els.fileStatus.className = "file-status";
       els.fileStatus.textContent = "";
@@ -1360,6 +1655,7 @@ Mini-lesson: Model finding miles per hour from a ratio of miles to hours; think-
       els.fWida.value = "";
       setDefaultDate();
       uploadedExtract = null;
+      lessonSegments = null;
       reshuffleNonce = 0;
       lastPlan = null;
       els.fileInput.value = "";
@@ -1725,6 +2021,7 @@ Mini-lesson: Model finding miles per hour from a ratio of miles to hours; think-
       els.fileStatus.innerHTML = `<span class="extract-ok">Loaded:</span> ${esc(uploadedExtract.name)}`;
     } else {
       uploadedExtract = null;
+      lessonSegments = null;
       els.fileStatus.textContent = "";
     }
 
@@ -2070,7 +2367,13 @@ Mini-lesson: Model finding miles per hour from a ratio of miles to hours; think-
     }
   }
 
-  window.__LPG__ = { buildContentMap, gatherFields, runQA, renderPlanHtml };
+  window.__LPG__ = {
+    buildContentMap,
+    gatherFields,
+    runQA,
+    renderPlanHtml,
+    detectLessonSegments,
+  };
 
   initTheme();
   setDefaultDate();

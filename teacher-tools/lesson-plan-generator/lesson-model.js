@@ -46,6 +46,134 @@
     return `How can I use ${t} to solve real problems, and how do I know my answer is reasonable?`;
   }
 
+  /* ---------- Pacing math ----------
+     Parse the length string to a target minute count, distribute it across
+     the seven phases by fixed weights, then return both minute chips and
+     clock ranges (0:00–0:06) that sum EXACTLY to the total. */
+  const PHASE_WEIGHTS = {
+    doNow: 5,
+    mini: 15,
+    guided: 10,
+    collaborative: 8,
+    independent: 12,
+    writing: 5,
+    exit: 5,
+  };
+  const PHASE_ORDER = [
+    "doNow",
+    "mini",
+    "guided",
+    "collaborative",
+    "independent",
+    "writing",
+    "exit",
+  ];
+
+  function parseMinutes(length) {
+    const s = clean(length).toLowerCase();
+    // "45-60", "45–60", "45 to 60" → upper bound (plan the fuller block).
+    const range = s.match(/(\d{2,3})\s*(?:[-–—]|to)\s*(\d{2,3})/);
+    if (range) return Math.min(120, Math.max(20, parseInt(range[2], 10)));
+    const one = s.match(/(\d{2,3})/);
+    if (one) return Math.min(120, Math.max(20, parseInt(one[1], 10)));
+    if (/double|block/.test(s)) return 90;
+    return 60; // sensible default for a standard period
+  }
+
+  function fmtClock(mins) {
+    const h = Math.floor(mins / 60);
+    const m = mins % 60;
+    return `${h}:${String(m).padStart(2, "0")}`;
+  }
+
+  /* Map free-text SPED / IEP accommodation notes to concrete, lesson-
+     embedded moves. Each entry: [matcher, support written for THIS plan].
+     Keeps the teacher's raw note too, so nothing is lost. */
+  const SPED_RULES = [
+    [
+      /extended?\s*time|more time|time and a half|1\.5x/i,
+      "Extended time: independent set is the core 4 problems; the remaining problems are optional. Do not penalize unfinished work — collect thinking on the core.",
+    ],
+    [
+      /small group|separate setting|reduced distraction/i,
+      "Small-group / reduced-distraction setting: pull the flagged students to the side table for the mini-lesson and guided practice; check in every 5 minutes.",
+    ],
+    [
+      /read\s*aloud|read.?to.?text|oral|decoding/i,
+      "Read-aloud: read every problem stem aloud (or pair with the read-aloud button); students underline the question before solving.",
+    ],
+    [
+      /chunk|fewer problems|reduced (?:items|assignment|quantity)|shortened/i,
+      "Reduced quantity: assign the odd-numbered problems only; mastery is shown on 3, not 6.",
+    ],
+    [
+      /calculator|number line|manipulative|tool|chart|reference/i,
+      "Approved tools: calculator, number line, and the anchor chart stay available; their use is expected, not a reward.",
+    ],
+    [
+      /scribe|speech.?to.?text|typ(?:e|ing)|writing (?:support|difficult)/i,
+      "Scribe / speech-to-text: accept oral or typed responses for the writing task; grade the math reasoning, not handwriting.",
+    ],
+    [
+      /graphic organizer|template|sentence (?:frame|starter|stem)/i,
+      "Graphic organizer: hand out the pre-structured template for the worked example and the TWR paragraph.",
+    ],
+    [
+      /check(?:list|-ins?)|frequent (?:check|feedback)|redirect|prompt/i,
+      "Frequent check-ins: confer after every 2 problems; use a private hand-signal to redirect and to confirm they are on the right step.",
+    ],
+    [
+      /movement|break|sensory|fidget/i,
+      "Movement breaks: build in a 60-second stand-and-stretch between the mini-lesson and independent practice; a fidget tool is allowed.",
+    ],
+    [
+      /preferential|front|seating/i,
+      "Preferential seating: seat flagged students near the board and the teacher path for quick, quiet support.",
+    ],
+  ];
+
+  function spedSupportsFrom(spedNeeds) {
+    if (!spedNeeds) return [];
+    const out = [];
+    const seen = new Set();
+    for (const [re, support] of SPED_RULES) {
+      if (re.test(spedNeeds) && !seen.has(support)) {
+        seen.add(support);
+        out.push(support);
+      }
+    }
+    return out;
+  }
+
+  function buildTiming(length) {
+    const total = parseMinutes(length);
+    const weightSum = PHASE_ORDER.reduce((a, k) => a + PHASE_WEIGHTS[k], 0);
+    // Largest-remainder apportionment so the rounded minutes sum to `total`.
+    const raw = PHASE_ORDER.map((k) => (PHASE_WEIGHTS[k] / weightSum) * total);
+    const floors = raw.map((x) => Math.max(2, Math.floor(x)));
+    let deficit = total - floors.reduce((a, b) => a + b, 0);
+    const order = raw
+      .map((x, i) => ({ i, frac: x - Math.floor(x) }))
+      .sort((a, b) => b.frac - a.frac);
+    for (let j = 0; deficit > 0 && j < order.length; j++, deficit--) floors[order[j].i]++;
+    // If rounding overshot (rare, from the min-2 floor), trim the longest.
+    while (deficit < 0) {
+      let maxIdx = 0;
+      for (let i = 1; i < floors.length; i++) if (floors[i] > floors[maxIdx]) maxIdx = i;
+      floors[maxIdx]--;
+      deficit++;
+    }
+    const out = { totalMinutes: total };
+    let clock = 0;
+    PHASE_ORDER.forEach((k, i) => {
+      const m = floors[i];
+      out[k] = `${m} min`;
+      out[k + "Clock"] = `${fmtClock(clock)}–${fmtClock(clock + m)}`;
+      clock += m;
+    });
+    return out;
+  }
+
   function build(map, fields, content) {
     const inferred = [];
     const note = (k) => inferred.push(k);
@@ -104,15 +232,11 @@
           ];
 
     // ---------- Pacing (drives the at-a-glance flow + section time chips) ----------
-    const timing = {
-      doNow: "3–5 min",
-      mini: "15 min",
-      guided: "10 min",
-      collaborative: "8 min",
-      independent: "12 min",
-      writing: "5 min",
-      exit: "5 min",
-    };
+    // Scale every phase to the ACTUAL lesson length parsed from the length
+    // field (a single "60 min", a "45-60" range → upper bound, or a class-
+    // period phrase), then emit real clock ranges that sum to the total so a
+    // 60-minute block reads "0:00–0:06 · Do Now" … not a fixed 45-min stub.
+    const timing = buildTiming(length);
     const pacing = [
       ["Do Now", timing.doNow],
       ["Mini-Lesson", timing.mini],
@@ -122,6 +246,31 @@
       ["Writing", timing.writing],
       ["Exit", timing.exit],
     ];
+
+    // ---------- Profile-driven supports (window.LPGProfile strategies) ----------
+    // fields.profile = { summary, strategies, includeIds } when a class
+    // support profile is locked in; null otherwise. Strategy text is
+    // teacher-facing only — the student handout never receives it.
+    const prof = fields.profile || null;
+    const strat = (prof && prof.strategies) || {};
+    // Per-phase "who gets what" lines (student initials + modification),
+    // present only when the teacher shows IDs. Teacher-facing only.
+    const phase = strat.phase || {};
+
+    // ---------- Instructional Framework (TEACH) alignment ----------
+    // Lesson-specific "evidence of a 4" moves the renderer weaves into each
+    // phase and lists as a dedicated section. Degrades to null if the module
+    // is absent so the plan still builds.
+    const rubric =
+      typeof window !== "undefined" && window.LPGRubric
+        ? window.LPGRubric.build({
+            topic: clean(topic).toLowerCase(),
+            eq: essentialQuestion(topic, content.topicLabel),
+            vocabList: (content.vocab || []).map((v) => v.term),
+            hasProfile: !!prof,
+          })
+        : null;
+    const rmove = (rubric && rubric.phaseMoves) || {};
 
     // ---------- Section 2: Teacher Snapshot ----------
     const snapshot = {
@@ -136,16 +285,6 @@
       ],
     };
 
-    // ---------- Profile-driven supports (window.LPGProfile strategies) ----------
-    // fields.profile = { summary, strategies, includeIds } when a class
-    // support profile is locked in; null otherwise. Strategy text is
-    // teacher-facing only — the student handout never receives it.
-    const prof = fields.profile || null;
-    const strat = (prof && prof.strategies) || {};
-    // Per-phase "who gets what" lines (student initials + modification),
-    // present only when the teacher shows IDs. Teacher-facing only.
-    const phase = strat.phase || {};
-
     // ---------- Section 4: Do Now ----------
     const doNow = {
       directions:
@@ -155,6 +294,7 @@
       teacherMove:
         "Circulate; note 1–2 approaches to surface in the mini-lesson. Thumbs check before moving on.",
       studentSupports: (phase.doNow || []).slice(),
+      rubricMove: rmove.doNow || "",
     };
 
     // ---------- Section 5: Mini-Lesson ----------
@@ -171,6 +311,7 @@
       worked: content.worked,
       gradualRelease: "I do (model) → We do (guided) → You do (independent).",
       studentSupports: (phase.mini || []).slice(),
+      rubricMove: rmove.mini || "",
     };
 
     // ---------- Section 6: Guided Practice ----------
@@ -184,6 +325,7 @@
         "My answer is ___, and it makes sense because ___.",
       ],
       studentSupports: (phase.guided || []).slice(),
+      rubricMove: rmove.guided || "",
     };
 
     // ---------- Section 7: Collaborative / Partner ----------
@@ -200,6 +342,7 @@
       ],
       twrWritten: content.twr.because,
       studentSupports: (phase.collaborative || []).slice(),
+      rubricMove: rmove.collaborative || "",
     };
 
     // ---------- Section 8: Independent Practice ----------
@@ -215,11 +358,13 @@
       extension: `Challenge: create your own ${content.topicLabel} problem, solve it, and write the answer key.`,
       coreSet: strat.independentCore || "",
       studentSupports: (phase.independent || []).slice(),
+      rubricMove: rmove.independent || "",
     };
 
     // ---------- Section 9: Writing / TWR ----------
     const writing = Object.assign({}, content.twr, {
       supports: (strat.writingSupports || []).concat(phase.writing || []),
+      rubricMove: rmove.writing || "",
     });
 
     // ---------- Section 10: Differentiation ----------
@@ -250,6 +395,10 @@
         "Read directions aloud twice; students highlight the numbers and underline the question before solving.",
       );
     }
+    // Turn the teacher's free-text SPED / IEP note into concrete, lesson-
+    // embedded accommodations (extended time, read-aloud, tools, etc.).
+    const spedParsed = spedSupportsFrom(spedNeeds);
+    baseSped.push(...spedParsed);
     if (spedNeeds) {
       baseSped.push(`Teacher-noted needs for this class: ${spedNeeds}.`);
     }
@@ -304,6 +453,7 @@
       tomorrow:
         "0–1 correct → reteach in small group tomorrow. 2 correct → targeted guided practice. All correct → move on / extend.",
       accommodations: (strat.exitAccommodations || []).concat(phase.exit || []),
+      rubricMove: rmove.exit || "",
     };
 
     // ---------- Section 13: Teacher Notes / Next-Day ----------
@@ -347,12 +497,16 @@
       cfu,
       exit,
       teacherNotes,
+      rubric,
       meta: {
         domain: content.domain,
         domainLabel: content.topicLabel,
         inferred,
         generic: !!content.generic,
         profileApplied: !!prof,
+        rubricApplied: !!rubric,
+        spedApplied: spedParsed.length,
+        totalMinutes: timing.totalMinutes,
       },
     };
   }

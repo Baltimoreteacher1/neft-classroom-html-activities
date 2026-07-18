@@ -59,20 +59,35 @@
       (map.standards || []).map((s) => s.code).join(" ") + " " + (fields.standards || "");
     const m = codes.match(/6\.(RP|NS|EE|G|SP)/i);
     if (m) return m[1].toUpperCase();
-    const hay = [
-      fields.topic,
-      fields.focus,
-      fields.unit,
-      fields.standards,
-      map.title,
-      map.objective,
-      (map.vocabulary || []).join(" "),
-      map._raw,
-    ]
-      .filter(Boolean)
-      .join("  ");
-    for (const d of DOMAINS) if (KEYWORDS[d].test(hay)) return d;
-    return null;
+    // Weighted keyword scoring instead of first-match-wins. The title,
+    // objective and topic dominate; the full deck body counts only ×1 so a
+    // stray "per" deep in a 50-slide deck can't hijack the domain (RP's
+    // broad keywords used to win every upload this way).
+    const weighted = [
+      [fields.topic, 5],
+      [fields.focus, 4],
+      [fields.unit, 4],
+      [map.title, 5],
+      [map.objective, 3],
+      [(map.vocabulary || []).join(" "), 3],
+      [fields.standards, 4],
+      [map._raw, 1],
+    ].filter((x) => x[0]);
+    let best = null;
+    let bestScore = 0;
+    for (const d of DOMAINS) {
+      const re = new RegExp(KEYWORDS[d].source, "gi");
+      let score = 0;
+      for (const [t, w] of weighted) {
+        const hits = (String(t).match(re) || []).length;
+        score += hits * w;
+      }
+      if (score > bestScore) {
+        bestScore = score;
+        best = d;
+      }
+    }
+    return bestScore > 0 ? best : null;
   }
 
   /* ---------- shared vocabulary bank (term, def, spanish, frame) ---------- */

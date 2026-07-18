@@ -273,11 +273,23 @@
     );
   }
 
+  /* Per-phase "evidence of a Level 4" callout tied to the TEACH rubric. */
+  function rubricBlock(text, k, out) {
+    if (!text) return;
+    out.push(k.callout(["◆ " + text], "Instructional Framework (evidence of a 4)"));
+  }
+
   /* ---------- TEACHER-FACING body ---------- */
   function teacherBody(plan, k) {
     const h = plan.header;
     const t = plan.timing || {};
-    const at = (n) => (n ? ` · ${n}` : ""); // time chip suffix for headings
+    // Time chip suffix = clock range · minutes ("0:06–0:21 · 15 min").
+    const at = (key) => {
+      const clock = t[key + "Clock"];
+      const mins = t[key];
+      if (clock && mins) return ` · ${clock} · ${mins}`;
+      return mins ? ` · ${mins}` : "";
+    };
     const out = [];
     out.push(k.H1(h.title));
     out.push(
@@ -389,7 +401,7 @@
     );
 
     // 4 · Do Now
-    out.push(k.H2("4 · Do Now / Warm-Up" + at(t.doNow)));
+    out.push(k.H2("4 · Do Now / Warm-Up" + at("doNow")));
     out.push(k.P(plan.doNow.directions, { italics: true }));
     out.push(
       k.table(
@@ -400,9 +412,10 @@
     );
     out.push(k.runs([{ t: "Teacher move: ", b: true }, { t: plan.doNow.teacherMove }]));
     supportsBlock(plan.doNow.studentSupports, k, out);
+    rubricBlock(plan.doNow.rubricMove, k, out);
 
     // 5 · Mini-Lesson
-    out.push(k.H2("5 · Mini-Lesson / Direct Instruction" + at(t.mini)));
+    out.push(k.H2("5 · Mini-Lesson / Direct Instruction" + at("mini")));
     out.push(k.P(plan.mini.teacherExplanation));
     out.push(k.P(plan.mini.gradualRelease, { italics: true }));
     out.push(k.H3("Student notes"));
@@ -415,9 +428,10 @@
     out.push(k.runs([{ t: "Common mistake: ", b: true }, { t: plan.mini.worked.commonMistake }]));
     out.push(k.runs([{ t: "Correction: ", b: true }, { t: plan.mini.worked.correction }]));
     supportsBlock(plan.mini.studentSupports, k, out);
+    rubricBlock(plan.mini.rubricMove, k, out);
 
     // 6 · Guided
-    out.push(k.H2("6 · Guided Practice" + at(t.guided)));
+    out.push(k.H2("6 · Guided Practice" + at("guided")));
     out.push(
       k.table(
         ["#", "Problem", "Answer", "Teacher prompt"],
@@ -429,10 +443,11 @@
     out.push(k.H3("Sentence starters"));
     out.push(...k.bullets(plan.guided.sentenceStarters));
     supportsBlock(plan.guided.studentSupports, k, out);
+    rubricBlock(plan.guided.rubricMove, k, out);
 
     // 7 · Collaborative
     const c = plan.collaborative;
-    out.push(k.H2("7 · Collaborative / Partner Activity" + at(t.collaborative)));
+    out.push(k.H2("7 · Collaborative / Partner Activity" + at("collaborative")));
     out.push(k.runs([{ t: "Student directions: ", b: true }, { t: c.studentDirections }]));
     out.push(k.runs([{ t: "Teacher directions: ", b: true }, { t: c.teacherDirections }]));
     out.push(k.runs([{ t: "Accountability: ", b: true }, { t: c.accountability }]));
@@ -440,9 +455,10 @@
     out.push(...k.bullets(c.discussionPrompts));
     out.push(k.runs([{ t: "Written response (TWR): ", b: true }, { t: c.twrWritten }]));
     supportsBlock(c.studentSupports, k, out);
+    rubricBlock(c.rubricMove, k, out);
 
     // 8 · Independent
-    out.push(k.H2("8 · Independent Practice" + at(t.independent)));
+    out.push(k.H2("8 · Independent Practice" + at("independent")));
     out.push(
       k.table(
         ["#", "Type", "Problem", "Answer key"],
@@ -458,10 +474,11 @@
       out.push(k.runs([{ t: "Core set: ", b: true }, { t: plan.independent.coreSet }]));
     }
     supportsBlock(plan.independent.studentSupports, k, out);
+    rubricBlock(plan.independent.rubricMove, k, out);
 
     // 9 · Writing / TWR
     const w = plan.writing;
-    out.push(k.H2("9 · Writing / TWR Connection" + at(t.writing)));
+    out.push(k.H2("9 · Writing / TWR Connection" + at("writing")));
     out.push(k.runs([{ t: "Kernel sentence: ", b: true }, { t: w.kernel }]));
     out.push(k.table(["Because", "But", "So"], [[w.because, w.but, w.so]], [34, 33, 33]));
     out.push(k.runs([{ t: "Explain your thinking: ", b: true }, { t: w.explain }]));
@@ -473,6 +490,7 @@
       out.push(k.H3("Language & writing supports for this class"));
       out.push(...k.bullets(w.supports));
     }
+    rubricBlock(w.rubricMove, k, out);
 
     // 10 · Differentiation
     const dz = plan.differentiation;
@@ -527,7 +545,7 @@
     out.push(...k.bullets(cf.decisionPoints));
 
     // 12 · Exit Ticket
-    out.push(k.H2("12 · Exit Ticket" + at(t.exit)));
+    out.push(k.H2("12 · Exit Ticket" + at("exit")));
     out.push(
       k.table(
         ["#", "Question", "Answer key"],
@@ -541,6 +559,7 @@
       out.push(...k.bullets(plan.exit.accommodations));
     }
     out.push(k.runs([{ t: "Tomorrow, based on results: ", b: true }, { t: plan.exit.tomorrow }]));
+    rubricBlock(plan.exit.rubricMove, k, out);
 
     // 13 · Teacher Notes / Next-Day
     const tn = plan.teacherNotes;
@@ -555,6 +574,20 @@
         tn.extra ? "Note: " + tn.extra : "",
       ]),
     );
+
+    // 14 · Instructional Framework (TEACH) alignment
+    if (plan.rubric) {
+      const rb = plan.rubric;
+      out.push(k.H2("14 · Instructional Framework Alignment (TEACH)"));
+      out.push(k.P(rb.source + ". " + rb.note, { italics: true }));
+      out.push(
+        k.table(
+          ["Indicator", "Highly Effective (4) looks like", "Evidence in this lesson"],
+          rb.rows.map((r) => [r.code + " — " + r.name, r.four, r.move]),
+          [22, 38, 40],
+        ),
+      );
+    }
 
     return out;
   }
