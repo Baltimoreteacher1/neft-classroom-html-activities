@@ -28,6 +28,9 @@ import { deriveCommonMistake } from "./content-enrichment.js";
 import { mountDiscussionMoment } from "./discourse.js";
 import { buildGradeCard } from "./grade.js";
 import { recommendedNext } from "./grade-emit.js";
+import { attachRegenPractice } from "../components/regen-practice.js";
+import { attachAnnotator } from "../components/scene-annotate.js";
+import { attachVoiceInput } from "../components/voice-explain.js";
 import { mountHintLadder } from "./hint-ladder.js";
 import { badgeName, phaseName, stackHtml, t } from "./i18n.js";
 import { interactiveVisualHost, mountInteractiveVisuals } from "./interactive-visual.js";
@@ -174,7 +177,12 @@ function buildVisual(v) {
         fallback: barChartSVG(v),
       });
     case "number-line":
-      return numberLineSVG(v);
+      // Interactive "place the points" when authored with `points`; the static
+      // line stays as the JS-off / print fallback (and the no-points case).
+      return interactiveVisualHost(v, {
+        ariaLabel: figureAria(v, "Number line"),
+        fallback: numberLineSVG(v),
+      });
     case "tape-diagram":
       return tapeDiagramSVG(v);
     case "coordinate-plane":
@@ -1131,6 +1139,10 @@ function renderNoticeAndWonder(host, config, state) {
     img.alt = nw.context ? String(nw.context) : "Notice and Wonder data display";
     fig.append(img);
     attachImageZoom(img);
+    // "Annotate the scene": a draw overlay so students can circle/underline what
+    // they notice before writing. Off by default so tap-to-zoom still works;
+    // turning Draw on captures the pen. No-op if the figure can't be measured.
+    attachAnnotator(fig, { label: "Circle what you notice" });
     layout.append(fig);
   } else {
     layout.classList.add("nw-layout-noimg");
@@ -2245,6 +2257,9 @@ function renderSkillPractice(host, config, state) {
       }
     });
     card.append(wrap);
+    // "Try another like this": generator-backed infinite reps, shown only when
+    // this problem can be safely regenerated (correctness-verified variants).
+    attachRegenPractice(wrap, it);
   });
 
   host.append(card);
@@ -2537,6 +2552,10 @@ function renderConnectPhase(el, state, ctx, config) {
   textarea.setAttribute("aria-label", promptText);
   textarea.value = state.getResponse(3, "connect") || "";
   respCard.append(textarea);
+  // "Explain Out Loud": speak the response and have it transcribed here, with
+  // the target math vocabulary highlighting as it is said. No-op (typing still
+  // works) where the browser has no speech recognition.
+  attachVoiceInput(textarea, { keywords: cfg.keywords || [] });
 
   const charCount = document.createElement("div");
   charCount.className = "connect-charcount";

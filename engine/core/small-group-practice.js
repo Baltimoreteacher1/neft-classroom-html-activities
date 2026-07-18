@@ -1,3 +1,4 @@
+import { attachRegenPractice } from "../components/regen-practice.js";
 import { isRight, numberOf } from "./small-group-answers.js";
 import { bi, celebrate, el, esc, speak } from "./small-group-ui.js";
 import { appendVisualPractice } from "./small-group-visual-practice.js";
@@ -611,6 +612,10 @@ export function createPracticeSection(
     };
     card = problemCard(item, index, config.variant, solve, scaffold, events);
     appendVisualPractice(card, item, { mode: options.mode || "guided", events });
+    // "Try another like this": infinite same-type reps — only appears when the
+    // generator can produce a correctness-verified variant, so it stays silent
+    // on problems it can't safely regenerate.
+    attachRegenPractice(card, item);
     const storeIndex = (options.indexOffset || 0) + index;
     if (store?.has("solvedPractice", storeIndex)) {
       card.prepend(

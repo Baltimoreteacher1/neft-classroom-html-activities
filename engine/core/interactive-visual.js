@@ -109,6 +109,35 @@ const REGISTRY = {
     const { renderFactorTreeFill } = await import("../components/factor-tree-fill.js");
     return renderFactorTreeFill(host, cfg);
   },
+  // Number line: authored WITH `points` → an interactive "place the points"
+  // lab (drag each labeled dot onto its value, checked on the tick). Authored
+  // WITHOUT points → the static reference line, unchanged — so pure displays
+  // never turn into tasks and the figure never blanks.
+  "number-line": async (host, cfg) => {
+    const pts = Array.isArray(cfg.points)
+      ? cfg.points.filter((p) => p && Number.isFinite(Number(p.value)))
+      : [];
+    const min = Number(cfg.min);
+    const max = Number(cfg.max);
+    if (pts.length && Number.isFinite(min) && Number.isFinite(max) && max > min) {
+      const { renderNumberLine } = await import("../components/number-line.js");
+      renderNumberLine(host, {
+        min,
+        max,
+        step: Number(cfg.step) > 0 ? Number(cfg.step) : 1,
+        snapToTick: true,
+        label: cfg.title || cfg.label || "Place each labeled point on the number line.",
+        targets: pts.map((p) => ({
+          value: Number(p.value),
+          label: p.label != null ? String(p.label) : String(p.value),
+        })),
+      });
+      return null;
+    }
+    const { numberLineSVG } = await import("./visual-figures.js");
+    host.innerHTML = numberLineSVG(cfg);
+    return null;
+  },
   // "Data Live": the four authored static data figures (histogram, dot plot,
   // box plot, bar chart) upgraded to explore-first interactive figures IN PLACE
   // from the SAME config. Default view equals the old static figure, plus a

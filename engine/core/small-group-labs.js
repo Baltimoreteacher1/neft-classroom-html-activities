@@ -5,6 +5,7 @@
 // (Polya-style word-problem workbench). Manipulative components are lazily
 // imported so lessons only pay for the one they use.
 
+import { attachVoiceInput } from "../components/voice-explain.js";
 import { interactiveVisualHost, mountInteractiveVisuals } from "./interactive-visual.js";
 import { celebrate, el, esc, sectionHeading, speak } from "./small-group-ui.js";
 import {
@@ -323,6 +324,10 @@ export function createModelLab(config, variant, { number, store, events, onDone 
   const row = el("div", "row");
   row.appendChild(check);
   card.append(response, row, status);
+  // "Explain Out Loud": speak the explanation and have it transcribed into the
+  // box (target math words highlight as they are said). No-op where speech
+  // recognition is unsupported — the textarea still works by typing.
+  attachVoiceInput(response, { keywords });
   section.appendChild(card);
   return section;
 }

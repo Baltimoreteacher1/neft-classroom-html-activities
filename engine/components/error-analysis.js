@@ -88,9 +88,59 @@ export function renderErrorAnalysis(
   checkBtn.style.display = "none";
   wrapper.append(checkBtn);
 
+  // ── Repair step: after the student finds AND explains the error, they must
+  // REWRITE the broken step correctly (checked against `correctWork`) instead of
+  // being handed the answer. Only shown when the item authored `correctWork`.
+  const repair = document.createElement("div");
+  repair.className = "ea-repair";
+  repair.style.display = "none";
+  repair.innerHTML = `
+    <p class="ea-repair-label">Now fix it — rewrite that step so it is correct:</p>
+    <div class="ea-repair-row">
+      <input type="text" class="text-input ea-repair-input" inputmode="text"
+        placeholder="The correct step is…" aria-label="Corrected work for the error step" />
+      <button type="button" class="btn btn-primary ea-repair-btn">Check the fix</button>
+    </div>
+    <div class="ea-repair-fb mt-2"></div>`;
+  wrapper.append(repair);
+  const repairInput = repair.querySelector(".ea-repair-input");
+  const repairBtn = repair.querySelector(".ea-repair-btn");
+  const repairFb = repair.querySelector(".ea-repair-fb");
+
   let selectedStep = null;
   let answered = false;
+  let foundError = false;
   let hintIndex = 0;
+  let repairTries = 0;
+
+  // Loose equivalence: numbers match by value; otherwise compare with spacing,
+  // case, and trailing punctuation normalized. Also accept an answer that ends
+  // in the correct final value (e.g. "= 36" vs "36").
+  const norm = (s) =>
+    String(s ?? "")
+      .toLowerCase()
+      .replace(/\s+/g, "")
+      .replace(/[.;,]+$/, "");
+  const lastNumber = (s) => {
+    const m = String(s ?? "").match(/-?\d+(?:\.\d+)?(?:\/\d+)?/g);
+    return m ? m[m.length - 1] : null;
+  };
+  const repairMatches = (typed) => {
+    if (!correctWork) return true;
+    const a = norm(typed);
+    const b = norm(correctWork);
+    if (!a) return false;
+    if (a === b || b.endsWith(a) || a.endsWith(b)) return true;
+    const na = lastNumber(typed);
+    const nb = lastNumber(correctWork);
+    return na != null && nb != null && Number(na) === Number(nb);
+  };
+
+  const finalize = () => {
+    answered = true;
+    textarea.readOnly = true;
+    if (onAnswer) onAnswer(true);
+  };
 
   const selectStep = (stepEl) => {
     if (answered) return;
@@ -146,7 +196,7 @@ export function renderErrorAnalysis(
       return;
     }
 
-    answered = true;
+    foundError = true;
     textarea.readOnly = true;
     checkBtn.style.display = "none";
 
@@ -169,12 +219,64 @@ export function renderErrorAnalysis(
       }
     });
 
-    const msg = correctWork
-      ? `Excellent analysis! The correct work for this step: <strong>${escHtml(correctWork)}</strong>`
-      : "Excellent error analysis! You identified the mistake and explained the fix.";
-    showFb(feedbackSlot, "success", msg);
+    // With a known-correct step, don't hand it over — make the student rebuild
+    // it. Without one, the identify-and-explain is the whole task, so finish.
+    if (correctWork) {
+      showFb(
+        feedbackSlot,
+        "success",
+        "You found the error and explained it. One more move: fix the step.",
+      );
+      repair.style.display = "";
+      repairInput.focus();
+    } else {
+      showFb(
+        feedbackSlot,
+        "success",
+        "Excellent error analysis! You identified the mistake and explained the fix.",
+      );
+      finalize();
+    }
+  });
 
-    if (onAnswer) onAnswer(true);
+  repairBtn.addEventListener("click", () => {
+    if (answered) return;
+    const typed = repairInput.value.trim();
+    if (!typed) {
+      showFb(repairFb, "hint", "Type the corrected step, then check it.");
+      return;
+    }
+    repairTries += 1;
+    if (repairMatches(typed)) {
+      repairInput.readOnly = true;
+      repairBtn.style.display = "none";
+      showFb(repairFb, "success", "That's the fix — the step is now correct. 🎉");
+      finalize();
+      return;
+    }
+    if (repairTries >= 3) {
+      repairInput.readOnly = true;
+      repairBtn.style.display = "none";
+      showFb(
+        repairFb,
+        "hint",
+        `Close. The correct step is: <strong>${escHtml(correctWork)}</strong>. Compare it with what you wrote.`,
+      );
+      finalize();
+      return;
+    }
+    showFb(
+      repairFb,
+      "hint",
+      "Not quite — re-do just this step's math and write the correct result.",
+    );
+  });
+
+  repairInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      repairBtn.click();
+    }
   });
 
   container.append(wrapper);
@@ -267,6 +369,21 @@ function injectErrorAnalysisStyles() {
       min-height: 4.5rem;
       overflow: hidden;
       resize: vertical;
+    }
+
+    /* Repair step: rewrite the broken step correctly */
+    .ea-root .ea-repair {
+      margin-top: var(--sp-4);
+      padding: var(--sp-3);
+      border: 2px dashed var(--teal);
+      border-radius: var(--radius-md);
+      background: color-mix(in srgb, var(--teal) 6%, transparent);
+    }
+    .ea-root .ea-repair-label { font-weight: 700; color: var(--navy); margin: 0 0 var(--sp-2); }
+    .ea-root .ea-repair-row { display: flex; gap: var(--sp-2); flex-wrap: wrap; align-items: center; }
+    .ea-root .ea-repair-input { flex: 1 1 12rem; min-width: 0; font-family: var(--font-mono); }
+    @media (max-width: 600px) {
+      .ea-root .ea-repair-input, .ea-root .ea-repair-btn { width: 100%; }
     }
 
     @keyframes eaCheckPop {
