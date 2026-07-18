@@ -196,6 +196,26 @@ function buildVisual(v) {
           "Box plot construction lab. Turn on JavaScript to drag the five-number summary into place and check your plot.",
       });
     }
+    case "histogram-builder": {
+      // Histogram construction lab: bin the data and raise each bar to its
+      // count; each interval is coached on Check.
+      return interactiveVisualHost(v, {
+        ariaLabel:
+          "Histogram builder. Count how many data values fall in each interval and raise each bar to match to build the histogram.",
+        fallback:
+          "Histogram construction lab. Turn on JavaScript to build the histogram bar by bar and check your intervals.",
+      });
+    }
+    case "equation-balance-lab": {
+      // Interactive equation balance: apply the same operation to both sides
+      // and watch the equation transform while the scale stays balanced.
+      return interactiveVisualHost(v, {
+        ariaLabel:
+          "Equation balance lab. Apply the same operation to both sides of the equation to isolate the variable while keeping the scale balanced.",
+        fallback:
+          "Equation balance scale. Turn on JavaScript to solve the equation by keeping both sides balanced.",
+      });
+    }
     case "line-grapher": {
       // Draggable y = kx grapher for proportional relationships / linear equations.
       const yN = v.yName || "y";

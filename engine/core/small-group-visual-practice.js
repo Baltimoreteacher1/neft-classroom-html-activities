@@ -1,5 +1,44 @@
+import { renderEquationBalanceLab } from "../components/equation-balance-lab.js";
 import { isRight } from "./small-group-answers.js";
 import { el, esc, esLane, speak } from "./small-group-ui.js";
+
+// Pull just the equation out of a solve-it stem like
+// "Solve the new equation x + 2 = 6." → "x + 2 = 6". Walks outward from the
+// "=" token, keeping only math-like tokens (numbers, single-letter variables,
+// coefficient-variables like 2x, operators), so surrounding words drop away.
+// Returns null when the stem has no equation (e.g. "write an equation" prompts).
+function extractEquation(stem) {
+  const toks = String(stem || "")
+    .replace(/[.?!,:;]+$/g, "")
+    .split(/\s+/);
+  const eqIdx = toks.findIndex((t) => t.includes("="));
+  if (eqIdx < 0) return null;
+  const clean = (t) => t.replace(/[.,?!:;]+$/g, "");
+  const mathy = (t) =>
+    /^[-+]?[\d.]+$/.test(t) ||
+    /^-?\d*[a-zA-Z](\/\d+)?$/.test(t) ||
+    /^[-+*/×÷·]$/.test(t) ||
+    t.includes("=");
+  let lo = eqIdx;
+  let hi = eqIdx;
+  while (lo - 1 >= 0 && mathy(clean(toks[lo - 1]))) lo--;
+  while (hi + 1 < toks.length && mathy(clean(toks[hi + 1]))) hi++;
+  const eq = toks
+    .slice(lo, hi + 1)
+    .map(clean)
+    .join(" ");
+  return /=/.test(eq) && /[a-zA-Z]/.test(eq) ? eq : null;
+}
+
+// Live interactive balance for solve-an-equation items: the same-operation-to-
+// both-sides scale, in place of the old static algebra figure.
+function typedBalance(item) {
+  const eq = item.visual?.equation || extractEquation(item.stem);
+  if (!eq) return null;
+  const wrap = el("div", "sg-balance-lab");
+  renderEquationBalanceLab(wrap, { equation: eq });
+  return wrap;
+}
 
 function valuesFrom(visual, stem, steps = []) {
   const values = [];
@@ -1121,6 +1160,10 @@ function typedModel(item, steps, events) {
   const kind = String(item.visual?.kind || "");
   if (!kind) return null;
   try {
+    if (kind.includes("balance") || kind.includes("equation")) {
+      const bal = typedBalance(item);
+      if (bal) return bal;
+    }
     if (kind.includes("factor-table")) return typedFactorLists(item, steps, events);
     if (kind.includes("multiple-lanes")) return typedLanes(item, steps, events);
     if (kind.includes("factor-tree")) return typedFactorTree(item, steps, events);

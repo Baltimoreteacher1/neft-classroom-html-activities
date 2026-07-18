@@ -20,7 +20,12 @@ import {
   createTeacherEvidenceConsole,
 } from "./small-group-innovation.js";
 import { syncSmallGroupEvidence } from "./small-group-evidence.js";
-import { createApplyLab, createExploreLab, createModelLab } from "./small-group-labs.js";
+import {
+  createApplyLab,
+  createExploreLab,
+  createModelLab,
+  figureBlock,
+} from "./small-group-labs.js";
 import { installSmallGroupPassport } from "./small-group-passport.js";
 import {
   collectPracticeItems,
@@ -513,7 +518,12 @@ function renderStudio(config) {
       // finish the reflection.
       id: "sg-tab-practice",
       label: "Practice & Check",
+      // practiceLab: the same optional practice.diagram slot the full lesson
+      // honors (step-solver, box-plot-builder, equation-balance-lab, …),
+      // mounted first so students can rehearse the skill with the tool before
+      // the graded items.
       panel: makePanel("sg-tab-practice", [
+        config.practice?.diagram ? figureBlock(config.practice.diagram) : null,
         practice,
         talk,
         check,

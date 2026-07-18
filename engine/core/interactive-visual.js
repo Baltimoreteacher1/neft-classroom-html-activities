@@ -154,6 +154,19 @@ const REGISTRY = {
     const { renderBoxPlotBuilder } = await import("../components/box-plot-builder.js");
     return renderBoxPlotBuilder(host, cfg);
   },
+  // Histogram construction lab: bin the data and raise each bar to its count
+  // (drag the bar top or use arrow keys); per-interval coaching on Check.
+  "histogram-builder": async (host, cfg) => {
+    const { renderHistogramBuilder } = await import("../components/histogram-builder.js");
+    return renderHistogramBuilder(host, cfg);
+  },
+  // Equation balance lab: apply the same operation to BOTH sides and watch the
+  // equation transform while the scale stays balanced — solving one-step
+  // equations as "keep the scale balanced."
+  "equation-balance-lab": async (host, cfg) => {
+    const { renderEquationBalanceLab } = await import("../components/equation-balance-lab.js");
+    return renderEquationBalanceLab(host, cfg);
+  },
   "dist-explorer": async (host, cfg) => {
     const { renderDistExplorer } = await import("../components/dist-explorer.js");
     return renderDistExplorer(host, { max: cfg.max, unit: cfg.unit, label: cfg.label });
