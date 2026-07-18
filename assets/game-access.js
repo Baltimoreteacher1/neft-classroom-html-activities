@@ -20,6 +20,7 @@
   window.__neftGameAccess = true;
 
   var CALM_KEY = "nt-calm-mode";
+  var TEXT_KEY = "nt-text-size"; // "0" normal | "1" large | "2" x-large
   var doc = document;
 
   function ready(fn) {
@@ -102,6 +103,40 @@
     if (btn) btn.setAttribute("aria-pressed", on ? "true" : "false");
   }
 
+  /* ---------- Text size ---------- */
+  // Scales the DOM/menu chrome (titles, instructions, buttons, our controls).
+  // Applied as a root class so any game's HTML UI inherits it. Canvas-rendered
+  // gameplay text is unaffected; this targets the readable HTML around it.
+  var TEXT_CLASSES = ["nt-text-lg", "nt-text-xl"];
+  function applyText(step) {
+    var root = doc.documentElement;
+    TEXT_CLASSES.forEach(function (c) {
+      root.classList.remove(c);
+    });
+    if (step === 1) root.classList.add("nt-text-lg");
+    else if (step === 2) root.classList.add("nt-text-xl");
+  }
+  function currentText() {
+    var v = 0;
+    try {
+      v = parseInt(localStorage.getItem(TEXT_KEY) || "0", 10) || 0;
+    } catch (e) {}
+    return v < 0 || v > 2 ? 0 : v;
+  }
+  function cycleText(btn) {
+    var next = (currentText() + 1) % 3;
+    try {
+      localStorage.setItem(TEXT_KEY, String(next));
+    } catch (e) {}
+    applyText(next);
+    if (btn) {
+      btn.setAttribute("aria-pressed", next ? "true" : "false");
+      var labels = ["Text size: normal", "Text size: large", "Text size: extra large"];
+      btn.title = labels[next];
+      btn.setAttribute("aria-label", labels[next]);
+    }
+  }
+
   /* ---------- Growth-mindset toast (public API) ---------- */
   var toastEl = null;
   var toastTimer = null;
@@ -145,7 +180,23 @@
         speak(read);
       });
 
+      // Text-size cycle — normal → large → x-large. Helps low-vision readers
+      // and anyone on a small screen read the HTML instructions/menus.
+      var textBtn = doc.createElement("button");
+      textBtn.type = "button";
+      textBtn.className = "nt-ga-btn nt-ga-text";
+      var startStep = currentText();
+      var startLabels = ["Text size: normal", "Text size: large", "Text size: extra large"];
+      textBtn.title = startLabels[startStep];
+      textBtn.setAttribute("aria-label", startLabels[startStep]);
+      textBtn.setAttribute("aria-pressed", startStep ? "true" : "false");
+      textBtn.innerHTML = 'A<span aria-hidden="true">+</span>';
+      textBtn.addEventListener("click", function () {
+        cycleText(textBtn);
+      });
+
       wrap.appendChild(read);
+      wrap.appendChild(textBtn);
       doc.body.appendChild(wrap);
 
       // Comfortable tap targets on obvious answer controls.
@@ -172,6 +223,11 @@
       setCalm(!!on, null);
     },
   };
+
+  // Apply any saved text-size preference as early as possible.
+  try {
+    applyText(currentText());
+  } catch (e) {}
 
   ready(build);
 })();

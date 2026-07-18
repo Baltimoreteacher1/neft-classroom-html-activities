@@ -40,12 +40,7 @@
         z-index: 0;
         overflow: hidden;
         pointer-events: none;
-        background: radial-gradient(
-          130% 90% at 50% 0%,
-          #14402e 0%,
-          #0c281d 55%,
-          #061410 100%
-        );
+        background: radial-gradient(130% 90% at 50% 0%, #14402e 0%, #0c281d 55%, #061410 100%);
       }
       #eq-bg-layer {
         position: absolute;
@@ -127,15 +122,14 @@
     <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
     <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
     <!-- ghl-injected:end -->
-  
-  
+
     <!-- uifr-injected:begin -->
     <!-- BCPS Instructional Framework Rubric · TEACH support. Teacher/observer reference — NOT shown to students. Interactive practice activity (math/games/u7-equation-quest): supports Level 4 conditions on T2, T4 (students choose their approach + immediate no-fail feedback with retry). Full evidence: /teacher-tools/teaching-evidence/ · docs/uifr-teach-l4.md. -->
     <!-- uifr-injected:end -->
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2" />
+    <!-- nsr-injected:end -->
+  </head>
   <body>
     <!-- Decorative animated spark-field (behind the Phaser canvas). -->
     <div id="eq-bg" data-parallax aria-hidden="true">
@@ -147,9 +141,7 @@
       // Decorative spark-field builder (reduced-motion safe; pointer-neutral).
       (function () {
         "use strict";
-        var reduceMQ =
-          window.matchMedia &&
-          window.matchMedia("(prefers-reduced-motion: reduce)");
+        var reduceMQ = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)");
         var layer = document.getElementById("eq-bg-layer");
         if (!layer) return;
         function rnd(a, b) {
@@ -177,11 +169,7 @@
           var dx = e.clientX / (window.innerWidth || 1) - 0.5;
           var dy = e.clientY / (window.innerHeight || 1) - 0.5;
           layer.style.transform =
-            "translate3d(" +
-            (dx * 20).toFixed(2) +
-            "px," +
-            (dy * 12).toFixed(2) +
-            "px,0)";
+            "translate3d(" + (dx * 20).toFixed(2) + "px," + (dy * 12).toFixed(2) + "px,0)";
         }
         function attach() {
           if (driver || (reduceMQ && reduceMQ.matches)) return;
@@ -201,8 +189,7 @@
             if (reduceMQ.matches) detach();
             else attach();
           };
-          if (reduceMQ.addEventListener)
-            reduceMQ.addEventListener("change", onChange);
+          if (reduceMQ.addEventListener) reduceMQ.addEventListener("change", onChange);
           else if (reduceMQ.addListener) reduceMQ.addListener(onChange);
         }
         var rt;
@@ -235,9 +222,7 @@
         init() {
           if (!this.ctx)
             try {
-              this.ctx = new (
-                window.AudioContext || window.webkitAudioContext
-              )();
+              this.ctx = new (window.AudioContext || window.webkitAudioContext)();
             } catch (e) {}
         },
         play(t, f, d, v = 0.18) {
@@ -335,14 +320,7 @@
               s,
               minMoves: 1,
               banner: "x + " + a + " = " + (a + s),
-              hint:
-                "Inverse of + " +
-                a +
-                " is − " +
-                a +
-                ". Subtract " +
-                a +
-                " from both sides.",
+              hint: "Inverse of + " + a + " is − " + a + ". Subtract " + a + " from both sides.",
               solveHint: "Subtract " + a + " from both sides → x = " + s,
             };
           }
@@ -356,14 +334,7 @@
             s,
             minMoves: 1,
             banner: a + "x = " + a * s,
-            hint:
-              "Inverse of × " +
-              a +
-              " is ÷ " +
-              a +
-              ". Divide both sides by " +
-              a +
-              ".",
+            hint: "Inverse of × " + a + " is ÷ " + a + ". Divide both sides by " + a + ".",
             solveHint: "Divide both sides by " + a + " → x = " + s,
           };
         }
@@ -391,19 +362,14 @@
         parent: document.body,
         backgroundColor: "#0c281d",
         scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-        scene: [
-          BootScene,
-          TitleScene,
-          VocabScene,
-          LevelScene,
-          GameScene,
-          ResultScene,
-        ],
+        scene: [BootScene, TitleScene, VocabScene, LevelScene, GameScene, ResultScene],
       };
 
       // ── Cross-scene state ──
       let eqVocabSeen = false; // vocab gate: shown once per page session
       let eqLevel = 1; // 1 = support, 2 = enrichment (chosen in LevelScene)
+      let eqAuto = false; // true when the ✨ Auto button picked the level (NTAdaptive)
+      let eqEndless = false; // true for endless (no auto-end) runs
 
       // Key words for THIS game's topic (solving equations). Each has a
       // student-facing (Level 1) definition and an emoji so a visual always
@@ -569,9 +535,7 @@
           })
           .setOrigin(0.5);
 
-        this.add
-          .rectangle(cx, 320, 560, 320, 0x0e3326)
-          .setStrokeStyle(2, 0x2d874b);
+        this.add.rectangle(cx, 320, 560, 320, 0x0e3326).setStrokeStyle(2, 0x2d874b);
 
         this.stepText = this.add
           .text(cx, 185, "", {
@@ -581,9 +545,7 @@
             color: "#6fae8c",
           })
           .setOrigin(0.5);
-        this.emojiText = this.add
-          .text(cx, 250, "", { fontSize: "76px" })
-          .setOrigin(0.5);
+        this.emojiText = this.add.text(cx, 250, "", { fontSize: "76px" }).setOrigin(0.5);
         this.termText = this.add
           .text(cx, 330, "", {
             fontFamily: "Segoe UI, sans-serif",
@@ -646,9 +608,7 @@
       VocabScene.prototype.renderCard = function () {
         const v = EQ_VOCAB[this.idx];
         const last = this.idx === EQ_VOCAB.length - 1;
-        this.stepText.setText(
-          "Key word " + (this.idx + 1) + " of " + EQ_VOCAB.length,
-        );
+        this.stepText.setText("Key word " + (this.idx + 1) + " of " + EQ_VOCAB.length);
         this.emojiText.setText(v.emoji);
         this.termText.setText(v.term);
         this.defText.setText(v.def);
@@ -741,6 +701,8 @@
             SFX.tap();
             JUICE.audio.unlock();
             eqLevel = lvl;
+            eqAuto = false;
+            eqEndless = false;
             this.scene.start("Game");
           };
           [card, pill].forEach((o) => {
@@ -784,9 +746,34 @@
             color: "#6fae8c",
           })
           .setOrigin(0.5);
-        srSay(
-          "Choose your level. Press 1 for Level 1 support, or 2 for Level 2 enrichment.",
-        );
+
+        // ✨ Auto: let the shared adaptive helper pick a level from past runs.
+        // Geometry-safe — it only chooses the level BEFORE the run starts.
+        const pickAuto = () => {
+          SFX.init();
+          SFX.tap();
+          JUICE.audio.unlock();
+          const lv = window.NTAdaptive ? window.NTAdaptive.pickLevel("u7-equation-quest", 1, 2) : 1;
+          eqLevel = lv;
+          eqAuto = true;
+          eqEndless = false;
+          this.scene.start("Game");
+        };
+        const autoBtn = this.add
+          .text(cx, 574, "✨ Auto — picks your level", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "16px",
+            fontStyle: "bold",
+            color: "#ffd24a",
+          })
+          .setOrigin(0.5)
+          .setInteractive({ useHandCursor: true });
+        autoBtn.on("pointerover", () => autoBtn.setColor("#ffffff"));
+        autoBtn.on("pointerout", () => autoBtn.setColor("#ffd24a"));
+        autoBtn.on("pointerdown", pickAuto);
+        this.input.keyboard.on("keydown-A", pickAuto);
+
+        srSay("Choose your level. Press 1 for Level 1 support, or 2 for Level 2 enrichment.");
       };
 
       // ── GAME ──
@@ -799,15 +786,15 @@
       GameScene.prototype.init = function () {
         this.reduceMotion =
           JUICE.reduceMotion ||
-          !!(
-            window.matchMedia &&
-            window.matchMedia("(prefers-reduced-motion: reduce)").matches
-          );
+          !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
         this.score = 0;
         this.streak = 0;
         this.level = eqLevel;
+        this.auto = eqAuto; // carried into Result for adaptive recordRun
+        this.endless = eqEndless; // endless runs never auto-end
+        this.attempts = 0; // graded lock-in attempts (for accuracy)
         this.solved = 0;
-        this.target = 10; // win: solve this many equations
+        this.target = this.endless ? Infinity : 10; // win: solve this many equations
         // Equation state A·x + B = C and its solution s.
         this.A = 1;
         this.B = 0;
@@ -848,8 +835,30 @@
           })
           .setOrigin(1, 0);
         this.progressText = this.add
-          .text(W / 2, 12, "0 / " + this.target, { ...hud, color: "#bfe0c8" })
+          .text(W / 2, 12, "0 / " + (this.endless ? "∞" : this.target), {
+            ...hud,
+            color: "#bfe0c8",
+          })
           .setOrigin(0.5, 0);
+
+        // Endless mode: a small "Finish ✓" HUD control that ends the run now
+        // (same Result transition the win uses, with current stats).
+        if (this.endless) {
+          this.finishBtn = this.add
+            .text(16, 40, "Finish ✓", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "15px",
+              fontStyle: "bold",
+              color: "#ffd24a",
+            })
+            .setInteractive({ useHandCursor: true });
+          this.finishBtn.on("pointerover", () => this.finishBtn.setColor("#ffffff"));
+          this.finishBtn.on("pointerout", () => this.finishBtn.setColor("#ffd24a"));
+          this.finishBtn.on("pointerdown", () => {
+            if (this.locked) return;
+            this.endGame();
+          });
+        }
 
         // Problem banner (the ORIGINAL equation to solve)
         this.bannerLabel = this.add
@@ -925,9 +934,7 @@
         this.rightExpr = this.add
           .text(this.pivotX + this.panDX, this.pivotY + 112, "", exprStyle)
           .setOrigin(0.5);
-        this.add
-          .text(this.pivotX, this.pivotY + 112, "=", exprStyle)
-          .setOrigin(0.5);
+        this.add.text(this.pivotX, this.pivotY + 112, "=", exprStyle).setOrigin(0.5);
 
         // Moves-left readout
         this.movesText = this.add
@@ -985,9 +992,7 @@
           })
           .setOrigin(0.5);
         minus.on("pointerdown", () => this.bumpAmt(-1));
-        this.amtBox = this.add
-          .rectangle(412, 424, 56, 44, 0x0e3326)
-          .setStrokeStyle(2, 0xffd24a);
+        this.amtBox = this.add.rectangle(412, 424, 56, 44, 0x0e3326).setStrokeStyle(2, 0xffd24a);
         this.amtText = this.add
           .text(412, 424, "1", {
             fontFamily: "Impact, sans-serif",
@@ -1020,12 +1025,8 @@
             color: "#ffffff",
           })
           .setOrigin(0.5);
-        this.applyBtn.on("pointerover", () =>
-          this.applyBtn.setFillStyle(0x2f74c2),
-        );
-        this.applyBtn.on("pointerout", () =>
-          this.applyBtn.setFillStyle(0x2563a8),
-        );
+        this.applyBtn.on("pointerover", () => this.applyBtn.setFillStyle(0x2f74c2));
+        this.applyBtn.on("pointerout", () => this.applyBtn.setFillStyle(0x2563a8));
         this.applyBtn.on("pointerdown", () => this.applyOp());
 
         // Lock-in button (armed only when x is alone)
@@ -1058,16 +1059,11 @@
           )
           .setOrigin(0.5);
         this.add
-          .text(
-            W / 2,
-            550,
-            "Blue □ = one x · Gold ■ = a 1 weight · Tall gold = a 10",
-            {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "12px",
-              color: "#82c9a0",
-            },
-          )
+          .text(W / 2, 550, "Blue □ = one x · Gold ■ = a 1 weight · Tall gold = a 10", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "12px",
+            color: "#82c9a0",
+          })
           .setOrigin(0.5);
 
         // Effects
@@ -1083,9 +1079,7 @@
           })
           .setDepth(20);
         // Brief calm amber tint (reduced-motion stand-in for the beam tilt).
-        this.amberTint = this.add
-          .rectangle(W / 2, H / 2, W, H, 0xf0b44a, 0)
-          .setDepth(30);
+        this.amberTint = this.add.rectangle(W / 2, H / 2, W, H, 0xf0b44a, 0).setDepth(30);
 
         // Keyboard
         const order = ["sub", "add", "div"];
@@ -1167,10 +1161,8 @@
       GameScene.prototype.refreshAmt = function () {
         this.amtText.setText(String(this.opAmt));
         let lab;
-        if (this.opType === "sub")
-          lab = "Apply: − " + this.opAmt + " from both";
-        else if (this.opType === "add")
-          lab = "Apply: + " + this.opAmt + " to both";
+        if (this.opType === "sub") lab = "Apply: − " + this.opAmt + " from both";
+        else if (this.opType === "add") lab = "Apply: + " + this.opAmt + " to both";
         else lab = "Apply: ÷ both by " + this.opAmt;
         this.applyText.setText(lab);
       };
@@ -1227,8 +1219,7 @@
           }
         } else {
           // div: must divide A, B, and C exactly (whole numbers, true balance)
-          legal =
-            n >= 2 && this.A % n === 0 && this.B % n === 0 && this.C % n === 0;
+          legal = n >= 2 && this.A % n === 0 && this.B % n === 0 && this.C % n === 0;
           if (legal) {
             this.A /= n;
             this.B /= n;
@@ -1239,9 +1230,7 @@
           this.tiltScale();
           SFX.tilt();
           this.feedback
-            .setText(
-              "⚖️ That would unbalance the scale — try a different move.",
-            )
+            .setText("⚖️ That would unbalance the scale — try a different move.")
             .setColor("#ffb38a");
           srSay("That move would unbalance the scale. Try a different one.");
           return;
@@ -1254,14 +1243,10 @@
         this.updateLock();
         this.updateMoves();
         if (this.isIsolated()) {
-          this.feedback
-            .setText("✅ x is alone! Read the value, then Lock In.")
-            .setColor("#8ff0c4");
+          this.feedback.setText("✅ x is alone! Read the value, then Lock In.").setColor("#8ff0c4");
           srSay("x is alone. It equals " + this.C + ". Press Lock In.");
         } else {
-          this.feedback
-            .setText("Now: " + this.leftExprStr() + " = " + this.C)
-            .setColor("#bfe0c8");
+          this.feedback.setText("Now: " + this.leftExprStr() + " = " + this.C).setColor("#bfe0c8");
         }
       };
 
@@ -1277,6 +1262,7 @@
             this.lockTween = null;
           }
           JUICE.audio.correct(this.streak);
+          this.attempts++;
           this.solved++;
           this.streak++;
           const bonus = Math.min(this.streak, 5) * 5;
@@ -1300,6 +1286,7 @@
         } else {
           // Gentle nudge — NOT a loss. x isn't isolated yet, so just guide the
           // student to keep applying inverse moves (calm, no-penalty).
+          this.attempts++;
           SFX.tilt();
           this.feedback
             .setText(
@@ -1418,7 +1405,7 @@
         this.scoreText.setText("Score: " + this.score);
         this.streakText.setText("Streak: " + this.streak);
         this.levelText.setText("Level " + this.level);
-        this.progressText.setText(this.solved + " / " + this.target);
+        this.progressText.setText(this.solved + " / " + (this.endless ? "∞" : this.target));
       };
 
       GameScene.prototype.endGame = function () {
@@ -1429,6 +1416,9 @@
             solved: this.solved,
             target: this.target,
             level: this.level,
+            auto: this.auto,
+            endless: this.endless,
+            accuracy: this.attempts ? this.solved / this.attempts : 1,
           });
         });
       };
@@ -1446,8 +1436,20 @@
         const d = this.data2;
         const cx = W / 2;
         this.add.rectangle(cx, H / 2, W, H, 0x0c281d);
-        const stars =
-          d.solved >= d.target ? 3 : d.solved >= d.target * 0.6 ? 2 : 1;
+        // Endless runs have no finite target; grade against the standard goal
+        // of 10 so stars and the adaptive win-signal stay meaningful.
+        const endless = !!d.endless;
+        const goal = endless ? 10 : d.target;
+        const stars = d.solved >= goal ? 3 : d.solved >= goal * 0.6 ? 2 : 1;
+        // Adaptive: only record a run when the level was auto-picked.
+        if (d.auto && window.NTAdaptive) {
+          window.NTAdaptive.recordRun("u7-equation-quest", {
+            won: d.solved >= goal,
+            accuracy: d.accuracy != null ? d.accuracy : 1,
+            min: 1,
+            max: 2,
+          });
+        }
         let hs = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
         if (d.score > hs) {
           hs = d.score;
@@ -1487,13 +1489,9 @@
           .text(
             cx,
             295,
-            "Solved " +
-              d.solved +
-              " of " +
-              d.target +
-              " equations (Level " +
-              d.level +
-              ")",
+            endless
+              ? "Solved " + d.solved + " equations (Level " + d.level + ")"
+              : "Solved " + d.solved + " of " + d.target + " equations (Level " + d.level + ")",
             {
               fontFamily: "Segoe UI, sans-serif",
               fontSize: "18px",
@@ -1542,6 +1540,30 @@
         btn.on("pointerdown", again);
         this.input.keyboard.on("keydown-SPACE", again);
         this.input.keyboard.on("keydown-ENTER", again);
+
+        // ♾️ Keep Playing: restart the Game at the same level in endless mode
+        // (carries the auto flag so adaptive still records the endless run).
+        const keepBtn = this.add
+          .rectangle(cx, 466, 240, 48, 0x2563a8)
+          .setStrokeStyle(2, 0x7dd3fc)
+          .setInteractive({ useHandCursor: true });
+        this.add
+          .text(cx, 466, "♾️ Keep Playing", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "18px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        const keepPlaying = () => {
+          eqLevel = d.level;
+          eqEndless = true;
+          eqAuto = d.auto;
+          this.scene.start("Game");
+        };
+        keepBtn.on("pointerover", () => keepBtn.setFillStyle(0x2f74c2));
+        keepBtn.on("pointerout", () => keepBtn.setFillStyle(0x2563a8));
+        keepBtn.on("pointerdown", keepPlaying);
       };
 
       // ── Launch ──
@@ -1581,6 +1603,8 @@
     <!-- gfx-injected:end -->
     <!-- Student Passport (meta-progression pill; boots itself, award() guarded) -->
     <script src="/assets/lesson-passport.js" defer></script>
+    <!-- Adaptive level picker (window.NTAdaptive: pickLevel / recordRun) -->
+    <script src="/assets/game-adaptive.js" defer></script>
     <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
     <script src="/assets/math-workbench-launcher.js" defer></script>
     <!-- mwb-injected:end -->
@@ -1607,8 +1631,8 @@
     <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
     <script src="/assets/canvas-bridge.js" defer></script>
     <!-- canvas-bridge-injected:end -->
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
-  <!-- nsr-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+    <!-- nsr-injected:end -->
   </body>
 </html>

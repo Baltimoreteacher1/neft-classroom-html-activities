@@ -4,9 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/assets/math-mobile.css" />
-    <title>
-      Coordinate Quest — Integers &amp; Coordinate Plane Game | Neft Teacher
-    </title>
+    <title>Coordinate Quest — Integers &amp; Coordinate Plane Game | Neft Teacher</title>
     <meta
       name="description"
       content="A calm plot-it coordinate-plane game for Grade 6 (6.NOS.6, 6.NOS.9, 6.GR.3): read an ordered pair and place the point on the exact grid cell. Level 1 stays in Quadrant I; Level 2 adds all four quadrants plus reflect-across-an-axis, distance-between-points, and finish-the-rectangle missions. No timer, no fail — misses teach by lighting up the correct spot."
@@ -43,12 +41,7 @@
         z-index: 0;
         overflow: hidden;
         pointer-events: none;
-        background: radial-gradient(
-          130% 90% at 50% 0%,
-          #122c4a 0%,
-          #0a1a2e 55%,
-          #050b15 100%
-        );
+        background: radial-gradient(130% 90% at 50% 0%, #122c4a 0%, #0a1a2e 55%, #050b15 100%);
       }
       #cq-bg-layer {
         position: absolute;
@@ -130,15 +123,14 @@
     <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
     <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
     <!-- ghl-injected:end -->
-  
-  
+
     <!-- uifr-injected:begin -->
     <!-- BCPS Instructional Framework Rubric · TEACH support. Teacher/observer reference — NOT shown to students. Interactive practice activity (math/games/u9-coordinate-quest): supports Level 4 conditions on T2, T4 (students choose their approach + immediate no-fail feedback with retry). Full evidence: /teacher-tools/teaching-evidence/ · docs/uifr-teach-l4.md. -->
     <!-- uifr-injected:end -->
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2" />
+    <!-- nsr-injected:end -->
+  </head>
   <body>
     <!-- Decorative animated star-field (behind the Phaser canvas). -->
     <div id="cq-bg" data-parallax aria-hidden="true">
@@ -153,8 +145,7 @@
         var layer = document.getElementById("cq-bg-layer");
         if (!layer) return;
         var reduce =
-          window.matchMedia &&
-          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         var frag = document.createDocumentFragment();
         for (var i = 0; i < 90; i++) {
           var s = document.createElement("div");
@@ -247,9 +238,7 @@
         }
         return a;
       }
-      const RM_QUERY =
-        window.matchMedia &&
-        window.matchMedia("(prefers-reduced-motion: reduce)");
+      const RM_QUERY = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)");
       const reducedMotion = () => !!(RM_QUERY && RM_QUERY.matches);
       // Real minus sign for negatives (matches the rest of the math UI).
       const fmt = (n) => (n < 0 ? "−" + Math.abs(n) : String(n));
@@ -299,9 +288,7 @@
         init() {
           if (!this.ctx)
             try {
-              this.ctx = new (
-                window.AudioContext || window.webkitAudioContext
-              )();
+              this.ctx = new (window.AudioContext || window.webkitAudioContext)();
             } catch (e) {}
         },
         play(t, f, d, v = 0.18) {
@@ -392,14 +379,7 @@
           given: null,
           prompt: "Plot the point  (" + fmt(x) + ", " + fmt(y) + ")",
           hint: "",
-          why:
-            "(" +
-            fmt(x) +
-            ", " +
-            fmt(y) +
-            ") sits in Quadrant " +
-            ROMAN[quadrantOf(x, y)] +
-            ".",
+          why: "(" + fmt(x) + ", " + fmt(y) + ") sits in Quadrant " + ROMAN[quadrantOf(x, y)] + ".",
         };
       }
 
@@ -420,11 +400,7 @@
             tx: a,
             ty: -b,
             prompt:
-              "Reflect P (" +
-              fmt(a) +
-              ", " +
-              fmt(b) +
-              ") across the x-axis. Place the image.",
+              "Reflect P (" + fmt(a) + ", " + fmt(b) + ") across the x-axis. Place the image.",
             hint: "Mirror it over the x-axis: keep x the same, flip the sign of y.",
             why:
               "Across the x-axis: (" +
@@ -443,12 +419,7 @@
           given: { x: a, y: b },
           tx: -a,
           ty: b,
-          prompt:
-            "Reflect P (" +
-            fmt(a) +
-            ", " +
-            fmt(b) +
-            ") across the y-axis. Place the image.",
+          prompt: "Reflect P (" + fmt(a) + ", " + fmt(b) + ") across the y-axis. Place the image.",
           hint: "Mirror it over the y-axis: keep y the same, flip the sign of x.",
           why:
             "Across the y-axis: (" +
@@ -468,23 +439,12 @@
       // values on a cross-zero pair). `extra` seeds one more distractor.
       function distanceChoices(d, a, b, extra) {
         const set = [d];
-        [
-          extra,
-          Math.abs(Math.abs(a) - Math.abs(b)),
-          d - 1,
-          d + 1,
-          d + 2,
-          d - 2,
-          d + 3,
-        ].forEach((v) => {
-          if (
-            typeof v === "number" &&
-            set.length < 4 &&
-            v >= 1 &&
-            set.indexOf(v) === -1
-          )
-            set.push(v);
-        });
+        [extra, Math.abs(Math.abs(a) - Math.abs(b)), d - 1, d + 1, d + 2, d - 2, d + 3].forEach(
+          (v) => {
+            if (typeof v === "number" && set.length < 4 && v >= 1 && set.indexOf(v) === -1)
+              set.push(v);
+          },
+        );
         return shuffle(set);
       }
 
@@ -551,15 +511,7 @@
             question: "How many units apart are A and B?",
             correct: d,
             choices: distanceChoices(d, a, b, null),
-            why:
-              "Distance = |" +
-              fmt(a) +
-              " − " +
-              fmtP(b) +
-              "| = " +
-              d +
-              " units." +
-              crossPart,
+            why: "Distance = |" + fmt(a) + " − " + fmtP(b) + "| = " + d + " units." + crossPart,
           },
         };
       }
@@ -589,8 +541,7 @@
           givens: givens,
           tx: miss.x,
           ty: miss.y,
-          prompt:
-            "Three corners of a rectangle are shown. Plot the missing corner.",
+          prompt: "Three corners of a rectangle are shown. Plot the missing corner.",
           hint: "The missing corner shares its x with one shown corner and its y with another.",
           why:
             "The missing corner is (" +
@@ -726,16 +677,11 @@
           )
           .setOrigin(0.5);
         this.add
-          .text(
-            cx,
-            292,
-            "Click a cell or use ← → ↑ ↓ · 6.NOS.6 · 6.NOS.9 · 6.GR.3 · Unit 9",
-            {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "14px",
-              color: C.sub,
-            },
-          )
+          .text(cx, 292, "Click a cell or use ← → ↑ ↓ · 6.NOS.6 · 6.NOS.9 · 6.GR.3 · Unit 9", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "14px",
+            color: C.sub,
+          })
           .setOrigin(0.5);
 
         const hs = localStorage.getItem(LS_KEY);
@@ -807,9 +753,7 @@
           })
           .setOrigin(0.5);
 
-        this.add
-          .rectangle(cx, 318, 560, 320, C.panel)
-          .setStrokeStyle(2, C.panelEdge);
+        this.add.rectangle(cx, 318, 560, 320, C.panel).setStrokeStyle(2, C.panelEdge);
 
         this.stepText = this.add
           .text(cx, 182, "", {
@@ -819,9 +763,7 @@
             color: C.accentS,
           })
           .setOrigin(0.5);
-        this.emojiText = this.add
-          .text(cx, 248, "", { fontSize: "76px" })
-          .setOrigin(0.5);
+        this.emojiText = this.add.text(cx, 248, "", { fontSize: "76px" }).setOrigin(0.5);
         this.termText = this.add
           .text(cx, 326, "", {
             fontFamily: "Segoe UI, sans-serif",
@@ -886,9 +828,7 @@
       VocabScene.prototype.renderCard = function () {
         const v = VOCAB_TERMS[this.idx];
         const last = this.idx === VOCAB_TERMS.length - 1;
-        this.stepText.setText(
-          "Key word " + (this.idx + 1) + " of " + VOCAB_TERMS.length,
-        );
+        this.stepText.setText("Key word " + (this.idx + 1) + " of " + VOCAB_TERMS.length);
         this.emojiText.setText(v.emoji);
         this.termText.setText(v.term);
         this.defText.setText(v.def);
@@ -955,6 +895,31 @@
           "Fewer hints",
         ]);
 
+        // Auto: let the adaptive helper pick the level from recent runs.
+        const autoBtn = this.add
+          .text(cx, 540, "✨ Auto — picks your level", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "20px",
+            fontStyle: "bold",
+            color: C.accentS,
+          })
+          .setOrigin(0.5)
+          .setInteractive({ useHandCursor: true });
+        const goAuto = () => {
+          SFX.init();
+          SFX.coin();
+          JUICE.audio.unlock();
+          const lv = window.NTAdaptive
+            ? window.NTAdaptive.pickLevel("u9-coordinate-quest", 1, 2)
+            : 1;
+          lastLevel = lv;
+          this.scene.start("Game", { level: lv, auto: true });
+        };
+        autoBtn.on("pointerover", () => autoBtn.setScale(1.05));
+        autoBtn.on("pointerout", () => autoBtn.setScale(1));
+        autoBtn.on("pointerdown", goAuto);
+        this.input.keyboard.on("keydown-A", goAuto);
+
         srSay(
           "Choose your level. Level 1 is support: Quadrant one with positive " +
             "numbers, hints on. Level 2 is enrichment: all four quadrants with " +
@@ -963,14 +928,7 @@
             "Press 1 or 2 to choose.",
         );
       };
-      LevelScene.prototype.makeCard = function (
-        x,
-        lvl,
-        title,
-        tag,
-        color,
-        bullets,
-      ) {
+      LevelScene.prototype.makeCard = function (x, lvl, title, tag, color, bullets) {
         const top = 188,
           h = 318,
           w = 320;
@@ -1028,10 +986,13 @@
       GameScene.prototype.init = function (data) {
         this.reduceMotion = reducedMotion();
         this.chosenLevel = (data && data.level) || 1;
+        this.autoMode = !!(data && data.auto);
+        this.attempts = 0;
+        this.endless = !!(data && data.endless);
         this.score = 0;
         this.streak = 0;
         this.solved = 0;
-        this.target = WIN_TARGET;
+        this.target = this.endless ? Infinity : WIN_TARGET;
         this.problem = null;
         this.locked = false;
         this.phase = "plot"; // "plot" (place the marker) or "answer" (choices)
@@ -1091,8 +1052,26 @@
           })
           .setOrigin(1, 0);
         this.progressText = this.add
-          .text(cx, 12, "0 / " + this.target, { ...hudStyle, color: C.ink })
+          .text(cx, 12, "0 / " + (this.endless ? "∞" : this.target), {
+            ...hudStyle,
+            color: C.ink,
+          })
           .setOrigin(0.5, 0);
+
+        // Endless mode: a small "Finish" control that ends the run on demand,
+        // reusing the same Result transition the win uses.
+        if (this.endless) {
+          const finishBtn = this.add
+            .text(cx + 200, 36, "Finish ✓", { ...hudStyle, color: C.goldS })
+            .setOrigin(0.5, 0)
+            .setInteractive({ useHandCursor: true });
+          finishBtn.on("pointerover", () => finishBtn.setScale(1.05));
+          finishBtn.on("pointerout", () => finishBtn.setScale(1));
+          finishBtn.on("pointerdown", () => {
+            if (this.locked) return;
+            this.endGame();
+          });
+        }
 
         // ── Problem banner ──
         this.bannerLabel = this.add
@@ -1166,10 +1145,7 @@
           .setVisible(false);
 
         // Marker (the star you place).
-        this.markerRing = this.add
-          .circle(0, 0, 13)
-          .setStrokeStyle(3, C.gold)
-          .setDepth(20);
+        this.markerRing = this.add.circle(0, 0, 13).setStrokeStyle(3, C.gold).setDepth(20);
         this.markerDot = this.add.circle(0, 0, 5, C.gold).setDepth(20);
 
         // ── Feedback line ──
@@ -1200,12 +1176,8 @@
             color: "#ffffff",
           })
           .setOrigin(0.5);
-        this.lockBtn.on("pointerover", () =>
-          this.lockBtn.setFillStyle(0x37a667),
-        );
-        this.lockBtn.on("pointerout", () =>
-          this.lockBtn.setFillStyle(0x2f8f5a),
-        );
+        this.lockBtn.on("pointerover", () => this.lockBtn.setFillStyle(0x37a667));
+        this.lockBtn.on("pointerout", () => this.lockBtn.setFillStyle(0x2f8f5a));
         this.lockBtn.on("pointerdown", () => this.lockIn());
 
         // ── Hint line ──
@@ -1291,20 +1263,10 @@
         // Gridlines.
         g.lineStyle(1, C.grid, 0.9);
         for (let gx = R.xmin; gx <= R.xmax; gx++) {
-          g.lineBetween(
-            this.sx(gx),
-            this.sy(R.ymax),
-            this.sx(gx),
-            this.sy(R.ymin),
-          );
+          g.lineBetween(this.sx(gx), this.sy(R.ymax), this.sx(gx), this.sy(R.ymin));
         }
         for (let gy = R.ymin; gy <= R.ymax; gy++) {
-          g.lineBetween(
-            this.sx(R.xmin),
-            this.sy(gy),
-            this.sx(R.xmax),
-            this.sy(gy),
-          );
+          g.lineBetween(this.sx(R.xmin), this.sy(gy), this.sx(R.xmax), this.sy(gy));
         }
         // Axes (highlighted).
         g.lineStyle(3, C.gridAxis, 1);
@@ -1372,9 +1334,7 @@
           py = this.sy(this.my);
         this.markerRing.setPosition(px, py);
         this.markerDot.setPosition(px, py);
-        this.readout.setText(
-          "Marker:  (" + fmt(this.mx) + ", " + fmt(this.my) + ")",
-        );
+        this.readout.setText("Marker:  (" + fmt(this.mx) + ", " + fmt(this.my) + ")");
         this.drawGuides();
       };
 
@@ -1416,8 +1376,7 @@
 
         // Show / hide the given point(s) for reflect / distance / rectangle.
         const givens = p.givens || (p.given ? [p.given] : []);
-        const nameFor =
-          p.kind === "reflect" ? "P " : p.kind === "distance" ? "A " : "";
+        const nameFor = p.kind === "reflect" ? "P " : p.kind === "distance" ? "A " : "";
         this.givenStars.forEach((s, i) => {
           const gp = givens[i];
           if (!gp) {
@@ -1436,16 +1395,11 @@
 
         // Hint line: Level 1 always shows it; the new mission types keep a
         // light scaffold on Level 2 too (they are two-part questions).
-        const showHint =
-          this.chosenLevel === 1 ||
-          p.kind === "distance" ||
-          p.kind === "polygon";
+        const showHint = this.chosenLevel === 1 || p.kind === "distance" || p.kind === "polygon";
         if (showHint && p.hint) {
           this.hintText.setText(p.hint);
         } else {
-          this.hintText.setText(
-            "Click a cell or use the arrow keys, then Lock In.",
-          );
+          this.hintText.setText("Click a cell or use the arrow keys, then Lock In.");
         }
 
         // Reset marker to the origin each round.
@@ -1453,9 +1407,7 @@
         const srGivens =
           p.kind === "polygon"
             ? " Corners shown: " +
-              givens
-                .map((g) => "(" + fmt(g.x) + ", " + fmt(g.y) + ")")
-                .join(", ") +
+              givens.map((g) => "(" + fmt(g.x) + ", " + fmt(g.y) + ")").join(", ") +
               "."
             : "";
         srSay(
@@ -1491,6 +1443,7 @@
             this.time.delayedCall(700, () => this.beginAnswerPhase());
             return;
           }
+          this.attempts++;
           this.solved++;
           this.streak++;
           const bonus = Math.min(this.streak, 5) * 5;
@@ -1512,13 +1465,12 @@
           this.streak = 0;
           SFX.bad();
           JUICE.audio.wrong();
-          const tip =
-            p.hint ||
-            "Check the sign and size of each coordinate, then Lock In.";
+          const tip = p.hint || "Check the sign and size of each coordinate, then Lock In.";
           this.feedback.setText("Not quite — try again. " + tip).setAlpha(1);
           this.updateHUD();
           srSay("Not quite. Try again. " + tip);
         } else {
+          this.attempts++;
           SFX.bad();
           JUICE.audio.wrong();
           this.streak = 0;
@@ -1583,12 +1535,7 @@
       // COUNT the distance calmly (matches the |a − b| explanation).
       GameScene.prototype.drawCountedSegment = function (seg) {
         this.segG.lineStyle(4, C.gold, 0.9);
-        this.segG.lineBetween(
-          this.sx(seg.x1),
-          this.sy(seg.y1),
-          this.sx(seg.x2),
-          this.sy(seg.y2),
-        );
+        this.segG.lineBetween(this.sx(seg.x1), this.sy(seg.y1), this.sx(seg.x2), this.sy(seg.y2));
         const steps = Math.abs(seg.x2 - seg.x1) + Math.abs(seg.y2 - seg.y1);
         if (!steps) return;
         const dx = (seg.x2 - seg.x1) / steps,
@@ -1600,17 +1547,12 @@
           this.segG.fillCircle(px, py, 4);
           this.segLabels.push(
             this.add
-              .text(
-                px + (dy !== 0 ? 14 : 0),
-                py - (dx !== 0 ? 14 : 0),
-                String(i),
-                {
-                  fontFamily: "Segoe UI, sans-serif",
-                  fontSize: "12px",
-                  fontStyle: "bold",
-                  color: C.goldS,
-                },
-              )
+              .text(px + (dy !== 0 ? 14 : 0), py - (dx !== 0 ? 14 : 0), String(i), {
+                fontFamily: "Segoe UI, sans-serif",
+                fontSize: "12px",
+                fontStyle: "bold",
+                color: C.goldS,
+              })
               .setOrigin(0.5)
               .setDepth(9),
           );
@@ -1682,14 +1624,14 @@
       };
 
       GameScene.prototype.pickChoice = function (i) {
-        if (this.phase !== "answer" || !this.choiceVals || this.answerDone)
-          return;
+        if (this.phase !== "answer" || !this.choiceVals || this.answerDone) return;
         if (i < 0 || i >= this.choiceVals.length) return;
         const ans = this.problem.answer;
         if (this.choiceVals[i] === ans.correct) {
           this.answerDone = true;
           SFX.good();
           JUICE.audio.correct(this.streak);
+          this.attempts++;
           this.solved++;
           this.streak++;
           const gained = 20 + Math.min(this.streak, 5) * 5;
@@ -1708,24 +1650,19 @@
           SFX.bad();
           JUICE.audio.wrong();
           this.feedback
-            .setText(
-              "Not quite — count the dots along the gold line, then pick again.",
-            )
+            .setText("Not quite — count the dots along the gold line, then pick again.")
             .setAlpha(1);
           this.updateHUD();
-          srSay(
-            "Not quite. Count the unit steps along the highlighted line, then pick again.",
-          );
+          srSay("Not quite. Count the unit steps along the highlighted line, then pick again.");
         } else {
           this.answerDone = true;
+          this.attempts++;
           this.streak = 0;
           SFX.bad();
           JUICE.audio.wrong();
           const ci = this.choiceVals.indexOf(ans.correct);
           if (ci >= 0) this.choiceRects[ci].setFillStyle(0x2f8f5a);
-          this.feedback
-            .setText("The answer is " + ans.correct + ". " + ans.why)
-            .setAlpha(1);
+          this.feedback.setText("The answer is " + ans.correct + ". " + ans.why).setAlpha(1);
           this.updateHUD();
           srSay("The answer is " + ans.correct + ". " + ans.why);
           this.afterAttempt();
@@ -1749,7 +1686,7 @@
         this.scoreText.setText("Score: " + this.score);
         this.streakText.setText("Streak: " + this.streak);
         this.levelText.setText("Level " + this.chosenLevel);
-        this.progressText.setText(this.solved + " / " + this.target);
+        this.progressText.setText(this.solved + " / " + (this.endless ? "∞" : this.target));
       };
 
       GameScene.prototype.endGame = function () {
@@ -1760,8 +1697,10 @@
           this.scene.start("Result", {
             score: this.score,
             solved: this.solved,
-            target: this.target,
+            target: this.endless ? this.solved : this.target,
             level: this.chosenLevel,
+            auto: this.autoMode,
+            accuracy: this.attempts ? this.solved / this.attempts : 1,
           });
         });
       };
@@ -1780,8 +1719,16 @@
         const cx = W / 2;
         this.add.rectangle(cx, H / 2, W, H, C.bg);
 
-        const stars =
-          d.solved >= d.target ? 3 : d.solved >= d.target * 0.6 ? 2 : 1;
+        // Adaptive: log the run so Auto can pick the next level.
+        if (d.auto && window.NTAdaptive)
+          window.NTAdaptive.recordRun("u9-coordinate-quest", {
+            won: d.solved >= d.target,
+            accuracy: typeof d.accuracy === "number" ? d.accuracy : 1,
+            min: 1,
+            max: 2,
+          });
+
+        const stars = d.solved >= d.target ? 3 : d.solved >= d.target * 0.6 ? 2 : 1;
 
         let hs = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
         if (d.score > hs) {
@@ -1818,21 +1765,11 @@
           })
           .setOrigin(0.5);
         this.add
-          .text(
-            cx,
-            292,
-            "Plotted " +
-              d.solved +
-              " of " +
-              d.target +
-              " points · Level " +
-              d.level,
-            {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "18px",
-              color: C.ink,
-            },
-          )
+          .text(cx, 292, "Plotted " + d.solved + " of " + d.target + " points · Level " + d.level, {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "18px",
+            color: C.ink,
+          })
           .setOrigin(0.5);
         this.add
           .text(cx, 322, "High Score: " + hs, {
@@ -1856,9 +1793,7 @@
               problemsAttempted: d.solved,
             });
         } catch (e) {}
-        srSay(
-          "Quest complete! Final score " + d.score + ", " + stars + " stars.",
-        );
+        srSay("Quest complete! Final score " + d.score + ", " + stars + " stars.");
 
         const btn = this.add
           .rectangle(cx, 398, 240, 54, 0x2f8f5a)
@@ -1878,6 +1813,26 @@
         btn.on("pointerdown", again);
         this.input.keyboard.on("keydown-SPACE", again);
         this.input.keyboard.on("keydown-ENTER", again);
+
+        // Endless: keep practicing at the same level without leaving.
+        const keepBtn = this.add
+          .text(cx, 456, "♾️ Keep Playing", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "20px",
+            fontStyle: "bold",
+            color: C.accentS,
+          })
+          .setOrigin(0.5)
+          .setInteractive({ useHandCursor: true });
+        const keepPlaying = () =>
+          this.scene.start("Game", {
+            level: d.level,
+            endless: true,
+            auto: !!d.auto,
+          });
+        keepBtn.on("pointerover", () => keepBtn.setScale(1.05));
+        keepBtn.on("pointerout", () => keepBtn.setScale(1));
+        keepBtn.on("pointerdown", keepPlaying);
       };
 
       // ── Launch ──
@@ -1888,14 +1843,7 @@
         parent: document.body,
         backgroundColor: "#0a1a2e",
         scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-        scene: [
-          BootScene,
-          TitleScene,
-          VocabScene,
-          LevelScene,
-          GameScene,
-          ResultScene,
-        ],
+        scene: [BootScene, TitleScene, VocabScene, LevelScene, GameScene, ResultScene],
       };
       const cqGame = new Phaser.Game(config);
 
@@ -1936,6 +1884,8 @@
     <!-- mwb-injected:end -->
     <!-- Student Passport (meta-progression pill; boots itself, award() guarded) -->
     <script src="/assets/lesson-passport.js" defer></script>
+    <!-- Adaptive level picker (between-run; NTAdaptive.pickLevel / recordRun) -->
+    <script src="/assets/game-adaptive.js"></script>
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
     <script src="/assets/game-access.js" defer></script>
     <!-- gacc-injected:end -->
@@ -1961,8 +1911,8 @@
     <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
     <script src="/assets/canvas-bridge.js" defer></script>
     <!-- canvas-bridge-injected:end -->
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
-  <!-- nsr-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+    <!-- nsr-injected:end -->
   </body>
 </html>
