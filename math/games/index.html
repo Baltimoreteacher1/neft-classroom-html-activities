@@ -20,23 +20,21 @@
     <link rel="stylesheet" href="/assets/game-access.css" />
     <!-- gacc-injected:end -->
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2" />
+    <!-- nsr-injected:end -->
+  </head>
   <body>
     <main class="page-shell">
       <section class="hero compact-hero">
         <p class="eyebrow">Play to Practice · Grade 6</p>
         <h1>Lesson Games</h1>
         <p class="hero-copy">
-          Interactive 2D games for small clusters of lessons — build, place,
-          balance, and plot your way through the math, with streaks and star
-          scoring. Calm and self-paced: no timers, and mistakes never end the
-          game. Great for a warm-up, a brain break, or end-of-cluster review.
+          Interactive 2D games for small clusters of lessons — build, place, balance, and plot your
+          way through the math, with streaks and star scoring. Calm and self-paced: no timers, and
+          mistakes never end the game. Great for a warm-up, a brain break, or end-of-cluster review.
           For a full mixed review, try the
-          <a href="/math/review-arcade/">Boss-Battle Review Arcade</a>, and
-          teachers can track play on the
-          <a href="/math/games/dashboard/">Games Progress Dashboard</a>.
+          <a href="/math/review-arcade/">Boss-Battle Review Arcade</a>, and teachers can track play
+          on the <a href="/math/games/dashboard/">Games Progress Dashboard</a>.
         </p>
       </section>
 
@@ -49,10 +47,7 @@
           <a
             class="activity-card"
             href="/math/games/placement-quest/"
-            style="
-              border: 2px solid #6366f1;
-              box-shadow: 0 4px 20px rgba(99, 102, 241, 0.15);
-            "
+            style="border: 2px solid #6366f1; box-shadow: 0 4px 20px rgba(99, 102, 241, 0.15)"
           >
             <span
               class="card-kicker"
@@ -67,19 +62,81 @@
             >
             <h3>🧭 Math Placement Quest</h3>
             <p>
-              Test your Grade 6 math readiness with a diagnostic adventure. Get
-              your Level Badge, target areas, and track your progress.
+              Test your Grade 6 math readiness with a diagnostic adventure. Get your Level Badge,
+              target areas, and track your progress.
             </p>
             <span class="button-link">Start Placement Quest</span>
           </a>
+
+          <a
+            class="activity-card"
+            id="daily-mix-card"
+            href="/math/games/u1-factor-frenzy/"
+            style="border: 2px solid #f59e0b; box-shadow: 0 4px 20px rgba(245, 158, 11, 0.15)"
+          >
+            <span
+              class="card-kicker"
+              style="
+                background: #f59e0b;
+                color: #fff;
+                padding: 2px 8px;
+                border-radius: 4px;
+                font-weight: 800;
+              "
+              >🎲 Daily Mix</span
+            >
+            <h3>🎲 Today's Game</h3>
+            <p id="daily-mix-copy">
+              A different game every day — the whole class plays the same pick. Come back tomorrow
+              for a new one!
+            </p>
+            <span class="button-link" id="daily-mix-btn">Play Today's Game</span>
+          </a>
+          <script>
+            /* Daily Mix: deterministic date-seeded rotation through the unit games.
+               Self-contained, no backend — everyone on the same date gets the same game. */
+            (function () {
+              var GAMES = [
+                { slug: "u1-factor-frenzy", name: "Factor Frenzy" },
+                { slug: "u1-decimal-dash", name: "Decimal Dash" },
+                { slug: "u2-fraction-frenzy", name: "Fraction Frenzy" },
+                { slug: "u3-ratio-rush", name: "Ratio Rush" },
+                { slug: "u4-percent-power", name: "Percent Power" },
+                { slug: "u5-area-attack", name: "Area Attack" },
+                { slug: "u6-expression-express", name: "Expression Express" },
+                { slug: "u7-equation-quest", name: "Equation Quest" },
+                { slug: "u8-data-dash", name: "Data Dash" },
+                { slug: "u9-coordinate-quest", name: "Coordinate Quest" },
+                { slug: "u10-volume-blast", name: "Volume Blast" },
+              ];
+              try {
+                var now = new Date();
+                // Days since epoch in local time → stable per calendar day.
+                var dayNum = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 86400000);
+                var pick = GAMES[(now.getFullYear() * 366 + dayNum) % GAMES.length];
+                var card = document.getElementById("daily-mix-card");
+                if (card) card.setAttribute("href", "/math/games/" + pick.slug + "/?daily=1");
+                var btn = document.getElementById("daily-mix-btn");
+                if (btn) btn.textContent = "Play " + pick.name;
+                var copy = document.getElementById("daily-mix-copy");
+                if (copy)
+                  copy.innerHTML =
+                    "Today's pick: <strong>" +
+                    pick.name +
+                    "</strong>. A different game every day — the whole class plays the same one. " +
+                    "Come back tomorrow for a new challenge!";
+              } catch (e) {
+                /* fall back to the static href already on the card */
+              }
+            })();
+          </script>
 
           <a class="activity-card" href="/math/games/u1-factor-frenzy/">
             <span class="card-kicker">Lessons 1.1–1.3 · 6.NOS.4</span>
             <h3>🧮 Factor Frenzy</h3>
             <p>
-              Build factor trees to find the prime factorization — split
-              composites apart and lock in the primes. Calm and self-paced, no
-              timer.
+              Build factor trees to find the prime factorization — split composites apart and lock
+              in the primes. Calm and self-paced, no timer.
             </p>
             <span class="button-link">Play Factor Frenzy</span>
           </a>
@@ -88,8 +145,8 @@
             <span class="card-kicker">Lessons 1.4–1.7 · 6.NOS.2–3</span>
             <h3>💨 Decimal Dash</h3>
             <p>
-              Place and order decimals (tenths and hundredths) on a number line
-              — drag each bead to its exact spot. Calm and self-paced, no timer.
+              Place and order decimals (tenths and hundredths) on a number line — drag each bead to
+              its exact spot. Calm and self-paced, no timer.
             </p>
             <span class="button-link">Play Decimal Dash</span>
           </a>
@@ -98,9 +155,9 @@
             <span class="card-kicker">Lessons 2.1–2.5 · 6.NOS.1</span>
             <h3>🍕 Fraction Frenzy</h3>
             <p>
-              Cut and shade a fraction bar to model fractions, build
-              equivalents, and divide fractions — including fraction ÷ fraction,
-              like how many 2/3 fit in 2. Calm and self-paced, no timer.
+              Cut and shade a fraction bar to model fractions, build equivalents, and divide
+              fractions — including fraction ÷ fraction, like how many 2/3 fit in 2. Calm and
+              self-paced, no timer.
             </p>
             <span class="button-link">Play</span>
           </a>
@@ -109,8 +166,8 @@
             <span class="card-kicker">Lessons 3.1–3.5 · 6.AT.1–3</span>
             <h3>⚖️ Ratio Rush</h3>
             <p>
-              Build equivalent ratios, fill in missing values, and find unit
-              rates on a double number line. Calm and self-paced, no timer.
+              Build equivalent ratios, fill in missing values, and find unit rates on a double
+              number line. Calm and self-paced, no timer.
             </p>
             <span class="button-link">Play</span>
           </a>
@@ -119,8 +176,8 @@
             <span class="card-kicker">Lessons 4.1–4.5 · 6.AT.4</span>
             <h3>💯 Percent Power</h3>
             <p>
-              Percent of a number, sale prices after a discount, and
-              percent–decimal equivalents.
+              Percent of a number, sale prices after a discount, and percent–decimal equivalents.
+              Calm and self-paced, no timer.
             </p>
             <span class="button-link">Play</span>
           </a>
@@ -129,9 +186,8 @@
             <span class="card-kicker">Lessons 5.1–5.5 · 6.GR.1</span>
             <h3>📐 Area Attack</h3>
             <p>
-              Tile rectangles and triangles (see the ½ × b × h half-rectangle!)
-              and decompose L-shapes into rectangles to find area. Calm and
-              self-paced, no timer.
+              Tile rectangles and triangles (see the ½ × b × h half-rectangle!) and decompose
+              L-shapes into rectangles to find area. Calm and self-paced, no timer.
             </p>
             <span class="button-link">Play</span>
           </a>
@@ -139,10 +195,7 @@
           <a class="activity-card" href="/math/games/u6-expression-express/">
             <span class="card-kicker">Lessons 6.1–6.7 · 6.AT.5–4</span>
             <h3>🧮 Expression Express</h3>
-            <p>
-              Exponents, evaluating expressions at a value, and order of
-              operations.
-            </p>
+            <p>Exponents, evaluating expressions at a value, and order of operations.</p>
             <span class="button-link">Play</span>
           </a>
 
@@ -150,8 +203,8 @@
             <span class="card-kicker">Lessons 7.1–7.7 · 6.AT.8</span>
             <h3>🧩 Equation Quest</h3>
             <p>
-              Solve one-step equations (+, −, ×, ÷) with inverse operations
-              before time runs out.
+              Solve one-step and two-step equations (+, −, ×, ÷) with inverse operations. Calm and
+              self-paced, no timer.
             </p>
             <span class="button-link">Play</span>
           </a>
@@ -160,9 +213,8 @@
             <span class="card-kicker">Lessons 8.1–8.7 · 6.DS</span>
             <h3>📊 Data Dash</h3>
             <p>
-              Build a dot plot around locked "given" data to hit a target mean,
-              median, range — or mean + MAD on Level 2. Calm and self-paced, no
-              timer.
+              Build a dot plot around locked "given" data to hit a target mean, median, range — or
+              mean + MAD on Level 2. Calm and self-paced, no timer.
             </p>
             <span class="button-link">Play</span>
           </a>
@@ -171,9 +223,8 @@
             <span class="card-kicker">Coordinate Plane · 6.NOS.6/8 · 6.GR.3</span>
             <h3>🧭 Coordinate Quest — Star Plotter</h3>
             <p>
-              Plot ordered pairs, reflect across an axis, count the distance
-              between points, and finish the missing corner of a rectangle. Two
-              levels, calm and self-paced, no timer.
+              Plot ordered pairs, reflect across an axis, count the distance between points, and
+              finish the missing corner of a rectangle. Two levels, calm and self-paced, no timer.
             </p>
             <span class="button-link">Play</span>
           </a>
@@ -182,10 +233,9 @@
             <span class="card-kicker">Lessons 10.1–10.5 · 6.GR.2</span>
             <h3>📦 Volume Blast — Unit-Cube Stacker</h3>
             <p>
-              Stack unit cubes to build a rectangular prism: set length, width,
-              and height, watch L × W × H update live, then match a target
-              volume or find a missing dimension. Level 3 builds with half-unit
-              edges (2½ × 3 × 4 = 30).
+              Stack unit cubes to build a rectangular prism: set length, width, and height, watch L
+              × W × H update live, then match a target volume or find a missing dimension. Level 3
+              builds with half-unit edges (2½ × 3 × 4 = 30).
             </p>
             <span class="button-link">Play</span>
           </a>
@@ -197,31 +247,24 @@
           <p class="eyebrow">⭐ Flagship Games · One per Unit</p>
           <h2 id="flagship-heading">Big 2D Unit Games</h2>
           <p>
-            Each unit has a full arcade-quality 2D game (built with the Phaser
-            engine) — multiple levels, streaks, animation, and star scoring, all
-            self-paced with no game-overs. Great for a reward day, a station, or
-            deep end-of-unit review.
+            Each unit has a full arcade-quality 2D game (built with the Phaser engine) — multiple
+            levels, streaks, animation, and star scoring, all self-paced with no game-overs. Great
+            for a reward day, a station, or deep end-of-unit review.
           </p>
         </div>
         <div class="activity-grid">
-          <a
-            class="activity-card"
-            href="/math/unit-1/games/unit1-factor-frenzy.html"
-          >
+          <a class="activity-card" href="/math/unit-1/games/unit1-factor-frenzy.html">
             <span class="card-kicker">Unit 1 · 6.NOS.4</span>
             <h3>🧱 Prime Brick Breaker</h3>
             <p>Smash bricks by their factors, GCF, and LCM.</p>
             <span class="button-link">Play</span>
           </a>
-          <a
-            class="activity-card"
-            href="/math/unit-2/games/unit2-fraction-foundry.html"
-          >
+          <a class="activity-card" href="/math/unit-2/games/unit2-fraction-foundry.html">
             <span class="card-kicker">Unit 2 · 6.NOS.1</span>
             <h3>🥧 Fraction Foundry — Divide Fractions</h3>
             <p>
-              Divide fractions with visual bar models across five levels — whole
-              ÷ unit fraction, fraction ÷ fraction, and mixed numbers. (<a
+              Divide fractions with visual bar models across five levels — whole ÷ unit fraction,
+              fraction ÷ fraction, and mixed numbers. (<a
                 href="/math/unit-2/games/unit2-fraction-kitchen.html"
                 >Fraction Kitchen</a
               >
@@ -233,88 +276,57 @@
             <span class="card-kicker">Unit 3 · 6.AT.1–3</span>
             <h3>🍧 Ratio Kitchen — Mix to the Recipe</h3>
             <p>
-              Add scoops to match a target ratio and serve the order — the
-              mixing IS the math. Equivalent ratios, scaling, and unit rates.
+              Add scoops to match a target ratio and serve the order — the mixing IS the math.
+              Equivalent ratios, scaling, and unit rates.
             </p>
             <span class="button-link">Play</span>
           </a>
-          <a
-            class="activity-card"
-            href="/math/unit-4/games/unit4-discount-dash.html"
-          >
+          <a class="activity-card" href="/math/unit-4/games/unit4-discount-dash.html">
             <span class="card-kicker">Unit 4 · 6.AT.4</span>
             <h3>🏷️ Discount Dash — Sale Runner</h3>
-            <p>
-              Grab the best deals using percent of a number and sale prices.
-            </p>
+            <p>Grab the best deals using percent of a number and sale prices.</p>
             <span class="button-link">Play</span>
           </a>
-          <a
-            class="activity-card"
-            href="/math/unit-5/games/unit5-area-architect.html"
-          >
+          <a class="activity-card" href="/math/unit-5/games/unit5-area-architect.html">
             <span class="card-kicker">Unit 5 · 6.GR.1</span>
             <h3>🏙️ Area Architect — City Builder</h3>
             <p>Build a city by computing areas of every shape.</p>
             <span class="button-link">Play</span>
           </a>
-          <a
-            class="activity-card"
-            href="/math/unit-6/games/unit6-expression-engine.html"
-          >
+          <a class="activity-card" href="/math/unit-6/games/unit6-expression-engine.html">
             <span class="card-kicker">Unit 6 · 6.AT.5–4</span>
             <h3>⚙️ Expression Engine — Assembly Line</h3>
-            <p>
-              Run the factory: exponents, evaluating, and order of operations.
-            </p>
+            <p>Run the factory: exponents, evaluating, and order of operations.</p>
             <span class="button-link">Play</span>
           </a>
-          <a
-            class="activity-card"
-            href="/math/unit-8/games/unit7-equation-escape.html"
-          >
+          <a class="activity-card" href="/math/unit-8/games/unit7-equation-escape.html">
             <span class="card-kicker">Unit 7 · 6.AT.8</span>
             <h3>🔓 Equation Escape — Dungeon Escape</h3>
             <p>Solve one-step equations to escape each dungeon room.</p>
             <span class="button-link">Play</span>
           </a>
-          <a
-            class="activity-card"
-            href="/math/statistics/games/unit8-stats-slam.html"
-          >
+          <a class="activity-card" href="/math/statistics/games/unit8-stats-slam.html">
             <span class="card-kicker">Unit 8 · 6.DS</span>
             <h3>📊 Stats Slam — Sports Manager</h3>
             <p>Manage a team using mean, median, mode, and range.</p>
             <span class="button-link">Play</span>
           </a>
-          <a
-            class="activity-card"
-            href="/math/unit-7/games/unit9-coordinate-quest.html"
-          >
+          <a class="activity-card" href="/math/unit-7/games/unit9-coordinate-quest.html">
             <span class="card-kicker">Coordinate Plane · 6.NOS.5–8</span>
             <h3>🧭 Coordinate Quest — Space Navigation</h3>
-            <p>
-              Navigate space by plotting points and reading the four quadrants.
-            </p>
+            <p>Navigate space by plotting points and reading the four quadrants.</p>
             <span class="button-link">Play</span>
           </a>
-          <a
-            class="activity-card"
-            href="/math/unit-9/games/unit9-variable-velocity.html"
-          >
+          <a class="activity-card" href="/math/unit-9/games/unit9-variable-velocity.html">
             <span class="card-kicker">Two-Variable · 6.AT.11</span>
             <h3>🚀 Variable Velocity — Rover Relay</h3>
             <p>
               Spot independent vs. dependent variables, write
-              <em>y = kx (+ b)</em>, and plot the line as your rover delivers
-              cargo.
+              <em>y = kx (+ b)</em>, and plot the line as your rover delivers cargo.
             </p>
             <span class="button-link">Play</span>
           </a>
-          <a
-            class="activity-card"
-            href="/math/unit-10/games/unit10-volume-vault.html"
-          >
+          <a class="activity-card" href="/math/unit-10/games/unit10-volume-vault.html">
             <span class="card-kicker">Unit 10 · 6.GR.2</span>
             <h3>📦 Volume Vault — Crate Packer</h3>
             <p>Pack the vault by computing volume of rectangular prisms.</p>
@@ -329,9 +341,9 @@
           <h2 id="review-heading">Unit Review Games</h2>
         </div>
         <p class="hero-copy">
-          One calm, self-paced review game per unit, built live from that unit's
-          own practice — sort into bins, match pairs, choose the answer, and
-          spot the mistake. No timer. Great for end-of-unit review or test prep.
+          One calm, self-paced review game per unit, built live from that unit's own practice — sort
+          into bins, match pairs, choose the answer, and spot the mistake. No timer. Great for
+          end-of-unit review or test prep.
         </p>
         <div class="activity-grid">
           <a class="activity-card" href="/math/games/practice-arcade/?unit=1">
@@ -407,9 +419,9 @@
             <span class="card-kicker">📊 Analytics · Save/Resume</span>
             <h3>Games Progress Dashboard</h3>
             <p>
-              See attempts, best scores, stars, and a per-standard mastery
-              snapshot from completed games on this device. Group by game,
-              standard, or student, flag who needs review, and export a CSV.
+              See attempts, best scores, stars, and a per-standard mastery snapshot from completed
+              games on this device. Group by game, standard, or student, flag who needs review, and
+              export a CSV.
             </p>
             <span class="button-link">Open Dashboard</span>
           </a>
@@ -423,17 +435,16 @@
         </div>
         <div class="note-panel">
           <p>
-            New games are being built for each small lesson cluster across all
-            ten units — for example: Decimal Operations (1.4–1.7), Dividing
-            Fractions (2.x), Ratios &amp; Rates (3.x), Percents (4.x), Area
-            (5.x), Expressions (6.x), Equations &amp; Inequalities (7.x), Data
-            &amp; Statistics (8.x), Integers &amp; the Coordinate Plane (9.x),
-            and Volume &amp; Surface Area (10.x).
+            New games are being built for each small lesson cluster across all ten units — for
+            example: Decimal Operations (1.4–1.7), Dividing Fractions (2.x), Ratios &amp; Rates
+            (3.x), Percents (4.x), Area (5.x), Expressions (6.x), Equations &amp; Inequalities
+            (7.x), Data &amp; Statistics (8.x), Integers &amp; the Coordinate Plane (9.x), and
+            Volume &amp; Surface Area (10.x).
           </p>
           <p>
             Check back as the lineup fills in, and use the
-            <a href="/math/finder/">Activities Finder</a> to find every
-            interactive resource in the meantime.
+            <a href="/math/finder/">Activities Finder</a> to find every interactive resource in the
+            meantime.
           </p>
         </div>
       </section>
@@ -453,8 +464,8 @@
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
     <script src="/assets/game-access.js" defer></script>
     <!-- gacc-injected:end -->
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
-  <!-- nsr-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+    <!-- nsr-injected:end -->
   </body>
 </html>

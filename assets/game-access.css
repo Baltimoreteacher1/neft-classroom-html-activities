@@ -61,6 +61,72 @@
   border-color: #2563eb;
   color: #1e3a8a;
 }
+.nt-ga-btn.nt-ga-text {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+/* ---- Text size: scale the readable HTML chrome (titles, instructions,
+ * menus, buttons) for low-vision readers and small screens. Canvas-rendered
+ * gameplay text is bitmap and is intentionally unaffected. ---- */
+html.nt-text-lg
+  :is(
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    p,
+    li,
+    label,
+    a,
+    span,
+    button,
+    td,
+    th,
+    .card,
+    .instructions,
+    .prompt,
+    .question,
+    .problem
+  ) {
+  font-size: 1.15em;
+}
+html.nt-text-xl
+  :is(
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    p,
+    li,
+    label,
+    a,
+    span,
+    button,
+    td,
+    th,
+    .card,
+    .instructions,
+    .prompt,
+    .question,
+    .problem
+  ) {
+  font-size: 1.3em;
+}
+/* Keep our own control cluster crisp and proportionate at every size. */
+html.nt-text-lg .nt-ga-btn {
+  font-size: 17px;
+}
+html.nt-text-xl .nt-ga-btn {
+  font-size: 19px;
+}
+/* Never let the scaler blow up the game canvas itself. */
+html.nt-text-lg canvas,
+html.nt-text-xl canvas {
+  font-size: initial;
+}
 
 /* ---- Strong, consistent keyboard focus everywhere ---- */
 /* Exclude the game <canvas>: each game defines its own tuned canvas focus
