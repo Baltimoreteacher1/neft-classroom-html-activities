@@ -4776,6 +4776,46 @@ html.nt-extra-fullpage-open body {
 .nt-utility-item-danger:hover {
   background: #fef2f2;
 }
+
+/* Always-visible teacher-only "Clear answers" floating button. Bottom-LEFT,
+   stacked just above the minimap HUD (bottom:16). Teacher-mode only — the
+   module never mounts it for students. See engine/core/teacher-clear.js. */
+.nt-teacher-clear {
+  position: fixed;
+  left: 16px;
+  bottom: 72px;
+  z-index: 9998;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid #fecaca;
+  border-radius: 50px;
+  background: #b91c1c;
+  color: #fff;
+  font: inherit;
+  font-weight: 800;
+  font-size: 0.92rem;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(185, 28, 28, 0.28);
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease;
+}
+.nt-teacher-clear:hover {
+  background: #991b1b;
+  transform: translateY(-1px);
+}
+.nt-teacher-clear:focus-visible {
+  outline: 3px solid var(--gold, #ffd54a);
+  outline-offset: 2px;
+}
+@media print {
+  .nt-teacher-clear {
+    display: none !important;
+  }
+}
 /* Adopted controls lose their fixed/full-width chrome inside the menu. */
 .nt-utility-pop .export-toolbar {
   position: static;

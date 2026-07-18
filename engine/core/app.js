@@ -2,6 +2,7 @@ import { createState, normalizeStudentId, findSavedStudents } from "./state.js";
 import { createEngagement } from "../engagement/engagement.js";
 import { mountExportToolbar } from "./export.js";
 import { mountUtilityMenu } from "./utility-menu.js";
+import { mountTeacherClearButton } from "./teacher-clear.js";
 import { mountVoiceNav } from "./voice-nav.js";
 import { mountTranslate } from "./translate.js";
 import { reportScore } from "./score-reporter.js";
@@ -581,6 +582,10 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     }
     window.location.reload();
   };
+
+  // Always-visible teacher-only "Clear answers" button (also mirrored in the
+  // Tools menu). Renders only in teacher mode; no-op for students.
+  mountTeacherClearButton(window.__ntClearLessonAnswers);
 
   if (!state.get().studentName) {
     state.set({ studentName, studentPeriod });

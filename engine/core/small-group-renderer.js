@@ -3,6 +3,7 @@
 // engagement interactions, math practice, and visual system.
 
 import { installSmallGroupAnnotation } from "./small-group-annotation.js";
+import { mountTeacherClearButton } from "./teacher-clear.js";
 import {
   createMissionSection,
   createReflectionSection,
@@ -240,6 +241,25 @@ function renderStudio(config) {
   app.setAttribute("role", "main");
   const talkData = selectedTalk(config, variant);
   const store = createStudioStore(config.lessonId);
+
+  // Teacher-only "Clear answers": wipe this device's studio state for this
+  // lesson + the Save/Resume pointer, then reload it blank. Same control the
+  // Reveal lessons expose, so a teacher can project a fresh studio. Renders the
+  // floating button only in teacher mode; students never see it.
+  window.__ntClearLessonAnswers = () => {
+    try {
+      store.clear();
+    } catch (_) {
+      /* storage blocked — reload still clears in-memory state */
+    }
+    try {
+      window.NeftSaveResume?.reset?.();
+    } catch (_) {
+      /* save/resume not present on this page */
+    }
+    window.location.reload();
+  };
+  mountTeacherClearButton(window.__ntClearLessonAnswers);
   const state = {
     before: null,
     after: null,
