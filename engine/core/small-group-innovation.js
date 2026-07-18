@@ -310,6 +310,103 @@ export function createProveItLab(config, variant, state, onDone, store = null) {
   return section;
 }
 
+// Short, ESOL-friendly "how to do it" guidance for each proof method, surfaced
+// as tap-to-open popovers in the consensus lab so a student who is unsure what
+// "Model it / Explain it / Test it / Teach it" means can see concrete steps and
+// sentence frames — anchored to one of the lesson's own problems.
+const PROOF_GUIDANCE = {
+  model: {
+    steps: [
+      "Draw it — a diagram, table, number line, or quick picture.",
+      "Label each part, then point to where the answer shows up.",
+    ],
+    frames: ["This part shows ___.", "The answer is here because ___."],
+  },
+  explain: {
+    steps: ["Say your steps out loud, in order.", "Name the rule or math idea you used."],
+    frames: ["I know ___ because ___, so ___.", "First ___, then ___, which means ___."],
+  },
+  test: {
+    steps: [
+      "Put your answer back into the problem and check every step.",
+      "Try one more example to be sure it holds.",
+    ],
+    group2Steps: [
+      "Try a boundary case or a number that could break your answer.",
+      "Show it still works — or find exactly where it would not.",
+    ],
+    frames: ["When I check it, I get ___.", "This proves ___ because ___."],
+  },
+  teach: {
+    steps: [
+      "Plan a 30-second explanation for a partner.",
+      "End with one question that checks they understood.",
+    ],
+    frames: ["The key step is ___.", "Check — can you tell me why ___?"],
+  },
+};
+
+// Tap-to-open method guide: a row of chips (one per proof method) that reveal a
+// shared panel with "Do this" steps + sentence frames for the tapped method.
+// One panel open at a time; tapping the open chip again closes it.
+function createConsensusGuide(config, variant) {
+  const wrap = el("div", "sg-guide");
+  wrap.appendChild(
+    el(
+      "div",
+      "sg-guide-lede",
+      "Not sure what a choice means? Tap it for how-to steps and sentence frames.",
+    ),
+  );
+  const practice = config.practice || {};
+  const sample =
+    practice.extending?.[0]?.stem ||
+    practice.onLevel?.[0]?.stem ||
+    practice.approaching?.[0]?.stem ||
+    "";
+  const chipRow = el("div", "sg-guide-chips");
+  const panel = el("div", "sg-guide-panel");
+  panel.hidden = true;
+  panel.setAttribute("aria-live", "polite");
+  const chips = [];
+  let openId = null;
+  const renderPanel = (path) => {
+    const guide = PROOF_GUIDANCE[path.id] || {};
+    const steps = (variant === "group2" && guide.group2Steps) || guide.steps || [];
+    const frames = guide.frames || [];
+    const list = (items) => items.map((item) => `<li>${esc(item)}</li>`).join("");
+    panel.innerHTML =
+      `<div class="sg-guide-title">${esc(path.label)}</div>` +
+      (sample ? `<p class="sg-guide-anchor">For a problem like: <i>${esc(sample)}</i></p>` : "") +
+      `<div class="sg-guide-cols">` +
+      `<div><b>Do this</b><ul>${list(steps)}</ul></div>` +
+      `<div><b>Sentence frames</b><ul>${list(frames)}</ul></div>` +
+      `</div>`;
+  };
+  proofEntries(variant).forEach((path) => {
+    const chip = el(
+      "button",
+      "sg-guide-chip",
+      `${esc(path.label)} <span aria-hidden="true">?</span>`,
+    );
+    chip.type = "button";
+    chip.setAttribute("aria-expanded", "false");
+    chip.onclick = () => {
+      const closing = openId === path.id;
+      openId = closing ? null : path.id;
+      if (!closing) renderPanel(path);
+      panel.hidden = closing;
+      chips.forEach((item) =>
+        item.setAttribute("aria-expanded", String(!closing && item === chip)),
+      );
+    };
+    chips.push(chip);
+    chipRow.appendChild(chip);
+  });
+  wrap.append(chipRow, panel);
+  return wrap;
+}
+
 export function createConsensusLab(config, variant, state, store = null) {
   const fieldset = el("fieldset", "sg-consensus sg-innovation");
   fieldset.setAttribute("aria-label", "Team consensus protocol");
@@ -394,7 +491,7 @@ export function createConsensusLab(config, variant, state, store = null) {
     store?.set("revisionReason", state.revisionReason);
   };
   revision.appendChild(reasonLabel);
-  fieldset.append(voteBoard, reveal, revision);
+  fieldset.append(createConsensusGuide(config, variant), voteBoard, reveal, revision);
   return fieldset;
 }
 
