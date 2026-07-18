@@ -744,36 +744,105 @@ function typedLanes(item, steps, events) {
   return shell;
 }
 
+// Traditional long division the student works the WHOLE way through: for each
+// digit of the dividend they enter how many times the divisor goes in, the
+// product to subtract, and what is left, then bring down the next digit — instead
+// of only typing a final quotient + remainder. Each blank is a checkable cell.
 function typedDivision(item, steps, events) {
   const [dividend, divisor] = (item.visual?.values || []).map(Number);
   if (!dividend || !divisor) return null;
+
+  const digits = String(dividend).split("");
+  const stepData = [];
+  let carry = 0;
+  for (let i = 0; i < digits.length; i++) {
+    const work = carry * 10 + Number(digits[i]);
+    const q = Math.floor(work / divisor);
+    const prod = q * divisor;
+    const diff = work - prod;
+    stepData.push({ work, q, prod, diff, bringNext: digits[i + 1] ?? null });
+    carry = diff;
+  }
   const quotient = Math.floor(dividend / divisor);
   const remainder = dividend % divisor;
+
   const shell = modelShell(
-    "Work the division",
-    "Type the quotient on top, then what is left over.",
+    "Work the long division",
+    "For each step: how many times does the divisor go in, multiply, subtract, then bring down the next digit.",
   );
   const status = modelStatus();
-  const top = el("div", "sg-div-top");
-  top.appendChild(
-    modelCell(quotient, events, {
-      label: "Quotient",
-      onCorrect: () => steps?.completeMatching(quotient),
-    }),
+  shell.appendChild(el("div", "sg-div-bracket", `${esc(divisor)} ⟌ ${esc(dividend)}`));
+
+  const ledger = el("div", "sg-div-ledger");
+  ledger.style.cssText = "display:flex; flex-direction:column; gap:10px; margin:8px 0;";
+  const totalCells = stepData.length * 3;
+  let solved = 0;
+  const bump = (val) => {
+    solved += 1;
+    steps?.completeMatching(val);
+    if (solved >= totalCells) status.textContent = "Long division complete ✓";
+  };
+  const opText = (t) => {
+    const s = el("span", "sg-div-op", t);
+    s.style.cssText = "font-weight:700; color:var(--navy,#12355b);";
+    return s;
+  };
+
+  stepData.forEach((s, i) => {
+    const block = el("div", "sg-div-step");
+    block.style.cssText =
+      "border:1px solid var(--line,#cbd5e1); border-radius:8px; padding:8px 10px; background:#fff;";
+    const lab = el("div", "sg-div-steplab", `Step ${i + 1}`);
+    lab.style.cssText = "font-weight:800; color:var(--navy,#12355b); margin-bottom:4px;";
+    block.appendChild(lab);
+
+    const line1 = el("div", "sg-div-line");
+    line1.style.cssText = "display:flex; flex-wrap:wrap; align-items:center; gap:6px;";
+    line1.append(opText(`${divisor} goes into ${s.work}`));
+    line1.appendChild(
+      modelCell(s.q, events, {
+        label: `Step ${i + 1}: how many times ${divisor} goes into ${s.work}`,
+        onCorrect: () => bump(s.q),
+      }),
+    );
+    line1.append(opText("time(s)"));
+    block.appendChild(line1);
+
+    const line2 = el("div", "sg-div-line");
+    line2.style.cssText =
+      "display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin-top:6px;";
+    line2.append(opText(`Multiply: ${divisor} × (that) =`));
+    line2.appendChild(
+      modelCell(s.prod, events, {
+        label: `Step ${i + 1}: product ${divisor} times the quotient digit`,
+        onCorrect: () => bump(s.prod),
+      }),
+    );
+    line2.append(opText(`Subtract: ${s.work} − (that) =`));
+    line2.appendChild(
+      modelCell(s.diff, events, {
+        label: `Step ${i + 1}: what is left after subtracting`,
+        onCorrect: () => bump(s.diff),
+      }),
+    );
+    if (s.bringNext != null) line2.append(opText(`↓ bring down ${s.bringNext}`));
+    block.appendChild(line2);
+    ledger.appendChild(block);
+  });
+
+  const answer = el("div", "sg-model-row");
+  answer.style.cssText =
+    "display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:4px;";
+  const q = el("strong", null, String(quotient));
+  const r = el("strong", null, String(remainder));
+  answer.append(
+    el("span", "sg-model-rowlab", "Quotient:"),
+    q,
+    el("span", "sg-model-rowlab", "Remainder:"),
+    r,
   );
-  const bracket = el("div", "sg-div-bracket", `${esc(divisor)}⟌${esc(dividend)}`);
-  const leftover = el("div", "sg-model-row");
-  leftover.append(
-    el("span", "sg-model-rowlab", "Left over:"),
-    modelCell(remainder, events, {
-      label: "Remainder",
-      onCorrect: () => {
-        steps?.completeMatching(remainder);
-        status.textContent = "Division complete ✓";
-      },
-    }),
-  );
-  shell.append(top, bracket, leftover, status);
+
+  shell.append(ledger, answer, status);
   return shell;
 }
 
