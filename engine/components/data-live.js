@@ -176,7 +176,7 @@ function shell(host, cfg, ctrl) {
 }
 
 // ── DOT PLOT ────────────────────────────────────────────────────────────────
-function dotPlot(host, cfg) {
+function dotPlot(host, cfg, viewOpts) {
   const orig = (cfg.values || []).map(Number).filter((n) => !isNaN(n));
   let data = orig.slice();
   const lo = () => (cfg.min != null ? Number(cfg.min) : Math.min(...data, 0));
@@ -193,7 +193,7 @@ function dotPlot(host, cfg) {
   };
   return shell(host, cfg, {
     defaultTitle: "Dot plot",
-    editable: true,
+    editable: viewOpts?.sandbox !== false,
     exploreHint:
       "Tap a stack to read how many. Press “Reveal the math” to see the mean vs. median.",
     editHint: "Tap the number line to add a dot; tap a dot to remove it.",
@@ -299,7 +299,7 @@ function barFigure(host, cfg, opts) {
     baseY = padT + plotH;
   return shell(host, cfg, {
     defaultTitle: opts.title,
-    editable: true,
+    editable: opts.sandbox !== false,
     exploreHint: opts.exploreHint,
     editHint: "Choose a bar, then use ▲ ▼ to change its value.",
     reset() {
@@ -364,10 +364,11 @@ function barFigure(host, cfg, opts) {
   });
 }
 
-function histogram(host, cfg) {
+function histogram(host, cfg, viewOpts) {
   return barFigure(host, cfg, {
     title: "Histogram",
     touching: true,
+    sandbox: viewOpts?.sandbox,
     exploreHint: "Tap an interval to read its frequency. Reveal the math to name the shape.",
     readOne: (bars, i) =>
       `The interval ${bars[i].label || "#" + (i + 1)} has a frequency of ${bars[i].value}.`,
@@ -400,10 +401,11 @@ function histogram(host, cfg) {
   });
 }
 
-function barChart(host, cfg) {
+function barChart(host, cfg, viewOpts) {
   return barFigure(host, cfg, {
     title: "Bar chart",
     touching: false,
+    sandbox: viewOpts?.sandbox,
     exploreHint: "Tap a bar to read its value and compare categories.",
     readOne: (bars, i) => `${bars[i].label || "That category"}: ${bars[i].value}.`,
     measures(bars) {
@@ -422,7 +424,7 @@ function barChart(host, cfg) {
 }
 
 // ── BOX PLOT ──────────────────────────────────────────────────────────────────
-function boxPlot(host, cfg) {
+function boxPlot(host, cfg, viewOpts) {
   const KEYS = ["min", "q1", "median", "q3", "max"];
   const orig = {};
   KEYS.forEach((k) => (orig[k] = Number(cfg[k])));
@@ -443,7 +445,7 @@ function boxPlot(host, cfg) {
   const xOf = (v) => padL + ((v - axisLo()) / Math.max(1, axisHi() - axisLo())) * (W - padL - padR);
   return shell(host, cfg, {
     defaultTitle: "Box plot",
-    editable: true,
+    editable: viewOpts?.sandbox !== false,
     exploreHint:
       "Tap the box or a whisker to read what it shows. Reveal the math for the IQR and range.",
     editHint: "Choose a handle, then nudge it with ◀ ▶. Order stays min ≤ Q1 ≤ median ≤ Q3 ≤ max.",
@@ -556,17 +558,44 @@ function boxPlot(host, cfg) {
   });
 }
 
-export function renderDataLive(host, cfg = {}) {
+// Normalize the small-group practice authoring shapes onto the shapes the
+// figure builders expect, so the SAME widget serves both surfaces:
+//   • `data-dots` is a dot plot authored with `values`.
+//   • SG `histogram` authors interval frequencies as `values:[…]` (no `bars`);
+//     turn each into a numbered interval bar.
+//   • SG `box-plot` may carry raw `values` instead of a five-number summary.
+function normalize(cfg) {
+  const kind = String(cfg.kind || "");
+  if (kind === "data-dots") return { ...cfg, kind: "dot-plot" };
+  if (kind === "histogram" && !Array.isArray(cfg.bars) && Array.isArray(cfg.values)) {
+    return {
+      ...cfg,
+      bars: cfg.values.map((v, i) => ({ label: String(i + 1), value: Number(v) || 0 })),
+    };
+  }
+  if (
+    kind === "box-plot" &&
+    Array.isArray(cfg.values) &&
+    ["min", "q1", "median", "q3", "max"].some((k) => cfg[k] == null)
+  ) {
+    const nums = cfg.values.map(Number).filter((n) => !isNaN(n));
+    if (nums.length) return { ...cfg, ...fiveNum(nums) };
+  }
+  return cfg;
+}
+
+export function renderDataLive(host, cfg = {}, opts = {}) {
   try {
-    switch (cfg.kind) {
+    const v = normalize(cfg);
+    switch (v.kind) {
       case "dot-plot":
-        return dotPlot(host, cfg);
+        return dotPlot(host, v, opts);
       case "histogram":
-        return histogram(host, cfg);
+        return histogram(host, v, opts);
       case "bar-chart":
-        return barChart(host, cfg);
+        return barChart(host, v, opts);
       case "box-plot":
-        return boxPlot(host, cfg);
+        return boxPlot(host, v, opts);
       default:
         return null;
     }

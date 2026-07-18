@@ -1,5 +1,11 @@
+import { renderDataLive } from "../components/data-live.js";
 import { renderEquationBalanceLab } from "../components/equation-balance-lab.js";
 import { isRight } from "./small-group-answers.js";
+
+// Exact data-figure kinds routed to the interactive "Data Live" widget. Exact
+// match (not substring) so bar-MODEL, scale-bars, double-rate-bars, etc. keep
+// their own renderings.
+const DATA_KINDS = new Set(["dot-plot", "data-dots", "histogram", "box-plot", "bar-chart"]);
 import { el, esc, esLane, speak } from "./small-group-ui.js";
 
 // Pull just the equation out of a solve-it stem like
@@ -1160,6 +1166,15 @@ function typedModel(item, steps, events) {
   const kind = String(item.visual?.kind || "");
   if (!kind) return null;
   try {
+    // Data figures (dot plot / histogram / box plot / bar chart / data-dots)
+    // become the "Data Live" explore widget: tap to read, reveal the measures
+    // of center & spread. The What-if sandbox is OFF here so a practice figure's
+    // data can never be altered out from under the question.
+    if (DATA_KINDS.has(kind)) {
+      const box = el("div", "sg-data-live");
+      const handle = renderDataLive(box, item.visual, { sandbox: false });
+      if (handle) return box;
+    }
     if (kind.includes("balance") || kind.includes("equation")) {
       const bal = typedBalance(item);
       if (bal) return bal;
