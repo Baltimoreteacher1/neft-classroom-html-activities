@@ -151,10 +151,18 @@ try {
   renderError = error;
 }
 assert.equal(renderError, undefined, `interactive renderer failed: ${renderError?.message}`);
-assert.match(container.textContent, /1\. Understand the Question/);
-assert.match(container.textContent, /2\. Plan Your Math Words/);
-assert.match(container.textContent, /3\. Build Your Explanation/);
-assert.match(container.textContent, /4\. Check Your Explanation/);
+// Compact layout (2026-07): the focus question + one inline write box show up
+// front; the heavy scaffolding (math words, extra levels, self-check) lives in a
+// collapsed "Need help?" panel. All three support-level write boxes and the
+// vocab/checklist inputs are still present (in the DOM) so save/resume and the
+// pedagogy are unchanged — just visually compact.
+assert.match(container.textContent, /Write About the Math/);
+assert.match(container.textContent, /Your job:/);
+assert.ok(
+  container.querySelector("details.twr-help"),
+  "scaffolding must live in a collapsible Need help panel",
+);
+assert.match(container.querySelector("details.twr-help summary").textContent, /Need help\?/);
 assert.equal(container.querySelectorAll("[data-support-level]").length, 3);
 assert.equal(container.querySelectorAll('input[type="checkbox"]').length >= 5, true);
 assert.equal(container.querySelectorAll("textarea").length, 3);
