@@ -15,6 +15,7 @@ import {
   linkifyObjectiveTerms,
   wireObjectiveTermPopups,
   underlineVocabTerms,
+  observeVocabTerms,
 } from "./lesson-renderer.js";
 import { buildLessonCoverExtras, mountCoverArt, applyPhaseAccent } from "./premium.js";
 import {
@@ -824,6 +825,11 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
 
     renderPhase(index, renderFn) {
       applyPhaseAccent(main, index);
+      // Stop watching the phase we're replacing so its observer doesn't linger.
+      if (this._vocabObserver) {
+        this._vocabObserver.disconnect();
+        this._vocabObserver = null;
+      }
       phaseContainer.innerHTML = "";
       const el = document.createElement("div");
       el.className = "phase active phase-enter";
@@ -836,6 +842,10 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       // academic math words are defined in context throughout the lesson — the
       // same treatment the small-group renderer gives (e.g. 7-2-group2).
       underlineVocabTerms(el, config.vocabulary || []);
+      // Practice serves problems one at a time, the level selector re-serves,
+      // and matching/optional activities mount their own markup after this
+      // point — keep underlining that dynamically-added content too.
+      this._vocabObserver = observeVocabTerms(el, config.vocabulary || []);
       el.addEventListener("animationend", () => el.classList.remove("phase-enter"), { once: true });
     },
 
