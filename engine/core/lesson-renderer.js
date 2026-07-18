@@ -1687,7 +1687,10 @@ export function underlineVocabTerms(container, vocab) {
   for (let n = walker.nextNode(); n; n = walker.nextNode()) textNodes.push(n);
   if (!textNodes.length) return;
 
-  const cap = new Map();
+  // Wire EVERY occurrence of a vocab term — wherever a math word is listed it
+  // should open its definition+image popup, not just the first couple of times.
+  // (Previously capped at 2 hits/term/phase, which left later listings — e.g. a
+  // term repeated in a practice stem or a sort label — underline-less and dead.)
   for (const textNode of textNodes) {
     const text = textNode.textContent;
     const fragment = document.createDocumentFragment();
@@ -1697,8 +1700,6 @@ export function underlineVocabTerms(container, vocab) {
     for (const match of text.matchAll(re)) {
       const idx = lookup.has(norm(match[0])) ? lookup.get(norm(match[0])) : -1;
       if (idx < 0) continue;
-      const count = cap.get(idx) || 0;
-      if (count >= 2) continue;
       fragment.append(text.slice(cursor, match.index));
       const btn = document.createElement("button");
       btn.type = "button";
@@ -1712,7 +1713,6 @@ export function underlineVocabTerms(container, vocab) {
       btn.textContent = match[0];
       fragment.appendChild(btn);
       cursor = match.index + match[0].length;
-      cap.set(idx, count + 1);
       changed = true;
     }
     if (!changed) continue;
@@ -1720,6 +1720,44 @@ export function underlineVocabTerms(container, vocab) {
     textNode.replaceWith(fragment);
   }
   wireObjectiveTermPopups(container, list);
+}
+
+// Keep vocab popups working on DYNAMICALLY-rendered content. A phase body is
+// underlined once on render, but several phases inject fresh DOM afterward —
+// Practice serves problems one at a time into a swap area, the Level 1/2/Adaptive
+// selector re-serves a problem, matching games and optional activities mount
+// their own markup. Without re-running the pass, math words in that later markup
+// are listed but never open their definition popup. This watches a phase
+// container and underlines each newly-added subtree, idempotently (terms already
+// wrapped live inside .obj-term, which underlineVocabTerms excludes). The
+// observer is disconnected while it writes so its own DOM edits never re-trigger
+// it. Returns the observer so the caller can disconnect it when the phase unmounts.
+export function observeVocabTerms(container, vocab) {
+  const list = Array.isArray(vocab) ? vocab : [];
+  if (!container || !list.length || typeof MutationObserver === "undefined") return null;
+  const pending = new Set();
+  let scheduled = false;
+  const obs = new MutationObserver((records) => {
+    for (const r of records) {
+      for (const node of r.addedNodes) {
+        if (node.nodeType === 1) pending.add(node);
+      }
+    }
+    if (!pending.size || scheduled) return;
+    scheduled = true;
+    queueMicrotask(() => {
+      scheduled = false;
+      obs.disconnect();
+      for (const node of pending) {
+        if (node.isConnected) underlineVocabTerms(node, list);
+      }
+      pending.clear();
+      obs.takeRecords(); // drop the mutations our own underlining just made
+      if (container.isConnected) obs.observe(container, { childList: true, subtree: true });
+    });
+  });
+  obs.observe(container, { childList: true, subtree: true });
+  return obs;
 }
 
 // Content / Language "I can…" objectives. Rendered AFTER the "Be Curious"
