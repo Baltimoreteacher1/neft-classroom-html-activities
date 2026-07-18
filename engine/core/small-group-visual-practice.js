@@ -846,6 +846,108 @@ function typedDivision(item, steps, events) {
   return shell;
 }
 
+// Solve an equation on a visual balance: students keep both sides equal, working
+// the lesson's own guided steps (inverse operation, then check) as checkable
+// cells, instead of typing one bare answer into an open box. The beam turns green
+// when x is isolated.
+function typedBalance(item, steps, events) {
+  const solution = item.answer != null ? String(item.answer).trim() : "";
+
+  // Only display the equation when the stem GIVES it explicitly (a solve task).
+  // For "write the equation" tasks the equation is the answer, so rebuilding it
+  // from values would give it away — show a neutral balance (? = ?) instead.
+  let left = "?";
+  let right = "?";
+  // Pull ONLY the equation ("2x + 1 = 7") out of the stem, not the surrounding
+  // prose ("Solve the new equation …"). Anchored to the end so we grab the actual
+  // equation, and the sides are pure math tokens (a variable or a digit at each
+  // edge). Absent an explicit equation, the pans stay "?" (no giveaway).
+  const eq = String(item.stem || "").match(
+    /([0-9x][0-9x+\-*/(). ]*?)\s*=\s*([0-9x+\-*/().]*[0-9x])\s*\.?\s*$/i,
+  );
+  if (eq) {
+    left = eq[1].trim();
+    right = eq[2].trim();
+  }
+
+  const shell = modelShell(
+    "Balance the equation",
+    "Whatever you do to one side, do to the other — keep the scale balanced until x is by itself.",
+  );
+  const status = modelStatus();
+
+  const scale = el("div", "sg-balance");
+  scale.style.cssText =
+    "display:flex; flex-direction:column; align-items:center; gap:2px; margin:8px 0;";
+  const beam = el("div");
+  beam.style.cssText = "display:flex; align-items:center; justify-content:center; gap:12px;";
+  const panStyle =
+    "min-width:64px; text-align:center; font-weight:800; font-size:1.05rem; color:var(--navy,#12355b); background:#eef4fb; border:2px solid var(--navy,#12355b); border-radius:10px; padding:8px 12px;";
+  const panL = el("div", "sg-balance-pan", left);
+  panL.style.cssText = panStyle;
+  const panR = el("div", "sg-balance-pan", right);
+  panR.style.cssText = panStyle;
+  const eqSign = el("div", null, "=");
+  eqSign.style.cssText = "font-weight:900; font-size:1.3rem; color:var(--muted,#54677c);";
+  beam.append(panL, eqSign, panR);
+  const bar = el("div");
+  bar.style.cssText =
+    "width:min(300px,88%); height:5px; background:var(--navy,#12355b); border-radius:3px; margin-top:4px;";
+  const fulcrum = el("div");
+  fulcrum.style.cssText =
+    "width:0; height:0; border-left:14px solid transparent; border-right:14px solid transparent; border-bottom:20px solid var(--amber-ink,#8a5a00);";
+  scale.append(beam, bar, fulcrum);
+
+  const stepList =
+    Array.isArray(item.steps) && item.steps.length
+      ? item.steps
+      : [{ prompt: "x =", answer: solution }];
+  const ledger = el("div");
+  ledger.style.cssText = "display:flex; flex-direction:column; gap:8px; margin-top:10px;";
+  let solved = 0;
+  const total = stepList.length;
+  stepList.forEach((st, i) => {
+    const row = el("div");
+    row.style.cssText = "display:flex; flex-wrap:wrap; align-items:center; gap:8px;";
+    const promptText = String(st.prompt || `Step ${i + 1}`)
+      .replace(/_{2,}/g, "")
+      .trim();
+    const lab = el("span", null, promptText);
+    lab.style.cssText = "font-weight:600;";
+    row.append(
+      lab,
+      modelCell(st.answer, events, {
+        label: `Step ${i + 1}`,
+        onCorrect: () => {
+          solved += 1;
+          steps?.completeMatching(st.answer);
+          if (solved >= total) {
+            // "x = N" only reads right when the solution is a bare number (a solve
+            // task). For write/setup tasks the answer is an equation, so just
+            // confirm — and reveal the earned equation in the balance pans.
+            const isValue = /^-?\d+(?:\.\d+)?$/.test(solution);
+            status.textContent = isValue ? `Balanced! x = ${solution} ✓` : "Correct ✓";
+            const eqMatch = String(st.answer || "").match(/(.+?)=(.+)/);
+            if (left === "?" && right === "?" && eqMatch) {
+              panL.textContent = eqMatch[1].trim();
+              panR.textContent = eqMatch[2].trim();
+            }
+            for (const pan of [panL, panR]) {
+              pan.style.background = "#e2f9f5";
+              pan.style.borderColor = "#0d7a76";
+              pan.style.color = "#095350";
+            }
+          }
+        },
+      }),
+    );
+    ledger.appendChild(row);
+  });
+
+  shell.append(scale, ledger, status);
+  return shell;
+}
+
 function typedTable(item, steps, events, kind) {
   const values = valuesFrom(item.visual, item.stem);
   const [first, second] = values.map(Number);
@@ -1194,6 +1296,7 @@ function typedModel(item, steps, events) {
     if (kind.includes("multiple-lanes")) return typedLanes(item, steps, events);
     if (kind.includes("factor-tree")) return typedFactorTree(item, steps, events);
     if (kind.includes("division-box")) return typedDivision(item, steps, events);
+    if (kind.includes("balance-scale")) return typedBalance(item, steps, events);
     if (kind.includes("unit-rate") || kind.includes("conversion") || kind.includes("ratio-table"))
       return typedTable(item, steps, events, kind);
     if (kind.includes("percent-bar")) return typedPercentBar(item, steps, events);
