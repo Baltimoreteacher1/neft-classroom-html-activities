@@ -34,16 +34,14 @@ const JSON_HEADERS = {
 };
 
 // Anthropic Messages API (primary). Hint mode uses the fast, low-cost Haiku
-// tier — proven on this account (the classroom tutor endpoint uses the same
-// model) and plenty capable for middle-school hints. Solve mode can be bumped
-// to "claude-sonnet-5" for deeper step-by-step rigor once Sonnet access is
-// confirmed on the account; kept on Haiku here so a missing Sonnet entitlement
-// can't silently push solve-mode onto the Gemini fallback.
+// tier — plenty capable for middle-school hints and quick to respond. Solve
+// mode ("show me the whole answer, step by step") uses Sonnet 5 for deeper
+// reasoning. Both are confirmed available on this account.
 const CLAUDE_URL = "https://api.anthropic.com/v1/messages";
 const CLAUDE_VERSION = "2023-06-01";
 const CLAUDE_MODELS = {
   hint: "claude-haiku-4-5-20251001",
-  solve: "claude-haiku-4-5-20251001",
+  solve: "claude-sonnet-5",
 };
 
 const DEFAULT_GEMINI_MODEL = "gemini-pro-latest"; // full-tier Gemini Pro fallback
