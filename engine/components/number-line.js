@@ -2,6 +2,13 @@ export function renderNumberLine(container, config) {
   const { min, max, step, targets, snapToTick, label, onComplete } = config;
   injectNumberLineStyles();
 
+  // Sequential mode: ONE draggable dot the student moves to each value in turn
+  // (e.g. "plot each decimal"), instead of a confusing cluster of dots that all
+  // start bunched together. Opt-in via `sequential:true` + `targets`.
+  if (config.sequential && Array.isArray(targets) && targets.length) {
+    return renderSequentialNumberLine(container, config);
+  }
+
   // Adapter: some lessons author number-line tasks in shapes the draggable-dot
   // renderer below cannot use (which would fall through to the "unavailable"
   // stub). Route them to purpose-built renderers:
@@ -285,6 +292,194 @@ export function renderNumberLine(container, config) {
 
   wrapper.append(checkBtn);
   container.append(wrapper);
+}
+
+// One dot, moved to each value in turn. Snaps to tenths when the values are
+// decimals (so 3.4 is actually reachable — integer snapping was the "weird" part),
+// shows the current target and progress, and advances on a correct placement.
+function renderSequentialNumberLine(container, config) {
+  const { min, max, targets, label, instructions, onComplete } = config;
+  injectNumberLineStyles();
+  const lo = Number(min ?? 0);
+  const hi = Number(max ?? 10);
+  const hasDecimals = targets.some((t) => !Number.isInteger(Number(t.value)));
+  const snapStep = hasDecimals ? 0.1 : Number(config.step) || 1;
+  const wide = hi - lo > 20;
+  // Label whole numbers (spaced out on wide ranges); don't label the fine
+  // decimal ticks or the line gets crowded with 0.5, 1.5, …
+  const labelStep = hasDecimals ? (wide ? 5 : 1) : Number(config.step) || (wide ? 5 : 1);
+  const tol = snapStep * 0.6;
+
+  const wrapper = document.createElement("div");
+  wrapper.className = "card";
+  const lead = label || instructions;
+  if (lead) {
+    const p = document.createElement("p");
+    p.style.cssText = "font-size:1rem; font-weight:600; margin:0 0 var(--sp-3); line-height:1.5;";
+    p.textContent = lead;
+    wrapper.append(p);
+  }
+
+  const prompt = document.createElement("p");
+  prompt.style.cssText =
+    "margin:0 0 var(--sp-2); font-weight:700; color:var(--navy,#12355b); text-align:center;";
+  wrapper.append(prompt);
+
+  const PAD_LEFT = 40;
+  const PAD_RIGHT = 20;
+  const HEIGHT = 120;
+  const TICK_Y = 60;
+  const DOT_R = 11;
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", `0 0 600 ${HEIGHT}`);
+  svg.style.cssText = "width:100%; height:auto; user-select:none; touch-action:none;";
+  svg.setAttribute("role", "application");
+  svg.setAttribute("aria-label", `Number line from ${lo} to ${hi}`);
+  const usable = 600 - PAD_LEFT - PAD_RIGHT;
+  const toX = (v) => PAD_LEFT + ((v - lo) / (hi - lo)) * usable;
+  const toVal = (x) => {
+    const raw = lo + ((x - PAD_LEFT) / usable) * (hi - lo);
+    return round(Math.round(raw / snapStep) * snapStep);
+  };
+
+  line(svg, PAD_LEFT, TICK_Y, 600 - PAD_RIGHT, TICK_Y, "#1fa6a2", 3);
+  poly(
+    svg,
+    `${PAD_LEFT - 6},${TICK_Y} ${PAD_LEFT + 4},${TICK_Y - 5} ${PAD_LEFT + 4},${TICK_Y + 5}`,
+    "#1fa6a2",
+  );
+  poly(
+    svg,
+    `${600 - PAD_RIGHT + 6},${TICK_Y} ${600 - PAD_RIGHT - 4},${TICK_Y - 5} ${600 - PAD_RIGHT - 4},${TICK_Y + 5}`,
+    "#1fa6a2",
+  );
+  // Minor ticks (whole-and-half) plus labeled major ticks.
+  const minor = hasDecimals ? (wide ? 1 : 0.5) : labelStep;
+  for (let v = lo; v <= hi + 1e-9; v = round(v + minor)) {
+    const x = toX(v);
+    const isMajor = Math.abs(v / labelStep - Math.round(v / labelStep)) < 1e-9;
+    line(
+      svg,
+      x,
+      TICK_Y - (isMajor ? 8 : 5),
+      x,
+      TICK_Y + (isMajor ? 8 : 5),
+      "#12355b",
+      isMajor ? 1.5 : 1,
+    );
+    if (isMajor) {
+      const t = text(svg, x, TICK_Y + 24, formatNum(v), "11px", "#21313f");
+      t.setAttribute("text-anchor", "middle");
+    }
+  }
+
+  const targetMarker = circle(svg, toX(lo), TICK_Y, 7, "none", "#0f7c4a", 2);
+  targetMarker.style.display = "none";
+
+  const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  g.style.cursor = "grab";
+  const shadow = circle(g, 0, 0, DOT_R + 2, "rgba(18,53,91,0.12)", "none", 0);
+  const dot = circle(g, 0, 0, DOT_R, "#f2c15b", "#12355b", 2.5);
+  dot.setAttribute("class", "nl-dot");
+  const valLabel = text(g, 0, -18, "", "12px", "#12355b");
+  valLabel.setAttribute("text-anchor", "middle");
+  valLabel.setAttribute("font-weight", "800");
+  g.append(shadow, dot, valLabel);
+  g.setAttribute("role", "slider");
+  g.setAttribute("tabindex", "0");
+  g.setAttribute("aria-valuemin", String(lo));
+  g.setAttribute("aria-valuemax", String(hi));
+
+  let curVal = toVal(toX(lo));
+  const setDot = (v) => {
+    curVal = round(Math.max(lo, Math.min(hi, Math.round(v / snapStep) * snapStep)));
+    g.setAttribute("transform", `translate(${toX(curVal)}, ${TICK_Y})`);
+    valLabel.textContent = formatNum(curVal);
+    g.setAttribute("aria-valuenow", String(curVal));
+    g.setAttribute("aria-valuetext", formatNum(curVal));
+  };
+  setDot(lo);
+
+  g.addEventListener("pointerdown", (e) => {
+    e.preventDefault();
+    g.style.cursor = "grabbing";
+    svg.setPointerCapture(e.pointerId);
+    const onMove = (ev) => {
+      const rect = svg.getBoundingClientRect();
+      const svgX = ((ev.clientX - rect.left) / rect.width) * 600;
+      setDot(toVal(Math.max(PAD_LEFT, Math.min(600 - PAD_RIGHT, svgX))));
+    };
+    const onUp = () => {
+      g.style.cursor = "grab";
+      svg.removeEventListener("pointermove", onMove);
+      svg.removeEventListener("pointerup", onUp);
+    };
+    svg.addEventListener("pointermove", onMove);
+    svg.addEventListener("pointerup", onUp);
+  });
+  g.addEventListener("keydown", (e) => {
+    const d = e.shiftKey ? snapStep * 5 : snapStep;
+    if (e.key === "ArrowRight" || e.key === "ArrowUp") {
+      e.preventDefault();
+      setDot(curVal + d);
+    } else if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
+      e.preventDefault();
+      setDot(curVal - d);
+    }
+  });
+  svg.append(g);
+  wrapper.append(svg);
+
+  const feedbackSlot = document.createElement("div");
+  feedbackSlot.className = "mt-4";
+  const checkBtn = document.createElement("button");
+  checkBtn.className = "btn btn-primary mt-4";
+  checkBtn.textContent = "Check placement";
+
+  let idx = 0;
+  const showTarget = () => {
+    const t = targets[idx];
+    prompt.innerHTML = `Move the dot to: <span style="color:var(--teal,#0d7a76)">${escHtml(t.label || formatNum(t.value))}</span> &nbsp;<span style="color:var(--muted,#5f6f80); font-weight:600;">(${idx + 1} of ${targets.length})</span>`;
+    targetMarker.style.display = "none";
+  };
+  showTarget();
+
+  checkBtn.addEventListener("click", () => {
+    const t = targets[idx];
+    if (Math.abs(curVal - Number(t.value)) <= tol + 1e-9) {
+      idx += 1;
+      if (idx >= targets.length) {
+        checkBtn.style.display = "none";
+        burstConfetti(svg);
+        showFb(feedbackSlot, "success", `All ${targets.length} decimals placed! 🎉`);
+        prompt.textContent = "Nice — every decimal is in the right spot.";
+        if (onComplete) onComplete(targets.length, targets.length);
+      } else {
+        showFb(feedbackSlot, "success", "Correct! Now the next one.");
+        setDot(lo);
+        showTarget();
+      }
+    } else {
+      targetMarker.setAttribute("cx", toX(Number(t.value)));
+      targetMarker.style.transformOrigin = `${toX(Number(t.value))}px ${TICK_Y}px`;
+      targetMarker.style.display = "";
+      triggerTargetMarker(targetMarker);
+      showFb(
+        feedbackSlot,
+        "hint",
+        `Not yet — the green circle shows where ${formatNum(t.value)} goes. Slide the dot there.`,
+      );
+    }
+  });
+
+  wrapper.append(checkBtn, feedbackSlot);
+  container.append(wrapper);
+}
+
+function escHtml(s) {
+  const d = document.createElement("div");
+  d.textContent = s ?? "";
+  return d.innerHTML;
 }
 
 // Normalize an inequality string for comparison: lowercase, strip spaces,

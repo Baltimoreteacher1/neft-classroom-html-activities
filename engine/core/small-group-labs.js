@@ -94,7 +94,9 @@ function normalizeExplore(explore) {
       min: range.min ?? explore.min ?? 0,
       max: range.max ?? explore.max ?? 10,
       step: range.step ?? explore.step ?? 1,
-      snapToTick: true,
+      // One dot moved to each value in turn (not a cluster of dots snapped to
+      // whole numbers) — the sequential renderer snaps to tenths for decimals.
+      sequential: true,
       targets: explore.items.map((item) => ({ value: item.value, label: item.label })),
     };
   }
