@@ -1,5 +1,7 @@
+import { renderAlgebraExpand } from "../components/algebra-tiles-expand.js";
 import { renderDataLive } from "../components/data-live.js";
 import { renderEquationBalanceLab } from "../components/equation-balance-lab.js";
+import { renderPercentGridLab } from "../components/percent-grid-lab.js";
 import { isRight } from "./small-group-answers.js";
 
 // Exact data-figure kinds routed to the interactive "Data Live" widget. Exact
@@ -1173,6 +1175,21 @@ function typedModel(item, steps, events) {
     if (DATA_KINDS.has(kind)) {
       const box = el("div", "sg-data-live");
       const handle = renderDataLive(box, item.visual, { sandbox: false });
+      if (handle) return box;
+    }
+    // Distributive expansion a(x + c) → interactive area-model tile builder.
+    // Gated to genuine "Expand …" items so it never mismodels another concept;
+    // falls through to the static figure otherwise.
+    if (kind === "algebra-tiles" && /expand/i.test(item.stem || "")) {
+      const box = el("div", "sg-atx");
+      const handle = renderAlgebraExpand(box, item.visual);
+      if (handle) return box;
+    }
+    // Percent grid → non-destructive hundred-grid equivalence explorer (loads
+    // with the authored amount shaded; reveal percent / decimal / fraction).
+    if (kind === "percent-grid") {
+      const box = el("div", "sg-pgl");
+      const handle = renderPercentGridLab(box, item.visual);
       if (handle) return box;
     }
     if (kind.includes("balance") || kind.includes("equation")) {

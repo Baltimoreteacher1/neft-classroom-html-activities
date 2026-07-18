@@ -109,6 +109,11 @@ const REGISTRY = {
     const { renderFactorTreeFill } = await import("../components/factor-tree-fill.js");
     return renderFactorTreeFill(host, cfg);
   },
+  // Scenario simulator: drag a slider to change one quantity and watch the
+  // model + result recompute live (proportional / percent / linear). Authored
+  // into a lesson's `connect.simulator`, rendered via this bridge.
+  "scenario-sim": (host, cfg) =>
+    import("../components/scenario-sim.js").then((m) => m.renderScenarioSim(host, cfg)),
   // Number line: authored WITH `points` → an interactive "place the points"
   // lab (drag each labeled dot onto its value, checked on the tick). Authored
   // WITHOUT points → the static reference line, unchanged — so pure displays

@@ -41,6 +41,9 @@ function rint(min, max) {
 function pick(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
+function maybeNeg(n) {
+  return Math.random() < 0.5 ? -n : n;
+}
 function gcd(a, b) {
   a = Math.abs(a);
   b = Math.abs(b);
@@ -55,6 +58,8 @@ function gcd(a, b) {
 const ARITH_RE = /(-?\d+)\s*([+\-*x×·/÷])\s*(-?\d+)/;
 // Detects "P% of W" (case-insensitive, non-global).
 const PCT_RE = /(\d+)\s*%\s*of\s*(\d+)/i;
+// Detects one binary operation between two fractions: "a/b OP c/d".
+const FRAC_RE = /(-?\d+)\s*\/\s*(\d+)\s*([+\-*x×·/÷])\s*(-?\d+)\s*\/\s*(\d+)/;
 
 // Finds the first contiguous numeric expression span (digits, operators, parens,
 // spaces, dots) that ends on a digit — used to tell order-of-operations apart
@@ -97,21 +102,29 @@ function genArithmetic(item, difficulty) {
   if (!m) return null;
   const sym = m[2];
   const op = /[*x×·]/.test(sym) ? "*" : /[/÷]/.test(sym) ? "/" : sym;
+  // If the authored problem uses a negative operand, keep new problems signed
+  // too (integer-unit practice) — the answer stays computed, so it's exact.
+  const signed = Number(m[1]) < 0 || Number(m[3]) < 0;
   let a, b, answer;
   if (op === "+") {
     [a, b] = addPair(difficulty);
+    if (signed) [a, b] = [maybeNeg(a), maybeNeg(b)];
     answer = a + b;
   } else if (op === "-") {
     [a, b] = subPair(difficulty);
+    if (signed) [a, b] = [maybeNeg(a), maybeNeg(b)];
     answer = a - b;
   } else if (op === "*") {
     [a, b] = mulPair(difficulty);
+    if (signed) [a, b] = [maybeNeg(a), maybeNeg(b)];
     answer = a * b;
   } else {
     ({ a, b } = divPair(difficulty));
     answer = a / b; // exact by construction
   }
-  const stem = item.stem.replace(ARITH_RE, `${a} ${sym} ${b}`); // keep author's symbol
+  // Print negative operands in parentheses ("8 + (-3)") — standard integer form.
+  const fmt = (n) => (n < 0 ? `(${n})` : String(n));
+  const stem = item.stem.replace(ARITH_RE, `${fmt(a)} ${sym} ${fmt(b)}`); // keep author's symbol
   return {
     stem,
     answer,
@@ -294,12 +307,110 @@ function buildVisual(orig, gen) {
   return v;
 }
 
+// ── 5) fractions ──────────────────────────────────────────────────────────────
+// One operation between two proper fractions; the exact reduced result is
+// computed in code. Returned as an open-answer string ("3/4" or a whole number)
+// via `openOnly`, since fraction distractors don't fit the numeric MC helper.
+function genFraction(item, difficulty) {
+  const m = String(item.stem).match(FRAC_RE);
+  if (!m) return null;
+  const sym = m[3];
+  const op = /[*x×·]/.test(sym) ? "*" : /[/÷]/.test(sym) ? "/" : sym;
+  const dmax = difficulty === "support" ? 6 : difficulty === "stretch" ? 12 : 10;
+  let d1 = rint(2, dmax);
+  let d2 = rint(2, dmax);
+  let n1 = rint(1, d1 - 1); // proper fraction
+  let n2 = rint(1, d2 - 1);
+  // Keep subtraction non-negative so the result is a friendly proper value.
+  if (op === "-" && n1 * d2 < n2 * d1) {
+    [n1, d1, n2, d2] = [n2, d2, n1, d1];
+  }
+  let pn;
+  let pd;
+  if (op === "+") {
+    pn = n1 * d2 + n2 * d1;
+    pd = d1 * d2;
+  } else if (op === "-") {
+    pn = n1 * d2 - n2 * d1;
+    pd = d1 * d2;
+  } else if (op === "*") {
+    pn = n1 * n2;
+    pd = d1 * d2;
+  } else {
+    pn = n1 * d2; // (n1/d1) ÷ (n2/d2) = n1·d2 / d1·n2
+    pd = d1 * n2;
+  }
+  const g = gcd(pn, pd);
+  pn = pn / g;
+  pd = pd / g;
+  if (pd < 0) {
+    pn = -pn;
+    pd = -pd;
+  }
+  const answer = pd === 1 ? String(pn) : `${pn}/${pd}`;
+  const stem = item.stem.replace(FRAC_RE, `${n1}/${d1} ${sym} ${n2}/${d2}`);
+  return { stem, answer, openOnly: true, visualFields: {} };
+}
+
+// ── 6) area / perimeter of a rectangle ────────────────────────────────────────
+// Confirm which formula the authored answer used (area = L·W or perimeter =
+// 2(L+W)) by testing the first two numbers against it, then regenerate with new
+// dimensions. Decline if neither formula reproduces the authored answer.
+function genAreaPerimeter(item, difficulty) {
+  const s = String(item.stem).toLowerCase();
+  const wantsPerim = /perimeter/.test(s);
+  const wantsArea = /\barea\b/.test(s);
+  if (!wantsPerim && !wantsArea) return null;
+  const nums = (String(item.stem).match(/\d+(?:\.\d+)?/g) || []).map(Number);
+  if (nums.length < 2) return null;
+  const [L, W] = nums;
+  const auth = firstNumber(item.answer);
+  if (auth == null || !Number.isFinite(auth)) return null;
+  const near = (x) => Math.abs(x - auth) < 1e-6;
+  let formula = null;
+  if (wantsArea && near(L * W)) formula = "area";
+  else if (wantsPerim && near(2 * (L + W))) formula = "perim";
+  else if (near(L * W)) formula = "area";
+  else if (near(2 * (L + W))) formula = "perim";
+  if (!formula) return null; // can't confirm ⇒ decline
+  const [lo, hi] =
+    difficulty === "support" ? [2, 10] : difficulty === "stretch" ? [6, 40] : [2, 20];
+  const nL = rint(lo, hi);
+  const nW = rint(lo, hi);
+  const answer = formula === "area" ? nL * nW : 2 * (nL + nW);
+  let i = 0;
+  const stem = String(item.stem).replace(/\d+(?:\.\d+)?/g, (tok) => {
+    i += 1;
+    return i === 1 ? String(nL) : i === 2 ? String(nW) : tok;
+  });
+  return {
+    stem,
+    answer,
+    visualFields: {
+      length: nL,
+      width: nW,
+      l: nL,
+      w: nW,
+      base: nL,
+      height: nW,
+      area: formula === "area" ? answer : nL * nW,
+      perimeter: formula === "perim" ? answer : 2 * (nL + nW),
+      value: answer,
+    },
+  };
+}
+
 // ── routing ───────────────────────────────────────────────────────────────────
 function generatorFor(item, difficulty) {
   const kind = String(item.visual?.kind || "").toLowerCase();
   if (/percent/.test(kind) || PCT_RE.test(item.stem)) return genPercent(item, difficulty);
   if (/unit-rate|unit rate|ratio|rate/.test(kind))
     return genRate(item, difficulty, analyzeRate(item));
+  // Fractions BEFORE plain arithmetic — "1/2 + 1/3" also loosely matches ARITH_RE
+  // ("2 + 1"), so the fraction pattern must win.
+  if (FRAC_RE.test(item.stem)) return genFraction(item, difficulty);
+  const area = genAreaPerimeter(item, difficulty);
+  if (area) return area;
   const ex = findExpr(item.stem);
   if (ex && (ex.ops >= 2 || ex.hasParen)) return genOrder(item, difficulty, ex);
   if (ARITH_RE.test(item.stem)) return genArithmetic(item, difficulty);
@@ -327,6 +438,8 @@ export function canRegenerate(item) {
   const kind = String(item.visual?.kind || "").toLowerCase();
   if (/percent/.test(kind) || PCT_RE.test(item.stem)) return true;
   if (/unit-rate|unit rate|ratio|rate/.test(kind)) return analyzeRate(item) != null;
+  if (FRAC_RE.test(item.stem)) return true;
+  if (genAreaPerimeter(item, "core") != null) return true;
   const ex = findExpr(item.stem);
   if (ex && (ex.ops >= 2 || ex.hasParen)) return true;
   return ARITH_RE.test(item.stem);
@@ -342,16 +455,30 @@ export function regenerate(item, opts = {}) {
   } catch (e) {
     return null; // any parsing surprise ⇒ decline rather than risk a wrong answer
   }
-  if (!gen || gen.answer == null || !Number.isFinite(gen.answer)) return null;
+  if (!gen || gen.answer == null) return null;
+  // Numeric answers gate on finiteness; `openOnly` generators (fractions) return
+  // a non-empty string answer and are always open-response.
+  const numeric = typeof gen.answer === "number" ? gen.answer : null;
+  if (numeric == null && !(gen.openOnly && typeof gen.answer === "string" && gen.answer)) {
+    return null;
+  }
+  if (numeric != null && !Number.isFinite(numeric)) return null;
 
   const out = { stem: gen.stem, answer: gen.answer, difficulty };
   if (item.visual) out.visual = buildVisual(item.visual, gen);
 
-  if (Array.isArray(item.choices) && item.choices.length && Number.isInteger(item.correctIndex)) {
-    const mc = makeChoices(gen.answer, item.choices.length);
+  // Rebuild multiple choice only for numeric answers (the distractor math needs
+  // a number); fraction/open-answer variants stay open-response.
+  if (
+    numeric != null &&
+    Array.isArray(item.choices) &&
+    item.choices.length &&
+    Number.isInteger(item.correctIndex)
+  ) {
+    const mc = makeChoices(numeric, item.choices.length);
     out.choices = mc.choices;
     out.correctIndex = mc.correctIndex;
-    out.answer = String(gen.answer); // match the winning choice's string form
+    out.answer = String(numeric); // match the winning choice's string form
   }
   return out;
 }

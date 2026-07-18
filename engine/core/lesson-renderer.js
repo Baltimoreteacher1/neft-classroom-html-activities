@@ -2505,6 +2505,17 @@ function renderConnectPhase(el, state, ctx, config) {
     <p class="connect-scenario-text">${renderMathText(cfg.scenario)}</p>`;
   if (cfg.diagram) card.innerHTML += buildVisual(cfg.diagram);
   else if (cfg.histogram) card.innerHTML += histogramSVG(cfg.histogram);
+  // Optional scenario simulator: a slider that recomputes a proportional /
+  // percent / linear relationship live, so students experiment before writing.
+  if (cfg.simulator && cfg.simulator.type) {
+    card.innerHTML += interactiveVisualHost(
+      { kind: "scenario-sim", ...cfg.simulator },
+      {
+        ariaLabel: cfg.simulator.title || "Scenario simulator",
+        fallback: "Turn on JavaScript to explore this relationship with a slider.",
+      },
+    );
+  }
   el.append(card);
   mountInteractiveVisuals(card);
 
