@@ -893,6 +893,78 @@ function typedDivision(item, steps, events) {
   return shell;
 }
 
+// Interactive number line: tap where the integer sits, and its distance from 0
+// (its absolute value) is measured with a bracket — turning a static picture +
+// open box into a model students act on. Auto-completes the matching guided step.
+function typedNumberLine(item, steps, events) {
+  const value = Number(item.visual?.value);
+  if (!Number.isFinite(value)) return null;
+  const lo = Math.min(0, value) - 1;
+  const hi = Math.max(0, value) + 1;
+  const span = hi - lo;
+  const W = 520;
+  const H = 118;
+  const padX = 32;
+  const axisY = 58;
+  const xOf = (k) => padX + ((k - lo) / span) * (W - 2 * padX);
+
+  let ticks = "";
+  for (let k = lo; k <= hi; k++) {
+    const x = xOf(k).toFixed(1);
+    const zero = k === 0;
+    ticks +=
+      `<line x1="${x}" y1="${axisY - 8}" x2="${x}" y2="${axisY + 8}" stroke="#12355b" stroke-width="${zero ? 3 : 1.5}"/>` +
+      `<text x="${x}" y="${axisY + 26}" text-anchor="middle" font-size="12" fill="#54677c" font-weight="${zero ? 800 : 500}">${k}</text>` +
+      `<circle class="nl-hit" data-n="${k}" cx="${x}" cy="${axisY}" r="13" fill="transparent" style="cursor:pointer"/>`;
+  }
+  const shell = modelShell(
+    "Plot it on the number line",
+    "Tap where the number lands, then read how far it is from 0.",
+  );
+  const status = modelStatus();
+  const wrap = el("div", "sg-nl");
+  wrap.style.cssText = "width:100%; max-width:520px; margin:6px auto;";
+  wrap.innerHTML =
+    `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Number line from ${lo} to ${hi}">` +
+    `<line x1="${xOf(lo).toFixed(1)}" y1="${axisY}" x2="${xOf(hi).toFixed(1)}" y2="${axisY}" stroke="#12355b" stroke-width="3"/>` +
+    `<polygon points="${(xOf(hi) + 8).toFixed(1)},${axisY} ${xOf(hi).toFixed(1)},${axisY - 5} ${xOf(hi).toFixed(1)},${axisY + 5}" fill="#12355b"/>` +
+    `<polygon points="${(xOf(lo) - 8).toFixed(1)},${axisY} ${xOf(lo).toFixed(1)},${axisY - 5} ${xOf(lo).toFixed(1)},${axisY + 5}" fill="#12355b"/>` +
+    ticks +
+    `<g class="nl-mark"></g></svg>`;
+
+  const dist = Math.abs(value);
+  let done = false;
+  const mark = wrap.querySelector(".nl-mark");
+  wrap.querySelectorAll(".nl-hit").forEach((hit) => {
+    hit.addEventListener("click", () => {
+      if (done) return;
+      const k = Number(hit.dataset.n);
+      if (k !== value) {
+        hit.setAttribute("fill", "#fdeceb");
+        setTimeout(() => hit.setAttribute("fill", "transparent"), 260);
+        events.onAttempt?.({ correct: false });
+        return;
+      }
+      done = true;
+      events.onAttempt?.({ correct: true });
+      const x0 = xOf(0);
+      const xv = xOf(value);
+      const bracketY = axisY - 20;
+      const midX = (x0 + xv) / 2;
+      mark.innerHTML =
+        `<circle cx="${xv.toFixed(1)}" cy="${axisY}" r="9" fill="#1d4ed8" stroke="#fff" stroke-width="2"/>` +
+        `<path d="M${x0.toFixed(1)} ${axisY - 6} V${bracketY} H${xv.toFixed(1)} V${axisY - 6}" fill="none" stroke="#0d7a76" stroke-width="2"/>` +
+        `<text x="${midX.toFixed(1)}" y="${bracketY - 4}" text-anchor="middle" font-size="13" font-weight="800" fill="#0d7a76">${dist} from 0</text>`;
+      status.textContent = `Distance from 0 is ${dist}. |${value}| = ${dist} ✓`;
+      status.className = "sg-model-status";
+      steps?.completeMatching(dist);
+    });
+  });
+
+  shell.append(wrap, status);
+  return shell;
+}
+
 function typedTable(item, steps, events, kind) {
   const values = valuesFrom(item.visual, item.stem);
   const [first, second] = values.map(Number);
@@ -1269,6 +1341,7 @@ function typedModel(item, steps, events) {
     if (kind.includes("multiple-lanes")) return typedLanes(item, steps, events);
     if (kind.includes("factor-tree")) return typedFactorTree(item, steps, events);
     if (kind.includes("division-box")) return typedDivision(item, steps, events);
+    if (kind.includes("number-line")) return typedNumberLine(item, steps, events);
     if (kind.includes("unit-rate") || kind.includes("conversion") || kind.includes("ratio-table"))
       return typedTable(item, steps, events, kind);
     if (kind.includes("percent-bar")) return typedPercentBar(item, steps, events);
