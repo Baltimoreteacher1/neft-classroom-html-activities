@@ -130,6 +130,50 @@
     return jszipPromise;
   }
 
+  // One text line per paragraph. Runs inside a paragraph are joined with NO
+  // separator — PowerPoint splits runs mid-word on any formatting change, so
+  // joining with spaces breaks words apart ("Objec tive"). <a:br/> is a real
+  // line break inside a paragraph.
+  function pptxParagraphs(xml) {
+    const paras = [];
+    for (const p of xml.split(/<\/a:p>|<a:br\s*\/>/)) {
+      const runs = [...p.matchAll(/<a:t>([\s\S]*?)<\/a:t>/g)].map((m) => decodeXml(m[1]));
+      const text = runs
+        .join("")
+        .replace(/[ \t]+/g, " ")
+        .trim();
+      if (text) paras.push(text);
+    }
+    return paras;
+  }
+
+  // Splits one slide (or notes-slide) XML into { title, body[] }, preserving
+  // shape boundaries, table rows, and paragraph order inside each shape.
+  function pptxSlideStructure(xml) {
+    // <a:fld> = auto fields (slide number, date) — noise, never lesson content.
+    let rest = xml.replace(/<a:fld[^>]*>[\s\S]*?<\/a:fld>/g, "");
+    const titleLines = [];
+    const body = [];
+    for (const shape of rest.match(/<p:sp>[\s\S]*?<\/p:sp>/g) || []) {
+      rest = rest.replace(shape, "");
+      const isTitle = /<p:ph[^>]*type="(?:title|ctrTitle)"/.test(shape);
+      (isTitle ? titleLines : body).push(...pptxParagraphs(shape));
+    }
+    for (const tbl of rest.match(/<a:tbl>[\s\S]*?<\/a:tbl>/g) || []) {
+      rest = rest.replace(tbl, "");
+      for (const tr of tbl.split(/<\/a:tr>/)) {
+        const cells = tr
+          .split(/<\/a:tc>/)
+          .map((c) => pptxParagraphs(c).join(" "))
+          .filter(Boolean);
+        if (cells.length === 2) body.push(cells[0].replace(/[:\s]+$/, "") + ": " + cells[1]);
+        else if (cells.length) body.push(cells.join(" | "));
+      }
+    }
+    body.push(...pptxParagraphs(rest)); // anything left (grouped shapes etc.)
+    return { title: titleLines.join(" ").trim(), body };
+  }
+
   async function extractPptx(arrayBuffer) {
     const JSZip = await ensureJSZip();
     const zip = await JSZip.loadAsync(arrayBuffer);
@@ -142,21 +186,57 @@
       });
     if (!slideFiles.length) throw new Error("No slides found in the .pptx.");
 
+    // Speaker notes are resolved through each slide's .rels file — notesSlide
+    // numbering is NOT guaranteed to match slide numbering.
+    async function speakerNotesFor(slideName) {
+      const relFile = zip.files[slideName.replace("ppt/slides/", "ppt/slides/_rels/") + ".rels"];
+      if (!relFile) return null;
+      const m = (await relFile.async("string")).match(/Target="[^"]*?(notesSlide\d+\.xml)"/);
+      const f = m && zip.files["ppt/notesSlides/" + m[1]];
+      return f ? f.async("string") : null;
+    }
+
     const results = [];
+    let notesCount = 0;
     for (let i = 0; i < slideFiles.length; i++) {
       const name = slideFiles[i];
-      const xml = await zip.files[name].async("string");
-      const runs = [...xml.matchAll(/<a:t>([\s\S]*?)<\/a:t>/g)].map((m) => decodeXml(m[1]));
       const n = (name.match(/slide(\d+)/) || [])[1];
-      const text = runs.join(" ").replace(/\s+/g, " ").trim();
-      results.push({ n, text });
+      const slide = pptxSlideStructure(await zip.files[name].async("string"));
+      const notesXml = await speakerNotesFor(name);
+      const notes = notesXml ? pptxSlideStructure(notesXml).body : [];
+      if (notes.length) notesCount++;
+      const lines = [`--- Slide ${n}${slide.title ? " · " + slide.title : ""} ---`];
+      if (slide.title) lines.push(slide.title);
+      lines.push(...slide.body);
+      if (notes.length) lines.push("Speaker notes: " + notes.join(" "));
+      results.push({ hasText: !!(slide.title || slide.body.length || notes.length), lines });
       els.fileStatus.textContent = `Reading slide ${i + 1} of ${slideFiles.length}…`;
       if (i % 3 === 0) {
         await yieldCpu();
       }
     }
-    const parts = results.filter((r) => r.text).map((r) => `--- Slide ${r.n} ---\n${r.text}`);
-    return parts.join("\n\n");
+    const text = results
+      .filter((r) => r.hasText)
+      .map((r) => r.lines.join("\n"))
+      .join("\n\n");
+    return {
+      text,
+      summary:
+        `${slideFiles.length} slide${slideFiles.length === 1 ? "" : "s"}` +
+        (notesCount ? `, speaker notes on ${notesCount}` : ""),
+    };
+  }
+
+  function docxParagraphText(pXml) {
+    // <w:t> or <w:t xml:space="preserve"> ONLY — a bare [^>]* would also
+    // match <w:tr>/<w:tc>/<w:tbl> and leak raw markup into the text.
+    const runs = [...pXml.matchAll(/<w:t(?:\s[^>]*)?>([\s\S]*?)<\/w:t>/g)].map((m) =>
+      decodeXml(m[1]),
+    );
+    return runs
+      .join("")
+      .replace(/[ \t]+/g, " ")
+      .trim();
   }
 
   async function extractDocx(arrayBuffer) {
@@ -164,14 +244,47 @@
     const zip = await JSZip.loadAsync(arrayBuffer);
     const docFile = zip.files["word/document.xml"];
     if (!docFile) throw new Error("No word/document.xml in the .docx.");
-    const xml = await docFile.async("string");
-    const paras = xml.split(/<\/w:p>/).map((p) => {
-      const runs = [...p.matchAll(/<w:t[^>]*>([\s\S]*?)<\/w:t>/g)].map((m) => decodeXml(m[1]));
-      return runs.join("").trim();
+    let xml = await docFile.async("string");
+    xml = xml
+      // mc:Fallback duplicates every text box's content — keep one copy only.
+      .replace(/<mc:Fallback>[\s\S]*?<\/mc:Fallback>/g, "")
+      // Tabs and manual line breaks otherwise glue words together.
+      .replace(/<w:tab\s*\/>/g, "<w:t> </w:t>")
+      .replace(/<w:br[^>]*\/>|<w:cr\s*\/>/g, "</w:p><w:p>");
+
+    // Tables in place: lesson-plan templates are usually two-column
+    // label/value tables, which read best as "Label: value" lines. Rendered
+    // rows are re-embedded as paragraphs so document order is preserved.
+    let tableRows = 0;
+    const reEnc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    xml = xml.replace(/<w:tbl>[\s\S]*?<\/w:tbl>/g, (tbl) => {
+      const rows = [];
+      for (const tr of tbl.split(/<\/w:tr>/)) {
+        const cells = tr
+          .split(/<\/w:tc>/)
+          .map((tc) =>
+            tc
+              .split(/<\/w:p>/)
+              .map(docxParagraphText)
+              .filter(Boolean)
+              .join(" "),
+          )
+          .filter(Boolean);
+        if (!cells.length) continue;
+        tableRows++;
+        if (cells.length === 2) rows.push(cells[0].replace(/[:\s]+$/, "") + ": " + cells[1]);
+        else rows.push(cells.join(" | "));
+      }
+      return rows.map((r) => `<w:p><w:t>${reEnc(r)}</w:t></w:p>`).join("");
     });
+
+    const paras = xml.split(/<\/w:p>/).map(docxParagraphText);
     const text = paras.filter(Boolean).join("\n");
     if (!text) throw new Error("The .docx contained no readable text.");
-    return text;
+    return {
+      text,
+      summary: tableRows ? `incl. ${tableRows} table row${tableRows === 1 ? "" : "s"}` : "",
+    };
   }
 
   async function extractPdf(arrayBuffer) {
@@ -195,10 +308,21 @@
     for (let p = 1; p <= doc.numPages; p++) {
       const page = await doc.getPage(p);
       const content = await page.getTextContent();
-      const txt = content.items
-        .map((i) => i.str || "")
-        .join(" ")
-        .replace(/\s+/g, " ")
+      // Rebuild real lines from the hasEOL markers so "Label: value" rows in
+      // the PDF survive as their own lines instead of one page-long run-on.
+      const lines = [];
+      let line = [];
+      for (const it of content.items) {
+        if (it.str && it.str.trim()) line.push(it.str.trim());
+        if (it.hasEOL && line.length) {
+          lines.push(line.join(" "));
+          line = [];
+        }
+      }
+      if (line.length) lines.push(line.join(" "));
+      const txt = lines
+        .join("\n")
+        .replace(/[ \t]+/g, " ")
         .trim();
       results.push({ p, txt });
       els.fileStatus.textContent = `Reading page ${p} of ${doc.numPages}…`;
@@ -212,11 +336,20 @@
       throw new Error(
         "No selectable text found in the PDF (it may be scanned images). Paste the text instead.",
       );
-    return text;
+    return { text, summary: `${doc.numPages} page${doc.numPages === 1 ? "" : "s"}` };
   }
 
+  function safeChar(code) {
+    try {
+      return String.fromCodePoint(code);
+    } catch (_) {
+      return "";
+    }
+  }
   function decodeXml(s) {
     return s
+      .replace(/&#x([0-9a-fA-F]+);/g, (_, h) => safeChar(parseInt(h, 16)))
+      .replace(/&#(\d+);/g, (_, d) => safeChar(parseInt(d, 10)))
       .replace(/&lt;/g, "<")
       .replace(/&gt;/g, ">")
       .replace(/&quot;/g, '"')
@@ -245,7 +378,23 @@
 
   const MAX_UPLOAD_BYTES = 25 * 1024 * 1024; // 25 MB — larger files stall in-browser parsing
 
-  async function handleFile(file) {
+  // Formats we can't parse, with the exact export path that produces one we can.
+  const CONVERT_HINTS = {
+    ".ppt":
+      "This is the old PowerPoint format. Open it and File → Save As → .pptx (or in Google Slides: File → Download → Microsoft PowerPoint), then upload the .pptx.",
+    ".doc":
+      "This is the old Word format. Open it and File → Save As → .docx, then upload the .docx.",
+    ".odp": "Export it as .pptx (File → Save As → PowerPoint format), then upload the .pptx.",
+    ".odt": "Export it as .docx (File → Save As → Word format), then upload the .docx.",
+    ".key": "In Keynote use File → Export To → PowerPoint (.pptx), then upload the .pptx.",
+    ".pages": "In Pages use File → Export To → Word (.docx) or PDF, then upload that file.",
+    ".gdoc":
+      "This is only a link to a Google Doc. In Google Docs use File → Download → Word (.docx) or PDF, then upload the downloaded file.",
+    ".gslides":
+      "This is only a link to Google Slides. Use File → Download → Microsoft PowerPoint (.pptx), then upload the downloaded file.",
+  };
+
+  async function handleFile(file, ignoredCount) {
     const name = file.name || "file";
     const lower = name.toLowerCase();
     els.fileStatus.className = "file-status";
@@ -257,29 +406,42 @@
           `This file is ${(file.size / (1024 * 1024)).toFixed(1)} MB, which is too large to read in the browser (limit ${MAX_UPLOAD_BYTES / (1024 * 1024)} MB). Copy the text and paste it into the box instead, or export a smaller/text-only version of the file.`,
         );
       }
-      let text = "";
+      const ext = (lower.match(/\.[a-z0-9]+$/) || [""])[0];
+      if (CONVERT_HINTS[ext]) throw new Error(CONVERT_HINTS[ext]);
+      let out;
       let kind = "";
       if (lower.endsWith(".pptx")) {
         kind = "PowerPoint slides";
-        text = await extractPptx(await file.arrayBuffer());
+        out = await extractPptx(await file.arrayBuffer());
       } else if (lower.endsWith(".docx")) {
         kind = "Word document";
-        text = await extractDocx(await file.arrayBuffer());
+        out = await extractDocx(await file.arrayBuffer());
       } else if (lower.endsWith(".pdf")) {
         kind = "PDF";
-        text = await extractPdf(await file.arrayBuffer());
+        out = await extractPdf(await file.arrayBuffer());
       } else if (lower.endsWith(".txt")) {
         kind = "text file";
-        text = await file.text();
+        out = { text: await file.text(), summary: "" };
       } else {
         throw new Error("Unsupported file type. Use .pptx, .pdf, .docx, .txt.");
       }
-      uploadedExtract = { text, name, kind };
+      if (!out.text || !out.text.trim()) {
+        throw new Error(
+          "No readable text was found in this file. Copy the content and paste it into the box instead.",
+        );
+      }
+      uploadedExtract = { text: out.text, name, kind };
       els.fileStatus.className = "file-status ok";
+      const detail = [out.summary, `${out.text.length.toLocaleString()} characters`]
+        .filter(Boolean)
+        .join(" · ");
       els.fileStatus.innerHTML =
         `<strong>${esc(name)}</strong> (${kind})<br>` +
-        `<span class="extract-ok">Extracted ✓ (${text.length.toLocaleString()} characters)</span> — review the text below, then click Generate.`;
-      els.sourceText.value = text;
+        `<span class="extract-ok">Extracted ✓ (${detail})</span> — review the text below, then click Generate.` +
+        (ignoredCount
+          ? `<br><span class="muted small">Only one file at a time — ${ignoredCount} other dropped file${ignoredCount === 1 ? " was" : "s were"} ignored.</span>`
+          : "");
+      els.sourceText.value = out.text;
     } catch (e) {
       uploadedExtract = null;
       els.fileStatus.className = "file-status bad";
@@ -307,16 +469,24 @@
       _raw: text,
     };
 
+    // Slide titles from the pptx extractor's slide markers — the strongest
+    // title signal an upload can carry. Markers are then excluded from the
+    // label-matching passes so "--- Slide 3 · Objective ---" never satisfies a
+    // "label: value" regex by accident.
+    const slideTitles = [...text.matchAll(/^--- Slide \d+ · (.+?) ---$/gm)]
+      .map((m) => m[1].trim())
+      .filter(Boolean);
+
     const lines = text
       .split("\n")
       .map((l) => l.trim())
-      .filter(Boolean);
+      .filter((l) => l && !/^---/.test(l));
 
     const segments = [];
     const rawSegs = text.split(/[\n;•]+/);
     for (const rSeg of rawSegs) {
       const trimmed = rSeg.trim();
-      if (!trimmed) continue;
+      if (!trimmed || /^---/.test(trimmed)) continue;
       // Split sentences lookbehind-free: period-space followed by capital letter
       const parts = trimmed.split(/\.\s+(?=[A-Z])/);
       for (const p of parts) {
@@ -393,6 +563,14 @@
 
     map.phases.mini = grab(lbl("mini[\\- ]?lesson|modeling|direct instruction|i do")) || null;
 
+    if (!map.title && slideTitles.length) {
+      // First slide title that names the lesson (skip boilerplate slides).
+      // Ranked ABOVE the loose topic/unit grab: "Understanding Unit Rate"
+      // must win over the "\bunit\b …" pattern capturing just "Rate".
+      const boilerplate =
+        /^(?:agenda|do now|warm[\s-]?up|objectives?|standards?|vocabulary|exit (?:ticket|slip)|homework|review|today|welcome|bell\s?ringer|announcements?|guided practice|independent practice|closure)\b[\s:.!]*$/i;
+      map.title = slideTitles.find((t) => t.length <= 120 && !boilerplate.test(t)) || null;
+    }
     if (!map.title) map.title = grab(/\b(?:lesson on|topic|unit|teaching)\s*[:\-]?\s*(.+)/i);
     if (!map.title) {
       const firstSeg = segments.find((s) => !/^---/.test(s) && s.length <= 120);
@@ -1226,8 +1404,8 @@ Mini-lesson: Model finding miles per hour from a ratio of miles to hours; think-
       }),
     );
     els.dropzone.addEventListener("drop", (e) => {
-      const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
-      if (f) handleFile(f);
+      const files = (e.dataTransfer && e.dataTransfer.files) || [];
+      if (files[0]) handleFile(files[0], files.length - 1);
     });
 
     els.printBtn.addEventListener("click", () => window.print());
