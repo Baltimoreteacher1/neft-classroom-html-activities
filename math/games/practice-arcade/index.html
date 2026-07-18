@@ -557,6 +557,19 @@
           if (!pool.length) pool = allRounds.slice();
           if (isReviewMode) pool = shuffle(pool);
           rounds = pool.slice(0, isReviewMode ? 12 : MAX_ROUNDS);
+          // Guarantee the interactive kinds (plot / multi-step chain) actually
+          // play: tier filtering (l2 can restrict to challenge-only) or the
+          // MAX_ROUNDS slice could otherwise drop a lesson's authored
+          // arcadeExtras entirely. Pull any that were excluded to the front and
+          // re-cap. No-op for the vast majority of lessons (no interactive rounds).
+          const interactive = allRounds.filter((r) => r.kind === "plot" || r.kind === "chain");
+          if (interactive.length) {
+            const have = new Set(rounds);
+            const missing = interactive.filter((r) => !have.has(r));
+            if (missing.length) {
+              rounds = missing.concat(rounds).slice(0, isReviewMode ? 12 : MAX_ROUNDS);
+            }
+          }
           if (!rounds.length) rounds = fallbackRounds();
         }
 
@@ -613,7 +626,11 @@
                 .concat(Array.isArray(p.onLevel) ? p.onLevel : [])
                 .concat(Array.isArray(p.extending) ? p.extending : [])
                 .concat(Array.isArray(p.approaching) ? p.approaching : [])
-                .concat(Array.isArray(data.parallelPractice) ? data.parallelPractice : []);
+                .concat(Array.isArray(data.parallelPractice) ? data.parallelPractice : [])
+                // Arcade-only channel: items the lesson renderer ignores but the
+                // arcade ingests (e.g. plot-point / multi-step interactive kinds).
+                // buildPlayList() force-surfaces these regardless of pool position.
+                .concat(Array.isArray(data.arcadeExtras) ? data.arcadeExtras : []);
               const seen = new Set();
               pool.forEach((it) => {
                 if (!it || typeof it !== "object") return;
