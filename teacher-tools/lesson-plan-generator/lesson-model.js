@@ -130,6 +130,40 @@
       /preferential|front|seating/i,
       "Preferential seating: seat flagged students near the board and the teacher path for quick, quiet support.",
     ],
+    [
+      /visual (?:support|aid|cue|model|schedule)|picture|diagram|anchor chart|color.?cod/i,
+      "Visual supports: pair every direction with a picture, diagram, or the anchor chart; let students point to a model before explaining in words.",
+    ],
+    // Teachers often write the disability/condition rather than the
+    // accommodation — map the common ones to appropriate, defensible moves.
+    [
+      /dyslexi|reading disab|below.?grade.?level read|print disab/i,
+      "Reading-need support: read all text aloud and cut the text load — lead with numbers and a labeled model instead of dense word problems.",
+    ],
+    [
+      /dyscalculi|number sense|math disab|math learning/i,
+      "Number-sense support: keep manipulatives, a number line, and a multiplication chart within reach; build from a concrete model before the abstract.",
+    ],
+    [
+      /adhd|\badd\b|attention|hyperactiv|impuls|off.?task/i,
+      "Attention support: short work chunks with a check-in after each, a private cue to refocus, and movement built into transitions.",
+    ],
+    [
+      /autis|\basd\b|spectrum/i,
+      "Structured routine: post a visual agenda, pre-teach each transition, keep expectations explicit, and allow a quiet processing option.",
+    ],
+    [
+      /processing|working memory|slow.?to.?process/i,
+      "Processing support: give extra wait time after every question, present one step at a time, and hand over a written copy of oral directions.",
+    ],
+    [
+      /behavior|\bbip\b|\bebd\b|emotional|self.?regulat|de.?escalat/i,
+      "Behavior support: follow the BIP — front-load specific praise, offer a planned break option, and keep corrections brief and private.",
+    ],
+    [
+      /anxiety|test.?anx|refus|avoid/i,
+      "Anxiety support: let the student start with the problems they feel sure of, allow a private signal for help, and avoid cold-calling without a heads-up.",
+    ],
   ];
 
   function spedSupportsFrom(spedNeeds) {
