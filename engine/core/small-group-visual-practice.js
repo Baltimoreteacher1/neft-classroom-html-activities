@@ -1428,6 +1428,53 @@ function typedModel(item, steps, events) {
   return null;
 }
 
+// A column-aligned vertical decimal operation: operands stacked with the decimal
+// points lined up (zeros annexed so both have the same number of places) and a
+// blank answer line under the bar. Pure visual scaffold — no answer given away.
+function verticalDecimal(values, operation) {
+  const nums = (values || []).map(Number).filter((n) => Number.isFinite(n));
+  if (nums.length < 2) return null;
+  const [a, b] = nums;
+  const decs = (x) => {
+    const s = String(x);
+    const i = s.indexOf(".");
+    return i < 0 ? 0 : s.length - i - 1;
+  };
+  const maxDec = Math.max(decs(a), decs(b));
+  const fa = a.toFixed(maxDec);
+  const fb = b.toFixed(maxDec);
+  const w = Math.max(fa.length, fb.length);
+  const op = operation === "−" || operation === "-" ? "−" : "+";
+
+  const box = el("div", "sg-vdec");
+  box.style.cssText = "display:flex;flex-direction:column;align-items:center;margin:8px 0 4px;";
+  const stack = el("div");
+  stack.style.cssText =
+    "font-family:ui-monospace,Menlo,Consolas,monospace;font-size:1.5rem;font-weight:800;color:var(--navy,#12355b);";
+  const row = (opc, numStr, extra) => {
+    const r = el("div");
+    r.style.cssText = "display:flex;align-items:baseline;justify-content:flex-end;gap:10px;";
+    const o = el("span", null, opc);
+    o.style.cssText = "width:1ch;color:var(--muted,#54677c);";
+    const nn = el("span", null, numStr.padStart(w, " "));
+    nn.style.cssText = `white-space:pre;${extra || ""}`;
+    r.append(o, nn);
+    return r;
+  };
+  stack.append(row(" ", fa), row(op, fb));
+  const bar = el("div");
+  bar.style.cssText = "border-top:3px solid var(--navy,#12355b);margin:5px 0 5px auto;";
+  bar.style.width = `${w + 1.5}ch`;
+  stack.append(bar);
+  stack.append(row(" ", "?".padStart(w, " "), "color:var(--amber-ink,#8a5a00);"));
+  box.append(stack);
+  const cap = el("div", null, "Line up the decimal points — the answer goes in the blank.");
+  cap.style.cssText =
+    "font-size:.75rem;font-weight:600;color:var(--muted,#54677c);text-align:center;margin-top:6px;";
+  box.append(cap);
+  return box;
+}
+
 export function appendVisualPractice(card, item, { mode = "guided", events = {} } = {}) {
   const kind = String(item.visual?.kind || "");
   const read = el("button", "btn ghost sg-read-problem", "🔊 Read this problem");
@@ -1442,7 +1489,11 @@ export function appendVisualPractice(card, item, { mode = "guided", events = {} 
     card.classList.add("sg-big-work");
     const top = el("div", "sg-problem-support-head");
     top.append(el("div", "sg-visual-title", "Work it here"), read);
-    question?.after(top, ...stepsNodes);
+    // Show the operation stacked with the decimal points lined up (zeros annexed
+    // so every number has the same places) — the whole point of the skill — with
+    // a blank answer line, above the guided steps.
+    const vd = verticalDecimal(item.visual?.values, item.visual?.operation);
+    question?.after(top, ...(vd ? [vd] : []), ...stepsNodes);
     return card;
   }
   // Typed model first: students put the numbers into the model themselves,
