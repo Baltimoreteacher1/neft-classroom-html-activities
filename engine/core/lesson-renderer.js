@@ -2125,13 +2125,28 @@ function renderCommonMistakeCallout(host, config) {
   const text = deriveCommonMistake(config);
   if (!text) return;
 
+  // Compact: lead with the core warning (first sentence) so the callout stays a
+  // quick glance; tuck any elaboration (examples, "before you submit…") into a
+  // collapsible instead of a full paragraph.
+  const parts = String(text)
+    .split(/(?<=[.!?])\s+/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const lead = parts.shift() || text;
+  const rest = parts.join(" ");
+
   const box = document.createElement("div");
   box.className = "common-mistake-callout";
   box.innerHTML = `
     <span class="common-mistake-icon" aria-hidden="true">⚠️</span>
     <div>
       <strong>${stackHtml(t("commonMistake", "en"), t("commonMistake", "es"))}</strong>
-      <p>${esc(text)}</p>
+      <p style="margin:2px 0 0;">${esc(lead)}</p>
+      ${
+        rest
+          ? `<details class="cm-more" style="margin-top:4px;"><summary style="cursor:pointer; font-size:.85rem; color:var(--muted);">See an example</summary><p style="margin:4px 0 0;">${esc(rest)}</p></details>`
+          : ""
+      }
     </div>`;
   host.append(box);
 }
