@@ -164,7 +164,12 @@ function buildVisual(v) {
     case "coordinate-plane":
       return coordPlaneSVG(v);
     case "factor-tree":
-      return factorTreeSVG(v);
+      // Fill-in-the-blank factor tree (interactive-visual bridge). The static
+      // SVG stays as the JS-off / print fallback so the figure never blanks.
+      return interactiveVisualHost(v, {
+        ariaLabel: `Fill-in-the-blank factor tree for ${v.value ?? "a number"}. Complete each branch so it multiplies to the number above and every leaf is prime.`,
+        fallback: factorTreeSVG(v),
+      });
     case "solid-3d": {
       // Interactive 3D solid explorer (drag/keyboard rotate, tap faces, unfold
       // net). Emits a mount host that mountInteractiveVisuals() hydrates.
