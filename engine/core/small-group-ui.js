@@ -96,7 +96,7 @@ export function injectSmallGroupStyles(accent) {
     const innovation = document.createElement("link");
     innovation.id = "sg-innovation-styles";
     innovation.rel = "stylesheet";
-    innovation.href = "/assets/small-group-innovation.css?v=20260718-guide2";
+    innovation.href = "/assets/small-group-innovation.css?v=20260718-guide3";
     document.head.appendChild(innovation);
   }
   if (!document.getElementById("sg-annotation-styles")) {

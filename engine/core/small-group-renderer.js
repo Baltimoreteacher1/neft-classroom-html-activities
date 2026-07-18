@@ -184,6 +184,13 @@ function teacherPanel(config, accent, talk) {
     .map((frame) => `<span class="sg-frame">${esc(frame)}</span>`)
     .join("");
   const listenFor = (group.listenFor || []).map((item) => `<li>${esc(item)}</li>`).join("");
+  // Facilitation note for this variant's proof capstone — how to run the
+  // Team Consensus Protocol (group 1) or the Prove-It & Defend-It flow (group 2)
+  // so the on-page activity is used as intended, not just clicked through.
+  const isGroup2 = (config.variant || `group${group.group}`) === "group2";
+  const capstoneNote = isGroup2
+    ? "<b>Prove-It &amp; Defend-It:</b> push past “I got the answer” to “here’s why it must be true.” Use the skeptic questions to demand a second representation or a boundary test before you accept the proof."
+    : "<b>Team consensus protocol:</b> post the problem, then have each voice privately pick the single best way to prove it before revealing the tally. Disagreement is the discussion fuel — ask “why that proof for this problem?” and let the group defend or revise.";
   wrapper.innerHTML = `<details>
     <summary>👩‍🏫 Teacher studio guide · ${esc(group.label || accent.name)}</summary>
     <div class="sg-tbody">
@@ -193,6 +200,7 @@ function teacherPanel(config, accent, talk) {
       ${frames ? `<p><b>Reusable frames:</b></p><div class="sg-frames">${frames}</div>` : ""}
       ${talk?.listenFor ? `<p><b>Listen for during team talk:</b> ${esc(talk.listenFor)}</p>` : ""}
       ${listenFor ? `<p><b>Listen-for checkpoints:</b></p><ul>${listenFor}</ul>` : ""}
+      <p class="sg-teacher-capstone">${capstoneNote}</p>
     </div>
   </details>`;
   return wrapper;
