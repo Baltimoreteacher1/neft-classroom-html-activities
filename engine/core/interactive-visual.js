@@ -101,6 +101,14 @@ const REGISTRY = {
     const { renderFactorTree } = await import("../components/factor-tree.js");
     return renderFactorTree(host, cfg);
   },
+  // Fill-in-the-blank factor tree: the SAME config a static `factor-tree`
+  // diagram uses, rendered with its branch nodes blanked as checkable inputs.
+  // The completed tree in config is the answer key, so every existing static
+  // factor tree upgrades to a scaffolded exercise with no config edits.
+  "factor-tree": async (host, cfg) => {
+    const { renderFactorTreeFill } = await import("../components/factor-tree-fill.js");
+    return renderFactorTreeFill(host, cfg);
+  },
   // Interactive powers & exponents lab: type a base and exponent, expand into
   // repeated multiplication, and evaluate — the sibling of the factor-tree lab.
   "power-builder": async (host, cfg) => {
