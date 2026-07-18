@@ -170,6 +170,27 @@ function buildVisual(v) {
         ariaLabel: `Fill-in-the-blank factor tree for ${v.value ?? "a number"}. Complete each branch so it multiplies to the number above and every leaf is prime.`,
         fallback: factorTreeSVG(v),
       });
+    case "decimal-columns":
+      return interactiveVisualHost(v, {
+        ariaLabel: `Interactive decimal ${v.op === "-" ? "subtraction" : "addition"} of ${v.a} and ${v.b}. Line up the decimal points and fill in each digit of the answer.`,
+        fallback: `Decimal ${v.op === "-" ? "subtraction" : "addition"}: ${v.a} ${v.op === "-" ? "−" : "+"} ${v.b}. Turn on JavaScript to line up the decimals and solve it.`,
+      });
+    case "decimal-product":
+      return interactiveVisualHost(v, {
+        ariaLabel: `Interactive decimal multiplication of ${v.a} and ${v.b}. Multiply as whole numbers, then place the decimal point.`,
+        fallback: `Decimal multiplication: ${v.a} × ${v.b}. Turn on JavaScript to multiply and place the decimal point.`,
+      });
+    case "decimal-quotient":
+      return interactiveVisualHost(v, {
+        ariaLabel: `Interactive decimal division of ${v.dividend} by ${v.divisor}. Shift both decimals to make the divisor whole, then divide.`,
+        fallback: `Decimal division: ${v.dividend} ÷ ${v.divisor}. Turn on JavaScript to rewrite and solve it.`,
+      });
+    case "histogram-builder":
+      return interactiveVisualHost(v, {
+        ariaLabel:
+          "Interactive histogram builder. Count the data in each interval and fill in the frequency to build the bars.",
+        fallback: "Histogram builder. Turn on JavaScript to bin the data and build the bars.",
+      });
     case "solid-3d": {
       // Interactive 3D solid explorer (drag/keyboard rotate, tap faces, unfold
       // net). Emits a mount host that mountInteractiveVisuals() hydrates.

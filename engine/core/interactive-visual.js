@@ -109,6 +109,26 @@ const REGISTRY = {
     const { renderFactorTreeFill } = await import("../components/factor-tree-fill.js");
     return renderFactorTreeFill(host, cfg);
   },
+  // Fill-in vertical decimal addition/subtraction, aligned by the decimal point.
+  "decimal-columns": async (host, cfg) => {
+    const { renderDecimalColumns } = await import("../components/decimal-columns.js");
+    return renderDecimalColumns(host, cfg);
+  },
+  // Decimal multiplication: multiply as whole numbers, then place the point.
+  "decimal-product": async (host, cfg) => {
+    const { renderDecimalProduct } = await import("../components/decimal-product.js");
+    return renderDecimalProduct(host, cfg);
+  },
+  // Decimal division: shift both decimals to make the divisor whole, then divide.
+  "decimal-quotient": async (host, cfg) => {
+    const { renderDecimalQuotient } = await import("../components/decimal-quotient.js");
+    return renderDecimalQuotient(host, cfg);
+  },
+  // Build-a-histogram: bin the data and fill each interval's frequency.
+  "histogram-builder": async (host, cfg) => {
+    const { renderHistogramBuilder } = await import("../components/histogram-builder.js");
+    return renderHistogramBuilder(host, cfg);
+  },
   // Interactive powers & exponents lab: type a base and exponent, expand into
   // repeated multiplication, and evaluate — the sibling of the factor-tree lab.
   "power-builder": async (host, cfg) => {
