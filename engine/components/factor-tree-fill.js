@@ -79,6 +79,26 @@ function ensureStyles() {
   .ftf-status.ok{color:${C.primeStroke};}
   .ftf-status.no{color:${C.wrong};}
   .ftf-result{margin-top:8px;font-size:.95rem;color:${C.navy};text-align:center;font-weight:700;}
+  .ftf-exp{margin-top:12px;width:100%;max-width:360px;box-sizing:border-box;padding:12px 14px;
+    border:1px solid ${C.line};border-left:4px solid ${C.accent};border-radius:12px;background:#f7faff;}
+  .ftf-exp-title{font-weight:800;color:${C.navy};font-size:.92rem;text-align:center;}
+  .ftf-exp-hint{font-size:.78rem;color:${C.muted};margin:2px 0 10px;text-align:center;}
+  .ftf-exp-row{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:center;gap:2px;
+    font-size:1.15rem;font-weight:800;color:${C.ink};}
+  .ftf-exp-factor{display:inline-flex;align-items:flex-start;}
+  .ftf-exp-times{margin:0 6px;color:${C.muted};align-self:center;}
+  .ftf-exp-input{width:26px;height:26px;margin-left:1px;border:2px dashed ${C.accent};border-radius:6px;
+    background:#fff;color:${C.ink};font-weight:800;font-size:.8rem;text-align:center;padding:0;
+    vertical-align:super;-moz-appearance:textfield;}
+  .ftf-exp-input::-webkit-outer-spin-button,.ftf-exp-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+  .ftf-exp-input:focus{outline:none;border-style:solid;box-shadow:0 0 0 3px rgba(29,78,216,.18);}
+  .ftf-exp-input.correct{border-style:solid;border-color:${C.primeStroke};background:${C.primeFill};color:${C.primeInk};}
+  .ftf-exp-input.wrong{border-color:${C.wrong};background:#fdeceb;color:${C.wrong};animation:ftf-shake-inline .32s;}
+  @keyframes ftf-shake-inline{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+  @media (prefers-reduced-motion:reduce){.ftf-exp-input.wrong{animation:none;}}
+  .ftf-exp-status{min-height:1.2em;margin-top:8px;font-size:.85rem;font-weight:700;text-align:center;}
+  .ftf-exp-status.ok{color:${C.primeStroke};}
+  .ftf-exp-status.no{color:${C.wrong};}
   `;
   document.head.appendChild(s);
 }
@@ -102,12 +122,16 @@ function leafPrimes(node, out) {
   return out;
 }
 
-// Compact exponent form: [2,2,3,7] -> "2² × 3 × 7".
-function exponentForm(primes) {
+// Ordered [prime, count] pairs, ascending by prime: [2,2,3,7] -> [[2,2],[3,1],[7,1]].
+function primeCounts(primes) {
   const counts = new Map();
   for (const p of primes) counts.set(p, (counts.get(p) || 0) + 1);
-  return [...counts.entries()]
-    .sort((a, b) => a[0] - b[0])
+  return [...counts.entries()].sort((a, b) => a[0] - b[0]);
+}
+
+// Compact exponent form: [2,2,3,7] -> "2² × 3 × 7".
+function exponentForm(primes) {
+  return primeCounts(primes)
     .map(([p, k]) => (k > 1 ? `${p}${sup(k)}` : `${p}`))
     .join(" × ");
 }
@@ -197,6 +221,9 @@ export function renderFactorTreeFill(host, cfg) {
   wrap.className = "ftf-wrap";
   const primes = leafPrimes(cfg, []);
   const rootVal = Number(cfg.value);
+  // Optional second stage: after the tree is solved, students rewrite the
+  // factorization in exponent form. Opt out with `"exponents": false`.
+  const withExponents = cfg.exponents !== false;
   wrap.innerHTML = `
     ${cfg.title ? `<div class="ftf-title">${esc(cfg.title)}</div>` : ""}
     <div class="ftf-hint">Fill in each blank so every branch multiplies to the number above it. Stop when every leaf is prime.</div>
@@ -211,11 +238,14 @@ export function renderFactorTreeFill(host, cfg) {
     </div>
     <div class="ftf-status" role="status" aria-live="polite"></div>
     <div class="ftf-result" hidden></div>
+    <div class="ftf-exp" hidden></div>
   `;
 
   const stage = wrap.querySelector(".ftf-stage");
   const status = wrap.querySelector(".ftf-status");
   const result = wrap.querySelector(".ftf-result");
+  const expPanel = wrap.querySelector(".ftf-exp");
+  let expCounts = null; // [[prime,count],…] locked in when the stage is built
 
   // Overlay an input on each blank node, positioned by percentage of the stage
   // box so it tracks the responsive SVG exactly.
@@ -319,7 +349,96 @@ export function renderFactorTreeFill(host, cfg) {
   function showResult(primeList) {
     const ps = primeList && primeList.length ? primeList : primes;
     result.hidden = false;
-    result.innerHTML = `${rootVal} = ${ps.join(" × ")} = ${exponentForm(ps)}`;
+    if (withExponents) {
+      // Show only the expanded product so the exponent form stays a challenge,
+      // not a giveaway — the exponent stage is the next step.
+      result.innerHTML = `${rootVal} = ${ps.join(" × ")}`;
+      buildExponentStage(ps, false);
+    } else {
+      result.innerHTML = `${rootVal} = ${ps.join(" × ")} = ${exponentForm(ps)}`;
+    }
+  }
+
+  // Second stage: rewrite the factorization in exponent form. Rendered once the
+  // tree is solved, as a clearly separate card so it never clutters the tree.
+  function buildExponentStage(ps, revealAnswers) {
+    if (!expCounts) {
+      expCounts = primeCounts(ps);
+      const factors = expCounts
+        .map(
+          ([p]) =>
+            `<span class="ftf-exp-factor">${p}<sup><input class="ftf-exp-input" data-p="${p}" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" aria-label="exponent for prime ${p}"></sup></span>`,
+        )
+        .join(`<span class="ftf-exp-times">×</span>`);
+      expPanel.innerHTML = `
+        <div class="ftf-exp-title">Now write it in exponent form ✍️</div>
+        <div class="ftf-exp-hint">Each exponent tells how many times that prime is used. A prime used once has exponent 1.</div>
+        <div class="ftf-exp-row">${rootVal} = ${factors}</div>
+        <div class="ftf-controls"><button type="button" class="ftf-btn ftf-btn-check ftf-exp-check">Check exponents</button></div>
+        <div class="ftf-exp-status" role="status" aria-live="polite"></div>
+      `;
+      expPanel.hidden = false;
+      const expCheckBtn = expPanel.querySelector(".ftf-exp-check");
+      expCheckBtn.addEventListener("click", checkExponents);
+      expPanel.querySelectorAll(".ftf-exp-input").forEach((el) => {
+        el.addEventListener("input", () => {
+          el.value = el.value.replace(/[^0-9]/g, "");
+          el.classList.remove("wrong", "correct");
+        });
+      });
+    }
+    if (revealAnswers) {
+      for (const [p, c] of expCounts) {
+        const el = expPanel.querySelector(`.ftf-exp-input[data-p="${p}"]`);
+        if (el) {
+          el.value = String(c);
+          el.classList.remove("wrong");
+          el.classList.add("correct");
+        }
+      }
+      finishExponents();
+    }
+  }
+
+  function checkExponents() {
+    const st = expPanel.querySelector(".ftf-exp-status");
+    let allRight = true;
+    let anyEmpty = false;
+    for (const [p, c] of expCounts) {
+      const el = expPanel.querySelector(`.ftf-exp-input[data-p="${p}"]`);
+      if (!el) continue;
+      el.classList.remove("correct", "wrong");
+      const v = el.value.trim();
+      if (v === "") {
+        anyEmpty = true;
+        allRight = false;
+        continue;
+      }
+      if (parseInt(v, 10) === c) el.classList.add("correct");
+      else {
+        el.classList.add("wrong");
+        allRight = false;
+      }
+    }
+    if (allRight) {
+      finishExponents();
+    } else {
+      st.textContent = anyEmpty
+        ? "Fill in every exponent."
+        : "Not yet — count how many times each prime appears in your tree.";
+      st.className = "ftf-exp-status no";
+    }
+  }
+
+  function finishExponents() {
+    const st = expPanel.querySelector(".ftf-exp-status");
+    const form = expCounts.map(([p, c]) => (c > 1 ? `${p}${sup(c)}` : `${p}`)).join(" × ");
+    st.innerHTML = `${rootVal} = ${form} ✓`;
+    st.className = "ftf-exp-status ok";
+    expPanel.querySelectorAll(".ftf-exp-input").forEach((el) => {
+      el.classList.remove("wrong");
+      el.classList.add("correct");
+    });
   }
 
   function reveal() {
@@ -330,7 +449,9 @@ export function renderFactorTreeFill(host, cfg) {
     }
     status.textContent = "Here's one completed factor tree.";
     status.className = "ftf-status ok";
-    showResult(primes.slice().sort((a, b) => a - b));
+    const sp = primes.slice().sort((a, b) => a - b);
+    showResult(sp);
+    if (withExponents) buildExponentStage(sp, true);
   }
 
   const checkBtn = wrap.querySelector(".ftf-btn-check");
