@@ -965,6 +965,75 @@ function typedNumberLine(item, steps, events) {
   return shell;
 }
 
+// Interactive double-rate bars: two bar-model rows drawn to the real gold:blue
+// proportions so students SEE which ratio packs more gold per blue, then click
+// the bar with FEWER gold per blue to answer. The guided steps still carry the
+// numeric division; this makes the comparison a model, not an open box.
+function typedRateBars(item, steps, events) {
+  const vals = (item.visual?.values || []).map(Number);
+  if (vals.length < 4 || vals.some((v) => !Number.isFinite(v) || v <= 0)) return null;
+  const [a, b, c, d] = vals;
+  // Ratio blue:gold = a:b and c:d → gold per blue = b/a and d/c (matches the
+  // authored steps "gold per blue: b ÷ a").
+  const r1 = b / a;
+  const r2 = d / c;
+  const answer = String(item.answer || "")
+    .trim()
+    .toLowerCase();
+  const target = answer.includes("second") ? "second" : "first"; // which has FEWER
+
+  const shell = modelShell(
+    "Compare gold per blue",
+    "Each row shows one ratio's gold tiles for every blue tile. Tap the row with FEWER gold per blue.",
+  );
+  const status = modelStatus();
+  const maxRate = Math.max(r1, r2, 1);
+  const rows = el("div", "sg-rate-rows");
+  rows.style.cssText = "display:flex; flex-direction:column; gap:10px; margin:8px 0;";
+  let done = false;
+  const makeRow = (label, rate, which) => {
+    const row = el("button", "sg-rate-row");
+    row.type = "button";
+    row.style.cssText =
+      "display:flex; align-items:center; gap:10px; width:100%; text-align:left; background:#fff; border:2px solid var(--line,#cbd5e1); border-radius:10px; padding:8px 10px; cursor:pointer;";
+    const tag = el("span", null, label);
+    tag.style.cssText = "font-weight:800; color:var(--navy,#12355b); min-width:58px;";
+    const track = el("div");
+    track.style.cssText =
+      "flex:1; height:20px; background:#eef4fb; border-radius:6px; overflow:hidden;";
+    const fill = el("div");
+    fill.style.cssText = `height:100%; width:${((rate / maxRate) * 100).toFixed(1)}%; background:#d4952a; border-radius:6px;`;
+    track.appendChild(fill);
+    const num = el("span", null, `${(Math.round(rate * 100) / 100).toString()} /blue`);
+    num.style.cssText =
+      "font-weight:700; color:var(--muted,#54677c); min-width:70px; text-align:right;";
+    row.append(tag, track, num);
+    row.addEventListener("click", () => {
+      if (done) return;
+      const correct = which === target;
+      events.onAttempt?.({ correct });
+      if (!correct) {
+        row.style.borderColor = "#d9534f";
+        row.style.background = "#fdeceb";
+        setTimeout(() => {
+          row.style.borderColor = "var(--line,#cbd5e1)";
+          row.style.background = "#fff";
+        }, 320);
+        return;
+      }
+      done = true;
+      row.style.borderColor = "#0d7a76";
+      row.style.background = "#e2f9f5";
+      status.textContent = `Yes — the ${target} ratio has fewer gold per blue ✓`;
+      steps?.completeMatching(item.answer);
+    });
+    return row;
+  };
+  rows.append(makeRow("First", r1, "first"), makeRow("Second", r2, "second"));
+  shell.append(rows, status);
+  return shell;
+}
+
 function typedTable(item, steps, events, kind) {
   const values = valuesFrom(item.visual, item.stem);
   const [first, second] = values.map(Number);
@@ -1342,6 +1411,7 @@ function typedModel(item, steps, events) {
     if (kind.includes("factor-tree")) return typedFactorTree(item, steps, events);
     if (kind.includes("division-box")) return typedDivision(item, steps, events);
     if (kind.includes("number-line")) return typedNumberLine(item, steps, events);
+    if (kind.includes("double-rate-bars")) return typedRateBars(item, steps, events);
     if (kind.includes("unit-rate") || kind.includes("conversion") || kind.includes("ratio-table"))
       return typedTable(item, steps, events, kind);
     if (kind.includes("percent-bar")) return typedPercentBar(item, steps, events);
