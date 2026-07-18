@@ -55,6 +55,7 @@ import {
   coordPlaneSVG,
   dotPlotSVG,
   factorTreeSVG,
+  figureAria,
   histogramSVG,
   numberLineSVG,
   tapeDiagramSVG,
@@ -149,14 +150,29 @@ function instructionCallout(el, icon, html) {
 function buildVisual(v) {
   if (!v) return "";
   switch (v.kind) {
+    // "Data Live" — authored data figures become explore-first interactive
+    // widgets (tap to read, reveal mean vs. median, opt-in "What if?" sandbox).
+    // The static SVG stays as the JS-off / print fallback so it never blanks.
     case "histogram":
-      return histogramSVG(v);
+      return interactiveVisualHost(v, {
+        ariaLabel: figureAria(v, "Interactive histogram"),
+        fallback: histogramSVG(v),
+      });
     case "dot-plot":
-      return dotPlotSVG(v);
+      return interactiveVisualHost(v, {
+        ariaLabel: figureAria(v, "Interactive dot plot"),
+        fallback: dotPlotSVG(v),
+      });
     case "box-plot":
-      return boxPlotSVG(v);
+      return interactiveVisualHost(v, {
+        ariaLabel: figureAria(v, "Interactive box plot"),
+        fallback: boxPlotSVG(v),
+      });
     case "bar-chart":
-      return barChartSVG(v);
+      return interactiveVisualHost(v, {
+        ariaLabel: figureAria(v, "Interactive bar chart"),
+        fallback: barChartSVG(v),
+      });
     case "number-line":
       return numberLineSVG(v);
     case "tape-diagram":

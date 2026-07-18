@@ -109,6 +109,19 @@ const REGISTRY = {
     const { renderFactorTreeFill } = await import("../components/factor-tree-fill.js");
     return renderFactorTreeFill(host, cfg);
   },
+  // "Data Live": the four authored static data figures (histogram, dot plot,
+  // box plot, bar chart) upgraded to explore-first interactive figures IN PLACE
+  // from the SAME config. Default view equals the old static figure, plus a
+  // reveal-the-measures overlay (mean vs. median) and an opt-in, reversible
+  // "What if?" sandbox — so lesson questions about the authored data still hold.
+  histogram: (host, cfg) =>
+    import("../components/data-live.js").then((m) => m.renderDataLive(host, cfg)),
+  "dot-plot": (host, cfg) =>
+    import("../components/data-live.js").then((m) => m.renderDataLive(host, cfg)),
+  "box-plot": (host, cfg) =>
+    import("../components/data-live.js").then((m) => m.renderDataLive(host, cfg)),
+  "bar-chart": (host, cfg) =>
+    import("../components/data-live.js").then((m) => m.renderDataLive(host, cfg)),
   // Interactive powers & exponents lab: type a base and exponent, expand into
   // repeated multiplication, and evaluate — the sibling of the factor-tree lab.
   "power-builder": async (host, cfg) => {
