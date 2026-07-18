@@ -523,7 +523,12 @@ function renderStudio(config) {
       // mounted first so students can rehearse the skill with the tool before
       // the graded items.
       panel: makePanel("sg-tab-practice", [
-        config.practice?.diagram ? figureBlock(config.practice.diagram) : null,
+        ...(config.practice?.diagram
+          ? (Array.isArray(config.practice.diagram)
+              ? config.practice.diagram
+              : [config.practice.diagram]
+            ).map((d) => figureBlock(d))
+          : []),
         practice,
         talk,
         check,

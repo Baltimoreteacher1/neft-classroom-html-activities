@@ -216,6 +216,26 @@ function buildVisual(v) {
           "Equation balance scale. Turn on JavaScript to solve the equation by keeping both sides balanced.",
       });
     }
+    case "stats-data-lab": {
+      // Interactive data workbench: build a data set and watch mean, median,
+      // mode, range, and MAD update live over a dot plot.
+      return interactiveVisualHost(v, {
+        ariaLabel:
+          "Data lab. Add or remove data values and watch the mean, median, mode, range, and mean absolute deviation update over a dot plot.",
+        fallback:
+          "Interactive data lab. Turn on JavaScript to build a data set and see its center and spread measures update live.",
+      });
+    }
+    case "number-line-explorer": {
+      // Interactive number line: drag a point to see absolute value as its
+      // distance from zero (and its opposite), or compare two numbers.
+      return interactiveVisualHost(v, {
+        ariaLabel:
+          "Number line explorer. Drag a point to see its absolute value as the distance from zero, along with its opposite, or compare two numbers.",
+        fallback:
+          "Interactive number line. Turn on JavaScript to drag a point and explore absolute value and opposites.",
+      });
+    }
     case "line-grapher": {
       // Draggable y = kx grapher for proportional relationships / linear equations.
       const yN = v.yName || "y";
@@ -2226,16 +2246,23 @@ function renderPracticePhase(el, state, ctx, config) {
     "<strong>Adaptive practice:</strong> Pick <strong>Level 1</strong> for step-by-step hints, <strong>Level 2</strong> for a stretch challenge, or <strong>Adaptive</strong> to let the activity adjust. Wrong answers teach — read the feedback and try again.",
   );
 
-  // Optional interactive "practice lab" (factor-tree-lab, power-builder,
-  // distributive-builder, percent-builder, …) — a put-your-own-numbers-in tool
+  // Optional interactive "practice lab(s)" (factor-tree-lab, power-builder,
+  // equation-balance-lab, step-solver, …) — a put-your-own-numbers-in tool
   // mounted at the top of Practice so students can rehearse the skill before the
-  // adaptive items. `practice.diagram` accepts any interactive/static visual kind.
+  // adaptive items. `practice.diagram` accepts any interactive/static visual
+  // kind, or an ARRAY of them to stack several complementary labs.
   if (config.practice?.diagram) {
-    const labCard = document.createElement("div");
-    labCard.className = "card";
-    labCard.innerHTML = buildVisual(config.practice.diagram);
-    el.append(labCard);
-    mountInteractiveVisuals(labCard);
+    const labs = Array.isArray(config.practice.diagram)
+      ? config.practice.diagram
+      : [config.practice.diagram];
+    for (const lab of labs) {
+      if (!lab) continue;
+      const labCard = document.createElement("div");
+      labCard.className = "card";
+      labCard.innerHTML = buildVisual(lab);
+      el.append(labCard);
+      mountInteractiveVisuals(labCard);
+    }
   }
 
   renderWorkedExamplePanel(el, config);

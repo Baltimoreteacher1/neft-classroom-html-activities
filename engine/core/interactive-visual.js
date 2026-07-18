@@ -167,6 +167,18 @@ const REGISTRY = {
     const { renderEquationBalanceLab } = await import("../components/equation-balance-lab.js");
     return renderEquationBalanceLab(host, cfg);
   },
+  // Data lab: build/edit a data set and watch mean (as a balance point),
+  // median, mode, range, and MAD update live over a dot plot.
+  "stats-data-lab": async (host, cfg) => {
+    const { renderStatsDataLab } = await import("../components/stats-data-lab.js");
+    return renderStatsDataLab(host, cfg);
+  },
+  // Number line explorer: drag a point to SEE absolute value as distance from
+  // zero (+ its opposite), or compare two integers/rationals.
+  "number-line-explorer": async (host, cfg) => {
+    const { renderNumberLineExplorer } = await import("../components/number-line-explorer.js");
+    return renderNumberLineExplorer(host, cfg);
+  },
   "dist-explorer": async (host, cfg) => {
     const { renderDistExplorer } = await import("../components/dist-explorer.js");
     return renderDistExplorer(host, { max: cfg.max, unit: cfg.unit, label: cfg.label });
