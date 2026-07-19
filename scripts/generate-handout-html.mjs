@@ -54,6 +54,17 @@ function practicePreview(config) {
           .slice(0, 3)
           .map((pair) => `<li>${esc(pair.left || pair.term || "")} → ___</li>`)
           .join("")}</ul>`;
+      } else if (p.type === "error-analysis" && Array.isArray(p.workedExample)) {
+        // Print the (flawed) worked solution the student must critique — without
+        // it the handout showed only the title, so there was no problem to solve.
+        // The wrong step is NOT marked: finding it is the task.
+        const steps = p.workedExample
+          .map(
+            (s, si) =>
+              `<li><strong>Step ${si + 1}:</strong> ${esc(s.label)} — <span style="font-family:monospace;">${esc(s.work)}</span></li>`,
+          )
+          .join("");
+        extra = `<ol style="margin:8px 0 0 1.2rem; font-size:0.88rem;">${steps}</ol><p style="margin:6px 0 0; font-size:0.85rem;"><em>Which step has the mistake? Explain it and write the correct work.</em></p>`;
       }
       return `<li>${esc(stem)}${extra}<div class="work-space"></div></li>`;
     })
