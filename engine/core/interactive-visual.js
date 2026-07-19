@@ -109,6 +109,14 @@ const REGISTRY = {
     const { renderFactorTreeFill } = await import("../components/factor-tree-fill.js");
     return renderFactorTreeFill(host, cfg);
   },
+  // Interactive vertical decimal addition/subtraction with hands-on carrying and
+  // borrowing: numbers stack aligned by the decimal point (short numbers zero-
+  // padded), and the student works each column, filling the amber carry/regroup
+  // boxes and the answer.
+  "decimal-columns": async (host, cfg) => {
+    const { renderDecimalColumns } = await import("../components/decimal-columns.js");
+    return renderDecimalColumns(host, cfg);
+  },
   // Interactive tape diagram: the SAME config the static `tape-diagram` figure
   // uses, rendered as a tap-to-count model (count the equal parts in all).
   "tape-diagram": async (host, cfg) => {
