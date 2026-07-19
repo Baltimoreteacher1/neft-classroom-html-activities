@@ -123,6 +123,18 @@ const REGISTRY = {
     const { renderLcmLab } = await import("../components/lcm-lab.js");
     return renderLcmLab(host, cfg);
   },
+  // Guided "multiply decimals" lab: multiply as whole numbers, then place the
+  // point by counting decimal places (three staged fill-ins).
+  "decimal-product": async (host, cfg) => {
+    const { renderDecimalProduct } = await import("../components/decimal-product.js");
+    return renderDecimalProduct(host, cfg);
+  },
+  // Guided "divide decimals" lab: shift both decimals to make the divisor whole,
+  // then divide (three staged fill-ins).
+  "decimal-quotient": async (host, cfg) => {
+    const { renderDecimalQuotient } = await import("../components/decimal-quotient.js");
+    return renderDecimalQuotient(host, cfg);
+  },
   // Interactive tape diagram: the SAME config the static `tape-diagram` figure
   // uses, rendered as a tap-to-count model (count the equal parts in all).
   "tape-diagram": async (host, cfg) => {

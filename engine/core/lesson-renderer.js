@@ -246,6 +246,26 @@ function buildVisual(v) {
           "Least common multiple workspace. Turn on JavaScript to count by each number and find the first shared multiple.",
       });
     }
+    case "decimal-product": {
+      // Guided multiply-decimals lab: multiply as whole numbers, then place the
+      // decimal point by counting decimal places.
+      return interactiveVisualHost(v, {
+        ariaLabel:
+          "Multiply decimals lab. Multiply the digits, count the decimal places, then place the decimal point.",
+        fallback:
+          "Multiply-decimals workspace. Turn on JavaScript to multiply the digits and place the decimal point.",
+      });
+    }
+    case "decimal-quotient": {
+      // Guided divide-decimals lab: shift both decimals to make the divisor
+      // whole, then divide.
+      return interactiveVisualHost(v, {
+        ariaLabel:
+          "Divide decimals lab. Shift both decimals to make the divisor whole, then divide.",
+        fallback:
+          "Divide-decimals workspace. Turn on JavaScript to make the divisor whole and divide.",
+      });
+    }
     case "box-plot-builder": {
       // Box-plot construction lab: drag the five-number summary onto a number
       // line over a dot plot of the data; each statistic is coached on Check.
