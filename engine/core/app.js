@@ -17,6 +17,7 @@ import {
   underlineVocabTerms,
   observeVocabTerms,
 } from "./lesson-renderer.js";
+import { augmentVocabWithGlossary } from "./math-glossary.js";
 import { buildLessonCoverExtras, mountCoverArt, applyPhaseAccent } from "./premium.js";
 import {
   buildWelcomeTeacherNotes,
@@ -841,11 +842,15 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       // wire it to the tap-to-open glossary popup (EN/ES + illustration), so
       // academic math words are defined in context throughout the lesson — the
       // same treatment the small-group renderer gives (e.g. 7-2-group2).
-      underlineVocabTerms(el, config.vocabulary || []);
+      // Augment the lesson's own vocabulary with the shared math glossary so a
+      // math word opens its definition+image popup wherever it appears — not only
+      // in lessons that happen to list it. Lesson entries win on any duplicate.
+      const glossaryVocab = augmentVocabWithGlossary(config.vocabulary);
+      underlineVocabTerms(el, glossaryVocab);
       // Practice serves problems one at a time, the level selector re-serves,
       // and matching/optional activities mount their own markup after this
       // point — keep underlining that dynamically-added content too.
-      this._vocabObserver = observeVocabTerms(el, config.vocabulary || []);
+      this._vocabObserver = observeVocabTerms(el, glossaryVocab);
       el.addEventListener("animationend", () => el.classList.remove("phase-enter"), { once: true });
     },
 

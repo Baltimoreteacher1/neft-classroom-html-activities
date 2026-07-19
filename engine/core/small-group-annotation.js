@@ -1,3 +1,4 @@
+import { augmentVocabWithGlossary } from "./math-glossary.js";
 import { el } from "./small-group-ui.js";
 import { configureVocabImage } from "./vocab-images.js";
 
@@ -254,5 +255,8 @@ export function installSmallGroupAnnotation(app, config) {
   if (progress) progress.after(tools);
   else app.prepend(tools);
   const dialog = createVocabularyDialog();
-  addVocabularyTriggers(app, (config.vocabulary || []).slice(0, 8), dialog);
+  // Lesson vocabulary plus the shared math glossary, so a math word opens its
+  // definition+image popup wherever it appears (not just the first 8 authored
+  // terms). The 2-per-section cap in addVocabularyTriggers keeps it readable.
+  addVocabularyTriggers(app, augmentVocabWithGlossary(config.vocabulary), dialog);
 }
