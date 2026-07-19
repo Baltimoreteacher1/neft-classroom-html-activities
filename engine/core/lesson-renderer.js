@@ -266,6 +266,16 @@ function buildVisual(v) {
           "Divide-decimals workspace. Turn on JavaScript to make the divisor whole and divide.",
       });
     }
+    case "fraction-divide": {
+      // Guided divide-fractions lab: rewrite to improper fractions, keep–change–
+      // flip, then multiply and simplify.
+      return interactiveVisualHost(v, {
+        ariaLabel:
+          "Divide fractions lab. Rewrite as improper fractions, keep change flip, then multiply and simplify.",
+        fallback:
+          "Divide-fractions workspace. Turn on JavaScript to keep, change, flip, and simplify.",
+      });
+    }
     case "box-plot-builder": {
       // Box-plot construction lab: drag the five-number summary onto a number
       // line over a dot plot of the data; each statistic is coached on Check.

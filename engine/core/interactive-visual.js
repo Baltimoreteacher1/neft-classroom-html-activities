@@ -135,6 +135,12 @@ const REGISTRY = {
     const { renderDecimalQuotient } = await import("../components/decimal-quotient.js");
     return renderDecimalQuotient(host, cfg);
   },
+  // Guided "divide fractions" lab: rewrite to improper fractions, keep–change–
+  // flip, then multiply and simplify (staged fill-ins).
+  "fraction-divide": async (host, cfg) => {
+    const { renderFractionDivide } = await import("../components/fraction-divide.js");
+    return renderFractionDivide(host, cfg);
+  },
   // Interactive tape diagram: the SAME config the static `tape-diagram` figure
   // uses, rendered as a tap-to-count model (count the equal parts in all).
   "tape-diagram": async (host, cfg) => {
