@@ -1,4 +1,4 @@
-import { createState, normalizeStudentId, findSavedStudents } from "./state.js";
+import { clearLessonStorage, createState, findSavedStudents, normalizeStudentId } from "./state.js";
 import { createEngagement } from "../engagement/engagement.js";
 import { mountExportToolbar } from "./export.js";
 import { mountUtilityMenu } from "./utility-menu.js";
@@ -97,6 +97,25 @@ export function createApp(config) {
   }
 
   showIdentityScreen(root, config);
+
+  // Teacher-only "Clear answers" — available immediately on the cover/identity
+  // screen, BEFORE the activity is entered, so a teacher can reset a lesson to
+  // blank between class periods (wiping last period's saved work) without having
+  // to sign in as a student. Wipes every saved-state key for this lesson on this
+  // device plus the Save/Resume pointer, then reloads. When the activity is
+  // later entered, initMainApp re-registers a state-aware clearFn; the button's
+  // own mount guard prevents a duplicate. Renders only in teacher mode — a
+  // student never sees it and can never erase work from here.
+  window.__ntClearLessonAnswers = () => {
+    clearLessonStorage(config.lessonId);
+    try {
+      window.NeftSaveResume?.reset?.();
+    } catch (_) {
+      /* save/resume not present on this page */
+    }
+    window.location.reload();
+  };
+  mountTeacherClearButton(window.__ntClearLessonAnswers);
 
   // Global sound hooks
   window.AudioSynth = {

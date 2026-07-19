@@ -37,6 +37,24 @@ export function buildStorageKey(lessonId, studentId) {
   return `${STORAGE_PREFIX}${lessonId}`;
 }
 
+// Remove every saved-state key for a lesson on this device — the base key AND
+// all per-student variants (`rma_<lessonId>` and `rma_<lessonId>_<studentId>`).
+// Powers the teacher-only "Clear answers" control: a teacher can reset a lesson
+// to blank between class periods (wiping last period's saved work) without
+// signing in as a student. state.js owns the key format, so the wipe lives here.
+export function clearLessonStorage(lessonId) {
+  if (!lessonId) return;
+  const base = `${STORAGE_PREFIX}${lessonId}`;
+  try {
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+      const k = localStorage.key(i);
+      if (k === base || (k && k.startsWith(`${base}_`))) localStorage.removeItem(k);
+    }
+  } catch (_) {
+    /* storage blocked — a reload still clears in-memory answers */
+  }
+}
+
 export function findSavedStudents(lessonId) {
   const prefix = `${STORAGE_PREFIX}${lessonId}_`;
   const students = [];
