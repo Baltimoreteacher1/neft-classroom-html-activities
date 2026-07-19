@@ -139,10 +139,9 @@ function conceptSection(config, onDone) {
   const section = el("section", "sg-sec");
   section.id = "sg-build";
   section.appendChild(sectionHeading(2, "See it · try it · own it", "Build the idea"));
-  // Problem-first: lead with the worked-example problem, not the answer. The
-  // anchor idea (which states the concept outright) is deferred until after the
-  // stages so students grapple with the problem before the idea is named.
-  if (concept.intro) section.appendChild(el("p", "sg-build-intro", esc(concept.intro)));
+  // Problem-first: the worked-example stages come first so the problem itself is
+  // the very first thing students see — the intro framing and the anchor idea
+  // (which states the concept outright) are both deferred until after the work.
 
   // Stages unlock in order so the studio walks itself: worked example first,
   // then the guided try, then the launch checklist.
@@ -163,7 +162,8 @@ function conceptSection(config, onDone) {
     section.appendChild(card);
   });
 
-  // Name the idea only after the problem has been worked through.
+  // After the work: brief framing, then name the idea.
+  if (concept.intro) section.appendChild(el("p", "sg-build-intro", esc(concept.intro)));
   if (concept.keyIdea)
     section.appendChild(
       el("div", "keyidea", `<span class="lab">💡 The big idea</span>${esc(concept.keyIdea)}`),
