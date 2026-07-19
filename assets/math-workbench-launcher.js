@@ -68,9 +68,16 @@
     return "";
   }
 
+  // Lessons open a CLEAN Workbench: do NOT auto-stage a preset problem, tools, or
+  // background from the lesson (that surprised students by "inserting" a problem
+  // for them). The plain Workbench URL is left in place. The preset deep-linking
+  // is kept below but gated off, so it can be re-enabled by flipping this flag.
+  var LESSON_PRESET_ENABLED = false;
+
   // If this is a lesson page, upgrade the launcher href to a preset deep link.
   // Fail-safe: any error leaves the plain Workbench URL in place.
   function lessonAwareHref(a) {
+    if (!LESSON_PRESET_ENABLED) return;
     var m = /^\/lessons\/([a-z0-9-]+)\//i.exec(location.pathname);
     if (!m) return;
     var key = "mwb-preset-link:" + m[1];
