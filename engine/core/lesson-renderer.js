@@ -225,6 +225,17 @@ function buildVisual(v) {
           "Step-by-step solving workspace. Turn on JavaScript to work the problem out line by line with instant feedback.",
       });
     }
+    case "decimal-columns": {
+      // Vertical decimal add/subtract with hands-on carrying and borrowing:
+      // numbers stack aligned by the decimal point, and the student works each
+      // column, filling the carry/regroup boxes and the answer.
+      return interactiveVisualHost(v, {
+        ariaLabel:
+          "Vertical decimal addition and subtraction lab. Fill the carry or regroup boxes and the answer, keeping the decimal points lined up.",
+        fallback:
+          "Vertical decimal add/subtract workspace. Turn on JavaScript to line up the place values and work each column.",
+      });
+    }
     case "box-plot-builder": {
       // Box-plot construction lab: drag the five-number summary onto a number
       // line over a dot plot of the data; each statistic is coached on Check.
