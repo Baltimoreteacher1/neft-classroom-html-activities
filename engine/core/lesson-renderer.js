@@ -276,6 +276,23 @@ function buildVisual(v) {
           "Divide-fractions workspace. Turn on JavaScript to keep, change, flip, and simplify.",
       });
     }
+    case "algebra-expand": {
+      // Distribute lab: expand a(x + c) on a tap-to-fill area model.
+      return interactiveVisualHost(v, {
+        ariaLabel:
+          "Distribute lab. Expand a times the quantity x plus c on an area model of x-tiles and unit tiles.",
+        fallback: "Distribute workspace. Turn on JavaScript to expand a(x + c) with an area model.",
+      });
+    }
+    case "combine-like-terms": {
+      // Combine-like-terms lab: add the x-terms, add the constants, simplify.
+      return interactiveVisualHost(v, {
+        ariaLabel:
+          "Combine like terms lab. Add the x-terms, add the constants, then write the simplified expression.",
+        fallback:
+          "Combine-like-terms workspace. Turn on JavaScript to combine the x-terms and constants.",
+      });
+    }
     case "box-plot-builder": {
       // Box-plot construction lab: drag the five-number summary onto a number
       // line over a dot plot of the data; each statistic is coached on Check.

@@ -141,6 +141,16 @@ const REGISTRY = {
     const { renderFractionDivide } = await import("../components/fraction-divide.js");
     return renderFractionDivide(host, cfg);
   },
+  // Distribute lab: expand a(x + c) on a tap-to-fill area model.
+  "algebra-expand": async (host, cfg) => {
+    const { renderAlgebraExpandLab } = await import("../components/algebra-expand-lab.js");
+    return renderAlgebraExpandLab(host, cfg);
+  },
+  // Combine-like-terms lab: add the x-terms, add the constants, simplify.
+  "combine-like-terms": async (host, cfg) => {
+    const { renderCombineLikeTerms } = await import("../components/combine-like-terms.js");
+    return renderCombineLikeTerms(host, cfg);
+  },
   // Interactive tape diagram: the SAME config the static `tape-diagram` figure
   // uses, rendered as a tap-to-count model (count the equal parts in all).
   "tape-diagram": async (host, cfg) => {
