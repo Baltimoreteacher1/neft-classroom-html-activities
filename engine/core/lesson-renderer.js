@@ -160,9 +160,19 @@ function buildVisual(v) {
     case "number-line":
       return numberLineSVG(v);
     case "tape-diagram":
-      return tapeDiagramSVG(v);
+      // Interactive counting tape (interactive-visual bridge). The static SVG
+      // stays as the JS-off / print fallback so the figure never blanks.
+      return interactiveVisualHost(v, {
+        ariaLabel: `Interactive tape diagram${v.title ? ` for ${v.title}` : ""}. Tap each equal part to count how many make the whole.`,
+        fallback: tapeDiagramSVG(v),
+      });
     case "coordinate-plane":
-      return coordPlaneSVG(v);
+      // Interactive plot-the-points plane (interactive-visual bridge). The static
+      // SVG stays as the JS-off / print fallback so the figure never blanks.
+      return interactiveVisualHost(v, {
+        ariaLabel: `Interactive coordinate plane${v.title ? ` for ${v.title}` : ""}. Tap the grid to plot each listed point.`,
+        fallback: coordPlaneSVG(v),
+      });
     case "factor-tree":
       // Fill-in-the-blank factor tree (interactive-visual bridge). The static
       // SVG stays as the JS-off / print fallback so the figure never blanks.

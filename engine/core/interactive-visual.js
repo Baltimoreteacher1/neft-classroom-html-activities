@@ -101,6 +101,20 @@ const REGISTRY = {
     const { renderFactorTree } = await import("../components/factor-tree.js");
     return renderFactorTree(host, cfg);
   },
+  // Interactive coordinate plane: the SAME config the static `coordinate-plane`
+  // figure uses, rendered as a plot-the-points model (tap the grid to place each
+  // listed point). The static SVG stays as the JS-off / print fallback.
+  "coordinate-plane": async (host, cfg) => {
+    const { renderCoordinatePlot } = await import("../components/coordinate-plot-lab.js");
+    return renderCoordinatePlot(host, cfg);
+  },
+  // Interactive tape diagram: the SAME config the static `tape-diagram` figure
+  // uses, rendered as a counting model (tap each equal part to count the whole).
+  // The static SVG stays as the JS-off / print fallback.
+  "tape-diagram": async (host, cfg) => {
+    const { renderTapeDiagram } = await import("../components/tape-diagram-lab.js");
+    return renderTapeDiagram(host, cfg);
+  },
   // Fill-in-the-blank factor tree: the SAME config a static `factor-tree`
   // diagram uses, rendered with its branch nodes blanked as checkable inputs.
   // The completed tree in config is the answer key, so every existing static
