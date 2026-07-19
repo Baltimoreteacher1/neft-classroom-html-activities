@@ -1225,7 +1225,7 @@
       .textobj {
         min-width: 34px;
         padding: 4px 8px;
-        font-size: 2rem;
+        font-size: calc(2rem * var(--wb-fs, 1));
         font-weight: 700;
         color: var(--ink);
         outline: none;
@@ -1268,7 +1268,7 @@
       .divobj {
         display: inline-flex;
         align-items: flex-start;
-        font-size: 1.9rem;
+        font-size: calc(1.9rem * var(--wb-fs, 1));
         font-weight: 800;
         color: var(--ink);
         padding: 4px;
@@ -4291,6 +4291,26 @@
         if (o.sy == null) o.sy = o.scale || 1;
       }
 
+      // Text-notation objects (typed equations, long division) resize by
+      // FONT-SIZE, not CSS transform scale, so they stay crisp and correctly
+      // laid out at any size instead of being pixel-stretched (blurry) by zoom.
+      const FONT_SCALED_TYPES = new Set(["text", "division"]);
+      const isFontScaled = (o) => FONT_SCALED_TYPES.has(o.type);
+
+      // Apply an object's size to its .obj-scale wrapper — as a font-size
+      // multiplier for text-notation objects, otherwise as a transform scale.
+      function applyObjScale(sc, o) {
+        if (isFontScaled(o)) {
+          sc.style.transform = "none";
+          // Uniform font scaling keyed off the "bigger/smaller" factor (sx) so
+          // math notation never stretches out of proportion.
+          sc.style.setProperty("--wb-fs", String(o.sx || 1));
+        } else {
+          sc.style.removeProperty("--wb-fs");
+          sc.style.transform = "scale(" + o.sx + "," + o.sy + ")";
+        }
+      }
+
       function applyTransform(el, o) {
         normScale(o);
         if (o.type === "line") {
@@ -4301,20 +4321,27 @@
         el.style.transform = "translate(" + o.x + "px," + o.y + "px)";
         const sc = el.querySelector(".obj-scale");
         if (sc) {
-          sc.style.transform = "scale(" + o.sx + "," + o.sy + ")";
+          applyObjScale(sc, o);
           sizeObjBox(el, o, sc);
         }
       }
 
-      // Size the .obj box to the SCALED visual size so edge handles align.
+      // Size the .obj box to the visual size so edge handles align. Font-scaled
+      // objects already grow their real layout box (font-size changed), so their
+      // box is the natural offset size; transform-scaled objects multiply by sx/sy.
       function sizeObjBox(el, o, sc) {
         sc = sc || el.querySelector(".obj-scale");
         if (!sc || o.type === "line") return;
         const bw = sc.offsetWidth,
           bh = sc.offsetHeight;
         if (!bw && !bh) return; // not in DOM yet
-        el.style.width = Math.max(1, bw * (o.sx || 1)) + "px";
-        el.style.height = Math.max(1, bh * (o.sy || 1)) + "px";
+        if (isFontScaled(o)) {
+          el.style.width = Math.max(1, bw) + "px";
+          el.style.height = Math.max(1, bh) + "px";
+        } else {
+          el.style.width = Math.max(1, bw * (o.sx || 1)) + "px";
+          el.style.height = Math.max(1, bh * (o.sy || 1)) + "px";
+        }
       }
 
       function updateObjEl(o) {
@@ -4347,7 +4374,7 @@
                 o.sx = s.sx * ratio;
                 o.sy = s.sy * ratio;
               }
-              sc.style.transform = "scale(" + o.sx + "," + o.sy + ")";
+              applyObjScale(sc, o);
               sizeObjBox(el, o, sc);
             };
             const fin = (ev) => {
