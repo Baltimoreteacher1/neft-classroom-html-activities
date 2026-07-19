@@ -202,8 +202,9 @@ export function injectSmallGroupStyles(accent) {
     .sg-pulse-btn:hover,.sg-role-btn:hover,.sg-match-btn:hover{border-color:var(--sg)}
     .sg-pulse-btn[aria-pressed="true"],.sg-role-btn.active{border-color:var(--sg);color:var(--sg-deep);background:var(--sg-soft)}
     .sg-ta{width:100%;min-height:82px;padding:11px 12px;border:2px solid var(--sg-line);border-radius:10px;color:var(--sg-text);background:#fff;resize:vertical}
-    .keyidea{margin-bottom:16px;padding:15px 17px;border-left:6px solid var(--sg);border-radius:12px;background:var(--sg-soft);color:var(--sg-deep);font-size:17px;font-weight:700}
-    .keyidea .lab,.block-lab{display:block;margin-bottom:5px;font-family:"Nunito",sans-serif;font-size:13px;font-weight:900;letter-spacing:.05em;text-transform:uppercase}
+    .keyidea{margin:18px 0 8px;padding:16px 18px;border-left:6px solid var(--sg);border-radius:12px;background:var(--sg-soft);color:var(--sg-deep);font-size:20px;line-height:1.5;font-weight:700}
+    .keyidea .lab,.block-lab{display:block;margin-bottom:5px;font-family:"Nunito",sans-serif;font-size:14px;font-weight:900;letter-spacing:.05em;text-transform:uppercase}
+    .sg-build-intro{font-size:19px;line-height:1.55;font-weight:600}
     .we-steps,.steplist{margin:10px 0;border:1px solid var(--sg-line);border-radius:13px;padding:7px 16px}.steps{margin:0;padding:0;list-style:none;counter-reset:step}
     .steps li{position:relative;padding:8px 0 8px 35px;border-bottom:1px dashed var(--sg-line)}.steps li:last-child{border:0}.steps li::before{counter-increment:step;content:counter(step);position:absolute;left:0;top:8px;display:grid;width:23px;height:23px;place-items:center;border-radius:8px;background:var(--sg-soft);color:var(--sg-deep);font-weight:900}
     .sg-vgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
@@ -350,7 +351,7 @@ export function injectSmallGroupStyles(accent) {
     .sg-buildstep{display:flex;gap:10px;padding:9px 0;border-bottom:1px dashed var(--sg-line);animation:sg-stepin .3s ease}
     .sg-buildstep:last-child{border:0}
     .sg-buildstep.now{margin:0 -10px;padding-inline:10px;border-radius:10px;background:var(--sg-soft);border-bottom:0}
-    .sg-buildstep-body{font-weight:600}
+    .sg-buildstep-body{font-size:18px;line-height:1.5;font-weight:600}
     @keyframes sg-stepin{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
     .sg-reveal{margin-left:8px;min-height:44px;padding:8px 13px;border:2px dashed var(--sg);border-radius:999px;background:#fff;color:var(--sg-deep);font-size:13px;font-weight:800;cursor:pointer}
     .sg-reveal-answer{display:inline-block;margin-left:8px;padding:3px 10px;border-radius:8px;background:var(--sg-soft);color:var(--sg-deep);font-weight:800;animation:sg-stepin .3s ease}
