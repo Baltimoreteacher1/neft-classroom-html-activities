@@ -117,6 +117,12 @@ const REGISTRY = {
     const { renderDecimalColumns } = await import("../components/decimal-columns.js");
     return renderDecimalColumns(host, cfg);
   },
+  // Interactive least-common-multiple lab: two lanes of multiples; click the
+  // first value that appears in both lanes (the LCM). No giveaway.
+  "lcm-lab": async (host, cfg) => {
+    const { renderLcmLab } = await import("../components/lcm-lab.js");
+    return renderLcmLab(host, cfg);
+  },
   // Interactive tape diagram: the SAME config the static `tape-diagram` figure
   // uses, rendered as a tap-to-count model (count the equal parts in all).
   "tape-diagram": async (host, cfg) => {

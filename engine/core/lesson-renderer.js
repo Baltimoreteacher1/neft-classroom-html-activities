@@ -236,6 +236,16 @@ function buildVisual(v) {
           "Vertical decimal add/subtract workspace. Turn on JavaScript to line up the place values and work each column.",
       });
     }
+    case "lcm-lab": {
+      // Interactive least-common-multiple lab: two lanes of multiples; the
+      // student clicks the first value that appears in both lanes.
+      return interactiveVisualHost(v, {
+        ariaLabel:
+          "Least common multiple lab. Two lanes of multiples; click the first number that appears in both lanes.",
+        fallback:
+          "Least common multiple workspace. Turn on JavaScript to count by each number and find the first shared multiple.",
+      });
+    }
     case "box-plot-builder": {
       // Box-plot construction lab: drag the five-number summary onto a number
       // line over a dot plot of the data; each statistic is coached on Check.
