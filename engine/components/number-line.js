@@ -302,8 +302,16 @@ function renderSequentialNumberLine(container, config) {
   injectNumberLineStyles();
   const lo = Number(min ?? 0);
   const hi = Number(max ?? 10);
-  const hasDecimals = targets.some((t) => !Number.isInteger(Number(t.value)));
-  const snapStep = hasDecimals ? 0.1 : Number(config.step) || 1;
+  // Snap to the finest place the target values actually use, so hundredths like
+  // 4.65 are reachable (not rounded to 4.7). tenths → 0.1, hundredths → 0.01.
+  const places = (x) => {
+    const s = String(x);
+    const i = s.indexOf(".");
+    return i < 0 ? 0 : s.length - i - 1;
+  };
+  const maxPlaces = Math.max(0, ...targets.map((t) => places(Number(t.value))));
+  const hasDecimals = maxPlaces > 0;
+  const snapStep = maxPlaces >= 2 ? 0.01 : maxPlaces === 1 ? 0.1 : Number(config.step) || 1;
   const wide = hi - lo > 20;
   // Label whole numbers (spaced out on wide ranges); don't label the fine
   // decimal ticks or the line gets crowded with 0.5, 1.5, …
@@ -418,7 +426,9 @@ function renderSequentialNumberLine(container, config) {
     svg.addEventListener("pointerup", onUp);
   });
   g.addEventListener("keydown", (e) => {
-    const d = e.shiftKey ? snapStep * 5 : snapStep;
+    // Fine step = one snap unit (reach any hundredth); Shift jumps by a bigger
+    // step so keyboard users aren't pressing 400 times to cross the line.
+    const d = e.shiftKey ? Math.max(snapStep * 10, 0.1) : snapStep;
     if (e.key === "ArrowRight" || e.key === "ArrowUp") {
       e.preventDefault();
       setDot(curVal + d);
@@ -456,7 +466,8 @@ function renderSequentialNumberLine(container, config) {
         if (onComplete) onComplete(targets.length, targets.length);
       } else {
         showFb(feedbackSlot, "success", "Correct! Now the next one.");
-        setDot(lo);
+        // Leave the dot where the student placed it — don't snap it back to 0,
+        // which felt like losing their work. They slide on to the next value.
         showTarget();
       }
     } else {
