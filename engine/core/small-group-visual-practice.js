@@ -1,5 +1,52 @@
+import { renderAlgebraExpand } from "../components/algebra-tiles-expand.js";
+import { renderDataLive } from "../components/data-live.js";
+import { renderEquationBalanceLab } from "../components/equation-balance-lab.js";
+import { renderPercentGridLab } from "../components/percent-grid-lab.js";
 import { isRight } from "./small-group-answers.js";
+
+// Exact data-figure kinds routed to the interactive "Data Live" widget. Exact
+// match (not substring) so bar-MODEL, scale-bars, double-rate-bars, etc. keep
+// their own renderings.
+const DATA_KINDS = new Set(["dot-plot", "data-dots", "histogram", "box-plot", "bar-chart"]);
 import { el, esc, esLane, speak } from "./small-group-ui.js";
+
+// Pull just the equation out of a solve-it stem like
+// "Solve the new equation x + 2 = 6." → "x + 2 = 6". Walks outward from the
+// "=" token, keeping only math-like tokens (numbers, single-letter variables,
+// coefficient-variables like 2x, operators), so surrounding words drop away.
+// Returns null when the stem has no equation (e.g. "write an equation" prompts).
+function extractEquation(stem) {
+  const toks = String(stem || "")
+    .replace(/[.?!,:;]+$/g, "")
+    .split(/\s+/);
+  const eqIdx = toks.findIndex((t) => t.includes("="));
+  if (eqIdx < 0) return null;
+  const clean = (t) => t.replace(/[.,?!:;]+$/g, "");
+  const mathy = (t) =>
+    /^[-+]?[\d.]+$/.test(t) ||
+    /^-?\d*[a-zA-Z](\/\d+)?$/.test(t) ||
+    /^[-+*/×÷·]$/.test(t) ||
+    t.includes("=");
+  let lo = eqIdx;
+  let hi = eqIdx;
+  while (lo - 1 >= 0 && mathy(clean(toks[lo - 1]))) lo--;
+  while (hi + 1 < toks.length && mathy(clean(toks[hi + 1]))) hi++;
+  const eq = toks
+    .slice(lo, hi + 1)
+    .map(clean)
+    .join(" ");
+  return /=/.test(eq) && /[a-zA-Z]/.test(eq) ? eq : null;
+}
+
+// Live interactive balance for solve-an-equation items: the same-operation-to-
+// both-sides scale, in place of the old static algebra figure.
+function typedBalance(item) {
+  const eq = item.visual?.equation || extractEquation(item.stem);
+  if (!eq) return null;
+  const wrap = el("div", "sg-balance-lab");
+  renderEquationBalanceLab(wrap, { equation: eq });
+  return wrap;
+}
 
 function valuesFrom(visual, stem, steps = []) {
   const values = [];
@@ -846,105 +893,145 @@ function typedDivision(item, steps, events) {
   return shell;
 }
 
-// Solve an equation on a visual balance: students keep both sides equal, working
-// the lesson's own guided steps (inverse operation, then check) as checkable
-// cells, instead of typing one bare answer into an open box. The beam turns green
-// when x is isolated.
-function typedBalance(item, steps, events) {
-  const solution = item.answer != null ? String(item.answer).trim() : "";
+// Interactive number line: tap where the integer sits, and its distance from 0
+// (its absolute value) is measured with a bracket — turning a static picture +
+// open box into a model students act on. Auto-completes the matching guided step.
+function typedNumberLine(item, steps, events) {
+  const value = Number(item.visual?.value);
+  if (!Number.isFinite(value)) return null;
+  const lo = Math.min(0, value) - 1;
+  const hi = Math.max(0, value) + 1;
+  const span = hi - lo;
+  const W = 520;
+  const H = 118;
+  const padX = 32;
+  const axisY = 58;
+  const xOf = (k) => padX + ((k - lo) / span) * (W - 2 * padX);
 
-  // Only display the equation when the stem GIVES it explicitly (a solve task).
-  // For "write the equation" tasks the equation is the answer, so rebuilding it
-  // from values would give it away — show a neutral balance (? = ?) instead.
-  let left = "?";
-  let right = "?";
-  // Pull ONLY the equation ("2x + 1 = 7") out of the stem, not the surrounding
-  // prose ("Solve the new equation …"). Anchored to the end so we grab the actual
-  // equation, and the sides are pure math tokens (a variable or a digit at each
-  // edge). Absent an explicit equation, the pans stay "?" (no giveaway).
-  const eq = String(item.stem || "").match(
-    /([0-9x][0-9x+\-*/(). ]*?)\s*=\s*([0-9x+\-*/().]*[0-9x])\s*\.?\s*$/i,
-  );
-  if (eq) {
-    left = eq[1].trim();
-    right = eq[2].trim();
+  let ticks = "";
+  for (let k = lo; k <= hi; k++) {
+    const x = xOf(k).toFixed(1);
+    const zero = k === 0;
+    ticks +=
+      `<line x1="${x}" y1="${axisY - 8}" x2="${x}" y2="${axisY + 8}" stroke="#12355b" stroke-width="${zero ? 3 : 1.5}"/>` +
+      `<text x="${x}" y="${axisY + 26}" text-anchor="middle" font-size="12" fill="#54677c" font-weight="${zero ? 800 : 500}">${k}</text>` +
+      `<circle class="nl-hit" data-n="${k}" cx="${x}" cy="${axisY}" r="13" fill="transparent" style="cursor:pointer"/>`;
   }
-
   const shell = modelShell(
-    "Balance the equation",
-    "Whatever you do to one side, do to the other — keep the scale balanced until x is by itself.",
+    "Plot it on the number line",
+    "Tap where the number lands, then read how far it is from 0.",
   );
   const status = modelStatus();
+  const wrap = el("div", "sg-nl");
+  wrap.style.cssText = "width:100%; max-width:520px; margin:6px auto;";
+  wrap.innerHTML =
+    `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Number line from ${lo} to ${hi}">` +
+    `<line x1="${xOf(lo).toFixed(1)}" y1="${axisY}" x2="${xOf(hi).toFixed(1)}" y2="${axisY}" stroke="#12355b" stroke-width="3"/>` +
+    `<polygon points="${(xOf(hi) + 8).toFixed(1)},${axisY} ${xOf(hi).toFixed(1)},${axisY - 5} ${xOf(hi).toFixed(1)},${axisY + 5}" fill="#12355b"/>` +
+    `<polygon points="${(xOf(lo) - 8).toFixed(1)},${axisY} ${xOf(lo).toFixed(1)},${axisY - 5} ${xOf(lo).toFixed(1)},${axisY + 5}" fill="#12355b"/>` +
+    ticks +
+    `<g class="nl-mark"></g></svg>`;
 
-  const scale = el("div", "sg-balance");
-  scale.style.cssText =
-    "display:flex; flex-direction:column; align-items:center; gap:2px; margin:8px 0;";
-  const beam = el("div");
-  beam.style.cssText = "display:flex; align-items:center; justify-content:center; gap:12px;";
-  const panStyle =
-    "min-width:64px; text-align:center; font-weight:800; font-size:1.05rem; color:var(--navy,#12355b); background:#eef4fb; border:2px solid var(--navy,#12355b); border-radius:10px; padding:8px 12px;";
-  const panL = el("div", "sg-balance-pan", left);
-  panL.style.cssText = panStyle;
-  const panR = el("div", "sg-balance-pan", right);
-  panR.style.cssText = panStyle;
-  const eqSign = el("div", null, "=");
-  eqSign.style.cssText = "font-weight:900; font-size:1.3rem; color:var(--muted,#54677c);";
-  beam.append(panL, eqSign, panR);
-  const bar = el("div");
-  bar.style.cssText =
-    "width:min(300px,88%); height:5px; background:var(--navy,#12355b); border-radius:3px; margin-top:4px;";
-  const fulcrum = el("div");
-  fulcrum.style.cssText =
-    "width:0; height:0; border-left:14px solid transparent; border-right:14px solid transparent; border-bottom:20px solid var(--amber-ink,#8a5a00);";
-  scale.append(beam, bar, fulcrum);
-
-  const stepList =
-    Array.isArray(item.steps) && item.steps.length
-      ? item.steps
-      : [{ prompt: "x =", answer: solution }];
-  const ledger = el("div");
-  ledger.style.cssText = "display:flex; flex-direction:column; gap:8px; margin-top:10px;";
-  let solved = 0;
-  const total = stepList.length;
-  stepList.forEach((st, i) => {
-    const row = el("div");
-    row.style.cssText = "display:flex; flex-wrap:wrap; align-items:center; gap:8px;";
-    const promptText = String(st.prompt || `Step ${i + 1}`)
-      .replace(/_{2,}/g, "")
-      .trim();
-    const lab = el("span", null, promptText);
-    lab.style.cssText = "font-weight:600;";
-    row.append(
-      lab,
-      modelCell(st.answer, events, {
-        label: `Step ${i + 1}`,
-        onCorrect: () => {
-          solved += 1;
-          steps?.completeMatching(st.answer);
-          if (solved >= total) {
-            // "x = N" only reads right when the solution is a bare number (a solve
-            // task). For write/setup tasks the answer is an equation, so just
-            // confirm — and reveal the earned equation in the balance pans.
-            const isValue = /^-?\d+(?:\.\d+)?$/.test(solution);
-            status.textContent = isValue ? `Balanced! x = ${solution} ✓` : "Correct ✓";
-            const eqMatch = String(st.answer || "").match(/(.+?)=(.+)/);
-            if (left === "?" && right === "?" && eqMatch) {
-              panL.textContent = eqMatch[1].trim();
-              panR.textContent = eqMatch[2].trim();
-            }
-            for (const pan of [panL, panR]) {
-              pan.style.background = "#e2f9f5";
-              pan.style.borderColor = "#0d7a76";
-              pan.style.color = "#095350";
-            }
-          }
-        },
-      }),
-    );
-    ledger.appendChild(row);
+  const dist = Math.abs(value);
+  let done = false;
+  const svg = wrap.querySelector("svg");
+  const mark = wrap.querySelector(".nl-mark");
+  wrap.querySelectorAll(".nl-hit").forEach((hit) => {
+    hit.addEventListener("click", () => {
+      if (done) return;
+      const k = Number(hit.dataset.n);
+      if (k !== value) {
+        hit.setAttribute("fill", "#fdeceb");
+        setTimeout(() => hit.setAttribute("fill", "transparent"), 260);
+        events.onAttempt?.({ correct: false });
+        return;
+      }
+      done = true;
+      events.onAttempt?.({ correct: true });
+      const x0 = xOf(0);
+      const xv = xOf(value);
+      const bracketY = axisY - 20;
+      const midX = (x0 + xv) / 2;
+      mark.innerHTML =
+        `<circle cx="${xv.toFixed(1)}" cy="${axisY}" r="9" fill="#1d4ed8" stroke="#fff" stroke-width="2"/>` +
+        `<path d="M${x0.toFixed(1)} ${axisY - 6} V${bracketY} H${xv.toFixed(1)} V${axisY - 6}" fill="none" stroke="#0d7a76" stroke-width="2"/>` +
+        `<text x="${midX.toFixed(1)}" y="${bracketY - 4}" text-anchor="middle" font-size="13" font-weight="800" fill="#0d7a76">${dist} from 0</text>`;
+      status.textContent = `Distance from 0 is ${dist}. |${value}| = ${dist} ✓`;
+      status.className = "sg-model-status";
+      steps?.completeMatching(dist);
+    });
   });
 
-  shell.append(scale, ledger, status);
+  shell.append(wrap, status);
+  return shell;
+}
+
+// Interactive double-rate bars: two bar-model rows drawn to the real gold:blue
+// proportions so students SEE which ratio packs more gold per blue, then click
+// the bar with FEWER gold per blue to answer. The guided steps still carry the
+// numeric division; this makes the comparison a model, not an open box.
+function typedRateBars(item, steps, events) {
+  const vals = (item.visual?.values || []).map(Number);
+  if (vals.length < 4 || vals.some((v) => !Number.isFinite(v) || v <= 0)) return null;
+  const [a, b, c, d] = vals;
+  // Ratio blue:gold = a:b and c:d → gold per blue = b/a and d/c (matches the
+  // authored steps "gold per blue: b ÷ a").
+  const r1 = b / a;
+  const r2 = d / c;
+  const answer = String(item.answer || "")
+    .trim()
+    .toLowerCase();
+  const target = answer.includes("second") ? "second" : "first"; // which has FEWER
+
+  const shell = modelShell(
+    "Compare gold per blue",
+    "Each row shows one ratio's gold tiles for every blue tile. Tap the row with FEWER gold per blue.",
+  );
+  const status = modelStatus();
+  const maxRate = Math.max(r1, r2, 1);
+  const rows = el("div", "sg-rate-rows");
+  rows.style.cssText = "display:flex; flex-direction:column; gap:10px; margin:8px 0;";
+  let done = false;
+  const makeRow = (label, rate, which) => {
+    const row = el("button", "sg-rate-row");
+    row.type = "button";
+    row.style.cssText =
+      "display:flex; align-items:center; gap:10px; width:100%; text-align:left; background:#fff; border:2px solid var(--line,#cbd5e1); border-radius:10px; padding:8px 10px; cursor:pointer;";
+    const tag = el("span", null, label);
+    tag.style.cssText = "font-weight:800; color:var(--navy,#12355b); min-width:58px;";
+    const track = el("div");
+    track.style.cssText =
+      "flex:1; height:20px; background:#eef4fb; border-radius:6px; overflow:hidden;";
+    const fill = el("div");
+    fill.style.cssText = `height:100%; width:${((rate / maxRate) * 100).toFixed(1)}%; background:#d4952a; border-radius:6px;`;
+    track.appendChild(fill);
+    const num = el("span", null, `${(Math.round(rate * 100) / 100).toString()} /blue`);
+    num.style.cssText =
+      "font-weight:700; color:var(--muted,#54677c); min-width:70px; text-align:right;";
+    row.append(tag, track, num);
+    row.addEventListener("click", () => {
+      if (done) return;
+      const correct = which === target;
+      events.onAttempt?.({ correct });
+      if (!correct) {
+        row.style.borderColor = "#d9534f";
+        row.style.background = "#fdeceb";
+        setTimeout(() => {
+          row.style.borderColor = "var(--line,#cbd5e1)";
+          row.style.background = "#fff";
+        }, 320);
+        return;
+      }
+      done = true;
+      row.style.borderColor = "#0d7a76";
+      row.style.background = "#e2f9f5";
+      status.textContent = `Yes — the ${target} ratio has fewer gold per blue ✓`;
+      steps?.completeMatching(item.answer);
+    });
+    return row;
+  };
+  rows.append(makeRow("First", r1, "first"), makeRow("Second", r2, "second"));
+  shell.append(rows, status);
   return shell;
 }
 
@@ -1292,11 +1379,41 @@ function typedModel(item, steps, events) {
   const kind = String(item.visual?.kind || "");
   if (!kind) return null;
   try {
+    // Data figures (dot plot / histogram / box plot / bar chart / data-dots)
+    // become the "Data Live" explore widget: tap to read, reveal the measures
+    // of center & spread. The What-if sandbox is OFF here so a practice figure's
+    // data can never be altered out from under the question.
+    if (DATA_KINDS.has(kind)) {
+      const box = el("div", "sg-data-live");
+      const handle = renderDataLive(box, item.visual, { sandbox: false });
+      if (handle) return box;
+    }
+    // Distributive expansion a(x + c) → interactive area-model tile builder.
+    // Gated to genuine "Expand …" items so it never mismodels another concept;
+    // falls through to the static figure otherwise.
+    if (kind === "algebra-tiles" && /expand/i.test(item.stem || "")) {
+      const box = el("div", "sg-atx");
+      const handle = renderAlgebraExpand(box, item.visual);
+      if (handle) return box;
+    }
+    // Percent grid → non-destructive hundred-grid equivalence explorer (loads
+    // with the authored amount shaded; reveal percent / decimal / fraction).
+    if (kind === "percent-grid") {
+      const box = el("div", "sg-pgl");
+      const handle = renderPercentGridLab(box, item.visual);
+      if (handle) return box;
+    }
+    if (kind.includes("balance") || kind.includes("equation")) {
+      const bal = typedBalance(item);
+      if (bal) return bal;
+    }
     if (kind.includes("factor-table")) return typedFactorLists(item, steps, events);
     if (kind.includes("multiple-lanes")) return typedLanes(item, steps, events);
     if (kind.includes("factor-tree")) return typedFactorTree(item, steps, events);
     if (kind.includes("division-box")) return typedDivision(item, steps, events);
-    if (kind.includes("balance-scale")) return typedBalance(item, steps, events);
+    if (kind.includes("double-rate-bars")) return typedRateBars(item, steps, events);
+    if (kind === "number-line" || kind.includes("number-line"))
+      return typedNumberLine(item, steps, events);
     if (kind.includes("unit-rate") || kind.includes("conversion") || kind.includes("ratio-table"))
       return typedTable(item, steps, events, kind);
     if (kind.includes("percent-bar")) return typedPercentBar(item, steps, events);
@@ -1313,6 +1430,53 @@ function typedModel(item, steps, events) {
   return null;
 }
 
+// A column-aligned vertical decimal operation: operands stacked with the decimal
+// points lined up (zeros annexed so both have the same number of places) and a
+// blank answer line under the bar. Pure visual scaffold — no answer given away.
+function verticalDecimal(values, operation) {
+  const nums = (values || []).map(Number).filter((n) => Number.isFinite(n));
+  if (nums.length < 2) return null;
+  const [a, b] = nums;
+  const decs = (x) => {
+    const s = String(x);
+    const i = s.indexOf(".");
+    return i < 0 ? 0 : s.length - i - 1;
+  };
+  const maxDec = Math.max(decs(a), decs(b));
+  const fa = a.toFixed(maxDec);
+  const fb = b.toFixed(maxDec);
+  const w = Math.max(fa.length, fb.length);
+  const op = operation === "−" || operation === "-" ? "−" : "+";
+
+  const box = el("div", "sg-vdec");
+  box.style.cssText = "display:flex;flex-direction:column;align-items:center;margin:8px 0 4px;";
+  const stack = el("div");
+  stack.style.cssText =
+    "font-family:ui-monospace,Menlo,Consolas,monospace;font-size:1.5rem;font-weight:800;color:var(--navy,#12355b);";
+  const row = (opc, numStr, extra) => {
+    const r = el("div");
+    r.style.cssText = "display:flex;align-items:baseline;justify-content:flex-end;gap:10px;";
+    const o = el("span", null, opc);
+    o.style.cssText = "width:1ch;color:var(--muted,#54677c);";
+    const nn = el("span", null, numStr.padStart(w, " "));
+    nn.style.cssText = `white-space:pre;${extra || ""}`;
+    r.append(o, nn);
+    return r;
+  };
+  stack.append(row(" ", fa), row(op, fb));
+  const bar = el("div");
+  bar.style.cssText = "border-top:3px solid var(--navy,#12355b);margin:5px 0 5px auto;";
+  bar.style.width = `${w + 1.5}ch`;
+  stack.append(bar);
+  stack.append(row(" ", "?".padStart(w, " "), "color:var(--amber-ink,#8a5a00);"));
+  box.append(stack);
+  const cap = el("div", null, "Line up the decimal points — the answer goes in the blank.");
+  cap.style.cssText =
+    "font-size:.75rem;font-weight:600;color:var(--muted,#54677c);text-align:center;margin-top:6px;";
+  box.append(cap);
+  return box;
+}
+
 export function appendVisualPractice(card, item, { mode = "guided", events = {} } = {}) {
   const kind = String(item.visual?.kind || "");
   const read = el("button", "btn ghost sg-read-problem", "🔊 Read this problem");
@@ -1327,7 +1491,11 @@ export function appendVisualPractice(card, item, { mode = "guided", events = {} 
     card.classList.add("sg-big-work");
     const top = el("div", "sg-problem-support-head");
     top.append(el("div", "sg-visual-title", "Work it here"), read);
-    question?.after(top, ...stepsNodes);
+    // Show the operation stacked with the decimal points lined up (zeros annexed
+    // so every number has the same places) — the whole point of the skill — with
+    // a blank answer line, above the guided steps.
+    const vd = verticalDecimal(item.visual?.values, item.visual?.operation);
+    question?.after(top, ...(vd ? [vd] : []), ...stepsNodes);
     return card;
   }
   // Typed model first: students put the numbers into the model themselves,

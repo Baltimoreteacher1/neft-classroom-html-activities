@@ -24,7 +24,7 @@ import { createAdaptiveSequence } from "./adaptive.js";
 import { enableWordProblemAnnotation } from "./annotate.js";
 import { createApp } from "./app.js";
 import { mountCertificateDownload } from "./certificate-export.js";
-import { deriveCommonMistake } from "./content-enrichment.js";
+import { deriveCommonMistake, deriveErrorExample } from "./content-enrichment.js";
 import { mountDiscussionMoment } from "./discourse.js";
 import { buildGradeCard } from "./grade.js";
 import { recommendedNext } from "./grade-emit.js";
@@ -2714,11 +2714,48 @@ function renderReflectPhase(el, state, ctx, config) {
 
   // Open-response ticket item: sentence-frame chips + saved textarea +
   // attempt-gated model-answer reveal (no zero-effort giveaways).
-  const buildOpenET = ({ labelKey, promptKey, frames, responseKey, model }) => {
+  const buildOpenET = ({
+    labelKey,
+    promptKey,
+    promptOverride,
+    frames,
+    responseKey,
+    model,
+    errorExample,
+  }) => {
     const card = etCard(labelKey);
+
+    // "Spot the mistake" needs a mistake to spot: show the flawed worked example
+    // (the step with the error highlighted) so the question isn't open-ended.
+    if (errorExample?.steps?.length) {
+      const work = document.createElement("div");
+      work.className = "et-flawed-work";
+      work.style.cssText =
+        "border:1px solid var(--line,#cbd5e1); border-left:4px solid var(--amber-ink,#8a5a00); border-radius:10px; padding:10px 12px; margin:0 0 var(--sp-3,12px); background:var(--surface-2,#f8fafc);";
+      const head = document.createElement("div");
+      head.style.cssText = "font-weight:800; color:var(--navy,#12355b); margin-bottom:6px;";
+      head.textContent = "Someone solved it like this — find their mistake:";
+      work.append(head);
+      const ol = document.createElement("ol");
+      ol.style.cssText = "margin:0; padding-left:1.2rem;";
+      errorExample.steps.forEach((s, i) => {
+        const li = document.createElement("li");
+        const flagged = errorExample.errorStep === i;
+        li.style.cssText = flagged ? "font-weight:700;" : "";
+        li.innerHTML = `${s.label ? `<strong>${esc(s.label)}:</strong> ` : ""}${esc(s.work)}${
+          flagged ? ' <span aria-hidden="true">⚠️</span>' : ""
+        }`;
+        ol.append(li);
+      });
+      work.append(ol);
+      card.append(work);
+    }
+
     const prompt = document.createElement("p");
     prompt.className = "problem-stem";
-    prompt.innerHTML = stackHtml(t(promptKey, "en"), t(promptKey, "es"));
+    prompt.innerHTML = promptOverride
+      ? stackHtml(promptOverride.en, promptOverride.es)
+      : stackHtml(t(promptKey, "en"), t(promptKey, "es"));
     card.append(prompt);
 
     const ta = document.createElement("textarea");
@@ -2834,16 +2871,27 @@ function renderReflectPhase(el, state, ctx, config) {
   });
 
   // Q3 — mistake analysis, self-checked against the lesson's common-mistake text.
+  // "Spot the mistake": show the lesson's flawed worked example to critique. When
+  // one exists, the prompt points at that work and the model answer is the fix;
+  // otherwise fall back to the open self-generated question.
+  const errorExample = deriveErrorExample(config);
   q3TA = buildOpenET({
     labelKey: "etQ3Label",
     promptKey: "etQ3Prompt",
+    promptOverride: errorExample
+      ? {
+          en: "Find the mistake in the work above. Which step is wrong, and how would you fix it?",
+          es: "Encuentra el error en el trabajo de arriba. ¿Qué paso está mal y cómo lo corregirías?",
+        }
+      : null,
     frames: [
       "The mistake is ___ because ___.",
       "To catch it, I would check ___.",
       "El error es ___ porque ___.",
     ],
     responseKey: "exit_mistake",
-    model: deriveCommonMistake(config),
+    model: errorExample?.fix || deriveCommonMistake(config),
+    errorExample,
   });
 
   // The Finish button appears inside finishRow once Q1 is answered.

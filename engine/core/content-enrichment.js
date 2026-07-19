@@ -20,6 +20,37 @@ export function deriveCommonMistake(config) {
   return "";
 }
 
+/**
+ * Find a concrete flawed worked example the student can critique, from the
+ * lesson's `error-analysis` practice item (every lesson authors one). Returns
+ * `{ steps:[{label,work}], fix, errorStep }` or null. Used to turn the exit
+ * ticket's "Spot the mistake" from an open question into a shown error to find.
+ */
+export function deriveErrorExample(config) {
+  const p = config.practice || {};
+  const tiers = [p.approaching, p.onLevel, p.extending];
+  for (const tier of tiers) {
+    if (!Array.isArray(tier)) continue;
+    const item = tier.find(
+      (it) => it && it.type === "error-analysis" && Array.isArray(it.workedExample),
+    );
+    if (item && item.workedExample.length) {
+      return {
+        steps: item.workedExample
+          .filter((s) => s && (s.work || s.label))
+          .map((s) => ({ label: String(s.label || ""), work: String(s.work || "") })),
+        fix: String(item.correctWork || ""),
+        // Normalize to a 0-based index into `steps`; clamp to range, null if absent.
+        errorStep:
+          typeof item.errorStep === "number"
+            ? Math.max(0, Math.min(item.workedExample.length - 1, item.errorStep))
+            : null,
+      };
+    }
+  }
+  return null;
+}
+
 /** Split launch narrative into tap-to-reveal story beats. */
 export function deriveLaunchBeats(config) {
   const narrative = config.launch?.narrative || "";
