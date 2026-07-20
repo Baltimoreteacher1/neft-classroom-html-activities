@@ -2416,6 +2416,160 @@
         color: var(--muted);
         line-height: 1.35;
       }
+      .fc-visual {
+        display: block;
+        width: 100%;
+        max-width: 260px;
+        margin: 6px 0 2px;
+        padding: 8px;
+        border: 1px solid #cbd9e9;
+        border-radius: 10px;
+        background: linear-gradient(145deg, #f8fbff, #eef5fb);
+        color: var(--ink);
+        white-space: normal;
+      }
+      .formulaobj .fc-visual {
+        max-width: 300px;
+        margin-top: 9px;
+        font-size: 0.9rem;
+      }
+      .ref-visual {
+        display: block;
+        width: 100%;
+        font-family: "Atkinson Hyperlegible", "Nunito", sans-serif;
+      }
+      .ref-place-value {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(42px, 1fr));
+        overflow: hidden;
+        border: 1px solid #9eb4cb;
+        border-radius: 7px;
+        background: #fff;
+      }
+      .ref-pv-label {
+        padding: 3px 2px;
+        border-bottom: 1px solid #b8c9da;
+        background: #e9f2fb;
+        color: #40536d;
+        font-size: 0.56rem;
+        font-weight: 900;
+        line-height: 1.1;
+        text-align: center;
+      }
+      .ref-pv-digit {
+        position: relative;
+        padding: 4px 3px;
+        font-size: 1.2rem;
+        font-weight: 900;
+        line-height: 1;
+        text-align: center;
+      }
+      .ref-pv-label + .ref-pv-label,
+      .ref-pv-digit + .ref-pv-digit {
+        border-left: 1px solid #cbd9e9;
+      }
+      .ref-pv-tenths {
+        border-left: 3px solid var(--green) !important;
+      }
+      .ref-pv-point {
+        position: absolute;
+        left: -7px;
+        bottom: 3px;
+        color: var(--green-d);
+        font-size: 1.35rem;
+        font-style: normal;
+      }
+      .ref-decimal-align {
+        display: grid;
+        justify-content: center;
+        gap: 2px;
+        font-variant-numeric: tabular-nums;
+      }
+      .ref-da-row {
+        display: grid;
+        grid-template-columns: 38px 10px 28px;
+        align-items: baseline;
+        font-size: 1rem;
+        font-weight: 900;
+        text-align: right;
+      }
+      .ref-da-row b {
+        color: var(--green-d);
+        font-size: 1.2em;
+        text-align: center;
+      }
+      .ref-da-rule {
+        height: 2px;
+        margin-top: 2px;
+        border-radius: 999px;
+        background: var(--ink);
+      }
+      .ref-hundred-grid {
+        display: grid;
+        grid-template-columns: repeat(10, 8px);
+        grid-auto-rows: 8px;
+        justify-content: center;
+        gap: 1px;
+      }
+      .ref-hundred-cell {
+        border: 1px solid #9eb4cb;
+        border-radius: 1px;
+        background: #fff;
+      }
+      .ref-hundred-cell.filled {
+        border-color: #176b5b;
+        background: var(--green);
+      }
+      .ref-percent-bar {
+        display: grid;
+        grid-template-columns: repeat(10, 1fr);
+        min-height: 28px;
+        overflow: hidden;
+        border: 2px solid #40536d;
+        border-radius: 7px;
+        background: #fff;
+      }
+      .ref-percent-part + .ref-percent-part {
+        border-left: 1px solid #9eb4cb;
+      }
+      .ref-percent-part.filled {
+        background: repeating-linear-gradient(
+          -45deg,
+          var(--teal),
+          var(--teal) 4px,
+          #3d79bb 4px,
+          #3d79bb 8px
+        );
+      }
+      .ref-visual-caption {
+        display: block;
+        margin-top: 5px;
+        color: #40536d;
+        font-size: 0.64rem;
+        font-weight: 900;
+        text-align: center;
+      }
+      .ref-conversion {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        flex-wrap: wrap;
+      }
+      .ref-conversion strong {
+        min-width: 48px;
+        padding: 5px 7px;
+        border: 1px solid #aac0d6;
+        border-radius: 8px;
+        background: #fff;
+        color: var(--teal-d);
+        font-size: 0.9rem;
+        text-align: center;
+      }
+      .ref-conversion span {
+        color: var(--green-d);
+        font-weight: 900;
+      }
       .formula-card .fc-add {
         margin-top: 3px;
         align-self: flex-start;
@@ -7625,6 +7779,69 @@
       /* ===================================================================
          FORMULA & REFERENCE BANK  (PreK – Grade 6)
          =================================================================== */
+      function referenceVisualHTML(visual) {
+        if (!visual || !visual.type) return "";
+        const safeLabel = String(visual.label || "Math visual")
+          .replace(/&/g, "&amp;")
+          .replace(/"/g, "&quot;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+        let content = "";
+        if (visual.type === "place-value") {
+          content =
+            '<span class="ref-place-value">' +
+            '<span class="ref-pv-label">ones</span>' +
+            '<span class="ref-pv-label ref-pv-tenths">tenths</span>' +
+            '<span class="ref-pv-label">hundredths</span>' +
+            '<span class="ref-pv-label">thousandths</span>' +
+            '<span class="ref-pv-digit">2</span>' +
+            '<span class="ref-pv-digit ref-pv-tenths"><i class="ref-pv-point">.</i>4</span>' +
+            '<span class="ref-pv-digit">7</span>' +
+            '<span class="ref-pv-digit">5</span>' +
+            "</span>";
+        } else if (visual.type === "decimal-align") {
+          content =
+            '<span class="ref-decimal-align">' +
+            '<span class="ref-da-row"><span>12</span><b>.</b><span>50</span></span>' +
+            '<span class="ref-da-row"><span>+ 3</span><b>.</b><span>47</span></span>' +
+            '<span class="ref-da-rule"></span>' +
+            "</span>";
+        } else if (visual.type === "hundred-grid") {
+          const filled = Math.max(0, Math.min(100, Number(visual.filled) || 0));
+          content =
+            '<span class="ref-hundred-grid">' +
+            Array.from({ length: 100 }, (_, i) =>
+              '<span class="ref-hundred-cell' + (i < filled ? " filled" : "") + '"></span>',
+            ).join("") +
+            '</span><span class="ref-visual-caption">' +
+            filled +
+            " shaded out of 100</span>";
+        } else if (visual.type === "percent-bar") {
+          const parts = 10;
+          const filled = Math.max(0, Math.min(parts, Number(visual.filled) || 0));
+          content =
+            '<span class="ref-percent-bar">' +
+            Array.from({ length: parts }, (_, i) =>
+              '<span class="ref-percent-part' + (i < filled ? " filled" : "") + '"></span>',
+            ).join("") +
+            '</span><span class="ref-visual-caption">Each part is 10% · ' +
+            filled * 10 +
+            "% shaded</span>";
+        } else if (visual.type === "conversion") {
+          content =
+            '<span class="ref-conversion"><strong>¼</strong><span>→</span><strong>0.25</strong><span>→</span><strong>25%</strong></span>';
+        }
+        if (!content) return "";
+        return (
+          '<span class="fc-visual"><span class="ref-visual ref-visual-' +
+          visual.type +
+          '" role="img" aria-label="' +
+          safeLabel +
+          '">' +
+          content +
+          "</span></span>"
+        );
+      }
       const TOPICS = [
         {
           id: "ooo",
@@ -7743,9 +7960,24 @@
           name: "Decimals & Percents",
           items: [
             {
+              name: "Decimal place value",
+              eq: "2.475 = 2 ones + 4 tenths + 7 hundredths + 5 thousandths",
+              note: "The decimal point is the fence between ones and tenths.",
+              visual: {
+                type: "place-value",
+                label:
+                  "Place-value chart for 2.475: 2 ones, 4 tenths, 7 hundredths, and 5 thousandths.",
+              },
+            },
+            {
               name: "Add / subtract decimals",
               eq: "line up the decimal points",
               note: "Fill empty places with zeros.",
+              visual: {
+                type: "decimal-align",
+                label:
+                  "The numbers 12.50 and 3.47 stacked vertically with their decimal points aligned.",
+              },
             },
             {
               name: "Multiply decimals",
@@ -7758,9 +7990,24 @@
               note: "Then divide as usual.",
             },
             {
+              name: "Percent means per 100",
+              eq: "35% = 35 out of 100 = 0.35",
+              note: "Percent means ‘for every 100.’",
+              visual: {
+                type: "hundred-grid",
+                filled: 35,
+                label: "A 10 by 10 hundred grid with 35 of its 100 squares shaded.",
+              },
+            },
+            {
               name: "Percent of a number",
               eq: "part = percent × whole",
-              note: "Write the percent as a decimal first (25% = 0.25).",
+              note: "Write the percent as a decimal first. Example: 30% = 0.30.",
+              visual: {
+                type: "percent-bar",
+                filled: 3,
+                label: "A bar split into 10 equal parts with 3 parts shaded to represent 30 percent.",
+              },
             },
             {
               name: "Find the percent",
@@ -7770,7 +8017,11 @@
             {
               name: "Fraction ↔ decimal ↔ %",
               eq: "÷ to decimal, × 100 to percent",
-              note: "½ = 0.5 = 50%.",
+              note: "Benchmarks: ¼ = 0.25 = 25% and ½ = 0.5 = 50%.",
+              visual: {
+                type: "conversion",
+                label: "One fourth converts to decimal zero point two five and then to 25 percent.",
+              },
             },
           ],
         },
@@ -8486,6 +8737,7 @@
       function buildFormulaCard(t, it) {
         const c = document.createElement("button");
         c.className = "formula-card" + (t.kind ? " fc-" + t.kind : "");
+        const visual = referenceVisualHTML(it.visual);
         const addLbl =
           t.kind === "stem"
             ? "＋ add a sentence to write in"
@@ -8499,6 +8751,7 @@
           it.eq +
           "</span>" +
           (it.note ? '<span class="fc-note">' + it.note + "</span>" : "") +
+          visual +
           '<span class="fc-add">' +
           addLbl +
           "</span>";
@@ -8518,7 +8771,15 @@
             });
           } else {
             makeObject("formula", {
-              html: "<b>" + it.name + ":</b>&nbsp; " + it.eq,
+              html:
+                "<b>" +
+                it.name +
+                ":</b>&nbsp; " +
+                it.eq +
+                visual +
+                (visual && it.note
+                  ? '<span class="ref-visual-caption">' + it.note + "</span>"
+                  : ""),
             });
           }
         });
