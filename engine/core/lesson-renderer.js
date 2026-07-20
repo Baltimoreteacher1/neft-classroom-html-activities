@@ -20,6 +20,9 @@ import {
   renderRemediation,
   renderTwrWriting,
 } from "../components/index.js";
+import { attachRegenPractice } from "../components/regen-practice.js";
+import { attachAnnotator } from "../components/scene-annotate.js";
+import { attachVoiceInput } from "../components/voice-explain.js";
 import { createAdaptiveSequence } from "./adaptive.js";
 import { enableWordProblemAnnotation } from "./annotate.js";
 import { createApp } from "./app.js";
@@ -28,9 +31,6 @@ import { deriveCommonMistake, deriveErrorExample } from "./content-enrichment.js
 import { mountDiscussionMoment } from "./discourse.js";
 import { buildGradeCard } from "./grade.js";
 import { recommendedNext } from "./grade-emit.js";
-import { attachRegenPractice } from "../components/regen-practice.js";
-import { attachAnnotator } from "../components/scene-annotate.js";
-import { attachVoiceInput } from "../components/voice-explain.js";
 import { mountHintLadder } from "./hint-ladder.js";
 import { badgeName, phaseName, stackHtml, t } from "./i18n.js";
 import { interactiveVisualHost, mountInteractiveVisuals } from "./interactive-visual.js";
@@ -2222,6 +2222,15 @@ const TIER_LABELS = {
   level2: { name: "Level 2", badge: "badge-navy" },
 };
 
+// Leveled coaching register per tier — the same voice contract the
+// small-group studio uses (supportive build / steady core / skeptic press).
+// Chrome only; the problems themselves are untouched.
+const TIER_VOICE = {
+  level1: "One step at a time — the hint below is part of the plan, not a penalty.",
+  core: "Solve it, check it, and be ready to say your because out loud.",
+  level2: "Push further: would your reasoning convince a skeptic?",
+};
+
 function renderWorkedExamplePanel(host, config) {
   const worked = deriveWorkedSteps(config);
   if (!worked.iDo) return;
@@ -2478,6 +2487,13 @@ function renderPracticePhase(el, state, ctx, config) {
   tierBadge.className = "badge badge-amber mb-4";
   el.append(tierBadge);
 
+  // One-line leveled voice beside the badge, refreshed per problem tier.
+  const tierVoice = document.createElement("p");
+  tierVoice.className = "practice-tier-voice";
+  tierVoice.style.cssText =
+    "margin:-6px 0 var(--sp-4); font-size:0.9rem; font-weight:600; color:var(--muted);";
+  el.append(tierVoice);
+
   const area = document.createElement("div");
   el.append(area);
 
@@ -2510,6 +2526,8 @@ function renderPracticePhase(el, state, ctx, config) {
 
   function finishPractice() {
     area.innerHTML = "";
+    // Finishing the whole practice set is the phase's big moment.
+    if (totalCorrect > 0) ctx.engagement.showBurstConfetti();
     completePhase(el, ctx, state, 2, "Practice", totalCorrect, totalAttempts);
   }
 
@@ -2564,6 +2582,7 @@ function renderPracticePhase(el, state, ctx, config) {
     const tl = TIER_LABELS[prob.tier] || TIER_LABELS.core;
     tierBadge.className = `badge ${tl.badge} mb-4`;
     tierBadge.textContent = tl.name;
+    tierVoice.textContent = TIER_VOICE[prob.tier] || TIER_VOICE.core;
 
     area.innerHTML = "";
 
@@ -2598,6 +2617,10 @@ function renderPracticePhase(el, state, ctx, config) {
             toast.innerHTML = `<span class="feedback-icon">✓</span><span>${result.message} ${result.streakMessage}</span>`;
             area.append(toast);
           }
+          // Streak milestones earn real confetti (was authored but never
+          // wired). Fires only at 3/5/8 so celebration stays an event, not
+          // wallpaper; the engagement layer mounts its own overlay.
+          if ([3, 5, 8].includes(result.streak)) ctx.engagement.showConfetti();
           updateScoreBar();
           setTimeout(() => next(), 1500);
         } else {

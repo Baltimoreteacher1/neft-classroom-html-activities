@@ -405,10 +405,80 @@ fieldset.sg-innovation {
   }
 }
 
+
+/* ── Award-wave interaction parity (2026-07-20) ─────────────────────────────
+   Same touch language as the studio core: soft lift on hover, press-down on
+   tap, a one-shot ring when a choice commits, and a gentle entrance when the
+   anonymous distribution reveals. */
+.sg-proof-button,
+.sg-vote-button,
+.sg-guide-chip,
+.sg-observation {
+  transition:
+    transform 0.12s,
+    border-color 0.12s,
+    background 0.12s,
+    box-shadow 0.12s;
+}
+
+.sg-proof-button:hover,
+.sg-vote-button:hover:not(:disabled),
+.sg-guide-chip:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(23, 32, 51, 0.1);
+}
+
+.sg-proof-button:active,
+.sg-vote-button:active:not(:disabled),
+.sg-guide-chip:active {
+  transform: translateY(1px) scale(0.98);
+  box-shadow: none;
+}
+
+.sg-proof-button[aria-pressed="true"],
+.sg-vote-button[aria-pressed="true"] {
+  animation: sgi-commit 0.45s ease;
+}
+
+@keyframes sgi-commit {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--sg) 45%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 12px transparent;
+  }
+}
+
+.sg-consensus-reveal.is-revealed {
+  animation: sgi-reveal 0.35s ease;
+}
+
+@keyframes sgi-reveal {
+  from {
+    transform: translateY(6px);
+  }
+  to {
+    transform: none;
+  }
+}
+
+.sg-observation:hover {
+  background: var(--sg-soft);
+  border-radius: 8px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .sg-proof-button,
-  .sg-vote-button {
+  .sg-vote-button,
+  .sg-guide-chip,
+  .sg-observation {
     transition: none;
+    animation: none;
+  }
+  .sg-proof-button[aria-pressed="true"],
+  .sg-vote-button[aria-pressed="true"],
+  .sg-consensus-reveal.is-revealed {
+    animation: none;
   }
 }
 

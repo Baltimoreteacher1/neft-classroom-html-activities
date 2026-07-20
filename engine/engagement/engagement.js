@@ -1,14 +1,17 @@
 const CONFETTI_COLORS = ["#F2C15B", "#1FA6A2", "#D9795D", "#12355B", "#0FA958", "#2F80D1"];
 
+// Process praise, not person praise: every message names the thinking that
+// earned the answer, matching the small-group studio's "Your reasoning
+// landed." register (award wave 2026-07-20).
 const ENCOURAGE_CORRECT = [
-  "Nice work!",
-  "You got it!",
-  "Excellent!",
-  "Well done!",
-  "That's right!",
-  "Great thinking!",
-  "Spot on!",
-  "Perfect!",
+  "Your reasoning landed.",
+  "That method is working.",
+  "Solid mathematical thinking.",
+  "You proved it.",
+  "Your steps held up.",
+  "That is how mathematicians do it.",
+  "Clean reasoning.",
+  "You earned that one.",
 ];
 
 const ENCOURAGE_STREAK = [
@@ -20,13 +23,15 @@ const ENCOURAGE_STREAK = [
   "Legendary! 6 in a row!",
 ];
 
-import { t, stackHtml, phaseName as getPhaseName, badgeName } from "../core/i18n.js";
+import { badgeName, phaseName as getPhaseName, stackHtml, t } from "../core/i18n.js";
 
+// Retry-first coaching: a miss is information, and the message says what to
+// do next instead of only cheering.
 const ENCOURAGE_TRY_AGAIN = [
-  "Not quite — try again!",
-  "Almost! Give it another shot.",
-  "Keep going — you've got this!",
-  "Close! Think it through.",
+  "Not yet — misses are data. Check one step and try again.",
+  "Almost. Walk your steps back one line.",
+  "Keep going — find the step that needs repair.",
+  "Close. Re-read what the question is really asking.",
 ];
 
 function randomFrom(arr) {
@@ -131,7 +136,15 @@ export function createEngagement(state) {
 
     showConfetti(container) {
       if (!container) container = document.querySelector(".celebration-overlay");
-      if (!container) return;
+      if (!container) {
+        // No page-provided overlay: mount an ephemeral one so celebration
+        // moments work on every lesson, then clean it up after the fall.
+        container = document.createElement("div");
+        container.className = "celebration-overlay";
+        container.setAttribute("aria-hidden", "true");
+        document.body.appendChild(container);
+        setTimeout(() => container.remove(), 3600);
+      }
 
       const count = 40;
       const pieces = [];
@@ -162,8 +175,10 @@ export function createEngagement(state) {
     },
 
     showBurstConfetti(container) {
+      // showConfetti mounts an ephemeral overlay when none exists, so the
+      // burst works on every page; passing the resolved container (when
+      // present) keeps all three waves in the same layer.
       if (!container) container = document.querySelector(".celebration-overlay");
-      if (!container) return;
       for (let i = 0; i < 3; i++) {
         setTimeout(() => this.showConfetti(container), i * 200);
       }
