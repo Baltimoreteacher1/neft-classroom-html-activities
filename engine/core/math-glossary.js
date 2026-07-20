@@ -259,6 +259,77 @@ export const MATH_GLOSSARY = [
     definition: "The spread of the middle half of the data.",
     definitionEs: "La dispersión de la mitad central de los datos.",
   },
+  // — two-word math terms —
+  // Registered so the WHOLE phrase underlines as one definition+image popup.
+  // Without these, a sub-word that is itself a glossary term ("factor", "ratio",
+  // "equivalent", "expression") would underline alone and split the phrase into
+  // one or two partial popups. Longest-match-first in the underliner guarantees
+  // these win over their single-word parts.
+  {
+    term: "scale factor",
+    termEs: "factor de escala",
+    definition:
+      "The number you multiply every part of a ratio (or figure) by to make an equivalent one.",
+    definitionEs:
+      "El número por el que multiplicas cada parte de una razón (o figura) para formar una equivalente.",
+  },
+  {
+    term: "equivalent ratio",
+    termEs: "razón equivalente",
+    definition:
+      "A ratio that shows the same comparison, made by multiplying or dividing both parts by the same number.",
+    definitionEs:
+      "Una razón que muestra la misma comparación, formada al multiplicar o dividir ambas partes por el mismo número.",
+  },
+  {
+    term: "equivalent expression",
+    termEs: "expresión equivalente",
+    definition:
+      "An expression that always has the same value as another, just written a different way.",
+    definitionEs:
+      "Una expresión que siempre tiene el mismo valor que otra, solo escrita de otra manera.",
+    image: "/assets/vocab-images/expression.svg",
+  },
+  {
+    term: "equivalent fraction",
+    termEs: "fracción equivalente",
+    definition: "A fraction that names the same amount as another (1/2 and 2/4).",
+    definitionEs: "Una fracción que nombra la misma cantidad que otra (1/2 y 2/4).",
+    image: "/assets/vocab-images/fraction.svg",
+  },
+  {
+    term: "common factor",
+    termEs: "factor común",
+    definition: "A number that divides evenly into two or more numbers.",
+    definitionEs: "Un número que divide exactamente a dos o más números.",
+    image: "/assets/vocab-images/factor.svg",
+  },
+  {
+    term: "common multiple",
+    termEs: "múltiplo común",
+    definition: "A number that is a multiple of two or more numbers.",
+    definitionEs: "Un número que es múltiplo de dos o más números.",
+  },
+  {
+    term: "prime factor",
+    termEs: "factor primo",
+    definition: "A factor that is itself a prime number.",
+    definitionEs: "Un factor que es un número primo.",
+    image: "/assets/vocab-images/factor.svg",
+  },
+  {
+    term: "conversion factor",
+    termEs: "factor de conversión",
+    definition: "A rate you multiply by to change one unit into another.",
+    definitionEs: "Una tasa por la que multiplicas para cambiar una unidad por otra.",
+  },
+  {
+    term: "algebraic expression",
+    termEs: "expresión algebraica",
+    definition: "An expression that uses at least one variable.",
+    definitionEs: "Una expresión que usa al menos una variable.",
+    image: "/assets/vocab-images/expression.svg",
+  },
 ];
 
 // Merge a lesson's own vocabulary with the shared glossary. Lesson entries win on
