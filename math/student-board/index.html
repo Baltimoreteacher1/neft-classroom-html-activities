@@ -4035,7 +4035,10 @@
               </div>
               <div class="gb-col-task" contenteditable="true" data-grp="${i}" data-gtask="1">${esc(g.task || "Task…")}</div>
               <div class="gb-col-body">${members}</div>
-              <div class="gb-col-foot"><button class="mini danger" data-delgrp="${i}">✕ Remove group</button></div>
+              <div class="gb-col-foot">
+                <button class="mini" data-copygrp="${i}" title="Copy these names for Canvas Assign-To">📋 Copy names</button>
+                <button class="mini danger" data-delgrp="${i}">✕ Remove group</button>
+              </div>
             </div>`;
           })
           .join("");
@@ -4073,6 +4076,21 @@
               markDirty();
               renderGroupBuilder();
               renderPods();
+            }),
+        );
+        // Copy a group's member names for Canvas "Assign To" (one per line —
+        // paste-friendly for typing each name into the Assign To field).
+        $$("#gbBoard [data-copygrp]").forEach(
+          (b) =>
+            (b.onclick = (e) => {
+              e.stopPropagation();
+              const g = state.groups[+b.dataset.copygrp];
+              const names = (g?.members || []).filter(Boolean);
+              if (!names.length) {
+                gbMsg("No students in this group yet — drag names in first.");
+                return;
+              }
+              copyText(names.join("\n"), b);
             }),
         );
         // Remove a student from the whole class roster.

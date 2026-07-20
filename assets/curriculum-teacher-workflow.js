@@ -164,6 +164,18 @@
         "Each student is sent to the variant you assigned them in Learning Supports;",
         "everyone else stays on this version. Or add ?group=1 / ?group=2 to force a version.",
       );
+    // One-upload auto-router SCORM: grade passback + per-student routing in a
+    // single package. Built from the site-relative path so the package always
+    // targets production regardless of where the hub is being viewed.
+    var autoPath =
+      autoUrl && lesson.resources?.lesson ? lesson.resources.lesson + "?route=auto" : null;
+    if (autoPath)
+      lines.push(
+        "",
+        "Auto-router SCORM package (one upload: grade passback + auto-routing): " +
+          `${location.origin}/api/scorm?activity=${encodeURIComponent(autoPath)}` +
+          `&title=${encodeURIComponent(lesson.title + " (auto-routed)")}`,
+      );
     return lines.join("\n");
   }
 

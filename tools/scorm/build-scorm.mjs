@@ -69,6 +69,7 @@ const defaultId = () => {
   const qUnit = u.searchParams.get("unit");
   if (qLesson) id += `-lesson-${qLesson}`;
   else if (qUnit) id += `-unit-${qUnit}`;
+  if (u.searchParams.get("route") === "auto") id += "-auto";
   return id;
 };
 const lessonId = (idArg && idArg.trim()) || (isLessonId ? target : defaultId());

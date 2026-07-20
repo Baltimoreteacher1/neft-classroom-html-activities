@@ -107,6 +107,10 @@ export function resolveTarget(target, site = SITE_DEFAULT) {
   const qUnit = u.searchParams.get("unit");
   if (qLesson) id = slug(id + "-lesson-" + qLesson);
   else if (qUnit) id = slug(id + "-unit-" + qUnit);
+  // Auto-router package (?route=auto sends each student to their assigned
+  // variant): distinct id so it never collides with the plain package's
+  // zip filename or SCORM manifest identifier.
+  if (u.searchParams.get("route") === "auto") id = slug(id + "-auto");
   return { lessonUrl, id, origin: u.origin };
 }
 
