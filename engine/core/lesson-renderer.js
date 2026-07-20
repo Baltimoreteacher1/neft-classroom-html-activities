@@ -45,6 +45,7 @@ import {
   buildPrintableSummary,
   checkBadges,
   getBadgeDefs,
+  renderLaunchStoryBeats,
 } from "./premium.js";
 import { createProblemCard, problemTypeLabel } from "./problem-shell.js";
 import { mountReadingProgress } from "./reading-progress.js";
@@ -2096,6 +2097,12 @@ function renderLaunchPhase(el, state, ctx, config) {
       renderThemeIllustration(scenario, config.theme, cfg.contextImage || null, config.heroFigure);
     }
     learnHost.append(scenario);
+
+    // Tap-to-reveal story beats: the same narrative chunked into labeled
+    // parts ("Set the Scene" → "Your Role") for readers who lose the thread
+    // in the full paragraph. Authored-but-unwired until the 2026-07-20
+    // dormant-feature sweep; renders nothing for 1-2 sentence narratives.
+    renderLaunchStoryBeats(learnHost, config);
 
     // 2) Inline Reveal Math slides for the launch + instruction sections — the
     //    "how it's taught" visuals belong with Learn It, not with Be Curious.
