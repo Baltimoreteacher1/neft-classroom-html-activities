@@ -200,3 +200,32 @@ export function enableWordProblemAnnotation(root = document) {
   const scope = root && root.querySelectorAll ? root : document;
   scope.querySelectorAll('[data-annotate="word-problem"]').forEach((el) => attach(el));
 }
+
+// Attach a toolbar to `node` (and any annotatable descendants) if it qualifies.
+function attachWithin(node) {
+  if (!node || node.nodeType !== Node.ELEMENT_NODE) return;
+  if (node.matches && node.matches('[data-annotate="word-problem"]')) attach(node);
+  if (node.querySelectorAll)
+    node.querySelectorAll('[data-annotate="word-problem"]').forEach((el) => attach(el));
+}
+
+let observerReady = false;
+
+// Public: enable annotation for the current AND all future word-problem blocks
+// inside `root`. Lesson phases render lazily and adaptive practice regenerates
+// problems on the fly, so a one-time scan can't cover every text-based problem.
+// A single MutationObserver watches the subtree and wires up any stem marked
+// `data-annotate="word-problem"` the moment it mounts — so highlight/underline/
+// bold is available on EVERY text problem, whenever and however it appears.
+export function observeWordProblemAnnotation(root = document.body) {
+  ensureGlobalListeners();
+  const host = root && root.nodeType ? root : document.body;
+  if (!host) return;
+  enableWordProblemAnnotation(host);
+  if (observerReady) return;
+  observerReady = true;
+  const mo = new MutationObserver((records) => {
+    for (const rec of records) rec.addedNodes.forEach(attachWithin);
+  });
+  mo.observe(host, { childList: true, subtree: true });
+}

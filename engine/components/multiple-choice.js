@@ -201,6 +201,8 @@ export function renderMultipleChoice(
   if (stem && !hideStem) {
     const stemEl = document.createElement("p");
     stemEl.className = "problem-stem";
+    // Let students mark up the problem text (highlight / underline / bold).
+    stemEl.setAttribute("data-annotate", "word-problem");
     stemEl.textContent = stem;
     wrapper.append(stemEl);
   }
