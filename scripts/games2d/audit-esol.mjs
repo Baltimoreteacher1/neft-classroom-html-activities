@@ -10,8 +10,8 @@
 // It excludes the legitimate English word family "resolve / resolved /
 // resolution / unresolved" (which contains the substring "esol") and matches
 // only true ESOL tokens via word boundaries and the known identifier forms.
-import { readdirSync, statSync, readFileSync } from "fs";
-import { join, dirname, relative } from "path";
+import { readdirSync, readFileSync, statSync } from "fs";
+import { dirname, join, relative } from "path";
 import { fileURLToPath } from "url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -27,11 +27,12 @@ const GAME_PATH_RE =
 // Directory subtrees to walk (cheap pre-filter; final gate is GAME_PATH_RE).
 const ROOTS = ["math", "games"];
 
-// Match a real "esol" token but never the "solv" word-family (solve, solvable,
-// resolve, and camelCase identifiers like "simulateSolve"/"verifySolvable"
-// whose lowercased form "...esolve" contains the substring "esol"). We strip
-// every word containing "solv" first, then look for any remaining "esol".
-const SOLVE_RE = /\w*solv\w*/gi;
+// Match a real "esol" token but never the "solv"/"solut" word families
+// (solve, solvable, resolve, resolutions, camelCase identifiers like
+// "simulateSolve"/"verifySolvable" — all contain the substring "esol" once
+// lowercased or via "r-esol-utions"). We strip every word containing either
+// stem first, then look for any remaining "esol".
+const SOLVE_RE = /\w*(?:solv|solut)\w*/gi;
 const ESOL_RE = /esol/i;
 
 // Code comments are never student-facing, so a comment that merely mentions the

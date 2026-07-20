@@ -1274,5 +1274,60 @@
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
   <!-- nsr-injected:end -->
+  
+    <!-- vocab-gate: word + student-facing definition BEFORE play (repo rule:
+         vocab before activities). Terms come from the games-2d source of
+         truth (assets/games2d-data.js) with an inline fallback so the page
+         is never blank. Added 2026-07-20 with the game's SoT registration. -->
+    <script src="/assets/games2d-data.js"></script>
+    <style>
+      #dd-vocab-gate{position:fixed;inset:0;z-index:9000;display:grid;place-items:center;padding:18px;background:rgba(10,22,40,0.92)}
+      #dd-vocab-gate .dd-vg-card{max-width:560px;width:100%;padding:26px 24px;border-radius:18px;background:#fdf9f0;color:#12355b;font-family:system-ui,sans-serif;box-shadow:0 18px 50px rgba(0,0,0,0.4)}
+      #dd-vocab-gate h2{margin:0 0 4px;font-size:24px}
+      #dd-vocab-gate .dd-vg-sub{margin:0 0 16px;color:#48607c;font-weight:600}
+      #dd-vocab-gate .dd-vg-term{margin:0 0 10px;padding:12px 14px;border:2px solid #1fa6a2;border-radius:12px;background:#fff}
+      #dd-vocab-gate .dd-vg-term b{display:block;font-size:18px;color:#0e6b68}
+      #dd-vocab-gate button{margin-top:14px;min-height:46px;width:100%;border:0;border-radius:12px;background:#12355b;color:#fff;font-size:17px;font-weight:800;cursor:pointer}
+      #dd-vocab-gate button:focus-visible{outline:3px solid #f2c15b;outline-offset:3px}
+    </style>
+    <script>
+      (function () {
+        var fallback = [
+          { term: "median", defn: "The middle value when the data is in order — half the values sit below it, half above." },
+          { term: "range", defn: "How spread out the data is: the biggest value minus the smallest value." },
+          { term: "outlier", defn: "A value that sits far away from the rest of the data — it can stretch the range." },
+        ];
+        var data = (window.Games2DData || {})["6-sp-b-5-data-detective-game"] || {};
+        var terms = (data.vocab && data.vocab.length ? data.vocab : fallback).slice(0, 4);
+        var gate = document.createElement("div");
+        gate.id = "dd-vocab-gate";
+        gate.setAttribute("role", "dialog");
+        gate.setAttribute("aria-modal", "true");
+        gate.setAttribute("aria-label", "Words for this investigation");
+        var cards = terms
+          .map(function (t) {
+            return '<p class="dd-vg-term"><b></b><span></span></p>';
+          })
+          .join("");
+        gate.innerHTML =
+          '<div class="dd-vg-card"><h2>🔎 Words for this investigation</h2>' +
+          '<p class="dd-vg-sub">Read each word first — you will use all of them as a data detective.</p>' +
+          cards +
+          '<button type="button" id="dd-vg-start">I know my words — start the investigation →</button></div>';
+        var slots = gate.querySelectorAll(".dd-vg-term");
+        terms.forEach(function (t, i) {
+          slots[i].querySelector("b").textContent = t.term || "";
+          slots[i].querySelector("span").textContent = t.defn || t.def || "";
+        });
+        document.body.appendChild(gate);
+        var btn = gate.querySelector("#dd-vg-start");
+        btn.addEventListener("click", function () {
+          gate.remove();
+          var canvas = document.querySelector("canvas");
+          if (canvas) canvas.focus && canvas.focus();
+        });
+        btn.focus();
+      })();
+    </script>
   </body>
 </html>

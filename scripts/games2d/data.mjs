@@ -1165,6 +1165,59 @@ export const GAMES_2D = {
       },
     },
   },
+
+  // ── Data Detective Lab (math/statistics/6-sp-b-5-data-detective-game) —
+  //    REAL_GAME (drag-sort the data to find the median, drag range markers).
+  //    Registered 2026-07-20: the game was already real; it only lacked its
+  //    canonical entry in this SoT.
+  "6-sp-b-5-data-detective-game": {
+    ccss: "6.DS.B.6",
+    title: "Data Detective Lab",
+    vocab: [
+      {
+        term: "median",
+        defn: "The middle value when the data is in order — half the values sit below it, half above.",
+        img: "",
+      },
+      {
+        term: "range",
+        defn: "How spread out the data is: the biggest value minus the smallest value.",
+        img: "",
+      },
+      {
+        term: "outlier",
+        defn: "A value that sits far away from the rest of the data — it can stretch the range.",
+        img: "",
+      },
+    ],
+    misconceptions: [
+      {
+        tag: "median-unsorted",
+        trigger: "Picks the middle of the UNSORTED list instead of ordering the data first.",
+        feedback:
+          "Order the data least to greatest FIRST — the median is the middle of the sorted line-up.",
+      },
+      {
+        tag: "range-endpoints",
+        trigger:
+          "Reports the largest value (or the two endpoints) instead of subtracting max − min.",
+        feedback:
+          "The range is one number: biggest value MINUS smallest value — it measures the spread.",
+      },
+    ],
+    tiers: {
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "Smaller data sets · sort guide shown · guided hints",
+      },
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Bigger data sets with outliers · no sort guide",
+      },
+    },
+  },
 };
 
 export default GAMES_2D;
