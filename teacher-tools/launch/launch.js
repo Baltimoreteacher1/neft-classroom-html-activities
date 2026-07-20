@@ -31,6 +31,12 @@
       primary: true,
     },
     {
+      key: "present",
+      icon: "📽️",
+      label: "Present Mode",
+      sub: "Opens the lesson as slides for the projector (arrow keys to advance)",
+    },
+    {
       key: "notes",
       icon: "📋",
       label: "Teacher Notes",
@@ -95,15 +101,11 @@
   function visibleLessons() {
     const q = state.query.trim().toLowerCase();
     return state.lessons.filter((l) => {
-      if (
-        state.selectedUnit !== "all" &&
-        String(l.unit) !== String(state.selectedUnit)
-      ) {
+      if (state.selectedUnit !== "all" && String(l.unit) !== String(state.selectedUnit)) {
         return false;
       }
       if (!q) return true;
-      const hay =
-        `${l.id} ${l.title} ${l.standard} ${l.objective}`.toLowerCase();
+      const hay = `${l.id} ${l.title} ${l.standard} ${l.objective}`.toLowerCase();
       return hay.includes(q);
     });
   }
@@ -124,13 +126,9 @@
     els.unitSelect.innerHTML = opts.join("");
 
     // Chips
-    const chips = [
-      `<button type="button" data-unit="all" aria-pressed="true">All units</button>`,
-    ];
+    const chips = [`<button type="button" data-unit="all" aria-pressed="true">All units</button>`];
     units.forEach((u) => {
-      chips.push(
-        `<button type="button" data-unit="${u}" aria-pressed="false">Unit ${u}</button>`,
-      );
+      chips.push(`<button type="button" data-unit="${u}" aria-pressed="false">Unit ${u}</button>`);
     });
     els.unitChips.innerHTML = chips.join("");
   }
@@ -144,25 +142,18 @@
         state.lessons.length +
         ")</option>" +
         list
-          .map(
-            (l) =>
-              `<option value="${escapeHtml(l.id)}">${escapeHtml(lessonLabel(l))}</option>`,
-          )
+          .map((l) => `<option value="${escapeHtml(l.id)}">${escapeHtml(lessonLabel(l))}</option>`)
           .join("");
     } else if (list.length) {
       els.lessonSelect.disabled = false;
       els.lessonSelect.innerHTML =
         '<option value="">Pick a lesson…</option>' +
         list
-          .map(
-            (l) =>
-              `<option value="${escapeHtml(l.id)}">${escapeHtml(lessonLabel(l))}</option>`,
-          )
+          .map((l) => `<option value="${escapeHtml(l.id)}">${escapeHtml(lessonLabel(l))}</option>`)
           .join("");
     } else {
       els.lessonSelect.disabled = true;
-      els.lessonSelect.innerHTML =
-        '<option value="">No matching lessons</option>';
+      els.lessonSelect.innerHTML = '<option value="">No matching lessons</option>';
     }
     if (state.selectedId) els.lessonSelect.value = state.selectedId;
   }
@@ -176,9 +167,7 @@
     els.grid.innerHTML = list
       .map((l) => {
         const pressed = l.id === state.selectedId ? "true" : "false";
-        const flagBadge = l.flagship
-          ? '<span class="lp-flagship">Flagship</span>'
-          : "";
+        const flagBadge = l.flagship ? '<span class="lp-flagship">Flagship</span>' : "";
         const emoji = l.themeEmoji
           ? `<span class="lp-emoji" aria-hidden="true">${escapeHtml(l.themeEmoji)}</span>`
           : "";
@@ -213,7 +202,12 @@
     els.empty.hidden = true;
     els.detail.hidden = false;
 
-    const res = lesson.resources || {};
+    const res = Object.assign({}, lesson.resources);
+    // Present Mode is the student activity with ?present=1 — derived here so
+    // the generated manifest stays untouched.
+    if (res.student && !res.present) {
+      res.present = res.student + (res.student.includes("?") ? "&" : "?") + "present=1";
+    }
     const buttons = RESOURCE_DEFS.filter((def) => res[def.key]).map((def) =>
       resourceButtonHtml(def, res[def.key]),
     );
@@ -233,9 +227,7 @@
     const emoji = lesson.themeEmoji
       ? `<span class="ld-emoji" aria-hidden="true">${escapeHtml(lesson.themeEmoji)}</span>`
       : "";
-    const flagBadge = lesson.flagship
-      ? '<span class="lp-flagship">Flagship</span>'
-      : "";
+    const flagBadge = lesson.flagship ? '<span class="lp-flagship">Flagship</span>' : "";
     const langObjective = lesson.languageObjective
       ? `<p class="ld-objective ld-lang"><strong>Language:</strong> ${escapeHtml(lesson.languageObjective)}</p>`
       : "";
@@ -287,10 +279,7 @@
     }
     els.unitSelect.value = unit;
     els.unitChips.querySelectorAll("button").forEach((b) => {
-      b.setAttribute(
-        "aria-pressed",
-        b.dataset.unit === String(unit) ? "true" : "false",
-      );
+      b.setAttribute("aria-pressed", b.dataset.unit === String(unit) ? "true" : "false");
     });
     populateLessonSelect();
     renderLessonGrid();
@@ -305,9 +294,7 @@
       if (btn) setUnit(btn.dataset.unit);
     });
 
-    els.lessonSelect.addEventListener("change", (e) =>
-      selectLesson(e.target.value),
-    );
+    els.lessonSelect.addEventListener("change", (e) => selectLesson(e.target.value));
 
     els.search.addEventListener("input", (e) => {
       state.query = e.target.value || "";
@@ -334,8 +321,7 @@
       if (!res.ok) throw new Error("HTTP " + res.status);
       const data = await res.json();
       const lessons = Array.isArray(data) ? data : data.lessons;
-      if (!Array.isArray(lessons) || !lessons.length)
-        throw new Error("empty manifest");
+      if (!Array.isArray(lessons) || !lessons.length) throw new Error("empty manifest");
       state.lessons = lessons;
     } catch (err) {
       console.error("Launch Mode: failed to load manifest", err);

@@ -41,8 +41,12 @@ export function initPresentMode({ app, config, phaseConfigs, phaseContainer, sta
 
   function slideTitle(group, fallback) {
     for (const el of group) {
-      const h = el.querySelector("h2, h3, h4, .card-title, [class*='section-title']");
-      const t = h?.textContent?.trim().replace(/\s+/g, " ");
+      const h = el.querySelector(
+        "h2, h3, h4, .card-title, [class*='section-title'], legend, [role='heading']",
+      );
+      const t = (h?.textContent || el.getAttribute?.("aria-label") || "")
+        .trim()
+        .replace(/\s+/g, " ");
       if (t) return t.length > 34 ? `${t.slice(0, 32)}…` : t;
     }
     return fallback;
@@ -71,13 +75,12 @@ export function initPresentMode({ app, config, phaseConfigs, phaseContainer, sta
     if (!phaseEl) return;
     slideEls = groupSlides(phaseEl);
     const phaseIdx = state.get().currentPhase ?? 0;
-    const phaseName = phaseConfigs[phaseIdx]?.name || `Part ${phaseIdx + 1}`;
     rail.querySelector(".pm-rail-slides").innerHTML = slideEls
       .map(
         (g, i) => `
         <button type="button" class="pm-thumb" role="tab" data-pm-slide-btn="${i}">
           <span class="pm-thumb-num">${i + 1}</span>
-          <span class="pm-thumb-title">${esc(slideTitle(g, `${phaseName} · ${i + 1}`))}</span>
+          <span class="pm-thumb-title">${esc(slideTitle(g, `Slide ${i + 1}`))}</span>
         </button>`,
       )
       .join("");
