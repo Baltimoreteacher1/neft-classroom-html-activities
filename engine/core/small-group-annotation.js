@@ -4,8 +4,13 @@ import { configureVocabImage } from "./vocab-images.js";
 
 const FORBIDDEN_SELECTION =
   "button, input, textarea, select, dialog, .sg-annotation-tools, .sg-teacher, .sg-facilitation, .sg-evidence-card";
+// NOTE: [hidden] is deliberately NOT excluded — triggers install after the
+// tab rail mounts, when every non-active panel is hidden; skipping hidden
+// text would strip inline vocabulary from all but the landing tab. Triggers
+// created inside hidden panels/reveals stay hidden until the student opens
+// them, so nothing leaks.
 const VOCAB_EXCLUSIONS =
-  "button, input, textarea, select, option, label, summary, script, style, dialog, [hidden], .sg-annotation-tools, .sg-vcard, .sg-match, .sg-cloze, .sg-langbar, .sg-welcome, .sg-teacher, .sg-facilitation, .sg-evidence-card";
+  "button, input, textarea, select, option, label, summary, script, style, dialog, .sg-annotation-tools, .sg-vcard, .sg-match, .sg-cloze, .sg-langbar, .sg-welcome, .sg-teacher, .sg-facilitation, .sg-evidence-card";
 
 function elementFor(node) {
   return node?.nodeType === Node.ELEMENT_NODE ? node : node?.parentElement;

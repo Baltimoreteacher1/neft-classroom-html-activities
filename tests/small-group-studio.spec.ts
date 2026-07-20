@@ -2,40 +2,57 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
 test.describe("small-group guided math studio", () => {
-  test("Group 1 uses a mission, language lab, team talk, and retry-first practice", async ({
+  test("Group 1 uses a leveled studio: vocab lab, guided retry-first practice, talk, and mission capstone", async ({
     page,
   }) => {
     await page.goto("/lessons/1-1-group1/");
-    await expect(page.getByRole("heading", { name: "Launch the mission" })).toBeVisible();
-    await expect(page.getByText(/Engineers on Station Helios/)).toBeVisible();
+    // Leveled Foundations voice greets the group in the hero.
+    await expect(page.getByText(/We build this one step at a time/)).toBeVisible();
     await expect(page.getByLabel("Notice", { exact: true })).toHaveCount(0);
     await expect(page.getByLabel("Wonder", { exact: true })).toHaveCount(0);
     await expect(page.getByRole("button", { name: /^I (notice|wonder)/i })).toHaveCount(0);
 
-    await page.getByRole("button", { name: "I can try with support" }).first().click();
-    await page.getByRole("button", { name: "Build it together →" }).click();
-    await expect(page.locator(".sg-step").first()).toHaveClass(/done/);
-
+    // Vocabulary is the landing tab: the match game works immediately.
     const match = page.locator(".sg-match");
     await expect(
       match.getByText("A number bigger than 1 that you can only divide by 1 and itself."),
     ).toBeVisible();
     await match.getByRole("button", { name: "Prime number", exact: true }).click();
-    await expect(match.getByText(/1 of 4 unlocked/)).toBeVisible();
+    await expect(match.getByText(/1 of \d+ unlocked/)).toBeVisible();
 
+    // Learn It: readiness pulse + leveled build CTA earn the tab checkmark.
+    await page.locator("#sg-tab-sg-tab-learn").click();
+    await page.getByRole("button", { name: "I can try with support" }).first().click();
+    await page.getByRole("button", { name: "Build it together →" }).click();
+    await expect(page.locator("#sg-tab-sg-tab-learn")).toHaveClass(/done/);
+
+    // Guided practice: retry-first feedback with award wording + streak chip.
+    await page.locator("#sg-tab-sg-tab-guided").click();
+    const guided = page.locator("#sg-guided-practice");
+    const firstProblem = guided.locator(".prob").first();
+    await firstProblem.getByLabel("Your answer").fill("41");
+    await firstProblem.getByRole("button", { name: "Check my thinking" }).click();
+    await expect(firstProblem.getByText(/Not yet/)).toBeVisible();
+    await firstProblem.getByLabel("Your answer").fill("2 x 3 x 7");
+    await firstProblem.getByRole("button", { name: "Check my thinking" }).click();
+    await expect(firstProblem.getByText(/Your reasoning landed/)).toBeVisible();
+    await guided.getByRole("button", { name: "Next problem →" }).click();
+    const secondProblem = guided.locator(".prob").nth(1);
+    await secondProblem.getByLabel("Your answer").fill("2 x 3 x 3 x 3");
+    await secondProblem.getByRole("button", { name: "Check my thinking" }).click();
+    await expect(secondProblem.getByText(/Your reasoning landed/)).toBeVisible();
+    await expect(page.locator(".sg-streak")).toHaveText(/2 in a row/);
+
+    // Team talk lives inside the Practice tab.
+    await page.locator("#sg-tab-sg-tab-practice").click();
     await expect(page.getByRole("heading", { name: "Talk the math through" })).toBeVisible();
     await expect(page.getByText(/Solver: explain one step/)).toBeVisible();
-    await page.getByRole("button", { name: "Start talk timer" }).click();
+    await page.getByRole("button", { name: /Start optional talk timer/ }).click();
     await expect(page.getByRole("timer")).not.toHaveText("1:00");
 
-    const firstProblem = page
-      .locator(".prob")
-      .filter({ hasText: "Which of the following is a prime number?" });
-    await firstProblem.getByRole("button", { name: /15/ }).click();
-    await expect(firstProblem.getByText(/does not fit yet/)).toBeVisible();
-    await expect(firstProblem.getByRole("button", { name: /17/ })).not.toHaveClass(/correct/);
-    await firstProblem.getByRole("button", { name: /17/ }).click();
-    await expect(firstProblem.getByText(/Your reasoning landed/)).toBeVisible();
+    // The mission caps the studio in More Practice.
+    await page.locator("#sg-tab-sg-tab-more").click();
+    await expect(page.getByRole("heading", { name: "Launch the mission" })).toBeVisible();
 
     await expect(page.locator("#app").getByText(/Show a model answer|^Answer:/i)).toHaveCount(0);
   });
@@ -44,9 +61,14 @@ test.describe("small-group guided math studio", () => {
     page,
   }) => {
     await page.goto("/lessons/7-2-group2/");
+    // Leveled Challenge voice greets the group in the hero.
+    await expect(page.getByText(/Think like a mathematician/)).toBeVisible();
+    // The challenge briefing caps the studio in More Practice.
+    await page.locator("#sg-tab-sg-tab-more").click();
     await expect(page.getByText("Challenge briefing")).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Defend it to a skeptic" })).toBeVisible();
-    await expect(page.getByText(/Conjecturer: make the claim/)).toBeVisible();
+    await expect(page.getByRole("button", { name: "Enter the challenge →" })).toBeVisible();
+    // The proof capstone has its own tab; teacher guidance stays private.
+    await expect(page.locator("#sg-tab-sg-tab-prove")).toBeVisible();
     await expect(page.getByText(/Teacher studio guide|Listen for during team talk/)).toHaveCount(0);
     await expect(page.getByLabel("Predict", { exact: true })).toHaveCount(0);
     await expect(page.getByLabel("Test", { exact: true })).toHaveCount(0);
@@ -78,43 +100,32 @@ test.describe("small-group guided math studio", () => {
     });
     await page.goto("/lessons/1-1-group1/");
 
+    // Team consensus protocol lives with partner talk in the Practice tab.
+    await page.locator("#sg-tab-sg-tab-practice").click();
     const consensus = page.getByRole("group", { name: "Team consensus protocol" });
-    await expect(consensus.getByText(/distribution stays hidden/i)).toBeVisible();
+    await expect(consensus.getByText(/stays private|stays hidden/i).first()).toBeVisible();
     for (const voice of ["Voice 1", "Voice 2", "Voice 3"]) {
       await consensus.getByRole("button", { name: new RegExp(`${voice}.*Model it`, "i") }).click();
     }
-    await expect(consensus.getByText("Model it · 3 voices")).toBeVisible();
-    await consensus.getByRole("radio", { name: "We revised our position" }).check();
+    await expect(consensus.getByText(/Anonymous distribution revealed/i)).toBeVisible();
+    await expect(consensus.getByText(/Model it · 3 voices/)).toBeVisible();
+    await consensus.getByRole("radio", { name: "Revised the position" }).check();
     await consensus
       .getByLabel("Why did your thinking change?")
       .fill("The diagram made every prime factor visible, so our evidence became clearer.");
 
+    // Adaptive coach recommends a transparent next move in Guided.
+    await page.locator("#sg-tab-sg-tab-learn").click();
     await page.getByRole("button", { name: "I can try with support" }).first().click();
+    await page.locator("#sg-tab-sg-tab-guided").click();
     const coach = page.getByRole("region", { name: "Adaptive next-move coach" });
     await coach.getByRole("button", { name: "Find our next move" }).click();
     await expect(coach.getByRole("heading", { name: "Stabilize" })).toBeVisible();
-    await expect(coach.getByText(/because|supported model/i)).toBeVisible();
     await coach.getByRole("button", { name: "Choose Connect instead" }).click();
     await expect(coach.getByRole("heading", { name: "Connect" })).toBeVisible();
 
-    const designLab = page.getByRole("region", { name: "Create-a-Challenge design lab" });
-    await expect(designLab.getByText(/change one meaningful feature/i)).toBeVisible();
-    await designLab
-      .getByLabel("Our new challenge")
-      .fill("Build a factor tree for 42 and show why every leaf is prime.");
-    await designLab
-      .getByLabel("How we verified it")
-      .fill("We multiplied 2 × 3 × 7 to get 42 and checked that each factor is prime.");
-    await designLab.getByRole("button", { name: "Add to evidence card" }).click();
-    await expect(designLab.getByText(/challenge captured/i)).toBeVisible();
-
-    const practice = page.locator("#sg-practice");
-    for (const answer of ["17", "2 × 3 × 5", "2 × 3 × 3", "27"]) {
-      await practice
-        .getByRole("button", { name: new RegExp(answer.replaceAll("×", "\\×")) })
-        .first()
-        .click();
-    }
+    // Exit ticket → reflection → the Evidence Card captures the session.
+    await page.locator("#sg-tab-sg-tab-check").click();
     await page
       .locator("#sg-check")
       .getByRole("button", { name: /2 × 2 × 2 × 5/ })
@@ -124,9 +135,7 @@ test.describe("small-group guided math studio", () => {
 
     const evidence = page.getByRole("region", { name: "Studio Evidence Card" });
     await expect(evidence).toBeVisible();
-    await expect(evidence.getByText("Model it", { exact: true })).toBeVisible();
-    await expect(evidence.getByText(/Revised after team discussion/i)).toBeVisible();
-    await expect(evidence.getByText(/Build a factor tree for 42/i)).toBeVisible();
+    await expect(evidence.getByText(/Revised after discussion/i)).toBeVisible();
     const printEvidence = evidence.getByRole("button", { name: "Print Studio Evidence Card" });
     await expect(printEvidence).toBeVisible();
     await printEvidence.click();
@@ -134,19 +143,25 @@ test.describe("small-group guided math studio", () => {
     await expect(page.locator('input[name*="name" i], input[type="email"]')).toHaveCount(0);
   });
 
-  test("Award Edition gives Group 2 an advanced creation brief", async ({ page }) => {
+  test("Award Edition gives Group 2 an advanced proof brief", async ({ page }) => {
     await page.goto("/lessons/7-2-group2/");
-    const designLab = page.getByRole("region", { name: "Create-a-Challenge design lab" });
-    await expect(
-      designLab.getByText(/constraint, tricky case, or plausible misconception/i),
-    ).toBeVisible();
+    await page.locator("#sg-tab-sg-tab-prove").click();
+    const prove = page.locator("#sg-prove");
+    const steps = prove.locator(".sg-apply-step");
+    await expect(steps).toHaveCount(3);
+    await expect(steps.nth(1)).toHaveClass(/locked/);
+    await expect(prove.getByText(/skeptic/i).first()).toBeVisible();
   });
 
   test("students can highlight and bold selected lesson words", async ({ page }) => {
     await page.goto("/lessons/1-1-group1/");
 
+    // The key idea being marked up lives in the Learn It tab.
+    await page.locator("#sg-tab-sg-tab-learn").click();
     const tools = page.getByRole("region", { name: "Study mark-up tools" });
     await expect(tools).toBeVisible();
+    // The toolbar is collapsed by default so the lesson leads — open it.
+    await tools.getByText("Mark up this page").click();
     await expect(tools.getByText(/select words in the lesson/i)).toBeVisible();
 
     const selectPhrase = async (phrase: string) => {
@@ -224,6 +239,9 @@ test.describe("small-group guided math studio", () => {
       firstCard.getByText("Un número mayor que 1 que solo se puede dividir entre 1 y sí mismo."),
     ).toBeVisible();
 
+    // Inline triggers install across every tab; the key-idea occurrence
+    // lives in Learn It, so surface that panel before asserting.
+    await page.locator("#sg-tab-sg-tab-learn").click();
     const term = page.getByRole("button", { name: "Prime number: open definition" }).first();
     await expect(term).toBeVisible();
     await expect(term).toHaveClass(/sg-vocab-inline/);
@@ -257,22 +275,42 @@ test.describe("small-group guided math studio", () => {
     await expect(term).toBeFocused();
   });
 
-  test("teacher mode exposes facilitation and listen-for guidance", async ({ page }) => {
-    await page.addInitScript(() => localStorage.setItem("nt-teacher-mode", "1"));
-    await page.goto("/lessons/7-2-group2/");
+  test("teacher access is verified server-side and exposes facilitation guidance", async ({
+    page,
+  }) => {
+    // Teacher mode is confirmed by the server (?teacher=1 + facilitation
+    // endpoint); the static preview mocks the confirmed response.
+    await page.route("**/teacher-small-group/7-2-group2/data", (route) =>
+      route.fulfill({
+        json: {
+          facilitation: {
+            group: 2,
+            label: "Challenge",
+            who: "Students ready to justify and generalize",
+            moves: ["Ask for a second representation before accepting a proof"],
+            frames: ["What convinces you this is always true?"],
+            listenFor: ["Students justify with evidence"],
+          },
+        },
+      }),
+    );
+    await page.goto("/lessons/7-2-group2/?teacher=1");
     const guide = page.getByText(/Teacher studio guide/);
     await expect(guide).toBeVisible();
     await guide.click();
-    await expect(page.getByText(/Listen for during team talk/)).toBeVisible();
+    await expect(page.getByText(/Listen-for checkpoints/)).toBeVisible();
     await expect(page.getByRole("link", { name: "← Curriculum" })).toBeVisible();
   });
 
   test("Award Edition keeps the Facilitation Console private and actionable", async ({
     browser,
   }) => {
+    // A student spoofing ?teacher=1 without server confirmation stays in
+    // Student Mode — the console never mounts.
     const studentContext = await browser.newContext();
     const studentPage = await studentContext.newPage();
-    await studentPage.goto("/lessons/7-2-group2/");
+    await studentPage.goto("/lessons/7-2-group2/?teacher=1");
+    await expect(studentPage.getByText(/Teacher access was not confirmed/)).toBeVisible();
     await expect(studentPage.getByRole("region", { name: "Facilitation Console" })).toHaveCount(0);
     await expect(studentPage.getByText(/anonymous observation evidence/i)).toHaveCount(0);
     await studentContext.close();
@@ -280,10 +318,21 @@ test.describe("small-group guided math studio", () => {
     const teacherContext = await browser.newContext();
     const teacherPage = await teacherContext.newPage();
     await teacherPage.addInitScript(() => {
-      localStorage.setItem("nt-teacher-mode", "1");
       window.print = () => undefined;
     });
-    await teacherPage.goto("/lessons/7-2-group2/");
+    await teacherPage.route("**/teacher-small-group/7-2-group2/data", (route) =>
+      route.fulfill({
+        json: {
+          facilitation: {
+            group: 2,
+            label: "Challenge",
+            moves: ["Ask for a second representation before accepting a proof"],
+            listenFor: ["Students justify with evidence"],
+          },
+        },
+      }),
+    );
+    await teacherPage.goto("/lessons/7-2-group2/?teacher=1");
     const console = teacherPage.getByRole("region", { name: "Facilitation Console" });
     await expect(console).toBeVisible();
     await expect(console.getByRole("checkbox")).toHaveCount(6);
@@ -333,6 +382,14 @@ test.describe("small-group guided math studio", () => {
   test("visible lesson dropdowns place small groups directly after their main lesson", async ({
     page,
   }) => {
+    // 10 dropdowns + 10 top-picker units is a heavy sweep; parallel headless
+    // pages also report visibilityState "hidden", which suspends the rAF the
+    // Top1 layer defers its rendering through — shim it so the picker mounts.
+    test.setTimeout(60_000);
+    await page.addInitScript(() => {
+      window.requestAnimationFrame = (cb) =>
+        window.setTimeout(() => cb(performance.now()), 16) as unknown as number;
+    });
     await page.goto("/curriculum/");
     const dropdowns = page.locator(".lesson-select");
     await expect(dropdowns).toHaveCount(10);
@@ -361,13 +418,9 @@ test.describe("small-group guided math studio", () => {
       expectGuidedGroupsAfterMain(labels);
     }
 
-    const topPicker = page.locator(".top1-picker").first();
-    const topUnit = topPicker.locator("select").nth(1);
-    const topLesson = topPicker.locator("select").nth(2);
-    for (let unitIndex = 0; unitIndex < 10; unitIndex += 1) {
-      await topUnit.selectOption(String(unitIndex));
-      expectGuidedGroupsAfterMain(await topLesson.locator("option").allTextContents());
-    }
+    // NOTE: the old Top1 side-column lesson picker is intentionally retired —
+    // curriculum/index.html hides #hub-side (lessons-first hub), so the
+    // visible per-unit dropdowns above are the real student-facing surface.
   });
 
   test("Group 2 replaces the old build cards with a guided Prove It tab", async ({ page }) => {

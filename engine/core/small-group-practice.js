@@ -140,7 +140,7 @@ function multipleChoiceCard(item, index, onSolved, events = {}) {
       showFeedback(
         status,
         "ok",
-        `${streakNote(events)}✅ <b>Correct.</b> ${bi(item.explanation || "Say out loud why this choice works.", item.explanationEs)}`,
+        `${streakNote(events)}✅ <b>Your reasoning landed.</b> ${bi(item.explanation || "Say out loud why this choice works.", item.explanationEs)}`,
       );
       celebrate((events.streak?.() || 0) >= 3 ? "🔥" : "✓");
       onSolved();
@@ -313,7 +313,7 @@ function answerControl(item, answer, scaffold, status, onSolved, events = {}, on
     showFeedback(
       status,
       "ok",
-      `${streakNote(events)}✅ <b>Correct.</b> ${bi(item.explanation || "Explain the step that convinced you.", item.explanationEs)}`,
+      `${streakNote(events)}✅ <b>Your reasoning landed.</b> ${bi(item.explanation || "Explain the step that convinced you.", item.explanationEs)}`,
     );
     celebrate((events.streak?.() || 0) >= 3 ? "🔥" : "✓");
     onSolved();

@@ -3,7 +3,6 @@
 // engagement interactions, math practice, and visual system.
 
 import { installSmallGroupAnnotation } from "./small-group-annotation.js";
-import { mountTeacherClearButton } from "./teacher-clear.js";
 import {
   createMissionSection,
   createReflectionSection,
@@ -12,6 +11,7 @@ import {
   makePulse,
   selectedTalk,
 } from "./small-group-engagement.js";
+import { syncSmallGroupEvidence } from "./small-group-evidence.js";
 import {
   createAdaptiveCoach,
   createConsensusLab,
@@ -20,7 +20,6 @@ import {
   createStudioPacket,
   createTeacherEvidenceConsole,
 } from "./small-group-innovation.js";
-import { syncSmallGroupEvidence } from "./small-group-evidence.js";
 import { createApplyLab, createExploreLab, createModelLab } from "./small-group-labs.js";
 import { installSmallGroupPassport } from "./small-group-passport.js";
 import {
@@ -33,12 +32,15 @@ import { mountSmallGroupTabs } from "./small-group-tabs.js";
 import { mountSmallGroupTeacherAccess } from "./small-group-teacher-access.js";
 import {
   ACCENTS,
+  bi,
   el,
   esc,
   injectSmallGroupStyles,
   sectionHeading,
   studentVoice,
+  voiceFor,
 } from "./small-group-ui.js";
+import { mountTeacherClearButton } from "./teacher-clear.js";
 
 // One Build stage rendered as an interactive player instead of a static list.
 // "ido" and "wedo" reveal one step at a time; "wedo" also converts a trailing
@@ -128,7 +130,7 @@ function stageCard(stage, fallbackTitle, kind, onStageDone) {
   return card;
 }
 
-function conceptSection(config, onDone) {
+function conceptSection(config, onDone, voice) {
   const concept = config.launch?.conceptIntro || {};
   const section = el("section", "sg-sec");
   section.id = "sg-build";
@@ -164,11 +166,11 @@ function conceptSection(config, onDone) {
     );
 
   const row = el("div", "row");
-  const ready = el("button", "btn", "I can explain the next step →");
+  const ready = el("button", "btn", voice.buildCta);
   ready.type = "button";
   ready.onclick = () => {
     ready.disabled = true;
-    ready.textContent = "Build phase complete ✓";
+    ready.textContent = voice.buildDone;
     onDone();
     (document.getElementById("sg-explore") || document.getElementById("sg-vocab"))?.scrollIntoView({
       behavior: "smooth",
@@ -211,7 +213,7 @@ function teacherPanel(config, accent, talk) {
   return wrapper;
 }
 
-function hero(config, accent) {
+function hero(config, accent, voice) {
   const container = el("div", "sg-hero");
   const grid = el("div", "sg-hero-grid");
   const copy = el("div");
@@ -222,6 +224,9 @@ function hero(config, accent) {
     copy.appendChild(el("p", "sg-obj", `🎯 ${esc(studentVoice(config.contentObjective))}`));
   if (config.languageObjective)
     copy.appendChild(el("p", "sg-langobj", `🗣️ ${esc(studentVoice(config.languageObjective))}`));
+  // Leveled coaching register — the one line that tells each group how this
+  // studio will feel (supportive build / mathematician's press / fresh start).
+  copy.appendChild(el("p", "sg-tagline", bi(voice.tagline, voice.taglineEs)));
   const chips = el("div", "sg-chips");
   chips.appendChild(el("span", "sg-chip", `⏱ ${esc(config.timeEstimate || "15–20 min")}`));
   if (config.standard) chips.appendChild(el("span", "sg-chip", esc(config.standard)));
@@ -245,6 +250,7 @@ function renderStudio(config) {
   const variant =
     config.variant || (config.smallGroup ? `group${config.smallGroup.group}` : "catchup");
   const accent = ACCENTS[variant] || ACCENTS.catchup;
+  const voice = voiceFor(variant);
   injectSmallGroupStyles(accent);
   document.title = `${config.title || "Small-Group Math Studio"} — Neft Teacher`;
 
@@ -298,6 +304,9 @@ function renderStudio(config) {
         // Streaks reset silently — momentum is celebrated, never mourned.
         state.streak = 0;
       }
+      // Live momentum chip in the sticky rail (tabs mount after restore, so
+      // the optional chain keeps restored solves from crashing the studio).
+      tabs?.setStreak?.(state.streak || 0);
     },
     onHint() {
       state.hints++;
@@ -352,7 +361,7 @@ function renderStudio(config) {
     () => {
       phaseDone("sg-tab-check", "reflectDone")();
       completion.hidden = false;
-      completion.innerHTML = `<h2>Studio complete 🎉</h2><p>You finished the mission and named your growth. That is what mathematicians do.</p>`;
+      completion.innerHTML = `<h2>Studio complete 🎉</h2><p>${esc(voice.completeBody)}</p>`;
       completion.appendChild(packet.button());
       evidence.reveal();
       // Section-scoped, name-free evidence for the teacher mastery dashboard.
@@ -400,7 +409,7 @@ function renderStudio(config) {
       store.get("pulseBefore"),
     ),
   );
-  const build = conceptSection(config, phaseDone("sg-tab-learn", "buildDone"));
+  const build = conceptSection(config, phaseDone("sg-tab-learn", "buildDone"), voice);
   // Group 2's challenge/justify work now lives in the guided "Prove It" tab,
   // which also absorbs the "Defend it to a skeptic" talk. Group 1 keeps its
   // supportive partner talk in Practice.
@@ -437,10 +446,8 @@ function renderStudio(config) {
       id: "sg-guided-practice",
       title: "Let’s solve together",
       eyebrow: "Guided practice",
-      directions:
-        "Work one problem at a time. Use the step guide and hints whenever you need them.",
-      directionsEs:
-        "Trabaja un problema a la vez. Usa la guía de pasos y las pistas cuando las necesites.",
+      directions: voice.guidedDir,
+      directionsEs: voice.guidedDirEs,
       scaffold: "all",
       showMistake: true,
       mode: "guided",
@@ -457,8 +464,8 @@ function renderStudio(config) {
       id: "sg-independent-practice",
       title: "Try it on your own",
       eyebrow: "Independent practice",
-      directions: "Solve each problem, check your answer, and revise when needed.",
-      directionsEs: "Resuelve cada problema, comprueba tu respuesta y corrige si hace falta.",
+      directions: voice.soloDir,
+      directionsEs: voice.soloDirEs,
       scaffold: variant === "group2" ? "none" : "default",
       showMistake: false,
       indexOffset: guidedCount,
@@ -476,9 +483,8 @@ function renderStudio(config) {
       id: "sg-more-practice",
       title: "More practice",
       eyebrow: "Build fluency",
-      directions: "Keep going until the steps feel familiar. Explain one answer out loud.",
-      directionsEs:
-        "Sigue practicando hasta que los pasos se sientan naturales. Explica una respuesta en voz alta.",
+      directions: voice.moreDir,
+      directionsEs: voice.moreDirEs,
       scaffold: variant === "group2" ? "none" : "default",
       showMistake: false,
       includeOptional: true,
@@ -561,13 +567,11 @@ function renderStudio(config) {
     },
   ];
 
-  const heroNode = hero(config, accent);
+  const heroNode = hero(config, accent, voice);
   app.appendChild(heroNode);
   if (store.isReturning()) {
     const welcome = el("div", "sg-welcome");
-    welcome.appendChild(
-      el("span", null, "👋 Welcome back — your studio progress is saved on this device."),
-    );
+    welcome.appendChild(el("span", null, esc(voice.welcome)));
     const fresh = el("button", "btn ghost", "Start fresh");
     fresh.type = "button";
     fresh.onclick = () => {
@@ -582,7 +586,7 @@ function renderStudio(config) {
   for (const step of activeTabSteps) app.appendChild(step.panel);
   const foot = footer();
   app.appendChild(foot);
-  tabs = mountSmallGroupTabs(app, activeTabSteps, { store });
+  tabs = mountSmallGroupTabs(app, activeTabSteps, { store, voice });
   pendingMarks.forEach((id) => tabs.markDone(id));
   tally.update();
 
