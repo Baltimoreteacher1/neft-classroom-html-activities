@@ -30,6 +30,7 @@ import { PHASE_TIME_ESTIMATES } from "./content-enrichment.js";
 import "@engine/styles/design-system.css";
 import "@engine/styles/themes.css";
 import "@engine/styles/editorial.css";
+import "@engine/styles/theme-warm.css";
 
 export function createApp(config) {
   const root = document.getElementById("app");
@@ -57,6 +58,9 @@ export function createApp(config) {
   // Publisher-grade editorial design layer (engine/styles/editorial.css) — the
   // approved look now applies to EVERY lesson, not just flagship pilots.
   document.body.classList.add("editorial");
+  // Opt-in visual skin (engine/styles/theme-warm.css) — config.skin names a
+  // `skin-*` body class; DOM, flow, and interactivity are untouched by skins.
+  if (config.skin) document.body.classList.add(`skin-${config.skin}`);
 
   // High Contrast stylesheet overrides
   const hcSheet = document.createElement("style");

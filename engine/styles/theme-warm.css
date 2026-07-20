@@ -1,0 +1,220 @@
+/* ============================================================================
+   Warm Deck skin — friendly slide-deck lesson design
+   ----------------------------------------------------------------------------
+   Opt-in per lesson via `"skin": "warm-deck"` in config.json (boot adds
+   `skin-warm-deck` to <body>, alongside `editorial`). Loaded AFTER
+   editorial.css so equal-specificity rules here win by order; most of the
+   editorial layer is var-driven, so overriding --fl-* tokens re-themes it.
+
+   Aesthetic direction: warm cream slide-canvas, chunky rounded display type,
+   soft rounded "slide card" sections, pill badges and buttons — the lesson
+   reads as a stack of presentation slides while keeping the exact same DOM,
+   flow, interactivity, save/resume, and Canvas/SCORM behavior.
+   ============================================================================ */
+
+@import url("https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Fredoka:wght@500;600;700&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Patrick+Hand&display=swap");
+
+/* ── Retokenize the editorial layer ──────────────────────────────────────── */
+body.editorial.skin-warm-deck {
+  /* Chunky rounded display face replaces the serif everywhere editorial
+     references var(--fl-serif); rounded readable sans for body copy. */
+  --fl-serif: "Baloo 2", "Arial Rounded MT Bold", "Avenir Next", sans-serif;
+  --fl-body: "Nunito", "Avenir Next", Calibri, system-ui, sans-serif;
+  --font-display: var(--fl-serif);
+  --font-body: var(--fl-body);
+  /* School-print accent face for callouts, hints, and vocab reveals. */
+  --wd-hand: "Patrick Hand", "Comic Sans MS", "Chalkboard SE", sans-serif;
+
+  /* Warm deck palette: cream canvas, blush paper, teal/coral/orange accents */
+  --wd-teal: #2e9e97;
+  --wd-teal-deep: #20716c;
+  --wd-coral: #f2a48f;
+  --wd-orange: #e8913d;
+  --wd-blush: #fae3d9;
+  --fl-paper: #f2e3da; /* page canvas behind the slide cards */
+  --fl-paper-2: #ecd9cd;
+  --fl-page: #fdf1ea; /* slide-card surface */
+  --fl-rule: #f0dccf; /* soft warm hairline */
+  --fl-rule-strong: #e5c9b6;
+  --ink: #4a342c; /* warm chocolate ink — AA on cream */
+  --muted: #6d564b; /* AA-safe muted on the cream surfaces */
+
+  /* Rounder geometry + softer, warmer elevation */
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 22px;
+  --shadow-sm: 0 3px 10px rgba(74, 52, 44, 0.08);
+  --shadow-md: 0 8px 22px rgba(74, 52, 44, 0.12);
+  --shadow-lg: 0 16px 34px rgba(74, 52, 44, 0.16);
+
+  background: var(--fl-paper);
+  color: var(--ink);
+  font-family: var(--fl-body);
+}
+/* Drop the paper-grain overlay — the warm deck look is smooth, not textured */
+body.editorial.skin-warm-deck::before {
+  display: none;
+}
+
+/* ── Masthead → title-slide card ─────────────────────────────────────────── */
+body.editorial.skin-warm-deck .lesson-hero {
+  background: var(--fl-page) !important;
+  border: none;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  position: relative;
+}
+/* Tilted color block + blob — the deck's signature decoration */
+body.editorial.skin-warm-deck .lesson-hero::before {
+  content: "";
+  position: absolute;
+  top: 18px;
+  left: -26px;
+  width: 130px;
+  height: 34px;
+  border-radius: 999px;
+  background: var(--wd-coral);
+  opacity: 0.4;
+  transform: rotate(38deg);
+  pointer-events: none;
+}
+body.editorial.skin-warm-deck .lesson-hero-title {
+  font-family: var(--fl-serif);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  color: var(--wd-teal);
+}
+body.editorial.skin-warm-deck .lesson-hero-meta {
+  font-family: "Fredoka", var(--fl-body);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: #fff;
+  background: var(--wd-teal);
+  border-radius: 999px;
+  padding: 5px 14px;
+  align-self: flex-start;
+}
+/* Swap the hairline gradient rule for a chunky rounded underline */
+body.editorial.skin-warm-deck .lesson-hero::after {
+  height: 8px;
+  width: 88px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--wd-teal), var(--wd-coral));
+}
+
+/* ── Sections → slide cards ──────────────────────────────────────────────── */
+body.editorial.skin-warm-deck .phase .card {
+  background: var(--fl-page);
+  border: none;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+body.editorial.skin-warm-deck .phase .card :is(h2, h3, h4, .card-title) {
+  font-family: var(--fl-serif);
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  color: var(--wd-teal);
+}
+body.editorial.skin-warm-deck .phase .card :is(h2, .card-title) {
+  text-transform: uppercase;
+}
+/* Objective / key-idea accents: dashed "sticker" panels */
+body.editorial.skin-warm-deck .phase .card-teal {
+  background: #e4f3f1;
+  border: 3px dashed var(--wd-teal);
+  border-radius: var(--radius-md);
+}
+body.editorial.skin-warm-deck .phase .card-teal :is(h3, h4) {
+  color: var(--wd-teal-deep);
+}
+body.editorial.skin-warm-deck .phase .card-coral {
+  background: var(--wd-blush);
+  border: 3px dashed var(--wd-coral);
+  border-radius: var(--radius-md);
+}
+body.editorial.skin-warm-deck .phase .card-coral :is(h3, h4) {
+  color: #b4503a;
+}
+
+/* ── Buttons + interactive chrome → pills ────────────────────────────────── */
+body.editorial.skin-warm-deck .btn {
+  border-radius: 999px;
+  font-family: "Fredoka", var(--fl-body);
+  font-weight: 600;
+}
+body.editorial.skin-warm-deck .btn-primary {
+  background: var(--wd-teal);
+  border-color: var(--wd-teal);
+}
+body.editorial.skin-warm-deck .btn-primary:hover {
+  background: var(--wd-teal-deep);
+}
+body.editorial.skin-warm-deck .btn:focus-visible {
+  outline: 3px solid var(--wd-orange);
+  outline-offset: 2px;
+}
+
+/* ── Sidebar → deck rail ─────────────────────────────────────────────────── */
+body.editorial.skin-warm-deck .sidebar {
+  background: linear-gradient(180deg, var(--wd-teal-deep) 0%, var(--wd-teal) 100%);
+  border-right: none;
+}
+body.editorial.skin-warm-deck .sidebar-title,
+body.editorial.skin-warm-deck .sidebar h1,
+body.editorial.skin-warm-deck .sidebar h2 {
+  font-family: var(--fl-serif);
+  font-weight: 800;
+}
+
+/* ── Cover / identity screen → title slide ───────────────────────────────── */
+body.editorial.skin-warm-deck .identity-card {
+  border: none;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+body.editorial.skin-warm-deck .identity-hero h1,
+body.editorial.skin-warm-deck .identity-card h1 {
+  font-family: var(--fl-serif);
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--wd-teal);
+}
+
+/* ── Mission / scene chrome ──────────────────────────────────────────────── */
+body.editorial.skin-warm-deck .flagship-mission-title,
+body.editorial.skin-warm-deck .flagship-finale-title,
+body.editorial.skin-warm-deck .flagship-scene-name {
+  font-family: var(--fl-serif);
+  font-weight: 800;
+  color: var(--wd-teal);
+}
+body.editorial.skin-warm-deck .flagship-mission-eyebrow {
+  color: var(--wd-orange);
+}
+body.editorial.skin-warm-deck .flagship-scene-hud {
+  background: var(--fl-page);
+  border: none;
+  border-left: 6px solid var(--wd-coral);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ── Hand-written accent voice: hints, feedback, vocab reveals ───────────── */
+body.editorial.skin-warm-deck :is(.hint-text, .feedback, .vocab-definition, .try-another-note) {
+  font-family: var(--wd-hand);
+  font-size: 1.1em;
+}
+
+/* ── Print parity: warm look flattens to clean white handouts ────────────── */
+@media print {
+  body.editorial.skin-warm-deck {
+    background: #fff;
+  }
+  body.editorial.skin-warm-deck .phase .card,
+  body.editorial.skin-warm-deck .lesson-hero {
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+}
