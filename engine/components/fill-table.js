@@ -345,11 +345,21 @@ function normalizeFillTable(config = {}) {
 }
 
 function normalizeAnswer(s) {
-  return String(s)
-    .trim()
-    .toLowerCase()
-    .replace(/−/g, "-") // unicode minus → ascii hyphen
-    .replace(/\s+/g, " ");
+  return (
+    String(s)
+      .trim()
+      .toLowerCase()
+      .replace(/−/g, "-") // unicode minus → ascii hyphen
+      // Canonicalize multiplication so a product-of-primes answer matches however
+      // the student types the operator: "2 × 2 × 3", "2x2x3", "2*2*3", "2·2·3" all
+      // normalize the same. The letter "x" is only treated as times when it sits
+      // between digits (zero-width look-around, so chains like 2x2x2x3 all convert),
+      // leaving an algebraic variable x (e.g. "3x + 2") untouched.
+      .replace(/[×✕✖⋅·∙•]/g, "*") // multiplication glyphs → *
+      .replace(/(?<=\d)\s*x\s*(?=\d)/g, "*") // letter x used as times between digits
+      .replace(/\s*\*\s*/g, "*") // canonicalize spacing around *
+      .replace(/\s+/g, " ")
+  );
 }
 
 // Parse a numeric answer, tolerating thousands separators and a unicode minus.
