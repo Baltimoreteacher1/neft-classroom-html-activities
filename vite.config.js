@@ -190,6 +190,14 @@ function copyStandaloneHtml() {
             mkdirSync(destDir, { recursive: true });
             cpSync(revealAssets, destDir, { recursive: true });
           }
+          // Reveal slide images referenced by config.revealSlides (the
+          // integrate-reveal-slides pipeline) and the interleaved slides.html.
+          const revealSlides = resolve(lessonsDir, dir.name, "reveal-slides");
+          if (existsSync(revealSlides)) {
+            const destDir = resolve(__dirname, "dist", "lessons", dir.name, "reveal-slides");
+            mkdirSync(destDir, { recursive: true });
+            cpSync(revealSlides, destDir, { recursive: true });
+          }
           // Generated lesson support pages (static index.html folders) linked
           // from the curriculum hub: family / teacher-notes / student-help.
           for (const sub of ["family", "teacher-notes", "student-help"]) {
