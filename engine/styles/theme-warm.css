@@ -207,6 +207,275 @@ body.editorial.skin-warm-deck :is(.hint-text, .feedback, .vocab-definition, .try
   font-size: 1.1em;
 }
 
+/* ══ Deck mode (engine/core/deck-mode.js) — slides + right rail + top bar ══ */
+
+/* Slide visibility: children of .phase are tagged, never re-parented */
+body.wd-deck .phase > .wd-hidden {
+  display: none !important;
+}
+
+/* App grid: content + right rail; the sidebar becomes a drawer */
+body.wd-deck .app {
+  grid-template-columns: minmax(0, 1fr) 172px;
+}
+body.wd-deck .app .sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: 292px;
+  max-width: 86vw;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 80;
+  transform: translateX(-104%);
+  transition: transform 0.24s ease;
+  box-shadow: 14px 0 40px rgba(74, 52, 44, 0.25);
+}
+body.wd-deck.wd-menu-open .app .sidebar {
+  transform: none;
+}
+body.wd-deck .wd-scrim {
+  position: fixed;
+  inset: 0;
+  background: rgba(74, 52, 44, 0.35);
+  z-index: 79;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.24s ease;
+}
+body.wd-deck.wd-menu-open .wd-scrim {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Top bar */
+body.wd-deck .wd-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  /* right padding clears the fixed Tools menu (top-right dock) */
+  padding: 10px 132px 10px 18px;
+  background: var(--wd-teal, #2e9e97);
+  color: #fff;
+}
+
+/* Deck mode: the masthead repeats on every slide — keep it compact */
+body.wd-deck .lesson-hero {
+  padding: var(--sp-5) var(--sp-6);
+  margin-bottom: var(--sp-5);
+}
+body.wd-deck .lesson-hero-title {
+  font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.1rem);
+}
+body.wd-deck .lesson-hero::after {
+  margin-top: var(--sp-3);
+}
+body.wd-deck .wd-brand {
+  font-family: "Baloo 2", "Arial Rounded MT Bold", sans-serif;
+  font-weight: 800;
+  font-size: 1.05rem;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+body.wd-deck .wd-topbar-lesson {
+  font-family: "Fredoka", "Avenir Next", sans-serif;
+  font-weight: 500;
+  font-size: 0.92rem;
+  opacity: 0.95;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+body.wd-deck .wd-topbar-spacer {
+  flex: 1;
+}
+body.wd-deck .wd-topbar-phase {
+  font-family: "Fredoka", "Avenir Next", sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  padding: 5px 14px;
+  white-space: nowrap;
+}
+body.wd-deck .wd-menu-btn {
+  font-family: "Fredoka", "Avenir Next", sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #fff;
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.75);
+  border-radius: 999px;
+  padding: 6px 14px;
+  cursor: pointer;
+}
+
+/* Right rail — slide thumbnails + phase list */
+body.wd-deck .wd-rail {
+  position: sticky;
+  top: 62px;
+  align-self: start;
+  height: calc(100vh - 62px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 12px;
+  background: #fff;
+  border-radius: 18px 0 0 18px;
+  box-shadow: var(--shadow-sm, 0 3px 10px rgba(74, 52, 44, 0.08));
+}
+body.wd-deck .wd-thumb {
+  position: relative;
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: var(--fl-page, #fdf1ea);
+  border: 3px solid transparent;
+  border-radius: 12px;
+  padding: 10px 10px 20px;
+  cursor: pointer;
+  font-family: "Fredoka", "Avenir Next", sans-serif;
+}
+body.wd-deck .wd-thumb.wd-sel {
+  border-color: var(--wd-teal, #2e9e97);
+}
+body.wd-deck .wd-thumb-title {
+  display: block;
+  font-family: "Baloo 2", "Arial Rounded MT Bold", sans-serif;
+  font-weight: 700;
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  color: var(--wd-teal, #2e9e97);
+  line-height: 1.25;
+}
+body.wd-deck .wd-thumb-num {
+  position: absolute;
+  left: 8px;
+  bottom: 5px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--ink, #4a342c);
+  background: #fff;
+  border-radius: 6px;
+  padding: 0 6px;
+}
+body.wd-deck .wd-rail-phases {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-top: 2px solid var(--fl-rule, #f0dccf);
+  padding-top: 10px;
+}
+body.wd-deck .wd-rail-phase {
+  font-family: "Fredoka", "Avenir Next", sans-serif;
+  font-weight: 500;
+  font-size: 0.72rem;
+  text-align: left;
+  color: var(--muted, #6d564b);
+  background: transparent;
+  border: none;
+  border-radius: 999px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+body.wd-deck .wd-rail-phase.wd-sel {
+  background: var(--wd-teal, #2e9e97);
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Prev / next arrows — bottom center, clear of the dock (bottom-right) */
+body.wd-deck .wd-deck-nav {
+  position: fixed;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  z-index: 60;
+  display: none;
+  align-items: center;
+  gap: 12px;
+}
+body.wd-deck.wd-lesson-active .wd-deck-nav {
+  display: flex;
+}
+body.wd-deck .wd-arrow {
+  width: 46px;
+  height: 46px;
+  border: none;
+  border-radius: 999px;
+  background: var(--wd-teal, #2e9e97);
+  color: #fff;
+  font-size: 1.15rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(74, 52, 44, 0.22);
+}
+body.wd-deck .wd-arrow:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+body.wd-deck .wd-count {
+  font-family: "Fredoka", "Avenir Next", sans-serif;
+  font-weight: 600;
+  color: var(--wd-teal-deep, #20716c);
+  background: #fff;
+  border-radius: 999px;
+  padding: 6px 14px;
+  box-shadow: 0 3px 10px rgba(74, 52, 44, 0.12);
+}
+
+/* Restyle the engine's floating "Next: <phase>" dock button to match */
+body.wd-deck .nt-next-phase-btn {
+  background: var(--wd-orange, #e8913d) !important;
+}
+
+/* Slide area breathing room; keep slides comfortably centered */
+body.wd-deck .phase-container {
+  padding-bottom: 84px;
+}
+
+/* Hide deck chrome before the lesson starts (identity screen) and in print */
+body.wd-deck:not(.wd-lesson-active) .wd-rail,
+body.wd-deck:not(.wd-lesson-active) .wd-topbar-phase {
+  visibility: hidden;
+}
+
+/* Extra full-page tabs (Vocab / Learn It / Notes) take over the viewport */
+html.nt-extra-fullpage-open body.wd-deck .wd-deck-nav,
+html.nt-extra-fullpage-open body.wd-deck .wd-topbar,
+html.nt-extra-fullpage-open body.wd-deck .wd-rail {
+  display: none;
+}
+
+/* Mobile: rail off, arrows stay */
+@media (max-width: 860px) {
+  body.wd-deck .app {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  body.wd-deck .wd-rail {
+    display: none;
+  }
+  body.wd-deck .wd-topbar-lesson {
+    display: none;
+  }
+}
+
+@media print {
+  body.wd-deck .wd-topbar,
+  body.wd-deck .wd-rail,
+  body.wd-deck .wd-deck-nav,
+  body.wd-deck .wd-scrim {
+    display: none !important;
+  }
+  body.wd-deck .phase > .wd-hidden {
+    display: block !important;
+  }
+}
+
 /* ── Print parity: warm look flattens to clean white handouts ────────────── */
 @media print {
   body.editorial.skin-warm-deck {

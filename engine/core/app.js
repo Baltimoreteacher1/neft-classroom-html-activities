@@ -31,6 +31,7 @@ import "@engine/styles/design-system.css";
 import "@engine/styles/themes.css";
 import "@engine/styles/editorial.css";
 import "@engine/styles/theme-warm.css";
+import { initDeckMode } from "./deck-mode.js";
 
 export function createApp(config) {
   const root = document.getElementById("app");
@@ -1443,6 +1444,11 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
 
   // One-tap ESOL translation of the current part.
   mountTranslate({ getPhaseEl: () => phaseContainer.querySelector(".phase") });
+
+  // Warm Deck skin presents each phase as slides (engine/core/deck-mode.js).
+  if (config.skin === "warm-deck") {
+    initDeckMode({ app, config, phaseConfigs, root, phaseContainer, state });
+  }
 
   return app;
 }
