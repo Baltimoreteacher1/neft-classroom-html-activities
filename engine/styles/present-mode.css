@@ -1,0 +1,202 @@
+/* ============================================================================
+   Present mode — teacher-facing slide projection (engine/core/present-mode.js)
+   ----------------------------------------------------------------------------
+   Styled in the editorial design language (paper, navy/teal, Fraunces via
+   --fl-serif, hairline rules, restrained radii). Opt-in via Tools ▸ Present
+   or ?present=1; body carries `nt-present` while active.
+   ============================================================================ */
+
+/* Slide visibility: children of .phase are tagged, never re-parented */
+body.nt-present .phase > .pm-hidden {
+  display: none !important;
+}
+
+/* Maximize the board: sidebar yields to the slide rail while presenting */
+body.nt-present .app {
+  grid-template-columns: minmax(0, 1fr) 190px;
+}
+body.nt-present .app .sidebar {
+  display: none;
+}
+
+/* Projection legibility: step the reading size up while presenting */
+body.nt-present .phase {
+  --fl-base: 1.25rem;
+  font-size: 1.0625em;
+}
+body.nt-present .phase-container {
+  padding-bottom: 92px;
+}
+
+/* ── Slide rail (right) — editorial contents column ──────────────────────── */
+body.nt-present .pm-rail {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 190px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 12px;
+  background: var(--fl-page, #fffdf8);
+  border-left: 1px solid var(--fl-rule, #e4d9c2);
+  z-index: 55;
+}
+body.nt-present .pm-rail-head {
+  font-family: var(--fl-body, var(--font-body));
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--teal-ink, #0c6f6b);
+  border-bottom: 2px solid var(--navy, #12355b);
+  padding-bottom: 8px;
+}
+body.nt-present .pm-thumb {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 1px solid transparent;
+  border-left: 3px solid var(--fl-rule, #e4d9c2);
+  border-radius: 4px;
+  padding: 8px 8px 8px 10px;
+  cursor: pointer;
+}
+body.nt-present .pm-thumb:hover {
+  background: var(--fl-paper, #f5f0e6);
+}
+body.nt-present .pm-thumb.pm-sel {
+  border-left-color: var(--teal, #1fa6a2);
+  background: var(--teal-light, #dff2ee);
+}
+body.nt-present .pm-thumb-num {
+  font-family: var(--fl-serif, Georgia, serif);
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--navy, #12355b);
+}
+body.nt-present .pm-thumb-title {
+  font-family: var(--fl-body, var(--font-body));
+  font-weight: 600;
+  font-size: 0.74rem;
+  line-height: 1.3;
+  color: var(--ink, #21313f);
+}
+body.nt-present .pm-rail-phases {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-top: 1px solid var(--fl-rule, #e4d9c2);
+  padding-top: 10px;
+}
+body.nt-present .pm-rail-phase {
+  font-family: var(--fl-body, var(--font-body));
+  font-weight: 600;
+  font-size: 0.74rem;
+  text-align: left;
+  color: var(--muted, #45535f);
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 8px;
+  cursor: pointer;
+}
+body.nt-present .pm-rail-phase:hover {
+  background: var(--fl-paper, #f5f0e6);
+}
+body.nt-present .pm-rail-phase.pm-sel {
+  background: var(--navy, #12355b);
+  color: #fff;
+}
+body.nt-present .pm-exit {
+  font-family: var(--fl-body, var(--font-body));
+  font-weight: 700;
+  font-size: 0.78rem;
+  color: var(--navy, #12355b);
+  background: transparent;
+  border: 1px solid var(--fl-rule-strong, #d8c9a8);
+  border-radius: 6px;
+  padding: 8px;
+  cursor: pointer;
+  margin-top: 8px;
+}
+body.nt-present .pm-exit:hover {
+  background: var(--fl-paper, #f5f0e6);
+}
+
+/* ── Arrows — bottom center, clear of the dock (bottom-right) ────────────── */
+.pm-nav {
+  display: none;
+}
+body.nt-present .pm-nav {
+  position: fixed;
+  left: calc(50% - 95px);
+  bottom: 16px;
+  transform: translateX(-50%);
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+body.nt-present .pm-arrow {
+  width: 46px;
+  height: 46px;
+  border: 1px solid var(--navy, #12355b);
+  border-radius: 6px;
+  background: var(--navy, #12355b);
+  color: #fff;
+  font-size: 1.15rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(18, 53, 91, 0.22);
+}
+body.nt-present .pm-arrow:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+body.nt-present .pm-arrow:focus-visible {
+  outline: 3px solid var(--teal, #1fa6a2);
+  outline-offset: 2px;
+}
+body.nt-present .pm-count {
+  font-family: var(--fl-serif, Georgia, serif);
+  font-weight: 600;
+  color: var(--navy, #12355b);
+  background: var(--fl-page, #fffdf8);
+  border: 1px solid var(--fl-rule, #e4d9c2);
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Full-page pre-lesson tabs (Vocab / Learn It / Notes) take the viewport */
+html.nt-extra-fullpage-open body.nt-present .pm-nav,
+html.nt-extra-fullpage-open body.nt-present .pm-rail {
+  display: none;
+}
+
+/* Narrow screens: presenting is a projector feature — keep the rail off */
+@media (max-width: 900px) {
+  body.nt-present .app {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  body.nt-present .pm-rail {
+    display: none;
+  }
+}
+
+@media print {
+  body.nt-present .pm-rail,
+  body.nt-present .pm-nav {
+    display: none !important;
+  }
+  body.nt-present .phase > .pm-hidden {
+    display: block !important;
+  }
+}

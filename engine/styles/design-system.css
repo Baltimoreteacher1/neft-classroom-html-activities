@@ -91,7 +91,8 @@ h4 {
 /* ── App Layout ── */
 .app {
   display: grid;
-  grid-template-columns: 260px minmax(0, 1fr);
+  /* 300px (was 260) — larger, more readable phase rail (per Joel 2026-07-20) */
+  grid-template-columns: 300px minmax(0, 1fr);
   min-height: 100vh;
 }
 
@@ -146,7 +147,7 @@ h4 {
 
 .sidebar-title {
   font-family: var(--font-display);
-  font-size: 0.95rem;
+  font-size: 1.05rem;
   font-weight: 800;
   line-height: 1.15;
 }
@@ -258,9 +259,9 @@ h4 {
   background: rgba(255, 255, 255, 0.05);
   color: white;
   border-radius: var(--radius-md);
-  padding: 10px 12px;
+  padding: 12px 12px;
   font-weight: 700;
-  font-size: 0.88rem;
+  font-size: 0.98rem;
   transition: all var(--duration-fast) ease;
 }
 
@@ -1238,8 +1239,73 @@ body.obj-popup-open {
   }
 }
 
+/* ── Sidebar collapse (desktop) — chevron toggle in the sidebar header; body
+   carries `nt-sidebar-collapsed` (persisted per device) and the rail slims to
+   a numbered strip so the lesson gets the full width. ── */
+.nt-sb-toggle {
+  position: absolute;
+  top: 10px;
+  right: 8px;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 800;
+  cursor: pointer;
+  z-index: 2;
+}
+.nt-sb-toggle:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+@media (min-width: 769px) {
+  body.nt-sidebar-collapsed .app {
+    grid-template-columns: 76px minmax(0, 1fr);
+  }
+  body.nt-sidebar-collapsed .app .sidebar {
+    padding: var(--sp-6) 10px;
+    gap: var(--sp-3);
+    align-items: center;
+  }
+  /* Keep only: toggle, badge, and the numbered phase rail. !important beats
+     inline styles (e.g. the Read Aloud / Draw bar sets display:flex inline). */
+  body.nt-sidebar-collapsed
+    .app
+    .sidebar
+    > :not(.sidebar-header):not(.phase-nav):not(.prelesson-nav):not(.nt-sb-toggle) {
+    display: none !important;
+  }
+  body.nt-sidebar-collapsed .app .sidebar-header > div {
+    display: none;
+  }
+  body.nt-sidebar-collapsed .app .sidebar-badge {
+    width: 44px;
+    height: 44px;
+  }
+  body.nt-sidebar-collapsed .app .phase-btn {
+    grid-template-columns: 36px;
+    justify-content: center;
+    padding: 8px;
+  }
+  body.nt-sidebar-collapsed .app .phase-btn > span:not(.phase-num),
+  body.nt-sidebar-collapsed .app .phase-stars {
+    display: none;
+  }
+  body.nt-sidebar-collapsed .app .phase-nav .phase-subtab {
+    margin-left: 0 !important;
+  }
+}
+
 /* ── Mobile / Tablet ── */
 @media (max-width: 768px) {
+  .nt-sb-toggle {
+    display: none;
+  }
   .app {
     grid-template-columns: 1fr;
   }
@@ -2935,9 +3001,26 @@ body:has(.identity-screen) .export-toolbar {
   margin-bottom: var(--sp-3);
 }
 
+/* Cover illustration as an editorial "plate" (per Joel 2026-07-20): larger,
+   matted on paper with a hairline frame, so the cover opens with a real
+   illustrated moment instead of a thumbnail. */
 .lesson-cover-art {
-  margin: var(--sp-4) auto;
-  max-width: 320px;
+  margin: var(--sp-5) auto;
+  max-width: 440px;
+}
+.lesson-cover-art .theme-illustration {
+  background: #fffdf8;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 10px;
+  padding: var(--sp-3) var(--sp-3) var(--sp-2);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+}
+.lesson-cover-art .theme-hero-svg {
+  max-width: 100%;
+}
+.lesson-cover-art .theme-illustration-caption {
+  color: var(--muted);
+  padding-bottom: var(--sp-1);
 }
 
 .lesson-cover-art .theme-hero-svg.cover-svg-animate {

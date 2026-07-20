@@ -2,6 +2,7 @@ import { clearLessonStorage, createState, findSavedStudents, normalizeStudentId 
 import { createEngagement } from "../engagement/engagement.js";
 import { mountExportToolbar } from "./export.js";
 import { mountUtilityMenu } from "./utility-menu.js";
+import { initPresentMode } from "./present-mode.js";
 import { mountTeacherClearButton } from "./teacher-clear.js";
 import { mountVoiceNav } from "./voice-nav.js";
 import { mountTranslate } from "./translate.js";
@@ -30,6 +31,7 @@ import { PHASE_TIME_ESTIMATES } from "./content-enrichment.js";
 import "@engine/styles/design-system.css";
 import "@engine/styles/themes.css";
 import "@engine/styles/editorial.css";
+import "@engine/styles/present-mode.css";
 
 export function createApp(config) {
   const root = document.getElementById("app");
@@ -1440,6 +1442,10 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
   // One-tap ESOL translation of the current part.
   mountTranslate({ getPhaseEl: () => phaseContainer.querySelector(".phase") });
 
+  // Teacher-facing Present toggle (engine/core/present-mode.js): Tools > Present
+  // or ?present=1 turns the current phase into projector slides.
+  initPresentMode({ app, config, phaseConfigs, phaseContainer, state });
+
   return app;
 }
 
@@ -1500,6 +1506,36 @@ function buildSidebar(config, state, phaseConfigs) {
       Neft Teacher · ${escHtml(config.standard)}
     </div>
   `;
+
+  // Collapse toggle (per Joel 2026-07-20): slims the rail to a numbered strip
+  // so the lesson gets the full width; the choice persists on this device.
+  const sbToggle = document.createElement("button");
+  sbToggle.type = "button";
+  sbToggle.className = "nt-sb-toggle";
+  const syncToggle = () => {
+    const collapsed = document.body.classList.contains("nt-sidebar-collapsed");
+    sbToggle.textContent = collapsed ? "›" : "‹";
+    sbToggle.setAttribute("aria-label", collapsed ? "Expand sidebar" : "Collapse sidebar");
+    sbToggle.setAttribute("aria-expanded", String(!collapsed));
+  };
+  sbToggle.addEventListener("click", () => {
+    const collapsed = document.body.classList.toggle("nt-sidebar-collapsed");
+    try {
+      localStorage.setItem("nt-sidebar-collapsed", collapsed ? "1" : "0");
+    } catch (_) {
+      /* private-mode storage — collapse just won't persist */
+    }
+    syncToggle();
+  });
+  try {
+    if (localStorage.getItem("nt-sidebar-collapsed") === "1") {
+      document.body.classList.add("nt-sidebar-collapsed");
+    }
+  } catch (_) {
+    /* private-mode storage */
+  }
+  syncToggle();
+  sidebar.prepend(sbToggle);
 
   return sidebar;
 }
