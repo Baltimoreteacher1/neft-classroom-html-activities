@@ -76,6 +76,8 @@ export function createProblemCard({ number, total, tier, typeLabel, stem } = {})
   if (stem) {
     const stemEl = document.createElement("p");
     stemEl.className = "problem-stem";
+    // Let students mark up the problem text (highlight / underline / bold).
+    stemEl.setAttribute("data-annotate", "word-problem");
     stemEl.innerHTML = renderMathText(stem);
     card.append(stemEl);
   }

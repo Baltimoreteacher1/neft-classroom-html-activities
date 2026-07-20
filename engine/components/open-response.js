@@ -159,6 +159,8 @@ export function renderOpenResponse(
   const promptEl = document.createElement("p");
   promptEl.style.cssText =
     "font-size:1rem; font-weight:600; margin:0 0 var(--sp-3); line-height:1.5;";
+  // Let students mark up the prompt text (highlight / underline / bold).
+  promptEl.setAttribute("data-annotate", "word-problem");
   promptEl.textContent = prompt;
   wrapper.append(promptEl);
 

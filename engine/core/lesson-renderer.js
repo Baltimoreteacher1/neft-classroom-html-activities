@@ -24,7 +24,7 @@ import { attachRegenPractice } from "../components/regen-practice.js";
 import { attachAnnotator } from "../components/scene-annotate.js";
 import { attachVoiceInput } from "../components/voice-explain.js";
 import { createAdaptiveSequence } from "./adaptive.js";
-import { enableWordProblemAnnotation } from "./annotate.js";
+import { enableWordProblemAnnotation, observeWordProblemAnnotation } from "./annotate.js";
 import { createApp } from "./app.js";
 import { mountCertificateDownload } from "./certificate-export.js";
 import { deriveCommonMistake, deriveErrorExample } from "./content-enrichment.js";
@@ -87,6 +87,10 @@ export function bootLesson(config) {
   });
   // Slim scroll-progress rail across the top of the lesson (additive, defensive).
   mountReadingProgress();
+  // Markup tools (highlight / underline / bold) on EVERY text-based problem —
+  // phases render lazily and practice regenerates, so watch the whole page and
+  // auto-wire any stem marked data-annotate="word-problem" the moment it mounts.
+  observeWordProblemAnnotation(document.body);
 }
 
 // ── Helpers ──
@@ -2709,7 +2713,7 @@ function renderConnectPhase(el, state, ctx, config) {
         <div class="connect-scenario-theme">${esc(config.theme?.replace(/-/g, " ") || "Real World")}</div>
       </div>
     </div>
-    <p class="connect-scenario-text">${renderMathText(cfg.scenario)}</p>`;
+    <p class="connect-scenario-text" data-annotate="word-problem">${renderMathText(cfg.scenario)}</p>`;
   if (cfg.diagram) card.innerHTML += buildVisual(cfg.diagram);
   else if (cfg.histogram) card.innerHTML += histogramSVG(cfg.histogram);
   // Optional scenario simulator: a slider that recomputes a proportional /
@@ -3000,6 +3004,8 @@ function renderReflectPhase(el, state, ctx, config) {
 
     const prompt = document.createElement("p");
     prompt.className = "problem-stem";
+    // Let students mark up the question text (highlight / underline / bold).
+    prompt.setAttribute("data-annotate", "word-problem");
     prompt.innerHTML = promptOverride
       ? stackHtml(promptOverride.en, promptOverride.es)
       : stackHtml(t(promptKey, "en"), t(promptKey, "es"));
