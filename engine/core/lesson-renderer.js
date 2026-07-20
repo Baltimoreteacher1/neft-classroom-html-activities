@@ -1750,9 +1750,42 @@ export function underlineVocabTerms(container, vocab) {
   for (const e of entries) {
     if (!lookup.has(norm(e.term))) lookup.set(norm(e.term), e.i);
   }
-  const alt = [...entries]
-    .sort((a, b) => b.term.length - a.term.length)
-    .map((e) => escapeRegExp(e.term))
+
+  // Also wire short natural surface forms of a term so a math word still opens
+  // its glossary popup when it appears on its own — e.g. "prime"/"composite" for
+  // the vocab terms "Prime number"/"Composite number". Two sources:
+  //   1. an explicit `aliases: [...]` array on the vocab entry (full control), and
+  //   2. an auto-derived modifier for two-word "<modifier> number(s)" terms,
+  //      limited to a curated allowlist of unambiguously-mathematical modifiers
+  //      so common adjectives ("whole", "even", "mixed") are never linked inside
+  //      ordinary sentences. The "number(s)" head requirement also disambiguates
+  //      (standalone "prime" → "Prime number", not "Prime factorization").
+  const SAFE_TERM_MODIFIERS = new Set(["prime", "composite", "rational", "irrational"]);
+  const surfaces = entries.map((e) => ({ surface: e.term, i: e.i }));
+  const addAlias = (surface, i) => {
+    const s = String(surface || "").trim();
+    if (s.length <= 2) return;
+    const key = norm(s);
+    if (lookup.has(key)) return; // never override a real term sharing this key
+    lookup.set(key, i);
+    surfaces.push({ surface: s, i });
+  };
+  for (const e of entries) {
+    const v = list[e.i] || {};
+    if (Array.isArray(v.aliases)) for (const a of v.aliases) addAlias(a, e.i);
+    const words = e.term.split(/\s+/);
+    if (
+      words.length === 2 &&
+      /^numbers?$/i.test(words[1]) &&
+      SAFE_TERM_MODIFIERS.has(words[0].toLowerCase())
+    ) {
+      addAlias(words[0], e.i);
+    }
+  }
+
+  const alt = [...surfaces]
+    .sort((a, b) => b.surface.length - a.surface.length)
+    .map((s) => escapeRegExp(s.surface))
     .join("|");
   const re = new RegExp(`\\b(?:${alt})(?:es|s)?\\b`, "gi");
 
