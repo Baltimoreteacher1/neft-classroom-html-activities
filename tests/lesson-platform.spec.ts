@@ -37,10 +37,7 @@ test.describe("lesson platform — reference lesson", () => {
     const errors = trackErrors(page);
     await page.goto(LESSON_PATH, { waitUntil: "networkidle" });
     await expect(page.locator("article.q-card").first()).toBeVisible();
-    expect(
-      errors,
-      `unexpected console/page errors:\n${errors.join("\n")}`,
-    ).toEqual([]);
+    expect(errors, `unexpected console/page errors:\n${errors.join("\n")}`).toEqual([]);
   });
 
   test("platform globals are all defined", async ({ page }) => {
@@ -94,19 +91,12 @@ test.describe("lesson platform — reference lesson", () => {
       (v) => v.impact === "serious" || v.impact === "critical",
     );
     const summary = blocking
-      .map(
-        (v) => `${v.id} (${v.impact}) — ${v.nodes.length} node(s): ${v.help}`,
-      )
+      .map((v) => `${v.id} (${v.impact}) — ${v.nodes.length} node(s): ${v.help}`)
       .join("\n");
-    expect(blocking, `serious/critical a11y violations:\n${summary}`).toEqual(
-      [],
-    );
+    expect(blocking, `serious/critical a11y violations:\n${summary}`).toEqual([]);
   });
 
-  test("telemetry/tutor degrades gracefully offline", async ({
-    page,
-    context,
-  }) => {
+  test("telemetry/tutor degrades gracefully offline", async ({ page, context }) => {
     const errors = trackErrors(page);
     await page.goto(LESSON_PATH, { waitUntil: "networkidle" });
     await page.waitForFunction(() => !!(window as any).NTtelemetry, undefined, {
@@ -131,9 +121,7 @@ test.describe("lesson platform — reference lesson", () => {
       }
     });
 
-    expect(result.ok, `offline path threw: ${(result as any).error}`).toBe(
-      true,
-    );
+    expect(result.ok, `offline path threw: ${(result as any).error}`).toBe(true);
     // Events are preserved in the offline queue rather than silently dropped.
     expect(result.queued).toBeGreaterThan(0);
 
@@ -141,9 +129,84 @@ test.describe("lesson platform — reference lesson", () => {
     await context.setOffline(false);
 
     // No console/page errors throughout the offline -> online transition.
-    expect(
-      errors,
-      `errors during offline degrade:\n${errors.join("\n")}`,
-    ).toEqual([]);
+    expect(errors, `errors during offline degrade:\n${errors.join("\n")}`).toEqual([]);
+  });
+});
+
+test.describe("lesson engine launcher — award layer", () => {
+  test("practice serves leveled tier voice, bilingual praise, and milestone confetti", async ({
+    page,
+    request,
+  }) => {
+    // The launcher bundles its config, but the same file ships in dist —
+    // use it as the answer key so the test never hardcodes content.
+    const config = await (await request.get("/lessons/1-1/config.json")).json();
+    const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const mcByStem = new Map<string, string>(
+      ["approaching", "onLevel", "extending"]
+        .flatMap((tier) => config.practice?.[tier] || [])
+        .filter(
+          (p: any) =>
+            p.type === "multiple-choice" &&
+            Array.isArray(p.choices) &&
+            Number.isInteger(p.correctIndex),
+        )
+        .map((p: any) => [
+          String(p.stem || p.title || "").trim(),
+          String(p.choices[p.correctIndex]),
+        ]),
+    );
+    expect(mcByStem.size).toBeGreaterThanOrEqual(3);
+
+    await page.goto("/lessons/1-1/");
+    await page.getByPlaceholder(/First name Last initial/i).fill("Test S");
+    const period = page.getByPlaceholder(/e\.g\.\s*3/);
+    if (await period.count()) await period.fill("3");
+    await page.getByRole("button", { name: /Start Activity/ }).click();
+
+    // Jump straight to Practice via the platform's own navigation event.
+    await page.evaluate(() =>
+      document.dispatchEvent(new CustomEvent("rma:navigate", { detail: { phase: 2 } })),
+    );
+
+    // The leveled coaching line follows the served problem's tier.
+    const tierVoice = page.locator(".practice-tier-voice");
+    await expect(tierVoice).toBeVisible();
+    await expect(tierVoice).toHaveText(/one step at a time|say your because|convince a skeptic/i);
+
+    // Force the Level 1 lane (authored multiple-choice items) and confirm the
+    // voice line switches to the supportive register.
+    await page.locator('.level-option[data-level="level1"]').click();
+    await expect(tierVoice).toHaveText(/part of the plan, not a penalty/i);
+
+    // Three consecutive correct answers: the streak toast at 3 must carry the
+    // bilingual stacked message, and the milestone confetti must actually fire
+    // (it was authored-but-unwired before the award wave). Hidden phase
+    // sections keep their own components in the DOM, so every interaction is
+    // scoped to the problem card that is actually on screen.
+    for (let i = 0; i < 3; i++) {
+      const card = page.locator(".problem-card").filter({ visible: true }).first();
+      const stemEl = card.locator(".problem-stem").first();
+      await expect(stemEl).toBeVisible();
+      const stem = ((await stemEl.textContent()) || "").trim();
+      const answer = mcByStem.get(stem);
+      expect(answer, `no authored MC answer for served stem: "${stem}"`).toBeTruthy();
+      await card
+        .locator(".mc-option-label")
+        .filter({
+          has: page.locator(".choice-text", {
+            hasText: new RegExp(`^${escapeRegex(answer as string)}$`),
+          }),
+        })
+        .first()
+        .click();
+      await card.getByRole("button", { name: "Check Answer" }).click();
+      if (i === 2) {
+        await expect(page.locator(".practice-toast .i18n-es").first()).toBeVisible();
+        await expect(page.locator(".celebration-overlay .confetti-piece").first()).toBeVisible();
+      }
+      // Correct answers auto-advance after ~1.5s.
+      await page.waitForTimeout(1700);
+    }
   });
 });

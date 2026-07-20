@@ -4,23 +4,23 @@ const CONFETTI_COLORS = ["#F2C15B", "#1FA6A2", "#D9795D", "#12355B", "#0FA958", 
 // earned the answer, matching the small-group studio's "Your reasoning
 // landed." register (award wave 2026-07-20).
 const ENCOURAGE_CORRECT = [
-  "Your reasoning landed.",
-  "That method is working.",
-  "Solid mathematical thinking.",
-  "You proved it.",
-  "Your steps held up.",
-  "That is how mathematicians do it.",
-  "Clean reasoning.",
-  "You earned that one.",
+  { en: "Your reasoning landed.", es: "¡Tu razonamiento dio en el blanco!" },
+  { en: "That method is working.", es: "Ese método está funcionando." },
+  { en: "Solid mathematical thinking.", es: "Pensamiento matemático sólido." },
+  { en: "You proved it.", es: "Lo demostraste." },
+  { en: "Your steps held up.", es: "Tus pasos se sostuvieron." },
+  { en: "That is how mathematicians do it.", es: "Así lo hacen los matemáticos." },
+  { en: "Clean reasoning.", es: "Razonamiento claro." },
+  { en: "You earned that one.", es: "Te lo ganaste." },
 ];
 
 const ENCOURAGE_STREAK = [
-  "",
-  "",
-  "On fire! 3 in a row!",
-  "Unstoppable! 4 straight!",
-  "Amazing streak — 5!",
-  "Legendary! 6 in a row!",
+  null,
+  null,
+  { en: "On fire! 3 in a row!", es: "¡En racha! ¡3 seguidas!" },
+  { en: "Unstoppable! 4 straight!", es: "¡Imparable! ¡4 seguidas!" },
+  { en: "Amazing streak — 5!", es: "¡Racha increíble: 5!" },
+  { en: "Legendary! 6 in a row!", es: "¡Legendario! ¡6 seguidas!" },
 ];
 
 import { badgeName, phaseName as getPhaseName, stackHtml, t } from "../core/i18n.js";
@@ -28,11 +28,24 @@ import { badgeName, phaseName as getPhaseName, stackHtml, t } from "../core/i18n
 // Retry-first coaching: a miss is information, and the message says what to
 // do next instead of only cheering.
 const ENCOURAGE_TRY_AGAIN = [
-  "Not yet — misses are data. Check one step and try again.",
-  "Almost. Walk your steps back one line.",
-  "Keep going — find the step that needs repair.",
-  "Close. Re-read what the question is really asking.",
+  {
+    en: "Not yet — misses are data. Check one step and try again.",
+    es: "Todavía no: los errores son información. Revisa un paso e inténtalo otra vez.",
+  },
+  { en: "Almost. Walk your steps back one line.", es: "Casi. Repasa tus pasos línea por línea." },
+  {
+    en: "Keep going — find the step that needs repair.",
+    es: "Sigue: encuentra el paso que necesita arreglo.",
+  },
+  {
+    en: "Close. Re-read what the question is really asking.",
+    es: "Cerca. Vuelve a leer qué pide la pregunta en realidad.",
+  },
 ];
+
+// Bilingual stack for a message entry — same EN-primary/ES-secondary layout
+// every other lesson-chrome string uses (see i18n stackHtml).
+const line = (entry) => stackHtml(entry.en, entry.es);
 
 function randomFrom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
@@ -92,15 +105,15 @@ export function createEngagement(state) {
         });
       }
 
-      const streakMsg =
-        s.streak >= 2 && s.streak <= 6
-          ? ENCOURAGE_STREAK[s.streak - 1] || ""
-          : s.streak > 6
-            ? `🔥 ${s.streak} in a row!`
-            : "";
+      const streakEntry = s.streak >= 2 && s.streak <= 6 ? ENCOURAGE_STREAK[s.streak - 1] : null;
+      const streakMsg = streakEntry
+        ? line(streakEntry)
+        : s.streak > 6
+          ? stackHtml(`🔥 ${s.streak} in a row!`, `🔥 ¡${s.streak} seguidas!`)
+          : "";
 
       return {
-        message: randomFrom(ENCOURAGE_CORRECT),
+        message: line(randomFrom(ENCOURAGE_CORRECT)),
         streakMessage: streakMsg,
         streak: s.streak,
         streakMultiplier: s.streak >= 5 ? 3 : s.streak >= 3 ? 2 : 1,
@@ -117,7 +130,7 @@ export function createEngagement(state) {
       }
 
       return {
-        message: randomFrom(ENCOURAGE_TRY_AGAIN),
+        message: line(randomFrom(ENCOURAGE_TRY_AGAIN)),
         streak: 0,
       };
     },
