@@ -1,4 +1,4 @@
-import { celebrate, el, voiceFor } from "./small-group-ui.js";
+import { celebrate, el, esLane, voiceFor } from "./small-group-ui.js";
 
 export function mountSmallGroupTabs(app, steps, { store = null, voice = null } = {}) {
   const tabs = el("nav", "sg-tabs");
@@ -112,7 +112,7 @@ export function mountSmallGroupTabs(app, steps, { store = null, voice = null } =
   function setStreak(count) {
     if (count >= 2) {
       streak.hidden = false;
-      streak.textContent = `🔥 ${count} in a row`;
+      streak.textContent = esLane() ? `🔥 ${count} seguidas` : `🔥 ${count} in a row`;
     } else {
       streak.hidden = true;
     }

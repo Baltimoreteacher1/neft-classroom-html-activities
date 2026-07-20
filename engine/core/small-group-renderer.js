@@ -307,12 +307,20 @@ function renderStudio(config) {
     revision: store.get("revision") || null,
     revisionReason: store.get("revisionReason") || "",
     adaptivePath: store.get("adaptivePath") || null,
+    // Best consecutive-correct run, persisted so the Evidence Card can show
+    // it across sessions (session streak itself always restarts at zero).
+    bestStreak: Number(store.get("bestStreak")) || 0,
   };
   const events = {
     onAttempt({ correct }) {
       state.attempts++;
-      if (correct) state.streak = (state.streak || 0) + 1;
-      else {
+      if (correct) {
+        state.streak = (state.streak || 0) + 1;
+        if (state.streak > (state.bestStreak || 0)) {
+          state.bestStreak = state.streak;
+          store.set("bestStreak", state.bestStreak);
+        }
+      } else {
         state.incorrectAttempts++;
         // Streaks reset silently — momentum is celebrated, never mourned.
         state.streak = 0;

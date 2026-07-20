@@ -127,6 +127,12 @@ export const esLane = () => {
 export const bi = (en, es) =>
   es && esLane() ? `${esc(en)}<span class="sg-es" lang="es">${esc(es)}</span>` : esc(en);
 
+// Rich bilingual line for feedback that carries markup (<b> emphasis): the
+// caller supplies pre-escaped HTML per lane; Spanish stacks beneath English
+// exactly like bi(). Never pass raw student/config text without esc().
+export const biHtml = (en, es) =>
+  es && esLane() ? `${en}<span class="sg-es" lang="es">${es}</span>` : en;
+
 export const esc = (value) =>
   String(value == null ? "" : value)
     .replace(/&/g, "&amp;")
@@ -476,7 +482,11 @@ export function injectSmallGroupStyles(accent) {
     @keyframes sg-pop{0%{opacity:0;transform:scale(.25) rotate(-8deg)}35%{opacity:1;transform:scale(1.12) rotate(4deg)}100%{opacity:0;transform:scale(1.35)}}
     .sg-confetti{position:absolute;left:50%;top:50%;width:10px;height:14px;border-radius:3px;opacity:0;animation:sg-confetti .9s cubic-bezier(.16,1,.3,1) forwards}
     @keyframes sg-confetti{0%{opacity:1;transform:translate(-50%,-50%) rotate(0)}100%{opacity:0;transform:translate(calc(-50% + var(--cx)),calc(-50% + var(--cy))) rotate(var(--cr))}}
-    @media(max-width:760px){#app{padding-inline:14px}.sg-mode{margin-inline:-14px;padding-inline:14px}.sg-hero{margin-inline:-14px;padding:24px 18px}.sg-hero-grid{grid-template-columns:1fr}.sg-hero-mark{display:none}.sg-mission{grid-template-columns:1fr}.sg-mission-visual{order:-1;min-height:190px}.sg-rail{margin-inline:-5px}.sg-tabs{grid-template-columns:repeat(3,1fr);margin-inline:-5px}.sg-step{min-height:44px}.sg-tabs .sg-step .lbl{display:inline}.sg-match-options{grid-template-columns:1fr}}
+    @media(max-width:760px){#app{padding-inline:14px}.sg-mode{margin-inline:-14px;padding-inline:14px}.sg-hero{margin-inline:-14px;padding:24px 18px}.sg-hero-grid{grid-template-columns:1fr}.sg-hero-mark{display:none}.sg-mission{grid-template-columns:1fr}.sg-mission-visual{order:-1;min-height:190px}.sg-rail{margin-inline:-5px}.sg-tabs{grid-template-columns:repeat(3,1fr);margin-inline:-5px}.sg-step{min-height:44px}.sg-tabs .sg-step .lbl{display:inline}.sg-match-options{grid-template-columns:1fr}
+    /* Site-wide passport pill mounts fixed top-left, where it collides with
+       the studio's mode bar on phones — drop it just below the bar. !important
+       because the passport stylesheet lazy-loads after this one. */
+    .ntp-pill{top:70px!important;left:10px!important}}
     @media(max-width:420px){body{font-size:16px}.sg-hero h1{font-size:29px}.sg-context,.sg-talk-q{font-size:17px}.sg-tabs{position:static;grid-template-columns:repeat(2,1fr)}.sg-problem-nav{grid-template-columns:1fr 1fr}.sg-problem-count{grid-column:1/-1;grid-row:1}.sg-problem-support-head{align-items:flex-start;flex-direction:column}.sg-problem-visual svg{min-height:210px}.sg-fill-step{grid-template-columns:auto minmax(0,1fr)}.sg-step-check{grid-column:2}.sg-step-status{grid-column:1/-1}.btn,.sg-pulse-btn,.sg-role-btn,.sg-match-btn,.choice{width:100%;justify-content:flex-start}.sg-timer{align-items:flex-start;flex-direction:column}.sg-timer-track{width:100%;flex:none}}
     @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.sg-burst{display:none}.sg-hero-mark{animation:none}.sg-tabpanel:not([hidden]){animation:none}.sg-meter-fill::after{animation:none}.choice.correct,.choice.wrong,.fillin.ok,.fillin.bad,.stepfill.ok,.stepfill.bad{animation:none}.btn,.choice{transition:none}}
     @media print{body{background:#fff}.sg-mode,.sg-tabs,.sg-rail,.sg-meter,.sg-reveal,.sg-toolrow,.sg-pulse,.sg-timer,.sg-foot,.sg-teacher,.btn,.sg-speak,#mwb-launcher,.sg-problem-nav,.sg-annotation-tools{display:none!important}.sg-tabpanel[hidden]{display:block!important}.prob[hidden]{display:block!important}.sg-fill-step[hidden]{display:grid!important}.sg-fill-step.locked,.gs-row.locked,.sg-stage.locked,.sg-apply-step.locked{opacity:1!important;pointer-events:auto}.sg-reveal-answer[hidden]{display:inline-block!important}#app{max-width:none;padding:0}.sg-hero{margin:0 0 16px;padding:0 0 12px;color:#111;background:#fff;border-bottom:3px solid #111}.sg-hero h1,.sg-obj,.sg-langobj{color:#111}.sg-kicker,.sg-chip{color:#111;background:#eee;border-color:#bbb}.card,.sg-mission,.sg-talk,.prob,.sg-vcard{box-shadow:none;break-inside:avoid}.sg-mission{display:block}.sg-mission-visual{display:none}.sg-sec{margin-bottom:18px}}

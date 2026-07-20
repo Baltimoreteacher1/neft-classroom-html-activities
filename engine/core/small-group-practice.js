@@ -1,6 +1,6 @@
 import { attachRegenPractice } from "../components/regen-practice.js";
 import { isRight, numberOf } from "./small-group-answers.js";
-import { bi, celebrate, el, esc, speak } from "./small-group-ui.js";
+import { bi, biHtml, celebrate, el, esc, speak } from "./small-group-ui.js";
 import { appendVisualPractice } from "./small-group-visual-practice.js";
 
 const firstHint = (item) => item.hints?.[0] || item.hint || null;
@@ -21,8 +21,16 @@ function answerOf(item) {
 // ever appears on a correct answer and resets silently after a miss.
 function streakNote(events) {
   const streak = events.streak?.() || 0;
-  return streak >= 2 ? `🔥 <b>${streak} in a row — your method is working.</b> ` : "";
+  if (streak < 2) return "";
+  return `🔥 <b>${biHtml(
+    `${streak} in a row — your method is working.`,
+    `${streak} seguidas: tu método está funcionando.`,
+  )}</b> `;
 }
+
+// Bilingual correct-answer lead shared by every checkable card.
+const correctLead = () =>
+  `✅ <b>${biHtml("Your reasoning landed.", "¡Tu razonamiento dio en el blanco!")}</b>`;
 
 function itemStem(item) {
   return item.stem || item.title || item.instructions || item.prompt || "Try this problem.";
@@ -131,7 +139,10 @@ function multipleChoiceCard(item, index, onSolved, events = {}) {
           "no",
           useful
             ? `<b>Look closer:</b> ${esc(targeted)}`
-            : "That choice does not fit yet. Compare it with the question, open a hint, and try again.",
+            : biHtml(
+                "That choice does not fit yet. Compare it with the question, open a hint, and try again.",
+                "Esa opción todavía no encaja. Compárala con la pregunta, abre una pista e inténtalo de nuevo.",
+              ),
         );
         return;
       }
@@ -141,7 +152,7 @@ function multipleChoiceCard(item, index, onSolved, events = {}) {
       showFeedback(
         status,
         "ok",
-        `${streakNote(events)}✅ <b>Your reasoning landed.</b> ${bi(item.explanation || "Say out loud why this choice works.", item.explanationEs)}`,
+        `${streakNote(events)}${correctLead()} ${bi(item.explanation || "Say out loud why this choice works.", item.explanationEs)}`,
       );
       celebrate((events.streak?.() || 0) >= 3 ? "🔥" : "✓");
       onSolved();
@@ -187,12 +198,19 @@ function errorAnalysisCard(item, index, onSolved, events = {}) {
         button.classList.add("wrong");
         button.disabled = true;
         const hint = firstHint(item);
+        const hintEs = item.hintsEs?.[0] || item.hintEs;
         showFeedback(
           status,
           "no",
           hint
-            ? `That step looks correct. <b>Clue:</b> ${esc(hint)}`
-            : "That step looks correct. Check the math in a different step.",
+            ? biHtml(
+                `That step looks correct. <b>Clue:</b> ${esc(hint)}`,
+                `Ese paso parece correcto. <b>Pista:</b> ${esc(hintEs || hint)}`,
+              )
+            : biHtml(
+                "That step looks correct. Check the math in a different step.",
+                "Ese paso parece correcto. Revisa las cuentas en otro paso.",
+              ),
         );
         return;
       }
@@ -202,7 +220,7 @@ function errorAnalysisCard(item, index, onSolved, events = {}) {
       showFeedback(
         status,
         "ok",
-        `✅ <b>You found the reasoning break.</b> ${item.correctWork ? `Repair: ${esc(item.correctWork)}` : "Say the repair out loud in your own words."}`,
+        `✅ <b>${biHtml("You found the reasoning break.", "¡Encontraste el error de razonamiento!")}</b> ${item.correctWork ? `Repair: ${esc(item.correctWork)}` : biHtml("Say the repair out loud in your own words.", "Di la corrección en voz alta con tus propias palabras.")}`,
       );
       celebrate("🔧");
       onSolved();
@@ -294,16 +312,29 @@ function answerControl(item, answer, scaffold, status, onSolved, events = {}, on
       // Third miss: bring the first hint to the student instead of waiting.
       if (tries >= 3) onStuck?.();
       const hint = firstHint(item);
+      const hintEs = item.hintsEs?.[0] || item.hintEs;
       showFeedback(
         status,
         "no",
         tries === 1
           ? hint
-            ? `Not yet. <b>Try this:</b> ${bi(hint, item.hintsEs?.[0] || item.hintEs)}`
-            : "Not yet. Re-read the question, check one step, and try again."
+            ? biHtml(
+                `Not yet. <b>Try this:</b> ${esc(hint)}`,
+                `Todavía no. <b>Prueba esto:</b> ${esc(hintEs || hint)}`,
+              )
+            : biHtml(
+                "Not yet. Re-read the question, check one step, and try again.",
+                "Todavía no. Vuelve a leer la pregunta, revisa un paso e inténtalo otra vez.",
+              )
           : opened
-            ? "Still building — so the step guide below just opened for you. Walk it one line at a time, then revise your answer."
-            : "Still building. Open the next hint or re-walk the worked example in Build — then revise your answer.",
+            ? biHtml(
+                "Still building — so the step guide below just opened for you. Walk it one line at a time, then revise your answer.",
+                "Aún en construcción: la guía de pasos de abajo se acaba de abrir para ti. Síguela línea por línea y corrige tu respuesta.",
+              )
+            : biHtml(
+                "Still building. Open the next hint or re-walk the worked example in Build — then revise your answer.",
+                "Aún en construcción. Abre la siguiente pista o repasa el ejemplo resuelto en Build y corrige tu respuesta.",
+              ),
       );
       return;
     }
@@ -314,7 +345,7 @@ function answerControl(item, answer, scaffold, status, onSolved, events = {}, on
     showFeedback(
       status,
       "ok",
-      `${streakNote(events)}✅ <b>Your reasoning landed.</b> ${bi(item.explanation || "Explain the step that convinced you.", item.explanationEs)}`,
+      `${streakNote(events)}${correctLead()} ${bi(item.explanation || "Explain the step that convinced you.", item.explanationEs)}`,
     );
     celebrate((events.streak?.() || 0) >= 3 ? "🔥" : "✓");
     onSolved();
@@ -416,7 +447,10 @@ function responseCard(item, index, variant, onSolved, scaffold, events = {}) {
         showFeedback(
           status,
           "no",
-          "Add one complete thought before you share. A sentence frame or word bank can help.",
+          biHtml(
+            "Add one complete thought before you share. A sentence frame or word bank can help.",
+            "Escribe una idea completa antes de compartir. Un marco de oración o el banco de palabras te puede ayudar.",
+          ),
         );
         return;
       }
@@ -426,7 +460,10 @@ function responseCard(item, index, variant, onSolved, scaffold, events = {}) {
       showFeedback(
         status,
         "ok",
-        "✓ Read your reasoning out loud, then ask yourself: what evidence makes it convincing?",
+        biHtml(
+          "✓ Read your reasoning out loud, then ask yourself: what evidence makes it convincing?",
+          "✓ Lee tu razonamiento en voz alta y pregúntate: ¿qué evidencia lo hace convincente?",
+        ),
       );
       onSolved();
     };
