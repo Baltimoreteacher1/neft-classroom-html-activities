@@ -840,6 +840,19 @@ export function renderComponent(container, problemDef, onAnswer, shellOpts) {
     onAnswer?.(isCorrect);
   };
 
+  // Optional per-item visual: a `diagram` authored on an individual practice
+  // item renders its figure (factor-tree builder, tape-diagram, …) above the
+  // component, through the same buildVisual bridge the section-level slots use.
+  if (problemDef.diagram?.kind) {
+    const fig = document.createElement("div");
+    fig.className = "problem-item-figure";
+    fig.innerHTML = buildVisual(problemDef.diagram);
+    if (fig.firstElementChild) {
+      body.append(fig);
+      mountInteractiveVisuals(fig);
+    }
+  }
+
   switch (problemDef.type) {
     case "multiple-choice":
       renderMultipleChoice(body, { ...problemDef, onAnswer: wrappedOnAnswer });
@@ -3001,6 +3014,22 @@ function renderReflectPhase(el, state, ctx, config) {
   renderMultipleChoice(q1Card, {
     ...cfg.exitTicket,
     onAnswer(isCorrect) {
+      // Adaptive follow-up: a missed skill check offers a fresh, generator-
+      // verified variant to retry before finishing. Self-contained tray (no XP,
+      // no gating) — attachRegenPractice no-ops when the item can't be safely
+      // regenerated. The graded Q1 result above stays exactly as answered.
+      if (!isCorrect && !q1Card.dataset.regenOffered) {
+        q1Card.dataset.regenOffered = "1";
+        attachRegenPractice(
+          q1Card,
+          {
+            ...cfg.exitTicket,
+            answer:
+              cfg.exitTicket?.answer ?? cfg.exitTicket?.choices?.[cfg.exitTicket?.correctIndex],
+          },
+          { label: "Not quite — try a similar one before you finish:" },
+        );
+      }
       const xp = ctx.engagement.awardXP(4, {
         correct: isCorrect ? 1 : 0,
         total: 1,

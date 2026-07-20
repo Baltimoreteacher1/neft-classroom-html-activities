@@ -75,6 +75,18 @@ const EXPLORE_LOADERS = {
   "bar-model": () => import("../components/bar-model.js").then((m) => m.renderBarModel),
 };
 
+// Honest lab subtitles: promise what THIS lab actually asks students to do.
+// A drag-sort of long-division steps isn't "Make the math move" — say what it
+// is. Unknown types keep the generic line.
+const EXPLORE_SUBTITLES = {
+  "drag-sort": "Put each piece where it belongs",
+  "fill-table": "Build the table one cell at a time",
+  "number-line": "Move along the line",
+  "coordinate-grid": "Plot the points",
+  "balance-scale": "Keep both sides balanced",
+  "bar-model": "Build the model",
+};
+
 // Some number-line explores are authored in alternate shapes the component's
 // `targets` contract doesn't cover (plot-the-items, inequality boundaries,
 // equal-jump counting). Normalize them so no lesson falls into the component's
@@ -159,7 +171,9 @@ export function createExploreLab(config, variant, { number, store, events, onDon
     sectionHeading(
       number,
       "Hands-on lab",
-      variant === "group2" ? "Put the idea under pressure" : "Make the math move",
+      variant === "group2"
+        ? "Put the idea under pressure"
+        : EXPLORE_SUBTITLES[explore.type] || "Make the math move",
     ),
   );
   if (store.get("exploreDone"))
