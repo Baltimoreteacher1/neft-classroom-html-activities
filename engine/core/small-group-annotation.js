@@ -192,8 +192,11 @@ function vocabularyPattern(words) {
     .filter(Boolean)
     .sort((a, b) => b.length - a.length)
     .map((term) => term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+  // Trailing `(?:es|s)?` lets a plural underline the WHOLE word/phrase
+  // ("equivalent ratios", "scale factors") instead of leaving the plural
+  // form unmatched — parity with the main lesson underliner.
   return terms.length
-    ? new RegExp(`(^|[^A-Za-z0-9])(${terms.join("|")})(?=$|[^A-Za-z0-9])`, "gi")
+    ? new RegExp(`(^|[^A-Za-z0-9])((?:${terms.join("|")})(?:es|s)?)(?=$|[^A-Za-z0-9])`, "gi")
     : null;
 }
 
@@ -232,7 +235,10 @@ function addVocabularyTriggers(app, words, dialog) {
     pattern.lastIndex = 0;
     for (const match of text.matchAll(pattern)) {
       const termText = match[2];
-      const word = byTerm.get(termText.toLocaleLowerCase());
+      const key = termText.toLocaleLowerCase();
+      // Match plural forms back to their singular glossary entry.
+      const word =
+        byTerm.get(key) || byTerm.get(key.replace(/es$/, "")) || byTerm.get(key.replace(/s$/, ""));
       const countKey = `${sectionId}:${word?.term}`;
       const count = counts.get(countKey) || 0;
       const termStart = match.index + match[1].length;

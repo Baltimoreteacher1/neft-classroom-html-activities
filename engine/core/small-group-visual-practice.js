@@ -89,45 +89,76 @@ function numberLine(values) {
   return `<line x1="55" y1="150" x2="585" y2="150" stroke="var(--sg-deep)" stroke-width="6"/><path d="M55 150l20-12v24zM585 150l-20-12v24z" fill="var(--sg-deep)"/>${points}`;
 }
 
-// Numbered coordinate plane: gridlines land on whole units at the SAME scale
-// the points plot at (so a cell = 1 unit), with tick numbers on both axes and
-// a labeled origin. Shared by the display grid and the tap-to-plot model.
-const ORIGIN_X = 320;
-const ORIGIN_Y = 150;
-const gridScale = (maxAbs) => ({
-  stepX: Math.min(28, 280 / Math.max(1, maxAbs)),
-  stepY: Math.min(24, 130 / Math.max(1, maxAbs)),
-});
-function coordinatePlane(stepX, stepY) {
-  const nx = Math.floor(280 / stepX);
-  const ny = Math.floor(130 / stepY);
+// Numbered FIRST-QUADRANT coordinate plane with SQUARE cells (1 unit right = 1
+// unit up), framed to the data with a little headroom. Ratio graphs live
+// entirely in quadrant I, so the old centered 4-quadrant grid wasted half the
+// canvas and squished cells into rectangles ("numbers off, not aligned"). The
+// plot box is a fixed square centered in the 640×300 viewBox; only the unit
+// step changes with the data. Shared by the display grid and the tap-to-plot
+// model — both convert through gridPx()/PLOT_* so they stay in lockstep.
+const PLOT_SIZE = 236; // square plot-box side, in viewBox units
+const PLOT_TOP = 22;
+const PLOT_BOTTOM = PLOT_TOP + PLOT_SIZE; // 258
+const PLOT_LEFT = (640 - PLOT_SIZE) / 2; // 202 — centered horizontally
+const PLOT_RIGHT = PLOT_LEFT + PLOT_SIZE;
+const gridMaxN = (maxAbs) => Math.max(5, Math.ceil(Math.max(1, maxAbs)) + 1);
+const gridStep = (maxN) => PLOT_SIZE / maxN;
+const gridPx = (x, y, step) => [PLOT_LEFT + x * step, PLOT_BOTTOM - y * step];
+function coordinatePlane(maxN) {
+  const step = gridStep(maxN);
   const tick = 'style="font-size:13px;fill:#6b7688;font-weight:600"';
+  const every = maxN > 12 ? 2 : 1; // thin the labels (not the gridlines) when dense
   let out = "";
-  for (let n = -nx; n <= nx; n++) {
-    if (n === 0) continue;
-    const x = ORIGIN_X + n * stepX;
-    out += `<line x1="${x}" y1="20" x2="${x}" y2="280" stroke="#dbe1ea" stroke-width="1.5"/><text x="${x}" y="168" text-anchor="middle" ${tick}>${n}</text>`;
-  }
-  for (let m = -ny; m <= ny; m++) {
-    if (m === 0) continue;
-    const y = ORIGIN_Y - m * stepY;
-    out += `<line x1="40" y1="${y}" x2="600" y2="${y}" stroke="#dbe1ea" stroke-width="1.5"/><text x="311" y="${y + 4}" text-anchor="end" ${tick}>${m}</text>`;
+  for (let i = 1; i <= maxN; i++) {
+    const x = PLOT_LEFT + i * step;
+    const y = PLOT_BOTTOM - i * step;
+    out += `<line x1="${x}" y1="${PLOT_TOP}" x2="${x}" y2="${PLOT_BOTTOM}" stroke="#dbe1ea" stroke-width="1.5"/>`;
+    out += `<line x1="${PLOT_LEFT}" y1="${y}" x2="${PLOT_RIGHT}" y2="${y}" stroke="#dbe1ea" stroke-width="1.5"/>`;
+    if (i % every === 0) {
+      out += `<text x="${x}" y="${PLOT_BOTTOM + 20}" text-anchor="middle" ${tick}>${i}</text>`;
+      out += `<text x="${PLOT_LEFT - 10}" y="${y + 5}" text-anchor="end" ${tick}>${i}</text>`;
+    }
   }
   // Bold axes, labeled origin, and x/y axis letters.
-  out += `<line x1="40" y1="${ORIGIN_Y}" x2="600" y2="${ORIGIN_Y}" stroke="var(--sg-deep)" stroke-width="4"/><line x1="${ORIGIN_X}" y1="20" x2="${ORIGIN_X}" y2="280" stroke="var(--sg-deep)" stroke-width="4"/><text x="311" y="168" text-anchor="end" ${tick}>0</text><text x="602" y="${ORIGIN_Y - 8}" ${tick}>x</text><text x="${ORIGIN_X + 9}" y="32" ${tick}>y</text>`;
+  out += `<line x1="${PLOT_LEFT}" y1="${PLOT_TOP}" x2="${PLOT_LEFT}" y2="${PLOT_BOTTOM}" stroke="var(--sg-deep)" stroke-width="4"/>`;
+  out += `<line x1="${PLOT_LEFT}" y1="${PLOT_BOTTOM}" x2="${PLOT_RIGHT}" y2="${PLOT_BOTTOM}" stroke="var(--sg-deep)" stroke-width="4"/>`;
+  out += `<text x="${PLOT_LEFT - 10}" y="${PLOT_BOTTOM + 20}" text-anchor="end" ${tick}>0</text>`;
+  out += `<text x="${PLOT_RIGHT + 12}" y="${PLOT_BOTTOM + 5}" ${tick}>x</text>`;
+  out += `<text x="${PLOT_LEFT - 4}" y="${PLOT_TOP - 7}" text-anchor="middle" ${tick}>y</text>`;
   return out;
 }
+// coordinate-ratio authors [a, b, scale]; graph the base pair and its scaled
+// equivalent so the two points show the proportional relationship.
+function ratioPoints(visual) {
+  const [a, b, scale] = (visual.values || []).map(Number);
+  if (!Number.isFinite(a) || !Number.isFinite(b)) return null;
+  const pts = [[a, b]];
+  if (Number.isFinite(scale) && scale > 1) pts.push([a * scale, b * scale]);
+  return pts;
+}
 function coordinateGrid(visual) {
-  const points = visual.points || (visual.point ? [visual.point] : [[2, 3]]);
+  const points = visual.points ||
+    (visual.point ? [visual.point] : null) ||
+    (String(visual.kind || "").includes("ratio") ? ratioPoints(visual) : null) || [[2, 3]];
   const maxAbs = Math.max(1, ...points.flat().map((value) => Math.abs(Number(value) || 0)));
-  const { stepX, stepY } = gridScale(maxAbs);
+  const maxN = gridMaxN(maxAbs);
+  const step = gridStep(maxN);
+  // A dashed ray through the origin when the points are proportional — the whole
+  // point of graphing a ratio table.
+  let ray = "";
+  const last = points[points.length - 1];
+  if (points.length > 1 && Number(last?.[0]) > 0 && Number(last?.[1]) > 0) {
+    const [ox, oy] = gridPx(0, 0, step);
+    const [ex, ey] = gridPx(Number(last[0]), Number(last[1]), step);
+    ray = `<line x1="${ox}" y1="${oy}" x2="${ex}" y2="${ey}" stroke="var(--sg-pop)" stroke-width="3" stroke-dasharray="8 7" opacity="0.7"/>`;
+  }
   const dots = points
-    .map(
-      ([x, y]) =>
-        `<circle cx="${ORIGIN_X + Number(x) * stepX}" cy="${ORIGIN_Y - Number(y) * stepY}" r="12" fill="var(--sg-pop)" stroke="var(--sg-deep)" stroke-width="4"/><text x="${ORIGIN_X + Number(x) * stepX + 12}" y="${ORIGIN_Y - Number(y) * stepY - 12}" style="font-size:17px">(${esc(x)}, ${esc(y)})</text>`,
-    )
+    .map(([x, y]) => {
+      const [cx, cy] = gridPx(Number(x), Number(y), step);
+      return `<circle cx="${cx}" cy="${cy}" r="11" fill="var(--sg-pop)" stroke="var(--sg-deep)" stroke-width="4"/><text x="${cx + 12}" y="${cy - 10}" style="font-size:16px">(${esc(x)}, ${esc(y)})</text>`;
+    })
     .join("");
-  return `${coordinatePlane(stepX, stepY)}${dots}`;
+  return `${coordinatePlane(maxN)}${ray}${dots}`;
 }
 
 function fractionBars(visual, values) {
@@ -1202,8 +1233,8 @@ function typedPlot(item, steps, events) {
   const targetX = Number(expected[0]);
   const targetY = Number(expected[1]);
   if (!Number.isFinite(targetX) || !Number.isFinite(targetY)) return null;
-  const maxAbs = Math.max(1, Math.abs(targetX), Math.abs(targetY));
-  const { stepX, stepY } = gridScale(maxAbs);
+  const maxN = gridMaxN(Math.max(Math.abs(targetX), Math.abs(targetY)));
+  const step = gridStep(maxN);
   const shell = modelShell(
     "Plot the point",
     "Read the numbered axes, then tap where the point belongs.",
@@ -1211,7 +1242,7 @@ function typedPlot(item, steps, events) {
   const status = modelStatus();
   shell.insertAdjacentHTML(
     "beforeend",
-    svgShell("numbered coordinate grid — tap to plot", coordinatePlane(stepX, stepY)),
+    svgShell("numbered coordinate grid — tap to plot", coordinatePlane(maxN)),
   );
   const svg = shell.querySelector("svg");
   svg.classList.add("sg-plot-grid");
@@ -1222,13 +1253,14 @@ function typedPlot(item, steps, events) {
     if (!box.width || !box.height) return;
     const viewX = ((clickEvent.clientX - box.left) / box.width) * 640;
     const viewY = ((clickEvent.clientY - box.top) / box.height) * 300;
-    const gridX = Math.round((viewX - 320) / stepX);
-    const gridY = Math.round((150 - viewY) / stepY);
+    const gridX = Math.round((viewX - PLOT_LEFT) / step);
+    const gridY = Math.round((PLOT_BOTTOM - viewY) / step);
+    const [markX, markY] = gridPx(gridX, gridY, step);
     const correct = gridX === targetX && gridY === targetY;
     events.onAttempt?.({ correct });
     const marker = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-    marker.setAttribute("cx", String(320 + gridX * stepX));
-    marker.setAttribute("cy", String(150 - gridY * stepY));
+    marker.setAttribute("cx", String(markX));
+    marker.setAttribute("cy", String(markY));
     marker.setAttribute("r", "13");
     marker.setAttribute("fill", correct ? "var(--sg-pop)" : "rgba(189,60,49,.55)");
     marker.setAttribute("stroke", correct ? "var(--sg-deep)" : "#bd3c31");
@@ -1241,8 +1273,8 @@ function typedPlot(item, steps, events) {
     }
     solved = true;
     const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    label.setAttribute("x", String(332 + gridX * stepX));
-    label.setAttribute("y", String(136 - gridY * stepY));
+    label.setAttribute("x", String(markX + 12));
+    label.setAttribute("y", String(markY - 14));
     label.textContent = `(${targetX}, ${targetY})`;
     svg.appendChild(label);
     status.textContent = `Plotted (${targetX}, ${targetY}) ✓`;
