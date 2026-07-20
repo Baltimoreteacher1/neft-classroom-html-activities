@@ -1,6 +1,6 @@
-import { el } from "./small-group-ui.js";
+import { celebrate, el, voiceFor } from "./small-group-ui.js";
 
-export function mountSmallGroupTabs(app, steps, { store = null } = {}) {
+export function mountSmallGroupTabs(app, steps, { store = null, voice = null } = {}) {
   const tabs = el("nav", "sg-tabs");
   tabs.setAttribute("role", "tablist");
   tabs.setAttribute("aria-label", "Lesson steps");
@@ -8,7 +8,12 @@ export function mountSmallGroupTabs(app, steps, { store = null } = {}) {
   const activeSteps = steps.filter((step) => step.panel);
 
   function markDone(id) {
-    buttons.get(id)?.classList.add("done");
+    const button = buttons.get(id);
+    if (!button) return;
+    button.classList.add("done");
+    // Earned checkmark replaces the step number — progress you can see.
+    const dot = button.querySelector(".dot");
+    if (dot) dot.textContent = "✓";
   }
 
   function activate(id, moveFocus = false) {
@@ -78,20 +83,44 @@ export function mountSmallGroupTabs(app, steps, { store = null } = {}) {
   const track = el("div", "sg-meter-track");
   const fill = el("div", "sg-meter-fill");
   track.appendChild(fill);
-  const label = el("span", "sg-meter-lab", "Let’s get started");
-  meter.append(track, label);
+  const studioVoice = voice || voiceFor("catchup");
+  const label = el("span", "sg-meter-lab", studioVoice.meterStart || "Let’s get started");
+  // Quiet momentum chip — appears at 2+ correct in a row, vanishes silently
+  // on a miss (momentum is celebrated, never mourned).
+  const streak = el("span", "sg-streak");
+  streak.hidden = true;
+  meter.append(track, streak, label);
   tabs.appendChild(meter);
 
+  // Milestone-aware meter copy, with a one-shot celebration when the last
+  // check lands during this session (a restored 100% stays quiet).
+  let lastPercent = null;
   function setProgress(solved, total) {
     if (!total) return;
     const percent = Math.round((solved / total) * 100);
     fill.style.width = `${percent}%`;
-    label.textContent = `${solved} of ${total} checks complete`;
+    label.textContent =
+      percent >= 100
+        ? `All ${total} checks complete 🏆`
+        : percent >= 50
+          ? `${solved} of ${total} — over halfway 💪`
+          : `${solved} of ${total} checks complete`;
+    if (lastPercent !== null && lastPercent < 100 && percent >= 100) celebrate("🏆");
+    lastPercent = percent;
+  }
+
+  function setStreak(count) {
+    if (count >= 2) {
+      streak.hidden = false;
+      streak.textContent = `🔥 ${count} in a row`;
+    } else {
+      streak.hidden = true;
+    }
   }
 
   app.querySelector(".sg-hero")?.after(tabs);
   const savedTab = store?.get("lastTab");
   const initial = activeSteps.find((step) => step.id === savedTab) || activeSteps[0];
   activate(initial.id);
-  return { activate, markDone, setProgress };
+  return { activate, markDone, setProgress, setStreak };
 }

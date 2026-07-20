@@ -239,7 +239,7 @@ export function createVocabularySection(config, onDone, store = null) {
         const translation = el(
           "div",
           "sg-vtranslations",
-          `<span lang="${currentLang.id}" dir="${currentLang.dir}">${esc(secondaryTerm)}</span>`,
+          `<span class="sg-vlang-tag">${esc(currentLang.id.toUpperCase())}:</span> <span lang="${currentLang.id}" dir="${currentLang.dir}">${esc(secondaryTerm)}</span>`,
         );
         if (currentLang.id === "es") {
           const speakEs = el("button", "sg-speak-inline", "🔊");
