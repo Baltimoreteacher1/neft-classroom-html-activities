@@ -1440,17 +1440,49 @@ function verticalDecimal(values, operation) {
     const i = s.indexOf(".");
     return i < 0 ? 0 : s.length - i - 1;
   };
-  const maxDec = Math.max(decs(a), decs(b));
-  const fa = a.toFixed(maxDec);
-  const fb = b.toFixed(maxDec);
-  const w = Math.max(fa.length, fb.length);
-  const op = operation === "−" || operation === "-" ? "−" : "+";
+  const isMul = operation === "×" || operation === "*" || operation === "x";
+  const isDiv = operation === "÷" || operation === "/";
 
   const box = el("div", "sg-vdec");
   box.style.cssText = "display:flex;flex-direction:column;align-items:center;margin:8px 0 4px;";
   const stack = el("div");
   stack.style.cssText =
     "font-family:ui-monospace,Menlo,Consolas,monospace;font-size:1.5rem;font-weight:800;color:var(--navy,#12355b);";
+
+  // Division is not a stacked column: show the whole-number-divisor rewrite so
+  // students see the actual first move (never an addition stack).
+  if (isDiv) {
+    const bDec = decs(b);
+    const shift = (x) => String(Number((x * 10 ** bDec).toFixed(6)));
+    const line = (txt, extra) => {
+      const d = el("div", null, txt);
+      d.style.cssText = `white-space:pre;${extra || ""}`;
+      return d;
+    };
+    stack.append(
+      line(`${a} ÷ ${b}`),
+      line(
+        `↓ move the point ${bDec} place${bDec === 1 ? "" : "s"} right`,
+        "font-size:.8rem;font-weight:600;color:var(--muted,#54677c);margin:4px 0;",
+      ),
+      line(`${shift(a)} ÷ ${shift(b)} = ?`, "color:var(--amber-ink,#8a5a00);"),
+    );
+    box.append(stack);
+    const cap = el("div", null, "Make the divisor a whole number, then divide as usual.");
+    cap.style.cssText =
+      "font-size:.75rem;font-weight:600;color:var(--muted,#54677c);text-align:center;margin-top:6px;";
+    box.append(cap);
+    return box;
+  }
+
+  // Multiply and add/subtract both stack into a right-aligned column, but they
+  // align differently: add/subtract lines up the decimal points (zeros annexed
+  // so every number has the same places); multiply keeps the numbers as written
+  // and places the point afterward — you do NOT line up decimals to multiply.
+  const fa = isMul ? String(a) : a.toFixed(Math.max(decs(a), decs(b)));
+  const fb = isMul ? String(b) : b.toFixed(Math.max(decs(a), decs(b)));
+  const w = Math.max(fa.length, fb.length);
+  const op = isMul ? "×" : operation === "−" || operation === "-" ? "−" : "+";
   const row = (opc, numStr, extra) => {
     const r = el("div");
     r.style.cssText = "display:flex;align-items:baseline;justify-content:flex-end;gap:10px;";
@@ -1468,7 +1500,13 @@ function verticalDecimal(values, operation) {
   stack.append(bar);
   stack.append(row(" ", "?".padStart(w, " "), "color:var(--amber-ink,#8a5a00);"));
   box.append(stack);
-  const cap = el("div", null, "Line up the decimal points — the answer goes in the blank.");
+  const cap = el(
+    "div",
+    null,
+    isMul
+      ? "Multiply as whole numbers, then count the decimal places to place the point."
+      : "Line up the decimal points — the answer goes in the blank.",
+  );
   cap.style.cssText =
     "font-size:.75rem;font-weight:600;color:var(--muted,#54677c);text-align:center;margin-top:6px;";
   box.append(cap);
@@ -1489,9 +1527,10 @@ export function appendVisualPractice(card, item, { mode = "guided", events = {} 
     card.classList.add("sg-big-work");
     const top = el("div", "sg-problem-support-head");
     top.append(el("div", "sg-visual-title", "Work it here"), read);
-    // Show the operation stacked with the decimal points lined up (zeros annexed
-    // so every number has the same places) — the whole point of the skill — with
-    // a blank answer line, above the guided steps.
+    // Render the operation the way you actually work it (verticalDecimal picks
+    // the right model per operator: add/subtract line up the points, multiply
+    // stacks as whole numbers, divide shows the whole-divisor rewrite) with a
+    // blank answer line, above the guided steps.
     const vd = verticalDecimal(item.visual?.values, item.visual?.operation);
     question?.after(top, ...(vd ? [vd] : []), ...stepsNodes);
     return card;

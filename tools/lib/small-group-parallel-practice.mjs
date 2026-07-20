@@ -243,28 +243,88 @@ function unit1(context) {
     } else {
       answer = operation === "+" ? tidy(a + b) : operation === "−" ? tidy(a - b) : tidy(a * b);
     }
+    const placesA = String(a).split(".")[1]?.length || 0;
+    const placesB = String(b).split(".")[1]?.length || 0;
+    // Each operation gets a scaffold that matches HOW you actually do it:
+    // add/subtract lines up place values, multiply works as whole numbers then
+    // places the point, divide makes the divisor whole then divides. The old
+    // template scaffolded every decimal op as if it were addition ("line up the
+    // place values"), which made Multiply Decimals read like Add Decimals.
+    let steps;
+    if (operation === "×") {
+      const intA = Math.round(a * 10 ** placesA);
+      const intB = Math.round(b * 10 ** placesB);
+      const totalPlaces = placesA + placesB;
+      const plural = totalPlaces === 1 ? "" : "s";
+      steps = [
+        [
+          `Multiply as whole numbers, ignoring the decimals: ${intA} × ${intB} = ___.`,
+          intA * intB,
+          `Multiplica como números enteros, sin los decimales: ${intA} × ${intB} = ___.`,
+        ],
+        [
+          `Count the total decimal places in both factors (${placesA} + ${placesB}): ___.`,
+          totalPlaces,
+          `Cuenta el total de cifras decimales en los dos factores (${placesA} + ${placesB}): ___.`,
+        ],
+        [
+          `Place the decimal point ${totalPlaces} place${plural} from the right: ___.`,
+          answer,
+          `Coloca el punto decimal ${totalPlaces} lugar${totalPlaces === 1 ? "" : "es"} desde la derecha: ___.`,
+        ],
+      ];
+    } else if (operation === "÷") {
+      const bWhole = Math.round(b * 10 ** placesB);
+      const aShift = tidy(a * 10 ** placesB);
+      const plural = placesB === 1 ? "" : "s";
+      steps = [
+        [
+          `Move both decimals ${placesB} place${plural} right so the divisor is a whole number: ___.`,
+          bWhole,
+          `Mueve ambos decimales ${placesB} lugar${placesB === 1 ? "" : "es"} a la derecha para que el divisor sea entero: ___.`,
+        ],
+        [
+          `Divide ${aShift} ÷ ${bWhole}, bringing the decimal point straight up: ___.`,
+          answer,
+          `Divide ${aShift} ÷ ${bWhole}, subiendo el punto decimal directamente: ___.`,
+        ],
+        [
+          `Check by multiplying back: ${answer} × ${b} = ___.`,
+          tidy(answer * b),
+          `Comprueba multiplicando al revés: ${answer} × ${b} = ___.`,
+        ],
+      ];
+    } else {
+      const verb = operation === "+" ? "Add" : "Subtract";
+      const verbEs = operation === "+" ? "Suma" : "Resta";
+      const maxDec = Math.max(placesA, placesB);
+      const estimate = tidy(
+        operation === "+" ? Math.round(a) + Math.round(b) : Math.round(a) - Math.round(b),
+      );
+      steps = [
+        [
+          "Line up the decimal points. How many decimal places will the answer have? ___.",
+          maxDec,
+          "Alinea los puntos decimales. ¿Cuántas cifras decimales tendrá la respuesta? ___.",
+        ],
+        [
+          `${verb} the digits column by column, keeping the points lined up: ___.`,
+          answer,
+          `${verbEs} los dígitos columna por columna, manteniendo los puntos alineados: ___.`,
+        ],
+        [
+          `Estimate to check — ${Math.round(a)} ${operation} ${Math.round(b)} is about ___.`,
+          estimate,
+          `Estima para comprobar — ${Math.round(a)} ${operation} ${Math.round(b)} es aproximadamente ___.`,
+        ],
+      ];
+    }
     return makeItem(context, index, {
       stem: `Solve the new decimal problem: ${a} ${operation} ${b}.`,
       stemEs: `Resuelve el nuevo problema con decimales: ${a} ${operation} ${b}.`,
       answer,
       visual: { kind: "place-value", values: [a, b], operation },
-      steps: [
-        [
-          "Line up or rewrite the place values: ___ decimal places in the first number.",
-          String(a).split(".")[1]?.length || 0,
-          "Alinea o reescribe los valores posicionales: ___ cifras decimales en el primer número.",
-        ],
-        [
-          `Round ${a} to the nearest whole number: ___.`,
-          Math.round(a),
-          `Redondea ${a} al número entero más cercano: ___.`,
-        ],
-        [
-          "Calculate and place the decimal: ___.",
-          answer,
-          "Calcula y coloca el punto decimal: ___.",
-        ],
-      ],
+      steps,
     });
   });
 }
