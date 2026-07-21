@@ -310,5 +310,29 @@ export function createState(lessonId, studentId) {
       state = { ...defaults, startedAt: Date.now() };
       notify();
     },
+
+    // Clear only ONE page (phase) worth of answers on this device — used by the
+    // teacher "Clear answers" control so a projector can be reset page-by-page
+    // instead of wiping the whole lesson. Removes every response keyed to this
+    // phase (`${phaseIndex}_…`) and zeroes that phase's answer-driven progress
+    // (stars / earned XP / attempts) while leaving other pages, coins, streaks,
+    // and the student identity untouched. Caller re-renders the phase to blank
+    // the on-screen inputs (no reload, so Save/Resume can't re-fill it).
+    clearPhaseResponses(phaseIndex) {
+      const prefix = `${phaseIndex}_`;
+      for (const rk of Object.keys(state.responses || {})) {
+        if (rk.startsWith(prefix)) delete state.responses[rk];
+      }
+      const ph = state.phases[phaseIndex];
+      if (ph) {
+        state.xp = Math.max(0, (state.xp || 0) - (ph.xpEarned || 0));
+        ph.xpEarned = 0;
+        ph.stars = 0;
+        ph.attempts = 0;
+        ph.correct = 0;
+      }
+      save();
+      notify();
+    },
   };
 }

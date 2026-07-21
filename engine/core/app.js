@@ -606,9 +606,33 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     window.location.reload();
   };
 
-  // Always-visible teacher-only "Clear answers" button (also mirrored in the
-  // Tools menu). Renders only in teacher mode; no-op for students.
-  mountTeacherClearButton(window.__ntClearLessonAnswers);
+  // Per-page teacher "Clear answers" API. Lets the compact control clear the
+  // current page or any set of pages (not the whole lesson) — it clears each
+  // phase's saved answers on this device and re-renders the current phase blank
+  // via the same rma:navigate event the sidebar uses (no reload, so Save/Resume
+  // can't re-fill it). clearAll keeps the old full-wipe-and-reload behavior.
+  window.__ntLessonClearApi = {
+    phases: () =>
+      (state.get().phases || []).map((p, i) => ({ index: i, name: p.name, icon: p.icon })),
+    currentPhase: () => state.get().currentPhase ?? 0,
+    clearPages: (indices) => {
+      (indices || []).forEach((i) => {
+        try {
+          state.clearPhaseResponses(i);
+        } catch (_) {
+          /* storage blocked — re-render still blanks the on-screen inputs */
+        }
+      });
+      const cur = state.get().currentPhase ?? 0;
+      document.dispatchEvent(new CustomEvent("rma:navigate", { detail: { phase: cur } }));
+    },
+    clearAll: () => window.__ntClearLessonAnswers(),
+  };
+
+  // Compact teacher-only "Clear answers" control (also mirrored in the Tools
+  // menu). Renders only in teacher mode; no-op for students. Upgrades the
+  // clear-all-only button the cover screen mounts into the full page picker.
+  mountTeacherClearButton(window.__ntLessonClearApi);
 
   if (!state.get().studentName) {
     state.set({ studentName, studentPeriod });

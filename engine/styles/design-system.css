@@ -4860,37 +4860,122 @@ html.nt-extra-fullpage-open body {
   background: #fef2f2;
 }
 
-/* Always-visible teacher-only "Clear answers" floating button. Bottom-LEFT,
-   stacked just above the minimap HUD (bottom:16). Teacher-mode only — the
+/* Teacher-only, compact "Clear answers" control. A small round 🧹 icon
+   bottom-LEFT, just above the minimap HUD (bottom:16), that opens a popover to
+   clear the current page, selected pages, or all pages. Teacher-mode only — the
    module never mounts it for students. See engine/core/teacher-clear.js. */
 .nt-teacher-clear {
   position: fixed;
   left: 16px;
   bottom: 72px;
   z-index: 9998;
+}
+.nt-teacher-clear-fab {
+  width: 40px;
+  height: 40px;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
+  justify-content: center;
+  padding: 0;
   border: 1px solid #fecaca;
-  border-radius: 50px;
+  border-radius: 999px;
   background: #b91c1c;
   color: #fff;
-  font: inherit;
-  font-weight: 800;
-  font-size: 0.92rem;
+  font-size: 1.05rem;
   line-height: 1;
   cursor: pointer;
-  box-shadow: 0 10px 30px rgba(185, 28, 28, 0.28);
+  box-shadow: 0 6px 18px rgba(185, 28, 28, 0.3);
   transition:
     transform 0.15s ease,
     background 0.15s ease;
 }
-.nt-teacher-clear:hover {
+.nt-teacher-clear-fab:hover {
   background: #991b1b;
   transform: translateY(-1px);
 }
-.nt-teacher-clear:focus-visible {
+.nt-teacher-clear-fab:focus-visible {
+  outline: 3px solid var(--gold, #ffd54a);
+  outline-offset: 2px;
+}
+.nt-teacher-clear-pop {
+  position: absolute;
+  left: 0;
+  bottom: 48px;
+  width: 244px;
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  background: #fff;
+  color: #0f172a;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.22);
+}
+.nt-teacher-clear-pop[hidden] {
+  display: none;
+}
+.nt-teacher-clear-title {
+  margin: 0 0 2px;
+  font-weight: 800;
+  font-size: 0.95rem;
+}
+.nt-teacher-clear-sub {
+  margin: 0 0 8px;
+  font-size: 0.76rem;
+  color: #64748b;
+}
+.nt-teacher-clear-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 210px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+}
+.nt-teacher-clear-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 6px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.nt-teacher-clear-row:hover {
+  background: #f1f5f9;
+}
+.nt-teacher-clear-row input {
+  width: 16px;
+  height: 16px;
+  accent-color: #b91c1c;
+  cursor: pointer;
+}
+.nt-teacher-clear-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.nt-teacher-clear-do {
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 9px;
+  background: #b91c1c;
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.nt-teacher-clear-do:hover {
+  background: #991b1b;
+}
+.nt-teacher-clear-all {
+  background: #fff;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+.nt-teacher-clear-all:hover {
+  background: #fef2f2;
+}
+.nt-teacher-clear-do:focus-visible {
   outline: 3px solid var(--gold, #ffd54a);
   outline-offset: 2px;
 }

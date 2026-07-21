@@ -46,7 +46,7 @@ export function mountUtilityMenu() {
   const clearAnswers = document.createElement("button");
   clearAnswers.type = "button";
   clearAnswers.className = "nt-utility-item nt-utility-item-danger";
-  clearAnswers.innerHTML = '<span aria-hidden="true">🧹</span><span>Clear answers</span>';
+  clearAnswers.innerHTML = '<span aria-hidden="true">🧹</span><span>Clear all answers</span>';
   clearAnswers.addEventListener("click", () => {
     if (
       !window.confirm(
