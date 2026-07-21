@@ -261,10 +261,11 @@ function addVocabularyTriggers(app, words, dialog) {
 }
 
 export function installSmallGroupAnnotation(app, config) {
-  const progress = app.querySelector(".sg-tabs, .sg-rail");
   const tools = createAnnotationTools(app);
-  if (progress) progress.after(tools);
-  else app.prepend(tools);
+  // Docked to the right edge (position: fixed) so mark-up stays reachable at
+  // any scroll depth. Mounted on <body>, not inside `app`, so the motion
+  // layer's animated (transformed) ancestors can't break fixed positioning.
+  document.body.appendChild(tools);
   const dialog = createVocabularyDialog();
   // Lesson vocabulary plus the shared math glossary, so a math word opens its
   // definition+image popup wherever it appears (not just the first 8 authored
