@@ -16,6 +16,7 @@ import { el, esc } from "./small-group-ui.js";
 
 const num = (t) => Number(String(t).replace(/[$,]/g, ""));
 const isInt = (n) => Number.isInteger(n);
+const SUPERSCRIPT = { "²": 2, "³": 3, "⁴": 4, "⁵": 5, "⁶": 6, "⁷": 7, "⁸": 8, "⁹": 9 };
 
 // Pull the headline relation out of a worked step. Tries the most specific
 // pattern first so "12 = 2 × 2 × 3" reads as a factorization, not a bare "=".
@@ -68,6 +69,20 @@ function parseRelation(line) {
     if (rel && rel.factors.length === 2)
       return { kind: "array", a: rel.factors[0], b: rel.factors[1], c: rel.parent };
     if (rel) return rel;
+  }
+
+  // 3b) Exponent / power — "2³", "5² = 25". In a powers lesson the notation IS
+  //     the idea, so expand it to repeated multiplication. Placed before the
+  //     product check so "5² = 25" reads as a power, not a plain 5×5 array.
+  //     Unit labels ("158 in²", "3 ft³") are ignored: no digit sits directly
+  //     before the superscript. Factorization above still wins for "2² × 3 × 5".
+  const power = text.match(/(\d+)([²³⁴⁵⁶⁷⁸⁹])(?:\s*=\s*(\d+))?/);
+  if (power) {
+    const base = Number(power[1]);
+    const exp = SUPERSCRIPT[power[2]];
+    const value = base ** exp;
+    if (exp >= 2 && exp <= 6 && (power[3] == null || Number(power[3]) === value))
+      return { kind: "power", base, exp, value };
   }
 
   // 4) Forward product — "a × b = c" (only when a·b really equals c).
@@ -165,6 +180,28 @@ function convertModel({ whole, part, den, improper }) {
   x += den * cw + 16;
   out += `<text x="${x}" y="${y + th / 2 + 7}" font-size="21" font-weight="900" fill="var(--sg-deep)">= ${improper}/${den}</text>`;
   return svg(`Rewrite ${whole} and ${part}/${den} as ${improper}/${den}`, x + 96, y + th + 16, out);
+}
+
+// A power bⁿ expanded into n repeated base tiles → product. Makes "2³ = 8" mean
+// "2 × 2 × 2 = 8" at a glance for the exponents lesson.
+function powerModel({ base, exp, value }) {
+  const chip = 40;
+  const gap = 22;
+  const y = 40;
+  let x = 16;
+  let out = `<text x="16" y="24" font-size="15" font-weight="800" fill="var(--sg-muted)">${base}<tspan baseline-shift="super" font-size="10">${exp}</tspan> = ${base} multiplied ${exp} times</text>`;
+  for (let i = 0; i < exp; i++) {
+    out += `<rect x="${x}" y="${y}" width="${chip}" height="${chip}" rx="9" fill="var(--sg)" stroke="#fff" stroke-width="1.5"/>
+      <text x="${x + chip / 2}" y="${y + chip / 2 + 7}" text-anchor="middle" font-size="20" font-weight="900" fill="#fff">${base}</text>`;
+    x += chip;
+    if (i < exp - 1) {
+      out += `<text x="${x + gap / 2}" y="${y + chip / 2 + 8}" text-anchor="middle" font-size="20" font-weight="900" fill="var(--sg-muted)">×</text>`;
+      x += gap;
+    }
+  }
+  x += 14;
+  out += `<text x="${x}" y="${y + chip / 2 + 8}" font-size="22" font-weight="900" fill="var(--sg-deep)">= ${value}</text>`;
+  return svg(`${base} to the power ${exp} equals ${value}`, x + 84, y + chip + 16, out);
 }
 
 // n = f1 × f2 (× f3) as a parent node branching into factor leaves.
@@ -266,6 +303,7 @@ function lineModel({ a, b, c, minus }) {
 const RENDERERS = {
   array: arrayModel,
   convert: convertModel,
+  power: powerModel,
   split: splitModel,
   point: pointModel,
   rate: rateModel,
