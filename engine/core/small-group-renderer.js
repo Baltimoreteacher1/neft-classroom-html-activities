@@ -3,6 +3,7 @@
 // engagement interactions, math practice, and visual system.
 
 import { installSmallGroupAnnotation } from "./small-group-annotation.js";
+import { buildStepVisual } from "./small-group-build-visuals.js";
 import {
   createMissionSection,
   createReflectionSection,
@@ -58,7 +59,7 @@ import { mountTeacherClearButton } from "./teacher-clear.js";
 // "ido" and "wedo" reveal one step at a time; "wedo" also converts a trailing
 // authored parenthetical ("(You might say 3 × 4.)") into a think-first reveal
 // chip; "youdo" becomes a tap-to-check launch list.
-function stageCard(stage, fallbackTitle, kind, onStageDone) {
+function stageCard(stage, fallbackTitle, kind, onStageDone, withVisuals = false) {
   const lines = stage?.lines || [];
   if (!lines.length) return null;
   const card = el("div", "card sg-stage");
@@ -91,7 +92,14 @@ function stageCard(stage, fallbackTitle, kind, onStageDone) {
         item.querySelector(".tick").textContent = "✓";
         if (++checked >= lines.length) finish();
       };
-      list.appendChild(item);
+      const visual = withVisuals ? buildStepVisual(line) : null;
+      if (visual) {
+        const wrap = el("div", "sg-checkstep-wrap");
+        wrap.append(item, visual);
+        list.appendChild(wrap);
+      } else {
+        list.appendChild(item);
+      }
     });
     return card;
   }
@@ -114,6 +122,12 @@ function stageCard(stage, fallbackTitle, kind, onStageDone) {
       body.append(chip, answer);
     } else {
       body.appendChild(el("span", null, esc(line)));
+    }
+    if (withVisuals) {
+      // For "think first, then reveal" wedo lines, the parenthetical answer
+      // holds the math — model the full authored line so the picture matches.
+      const visual = buildStepVisual(reveal ? `${reveal[1]} ${reveal[2]}` : line);
+      if (visual) body.appendChild(visual);
     }
     step.appendChild(body);
     return step;
@@ -142,7 +156,7 @@ function stageCard(stage, fallbackTitle, kind, onStageDone) {
   return card;
 }
 
-function conceptSection(config, onDone, voice) {
+function conceptSection(config, onDone, voice, variant) {
   const concept = config.launch?.conceptIntro || {};
   const section = el("section", "sg-sec");
   section.id = "sg-build";
@@ -161,12 +175,21 @@ function conceptSection(config, onDone, voice) {
     [concept.weDo, "🤝 Try it with the guide", "wedo"],
     [concept.youDo, "🧠 Take the lead", "youdo"],
   ];
+  // Level 1 (group1) support studios get a canonical visual model beside each
+  // worked step; Level 2 keeps the leaner text-only build.
+  const withVisuals = variant === "group1";
   const cards = [];
   stages.forEach(([stage, fallback, kind]) => {
-    const card = stageCard(stage, fallback, kind, () => {
-      const position = cards.indexOf(card);
-      cards[position + 1]?.classList.remove("locked");
-    });
+    const card = stageCard(
+      stage,
+      fallback,
+      kind,
+      () => {
+        const position = cards.indexOf(card);
+        cards[position + 1]?.classList.remove("locked");
+      },
+      withVisuals,
+    );
     if (!card) return;
     if (cards.length) card.classList.add("locked");
     cards.push(card);
@@ -531,7 +554,7 @@ function renderStudio(config) {
       store.get("pulseBefore"),
     ),
   );
-  const build = conceptSection(config, phaseDone("sg-tab-learn", "buildDone"), voice);
+  const build = conceptSection(config, phaseDone("sg-tab-learn", "buildDone"), voice, variant);
   // Group 2's challenge/justify work now lives in the guided "Prove It" tab,
   // which also absorbs the "Defend it to a skeptic" talk. Group 1 keeps its
   // supportive partner talk in Practice.

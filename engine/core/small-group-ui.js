@@ -480,6 +480,13 @@ export function injectSmallGroupStyles(accent) {
     .sg-buildstep.now{margin:0 -10px;padding-inline:10px;border-radius:10px;background:var(--sg-soft);border-bottom:0}
     .sg-buildstep-body{font-size:18px;line-height:1.5;font-weight:600}
     @keyframes sg-stepin{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+    /* ── Per-step visual models (Level 1 Build the idea) ── */
+    .sg-step-visual{margin:9px 0 2px;padding:8px 10px;border:1px solid var(--sg-line);border-radius:12px;background:#fff;box-shadow:0 4px 14px rgba(23,32,51,.05);animation:sg-stepin .3s ease}
+    .sg-step-visual svg{display:block;width:100%;max-width:360px;height:auto}
+    .sg-checkstep-wrap{margin:0 0 9px}
+    .sg-checkstep-wrap .sg-checkstep{margin:0}
+    .sg-checkstep-wrap .sg-step-visual{margin:6px 0 0}
+    @media (prefers-reduced-motion:reduce){.sg-step-visual{animation:none}}
     .sg-reveal{margin-left:8px;min-height:44px;padding:8px 13px;border:2px dashed var(--sg);border-radius:999px;background:#fff;color:var(--sg-deep);font-size:13px;font-weight:800;cursor:pointer}
     .sg-reveal-answer{display:inline-block;margin-left:8px;padding:3px 10px;border-radius:8px;background:var(--sg-soft);color:var(--sg-deep);font-weight:800;animation:sg-stepin .3s ease}
     .sg-checkstep{display:flex;width:100%;align-items:center;gap:10px;margin:0 0 7px;padding:11px 13px;border:2px solid var(--sg-line);border-radius:11px;background:#fff;font-weight:600;text-align:left;cursor:pointer}
