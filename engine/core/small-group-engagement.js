@@ -1,5 +1,6 @@
 import { figureBlock } from "./small-group-labs.js";
-import { markScene, mountThemeArt } from "./small-group-storyboard.js";
+import { markScene, mountThemeArt, themeDisplayName } from "./small-group-storyboard.js";
+import { renderLaunchStoryBeats } from "./premium.js";
 import {
   celebrate,
   el,
@@ -81,12 +82,30 @@ export function createMissionSection(config, variant, onDone) {
 
   const mission = el("div", "sg-mission");
   const copy = el("div", "sg-mission-copy sg-scene-enter");
-  copy.appendChild(el("p", "sg-context", esc(context)));
+
+  // Tap-to-reveal story beats when launch.narrative has enough sentences.
+  // Keep a distinct notice/wonder context paragraph when present so the
+  // math-rich mission brief is never replaced by generic framing.
+  const storyHost = el("div", "sg-mission-story");
+  const beats = renderLaunchStoryBeats(storyHost, config);
+  const narrative = (config.launch?.narrative || "").trim();
+  const authoredContext = (missionContent.context || "").trim();
+  const distinctContext = authoredContext && authoredContext !== narrative ? authoredContext : null;
+  if (!beats) {
+    storyHost.appendChild(el("p", "sg-context", esc(context)));
+  } else if (distinctContext) {
+    storyHost.appendChild(el("p", "sg-context", esc(distinctContext)));
+  }
+  copy.appendChild(storyHost);
+
+  const speakText = [beats ? narrative : "", distinctContext || (!beats ? context : "")]
+    .filter(Boolean)
+    .join(" ");
   const tools = el("div", "sg-toolrow");
   const read = el("button", "btn ghost", "🔊 Read the mission");
   read.type = "button";
   read.setAttribute("aria-pressed", "false");
-  read.onclick = () => speak(context, read);
+  read.onclick = () => speak(speakText || context, read);
   tools.appendChild(read);
   copy.appendChild(tools);
 
@@ -97,9 +116,10 @@ export function createMissionSection(config, variant, onDone) {
     ? figureBlock(config.launch?.visual)
     : null;
   const visual = el("div", `sg-mission-visual sg-scene-enter${missionFigure ? " has-figure" : ""}`);
+  const themeCaption = config.launch?.contextImage || themeDisplayName(config.theme) || "";
   if (missionFigure) {
     visual.appendChild(missionFigure);
-  } else if (config.theme && mountThemeArt(visual, config.theme, "", config.heroFigure)) {
+  } else if (config.theme && mountThemeArt(visual, config.theme, themeCaption, config.heroFigure)) {
     visual.classList.add("has-theme");
   } else {
     visual.classList.add("no-image");

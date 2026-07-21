@@ -224,7 +224,7 @@ export function injectSmallGroupStyles(accent) {
     const storyboard = document.createElement("link");
     storyboard.id = "sg-storyboard-styles";
     storyboard.rel = "stylesheet";
-    storyboard.href = "/assets/small-group-storyboard.css?v=20260721-chalkie1";
+    storyboard.href = "/assets/small-group-storyboard.css?v=20260721-chalkie2";
     document.head.appendChild(storyboard);
   }
   if (document.getElementById("sg-styles")) return;

@@ -35,7 +35,12 @@ import {
 import { createStudioStore } from "./small-group-state.js";
 import { mountSmallGroupTabs } from "./small-group-tabs.js";
 import { mountSmallGroupTeacherAccess } from "./small-group-teacher-access.js";
-import { installStoryboardScenes, markScene, mountThemeArt } from "./small-group-storyboard.js";
+import {
+  installStoryboardScenes,
+  markScene,
+  mountThemeArt,
+  themeDisplayName,
+} from "./small-group-storyboard.js";
 import {
   ACCENTS,
   bi,
@@ -141,6 +146,9 @@ function conceptSection(config, onDone, voice) {
   const concept = config.launch?.conceptIntro || {};
   const section = el("section", "sg-sec");
   section.id = "sg-build";
+  // Scene mark only — do not put sg-scene-enter on locked stages (animation
+  // fill would fight `.locked { opacity }`). Section-level enter is safe.
+  markScene(section, "build");
   section.appendChild(sectionHeading(2, "See it · try it · own it", "Build the idea"));
   // Problem-first: the worked-example stages come first so the problem itself is
   // the very first thing students see — the intro framing and the anchor idea
@@ -248,8 +256,9 @@ function hero(config, accent, voice) {
   if (config.standard) chips.appendChild(el("span", "sg-chip", esc(config.standard)));
   chips.appendChild(el("span", "sg-chip", "Private · saved on this device"));
   copy.appendChild(chips);
-  if (config.theme) {
-    copy.appendChild(el("div", "sg-hero-scene-chip", "Scene · mission brief"));
+  const sceneName = themeDisplayName(config.theme);
+  if (sceneName) {
+    copy.appendChild(el("div", "sg-hero-scene-chip", `Scene · ${esc(sceneName)}`));
   }
   const mark = el("div", "sg-hero-mark sg-scene-enter");
   if (config.theme && mountThemeArt(mark, config.theme, "", config.heroFigure)) {

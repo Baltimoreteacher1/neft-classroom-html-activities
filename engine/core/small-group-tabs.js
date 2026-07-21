@@ -98,23 +98,46 @@ export function mountSmallGroupTabs(app, steps, { store = null, voice = null } =
   function setProgress(solved, total) {
     if (!total) return;
     const percent = Math.round((solved / total) * 100);
+    const remaining = Math.max(0, total - solved);
+    const toHalfway = Math.ceil(total / 2) - solved;
     fill.style.width = `${percent}%`;
-    label.textContent =
-      percent >= 100
-        ? `All ${total} checks complete 🏆`
-        : percent >= 50
-          ? `${solved} of ${total} — over halfway 💪`
-          : `${solved} of ${total} checks complete`;
+    if (percent >= 100) {
+      label.textContent = `All ${total} checks complete 🏆`;
+    } else if (remaining === 1 || percent >= 90) {
+      label.textContent = esLane()
+        ? remaining === 1
+          ? "1 más para terminar"
+          : `${remaining} más para terminar`
+        : remaining === 1
+          ? "1 more to finish"
+          : `${remaining} more to finish`;
+    } else if (toHalfway > 0 && percent >= 35 && percent < 50) {
+      label.textContent = esLane()
+        ? `${toHalfway} más para la mitad`
+        : `${toHalfway} more to halfway`;
+    } else if (percent >= 50) {
+      label.textContent = `${solved} of ${total} — over halfway 💪`;
+    } else {
+      label.textContent = `${solved} of ${total} checks complete`;
+    }
     if (lastPercent !== null && lastPercent < 100 && percent >= 100) celebrate("🏆");
     lastPercent = percent;
   }
 
   function setStreak(count) {
     if (count >= 2) {
+      const wasHidden = streak.hidden;
       streak.hidden = false;
       streak.textContent = esLane() ? `🔥 ${count} seguidas` : `🔥 ${count} in a row`;
+      if (wasHidden) {
+        streak.classList.remove("sg-streak-hot");
+        // Retrigger one-shot pulse on the hidden→shown transition.
+        void streak.offsetWidth;
+        streak.classList.add("sg-streak-hot");
+      }
     } else {
       streak.hidden = true;
+      streak.classList.remove("sg-streak-hot");
     }
   }
 
