@@ -330,4 +330,72 @@ test.describe("AI Learning Hub - Browser QA Suite", () => {
 
     expect(errors).toEqual([]);
   });
+
+  // ─── 22. Award layer: innovation thesis + mastery rings ──────────
+  test("Innovation thesis and mastery rings render for students", async ({ page }) => {
+    await expect(page.locator(".innovation-thesis")).toBeVisible();
+    await page.locator(".role-card").first().click();
+    await page.waitForTimeout(600);
+    await expect(page.locator(".mastery-ring").first()).toBeVisible();
+    await expect(page.locator("#student-progress-dashboard")).toContainText("Passports");
+  });
+
+  // ─── 23. Language objective + focus mode ────────────────────────
+  test("Workspace shows language objective and focus mode toggles", async ({ page }) => {
+    await page.locator(".role-card").first().click();
+    await page.waitForTimeout(600);
+    await page.locator(".unit-card").first().click();
+    await page.waitForTimeout(600);
+    await expect(page.locator("#lang-objective")).toBeVisible();
+    await expect(page.locator("#lang-objective")).toContainText("Language goal");
+    const focusBtn = page.locator("#btn-focus-mode");
+    await expect(focusBtn).toBeVisible();
+    await focusBtn.click();
+    await expect(page.locator("body")).toHaveClass(/focus-mode/);
+    await focusBtn.click();
+    await expect(page.locator("body")).not.toHaveClass(/focus-mode/);
+  });
+
+  // ─── 24. Prove-It gate after solving final step ─────────────────
+  test("Prove-It Passport gate appears after solving and stamps evidence", async ({ page }) => {
+    await page.locator(".role-card").first().click();
+    await page.waitForTimeout(600);
+    await page.locator(".unit-card").first().click();
+    await page.waitForTimeout(600);
+    await submitPromptStudent(page);
+
+    // Jump to final answer for Unit 1 Challenge A (12.5 × 4 = 50)
+    await page.locator("#chat-input").fill("50");
+    await page.locator(".chat-send-btn").click();
+    await expect(page.locator("#proveit-panel")).toBeVisible({ timeout: 8000 });
+    await expect(page.locator("#proveit-panel")).toContainText("Prove-It Passport");
+
+    await page.locator("#proveit-text").fill(
+      "I multiplied 12.5 × 4 because the picture shows 4 groups of 12.5, so the product is 50."
+    );
+    await page.locator("button", { hasText: "Stamp my Passport" }).click();
+    await expect(page.locator("#passport-print-root")).toBeVisible({ timeout: 5000 });
+    const stamped = await page.evaluate(() =>
+      Object.keys(JSON.parse(localStorage.getItem("ai-hub-teachbacks") || "{}")).length
+    );
+    expect(stamped).toBeGreaterThan(0);
+  });
+
+  // ─── 25. Teacher Evidence Room ──────────────────────────────────
+  test("Teacher role shows Award Evidence Room", async ({ page }) => {
+    await page.locator(".role-card").nth(1).click();
+    await page.waitForTimeout(600);
+    await expect(page.locator(".evidence-room")).toBeVisible();
+    await expect(page.locator(".evidence-room")).toContainText("Award Evidence Room");
+  });
+
+  // ─── 26. Inactive AI101 tab is inert for a11y ───────────────────
+  test("AI101 panel is aria-hidden and inert until opened", async ({ page }) => {
+    const hidden = await page.locator("#ai101").getAttribute("aria-hidden");
+    expect(hidden).toBe("true");
+    await page.locator(".role-card").nth(2).click();
+    await page.waitForTimeout(400);
+    const shown = await page.locator("#ai101").getAttribute("aria-hidden");
+    expect(shown).toBe("false");
+  });
 });
