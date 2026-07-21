@@ -206,7 +206,7 @@ function buildVisual(v) {
       // Fill-in-the-blank factor tree (interactive-visual bridge). The static
       // SVG stays as the JS-off / print fallback so the figure never blanks.
       return interactiveVisualHost(v, {
-        ariaLabel: `Fill-in-the-blank factor tree for ${v.value ?? "a number"}. Complete each branch so it multiplies to the number above and every leaf is prime.`,
+        ariaLabel: `Fill-in-the-blank factor tree for ${v.value ?? "a number"}. Complete each branch so it multiplies to the number above and every end number is prime.`,
         fallback: factorTreeSVG(v),
       });
     case "solid-3d": {
