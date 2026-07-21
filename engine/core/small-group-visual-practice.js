@@ -636,7 +636,7 @@ function typedFactorTree(item, steps, events) {
   if (!splits.length) return null; // a prime value has no tree to build
   const shell = modelShell(
     "Build the whole factor tree",
-    "Split each composite number all the way down. Fill in both factors at every branch until every leaf is a prime you cannot split.",
+    "Split each composite number all the way down. Fill in both factors at every branch until every end number is a prime you cannot split.",
   );
   const status = modelStatus();
   const tree = el("div", "sg-tree");
@@ -666,7 +666,7 @@ function typedFactorTree(item, steps, events) {
         status.textContent = `Branch built ✓ — now split ${split.cofactor} the same way.`;
       } else {
         branchesBuilt = splits.length;
-        status.textContent = "Every leaf is prime ✓ — write the prime factorization below.";
+        status.textContent = "Every end number is prime ✓ — write the prime factorization below.";
       }
     };
     row.append(

@@ -124,9 +124,9 @@ function unit1(context) {
           ],
           [`${value} ÷ ${first} = ___.`, value / first, `${value} ÷ ${first} = ___.`],
           [
-            "Continue until every leaf is prime: ___.",
+            "Keep splitting until every end number is prime. Write the prime factorization: ___.",
             primes.join(" × "),
-            "Continúa hasta que cada rama termine en un número primo: ___.",
+            "Sigue separando hasta que cada número del final sea primo. Escribe la factorización prima: ___.",
           ],
         ],
         hint: "Start by testing divisibility by 2, then 3, then 5.",

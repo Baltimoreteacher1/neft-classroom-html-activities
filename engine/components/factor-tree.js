@@ -185,7 +185,7 @@ export function renderFactorTree(container, cfg = {}) {
         : "Factor Tree Lab";
   const hint =
     mode === "single"
-      ? "Type a number, then build its tree. Keep splitting until every leaf is a prime."
+      ? "Type a number, then build its tree. Keep splitting until every end number is a prime."
       : mode === "gcf"
         ? "Build both trees, then read the shared primes to find the GCF."
         : "Build both trees, then combine the primes (highest power of each) to find the LCM.";
