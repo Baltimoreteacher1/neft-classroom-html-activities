@@ -1,11 +1,19 @@
 .sg-annotation-tools {
-  position: static;
-  z-index: 24;
-  margin: 0 0 22px;
+  position: fixed;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 40;
+  width: max-content;
+  max-width: min(300px, calc(100vw - 16px));
+  max-height: calc(100vh - 24px);
+  overflow: auto;
+  margin: 0;
   border: 2px solid color-mix(in srgb, var(--sg) 55%, white);
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 9px 24px rgba(23, 32, 51, 0.12);
+  border-right: 0;
+  border-radius: 14px 0 0 14px;
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: -8px 10px 26px rgba(23, 32, 51, 0.16);
   backdrop-filter: blur(12px);
 }
 
@@ -20,9 +28,10 @@
 
 .sg-annotation-inner {
   display: grid;
-  grid-template-columns: minmax(190px, 1fr) auto;
-  gap: 8px 18px;
-  align-items: center;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  align-items: start;
+  width: min(280px, calc(100vw - 20px));
   padding: 0 14px 12px;
 }
 
@@ -251,16 +260,11 @@
 
 @media (max-width: 760px) {
   .sg-annotation-tools {
-    position: static;
-    margin-top: -14px;
+    max-width: min(260px, calc(100vw - 12px));
   }
 
   .sg-annotation-inner {
-    grid-template-columns: 1fr;
-  }
-
-  .sg-annotation-status {
-    grid-column: auto;
+    width: min(232px, calc(100vw - 40px));
   }
 
   .sg-vocab-dialog-grid {
