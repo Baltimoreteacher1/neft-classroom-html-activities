@@ -61,9 +61,12 @@ export function createApp(config) {
   // Publisher-grade editorial design layer (engine/styles/editorial.css) — the
   // approved look now applies to EVERY lesson, not just flagship pilots.
   document.body.classList.add("editorial");
-  // Opt-in visual skin (engine/styles/theme-warm.css) — config.skin names a
-  // `skin-*` body class; DOM, flow, and interactivity are untouched by skins.
-  if (config.skin) document.body.classList.add(`skin-${config.skin}`);
+  // Visual skin (engine/styles/theme-warm.css) — warm-deck is the canonical
+  // look for every lesson; config.skin can name another `skin-*` class, and
+  // `"skin": "editorial"` opts a lesson back to the bare editorial layer.
+  // DOM, flow, and interactivity are untouched by skins.
+  const skin = config.skin || "warm-deck";
+  if (skin !== "editorial") document.body.classList.add(`skin-${skin}`);
 
   // High Contrast stylesheet overrides
   const hcSheet = document.createElement("style");

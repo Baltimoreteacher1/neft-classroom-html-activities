@@ -12,7 +12,45 @@
    flow, interactivity, save/resume, and Canvas/SCORM behavior.
    ============================================================================ */
 
-@import url("https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Fredoka:wght@500;600;700&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Patrick+Hand&display=swap");
+/* Vendored latin-subset woff2 (engine/styles/fonts/) — no CDN dependency, so
+   the skin renders identically inside Canvas iframes, offline SCORM packages,
+   and the lessons/ service-worker cache. Baloo 2 and Nunito are variable
+   fonts covering their full weight ranges in one file each. */
+@font-face {
+  font-family: "Baloo 2";
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url("./fonts/baloo2-var.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Fredoka";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("./fonts/fredoka-600.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Nunito";
+  font-style: normal;
+  font-weight: 200 1000;
+  font-display: swap;
+  src: url("./fonts/nunito-var.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Nunito";
+  font-style: italic;
+  font-weight: 200 1000;
+  font-display: swap;
+  src: url("./fonts/nunito-var-italic.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Patrick Hand";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./fonts/patrickhand-400.woff2") format("woff2");
+}
 
 /* ── Retokenize the editorial layer ──────────────────────────────────────── */
 body.editorial.skin-warm-deck {
@@ -136,6 +174,18 @@ body.editorial.skin-warm-deck .phase .card-coral {
 }
 body.editorial.skin-warm-deck .phase .card-coral :is(h3, h4) {
   color: #b4503a;
+}
+
+/* ── Headings outside the slide cards ────────────────────────────────────────
+   .section-title / .nw-title ("Be Curious", Notice & Wonder) hardcode
+   var(--navy) in design-system.css and sit on the cream canvas, not inside
+   .phase .card — retint them to the deck voice. Deep teal (not --wd-teal):
+   #20716c on the cream paper clears large-text AA where the lighter teal
+   does not. */
+body.editorial.skin-warm-deck :is(.section-title, .nw-title) {
+  font-family: var(--fl-serif);
+  font-weight: 800;
+  color: var(--wd-teal-deep);
 }
 
 /* ── Buttons + interactive chrome → pills ────────────────────────────────── */
