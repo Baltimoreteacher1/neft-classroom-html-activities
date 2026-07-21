@@ -629,11 +629,6 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     clearAll: () => window.__ntClearLessonAnswers(),
   };
 
-  // Compact teacher-only "Clear answers" control (also mirrored in the Tools
-  // menu). Renders only in teacher mode; no-op for students. Upgrades the
-  // clear-all-only button the cover screen mounts into the full page picker.
-  mountTeacherClearButton(window.__ntLessonClearApi);
-
   if (!state.get().studentName) {
     state.set({ studentName, studentPeriod });
   }
@@ -647,6 +642,12 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
   ];
 
   state.initPhases(phaseConfigs);
+
+  // Compact teacher-only "Clear answers" control (also mirrored in the Tools
+  // menu). Renders only in teacher mode; no-op for students. Mounted AFTER
+  // initPhases so phases() is populated on a fresh lesson — it upgrades the
+  // clear-all-only button the cover screen mounts into the full page picker.
+  mountTeacherClearButton(window.__ntLessonClearApi);
 
   const sidebar = buildSidebar(config, state, phaseConfigs);
   const main = document.createElement("div");
