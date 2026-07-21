@@ -58,6 +58,14 @@ check(
     /href="\/curriculum\/family-connections\/teacher\/"/.test(html),
   "missing public Family Mode or protected Teacher Mode link",
 );
+check(
+  /id="arcade-feature-title"/.test(html) && /href="\/curriculum\/arcade\/"/.test(html),
+  "missing the Arcade Games featured card or /curriculum/arcade/ link",
+);
+check(
+  /id="projects-feature-title"/.test(html) && /href="\/curriculum\/projects\/"/.test(html),
+  "missing the Culminating Projects featured card or /curriculum/projects/ link",
+);
 
 // Review-game link integrity — locks the 2026-06-29 regression where the
 // End-of-Unit entry (lessonId "") produced /practice-arcade/?lesson= (empty),
