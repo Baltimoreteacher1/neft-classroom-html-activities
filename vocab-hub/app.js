@@ -88,7 +88,7 @@
   /* ---------------- speech ---------------- */
   var synth = window.speechSynthesis || null;
   // Cache voices and pick one that actually matches the target language. Setting
-  // u.lang alone leaves Spanish/Vietnamese/Arabic read by the default English
+  // u.lang alone leaves Spanish read by the default English
   // voice on most browsers; an explicit u.voice fixes pronunciation.
   var _voices = [];
   function refreshVoices() {
@@ -137,8 +137,6 @@
       synth.cancel();
       var u = new SpeechSynthesisUtterance(text);
       if (lang === "es") u.lang = "es-US";
-      else if (lang === "vi") u.lang = "vi-VN";
-      else if (lang === "ar") u.lang = "ar-SA";
       else u.lang = "en-US";
       var voice = pickVoice(u.lang);
       if (voice) u.voice = voice;
@@ -206,17 +204,12 @@
 
   /* ---------------- language classes ---------------- */
   function langClass() {
-    if (state.lang === "en") return "lang-hide-es lang-hide-vi lang-hide-ar";
-    if (state.lang === "es") return "lang-hide-en lang-hide-vi lang-hide-ar";
-    if (state.lang === "vi") return "lang-hide-en lang-hide-es lang-hide-ar";
-    if (state.lang === "ar") return "lang-hide-en lang-hide-es lang-hide-vi";
-    if (state.lang === "both") return "lang-hide-vi lang-hide-ar";
-    if (state.lang === "vi_both") return "lang-hide-es lang-hide-ar";
-    if (state.lang === "ar_both") return "lang-hide-es lang-hide-vi";
+    if (state.lang === "en") return "lang-hide-es";
+    if (state.lang === "es") return "lang-hide-en";
     return "";
   }
 
-  function sayButtons(enText, esText, viText, arText) {
+  function sayButtons(enText, esText) {
     var row = el("div", "say-row");
     if (enText) {
       var b = el("button", "say-btn en", "🔊 EN");
@@ -237,26 +230,6 @@
         say(esText, "es");
       });
       row.appendChild(b2);
-    }
-    if (viText) {
-      var b3 = el("button", "say-btn vi", "🔊 VI");
-      b3.type = "button";
-      b3.setAttribute("aria-label", "Đọc to bằng tiếng Việt: " + viText);
-      b3.addEventListener("click", function (ev) {
-        ev.stopPropagation();
-        say(viText, "vi");
-      });
-      row.appendChild(b3);
-    }
-    if (arText) {
-      var b4 = el("button", "say-btn ar", "🔊 AR");
-      b4.type = "button";
-      b4.setAttribute("aria-label", "القراءة بصوت عالي بالعربية: " + arText);
-      b4.addEventListener("click", function (ev) {
-        ev.stopPropagation();
-        say(arText, "ar");
-      });
-      row.appendChild(b4);
     }
     return row;
   }
@@ -341,28 +314,16 @@
         it.units.indexOf(browseFilter.unit) === -1
       )
         return false;
-      if (
-        browseFilter.standard &&
-        it.standards.indexOf(browseFilter.standard) === -1
-      )
-        return false;
+      if (browseFilter.standard && it.standards.indexOf(browseFilter.standard) === -1) return false;
       if (browseFilter.q) {
         var hay = (
           it.term +
           " " +
           it.termEs +
           " " +
-          (it.termVi || "") +
-          " " +
-          (it.termAr || "") +
-          " " +
           it.definition +
           " " +
-          it.definitionEs +
-          " " +
-          (it.definitionVi || "") +
-          " " +
-          (it.definitionAr || "")
+          it.definitionEs
         ).toLowerCase();
         if (hay.indexOf(browseFilter.q) === -1) return false;
       }
@@ -390,30 +351,15 @@
       card.appendChild(img);
       card.appendChild(el("div", "term-en", esc(it.term)));
       if (it.termEs) card.appendChild(el("div", "term-es", esc(it.termEs)));
-      if (it.termVi) card.appendChild(el("div", "term-vi", esc(it.termVi)));
-      if (it.termAr) card.appendChild(el("div", "term-ar", esc(it.termAr)));
       card.appendChild(el("div", "def-en", esc(it.definition)));
-      if (it.definitionEs)
-        card.appendChild(el("div", "def-es", esc(it.definitionEs)));
-      if (it.definitionVi)
-        card.appendChild(el("div", "def-vi", esc(it.definitionVi)));
-      if (it.definitionAr)
-        card.appendChild(el("div", "def-ar", esc(it.definitionAr)));
-      card.appendChild(
-        sayButtons(
-          it.term,
-          it.termEs || it.definition,
-          it.termVi || it.definitionVi,
-          it.termAr || it.definitionAr,
-        ),
-      );
+      if (it.definitionEs) card.appendChild(el("div", "def-es", esc(it.definitionEs)));
+      card.appendChild(sayButtons(it.term, it.termEs || it.definition));
       var tags = el("div", "card-tags");
       it.units.forEach(function (u) {
         tags.appendChild(el("span", "tag", "Unit " + u));
       });
       if (it.standard) tags.appendChild(el("span", "tag", esc(it.standard)));
-      if (store.progress[it.term] === "got")
-        tags.appendChild(el("span", "tag got-it", "✓ got it"));
+      if (store.progress[it.term] === "got") tags.appendChild(el("span", "tag got-it", "✓ got it"));
       card.appendChild(tags);
       wall.appendChild(card);
     });
@@ -497,15 +443,9 @@
     if (it) {
       if (fc.flipped) {
         if (state.lang === "es") say(it.definitionEs || it.definition, "es");
-        else if (state.lang === "vi")
-          say(it.definitionVi || it.definition, "vi");
-        else if (state.lang === "ar")
-          say(it.definitionAr || it.definition, "ar");
         else say(it.definition, "en");
       } else {
         if (state.lang === "es") say(it.termEs || it.term, "es");
-        else if (state.lang === "vi") say(it.termVi || it.term, "vi");
-        else if (state.lang === "ar") say(it.termAr || it.term, "ar");
         else say(it.term, "en");
       }
     }
@@ -527,11 +467,7 @@
     announce(kind === "got" ? "Marked got it" : "Marked for review");
     var gotCount = countGot();
     if (gotCount === state.items.length) {
-      celebrate(
-        "You learned all " +
-          state.items.length +
-          " words! · ¡Aprendiste todas!",
-      );
+      celebrate("You learned all " + state.items.length + " words! · ¡Aprendiste todas!");
     }
     go(1);
   }
@@ -557,15 +493,7 @@
       '<div class="fc-term term-en">' +
       esc(it.term) +
       "</div>" +
-      (it.termEs
-        ? '<div class="fc-term-es term-es">' + esc(it.termEs) + "</div>"
-        : "") +
-      (it.termVi
-        ? '<div class="fc-term-vi term-vi">' + esc(it.termVi) + "</div>"
-        : "") +
-      (it.termAr
-        ? '<div class="fc-term-ar term-ar">' + esc(it.termAr) + "</div>"
-        : "") +
+      (it.termEs ? '<div class="fc-term-es term-es">' + esc(it.termEs) + "</div>" : "") +
       '<div class="fc-hint">Tap / Space to flip · Toca para voltear</div>' +
       "</div>";
     var back =
@@ -580,23 +508,13 @@
       '<div class="fc-def def-en">' +
       esc(it.definition) +
       "</div>" +
-      (it.definitionEs
-        ? '<div class="fc-def-es def-es">' + esc(it.definitionEs) + "</div>"
-        : "") +
-      (it.definitionVi
-        ? '<div class="fc-def-vi def-vi">' + esc(it.definitionVi) + "</div>"
-        : "") +
-      (it.definitionAr
-        ? '<div class="fc-def-ar def-ar">' + esc(it.definitionAr) + "</div>"
-        : "") +
+      (it.definitionEs ? '<div class="fc-def-es def-es">' + esc(it.definitionEs) + "</div>" : "") +
       "</div>";
     inner.innerHTML = front + back;
 
-    document.getElementById("fc-pos").textContent =
-      fc.idx + 1 + " / " + fc.order.length;
+    document.getElementById("fc-pos").textContent = fc.idx + 1 + " / " + fc.order.length;
     var got = countGot();
-    document.getElementById("fc-bar").style.width =
-      (got / state.items.length) * 100 + "%";
+    document.getElementById("fc-bar").style.width = (got / state.items.length) * 100 + "%";
     document.getElementById("fc-got").textContent = "★ " + got + " got it";
   }
 
@@ -625,18 +543,14 @@
     view.appendChild(grid);
 
     mg.mode = "def";
-    toolbar
-      .querySelector("#mg-mode-def")
-      .addEventListener("click", function () {
-        mg.mode = "def";
-        newMatchRound();
-      });
-    toolbar
-      .querySelector("#mg-mode-img")
-      .addEventListener("click", function () {
-        mg.mode = "img";
-        newMatchRound();
-      });
+    toolbar.querySelector("#mg-mode-def").addEventListener("click", function () {
+      mg.mode = "def";
+      newMatchRound();
+    });
+    toolbar.querySelector("#mg-mode-img").addEventListener("click", function () {
+      mg.mode = "img";
+      newMatchRound();
+    });
     toolbar.querySelector("#mg-new").addEventListener("click", newMatchRound);
 
     newMatchRound();
@@ -674,12 +588,7 @@
       b.type = "button";
       b.dataset.id = String(o.id);
       var html = '<span class="term-en">' + esc(o.p.term) + "</span>";
-      if (o.p.termEs)
-        html += ' <span class="term-es">/ ' + esc(o.p.termEs) + "</span>";
-      if (o.p.termVi)
-        html += ' <span class="term-vi">/ ' + esc(o.p.termVi) + "</span>";
-      if (o.p.termAr)
-        html += ' <span class="term-ar">/ ' + esc(o.p.termAr) + "</span>";
+      if (o.p.termEs) html += ' <span class="term-es">/ ' + esc(o.p.termEs) + "</span>";
       b.innerHTML = html;
       b.addEventListener("click", function () {
         selectLeft(b, o.id);
@@ -698,12 +607,7 @@
           '" alt="Picture for a math word"><span class="def-en">picture</span>';
       } else {
         var html = '<span class="def-en">' + esc(o.p.definition) + "</span>";
-        if (o.p.definitionEs)
-          html += '<span class="def-es"> ' + esc(o.p.definitionEs) + "</span>";
-        if (o.p.definitionVi)
-          html += '<span class="def-vi"> ' + esc(o.p.definitionVi) + "</span>";
-        if (o.p.definitionAr)
-          html += '<span class="def-ar"> ' + esc(o.p.definitionAr) + "</span>";
+        if (o.p.definitionEs) html += '<span class="def-es"> ' + esc(o.p.definitionEs) + "</span>";
         b.innerHTML = html;
       }
       b.addEventListener("click", function () {
@@ -719,9 +623,7 @@
 
   function selectLeft(btn, id) {
     if (btn.classList.contains("matched")) return;
-    var prev = document.querySelector(
-      "#mg-grid .match-col:first-child .selected",
-    );
+    var prev = document.querySelector("#mg-grid .match-col:first-child .selected");
     if (prev) prev.classList.remove("selected");
     mg.selectedLeft = id;
     btn.classList.add("selected");
@@ -809,9 +711,7 @@
             kind: "example",
             item: it,
             promptEn: 'Which is an example of "' + it.term + '"?',
-            promptEs: it.termEs
-              ? "¿Cuál es un ejemplo de «" + it.termEs + "»?"
-              : "",
+            promptEs: it.termEs ? "¿Cuál es un ejemplo de «" + it.termEs + "»?" : "",
             options: opts.map(function (o) {
               return { text: o.text, correct: o === correct, why: o.why };
             }),
@@ -865,9 +765,7 @@
           kind: "define",
           item: it,
           promptEn: "Which word means: " + it.definition,
-          promptEs: it.definitionEs
-            ? "¿Qué palabra significa: " + it.definitionEs
-            : "",
+          promptEs: it.definitionEs ? "¿Qué palabra significa: " + it.definitionEs : "",
           options: defOpts.map(function (t) {
             return { text: t, correct: t === it.term };
           }),
@@ -895,10 +793,8 @@
     var showEs = state.lang !== "en";
     var showEn = state.lang !== "es";
 
-    if (showEn || !q.promptEs)
-      card.appendChild(el("p", "quiz-prompt", esc(q.promptEn)));
-    if (showEs && q.promptEs)
-      card.appendChild(el("p", "quiz-prompt-es", esc(q.promptEs)));
+    if (showEn || !q.promptEs) card.appendChild(el("p", "quiz-prompt", esc(q.promptEn)));
+    if (showEs && q.promptEs) card.appendChild(el("p", "quiz-prompt-es", esc(q.promptEs)));
 
     if (q.kind === "cloze" || q.kind === "define" || q.kind === "example") {
       var img = el("img", "quiz-img");
@@ -956,9 +852,7 @@
 
     var nextBtn = el("button", "btn btn-primary");
     nextBtn.textContent =
-      qz.idx + 1 < qz.questions.length
-        ? "Next → · Siguiente"
-        : "See score · Ver puntaje";
+      qz.idx + 1 < qz.questions.length ? "Next → · Siguiente" : "See score · Ver puntaje";
     nextBtn.style.marginTop = "14px";
     nextBtn.addEventListener("click", function () {
       qz.idx++;
@@ -1037,12 +931,10 @@
     btn.focus();
     announce(msg);
   }
-  document
-    .getElementById("celebrate-close")
-    .addEventListener("click", function () {
-      celebrateEl.hidden = true;
-      celebrateEl.setAttribute("aria-hidden", "true");
-    });
+  document.getElementById("celebrate-close").addEventListener("click", function () {
+    celebrateEl.hidden = true;
+    celebrateEl.setAttribute("aria-hidden", "true");
+  });
 
   /* ============================================================
      MODE 5 — ADVENTURE EXPEDITION (QUEST)
@@ -1085,11 +977,7 @@
 
     // 2. Powerups Shop
     var shop = el("div", "quest-shop");
-    var shopTitle = el(
-      "div",
-      "quest-shop-title",
-      "🛍️ Adventurer's Power-up Shop",
-    );
+    var shopTitle = el("div", "quest-shop-title", "🛍️ Adventurer's Power-up Shop");
     var shopItems = el("div", "quest-shop-items");
 
     var itemsData = [
@@ -1140,8 +1028,7 @@
           saveStore(store);
 
           document.getElementById("qst-coins").textContent = store.coins;
-          document.getElementById("shop-qty-" + item.key).textContent =
-            store.powerups[item.key];
+          document.getElementById("shop-qty-" + item.key).textContent = store.powerups[item.key];
           announce("Purchased " + item.name);
         } else {
           alert("Not enough coins! / ¡No tienes suficientes monedas!");
@@ -1169,10 +1056,7 @@
     var pathStr =
       "M 40 180 C 60 120, 70 80, 90 80 C 110 80, 130 140, 150 160 C 170 180, 190 100, 210 80 C 230 60, 250 140, 270 160 C 290 180, 310 100, 330 80 C 350 60, 370 140, 390 160 C 410 180, 430 100, 450 80 C 470 60, 490 140, 510 160 C 530 180, 540 120, 560 100";
 
-    var mapPath = document.createElementNS(
-      "http://www.w3.org/2000/svg",
-      "path",
-    );
+    var mapPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
     mapPath.setAttribute("d", pathStr);
     mapPath.setAttribute("fill", "none");
     mapPath.setAttribute("stroke", "#cbd5e1");
@@ -1224,10 +1108,7 @@
       t.setAttribute("font-weight", "900");
       t.textContent = st.u;
 
-      var title = document.createElementNS(
-        "http://www.w3.org/2000/svg",
-        "title",
-      );
+      var title = document.createElementNS("http://www.w3.org/2000/svg", "title");
       title.textContent =
         "Unit " +
         st.u +
@@ -1265,11 +1146,7 @@
       certBox.style.background = "#f0fdf4";
       certBox.style.borderColor = "#bbf7d0";
 
-      var printBtn = el(
-        "button",
-        "btn btn-primary",
-        "🖨️ Print Achievement Certificate",
-      );
+      var printBtn = el("button", "btn btn-primary", "🖨️ Print Achievement Certificate");
       printBtn.addEventListener("click", showCertificate);
       certBox.appendChild(printBtn);
       view.appendChild(certBox);
@@ -1278,10 +1155,7 @@
 
   function startQuestChallenge(unitNum) {
     var unitTerms = state.items.filter(function (it) {
-      return (
-        it.units.indexOf(unitNum) !== -1 ||
-        it.units.indexOf(String(unitNum)) !== -1
-      );
+      return it.units.indexOf(unitNum) !== -1 || it.units.indexOf(String(unitNum)) !== -1;
     });
 
     if (unitTerms.length < 1) {
@@ -1299,12 +1173,7 @@
       return {
         kind: "define",
         item: it,
-        promptEn:
-          "Unit " +
-          unitNum +
-          ' Challenge: Which word means "' +
-          it.definition +
-          '"?',
+        promptEn: "Unit " + unitNum + ' Challenge: Which word means "' + it.definition + '"?',
         promptEs: it.definitionEs
           ? "Desafío de la Unidad " +
             unitNum +
@@ -1379,33 +1248,21 @@
     var pBar = el("div", "powerups-bar");
     pBar.innerHTML = "<strong>🎒 Power-ups:</strong>";
 
-    var halfBtn = el(
-      "button",
-      "powerup-btn",
-      "🃏 50/50 (" + store.powerups.halfHalf + ")",
-    );
+    var halfBtn = el("button", "powerup-btn", "🃏 50/50 (" + store.powerups.halfHalf + ")");
     halfBtn.disabled = store.powerups.halfHalf < 1 || qst.halfHalfUsed;
     halfBtn.addEventListener("click", function () {
       usePowerup("halfHalf", halfBtn);
     });
     pBar.appendChild(halfBtn);
 
-    var transBtn = el(
-      "button",
-      "powerup-btn",
-      "🗣️ Translate (" + store.powerups.translate + ")",
-    );
+    var transBtn = el("button", "powerup-btn", "🗣️ Translate (" + store.powerups.translate + ")");
     transBtn.disabled = store.powerups.translate < 1 || qst.translateUsed;
     transBtn.addEventListener("click", function () {
       usePowerup("translate", transBtn);
     });
     pBar.appendChild(transBtn);
 
-    var clueBtn = el(
-      "button",
-      "powerup-btn",
-      "🔍 Clue (" + store.powerups.clue + ")",
-    );
+    var clueBtn = el("button", "powerup-btn", "🔍 Clue (" + store.powerups.clue + ")");
     clueBtn.disabled = store.powerups.clue < 1 || qst.clueUsed;
     clueBtn.addEventListener("click", function () {
       usePowerup("clue", clueBtn);
@@ -1442,11 +1299,7 @@
     saveStore(store);
 
     btn.textContent =
-      (kind === "halfHalf"
-        ? "🃏 50/50"
-        : kind === "translate"
-          ? "🗣️ Translate"
-          : "🔍 Clue") +
+      (kind === "halfHalf" ? "🃏 50/50" : kind === "translate" ? "🗣️ Translate" : "🔍 Clue") +
       " (" +
       store.powerups[kind] +
       ")";
@@ -1489,11 +1342,7 @@
       var hintText = el(
         "div",
         "tag got-it",
-        'Clue: Starts with letter "' +
-          firstLetter +
-          '" / Empieza con "' +
-          firstLetter +
-          '"',
+        'Clue: Starts with letter "' + firstLetter + '" / Empieza con "' + firstLetter + '"',
       );
       hintText.style.margin = "8px auto";
       hintText.style.display = "block";
@@ -1540,8 +1389,7 @@
     }
 
     var nextBtn = el("button", "btn btn-primary");
-    nextBtn.textContent =
-      qst.idx + 1 < qst.questions.length ? "Next →" : "Finish Challenge";
+    nextBtn.textContent = qst.idx + 1 < qst.questions.length ? "Next →" : "Finish Challenge";
     nextBtn.style.marginTop = "14px";
     nextBtn.addEventListener("click", function () {
       qst.idx++;
@@ -1586,21 +1434,13 @@
         "<p>Try again to get a perfect 3/3 score to pass this station!</p>";
     }
 
-    var returnBtn = el(
-      "button",
-      "btn btn-primary",
-      "🗺️ Return to Expedition Map",
-    );
+    var returnBtn = el("button", "btn btn-primary", "🗺️ Return to Expedition Map");
     returnBtn.addEventListener("click", renderQuest);
     card.appendChild(returnBtn);
     view.appendChild(card);
 
     if (isPerfect) {
-      celebrate(
-        "Expedition station " +
-          qst.activeUnit +
-          " conquered! / ¡Estación completada!",
-      );
+      celebrate("Expedition station " + qst.activeUnit + " conquered! / ¡Estación completada!");
     } else {
       announce("Expedition station finished. Score " + pct + " percent.");
     }
@@ -1684,18 +1524,13 @@
 
   /* ---------------- theme ---------------- */
   function applyTheme(theme) {
-    if (theme === "dark")
-      document.documentElement.setAttribute("data-theme", "dark");
-    else if (theme === "light")
-      document.documentElement.setAttribute("data-theme", "light");
+    if (theme === "dark") document.documentElement.setAttribute("data-theme", "dark");
+    else if (theme === "light") document.documentElement.setAttribute("data-theme", "light");
     else document.documentElement.removeAttribute("data-theme");
   }
   function initTheme() {
     if (store.theme) applyTheme(store.theme);
-    else if (
-      window.matchMedia &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches
-    )
+    else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches)
       applyTheme("dark");
     document.getElementById("theme-btn").addEventListener("click", function () {
       var cur = document.documentElement.getAttribute("data-theme");
@@ -1742,8 +1577,6 @@
     })
     .catch(function (err) {
       loadingEl.textContent =
-        "Could not load vocabulary. Open this page from a web server. (" +
-        err.message +
-        ")";
+        "Could not load vocabulary. Open this page from a web server. (" + err.message + ")";
     });
 })();
