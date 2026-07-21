@@ -4,7 +4,7 @@
 // small `pop` accent (hero underline + focus glow), giving a quiet at-a-glance
 // cue for which group you're in without a full theme change. Name + emoji carry
 // the rest of the identity.
-const SG_PALETTE = { hue: "#33568f", deep: "#1e3358", soft: "#eef2fa" };
+const SG_PALETTE = { hue: "#33568f", deep: "#284164", soft: "#eef2fa" };
 export const ACCENTS = {
   group1: { name: "Foundations", ...SG_PALETTE, pop: "#2f8f7d", emoji: "🤝" },
   group2: { name: "Challenge", ...SG_PALETTE, pop: "#e0a63c", emoji: "🚀" },
@@ -15,7 +15,14 @@ export const ACCENTS = {
 // always shown; Spanish is the only additional lane (Joel directive
 // 2026-07-16: English and Spanish only — do not add other languages).
 export const VOCAB_LANGS = [
-  { id: "es", suffix: "Es", label: "Español", speech: "es-ES", dir: "ltr" },
+  {
+    id: "es",
+    suffix: "Es",
+    label: "Español",
+    toggleLabel: "English + Spanish",
+    speech: "es-ES",
+    dir: "ltr",
+  },
 ];
 
 // Objectives are authored in facilitation voice ("With my small group, I
@@ -241,15 +248,15 @@ export function injectSmallGroupStyles(accent) {
   const styles = document.createElement("style");
   styles.id = "sg-styles";
   styles.textContent = `
-    :root{--sg-line:#d9e0e8;--sg-paper:#f4f1e9;--sg-card:#fff;--sg-text:#172033;--sg-muted:#536174;--sg-good:#16734b;--sg-warn:#9a4b05}
+    :root{--sg-line:#d9e0e8;--sg-paper:#f4f1e9;--sg-card:#fff;--sg-text:#24314a;--sg-muted:#5a687c;--sg-good:#16734b;--sg-warn:#9a4b05}
     *{box-sizing:border-box}
     html{scroll-behavior:smooth}
-    body{margin:0;color:var(--sg-text);font-family:"Atkinson Hyperlegible",system-ui,sans-serif;font-size:17px;line-height:1.55;background-color:var(--sg-paper);background-image:radial-gradient(circle at 1px 1px,rgba(23,32,51,.08) 1px,transparent 0);background-size:24px 24px;-webkit-font-smoothing:antialiased}
+    body{margin:0;color:var(--sg-text);font-family:"Atkinson Hyperlegible",system-ui,sans-serif;font-size:17px;line-height:1.55;background-color:var(--sg-paper);background-image:radial-gradient(circle at 1px 1px,rgba(23,32,51,.08) 1px,transparent 0);background-size:24px 24px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;font-optical-sizing:auto}
     button,input,textarea{font:inherit}
     button,a,input,textarea,summary{outline-offset:4px}
     button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid var(--sg-deep);box-shadow:0 0 0 6px color-mix(in srgb,var(--sg-pop) 45%,transparent)}
     #app{max-width:1040px;margin:0 auto;padding:0 22px 100px}
-    h1,h2,h3{font-family:"Nunito","Atkinson Hyperlegible",sans-serif;line-height:1.14;margin:0}
+    h1,h2,h3{font-family:"Nunito","Atkinson Hyperlegible",sans-serif;line-height:1.14;letter-spacing:-.01em;margin:0}
     p{margin:0 0 12px}
     .sg-hero{position:relative;overflow:hidden;margin:0 -22px 24px;padding:30px 28px 28px;color:#fff;background:linear-gradient(118deg,var(--sg-deep),var(--sg) 70%,color-mix(in srgb,var(--sg) 72%,white));border-bottom:8px solid var(--sg-pop)}
     .sg-hero::after{content:"";position:absolute;right:-55px;top:-90px;width:250px;height:250px;border:42px solid rgba(255,255,255,.11);border-radius:50%;transform:rotate(-12deg)}
@@ -275,7 +282,7 @@ export function injectSmallGroupStyles(accent) {
     .sg-teacher summary{cursor:pointer;padding:13px 16px;font-family:"Nunito",sans-serif;font-weight:900;color:var(--sg-deep)}
     .sg-tbody{padding:0 18px 18px}.sg-tbody li{margin:5px 0}.sg-frames,.sg-wordbank{display:flex;flex-wrap:wrap;gap:8px}
     .sg-frame,.sg-word{padding:7px 11px;border-radius:9px;background:var(--sg-soft);color:var(--sg-deep);font-weight:700}
-    .sg-mode{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 -22px;padding:9px 22px;color:#fff;background:#172033;font-family:"Nunito",sans-serif;font-size:14px;font-weight:900}
+    .sg-mode{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 -22px;padding:9px 22px;color:#fff;background:#28344c;font-family:"Nunito",sans-serif;font-size:14px;font-weight:900}
     .sg-mode-action{min-height:44px;padding:9px 12px;border:1px solid rgba(255,255,255,.5);border-radius:9px;color:#fff;text-decoration:none}
     .sg-mode--teacher{background:#58320a}.sg-mode-notice{margin:12px 0;padding:11px 14px;border:1px solid #d97706;border-radius:11px;color:#743706;background:#fff5e7}
     .sg-rail{position:sticky;top:0;z-index:30;display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:5px;margin:0 -10px 28px;padding:10px;border:1px solid rgba(23,32,51,.09);border-radius:0 0 16px 16px;background:rgba(244,241,233,.94);backdrop-filter:blur(12px);box-shadow:0 5px 18px rgba(23,32,51,.08)}
@@ -310,6 +317,9 @@ export function injectSmallGroupStyles(accent) {
     .btn:hover:not(:disabled){transform:translateY(-1px)}.btn:active:not(:disabled){transform:translateY(1px) scale(.98)}.btn.ghost{color:var(--sg-deep);background:#fff}.btn:disabled{opacity:.55;cursor:default}
     .sg-pulse-btn,.sg-role-btn,.sg-match-btn{padding:9px 13px;border:2px solid var(--sg-line);color:var(--sg-text);background:#fff;font-weight:700;text-align:left}
     .sg-pulse-btn:hover,.sg-role-btn:hover,.sg-match-btn:hover{border-color:var(--sg)}
+    .sg-match-btn.correct{border-color:var(--sg-good);background:#e9f8f0;color:#0e5033;animation:sg-okpulse .5s ease}
+    .sg-match-btn.wrong{border-color:#bd3c31;background:#fff0ee;color:#7c2d24;animation:sg-nudge .3s ease}
+    .sg-match-btn:disabled{cursor:default;opacity:.7}
     .sg-pulse-btn[aria-pressed="true"],.sg-role-btn.active{border-color:var(--sg);color:var(--sg-deep);background:var(--sg-soft)}
     .sg-ta{width:100%;min-height:82px;padding:11px 12px;border:2px solid var(--sg-line);border-radius:10px;color:var(--sg-text);background:#fff;resize:vertical}
     .keyidea{margin:18px 0 8px;padding:16px 18px;border-left:6px solid var(--sg);border-radius:12px;background:var(--sg-soft);color:var(--sg-deep);font-size:20px;line-height:1.5;font-weight:700}
@@ -495,7 +505,7 @@ export function injectSmallGroupStyles(accent) {
        because the passport stylesheet lazy-loads after this one. */
     .ntp-pill{top:70px!important;left:10px!important}}
     @media(max-width:420px){body{font-size:16px}.sg-hero h1{font-size:29px}.sg-context,.sg-talk-q{font-size:17px}.sg-tabs{position:static;grid-template-columns:repeat(2,1fr)}.sg-problem-nav{grid-template-columns:1fr 1fr}.sg-problem-count{grid-column:1/-1;grid-row:1}.sg-problem-support-head{align-items:flex-start;flex-direction:column}.sg-problem-visual svg{min-height:210px}.sg-fill-step{grid-template-columns:auto minmax(0,1fr)}.sg-step-check{grid-column:2}.sg-step-status{grid-column:1/-1}.btn,.sg-pulse-btn,.sg-role-btn,.sg-match-btn,.choice{width:100%;justify-content:flex-start}.sg-timer{align-items:flex-start;flex-direction:column}.sg-timer-track{width:100%;flex:none}}
-    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.sg-burst{display:none!important}.sg-hero-mark{animation:none}.sg-tabpanel:not([hidden]){animation:none}.sg-meter-fill::after{animation:none}.choice.correct,.choice.wrong,.fillin.ok,.fillin.bad,.stepfill.ok,.stepfill.bad,.sg-fill-step.complete{animation:none}.btn,.choice{transition:none}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.sg-burst{display:none!important}.sg-hero-mark{animation:none}.sg-tabpanel:not([hidden]){animation:none}.sg-meter-fill::after{animation:none}.choice.correct,.choice.wrong,.sg-match-btn.correct,.sg-match-btn.wrong,.fillin.ok,.fillin.bad,.stepfill.ok,.stepfill.bad,.sg-fill-step.complete{animation:none}.btn,.choice{transition:none}}
     @media print{body{background:#fff}.sg-mode,.sg-tabs,.sg-rail,.sg-meter,.sg-reveal,.sg-toolrow,.sg-pulse,.sg-timer,.sg-foot,.sg-teacher,.btn,.sg-speak,#mwb-launcher,.sg-problem-nav,.sg-annotation-tools{display:none!important}.sg-tabpanel[hidden]{display:block!important}.prob[hidden]{display:block!important}.sg-fill-step[hidden]{display:grid!important}.sg-fill-step.locked,.gs-row.locked,.sg-stage.locked,.sg-apply-step.locked{opacity:1!important;pointer-events:auto}.sg-reveal-answer[hidden]{display:inline-block!important}#app{max-width:none;padding:0}.sg-hero{margin:0 0 16px;padding:0 0 12px;color:#111;background:#fff;border-bottom:3px solid #111}.sg-hero h1,.sg-obj,.sg-langobj{color:#111}.sg-kicker,.sg-chip{color:#111;background:#eee;border-color:#bbb}.card,.sg-mission,.sg-talk,.prob,.sg-vcard{box-shadow:none;break-inside:avoid}.sg-mission{display:block}.sg-mission-visual{display:none}.sg-sec{margin-bottom:18px}}
   `;
   document.head.appendChild(styles);
