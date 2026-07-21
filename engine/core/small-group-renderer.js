@@ -260,6 +260,8 @@ function hero(config, accent, voice) {
   if (sceneName) {
     copy.appendChild(el("div", "sg-hero-scene-chip", `Scene · ${esc(sceneName)}`));
   }
+  const mathMove = mathMoveOfTheDay(config);
+  if (mathMove) copy.appendChild(mathMove);
   const mark = el("div", "sg-hero-mark sg-scene-enter");
   if (config.theme && mountThemeArt(mark, config.theme, "", config.heroFigure)) {
     mark.classList.add("has-theme");
@@ -269,6 +271,84 @@ function hero(config, accent, voice) {
   grid.append(copy, mark);
   container.appendChild(grid);
   return container;
+}
+
+// Guided one-tap challenge: launches the lesson's primary manipulative with a
+// short, ESOL-friendly prompt. Additive — never gates progress.
+const MATH_MOVE_COPY = {
+  "drag-sort": {
+    label: "Sort it",
+    challenge: "Put each piece in the right place — then say why aloud.",
+  },
+  "fill-table": {
+    label: "Fill the table",
+    challenge: "Complete one row, check the pattern, then explain it.",
+  },
+  "number-line": {
+    label: "Place it",
+    challenge: "Snap the point to the right tick — then say what the jump means.",
+  },
+  "coordinate-grid": {
+    label: "Plot it",
+    challenge: "Plot one point carefully. Name the ordered pair out loud.",
+  },
+  "balance-scale": {
+    label: "Balance it",
+    challenge: "Keep both sides equal. Say the move that preserves balance.",
+  },
+  "bar-model": {
+    label: "Build the bar",
+    challenge: "Build the model to match the story. Point to the unknown.",
+  },
+  "factor-tree": {
+    label: "Split it",
+    challenge: "Split until every leaf is prime. Glow means you’re done.",
+  },
+  "factor-tree-lab": {
+    label: "Split it",
+    challenge: "Split until every leaf is prime. Glow means you’re done.",
+  },
+  "tape-diagram": {
+    label: "Show the tape",
+    challenge: "Adjust the tape so the parts match the problem.",
+  },
+};
+
+function mathMoveOfTheDay(config) {
+  const exploreType = config.explore?.type;
+  const diagramKind = config.connect?.diagram?.kind || config.explore?.diagram?.kind || "";
+  const key =
+    (exploreType && MATH_MOVE_COPY[exploreType] && exploreType) ||
+    (MATH_MOVE_COPY[diagramKind] && diagramKind) ||
+    (diagramKind.includes("factor") ? "factor-tree" : null) ||
+    (diagramKind.includes("number-line") ? "number-line" : null) ||
+    (diagramKind.includes("tape") || diagramKind.includes("bar") ? "bar-model" : null);
+  const copy = key && MATH_MOVE_COPY[key];
+  if (!copy) return null;
+  const chip = el("button", "sg-math-move", "");
+  chip.type = "button";
+  chip.innerHTML = `<span class="sg-math-move-kicker">Math move of the day</span><span class="sg-math-move-label">${esc(copy.label)}</span><span class="sg-math-move-hint">${esc(copy.challenge)}</span>`;
+  chip.setAttribute("aria-label", `Math move of the day: ${copy.label}. ${copy.challenge}`);
+  chip.onclick = () => {
+    // Prefer Explore Lab; fall back to Model Lab / Learn tab.
+    const exploreTab = document.getElementById("sg-tab-sg-tab-learn");
+    exploreTab?.click();
+    const target =
+      document.getElementById("sg-explore") ||
+      document.getElementById("sg-model") ||
+      document.getElementById("sg-guided-practice");
+    target?.scrollIntoView({ behavior: "smooth", block: "start" });
+    target?.classList.add("sg-math-move-pulse");
+    window.setTimeout(() => target?.classList.remove("sg-math-move-pulse"), 1200);
+    const note = target?.querySelector(".sg-math-move-challenge");
+    if (!note && target) {
+      const banner = el("div", "sg-math-move-challenge", esc(copy.challenge));
+      banner.setAttribute("role", "status");
+      target.prepend(banner);
+      window.setTimeout(() => banner.remove(), 8000);
+    }
+  };
+  return chip;
 }
 
 function footer() {
@@ -532,6 +612,9 @@ function renderStudio(config) {
       includeOptional: true,
       indexOffset: guidedCount + independentItems.length,
       mode: "more",
+      // Restore last session's coach path so More Practice reorders on boot
+      // the same way a live "Find our next move" choice would.
+      adaptivePath: state.adaptivePath || store.get("adaptivePath") || "connect",
     },
   );
   const apply = createApplyLab(config, variant, {

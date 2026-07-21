@@ -1588,9 +1588,51 @@ export function appendVisualPractice(card, item, { mode = "guided", events = {} 
   const visual = el("div", "sg-problem-visual", markup);
   const title = el("div", "sg-visual-title", "See the math");
   const top = el("div", "sg-problem-support-head");
-  top.append(title, read);
+  // Dual-representation toggle: symbolic ↔ visual on the same card.
+  const toggle = el("button", "btn ghost sg-dual-toggle", "𝑎𝑏 Symbolic");
+  toggle.type = "button";
+  toggle.setAttribute("aria-pressed", "false");
+  toggle.title = "Toggle symbolic and visual views";
+  const symbolic = el(
+    "div",
+    "sg-symbolic-view",
+    `<p class="sg-symbolic-eq">${esc(item.stem || item.title || "Look at the model, then write the math.")}</p>`,
+  );
+  symbolic.hidden = true;
+  let showingSymbolic = false;
+  toggle.onclick = () => {
+    showingSymbolic = !showingSymbolic;
+    visual.hidden = showingSymbolic;
+    symbolic.hidden = !showingSymbolic;
+    toggle.textContent = showingSymbolic ? "▣ Visual" : "𝑎𝑏 Symbolic";
+    toggle.setAttribute("aria-pressed", showingSymbolic ? "true" : "false");
+    title.textContent = showingSymbolic ? "Read the math" : "See the math";
+  };
+  top.append(title, toggle, read);
   const tool = interactiveTool(item, mode === "guided");
-  question?.after(top, visual, tool, ...stepsNodes);
+  // “What changed?” morph strip — flashes when the student revises an answer
+  // on tape / bar / area style visuals so the model feels alive.
+  const morphKinds = /tape|bar|area|fraction|rect/;
+  let morph = null;
+  if (morphKinds.test(kind)) {
+    morph = el("div", "sg-what-changed");
+    morph.hidden = true;
+    morph.setAttribute("role", "status");
+    morph.innerHTML =
+      '<span class="sg-what-changed-label">What changed?</span> <span class="sg-what-changed-body">Watch the model update with your thinking.</span>';
+    const flashMorph = () => {
+      morph.hidden = false;
+      morph.classList.remove("is-flash");
+      void morph.offsetWidth;
+      morph.classList.add("is-flash");
+      visual.classList.remove("sg-morph-pulse");
+      void visual.offsetWidth;
+      visual.classList.add("sg-morph-pulse");
+    };
+    card.addEventListener("input", flashMorph);
+    card.addEventListener("change", flashMorph);
+  }
+  question?.after(top, visual, symbolic, ...(morph ? [morph] : []), tool, ...stepsNodes);
   return card;
 }
 

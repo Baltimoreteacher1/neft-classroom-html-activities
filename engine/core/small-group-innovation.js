@@ -144,6 +144,104 @@ function proveStep(labelText) {
   return card;
 }
 
+/** Drag/tap factors into a product tray, then check — deepens Prove It for factor trees. */
+function createFactorBuildStrip(problem, state, store) {
+  const stem = String(problem.stem || problem.title || "");
+  const answer = String(problem.answer || problem.sampleAnswer || "");
+  // Detect a product-of-primes style answer like "2 × 2 × 3 × 5" or "2^2 × 3".
+  const productMatch =
+    answer.match(/\d+(?:\s*[×x*]\s*\d+)+/) || stem.match(/prime factorization of\s+(\d+)/i);
+  if (!productMatch && !/factor|prime/i.test(stem)) return null;
+  const targetNum = Number(
+    (stem.match(/prime factorization of\s+(\d+)/i) || [])[1] ||
+      (stem.match(/\b(\d{2,3})\b/) || [])[1],
+  );
+  if (!Number.isFinite(targetNum) || targetNum < 4) return null;
+  // Candidate chips: small primes + a couple of composites that tempt mistakes.
+  const primes = [2, 3, 5, 7].filter((p) => p <= targetNum);
+  const chips = [...primes, Math.min(9, targetNum - 1), Math.min(4, targetNum - 1)].filter(
+    (n, i, arr) => n >= 2 && arr.indexOf(n) === i,
+  );
+  const wrap = el("div", "sg-factor-build");
+  wrap.appendChild(
+    el("p", "block-lab", `Build-then-check: tap factors so their product equals ${targetNum}.`),
+  );
+  const tray = el("div", "sg-factor-tray");
+  tray.setAttribute("aria-label", "Product tray");
+  tray.dataset.empty = "Drop factors here";
+  const bank = el("div", "sg-factor-bank");
+  const product = [];
+  const status = el("div", "fb");
+  status.setAttribute("aria-live", "polite");
+  const refresh = () => {
+    tray.innerHTML = "";
+    if (!product.length) {
+      tray.textContent = "Tap factors below →";
+      tray.dataset.empty = "1";
+    } else {
+      tray.dataset.empty = "0";
+      product.forEach((n, index) => {
+        const chip = el("button", "sg-factor-chip on", String(n));
+        chip.type = "button";
+        chip.title = "Remove";
+        chip.onclick = () => {
+          product.splice(index, 1);
+          refresh();
+        };
+        tray.appendChild(chip);
+        if (index < product.length - 1) tray.appendChild(el("span", "sg-factor-op", "×"));
+      });
+    }
+  };
+  chips.forEach((n) => {
+    const chip = el("button", "sg-factor-chip", String(n));
+    chip.type = "button";
+    chip.onclick = () => {
+      if (product.length >= 6) return;
+      product.push(n);
+      refresh();
+    };
+    bank.appendChild(chip);
+  });
+  const check = el("button", "btn", "Check my product");
+  check.type = "button";
+  check.onclick = () => {
+    if (!product.length) {
+      status.className = "fb show no";
+      status.textContent = "Add at least one factor first.";
+      return;
+    }
+    const value = product.reduce((a, b) => a * b, 1);
+    const allPrime = product.every((n) => {
+      if (n < 2) return false;
+      for (let i = 2; i * i <= n; i++) if (n % i === 0) return false;
+      return true;
+    });
+    if (value === targetNum && allPrime) {
+      status.className = "fb show ok";
+      status.innerHTML = `✅ <b>${product.join(" × ")} = ${targetNum}</b> — every factor is prime. That proves the factorization.`;
+      state.factorBuildOk = true;
+      store?.set("factorBuildOk", true);
+      celebrate("✓");
+    } else if (value === targetNum) {
+      status.className = "fb show no";
+      status.textContent = `Product is ${targetNum}, but a factor is still composite. Keep splitting until every chip is prime.`;
+    } else {
+      status.className = "fb show no";
+      status.textContent = `${product.join(" × ")} = ${value}, not ${targetNum}. Adjust the factors.`;
+    }
+  };
+  const row = el("div", "row");
+  row.appendChild(check);
+  wrap.append(tray, bank, row, status);
+  refresh();
+  if (store?.get("factorBuildOk") || state.factorBuildOk) {
+    status.className = "fb show ok";
+    status.textContent = "✓ Product build completed last session — explain it again out loud.";
+  }
+  return wrap;
+}
+
 export function createProveItLab(config, variant, state, onDone, store = null) {
   const section = el("section", "sg-sec sg-lab");
   section.id = "sg-prove";
@@ -262,6 +360,9 @@ export function createProveItLab(config, variant, state, onDone, store = null) {
   const proveRow = el("div", "row");
   proveRow.appendChild(proveBtn);
   prove.append(grid, promptEl, proveTa, proveRow, proveFb);
+  // Factor lessons: deepen “Model it” with a build-then-check product strip.
+  const factorBuild = createFactorBuildStrip(problem, state, store);
+  if (factorBuild) prove.appendChild(factorBuild);
   section.appendChild(prove);
   steps.push(prove);
 
@@ -547,9 +648,9 @@ export function createAdaptiveCoach(variant, state, store = null) {
       document.getElementById(targetId)?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
   const PATH_ACTIONS = {
-    stabilize: ["🧰 Supports are open — go to my problems", () => goToTab("sg-tab-practice")],
+    stabilize: ["🧰 Supports open — scaffold problems first", () => goToTab("sg-tab-more")],
     connect: ["🔗 Open the Model Lab", () => goToTab("sg-tab-learn", "sg-model")],
-    stretch: ["🚀 Jump to More Practice", () => goToTab("sg-tab-more")],
+    stretch: ["🚀 Jump to More Practice (stretch set)", () => goToTab("sg-tab-more")],
   };
   const render = (path) => {
     state.adaptivePath = path.id;

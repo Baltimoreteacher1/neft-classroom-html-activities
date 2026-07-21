@@ -96,8 +96,13 @@ function ensureStyles() {
   .ftb-node{display:flex;flex-direction:column;align-items:center;gap:4px;}
   .ftb-bubble{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;
     font-weight:800;font-size:1rem;border:2px solid ${C.compStroke};background:${C.compFill};color:${C.compInk};}
-  .ftb-bubble.prime{border-color:${C.primeStroke};background:${C.primeFill};color:${C.primeInk};}
-  .ftb-bubble.root{width:48px;height:48px;font-size:1.1rem;border-color:${C.navy};color:${C.navy};background:#eef4fb;}
+  .ftb-bubble.prime{border-color:${C.primeStroke};background:${C.primeFill};color:${C.primeInk};
+    box-shadow:0 0 0 0 rgba(13,122,118,.35);animation:ftb-prime-glow 1.6s ease-in-out infinite;}
+  .ftb-bubble.root{width:48px;height:48px;font-size:1.1rem;border-color:${C.navy};color:${C.navy};background:#eef4fb;animation:none;box-shadow:none;}
+  .ftb-bubble.composite-nudge{animation:ftb-nudge .55s ease;border-color:${C.wrong};}
+  @keyframes ftb-prime-glow{0%,100%{box-shadow:0 0 0 0 rgba(13,122,118,.28)}50%{box-shadow:0 0 0 8px rgba(13,122,118,0)}}
+  @keyframes ftb-nudge{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
+  @media (prefers-reduced-motion:reduce){.ftb-bubble.prime{animation:none;box-shadow:0 0 0 3px rgba(13,122,118,.25)}.ftb-bubble.composite-nudge,.ftb-split.shake,.ftb-exp-input.wrong{animation:none}}
   .ftb-prime-tag{font-size:.62rem;font-weight:800;color:${C.primeStroke};text-transform:uppercase;letter-spacing:.04em;}
   .ftb-split{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:3px;margin-top:2px;}
   .ftb-fac{width:34px;height:30px;border:2px dashed ${C.compStroke};border-radius:7px;background:#fffdf7;color:${C.ink};
@@ -125,7 +130,9 @@ function ensureStyles() {
   .ftb-root-in>.ftb-node{animation:ftb-root-pop .45s cubic-bezier(.34,1.56,.64,1) backwards;}
   @keyframes ftb-root-pop{from{transform:scale(.6);opacity:0;}to{transform:scale(1);opacity:1;}}
   @media (prefers-reduced-motion:reduce){
-    .ftb-split.shake,.ftb-li-in>.ftb-node,.ftb-kids-in::before,.ftb-li-in::before,
+    .ftb-bubble.prime{animation:none;box-shadow:0 0 0 3px rgba(13,122,118,.25)}
+    .ftb-bubble.composite-nudge,.ftb-split.shake,.ftb-exp-input.wrong,
+    .ftb-li-in>.ftb-node,.ftb-kids-in::before,.ftb-li-in::before,
     .ftb-li-in::after,.ftb-li-in .ftb-prime-tag,.ftb-root-in>.ftb-node{animation:none;}
   }
   .ftb-controls{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:12px;}
@@ -291,17 +298,33 @@ export function renderFactorTreeFill(host, cfg) {
     if (a < 2 || b < 2) {
       err.textContent = "Use factors greater than 1.";
       shake(form);
+      nudgeBubble(n);
       return;
     }
     if (a * b !== n.value) {
-      err.textContent = `${a} × ${b} = ${a * b}, not ${n.value}.`;
+      // Living feedback: wrong composite product gets a why-nudge, not just "no".
+      err.textContent = `${a} × ${b} = ${a * b}, not ${n.value}. Try factors of ${n.value}.`;
       shake(form);
+      nudgeBubble(n);
       return;
     }
     n.children = [makeNode(a), makeNode(b)];
     n.growKids = true; // animate ONLY these fresh branches on the next render
     rerender();
     focusNextSplit();
+  }
+
+  function nudgeBubble(n) {
+    // Soft visual nudge on the composite being split — Chromebook-safe CSS only.
+    const bubbles = rootUl.querySelectorAll(".ftb-bubble");
+    for (const bubble of bubbles) {
+      if (bubble.textContent === String(n.value) && !bubble.classList.contains("prime")) {
+        bubble.classList.remove("composite-nudge");
+        void bubble.offsetWidth;
+        bubble.classList.add("composite-nudge");
+        break;
+      }
+    }
   }
 
   function shake(form) {

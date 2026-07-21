@@ -173,16 +173,27 @@ function errorAnalysisCard(item, index, onSolved, events = {}) {
   );
   const work = el("div", "we-steps");
   const list = el("ol", "steps");
-  item.workedExample.forEach((step) =>
-    list.appendChild(
-      el("li", null, `<b>${esc(step.label || "")}</b>${step.work ? ` — ${esc(step.work)}` : ""}`),
-    ),
-  );
+  const stepNodes = [];
+  item.workedExample.forEach((step) => {
+    const li = el(
+      "li",
+      null,
+      `<b>${esc(step.label || "")}</b>${step.work ? ` — ${esc(step.work)}` : ""}`,
+    );
+    list.appendChild(li);
+    stepNodes.push(li);
+  });
   work.appendChild(list);
   card.append(work, el("p", "block-lab", "Which step needs repair?"));
   const options = el("div", "choices");
   const status = feedback();
   let complete = false;
+  const finish = () => {
+    if (complete) return;
+    complete = true;
+    celebrate("🔧");
+    onSolved();
+  };
   item.workedExample.forEach((step, optionIndex) => {
     const button = el(
       "button",
@@ -214,16 +225,64 @@ function errorAnalysisCard(item, index, onSolved, events = {}) {
         );
         return;
       }
-      complete = true;
       button.classList.add("correct");
       [...options.children].forEach((child) => (child.disabled = true));
+      // Animate the mistaken step, then invite a same-visual repair.
+      const broken = stepNodes[optionIndex];
+      broken?.classList.add("sg-error-break");
+      const repair = el("div", "sg-error-repair");
+      repair.appendChild(
+        el(
+          "p",
+          "block-lab",
+          biHtml(
+            "Fix it on this step — rewrite the work so the reasoning holds.",
+            "Corrige este paso: reescribe el trabajo para que el razonamiento se sostenga.",
+          ),
+        ),
+      );
+      const fixInput = el("textarea", "sg-ta");
+      fixInput.setAttribute("aria-label", "Your repaired step");
+      fixInput.placeholder = item.correctWork
+        ? "Rewrite the repaired step in your own words…"
+        : "Write the correct work for this step…";
+      const fixBtn = el("button", "btn", "Check my repair");
+      fixBtn.type = "button";
+      const fixRow = el("div", "row");
+      fixRow.appendChild(fixBtn);
+      repair.append(fixInput, fixRow);
+      work.appendChild(repair);
       showFeedback(
         status,
-        "ok",
-        `✅ <b>${biHtml("You found the reasoning break.", "¡Encontraste el error de razonamiento!")}</b> ${item.correctWork ? `Repair: ${esc(item.correctWork)}` : biHtml("Say the repair out loud in your own words.", "Di la corrección en voz alta con tus propias palabras.")}`,
+        "info",
+        biHtml(
+          "You found the break. Now repair that step on the same visual.",
+          "Encontraste el error. Ahora repara ese paso en el mismo visual.",
+        ),
       );
-      celebrate("🔧");
-      onSolved();
+      fixBtn.onclick = () => {
+        if (fixInput.value.trim().length < 6) {
+          showFeedback(
+            status,
+            "no",
+            biHtml(
+              "Add the repaired work (a full step) before checking.",
+              "Escribe el trabajo corregido (un paso completo) antes de revisar.",
+            ),
+          );
+          return;
+        }
+        fixInput.disabled = true;
+        fixBtn.disabled = true;
+        broken?.classList.remove("sg-error-break");
+        broken?.classList.add("sg-error-fixed");
+        showFeedback(
+          status,
+          "ok",
+          `✅ <b>${biHtml("You repaired the reasoning.", "¡Reparaste el razonamiento!")}</b> ${item.correctWork ? `Model repair: ${esc(item.correctWork)}` : biHtml("Say the repair out loud in your own words.", "Di la corrección en voz alta con tus propias palabras.")}`,
+        );
+        finish();
+      };
     };
     options.appendChild(button);
   });
@@ -486,9 +545,17 @@ function responseCard(item, index, variant, onSolved, scaffold, events = {}) {
 
 const itemKey = (item) => item.stem || item.title || JSON.stringify(item).slice(0, 60);
 
+function tagPracticeItem(item, tier, practiceIndex) {
+  // Shallow copy so we never mutate authored config objects; tags are engine-
+  // only and keep Save/Resume indices stable across adaptive reordering.
+  return { ...item, _tier: tier, _practiceIndex: practiceIndex };
+}
+
 export function collectPracticeItems(config) {
   if (Array.isArray(config.parallelPractice) && config.parallelPractice.length) {
-    const items = [...config.parallelPractice];
+    const items = config.parallelPractice.map((item, index) =>
+      tagPracticeItem(item, "onLevel", index),
+    );
     // Group 2's authored enrichment (justify, error-analysis, challenge
     // panels) is real content — append it after the parallel set instead of
     // dropping it, so mastery students get genuine extension work.
@@ -498,7 +565,7 @@ export function collectPracticeItems(config) {
         const key = itemKey(item);
         if (seen.has(key)) continue;
         seen.add(key);
-        items.push(item);
+        items.push(tagPracticeItem(item, "extending", items.length));
       }
     }
     return items;
@@ -511,10 +578,66 @@ export function collectPracticeItems(config) {
       const key = itemKey(item);
       if (seen.has(key)) continue;
       seen.add(key);
-      items.push(item);
+      items.push(tagPracticeItem(item, tier, items.length));
     }
   }
   return items;
+}
+
+/** Score how strongly an item matches an adaptive path (higher = promote). */
+function adaptiveScore(item, pathId) {
+  const tier = item?._tier || "";
+  const hasHints = Boolean(item?.hints?.length || item?.hint);
+  if (pathId === "stabilize") {
+    if (tier === "approaching") return 40;
+    if (hasHints) return 25;
+    if (item?.type === "multiple-choice") return 10;
+    return 0;
+  }
+  if (pathId === "stretch") {
+    if (tier === "extending") return 40;
+    if (tier === "optional") return 30;
+    if (item?.type === "error-analysis") return 20;
+    // Later bank items (higher authored index) read as stretch-ready.
+    return Math.min(15, Number(item?._practiceIndex) || 0);
+  }
+  return 0;
+}
+
+/**
+ * Re-order practice items for an adaptive path without dropping any.
+ * Stable when scores tie — original relative order is preserved.
+ * Save/Resume keys stay on `_practiceIndex`, not display position.
+ */
+export function orderItemsForAdaptivePath(items = [], pathId = "connect") {
+  if (!Array.isArray(items) || !items.length) return [];
+  if (!pathId || pathId === "connect") return items.slice();
+  return items
+    .map((item, index) => ({ item, index, score: adaptiveScore(item, pathId) }))
+    .sort((a, b) => b.score - a.score || a.index - b.index)
+    .map((entry) => entry.item);
+}
+
+/**
+ * Additive stretch: ensure authored extending items appear in the More Practice
+ * set when the stretch path is chosen. Never removes existing items; tags new
+ * arrivals with fresh `_practiceIndex` values past the current max so prior
+ * Save/Resume slots stay intact.
+ */
+export function bringInExtendingItems(items = [], config = {}) {
+  const extending = config.practice?.extending || [];
+  if (!extending.length) return items.slice();
+  const out = items.slice();
+  const seen = new Set(out.map(itemKey));
+  let nextIndex =
+    out.reduce((max, item) => Math.max(max, Number(item._practiceIndex) || 0), -1) + 1;
+  for (const item of extending) {
+    const key = itemKey(item);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(tagPracticeItem(item, "extending", nextIndex++));
+  }
+  return out;
 }
 
 function problemCard(item, index, variant, onSolved, scaffold, events = {}) {
@@ -560,16 +683,24 @@ export function createPracticeSection(
   store = null,
   options = {},
 ) {
-  const collected = options.items || collectPracticeItems(config);
+  let collected = options.items || collectPracticeItems(config);
+  // Stretch path can add authored extending items that weren't in this slice
+  // yet — additive only, never removes what students already need.
+  if (options.adaptivePath === "stretch" && options.mode === "more") {
+    collected = bringInExtendingItems(collected, config);
+  }
+  const pathId = options.adaptivePath || "connect";
+  const ordered = orderItemsForAdaptivePath(collected, pathId);
   // Interactive, checkable problems first; written responses close the set
   // (stable partition — relative order inside each group is preserved).
   const items = [
-    ...collected.filter((item) => answerOf(item) != null || item.type === "error-analysis"),
-    ...collected.filter((item) => answerOf(item) == null && item.type !== "error-analysis"),
+    ...ordered.filter((item) => answerOf(item) != null || item.type === "error-analysis"),
+    ...ordered.filter((item) => answerOf(item) == null && item.type !== "error-analysis"),
   ];
   if (!items.length) return null;
   const section = el("section", "sg-sec");
   section.id = options.id || "sg-practice";
+  section.dataset.adaptivePath = pathId;
   const title =
     options.title ||
     (config.variant === "group2"
@@ -584,6 +715,25 @@ export function createPracticeSection(
   );
   if (options.directions)
     section.appendChild(el("p", "sg-directions", bi(options.directions, options.directionsEs)));
+  // Live path banner for More Practice — shows how the coach reordered the set.
+  let pathBanner = null;
+  if (options.mode === "more") {
+    pathBanner = el("div", "sg-adaptive-banner");
+    pathBanner.hidden = pathId === "connect";
+    pathBanner.setAttribute("aria-live", "polite");
+    const pathCopy = {
+      stabilize: biHtml(
+        "Stabilize path: scaffold-friendly problems are up front. Supports open on miss.",
+        "Ruta Estabilizar: los problemas con andamiaje van primero. Los apoyos se abren al fallar.",
+      ),
+      stretch: biHtml(
+        "Stretch path: extending challenges are promoted. Keep proving your method.",
+        "Ruta Estirar: los retos de extensión van primero. Sigue demostrando tu método.",
+      ),
+    };
+    pathBanner.innerHTML = pathCopy[pathId] || "";
+    section.appendChild(pathBanner);
+  }
   const mistake = config.practice?.commonMistake;
   const mistakeText = typeof mistake === "string" ? mistake : mistake?.text || mistake?.mistake;
   if (mistakeText && config.variant !== "group2" && options.showMistake !== false) {
@@ -599,8 +749,7 @@ export function createPracticeSection(
   // Count each item at most once so a restored-then-resolved card can't
   // double-credit the tally.
   const counted = new Set();
-  const solveItem = (index) => {
-    const storeIndex = (options.indexOffset || 0) + index;
+  const solveItem = (storeIndex) => {
     if (counted.has(storeIndex)) return;
     counted.add(storeIndex);
     solved++;
@@ -610,10 +759,16 @@ export function createPracticeSection(
     store?.addTo("solvedPractice", storeIndex);
     if (solved >= Math.ceil(items.length * 0.6)) onPhaseDone();
   };
+  const cardsByIndex = new Map();
   items.forEach((item, index) => {
     tally.total++;
+    // Persist original authored order for Save/Resume — never the display slot.
+    const storeIndex =
+      Number.isInteger(item._practiceIndex) && item._practiceIndex >= 0
+        ? item._practiceIndex
+        : (options.indexOffset || 0) + index;
     const scaffold =
-      options.scaffold === "all"
+      options.scaffold === "all" || pathId === "stabilize"
         ? true
         : options.scaffold === "none"
           ? false
@@ -624,7 +779,7 @@ export function createPracticeSection(
     let card;
     const solve = () => {
       card?.classList.add("sg-done-all");
-      solveItem(index);
+      solveItem(storeIndex);
       // Hot streak in a Foundations lesson: offer the Challenge bridge
       // once, as an invitation — never a requirement.
       if (
@@ -648,12 +803,14 @@ export function createPracticeSection(
       }
     };
     card = problemCard(item, index, config.variant, solve, scaffold, events);
+    card.dataset.practiceIndex = String(storeIndex);
+    card.dataset.tier = item._tier || "";
+    cardsByIndex.set(storeIndex, card);
     appendVisualPractice(card, item, { mode: options.mode || "guided", events });
     // "Try another like this": infinite same-type reps — only appears when the
     // generator can produce a correctness-verified variant, so it stays silent
     // on problems it can't safely regenerate.
     attachRegenPractice(card, item);
-    const storeIndex = (options.indexOffset || 0) + index;
     if (store?.has("solvedPractice", storeIndex)) {
       card.prepend(
         el("div", "sg-donechip", "✓ Solved last session — explain your reasoning again, out loud."),
@@ -662,16 +819,107 @@ export function createPracticeSection(
       // finished instead of inviting a confusing re-solve.
       for (const control of card.querySelectorAll("input, textarea, .choice, .btn:not(.ghost)"))
         control.disabled = true;
-      solveItem(index);
+      solveItem(storeIndex);
     }
     section.appendChild(card);
   });
+
+  const renumberCards = () => {
+    [...section.querySelectorAll(":scope > .prob")].forEach((card, cardIndex) => {
+      const pn = card.querySelector(".pn");
+      if (pn) pn.textContent = String(cardIndex + 1);
+    });
+  };
+
+  const applyPathOrder = (nextPath) => {
+    if (options.mode !== "more") return;
+    section.dataset.adaptivePath = nextPath || "connect";
+    if (pathBanner) {
+      const pathCopy = {
+        stabilize: biHtml(
+          "Stabilize path: scaffold-friendly problems are up front. Supports open on miss.",
+          "Ruta Estabilizar: los problemas con andamiaje van primero. Los apoyos se abren al fallar.",
+        ),
+        stretch: biHtml(
+          "Stretch path: extending challenges are promoted. Keep proving your method.",
+          "Ruta Estirar: los retos de extensión van primero. Sigue demostrando tu método.",
+        ),
+      };
+      pathBanner.innerHTML = pathCopy[nextPath] || "";
+      pathBanner.hidden = !nextPath || nextPath === "connect";
+    }
+    // Reorder existing cards in the DOM — no remount, so Save/Resume state
+    // and in-progress answers stay on the same nodes.
+    let displayItems = items.slice();
+    if (nextPath === "stretch") {
+      const enriched = bringInExtendingItems(displayItems, config);
+      // Mount any newly brought-in extending cards once, then include them.
+      for (const item of enriched) {
+        if (cardsByIndex.has(item._practiceIndex)) continue;
+        const storeIndex = item._practiceIndex;
+        tally.total++;
+        const card = problemCard(
+          item,
+          cardsByIndex.size,
+          config.variant,
+          () => {
+            card.classList.add("sg-done-all");
+            solveItem(storeIndex);
+          },
+          false,
+          events,
+        );
+        card.dataset.practiceIndex = String(storeIndex);
+        card.dataset.tier = "extending";
+        cardsByIndex.set(storeIndex, card);
+        appendVisualPractice(card, item, { mode: "more", events });
+        attachRegenPractice(card, item);
+        section.appendChild(card);
+        displayItems.push(item);
+      }
+      displayItems = enriched;
+    }
+    const reordered = orderItemsForAdaptivePath(displayItems, nextPath || "connect");
+    const nav = section.querySelector(":scope > .sg-problem-nav");
+    const anchor = nav || null;
+    reordered.forEach((item) => {
+      const card = cardsByIndex.get(item._practiceIndex);
+      if (!card) return;
+      if (anchor) section.insertBefore(card, anchor);
+      else section.appendChild(card);
+    });
+    renumberCards();
+    // Stabilize also opens banks/step guides on every unsolved card.
+    if (nextPath === "stabilize") {
+      for (const card of section.querySelectorAll(":scope > .prob:not(.sg-done-all)"))
+        card.sgApplySupport?.();
+    }
+    // Reset pagination to the newly promoted first problem.
+    const cards = [...section.querySelectorAll(":scope > .prob")];
+    if (cards.length >= 2) {
+      cards.forEach((card, cardIndex) => {
+        card.hidden = cardIndex !== 0;
+      });
+      const status = section.querySelector(".sg-problem-count");
+      if (status) status.textContent = `Problem 1 of ${cards.length}`;
+      const prev = section.querySelector(".sg-problem-nav .btn.ghost");
+      const next = section.querySelector(".sg-problem-nav .btn:not(.ghost)");
+      if (prev) prev.disabled = true;
+      if (next) next.disabled = cards.length < 2;
+    }
+  };
+  section.sgApplyAdaptivePath = applyPathOrder;
+
   // The adaptive coach's "stabilize" move opens real support on every
   // unsolved problem in this set — banks and step guides appear at once.
+  // More Practice also reorders / promotes items for any path.
   document.addEventListener("sg:adaptive-path", (event) => {
-    if (event.detail !== "stabilize") return;
-    for (const card of section.querySelectorAll(":scope > .prob:not(.sg-done-all)"))
-      card.sgApplySupport?.();
+    const nextPath = event.detail;
+    if (options.mode === "more") applyPathOrder(nextPath);
+    else if (nextPath === "stabilize") {
+      for (const card of section.querySelectorAll(":scope > .prob:not(.sg-done-all)"))
+        card.sgApplySupport?.();
+    }
   });
   const optional = config.practice?.optionalActivity;
   if (optional && options.includeOptional)
