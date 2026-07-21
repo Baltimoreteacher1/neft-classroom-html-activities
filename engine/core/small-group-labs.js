@@ -8,6 +8,7 @@
 import { attachVoiceInput } from "../components/voice-explain.js";
 import { interactiveVisualHost, mountInteractiveVisuals } from "./interactive-visual.js";
 import { celebrate, el, esc, sectionHeading, speak } from "./small-group-ui.js";
+import { markScene } from "./small-group-storyboard.js";
 import {
   barChartSVG,
   boxPlotSVG,
@@ -167,6 +168,7 @@ export function createExploreLab(config, variant, { number, store, events, onDon
 
   const section = el("section", "sg-sec sg-lab");
   section.id = "sg-explore";
+  markScene(section, "explore");
   section.appendChild(
     sectionHeading(
       number,
@@ -220,12 +222,14 @@ export function createExploreLab(config, variant, { number, store, events, onDon
     events.onSolved?.();
     if (talk) talk.hidden = false;
     celebrate("🧪");
+    section.classList.add("sg-lab-success");
     onDone();
   };
 
   loader()
     .then((render) => {
       mount.innerHTML = "";
+      mount.classList.add("sg-lab-ready");
       render(mount, {
         ...normalizeExplore(explore),
         label: explore.label || explore.questionText,
@@ -265,6 +269,7 @@ export function createModelLab(config, variant, { number, store, events, onDone 
 
   const section = el("section", "sg-sec sg-lab");
   section.id = "sg-model";
+  markScene(section, "model");
   section.appendChild(
     sectionHeading(
       number,
@@ -335,6 +340,7 @@ export function createModelLab(config, variant, { number, store, events, onDone 
     status.innerHTML =
       "✅ <b>You connected the model to the math.</b> Read your explanation out loud.";
     celebrate("🔗");
+    section.classList.add("sg-lab-success");
     onDone();
   };
   const row = el("div", "row");
@@ -388,6 +394,7 @@ export function createApplyLab(config, variant, { number, store, events, onDone 
 
   const section = el("section", "sg-sec sg-lab");
   section.id = "sg-apply";
+  markScene(section, "apply");
   section.appendChild(sectionHeading(number, "Apply it", problem.title || "Solve a real problem"));
   if (store.get("applyDone")) section.appendChild(doneChip("Problem solved last session."));
 

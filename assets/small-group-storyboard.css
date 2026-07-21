@@ -1,0 +1,301 @@
+/* Small-group Chalkie storyboard skin — presentation / motion only.
+   Content, section order, and interactive contracts stay unchanged.
+   All continuous + enter motion respects prefers-reduced-motion. */
+
+/* ── Scene enter (one-shot via .is-scene-in) ── */
+[data-sg-scene] {
+  --sg-scene-shift: 10px;
+}
+[data-sg-scene]:not(.is-scene-in) .sg-scene-enter {
+  opacity: 0;
+  transform: translateY(var(--sg-scene-shift));
+}
+[data-sg-scene].is-scene-in .sg-scene-enter {
+  animation: sg-scene-in 0.45s ease both;
+}
+@keyframes sg-scene-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Staggered children (talk cards, vocab grid, chips) */
+[data-sg-scene].is-scene-in .sg-scene-stagger > *:nth-child(1) {
+  animation: sg-scene-in 0.4s ease 0.02s both;
+}
+[data-sg-scene].is-scene-in .sg-scene-stagger > *:nth-child(2) {
+  animation: sg-scene-in 0.4s ease 0.08s both;
+}
+[data-sg-scene].is-scene-in .sg-scene-stagger > *:nth-child(3) {
+  animation: sg-scene-in 0.4s ease 0.14s both;
+}
+[data-sg-scene].is-scene-in .sg-scene-stagger > *:nth-child(4) {
+  animation: sg-scene-in 0.4s ease 0.2s both;
+}
+[data-sg-scene].is-scene-in .sg-scene-stagger > *:nth-child(5) {
+  animation: sg-scene-in 0.4s ease 0.26s both;
+}
+[data-sg-scene].is-scene-in .sg-scene-stagger > *:nth-child(n + 6) {
+  animation: sg-scene-in 0.4s ease 0.32s both;
+}
+
+/* ── Hero theme art ── */
+.sg-hero-mark.has-theme {
+  width: min(168px, 34vw);
+  height: auto;
+  min-height: 112px;
+  padding: 8px;
+  font-size: 0;
+  overflow: hidden;
+  border-radius: 22px 12px 22px 12px;
+}
+.sg-hero-mark.has-theme .theme-illustration {
+  margin: 0;
+  width: 100%;
+}
+.sg-hero-mark.has-theme .theme-hero-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 14px;
+}
+.sg-hero-mark.has-theme .theme-illustration-caption {
+  display: none;
+}
+.sg-hero-scene-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 4px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  border-radius: 999px;
+  background: rgba(8, 25, 54, 0.22);
+  font-family: "Nunito", sans-serif;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+/* ── Mission theme art + figure scenes ── */
+.sg-mission-visual.has-theme {
+  display: grid;
+  place-items: center;
+  padding: 14px;
+  background: #fff;
+}
+.sg-mission-visual.has-theme .theme-illustration {
+  margin: 0;
+  width: 100%;
+  max-width: 360px;
+}
+.sg-mission-visual.has-theme .theme-hero-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 16px;
+}
+.sg-mission-visual.has-theme .theme-illustration-caption {
+  margin-top: 8px;
+  text-align: center;
+  color: var(--sg-muted);
+  font-weight: 700;
+  font-size: 13px;
+}
+.sg-mission-visual.has-figure .theme-illustration {
+  display: none;
+}
+
+/* Data chips land */
+.sg-datachips-row .sg-datachip {
+  opacity: 1;
+  transform: none;
+}
+[data-sg-scene="mission"].is-scene-in .sg-datachips-row .sg-datachip {
+  animation: sg-chip-land 0.45s cubic-bezier(0.2, 1.2, 0.4, 1) both;
+}
+[data-sg-scene="mission"].is-scene-in .sg-datachips-row .sg-datachip:nth-child(1) {
+  animation-delay: 0.05s;
+}
+[data-sg-scene="mission"].is-scene-in .sg-datachips-row .sg-datachip:nth-child(2) {
+  animation-delay: 0.12s;
+}
+[data-sg-scene="mission"].is-scene-in .sg-datachips-row .sg-datachip:nth-child(3) {
+  animation-delay: 0.19s;
+}
+[data-sg-scene="mission"].is-scene-in .sg-datachips-row .sg-datachip:nth-child(4) {
+  animation-delay: 0.26s;
+}
+[data-sg-scene="mission"].is-scene-in .sg-datachips-row .sg-datachip:nth-child(n + 5) {
+  animation-delay: 0.33s;
+}
+@keyframes sg-chip-land {
+  from {
+    opacity: 0;
+    transform: translateY(-14px) scale(0.86);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Factor-tree grow */
+.factor-tree-figure .ft-branch {
+  stroke-dasharray: 80;
+  stroke-dashoffset: 0;
+}
+.factor-tree-figure .ft-node {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+[data-sg-scene]:not(.is-scene-in) .factor-tree-figure .ft-branch {
+  stroke-dashoffset: 80;
+}
+[data-sg-scene]:not(.is-scene-in) .factor-tree-figure .ft-node {
+  transform: scale(0);
+}
+[data-sg-scene].is-scene-in .factor-tree-figure .ft-branch {
+  animation: sg-tree-draw 0.7s ease forwards;
+}
+[data-sg-scene].is-scene-in .factor-tree-figure .ft-node {
+  animation: sg-leaf-pop 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+[data-sg-scene].is-scene-in .factor-tree-figure .ft-node:nth-of-type(1) {
+  animation-delay: 0.05s;
+}
+[data-sg-scene].is-scene-in .factor-tree-figure .ft-node:nth-of-type(2) {
+  animation-delay: 0.15s;
+}
+[data-sg-scene].is-scene-in .factor-tree-figure .ft-node:nth-of-type(3) {
+  animation-delay: 0.25s;
+}
+[data-sg-scene].is-scene-in .factor-tree-figure .ft-node:nth-of-type(4) {
+  animation-delay: 0.35s;
+}
+[data-sg-scene].is-scene-in .factor-tree-figure .ft-node:nth-of-type(n + 5) {
+  animation-delay: 0.42s;
+}
+@keyframes sg-tree-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes sg-leaf-pop {
+  0% {
+    transform: scale(0);
+  }
+  70% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ── Vocab picture fade-in ── */
+.sg-vcard-picture img {
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+[data-sg-scene="vocab"].is-scene-in .sg-vcard-picture img:not([data-image-state="loading"]) {
+  animation: sg-pic-in 0.5s ease both;
+}
+@keyframes sg-pic-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ── Lab mount flourish ── */
+.sg-lab-mount.sg-lab-ready {
+  animation: sg-lab-flourish 0.5s ease both;
+}
+@keyframes sg-lab-flourish {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.sg-lab.sg-lab-success {
+  animation: sg-okpulse 0.55s ease;
+}
+
+/* ── Richer correct / wrong juice ── */
+.choice.correct,
+.fillin.ok,
+.stepfill.ok,
+.sg-fill-step.complete {
+  animation: sg-okpulse 0.55s ease, sg-correct-glow 0.7s ease;
+}
+@keyframes sg-correct-glow {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--sg-good) 40%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 12px transparent;
+  }
+}
+.choice.wrong,
+.fillin.bad,
+.stepfill.bad {
+  animation: sg-nudge 0.35s ease, sg-wrong-flash 0.45s ease;
+}
+@keyframes sg-wrong-flash {
+  0% {
+    filter: brightness(1);
+  }
+  40% {
+    filter: brightness(0.97);
+  }
+  100% {
+    filter: none;
+  }
+}
+
+/* Reflect / completion beat */
+.sg-done:not([hidden]) {
+  animation: sg-scene-in 0.55s ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-sg-scene]:not(.is-scene-in) .sg-scene-enter,
+  [data-sg-scene].is-scene-in .sg-scene-enter,
+  [data-sg-scene].is-scene-in .sg-scene-stagger > *,
+  [data-sg-scene].is-scene-in .sg-datachips-row .sg-datachip,
+  [data-sg-scene].is-scene-in .factor-tree-figure .ft-branch,
+  [data-sg-scene].is-scene-in .factor-tree-figure .ft-node,
+  [data-sg-scene="vocab"].is-scene-in .sg-vcard-picture img,
+  .sg-lab-mount.sg-lab-ready,
+  .sg-lab.sg-lab-success,
+  .sg-done:not([hidden]),
+  .choice.correct,
+  .choice.wrong,
+  .fillin.ok,
+  .fillin.bad,
+  .stepfill.ok,
+  .stepfill.bad,
+  .sg-fill-step.complete,
+  .sg-hero-mark {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    stroke-dashoffset: 0 !important;
+  }
+}

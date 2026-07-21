@@ -220,6 +220,13 @@ export function injectSmallGroupStyles(accent) {
     annotation.href = "/assets/small-group-annotation.css?v=20260716-gold2";
     document.head.appendChild(annotation);
   }
+  if (!document.getElementById("sg-storyboard-styles")) {
+    const storyboard = document.createElement("link");
+    storyboard.id = "sg-storyboard-styles";
+    storyboard.rel = "stylesheet";
+    storyboard.href = "/assets/small-group-storyboard.css?v=20260721-chalkie1";
+    document.head.appendChild(storyboard);
+  }
   if (document.getElementById("sg-styles")) return;
 
   if (!document.getElementById("sg-fonts")) {
@@ -488,7 +495,7 @@ export function injectSmallGroupStyles(accent) {
        because the passport stylesheet lazy-loads after this one. */
     .ntp-pill{top:70px!important;left:10px!important}}
     @media(max-width:420px){body{font-size:16px}.sg-hero h1{font-size:29px}.sg-context,.sg-talk-q{font-size:17px}.sg-tabs{position:static;grid-template-columns:repeat(2,1fr)}.sg-problem-nav{grid-template-columns:1fr 1fr}.sg-problem-count{grid-column:1/-1;grid-row:1}.sg-problem-support-head{align-items:flex-start;flex-direction:column}.sg-problem-visual svg{min-height:210px}.sg-fill-step{grid-template-columns:auto minmax(0,1fr)}.sg-step-check{grid-column:2}.sg-step-status{grid-column:1/-1}.btn,.sg-pulse-btn,.sg-role-btn,.sg-match-btn,.choice{width:100%;justify-content:flex-start}.sg-timer{align-items:flex-start;flex-direction:column}.sg-timer-track{width:100%;flex:none}}
-    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.sg-burst{display:none}.sg-hero-mark{animation:none}.sg-tabpanel:not([hidden]){animation:none}.sg-meter-fill::after{animation:none}.choice.correct,.choice.wrong,.fillin.ok,.fillin.bad,.stepfill.ok,.stepfill.bad{animation:none}.btn,.choice{transition:none}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.sg-burst{display:none!important}.sg-hero-mark{animation:none}.sg-tabpanel:not([hidden]){animation:none}.sg-meter-fill::after{animation:none}.choice.correct,.choice.wrong,.fillin.ok,.fillin.bad,.stepfill.ok,.stepfill.bad,.sg-fill-step.complete{animation:none}.btn,.choice{transition:none}}
     @media print{body{background:#fff}.sg-mode,.sg-tabs,.sg-rail,.sg-meter,.sg-reveal,.sg-toolrow,.sg-pulse,.sg-timer,.sg-foot,.sg-teacher,.btn,.sg-speak,#mwb-launcher,.sg-problem-nav,.sg-annotation-tools{display:none!important}.sg-tabpanel[hidden]{display:block!important}.prob[hidden]{display:block!important}.sg-fill-step[hidden]{display:grid!important}.sg-fill-step.locked,.gs-row.locked,.sg-stage.locked,.sg-apply-step.locked{opacity:1!important;pointer-events:auto}.sg-reveal-answer[hidden]{display:inline-block!important}#app{max-width:none;padding:0}.sg-hero{margin:0 0 16px;padding:0 0 12px;color:#111;background:#fff;border-bottom:3px solid #111}.sg-hero h1,.sg-obj,.sg-langobj{color:#111}.sg-kicker,.sg-chip{color:#111;background:#eee;border-color:#bbb}.card,.sg-mission,.sg-talk,.prob,.sg-vcard{box-shadow:none;break-inside:avoid}.sg-mission{display:block}.sg-mission-visual{display:none}.sg-sec{margin-bottom:18px}}
   `;
   document.head.appendChild(styles);

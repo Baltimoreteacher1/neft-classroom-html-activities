@@ -1,4 +1,5 @@
 import { figureBlock } from "./small-group-labs.js";
+import { markScene, mountThemeArt } from "./small-group-storyboard.js";
 import {
   celebrate,
   el,
@@ -79,7 +80,7 @@ export function createMissionSection(config, variant, onDone) {
   );
 
   const mission = el("div", "sg-mission");
-  const copy = el("div", "sg-mission-copy");
+  const copy = el("div", "sg-mission-copy sg-scene-enter");
   copy.appendChild(el("p", "sg-context", esc(context)));
   const tools = el("div", "sg-toolrow");
   const read = el("button", "btn ghost", "🔊 Read the mission");
@@ -90,19 +91,24 @@ export function createMissionSection(config, variant, onDone) {
   copy.appendChild(tools);
 
   // Photos and screenshots are gone by design: the mission panel shows the
-  // lesson's math figure when one exists, otherwise a quiet emoji tile.
+  // lesson's math figure when one exists, otherwise theme art (storyboard skin)
+  // or a quiet emoji tile.
   const missionFigure = missionFigureMatches(config.launch?.visual, context)
     ? figureBlock(config.launch?.visual)
     : null;
-  const visual = el("div", `sg-mission-visual${missionFigure ? " has-figure" : " no-image"}`);
+  const visual = el("div", `sg-mission-visual sg-scene-enter${missionFigure ? " has-figure" : ""}`);
   if (missionFigure) {
     visual.appendChild(missionFigure);
+  } else if (config.theme && mountThemeArt(visual, config.theme, "", config.heroFigure)) {
+    visual.classList.add("has-theme");
   } else {
+    visual.classList.add("no-image");
     visual.textContent = variant === "group2" ? "🔎" : "🧩";
     visual.setAttribute("aria-hidden", "true");
   }
   mission.append(copy, visual);
   section.appendChild(mission);
+  markScene(section, "mission");
 
   const launchRow = el("div", "row");
   const launch = el(
@@ -145,6 +151,7 @@ export function createVocabularySection(config, onDone, store = null) {
   const section = el("section", "sg-sec");
   section.id = "sg-vocab";
   section.appendChild(heading(3, "Language power", "Unlock the math words"));
+  markScene(section, "vocab");
   section.appendChild(
     el(
       "p",
@@ -162,7 +169,7 @@ export function createVocabularySection(config, onDone, store = null) {
     available.find((lang) => lang.id === "es") ||
     available[0] ||
     null;
-  const grid = el("div", "sg-vgrid");
+  const grid = el("div", "sg-vgrid sg-scene-stagger");
 
   if (available.length) {
     const bar = el("div", "sg-langbar");
@@ -418,6 +425,7 @@ export function createTalkSection(config, variant, onDone) {
   if (!talk) return null;
   const section = el("section", "sg-sec");
   section.id = "sg-talk";
+  markScene(section, "talk");
   section.appendChild(
     heading(
       4,
@@ -425,7 +433,7 @@ export function createTalkSection(config, variant, onDone) {
       variant === "group2" ? "Solve one — then defend it to a skeptic" : "Talk the math through",
     ),
   );
-  const card = el("div", "sg-talk");
+  const card = el("div", "sg-talk sg-scene-enter");
   // Group 2's "defend" framing only makes sense once a student has an answer to
   // defend: tell them to commit to one first, then treat the prompt as the
   // skeptic's challenge to that answer.
@@ -556,8 +564,9 @@ export function createReflectionSection(config, state, onDone, store = null) {
   const section = el("section", "sg-sec");
   section.id = "sg-reflect";
   section.hidden = true;
+  markScene(section, "reflect");
   section.appendChild(heading(7, "Growth check", "Name what changed"));
-  const card = el("div", "sg-reflect");
+  const card = el("div", "sg-reflect sg-scene-enter");
   const growth = el("div", "sg-growth");
   growth.appendChild(el("div", "sg-growth-icon", "🌱"));
   const copy = el(
