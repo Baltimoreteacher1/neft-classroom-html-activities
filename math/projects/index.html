@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Culminating Projects Gallery | Grade 6 Math | Neft Teacher</title>
+    <meta name="description" content="Browse all 10 Grade 6 culminating math projects — one per unit, two versions each. Real-world design tasks covering number sense, fractions, ratios, percents, area, expressions, equations, data, coordinates, and volume." />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-premium.css" />
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
+    <style>
+      :root {
+        --gal-bg: #0f172a;
+        --gal-card: #1e293b;
+        --gal-border: rgba(255,255,255,0.12);
+        --gal-text: #f8fafc;
+        --gal-muted: #94a3b8;
+        --gal-cyan: #38bdf8;
+        --gal-purple: #c084fc;
+        --gal-amber: #f59e0b;
+        --gal-pink: #ec4899;
+        --gal-teal: #2dd4bf;
+        --gal-green: #34d399;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        background: var(--gal-bg);
+        color: var(--gal-text);
+        font-family: 'Atkinson Hyperlegible', system-ui, -apple-system, sans-serif;
+        min-height: 100vh;
+      }
+
+      /* Hero */
+      .gallery-hero {
+        background: radial-gradient(ellipse 120% 80% at 50% 0%, #1e1b4b 0%, #0f172a 70%);
+        padding: 48px 24px 36px;
+        text-align: center;
+        border-bottom: 1px solid rgba(192, 132, 252, 0.2);
+        position: relative;
+        overflow: hidden;
+      }
+      .gallery-hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1px);
+        background-size: 20px 20px;
+        opacity: 0.5;
+        pointer-events: none;
+      }
+      .gallery-hero > * { position: relative; z-index: 1; }
+      .gallery-hero .eyebrow {
+        color: var(--gal-amber);
+        font-size: 0.85rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 8px;
+      }
+      .gallery-hero h1 {
+        font-size: clamp(2rem, 5vw, 3.2rem);
+        font-weight: 900;
+        background: linear-gradient(135deg, #ffffff 20%, #c084fc 60%, #38bdf8 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 12px;
+      }
+      .gallery-hero .hero-copy {
+        color: var(--gal-muted);
+        font-size: 1.1rem;
+        max-width: 640px;
+        margin: 0 auto 20px;
+        line-height: 1.6;
+      }
+
+      /* Stats chips */
+      .hero-stats {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .hero-stat {
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.15);
+        border-radius: 999px;
+        padding: 6px 16px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: var(--gal-cyan);
+      }
+
+      /* SVG showcase */
+      .gallery-hero-svg {
+        margin-top: 24px;
+      }
+
+      /* Filter bar */
+      .filter-bar {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 20px 24px 0;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .filter-search {
+        flex: 1;
+        min-width: 200px;
+        background: var(--gal-card);
+        border: 1px solid var(--gal-border);
+        border-radius: 12px;
+        padding: 10px 16px;
+        color: var(--gal-text);
+        font-size: 0.95rem;
+        font-family: inherit;
+      }
+      .filter-search::placeholder { color: var(--gal-muted); }
+      .filter-search:focus { outline: 2px solid var(--gal-cyan); outline-offset: 1px; }
+
+      /* Project grid */
+      .projects-grid {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 24px;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 20px;
+      }
+
+      .project-tile {
+        background: var(--gal-card);
+        border: 1px solid var(--gal-border);
+        border-radius: 20px;
+        padding: 0;
+        overflow: hidden;
+        text-decoration: none;
+        color: inherit;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.2s, box-shadow 0.2s;
+        position: relative;
+      }
+      .project-tile:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+      }
+      .tile-accent {
+        height: 6px;
+        background: linear-gradient(90deg, var(--gal-cyan), var(--gal-purple));
+      }
+      .tile-body {
+        padding: 20px 22px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .tile-unit-chip {
+        display: inline-block;
+        background: rgba(56, 189, 248, 0.15);
+        color: var(--gal-cyan);
+        border-radius: 999px;
+        padding: 3px 12px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        align-self: flex-start;
+      }
+      .tile-title {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #fff;
+        margin: 0;
+      }
+      .tile-desc {
+        font-size: 0.9rem;
+        color: var(--gal-muted);
+        line-height: 1.55;
+        flex: 1;
+      }
+      .tile-tags {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin-top: 4px;
+      }
+      .tile-tag {
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 999px;
+        padding: 3px 10px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--gal-muted);
+      }
+      .tile-versions {
+        display: flex;
+        gap: 8px;
+        padding: 14px 22px;
+        border-top: 1px solid var(--gal-border);
+        background: rgba(0,0,0,0.15);
+      }
+      .tile-ver-btn {
+        flex: 1;
+        text-align: center;
+        padding: 8px 12px;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: transform 0.15s, background 0.15s;
+      }
+      .tile-ver-btn.a {
+        background: linear-gradient(135deg, #1763c7, #0c3f86);
+        color: #fff;
+      }
+      .tile-ver-btn.b {
+        background: linear-gradient(135deg, #ef6b52, #c8462f);
+        color: #fff;
+      }
+      .tile-ver-btn:hover { transform: translateY(-1px); filter: brightness(1.1); }
+
+      /* Bottom nav */
+      .gallery-footer {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 20px 24px 40px;
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .gallery-footer a {
+        background: var(--gal-card);
+        border: 1px solid var(--gal-border);
+        border-radius: 12px;
+        padding: 12px 20px;
+        color: var(--gal-cyan);
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 0.9rem;
+        transition: transform 0.15s;
+      }
+      .gallery-footer a:hover { transform: translateY(-2px); }
+
+      @media (max-width: 700px) {
+        .projects-grid { grid-template-columns: 1fr; }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <header class="gallery-hero">
+      <p class="eyebrow">Grade 6 Math · Neft Teacher</p>
+      <h1>🎓 Culminating Projects Gallery</h1>
+      <p class="hero-copy">
+        Every unit ends with a real-world culminating project — two differentiated versions,
+        same standards, same rubric. Interactive, self-paced, printable, and built with
+        Save/Resume, EN/ES toggle, and SCORM support.
+      </p>
+      <div class="hero-stats">
+        <span class="hero-stat">📐 10 Units</span>
+        <span class="hero-stat">📝 20 Project Versions</span>
+        <span class="hero-stat">💾 Save/Resume</span>
+        <span class="hero-stat">🌐 EN/ES Bilingual</span>
+        <span class="hero-stat">🏆 Built-in Rubric</span>
+      </div>
+      <div class="gallery-hero-svg">
+        <svg width="360" height="120" viewBox="0 0 360 120" style="background:transparent;" xmlns="http://www.w3.org/2000/svg">
+          <!-- Stylized open book with math symbols -->
+          <rect x="40" y="30" width="130" height="80" rx="4" fill="#1e293b" stroke="#c084fc" stroke-width="2"/>
+          <rect x="190" y="30" width="130" height="80" rx="4" fill="#1e293b" stroke="#38bdf8" stroke-width="2"/>
+          <line x1="170" y1="25" x2="170" y2="115" stroke="#64748b" stroke-width="2"/>
+          <!-- Left page: math symbols -->
+          <text x="70" y="58" fill="#c084fc" font-size="14" font-weight="800" font-family="system-ui">GCF · LCM</text>
+          <text x="70" y="78" fill="#f59e0b" font-size="14" font-weight="800" font-family="system-ui">½ × b × h</text>
+          <text x="70" y="98" fill="#2dd4bf" font-size="14" font-weight="800" font-family="system-ui">x + 3 = 12</text>
+          <!-- Right page: project icons -->
+          <text x="210" y="58" fill="#38bdf8" font-size="14" font-weight="800" font-family="system-ui">🎉 Plan</text>
+          <text x="210" y="78" fill="#ec4899" font-size="14" font-weight="800" font-family="system-ui">📐 Design</text>
+          <text x="210" y="98" fill="#34d399" font-size="14" font-weight="800" font-family="system-ui">🏆 Present</text>
+          <!-- Stars -->
+          <text x="10" y="50" fill="#f59e0b" font-size="18">⭐</text>
+          <text x="335" y="70" fill="#f59e0b" font-size="18">⭐</text>
+        </svg>
+      </div>
+    </header>
+
+    <div class="filter-bar">
+      <input type="text" class="filter-search" id="project-search" placeholder="🔍 Search projects by unit, topic, or standard..." autocomplete="off" />
+    </div>
+
+    <div class="projects-grid" id="projects-grid">
+      <!-- Unit 1 -->
+      <div class="project-tile" data-unit="1" data-keywords="number sense gcf lcm decimal division 6.NOS.2 6.NOS.3 6.NOS.4">
+        <div class="tile-accent" style="background: linear-gradient(90deg, #1763c7, #0e9a8c);"></div>
+        <div class="tile-body">
+          <span class="tile-unit-chip">Unit 1 · Number Sense</span>
+          <h3 class="tile-title">🎉 Block Party Planner / 🤖 Build-a-Bot Budget</h3>
+          <p class="tile-desc">GCF bags, LCM scheduling, decimal budgets, and multi-digit division — plan a real event or engineer a robotics order.</p>
+          <div class="tile-tags">
+            <span class="tile-tag">6.NOS.2</span>
+            <span class="tile-tag">6.NOS.3</span>
+            <span class="tile-tag">6.NOS.4</span>
+          </div>
+        </div>
+        <div class="tile-versions">
+          <a class="tile-ver-btn a" href="/math/unit-1/projects/version-a/">🎉 Version A</a>
+          <a class="tile-ver-btn b" href="/math/unit-1/projects/version-b/">🤖 Version B</a>
+        </div>
+      </div>
+
+      <!-- Unit 2 -->
+      <div class="project-tile" data-unit="2" data-keywords="fractions divide multiply 6.NOS.5 6.NOS.6">
+        <div class="tile-accent" style="background: linear-gradient(90deg, #f59e0b, #ef6b52);"></div>
+        <div class="tile-body">
+          <span class="tile-unit-chip" style="background:rgba(245,158,11,0.15);color:#f59e0b;">Unit 2 · Fractions</span>
+          <h3 class="tile-title">🍕 Pizza Party Planner / 🎂 Bake-Off Budget</h3>
+          <p class="tile-desc">Divide and multiply fractions in real recipe and party-planning contexts with visual fraction models.</p>
+          <div class="tile-tags">
+            <span class="tile-tag">6.NOS.5</span>
+            <span class="tile-tag">6.NOS.6</span>
+          </div>
+        </div>
+        <div class="tile-versions">
+          <a class="tile-ver-btn a" href="/math/unit-2/projects/version-a/">🍕 Version A</a>
+          <a class="tile-ver-btn b" href="/math/unit-2/projects/version-b/">🎂 Version B</a>
+        </div>
+      </div>
+
+      <!-- Unit 3 -->
+      <div class="project-tile" data-unit="3" data-keywords="ratios rates proportions 6.RP.1 6.RP.2 6.RP.3">
+        <div class="tile-accent" style="background: linear-gradient(90deg, #2dd4bf, #0e9a8c);"></div>
+        <div class="tile-body">
+          <span class="tile-unit-chip" style="background:rgba(45,212,191,0.15);color:#2dd4bf;">Unit 3 · Ratios</span>
+          <h3 class="tile-title">⚖️ Ratio & Rate Projects</h3>
+          <p class="tile-desc">Apply unit rates, equivalent ratios, and double number lines to real-world comparison tasks.</p>
+          <div class="tile-tags">
+            <span class="tile-tag">6.RP.1</span>
+            <span class="tile-tag">6.RP.2</span>
+            <span class="tile-tag">6.RP.3</span>
+          </div>
+        </div>
+        <div class="tile-versions">
+          <a class="tile-ver-btn a" href="/math/unit-3/projects/version-a/">⚖️ Version A</a>
+          <a class="tile-ver-btn b" href="/math/unit-3/projects/version-b/">📊 Version B</a>
+        </div>
+      </div>
+
+      <!-- Unit 4 -->
+      <div class="project-tile" data-unit="4" data-keywords="percent discount tax tip 6.RP.3c 6.RP.3d">
+        <div class="tile-accent" style="background: linear-gradient(90deg, #ec4899, #c084fc);"></div>
+        <div class="tile-body">
+          <span class="tile-unit-chip" style="background:rgba(236,72,153,0.15);color:#ec4899;">Unit 4 · Percents</span>
+          <h3 class="tile-title">💰 Shopping Spree / 🏪 Small Business Launch</h3>
+          <p class="tile-desc">Calculate discounts, tax, tips, and percent of a number in real retail and entrepreneurship contexts.</p>
+          <div class="tile-tags">
+            <span class="tile-tag">6.RP.3c</span>
+            <span class="tile-tag">6.RP.3d</span>
+          </div>
+        </div>
+        <div class="tile-versions">
+          <a class="tile-ver-btn a" href="/math/unit-4/projects/version-a/">💰 Version A</a>
+          <a class="tile-ver-btn b" href="/math/unit-4/projects/version-b/">🏪 Version B</a>
+        </div>
+      </div>
+
+      <!-- Unit 5 -->
+      <div class="project-tile" data-unit="5" data-keywords="area triangle rectangle surface 6.GR.1 6.GR.4">
+        <div class="tile-accent" style="background: linear-gradient(90deg, #34d399, #0e9a8c);"></div>
+        <div class="tile-body">
+          <span class="tile-unit-chip" style="background:rgba(52,211,153,0.15);color:#34d399;">Unit 5 · Area</span>
+          <h3 class="tile-title">🏠 Dream Room Designer / 🎨 Room Makeover Budget</h3>
+          <p class="tile-desc">Calculate floor area, triangle nooks, and wall paint coverage with real measurement and pricing.</p>
+          <div class="tile-tags">
+            <span class="tile-tag">6.GR.1</span>
+            <span class="tile-tag">6.GR.4</span>
+          </div>
+        </div>
+        <div class="tile-versions">
+          <a class="tile-ver-btn a" href="/math/unit-5/projects/version-a/">🏠 Version A</a>
+          <a class="tile-ver-btn b" href="/math/unit-5/projects/version-b/">🎨 Version B</a>
+        </div>
+      </div>
+
+      <!-- Unit 6 -->
+      <div class="project-tile" data-unit="6" data-keywords="expressions exponents order operations evaluate 6.AT.4 6.AT.5">
+        <div class="tile-accent" style="background: linear-gradient(90deg, #c084fc, #6d4ad6);"></div>
+        <div class="tile-body">
+          <span class="tile-unit-chip" style="background:rgba(192,132,252,0.15);color:#c084fc;">Unit 6 · Expressions</span>
+          <h3 class="tile-title">⚙️ Expression & Exponent Projects</h3>
+          <p class="tile-desc">Evaluate expressions with exponents, apply order of operations, and write expressions from real contexts.</p>
+          <div class="tile-tags">
+            <span class="tile-tag">6.AT.4</span>
+            <span class="tile-tag">6.AT.5</span>
+          </div>
+        </div>
+        <div class="tile-versions">
+          <a class="tile-ver-btn a" href="/math/unit-6/projects/version-a/">⚙️ Version A</a>
+          <a class="tile-ver-btn b" href="/math/unit-6/projects/version-b/">🧪 Version B</a>
+        </div>
+      </div>
+
+      <!-- Unit 7 -->
+      <div class="project-tile" data-unit="7" data-keywords="equations inequalities balance solve 6.AT.1 6.AT.2 6.AT.3">
+        <div class="tile-accent" style="background: linear-gradient(90deg, #38bdf8, #1763c7);"></div>
+        <div class="tile-body">
+          <span class="tile-unit-chip">Unit 7 · Equations</span>
+          <h3 class="tile-title">⚖️ Equation & Inequality Projects</h3>
+          <p class="tile-desc">Write and solve one-step equations and inequalities with real-world balance-scale reasoning.</p>
+          <div class="tile-tags">
+            <span class="tile-tag">6.AT.1</span>
+            <span class="tile-tag">6.AT.2</span>
+            <span class="tile-tag">6.AT.3</span>
+          </div>
+        </div>
+        <div class="tile-versions">
+          <a class="tile-ver-btn a" href="/math/unit-7/projects/version-a/">⚖️ Version A</a>
+          <a class="tile-ver-btn b" href="/math/unit-7/projects/version-b/">🧩 Version B</a>
+        </div>
+      </div>
+
+      <!-- Unit 8 -->
+      <div class="project-tile" data-unit="8" data-keywords="data statistics mean median mode dot plot 6.SP.1 6.SP.2 6.SP.3">
+        <div class="tile-accent" style="background: linear-gradient(90deg, #f59e0b, #34d399);"></div>
+        <div class="tile-body">
+          <span class="tile-unit-chip" style="background:rgba(245,158,11,0.15);color:#f59e0b;">Unit 8 · Data & Statistics</span>
+          <h3 class="tile-title">📊 Data & Statistics Projects</h3>
+          <p class="tile-desc">Collect real data, build dot plots, calculate mean/median/mode, and analyze variability.</p>
+          <div class="tile-tags">
+            <span class="tile-tag">6.SP.1</span>
+            <span class="tile-tag">6.SP.2</span>
+            <span class="tile-tag">6.SP.3</span>
+          </div>
+        </div>
+        <div class="tile-versions">
+          <a class="tile-ver-btn a" href="/math/unit-8/projects/version-a/">📊 Version A</a>
+          <a class="tile-ver-btn b" href="/math/unit-8/projects/version-b/">📈 Version B</a>
+        </div>
+      </div>
+
+      <!-- Unit 9 -->
+      <div class="project-tile" data-unit="9" data-keywords="coordinate plane integers quadrants ordered pairs 6.NS.5 6.NS.6 6.NS.8">
+        <div class="tile-accent" style="background: linear-gradient(90deg, #0e9a8c, #2dd4bf);"></div>
+        <div class="tile-body">
+          <span class="tile-unit-chip" style="background:rgba(45,212,191,0.15);color:#2dd4bf;">Unit 9 · Coordinate Plane</span>
+          <h3 class="tile-title">🧭 Coordinate Plane Projects</h3>
+          <p class="tile-desc">Plot ordered pairs across all four quadrants, calculate distances, and design coordinate art.</p>
+          <div class="tile-tags">
+            <span class="tile-tag">6.NS.5</span>
+            <span class="tile-tag">6.NS.6</span>
+            <span class="tile-tag">6.NS.8</span>
+          </div>
+        </div>
+        <div class="tile-versions">
+          <a class="tile-ver-btn a" href="/math/unit-9/projects/version-a/">🧭 Version A</a>
+          <a class="tile-ver-btn b" href="/math/unit-9/projects/version-b/">🗺️ Version B</a>
+        </div>
+      </div>
+
+      <!-- Unit 10 -->
+      <div class="project-tile" data-unit="10" data-keywords="volume surface area prism net 6.GR.2 6.GR.4">
+        <div class="tile-accent" style="background: linear-gradient(90deg, #ef6b52, #f59e0b);"></div>
+        <div class="tile-body">
+          <span class="tile-unit-chip" style="background:rgba(239,107,82,0.15);color:#ef6b52;">Unit 10 · Volume</span>
+          <h3 class="tile-title">📦 Volume & Surface Area Projects</h3>
+          <p class="tile-desc">Design 3D packaging, calculate volume of rectangular prisms, and unfold nets for surface area.</p>
+          <div class="tile-tags">
+            <span class="tile-tag">6.GR.2</span>
+            <span class="tile-tag">6.GR.4</span>
+          </div>
+        </div>
+        <div class="tile-versions">
+          <a class="tile-ver-btn a" href="/math/unit-10/projects/version-a/">📦 Version A</a>
+          <a class="tile-ver-btn b" href="/math/unit-10/projects/version-b/">🏗️ Version B</a>
+        </div>
+      </div>
+    </div>
+
+    <nav class="gallery-footer">
+      <a href="/math/projects/portfolio/">📋 My Project Portfolio</a>
+      <a href="/curriculum/">← Back to Curriculum</a>
+      <a href="/math/games/">🕹️ Arcade Games</a>
+      <a href="/teacher-tools/">🛠️ Teacher Tools</a>
+    </nav>
+
+    <script>
+      (function() {
+        var search = document.getElementById('project-search');
+        var tiles = document.querySelectorAll('.project-tile');
+        search.addEventListener('input', function() {
+          var q = this.value.toLowerCase().trim();
+          tiles.forEach(function(tile) {
+            var text = (tile.textContent + ' ' + (tile.getAttribute('data-keywords') || '')).toLowerCase();
+            tile.style.display = (!q || text.indexOf(q) !== -1) ? '' : 'none';
+          });
+        });
+      })();
+    </script>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+  <!-- nsr-injected:end -->
+  </body>
+</html>

@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Project Portfolio | Grade 6 Math | Neft Teacher</title>
+    <meta name="description" content="Track your culminating project progress across all 10 Grade 6 math units. See completion status, rubric scores, and earned certificates." />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
+    <style>
+      :root {
+        --bg: #0f172a;
+        --card: #1e293b;
+        --border: rgba(255,255,255,0.12);
+        --text: #f8fafc;
+        --muted: #94a3b8;
+        --cyan: #38bdf8;
+        --purple: #c084fc;
+        --amber: #f59e0b;
+        --green: #34d399;
+        --pink: #ec4899;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: 'Atkinson Hyperlegible', system-ui, -apple-system, sans-serif;
+        min-height: 100vh;
+        padding: 24px;
+      }
+
+      .portfolio-hero {
+        text-align: center;
+        padding: 32px 16px 24px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 24px;
+      }
+      .portfolio-hero h1 {
+        font-size: clamp(1.8rem, 4vw, 2.8rem);
+        font-weight: 900;
+        background: linear-gradient(135deg, #fff 20%, var(--purple) 60%, var(--cyan) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .portfolio-hero p { color: var(--muted); margin-top: 8px; font-size: 1rem; }
+
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 14px;
+        max-width: 800px;
+        margin: 0 auto 28px;
+      }
+      .stat-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 16px;
+        text-align: center;
+      }
+      .stat-card .num {
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: var(--cyan);
+      }
+      .stat-card .label {
+        font-size: 0.75rem;
+        color: var(--muted);
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-top: 4px;
+      }
+
+      .unit-list {
+        max-width: 800px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .unit-row {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 16px 20px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        transition: transform 0.15s;
+      }
+      .unit-row:hover { transform: translateX(4px); }
+      .unit-badge {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        font-size: 1.5rem;
+        flex-shrink: 0;
+      }
+      .unit-info { flex: 1; }
+      .unit-info h3 { font-size: 1rem; font-weight: 800; margin-bottom: 2px; }
+      .unit-info .standards { font-size: 0.78rem; color: var(--muted); }
+      .unit-status {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .status-chip {
+        padding: 5px 14px;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 800;
+      }
+      .status-chip.done {
+        background: rgba(52, 211, 153, 0.15);
+        color: var(--green);
+      }
+      .status-chip.pending {
+        background: rgba(148, 163, 184, 0.15);
+        color: var(--muted);
+      }
+      .cert-btn {
+        background: linear-gradient(135deg, var(--amber), #d97706);
+        color: #000;
+        border: none;
+        border-radius: 10px;
+        padding: 6px 14px;
+        font-size: 0.78rem;
+        font-weight: 800;
+        cursor: pointer;
+        transition: transform 0.15s;
+      }
+      .cert-btn:hover { transform: translateY(-1px); }
+
+      /* Certificate modal */
+      #cert-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+        background: rgba(2,6,23,0.9);
+        backdrop-filter: blur(12px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+      }
+      #cert-modal.show { display: flex; }
+      .cert-card {
+        background: #fff;
+        border-radius: 20px;
+        padding: 0;
+        max-width: 600px;
+        width: 100%;
+        overflow: hidden;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      }
+      .cert-card .cert-inner {
+        padding: 32px;
+        text-align: center;
+        color: #0f172a;
+      }
+      .cert-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        padding: 0 32px 24px;
+      }
+      .cert-actions button {
+        padding: 10px 20px;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        cursor: pointer;
+        border: none;
+        transition: transform 0.15s;
+      }
+      .cert-actions button:hover { transform: translateY(-1px); }
+      .cert-print { background: var(--cyan); color: #000; }
+      .cert-close { background: #e2e8f0; color: #475569; }
+
+      .nav-links {
+        max-width: 800px;
+        margin: 28px auto 0;
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .nav-links a {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 10px 18px;
+        color: var(--cyan);
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 0.85rem;
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <header class="portfolio-hero">
+      <h1>📋 My Project Portfolio</h1>
+      <p>Track your culminating project progress across all 10 units</p>
+    </header>
+
+    <div class="stats-row" id="stats-row">
+      <div class="stat-card"><div class="num" id="stat-completed">0</div><div class="label">Completed</div></div>
+      <div class="stat-card"><div class="num" id="stat-total">10</div><div class="label">Total Units</div></div>
+      <div class="stat-card"><div class="num" id="stat-stars">0</div><div class="label">Stars Earned</div></div>
+      <div class="stat-card"><div class="num" id="stat-pct">0%</div><div class="label">Portfolio</div></div>
+    </div>
+
+    <div class="unit-list" id="unit-list"></div>
+
+    <div id="cert-modal">
+      <div class="cert-card">
+        <div class="cert-inner" id="cert-content"></div>
+        <div class="cert-actions">
+          <button class="cert-print" onclick="window.print()">🖨️ Print Certificate</button>
+          <button class="cert-close" onclick="closeCert()">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <nav class="nav-links">
+      <a href="/math/projects/">🎓 Projects Gallery</a>
+      <a href="/curriculum/">← Curriculum Hub</a>
+    </nav>
+
+    <script>
+      var UNITS = [
+        { n: 1, icon: "🧮", title: "Number Sense in Action", standards: "6.NOS.2 · 6.NOS.3 · 6.NOS.4", color: "#1763c7" },
+        { n: 2, icon: "🍕", title: "Fractions in Action", standards: "6.NOS.5 · 6.NOS.6", color: "#f59e0b" },
+        { n: 3, icon: "⚖️", title: "Ratios in Action", standards: "6.RP.1 · 6.RP.2 · 6.RP.3", color: "#2dd4bf" },
+        { n: 4, icon: "💯", title: "Percents in Action", standards: "6.RP.3c · 6.RP.3d", color: "#ec4899" },
+        { n: 5, icon: "📐", title: "Area in Action", standards: "6.GR.1 · 6.GR.4", color: "#34d399" },
+        { n: 6, icon: "⚙️", title: "Expressions in Action", standards: "6.AT.4 · 6.AT.5", color: "#c084fc" },
+        { n: 7, icon: "⚖️", title: "Equations in Action", standards: "6.AT.1 · 6.AT.2 · 6.AT.3", color: "#38bdf8" },
+        { n: 8, icon: "📊", title: "Data in Action", standards: "6.SP.1 · 6.SP.2 · 6.SP.3", color: "#f59e0b" },
+        { n: 9, icon: "🧭", title: "Coordinates in Action", standards: "6.NS.5 · 6.NS.6 · 6.NS.8", color: "#0e9a8c" },
+        { n: 10, icon: "📦", title: "Volume in Action", standards: "6.GR.2 · 6.GR.4", color: "#ef6b52" }
+      ];
+
+      function getStatus(unit) {
+        try { return JSON.parse(localStorage.getItem("nt-project-u" + unit) || "null"); } catch(e) { return null; }
+      }
+
+      function renderList() {
+        var list = document.getElementById("unit-list");
+        var completed = 0;
+        var stars = 0;
+        list.innerHTML = "";
+        UNITS.forEach(function(u) {
+          var status = getStatus(u.n);
+          var isDone = status && status.completed;
+          if (isDone) { completed++; stars += (status.stars || 3); }
+          var row = document.createElement("div");
+          row.className = "unit-row";
+          row.innerHTML =
+            '<div class="unit-badge" style="background:' + u.color + '22;color:' + u.color + ';">' + u.icon + '</div>' +
+            '<div class="unit-info"><h3>Unit ' + u.n + ' — ' + u.title + '</h3><span class="standards">' + u.standards + '</span></div>' +
+            '<div class="unit-status">' +
+              '<span class="status-chip ' + (isDone ? 'done' : 'pending') + '">' + (isDone ? '✅ Complete' : '⏳ Not Started') + '</span>' +
+              (isDone ? '<button class="cert-btn" onclick="showCert(' + u.n + ')">🏅 Certificate</button>' : '') +
+            '</div>';
+          list.appendChild(row);
+        });
+        document.getElementById("stat-completed").textContent = completed;
+        document.getElementById("stat-stars").textContent = "⭐ " + stars;
+        document.getElementById("stat-pct").textContent = Math.round((completed / 10) * 100) + "%";
+      }
+
+      function showCert(unitNum) {
+        var u = UNITS.find(function(x) { return x.n === unitNum; });
+        if (!u) return;
+        var modal = document.getElementById("cert-modal");
+        var content = document.getElementById("cert-content");
+        var name = "";
+        try { name = localStorage.getItem("nt-student-name") || "Student"; } catch(e) { name = "Student"; }
+        content.innerHTML =
+          '<svg width="100%" height="280" viewBox="0 0 520 280" style="background:white;" xmlns="http://www.w3.org/2000/svg">' +
+            '<rect x="8" y="8" width="504" height="264" rx="16" fill="#fefce8" stroke="#f59e0b" stroke-width="3" stroke-dasharray="8 4"/>' +
+            '<text x="260" y="50" text-anchor="middle" font-size="14" fill="#92400e" font-weight="700" font-family="system-ui">CERTIFICATE OF COMPLETION</text>' +
+            '<text x="260" y="85" text-anchor="middle" font-size="28" fill="#0f172a" font-weight="900" font-family="system-ui">🏆 ' + u.title + '</text>' +
+            '<text x="260" y="125" text-anchor="middle" font-size="16" fill="#475569" font-family="system-ui">Awarded to</text>' +
+            '<text x="260" y="160" text-anchor="middle" font-size="24" fill="#1e3a5f" font-weight="800" font-family="system-ui">' + name + '</text>' +
+            '<line x1="160" y1="168" x2="360" y2="168" stroke="#cbd5e1" stroke-width="1"/>' +
+            '<text x="260" y="200" text-anchor="middle" font-size="13" fill="#64748b" font-family="system-ui">For successfully completing the Unit ' + u.n + ' Culminating Project</text>' +
+            '<text x="260" y="220" text-anchor="middle" font-size="12" fill="#94a3b8" font-family="system-ui">Standards: ' + u.standards + '</text>' +
+            '<text x="260" y="255" text-anchor="middle" font-size="11" fill="#94a3b8" font-family="system-ui">Neft Teacher · Grade 6 Math · eduwonderlab.com</text>' +
+            '<text x="40" y="255" font-size="22">⭐</text>' +
+            '<text x="480" y="255" font-size="22">⭐</text>' +
+          '</svg>';
+        modal.classList.add("show");
+      }
+
+      window.closeCert = function() {
+        document.getElementById("cert-modal").classList.remove("show");
+      };
+
+      renderList();
+    </script>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+  <!-- nsr-injected:end -->
+  </body>
+</html>
