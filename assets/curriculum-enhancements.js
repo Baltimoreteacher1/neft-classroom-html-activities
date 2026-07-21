@@ -10,10 +10,17 @@
   // teacher-mode.js) so one toggle flips both the hub and every lesson.
   var STORAGE_MODE = "nt-teacher-mode";
   var STORAGE_MODE_LEGACY = "curriculumTeacherMode";
-  // Classroom deterrent password for entering Teacher Mode (not real security —
-  // a client-side gate that stops casual student access).
-  // ⚠️ KEEP IN SYNC with TEACHER_PIN in engine/core/teacher-mode.js.
-  var TEACHER_PIN = "TeacherNeft";
+  // Which accepted PIN unlocked Teacher Mode (master | coteacher). Nice-to-have
+  // for future rotation; does not grant SITE_PASSWORD / Basic Auth.
+  var STORAGE_PIN_ROLE = "nt-teacher-pin-role";
+  // Classroom deterrent passwords for entering Teacher Mode (not real security —
+  // a client-side gate that stops casual student access). Either PIN unlocks the
+  // same Teacher Mode sticky flag; neither is SITE_PASSWORD.
+  // ⚠️ KEEP IN SYNC with TEACHER_PINS in engine/core/teacher-mode.js.
+  var TEACHER_PINS = {
+    master: "TeacherNeft",
+    coteacher: "TeacherAlba",
+  };
   var STORAGE_PROGRESS = "curriculumProgress";
   var FILTER_ALL = "all";
 
@@ -136,18 +143,33 @@
     return false;
   }
 
-  function saveTeacherMode(on) {
+  function saveTeacherMode(on, role) {
     try {
       localStorage.setItem(STORAGE_MODE, on ? "1" : "0");
+      if (!on) {
+        localStorage.removeItem(STORAGE_PIN_ROLE);
+      } else if (role) {
+        localStorage.setItem(STORAGE_PIN_ROLE, role);
+      }
+      // on && !role: leave an existing role from requestTeacher alone
     } catch (e) {}
   }
 
-  // Password gate for switching INTO Teacher Mode. Returns true on success.
+  function matchTeacherPin(pin) {
+    if (pin === TEACHER_PINS.master) return "master";
+    if (pin === TEACHER_PINS.coteacher) return "coteacher";
+    return null;
+  }
+
+  // Password gate for switching INTO Teacher Mode. Returns role string on
+  // success, or false. Accepts master or co-teacher PIN (same Teacher Mode;
+  // no Basic Auth / SITE_PASSWORD grant).
   function requestTeacher() {
-    var entered = window.prompt("Teacher password:");
+    var entered = window.prompt("Enter teacher password:");
     if (entered === null) return false; // cancelled
-    if (entered.trim() === TEACHER_PIN) return true;
-    window.alert("Incorrect password.");
+    var role = matchTeacherPin(entered.trim());
+    if (role) return role;
+    window.alert("That password did not work. Try again.");
     return false;
   }
 
@@ -426,12 +448,14 @@
     modeBtn.addEventListener("click", function () {
       // Switching INTO teacher requires the password; back to student is free.
       if (!teacherMode) {
-        if (!requestTeacher()) return;
+        var role = requestTeacher();
+        if (!role) return;
         teacherMode = true;
+        saveTeacherMode(true, role);
       } else {
         teacherMode = false;
+        saveTeacherMode(false);
       }
-      saveTeacherMode(teacherMode);
       applyTeacherMode();
       updateProgressSummary();
     });
@@ -455,9 +479,10 @@
       '<button type="button" class="hub-hint-link" id="hub-hint-teacher">Switch to Teacher Mode</button> ' +
       "to restore them.";
     hint.querySelector("#hub-hint-teacher").addEventListener("click", function () {
-      if (!requestTeacher()) return;
+      var role = requestTeacher();
+      if (!role) return;
       teacherMode = true;
-      saveTeacherMode(true);
+      saveTeacherMode(true, role);
       applyTeacherMode();
       updateProgressSummary();
     });

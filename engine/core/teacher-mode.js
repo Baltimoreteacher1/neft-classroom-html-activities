@@ -18,13 +18,26 @@ function esc(s) {
 }
 
 const TEACHER_KEY = "nt-teacher-mode";
+// Which accepted PIN unlocked Teacher Mode (master | coteacher). Nice-to-have
+// for future rotation; does not grant SITE_PASSWORD / Basic Auth.
+const TEACHER_PIN_ROLE_KEY = "nt-teacher-pin-role";
 
-// Classroom deterrent password for entering Teacher Mode. NOTE: this is a
+// Classroom deterrent passwords for entering Teacher Mode. NOTE: this is a
 // client-side gate, not real security — answer-key content still ships in the
 // page, so a determined student could read it from source. It stops casual
-// clicking/peeking, which is the real classroom risk.
-// ⚠️ KEEP IN SYNC with TEACHER_PIN in assets/curriculum-enhancements.js.
-const TEACHER_PIN = "TeacherNeft";
+// clicking/peeking, which is the real classroom risk. Either PIN unlocks the
+// same Teacher Mode sticky flag; neither is SITE_PASSWORD.
+// ⚠️ KEEP IN SYNC with TEACHER_PINS in assets/curriculum-enhancements.js.
+const TEACHER_PINS = Object.freeze({
+  master: "TeacherNeft",
+  coteacher: "TeacherAlba",
+});
+
+function matchTeacherPin(pin) {
+  if (pin === TEACHER_PINS.master) return "master";
+  if (pin === TEACHER_PINS.coteacher) return "coteacher";
+  return null;
+}
 
 function readStickyTeacher() {
   try {
@@ -33,10 +46,15 @@ function readStickyTeacher() {
     return false;
   }
 }
-function setStickyTeacher(on) {
+function setStickyTeacher(on, role) {
   try {
-    if (on) localStorage.setItem(TEACHER_KEY, "1");
-    else localStorage.removeItem(TEACHER_KEY);
+    if (on) {
+      localStorage.setItem(TEACHER_KEY, "1");
+      if (role) localStorage.setItem(TEACHER_PIN_ROLE_KEY, role);
+    } else {
+      localStorage.removeItem(TEACHER_KEY);
+      localStorage.removeItem(TEACHER_PIN_ROLE_KEY);
+    }
   } catch {
     /* storage blocked — fall back to URL param only */
   }
@@ -51,10 +69,12 @@ export function isTeacherMode() {
   return readStickyTeacher();
 }
 
-/** Check the password and, if correct, stick teacher mode on this device. */
+/** Check the password and, if correct, stick teacher mode on this device.
+ *  Accepts master or co-teacher PIN (same Teacher Mode; no Basic Auth grant). */
 export function unlockTeacher(pin) {
-  if (pin !== TEACHER_PIN) return false;
-  setStickyTeacher(true);
+  const role = matchTeacherPin(pin);
+  if (!role) return false;
+  setStickyTeacher(true, role);
   return true;
 }
 
@@ -128,7 +148,7 @@ function mountModeToggle() {
     '<span class="mode-toggle-state">Student Mode</span>' +
     '<span class="mode-toggle-action">Teacher →</span></button>' +
     '<form class="mode-toggle-unlock" hidden>' +
-    '<input type="password" class="mode-toggle-pin" placeholder="Teacher password" autocomplete="off" aria-label="Teacher password" />' +
+    '<input type="password" class="mode-toggle-pin" placeholder="Enter teacher password" autocomplete="off" aria-label="Enter teacher password" />' +
     '<button type="submit" class="mode-toggle-go">Enter</button></form>';
   const enterBtn = wrap.querySelector(".mode-toggle-enter");
   const form = wrap.querySelector(".mode-toggle-unlock");
@@ -172,9 +192,9 @@ export function mountIdentityTeacherButton(slot) {
     <div class="identity-teacher">
       <button type="button" class="identity-teacher-btn">Teacher</button>
       <form class="identity-teacher-unlock" hidden>
-        <input type="password" class="identity-teacher-pin" placeholder="Teacher password" autocomplete="off" aria-label="Teacher password" />
+        <input type="password" class="identity-teacher-pin" placeholder="Enter teacher password" autocomplete="off" aria-label="Enter teacher password" />
         <button type="submit" class="identity-teacher-go">Enter</button>
-        <p class="identity-teacher-err" role="alert" hidden>Incorrect password</p>
+        <p class="identity-teacher-err" role="alert" hidden>That password did not work. Try again.</p>
       </form>
     </div>`;
 
