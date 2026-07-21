@@ -111,7 +111,23 @@ function ensureStyles() {
   .ftb-err{flex-basis:100%;font-size:.68rem;font-weight:700;color:${C.wrong};text-align:center;min-height:.9em;}
   .ftb-split.shake{animation:ftb-shake .32s;}
   @keyframes ftb-shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
-  @media (prefers-reduced-motion:reduce){.ftb-split.shake{animation:none;}}
+  /* Growth motion (additive only): freshly split branches spring out of their
+     parent, connector lines fade in just after the children land, and prime
+     tags pop. "backwards" fill hides elements during their delay but releases
+     all styles once the animation ends, so the settled tree is untouched. */
+  .ftb-li-in>.ftb-node{animation:ftb-child-in .42s cubic-bezier(.34,1.56,.64,1) backwards;}
+  .ftb-li-in:nth-child(2)>.ftb-node{animation-delay:.06s;}
+  @keyframes ftb-child-in{from{transform:translateY(-14px) scale(.4);opacity:0;}to{transform:translateY(0) scale(1);opacity:1;}}
+  .ftb-kids-in::before,.ftb-li-in::before,.ftb-li-in::after{animation:ftb-line-in .28s ease .18s backwards;}
+  @keyframes ftb-line-in{from{opacity:0;}to{opacity:1;}}
+  .ftb-li-in .ftb-prime-tag{animation:ftb-tag-in .3s cubic-bezier(.34,1.56,.64,1) .26s backwards;}
+  @keyframes ftb-tag-in{from{transform:scale(.5);opacity:0;}to{transform:scale(1);opacity:1;}}
+  .ftb-root-in>.ftb-node{animation:ftb-root-pop .45s cubic-bezier(.34,1.56,.64,1) backwards;}
+  @keyframes ftb-root-pop{from{transform:scale(.6);opacity:0;}to{transform:scale(1);opacity:1;}}
+  @media (prefers-reduced-motion:reduce){
+    .ftb-split.shake,.ftb-li-in>.ftb-node,.ftb-kids-in::before,.ftb-li-in::before,
+    .ftb-li-in::after,.ftb-li-in .ftb-prime-tag,.ftb-root-in>.ftb-node{animation:none;}
+  }
   .ftb-controls{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:12px;}
   .ftb-btn{font:inherit;font-weight:700;font-size:.85rem;border-radius:999px;padding:7px 16px;cursor:pointer;
     border:2px solid ${C.line};background:#fff;color:${C.navy};}
@@ -192,9 +208,11 @@ export function renderFactorTreeFill(host, cfg) {
   const solved = () => allLeavesPrime(root) && (!!root.children || isPrime(root.value));
 
   // ---- rendering ----------------------------------------------------------
-  function renderNode(n, isRoot) {
+  // `grow` marks a node created by the split that triggered this rerender, so
+  // only fresh branches animate — the settled part of the tree stays still.
+  function renderNode(n, isRoot, grow) {
     const li = document.createElement("li");
-    li.className = "ftb-li";
+    li.className = "ftb-li" + (grow ? " ftb-li-in" : "");
 
     const node = document.createElement("div");
     node.className = "ftb-node";
@@ -219,8 +237,11 @@ export function renderFactorTreeFill(host, cfg) {
 
     if (n.children) {
       const ul = document.createElement("ul");
-      ul.className = "ftb-kids";
-      n.children.forEach((c) => ul.appendChild(renderNode(c, false)));
+      // One-shot flag set by trySplit: consume it so later rerenders are still.
+      const kidsIn = n.growKids === true;
+      n.growKids = false;
+      ul.className = "ftb-kids" + (kidsIn ? " ftb-kids-in" : "");
+      n.children.forEach((c) => ul.appendChild(renderNode(c, false, kidsIn)));
       li.appendChild(ul);
     }
     return li;
@@ -278,6 +299,7 @@ export function renderFactorTreeFill(host, cfg) {
       return;
     }
     n.children = [makeNode(a), makeNode(b)];
+    n.growKids = true; // animate ONLY these fresh branches on the next render
     rerender();
     focusNextSplit();
   }
@@ -294,9 +316,16 @@ export function renderFactorTreeFill(host, cfg) {
     if (nextInput) setTimeout(() => nextInput.focus(), 0);
   }
 
+  let firstMount = true;
   function rerender() {
     rootUl.innerHTML = "";
-    rootUl.appendChild(renderNode(root, true));
+    const rootLi = renderNode(root, true);
+    // The root pops in once, on initial mount only.
+    if (firstMount) {
+      rootLi.classList.add("ftb-root-in");
+      firstMount = false;
+    }
+    rootUl.appendChild(rootLi);
     updateStatus();
   }
 

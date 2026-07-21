@@ -51,6 +51,67 @@ function randomFrom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
+// JS-spawned motion (orbs/sparkles) honors the same media query the CSS
+// motion layer uses, so reduced-motion users never see particles at all.
+function motionOK() {
+  return !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+// Six-point sparkle burst around a correct answer. Positions are computed
+// from the element's live rect so the burst tracks scrolled/nested layouts.
+function sparkleBurst(element) {
+  if (!motionOK() || !element) return;
+  const rect = element.getBoundingClientRect();
+  if (!rect.width && !rect.height) return;
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+  for (let i = 0; i < 6; i++) {
+    const bit = document.createElement("div");
+    bit.className = "spark-bit";
+    const angle = (Math.PI * 2 * i) / 6 + Math.random() * 0.5;
+    const dist = 26 + Math.random() * 22;
+    Object.assign(bit.style, {
+      left: `${cx}px`,
+      top: `${cy}px`,
+      background: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
+      "--sx": `${Math.cos(angle) * dist}px`,
+      "--sy": `${Math.sin(angle) * dist}px`,
+      animationDelay: `${Math.random() * 0.08}s`,
+    });
+    document.body.appendChild(bit);
+    setTimeout(() => bit.remove(), 700);
+  }
+}
+
+// XP orbs that fly from the completed phase card toward the streak/XP
+// display (or upward off the card when no target is mounted).
+function flyXPOrbs(fromEl, count = 6) {
+  if (!motionOK() || !fromEl) return;
+  const rect = fromEl.getBoundingClientRect();
+  if (!rect.width && !rect.height) return;
+  const target = document.querySelector(".streak-display");
+  const targetRect = target?.getBoundingClientRect();
+  for (let i = 0; i < count; i++) {
+    const orb = document.createElement("div");
+    orb.className = "xp-orb";
+    const sx = rect.left + rect.width * (0.3 + Math.random() * 0.4);
+    const sy = rect.top + rect.height * 0.35;
+    const ox = targetRect
+      ? targetRect.left + targetRect.width / 2 - sx
+      : (Math.random() - 0.5) * 80;
+    const oy = targetRect ? targetRect.top + targetRect.height / 2 - sy : -110 - Math.random() * 50;
+    Object.assign(orb.style, {
+      left: `${sx}px`,
+      top: `${sy}px`,
+      "--ox": `${ox}px`,
+      "--oy": `${oy}px`,
+      animationDelay: `${i * 0.06}s`,
+    });
+    document.body.appendChild(orb);
+    setTimeout(() => orb.remove(), 1200);
+  }
+}
+
 export function createEngagement(state) {
   let streakEl = null;
 
@@ -103,6 +164,7 @@ export function createEngagement(state) {
         element.addEventListener("animationend", () => element.classList.remove("pop-correct"), {
           once: true,
         });
+        sparkleBurst(element);
       }
 
       const streakEntry = s.streak >= 2 && s.streak <= 6 ? ENCOURAGE_STREAK[s.streak - 1] : null;
@@ -274,6 +336,7 @@ export function createEngagement(state) {
       } else {
         this.showConfetti();
       }
+      flyXPOrbs(banner, Math.min(8, 4 + stars));
 
       return new Promise((resolve) => {
         banner

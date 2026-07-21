@@ -40,6 +40,13 @@ function esc(s) {
   );
 }
 
+function prefersReducedMotion() {
+  return (
+    typeof window.matchMedia === "function" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
+}
+
 // --- Tokenizer -------------------------------------------------------------
 // Normalizes student-friendly notation, then emits { num | var | op | paren }.
 // "2 1/2" (number, space, fraction) becomes a single mixed-number value token.
@@ -373,6 +380,7 @@ export function renderStepSolver(container, cfg = {}) {
     const rev = el("reveal");
     if (rev) rev.hidden = true;
     renderLines();
+    if (lines.length) animateReveal(0);
   }
 
   function renderLines() {
@@ -385,6 +393,38 @@ export function renderStepSolver(container, cfg = {}) {
           `</li>`,
       )
       .join("");
+  }
+
+  // "Self-writing" reveal for one just-added line: a soft highlight sweeps the
+  // row while the text types itself in. Step text is always plain (esc'd on
+  // render), so slicing is entity-safe. The full text stays in the DOM for
+  // screen readers via a visually-hidden twin; only the aria-hidden visual
+  // layer types. Purely cosmetic — never blocks input, grading, or state.
+  let typeRaf = 0;
+  function animateReveal(index) {
+    const li = el("lines").children[index];
+    if (!li) return;
+    li.classList.add("stepslv-line-reveal");
+    if (prefersReducedMotion()) return;
+    const span = li.querySelector(".stepslv-linetext");
+    const full = span.textContent;
+    if (!full) return;
+    cancelAnimationFrame(typeRaf);
+    span.innerHTML =
+      `<span class="stepslv-srtext">${esc(full)}</span>` +
+      `<span class="stepslv-typetext" aria-hidden="true"></span>`;
+    const vis = span.lastElementChild;
+    // ~24ms/char, scaled down so long lines finish within ~900ms total.
+    const perChar = Math.min(24, 900 / full.length);
+    const t0 = performance.now();
+    const tick = (now) => {
+      if (!vis.isConnected) return; // list re-rendered mid-type; stop quietly
+      const n = Math.min(full.length, Math.ceil((now - t0) / perChar));
+      vis.textContent = full.slice(0, n);
+      if (n < full.length) typeRaf = requestAnimationFrame(tick);
+      else span.textContent = full; // collapse back to one plain text node
+    };
+    typeRaf = requestAnimationFrame(tick);
   }
 
   function say(kind, html) {
@@ -434,6 +474,7 @@ export function renderStepSolver(container, cfg = {}) {
     lines.push({ text, parsed });
     inp.value = "";
     renderLines();
+    animateReveal(lines.length - 1);
     let answerTokens = 0;
     if (problem.answer) {
       try {
@@ -504,6 +545,7 @@ export function renderStepSolver(container, cfg = {}) {
 
   return {
     destroy() {
+      cancelAnimationFrame(typeRaf);
       root.remove();
     },
   };
@@ -544,13 +586,23 @@ function injectStyles() {
   .stepslv-key{padding:6px 12px;font-size:.95rem;font-weight:700;color:${C.navy};background:${C.chipBg};border:1.5px solid ${C.line};border-radius:8px;cursor:pointer;}
   .stepslv-key:hover{background:#e2ecff;}
   .stepslv-feed{margin-top:10px;min-height:1.2em;}
-  .stepslv-msg{padding:10px 14px;border-radius:12px;font-size:.95rem;line-height:1.5;}
+  .stepslv-msg{padding:10px 14px;border-radius:12px;font-size:.95rem;line-height:1.5;animation:stepslv-msgin .28s ease;}
   .stepslv-msg-ok{background:${C.tealBg};color:#095350;border:1px solid #9adbd2;}
   .stepslv-msg-warn{background:${C.amberBg};color:${C.amber};border:1px solid #ecd9ae;}
   .stepslv-msg-win{background:linear-gradient(135deg,#e2f9f5,#eef2ff);color:${C.navy};border:1px solid #9adbd2;font-weight:600;}
   .stepslv-won{animation:stepslv-pop .5s ease;}
+  .stepslv-line-reveal{position:relative;overflow:hidden;animation:stepslv-linein .3s ease;}
+  .stepslv-line-reveal::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(105deg,transparent 20%,rgba(29,78,216,.14) 45%,rgba(13,122,118,.12) 55%,transparent 80%);transform:translateX(-101%);animation:stepslv-sweep .9s ease .05s forwards;}
+  .stepslv-srtext{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;}
+  .stepslv-typetext::after{content:"";display:inline-block;width:2px;height:1em;margin-left:1px;vertical-align:-.15em;background:${C.accent};}
   @keyframes stepslv-pop{0%{transform:scale(1)}35%{transform:scale(1.015)}100%{transform:scale(1)}}
-  @media (prefers-reduced-motion:reduce){.stepslv-won{animation:none}}
+  @keyframes stepslv-linein{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  @keyframes stepslv-sweep{to{transform:translateX(101%)}}
+  @keyframes stepslv-msgin{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){
+    .stepslv-won,.stepslv-msg,.stepslv-line-reveal{animation:none;}
+    .stepslv-line-reveal::after{animation:none;content:none;}
+  }
   @media (max-width:480px){.stepslv-inrow{flex-direction:column}.stepslv-go{width:100%}}
   `;
   document.head.appendChild(s);

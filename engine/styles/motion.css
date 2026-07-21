@@ -1,0 +1,265 @@
+/* ── Motion layer ──
+   Publisher "more alive" pass: micro-interaction juice, phase-header
+   ambience, entrance staggers, and celebration effects. Additive only —
+   layers on design-system.css without changing layout or behavior.
+
+   Scoped under .app: cssCodeSplit:false ships this bundle to every Vite
+   entry, so unscoped selectors would leak into non-lesson pages.
+
+   Every rule that moves lives inside the no-preference media query, so
+   prefers-reduced-motion users get the exact pre-motion experience.
+   JS-driven effects (XP orbs, sparkles) guard with matchMedia in
+   engagement.js. */
+
+@media (prefers-reduced-motion: no-preference) {
+  /* ── Phase content entrance stagger ──
+     phaseIn already fades the panel; children rise in sequence behind it
+     so each section feels composed rather than dumped. Capped at 8 rows —
+     later children render instantly, keeping long phases snappy. */
+  .app .phase.active > * {
+    animation: motionRise 0.45s var(--ease-out) both;
+  }
+  .app .phase.active > *:nth-child(1) {
+    animation-delay: 0.03s;
+  }
+  .app .phase.active > *:nth-child(2) {
+    animation-delay: 0.09s;
+  }
+  .app .phase.active > *:nth-child(3) {
+    animation-delay: 0.15s;
+  }
+  .app .phase.active > *:nth-child(4) {
+    animation-delay: 0.21s;
+  }
+  .app .phase.active > *:nth-child(5) {
+    animation-delay: 0.27s;
+  }
+  .app .phase.active > *:nth-child(6) {
+    animation-delay: 0.33s;
+  }
+  .app .phase.active > *:nth-child(7) {
+    animation-delay: 0.38s;
+  }
+  .app .phase.active > *:nth-child(8) {
+    animation-delay: 0.42s;
+  }
+  .app .phase.active > *:nth-child(n + 9) {
+    animation: none;
+  }
+
+  /* ── Section header ambience ── */
+  .app .section-header {
+    position: relative;
+  }
+  .app .section-header .section-icon {
+    animation:
+      motionIconLand 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both,
+      motionIconFloat 5.5s ease-in-out 1.2s infinite;
+  }
+  .app .section-header::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -10px;
+    height: 3px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--teal, #1fa6a2), transparent 70%);
+    transform: scaleX(0);
+    transform-origin: left;
+    animation: motionUnderline 0.7s var(--ease-out) 0.25s both;
+    opacity: 0.55;
+    pointer-events: none;
+  }
+
+  /* ── Micro-interaction juice ── */
+  .app .btn:active {
+    transform: scale(0.96);
+  }
+  .app .card {
+    transition:
+      transform 0.22s var(--ease-out),
+      box-shadow 0.22s var(--ease-out);
+  }
+  .app .card:hover {
+    transform: translateY(-2px);
+  }
+  .app .mc-option:active {
+    transform: scale(0.98);
+  }
+  .app .phase-btn:not(.locked):hover {
+    transform: translateY(-2px);
+  }
+  .app .text-input:focus {
+    animation: motionFocusGlow 0.8s ease-out 1;
+  }
+
+  /* ── Streak & celebration ── */
+  .app .streak-fire {
+    display: inline-block;
+    animation: motionFlicker 1.7s ease-in-out infinite;
+    transform-origin: 50% 85%;
+  }
+  .app .star-display {
+    animation: motionStarGlow 2.2s ease-in-out 0.9s 2;
+  }
+  .app .phase-complete-banner {
+    position: relative;
+    overflow: hidden;
+  }
+  .app .phase-complete-banner::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -60%;
+    width: 45%;
+    background: linear-gradient(105deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+    animation: motionShine 1.1s ease-out 0.5s 1 both;
+    pointer-events: none;
+  }
+  .app .phase-complete-badge,
+  .app .badge-unlock {
+    animation: motionStampIn 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+  .app .badge-unlock:nth-child(2) {
+    animation-delay: 0.15s;
+  }
+  .app .badge-unlock:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+}
+
+/* ── JS-spawned particles (engagement.js) ──
+   Base styles live outside the media query so elements are defined either
+   way; engagement.js simply never spawns them under reduced motion. */
+.xp-orb {
+  position: fixed;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 30%, #ffe9a8, #f2c15b 55%, #c98f2a);
+  box-shadow: 0 0 8px rgba(242, 193, 91, 0.8);
+  pointer-events: none;
+  z-index: 9999;
+  animation: motionOrbFly 0.7s cubic-bezier(0.5, -0.15, 0.6, 1) both;
+}
+
+.spark-bit {
+  position: fixed;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  animation: motionSparkFly 0.55s ease-out both;
+}
+
+@keyframes motionRise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes motionIconLand {
+  0% {
+    opacity: 0;
+    transform: scale(0.4) rotate(-8deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+  }
+}
+
+@keyframes motionIconFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes motionUnderline {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes motionFocusGlow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(31, 166, 162, 0.45);
+  }
+  100% {
+    box-shadow: 0 0 0 10px rgba(31, 166, 162, 0);
+  }
+}
+
+@keyframes motionFlicker {
+  0%,
+  100% {
+    transform: scale(1) rotate(0);
+  }
+  30% {
+    transform: scale(1.08) rotate(-3deg);
+  }
+  60% {
+    transform: scale(0.96) rotate(2deg);
+  }
+}
+
+@keyframes motionStarGlow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0 rgba(242, 193, 91, 0));
+  }
+  50% {
+    filter: drop-shadow(0 0 10px rgba(242, 193, 91, 0.7));
+  }
+}
+
+@keyframes motionShine {
+  to {
+    left: 120%;
+  }
+}
+
+@keyframes motionStampIn {
+  0% {
+    opacity: 0;
+    transform: scale(2.2) rotate(-10deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+  }
+}
+
+@keyframes motionOrbFly {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--ox, 0px), var(--oy, -120px)) scale(0.4);
+  }
+}
+
+@keyframes motionSparkFly {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--sx, 0px), var(--sy, -30px)) scale(0.2);
+  }
+}

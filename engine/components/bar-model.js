@@ -2,9 +2,34 @@ let BM_STYLE_INJECTED = false;
 
 function injectBarModelStyle() {
   if (BM_STYLE_INJECTED) return;
+  if (typeof document === "undefined") return;
+  if (document.getElementById("bm-engine-styles")) {
+    BM_STYLE_INJECTED = true;
+    return;
+  }
   BM_STYLE_INJECTED = true;
   const css = `
   .bm-total { animation: bm-total-in .45s var(--ease-out, ease-out) both; }
+  /* Segments draw in left-to-right on mount (delay staggered inline).
+     "backwards" fill (not "both") so no final transform lingers to fight the
+     hover scale transition after the entrance finishes. */
+  .bm-seg-in { animation: bm-seg-in .45s cubic-bezier(.22,.9,.32,1) backwards; transform-origin: left center; }
+  @keyframes bm-seg-in {
+    from { opacity: 0; transform: scaleX(0); }
+    to   { opacity: 1; transform: scaleX(1); }
+  }
+  /* Bracket annotations fade in after their segment lands. */
+  .bm-fade-in { animation: bm-fade-in .4s var(--ease-out, ease-out) backwards; }
+  @keyframes bm-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  /* Value label pops when a segment's value changes / is revealed. */
+  .bm-label-pop { animation: bm-label-pop .38s cubic-bezier(.34,1.56,.64,1) both; }
+  @keyframes bm-label-pop {
+    from { transform: scale(0.55); }
+    to   { transform: scale(1); }
+  }
   .bm-seg { transition: flex 0.3s var(--ease-out, ease-out), transform .16s var(--ease-out, ease-out), box-shadow .16s var(--ease-out, ease-out), filter .16s var(--ease-out, ease-out); }
   .bm-seg:hover { transform: scale(1.03); box-shadow: 0 4px 14px rgba(15,23,42,0.18); filter: brightness(1.05); z-index: 1; }
   .bm-annotation { transition: transform .2s var(--ease-out, ease-out), border-color .2s var(--ease-out, ease-out), color .2s var(--ease-out, ease-out); }
@@ -29,9 +54,13 @@ function injectBarModelStyle() {
     .bm-annotation.bm-emphasis { transform: none; }
     .bm-input { transition: none; }
     .bm-revealed { animation: none; }
+    .bm-seg-in { animation: none; transform: none; opacity: 1; }
+    .bm-fade-in { animation: none; opacity: 1; }
+    .bm-label-pop { animation: none; transform: none; }
   }
   `;
   const style = document.createElement("style");
+  style.id = "bm-engine-styles";
   style.dataset.bm = "bar-model";
   style.textContent = css;
   (document.head || document.documentElement).append(style);
@@ -91,13 +120,16 @@ export function renderBarModel(container, config) {
   bars.forEach((bar, i) => {
     const pct = (bar.value / totalValue) * 100;
     const seg = document.createElement("div");
-    seg.className = "bm-seg";
+    seg.className = "bm-seg bm-seg-in";
     const bgColor = colors[i % colors.length];
     seg.style.cssText = `
       flex:${pct}; background:${bgColor}; border-radius:var(--radius-sm);
       display:grid; place-items:center; color:white; font-weight:800; font-size:0.88rem;
       position:relative; min-width:40px;
     `;
+    // Left-to-right entrance stagger. Set AFTER cssText (which replaces the
+    // whole inline style). Decorative; the class is removed before any reveal.
+    seg.style.animationDelay = `${i * 70}ms`;
 
     if (bar.editable) {
       seg.style.background = "var(--cream)";
@@ -127,12 +159,15 @@ export function renderBarModel(container, config) {
   bars.forEach((bar, i) => {
     const pct = (bar.value / totalValue) * 100;
     const annotation = document.createElement("div");
-    annotation.className = "bm-annotation";
+    annotation.className = "bm-annotation bm-fade-in";
     annotation.style.cssText = `
       flex:${pct}; text-align:center; font-size:0.72rem; font-weight:700;
       color:${colors[i % colors.length]}; border-top:2px solid ${colors[i % colors.length]};
       padding-top:2px; min-width:40px;
     `;
+    // Fade in after the matching segment lands (cssText replaces inline style,
+    // so the delay must be set after it).
+    annotation.style.animationDelay = `${260 + i * 70}ms`;
     annotation.textContent = bar.annotation || "";
     bracketRow.append(annotation);
   });
@@ -220,8 +255,17 @@ export function renderBarModel(container, config) {
             seg.style.border = "none";
             seg.style.color = "white";
             seg.innerHTML = `<div style="text-align:center; line-height:1.2;"><div style="font-size:0.72rem; opacity:0.85;">${bars[i].label || ""}</div><div>${bars[i].value}</div></div>`;
+            // Drop the entrance animation class so bm-revealed's animation
+            // wins the cascade and the pop actually plays.
+            seg.classList.remove("bm-seg-in");
             seg.style.animationDelay = `${revealIndex * 90}ms`;
             seg.classList.add("bm-revealed");
+            // Pop the newly revealed value label (the inner value <div>).
+            const valDiv = seg.firstElementChild?.lastElementChild;
+            if (valDiv) {
+              valDiv.classList.add("bm-label-pop");
+              valDiv.style.animationDelay = `${revealIndex * 90 + 120}ms`;
+            }
             revealIndex += 1;
           }
         });
@@ -304,12 +348,14 @@ function renderRatioBarModel(container, config) {
   segs.forEach((part, i) => {
     const pct = (Number(part.value || 0) / partSum) * 100;
     const seg = document.createElement("div");
-    seg.className = "bm-seg";
+    seg.className = "bm-seg bm-seg-in";
     seg.style.cssText = `
       flex:${pct}; background:${part.color || palette[i % palette.length]}; border-radius:var(--radius-sm);
       display:grid; place-items:center; color:white; font-weight:800; font-size:0.82rem;
       position:relative; min-width:40px; text-align:center; line-height:1.15;
     `;
+    // Entrance stagger — set after cssText (which replaces inline style).
+    seg.style.animationDelay = `${i * 70}ms`;
     seg.innerHTML = `<div><div style="font-size:0.7rem; opacity:0.9;">${part.label || ""}</div></div>`;
     segBar.append(seg);
   });

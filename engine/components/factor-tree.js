@@ -112,6 +112,12 @@ function treeSVG(n) {
   const px = (gx) => PAD + R + gx * GAPX;
   const py = (depth) => PAD + R + depth * GAPY;
 
+  // Build-in cascade: the root pops first (delay 0), each depth of children
+  // springs in from its parent slightly later (plus a small left-to-right
+  // ripple), and each connector fades in just after its child lands. Delays
+  // are inline; the keyframes live in injectStyles() and are disabled under
+  // prefers-reduced-motion (the tree then simply appears complete).
+  const nodeDelay = (n) => Math.round(n.depth * 90 + n.gx * 24);
   let lines = "";
   let circles = "";
   for (const node of nodes) {
@@ -121,14 +127,14 @@ function treeSVG(n) {
       if (!child) continue;
       const cx = px(child.gx);
       const cy = py(child.depth);
-      lines += `<line x1="${x}" y1="${y + R}" x2="${cx}" y2="${cy - R}" stroke="${C.line}" stroke-width="2.5" />`;
+      lines += `<line x1="${x}" y1="${y + R}" x2="${cx}" y2="${cy - R}" stroke="${C.line}" stroke-width="2.5" class="ftlab-line-in" style="animation-delay:${nodeDelay(child) + 150}ms" />`;
     }
     const fill = node.prime ? C.primeFill : C.compFill;
     const stroke = node.prime ? C.primeStroke : C.compStroke;
     const ink = node.prime ? C.primeInk : C.compInk;
     const fontSize = node.value >= 100 ? 12 : 13;
     circles +=
-      `<g><circle cx="${x}" cy="${y}" r="${R}" fill="${fill}" stroke="${stroke}" stroke-width="2.5" />` +
+      `<g class="ftlab-node-in" style="animation-delay:${nodeDelay(node)}ms"><circle cx="${x}" cy="${y}" r="${R}" fill="${fill}" stroke="${stroke}" stroke-width="2.5" />` +
       `<text x="${x}" y="${y}" dy="4.5" font-family="Outfit, Segoe UI, sans-serif" font-weight="800" font-size="${fontSize}px" fill="${ink}" text-anchor="middle">${node.value}</text></g>`;
   }
 
@@ -378,6 +384,14 @@ function injectStyles() {
   .ftlab-key.is-prime::before{background:${C.primeFill};border-color:${C.primeStroke};}
   .ftlab-tag{font-weight:800;padding:1px 8px;border-radius:999px;}
   .ftlab-tag.is-prime{background:${C.primeFill};color:${C.primeInk};}
+  /* Build-in motion: root pops in, children spring in from their parent with a
+     spring ease, connectors fade in after their child lands. "backwards" fill
+     hides elements during their inline delay, then releases all styles. */
+  .ftlab-tree svg .ftlab-node-in{transform-box:fill-box;transform-origin:center;animation:ftlab-node-in .5s cubic-bezier(.34,1.56,.64,1) backwards;}
+  @keyframes ftlab-node-in{from{transform:translateY(-12px) scale(.3);opacity:0;}to{transform:translateY(0) scale(1);opacity:1;}}
+  .ftlab-tree svg .ftlab-line-in{animation:ftlab-line-in .3s ease backwards;}
+  @keyframes ftlab-line-in{from{opacity:0;}to{opacity:1;}}
+  @media (prefers-reduced-motion:reduce){.ftlab-tree svg .ftlab-node-in,.ftlab-tree svg .ftlab-line-in{animation:none;}}
   @media (max-width:480px){.ftlab-field input{width:80px;}}
   `;
   document.head.appendChild(s);

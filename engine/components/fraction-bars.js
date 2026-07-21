@@ -44,7 +44,10 @@ export function renderFractionBars(
     "position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);";
   wrapper.append(live);
 
+  let barCount = 0;
+
   function buildBar(spec, name, fixedDenominator) {
+    const barIndex = barCount++;
     const block = document.createElement("div");
     block.style.cssText = "margin-bottom:var(--sp-4);";
 
@@ -100,12 +103,21 @@ export function renderFractionBars(
     bar.setAttribute("aria-label", `${name} fraction bar`);
     bar.style.cssText =
       "display:flex; width:100%; height:56px; border:2px solid var(--navy); border-radius:var(--radius-sm); overflow:hidden;";
+    // Mount draw-in: each bar grows from the left, staggered per bar. Set the
+    // delay AFTER cssText (cssText assignment would wipe it).
+    bar.classList.add("fb-bar-in");
+    bar.style.animationDelay = `${barIndex * 120}ms`;
     block.append(bar);
+
+    let prevShaded = new Set();
 
     function render() {
       bar.innerHTML = "";
       const anyShaded = shaded.size > 0;
       bar.classList.toggle("fb-active", anyShaded);
+      // Segments shaded since the last render fill like liquid, left-to-right,
+      // with a short stagger. Already-shaded segments keep their final state.
+      const newlyShaded = [...shaded].filter((i) => !prevShaded.has(i)).sort((a, b) => a - b);
       for (let i = 0; i < parts; i++) {
         const isShaded = shaded.has(i);
         const seg = document.createElement("button");
@@ -117,6 +129,11 @@ export function renderFractionBars(
         seg.style.cssText = `
           flex:1; border:none; border-right:${i < parts - 1 ? "1px solid var(--navy)" : "none"};
           background-color:${isShaded ? "var(--teal)" : "white"}; cursor:pointer;`;
+        const fillOrder = isShaded ? newlyShaded.indexOf(i) : -1;
+        if (fillOrder !== -1) {
+          seg.classList.add("fb-fill-new");
+          seg.style.animationDelay = `${fillOrder * 50}ms`;
+        }
         seg.addEventListener("click", () => {
           if (shaded.has(i)) shaded.delete(i);
           else shaded.add(i);
@@ -131,22 +148,47 @@ export function renderFractionBars(
         });
         bar.append(seg);
       }
+      prevShaded = new Set(shaded);
       updateReadout();
     }
 
     let lastReadout = null;
+    let shownNum = 0;
+    let tickRaf = 0;
     function updateReadout() {
       const key = `${shaded.size}/${parts}`;
-      readoutNum.textContent = String(shaded.size);
       readoutSep.textContent = `/${parts}`;
-      // Re-trigger the numerator slide-in only when the value actually changes,
-      // so the readout animates on interaction but not on no-op renders.
+      // Animate only when the value actually changes (never on no-op renders):
+      // the displayed numerator ticks toward the new value and pops. Purely
+      // cosmetic — grading reads `shaded.size` directly, never this text.
       if (key !== lastReadout) {
-        readoutNum.classList.remove("fb-num-in");
-        // Force reflow so removing + re-adding the class restarts the animation.
-        void readoutNum.offsetWidth;
-        readoutNum.classList.add("fb-num-in");
+        const isFirst = lastReadout === null;
         lastReadout = key;
+        if (tickRaf) cancelAnimationFrame(tickRaf);
+        tickRaf = 0;
+        const from = shownNum;
+        const to = shaded.size;
+        if (isFirst || from === to || prefersReducedMotion()) {
+          shownNum = to;
+          readoutNum.textContent = String(to);
+        } else {
+          const t0 = performance.now();
+          const dur = Math.min(240, Math.max(120, Math.abs(to - from) * 60));
+          const step = (t) => {
+            const k = Math.min(1, (t - t0) / dur);
+            shownNum = Math.round(from + (to - from) * k);
+            readoutNum.textContent = String(shownNum);
+            tickRaf = k < 1 ? requestAnimationFrame(step) : 0;
+          };
+          tickRaf = requestAnimationFrame(step);
+          readoutNum.classList.remove("fb-num-in");
+          // Force reflow so removing + re-adding the class restarts the pop.
+          void readoutNum.offsetWidth;
+          readoutNum.classList.add("fb-num-in");
+        }
+      } else {
+        shownNum = shaded.size;
+        readoutNum.textContent = String(shownNum);
       }
       live.textContent = `${name}: ${shaded.size} of ${parts} parts shaded.`;
     }
@@ -236,6 +278,16 @@ function ctrlBtn(label, aria) {
   return b;
 }
 
+// JS-side guard for scripted motion (the readout tick). CSS motion is guarded
+// separately by the @media (prefers-reduced-motion: reduce) block below.
+function prefersReducedMotion() {
+  return (
+    typeof window !== "undefined" &&
+    typeof window.matchMedia === "function" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
+}
+
 function showFb(slot, type, msg) {
   const fb = document.createElement("div");
   fb.className = `feedback feedback-${type} visible`;
@@ -265,7 +317,8 @@ function injectFractionBarsStyles() {
       transition: transform 0.14s ease, opacity 0.18s ease, box-shadow 0.14s ease,
         filter 0.18s ease;
     }
-    /* Gradient sweep that fills a segment left-to-right when it becomes shaded. */
+    /* Shaded segments hold a static liquid gradient; only NEWLY shaded segments
+       animate (fb-fill-new, staggered per segment via inline animation-delay). */
     .fb-seg.fb-shaded {
       background-image: linear-gradient(
         90deg,
@@ -275,11 +328,34 @@ function injectFractionBarsStyles() {
       );
       background-size: 200% 100%;
       background-position: 0% 0;
-      animation: fb-sweep 0.42s cubic-bezier(0.16, 0.8, 0.3, 1) both;
+    }
+    /* Liquid fill-in: gradient sweeps left-to-right while the segment rises
+       from the bottom with a subtle pop. Backwards fill keeps the segment in
+       its "empty" pose during the stagger delay, then releases the transform
+       after the animation so hover/focus scaling still works. */
+    .fb-seg.fb-fill-new {
+      transform-origin: 50% 100%;
+      animation:
+        fb-sweep 0.42s cubic-bezier(0.16, 0.8, 0.3, 1) backwards,
+        fb-pop 0.34s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
     }
     @keyframes fb-sweep {
       from { background-position: 100% 0; }
       to   { background-position: 0% 0; }
+    }
+    @keyframes fb-pop {
+      0%   { transform: scaleY(0.55); opacity: 0.35; }
+      65%  { transform: scaleY(1.06); opacity: 1; }
+      100% { transform: scaleY(1); opacity: 1; }
+    }
+    /* Mount draw-in: each bar grows from the left (stagger set inline per bar). */
+    .fb-bar.fb-bar-in {
+      transform-origin: 0 50%;
+      animation: fb-bar-grow 0.45s cubic-bezier(0.16, 0.8, 0.3, 1) backwards;
+    }
+    @keyframes fb-bar-grow {
+      from { transform: scaleX(0); opacity: 0; }
+      to   { transform: scaleX(1); opacity: 1; }
     }
     /* Hover/focus: scale up slightly + highlight border. */
     .fb-seg:hover {
@@ -300,16 +376,17 @@ function injectFractionBarsStyles() {
     .fb-bar.fb-active .fb-seg:not(.fb-shaded):hover {
       opacity: 1;
     }
-    /* Live readout: numerator slides in from the left on change. */
+    /* Live readout: the numerator ticks toward its new value (JS) and pops. */
     .fb-readout-num {
       display: inline-block;
     }
     .fb-readout-num.fb-num-in {
-      animation: fb-num-slide 0.3s cubic-bezier(0.16, 0.8, 0.3, 1) both;
+      animation: fb-num-pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-    @keyframes fb-num-slide {
-      from { transform: translateX(-8px); opacity: 0; }
-      to   { transform: translateX(0); opacity: 1; }
+    @keyframes fb-num-pop {
+      0%   { transform: scale(1); }
+      45%  { transform: scale(1.3); }
+      100% { transform: scale(1); }
     }
     /* Touch devices: taller, easier-to-tap bars and a larger readout. */
     @media (hover: none) and (pointer: coarse) {
@@ -328,6 +405,8 @@ function injectFractionBarsStyles() {
     @media (prefers-reduced-motion: reduce) {
       .fb-seg,
       .fb-seg.fb-shaded,
+      .fb-seg.fb-fill-new,
+      .fb-bar.fb-bar-in,
       .fb-readout-num.fb-num-in {
         transition: none !important;
         animation: none !important;

@@ -29,6 +29,7 @@ import {
 import { t, stackHtml, phaseName } from "./i18n.js";
 import { PHASE_TIME_ESTIMATES } from "./content-enrichment.js";
 import "@engine/styles/design-system.css";
+import "@engine/styles/motion.css";
 import "@engine/styles/themes.css";
 import "@engine/styles/editorial.css";
 import "@engine/styles/present-mode.css";

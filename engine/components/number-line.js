@@ -62,10 +62,11 @@ export function renderNumberLine(container, config) {
     return Math.round(raw * 100) / 100;
   };
 
-  // Main axis line
+  // Main axis line — draws in from the left on mount (decorative only).
   const axis = line(svg, PAD_LEFT, TICK_Y, 600 - PAD_RIGHT, TICK_Y, "#1fa6a2", 3);
+  animateAxisDraw(axis, PAD_LEFT, TICK_Y);
 
-  // Arrow heads
+  // Arrow heads — fade in once the axis has drawn.
   const arrowL = poly(
     svg,
     `${PAD_LEFT - 6},${TICK_Y} ${PAD_LEFT + 4},${TICK_Y - 5} ${PAD_LEFT + 4},${TICK_Y + 5}`,
@@ -76,13 +77,18 @@ export function renderNumberLine(container, config) {
     `${600 - PAD_RIGHT + 6},${TICK_Y} ${600 - PAD_RIGHT - 4},${TICK_Y - 5} ${600 - PAD_RIGHT - 4},${TICK_Y + 5}`,
     "#1fa6a2",
   );
+  fadeInOnMount(arrowL, 380);
+  fadeInOnMount(arrowR, 380);
 
-  // Ticks and labels
+  // Ticks and labels (labels fade in with a slight left-to-right stagger)
+  let tickIdx = 0;
   for (let v = min; v <= max; v = round(v + step)) {
     const x = toX(v);
     line(svg, x, TICK_Y - 8, x, TICK_Y + 8, "#12355b", 1.5);
     const txt = text(svg, x, TICK_Y + 24, formatNum(v), "11px", "#21313f");
     txt.setAttribute("text-anchor", "middle");
+    fadeInOnMount(txt, 140 + tickIdx * 35);
+    tickIdx += 1;
   }
 
   // Target zones (invisible, shown on check)
@@ -120,6 +126,9 @@ export function renderNumberLine(container, config) {
 
     g.append(shadow, dot, dotLabel, valLabel);
     g.setAttribute("transform", `translate(${startX}, ${TICK_Y})`);
+    // Spring transition on discrete moves (keyboard, release-snap). Disabled
+    // while dragging so the pointer is never laggy — see .nl-dragging.
+    g.classList.add("nl-spring");
     g.setAttribute("role", "slider");
     g.setAttribute("aria-label", t.label || `Point ${i + 1}`);
     g.setAttribute("tabindex", "0");
@@ -184,6 +193,7 @@ export function renderNumberLine(container, config) {
     g.addEventListener("pointerdown", (e) => {
       e.preventDefault();
       state.dragging = true;
+      g.classList.add("nl-dragging");
       g.style.cursor = "grabbing";
       dot.setAttribute("fill", "#e5b54e");
       shadow.setAttribute("fill", "rgba(31,166,162,0.15)");
@@ -199,6 +209,19 @@ export function renderNumberLine(container, config) {
         shadow.setAttribute("fill", "rgba(18,53,91,0.12)");
         svg.removeEventListener("pointermove", onMove);
         svg.removeEventListener("pointerup", onUp);
+        // Release: stop the drag tween, re-enable the spring transition, and
+        // let CSS carry the marker into its final (snapped) position. Purely
+        // visual — currentVal was already set by the last moveTo.
+        if (rafId) {
+          cancelAnimationFrame(rafId);
+          rafId = 0;
+        }
+        g.classList.remove("nl-dragging");
+        // Force style recalc so the transition applies to this final paint.
+        void g.getBoundingClientRect();
+        renderX = state.x;
+        paint(renderX);
+        if (snapToTick) spawnSnapPulse(svg, state.x, TICK_Y);
       };
 
       svg.addEventListener("pointermove", onMove);
@@ -350,19 +373,23 @@ function renderSequentialNumberLine(container, config) {
     return round(Math.round(raw / snapStep) * snapStep);
   };
 
-  line(svg, PAD_LEFT, TICK_Y, 600 - PAD_RIGHT, TICK_Y, "#1fa6a2", 3);
-  poly(
+  const seqAxis = line(svg, PAD_LEFT, TICK_Y, 600 - PAD_RIGHT, TICK_Y, "#1fa6a2", 3);
+  animateAxisDraw(seqAxis, PAD_LEFT, TICK_Y);
+  const seqArrowL = poly(
     svg,
     `${PAD_LEFT - 6},${TICK_Y} ${PAD_LEFT + 4},${TICK_Y - 5} ${PAD_LEFT + 4},${TICK_Y + 5}`,
     "#1fa6a2",
   );
-  poly(
+  const seqArrowR = poly(
     svg,
     `${600 - PAD_RIGHT + 6},${TICK_Y} ${600 - PAD_RIGHT - 4},${TICK_Y - 5} ${600 - PAD_RIGHT - 4},${TICK_Y + 5}`,
     "#1fa6a2",
   );
+  fadeInOnMount(seqArrowL, 380);
+  fadeInOnMount(seqArrowR, 380);
   // Minor ticks (whole-and-half) plus labeled major ticks.
   const minor = hasDecimals ? (wide ? 1 : 0.5) : labelStep;
+  let seqTickIdx = 0;
   for (let v = lo; v <= hi + 1e-9; v = round(v + minor)) {
     const x = toX(v);
     const isMajor = Math.abs(v / labelStep - Math.round(v / labelStep)) < 1e-9;
@@ -378,6 +405,8 @@ function renderSequentialNumberLine(container, config) {
     if (isMajor) {
       const t = text(svg, x, TICK_Y + 24, formatNum(v), "11px", "#21313f");
       t.setAttribute("text-anchor", "middle");
+      fadeInOnMount(t, 140 + seqTickIdx * 35);
+      seqTickIdx += 1;
     }
   }
 
@@ -393,6 +422,8 @@ function renderSequentialNumberLine(container, config) {
   valLabel.setAttribute("text-anchor", "middle");
   valLabel.setAttribute("font-weight", "800");
   g.append(shadow, dot, valLabel);
+  // Spring on discrete moves (keyboard, release); off while dragging.
+  g.classList.add("nl-spring");
   g.setAttribute("role", "slider");
   g.setAttribute("tabindex", "0");
   g.setAttribute("aria-valuemin", String(lo));
@@ -410,6 +441,7 @@ function renderSequentialNumberLine(container, config) {
 
   g.addEventListener("pointerdown", (e) => {
     e.preventDefault();
+    g.classList.add("nl-dragging");
     g.style.cursor = "grabbing";
     svg.setPointerCapture(e.pointerId);
     const onMove = (ev) => {
@@ -421,6 +453,10 @@ function renderSequentialNumberLine(container, config) {
       g.style.cursor = "grab";
       svg.removeEventListener("pointermove", onMove);
       svg.removeEventListener("pointerup", onUp);
+      g.classList.remove("nl-dragging");
+      // The dot snaps continuously while dragging, so it is already in place;
+      // just confirm the landing with a brief pulse ring at the snap point.
+      spawnSnapPulse(svg, toX(curVal), TICK_Y);
     };
     svg.addEventListener("pointermove", onMove);
     svg.addEventListener("pointerup", onUp);
@@ -859,6 +895,35 @@ function triggerTargetMarker(marker) {
   marker.classList.add("nl-marker-reveal");
 }
 
+// Mount motion: the axis line draws in from its left end (scaleX 0 → 1).
+// Decorative only — geometry attributes are untouched; the transform-origin is
+// pinned to the line's left endpoint in viewBox units so the scale anchors there.
+function animateAxisDraw(axisEl, originX, originY) {
+  if (!axisEl || prefersReducedMotion()) return;
+  axisEl.style.transformOrigin = `${originX}px ${originY}px`;
+  axisEl.classList.add("nl-axis-draw");
+}
+
+// Mount motion: fade an element in after `delayMs`. Skipped (element simply
+// shows) under reduced motion.
+function fadeInOnMount(el, delayMs) {
+  if (!el || prefersReducedMotion()) return;
+  el.style.animationDelay = `${delayMs}ms`;
+  el.classList.add("nl-fade-in");
+}
+
+// Brief expanding pulse ring at a snap point. Self-removing and pointer-inert,
+// so it never interferes with dragging or checking. Skipped under reduced motion.
+function spawnSnapPulse(svg, cx, cy) {
+  if (!svg || prefersReducedMotion()) return;
+  const ring = circle(svg, cx, cy, 9, "none", "#1fa6a2", 2.5);
+  ring.setAttribute("class", "nl-snap-pulse");
+  ring.setAttribute("aria-hidden", "true");
+  ring.style.pointerEvents = "none";
+  ring.style.transformOrigin = `${cx}px ${cy}px`;
+  setTimeout(() => ring.remove(), 520);
+}
+
 // Best-effort haptic feedback. Silently no-ops where unsupported (desktop,
 // iOS Safari) and is suppressed under reduced-motion to respect that
 // preference. Never throws; never affects checking/return values.
@@ -922,6 +987,38 @@ function injectNumberLineStyles() {
     .nl-dot {
       transition: fill 0.3s ease, stroke 0.3s ease;
     }
+    /* Axis draws in from the left on mount (transform-origin set inline). */
+    .nl-axis-draw {
+      animation: nl-axis-draw 0.5s cubic-bezier(0.16, 0.8, 0.3, 1) both;
+    }
+    @keyframes nl-axis-draw {
+      from { transform: scaleX(0); }
+      to   { transform: scaleX(1); }
+    }
+    /* Tick labels / arrowheads fade in with a slight stagger on mount. */
+    .nl-fade-in {
+      animation: nl-fade-in 0.4s ease-out both;
+    }
+    @keyframes nl-fade-in {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    /* Markers spring into place on discrete moves (keyboard, release-snap). */
+    .nl-spring {
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    /* While actively dragging, follow the pointer with zero transition lag. */
+    .nl-spring.nl-dragging {
+      transition: none;
+    }
+    /* Brief expanding ring where a marker snapped to a value. */
+    .nl-snap-pulse {
+      animation: nl-snap-pulse 0.45s ease-out both;
+    }
+    @keyframes nl-snap-pulse {
+      0%   { transform: scale(0.4); opacity: 0.85; }
+      100% { transform: scale(2.4); opacity: 0; }
+    }
     /* Gentle confirmation pop on a correctly placed dot. */
     .nl-dot-correct {
       animation: nl-dot-pop 0.42s cubic-bezier(0.16, 0.8, 0.3, 1) both;
@@ -971,13 +1068,19 @@ function injectNumberLineStyles() {
       .nl-dot,
       .nl-dot-correct,
       .nl-marker-reveal,
-      .nl-confetti-dot {
+      .nl-confetti-dot,
+      .nl-axis-draw,
+      .nl-fade-in,
+      .nl-spring {
         transition: none !important;
         animation: none !important;
       }
       .nl-dot-correct { transform: none; }
-      /* Drop the celebration layer entirely. */
+      .nl-axis-draw { transform: none; }
+      .nl-fade-in { opacity: 1; }
+      /* Drop the celebration layer and snap pulses entirely. */
       .nl-confetti-layer { display: none !important; }
+      .nl-snap-pulse { display: none !important; }
     }
   `;
   (document.head || document.documentElement).append(style);
