@@ -279,13 +279,17 @@ export function renderNumberLine(container, config) {
       completed = true;
       checkBtn.style.display = "none";
       burstConfetti(svg);
-      showFb(feedbackSlot, "success", `All ${targets.length} points placed correctly!`);
+      showFb(
+        feedbackSlot,
+        "success",
+        `All ${targets.length} points placed correctly! Snapped to the tick marks — each mark is one unit on this line.`,
+      );
       if (onComplete) onComplete(correct, targets.length);
     } else {
       showFb(
         feedbackSlot,
         "hint",
-        `${correct} of ${targets.length} correct. Green circles show where the remaining points belong.`,
+        `${correct} of ${targets.length} correct. The line snapped your dots to nearby ticks — green circles show where the remaining points belong and why.`,
       );
     }
   });
@@ -461,11 +465,19 @@ function renderSequentialNumberLine(container, config) {
       if (idx >= targets.length) {
         checkBtn.style.display = "none";
         burstConfetti(svg);
-        showFb(feedbackSlot, "success", `All ${targets.length} decimals placed! 🎉`);
+        showFb(
+          feedbackSlot,
+          "success",
+          `All ${targets.length} decimals placed! 🎉 Snap landed on ${formatNum(t.value)} because that tick matches the place value.`,
+        );
         prompt.textContent = "Nice — every decimal is in the right spot.";
         if (onComplete) onComplete(targets.length, targets.length);
       } else {
-        showFb(feedbackSlot, "success", "Correct! Now the next one.");
+        showFb(
+          feedbackSlot,
+          "success",
+          `Snapped to ${formatNum(t.value)} — that tick matches the place value. Now the next one.`,
+        );
         // Leave the dot where the student placed it — don't snap it back to 0,
         // which felt like losing their work. They slide on to the next value.
         showTarget();
@@ -475,10 +487,11 @@ function renderSequentialNumberLine(container, config) {
       targetMarker.style.transformOrigin = `${toX(Number(t.value))}px ${TICK_Y}px`;
       targetMarker.style.display = "";
       triggerTargetMarker(targetMarker);
+      const delta = Math.abs(curVal - Number(t.value));
       showFb(
         feedbackSlot,
         "hint",
-        `Not yet — the green circle shows where ${formatNum(t.value)} goes. Slide the dot there.`,
+        `Not yet — you landed near ${formatNum(curVal)}. ${formatNum(t.value)} is ${formatNum(delta)} away. The green circle shows the snap target.`,
       );
     }
   });
