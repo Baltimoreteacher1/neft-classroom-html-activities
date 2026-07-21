@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Curriculum Arcade — Practice Arcade World Map, unit lesson games, Placement Quest, and Monster Math Academy for Grade 6 math."
+    />
+    <title>Arcade Games — Curriculum Hub | Neft Teacher</title>
+    <link rel="canonical" href="https://eduwonderlab.com/curriculum/arcade/" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#15487f" />
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Nunito:wght@600;700;800;900&display=swap"
+    />
+    <style>
+      :root {
+        --navy: #15487f;
+        --teal: #205fa6;
+        --amber: #256b5b;
+        --cream: #eaf0f7;
+        --ink: #14223a;
+        --muted: #56627a;
+        --line: rgba(20, 34, 58, 0.1);
+        --card: #ffffff;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--cream);
+        color: var(--ink);
+        font-family: "Atkinson Hyperlegible", system-ui, sans-serif;
+        font-size: 17px;
+        line-height: 1.6;
+        min-height: 100vh;
+      }
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        background:
+          radial-gradient(1000px 480px at 90% -10%, rgba(32, 95, 166, 0.16), transparent 58%),
+          radial-gradient(900px 420px at -5% 5%, rgba(44, 125, 107, 0.12), transparent 55%),
+          var(--cream);
+      }
+      a {
+        color: var(--teal);
+        text-decoration: none;
+      }
+      a:hover {
+        color: var(--amber);
+      }
+      .wrap {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: clamp(28px, 4vw, 48px) clamp(16px, 4vw, 32px) 64px;
+      }
+      .back {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 700;
+        font-size: 0.95rem;
+        margin-bottom: 18px;
+      }
+      .eyebrow {
+        color: var(--teal);
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        font-size: 11px;
+        margin: 0;
+      }
+      h1 {
+        font-family: "Nunito", system-ui, sans-serif;
+        font-size: clamp(2rem, 5vw, 3rem);
+        font-weight: 900;
+        letter-spacing: -0.02em;
+        margin: 8px 0 10px;
+        color: var(--ink);
+      }
+      .lede {
+        color: var(--muted);
+        max-width: 68ch;
+        margin: 0 0 22px;
+      }
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 28px;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 44px;
+        padding: 10px 18px;
+        border-radius: 12px;
+        font-weight: 800;
+        font-family: "Nunito", system-ui, sans-serif;
+        border: 2px solid transparent;
+        transition:
+          transform 0.15s ease,
+          box-shadow 0.15s ease;
+      }
+      .btn:hover {
+        transform: translateY(-1px);
+      }
+      .btn-solid {
+        background: linear-gradient(135deg, #15487f, #205fa6);
+        color: #fff;
+        box-shadow: 0 8px 20px rgba(21, 72, 127, 0.22);
+      }
+      .btn-solid:hover {
+        color: #fff;
+      }
+      .btn-outline {
+        background: #fff;
+        color: var(--navy);
+        border-color: rgba(21, 72, 127, 0.22);
+      }
+      .section-label {
+        font-family: "Nunito", system-ui, sans-serif;
+        font-weight: 800;
+        font-size: 1.25rem;
+        margin: 28px 0 12px;
+        color: var(--ink);
+      }
+      .section-sub {
+        color: var(--muted);
+        margin: -6px 0 14px;
+        font-size: 0.95rem;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 12px;
+      }
+      .card {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 16px;
+        color: inherit;
+        box-shadow: 0 6px 16px rgba(20, 34, 58, 0.05);
+        transition:
+          transform 0.18s ease,
+          box-shadow 0.18s ease,
+          border-color 0.18s ease;
+        min-height: 132px;
+      }
+      .card:hover {
+        transform: translateY(-2px);
+        border-color: rgba(32, 95, 166, 0.35);
+        box-shadow: 0 12px 28px rgba(21, 72, 127, 0.12);
+        color: inherit;
+      }
+      .card:focus-visible {
+        outline: 3px solid #38bdf8;
+        outline-offset: 2px;
+      }
+      .card-kicker {
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--teal);
+      }
+      .card h3 {
+        font-family: "Nunito", system-ui, sans-serif;
+        font-size: 1.05rem;
+        font-weight: 800;
+        margin: 0;
+      }
+      .card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.9rem;
+        flex: 1;
+      }
+      .card-cta {
+        font-weight: 800;
+        font-size: 0.88rem;
+        color: var(--teal);
+        margin-top: 4px;
+      }
+      .featured {
+        border-color: rgba(32, 95, 166, 0.28);
+        background:
+          radial-gradient(500px 160px at 100% 0%, rgba(32, 95, 166, 0.1), transparent 60%),
+          #fff;
+      }
+      .stats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 0 0 8px;
+      }
+      .stat {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 5px 12px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--navy);
+      }
+      footer.note {
+        margin-top: 36px;
+        padding-top: 18px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .btn,
+        .card {
+          transition: none;
+        }
+        .btn:hover,
+        .card:hover {
+          transform: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <a class="back" href="/curriculum/">← Back to Curriculum Hub</a>
+      <p class="eyebrow">Curriculum · Student Arcade</p>
+      <h1>Arcade Games</h1>
+      <p class="lede">
+        Calm, self-paced Grade 6 math games from the curriculum hub — World Map review worlds, unit
+        arcade cabinets, Placement Quest, and Monster Math Academy. No timers required. Chromebook
+        ready with Save/Resume and bilingual coach supports.
+      </p>
+      <div class="stats" aria-label="Arcade highlights">
+        <span class="stat">11 unit arcade games</span>
+        <span class="stat">Practice Arcade World Map</span>
+        <span class="stat">EN / ES coach</span>
+        <span class="stat">Open — no PIN</span>
+      </div>
+      <div class="hero-actions">
+        <a class="btn btn-solid" href="/math/games/practice-arcade/map.html">Open Arcade World Map</a>
+        <a class="btn btn-outline" href="/math/games/">Full Games Catalog</a>
+        <a class="btn btn-outline" href="/math/games/placement-quest/">Placement Quest</a>
+        <a class="btn btn-outline" href="/curriculum/projects/">Culminating Projects →</a>
+      </div>
+
+      <h2 class="section-label">Start here</h2>
+      <p class="section-sub">Flagship entry points students use most from class.</p>
+      <div class="grid">
+        <a class="card featured" href="/math/games/practice-arcade/map.html">
+          <span class="card-kicker">World Map</span>
+          <h3>Practice Arcade</h3>
+          <p>Pick a unit world and play calm lesson challenges — choose, sort, match, find the mistake.</p>
+          <span class="card-cta">Open World Map →</span>
+        </a>
+        <a class="card featured" href="/math/games/">
+          <span class="card-kicker">Catalog</span>
+          <h3>All Lesson Games</h3>
+          <p>Unit arcade cabinets, 2D flagships, daily mix, and review worlds in one hub.</p>
+          <span class="card-cta">Browse games →</span>
+        </a>
+        <a class="card featured" href="/math/games/placement-quest/">
+          <span class="card-kicker">Diagnostic</span>
+          <h3>Math Placement Quest</h3>
+          <p>Readiness adventure with a level badge and target areas for the year ahead.</p>
+          <span class="card-cta">Start quest →</span>
+        </a>
+        <a class="card featured" href="/curriculum/monster-math-academy/">
+          <span class="card-kicker">Adventure</span>
+          <h3>Monster Math Academy</h3>
+          <p>Design a monster and teach it math — mastery is measured on held-out problems.</p>
+          <span class="card-cta">Open academy →</span>
+        </a>
+      </div>
+
+      <h2 class="section-label">Unit arcade cabinets</h2>
+      <p class="section-sub">One focused game per unit — live at stable <code>/math/games/</code> routes.</p>
+      <div class="grid">
+        <a class="card" href="/math/games/u1-factor-frenzy/">
+          <span class="card-kicker">Unit 1</span>
+          <h3>Factor Frenzy</h3>
+          <p>Factors, multiples, GCF &amp; LCM.</p>
+          <span class="card-cta">Play →</span>
+        </a>
+        <a class="card" href="/math/games/u1-decimal-dash/">
+          <span class="card-kicker">Unit 1</span>
+          <h3>Decimal Dash</h3>
+          <p>Decimal operations with place-value clarity.</p>
+          <span class="card-cta">Play →</span>
+        </a>
+        <a class="card" href="/math/games/u2-fraction-frenzy/">
+          <span class="card-kicker">Unit 2</span>
+          <h3>Fraction Frenzy</h3>
+          <p>Multiply and divide fractions in motion.</p>
+          <span class="card-cta">Play →</span>
+        </a>
+        <a class="card" href="/math/games/u3-ratio-rush/">
+          <span class="card-kicker">Unit 3</span>
+          <h3>Ratio Rush</h3>
+          <p>Equivalent ratios and unit rates.</p>
+          <span class="card-cta">Play →</span>
+        </a>
+        <a class="card" href="/math/games/u4-percent-power/">
+          <span class="card-kicker">Unit 4</span>
+          <h3>Percent Power</h3>
+          <p>Percents, discounts, and better buys.</p>
+          <span class="card-cta">Play →</span>
+        </a>
+        <a class="card" href="/math/games/u5-area-attack/">
+          <span class="card-kicker">Unit 5</span>
+          <h3>Area Attack</h3>
+          <p>Area of polygons and composite figures.</p>
+          <span class="card-cta">Play →</span>
+        </a>
+        <a class="card" href="/math/games/u6-expression-express/">
+          <span class="card-kicker">Unit 6</span>
+          <h3>Expression Express</h3>
+          <p>Write, evaluate, and simplify expressions.</p>
+          <span class="card-cta">Play →</span>
+        </a>
+        <a class="card" href="/math/games/u7-equation-quest/">
+          <span class="card-kicker">Unit 7</span>
+          <h3>Equation Quest</h3>
+          <p>One-step equations and inequalities.</p>
+          <span class="card-cta">Play →</span>
+        </a>
+        <a class="card" href="/math/games/u8-data-dash/">
+          <span class="card-kicker">Unit 8</span>
+          <h3>Data Dash</h3>
+          <p>Dot plots, mean, median, and variability.</p>
+          <span class="card-cta">Play →</span>
+        </a>
+        <a class="card" href="/math/games/u9-coordinate-quest/">
+          <span class="card-kicker">Unit 9</span>
+          <h3>Coordinate Quest</h3>
+          <p>Ordered pairs across four quadrants.</p>
+          <span class="card-cta">Play →</span>
+        </a>
+        <a class="card" href="/math/games/u10-volume-blast/">
+          <span class="card-kicker">Unit 10</span>
+          <h3>Volume Blast</h3>
+          <p>Rectangular prism volume and packing.</p>
+          <span class="card-cta">Play →</span>
+        </a>
+      </div>
+
+      <h2 class="section-label">Practice Arcade by unit</h2>
+      <p class="section-sub">Cumulative review worlds — same calm mechanics as the World Map.</p>
+      <div class="grid">
+        <a class="card" href="/math/games/practice-arcade/?unit=1"><span class="card-kicker">Review</span><h3>Unit 1 World</h3><span class="card-cta">Play →</span></a>
+        <a class="card" href="/math/games/practice-arcade/?unit=2"><span class="card-kicker">Review</span><h3>Unit 2 World</h3><span class="card-cta">Play →</span></a>
+        <a class="card" href="/math/games/practice-arcade/?unit=3"><span class="card-kicker">Review</span><h3>Unit 3 World</h3><span class="card-cta">Play →</span></a>
+        <a class="card" href="/math/games/practice-arcade/?unit=4"><span class="card-kicker">Review</span><h3>Unit 4 World</h3><span class="card-cta">Play →</span></a>
+        <a class="card" href="/math/games/practice-arcade/?unit=5"><span class="card-kicker">Review</span><h3>Unit 5 World</h3><span class="card-cta">Play →</span></a>
+        <a class="card" href="/math/games/practice-arcade/?unit=6"><span class="card-kicker">Review</span><h3>Unit 6 World</h3><span class="card-cta">Play →</span></a>
+        <a class="card" href="/math/games/practice-arcade/?unit=7"><span class="card-kicker">Review</span><h3>Unit 7 World</h3><span class="card-cta">Play →</span></a>
+        <a class="card" href="/math/games/practice-arcade/?unit=8"><span class="card-kicker">Review</span><h3>Unit 8 World</h3><span class="card-cta">Play →</span></a>
+        <a class="card" href="/math/games/practice-arcade/?unit=9"><span class="card-kicker">Review</span><h3>Unit 9 World</h3><span class="card-cta">Play →</span></a>
+        <a class="card" href="/math/games/practice-arcade/?unit=10"><span class="card-kicker">Review</span><h3>Unit 10 World</h3><span class="card-cta">Play →</span></a>
+      </div>
+
+      <footer class="note">
+        Game files stay on their live student URLs under <code>/math/games/</code> so bookmarks keep
+        working. This page is the curriculum discovery home for the arcade.
+        <br />
+        <a href="/curriculum/">Curriculum Hub</a> ·
+        <a href="/curriculum/projects/">Culminating Projects</a> ·
+        <a href="/math/games/dashboard/">Student Dashboard</a>
+      </footer>
+    </main>
+  </body>
+</html>
