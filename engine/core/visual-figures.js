@@ -84,8 +84,8 @@ export function histogramSVG(cfg) {
       const y = baseY - h;
       const fill = i === hi ? "var(--coral, #d9795d)" : "var(--teal, #2a9d8f)";
       return (
-        `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${(bw - 1).toFixed(1)}" height="${h.toFixed(1)}" fill="${fill}" stroke="#fff" stroke-width="1"/>` +
-        `<text x="${(x + bw / 2).toFixed(1)}" y="${(y - 6).toFixed(1)}" text-anchor="middle" font-size="12" font-weight="700" fill="var(--navy, #264653)">${v}</text>` +
+        `<rect class="hist-bar" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${(bw - 1).toFixed(1)}" height="${h.toFixed(1)}" fill="${fill}" stroke="#fff" stroke-width="1"/>` +
+        `<text class="hist-val" x="${(x + bw / 2).toFixed(1)}" y="${(y - 6).toFixed(1)}" text-anchor="middle" font-size="12" font-weight="700" fill="var(--navy, #264653)">${v}</text>` +
         `<text x="${(x + bw / 2).toFixed(1)}" y="${(baseY + 18).toFixed(1)}" text-anchor="middle" font-size="11" fill="var(--ink, #333)">${esc(b.label ?? "")}</text>`
       );
     })
@@ -131,7 +131,7 @@ export function dotPlotSVG(cfg) {
     .map((v) => {
       counts[v] = (counts[v] || 0) + 1;
       const cy = baseY - 12 - (counts[v] - 1) * 16;
-      return `<circle cx="${xOf(v).toFixed(1)}" cy="${cy.toFixed(1)}" r="6" fill="var(--teal,#2a9d8f)" stroke="#fff" stroke-width="1.5"/>`;
+      return `<circle class="dot-mark" cx="${xOf(v).toFixed(1)}" cy="${cy.toFixed(1)}" r="6" fill="var(--teal,#2a9d8f)" stroke="#fff" stroke-width="1.5"/>`;
     })
     .join("");
   // axis ticks at each integer (capped) or at the distinct values
@@ -147,7 +147,7 @@ export function dotPlotSVG(cfg) {
   const xLabel = cfg.xLabel
     ? `<text x="${(padL + plotW / 2).toFixed(1)}" y="${H - 6}" text-anchor="middle" font-size="12" font-weight="600" fill="var(--muted)">${esc(cfg.xLabel)}</text>`
     : "";
-  return svgFigure(cfg, `${axis}${ticks.join("")}${dots}${xLabel}`, W, H, padT);
+  return svgFigure(cfg, `${axis}${ticks.join("")}${dots}${xLabel}`, W, H, padT, "dot-plot-figure");
 }
 
 // Box-and-whisker plot from a five-number summary.
@@ -169,12 +169,12 @@ export function boxPlotSVG(cfg) {
     bot = midY + boxH / 2;
   const teal = "var(--teal,#2a9d8f)";
   const parts = [
-    `<line x1="${xOf(min)}" y1="${midY}" x2="${xOf(q1)}" y2="${midY}" stroke="var(--ink,#333)" stroke-width="2"/>`,
-    `<line x1="${xOf(q3)}" y1="${midY}" x2="${xOf(max)}" y2="${midY}" stroke="var(--ink,#333)" stroke-width="2"/>`,
-    `<line x1="${xOf(min)}" y1="${top + 10}" x2="${xOf(min)}" y2="${bot - 10}" stroke="var(--ink,#333)" stroke-width="2"/>`,
-    `<line x1="${xOf(max)}" y1="${top + 10}" x2="${xOf(max)}" y2="${bot - 10}" stroke="var(--ink,#333)" stroke-width="2"/>`,
-    `<rect x="${xOf(q1)}" y="${top}" width="${(xOf(q3) - xOf(q1)).toFixed(1)}" height="${boxH}" fill="${teal}" fill-opacity="0.25" stroke="${teal}" stroke-width="2"/>`,
-    `<line x1="${xOf(median)}" y1="${top}" x2="${xOf(median)}" y2="${bot}" stroke="var(--coral,#d9795d)" stroke-width="3"/>`,
+    `<line class="box-whisker" x1="${xOf(min)}" y1="${midY}" x2="${xOf(q1)}" y2="${midY}" stroke="var(--ink,#333)" stroke-width="2"/>`,
+    `<line class="box-whisker" x1="${xOf(q3)}" y1="${midY}" x2="${xOf(max)}" y2="${midY}" stroke="var(--ink,#333)" stroke-width="2"/>`,
+    `<line class="box-whisker" x1="${xOf(min)}" y1="${top + 10}" x2="${xOf(min)}" y2="${bot - 10}" stroke="var(--ink,#333)" stroke-width="2"/>`,
+    `<line class="box-whisker" x1="${xOf(max)}" y1="${top + 10}" x2="${xOf(max)}" y2="${bot - 10}" stroke="var(--ink,#333)" stroke-width="2"/>`,
+    `<rect class="box-body" x="${xOf(q1)}" y="${top}" width="${(xOf(q3) - xOf(q1)).toFixed(1)}" height="${boxH}" fill="${teal}" fill-opacity="0.25" stroke="${teal}" stroke-width="2"/>`,
+    `<line class="box-median" x1="${xOf(median)}" y1="${top}" x2="${xOf(median)}" y2="${bot}" stroke="var(--coral,#d9795d)" stroke-width="3"/>`,
   ];
   const labels = [
     [min, "Min"],
@@ -189,7 +189,7 @@ export function boxPlotSVG(cfg) {
         `<text x="${xOf(v)}" y="${top - 8}" text-anchor="middle" font-size="9" fill="var(--muted)">${t}</text>`,
     )
     .join("");
-  return svgFigure(cfg, `${parts.join("")}${labels}`, W, H, 10);
+  return svgFigure(cfg, `${parts.join("")}${labels}`, W, H, 10, "box-plot-figure");
 }
 
 // Categorical bar chart (bars have GAPS — contrast with a histogram).
@@ -215,14 +215,14 @@ export function barChartSVG(cfg) {
       const x = padL + i * slot + (slot - bw) / 2;
       const y = baseY - h;
       return (
-        `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="3" fill="var(--teal,#2a9d8f)"/>` +
-        `<text x="${(x + bw / 2).toFixed(1)}" y="${(y - 6).toFixed(1)}" text-anchor="middle" font-size="12" font-weight="700" fill="var(--navy,#264653)">${v}</text>` +
+        `<rect class="bar-rect" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="3" fill="var(--teal,#2a9d8f)"/>` +
+        `<text class="bar-val" x="${(x + bw / 2).toFixed(1)}" y="${(y - 6).toFixed(1)}" text-anchor="middle" font-size="12" font-weight="700" fill="var(--navy,#264653)">${v}</text>` +
         `<text x="${(x + bw / 2).toFixed(1)}" y="${(baseY + 18).toFixed(1)}" text-anchor="middle" font-size="11" fill="var(--ink,#333)">${esc(b.label ?? "")}</text>`
       );
     })
     .join("");
   const axis = `<line x1="${padL}" y1="${baseY}" x2="${W - padR}" y2="${baseY}" stroke="var(--ink,#333)" stroke-width="1.5"/>`;
-  return svgFigure(cfg, `${axis}${rects}`, W, H, padT);
+  return svgFigure(cfg, `${axis}${rects}`, W, H, padT, "bar-chart-figure");
 }
 
 // Draw a real, structured SVG factor tree diagram from config tree.
@@ -332,25 +332,25 @@ export function numberLineSVG(cfg) {
   const pts = (cfg.points || [])
     .map(
       (p) =>
-        `<circle cx="${xOf(Number(p.value)).toFixed(1)}" cy="${y}" r="7" fill="var(--coral,#d9795d)" stroke="#fff" stroke-width="2"/>` +
+        `<circle class="nl-point" cx="${xOf(Number(p.value)).toFixed(1)}" cy="${y}" r="7" fill="var(--coral,#d9795d)" stroke="#fff" stroke-width="2"/>` +
         (p.label
-          ? `<text x="${xOf(Number(p.value)).toFixed(1)}" y="${y - 14}" text-anchor="middle" font-size="11" font-weight="700" fill="var(--coral,#d9795d)">${esc(p.label)}</text>`
+          ? `<text class="nl-point-label" x="${xOf(Number(p.value)).toFixed(1)}" y="${y - 14}" text-anchor="middle" font-size="11" font-weight="700" fill="var(--coral,#d9795d)">${esc(p.label)}</text>`
           : ""),
     )
     .join("");
-  const line = `<line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" stroke="var(--ink,#333)" stroke-width="2"/>`;
-  return svgFigure(cfg, `${line}${ticks}${pts}`, W, H, 8);
+  const line = `<line class="nl-axis" x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" stroke="var(--ink,#333)" stroke-width="2"/>`;
+  return svgFigure(cfg, `${line}${ticks}${pts}`, W, H, 8, "number-line-figure");
 }
 
 // Shared figure wrapper: optional title + responsive SVG + optional caption.
-export function svgFigure(cfg, inner, W, H, padT = 16) {
+export function svgFigure(cfg, inner, W, H, padT = 16, figureClass = "data-figure") {
   const title = cfg.title
     ? `<div style="font-weight:700; color:var(--navy,#264653); margin-bottom:var(--sp-2); text-align:center;">${esc(cfg.title)}</div>`
     : "";
   const caption = cfg.caption
     ? `<div style="font-size:0.82rem; color:var(--muted); margin-top:var(--sp-2); text-align:center; font-style:italic;">${esc(cfg.caption)}</div>`
     : "";
-  return `<div class="data-figure" style="margin:var(--sp-3) 0;">${title}<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(figureAria(cfg))}" style="width:100%; height:auto; max-width:560px; display:block; margin:0 auto;"><g transform="translate(0,${padT - 16})">${inner}</g></svg>${caption}</div>`;
+  return `<div class="${figureClass}" style="margin:var(--sp-3) 0;">${title}<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(figureAria(cfg))}" style="width:100%; height:auto; max-width:560px; display:block; margin:0 auto;"><g transform="translate(0,${padT - 16})">${inner}</g></svg>${caption}</div>`;
 }
 
 // Tape / bar diagram: stacked labeled segments per row. Models part–whole,
@@ -383,7 +383,7 @@ export function tapeDiagramSVG(cfg) {
         .map((p, i) => {
           const w = ((Number(p.value) || 0) / maxTotal) * trackW;
           const fill = p.fill || palette[i % palette.length];
-          const rect = `<rect x="${x.toFixed(1)}" y="${y}" width="${Math.max(0, w - 2).toFixed(1)}" height="${rowH}" rx="4" fill="${fill}"/><text x="${(x + w / 2).toFixed(1)}" y="${y + rowH / 2 + 4}" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">${esc(p.label != null ? p.label : p.value)}</text>`;
+          const rect = `<rect class="tape-seg" x="${x.toFixed(1)}" y="${y}" width="${Math.max(0, w - 2).toFixed(1)}" height="${rowH}" rx="4" fill="${fill}"/><text class="tape-label" x="${(x + w / 2).toFixed(1)}" y="${y + rowH / 2 + 4}" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">${esc(p.label != null ? p.label : p.value)}</text>`;
           x += w;
           return rect;
         })
@@ -393,7 +393,7 @@ export function tapeDiagramSVG(cfg) {
       return rowLabel + segs;
     })
     .join("");
-  return svgFigure(cfg, body, W, H, 16);
+  return svgFigure(cfg, body, W, H, 16, "tape-figure");
 }
 
 // Static four-quadrant coordinate plane with optional plotted points.
@@ -440,15 +440,15 @@ export function coordPlaneSVG(cfg) {
       .slice()
       .sort((a, b) => Math.atan2(a.y - gy, a.x - gx) - Math.atan2(b.y - gy, b.x - gx));
     const poly = ring.map((p) => `${X(p.x).toFixed(1)},${Y(p.y).toFixed(1)}`).join(" ");
-    outline = `<polygon points="${poly}" fill="rgba(31,166,162,0.10)" stroke="#1fa6a2" stroke-width="2.5"/>`;
+    outline = `<polygon class="cp-outline" points="${poly}" fill="rgba(31,166,162,0.10)" stroke="#1fa6a2" stroke-width="2.5"/>`;
   }
   const pts = rawPts
     .map((p) => {
       const px = X(p.x),
         py = Y(p.y);
       const lbl = p.label || `(${p.x}, ${p.y})`;
-      return `<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="6" fill="var(--coral,#d9795d)" stroke="#fff" stroke-width="2"/><text x="${(px + 8).toFixed(1)}" y="${(py - 8).toFixed(1)}" font-size="11" font-weight="700" fill="var(--navy,#264653)">${esc(lbl)}</text>`;
+      return `<circle class="cp-point" cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="6" fill="var(--coral,#d9795d)" stroke="#fff" stroke-width="2"/><text class="cp-point-label" x="${(px + 8).toFixed(1)}" y="${(py - 8).toFixed(1)}" font-size="11" font-weight="700" fill="var(--navy,#264653)">${esc(lbl)}</text>`;
     })
     .join("");
-  return svgFigure(cfg, `${grid}${axes}${outline}${pts}`, W, H, 16);
+  return svgFigure(cfg, `${grid}${axes}${outline}${pts}`, W, H, 16, "coord-plane-figure");
 }

@@ -6,6 +6,16 @@ import { renderThemeIllustration } from "./theme-illustrations.js";
 const REDUCED =
   typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
 
+/** Humanize a theme slug for scene chips / captions (e.g. space-station → Space Station). */
+export function themeDisplayName(theme) {
+  if (!theme || typeof theme !== "string") return "";
+  return theme
+    .split("-")
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
 /** Mark a section for scene enter; CSS plays when `.is-scene-in` is added. */
 export function markScene(section, name, { enterSelector } = {}) {
   if (!section) return section;

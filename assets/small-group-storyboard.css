@@ -200,6 +200,287 @@
   }
 }
 
+/* Number-line points land */
+.number-line-figure .nl-point {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+[data-sg-scene]:not(.is-scene-in) .number-line-figure .nl-point,
+[data-sg-scene]:not(.is-scene-in) .number-line-figure .nl-point-label {
+  opacity: 0;
+  transform: translateY(-10px) scale(0.7);
+}
+[data-sg-scene].is-scene-in .number-line-figure .nl-point,
+[data-sg-scene].is-scene-in .number-line-figure .nl-point-label {
+  animation: sg-chip-land 0.45s cubic-bezier(0.2, 1.2, 0.4, 1) both;
+}
+[data-sg-scene].is-scene-in .number-line-figure .nl-point:nth-of-type(1),
+[data-sg-scene].is-scene-in .number-line-figure .nl-point-label:nth-of-type(1) {
+  animation-delay: 0.08s;
+}
+[data-sg-scene].is-scene-in .number-line-figure .nl-point:nth-of-type(2),
+[data-sg-scene].is-scene-in .number-line-figure .nl-point-label:nth-of-type(2) {
+  animation-delay: 0.16s;
+}
+[data-sg-scene].is-scene-in .number-line-figure .nl-point:nth-of-type(n + 3),
+[data-sg-scene].is-scene-in .number-line-figure .nl-point-label:nth-of-type(n + 3) {
+  animation-delay: 0.24s;
+}
+
+/* Tape segments grow */
+.tape-figure .tape-seg {
+  transform-box: fill-box;
+  transform-origin: left center;
+}
+[data-sg-scene]:not(.is-scene-in) .tape-figure .tape-seg,
+[data-sg-scene]:not(.is-scene-in) .tape-figure .tape-label {
+  opacity: 0;
+  transform: scaleX(0.15);
+}
+[data-sg-scene].is-scene-in .tape-figure .tape-seg,
+[data-sg-scene].is-scene-in .tape-figure .tape-label {
+  animation: sg-tape-grow 0.55s cubic-bezier(0.2, 1.1, 0.4, 1) both;
+}
+[data-sg-scene].is-scene-in .tape-figure .tape-seg:nth-of-type(1),
+[data-sg-scene].is-scene-in .tape-figure .tape-label:nth-of-type(1) {
+  animation-delay: 0.05s;
+}
+[data-sg-scene].is-scene-in .tape-figure .tape-seg:nth-of-type(2),
+[data-sg-scene].is-scene-in .tape-figure .tape-label:nth-of-type(2) {
+  animation-delay: 0.12s;
+}
+[data-sg-scene].is-scene-in .tape-figure .tape-seg:nth-of-type(3),
+[data-sg-scene].is-scene-in .tape-figure .tape-label:nth-of-type(3) {
+  animation-delay: 0.19s;
+}
+[data-sg-scene].is-scene-in .tape-figure .tape-seg:nth-of-type(n + 4),
+[data-sg-scene].is-scene-in .tape-figure .tape-label:nth-of-type(n + 4) {
+  animation-delay: 0.26s;
+}
+@keyframes sg-tape-grow {
+  from {
+    opacity: 0;
+    transform: scaleX(0.15);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Bar / histogram rise */
+.bar-chart-figure .bar-rect,
+.histogram-figure .hist-bar {
+  transform-box: fill-box;
+  transform-origin: center bottom;
+}
+[data-sg-scene]:not(.is-scene-in) .bar-chart-figure .bar-rect,
+[data-sg-scene]:not(.is-scene-in) .bar-chart-figure .bar-val,
+[data-sg-scene]:not(.is-scene-in) .histogram-figure .hist-bar,
+[data-sg-scene]:not(.is-scene-in) .histogram-figure .hist-val {
+  opacity: 0;
+  transform: scaleY(0.08);
+}
+[data-sg-scene].is-scene-in .bar-chart-figure .bar-rect,
+[data-sg-scene].is-scene-in .bar-chart-figure .bar-val,
+[data-sg-scene].is-scene-in .histogram-figure .hist-bar,
+[data-sg-scene].is-scene-in .histogram-figure .hist-val {
+  animation: sg-bar-rise 0.55s cubic-bezier(0.2, 1.2, 0.4, 1) both;
+}
+[data-sg-scene].is-scene-in .bar-chart-figure .bar-rect:nth-of-type(1),
+[data-sg-scene].is-scene-in .histogram-figure .hist-bar:nth-of-type(1) {
+  animation-delay: 0.05s;
+}
+[data-sg-scene].is-scene-in .bar-chart-figure .bar-rect:nth-of-type(2),
+[data-sg-scene].is-scene-in .histogram-figure .hist-bar:nth-of-type(2) {
+  animation-delay: 0.12s;
+}
+[data-sg-scene].is-scene-in .bar-chart-figure .bar-rect:nth-of-type(3),
+[data-sg-scene].is-scene-in .histogram-figure .hist-bar:nth-of-type(3) {
+  animation-delay: 0.19s;
+}
+[data-sg-scene].is-scene-in .bar-chart-figure .bar-rect:nth-of-type(n + 4),
+[data-sg-scene].is-scene-in .histogram-figure .hist-bar:nth-of-type(n + 4) {
+  animation-delay: 0.26s;
+}
+@keyframes sg-bar-rise {
+  from {
+    opacity: 0;
+    transform: scaleY(0.08);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Box plot assemble */
+[data-sg-scene]:not(.is-scene-in) .box-plot-figure .box-whisker {
+  opacity: 0;
+}
+[data-sg-scene]:not(.is-scene-in) .box-plot-figure .box-body,
+[data-sg-scene]:not(.is-scene-in) .box-plot-figure .box-median {
+  opacity: 0;
+  transform: scaleX(0.2);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+[data-sg-scene].is-scene-in .box-plot-figure .box-whisker {
+  animation: sg-scene-in 0.4s ease both;
+}
+[data-sg-scene].is-scene-in .box-plot-figure .box-body {
+  animation: sg-tape-grow 0.5s ease 0.12s both;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+[data-sg-scene].is-scene-in .box-plot-figure .box-median {
+  animation: sg-leaf-pop 0.45s cubic-bezier(0.2, 1.4, 0.4, 1) 0.28s both;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* Dot plot pop */
+.dot-plot-figure .dot-mark {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+[data-sg-scene]:not(.is-scene-in) .dot-plot-figure .dot-mark {
+  opacity: 0;
+  transform: scale(0);
+}
+[data-sg-scene].is-scene-in .dot-plot-figure .dot-mark {
+  animation: sg-leaf-pop 0.45s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+[data-sg-scene].is-scene-in .dot-plot-figure .dot-mark:nth-of-type(1) {
+  animation-delay: 0.04s;
+}
+[data-sg-scene].is-scene-in .dot-plot-figure .dot-mark:nth-of-type(2) {
+  animation-delay: 0.1s;
+}
+[data-sg-scene].is-scene-in .dot-plot-figure .dot-mark:nth-of-type(3) {
+  animation-delay: 0.16s;
+}
+[data-sg-scene].is-scene-in .dot-plot-figure .dot-mark:nth-of-type(4) {
+  animation-delay: 0.22s;
+}
+[data-sg-scene].is-scene-in .dot-plot-figure .dot-mark:nth-of-type(n + 5) {
+  animation-delay: 0.28s;
+}
+
+/* Coord plane points + outline */
+.coord-plane-figure .cp-point {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+[data-sg-scene]:not(.is-scene-in) .coord-plane-figure .cp-outline {
+  opacity: 0;
+}
+[data-sg-scene]:not(.is-scene-in) .coord-plane-figure .cp-point,
+[data-sg-scene]:not(.is-scene-in) .coord-plane-figure .cp-point-label {
+  opacity: 0;
+  transform: scale(0);
+}
+[data-sg-scene].is-scene-in .coord-plane-figure .cp-outline {
+  animation: sg-scene-in 0.5s ease 0.08s both;
+}
+[data-sg-scene].is-scene-in .coord-plane-figure .cp-point,
+[data-sg-scene].is-scene-in .coord-plane-figure .cp-point-label {
+  animation: sg-leaf-pop 0.45s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+[data-sg-scene].is-scene-in .coord-plane-figure .cp-point:nth-of-type(1),
+[data-sg-scene].is-scene-in .coord-plane-figure .cp-point-label:nth-of-type(1) {
+  animation-delay: 0.18s;
+}
+[data-sg-scene].is-scene-in .coord-plane-figure .cp-point:nth-of-type(2),
+[data-sg-scene].is-scene-in .coord-plane-figure .cp-point-label:nth-of-type(2) {
+  animation-delay: 0.26s;
+}
+[data-sg-scene].is-scene-in .coord-plane-figure .cp-point:nth-of-type(n + 3),
+[data-sg-scene].is-scene-in .coord-plane-figure .cp-point-label:nth-of-type(n + 3) {
+  animation-delay: 0.34s;
+}
+
+/* ── Mission story beats (SG pages don't load design-system.css) ── */
+.sg-mission-story .launch-story-beats {
+  margin: 0 0 12px;
+  display: grid;
+  gap: 8px;
+}
+.sg-mission-story .story-beat-row {
+  margin: 0;
+}
+.sg-mission-story .story-beat-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 14px;
+  border: 2px solid var(--sg-line, #d7e2ed);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--sg-deep, #12355b);
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+}
+.sg-mission-story .story-beat-card:hover,
+.sg-mission-story .story-beat-card.is-revealed {
+  border-color: var(--sg, #2f80d1);
+}
+.sg-mission-story .story-beat-num {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--sg, #2f80d1);
+  color: #fff;
+  font-family: "Nunito", sans-serif;
+  font-weight: 900;
+  font-size: 13px;
+}
+.sg-mission-story .story-beat-label {
+  font-family: "Nunito", sans-serif;
+  font-weight: 800;
+  font-size: 15px;
+}
+.sg-mission-story .story-beat-teaser {
+  color: var(--sg-muted, #536174);
+  font-size: 12px;
+  font-weight: 700;
+}
+.sg-mission-story .story-beat-reveal {
+  margin-top: 6px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--sg-soft, #eef5fc);
+  color: var(--sg-deep, #12355b);
+  font-size: 16px;
+  line-height: 1.45;
+  font-weight: 600;
+}
+.sg-mission-story .story-beat-reveal[hidden] {
+  display: none;
+}
+
+/* Streak chip one-shot pulse on appear */
+.sg-streak.sg-streak-hot {
+  animation: sg-streak-pulse 0.55s cubic-bezier(0.2, 1.3, 0.4, 1);
+}
+@keyframes sg-streak-pulse {
+  0% {
+    transform: scale(0.86);
+  }
+  55% {
+    transform: scale(1.08);
+  }
+  100% {
+    transform: none;
+  }
+}
+
 /* ── Vocab picture fade-in ── */
 .sg-vcard-picture img {
   transition: opacity 0.35s ease, transform 0.35s ease;
@@ -280,10 +561,43 @@
   [data-sg-scene].is-scene-in .sg-datachips-row .sg-datachip,
   [data-sg-scene].is-scene-in .factor-tree-figure .ft-branch,
   [data-sg-scene].is-scene-in .factor-tree-figure .ft-node,
+  [data-sg-scene]:not(.is-scene-in) .factor-tree-figure .ft-branch,
+  [data-sg-scene]:not(.is-scene-in) .factor-tree-figure .ft-node,
+  [data-sg-scene].is-scene-in .number-line-figure .nl-point,
+  [data-sg-scene].is-scene-in .number-line-figure .nl-point-label,
+  [data-sg-scene]:not(.is-scene-in) .number-line-figure .nl-point,
+  [data-sg-scene]:not(.is-scene-in) .number-line-figure .nl-point-label,
+  [data-sg-scene].is-scene-in .tape-figure .tape-seg,
+  [data-sg-scene].is-scene-in .tape-figure .tape-label,
+  [data-sg-scene]:not(.is-scene-in) .tape-figure .tape-seg,
+  [data-sg-scene]:not(.is-scene-in) .tape-figure .tape-label,
+  [data-sg-scene].is-scene-in .bar-chart-figure .bar-rect,
+  [data-sg-scene].is-scene-in .bar-chart-figure .bar-val,
+  [data-sg-scene].is-scene-in .histogram-figure .hist-bar,
+  [data-sg-scene].is-scene-in .histogram-figure .hist-val,
+  [data-sg-scene]:not(.is-scene-in) .bar-chart-figure .bar-rect,
+  [data-sg-scene]:not(.is-scene-in) .bar-chart-figure .bar-val,
+  [data-sg-scene]:not(.is-scene-in) .histogram-figure .hist-bar,
+  [data-sg-scene]:not(.is-scene-in) .histogram-figure .hist-val,
+  [data-sg-scene].is-scene-in .box-plot-figure .box-whisker,
+  [data-sg-scene].is-scene-in .box-plot-figure .box-body,
+  [data-sg-scene].is-scene-in .box-plot-figure .box-median,
+  [data-sg-scene]:not(.is-scene-in) .box-plot-figure .box-whisker,
+  [data-sg-scene]:not(.is-scene-in) .box-plot-figure .box-body,
+  [data-sg-scene]:not(.is-scene-in) .box-plot-figure .box-median,
+  [data-sg-scene].is-scene-in .dot-plot-figure .dot-mark,
+  [data-sg-scene]:not(.is-scene-in) .dot-plot-figure .dot-mark,
+  [data-sg-scene].is-scene-in .coord-plane-figure .cp-outline,
+  [data-sg-scene].is-scene-in .coord-plane-figure .cp-point,
+  [data-sg-scene].is-scene-in .coord-plane-figure .cp-point-label,
+  [data-sg-scene]:not(.is-scene-in) .coord-plane-figure .cp-outline,
+  [data-sg-scene]:not(.is-scene-in) .coord-plane-figure .cp-point,
+  [data-sg-scene]:not(.is-scene-in) .coord-plane-figure .cp-point-label,
   [data-sg-scene="vocab"].is-scene-in .sg-vcard-picture img,
   .sg-lab-mount.sg-lab-ready,
   .sg-lab.sg-lab-success,
   .sg-done:not([hidden]),
+  .sg-streak.sg-streak-hot,
   .choice.correct,
   .choice.wrong,
   .fillin.ok,
