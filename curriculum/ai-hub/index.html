@@ -9530,8 +9530,12 @@ Instructions:
         Repository.saveTeachBacks();
 
         renderPassportCard(entry);
-        if (fb) fb.style.color = "#6ee7b7";
-        if (fb) fb.textContent = "Passport stamped! Your explanation is saved as learning evidence.";
+        // Re-query after render — the card must not destroy #proveit-feedback
+        const stampedFb = document.getElementById("proveit-feedback");
+        if (stampedFb) {
+          stampedFb.style.color = "#6ee7b7";
+          stampedFb.textContent = "Passport stamped! Your explanation is saved as learning evidence.";
+        }
         appendTutorMessage(
           "bot",
           "🛂 Passport stamped. You didn't just get the answer — you can teach it. Tap the next letter (A–E) when you're ready."
@@ -9546,6 +9550,7 @@ Instructions:
         const panel = document.getElementById("proveit-panel");
         if (!panel || !entry) return;
         const when = new Date(entry.stampedAt).toLocaleString();
+        // Preserve #proveit-feedback so post-stamp DOM updates still work
         panel.innerHTML = `
           <div class="passport-card" id="passport-print-root">
             <h4>Learning Passport · EduWonderLab</h4>
@@ -9563,6 +9568,7 @@ Instructions:
               <button type="button" class="role-btn" style="background:rgba(255,255,255,0.06); color:#fff; border:1px solid var(--bg-panel-border); padding:8px 14px; border-radius:8px; font-weight:700; cursor:pointer;" onclick="copyPassportText()">📋 Copy evidence</button>
             </div>
           </div>
+          <div id="proveit-feedback" style="margin-top:10px; font-size:0.85rem; color:#fbbf24;"></div>
         `;
       }
 
@@ -9609,7 +9615,8 @@ Instructions:
           return;
         }
         const rec = new SpeechRecognition();
-        rec.lang = STATE.esolLevel <= 1 ? "en-US" : "en-US";
+        // ESOL Level 1: Spanish recognition; higher levels stay English
+        rec.lang = STATE.esolLevel <= 1 ? "es-US" : "en-US";
         rec.interimResults = false;
         rec.maxAlternatives = 1;
         rec.onresult = (event) => {

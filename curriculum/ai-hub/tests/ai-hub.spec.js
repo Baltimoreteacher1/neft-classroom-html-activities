@@ -128,6 +128,56 @@ test.describe("AI Learning Hub - Browser QA Suite", () => {
     expect(value).toBe("2");
   });
 
+  // ─── 9b. Voice input language follows ESOL level ────────────────
+  test("Voice input uses Spanish recognition for ESOL Level 1", async ({ page }) => {
+    await page.locator("#select-esol-level").selectOption("1");
+    await page.waitForTimeout(200);
+
+    const lang = await page.evaluate(() => {
+      let captured = null;
+      class FakeRec {
+        constructor() {
+          this.lang = "";
+          this.interimResults = false;
+          this.maxAlternatives = 1;
+        }
+        start() {
+          captured = this.lang;
+        }
+        stop() {}
+      }
+      window.SpeechRecognition = FakeRec;
+      window.webkitSpeechRecognition = FakeRec;
+      window.toggleVoiceInput("chat-input", null);
+      return captured;
+    });
+    expect(lang).toBe("es-US");
+
+    await page.locator("#select-esol-level").selectOption("3");
+    await page.waitForTimeout(200);
+    const langEn = await page.evaluate(() => {
+      let captured = null;
+      class FakeRec {
+        constructor() {
+          this.lang = "";
+          this.interimResults = false;
+          this.maxAlternatives = 1;
+        }
+        start() {
+          captured = this.lang;
+        }
+        stop() {}
+      }
+      window.SpeechRecognition = FakeRec;
+      window.webkitSpeechRecognition = FakeRec;
+      // Stop any prior session stub
+      window.toggleVoiceInput("chat-input", null);
+      window.toggleVoiceInput("chat-input", null);
+      return captured;
+    });
+    expect(langEn).toBe("en-US");
+  });
+
   // ─── 10. Student progress dashboard renders ──────────────────────
   test("Student progress dashboard renders when student role selected", async ({ page }) => {
     await page.locator(".role-card").first().click();
@@ -375,6 +425,9 @@ test.describe("AI Learning Hub - Browser QA Suite", () => {
     );
     await page.locator("button", { hasText: "Stamp my Passport" }).click();
     await expect(page.locator("#passport-print-root")).toBeVisible({ timeout: 5000 });
+    // Feedback node must survive passport render (not be wiped with panel.innerHTML)
+    await expect(page.locator("#proveit-feedback")).toBeVisible();
+    await expect(page.locator("#proveit-feedback")).toContainText("Passport stamped");
     const stamped = await page.evaluate(() =>
       Object.keys(JSON.parse(localStorage.getItem("ai-hub-teachbacks") || "{}")).length
     );
