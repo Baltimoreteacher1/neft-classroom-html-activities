@@ -44,13 +44,6 @@
   font-display: swap;
   src: url("./fonts/nunito-var-italic.woff2") format("woff2");
 }
-@font-face {
-  font-family: "Patrick Hand";
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url("./fonts/patrickhand-400.woff2") format("woff2");
-}
 
 /* ── Retokenize the editorial layer ──────────────────────────────────────── */
 body.editorial.skin-warm-deck {
@@ -60,8 +53,9 @@ body.editorial.skin-warm-deck {
   --fl-body: "Nunito", "Avenir Next", Calibri, system-ui, sans-serif;
   --font-display: var(--fl-serif);
   --font-body: var(--fl-body);
-  /* School-print accent face for callouts, hints, and vocab reveals. */
-  --wd-hand: "Patrick Hand", "Comic Sans MS", "Chalkboard SE", sans-serif;
+  /* Readable measure inside cards — editorial's 100% measure makes text
+     lines uncomfortably long in maximized windows (Joel, 2026-07-21). */
+  --fl-measure: 72ch;
 
   /* Warm deck palette: cream canvas, blush paper, teal/coral/orange accents */
   --wd-teal: #2e9e97;
@@ -94,6 +88,16 @@ body.editorial.skin-warm-deck::before {
   display: none;
 }
 
+/* ── Slide column: cap and center content in wide windows ────────────────────
+   Editorial fills the full page width; on a maximized display that stretches
+   cards edge-to-edge. The deck look centers a comfortable slide column on
+   the cream canvas instead. No effect at laptop/tablet/mobile widths. */
+body.editorial.skin-warm-deck .main {
+  max-width: 1240px;
+  width: 100%;
+  margin-inline: auto;
+}
+
 /* ── Masthead → title-slide card ─────────────────────────────────────────── */
 body.editorial.skin-warm-deck .lesson-hero {
   background: var(--fl-page) !important;
@@ -117,10 +121,11 @@ body.editorial.skin-warm-deck .lesson-hero::before {
   transform: rotate(38deg);
   pointer-events: none;
 }
+/* Title case, not ALL-CAPS: mixed-case word shapes read faster for grade-6
+   and L0/L1 students (Joel: fonts must be student-friendly and clear). */
 body.editorial.skin-warm-deck .lesson-hero-title {
   font-family: var(--fl-serif);
   font-weight: 800;
-  text-transform: uppercase;
   letter-spacing: 0.01em;
   color: var(--wd-teal);
 }
@@ -154,9 +159,6 @@ body.editorial.skin-warm-deck .phase .card :is(h2, h3, h4, .card-title) {
   font-weight: 800;
   letter-spacing: 0.01em;
   color: var(--wd-teal);
-}
-body.editorial.skin-warm-deck .phase .card :is(h2, .card-title) {
-  text-transform: uppercase;
 }
 /* Objective / key-idea accents: dashed "sticker" panels */
 body.editorial.skin-warm-deck .phase .card-teal {
@@ -206,9 +208,11 @@ body.editorial.skin-warm-deck .btn:focus-visible {
   outline-offset: 2px;
 }
 
-/* ── Sidebar → deck rail ─────────────────────────────────────────────────── */
+/* ── Sidebar → deck rail ─────────────────────────────────────────────────────
+   Keep the base navy gradient (design-system) so the rail matches the navy
+   title-slide cover — Joel's verdict on the pilot: the teal-green rail was
+   the one clash in the warm palette. Only the hairline border goes. */
 body.editorial.skin-warm-deck .sidebar {
-  background: linear-gradient(180deg, var(--wd-teal-deep) 0%, var(--wd-teal) 100%);
   border-right: none;
 }
 body.editorial.skin-warm-deck .sidebar-title,
@@ -228,7 +232,6 @@ body.editorial.skin-warm-deck .identity-hero h1,
 body.editorial.skin-warm-deck .identity-card h1 {
   font-family: var(--fl-serif);
   font-weight: 800;
-  text-transform: uppercase;
   color: var(--wd-teal);
 }
 
@@ -251,10 +254,14 @@ body.editorial.skin-warm-deck .flagship-scene-hud {
   box-shadow: var(--shadow-sm);
 }
 
-/* ── Hand-written accent voice: hints, feedback, vocab reveals ───────────── */
+/* ── Hints, feedback, vocab reveals: clear reading voice ─────────────────────
+   Was Patrick Hand (handwriting); dropped for L0/L1 legibility — these are
+   exactly the moments a struggling reader must not fight the font. Slightly
+   larger clear Nunito instead. */
 body.editorial.skin-warm-deck :is(.hint-text, .feedback, .vocab-definition, .try-another-note) {
-  font-family: var(--wd-hand);
-  font-size: 1.1em;
+  font-family: var(--fl-body);
+  font-size: 1.08em;
+  font-weight: 600;
 }
 
 /* ── Print parity: warm look flattens to clean white handouts ────────────── */
