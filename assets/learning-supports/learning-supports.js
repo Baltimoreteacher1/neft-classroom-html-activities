@@ -255,7 +255,7 @@
       .match(/(?:^|&)lang=([a-z]{2})(?:&|$)/i);
     if (!m) return null;
     const code = m[1].toLowerCase();
-    return ["en", "es", "vi", "ar"].includes(code) ? code : null;
+    return ["en", "es"].includes(code) ? code : null;
   }
 
   // Parse hash/query parameter
@@ -642,8 +642,6 @@
         const languages = [
           { code: "en", name: "English" },
           { code: "es", name: "Español (Spanish)" },
-          { code: "vi", name: "Tiếng Việt (Vietnamese)" },
-          { code: "ar", name: "العربية (Arabic)" },
         ];
 
         languages.forEach((lang) => {
@@ -1435,12 +1433,6 @@
             if (activeLanguage === "es" && v.termEs) {
               displayTerm = `${v.term} (${v.termEs})`;
               displayDef = v.definitionEs || v.definition;
-            } else if (activeLanguage === "vi" && v.termVi) {
-              displayTerm = `${v.term} (${v.termVi})`;
-              displayDef = v.definitionVi || v.definition;
-            } else if (activeLanguage === "ar" && v.termAr) {
-              displayTerm = `${v.term} (${v.termAr})`;
-              displayDef = v.definitionAr || v.definition;
             }
           }
 
@@ -1643,7 +1635,7 @@
             dictation = new SR();
             dictation.lang =
               activeProfiles["language-support"] && activeLanguage !== "en"
-                ? { es: "es-ES", vi: "vi-VN", ar: "ar-SA" }[activeLanguage] || "en-US"
+                ? { es: "es-ES" }[activeLanguage] || "en-US"
                 : "en-US";
             dictation.interimResults = false;
             dictation.continuous = true;
@@ -2012,16 +2004,6 @@
         langObjTitle = "Objetivo lingüístico.";
         vocabTitle = "Términos de vocabulario clave.";
         definitionLabel = "Definición.";
-      } else if (activeLanguage === "vi") {
-        objTitle = "Mục tiêu hôm nay.";
-        langObjTitle = "Mục tiêu ngôn ngữ.";
-        vocabTitle = "Các thuật ngữ từ vựng chính.";
-        definitionLabel = "Định nghĩa.";
-      } else if (activeLanguage === "ar") {
-        objTitle = "هدف اليوم.";
-        langObjTitle = "الهدف اللغوي.";
-        vocabTitle = "مصطلحات المفردات الرئيسية.";
-        definitionLabel = "تعريف.";
       }
     }
 
@@ -2039,12 +2021,6 @@
           if (activeLanguage === "es") {
             termText = v.termEs || v.term;
             defText = v.definitionEs || v.definition;
-          } else if (activeLanguage === "vi") {
-            termText = v.termVi || v.term;
-            defText = v.definitionVi || v.definition;
-          } else if (activeLanguage === "ar") {
-            termText = v.termAr || v.term;
-            defText = v.definitionAr || v.definition;
           }
         }
         text += `${termText}. ${definitionLabel} ${defText}. `;
@@ -2055,8 +2031,6 @@
 
     if (isLangSupport) {
       if (activeLanguage === "es") activeSpeechUtterance.lang = "es-ES";
-      else if (activeLanguage === "vi") activeSpeechUtterance.lang = "vi-VN";
-      else if (activeLanguage === "ar") activeSpeechUtterance.lang = "ar-SA";
       else activeSpeechUtterance.lang = "en-US";
     } else {
       activeSpeechUtterance.lang = "en-US";
@@ -2093,8 +2067,6 @@
     const isLangSupport = activeProfiles["language-support"];
     if (isLangSupport) {
       if (activeLanguage === "es") utterance.lang = "es-ES";
-      else if (activeLanguage === "vi") utterance.lang = "vi-VN";
-      else if (activeLanguage === "ar") utterance.lang = "ar-SA";
       else utterance.lang = "en-US";
     } else {
       utterance.lang = "en-US";
@@ -3135,7 +3107,9 @@
     const inner = dock.querySelector(".ewl-supports-tools-inner");
     if (!inner) return;
     let chip = inner.querySelector(".ewl-supports-mylessons-chip");
-    const list = Array.isArray(lessons) ? lessons.filter((id) => /^\d+-\d+(?:-group[12]|-catchup)?$/.test(id)) : [];
+    const list = Array.isArray(lessons)
+      ? lessons.filter((id) => /^\d+-\d+(?:-group[12]|-catchup)?$/.test(id))
+      : [];
     if (!list.length) {
       if (chip) chip.remove();
       if (myLessonsPop) {
@@ -3663,8 +3637,6 @@
     [
       { code: "en", name: "English" },
       { code: "es", name: "Español (Spanish)" },
-      { code: "vi", name: "Tiếng Việt (Vietnamese)" },
-      { code: "ar", name: "العربية (Arabic)" },
     ].forEach((l) => {
       const o = document.createElement("option");
       o.value = l.code;

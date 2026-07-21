@@ -9,7 +9,7 @@
  * criteria (engagement, narrative quality, standards precision) stay in the rubric
  * doc for manual/agent audit passes. Run: npm run validate:lesson-quality
  */
-import { readdirSync, readFileSync, existsSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 const root = process.cwd();
@@ -82,10 +82,6 @@ for (const id of readdirSync(lessonsDir)) {
     if (!v.termEs || !v.definitionEs) {
       fail(id, `vocabulary[${i}] ("${v.term}") missing termEs/definitionEs`);
     }
-    if (v.termVi !== undefined && !v.termVi)
-      fail(id, `vocabulary[${i}] ("${v.term}") has empty termVi`);
-    if (v.termAr !== undefined && !v.termAr)
-      fail(id, `vocabulary[${i}] ("${v.term}") has empty termAr`);
     if (!v.visual) warn(id, `vocabulary[${i}] ("${v.term}") missing visual`);
   }
 

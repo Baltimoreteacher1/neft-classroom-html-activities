@@ -4,8 +4,8 @@ import { fileURLToPath } from "node:url";
 import { deriveTWR } from "../engine/core/twr.js";
 import { resolveVocabImage, vocabImageAlt } from "../engine/core/vocab-images.js";
 import { deriveWorkedSteps } from "../engine/core/worked-steps.js";
-import { lessonScope, inScope } from "./lib/lesson-scope.mjs";
 import { EDITORIAL_FONT_IMPORT, EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
+import { inScope, lessonScope } from "./lib/lesson-scope.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
@@ -2693,17 +2693,14 @@ function vocabExplorer(cfg = {}) {
     return `<p class="level-note">No vocabulary is listed for this lesson yet.</p>`;
 
   // ① Word Wall — receptive (picture + word + say-it + plain meaning), with the
-  // lesson's authored translations (Spanish / Vietnamese / Arabic) so multilingual
-  // learners get a first-language anchor for every term.
+  // lesson's authored Spanish translation so multilingual learners get a
+  // first-language anchor for every term.
   const wall = items
     .map((v) => {
       const imgSrc = resolveVocabImage(v.term, v.image).replace(/^\//, "../../");
       const say = esc(`${v.term}. ${v.definition || ""}`);
       const langs = [];
       if (v.termEs) langs.push(`<span class="vx-lang" lang="es"><b>ES</b> ${esc(v.termEs)}</span>`);
-      if (v.termVi) langs.push(`<span class="vx-lang" lang="vi"><b>VI</b> ${esc(v.termVi)}</span>`);
-      if (v.termAr)
-        langs.push(`<span class="vx-lang" lang="ar" dir="rtl"><b>AR</b> ${esc(v.termAr)}</span>`);
       const transLine = langs.length
         ? `<p class="vx-langs">${langs.join('<span class="vx-langsep">·</span>')}</p>`
         : "";
@@ -2930,7 +2927,10 @@ function main() {
   // the full lesson set so a scoped run never drops lessons from notes-index.
   const scope = lessonScope();
   const targets = lessons.filter(({ id }) => inScope(id, scope));
-  if (scope) console.log(`Scoped notes to ${targets.length} lesson(s): ${targets.map((l) => l.id).join(", ")}`);
+  if (scope)
+    console.log(
+      `Scoped notes to ${targets.length} lesson(s): ${targets.map((l) => l.id).join(", ")}`,
+    );
   let count = 0;
   let flagshipCount = 0;
   for (const { id, cfg, isFlagship } of targets) {
