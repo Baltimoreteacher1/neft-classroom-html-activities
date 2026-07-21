@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="AI Learning Hub for Grade 6 math: a guided prompt builder, step-by-step tutor practice, and family AI-literacy modules. Aligned to Common Core standards."
+      content="Award-ready AI Learning Hub for Grade 6 math: learning-safe prompt builder, step-synced visual tutor, Prove-It Learning Passport evidence, ESOL scaffolds, and family AI literacy. Aligned to Common Core."
     />
     <title>AI Learning Hub — Grade 6 Math</title>
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
@@ -2350,6 +2350,321 @@
         }
       }
 
+
+      /* ═══════════════════════════════════════════════════════════
+         Award layer: Prove-It Passport, mastery rings, focus mode,
+         misconception radar, discourse frames, innovation thesis
+         ═══════════════════════════════════════════════════════════ */
+      .innovation-thesis {
+        max-width: 720px;
+        margin: 18px auto 0;
+        padding: 14px 18px;
+        border-radius: 14px;
+        border: 1px solid rgba(138, 180, 248, 0.28);
+        background:
+          linear-gradient(135deg, rgba(66, 133, 244, 0.12), rgba(16, 185, 129, 0.08));
+        text-align: left;
+        box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
+      }
+      .innovation-thesis strong {
+        display: block;
+        font-family: var(--font-heading);
+        font-size: 0.78rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #8ab4f8;
+        margin-bottom: 6px;
+      }
+      .innovation-thesis p {
+        margin: 0;
+        color: #e2e8f0;
+        font-size: 0.92rem;
+        line-height: 1.45;
+      }
+      .hero-orbit {
+        position: relative;
+        overflow: hidden;
+      }
+      .hero-orbit::before {
+        content: "";
+        position: absolute;
+        inset: -40% -10% auto;
+        height: 180px;
+        background: radial-gradient(ellipse at center, rgba(66, 133, 244, 0.18), transparent 70%);
+        pointer-events: none;
+        animation: hubPulse 7s ease-in-out infinite;
+      }
+      @keyframes hubPulse {
+        0%, 100% { opacity: 0.55; transform: scale(1); }
+        50% { opacity: 1; transform: scale(1.08); }
+      }
+      .unit-card {
+        position: relative;
+      }
+      .mastery-ring {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        width: 36px;
+        height: 36px;
+      }
+      .mastery-ring svg {
+        width: 36px;
+        height: 36px;
+        transform: rotate(-90deg);
+      }
+      .mastery-ring text {
+        transform: rotate(90deg);
+        transform-origin: center;
+        font-size: 9px;
+        font-weight: 800;
+        fill: #cbd5e1;
+        font-family: var(--font-heading);
+      }
+      .proveit-panel {
+        margin-top: 14px;
+        padding: 16px;
+        border-radius: 14px;
+        border: 2px solid rgba(16, 185, 129, 0.45);
+        background: linear-gradient(160deg, rgba(16, 185, 129, 0.12), rgba(66, 133, 244, 0.08));
+        animation: fadeIn 0.35s ease-out;
+      }
+      .proveit-panel h4 {
+        margin: 0 0 6px;
+        font-family: var(--font-heading);
+        font-weight: 900;
+        color: #6ee7b7;
+        font-size: 1.05rem;
+      }
+      .proveit-panel p {
+        margin: 0 0 12px;
+        color: #cbd5e1;
+        font-size: 0.88rem;
+        line-height: 1.45;
+      }
+      .proveit-frames {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 10px;
+      }
+      .proveit-frames button {
+        border: 1px solid rgba(138, 180, 248, 0.35);
+        background: rgba(7, 9, 19, 0.55);
+        color: #dbeafe;
+        border-radius: 999px;
+        padding: 6px 12px;
+        font-size: 0.78rem;
+        font-family: var(--font-body);
+        cursor: pointer;
+      }
+      .proveit-frames button:hover,
+      .proveit-frames button:focus-visible {
+        border-color: #8ab4f8;
+        outline: none;
+      }
+      .proveit-panel textarea {
+        width: 100%;
+        min-height: 88px;
+        resize: vertical;
+        border-radius: 10px;
+        border: 1px solid var(--bg-panel-border);
+        background: rgba(7, 9, 19, 0.85);
+        color: var(--text-primary);
+        padding: 10px 12px;
+        font-family: var(--font-body);
+        font-size: 0.95rem;
+        line-height: 1.4;
+      }
+      .proveit-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .misconception-banner {
+        display: none;
+        margin: 0 0 12px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid rgba(245, 158, 11, 0.45);
+        background: rgba(245, 158, 11, 0.12);
+        color: #fde68a;
+        font-size: 0.84rem;
+        line-height: 1.4;
+      }
+      .misconception-banner.visible {
+        display: block;
+        animation: fadeIn 0.25s ease-out;
+      }
+      .discourse-strip {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        padding: 8px 12px;
+        border-top: 1px solid var(--bg-panel-border);
+        background: rgba(255, 255, 255, 0.02);
+      }
+      .discourse-strip button {
+        border: 1px dashed rgba(197, 138, 249, 0.4);
+        background: transparent;
+        color: #e9d5ff;
+        border-radius: 8px;
+        padding: 5px 9px;
+        font-size: 0.72rem;
+        cursor: pointer;
+        font-family: var(--font-body);
+      }
+      .lang-objective {
+        margin: 0 0 12px;
+        padding: 8px 12px;
+        border-left: 3px solid #c58af9;
+        background: rgba(197, 138, 249, 0.08);
+        color: #e9d5ff;
+        font-size: 0.8rem;
+        border-radius: 0 8px 8px 0;
+      }
+      .lang-objective strong {
+        color: #f5d0fe;
+        font-family: var(--font-heading);
+      }
+      body.focus-mode .ai-header,
+      body.focus-mode .hero,
+      body.focus-mode .stepper,
+      body.focus-mode .step-actions,
+      body.focus-mode .partnership-badges,
+      body.focus-mode .tools-toggle-btn {
+        display: none !important;
+      }
+      body.focus-mode #btn-focus-mode {
+        display: inline-flex !important;
+      }
+      body.focus-mode .hub-wrap {
+        max-width: 1280px;
+        padding-top: 12px;
+      }
+      body.focus-mode .workspace-layout {
+        gap: 18px;
+      }
+      .focus-mode-btn,
+      .voice-mic-btn {
+        border: 1px solid var(--bg-panel-border);
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--text-primary);
+        border-radius: 999px;
+        padding: 6px 12px;
+        font-size: 0.78rem;
+        font-family: var(--font-heading);
+        font-weight: 700;
+        cursor: pointer;
+      }
+      #btn-focus-mode {
+        position: fixed;
+        top: 14px;
+        right: 14px;
+        z-index: 10050;
+        background: rgba(7, 9, 19, 0.88);
+      }
+      .focus-mode-btn[aria-pressed="true"],
+      .voice-mic-btn.listening {
+        border-color: #8ab4f8;
+        color: #8ab4f8;
+        box-shadow: 0 0 0 2px rgba(138, 180, 248, 0.2);
+      }
+      .passport-card {
+        margin-top: 14px;
+        padding: 18px;
+        border-radius: 16px;
+        border: 1px solid rgba(138, 180, 248, 0.35);
+        background:
+          radial-gradient(circle at top right, rgba(66, 133, 244, 0.18), transparent 45%),
+          rgba(10, 14, 28, 0.95);
+      }
+      .passport-card h4 {
+        margin: 0 0 4px;
+        font-family: var(--font-heading);
+        font-size: 1.15rem;
+        color: #fff;
+      }
+      .passport-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 10px 0 12px;
+      }
+      .passport-meta span {
+        font-size: 0.72rem;
+        border-radius: 999px;
+        padding: 4px 10px;
+        background: rgba(255, 255, 255, 0.06);
+        color: #cbd5e1;
+        border: 1px solid var(--bg-panel-border);
+      }
+      .passport-explain {
+        margin: 0;
+        padding: 12px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.04);
+        color: #e2e8f0;
+        font-size: 0.92rem;
+        line-height: 1.5;
+        border-left: 3px solid #10b981;
+      }
+      .evidence-room {
+        margin-top: 18px;
+        padding: 16px;
+        border-radius: 14px;
+        border: 1px solid rgba(138, 180, 248, 0.25);
+        background: rgba(66, 133, 244, 0.06);
+      }
+      .evidence-room h4 {
+        margin: 0 0 8px;
+        font-family: var(--font-heading);
+        color: #8ab4f8;
+      }
+      .evidence-room pre {
+        white-space: pre-wrap;
+        word-break: break-word;
+        background: rgba(7, 9, 19, 0.75);
+        border: 1px solid var(--bg-panel-border);
+        border-radius: 10px;
+        padding: 12px;
+        color: #cbd5e1;
+        font-size: 0.78rem;
+        max-height: 220px;
+        overflow: auto;
+      }
+      @media print {
+        body.print-passport * {
+          visibility: hidden !important;
+        }
+        body.print-passport #passport-print-root,
+        body.print-passport #passport-print-root * {
+          visibility: visible !important;
+        }
+        body.print-passport #passport-print-root {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          background: #fff !important;
+          color: #111 !important;
+          padding: 24px;
+        }
+      }
+
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
       /* Calm mode: respect users who turn off motion */
       @media (prefers-reduced-motion: reduce) {
         *,
@@ -2433,6 +2748,16 @@
         </div>
       </div>
     </header>
+    <button
+      type="button"
+      class="focus-mode-btn"
+      id="btn-focus-mode"
+      aria-pressed="false"
+      title="Hide chrome for projection or deep focus"
+      onclick="toggleFocusMode()"
+    >
+      🎯 Focus Mode
+    </button>
 
     
     <!-- Math Tools Drawer (scratchpad + calculator) -->
@@ -2563,13 +2888,14 @@
 
     <div class="hub-wrap">
       <!-- Hero -->
-      <section class="hero" style="margin-bottom: 24px; text-align: center">
+      <section class="hero hero-orbit" style="margin-bottom: 24px; text-align: center">
         <h2
           style="
             font-family: var(--font-heading);
             font-size: clamp(1.8rem, 4vw, 2.5rem);
             font-weight: 900;
             margin: 0 0 8px;
+            position: relative;
           "
         >
           Learn Math <span>with AI</span> — the Smart Way
@@ -2581,18 +2907,30 @@
             max-width: 600px;
             margin: 0 auto;
             color: var(--text-secondary);
+            position: relative;
           "
         >
           Build a smart AI prompt, then solve math step by step with a
           practice tutor. Made for Mr. Neft's Grade 6 math classes — works
           with Gemini, ChatGPT, or any AI tool.
         </p>
+        <div class="innovation-thesis" role="note" aria-label="Innovation model">
+          <strong>Innovation model · Prove → Picture → Passport</strong>
+          <p>
+            Students coach an AI tutor with a learning-safe prompt, solve with a
+            step-synced visual model, then prove understanding in their own words.
+            The Learning Passport becomes evidence for families, teachers, and awards —
+            not just a completed checkbox.
+          </p>
+        </div>
       </section>
 
       <section
         class="ai101-studio hub-tab-panel"
         id="ai101"
         aria-labelledby="ai101-title"
+        aria-hidden="true"
+        inert
       >
         <div class="ai101-header">
           <div>
@@ -5768,6 +6106,10 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
           completedStepsByUnit: {},
           lastVisited: { unitId: 1, exampleIndex: 0, timestamp: Date.now() }
         },
+        teachBacks: {},
+        evidenceLog: [],
+        attemptLog: {},
+        focusMode: false,
         logs: []
       };
 
@@ -5830,6 +6172,24 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
             return null;
           } catch (e) {
             return null;
+          }
+        },
+
+        saveTeachBacks() {
+          try {
+            localStorage.setItem("ai-hub-teachbacks", JSON.stringify(STATE.teachBacks || {}));
+            localStorage.setItem("ai-hub-evidence-log", JSON.stringify(STATE.evidenceLog || []));
+          } catch (e) {}
+        },
+        loadTeachBacks() {
+          try {
+            const tb = localStorage.getItem("ai-hub-teachbacks");
+            const ev = localStorage.getItem("ai-hub-evidence-log");
+            if (tb) STATE.teachBacks = JSON.parse(tb) || {};
+            if (ev) STATE.evidenceLog = JSON.parse(ev) || [];
+          } catch (e) {
+            STATE.teachBacks = STATE.teachBacks || {};
+            STATE.evidenceLog = STATE.evidenceLog || [];
           }
         },
         saveEsolLevel(level) {
@@ -5950,9 +6310,17 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
             }
           }
 
-          document.querySelectorAll(".step-panel").forEach(p => p.classList.remove("active"));
+          document.querySelectorAll(".step-panel").forEach((p) => {
+            p.classList.remove("active");
+            p.setAttribute("aria-hidden", "true");
+            p.setAttribute("inert", "");
+          });
           const panel = document.getElementById("panel-" + stepNum);
-          if (panel) panel.classList.add("active");
+          if (panel) {
+            panel.classList.add("active");
+            panel.setAttribute("aria-hidden", "false");
+            panel.removeAttribute("inert");
+          }
 
           if (stepNum === 2) {
             UI.renderUnitGrid();
@@ -6003,6 +6371,9 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
         resetProgress() {
           if (confirm("Are you sure you want to reset all progress? This cannot be undone.")) {
             STATE.completedChallenges = {};
+            STATE.teachBacks = {};
+            STATE.evidenceLog = [];
+            STATE.attemptLog = {};
             STATE.studentProgress = {
               activeUnit: 1,
               completedUnits: [],
@@ -6011,6 +6382,7 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
             };
             Repository.saveProgress();
             Repository.saveStudentProgress();
+            Repository.saveTeachBacks();
             UI.renderUI();
             if (document.getElementById("panel-2").classList.contains("active")) {
               UI.renderUnitGrid();
@@ -6180,8 +6552,18 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
           const showAi101 = tabName === "ai101";
           const ai101El = document.getElementById("ai101");
           const geminiEl = document.getElementById("gemini-tools");
-          if (ai101El) ai101El.classList.toggle("active", showAi101);
-          if (geminiEl) geminiEl.classList.toggle("active", !showAi101);
+          if (ai101El) {
+            ai101El.classList.toggle("active", showAi101);
+            ai101El.setAttribute("aria-hidden", showAi101 ? "false" : "true");
+            if (showAi101) ai101El.removeAttribute("inert");
+            else ai101El.setAttribute("inert", "");
+          }
+          if (geminiEl) {
+            geminiEl.classList.toggle("active", !showAi101);
+            geminiEl.setAttribute("aria-hidden", showAi101 ? "true" : "false");
+            if (showAi101) geminiEl.setAttribute("inert", "");
+            else geminiEl.removeAttribute("inert");
+          }
         },
         renderProgressDashboard() {
           const container = document.getElementById("student-progress-dashboard");
@@ -6249,7 +6631,7 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
               <div style="flex: 1; min-width: 250px;">
                 <h4 style="margin: 0 0 4px; font-family: var(--font-heading); font-weight: 800; font-size: 1.15rem; color: #fff;">Student Progress Tracker 🌟</h4>
                 <p style="margin: 0 0 12px; font-size: 0.88rem; color: var(--text-secondary);">
-                  Completed Challenges: <strong style="color: #10b981;">${totalCompleted} / 50</strong> | Completed Units: <strong style="color: #8ab4f8;">${completedUnitList.length} / 10</strong>
+                  Completed Challenges: <strong style="color: #10b981;">${totalCompleted} / 50</strong> | Units: <strong style="color: #8ab4f8;">${completedUnitList.length} / 10</strong> | Passports: <strong style="color: #c58af9;">${Object.keys(STATE.teachBacks || {}).length}</strong>
                 </p>
                 <div style="display: flex; gap: 4px; flex-wrap: wrap;">
                   ${Array.from({ length: 10 }, (_, i) => {
@@ -6302,7 +6684,18 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
               Controller.goToStep(3);
             };
             
+            const doneCount = (STATE.completedChallenges[key] || []).filter(Boolean).length;
+            const pct = Math.round((doneCount / 5) * 100);
+            const circ = 2 * Math.PI * 14;
+            const dash = (pct / 100) * circ;
             card.innerHTML = `
+              <div class="mastery-ring" aria-hidden="true" title="${doneCount}/5 challenges">
+                <svg viewBox="0 0 36 36">
+                  <circle cx="18" cy="18" r="14" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="3"></circle>
+                  <circle cx="18" cy="18" r="14" fill="none" stroke="${doneCount === 5 ? '#10b981' : '#8ab4f8'}" stroke-width="3" stroke-linecap="round" stroke-dasharray="${dash} ${circ}"></circle>
+                  <text x="18" y="18" text-anchor="middle" dominant-baseline="central">${doneCount}/5</text>
+                </svg>
+              </div>
               <span class="unit-card-num">Unit ${key}</span>
               <h4 class="unit-card-title">${u.name.split(': ')[1]}</h4>
               <span class="unit-card-desc">${u.topic}</span>
@@ -6396,6 +6789,10 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
                     </div>
                     <p class="math-problem" id="current-math-problem">${data.examples[STATE.selectedExample].mathProblem}</p>
                   </div>
+                  <div class="lang-objective" id="lang-objective" aria-live="polite">
+                    <strong>Language goal:</strong> ${getLanguageObjective(STATE.selectedUnit, STATE.esolLevel)}
+                  </div>
+                  <div class="misconception-banner" id="misconception-banner" role="status" aria-live="polite"></div>
                   
                   <div class="builder-section" id="prompt-builder-area">
                     <h4 class="visual-options-title">Build your AI Math Buddy — 3 quick picks:</h4>
@@ -6448,8 +6845,15 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
                     </div>
                     <div class="chat-box" id="chat-log" style="max-height: 380px; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 12px;"></div>
                     <div class="chat-input-bar">
-                      <input type="text" id="chat-input" class="chat-text-input" placeholder="Type your math answer here..." onkeydown="handleChatKeyDown(event)" />
+                      <input type="text" id="chat-input" class="chat-text-input" placeholder="Type your math answer here..." onkeydown="handleChatKeyDown(event)" aria-label="Your math answer" />
+                      <button type="button" class="voice-mic-btn" id="btn-voice-answer" title="Speak your answer" aria-label="Speak your answer" onclick="toggleVoiceInput('chat-input', this)">🎤</button>
                       <button class="chat-send-btn" onclick="sendChatAnswer()">Send</button>
+                    </div>
+                    <div class="discourse-strip" aria-label="Sentence frames for math talk">
+                      <button type="button" onclick="insertDiscourseFrame('I think the answer is ___ because...')">I think… because…</button>
+                      <button type="button" onclick="insertDiscourseFrame('First I ___, then I ___.')">First… then…</button>
+                      <button type="button" onclick="insertDiscourseFrame('The picture shows ___, so ___')">Picture shows…</button>
+                      <button type="button" onclick="insertDiscourseFrame('My estimate is ___')">Estimate…</button>
                     </div>
                     <div class="chat-helpers">
                       <button class="helper-btn" onclick="revealHint()">❓ Need a Hint?</button>
@@ -6633,6 +7037,7 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
             `;
             
             updateTeacherPrompt();
+            renderTeacherEvidenceRoom(container);
           }
         },
         renderUI() {
@@ -7077,6 +7482,8 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
           }
 
           if (isCorrect) {
+            recordAttempt(text, true);
+            hideMisconceptionBanner();
             STATE.currentDialogueIndex++;
             updateDialogueStepper();
             drawVisualModel(STATE.currentDialogueIndex);
@@ -7087,12 +7494,6 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
               const adaptedQ = adaptTutorMessage(rawQ, STATE.promptSelections.role, STATE.promptSelections.help);
               appendTutorMessage("bot", adaptedQ);
             } else {
-              if (!STATE.completedChallenges[STATE.selectedUnit]) {
-                STATE.completedChallenges[STATE.selectedUnit] = [false, false, false, false, false];
-              }
-              STATE.completedChallenges[STATE.selectedUnit][STATE.selectedExample] = true;
-              Repository.saveProgress();
-
               const canvasSvg = document.querySelector(
                 "#svg-canvas-container svg",
               );
@@ -7100,23 +7501,32 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
                 canvasSvg.classList.add("success-glow");
               }
 
-              appendTutorMessage("bot", "🎉 You solved it! Look at the finished picture. Tap the next letter (A–E) up top for a new challenge.");
+              appendTutorMessage(
+                "bot",
+                "🎉 You solved the math! One more award-winning move: <strong>Prove It</strong> — explain the picture in your own words so we can stamp your Learning Passport."
+              );
               const inputBar = document.querySelector(".chat-input-bar");
               if (inputBar) inputBar.style.display = "none";
+              const discourse = document.querySelector(".discourse-strip");
+              if (discourse) discourse.style.display = "none";
               const helpers = document.querySelector(".chat-helpers");
               if (helpers) {
                 helpers.innerHTML = `
-                  <div style="color:var(--success); font-weight:800; font-size:1rem; text-align:center; padding:10px; border: 1px dashed rgba(16,185,129,0.3); border-radius:8px; width: 100%;">
-                    🌟 Challenge Completed! You worked through the math problem step-by-step.
+                  <div style="color:var(--success); font-weight:800; font-size:0.95rem; text-align:center; padding:8px; border: 1px dashed rgba(16,185,129,0.3); border-radius:8px; width: 100%;">
+                    Math complete ✓ — finish your Prove-It Passport below.
                   </div>
                 `;
               }
-              
-              setTimeout(() => {
-                UI.renderWorkspace();
-              }, 2000);
+              showProveItGate();
             }
           } else {
+            recordAttempt(text, false);
+            const misconception = detectMisconception(text, dialogue);
+            if (misconception) {
+              showMisconceptionBanner(misconception);
+              drawVisualModel(STATE.currentDialogueIndex);
+            }
+
             // Try the REAL AI tutor first (Claude Haiku via /api/tutor). It
             // reads the student's own words and replies like a warm Grade 6
             // Socratic tutor, adapting to a wrong answer or confusion. Falls back
@@ -7129,7 +7539,10 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
             }
 
             if (aiReply) {
-              appendTutorMessage("bot", aiReply);
+              const boost = misconception
+                ? `<br><br><strong>Misconception radar:</strong> ${misconception.coach}`
+                : "";
+              appendTutorMessage("bot", aiReply + boost);
             } else {
               let responseText = "";
               const userVal = parseFloat(text.replace(/[^0-9.]/g, ""));
@@ -7809,44 +8222,9 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
           });
         }
 
-        // Add Step 4: Explain-Back / Reflection
-        let qReflect = "";
-        if (unitNum === 1) {
-          qReflect =
-            "Superb job! In your own words, explain how we find the greatest common factor or how we multiply decimals.";
-        } else if (unitNum === 2) {
-          qReflect =
-            "Excellent division! In your own words, explain the 'Keep-Change-Flip' rule for dividing fractions.";
-        } else if (unitNum === 3) {
-          qReflect =
-            "Wonderful ratio scaling! Explain why finding the 'unit rate' (the cost or rate for 1 item) makes it easier to scale ratios.";
-        } else if (unitNum === 4) {
-          qReflect =
-            "Percent wizard! In your own words, explain what a percentage is or how you find 10% of any number quickly.";
-        } else if (unitNum === 5) {
-          qReflect =
-            "Geometry star! Explain why we can decompose a composite polygon into rectangles to find its total area.";
-        } else if (unitNum === 6) {
-          qReflect = "Volume explorer! Explain the difference between volume (space inside) and surface area (area of the outside net).";
-        } else if (unitNum === 7) {
-          qReflect =
-            "Algebra master! Why must we perform the exact same operation on *both* sides of the equation when solving?";
-        } else if (unitNum === 8) {
-          qReflect =
-            "Statistics analyst! Explain the difference between finding the average (mean) and finding the middle number (median).";
-        } else if (unitNum === 9) {
-          qReflect =
-            "Coordinate navigator! In your own words, explain what happens to a coordinate when we reflect it across the x-axis.";
-        } else {
-          qReflect = "Financial literacy expert! Explain how we calculate a sales tax or a discount, and how they affect the total price.";
-        }
-
-        steps.push({
-          q: qReflect,
-          expected: [""],
-          hint: "Just write a short explanation of your understanding!",
-        });
-
+        // Teach-back moved to the Prove-It Passport gate (award evidence).
+        // Keeping an open-ended chat reflection with expected:[""] previously
+        // blocked completion because mathAnswerMatches never accepted "".
         return steps;
       }
 
@@ -8823,6 +9201,494 @@ Instructions:
         captionEl.innerHTML = msg;
       }
 
+
+      // ============================================================================
+      // AWARD LAYER — Prove-It Passport, misconception radar, discourse, focus
+      // ============================================================================
+      function getLanguageObjective(unitNum, esolLevel) {
+        const goals = {
+          1: "Explain place value and why a decimal answer makes sense.",
+          2: "Describe fraction division using keep-change-flip language.",
+          3: "Compare ratios with a complete sentence using 'for every'.",
+          4: "Explain a percent as parts out of 100 with a real-world example.",
+          5: "Justify an area by naming the shapes you composed or decomposed.",
+          6: "Distinguish volume (space inside) from surface area (wrapping).",
+          7: "Explain inverse operations that keep an equation balanced.",
+          8: "Compare mean and median and say which fits the story better.",
+          9: "Describe a point's location using axis language (x, y, quadrant).",
+          10: "Explain a money calculation using deposit, tax, or interest words."
+        };
+        const base = goals[unitNum] || "Explain your math thinking in complete sentences.";
+        if (esolLevel <= 1) {
+          return base + " / Explica tu pensamiento con oraciones completas. You may mix English + Spanish.";
+        }
+        if (esolLevel === 2) {
+          return base + " Use the word bank if you get stuck.";
+        }
+        if (esolLevel === 3) {
+          return base + " Start with a sentence frame, then add details.";
+        }
+        return base + " Use precise academic vocabulary.";
+      }
+
+      function insertDiscourseFrame(frame) {
+        const input = document.getElementById("chat-input");
+        if (!input) return;
+        input.value = frame;
+        input.focus();
+        const marker = frame.indexOf("___");
+        if (marker >= 0 && input.setSelectionRange) {
+          input.setSelectionRange(marker, marker + 3);
+        }
+      }
+
+      function challengeKey(unit, example) {
+        return `${unit}-${example}`;
+      }
+
+      function recordAttempt(text, correct) {
+        const key = challengeKey(STATE.selectedUnit, STATE.selectedExample);
+        if (!STATE.attemptLog[key]) STATE.attemptLog[key] = [];
+        STATE.attemptLog[key].push({
+          text: String(text || "").slice(0, 120),
+          correct: !!correct,
+          step: STATE.currentDialogueIndex,
+          at: Date.now()
+        });
+        if (STATE.attemptLog[key].length > 12) {
+          STATE.attemptLog[key] = STATE.attemptLog[key].slice(-12);
+        }
+      }
+
+      function detectMisconception(userText, dialogue) {
+        const raw = String(userText || "");
+        const userVal = parseMathValue(raw);
+        const expectedList = (dialogue && dialogue.expected) || [];
+        const expectedVal = expectedList.length ? parseMathValue(expectedList[0]) : null;
+        const unit = STATE.selectedUnit;
+
+        if (userVal !== null && expectedVal !== null) {
+          if (userVal === expectedVal * 10 || userVal === expectedVal * 100) {
+            return {
+              id: "place-value-right",
+              title: "Place-value shift",
+              coach: "Your digits look right, but the decimal point slid. Check place value in the picture.",
+              visualHint: "decimal"
+            };
+          }
+          if (userVal === expectedVal / 10 || userVal === expectedVal / 100) {
+            return {
+              id: "place-value-left",
+              title: "Decimal moved too far",
+              coach: "It looks like the decimal moved too far left. Re-count the place-value spots.",
+              visualHint: "decimal"
+            };
+          }
+          if (Math.abs(userVal - expectedVal) < 1e-9) {
+            return null;
+          }
+        }
+
+        // Unit-specific linguistic / conceptual patterns
+        const lower = raw.toLowerCase();
+        if (unit === 2 && (lower.includes("multiply both") || lower.includes("keep keep") || lower.includes("flip both"))) {
+          return {
+            id: "kcf-both",
+            title: "Keep-Change-Flip mix-up",
+            coach: "Remember: keep the first fraction, change ÷ to ×, flip only the second fraction.",
+            visualHint: "fraction"
+          };
+        }
+        if (unit === 3 && (lower.includes("add") || lower.includes("subtract")) && expectedVal !== null) {
+          return {
+            id: "ratio-as-add",
+            title: "Ratio treated like addition",
+            coach: "Ratios scale by multiplying or dividing both parts together — not by adding a number to only one side.",
+            visualHint: "ratio"
+          };
+        }
+        if (unit === 4 && userVal !== null && expectedVal !== null && Math.abs(userVal - expectedVal * 100) < 0.01) {
+          return {
+            id: "percent-as-whole",
+            title: "Percent / whole confusion",
+            coach: "A percent is out of 100. Convert to a decimal or use a 100-grid before multiplying.",
+            visualHint: "percent"
+          };
+        }
+        if (unit === 7 && (lower.includes("only one side") || lower.includes("just subtract") || lower.includes("just add"))) {
+          return {
+            id: "balance-one-side",
+            title: "Unbalanced equation move",
+            coach: "Whatever you do to one side, do to the other — keep the seesaw balanced.",
+            visualHint: "balance"
+          };
+        }
+        if (unit === 8 && (lower.includes("mean is middle") || lower.includes("median is average"))) {
+          return {
+            id: "mean-median-swap",
+            title: "Mean / median swap",
+            coach: "Mean = fair share (add & divide). Median = middle value after sorting.",
+            visualHint: "stats"
+          };
+        }
+        if (unit === 9 && (lower.includes("x is up") || lower.includes("y is across"))) {
+          return {
+            id: "axis-swap",
+            title: "Axis language swap",
+            coach: "x moves left/right (across). y moves up/down.",
+            visualHint: "coord"
+          };
+        }
+
+        // Generic near-miss: off by common factor
+        if (userVal !== null && expectedVal !== null && expectedVal !== 0) {
+          const ratio = userVal / expectedVal;
+          if (Math.abs(ratio - 2) < 0.01 || Math.abs(ratio - 0.5) < 0.01) {
+            return {
+              id: "factor-of-two",
+              title: "Off by a factor of 2",
+              coach: "You're close — check whether you doubled or halved a step in the picture.",
+              visualHint: "scale"
+            };
+          }
+        }
+        return null;
+      }
+
+      function showMisconceptionBanner(m) {
+        const el = document.getElementById("misconception-banner");
+        if (!el || !m) return;
+        el.classList.add("visible");
+        el.innerHTML = `<strong>🎯 Misconception radar — ${m.title}:</strong> ${m.coach}`;
+      }
+
+      function hideMisconceptionBanner() {
+        const el = document.getElementById("misconception-banner");
+        if (!el) return;
+        el.classList.remove("visible");
+        el.textContent = "";
+      }
+
+      function getProveItFrames(unitNum, esolLevel) {
+        const frames = {
+          1: [
+            "I multiplied ___ × ___ and got ___ because ___",
+            "The picture shows ___ groups of ___, so the product is ___",
+            "I checked place value by ___"
+          ],
+          2: [
+            "I kept ___, changed to multiply, and flipped ___ to get ___",
+            "Dividing by a fraction means ___ because ___",
+            "The bars show ___ wholes cut into ___ pieces"
+          ],
+          3: [
+            "For every ___ there are ___, so the rate is ___",
+            "I scaled the ratio by multiplying both parts by ___",
+            "The double number line shows ___"
+          ],
+          4: [
+            "___% of ___ is ___ because I ___",
+            "As a decimal, ___% is ___, then I multiplied ___",
+            "On a 100-grid, ___ means ___ shaded squares"
+          ],
+          5: [
+            "I decomposed the shape into ___ and ___, then added the areas",
+            "Area = ___ because length ___ × width ___",
+            "The grid shows ___ square units"
+          ],
+          6: [
+            "Volume is ___ because ___ × ___ × ___",
+            "Surface area adds the faces: ___",
+            "The net unfolds into ___ faces totaling ___"
+          ],
+          7: [
+            "I used inverse operations: first ___, then ___",
+            "Both sides stay balanced when I ___",
+            "Solving for the variable means ___"
+          ],
+          8: [
+            "The mean is ___ because I ___",
+            "The median is ___ after sorting ___",
+            "I chose ___ as the better measure because ___"
+          ],
+          9: [
+            "The point (___, ___) is in quadrant ___ because ___",
+            "Moving ___ on x and ___ on y lands at ___",
+            "A reflection across the ___ axis changes ___ to ___"
+          ],
+          10: [
+            "The total is ___ because base ___ plus/minus ___",
+            "Interest/tax of ___% on ___ equals ___",
+            "I checked the ledger by ___"
+          ]
+        };
+        const list = frames[unitNum] || [
+          "I got ___ because ___",
+          "The picture shows ___, so ___",
+          "First I ___, then I ___"
+        ];
+        if (esolLevel <= 2) return list.slice(0, 2);
+        return list;
+      }
+
+      function showProveItGate() {
+        const chat = document.getElementById("chat-console");
+        if (!chat) return;
+        let panel = document.getElementById("proveit-panel");
+        if (panel) panel.remove();
+
+        const frames = getProveItFrames(STATE.selectedUnit, STATE.esolLevel);
+        panel = document.createElement("div");
+        panel.id = "proveit-panel";
+        panel.className = "proveit-panel";
+        panel.setAttribute("role", "region");
+        panel.setAttribute("aria-label", "Prove-It Learning Passport");
+        panel.innerHTML = `
+          <h4>🛂 Prove-It Passport</h4>
+          <p>
+            Awards and teachers care about <em>evidence of understanding</em>, not just a correct number.
+            Use a sentence frame, then explain the finished picture in your own words.
+            ${STATE.esolLevel <= 1 ? "<span class='ai101-es'>Puedes escribir en inglés, español, o ambos.</span>" : ""}
+          </p>
+          <div class="proveit-frames">
+            ${frames.map((f) => `<button type="button" onclick="fillProveItFrame(${JSON.stringify(f)})">${f.replace(/</g, "&lt;")}</button>`).join("")}
+          </div>
+          <label for="proveit-text" class="sr-only">Your teach-back explanation</label>
+          <textarea id="proveit-text" maxlength="600" placeholder="Explain what the picture shows and how you know the answer is correct..."></textarea>
+          <div class="proveit-actions">
+            <button type="button" class="voice-mic-btn" onclick="toggleVoiceInput('proveit-text', this)">🎤 Speak explanation</button>
+            <button type="button" class="role-btn" style="background: var(--button-solid); color:#fff; border:none; padding:10px 16px; border-radius:8px; font-weight:800; cursor:pointer;" onclick="submitProveIt()">Stamp my Passport</button>
+          </div>
+          <div id="proveit-feedback" style="margin-top:10px; font-size:0.85rem; color:#fbbf24;"></div>
+        `;
+        chat.appendChild(panel);
+        const ta = document.getElementById("proveit-text");
+        if (ta) ta.focus();
+      }
+
+      function fillProveItFrame(frame) {
+        const ta = document.getElementById("proveit-text");
+        if (!ta) return;
+        ta.value = frame;
+        ta.focus();
+      }
+
+      function scoreTeachBack(text) {
+        const t = String(text || "").trim();
+        const words = t.split(/\s+/).filter(Boolean);
+        if (words.length < 6) {
+          return { ok: false, reason: "Add a few more words — explain the picture, not just the number." };
+        }
+        const hasBlank = /_{2,}/.test(t) || /\b___\b/.test(t);
+        if (hasBlank) {
+          return { ok: false, reason: "Replace the blanks (___) with your own numbers and words." };
+        }
+        const mathish = /[0-9]|because|picture|first|then|multiply|divide|add|subtract|ratio|percent|area|volume|mean|median|quadrant|tax|interest|porque|entonces|multiplic/i.test(t);
+        if (!mathish) {
+          return { ok: false, reason: "Name a number or math idea from the picture (because / first / then / area…)." };
+        }
+        return { ok: true };
+      }
+
+      function submitProveIt() {
+        const ta = document.getElementById("proveit-text");
+        const fb = document.getElementById("proveit-feedback");
+        if (!ta) return;
+        const explanation = ta.value.trim();
+        const scored = scoreTeachBack(explanation);
+        if (!scored.ok) {
+          if (fb) fb.textContent = scored.reason;
+          ta.focus();
+          return;
+        }
+
+        if (!STATE.completedChallenges[STATE.selectedUnit]) {
+          STATE.completedChallenges[STATE.selectedUnit] = [false, false, false, false, false];
+        }
+        STATE.completedChallenges[STATE.selectedUnit][STATE.selectedExample] = true;
+        Repository.saveProgress();
+
+        const data = UNIT_DATA[STATE.selectedUnit];
+        const ex = data.examples[STATE.selectedExample];
+        const key = challengeKey(STATE.selectedUnit, STATE.selectedExample);
+        const entry = {
+          unit: STATE.selectedUnit,
+          example: STATE.selectedExample,
+          unitName: data.name,
+          skill: ex.skill || "",
+          problem: ex.mathProblem,
+          standard: ex.ccss,
+          explanation,
+          attempts: (STATE.attemptLog[key] || []).length,
+          stampedAt: new Date().toISOString(),
+          esolLevel: STATE.esolLevel
+        };
+        STATE.teachBacks[key] = entry;
+        STATE.evidenceLog = (STATE.evidenceLog || []).filter((e) => e.key !== key);
+        STATE.evidenceLog.unshift({ key, ...entry });
+        if (STATE.evidenceLog.length > 40) STATE.evidenceLog = STATE.evidenceLog.slice(0, 40);
+        Repository.saveTeachBacks();
+
+        renderPassportCard(entry);
+        if (fb) fb.style.color = "#6ee7b7";
+        if (fb) fb.textContent = "Passport stamped! Your explanation is saved as learning evidence.";
+        appendTutorMessage(
+          "bot",
+          "🛂 Passport stamped. You didn't just get the answer — you can teach it. Tap the next letter (A–E) when you're ready."
+        );
+
+        setTimeout(() => {
+          UI.renderWorkspace();
+        }, 3200);
+      }
+
+      function renderPassportCard(entry) {
+        const panel = document.getElementById("proveit-panel");
+        if (!panel || !entry) return;
+        const when = new Date(entry.stampedAt).toLocaleString();
+        panel.innerHTML = `
+          <div class="passport-card" id="passport-print-root">
+            <h4>Learning Passport · EduWonderLab</h4>
+            <p style="margin:0; color:#94a3b8; font-size:0.8rem;">Prove → Picture → Passport evidence card</p>
+            <div class="passport-meta">
+              <span>${entry.unitName}</span>
+              <span>${entry.skill || "Challenge " + String.fromCharCode(65 + entry.example)}</span>
+              <span>${entry.standard}</span>
+              <span>${when}</span>
+            </div>
+            <p style="margin:0 0 8px; color:#cbd5e1; font-size:0.85rem;"><strong>Problem:</strong> ${escapeForAttr(entry.problem).replace(/&quot;/g, '"')}</p>
+            <p class="passport-explain"><strong>Student teach-back:</strong> ${escapeForAttr(entry.explanation).replace(/&quot;/g, '"')}</p>
+            <div class="proveit-actions">
+              <button type="button" class="role-btn" style="background:rgba(255,255,255,0.06); color:#fff; border:1px solid var(--bg-panel-border); padding:8px 14px; border-radius:8px; font-weight:700; cursor:pointer;" onclick="printPassport()">🖨️ Print / Save PDF</button>
+              <button type="button" class="role-btn" style="background:rgba(255,255,255,0.06); color:#fff; border:1px solid var(--bg-panel-border); padding:8px 14px; border-radius:8px; font-weight:700; cursor:pointer;" onclick="copyPassportText()">📋 Copy evidence</button>
+            </div>
+          </div>
+        `;
+      }
+
+      function printPassport() {
+        document.body.classList.add("print-passport");
+        window.print();
+        setTimeout(() => document.body.classList.remove("print-passport"), 400);
+      }
+
+      function copyPassportText() {
+        const entry = STATE.teachBacks[challengeKey(STATE.selectedUnit, STATE.selectedExample)];
+        if (!entry) return;
+        const text = `EduWonderLab Learning Passport\n${entry.unitName}\n${entry.standard}\nProblem: ${entry.problem}\nTeach-back: ${entry.explanation}\nStamped: ${entry.stampedAt}`;
+        safeCopyText(text);
+      }
+
+      function toggleFocusMode() {
+        STATE.focusMode = !STATE.focusMode;
+        document.body.classList.toggle("focus-mode", STATE.focusMode);
+        const btn = document.getElementById("btn-focus-mode");
+        if (btn) {
+          btn.setAttribute("aria-pressed", STATE.focusMode ? "true" : "false");
+          btn.textContent = STATE.focusMode ? "🎯 Exit Focus" : "🎯 Focus Mode";
+        }
+      }
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && STATE.focusMode) {
+          toggleFocusMode();
+        }
+      });
+
+      let _voiceRec = null;
+      function toggleVoiceInput(targetId, btn) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+          alert("Voice input is not supported in this browser. You can still type your answer.");
+          return;
+        }
+        if (_voiceRec) {
+          try { _voiceRec.stop(); } catch (_) {}
+          _voiceRec = null;
+          if (btn) btn.classList.remove("listening");
+          return;
+        }
+        const rec = new SpeechRecognition();
+        rec.lang = STATE.esolLevel <= 1 ? "en-US" : "en-US";
+        rec.interimResults = false;
+        rec.maxAlternatives = 1;
+        rec.onresult = (event) => {
+          const said = event.results[0][0].transcript;
+          const el = document.getElementById(targetId);
+          if (el) {
+            el.value = ((el.value || "") + " " + said).trim();
+            el.dispatchEvent(new Event("input", { bubbles: true }));
+          }
+        };
+        rec.onerror = () => {
+          if (btn) btn.classList.remove("listening");
+          _voiceRec = null;
+        };
+        rec.onend = () => {
+          if (btn) btn.classList.remove("listening");
+          _voiceRec = null;
+        };
+        _voiceRec = rec;
+        if (btn) btn.classList.add("listening");
+        rec.start();
+      }
+
+      function buildEvidenceBrief() {
+        const stamped = Object.values(STATE.teachBacks || {});
+        const completed = Object.values(STATE.completedChallenges || {}).reduce(
+          (n, arr) => n + (arr || []).filter(Boolean).length,
+          0
+        );
+        const lines = [
+          "EduWonderLab AI Learning Hub — Evidence Brief",
+          "Innovation thesis: Prove → Picture → Passport",
+          `Challenges completed (device): ${completed} / 50`,
+          `Teach-backs stamped: ${stamped.length}`,
+          `Generated: ${new Date().toISOString()}`,
+          "",
+          "Privacy: no student names are stored. This brief is device-local evidence.",
+          ""
+        ];
+        stamped.slice(0, 12).forEach((e, i) => {
+          lines.push(`${i + 1}. ${e.unitName} · ${e.standard}`);
+          lines.push(`   Problem: ${e.problem}`);
+          lines.push(`   Teach-back: ${e.explanation}`);
+          lines.push("");
+        });
+        if (!stamped.length) {
+          lines.push("No passports stamped yet. After students solve, they must Prove It in their own words.");
+        }
+        return lines.join("\n");
+      }
+
+      function renderTeacherEvidenceRoom(container) {
+        if (!container) return;
+        const room = document.createElement("div");
+        room.className = "evidence-room";
+        room.innerHTML = `
+          <h4>🏆 Award Evidence Room</h4>
+          <p style="margin:0 0 10px; color:var(--text-secondary); font-size:0.88rem;">
+            Export anonymized Learning Passports for PAEMST / TESOL / QS-style narratives.
+            Students must teach back before a challenge counts as complete — that is the innovation claim judges can verify.
+          </p>
+          <pre id="evidence-brief-pre">${buildEvidenceBrief().replace(/</g, "&lt;")}</pre>
+          <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">
+            <button type="button" class="role-btn" style="background:var(--button-solid); color:#fff; border:none; padding:8px 14px; border-radius:8px; font-weight:700; cursor:pointer;" onclick="refreshEvidenceBrief()">🔄 Refresh</button>
+            <button type="button" class="role-btn" style="background:rgba(255,255,255,0.06); color:#fff; border:1px solid var(--bg-panel-border); padding:8px 14px; border-radius:8px; font-weight:700; cursor:pointer;" onclick="copyEvidenceBrief()">📋 Copy brief</button>
+          </div>
+        `;
+        container.appendChild(room);
+      }
+
+      function refreshEvidenceBrief() {
+        const pre = document.getElementById("evidence-brief-pre");
+        if (pre) pre.textContent = buildEvidenceBrief();
+      }
+
+      function copyEvidenceBrief() {
+        safeCopyText(buildEvidenceBrief());
+      }
+
       // ============================================================================
       // CONTROLLER IMPLEMENTATION (ai101, deep links, diagnostics)
       // ============================================================================
@@ -9109,6 +9975,16 @@ Instructions:
       window.selectRole = (role) => Controller.selectRole(role);
       window.goToStep = (step) => Controller.goToStep(step);
       window.showHubTab = (name) => UI.showHubTab(name);
+      window.toggleFocusMode = toggleFocusMode;
+      window.toggleVoiceInput = toggleVoiceInput;
+      window.insertDiscourseFrame = insertDiscourseFrame;
+      window.fillProveItFrame = fillProveItFrame;
+      window.submitProveIt = submitProveIt;
+      window.printPassport = printPassport;
+      window.copyPassportText = copyPassportText;
+      window.refreshEvidenceBrief = refreshEvidenceBrief;
+      window.copyEvidenceBrief = copyEvidenceBrief;
+      window.showProveItGate = showProveItGate;
       window.ai101ShowModule = (n) => Controller.ai101ShowModule(n);
       window.ai101ToggleTheme = () => Controller.ai101ToggleTheme();
       window.ai101Detective = (btn, fb) => Controller.ai101Detective(btn, fb);
@@ -9143,6 +10019,7 @@ Instructions:
           // Completed challenges live under their own key, not inside
           // studentProgress -- load them here so progress survives a reload.
           Repository.loadProgress();
+          Repository.loadTeachBacks();
         } catch (e) {
           console.error("Initialization check failed: " + e.message);
         }
