@@ -24,28 +24,251 @@
     <!-- nsr-injected:end -->
   </head>
   <body>
+    <style>
+      .arcade-hero-shell {
+        background: radial-gradient(120% 100% at 50% 0%, #1e1b4b 0%, #0f172a 60%, #020617 100%);
+        border: 1px solid rgba(139, 92, 246, 0.3);
+        border-radius: 24px;
+        padding: clamp(24px, 4vw, 40px);
+        color: #f8fafc;
+        margin-bottom: 28px;
+        box-shadow: 0 20px 50px rgba(15, 23, 42, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        position: relative;
+        overflow: hidden;
+      }
+      .arcade-hero-shell::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.15), transparent 40%),
+                    radial-gradient(circle at 20% 80%, rgba(56, 189, 248, 0.15), transparent 40%);
+        pointer-events: none;
+      }
+      .arcade-hero-grid {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 24px;
+        align-items: center;
+      }
+      @media (max-width: 768px) {
+        .arcade-hero-grid { grid-template-columns: 1fr; }
+      }
+      .arcade-title-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(236, 72, 153, 0.25));
+        border: 1px solid rgba(167, 139, 250, 0.4);
+        padding: 4px 14px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: #ddd6fe;
+        margin-bottom: 12px;
+      }
+      .arcade-hero-shell h1 {
+        font-size: clamp(2.2rem, 5vw, 3.4rem);
+        font-weight: 900;
+        line-height: 1.1;
+        background: linear-gradient(135deg, #ffffff 30%, #c084fc 70%, #f472b6 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 12px;
+        letter-spacing: -0.02em;
+      }
+      .arcade-hero-copy {
+        font-size: 1.05rem;
+        color: #cbd5e1;
+        max-width: 65ch;
+        line-height: 1.6;
+
+      }
+      .arcade-stats-strip {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-top: 18px;
+      }
+      .arcade-stat-chip {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(30, 41, 59, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 6px 14px;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #e2e8f0;
+      }
+      .arcade-stat-chip strong {
+        color: #38bdf8;
+      }
+
+      /* Filter Toolbar */
+      .arcade-filter-bar {
+        background: rgba(15, 23, 42, 0.8);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 12px;
+        margin-bottom: 24px;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        sticky-top: 12px;
+      }
+      .arcade-search-box {
+        flex: 1;
+        min-width: 220px;
+        position: relative;
+      }
+      .arcade-search-box input {
+        width: 100%;
+        padding: 10px 16px 10px 38px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: rgba(30, 41, 59, 0.9);
+        color: #fff;
+        font-size: 14px;
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+      }
+      .arcade-search-box input:focus {
+        border-color: #a855f7;
+        box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.25);
+      }
+      .arcade-search-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+        pointer-events: none;
+      }
+      .arcade-pills {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .arcade-pill {
+        background: rgba(30, 41, 59, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #94a3b8;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .arcade-pill:hover, .arcade-pill.active {
+        background: linear-gradient(135deg, #8b5cf6, #ec4899);
+        border-color: transparent;
+        color: #fff;
+        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+      }
+
+      /* Card Elevate */
+      .activity-card {
+        transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease !important;
+        position: relative;
+      }
+      .activity-card:hover {
+        transform: translateY(-4px) scale(1.01) !important;
+        box-shadow: 0 12px 30px rgba(139, 92, 246, 0.25) !important;
+        border-color: rgba(167, 139, 250, 0.6) !important;
+      }
+      .activity-card .card-kicker {
+        font-weight: 800;
+        letter-spacing: 0.04em;
+      }
+    </style>
+  </head>
+  <body>
     <main class="page-shell">
-      <section class="hero compact-hero">
-        <p class="eyebrow">Play to Practice · Grade 6</p>
-        <h1>Lesson Games</h1>
-        <p class="hero-copy">
-          Interactive 2D games for small clusters of lessons — build, place, balance, and plot your
-          way through the math, with streaks and star scoring. Calm and self-paced: no timers, and
-          mistakes never end the game. Great for a warm-up, a brain break, or end-of-cluster review.
-          For a full mixed review, try the
-          <a href="/math/review-arcade/">Boss-Battle Review Arcade</a>, and teachers can track play
-          on the <a href="/math/games/dashboard/">Games Progress Dashboard</a>.
-        </p>
+      <section class="arcade-hero-shell">
+        <div class="arcade-hero-grid">
+          <div>
+            <div class="arcade-title-badge">
+              <span>🕹️ Arcade Games Hub</span>
+              <span>•</span>
+              <span>Grade 6 Math</span>
+            </div>
+            <h1>Math Arcade Games</h1>
+            <p class="arcade-hero-copy">
+              Interactive 2D review games for Grade 6 math — build factor trees, plot coordinate stars, divide fractions, balance equations, and stack 3D volume prisms. Multi-representation, calm & self-paced with zero timers.
+            </p>
+            <div class="arcade-stats-strip">
+              <div class="arcade-stat-chip">🏆 <strong>11</strong> Unit Arcade Games</div>
+              <div class="arcade-stat-chip">⭐ <strong>11</strong> 2D Flagships</div>
+              <div class="arcade-stat-chip">⚡ <strong>100%</strong> SCORM & Save/Resume</div>
+              <div class="arcade-stat-chip">🌐 <strong>EN/ES</strong> Coach Support</div>
+            </div>
+          </div>
+          <div class="arcade-cabinet-art" aria-hidden="true">
+            <svg width="180" height="200" viewBox="0 0 180 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Cabinet Body -->
+              <rect x="20" y="10" width="140" height="180" rx="16" fill="#0f172a" stroke="#8b5cf6" stroke-width="4" />
+              <!-- Marquee Header -->
+              <rect x="30" y="20" width="120" height="34" rx="8" fill="url(#marqueeGrad)" stroke="#ec4899" stroke-width="2" />
+              <text x="90" y="42" font-family="'Nunito', sans-serif" font-weight="900" font-size="15" fill="#ffffff" text-anchor="middle">MATH ARCADE</text>
+              <!-- Screen -->
+              <rect x="35" y="62" width="110" height="70" rx="8" fill="#020617" stroke="#38bdf8" stroke-width="2" />
+              <!-- Screen Content / Graph -->
+              <path d="M 45 110 Q 65 80 85 100 T 135 75" stroke="#34d399" stroke-width="3" fill="none" stroke-dasharray="4 2" />
+              <circle cx="85" cy="100" r="5" fill="#f43f5e" />
+              <circle cx="135" cy="75" r="5" fill="#fbbf24" />
+              <!-- Control Deck -->
+              <rect x="30" y="140" width="120" height="35" rx="6" fill="#1e293b" stroke="#475569" stroke-width="2" />
+              <!-- Joystick -->
+              <circle cx="60" cy="157" r="8" fill="#ef4444" />
+              <line x1="60" y1="157" x2="60" y2="167" stroke="#94a3b8" stroke-width="4" stroke-linecap="round" />
+              <!-- Action Buttons -->
+              <circle cx="95" cy="154" r="5" fill="#3b82f6" />
+              <circle cx="110" cy="160" r="5" fill="#10b981" />
+              <circle cx="125" cy="154" r="5" fill="#f59e0b" />
+              <!-- Glow Gradients -->
+              <defs>
+                <linearGradient id="marqueeGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#8b5cf6" />
+                  <stop offset="50%" stop-color="#ec4899" />
+                  <stop offset="100%" stop-color="#3b82f6" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+        </div>
       </section>
+
+      <!-- Dynamic Filter Bar -->
+      <div class="arcade-filter-bar">
+        <div class="arcade-search-box">
+          <svg class="arcade-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="text" id="arcade-search-input" placeholder="Search games by keyword or CCSS standard (e.g. 6.NOS.4, ratio, area)..." aria-label="Search games" />
+        </div>
+        <div class="arcade-pills" id="arcade-topic-filters">
+          <button class="arcade-pill active" data-filter="all">All Games</button>
+          <button class="arcade-pill" data-filter="unit-games">Unit Games</button>
+          <button class="arcade-pill" data-filter="flagship">2D Flagships</button>
+          <button class="arcade-pill" data-filter="review">Practice Arcades</button>
+          <button class="arcade-pill" data-filter="diagnostic">Diagnostic</button>
+        </div>
+      </div>
 
       <section aria-labelledby="games-heading">
         <div class="section-heading">
           <p class="eyebrow">Available Now</p>
           <h2 id="games-heading">Pick a Game</h2>
         </div>
-        <div class="activity-grid">
+        <div class="activity-grid" id="main-games-grid">
           <a
             class="activity-card"
+            data-category="diagnostic"
             href="/math/games/placement-quest/"
             style="border: 2px solid #6366f1; box-shadow: 0 4px 20px rgba(99, 102, 241, 0.15)"
           >
@@ -70,6 +293,7 @@
 
           <a
             class="activity-card"
+            data-category="unit-games"
             id="daily-mix-card"
             href="/math/games/u1-factor-frenzy/"
             style="border: 2px solid #f59e0b; box-shadow: 0 4px 20px rgba(245, 158, 11, 0.15)"
@@ -93,8 +317,7 @@
             <span class="button-link" id="daily-mix-btn">Play Today's Game</span>
           </a>
           <script>
-            /* Daily Mix: deterministic date-seeded rotation through the unit games.
-               Self-contained, no backend — everyone on the same date gets the same game. */
+            /* Daily Mix & Filter Logic */
             (function () {
               var GAMES = [
                 { slug: "u1-factor-frenzy", name: "Factor Frenzy" },
@@ -111,7 +334,6 @@
               ];
               try {
                 var now = new Date();
-                // Days since epoch in local time → stable per calendar day.
                 var dayNum = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 86400000);
                 var pick = GAMES[(now.getFullYear() * 366 + dayNum) % GAMES.length];
                 var card = document.getElementById("daily-mix-card");
@@ -123,15 +345,47 @@
                   copy.innerHTML =
                     "Today's pick: <strong>" +
                     pick.name +
-                    "</strong>. A different game every day — the whole class plays the same one. " +
-                    "Come back tomorrow for a new challenge!";
-              } catch (e) {
-                /* fall back to the static href already on the card */
-              }
+                    "</strong>. A different game every day — the whole class plays the same one.";
+              } catch (e) {}
+
+              // Filter handler
+              document.addEventListener('DOMContentLoaded', function() {
+                var searchInput = document.getElementById('arcade-search-input');
+                var filterBtns = document.querySelectorAll('.arcade-pill');
+                var cards = document.querySelectorAll('.activity-card');
+
+                function applyFilters() {
+                  var query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+                  var activePill = document.querySelector('.arcade-pill.active');
+                  var filter = activePill ? activePill.getAttribute('data-filter') : 'all';
+
+                  cards.forEach(function(card) {
+                    var text = card.textContent.toLowerCase();
+                    var category = card.getAttribute('data-category') || '';
+                    var matchesQuery = !query || text.indexOf(query) !== -1;
+                    var matchesFilter = filter === 'all' || category.indexOf(filter) !== -1;
+
+                    if (matchesQuery && matchesFilter) {
+                      card.style.display = 'flex';
+                    } else {
+                      card.style.display = 'none';
+                    }
+                  });
+                }
+
+                if (searchInput) searchInput.addEventListener('input', applyFilters);
+                filterBtns.forEach(function(btn) {
+                  btn.addEventListener('click', function() {
+                    filterBtns.forEach(function(b) { b.classList.remove('active'); });
+                    btn.classList.add('active');
+                    applyFilters();
+                  });
+                });
+              });
             })();
           </script>
 
-          <a class="activity-card" href="/math/games/u1-factor-frenzy/">
+          <a class="activity-card" data-category="unit-games" href="/math/games/u1-factor-frenzy/">
             <span class="card-kicker">Lessons 1.1–1.3 · 6.NOS.4</span>
             <h3>🧮 Factor Frenzy</h3>
             <p>
@@ -141,7 +395,7 @@
             <span class="button-link">Play Factor Frenzy</span>
           </a>
 
-          <a class="activity-card" href="/math/games/u1-decimal-dash/">
+          <a class="activity-card" data-category="unit-games" href="/math/games/u1-decimal-dash/">
             <span class="card-kicker">Lessons 1.4–1.7 · 6.NOS.2–3</span>
             <h3>💨 Decimal Dash</h3>
             <p>
@@ -151,7 +405,7 @@
             <span class="button-link">Play Decimal Dash</span>
           </a>
 
-          <a class="activity-card" href="/math/games/u2-fraction-frenzy/">
+          <a class="activity-card" data-category="unit-games" href="/math/games/u2-fraction-frenzy/">
             <span class="card-kicker">Lessons 2.1–2.5 · 6.NOS.1</span>
             <h3>🍕 Fraction Frenzy</h3>
             <p>
@@ -162,7 +416,7 @@
             <span class="button-link">Play</span>
           </a>
 
-          <a class="activity-card" href="/math/games/u3-ratio-rush/">
+          <a class="activity-card" data-category="unit-games" href="/math/games/u3-ratio-rush/">
             <span class="card-kicker">Lessons 3.1–3.5 · 6.AT.1–3</span>
             <h3>⚖️ Ratio Rush</h3>
             <p>
@@ -172,7 +426,7 @@
             <span class="button-link">Play</span>
           </a>
 
-          <a class="activity-card" href="/math/games/u4-percent-power/">
+          <a class="activity-card" data-category="unit-games" href="/math/games/u4-percent-power/">
             <span class="card-kicker">Lessons 4.1–4.5 · 6.AT.4</span>
             <h3>💯 Percent Power</h3>
             <p>
@@ -182,7 +436,7 @@
             <span class="button-link">Play</span>
           </a>
 
-          <a class="activity-card" href="/math/games/u5-area-attack/">
+          <a class="activity-card" data-category="unit-games" href="/math/games/u5-area-attack/">
             <span class="card-kicker">Lessons 5.1–5.5 · 6.GR.1</span>
             <h3>📐 Area Attack</h3>
             <p>
@@ -192,14 +446,14 @@
             <span class="button-link">Play</span>
           </a>
 
-          <a class="activity-card" href="/math/games/u6-expression-express/">
+          <a class="activity-card" data-category="unit-games" href="/math/games/u6-expression-express/">
             <span class="card-kicker">Lessons 6.1–6.7 · 6.AT.5–4</span>
             <h3>🧮 Expression Express</h3>
             <p>Exponents, evaluating expressions at a value, and order of operations.</p>
             <span class="button-link">Play</span>
           </a>
 
-          <a class="activity-card" href="/math/games/u7-equation-quest/">
+          <a class="activity-card" data-category="unit-games" href="/math/games/u7-equation-quest/">
             <span class="card-kicker">Lessons 7.1–7.7 · 6.AT.8</span>
             <h3>🧩 Equation Quest</h3>
             <p>
@@ -209,7 +463,7 @@
             <span class="button-link">Play</span>
           </a>
 
-          <a class="activity-card" href="/math/games/u8-data-dash/">
+          <a class="activity-card" data-category="unit-games" href="/math/games/u8-data-dash/">
             <span class="card-kicker">Lessons 8.1–8.7 · 6.DS</span>
             <h3>📊 Data Dash</h3>
             <p>
@@ -219,7 +473,7 @@
             <span class="button-link">Play</span>
           </a>
 
-          <a class="activity-card" href="/math/games/u9-coordinate-quest/">
+          <a class="activity-card" data-category="unit-games" href="/math/games/u9-coordinate-quest/">
             <span class="card-kicker">Coordinate Plane · 6.NOS.6/8 · 6.GR.3</span>
             <h3>🧭 Coordinate Quest — Star Plotter</h3>
             <p>
@@ -229,7 +483,7 @@
             <span class="button-link">Play</span>
           </a>
 
-          <a class="activity-card" href="/math/games/u10-volume-blast/">
+          <a class="activity-card" data-category="unit-games" href="/math/games/u10-volume-blast/">
             <span class="card-kicker">Lessons 10.1–10.5 · 6.GR.2</span>
             <h3>📦 Volume Blast — Unit-Cube Stacker</h3>
             <p>
@@ -253,13 +507,13 @@
           </p>
         </div>
         <div class="activity-grid">
-          <a class="activity-card" href="/math/unit-1/games/unit1-factor-frenzy.html">
+          <a class="activity-card" data-category="flagship" href="/math/unit-1/games/unit1-factor-frenzy.html">
             <span class="card-kicker">Unit 1 · 6.NOS.4</span>
             <h3>🧱 Prime Brick Breaker</h3>
             <p>Smash bricks by their factors, GCF, and LCM.</p>
             <span class="button-link">Play</span>
           </a>
-          <a class="activity-card" href="/math/unit-2/games/unit2-fraction-foundry.html">
+          <a class="activity-card" data-category="flagship" href="/math/unit-2/games/unit2-fraction-foundry.html">
             <span class="card-kicker">Unit 2 · 6.NOS.1</span>
             <h3>🥧 Fraction Foundry — Divide Fractions</h3>
             <p>
@@ -272,7 +526,7 @@
             </p>
             <span class="button-link">Play</span>
           </a>
-          <a class="activity-card" href="/math/unit-3/6-rp-1game/">
+          <a class="activity-card" data-category="flagship" href="/math/unit-3/6-rp-1game/">
             <span class="card-kicker">Unit 3 · 6.AT.1–3</span>
             <h3>🍧 Ratio Kitchen — Mix to the Recipe</h3>
             <p>
@@ -281,43 +535,43 @@
             </p>
             <span class="button-link">Play</span>
           </a>
-          <a class="activity-card" href="/math/unit-4/games/unit4-discount-dash.html">
+          <a class="activity-card" data-category="flagship" href="/math/unit-4/games/unit4-discount-dash.html">
             <span class="card-kicker">Unit 4 · 6.AT.4</span>
             <h3>🏷️ Discount Dash — Sale Runner</h3>
             <p>Grab the best deals using percent of a number and sale prices.</p>
             <span class="button-link">Play</span>
           </a>
-          <a class="activity-card" href="/math/unit-5/games/unit5-area-architect.html">
+          <a class="activity-card" data-category="flagship" href="/math/unit-5/games/unit5-area-architect.html">
             <span class="card-kicker">Unit 5 · 6.GR.1</span>
             <h3>🏙️ Area Architect — City Builder</h3>
             <p>Build a city by computing areas of every shape.</p>
             <span class="button-link">Play</span>
           </a>
-          <a class="activity-card" href="/math/unit-6/games/unit6-expression-engine.html">
+          <a class="activity-card" data-category="flagship" href="/math/unit-6/games/unit6-expression-engine.html">
             <span class="card-kicker">Unit 6 · 6.AT.5–4</span>
             <h3>⚙️ Expression Engine — Assembly Line</h3>
             <p>Run the factory: exponents, evaluating, and order of operations.</p>
             <span class="button-link">Play</span>
           </a>
-          <a class="activity-card" href="/math/unit-8/games/unit7-equation-escape.html">
+          <a class="activity-card" data-category="flagship" href="/math/unit-8/games/unit7-equation-escape.html">
             <span class="card-kicker">Unit 7 · 6.AT.8</span>
             <h3>🔓 Equation Escape — Dungeon Escape</h3>
             <p>Solve one-step equations to escape each dungeon room.</p>
             <span class="button-link">Play</span>
           </a>
-          <a class="activity-card" href="/math/statistics/games/unit8-stats-slam.html">
+          <a class="activity-card" data-category="flagship" href="/math/statistics/games/unit8-stats-slam.html">
             <span class="card-kicker">Unit 8 · 6.DS</span>
             <h3>📊 Stats Slam — Sports Manager</h3>
             <p>Manage a team using mean, median, mode, and range.</p>
             <span class="button-link">Play</span>
           </a>
-          <a class="activity-card" href="/math/unit-7/games/unit9-coordinate-quest.html">
+          <a class="activity-card" data-category="flagship" href="/math/unit-7/games/unit9-coordinate-quest.html">
             <span class="card-kicker">Coordinate Plane · 6.NOS.5–8</span>
             <h3>🧭 Coordinate Quest — Space Navigation</h3>
             <p>Navigate space by plotting points and reading the four quadrants.</p>
             <span class="button-link">Play</span>
           </a>
-          <a class="activity-card" href="/math/unit-9/games/unit9-variable-velocity.html">
+          <a class="activity-card" data-category="flagship" href="/math/unit-9/games/unit9-variable-velocity.html">
             <span class="card-kicker">Two-Variable · 6.AT.11</span>
             <h3>🚀 Variable Velocity — Rover Relay</h3>
             <p>
@@ -326,7 +580,7 @@
             </p>
             <span class="button-link">Play</span>
           </a>
-          <a class="activity-card" href="/math/unit-10/games/unit10-volume-vault.html">
+          <a class="activity-card" data-category="flagship" href="/math/unit-10/games/unit10-volume-vault.html">
             <span class="card-kicker">Unit 10 · 6.GR.2</span>
             <h3>📦 Volume Vault — Crate Packer</h3>
             <p>Pack the vault by computing volume of rectangular prisms.</p>
@@ -349,6 +603,7 @@
         <div class="activity-grid">
           <a
             class="activity-card"
+            data-category="review"
             href="/math/games/practice-arcade/map.html"
             style="border: 2px solid #7c3aed; box-shadow: 0 4px 20px rgba(124, 58, 237, 0.18)"
           >
@@ -370,25 +625,25 @@
             </p>
             <span class="button-link">Open World Map</span>
           </a>
-          <a class="activity-card" href="/math/games/practice-arcade/?unit=1">
+          <a class="activity-card" data-category="review" href="/math/games/practice-arcade/?unit=1">
             <span class="card-kicker">🎮 Unit 1 Review</span>
             <h3>Whole Numbers &amp; Factors</h3>
             <p>Mixed review across every Unit 1 lesson.</p>
             <span class="button-link">Play Unit 1 Review</span>
           </a>
-          <a class="activity-card" href="/math/games/practice-arcade/?unit=2">
+          <a class="activity-card" data-category="review" href="/math/games/practice-arcade/?unit=2">
             <span class="card-kicker">🎮 Unit 2 Review</span>
             <h3>Fractions &amp; Division</h3>
             <p>Mixed review across every Unit 2 lesson.</p>
             <span class="button-link">Play Unit 2 Review</span>
           </a>
-          <a class="activity-card" href="/math/games/practice-arcade/?unit=3">
+          <a class="activity-card" data-category="review" href="/math/games/practice-arcade/?unit=3">
             <span class="card-kicker">🎮 Unit 3 Review</span>
             <h3>Ratios &amp; Rates</h3>
             <p>Mixed review across every Unit 3 lesson.</p>
             <span class="button-link">Play Unit 3 Review</span>
           </a>
-          <a class="activity-card" href="/math/games/practice-arcade/?unit=4">
+          <a class="activity-card" data-category="review" href="/math/games/practice-arcade/?unit=4">
             <span class="card-kicker">🎮 Unit 4 Review</span>
             <h3>Percents</h3>
             <p>Mixed review across every Unit 4 lesson.</p>
