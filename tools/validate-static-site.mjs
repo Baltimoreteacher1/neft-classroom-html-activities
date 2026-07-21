@@ -98,7 +98,9 @@ function walk(dir) {
       name === "dist" ||
       name === ".vite" ||
       name === "test-results" ||
-      name === "playwright-report"
+      name === "playwright-report" ||
+      name === ".superpowers" ||
+      name === ".qa-logs"
     )
       return [];
     const full = join(dir, name);

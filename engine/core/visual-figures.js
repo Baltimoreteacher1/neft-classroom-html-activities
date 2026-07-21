@@ -290,7 +290,7 @@ export function factorTreeSVG(cfg) {
 
   elements.forEach((el) => {
     if (el.type === "line") {
-      linesSvg += `<line x1="${el.x1}" y1="${el.y1}" x2="${el.x2}" y2="${el.y2}" stroke="#d7e2ed" stroke-width="2.5" />`;
+      linesSvg += `<line class="ft-branch" x1="${el.x1}" y1="${el.y1}" x2="${el.x2}" y2="${el.y2}" stroke="#d7e2ed" stroke-width="2.5" />`;
     } else if (el.type === "node") {
       nodesSvg += `
         <g class="ft-node">

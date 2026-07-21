@@ -35,6 +35,7 @@ import {
 import { createStudioStore } from "./small-group-state.js";
 import { mountSmallGroupTabs } from "./small-group-tabs.js";
 import { mountSmallGroupTeacherAccess } from "./small-group-teacher-access.js";
+import { installStoryboardScenes, markScene, mountThemeArt } from "./small-group-storyboard.js";
 import {
   ACCENTS,
   bi,
@@ -221,8 +222,10 @@ function teacherPanel(config, accent, talk) {
 
 function hero(config, accent, voice) {
   const container = el("div", "sg-hero");
+  markScene(container, "hero");
   const grid = el("div", "sg-hero-grid");
   const copy = el("div");
+  copy.classList.add("sg-scene-enter");
   const badge = config.launch?.badge || `Small Group · ${accent.name}`;
   copy.appendChild(el("div", null, `<span class="sg-kicker">${accent.emoji} ${esc(badge)}</span>`));
   copy.appendChild(el("h1", null, esc(config.title || "Small-Group Math Studio")));
@@ -245,7 +248,16 @@ function hero(config, accent, voice) {
   if (config.standard) chips.appendChild(el("span", "sg-chip", esc(config.standard)));
   chips.appendChild(el("span", "sg-chip", "Private · saved on this device"));
   copy.appendChild(chips);
-  grid.append(copy, el("div", "sg-hero-mark", accent.emoji));
+  if (config.theme) {
+    copy.appendChild(el("div", "sg-hero-scene-chip", "Scene · mission brief"));
+  }
+  const mark = el("div", "sg-hero-mark sg-scene-enter");
+  if (config.theme && mountThemeArt(mark, config.theme, "", config.heroFigure)) {
+    mark.classList.add("has-theme");
+  } else {
+    mark.textContent = accent.emoji;
+  }
+  grid.append(copy, mark);
   container.appendChild(grid);
   return container;
 }
@@ -620,6 +632,8 @@ function renderStudio(config) {
   tabs = mountSmallGroupTabs(app, activeTabSteps, { store, voice });
   pendingMarks.forEach((id) => tabs.markDone(id));
   tally.update();
+  // Chalkie storyboard skin: one-shot scene enters (presentation only).
+  installStoryboardScenes(app);
 
   // Number sections per tab: a lone section carries the tab number, multiple
   // sections get dotted sub-numbers ("2.1", "2.2") instead of duplicates.
