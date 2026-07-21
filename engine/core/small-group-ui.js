@@ -224,7 +224,7 @@ export function injectSmallGroupStyles(accent) {
     const annotation = document.createElement("link");
     annotation.id = "sg-annotation-styles";
     annotation.rel = "stylesheet";
-    annotation.href = "/assets/small-group-annotation.css?v=20260721-rightdock";
+    annotation.href = "/assets/small-group-annotation.css?v=20260721-compactdock";
     document.head.appendChild(annotation);
   }
   if (!document.getElementById("sg-storyboard-styles")) {
