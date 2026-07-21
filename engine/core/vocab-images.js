@@ -353,6 +353,21 @@ export function resolveVocabImage(term, override) {
   return resolveVocabFallback(term);
 }
 
+// True only when `term` maps to a real, term-specific illustration — an authored
+// override, a dedicated SVG, or a synonym that resolves to one. False means the
+// only thing resolveVocabImage() could return is a generic category placeholder
+// (e.g. cat-number.svg, the literal "#" tile), which reads as an unrelated image
+// for descriptive words like "corner", "leans", or "slanted side". Callers use
+// this to suppress the placeholder rather than show a misleading picture.
+export function hasRealVocabImage(term, override) {
+  if (override && typeof override === "string") return true;
+  const slug = slugify(term);
+  if (!slug) return false;
+  if (DEDICATED.has(slug) || EXTRA_DEDICATED.has(slug)) return true;
+  const syn = SYNONYMS[slug];
+  return !!(syn && (DEDICATED.has(syn) || EXTRA_DEDICATED.has(syn)));
+}
+
 export function vocabImageAlt(term, definition) {
   const t = String(term || "").trim();
   const d = String(definition || "").trim();

@@ -64,7 +64,7 @@ import {
   numberLineSVG,
   tapeDiagramSVG,
 } from "./visual-figures.js";
-import resolveVocabImage, { vocabImageAlt } from "./vocab-images.js";
+import resolveVocabImage, { vocabImageAlt, hasRealVocabImage } from "./vocab-images.js";
 import { deriveWorkedSteps } from "./worked-steps.js";
 
 export function bootLesson(config) {
@@ -1632,12 +1632,12 @@ function getObjectivePopup() {
         <span class="obj-popup-tr-label">Español:</span>
         <span class="obj-popup-tr-es" lang="es"></span>
       </p>
+      <p class="obj-popup-def"></p>
+      <p class="obj-popup-def-es" lang="es"></p>
       <figure class="obj-popup-visual">
         <img class="obj-popup-img" alt="" />
         <figcaption class="obj-popup-example"></figcaption>
       </figure>
-      <p class="obj-popup-def"></p>
-      <p class="obj-popup-def-es" lang="es"></p>
     </div>`;
   document.body.append(backdrop);
   backdrop.addEventListener("click", (e) => {
@@ -1667,14 +1667,32 @@ function openObjectiveTermPopup(entry) {
     trRow.hidden = true;
   }
 
+  // Only show a picture when the term has a real, term-specific illustration.
+  // Descriptive words (corner, leans, slanted side, straight up…) have a
+  // definition but no image, and would otherwise fall back to the generic "#"
+  // number-category tile — an unrelated picture. In that case hide the image and
+  // let the definition stand alone.
   const img = backdrop.querySelector(".obj-popup-img");
-  img.src = resolveVocabImage(term, entry.image);
-  img.alt = vocabImageAlt(term, entry.definition);
+  const showImg = hasRealVocabImage(term, entry.image);
+  if (showImg) {
+    img.src = resolveVocabImage(term, entry.image);
+    img.alt = vocabImageAlt(term, entry.definition);
+    img.hidden = false;
+  } else {
+    img.removeAttribute("src");
+    img.alt = "";
+    img.hidden = true;
+  }
 
   const ex = backdrop.querySelector(".obj-popup-example");
   const visual = entry.visual ? String(entry.visual) : "";
   ex.textContent = visual;
   ex.hidden = !visual;
+
+  // Collapse the whole figure when it has neither a picture nor an example so
+  // the popup does not leave an empty framed gap.
+  const fig = backdrop.querySelector(".obj-popup-visual");
+  if (fig) fig.hidden = !showImg && !visual;
 
   backdrop.querySelector(".obj-popup-def").textContent = entry.definition
     ? String(entry.definition)
