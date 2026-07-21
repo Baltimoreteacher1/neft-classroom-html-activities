@@ -41,7 +41,14 @@ function createAnnotationTools(app) {
   tools.setAttribute("role", "region");
   tools.setAttribute("aria-label", "Study mark-up tools");
   const shell = el("details", "sg-annotation-shell");
-  shell.appendChild(el("summary", null, "🖍️ Mark up this page"));
+  shell.appendChild(
+    el(
+      "summary",
+      "sg-annotation-summary",
+      '<span class="sg-annotation-summary-icon" aria-hidden="true">🖍️</span>' +
+        '<span class="sg-annotation-summary-label">Mark up this page</span>',
+    ),
+  );
   tools.appendChild(shell);
   const inner = el("div", "sg-annotation-inner");
   shell.appendChild(inner);

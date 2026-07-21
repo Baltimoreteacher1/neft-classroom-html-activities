@@ -18,12 +18,42 @@
 }
 
 .sg-annotation-shell > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   min-height: 44px;
   padding: 10px 14px;
   color: var(--sg-deep);
   font-family: "Nunito", sans-serif;
   font-weight: 900;
+  list-style: none;
   cursor: pointer;
+}
+
+.sg-annotation-shell > summary::-webkit-details-marker {
+  display: none;
+}
+
+.sg-annotation-summary-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+/* Collapsed ("reduced") state: shrink the dock to a compact icon tab so the
+   lesson — not the toolbar — owns the right edge until a student opens it. */
+.sg-annotation-shell:not([open]) > summary {
+  min-height: 0;
+  padding: 8px 9px;
+}
+
+.sg-annotation-shell:not([open]) > summary .sg-annotation-summary-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 
 .sg-annotation-inner {
