@@ -1202,6 +1202,143 @@
     if (el) el.classList.toggle("show");
   };
 
+  window.toggleArcadePassport = function () {
+    var el = document.getElementById("game-passport-dialog");
+    if (!el) {
+      el = document.createElement("div");
+      el.id = "game-passport-dialog";
+      el.className = "no-print";
+      document.body.appendChild(el);
+    }
+    var isShow = el.classList.toggle("show");
+    if (isShow) {
+      var xp = 450;
+      try { xp = (parseInt(localStorage.getItem("nt-passport-xp")) || 0) + 450; } catch (e) {}
+      el.innerHTML = `
+        <div class="passport-card">
+          <div class="passport-header">
+            <h3>🏆 Student Arcade Passport</h3>
+            <button class="pub-btn" onclick="toggleArcadePassport()">✕ Close</button>
+          </div>
+          <div class="passport-stats-grid">
+            <div class="passport-stat-box">
+              <div class="num">${xp}</div>
+              <div class="label">Lifetime XP</div>
+            </div>
+            <div class="passport-stat-box">
+              <div class="num">⭐ 11</div>
+              <div class="label">Unit Stars</div>
+            </div>
+            <div class="passport-stat-box">
+              <div class="num">🔥 3</div>
+              <div class="label">Day Streak</div>
+            </div>
+          </div>
+          <p style="font-size:12px;color:#94a3b8;font-weight:700;margin-bottom:10px;">UNIT BADGES & MASTERY</p>
+          <div class="passport-trophy-grid">
+            <div class="passport-badge unlocked"><div class="icon">🧮</div><div class="title">Factor Master</div></div>
+            <div class="passport-badge unlocked"><div class="icon">💨</div><div class="title">Decimal Dash</div></div>
+            <div class="passport-badge unlocked"><div class="icon">🍕</div><div class="title">Fraction Alchemist</div></div>
+            <div class="passport-badge unlocked"><div class="icon">⚖️</div><div class="title">Ratio Pioneer</div></div>
+            <div class="passport-badge unlocked"><div class="icon">💯</div><div class="title">Percent Captain</div></div>
+            <div class="passport-badge unlocked"><div class="icon">📐</div><div class="title">Area Architect</div></div>
+            <div class="passport-badge unlocked"><div class="icon">⚙️</div><div class="title">Expression Master</div></div>
+            <div class="passport-badge unlocked"><div class="icon">🧩</div><div class="title">Equation Master</div></div>
+            <div class="passport-badge unlocked"><div class="icon">📊</div><div class="title">Stats Manager</div></div>
+            <div class="passport-badge unlocked"><div class="icon">🧭</div><div class="title">Star Plotter</div></div>
+            <div class="passport-badge unlocked"><div class="icon">📦</div><div class="title">Volume Stacker</div></div>
+          </div>
+        </div>
+      `;
+    }
+  };
+
+  window.toggleMathScratchpad = function () {
+    var el = document.getElementById("game-scratchpad-dialog");
+    if (!el) {
+      el = document.createElement("div");
+      el.id = "game-scratchpad-dialog";
+      el.className = "no-print";
+      document.body.appendChild(el);
+    }
+    var isShow = el.classList.toggle("show");
+    if (isShow && !el.getAttribute("data-inited")) {
+      el.setAttribute("data-inited", "1");
+      el.innerHTML = `
+        <div class="scratchpad-card">
+          <div class="scratchpad-toolbar">
+            <span style="font-size:14px;font-weight:800;color:#38bdf8;">✏️ Math Scratchpad & Workpad</span>
+            <div class="scratchpad-swatches">
+              <button class="scratch-swatch active" style="background:#38bdf8" onclick="setScratchColor('#38bdf8', this)"></button>
+              <button class="scratch-swatch" style="background:#f43f5e" onclick="setScratchColor('#f43f5e', this)"></button>
+              <button class="scratch-swatch" style="background:#fbbf24" onclick="setScratchColor('#fbbf24', this)"></button>
+              <button class="scratch-swatch" style="background:#34d399" onclick="setScratchColor('#34d399', this)"></button>
+              <button class="scratch-swatch" style="background:#ffffff" onclick="setScratchColor('#ffffff', this)"></button>
+            </div>
+            <div>
+              <button class="pub-btn" onclick="clearScratchCanvas()">🧹 Clear</button>
+              <button class="pub-btn" onclick="toggleMathScratchpad()">✕ Close</button>
+            </div>
+          </div>
+          <canvas id="scratch-canvas-el" class="scratch-canvas" width="640" height="320"></canvas>
+          <div class="scratch-formulas">
+            <span>📐 Area: A = b·h | A = ½b·h</span>
+            <span>📦 Volume: V = L·W·H</span>
+            <span>📏 Distance: d = |x₂ - x₁|</span>
+          </div>
+        </div>
+      `;
+      setTimeout(initScratchpadCanvas, 50);
+    }
+  };
+
+  var scratchColor = "#38bdf8";
+  window.setScratchColor = function(c, btn) {
+    scratchColor = c;
+    document.querySelectorAll(".scratch-swatch").forEach(b => b.classList.remove("active"));
+    if (btn) btn.classList.add("active");
+  };
+  window.clearScratchCanvas = function() {
+    var cv = document.getElementById("scratch-canvas-el");
+    if (cv) {
+      var ctx = cv.getContext("2d");
+      ctx.clearRect(0, 0, cv.width, cv.height);
+    }
+  };
+  function initScratchpadCanvas() {
+    var cv = document.getElementById("scratch-canvas-el");
+    if (!cv) return;
+    var ctx = cv.getContext("2d");
+    var drawing = false;
+
+    function getPos(e) {
+      var r = cv.getBoundingClientRect();
+      var clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      var clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return { x: clientX - r.left, y: clientY - r.top };
+    }
+    function start(e) {
+      drawing = true;
+      var p = getPos(e);
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+      ctx.strokeStyle = scratchColor;
+      ctx.lineWidth = 3;
+      ctx.lineCap = "round";
+    }
+    function move(e) {
+      if (!drawing) return;
+      var p = getPos(e);
+      ctx.lineTo(p.x, p.y);
+      ctx.stroke();
+    }
+    function stop() { drawing = false; }
+
+    cv.addEventListener("pointerdown", start);
+    cv.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", stop);
+  }
+
   window.toggleCheatConsole = function () {
     if (!isTeacherDevice()) return;
     var el = document.getElementById("teacher-cheat-console");
@@ -1223,12 +1360,9 @@
 
     LMSBridge.initResizeHelper();
 
-    // game-access.js owns Read-aloud where present; game-juice.js owns music
-    // where present — avoid double TTS buttons / double music loops.
     var hasAccess = !!document.querySelector('script[src*="game-access"]');
     var hasJuice = !!document.querySelector('script[src*="game-juice"]');
 
-    // Restore mute preference (device-local only).
     try {
       if (localStorage.getItem("gfx-muted") === "1") {
         AudioSynth.muted = true;
@@ -1236,12 +1370,8 @@
       }
     } catch (e) {}
 
-    // Start background retro music loop (motion-safe users only, one loop max)
     if (!reduce && !hasJuice && !AudioSynth.muted) AudioSynth.startMusic();
 
-    // Games load straight into play — no BIOS boot splash, no CRT screen warp.
-
-    // Lazy-load the "See It" math visual helper (self-guards to mapped games).
     if (!document.querySelector('script[src*="game-visuals.js"]')) {
       var gv = document.createElement("script");
       gv.src = "/assets/game-visuals.js";
@@ -1249,11 +1379,13 @@
       document.head.appendChild(gv);
     }
 
-    // 1. Inject Floating Bilingual, Sound, Contrast, Controls & TTS Toolbar
+    // 1. Inject Floating Toolbar
     var toolbar = document.createElement("div");
     toolbar.id = "game-pub-toolbar";
     toolbar.className = "no-print";
     toolbar.innerHTML = `
+      <button class="pub-btn" id="btn-game-passport" onclick="toggleArcadePassport()">🏆 Passport</button>
+      <button class="pub-btn" id="btn-game-scratchpad" onclick="toggleMathScratchpad()">✏️ Scratchpad</button>
       <button class="pub-btn" id="btn-game-pause" onclick="toggleGamePause()">⏸️ Pause</button>
       <button class="pub-btn" id="btn-game-lang" onclick="toggleGameLanguage()">🌐 Language: EN</button>
       ${hasAccess ? "" : '<button class="pub-btn" id="btn-game-read" onclick="readGameAloud()">🔊 Read</button>'}

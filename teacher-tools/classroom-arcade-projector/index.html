@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Classroom Arcade Projector | Neft Teacher</title>
+    <meta name="description" content="Presenter dashboard for smartboards & projectors — display Today's Daily Arcade Mix, QR launcher, warm-up timer, and class trophy tracker." />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      :root {
+        --bg: #0f172a;
+        --card: #1e293b;
+        --border: rgba(255, 255, 255, 0.15);
+        --text: #f8fafc;
+        --muted: #94a3b8;
+        --cyan: #38bdf8;
+        --purple: #c084fc;
+        --amber: #f59e0b;
+        --pink: #ec4899;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: 'Atkinson Hyperlegible', system-ui, -apple-system, sans-serif;
+        min-height: 100vh;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      header.projector-header {
+        background: radial-gradient(100% 100% at 50% 0%, #1e1b4b 0%, #0f172a 100%);
+        border: 1px solid rgba(192, 132, 252, 0.3);
+        border-radius: 20px;
+        padding: 24px 32px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+      }
+      .projector-title h1 {
+        font-size: clamp(2rem, 4vw, 3rem);
+        font-weight: 900;
+        background: linear-gradient(135deg, #ffffff 30%, #c084fc 70%, #38bdf8 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .projector-title p {
+        color: var(--muted);
+        font-size: 1.1rem;
+        font-weight: 600;
+      }
+      .projector-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        flex: 1;
+      }
+      @media (max-width: 800px) {
+        .projector-grid { grid-template-columns: 1fr; }
+      }
+      .projector-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      }
+      .projector-card h2 {
+        font-size: 1.5rem;
+        color: var(--cyan);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .qr-box {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 20px;
+        color: #0f172a;
+        text-align: center;
+      }
+      .qr-box img {
+        width: 180px;
+        height: 180px;
+        border-radius: 8px;
+      }
+      .timer-display {
+        font-size: clamp(3.5rem, 8vw, 5.5rem);
+        font-weight: 900;
+        font-family: monospace;
+        color: var(--amber);
+        text-align: center;
+        letter-spacing: 2px;
+      }
+      .timer-controls {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+      }
+      .btn {
+        padding: 12px 24px;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: 700;
+        border: none;
+        cursor: pointer;
+        background: var(--cyan);
+        color: #0f172a;
+        transition: transform 0.15s;
+      }
+      .btn:hover { transform: translateY(-2px); }
+      .btn.purple { background: var(--purple); color: #fff; }
+      .btn.pink { background: var(--pink); color: #fff; }
+      .btn.ghost { background: rgba(255,255,255,0.1); color: #fff; }
+    </style>
+  </head>
+  <body>
+    <header class="projector-header">
+      <div class="projector-title">
+        <h1>🕹️ Classroom Arcade Mode</h1>
+        <p>Neft Teacher Grade 6 Math · Smartboard & Projector Display</p>
+      </div>
+      <div style="text-align: right;">
+        <span class="btn ghost" id="date-chip">📅 Today</span>
+      </div>
+    </header>
+
+    <div class="projector-grid">
+      <!-- Daily Game Pick & QR Code -->
+      <div class="projector-card">
+        <h2>🎲 Today's Class Game Pick</h2>
+        <p id="pick-desc" style="font-size: 1.15rem; color: #cbd5e1; line-height: 1.5;">
+          Loading today's arcade pick...
+        </p>
+        <div class="qr-box">
+          <img id="qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://eduwonderlab.com/math/games/" alt="QR Code to join game" />
+          <p style="margin-top: 12px; font-weight: 800; font-size: 1.1rem;">Scan to Play on Chromebooks or Tablets</p>
+          <p style="font-size: 0.9rem; color: #64748b;">eduwonderlab.com/math/games/</p>
+        </div>
+      </div>
+
+      <!-- Class Warm-Up Timer & Stars -->
+      <div class="projector-card">
+        <h2>⏱️ Class Arcade Timer</h2>
+        <div class="timer-display" id="timer-val">05:00</div>
+        <div class="timer-controls">
+          <button class="btn" onclick="startTimer()">▶️ Start</button>
+          <button class="btn purple" onclick="pauseTimer()">⏸️ Pause</button>
+          <button class="btn ghost" onclick="resetTimer()">🔄 Reset (5m)</button>
+        </div>
+        <div style="margin-top: 20px; background: rgba(255,255,255,0.05); padding: 16px; border-radius: 12px; text-align: center;">
+          <p style="font-size: 0.9rem; color: var(--muted); font-weight: 700; text-transform: uppercase;">Class Goal</p>
+          <p style="font-size: 1.8rem; font-weight: 900; color: var(--purple);">⭐ Complete 1 Arcade Cluster</p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      (function() {
+        var GAMES = [
+          { slug: "u1-factor-frenzy", name: "Factor Frenzy", desc: "Build factor trees and lock in prime factors." },
+          { slug: "u1-decimal-dash", name: "Decimal Dash", desc: "Place tenths and hundredths on the number line." },
+          { slug: "u2-fraction-frenzy", name: "Fraction Frenzy", desc: "Partition fraction bars and divide fractions." },
+          { slug: "u3-ratio-rush", name: "Ratio Rush", desc: "Double number lines and equivalent ratio scaling." },
+          { slug: "u4-percent-power", name: "Percent Power", desc: "Calculate percent of a number and sale discounts." },
+          { slug: "u5-area-attack", name: "Area Attack", desc: "Tile triangles, rectangles, and decompose shapes." },
+          { slug: "u6-expression-express", name: "Expression Express", desc: "Evaluate exponents and order of operations." },
+          { slug: "u7-equation-quest", name: "Equation Quest", desc: "Balance scale equations and inverse operations." },
+          { slug: "u8-data-dash", name: "Data Dash", desc: "Build dot plots to hit target mean & median." },
+          { slug: "u9-coordinate-quest", name: "Coordinate Quest", desc: "Plot ordered pairs across all four quadrants." },
+          { slug: "u10-volume-blast", name: "Volume Blast", desc: "Stack unit cubes and compute rectangular volume." }
+        ];
+
+        var now = new Date();
+        document.getElementById("date-chip").textContent = "📅 " + now.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+
+        var dayNum = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 86400000);
+        var pick = GAMES[(now.getFullYear() * 366 + dayNum) % GAMES.length];
+
+        document.getElementById("pick-desc").innerHTML = "Today's Challenge: <strong style='color:#38bdf8;'>" + pick.name + "</strong><br><span style='font-size:0.95rem;color:#94a3b8;'>" + pick.desc + "</span>";
+
+        var targetUrl = "https://eduwonderlab.com/math/games/" + pick.slug + "/";
+        document.getElementById("qr-img").src = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" + encodeURIComponent(targetUrl);
+      })();
+
+      var timerSeconds = 300;
+      var timerInterval = null;
+      function updateTimerDisplay() {
+        var m = Math.floor(timerSeconds / 60);
+        var s = timerSeconds % 60;
+        document.getElementById("timer-val").textContent = (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s;
+      }
+      function startTimer() {
+        if (timerInterval) return;
+        timerInterval = setInterval(function() {
+          if (timerSeconds > 0) {
+            timerSeconds--;
+            updateTimerDisplay();
+          } else {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            alert("⏰ Arcade Time's Up! Great work class!");
+          }
+        }, 1000);
+      }
+      function pauseTimer() {
+        if (timerInterval) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+        }
+      }
+      function resetTimer() {
+        pauseTimer();
+        timerSeconds = 300;
+        updateTimerDisplay();
+      }
+    </script>
+  </body>
+</html>
