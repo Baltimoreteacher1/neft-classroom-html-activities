@@ -419,6 +419,12 @@
         // configs and are localized only when the config provides an `_es` field.
         const STR = {
           practiceArcade: { en: "PRACTICE ARCADE", es: "ARCADE DE PRÁCTICA" },
+          missionLabel: { en: "YOUR MISSION", es: "TU MISIÓN" },
+          missionText: {
+            en: "Clear each challenge. Misses teach you — keep trying. First tries earn ⭐ and gems.",
+            es: "Completa cada reto. Los errores te enseñan — sigue intentando. Los aciertos al primer intento ganan ⭐ y gemas.",
+          },
+          openMap: { en: "🗺️ World Map", es: "🗺️ Mapa del Arcade" },
           unitReview: { en: "UNIT REVIEW", es: "REPASO DE UNIDAD" },
           start: { en: "START ▶", es: "EMPEZAR ▶" },
           back: { en: "← Back to lessons", es: "← Volver a las lecciones" },
@@ -1217,6 +1223,28 @@
               })
               .setOrigin(0.5);
 
+            // Mission brief strip — ESOL-friendly, calm, award-ceremony clear.
+            this.add
+              .text(W / 2, 292, t("missionLabel"), {
+                fontFamily: "Nunito, Segoe UI, sans-serif",
+                fontSize: "12px",
+                fontStyle: "bold",
+                color: "#fde68a",
+                backgroundColor: "rgba(0,0,0,0.28)",
+                padding: { x: 10, y: 4 },
+              })
+              .setOrigin(0.5);
+            this.add
+              .text(W / 2, 318, t("missionText"), {
+                fontFamily: "Nunito, Segoe UI, sans-serif",
+                fontSize: "14px",
+                fontStyle: "bold",
+                color: "#e2e8f0",
+                align: "center",
+                wordWrap: { width: W - 200 },
+              })
+              .setOrigin(0.5);
+
             // "How to play" chips — one per game type, plain words, localized.
             const chips =
               lang === "es"
@@ -1239,7 +1267,7 @@
             let cx = W / 2 - ((chips.length - 1) * 152) / 2;
             chips.forEach((txt) => {
               this.add
-                .text(cx, 306, txt, {
+                .text(cx, 352, txt, {
                   fontFamily: "Nunito, Segoe UI, sans-serif",
                   fontSize: "13px",
                   fontStyle: "bold",
@@ -1253,7 +1281,7 @@
 
             // ── Level (tier) selector ── Level 1 support / Level 2 enrichment.
             this.add
-              .text(W / 2, 356, t("levelPick"), {
+              .text(W / 2, 392, t("levelPick"), {
                 fontFamily: "Nunito, Segoe UI, sans-serif",
                 fontSize: "15px",
                 fontStyle: "bold",
@@ -1278,7 +1306,7 @@
             };
             tierDefs.forEach(([id, label], i) => {
               const p = this.add
-                .text(xs[i], 392, label, {
+                .text(xs[i], 428, label, {
                   fontFamily: "Nunito, Segoe UI, sans-serif",
                   fontSize: "14px",
                   fontStyle: "bold",
@@ -1307,17 +1335,17 @@
               buildPlayList(); // apply the chosen level before playing
               this.scene.start("Play");
             };
-            makeButton(this, W / 2, 470, 280, 64, t("start"), start);
+            makeButton(this, W / 2, 500, 280, 64, t("start"), start);
             this.input.keyboard.on("keydown-SPACE", start);
             this.input.keyboard.on("keydown-ENTER", start);
 
-            // ── Read-aloud + language toggle (ESOL support) ──
+            // ── Read-aloud + language toggle + world map (ESOL support) ──
             const helpLine =
               lang === "es"
                 ? "Sin cronómetro. Toca tu respuesta o usa las teclas de números. Los primeros aciertos ganan estrellas."
                 : "No timer. Tap your answer or use the number keys. First tries earn stars and gems.";
             const ra = this.add
-              .text(W / 2 - 90, 540, t("readAloud"), {
+              .text(W / 2 - 150, 580, t("readAloud"), {
                 fontFamily: "Nunito, Segoe UI, sans-serif",
                 fontSize: "15px",
                 fontStyle: "bold",
@@ -1329,7 +1357,7 @@
               .setInteractive({ useHandCursor: true });
             ra.on("pointerdown", () => speak(lessonTitle + ". " + helpLine));
             const langBtn = this.add
-              .text(W / 2 + 90, 540, lang === "es" ? "EN | ES" : "EN | ES", {
+              .text(W / 2, 580, lang === "es" ? "EN | ES" : "EN | ES", {
                 fontFamily: "Nunito, Segoe UI, sans-serif",
                 fontSize: "15px",
                 fontStyle: "bold",
@@ -1348,7 +1376,28 @@
               } catch (e) {}
               this.scene.restart();
             });
-            srSay(lessonTitle + " Practice Arcade. " + rounds.length + " challenges. Press Start.");
+            const mapBtn = this.add
+              .text(W / 2 + 150, 580, t("openMap"), {
+                fontFamily: "Nunito, Segoe UI, sans-serif",
+                fontSize: "15px",
+                fontStyle: "bold",
+                color: "#0b1020",
+                backgroundColor: accentHex,
+                padding: { x: 12, y: 8 },
+              })
+              .setOrigin(0.5)
+              .setInteractive({ useHandCursor: true });
+            mapBtn.on("pointerdown", () => {
+              location.href = "/math/games/practice-arcade/map.html";
+            });
+            srSay(
+              lessonTitle +
+                " Practice Arcade. " +
+                rounds.length +
+                " challenges. " +
+                t("missionText") +
+                " Press Start.",
+            );
           }
         }
 
@@ -2033,7 +2082,8 @@
                 this.startRound();
               });
             } else {
-              // Wrong: encourage + hint, keep the round open for another attempt.
+              // Wrong: dual feedback — visual juice + teaching text on first miss
+              // when an authored explanation exists (teaches, not just "wrong").
               this.tries++;
               this.streak = 0;
               paSignal(rounds[this.idx], false, this.lastWrongTag || null);
@@ -2042,9 +2092,14 @@
               this.mascotReact(false);
               this.mascotSay(this.tries >= 2 ? "Use the hint 👀" : "Try again 👀");
               this.flashEdge(PALETTE.bad);
-              const msg = this.tries >= 2 && w ? t("hint") + w : t("tryAgain");
+              const msg = w ? t("hint") + w : t("tryAgain");
               this.feedback.setColor("#fde68a").setText(msg).setAlpha(1);
-              srSay("Not quite. Try again. " + (this.tries >= 2 ? w : ""));
+              srSay("Not quite. " + (w || "Try again."));
+              try {
+                if (window.GameFX && typeof window.GameFX.coach === "function") {
+                  window.GameFX.coach("tip", msg);
+                }
+              } catch (eCoach) {}
               this.updateHUD();
             }
           }
@@ -3108,9 +3163,14 @@
                 JUICE.audio.wrong();
                 JUICE.shake(this, 0.005);
                 this.mascotReact(false);
-                const msg = this.tries >= 2 && s.why ? t("hint") + s.why : t("tryAgain");
+                const msg = s.why ? t("hint") + s.why : t("tryAgain");
                 this.feedback.setColor("#fde68a").setText(msg).setAlpha(1);
-                srSay("Not quite. Try again. " + (this.tries >= 2 ? s.why : ""));
+                srSay("Not quite. " + (s.why || "Try again."));
+                try {
+                  if (window.GameFX && typeof window.GameFX.coach === "function") {
+                    window.GameFX.coach("tip", msg);
+                  }
+                } catch (eCoach) {}
                 this.time.delayedCall(560, () => {
                   if (!this.locked) tile.bg.setFillStyle(PALETTE.tile);
                 });

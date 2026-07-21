@@ -421,6 +421,192 @@ body.crt-glitch .page-shell {
   display: block;
 }
 
+/* Dual-feedback coach toast */
+#gfx-coach-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 88px;
+  transform: translateX(-50%) translateY(12px);
+  z-index: 100050;
+  max-width: min(520px, calc(100vw - 24px));
+  background: rgba(15, 23, 42, 0.96);
+  color: #f8fafc;
+  border: 2px solid #38bdf8;
+  border-radius: 14px;
+  padding: 12px 16px;
+  font-family: "Nunito", "Segoe UI", system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.35;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+#gfx-coach-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
+}
+#gfx-coach-toast.gfx-coach-good {
+  border-color: #34d399;
+  background: linear-gradient(135deg, rgba(6, 78, 59, 0.95), rgba(15, 23, 42, 0.96));
+}
+#gfx-coach-toast.gfx-coach-tip {
+  border-color: #fbbf24;
+  background: linear-gradient(135deg, rgba(120, 53, 15, 0.92), rgba(15, 23, 42, 0.96));
+}
+.gfx-coach-icon {
+  font-size: 1.25rem;
+  line-height: 1.2;
+  flex: 0 0 auto;
+}
+.gfx-coach-msg {
+  flex: 1 1 auto;
+}
+
+/* Pause overlay */
+#gfx-pause-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100060;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(2, 6, 23, 0.72);
+  padding: 16px;
+}
+#gfx-pause-overlay.show {
+  display: flex;
+}
+.gfx-pause-card {
+  width: min(420px, 100%);
+  background: #0f172a;
+  border: 2px solid rgba(56, 189, 248, 0.45);
+  border-radius: 18px;
+  padding: 22px 20px 18px;
+  color: #f8fafc;
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+}
+.gfx-pause-card h2 {
+  margin: 0 0 8px;
+  font-size: 1.45rem;
+  color: #67e8f9;
+}
+.gfx-pause-body {
+  margin: 0 0 16px;
+  opacity: 0.9;
+  font-size: 0.98rem;
+  line-height: 1.45;
+}
+.gfx-pause-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+.gfx-pause-resume {
+  background: #0891b2 !important;
+  border-color: #67e8f9 !important;
+}
+.gfx-pause-hint {
+  margin: 14px 0 0;
+  font-size: 12px;
+  opacity: 0.7;
+}
+body.gfx-paused canvas {
+  filter: brightness(0.55);
+}
+
+/* Mission brief */
+#gfx-mission-brief {
+  position: fixed;
+  inset: 0;
+  z-index: 100070;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(2, 6, 23, 0.78);
+  padding: 16px;
+}
+#gfx-mission-brief.show {
+  display: flex;
+}
+.gfx-mission-card {
+  width: min(480px, 100%);
+  background: linear-gradient(160deg, #1e1b4b 0%, #0f172a 55%, #134e4a 100%);
+  border: 2px solid rgba(250, 204, 21, 0.45);
+  border-radius: 20px;
+  padding: 24px 22px 20px;
+  color: #f8fafc;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+}
+.gfx-mission-tag {
+  margin: 0 0 6px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fde68a;
+}
+.gfx-mission-card h2 {
+  margin: 0 0 10px;
+  font-size: 1.5rem;
+  color: #a5f3fc;
+}
+.gfx-mission-card p {
+  margin: 0 0 16px;
+  line-height: 1.5;
+  font-size: 1rem;
+  opacity: 0.95;
+}
+.gfx-mission-go {
+  background: #facc15 !important;
+  color: #0b1020 !important;
+  border-color: #fde68a !important;
+  font-weight: 900 !important;
+  width: 100%;
+  justify-content: center;
+}
+
+/* Accessible streak badge + SR live region */
+#gfx-streak-access {
+  position: fixed;
+  top: 70px;
+  left: 12px;
+  z-index: 9998;
+  background: rgba(15, 23, 42, 0.92);
+  color: #facc15;
+  border: 2px solid #f59e0b;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-weight: 900;
+  font-size: 14px;
+  font-family: "Nunito", system-ui, sans-serif;
+}
+#game-combo-hud.gfx-combo-calm {
+  background: #0f172a;
+  border-color: #f59e0b;
+  box-shadow: none;
+}
+.gfx-sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
 /* Retro BIOS Boot Diagnostic Screen */
 #gfx-bios-screen {
   position: fixed;
@@ -472,6 +658,13 @@ body.crt-glitch .page-shell {
   #gfx-arcade-controls {
     animation: none !important;
     display: none !important;
+  }
+  #game-combo-hud,
+  #gfx-coach-toast,
+  #gfx-pause-overlay .gfx-pause-card,
+  #gfx-mission-brief .gfx-mission-card {
+    transition: none !important;
+    animation: none !important;
   }
   [data-parallax] [data-parallax-layer],
   .ghero .deco {

@@ -13,8 +13,11 @@
  *   - 🌓 High-Contrast Accessibility Theme.
  *   - ⌨️ Keyboard Navigation & Controls Guide.
  *   - ⚡ Juicy Click Cursor Ripples & Stars.
- *   - 🔥 Animated Combo Score Multiplier HUD.
+ *   - 🔥 Animated Combo Score Multiplier HUD (+ calm reduced-motion path).
  *   - 🎵 Synthesized Retro 8-bit Background Music.
+ *   - 💡 Dual-feedback coach toast (visual + short teaching text on misses).
+ *   - ⏸️ Pause / resume overlay (Esc + toolbar); mute preference persists locally.
+ *   - 📜 One-time mission brief for arcade entry (sessionStorage).
  */
 (function () {
   "use strict";
@@ -573,23 +576,287 @@
     }
   }
 
+  // --- Dual-feedback coach toast (visual + short teaching text) ---
+  var coachHideTimer = null;
+  var COACH_COPY = {
+    en: {
+      wrong: "Not quite — check your steps and try again.",
+      wrongHint: "Coach tip: ",
+      streak: "Streak x",
+      streakGo: "You're on fire — keep going!",
+      pauseTitle: "Paused",
+      pauseBody: "Take a breath. Sound stays how you left it.",
+      resume: "Resume",
+      missionTitle: "Mission Brief",
+      missionBody:
+        "Solve each challenge at your own pace. Misses teach you — keep trying. First tries earn stars.",
+      missionGo: "Got it — let's play",
+      missionArcade:
+        "Practice Arcade: choose, sort, match, or find the mistake. No timer. Wrong math shows a coach tip so you learn, not just lose.",
+    },
+    es: {
+      wrong: "Casi — revisa tus pasos e inténtalo de nuevo.",
+      wrongHint: "Pista del coach: ",
+      streak: "Racha x",
+      streakGo: "¡Vas en racha — sigue así!",
+      pauseTitle: "Pausa",
+      pauseBody: "Respira. El sonido queda como lo dejaste.",
+      resume: "Continuar",
+      missionTitle: "Misión",
+      missionBody:
+        "Resuelve cada reto a tu ritmo. Los errores te enseñan — sigue intentando. Los aciertos al primer intento ganan estrellas.",
+      missionGo: "Entendido — a jugar",
+      missionArcade:
+        "Arcade de Práctica: elige, clasifica, une o encuentra el error. Sin cronómetro. Si te equivocas, el coach te explica para que aprendas.",
+    },
+  };
+  function coachLang() {
+    return document.body.classList.contains("es") ||
+      (document.documentElement.lang || "").toLowerCase().indexOf("es") === 0
+      ? "es"
+      : "en";
+  }
+  function coachT(key) {
+    var pack = COACH_COPY[coachLang()] || COACH_COPY.en;
+    return pack[key] || COACH_COPY.en[key] || key;
+  }
+  function ensureLiveRegion() {
+    var live = document.getElementById("gfx-live");
+    if (live) return live;
+    live = document.createElement("div");
+    live.id = "gfx-live";
+    live.className = "gfx-sr-only";
+    live.setAttribute("role", "status");
+    live.setAttribute("aria-live", "polite");
+    live.setAttribute("aria-atomic", "true");
+    document.body.appendChild(live);
+    return live;
+  }
+  function announce(msg) {
+    try {
+      var live = ensureLiveRegion();
+      live.textContent = "";
+      setTimeout(function () {
+        live.textContent = msg;
+      }, 30);
+    } catch (e) {}
+  }
+  function extractTeachText(fromEl) {
+    if (!fromEl || fromEl.nodeType !== 1) return "";
+    var root = fromEl.closest
+      ? fromEl.closest(".card, .round, .question, .prompt, .panel, [data-round], li, article") ||
+        fromEl.parentElement
+      : fromEl.parentElement;
+    if (!root) return "";
+    var why =
+      root.querySelector("[data-why], [data-explanation], .why, .explanation, .feedback-why") ||
+      document.querySelector("[data-gfx-why]");
+    if (why) {
+      var txt = (
+        why.getAttribute("data-why") ||
+        why.getAttribute("data-explanation") ||
+        why.textContent ||
+        ""
+      )
+        .replace(/\s+/g, " ")
+        .trim();
+      if (txt && txt.length < 220) return txt;
+    }
+    return "";
+  }
+  function showCoachToast(kind, text) {
+    var toast = document.getElementById("gfx-coach-toast");
+    if (!toast) {
+      toast = document.createElement("div");
+      toast.id = "gfx-coach-toast";
+      toast.className = "no-print";
+      toast.setAttribute("role", "status");
+      toast.setAttribute("aria-live", "polite");
+      document.body.appendChild(toast);
+    }
+    var msg = text || (kind === "good" ? coachT("streakGo") : coachT("wrong"));
+    toast.className = "no-print show gfx-coach-" + (kind === "good" ? "good" : "tip");
+    toast.innerHTML =
+      '<span class="gfx-coach-icon" aria-hidden="true">' +
+      (kind === "good" ? "✨" : "💡") +
+      '</span><span class="gfx-coach-msg">' +
+      msg.replace(/</g, "&lt;") +
+      "</span>";
+    announce(msg);
+    if (coachHideTimer) clearTimeout(coachHideTimer);
+    coachHideTimer = setTimeout(
+      function () {
+        toast.classList.remove("show");
+      },
+      reduce ? 4200 : 3200,
+    );
+  }
+
+  // --- Pause / resume overlay (Esc or toolbar) ---
+  var gamePaused = false;
+  function findPhaserGame() {
+    try {
+      if (window.Phaser && Phaser.GAMES && Phaser.GAMES.length) return Phaser.GAMES[0];
+    } catch (e) {}
+    try {
+      for (var key in window) {
+        try {
+          if (window[key] && typeof Phaser !== "undefined" && window[key] instanceof Phaser.Game) {
+            return window[key];
+          }
+        } catch (e2) {}
+      }
+    } catch (e3) {}
+    return window.game || window.ffGame || null;
+  }
+  function setPhaserPaused(paused) {
+    var pg = findPhaserGame();
+    if (!pg || !pg.scene) return;
+    try {
+      var scenes = pg.scene.getScenes(true);
+      for (var i = 0; i < scenes.length; i++) {
+        var sc = scenes[i];
+        if (!sc || !sc.scene) continue;
+        if (paused) sc.scene.pause();
+        else sc.scene.resume();
+      }
+    } catch (e) {}
+  }
+  function ensurePauseOverlay() {
+    var el = document.getElementById("gfx-pause-overlay");
+    if (el) return el;
+    el = document.createElement("div");
+    el.id = "gfx-pause-overlay";
+    el.className = "no-print";
+    el.setAttribute("role", "dialog");
+    el.setAttribute("aria-modal", "true");
+    el.setAttribute("aria-labelledby", "gfx-pause-title");
+    el.innerHTML =
+      '<div class="gfx-pause-card">' +
+      '<h2 id="gfx-pause-title">' +
+      coachT("pauseTitle") +
+      "</h2>" +
+      '<p class="gfx-pause-body">' +
+      coachT("pauseBody") +
+      "</p>" +
+      '<div class="gfx-pause-actions">' +
+      '<button type="button" class="pub-btn gfx-pause-resume" id="gfx-pause-resume">' +
+      coachT("resume") +
+      "</button>" +
+      '<button type="button" class="pub-btn" id="gfx-pause-mute" onclick="toggleGameSound()">🔊 Sound</button>' +
+      "</div>" +
+      '<p class="gfx-pause-hint">Esc · Resume</p>' +
+      "</div>";
+    document.body.appendChild(el);
+    el.querySelector("#gfx-pause-resume").addEventListener("click", function () {
+      setPaused(false);
+    });
+    return el;
+  }
+  function setPaused(on) {
+    gamePaused = !!on;
+    var el = ensurePauseOverlay();
+    var title = el.querySelector("#gfx-pause-title");
+    var body = el.querySelector(".gfx-pause-body");
+    var resume = el.querySelector("#gfx-pause-resume");
+    if (title) title.textContent = coachT("pauseTitle");
+    if (body) body.textContent = coachT("pauseBody");
+    if (resume) resume.textContent = coachT("resume");
+    el.classList.toggle("show", gamePaused);
+    document.body.classList.toggle("gfx-paused", gamePaused);
+    setPhaserPaused(gamePaused);
+    var btn = document.getElementById("btn-game-pause");
+    if (btn) btn.textContent = gamePaused ? "▶️ Resume" : "⏸️ Pause";
+    if (gamePaused) announce(coachT("pauseTitle"));
+  }
+  function togglePause() {
+    setPaused(!gamePaused);
+  }
+
+  // --- One-time mission brief (sessionStorage; Chromebook-safe) ---
+  function showMissionBrief() {
+    try {
+      var path = location.pathname || "/";
+      // Practice Arcade title scene already has an in-game mission strip.
+      if (/practice-arcade\/?(index\.html)?$/i.test(path)) return;
+      var key = "gfx-brief:" + path;
+      if (sessionStorage.getItem(key) === "1") return;
+    } catch (e) {}
+    var isArcade =
+      /practice-arcade|review-arcade|\/math\/games\//i.test(location.pathname || "") ||
+      !!document.querySelector('script[src*="game-juice"]');
+    var overlay = document.createElement("div");
+    overlay.id = "gfx-mission-brief";
+    overlay.className = "no-print show";
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-modal", "true");
+    overlay.setAttribute("aria-labelledby", "gfx-mission-title");
+    var bodyText = isArcade ? coachT("missionArcade") : coachT("missionBody");
+    overlay.innerHTML =
+      '<div class="gfx-mission-card">' +
+      '<p class="gfx-mission-tag">🎮 Arcade</p>' +
+      '<h2 id="gfx-mission-title">' +
+      coachT("missionTitle") +
+      "</h2>" +
+      "<p>" +
+      bodyText +
+      "</p>" +
+      '<button type="button" class="pub-btn gfx-mission-go" id="gfx-mission-go">' +
+      coachT("missionGo") +
+      "</button>" +
+      "</div>";
+    document.body.appendChild(overlay);
+    function dismiss() {
+      overlay.classList.remove("show");
+      setTimeout(function () {
+        overlay.remove();
+      }, 280);
+      try {
+        sessionStorage.setItem("gfx-brief:" + (location.pathname || "/"), "1");
+      } catch (e2) {}
+    }
+    overlay.querySelector("#gfx-mission-go").addEventListener("click", dismiss);
+    overlay.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === "Escape" || e.key === " ") {
+        e.preventDefault();
+        dismiss();
+      }
+    });
+    setTimeout(function () {
+      var go = overlay.querySelector("#gfx-mission-go");
+      if (go) go.focus();
+    }, 50);
+  }
+
   // --- Combo Score Multiplier HUD ---
   var comboDrainTimer = null;
   function updateComboHUD(streak) {
     var hud = document.getElementById("game-combo-hud");
     var meter = document.getElementById("gfx-combo-meter");
     var fill = document.getElementById("gfx-combo-fill");
+    var access = document.getElementById("gfx-streak-access");
     if (!hud) return;
 
-    if (streak >= 3) {
-      hud.textContent = "🔥 STREAK x" + streak + "! 🔥";
-      hud.className = "show pop";
-      AudioSynth.playTone(300 + streak * 60, "triangle", 0.1, 0.1);
-      setTimeout(function () {
-        hud.classList.remove("pop");
-      }, 300);
+    if (streak >= 2) {
+      var label = coachT("streak") + streak + "!";
+      hud.textContent = reduce ? label : "🔥 " + label + " 🔥";
+      hud.className = reduce ? "show gfx-combo-calm" : "show pop";
+      if (!reduce) {
+        AudioSynth.playTone(300 + streak * 60, "triangle", 0.1, 0.1);
+        setTimeout(function () {
+          hud.classList.remove("pop");
+        }, 300);
+      }
+      if (access) {
+        access.textContent = label;
+        access.hidden = false;
+      }
+      if (streak === 3 || streak === 5 || streak === 8) {
+        showCoachToast("good", coachT("streakGo") + " (" + label + ")");
+      }
+      announce(label);
 
-      if (meter && fill) {
+      if (meter && fill && !reduce) {
         meter.classList.add("active");
         fill.style.width = "100%";
         if (comboDrainTimer) clearInterval(comboDrainTimer);
@@ -606,6 +873,10 @@
       }
     } else {
       hud.className = "";
+      if (access) {
+        access.textContent = "";
+        access.hidden = true;
+      }
       if (meter) meter.classList.remove("active");
       if (comboDrainTimer) {
         clearInterval(comboDrainTimer);
@@ -678,17 +949,6 @@
   }
 
   // --- Cheats & Auto-Wins ---
-  function findPhaserGame() {
-    for (var key in window) {
-      try {
-        if (window[key] && window[key] instanceof Phaser.Game) {
-          return window[key];
-        }
-      } catch (e) {}
-    }
-    return window.game || window.ffGame || null;
-  }
-
   function cheatAutoWin() {
     var pg = findPhaserGame();
     if (pg) {
@@ -882,6 +1142,11 @@
     flash: flashScreen,
     shockwave: spawnShockwave,
     glitch: triggerScreenGlitch,
+    coach: showCoachToast,
+    pause: togglePause,
+    setPaused: setPaused,
+    brief: showMissionBrief,
+    announce: announce,
     reduce: reduce,
     bilingual: true,
     soundInjected: true,
@@ -912,11 +1177,19 @@
 
   window.toggleGameSound = function () {
     AudioSynth.muted = !AudioSynth.muted;
+    try {
+      localStorage.setItem("gfx-muted", AudioSynth.muted ? "1" : "0");
+      window.NT_MUTED = AudioSynth.muted;
+    } catch (e) {}
     var btn = document.getElementById("btn-game-sound");
     if (btn) btn.textContent = AudioSynth.muted ? "🔇 Sound: OFF" : "🔊 Sound: ON";
+    var pauseMute = document.getElementById("gfx-pause-mute");
+    if (pauseMute) pauseMute.textContent = AudioSynth.muted ? "🔇 Sound: OFF" : "🔊 Sound: ON";
     if (!AudioSynth.muted) AudioSynth.startMusic();
     else AudioSynth.stopMusic();
   };
+
+  window.toggleGamePause = togglePause;
 
   window.toggleGameContrast = function () {
     var hc = document.body.classList.toggle("high-contrast");
@@ -955,8 +1228,16 @@
     var hasAccess = !!document.querySelector('script[src*="game-access"]');
     var hasJuice = !!document.querySelector('script[src*="game-juice"]');
 
+    // Restore mute preference (device-local only).
+    try {
+      if (localStorage.getItem("gfx-muted") === "1") {
+        AudioSynth.muted = true;
+        window.NT_MUTED = true;
+      }
+    } catch (e) {}
+
     // Start background retro music loop (motion-safe users only, one loop max)
-    if (!reduce && !hasJuice) AudioSynth.startMusic();
+    if (!reduce && !hasJuice && !AudioSynth.muted) AudioSynth.startMusic();
 
     // Games load straight into play — no BIOS boot splash, no CRT screen warp.
 
@@ -973,13 +1254,40 @@
     toolbar.id = "game-pub-toolbar";
     toolbar.className = "no-print";
     toolbar.innerHTML = `
+      <button class="pub-btn" id="btn-game-pause" onclick="toggleGamePause()">⏸️ Pause</button>
       <button class="pub-btn" id="btn-game-lang" onclick="toggleGameLanguage()">🌐 Language: EN</button>
       ${hasAccess ? "" : '<button class="pub-btn" id="btn-game-read" onclick="readGameAloud()">🔊 Read</button>'}
-      <button class="pub-btn" id="btn-game-sound" onclick="toggleGameSound()">🔊 Sound: ON</button>
+      <button class="pub-btn" id="btn-game-sound" onclick="toggleGameSound()">${AudioSynth.muted ? "🔇 Sound: OFF" : "🔊 Sound: ON"}</button>
       <button class="pub-btn" id="btn-game-contrast" onclick="toggleGameContrast()">🌓 Contrast: NORM</button>
       <button class="pub-btn" id="btn-game-controls" onclick="toggleControlsDialog()">⌨️ Controls</button>
     `;
     document.body.appendChild(toolbar);
+
+    // Accessible streak badge (always available; calm under reduced motion)
+    var streakAccess = document.createElement("div");
+    streakAccess.id = "gfx-streak-access";
+    streakAccess.className = "no-print";
+    streakAccess.hidden = true;
+    streakAccess.setAttribute("aria-live", "polite");
+    document.body.appendChild(streakAccess);
+
+    ensureLiveRegion();
+
+    // Esc toggles pause (skip when typing in inputs / when brief is open)
+    document.addEventListener("keydown", function (e) {
+      if (e.key !== "Escape") return;
+      if (e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+      if (document.getElementById("gfx-mission-brief")) return;
+      e.preventDefault();
+      togglePause();
+    });
+
+    // Mission brief once per session for arcade / juiced games
+    setTimeout(function () {
+      try {
+        showMissionBrief();
+      } catch (eBrief) {}
+    }, 400);
 
     // 2. Inject Combo Streak HUD banner overlay
     var comboHud = document.createElement("div");
@@ -1049,7 +1357,8 @@
         <li><strong>Tab</strong> : Move focus between options and interactive tiles.</li>
         <li><strong>Enter / Space</strong> : Select a focused option or button.</li>
         <li><strong>Arrow Keys (Left/Right)</strong> : Slide, navigate, or direct standard horizontal mechanics.</li>
-        <li><strong>Escape</strong> : Close overlays or return to the main menu.</li>
+        <li><strong>Escape</strong> : Pause / resume the game (or close overlays).</li>
+        <li><strong>Pause button</strong> : Freeze play; mute stays how you set it.</li>
       </ul>
       <button class="cheat-btn" style="text-align:center;margin-top:12px;background:#0284c7;color:#fff;" onclick="toggleControlsDialog()">Close</button>
     `;
@@ -1134,6 +1443,8 @@
             shakeScreen();
             comboStreak = 0;
             updateComboHUD(0);
+            var teach = extractTeachText(target);
+            showCoachToast("tip", teach ? coachT("wrongHint") + teach : coachT("wrong"));
           }
         }
       });
@@ -1186,6 +1497,8 @@
               shakeScreen();
               comboStreak = 0;
               updateComboHUD(0);
+              var tip = extractTeachText(t);
+              showCoachToast("tip", tip ? coachT("wrongHint") + tip : coachT("wrong"));
             }
           }
         });
