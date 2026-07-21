@@ -159,8 +159,10 @@ function definitionLine(label, text, lang, dir = "ltr") {
   const line = el("p", "sg-vdef-line");
   line.lang = lang;
   line.dir = dir;
-  const language = el("strong", "sg-vdef-language", esc(label));
-  line.append(language, document.createTextNode(text));
+  // The language tag only clarifies things when two lanes are on screen; in
+  // English-only mode it is noise, so an empty label renders a clean definition.
+  if (label) line.appendChild(el("strong", "sg-vdef-language", esc(label)));
+  line.appendChild(document.createTextNode(text));
   return line;
 }
 
@@ -176,7 +178,7 @@ export function createVocabularySection(config, onDone, store = null) {
     el(
       "p",
       null,
-      "Tap each card to reveal its meaning. Use the speaker to hear the word, then finish the quick match.",
+      "Read each word and its meaning. Use the speaker to hear the word, then finish the quick match.",
     ),
   );
 
@@ -193,7 +195,7 @@ export function createVocabularySection(config, onDone, store = null) {
 
   if (available.length) {
     const bar = el("div", "sg-langbar");
-    bar.appendChild(el("span", "block-lab", "Also show:"));
+    bar.appendChild(el("span", "block-lab", "Language:"));
     const buttons = [];
     // The device lane is read once at render time by every section, so
     // switching it must re-render the whole studio. We persist the studio's
@@ -234,7 +236,7 @@ export function createVocabularySection(config, onDone, store = null) {
     buttons.push([englishOnly, "en"]);
     bar.appendChild(englishOnly);
     available.forEach((lang) => {
-      const button = el("button", "sg-langbtn", esc(lang.label));
+      const button = el("button", "sg-langbtn", esc(lang.toggleLabel || lang.label));
       button.type = "button";
       button.lang = lang.id;
       button.setAttribute("aria-pressed", String(currentLang?.id === lang.id));
@@ -282,19 +284,18 @@ export function createVocabularySection(config, onDone, store = null) {
       speaker.setAttribute("aria-label", `Hear ${word.term}`);
       speaker.onclick = () => speak(word.term, speaker);
       card.appendChild(speaker);
-      const reveal = el("button", "btn ghost", "Reveal meaning");
-      reveal.type = "button";
       const definition = el("div", "sg-vdef");
       const definitionText =
         word.definition || word.visual || "Use this word in today's math talk.";
-      const englishLine = definitionLine("English", definitionText, "en");
+      const secondaryDef = currentLang && word[`definition${currentLang.suffix}`];
+      // Label the English line only when a second lane is present to compare it to.
+      const englishLine = definitionLine(secondaryDef ? "English" : "", definitionText, "en");
       const speakDef = el("button", "sg-speak-inline", "🔊");
       speakDef.type = "button";
       speakDef.setAttribute("aria-label", `Hear the meaning of ${word.term}`);
       speakDef.onclick = () => speak(definitionText, speakDef);
       englishLine.appendChild(speakDef);
       definition.appendChild(englishLine);
-      const secondaryDef = currentLang && word[`definition${currentLang.suffix}`];
       if (secondaryDef)
         definition.appendChild(
           definitionLine(currentLang.label, secondaryDef, currentLang.id, currentLang.dir),
@@ -318,12 +319,7 @@ export function createVocabularySection(config, onDone, store = null) {
         });
         definition.appendChild(examples);
       }
-      definition.hidden = true;
-      reveal.onclick = () => {
-        definition.hidden = !definition.hidden;
-        reveal.textContent = definition.hidden ? "Reveal meaning" : "Hide meaning";
-      };
-      card.append(reveal, definition);
+      card.appendChild(definition);
       grid.appendChild(card);
     });
   };
