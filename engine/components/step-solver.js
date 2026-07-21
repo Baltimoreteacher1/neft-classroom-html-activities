@@ -490,6 +490,12 @@ export function renderStepSolver(container, cfg = {}) {
           : `🎉 <strong>Fully worked out!</strong> Every step stayed equivalent — <strong>${esc(text)}</strong> is your simplified answer.`,
       );
       setTimeout(() => root.classList.remove("stepslv-won"), 1400);
+      // Circle the final answer with a hand-drawn chalk mark (warm-deck only;
+      // no-op otherwise). The answer is the last <strong> in the win message.
+      if (window.NTChalk) {
+        const answerEl = feed.querySelector(".stepslv-msg-win strong:last-of-type");
+        if (answerEl) window.NTChalk.circle(answerEl);
+      }
     } else {
       const n = lines.length - 1;
       say(
