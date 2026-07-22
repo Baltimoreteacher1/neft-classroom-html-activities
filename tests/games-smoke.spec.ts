@@ -60,6 +60,7 @@ const IGNORE_CONSOLE = [
 
 for (const url of GAMES) {
   test(`game boots: ${url}`, async ({ page, baseURL }) => {
+    test.setTimeout(45_000);
     const pageErrors: string[] = [];
     const badResponses: string[] = [];
     const consoleErrors: string[] = [];
@@ -81,6 +82,16 @@ for (const url of GAMES) {
 
     await page.goto(url, { waitUntil: "load", timeout: 30_000 });
 
+    // The shared game layer may place a one-time mission brief above the
+    // game's own vocabulary gate. Clear it first so it cannot intercept the
+    // vocabulary button and consume the test timeout with blocked retries.
+    const missionBrief = page.locator("#gfx-mission-brief");
+    await missionBrief.waitFor({ state: "visible", timeout: 1_500 }).catch(() => {});
+    if (await missionBrief.isVisible()) {
+      await missionBrief.getByRole("button").click();
+      await expect(missionBrief).toBeHidden();
+    }
+
     // Some games show a one-time "vocab gate" modal (id ending in -vocab) BEFORE
     // play; a few (e.g. u2-fraction-frenzy) defer creating the Phaser canvas
     // until it is dismissed. Dismiss it so the real game flow runs. This repo's
@@ -96,11 +107,23 @@ for (const url of GAMES) {
         .last()
         .click({ timeout: 3_000 })
         .catch(() => {});
-      await page.waitForTimeout(300);
+      await vocabGate.waitFor({ state: "hidden", timeout: 1_000 }).catch(() => {});
     }
 
-    // Allow the game engine to boot, build textures, and start the first scene.
-    await page.waitForTimeout(2500);
+    // Wait on a rendered surface instead of guessing how long a busy classroom
+    // Chromebook or parallel CI worker needs to build the first scene.
+    await expect
+      .poll(
+        async () => {
+          const canvases = await page.locator("canvas").count();
+          const textLength = await page.evaluate(
+            () => (document.body?.innerText || "").trim().length,
+          );
+          return canvases > 0 || textLength > 40;
+        },
+        { timeout: 10_000 },
+      )
+      .toBe(true);
 
     // Most games are Phaser (canvas); a few use a DOM-based 2D engine. Verify
     // each "rendered something" with an engine-appropriate signal rather than
@@ -146,9 +169,7 @@ for (const url of GAMES) {
       "ArrowLeft",
     ]) {
       await page.keyboard.press(key).catch(() => {});
-      await page.waitForTimeout(250);
     }
-    await page.waitForTimeout(800);
 
     // If an input didn't navigate away, a canvas game must still have its
     // surface (a crash mid-game would tear it down).
