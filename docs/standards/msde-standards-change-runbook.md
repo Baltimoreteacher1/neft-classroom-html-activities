@@ -5,6 +5,13 @@ changes, the curriculum is **config‑driven**, so you adapt it by editing a few
 source files and running **one command**. You never hand‑edit the curriculum hub,
 the manifests, or 60+ lesson pages.
 
+> **Start in the browser:** the [Standards Shift Studio](/teacher-tools/standards-shift-studio/)
+> (`teacher-tools/standards-shift-studio/`) models a proposed change against the
+> live curriculum first — paste the draft standards, review the auto‑drafted
+> crosswalk, re‑sequence with a live spine doctor, and download the exact files
+> this runbook consumes (crosswalk JSON, registry additions, spine edits, lesson
+> starters) plus an adaptation brief. Then apply them with the steps below.
+
 ## The mental model (memorize this)
 
 ```
