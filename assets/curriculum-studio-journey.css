@@ -1,0 +1,91 @@
+/* Studio Journey — per-unit progress "gallery wall" strip on the curriculum
+ * hub + a continue-where-you-left-off chip. Additive and scoped (.ntj-*):
+ * reads existing local signals only, renders growth, never deficits. */
+
+.ntj-continue {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 14px 0;
+  padding: 12px 16px;
+  border: 2px solid #7c5cd6;
+  border-radius: 14px;
+  background: #f6f3ff;
+  color: #2d2354;
+}
+.ntj-continue a {
+  font-weight: 800;
+  color: #4c2ea8;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  border-radius: 8px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.ntj-continue a:focus-visible {
+  outline: 3px solid #4c2ea8;
+  outline-offset: 2px;
+}
+.ntj-continue .ntj-es {
+  flex-basis: 100%;
+}
+
+.ntj-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin: 10px 0 2px;
+}
+.ntj-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1.5px solid #d5d9e6;
+  border-radius: 999px;
+  background: #f6f7fb;
+  color: #4a5068;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 5px 12px;
+  transition:
+    background 200ms ease,
+    border-color 200ms ease;
+}
+.ntj-pill[data-lit="true"] {
+  border-color: #7c5cd6;
+  background: #efe9ff;
+  color: #3b2a75;
+}
+.ntj-complete {
+  border-color: #15803d;
+  background: #ecfdf3;
+  color: #14532d;
+}
+.ntj-invite {
+  font-size: 0.82rem;
+  color: #5a6178;
+  margin: 0;
+  font-style: italic;
+}
+.ntj-es {
+  display: block;
+  font-size: 0.86em;
+  font-style: italic;
+  color: #6d5bb0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ntj-pill {
+    transition: none;
+  }
+}
+@media print {
+  .ntj-continue,
+  .ntj-strip,
+  .ntj-invite {
+    display: none;
+  }
+}

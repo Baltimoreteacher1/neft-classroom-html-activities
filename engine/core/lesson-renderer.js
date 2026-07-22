@@ -30,6 +30,7 @@ import { mountCertificateDownload } from "./certificate-export.js";
 import { mountChalkAnnotations } from "./chalk-annotate.js";
 import { deriveCommonMistake, deriveErrorExample } from "./content-enrichment.js";
 import { mountDiscussionMoment } from "./discourse.js";
+import { createGoDeeper } from "./go-deeper.js";
 import { buildGradeCard } from "./grade.js";
 import { recommendedNext } from "./grade-emit.js";
 import { mountHintLadder } from "./hint-ladder.js";
@@ -65,7 +66,7 @@ import {
   numberLineSVG,
   tapeDiagramSVG,
 } from "./visual-figures.js";
-import resolveVocabImage, { vocabImageAlt, hasRealVocabImage } from "./vocab-images.js";
+import resolveVocabImage, { hasRealVocabImage, vocabImageAlt } from "./vocab-images.js";
 import { deriveWorkedSteps } from "./worked-steps.js";
 
 export function bootLesson(config) {
@@ -73,6 +74,21 @@ export function bootLesson(config) {
   // <head> — never rendered on screen; discoverable via View Source / DevTools
   // and mirrored in the Teacher Mode panel + reports/uifr-teach-l4-coverage.*.
   stampTeachL4Meta(config);
+  // Studio Journey breadcrumb: lets the curriculum hub offer "pick up where
+  // you left off". Local-only, no PII (lesson id + title + path).
+  try {
+    localStorage.setItem(
+      "nt-journey-last",
+      JSON.stringify({
+        id: config.lessonId,
+        title: config.title || "",
+        path: window.location.pathname,
+        t: Date.now(),
+      }),
+    );
+  } catch (_error) {
+    /* private mode — breadcrumb is optional */
+  }
   createApp({
     ...config,
     // Vocabulary lives only in the Vocab tab now (the Vocab Explorer), so it is
@@ -2711,6 +2727,12 @@ function renderPracticePhase(el, state, ctx, config) {
     );
   }
   next();
+
+  // Go Deeper: the optional advanced path (solve a stretch problem → convince
+  // a skeptic → author your own harder version). Invitation-only — collapsed,
+  // never counted toward phase completion, safe for every tier.
+  const goDeeper = createGoDeeper({ config, lessonId: config.lessonId, variant: "lesson" });
+  if (goDeeper) el.append(goDeeper);
 }
 
 // ── Phase 5: Connect ──

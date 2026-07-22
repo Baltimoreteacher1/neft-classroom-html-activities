@@ -2,6 +2,8 @@
 // Lesson configs remain the content source of truth; focused modules own the
 // engagement interactions, math practice, and visual system.
 
+import { createRhythmCoach } from "./facilitation-rhythm.js";
+import { createGoDeeper } from "./go-deeper.js";
 import { installSmallGroupAnnotation } from "./small-group-annotation.js";
 import { createBuildVisualizer } from "./small-group-build-visuals.js";
 import {
@@ -34,14 +36,14 @@ import {
   createPracticeSection,
 } from "./small-group-practice.js";
 import { createStudioStore } from "./small-group-state.js";
-import { mountSmallGroupTabs } from "./small-group-tabs.js";
-import { mountSmallGroupTeacherAccess } from "./small-group-teacher-access.js";
 import {
   installStoryboardScenes,
   markScene,
   mountThemeArt,
   themeDisplayName,
 } from "./small-group-storyboard.js";
+import { mountSmallGroupTabs } from "./small-group-tabs.js";
+import { mountSmallGroupTeacherAccess } from "./small-group-teacher-access.js";
 import {
   ACCENTS,
   bi,
@@ -392,6 +394,21 @@ function renderStudio(config) {
   const accent = ACCENTS[variant] || ACCENTS.catchup;
   const voice = voiceFor(variant);
   injectSmallGroupStyles(accent);
+  // Studio Journey breadcrumb for the curriculum hub's "pick up where you
+  // left off" chip. Local-only, no PII (lesson id + title + path).
+  try {
+    localStorage.setItem(
+      "nt-journey-last",
+      JSON.stringify({
+        id: config.lessonId,
+        title: config.title || "",
+        path: window.location.pathname,
+        t: Date.now(),
+      }),
+    );
+  } catch (_error) {
+    /* private mode — breadcrumb is optional */
+  }
   document.title = `${config.title || "Small-Group Math Studio"} — Neft Teacher`;
 
   const app = document.getElementById("app");
@@ -649,6 +666,12 @@ function renderStudio(config) {
     onDone: phaseDone("sg-tab-more", "applyDone"),
   });
 
+  // Go Deeper stretch parity: group1/catch-up get the optional advanced path
+  // (group2 already has the full Prove It lab). Deliberately NOT registered in
+  // trackedPhases — it's an invitation, never part of the progress denominator.
+  const goDeeper =
+    variant === "group2" ? null : createGoDeeper({ config, lessonId: config.lessonId, variant });
+
   // Register the phase checks that exist in THIS lesson (labs are optional),
   // and restore ones finished last session, so the meter's denominator is
   // honest and prior work still counts. Practice-driven phase marks
@@ -718,7 +741,7 @@ function renderStudio(config) {
     {
       id: "sg-tab-more",
       label: "More Practice",
-      panel: makePanel("sg-tab-more", [morePractice, mission, apply]),
+      panel: makePanel("sg-tab-more", [morePractice, mission, apply, goDeeper]),
     },
     // Group 2 only — panel is empty (and auto-filtered) for other variants.
     {
@@ -802,6 +825,8 @@ function renderStudio(config) {
       teacherToolsAdded = true;
       const teacherConfig = { ...config, smallGroup: facilitation };
       const evidenceConsole = createTeacherEvidenceConsole(teacherConfig, state);
+      const rhythm = createRhythmCoach(facilitation);
+      if (rhythm) heroNode.after(rhythm);
       const panel = teacherPanel(teacherConfig, accent, talkData);
       if (panel) heroNode.after(panel);
       if (evidenceConsole) heroNode.after(evidenceConsole);
