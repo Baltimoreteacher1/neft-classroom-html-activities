@@ -62,6 +62,7 @@ export const SKIP_TOPLEVEL = new Set([
   "assets",
   "docs",
   "curriculum", // curriculum hub/index pages, not activities
+  "families", // read-only family reference guides, not student work surfaces
   "about", // public about/impact/accessibility/privacy info pages — not activities
   "personal", // private (event planning, family pages) — not classroom activities
   "futures", // concept/demo/roadmap pages — not student activities
