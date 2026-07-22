@@ -204,6 +204,99 @@ function powerModel({ base, exp, value }) {
   return svg(`${base} to the power ${exp} equals ${value}`, x + 84, y + chip + 16, out);
 }
 
+// ── Cumulative factor tree ────────────────────────────────────────────────
+// A worked factor-tree example is a *derivation*: each step splits one more
+// composite factor. Rendering every step's split in isolation loses the shape
+// of the tree, so instead we keep a running tree across the stage's steps and
+// redraw the WHOLE tree at each step, highlighting the branch that just grew.
+// (splitModel below stays as the fallback for a lone, out-of-sequence split.)
+
+function treeNode(value) {
+  return { value, children: [], isNew: false };
+}
+
+// First unexpanded leaf whose value matches — the node a "N = a × b" step grows.
+function findLeaf(node, value) {
+  if (!node.children.length) return node.value === value ? node : null;
+  for (const child of node.children) {
+    const hit = findLeaf(child, value);
+    if (hit) return hit;
+  }
+  return null;
+}
+
+function eachNode(node, fn) {
+  fn(node);
+  node.children.forEach((c) => eachNode(c, fn));
+}
+
+// Layout the tree and emit SVG. Leaves get evenly spaced x slots; internal
+// nodes centre over their children. Nodes flagged `isNew` (and the edges into
+// them) render in the emphasis colour so the newest branch reads at a glance.
+function cumulativeTreeModel(root) {
+  const R = 19;
+  const slotW = 58;
+  const levelH = 62;
+  const padX = 24;
+  const padTop = 24;
+  const padBot = 20;
+
+  let leafIndex = 0;
+  let maxDepth = 0;
+  const place = (node, depth) => {
+    if (depth > maxDepth) maxDepth = depth;
+    if (!node.children.length) {
+      node.x = padX + R + leafIndex * slotW;
+      leafIndex++;
+    } else {
+      node.children.forEach((c) => place(c, depth + 1));
+      const kids = node.children;
+      node.x = (kids[0].x + kids[kids.length - 1].x) / 2;
+    }
+    node.y = padTop + R + depth * levelH;
+  };
+  place(root, 0);
+
+  const leaves = Math.max(leafIndex, 1);
+  const w = padX * 2 + R * 2 + (leaves - 1) * slotW;
+  const h = padTop + padBot + R * 2 + maxDepth * levelH;
+
+  let edges = "";
+  let nodes = "";
+  const draw = (node) => {
+    node.children.forEach((child) => {
+      const hot = child.isNew;
+      edges += `<line x1="${node.x}" y1="${node.y}" x2="${child.x}" y2="${child.y}" stroke="${hot ? "var(--sg-deep)" : "var(--sg-line)"}" stroke-width="${hot ? 3.5 : 2.5}"/>`;
+      draw(child);
+    });
+    const leaf = !node.children.length;
+    const prime = leaf && isPrime(node.value);
+    let fill;
+    let stroke;
+    let txt;
+    if (!leaf) {
+      fill = "var(--sg)";
+      stroke = "var(--sg)";
+      txt = "white";
+    } else if (prime) {
+      fill = "var(--sg-good)";
+      stroke = "var(--sg-good)";
+      txt = "white";
+    } else {
+      fill = "color-mix(in srgb,var(--sg-warn) 30%,white)";
+      stroke = "var(--sg-warn)";
+      txt = "var(--sg-warn)";
+    }
+    if (node.isNew)
+      nodes += `<circle cx="${node.x}" cy="${node.y}" r="${R + 5}" fill="none" stroke="var(--sg-deep)" stroke-width="2.5" stroke-dasharray="3 3"/>`;
+    nodes += `<circle cx="${node.x}" cy="${node.y}" r="${R}" fill="${fill}" stroke="${stroke}" stroke-width="2.5"/>`;
+    nodes += `<text x="${node.x}" y="${node.y + 6}" text-anchor="middle" font-size="16" font-weight="900" fill="${txt}">${node.value}</text>`;
+  };
+  draw(root);
+
+  return svg(`Factor tree for ${root.value}`, w, h, edges + nodes);
+}
+
 // n = f1 × f2 (× f3) as a parent node branching into factor leaves.
 function splitModel({ parent, factors }) {
   const leaves = factors.slice(0, 5);
@@ -310,10 +403,16 @@ const RENDERERS = {
   line: lineModel,
 };
 
-// Public: build the visual-model element for one Build step, or null when the
-// line carries no drawable math (pure talk/instruction lines).
-export function buildStepVisual(line) {
-  const relation = parseRelation(line);
+function figureFrom(markup) {
+  if (!markup) return null;
+  const host = el("figure", "sg-step-visual", markup);
+  host.setAttribute("aria-hidden", "false");
+  return host;
+}
+
+// One step's stand-alone model (array, fraction bar, single split, …) — used
+// when the line isn't part of a growing factor tree.
+function statelessVisual(relation) {
   if (!relation) return null;
   const render = RENDERERS[relation.kind];
   if (!render) return null;
@@ -323,8 +422,79 @@ export function buildStepVisual(line) {
   } catch {
     return null;
   }
-  if (!markup) return null;
-  const host = el("figure", "sg-step-visual", markup);
-  host.setAttribute("aria-hidden", "false");
-  return host;
+  return figureFrom(markup);
+}
+
+// Read a step's relation as a factor-tree move: a parent breaking into factors.
+// `fromArray` marks products written as "a × b" (no explicit parent named), so
+// the caller can refuse to *seed* a tree from them (a bare product in a
+// multiplication example must stay an area model, not sprout a tree).
+function treeMove(relation) {
+  if (!relation) return null;
+  if (relation.kind === "split")
+    return { parent: relation.parent, factors: relation.factors, fromArray: false };
+  if (relation.kind === "array")
+    return {
+      parent: relation.c != null ? relation.c : relation.a * relation.b,
+      factors: [relation.a, relation.b],
+      fromArray: true,
+    };
+  return null;
+}
+
+// Public: a per-stage visual builder. Call the returned function on each step
+// line in order. Factor-tree steps accumulate into one growing tree that is
+// redrawn — whole — every step with the newest branch highlighted; every other
+// step falls back to its own stand-alone model. Kept stateful (not a pure
+// per-line call) precisely so "each step shows the full tree so far".
+export function createBuildVisualizer() {
+  let tree = null;
+  let seedBlocked = false;
+
+  return function visualFor(line) {
+    const relation = parseRelation(line);
+    const move = treeMove(relation);
+
+    if (tree && move) {
+      // Grow the branch whose composite value this step splits…
+      const leaf = findLeaf(tree, move.parent);
+      if (leaf) {
+        eachNode(tree, (n) => (n.isNew = false));
+        move.factors.forEach((f) => {
+          const child = treeNode(f);
+          child.isNew = true;
+          leaf.children.push(child);
+        });
+        return figureFrom(cumulativeTreeModel(tree));
+      }
+      // …or restate the finished factorisation ("60 = 2 × 2 × 3 × 5"): keep the
+      // built tree and spotlight the prime leaves that are the answer.
+      if (move.parent === tree.value) {
+        eachNode(tree, (n) => (n.isNew = !n.children.length && isPrime(n.value)));
+        return figureFrom(cumulativeTreeModel(tree));
+      }
+      // A split that fits nowhere in this tree → stand-alone model, tree intact.
+      return statelessVisual(relation);
+    }
+
+    // No tree yet: seed one only from an explicit "N = a × b" split, and only
+    // if the stage's first drawable step was one (so a bare product doesn't
+    // start a spurious tree in a non-factoring example).
+    if (!tree && move && !move.fromArray && !seedBlocked) {
+      tree = treeNode(move.parent);
+      move.factors.forEach((f) => {
+        const child = treeNode(f);
+        child.isNew = true;
+        tree.children.push(child);
+      });
+      return figureFrom(cumulativeTreeModel(tree));
+    }
+    if (relation) seedBlocked = true;
+    return statelessVisual(relation);
+  };
+}
+
+// Public (back-compat): a single, stand-alone step visual.
+export function buildStepVisual(line) {
+  return createBuildVisualizer()(line);
 }
