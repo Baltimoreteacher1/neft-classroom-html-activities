@@ -958,6 +958,14 @@
     // shared taxonomy loads; the section removes itself if presets are absent.
     buildQuickSetupsSection(toolsInner);
 
+    // Fold the ~24 tool buttons into a few collapsible, labelled groups so the
+    // rail opens as a short list of categories instead of one long wall of
+    // buttons (per Joel 2026-07-22: "make the right side simpler / minimize the
+    // buttons"). Every button keeps its original element, handlers, data-tool,
+    // and active state — they are just re-parented into group bodies — so all
+    // `[data-tool="…"]` queries and toggles elsewhere keep working unchanged.
+    buildToolAccordion(toolsInner);
+
     studentTools.appendChild(toolsInner);
 
     // Collapse / reopen so the tools bar can be turned off when it's in the way.
@@ -3237,6 +3245,123 @@
   // v2SyncBridgeProfiles + saveStoredPreferences) plus a `quickSetup` marker
   // so the active chip survives a reload.
   // =========================================================================
+  // Category groups for the tools rail. Each group's `tools` lists data-tool
+  // ids in display order; any button not named here is swept into a trailing
+  // "More" group so a newly-added tool can never silently disappear.
+  const TOOL_GROUPS = [
+    {
+      id: "read",
+      label: "📖 Reading & Language",
+      tools: ["words", "explain", "translate", "listen", "rate"],
+    },
+    { id: "learn", label: "🧠 Learn It", tools: ["example", "model", "misconceptions"] },
+    {
+      id: "math",
+      label: "🧮 Math Tools",
+      tools: ["multchart", "numberline", "placevalue", "calculator"],
+    },
+    {
+      id: "focus",
+      label: "🌿 Focus & Comfort",
+      tools: ["focus", "ruler", "comfort", "textsize", "tint", "break"],
+    },
+    {
+      id: "work",
+      label: "✍️ Work & Notes",
+      tools: ["checklist", "directions", "highlighter", "organizer", "notepad", "checkin"],
+    },
+  ];
+  const OPEN_GROUP_KEY = "nt-supports-open-group";
+
+  function buildToolAccordion(inner) {
+    // Snapshot the flat tool buttons before we start moving them.
+    const btns = new Map();
+    inner.querySelectorAll(".ewl-supports-tool-btn[data-tool]").forEach((b) => {
+      btns.set(b.getAttribute("data-tool"), b);
+    });
+    if (!btns.size) return;
+
+    const openGroup = () => {
+      try {
+        return localStorage.getItem(OPEN_GROUP_KEY) || "";
+      } catch (_e) {
+        return "";
+      }
+    };
+
+    const groups = [];
+    const placed = new Set();
+
+    const makeGroup = (id, label) => {
+      const group = document.createElement("div");
+      group.className = "ewl-supports-group";
+      group.dataset.group = id;
+
+      const head = document.createElement("button");
+      head.type = "button";
+      head.className = "ewl-supports-group-head";
+      head.setAttribute("aria-expanded", "false");
+      head.innerHTML =
+        '<span class="ewl-supports-group-label">' +
+        label +
+        '</span><span class="ewl-supports-group-caret" aria-hidden="true">▾</span>';
+
+      const body = document.createElement("div");
+      body.className = "ewl-supports-group-body";
+      body.hidden = true;
+
+      head.addEventListener("click", () => {
+        const willOpen = body.hidden;
+        // Accordion: opening one group closes the others so the rail stays short.
+        groups.forEach((g) => {
+          g.body.hidden = true;
+          g.head.setAttribute("aria-expanded", "false");
+        });
+        body.hidden = !willOpen;
+        head.setAttribute("aria-expanded", String(willOpen));
+        try {
+          localStorage.setItem(OPEN_GROUP_KEY, willOpen ? id : "");
+        } catch (_e) {
+          /* private mode — non-fatal */
+        }
+      });
+
+      group.append(head, body);
+      inner.appendChild(group);
+      const entry = { id, head, body };
+      groups.push(entry);
+      return entry;
+    };
+
+    TOOL_GROUPS.forEach((def) => {
+      const members = def.tools.map((t) => btns.get(t)).filter(Boolean);
+      if (!members.length) return;
+      const entry = makeGroup(def.id, def.label);
+      members.forEach((b) => {
+        entry.body.appendChild(b);
+        placed.add(b);
+      });
+    });
+
+    // Safety net: any tool button not claimed above goes into a "More" group.
+    const leftovers = [...btns.values()].filter((b) => !placed.has(b));
+    if (leftovers.length) {
+      const entry = makeGroup("more", "➕ More Tools");
+      leftovers.forEach((b) => entry.body.appendChild(b));
+    }
+
+    // Restore the last-opened group; otherwise reveal a group that already has
+    // an active tool (e.g. teacher-assigned supports auto-enabled on load).
+    let toOpen = groups.find((g) => g.id === openGroup());
+    if (!toOpen) {
+      toOpen = groups.find((g) => g.body.querySelector(".is-active, [aria-pressed='true']"));
+    }
+    if (toOpen) {
+      toOpen.body.hidden = false;
+      toOpen.head.setAttribute("aria-expanded", "true");
+    }
+  }
+
   function buildQuickSetupsSection(inner) {
     const section = document.createElement("div");
     section.className = "ewl-supports-quick-row";
