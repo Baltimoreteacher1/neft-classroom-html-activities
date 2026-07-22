@@ -162,7 +162,12 @@ test.describe("small-group guided math studio", () => {
     const tools = page.getByRole("region", { name: "Study mark-up tools" });
     await expect(tools).toBeVisible();
     // The toolbar is collapsed by default so the lesson leads — open it.
-    await tools.getByText("Mark up this page").click();
+    // While collapsed, the "Mark up this page" label is deliberately sr-only
+    // (small-group-annotation.css clips it to 1×1px so the dock shrinks to a
+    // compact 🖍️ icon tab); clicking the label text therefore hangs — the icon
+    // intercepts the pointer. Intentional design change; the stale test now
+    // clicks the summary control itself, like a real student clicking the tab.
+    await tools.locator("summary.sg-annotation-summary").click();
     await expect(tools.getByText(/select words in the lesson/i)).toBeVisible();
 
     const selectPhrase = async (phrase: string) => {
@@ -232,7 +237,9 @@ test.describe("small-group guided math studio", () => {
     const firstCard = page.locator(".sg-vcard").first();
     await expect(firstCard.getByText(/ES:\s*Número primo/)).toBeVisible();
     await expect(firstCard.getByText(/VI:|AR:/)).toHaveCount(0);
-    await firstCard.getByRole("button", { name: "Reveal meaning" }).click();
+    // The vocab cards now lead with the EN + ES meanings always visible
+    // (vocab-first design: definitions before activities, no reveal gate).
+    // The old "Reveal meaning" button no longer exists — stale expectation.
     await expect(
       firstCard.getByText("A number bigger than 1 that you can only divide by 1 and itself."),
     ).toBeVisible();
@@ -363,21 +370,31 @@ test.describe("small-group guided math studio", () => {
   test("curriculum keeps each small-group pair directly below its main lesson", async ({
     page,
   }) => {
+    // The hub no longer serves static `details.lesson` rows — the interactive
+    // hub (#interactive-hub) intentionally re-renders each unit at runtime as a
+    // unit card with a per-unit lesson dropdown, so the old DOM walk matched
+    // nothing (findIndex -1). Stale test, not a hub-ordering bug: assert the
+    // same invariant on the rendered surface — in the Unit 1 dropdown the
+    // small-group pair sits directly below its main lesson, and selecting a
+    // small-group entry surfaces its launch link. (rAF shim: parallel headless
+    // pages report visibilityState "hidden", which suspends the rAF the hub
+    // defers its rendering through — same shim as the dropdown sweep below.)
+    await page.addInitScript(() => {
+      window.requestAnimationFrame = (cb) =>
+        window.setTimeout(() => cb(performance.now()), 16) as unknown as number;
+    });
     await page.goto("/curriculum/");
-    const order = await page.evaluate(() =>
-      [...document.querySelectorAll("details.lesson")].map((lesson) => ({
-        text: lesson.querySelector("summary")?.textContent?.replace(/\s+/g, " ").trim() || "",
-        hrefs: [...lesson.querySelectorAll<HTMLAnchorElement>("a[href]")].map(
-          (link) => link.getAttribute("href") || "",
-        ),
-      })),
-    );
-    const parent = order.findIndex((item) => item.hrefs.includes("/lessons/1-1/"));
+    const dropdown = page.locator(".lesson-select").first();
+    await expect(dropdown).toBeVisible();
+    const labels = await dropdown.locator("option").allTextContents();
+    const parent = labels.findIndex((label) => /^Lesson 1-1 ·/.test(label.trim()));
     expect(parent).toBeGreaterThanOrEqual(0);
-    expect(order[parent + 1].hrefs).toContain("/lessons/1-1-group1/");
-    expect(order[parent + 1].text).toContain("1.1 Small Group: Group 1");
-    expect(order[parent + 2].hrefs).toContain("/lessons/1-1-group2/");
-    expect(order[parent + 2].text).toContain("1.1 Small Group: Group 2");
+    expect(labels[parent + 1]).toContain("1.1 Small Group: Group 1");
+    expect(labels[parent + 2]).toContain("1.1 Small Group: Group 2");
+    await dropdown.selectOption({ index: parent + 1 });
+    await expect(page.locator('a[href="/lessons/1-1-group1/"]').first()).toBeVisible();
+    await dropdown.selectOption({ index: parent + 2 });
+    await expect(page.locator('a[href="/lessons/1-1-group2/"]').first()).toBeVisible();
   });
 
   test("visible lesson dropdowns place small groups directly after their main lesson", async ({
@@ -477,17 +494,32 @@ test.describe("small-group guided math studio", () => {
     await expect(steps.nth(2).getByText(/Proof complete/)).toBeVisible();
   });
 
-  test("student studio has no serious or critical accessibility violations", async ({ page }) => {
-    await page.goto("/lessons/1-1-group1/");
-    const results = await new AxeBuilder({ page })
-      .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
-      .analyze();
-    const blocking = results.violations.filter(
-      (violation) => violation.impact === "serious" || violation.impact === "critical",
-    );
-    expect(
-      blocking,
-      blocking.map((violation) => `${violation.id}: ${violation.help}`).join("\n"),
-    ).toEqual([]);
+  test.describe("full-page axe scan", () => {
+    // The studio's entrance stagger (`sg-scene-in` on .sg-vcard and friends)
+    // fades content in from opacity 0; axe blends that mid-animation ancestor
+    // opacity into the text color, so a scan fired right after load reported
+    // transient color-contrast "violations" (e.g. .sg-vexample measured as
+    // #608d77 on #edf5ed = 3.38:1) even though the settled colors pass
+    // (rgb(14,80,51) on the same chip ≈ 8.6:1 — a settled scan reports zero
+    // violations). Not a real contrast bug: the scan raced the animation.
+    // Emulate reduced motion — which the studio CSS honors — so the scan is
+    // deterministic, with no axe rule weakened or scoped out.
+    test.use({ contextOptions: { reducedMotion: "reduce" } });
+
+    test("student studio has no serious or critical accessibility violations", async ({
+      page,
+    }) => {
+      await page.goto("/lessons/1-1-group1/");
+      const results = await new AxeBuilder({ page })
+        .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
+        .analyze();
+      const blocking = results.violations.filter(
+        (violation) => violation.impact === "serious" || violation.impact === "critical",
+      );
+      expect(
+        blocking,
+        blocking.map((violation) => `${violation.id}: ${violation.help}`).join("\n"),
+      ).toEqual([]);
+    });
   });
 });

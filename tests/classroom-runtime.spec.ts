@@ -46,12 +46,27 @@ test("classroom runtime compiles, adapts, reviews, and forks in English/Spanish 
   await expect(page.locator("#fork-invariants")).toContainText("6.NOS.4");
 });
 
-test("runtime has no serious accessibility violations", async ({ page }) => {
-  await page.goto("/curriculum/runtime/");
-  await expect(page.getByRole("status")).toContainText("canonical lessons ready");
-  const results = await new AxeBuilder({ page }).analyze();
-  const blocking = results.violations.filter(({ impact }) => impact === "serious" || impact === "critical");
-  expect(blocking, blocking.map(({ id, help }) => `${id}: ${help}`).join("\n")).toEqual([]);
+test.describe("full-page axe scan", () => {
+  // FLAKY-fix: the compose stage fades in on load, and axe blends the
+  // mid-animation opacity into the text colors — so this scan intermittently
+  // flagged color-contrast on .eyebrow / #privacy / #compose-submit with
+  // ratios that drifted run-to-run (2.6–4.4:1 on identical builds), while the
+  // settled colors all pass (a settled or reduced-motion scan is consistently
+  // clean; e.g. the eyebrow settles at rgb(16,103,99) on #f4f1e8). The colors
+  // in curriculum/runtime/runtime.css are fine — the scan raced the entrance
+  // animation. Emulate reduced motion for a deterministic scan with no axe
+  // rule weakened or scoped out.
+  test.use({ contextOptions: { reducedMotion: "reduce" } });
+
+  test("runtime has no serious accessibility violations", async ({ page }) => {
+    await page.goto("/curriculum/runtime/");
+    await expect(page.getByRole("status")).toContainText("canonical lessons ready");
+    const results = await new AxeBuilder({ page }).analyze();
+    const blocking = results.violations.filter(
+      ({ impact }) => impact === "serious" || impact === "critical",
+    );
+    expect(blocking, blocking.map(({ id, help }) => `${id}: ${help}`).join("\n")).toEqual([]);
+  });
 });
 
 test("clicking a left-side unit keeps its lessons visible and launchable", async ({ page }) => {

@@ -62,7 +62,14 @@ test.describe("teacher command center", () => {
 test("student launcher is focused, safe, and accessible", async ({ page }) => {
   await page.goto("/curriculum/student-launch/?playlist=1-1,1-2");
   await expect(page.getByRole("heading", { name: "Prime Factorization" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Start lesson" })).toHaveAttribute("href", "/lessons/1-1/");
+  // The launcher deliberately appends ?student=1 (assets/curriculum-student-launch.js
+  // forceStudentMode): it pins the lesson to Student Mode so a student following a
+  // launcher link can never land in a teacher-mode session. Intentional privacy
+  // feature — the old bare-href expectation was stale.
+  await expect(page.getByRole("link", { name: "Start lesson" })).toHaveAttribute(
+    "href",
+    "/lessons/1-1/?student=1",
+  );
   await expect(page.getByText("Lesson 1 of 2")).toBeVisible();
   await page.getByRole("button", { name: "Next lesson →" }).click();
   await expect(page.getByRole("heading", { name: "Greatest Common Factor" })).toBeVisible();

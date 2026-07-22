@@ -81,6 +81,23 @@ for (const url of GAMES) {
 
     await page.goto(url, { waitUntil: "load", timeout: 30_000 });
 
+    // The shared Game FX kit deliberately opens a one-time "Mission Brief"
+    // dialog (#gfx-mission-brief, aria-modal) on top of the whole page before
+    // play. On games that ALSO have a vocab gate (u1-factor-frenzy,
+    // unit10-volume-vault) it sits above the gate and intercepts pointer
+    // events, so the gate-dismissal clicks below timed out. The dialog is an
+    // intentional site feature — dismiss it first (stale test, not a game bug).
+    const missionBrief = page.locator("#gfx-mission-brief");
+    await missionBrief.waitFor({ state: "visible", timeout: 1500 }).catch(() => {});
+    if (await missionBrief.isVisible()) {
+      await missionBrief
+        .locator("button:visible")
+        .last()
+        .click({ timeout: 3_000 })
+        .catch(() => {});
+      await missionBrief.waitFor({ state: "hidden", timeout: 2_000 }).catch(() => {});
+    }
+
     // Some games show a one-time "vocab gate" modal (id ending in -vocab) BEFORE
     // play; a few (e.g. u2-fraction-frenzy) defer creating the Phaser canvas
     // until it is dismissed. Dismiss it so the real game flow runs. This repo's
