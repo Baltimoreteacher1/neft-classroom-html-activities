@@ -1206,10 +1206,23 @@
             </button>
           </div>
 
-          <button class="calc-btn" onclick="updateVolumeCalc()">
-            <span class="en-text">🧮 Calculate Volume</span>
-            <span class="es-text">🧮 Calcular Volumen</span>
-          </button>
+          <div class="student-solve-block" style="margin-top: 14px; padding: 14px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px;">
+            <label class="lbl" for="v-user-vol" style="font-weight:700;">
+              <span class="en-text">✍️ Calculate &amp; Enter Your Box Volume (in³)</span>
+              <span class="es-text">✍️ Calcula e Ingresa el Volumen de tu Caja (pulg³)</span>
+            </label>
+            <input
+              type="number"
+              id="v-user-vol"
+              step="0.1"
+              placeholder="e.g. 160"
+              style="width:100%; padding:9px 12px; font-size:15px; border:1px solid #cbd5e1; border-radius:6px; margin-top:4px;"
+            />
+            <button class="calc-btn" onclick="checkVolumeSolve()" style="margin-top:10px;">
+              <span class="en-text">✓ Check My Volume Calculation</span>
+              <span class="es-text">✓ Comprobar Mi Cálculo de Volumen</span>
+            </button>
+          </div>
           <div class="readout" id="vol-out"></div>
 
           <details class="hint">
@@ -1448,10 +1461,23 @@
             </div>
           </div>
 
-          <button class="calc-btn teal" onclick="calcSA()">
-            <span class="en-text">⭐ Verify Face Areas</span>
-            <span class="es-text">⭐ Verificar Áreas de las Caras</span>
-          </button>
+          <div class="student-solve-block" style="margin-top: 14px; padding: 14px; background: #f0fdf4; border: 1px solid #86efac; border-radius: 10px;">
+            <label class="lbl" for="sa-user-total" style="font-weight:700;">
+              <span class="en-text">✍️ Sum &amp; Enter Your Total Surface Area (sq in)</span>
+              <span class="es-text">✍️ Suma e Ingresa tu Área de Superficie Total (pulg²)</span>
+            </label>
+            <input
+              type="number"
+              id="sa-user-total"
+              step="0.1"
+              placeholder="e.g. 184"
+              style="width:100%; padding:9px 12px; font-size:15px; border:1px solid #cbd5e1; border-radius:6px; margin-top:4px;"
+            />
+            <button class="calc-btn teal" onclick="checkSASolve()" style="margin-top:10px;">
+              <span class="en-text">✓ Check My Surface Area Calculation</span>
+              <span class="es-text">✓ Comprobar Mi Cálculo de Área de Superficie</span>
+            </button>
+          </div>
           <div class="readout" id="sa-out"></div>
 
           <details class="hint">
@@ -1592,10 +1618,23 @@
             />
           </div>
 
-          <button class="calc-btn gold" onclick="calcCost()">
-            <span class="en-text">💵 Calculate Material Cost</span>
-            <span class="es-text">💵 Calcular Costo del Material</span>
-          </button>
+          <div class="student-solve-block" style="margin-top: 14px; padding: 14px; background: #fffbeb; border: 1px solid #fde047; border-radius: 10px;">
+            <label class="lbl" for="cost-user-val" style="font-weight:700;">
+              <span class="en-text">✍️ Calculate &amp; Enter Your Total Cardboard Cost ($)</span>
+              <span class="es-text">✍️ Calcula e Ingresa tu Costo Total de Cartón ($)</span>
+            </label>
+            <input
+              type="number"
+              id="cost-user-val"
+              step="0.01"
+              placeholder="e.g. 5.52"
+              style="width:100%; padding:9px 12px; font-size:15px; border:1px solid #cbd5e1; border-radius:6px; margin-top:4px;"
+            />
+            <button class="calc-btn gold" onclick="checkCostSolve()" style="margin-top:10px;">
+              <span class="en-text">✓ Check My Cost Calculation</span>
+              <span class="es-text">✓ Comprobar Mi Cálculo de Costo</span>
+            </button>
+          </div>
           <div class="readout" id="cost-out"></div>
 
           <!-- Real-world comparison -->
@@ -2617,37 +2656,120 @@
 
         updateDynamicBoxSVG(l, w, h);
         updateDynamicNetSVG(l, w, h);
+      }
+
+      function checkVolumeSolve() {
+        const l = parseFloat(document.getElementById("v-len").value);
+        const w = parseFloat(document.getElementById("v-wid").value);
+        const h = parseFloat(document.getElementById("v-hgt").value);
+        const userVol = parseFloat(document.getElementById("v-user-vol").value);
+
+        updateVolumeCalc();
 
         if (isNaN(l) || isNaN(w) || isNaN(h) || l <= 0 || w <= 0 || h <= 0) {
-          document.getElementById("vol-out").classList.remove("show");
+          showReadout(
+            "vol-out",
+            isSpanish
+              ? '<span style="color:#ef4444;font-weight:bold;">⚠️ ¡Ingresa primero la longitud, el ancho y la altura arriba!</span>'
+              : '<span style="color:#ef4444;font-weight:bold;">⚠️ Enter length, width, and height above first!</span>'
+          );
           return;
         }
 
-        const vol = l * w * h;
-        if (isSpanish) {
+        if (isNaN(userVol)) {
           showReadout(
             "vol-out",
-            `
-            <strong>Volumen = Longitud × Ancho × Altura = ${l}" × ${w}" × ${h}" = <strong>${fmt(vol)}</strong> pulgadas cúbicas (in³)</strong><br>
-            Esto significa que tu paquete tiene una capacidad de <strong>${fmt(vol)}</strong> cubos unitarios (1" × 1" × 1").<br>
-            <small>Fórmula: V = l × a × h = ${l} × ${w} × ${h} = ${fmt(vol)}</small>
-          `,
+            isSpanish
+              ? '<span style="color:#ef4444;font-weight:bold;">⚠️ ¡Escribe tu volumen calculado en la casilla antes de comprobar!</span>'
+              : '<span style="color:#ef4444;font-weight:bold;">⚠️ Type your calculated volume in the input box before checking!</span>'
           );
-        } else {
-          showReadout(
-            "vol-out",
-            `
-            <strong>Volume = Length × Width × Height = ${l}" × ${w}" × ${h}" = <strong>${fmt(vol)}</strong> cubic inches (in³)</strong><br>
-            This means your package has a capacity of <strong>${fmt(vol)}</strong> unit cubes (1" × 1" × 1").<br>
-            <small>Formula: V = l × w × h = ${l} × ${w} × ${h} = ${fmt(vol)}</small>
-          `,
-          );
+          return;
         }
 
-        calcSA();
+        const expectedVol = l * w * h;
+        const isCorrect = Math.abs(userVol - expectedVol) < 0.2;
+
+        if (isCorrect) {
+          _tries["vol-check"] = 0;
+          if (isSpanish) {
+            showReadout(
+              "vol-out",
+              `
+              <strong>¡Cálculo de Volumen Correcto! 🎉</strong><br>
+              Longitud × Ancho × Altura = ${l}" × ${w}" × ${h}" = <strong>${fmt(expectedVol)}</strong> pulgadas cúbicas (in³)<br>
+              <small>¡Excelente trabajo! Tu paquete tiene una capacidad exacta de <strong>${fmt(expectedVol)}</strong> cubos unitarios.</small>
+            `
+            );
+          } else {
+            showReadout(
+              "vol-out",
+              `
+              <strong>Volume Calculation is Correct! 🎉</strong><br>
+              Length × Width × Height = ${l}" × ${w}" × ${h}" = <strong>${fmt(expectedVol)}</strong> cubic inches (in³)<br>
+              <small>Great work! Your package has an exact capacity of <strong>${fmt(expectedVol)}</strong> unit cubes.</small>
+            `
+            );
+          }
+        } else {
+          _tries["vol-check"] = (_tries["vol-check"] || 0) + 1;
+          const tryNum = _tries["vol-check"];
+          if (tryNum === 1) {
+            if (isSpanish) {
+              showReadout("vol-out", `<span style="color:#ef4444;font-weight:bold;">🤔 Ingresaste ${userVol}, pero aún no coincide.</span><br><small>Pista: Para encontrar el volumen, multiplica la longitud por el ancho y luego multiplica ese resultado por la altura (${l} × ${w} × ${h}).</small>`);
+            } else {
+              showReadout("vol-out", `<span style="color:#ef4444;font-weight:bold;">🤔 You entered ${userVol}, but that's not quite right.</span><br><small>Hint: To find volume, multiply length by width, then multiply that result by height (${l} × ${w} × ${h}).</small>`);
+            }
+          } else {
+            const step1 = (l * w).toFixed(1);
+            if (isSpanish) {
+              showReadout("vol-out", `<span style="color:#ef4444;font-weight:bold;">⚠️ Solución paso a paso:</span><br>1. Área de la base = Longitud × Ancho = ${l} × ${w} = <strong>${step1}</strong><br>2. Volumen = Base × Altura = ${step1} × ${h} = <strong>${fmt(expectedVol)}</strong> pulg³.`);
+            } else {
+              showReadout("vol-out", `<span style="color:#ef4444;font-weight:bold;">⚠️ Step-by-step solution:</span><br>1. Base Area = Length × Width = ${l} × ${w} = <strong>${step1}</strong><br>2. Volume = Base × Height = ${step1} × ${h} = <strong>${fmt(expectedVol)}</strong> cu in.`);
+            }
+          }
+        }
       }
 
       // ---- Surface Area ----
+      function checkSASolve() {
+        const sa = getCalculatedSA();
+        const userSATotal = parseFloat(document.getElementById("sa-user-total")?.value);
+
+        if (isNaN(userSATotal)) {
+          showReadout(
+            "sa-out",
+            isSpanish
+              ? '<span style="color:#ef4444;font-weight:bold;">⚠️ ¡Escribe tu área de superficie total calculada en la casilla antes de comprobar!</span>'
+              : '<span style="color:#ef4444;font-weight:bold;">⚠️ Type your calculated total surface area in the input box before checking!</span>'
+          );
+          return;
+        }
+
+        if (sa === null) {
+          calcSA();
+          return;
+        }
+
+        const isCorrect = Math.abs(userSATotal - sa) < 0.2;
+        if (isCorrect) {
+          _tries["sa-check"] = 0;
+          calcSA();
+        } else {
+          _tries["sa-check"] = (_tries["sa-check"] || 0) + 1;
+          if (isSpanish) {
+            showReadout(
+              "sa-out",
+              `<span style="color:#ef4444;font-weight:bold;">🤔 Ingresaste ${userSATotal} pulg², pero la suma total de las caras es ${fmt(sa)} pulg².</span><br><small>Verifica la suma de todas las caras de tu paquete.</small>`
+            );
+          } else {
+            showReadout(
+              "sa-out",
+              `<span style="color:#ef4444;font-weight:bold;">🤔 You entered ${userSATotal} sq in, but the total sum of all faces is ${fmt(sa)} sq in.</span><br><small>Double-check your addition of all box faces.</small>`
+            );
+          }
+        }
+      }
+
       function handleLidChange() {
         const isLevel2 = document.getElementById("body").classList.contains("level-2");
         const lidOpt =
@@ -2888,7 +3010,58 @@
           const type = document.getElementById("mc-type").value;
           document.getElementById("mc-rate").value = type;
         }
-        calcCost();
+      }
+
+      function checkCostSolve() {
+        const sa = getCalculatedSA();
+        if (sa === null) {
+          if (isSpanish) {
+            showReadout(
+              "cost-out",
+              '<span style="color:#ef4444;font-weight:bold;">⚠️ ¡Completa y verifica tus cálculos de las caras del Área de Superficie en el Paso 2 primero!</span>'
+            );
+          } else {
+            showReadout(
+              "cost-out",
+              '<span style="color:#ef4444;font-weight:bold;">⚠️ Complete and verify your Surface Area face calculations in Step 2 first!</span>'
+            );
+          }
+          return;
+        }
+
+        const rate = parseFloat(document.getElementById("mc-rate").value) || 0.03;
+        const userCost = parseFloat(document.getElementById("cost-user-val").value);
+
+        if (isNaN(userCost)) {
+          showReadout(
+            "cost-out",
+            isSpanish
+              ? '<span style="color:#ef4444;font-weight:bold;">⚠️ ¡Escribe tu costo calculado en la casilla antes de comprobar!</span>'
+              : '<span style="color:#ef4444;font-weight:bold;">⚠️ Type your calculated cost in the input box before checking!</span>'
+          );
+          return;
+        }
+
+        const expectedCost = sa * rate;
+        const isCorrect = Math.abs(userCost - expectedCost) < 0.15;
+
+        if (isCorrect) {
+          _tries["cost-check"] = 0;
+          calcCost();
+        } else {
+          _tries["cost-check"] = (_tries["cost-check"] || 0) + 1;
+          if (isSpanish) {
+            showReadout(
+              "cost-out",
+              `<span style="color:#ef4444;font-weight:bold;">🤔 Ingresaste $${userCost.toFixed(2)}, pero aún no coincide.</span><br><small>Fórmula: Área de Superficie × Tarifa = ${fmt(sa)} pulg² × $${rate.toFixed(3)} = <strong>$${expectedCost.toFixed(2)}</strong>. Revisa tu multiplicación.</small>`
+            );
+          } else {
+            showReadout(
+              "cost-out",
+              `<span style="color:#ef4444;font-weight:bold;">🤔 You entered $${userCost.toFixed(2)}, but that's not quite right.</span><br><small>Formula: Surface Area × Rate = ${fmt(sa)} sq in × $${rate.toFixed(3)} = <strong>$${expectedCost.toFixed(2)}</strong>. Double-check your multiplication.</small>`
+            );
+          }
+        }
       }
 
       function calcCost() {

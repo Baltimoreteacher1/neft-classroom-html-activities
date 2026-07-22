@@ -640,10 +640,23 @@
             </div>
           </div>
 
-          <button class="calc-btn" onclick="calcFloor()">
-            <span class="en-text">🧮 Calculate Bedroom Floor Area</span>
-            <span class="es-text">🧮 Calcular el área del piso</span>
-          </button>
+          <div class="student-solve-block" style="margin-top: 14px; padding: 14px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px;">
+            <label class="lbl" for="f-user-area" style="font-weight:700;">
+              <span class="en-text">✍️ Calculate &amp; Enter Bedroom Floor Area (sq ft)</span>
+              <span class="es-text">✍️ Calcula e Ingresa el Área del Piso de la Habitación (pies²)</span>
+            </label>
+            <input
+              type="number"
+              id="f-user-area"
+              step="0.1"
+              placeholder="e.g. 150"
+              style="width:100%; padding:9px 12px; font-size:15px; border:1px solid #cbd5e1; border-radius:6px; margin-top:4px;"
+            />
+            <button class="calc-btn" onclick="checkFloorSolve()" style="margin-top:10px;">
+              <span class="en-text">✓ Check My Floor Area Calculation</span>
+              <span class="es-text">✓ Comprobar Mi Cálculo de Área</span>
+            </button>
+          </div>
           <div class="readout" id="floor-out"></div>
 
           <details class="hint">
@@ -1516,6 +1529,50 @@
         `;
         showReadout('floor-out', html);
         recalcTotal();
+      }
+
+      function checkFloorSolve() {
+        const len = parseFloat(document.getElementById('f-length').value);
+        const wid = parseFloat(document.getElementById('f-width').value);
+        const userArea = parseFloat(document.getElementById('f-user-area').value);
+        const isEs = document.body.classList.contains('es');
+
+        calcFloor();
+
+        if (isNaN(len) || isNaN(wid) || len <= 0 || wid <= 0) {
+          showReadout('floor-out', isEs ? '<span style="color:#ef4444;font-weight:bold;">⚠️ ¡Ingresa el largo y el ancho de la habitación arriba primero!</span>' : '<span style="color:#ef4444;font-weight:bold;">⚠️ Enter bedroom length and width above first!</span>');
+          return;
+        }
+
+        if (isNaN(userArea)) {
+          showReadout('floor-out', isEs ? '<span style="color:#ef4444;font-weight:bold;">⚠️ ¡Escribe tu área calculada en la casilla antes de comprobar!</span>' : '<span style="color:#ef4444;font-weight:bold;">⚠️ Type your calculated area in the input box before checking!</span>');
+          return;
+        }
+
+        const expectedArea = len * wid;
+        const isCorrect = Math.abs(userArea - expectedArea) < 0.2;
+
+        if (isCorrect) {
+          const html = isEs ? `
+            <strong>¡Cálculo de Área Correcto! 🎉</strong><br>
+            Cálculo: <strong>${len} pies × ${wid} pies = ${fmt(expectedArea)} pies²</strong><br>
+            <small>Fórmula: Área = largo × ancho (l × w)</small>
+          ` : `
+            <strong>Floor Area Calculation is Correct! 🎉</strong><br>
+            Calculation: <strong>${len} ft × ${wid} ft = ${fmt(expectedArea)} sq ft</strong><br>
+            <small>Formula: Area = length × width (l × w)</small>
+          `;
+          showReadout('floor-out', html);
+        } else {
+          const html = isEs ? `
+            <span style="color:#ef4444;font-weight:bold;">🤔 Ingresaste ${userArea}, pero el área se calcula multiplicando largo × ancho.</span><br>
+            <small>Intenta calcular: <strong>${len} × ${wid}</strong> y vuelve a intentar.</small>
+          ` : `
+            <span style="color:#ef4444;font-weight:bold;">🤔 You entered ${userArea}, but area is calculated by multiplying length × width.</span><br>
+            <small>Try calculating: <strong>${len} × ${wid}</strong> and try again.</small>
+          `;
+          showReadout('floor-out', html);
+        }
       }
 
       // ---- Triangle Nook Area ----
