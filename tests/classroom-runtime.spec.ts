@@ -46,9 +46,12 @@ test("classroom runtime compiles, adapts, reviews, and forks in English/Spanish 
   await expect(page.locator("#fork-invariants")).toContainText("6.NOS.4");
 });
 
-test("runtime has no serious accessibility violations", async ({ page }) => {
+test("compiled runtime has no serious accessibility violations", async ({ page }) => {
   await page.goto("/curriculum/runtime/");
   await expect(page.getByRole("status")).toContainText("canonical lessons ready");
+  await page.getByLabel("What should students understand?").fill("Compare two strategies");
+  await page.getByRole("button", { name: "Compile classroom runtime" }).click();
+  await expect(page.getByRole("heading", { name: "Prime Factorization" })).toBeVisible();
   const results = await new AxeBuilder({ page }).analyze();
   const blocking = results.violations.filter(({ impact }) => impact === "serious" || impact === "critical");
   expect(blocking, blocking.map(({ id, help }) => `${id}: ${help}`).join("\n")).toEqual([]);
