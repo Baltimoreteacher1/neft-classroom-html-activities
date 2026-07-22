@@ -25,6 +25,11 @@ import {
 } from "./homework-guided-notes.mjs";
 import { HOMEWORK_GAME_JS } from "./homework-games.mjs";
 import {
+  renderVisualMathLab,
+  VISUAL_LABS_CSS,
+  VISUAL_LABS_JS,
+} from "./homework-visual-labs.mjs";
+import {
   detectVisualTopic,
   selectMorePracticeProblems,
   selectTieredQuickCheckProblems,
@@ -874,7 +879,7 @@ function generateHtml(lessonId, config) {
     .join("\n");
 
   const tabPanels = [
-    renderLearnTab(config),
+    renderLearnTab(config, renderVisualMathLab(topic, config)),
     renderArcadeTabPanel(lessonId),
     renderWordsTab(vocab, resolveVocabImage, vocabImageAlt),
     renderTogetherTab(config),
@@ -2341,6 +2346,7 @@ header.homework-header h1 {
   }
 }
 ${GUIDED_NOTES_CSS}
+${VISUAL_LABS_CSS}
 
 /* ============================================================
    Polish layer — premium, TpT-quality finish (loads last).
@@ -2515,6 +2521,7 @@ window.LESSON_ID = "${escAttr(lessonId)}";
 window.LESSON_TITLE = "${escAttr(title)}";
 ${HOMEWORK_TABS_JS}
 ${HOMEWORK_GAME_JS}
+${VISUAL_LABS_JS}
 // Sound engine
 let soundEnabled = true;
 let audioCtx = null;
