@@ -140,7 +140,7 @@ export default {
   vocab: [
     {
       term: "Integer",
-      definition: "A whole number that can be positive, negative, or zero.",
+      definition: "Whole numbers and their opposites, like -2, -1, 0, 1, 2.",
       emoji: "🔢",
     },
     {

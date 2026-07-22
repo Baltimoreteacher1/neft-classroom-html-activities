@@ -188,7 +188,7 @@ export const MATH_GLOSSARY = [
   {
     term: "integer",
     termEs: "entero",
-    definition: "A whole number that can be positive, negative, or zero.",
+    definition: "Whole numbers and their opposites, like -2, -1, 0, 1, 2.",
     definitionEs: "Un número entero que puede ser positivo, negativo o cero.",
   },
   {
