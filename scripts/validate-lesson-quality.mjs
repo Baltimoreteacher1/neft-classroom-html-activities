@@ -37,11 +37,21 @@ for (const id of readdirSync(lessonsDir)) {
     continue;
   }
 
-  // 1. DOK tier presence — practice must have all three difficulty tiers non-empty.
+  // 1. DOK tier presence — parent lessons must have all three difficulty tiers non-empty.
   const practice = d.practice || {};
-  for (const tier of ["approaching", "onLevel", "extending"]) {
-    if (!Array.isArray(practice[tier]) || practice[tier].length === 0) {
-      fail(id, `practice.${tier} is missing or empty`);
+  const isVariant = id.includes("-group") || id.includes("-catchup");
+  if (!isVariant) {
+    for (const tier of ["approaching", "onLevel", "extending"]) {
+      if (!Array.isArray(practice[tier]) || practice[tier].length === 0) {
+        fail(id, `practice.${tier} is missing or empty`);
+      }
+    }
+  } else {
+    const hasAnyTier = ["approaching", "onLevel", "extending"].some(
+      (tier) => Array.isArray(practice[tier]) && practice[tier].length > 0,
+    );
+    if (!hasAnyTier) {
+      fail(id, "variant practice has no tiers populated");
     }
   }
 
@@ -141,8 +151,8 @@ for (const id of readdirSync(lessonsDir)) {
     }
   }
 
-  // 8. Printables completeness.
-  if (!Array.isArray(d.printables) || d.printables.length === 0) {
+  // 8. Printables completeness (parent lessons).
+  if (!isVariant && (!Array.isArray(d.printables) || d.printables.length === 0)) {
     warn(id, "printables is missing or empty");
   }
 }
