@@ -185,7 +185,7 @@ export const FACILITATION_BY_LESSON = {
       "Open with the worked example (I Do) — think aloud, don't just show.",
       "Do the We Do together; require every student to say the sentence frame.",
       "Release to the practice problems; the hint ladder is the safety net.",
-      "Watch for the common mistake: A common mistake in Add and Subtract Decimals is lining up the last digits (the right edges) of each number instead of lining up the decimal points — for example, adding 8.3 and 2.45 as if the 3 and the 5 belong in the same column. Before you add or subtract, annex zeros so every number has the same number of decimal places (write 8.3 as 8.30), then check that the decimal points sit directly above one another.",
+      "Watch for the common mistake: A common mistake in Add and Subtract Decimals is lining up the last digits (the right edges) of each number instead of lining up the decimal points — for example, adding 8.3 and 2.45 as if the 3 and the 5 belong in the same column. Before you add or subtract, add zeros so every number has the same number of decimal places (write 8.3 as 8.30), then check that the decimal points sit directly above one another.",
       "Close with the exit-ticket check — celebrate the growth."
     ],
     "frames": [
@@ -195,7 +195,7 @@ export const FACILITATION_BY_LESSON = {
     "listenFor": [
       "Students explain that aligning decimal points lines up matching place values (tenths under tenths, hundredths under hundredths) so the addition and subtraction are correct.",
       "Students annex a zero to write 46.80, aligning hundredths, and explain regrouping happens when a column sum is 10 or more (or borrowing is needed when subtracting).",
-      "Students annex zeros (2.60), align the decimal points, and add 2.45 + 2.60 + 2.38 = 7.43 minutes.",
+      "Students add zeros (2.60), align the decimal points, and add 2.45 + 2.60 + 2.38 = 7.43 minutes.",
       "Students explain that decimals can have different numbers of places, so lining up the decimal point (not the right edge) is what keeps tenths with tenths and hundredths with hundredths.",
       "Listen for students naming a specific strategy tied to 6.NOS.3 — not just \"I added them\" — they should describe lining up the decimal points, annexing zeros, and regrouping, connecting each step to the key idea."
     ]
@@ -215,7 +215,7 @@ export const FACILITATION_BY_LESSON = {
     "listenFor": [
       "Students explain that aligning decimal points lines up matching place values (tenths under tenths, hundredths under hundredths) so the addition and subtraction are correct.",
       "Students annex a zero to write 46.80, aligning hundredths, and explain regrouping happens when a column sum is 10 or more (or borrowing is needed when subtracting).",
-      "Students annex zeros (2.60), align the decimal points, and add 2.45 + 2.60 + 2.38 = 7.43 minutes.",
+      "Students add zeros (2.60), align the decimal points, and add 2.45 + 2.60 + 2.38 = 7.43 minutes.",
       "Students explain that decimals can have different numbers of places, so lining up the decimal point (not the right edge) is what keeps tenths with tenths and hundredths with hundredths.",
       "Listen for students naming a specific strategy tied to 6.NOS.3 — not just \"I added them\" — they should describe lining up the decimal points, annexing zeros, and regrouping, connecting each step to the key idea."
     ]

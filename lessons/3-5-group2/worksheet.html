@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>3.5 Small Group · Group 2 — Practice Worksheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --navy:#143a6b; --blue:#1f5fa6; --teal:#1c7a64; --ink:#16243d; --muted:#5a6b82;
+  --line:#d7e2ed; --soft:#eef3f9; --bank:#fff8e8; --bank-line:#f0d9a0; --ex:#eaf4ff;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:13.5px;line-height:1.5;}
+.ws-page{background:#fff;max-width:760px;margin:18px auto;padding:34px 40px 44px;box-shadow:0 6px 24px rgba(20,40,75,.12);border-radius:6px;}
+.ws-head{border-bottom:3px solid var(--navy);padding-bottom:12px;margin-bottom:18px;}
+.ws-head-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.ws-std{background:var(--navy);color:#fff;font-weight:700;font-size:11px;letter-spacing:.04em;padding:4px 11px;border-radius:999px;}
+.ws-ver{font-family:"Fraunces",serif;font-weight:700;color:var(--blue);font-size:14px;}
+.ws-title{font-family:"Fraunces",serif;font-weight:700;font-size:25px;margin:4px 0 2px;color:var(--navy);line-height:1.1;}
+.ws-sub{margin:0;color:var(--muted);font-weight:600;font-size:13px;}
+.ws-meta{display:flex;gap:28px;margin-top:12px;font-weight:600;color:var(--ink);font-size:13px;}
+.ws-fill{display:inline-block;width:220px;border-bottom:1.5px solid var(--ink);}
+.ws-fill-sm{width:120px;}
+.ws-bank{background:var(--bank);border:1.5px solid var(--bank-line);border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-bank-h,.ws-example-h{font-family:"Fraunces",serif;font-size:14px;margin:0 0 8px;color:var(--navy);}
+.ws-bankwords{display:flex;flex-wrap:wrap;gap:8px;}
+.ws-bankword{background:#fff;border:1.5px solid var(--bank-line);border-radius:999px;padding:4px 12px;font-weight:700;font-size:12.5px;}
+.ws-example{background:var(--ex);border:1.5px solid #cfe2f6;border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-example-steps{margin:0;padding-left:18px;}
+.ws-example-steps li{margin:2px 0;}
+.ws-problems{list-style:none;margin:0;padding:0;counter-reset:none;}
+.ws-problem{display:flex;gap:12px;padding:14px 0;border-bottom:1px dashed var(--line);break-inside:avoid;page-break-inside:avoid;}
+.ws-problem:last-child{border-bottom:0;}
+.ws-pnum{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.ws-pbody{flex:1;min-width:0;}
+.ws-stem{margin:0 0 8px;font-weight:600;}
+.ws-prompt{margin:6px 0;color:var(--muted);font-size:12.5px;}
+.ws-opts{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;}
+.ws-opt{display:flex;align-items:flex-start;gap:8px;}
+.ws-bub{flex:0 0 auto;width:22px;height:22px;border:2px solid var(--navy);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;}
+.ws-bub-sm{width:20px;height:20px;font-size:11px;}
+.ws-correct .ws-bub{background:var(--teal);border-color:var(--teal);color:#fff;}
+.ws-correct{font-weight:700;color:var(--teal);}
+.ws-keynote{margin:6px 0 0;color:var(--teal);font-size:12px;font-style:italic;}
+.ws-watch{margin:4px 0 0;color:#9a4a12;font-size:12px;background:#fff3e6;border-left:3px solid #e08a3c;padding:5px 10px;border-radius:0 8px 8px 0;}
+.ws-scaffold-note{margin:0 0 14px;background:var(--soft);border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;font-weight:600;color:var(--navy);font-size:12.5px;}
+.ws-match{display:flex;gap:24px;flex-wrap:wrap;}
+.ws-match-terms{list-style:none;margin:0;padding:0;flex:1;min-width:180px;}
+.ws-match-term{display:flex;align-items:center;gap:8px;margin:5px 0;font-weight:600;}
+.ws-match-bank{list-style:none;margin:0;padding:10px 12px;background:var(--soft);border:1px solid var(--line);border-radius:10px;flex:1;min-width:180px;}
+.ws-match-bank li{display:flex;align-items:center;gap:8px;margin:4px 0;}
+.ws-blank{display:inline-block;min-width:54px;border-bottom:1.5px solid var(--ink);text-align:center;font-weight:700;}
+.ws-blank-sm{min-width:40px;}
+.ws-steps{list-style:none;margin:6px 0;padding:0;}
+.ws-steps li{display:flex;gap:10px;align-items:baseline;padding:4px 0;}
+.ws-step-n{flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:var(--soft);font-weight:700;font-size:11px;display:inline-flex;align-items:center;justify-content:center;}
+.ws-step-l{flex:0 0 38%;font-weight:600;}
+.ws-step-w{flex:1;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
+.ws-table{width:100%;border-collapse:collapse;margin:8px 0;}
+.ws-table th{background:var(--navy);color:#fff;font-size:12px;padding:7px 9px;text-align:left;}
+.ws-table td{border:1px solid var(--line);padding:9px;height:34px;font-weight:600;}
+.ws-lines{margin:8px 0 0;}
+.ws-line{display:block;border-bottom:1.5px solid var(--line);height:24px;}
+.ws-work{margin:8px 0 0;border:1.5px dashed var(--line);border-radius:10px;min-height:70px;padding:6px 10px;position:relative;}
+.ws-work-label{color:var(--muted);font-size:11px;font-weight:600;}
+.ws-frame{background:var(--soft);border-left:3px solid var(--blue);padding:6px 10px;margin:6px 0;font-style:italic;color:var(--muted);border-radius:0 8px 8px 0;}
+.ws-sort{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:5px 18px;}
+.ws-sort li{display:flex;align-items:center;gap:8px;font-weight:600;}
+
+@media print{
+  body{background:#fff;font-size:12pt;}
+  .ws-page{box-shadow:none;border-radius:0;margin:0;max-width:none;padding:0;page-break-after:always;}
+  .ws-page:last-child{page-break-after:auto;}
+  @page{margin:1.5cm;}
+  a{color:#000;}
+}
+
+/* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
+   Appended last so it overrides each generator's base CSS. Finish-only:
+   serif headings + paper ground + AA-safe ink. No layout/size changes. */
+:root{ --ink:#19262f; --muted:#475663; }
+body{ background:#f5f0e6; color:#19262f; }
+h1,h2,h3,h4,h5,h6,
+header.packet h1,.section>h2,.li-title,.learnit-head,.learnit-stage-title,
+.mission-title,.answer-key h2,.think-block h3,.topbar .brand{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
+/* A thin editorial accent rule under the document's main title. */
+header.packet h1{ position:relative; }
+header.packet h1::after{
+  content:""; display:block; width:56px; height:2px; margin-top:8px;
+  background:linear-gradient(90deg,#1fa6a2,#f2c15b); border-radius:2px;
+}
+@media print{ body{ background:#fff !important; } }
+
+</style>
+</head>
+<body>
+<main>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.3</span>
+      <span class="ws-ver">Version B</span>
+    </div>
+    <h1 class="ws-title">3.5 Small Group · Group 2</h1>
+    <p class="ws-sub">Practice — Version B</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Store A sells 3 mangoes for $6. Store B sells 5 mangoes for $9. Which store offers a better price per mango?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>Store B</li><li class="ws-opt"><span class="ws-bub">B</span>Store A</li><li class="ws-opt"><span class="ws-bub">C</span>Same price</li><li class="ws-opt"><span class="ws-bub">D</span>Cannot determine</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read the problem</span><span class="ws-step-w">Compare Chef Reyes's dressing (4 tbsp oil : 6 tbsp vinegar) to Chef Tran's dressing (5 tbsp oil : 8 tbsp vinegar). Which dressing is oilier?</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find a common denominator</span><span class="ws-step-w">LCD of 6 and 8 is 24.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Scale each ratio</span><span class="ws-step-w">Chef Reyes: 6 × 4 = 24, so oil = 4 × 4 = 16, giving 16:24. Chef Tran: to reach 24 he also multiplies by 4: oil = 5 × 4 = 20, giving 20:24.</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Conclusion</span><span class="ws-step-w">Since 20 &gt; 16, Chef Tran's dressing is oilier.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Find Kai's Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read the problem</span><span class="ws-step-w">Compare 3:5 and 4:7. Which ratio is greater?</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find common denominator</span><span class="ws-step-w">LCD of 5 and 7 is 35</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Scale the ratios</span><span class="ws-step-w">3:5 = 21:35 (3 × 7 = 21). For 4:7, Kai multiplies by 7 again: 4 × 7 = 28, giving 28:35.</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Conclusion</span><span class="ws-step-w">Since 28 &gt; 21, the ratio 4:7 is greater.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem"></p><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.3</span>
+      <span class="ws-ver">Challenge</span>
+    </div>
+    <h1 class="ws-title">3.5 Small Group · Group 2</h1>
+    <p class="ws-sub">Practice — Challenge</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Chef Academy's snack bar sells 3 mini quiches for $6 or 5 mini quiches for $8. Which is the better deal per quiche?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>5 quiches for $8</li><li class="ws-opt"><span class="ws-bub">B</span>3 quiches for $6</li><li class="ws-opt"><span class="ws-bub">C</span>They cost the same</li><li class="ws-opt"><span class="ws-bub">D</span>Cannot determine</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Two soup recipes use salt. Recipe A uses 4 tsp salt for 10 cups of broth. Recipe B uses 3 tsp salt for 8 cups of broth. Which soup is saltier per cup?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>Recipe B</li><li class="ws-opt"><span class="ws-bub">B</span>Recipe A</li><li class="ws-opt"><span class="ws-bub">C</span>They are equally salty</li><li class="ws-opt"><span class="ws-bub">D</span>Cannot determine</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Chef Mara's lemon glaze uses 6 oz of lemon juice for 9 cupcakes. Chef Devi's uses 4 oz for 7 cupcakes. Whose glaze has more lemon per cupcake?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>Chef Mara</li><li class="ws-opt"><span class="ws-bub">B</span>Chef Devi</li><li class="ws-opt"><span class="ws-bub">C</span>Same amount</li><li class="ws-opt"><span class="ws-bub">D</span>Cannot determine</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Level 2 Extension — Chef Omar's Glaze Comparison</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read the problem</span><span class="ws-step-w">Chef Omar compares two glazes: 3 oz syrup for 8 oz water and 5 oz syrup for 12 oz water. Which is sweeter per ounce of water?</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Look at the syrup</span><span class="ws-step-w">Glaze 1 has 3 oz syrup. Glaze 2 has 5 oz syrup.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Compare the syrup amounts</span><span class="ws-step-w">Since 5 &gt; 3, Glaze 2 must have more syrup per ounce of water.</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Conclusion</span><span class="ws-step-w">Glaze 2 is sweeter per ounce of water.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Chef A uses 2 cups of cheese for every 8 crackers. Chef B uses 3 cups of cheese for every 9 crackers. Who uses more cheese per cracker?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>Chef B</li><li class="ws-opt"><span class="ws-bub">B</span>Chef A</li><li class="ws-opt"><span class="ws-bub">C</span>They use the same amount</li><li class="ws-opt"><span class="ws-bub">D</span>Cannot determine</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">Which ratio is greater: 3:4 or 5:8?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>3:4</li><li class="ws-opt"><span class="ws-bub">B</span>5:8</li><li class="ws-opt"><span class="ws-bub">C</span>They are equal</li><li class="ws-opt"><span class="ws-bub">D</span>Cannot determine</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">7</span><div class="ws-pbody"><p class="ws-stem">Which lemonade recipe is more lemony? Recipe A: 2 lemons for 6 cups of water. Recipe B: 3 lemons for 7 cups of water.</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>Recipe B</li><li class="ws-opt"><span class="ws-bub">B</span>Recipe A</li><li class="ws-opt"><span class="ws-bub">C</span>They are the same</li><li class="ws-opt"><span class="ws-bub">D</span>Cannot determine</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">8</span><div class="ws-pbody"><p class="ws-stem">Which is the better deal: 4 apples for $3 or 6 apples for $5?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>4 apples for $3</li><li class="ws-opt"><span class="ws-bub">B</span>6 apples for $5</li><li class="ws-opt"><span class="ws-bub">C</span>They cost the same</li><li class="ws-opt"><span class="ws-bub">D</span>Cannot determine</li></ol></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.3</span>
+      <span class="ws-ver">Version B — Answer Key</span>
+    </div>
+    <h1 class="ws-title">3.5 Small Group · Group 2</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Store A sells 3 mangoes for $6. Store B sells 5 mangoes for $9. Which store offers a better price per mango?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>Store B</li><li class="ws-opt"><span class="ws-bub">B</span>Store A</li><li class="ws-opt"><span class="ws-bub">C</span>Same price</li><li class="ws-opt"><span class="ws-bub">D</span>Cannot determine</li></ol><p class="ws-keynote">Store A: $6÷3 = $2.00 per mango. Store B: $9÷5 = $1.80 per mango. Store B has the better (lower) price per mango.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Compare Ratios is thinking the ratio with the bigger raw number automatically wins — like assuming Chef Tran's 8 tablespoons of cocoa must be more chocolatey than Chef Reyes's 6 tablespoons, without checking that the milk amounts (14 oz vs. 10 oz) are different. Never compare the raw numbers alone — always scale both ratios to the same amount or find each unit rate first.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read the problem</span><span class="ws-step-w">Compare Chef Reyes's dressing (4 tbsp oil : 6 tbsp vinegar) to Chef Tran's dressing (5 tbsp oil : 8 tbsp vinegar). Which dressing is oilier?</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find a common denominator</span><span class="ws-step-w">LCD of 6 and 8 is 24.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Scale each ratio</span><span class="ws-step-w">Chef Reyes: 6 × 4 = 24, so oil = 4 × 4 = 16, giving 16:24. Chef Tran: to reach 24 he also multiplies by 4: oil = 5 × 4 = 20, giving 20:24.</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Conclusion</span><span class="ws-step-w">Since 20 &gt; 16, Chef Tran's dressing is oilier.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 3. Correct work: Each ratio needs its own multiplier to reach 24 — Chef Reyes and Chef Tran do not use the same multiplier. Chef Tran's vinegar is 8, and 8 × 3 = 24 (not 8 × 4 = 32), so multiply BOTH parts of his ratio by 3, not 4: oil = 5 × 3 = 15, giving 15:24. Now compare with equal vinegar (24): Chef Reyes has 16 tbsp oil and Chef Tran has 15 tbsp oil. Since 16 &gt; 15, Chef Reyes's dressing is actually oilier.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Find Kai's Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read the problem</span><span class="ws-step-w">Compare 3:5 and 4:7. Which ratio is greater?</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find common denominator</span><span class="ws-step-w">LCD of 5 and 7 is 35</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Scale the ratios</span><span class="ws-step-w">3:5 = 21:35 (3 × 7 = 21). For 4:7, Kai multiplies by 7 again: 4 × 7 = 28, giving 28:35.</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Conclusion</span><span class="ws-step-w">Since 28 &gt; 21, the ratio 4:7 is greater.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 3. Correct work: To scale 4:7 to 35ths, multiply by 35 ÷ 7 = 5, not by 7 again: 4 × 5 = 20, so 4:7 = 20:35 (not 28:35). Now compare correctly: 21:35 vs. 20:35. Since 21 &gt; 20, the ratio 3:5 is actually greater, not 4:7.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem"></p><p class="ws-keynote">Sample: The student's reasoning is not valid — getting more items does not mean a lower price per item. Store A: $12 ÷ 5 = $2.40 per notebook. Store B: $20 ÷ 8 = $2.50 per notebook. Store A is actually cheaper per notebook, even though Store B offers more notebooks per purchase. Look for: $2.40, $2.50, Store A, cheaper, unit rate, not valid.</p></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.3</span>
+      <span class="ws-ver">Challenge — Answer Key</span>
+    </div>
+    <h1 class="ws-title">3.5 Small Group · Group 2</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Chef Academy's snack bar sells 3 mini quiches for $6 or 5 mini quiches for $8. Which is the better deal per quiche?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>5 quiches for $8</li><li class="ws-opt"><span class="ws-bub">B</span>3 quiches for $6</li><li class="ws-opt"><span class="ws-bub">C</span>They cost the same</li><li class="ws-opt"><span class="ws-bub">D</span>Cannot determine</li></ol><p class="ws-keynote">3 for $6 is $6 / 3 = $2.00 per quiche. 5 for $8 is $8 / 5 = $1.60 per quiche. $1.60 &lt; $2.00, so 5 quiches for $8 is the better deal.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Compare Ratios is thinking the ratio with the bigger raw number automatically wins — like assuming Chef Tran's 8 tablespoons of cocoa must be more chocolatey than Chef Reyes's 6 tablespoons, without checking that the milk amounts (14 oz vs. 10 oz) are different. Never compare the raw numbers alone — always scale both ratios to the same amount or find each unit rate first.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Two soup recipes use salt. Recipe A uses 4 tsp salt for 10 cups of broth. Recipe B uses 3 tsp salt for 8 cups of broth. Which soup is saltier per cup?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>Recipe B</li><li class="ws-opt ws-correct"><span class="ws-bub">B</span>Recipe A</li><li class="ws-opt"><span class="ws-bub">C</span>They are equally salty</li><li class="ws-opt"><span class="ws-bub">D</span>Cannot determine</li></ol><p class="ws-keynote">Recipe A: 4 / 10 = 0.4 tsp per cup. Recipe B: 3 / 8 = 0.375 tsp per cup. Since 0.4 &gt; 0.375, Recipe A is saltier per cup.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Compare Ratios is thinking the ratio with the bigger raw number automatically wins — like assuming Chef Tran's 8 tablespoons of cocoa must be more chocolatey than Chef Reyes's 6 tablespoons, without checking that the milk amounts (14 oz vs. 10 oz) are different. Never compare the raw numbers alone — always scale both ratios to the same amount or find each unit rate first.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Chef Mara's lemon glaze uses 6 oz of lemon juice for 9 cupcakes. Chef Devi's uses 4 oz for 7 cupcakes. Whose glaze has more lemon per cupcake?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>Chef Mara</li><li class="ws-opt"><span class="ws-bub">B</span>Chef Devi</li><li class="ws-opt"><span class="ws-bub">C</span>Same amount</li><li class="ws-opt"><span class="ws-bub">D</span>Cannot determine</li></ol><p class="ws-keynote">Chef Mara: 6 / 9 = 0.666... oz per cupcake. Chef Devi: 4 / 7 = 0.571... oz per cupcake. Since 0.67 &gt; 0.57, Chef Mara's glaze has more lemon per cupcake.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Compare Ratios is thinking the ratio with the bigger raw number automatically wins — like assuming Chef Tran's 8 tablespoons of cocoa must be more chocolatey than Chef Reyes's 6 tablespoons, without checking that the milk amounts (14 oz vs. 10 oz) are different. Never compare the raw numbers alone — always scale both ratios to the same amount or find each unit rate first.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Level 2 Extension — Chef Omar's Glaze Comparison</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read the problem</span><span class="ws-step-w">Chef Omar compares two glazes: 3 oz syrup for 8 oz water and 5 oz syrup for 12 oz water. Which is sweeter per ounce of water?</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Look at the syrup</span><span class="ws-step-w">Glaze 1 has 3 oz syrup. Glaze 2 has 5 oz syrup.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Compare the syrup amounts</span><span class="ws-step-w">Since 5 &gt; 3, Glaze 2 must have more syrup per ounce of water.</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Conclusion</span><span class="ws-step-w">Glaze 2 is sweeter per ounce of water.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 3. Correct work: You cannot just compare the syrup amounts because the water amounts are different (8 oz vs 12 oz). Find the unit rate: Glaze 1 = 3 / 8 = 0.375 oz syrup per oz water; Glaze 2 = 5 / 12 = 0.416... oz syrup per oz water. Since 0.417 &gt; 0.375, Glaze 2 is sweeter per ounce — but this must be proven with unit rates, not by comparing 5 &gt; 3 alone.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Chef A uses 2 cups of cheese for every 8 crackers. Chef B uses 3 cups of cheese for every 9 crackers. Who uses more cheese per cracker?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>Chef B</li><li class="ws-opt"><span class="ws-bub">B</span>Chef A</li><li class="ws-opt"><span class="ws-bub">C</span>They use the same amount</li><li class="ws-opt"><span class="ws-bub">D</span>Cannot determine</li></ol><p class="ws-keynote">Chef A: 2÷8 = 0.25 cups per cracker. Chef B: 3÷9 ≈ 0.33 cups per cracker. Chef B uses more cheese per cracker.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Compare Ratios is thinking the ratio with the bigger raw number automatically wins — like assuming Chef Tran's 8 tablespoons of cocoa must be more chocolatey than Chef Reyes's 6 tablespoons, without checking that the milk amounts (14 oz vs. 10 oz) are different. Never compare the raw numbers alone — always scale both ratios to the same amount or find each unit rate first.</p></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">Which ratio is greater: 3:4 or 5:8?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>3:4</li><li class="ws-opt"><span class="ws-bub">B</span>5:8</li><li class="ws-opt"><span class="ws-bub">C</span>They are equal</li><li class="ws-opt"><span class="ws-bub">D</span>Cannot determine</li></ol><p class="ws-keynote">Convert to the same denominator: 3:4 = 6:8. Since 6:8 &gt; 5:8, the ratio 3:4 is greater.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Compare Ratios is thinking the ratio with the bigger raw number automatically wins — like assuming Chef Tran's 8 tablespoons of cocoa must be more chocolatey than Chef Reyes's 6 tablespoons, without checking that the milk amounts (14 oz vs. 10 oz) are different. Never compare the raw numbers alone — always scale both ratios to the same amount or find each unit rate first.</p></div></li><li class="ws-problem"><span class="ws-pnum">7</span><div class="ws-pbody"><p class="ws-stem">Which lemonade recipe is more lemony? Recipe A: 2 lemons for 6 cups of water. Recipe B: 3 lemons for 7 cups of water.</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>Recipe B</li><li class="ws-opt"><span class="ws-bub">B</span>Recipe A</li><li class="ws-opt"><span class="ws-bub">C</span>They are the same</li><li class="ws-opt"><span class="ws-bub">D</span>Cannot determine</li></ol><p class="ws-keynote">Recipe A: 2÷6 ≈ 0.33 lemons per cup. Recipe B: 3÷7 ≈ 0.43 lemons per cup. Since 0.43 &gt; 0.33, Recipe B is more lemony.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Compare Ratios is thinking the ratio with the bigger raw number automatically wins — like assuming Chef Tran's 8 tablespoons of cocoa must be more chocolatey than Chef Reyes's 6 tablespoons, without checking that the milk amounts (14 oz vs. 10 oz) are different. Never compare the raw numbers alone — always scale both ratios to the same amount or find each unit rate first.</p></div></li><li class="ws-problem"><span class="ws-pnum">8</span><div class="ws-pbody"><p class="ws-stem">Which is the better deal: 4 apples for $3 or 6 apples for $5?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>4 apples for $3</li><li class="ws-opt"><span class="ws-bub">B</span>6 apples for $5</li><li class="ws-opt"><span class="ws-bub">C</span>They cost the same</li><li class="ws-opt"><span class="ws-bub">D</span>Cannot determine</li></ol><p class="ws-keynote">Deal 1: $3÷4 = $0.75 per apple. Deal 2: $5÷6 ≈ $0.83 per apple. $0.75 &lt; $0.83, so 4 apples for $3 is the better deal.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Compare Ratios is thinking the ratio with the bigger raw number automatically wins — like assuming Chef Tran's 8 tablespoons of cocoa must be more chocolatey than Chef Reyes's 6 tablespoons, without checking that the milk amounts (14 oz vs. 10 oz) are different. Never compare the raw numbers alone — always scale both ratios to the same amount or find each unit rate first.</p></div></li></ol>
+  </section>
+</main>
+</body>
+</html>

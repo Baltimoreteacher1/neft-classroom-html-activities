@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>6.7 Small Group · Group 1 — Practice Worksheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --navy:#143a6b; --blue:#1f5fa6; --teal:#1c7a64; --ink:#16243d; --muted:#5a6b82;
+  --line:#d7e2ed; --soft:#eef3f9; --bank:#fff8e8; --bank-line:#f0d9a0; --ex:#eaf4ff;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:13.5px;line-height:1.5;}
+.ws-page{background:#fff;max-width:760px;margin:18px auto;padding:34px 40px 44px;box-shadow:0 6px 24px rgba(20,40,75,.12);border-radius:6px;}
+.ws-head{border-bottom:3px solid var(--navy);padding-bottom:12px;margin-bottom:18px;}
+.ws-head-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.ws-std{background:var(--navy);color:#fff;font-weight:700;font-size:11px;letter-spacing:.04em;padding:4px 11px;border-radius:999px;}
+.ws-ver{font-family:"Fraunces",serif;font-weight:700;color:var(--blue);font-size:14px;}
+.ws-title{font-family:"Fraunces",serif;font-weight:700;font-size:25px;margin:4px 0 2px;color:var(--navy);line-height:1.1;}
+.ws-sub{margin:0;color:var(--muted);font-weight:600;font-size:13px;}
+.ws-meta{display:flex;gap:28px;margin-top:12px;font-weight:600;color:var(--ink);font-size:13px;}
+.ws-fill{display:inline-block;width:220px;border-bottom:1.5px solid var(--ink);}
+.ws-fill-sm{width:120px;}
+.ws-bank{background:var(--bank);border:1.5px solid var(--bank-line);border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-bank-h,.ws-example-h{font-family:"Fraunces",serif;font-size:14px;margin:0 0 8px;color:var(--navy);}
+.ws-bankwords{display:flex;flex-wrap:wrap;gap:8px;}
+.ws-bankword{background:#fff;border:1.5px solid var(--bank-line);border-radius:999px;padding:4px 12px;font-weight:700;font-size:12.5px;}
+.ws-example{background:var(--ex);border:1.5px solid #cfe2f6;border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-example-steps{margin:0;padding-left:18px;}
+.ws-example-steps li{margin:2px 0;}
+.ws-problems{list-style:none;margin:0;padding:0;counter-reset:none;}
+.ws-problem{display:flex;gap:12px;padding:14px 0;border-bottom:1px dashed var(--line);break-inside:avoid;page-break-inside:avoid;}
+.ws-problem:last-child{border-bottom:0;}
+.ws-pnum{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.ws-pbody{flex:1;min-width:0;}
+.ws-stem{margin:0 0 8px;font-weight:600;}
+.ws-prompt{margin:6px 0;color:var(--muted);font-size:12.5px;}
+.ws-opts{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;}
+.ws-opt{display:flex;align-items:flex-start;gap:8px;}
+.ws-bub{flex:0 0 auto;width:22px;height:22px;border:2px solid var(--navy);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;}
+.ws-bub-sm{width:20px;height:20px;font-size:11px;}
+.ws-correct .ws-bub{background:var(--teal);border-color:var(--teal);color:#fff;}
+.ws-correct{font-weight:700;color:var(--teal);}
+.ws-keynote{margin:6px 0 0;color:var(--teal);font-size:12px;font-style:italic;}
+.ws-watch{margin:4px 0 0;color:#9a4a12;font-size:12px;background:#fff3e6;border-left:3px solid #e08a3c;padding:5px 10px;border-radius:0 8px 8px 0;}
+.ws-scaffold-note{margin:0 0 14px;background:var(--soft);border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;font-weight:600;color:var(--navy);font-size:12.5px;}
+.ws-match{display:flex;gap:24px;flex-wrap:wrap;}
+.ws-match-terms{list-style:none;margin:0;padding:0;flex:1;min-width:180px;}
+.ws-match-term{display:flex;align-items:center;gap:8px;margin:5px 0;font-weight:600;}
+.ws-match-bank{list-style:none;margin:0;padding:10px 12px;background:var(--soft);border:1px solid var(--line);border-radius:10px;flex:1;min-width:180px;}
+.ws-match-bank li{display:flex;align-items:center;gap:8px;margin:4px 0;}
+.ws-blank{display:inline-block;min-width:54px;border-bottom:1.5px solid var(--ink);text-align:center;font-weight:700;}
+.ws-blank-sm{min-width:40px;}
+.ws-steps{list-style:none;margin:6px 0;padding:0;}
+.ws-steps li{display:flex;gap:10px;align-items:baseline;padding:4px 0;}
+.ws-step-n{flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:var(--soft);font-weight:700;font-size:11px;display:inline-flex;align-items:center;justify-content:center;}
+.ws-step-l{flex:0 0 38%;font-weight:600;}
+.ws-step-w{flex:1;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
+.ws-table{width:100%;border-collapse:collapse;margin:8px 0;}
+.ws-table th{background:var(--navy);color:#fff;font-size:12px;padding:7px 9px;text-align:left;}
+.ws-table td{border:1px solid var(--line);padding:9px;height:34px;font-weight:600;}
+.ws-lines{margin:8px 0 0;}
+.ws-line{display:block;border-bottom:1.5px solid var(--line);height:24px;}
+.ws-work{margin:8px 0 0;border:1.5px dashed var(--line);border-radius:10px;min-height:70px;padding:6px 10px;position:relative;}
+.ws-work-label{color:var(--muted);font-size:11px;font-weight:600;}
+.ws-frame{background:var(--soft);border-left:3px solid var(--blue);padding:6px 10px;margin:6px 0;font-style:italic;color:var(--muted);border-radius:0 8px 8px 0;}
+.ws-sort{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:5px 18px;}
+.ws-sort li{display:flex;align-items:center;gap:8px;font-weight:600;}
+
+@media print{
+  body{background:#fff;font-size:12pt;}
+  .ws-page{box-shadow:none;border-radius:0;margin:0;max-width:none;padding:0;page-break-after:always;}
+  .ws-page:last-child{page-break-after:auto;}
+  @page{margin:1.5cm;}
+  a{color:#000;}
+}
+
+/* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
+   Appended last so it overrides each generator's base CSS. Finish-only:
+   serif headings + paper ground + AA-safe ink. No layout/size changes. */
+:root{ --ink:#19262f; --muted:#475663; }
+body{ background:#f5f0e6; color:#19262f; }
+h1,h2,h3,h4,h5,h6,
+header.packet h1,.section>h2,.li-title,.learnit-head,.learnit-stage-title,
+.mission-title,.answer-key h2,.think-block h3,.topbar .brand{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
+/* A thin editorial accent rule under the document's main title. */
+header.packet h1{ position:relative; }
+header.packet h1::after{
+  content:""; display:block; width:56px; height:2px; margin-top:8px;
+  background:linear-gradient(90deg,#1fa6a2,#f2c15b); border-radius:2px;
+}
+@media print{ body{ background:#fff !important; } }
+
+</style>
+</head>
+<body>
+<main>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.7</span>
+      <span class="ws-ver">Level 0</span>
+    </div>
+    <h1 class="ws-title">6.7 Small Group · Group 1</h1>
+    <p class="ws-sub">Practice — Level 0</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    <section class="ws-bank">
+    <h2 class="ws-bank-h">📕 Word Bank</h2>
+    <div class="ws-bankwords"><span class="ws-bankword">Like Terms</span><span class="ws-bankword">Combine</span><span class="ws-bankword">Simplify</span><span class="ws-bankword">Coefficient</span></div>
+  </section><section class="ws-example">
+    <h2 class="ws-example-h">✏️ Worked Example</h2>
+    <ol class="ws-example-steps"><li><b>Track:</b> 3x + 5</li><li><b>Combine:</b> Add the 3 and the 5</li><li><b>Simplify:</b> 8x</li></ol>
+  </section>
+    <p class="ws-scaffold-note">🧩 Extra support: use the word bank and the worked example. A sentence starter is given under each problem.</p>
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Simplify 7x + 3x.</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>10x</li><li class="ws-opt"><span class="ws-bub">B</span>10x²</li><li class="ws-opt"><span class="ws-bub">C</span>21x</li><li class="ws-opt"><span class="ws-bub">D</span>73x</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Simplify 9n + 4 + 2n.</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>11n + 4</li><li class="ws-opt"><span class="ws-bub">B</span>15n</li><li class="ws-opt"><span class="ws-bub">C</span>11n² + 4</li><li class="ws-opt"><span class="ws-bub">D</span>92n + 4</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Which pair are like terms?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>6x and 2x</li><li class="ws-opt"><span class="ws-bub">B</span>6x and 6y</li><li class="ws-opt"><span class="ws-bub">C</span>6x and 6</li><li class="ws-opt"><span class="ws-bub">D</span>6x and 2x²</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Simplify 5a + 3 + 2a.</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>7a + 3</li><li class="ws-opt"><span class="ws-bub">B</span>10a</li><li class="ws-opt"><span class="ws-bub">C</span>7a² + 3</li><li class="ws-opt"><span class="ws-bub">D</span>52a + 3</li></ol></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.7</span>
+      <span class="ws-ver">Version A</span>
+    </div>
+    <h1 class="ws-title">6.7 Small Group · Group 1</h1>
+    <p class="ws-sub">Practice — Version A</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    <section class="ws-bank">
+    <h2 class="ws-bank-h">📕 Word Bank</h2>
+    <div class="ws-bankwords"><span class="ws-bankword">Like Terms</span><span class="ws-bankword">Combine</span><span class="ws-bankword">Simplify</span><span class="ws-bankword">Coefficient</span></div>
+  </section><section class="ws-example">
+    <h2 class="ws-example-h">✏️ Worked Example</h2>
+    <ol class="ws-example-steps"><li><b>Track:</b> 3x + 5</li><li><b>Combine:</b> Add the 3 and the 5</li><li><b>Simplify:</b> 8x</li></ol>
+  </section>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Simplify 7x + 3x.</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>10x</li><li class="ws-opt"><span class="ws-bub">B</span>10x²</li><li class="ws-opt"><span class="ws-bub">C</span>21x</li><li class="ws-opt"><span class="ws-bub">D</span>73x</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Simplify 9n + 4 + 2n.</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>11n + 4</li><li class="ws-opt"><span class="ws-bub">B</span>15n</li><li class="ws-opt"><span class="ws-bub">C</span>11n² + 4</li><li class="ws-opt"><span class="ws-bub">D</span>92n + 4</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Which pair are like terms?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>6x and 2x</li><li class="ws-opt"><span class="ws-bub">B</span>6x and 6y</li><li class="ws-opt"><span class="ws-bub">C</span>6x and 6</li><li class="ws-opt"><span class="ws-bub">D</span>6x and 2x²</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Simplify 5a + 3 + 2a.</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>7a + 3</li><li class="ws-opt"><span class="ws-bub">B</span>10a</li><li class="ws-opt"><span class="ws-bub">C</span>7a² + 3</li><li class="ws-opt"><span class="ws-bub">D</span>52a + 3</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Spot the Mistake — Exponent Slip</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Expression</span><span class="ws-step-w">4x + 3x</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Combine</span><span class="ws-step-w">Add the coefficients: 4 + 3 = 7</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Simplify</span><span class="ws-step-w">7x²</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">Spot the Mistake — Swept-Up Constant</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Expression</span><span class="ws-step-w">6x + 4 + 2x</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Combine</span><span class="ws-step-w">Add everything: 6 + 4 + 2 = 12</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Simplify</span><span class="ws-step-w">12x</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.7</span>
+      <span class="ws-ver">Version B</span>
+    </div>
+    <h1 class="ws-title">6.7 Small Group · Group 1</h1>
+    <p class="ws-sub">Practice — Version B</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">The board shows 3x + 5x on one channel. Simplify it.</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>8x</li><li class="ws-opt"><span class="ws-bub">B</span>15x</li><li class="ws-opt"><span class="ws-bub">C</span>8x²</li><li class="ws-opt"><span class="ws-bub">D</span>35x</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Simplify the track: 4a + 2 + a.</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>5a + 2</li><li class="ws-opt"><span class="ws-bub">B</span>7a</li><li class="ws-opt"><span class="ws-bub">C</span>5a²+ 2</li><li class="ws-opt"><span class="ws-bub">D</span>6a</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Clean up this channel: 7y − 3y.</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>4y</li><li class="ws-opt"><span class="ws-bub">B</span>10y</li><li class="ws-opt"><span class="ws-bub">C</span>4</li><li class="ws-opt"><span class="ws-bub">D</span>21y</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Simplify the mix: 6m + 4 + 3m.</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>9m + 4</li><li class="ws-opt"><span class="ws-bub">B</span>13m</li><li class="ws-opt"><span class="ws-bub">C</span>9m + 4m</li><li class="ws-opt"><span class="ws-bub">D</span>10m</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Level 2 Extension — Crossed Channels on the Board</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Track</span><span class="ws-step-w">3x + 5</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Combine</span><span class="ws-step-w">Add the 3 and the 5</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Simplify</span><span class="ws-step-w">8x</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">Find the Simplification Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Expression</span><span class="ws-step-w">5x + 3 + 2y + 4x</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Combine</span><span class="ws-step-w">5x + 2y + 4x + 3</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Simplify</span><span class="ws-step-w">11xy + 3</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.7</span>
+      <span class="ws-ver">Level 0 — Answer Key</span>
+    </div>
+    <h1 class="ws-title">6.7 Small Group · Group 1</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Simplify 7x + 3x.</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>10x</li><li class="ws-opt"><span class="ws-bub">B</span>10x²</li><li class="ws-opt"><span class="ws-bub">C</span>21x</li><li class="ws-opt"><span class="ws-bub">D</span>73x</li></ol><p class="ws-keynote">7x + 3x = 10x. Add the coefficients: 7 + 3 = 10.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Simplify Algebraic Expressions is sweeping a constant into the variable terms — for example, simplifying 6x + 4 + 2x as 12x by adding all three numbers (6 + 4 + 2 = 12) instead of recognizing that 4 has no variable and cannot combine with 6x and 2x. The correct simplified expression is 8x + 4 (combine 6x + 2x = 8x, and let the 4 stay on its own). Before you submit, check that every term you combined has the exact same variable part.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Simplify 9n + 4 + 2n.</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>11n + 4</li><li class="ws-opt"><span class="ws-bub">B</span>15n</li><li class="ws-opt"><span class="ws-bub">C</span>11n² + 4</li><li class="ws-opt"><span class="ws-bub">D</span>92n + 4</li></ol><p class="ws-keynote">9n + 2n = 11n. The constant 4 has no like term, so it stays. Result: 11n + 4.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Simplify Algebraic Expressions is sweeping a constant into the variable terms — for example, simplifying 6x + 4 + 2x as 12x by adding all three numbers (6 + 4 + 2 = 12) instead of recognizing that 4 has no variable and cannot combine with 6x and 2x. The correct simplified expression is 8x + 4 (combine 6x + 2x = 8x, and let the 4 stay on its own). Before you submit, check that every term you combined has the exact same variable part.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Which pair are like terms?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>6x and 2x</li><li class="ws-opt"><span class="ws-bub">B</span>6x and 6y</li><li class="ws-opt"><span class="ws-bub">C</span>6x and 6</li><li class="ws-opt"><span class="ws-bub">D</span>6x and 2x²</li></ol><p class="ws-keynote">6x and 2x are like terms because they both have the same variable (x) raised to the same power (1).</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Simplify Algebraic Expressions is sweeping a constant into the variable terms — for example, simplifying 6x + 4 + 2x as 12x by adding all three numbers (6 + 4 + 2 = 12) instead of recognizing that 4 has no variable and cannot combine with 6x and 2x. The correct simplified expression is 8x + 4 (combine 6x + 2x = 8x, and let the 4 stay on its own). Before you submit, check that every term you combined has the exact same variable part.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Simplify 5a + 3 + 2a.</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>7a + 3</li><li class="ws-opt"><span class="ws-bub">B</span>10a</li><li class="ws-opt"><span class="ws-bub">C</span>7a² + 3</li><li class="ws-opt"><span class="ws-bub">D</span>52a + 3</li></ol><p class="ws-keynote">5a + 2a = 7a. The constant 3 stays. Result: 7a + 3.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Simplify Algebraic Expressions is sweeping a constant into the variable terms — for example, simplifying 6x + 4 + 2x as 12x by adding all three numbers (6 + 4 + 2 = 12) instead of recognizing that 4 has no variable and cannot combine with 6x and 2x. The correct simplified expression is 8x + 4 (combine 6x + 2x = 8x, and let the 4 stay on its own). Before you submit, check that every term you combined has the exact same variable part.</p></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.7</span>
+      <span class="ws-ver">Version A — Answer Key</span>
+    </div>
+    <h1 class="ws-title">6.7 Small Group · Group 1</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Simplify 7x + 3x.</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>10x</li><li class="ws-opt"><span class="ws-bub">B</span>10x²</li><li class="ws-opt"><span class="ws-bub">C</span>21x</li><li class="ws-opt"><span class="ws-bub">D</span>73x</li></ol><p class="ws-keynote">7x + 3x = 10x. Add the coefficients: 7 + 3 = 10.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Simplify Algebraic Expressions is sweeping a constant into the variable terms — for example, simplifying 6x + 4 + 2x as 12x by adding all three numbers (6 + 4 + 2 = 12) instead of recognizing that 4 has no variable and cannot combine with 6x and 2x. The correct simplified expression is 8x + 4 (combine 6x + 2x = 8x, and let the 4 stay on its own). Before you submit, check that every term you combined has the exact same variable part.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Simplify 9n + 4 + 2n.</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>11n + 4</li><li class="ws-opt"><span class="ws-bub">B</span>15n</li><li class="ws-opt"><span class="ws-bub">C</span>11n² + 4</li><li class="ws-opt"><span class="ws-bub">D</span>92n + 4</li></ol><p class="ws-keynote">9n + 2n = 11n. The constant 4 has no like term, so it stays. Result: 11n + 4.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Simplify Algebraic Expressions is sweeping a constant into the variable terms — for example, simplifying 6x + 4 + 2x as 12x by adding all three numbers (6 + 4 + 2 = 12) instead of recognizing that 4 has no variable and cannot combine with 6x and 2x. The correct simplified expression is 8x + 4 (combine 6x + 2x = 8x, and let the 4 stay on its own). Before you submit, check that every term you combined has the exact same variable part.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Which pair are like terms?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>6x and 2x</li><li class="ws-opt"><span class="ws-bub">B</span>6x and 6y</li><li class="ws-opt"><span class="ws-bub">C</span>6x and 6</li><li class="ws-opt"><span class="ws-bub">D</span>6x and 2x²</li></ol><p class="ws-keynote">6x and 2x are like terms because they both have the same variable (x) raised to the same power (1).</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Simplify Algebraic Expressions is sweeping a constant into the variable terms — for example, simplifying 6x + 4 + 2x as 12x by adding all three numbers (6 + 4 + 2 = 12) instead of recognizing that 4 has no variable and cannot combine with 6x and 2x. The correct simplified expression is 8x + 4 (combine 6x + 2x = 8x, and let the 4 stay on its own). Before you submit, check that every term you combined has the exact same variable part.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Simplify 5a + 3 + 2a.</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>7a + 3</li><li class="ws-opt"><span class="ws-bub">B</span>10a</li><li class="ws-opt"><span class="ws-bub">C</span>7a² + 3</li><li class="ws-opt"><span class="ws-bub">D</span>52a + 3</li></ol><p class="ws-keynote">5a + 2a = 7a. The constant 3 stays. Result: 7a + 3.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Simplify Algebraic Expressions is sweeping a constant into the variable terms — for example, simplifying 6x + 4 + 2x as 12x by adding all three numbers (6 + 4 + 2 = 12) instead of recognizing that 4 has no variable and cannot combine with 6x and 2x. The correct simplified expression is 8x + 4 (combine 6x + 2x = 8x, and let the 4 stay on its own). Before you submit, check that every term you combined has the exact same variable part.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Spot the Mistake — Exponent Slip</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Expression</span><span class="ws-step-w">4x + 3x</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Combine</span><span class="ws-step-w">Add the coefficients: 4 + 3 = 7</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Simplify</span><span class="ws-step-w">7x²</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 3. Correct work: 4x and 3x are like terms, so add the coefficients 4 + 3 = 7 and KEEP the variable exactly as it is: the answer is 7x, not 7x². Adding like terms never changes the exponent on the variable. (Check: at x = 2, 4x + 3x = 8 + 6 = 14, and 7x = 14, but 7x² = 28.)</p></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">Spot the Mistake — Swept-Up Constant</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Expression</span><span class="ws-step-w">6x + 4 + 2x</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Combine</span><span class="ws-step-w">Add everything: 6 + 4 + 2 = 12</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Simplify</span><span class="ws-step-w">12x</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 2. Correct work: The 4 is a constant with no variable, so it cannot be combined with the x-terms. Combine only the like terms: 6x + 2x = 8x, and the 4 stays on its own. The correct simplified expression is 8x + 4. (Check: at x = 1, 6x + 4 + 2x = 6 + 4 + 2 = 12, and 8x + 4 = 12, but 12x = 12 only by accident — at x = 2 it gives 24 instead of the true 20.)</p></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.7</span>
+      <span class="ws-ver">Version B — Answer Key</span>
+    </div>
+    <h1 class="ws-title">6.7 Small Group · Group 1</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">The board shows 3x + 5x on one channel. Simplify it.</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>8x</li><li class="ws-opt"><span class="ws-bub">B</span>15x</li><li class="ws-opt"><span class="ws-bub">C</span>8x²</li><li class="ws-opt"><span class="ws-bub">D</span>35x</li></ol><p class="ws-keynote">3x and 5x are like terms, so add the coefficients: 3 + 5 = 8. The variable x stays, giving 8x.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Simplify Algebraic Expressions is sweeping a constant into the variable terms — for example, simplifying 6x + 4 + 2x as 12x by adding all three numbers (6 + 4 + 2 = 12) instead of recognizing that 4 has no variable and cannot combine with 6x and 2x. The correct simplified expression is 8x + 4 (combine 6x + 2x = 8x, and let the 4 stay on its own). Before you submit, check that every term you combined has the exact same variable part.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Simplify the track: 4a + 2 + a.</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>5a + 2</li><li class="ws-opt"><span class="ws-bub">B</span>7a</li><li class="ws-opt"><span class="ws-bub">C</span>5a²+ 2</li><li class="ws-opt"><span class="ws-bub">D</span>6a</li></ol><p class="ws-keynote">4a + a = 5a (remember a means 1a). The 2 has no like term, so it stays. Result: 5a + 2.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Simplify Algebraic Expressions is sweeping a constant into the variable terms — for example, simplifying 6x + 4 + 2x as 12x by adding all three numbers (6 + 4 + 2 = 12) instead of recognizing that 4 has no variable and cannot combine with 6x and 2x. The correct simplified expression is 8x + 4 (combine 6x + 2x = 8x, and let the 4 stay on its own). Before you submit, check that every term you combined has the exact same variable part.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Clean up this channel: 7y − 3y.</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>4y</li><li class="ws-opt"><span class="ws-bub">B</span>10y</li><li class="ws-opt"><span class="ws-bub">C</span>4</li><li class="ws-opt"><span class="ws-bub">D</span>21y</li></ol><p class="ws-keynote">Subtract the coefficients of the like terms: 7 − 3 = 4. Keep the variable y, giving 4y.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Simplify Algebraic Expressions is sweeping a constant into the variable terms — for example, simplifying 6x + 4 + 2x as 12x by adding all three numbers (6 + 4 + 2 = 12) instead of recognizing that 4 has no variable and cannot combine with 6x and 2x. The correct simplified expression is 8x + 4 (combine 6x + 2x = 8x, and let the 4 stay on its own). Before you submit, check that every term you combined has the exact same variable part.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Simplify the mix: 6m + 4 + 3m.</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>9m + 4</li><li class="ws-opt"><span class="ws-bub">B</span>13m</li><li class="ws-opt"><span class="ws-bub">C</span>9m + 4m</li><li class="ws-opt"><span class="ws-bub">D</span>10m</li></ol><p class="ws-keynote">6m + 3m = 9m. The constant 4 has no like term, so it stays. Result: 9m + 4.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Simplify Algebraic Expressions is sweeping a constant into the variable terms — for example, simplifying 6x + 4 + 2x as 12x by adding all three numbers (6 + 4 + 2 = 12) instead of recognizing that 4 has no variable and cannot combine with 6x and 2x. The correct simplified expression is 8x + 4 (combine 6x + 2x = 8x, and let the 4 stay on its own). Before you submit, check that every term you combined has the exact same variable part.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Level 2 Extension — Crossed Channels on the Board</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Track</span><span class="ws-step-w">3x + 5</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Combine</span><span class="ws-step-w">Add the 3 and the 5</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Simplify</span><span class="ws-step-w">8x</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 3. Correct work: 3x and 5 are NOT like terms — 3x has the variable x and 5 is a constant with no variable. They cannot be combined. The expression 3x + 5 is already in simplest form. Writing 8x is wrong because it changes the value (at x = 2, 3x + 5 = 11 but 8x = 16).</p></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">Find the Simplification Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Expression</span><span class="ws-step-w">5x + 3 + 2y + 4x</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Combine</span><span class="ws-step-w">5x + 2y + 4x + 3</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Simplify</span><span class="ws-step-w">11xy + 3</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 3. Correct work: 5x + 4x = 9x (like terms). 2y stays separate (no other y-term). The constant 3 stays. Correct answer: 9x + 2y + 3. You cannot combine x-terms and y-terms into xy.</p></div></li></ol>
+  </section>
+</main>
+</body>
+</html>

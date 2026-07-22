@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>6.1 Small Group · Group 1 — Practice Worksheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --navy:#143a6b; --blue:#1f5fa6; --teal:#1c7a64; --ink:#16243d; --muted:#5a6b82;
+  --line:#d7e2ed; --soft:#eef3f9; --bank:#fff8e8; --bank-line:#f0d9a0; --ex:#eaf4ff;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:13.5px;line-height:1.5;}
+.ws-page{background:#fff;max-width:760px;margin:18px auto;padding:34px 40px 44px;box-shadow:0 6px 24px rgba(20,40,75,.12);border-radius:6px;}
+.ws-head{border-bottom:3px solid var(--navy);padding-bottom:12px;margin-bottom:18px;}
+.ws-head-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.ws-std{background:var(--navy);color:#fff;font-weight:700;font-size:11px;letter-spacing:.04em;padding:4px 11px;border-radius:999px;}
+.ws-ver{font-family:"Fraunces",serif;font-weight:700;color:var(--blue);font-size:14px;}
+.ws-title{font-family:"Fraunces",serif;font-weight:700;font-size:25px;margin:4px 0 2px;color:var(--navy);line-height:1.1;}
+.ws-sub{margin:0;color:var(--muted);font-weight:600;font-size:13px;}
+.ws-meta{display:flex;gap:28px;margin-top:12px;font-weight:600;color:var(--ink);font-size:13px;}
+.ws-fill{display:inline-block;width:220px;border-bottom:1.5px solid var(--ink);}
+.ws-fill-sm{width:120px;}
+.ws-bank{background:var(--bank);border:1.5px solid var(--bank-line);border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-bank-h,.ws-example-h{font-family:"Fraunces",serif;font-size:14px;margin:0 0 8px;color:var(--navy);}
+.ws-bankwords{display:flex;flex-wrap:wrap;gap:8px;}
+.ws-bankword{background:#fff;border:1.5px solid var(--bank-line);border-radius:999px;padding:4px 12px;font-weight:700;font-size:12.5px;}
+.ws-example{background:var(--ex);border:1.5px solid #cfe2f6;border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-example-steps{margin:0;padding-left:18px;}
+.ws-example-steps li{margin:2px 0;}
+.ws-problems{list-style:none;margin:0;padding:0;counter-reset:none;}
+.ws-problem{display:flex;gap:12px;padding:14px 0;border-bottom:1px dashed var(--line);break-inside:avoid;page-break-inside:avoid;}
+.ws-problem:last-child{border-bottom:0;}
+.ws-pnum{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.ws-pbody{flex:1;min-width:0;}
+.ws-stem{margin:0 0 8px;font-weight:600;}
+.ws-prompt{margin:6px 0;color:var(--muted);font-size:12.5px;}
+.ws-opts{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;}
+.ws-opt{display:flex;align-items:flex-start;gap:8px;}
+.ws-bub{flex:0 0 auto;width:22px;height:22px;border:2px solid var(--navy);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;}
+.ws-bub-sm{width:20px;height:20px;font-size:11px;}
+.ws-correct .ws-bub{background:var(--teal);border-color:var(--teal);color:#fff;}
+.ws-correct{font-weight:700;color:var(--teal);}
+.ws-keynote{margin:6px 0 0;color:var(--teal);font-size:12px;font-style:italic;}
+.ws-watch{margin:4px 0 0;color:#9a4a12;font-size:12px;background:#fff3e6;border-left:3px solid #e08a3c;padding:5px 10px;border-radius:0 8px 8px 0;}
+.ws-scaffold-note{margin:0 0 14px;background:var(--soft);border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;font-weight:600;color:var(--navy);font-size:12.5px;}
+.ws-match{display:flex;gap:24px;flex-wrap:wrap;}
+.ws-match-terms{list-style:none;margin:0;padding:0;flex:1;min-width:180px;}
+.ws-match-term{display:flex;align-items:center;gap:8px;margin:5px 0;font-weight:600;}
+.ws-match-bank{list-style:none;margin:0;padding:10px 12px;background:var(--soft);border:1px solid var(--line);border-radius:10px;flex:1;min-width:180px;}
+.ws-match-bank li{display:flex;align-items:center;gap:8px;margin:4px 0;}
+.ws-blank{display:inline-block;min-width:54px;border-bottom:1.5px solid var(--ink);text-align:center;font-weight:700;}
+.ws-blank-sm{min-width:40px;}
+.ws-steps{list-style:none;margin:6px 0;padding:0;}
+.ws-steps li{display:flex;gap:10px;align-items:baseline;padding:4px 0;}
+.ws-step-n{flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:var(--soft);font-weight:700;font-size:11px;display:inline-flex;align-items:center;justify-content:center;}
+.ws-step-l{flex:0 0 38%;font-weight:600;}
+.ws-step-w{flex:1;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
+.ws-table{width:100%;border-collapse:collapse;margin:8px 0;}
+.ws-table th{background:var(--navy);color:#fff;font-size:12px;padding:7px 9px;text-align:left;}
+.ws-table td{border:1px solid var(--line);padding:9px;height:34px;font-weight:600;}
+.ws-lines{margin:8px 0 0;}
+.ws-line{display:block;border-bottom:1.5px solid var(--line);height:24px;}
+.ws-work{margin:8px 0 0;border:1.5px dashed var(--line);border-radius:10px;min-height:70px;padding:6px 10px;position:relative;}
+.ws-work-label{color:var(--muted);font-size:11px;font-weight:600;}
+.ws-frame{background:var(--soft);border-left:3px solid var(--blue);padding:6px 10px;margin:6px 0;font-style:italic;color:var(--muted);border-radius:0 8px 8px 0;}
+.ws-sort{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:5px 18px;}
+.ws-sort li{display:flex;align-items:center;gap:8px;font-weight:600;}
+
+@media print{
+  body{background:#fff;font-size:12pt;}
+  .ws-page{box-shadow:none;border-radius:0;margin:0;max-width:none;padding:0;page-break-after:always;}
+  .ws-page:last-child{page-break-after:auto;}
+  @page{margin:1.5cm;}
+  a{color:#000;}
+}
+
+/* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
+   Appended last so it overrides each generator's base CSS. Finish-only:
+   serif headings + paper ground + AA-safe ink. No layout/size changes. */
+:root{ --ink:#19262f; --muted:#475663; }
+body{ background:#f5f0e6; color:#19262f; }
+h1,h2,h3,h4,h5,h6,
+header.packet h1,.section>h2,.li-title,.learnit-head,.learnit-stage-title,
+.mission-title,.answer-key h2,.think-block h3,.topbar .brand{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
+/* A thin editorial accent rule under the document's main title. */
+header.packet h1{ position:relative; }
+header.packet h1::after{
+  content:""; display:block; width:56px; height:2px; margin-top:8px;
+  background:linear-gradient(90deg,#1fa6a2,#f2c15b); border-radius:2px;
+}
+@media print{ body{ background:#fff !important; } }
+
+</style>
+</head>
+<body>
+<main>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.5</span>
+      <span class="ws-ver">Level 0</span>
+    </div>
+    <h1 class="ws-title">6.1 Small Group · Group 1</h1>
+    <p class="ws-sub">Practice — Level 0</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    <section class="ws-bank">
+    <h2 class="ws-bank-h">📕 Word Bank</h2>
+    <div class="ws-bankwords"><span class="ws-bankword">Exponent</span><span class="ws-bankword">Base</span><span class="ws-bankword">Power</span><span class="ws-bankword">Evaluate</span></div>
+  </section><section class="ws-example">
+    <h2 class="ws-example-h">✏️ Worked Example</h2>
+    <ol class="ws-example-steps"><li><b>Track says:</b> Play 3⁴ beats</li><li><b>Producer's thinking:</b> 3 × 4</li><li><b>Calculate:</b> = 12</li></ol>
+  </section>
+    <p class="ws-scaffold-note">🧩 Extra support: use the word bank and the worked example. A sentence starter is given under each problem.</p>
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">What is the value of 4³?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>64</li><li class="ws-opt"><span class="ws-bub">B</span>12</li><li class="ws-opt"><span class="ws-bub">C</span>43</li><li class="ws-opt"><span class="ws-bub">D</span>7</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">What is the value of 6²?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>36</li><li class="ws-opt"><span class="ws-bub">B</span>12</li><li class="ws-opt"><span class="ws-bub">C</span>62</li><li class="ws-opt"><span class="ws-bub">D</span>8</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Which expression shows 5³ as repeated multiplication?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>5 × 5 × 5</li><li class="ws-opt"><span class="ws-bub">B</span>5 × 3</li><li class="ws-opt"><span class="ws-bub">C</span>5 + 5 + 5</li><li class="ws-opt"><span class="ws-bub">D</span>3 × 3 × 3 × 3 × 3</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Evaluate: 3 × (4 + 2)²</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>108</li><li class="ws-opt"><span class="ws-bub">B</span>54</li><li class="ws-opt"><span class="ws-bub">C</span>36</li><li class="ws-opt"><span class="ws-bub">D</span>144</li></ol></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.5</span>
+      <span class="ws-ver">Version A</span>
+    </div>
+    <h1 class="ws-title">6.1 Small Group · Group 1</h1>
+    <p class="ws-sub">Practice — Version A</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    <section class="ws-bank">
+    <h2 class="ws-bank-h">📕 Word Bank</h2>
+    <div class="ws-bankwords"><span class="ws-bankword">Exponent</span><span class="ws-bankword">Base</span><span class="ws-bankword">Power</span><span class="ws-bankword">Evaluate</span></div>
+  </section><section class="ws-example">
+    <h2 class="ws-example-h">✏️ Worked Example</h2>
+    <ol class="ws-example-steps"><li><b>Track says:</b> Play 3⁴ beats</li><li><b>Producer's thinking:</b> 3 × 4</li><li><b>Calculate:</b> = 12</li></ol>
+  </section>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">What is the value of 4³?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>64</li><li class="ws-opt"><span class="ws-bub">B</span>12</li><li class="ws-opt"><span class="ws-bub">C</span>43</li><li class="ws-opt"><span class="ws-bub">D</span>7</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">What is the value of 6²?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>36</li><li class="ws-opt"><span class="ws-bub">B</span>12</li><li class="ws-opt"><span class="ws-bub">C</span>62</li><li class="ws-opt"><span class="ws-bub">D</span>8</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Which expression shows 5³ as repeated multiplication?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>5 × 5 × 5</li><li class="ws-opt"><span class="ws-bub">B</span>5 × 3</li><li class="ws-opt"><span class="ws-bub">C</span>5 + 5 + 5</li><li class="ws-opt"><span class="ws-bub">D</span>3 × 3 × 3 × 3 × 3</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Evaluate: 3 × (4 + 2)²</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>108</li><li class="ws-opt"><span class="ws-bub">B</span>54</li><li class="ws-opt"><span class="ws-bub">C</span>36</li><li class="ws-opt"><span class="ws-bub">D</span>144</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Expression</span><span class="ws-step-w">5³</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Student's thinking</span><span class="ws-step-w">5 × 3</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Calculate</span><span class="ws-step-w">= 15</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Expression</span><span class="ws-step-w">2⁴</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Student's thinking</span><span class="ws-step-w">2 × 4</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Calculate</span><span class="ws-step-w">= 8</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.5</span>
+      <span class="ws-ver">Version B</span>
+    </div>
+    <h1 class="ws-title">6.1 Small Group · Group 1</h1>
+    <p class="ws-sub">Practice — Version B</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">The drum loop plays 3⁴ beats. What is the value of 3⁴?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>81</li><li class="ws-opt"><span class="ws-bub">B</span>12</li><li class="ws-opt"><span class="ws-bub">C</span>7</li><li class="ws-opt"><span class="ws-bub">D</span>27</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A synth pattern repeats 7 × 7 × 7. How do you write that as a power?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>7³</li><li class="ws-opt"><span class="ws-bub">B</span>3⁷</li><li class="ws-opt"><span class="ws-bub">C</span>7 × 3</li><li class="ws-opt"><span class="ws-bub">D</span>21³</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">The bass line doubles for 2⁶ counts. What is the value of 2⁶?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>64</li><li class="ws-opt"><span class="ws-bub">B</span>12</li><li class="ws-opt"><span class="ws-bub">C</span>32</li><li class="ws-opt"><span class="ws-bub">D</span>36</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Level 2 Extension — Spot the Beat-Builder Bug</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Track says</span><span class="ws-step-w">Play 3⁴ beats</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Producer's thinking</span><span class="ws-step-w">3 × 4</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Calculate</span><span class="ws-step-w">= 12</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Find the Exponent Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Expression</span><span class="ws-step-w">2³</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Student's thinking</span><span class="ws-step-w">2 × 3</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Calculate</span><span class="ws-step-w">= 6</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">A bacteria colony doubles every hour. Starting with 1 bacterium, write a power expression for the number after 6 hours. Explain why exponential growth is so much faster than adding the same number each hour.</p><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.5</span>
+      <span class="ws-ver">Level 0 — Answer Key</span>
+    </div>
+    <h1 class="ws-title">6.1 Small Group · Group 1</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">What is the value of 4³?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>64</li><li class="ws-opt"><span class="ws-bub">B</span>12</li><li class="ws-opt"><span class="ws-bub">C</span>43</li><li class="ws-opt"><span class="ws-bub">D</span>7</li></ol><p class="ws-keynote">4³ = 4 × 4 × 4 = 64.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Powers and Exponents is multiplying the base by the exponent instead of using the base as a repeated factor — for example, thinking 2³ = 2 × 3 = 6 instead of 2³ = 2 × 2 × 2 = 8. Before you submit, rewrite the power as repeated multiplication first, then multiply step by step.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">What is the value of 6²?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>36</li><li class="ws-opt"><span class="ws-bub">B</span>12</li><li class="ws-opt"><span class="ws-bub">C</span>62</li><li class="ws-opt"><span class="ws-bub">D</span>8</li></ol><p class="ws-keynote">6² = 6 × 6 = 36.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Powers and Exponents is multiplying the base by the exponent instead of using the base as a repeated factor — for example, thinking 2³ = 2 × 3 = 6 instead of 2³ = 2 × 2 × 2 = 8. Before you submit, rewrite the power as repeated multiplication first, then multiply step by step.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Which expression shows 5³ as repeated multiplication?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>5 × 5 × 5</li><li class="ws-opt"><span class="ws-bub">B</span>5 × 3</li><li class="ws-opt"><span class="ws-bub">C</span>5 + 5 + 5</li><li class="ws-opt"><span class="ws-bub">D</span>3 × 3 × 3 × 3 × 3</li></ol><p class="ws-keynote">5³ means use 5 as a factor 3 times: 5 × 5 × 5. The exponent tells how many times to multiply, not what to multiply by.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Powers and Exponents is multiplying the base by the exponent instead of using the base as a repeated factor — for example, thinking 2³ = 2 × 3 = 6 instead of 2³ = 2 × 2 × 2 = 8. Before you submit, rewrite the power as repeated multiplication first, then multiply step by step.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Evaluate: 3 × (4 + 2)²</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>108</li><li class="ws-opt"><span class="ws-bub">B</span>54</li><li class="ws-opt"><span class="ws-bub">C</span>36</li><li class="ws-opt"><span class="ws-bub">D</span>144</li></ol><p class="ws-keynote">4 + 2 = 6. 6² = 36. 3 × 36 = 108.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Powers and Exponents is multiplying the base by the exponent instead of using the base as a repeated factor — for example, thinking 2³ = 2 × 3 = 6 instead of 2³ = 2 × 2 × 2 = 8. Before you submit, rewrite the power as repeated multiplication first, then multiply step by step.</p></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.5</span>
+      <span class="ws-ver">Version A — Answer Key</span>
+    </div>
+    <h1 class="ws-title">6.1 Small Group · Group 1</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">What is the value of 4³?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>64</li><li class="ws-opt"><span class="ws-bub">B</span>12</li><li class="ws-opt"><span class="ws-bub">C</span>43</li><li class="ws-opt"><span class="ws-bub">D</span>7</li></ol><p class="ws-keynote">4³ = 4 × 4 × 4 = 64.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Powers and Exponents is multiplying the base by the exponent instead of using the base as a repeated factor — for example, thinking 2³ = 2 × 3 = 6 instead of 2³ = 2 × 2 × 2 = 8. Before you submit, rewrite the power as repeated multiplication first, then multiply step by step.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">What is the value of 6²?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>36</li><li class="ws-opt"><span class="ws-bub">B</span>12</li><li class="ws-opt"><span class="ws-bub">C</span>62</li><li class="ws-opt"><span class="ws-bub">D</span>8</li></ol><p class="ws-keynote">6² = 6 × 6 = 36.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Powers and Exponents is multiplying the base by the exponent instead of using the base as a repeated factor — for example, thinking 2³ = 2 × 3 = 6 instead of 2³ = 2 × 2 × 2 = 8. Before you submit, rewrite the power as repeated multiplication first, then multiply step by step.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Which expression shows 5³ as repeated multiplication?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>5 × 5 × 5</li><li class="ws-opt"><span class="ws-bub">B</span>5 × 3</li><li class="ws-opt"><span class="ws-bub">C</span>5 + 5 + 5</li><li class="ws-opt"><span class="ws-bub">D</span>3 × 3 × 3 × 3 × 3</li></ol><p class="ws-keynote">5³ means use 5 as a factor 3 times: 5 × 5 × 5. The exponent tells how many times to multiply, not what to multiply by.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Powers and Exponents is multiplying the base by the exponent instead of using the base as a repeated factor — for example, thinking 2³ = 2 × 3 = 6 instead of 2³ = 2 × 2 × 2 = 8. Before you submit, rewrite the power as repeated multiplication first, then multiply step by step.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Evaluate: 3 × (4 + 2)²</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>108</li><li class="ws-opt"><span class="ws-bub">B</span>54</li><li class="ws-opt"><span class="ws-bub">C</span>36</li><li class="ws-opt"><span class="ws-bub">D</span>144</li></ol><p class="ws-keynote">4 + 2 = 6. 6² = 36. 3 × 36 = 108.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Powers and Exponents is multiplying the base by the exponent instead of using the base as a repeated factor — for example, thinking 2³ = 2 × 3 = 6 instead of 2³ = 2 × 2 × 2 = 8. Before you submit, rewrite the power as repeated multiplication first, then multiply step by step.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Expression</span><span class="ws-step-w">5³</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Student's thinking</span><span class="ws-step-w">5 × 3</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Calculate</span><span class="ws-step-w">= 15</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 2. Correct work: 5³ does NOT mean 5 × 3. The exponent 3 tells you to use the base 5 as a factor 3 times: 5 × 5 × 5 = 125. So 5³ = 125, not 15.</p></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Expression</span><span class="ws-step-w">2⁴</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Student's thinking</span><span class="ws-step-w">2 × 4</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Calculate</span><span class="ws-step-w">= 8</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 2. Correct work: 2⁴ does NOT mean 2 × 4. The exponent 4 tells you to use the base 2 as a factor 4 times: 2 × 2 × 2 × 2 = 16. So 2⁴ = 16, not 8.</p></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.5</span>
+      <span class="ws-ver">Version B — Answer Key</span>
+    </div>
+    <h1 class="ws-title">6.1 Small Group · Group 1</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">The drum loop plays 3⁴ beats. What is the value of 3⁴?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>81</li><li class="ws-opt"><span class="ws-bub">B</span>12</li><li class="ws-opt"><span class="ws-bub">C</span>7</li><li class="ws-opt"><span class="ws-bub">D</span>27</li></ol><p class="ws-keynote">3⁴ means use 3 as a factor 4 times: 3 × 3 × 3 × 3 = 81. It is NOT 3 × 4 = 12.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Powers and Exponents is multiplying the base by the exponent instead of using the base as a repeated factor — for example, thinking 2³ = 2 × 3 = 6 instead of 2³ = 2 × 2 × 2 = 8. Before you submit, rewrite the power as repeated multiplication first, then multiply step by step.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A synth pattern repeats 7 × 7 × 7. How do you write that as a power?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>7³</li><li class="ws-opt"><span class="ws-bub">B</span>3⁷</li><li class="ws-opt"><span class="ws-bub">C</span>7 × 3</li><li class="ws-opt"><span class="ws-bub">D</span>21³</li></ol><p class="ws-keynote">The base 7 is used as a factor 3 times, so the power is 7³. 7³ = 7 × 7 × 7 = 343.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Powers and Exponents is multiplying the base by the exponent instead of using the base as a repeated factor — for example, thinking 2³ = 2 × 3 = 6 instead of 2³ = 2 × 2 × 2 = 8. Before you submit, rewrite the power as repeated multiplication first, then multiply step by step.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">The bass line doubles for 2⁶ counts. What is the value of 2⁶?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>64</li><li class="ws-opt"><span class="ws-bub">B</span>12</li><li class="ws-opt"><span class="ws-bub">C</span>32</li><li class="ws-opt"><span class="ws-bub">D</span>36</li></ol><p class="ws-keynote">2⁶ = 2 × 2 × 2 × 2 × 2 × 2 = 64. The exponent 6 counts how many times 2 is a factor.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Powers and Exponents is multiplying the base by the exponent instead of using the base as a repeated factor — for example, thinking 2³ = 2 × 3 = 6 instead of 2³ = 2 × 2 × 2 = 8. Before you submit, rewrite the power as repeated multiplication first, then multiply step by step.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Level 2 Extension — Spot the Beat-Builder Bug</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Track says</span><span class="ws-step-w">Play 3⁴ beats</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Producer's thinking</span><span class="ws-step-w">3 × 4</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Calculate</span><span class="ws-step-w">= 12</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 2. Correct work: 3⁴ does NOT mean 3 × 4. The exponent 4 tells you to use the base 3 as a factor 4 times: 3 × 3 × 3 × 3 = 81. So the track plays 81 beats, not 12.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Find the Exponent Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Expression</span><span class="ws-step-w">2³</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Student's thinking</span><span class="ws-step-w">2 × 3</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Calculate</span><span class="ws-step-w">= 6</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 2. Correct work: 2³ means 2 × 2 × 2, NOT 2 × 3. The exponent tells us to multiply the base by itself 3 times: 2 × 2 × 2 = 8.</p></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">A bacteria colony doubles every hour. Starting with 1 bacterium, write a power expression for the number after 6 hours. Explain why exponential growth is so much faster than adding the same number each hour.</p><p class="ws-keynote">Look for: power, base, exponent, doubles, repeated multiplication, exponential, growth.</p></div></li></ol>
+  </section>
+</main>
+</body>
+</html>

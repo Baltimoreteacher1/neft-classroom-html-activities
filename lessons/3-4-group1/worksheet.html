@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>3.4 Small Group · Group 1 — Practice Worksheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --navy:#143a6b; --blue:#1f5fa6; --teal:#1c7a64; --ink:#16243d; --muted:#5a6b82;
+  --line:#d7e2ed; --soft:#eef3f9; --bank:#fff8e8; --bank-line:#f0d9a0; --ex:#eaf4ff;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:13.5px;line-height:1.5;}
+.ws-page{background:#fff;max-width:760px;margin:18px auto;padding:34px 40px 44px;box-shadow:0 6px 24px rgba(20,40,75,.12);border-radius:6px;}
+.ws-head{border-bottom:3px solid var(--navy);padding-bottom:12px;margin-bottom:18px;}
+.ws-head-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.ws-std{background:var(--navy);color:#fff;font-weight:700;font-size:11px;letter-spacing:.04em;padding:4px 11px;border-radius:999px;}
+.ws-ver{font-family:"Fraunces",serif;font-weight:700;color:var(--blue);font-size:14px;}
+.ws-title{font-family:"Fraunces",serif;font-weight:700;font-size:25px;margin:4px 0 2px;color:var(--navy);line-height:1.1;}
+.ws-sub{margin:0;color:var(--muted);font-weight:600;font-size:13px;}
+.ws-meta{display:flex;gap:28px;margin-top:12px;font-weight:600;color:var(--ink);font-size:13px;}
+.ws-fill{display:inline-block;width:220px;border-bottom:1.5px solid var(--ink);}
+.ws-fill-sm{width:120px;}
+.ws-bank{background:var(--bank);border:1.5px solid var(--bank-line);border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-bank-h,.ws-example-h{font-family:"Fraunces",serif;font-size:14px;margin:0 0 8px;color:var(--navy);}
+.ws-bankwords{display:flex;flex-wrap:wrap;gap:8px;}
+.ws-bankword{background:#fff;border:1.5px solid var(--bank-line);border-radius:999px;padding:4px 12px;font-weight:700;font-size:12.5px;}
+.ws-example{background:var(--ex);border:1.5px solid #cfe2f6;border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-example-steps{margin:0;padding-left:18px;}
+.ws-example-steps li{margin:2px 0;}
+.ws-problems{list-style:none;margin:0;padding:0;counter-reset:none;}
+.ws-problem{display:flex;gap:12px;padding:14px 0;border-bottom:1px dashed var(--line);break-inside:avoid;page-break-inside:avoid;}
+.ws-problem:last-child{border-bottom:0;}
+.ws-pnum{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.ws-pbody{flex:1;min-width:0;}
+.ws-stem{margin:0 0 8px;font-weight:600;}
+.ws-prompt{margin:6px 0;color:var(--muted);font-size:12.5px;}
+.ws-opts{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;}
+.ws-opt{display:flex;align-items:flex-start;gap:8px;}
+.ws-bub{flex:0 0 auto;width:22px;height:22px;border:2px solid var(--navy);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;}
+.ws-bub-sm{width:20px;height:20px;font-size:11px;}
+.ws-correct .ws-bub{background:var(--teal);border-color:var(--teal);color:#fff;}
+.ws-correct{font-weight:700;color:var(--teal);}
+.ws-keynote{margin:6px 0 0;color:var(--teal);font-size:12px;font-style:italic;}
+.ws-watch{margin:4px 0 0;color:#9a4a12;font-size:12px;background:#fff3e6;border-left:3px solid #e08a3c;padding:5px 10px;border-radius:0 8px 8px 0;}
+.ws-scaffold-note{margin:0 0 14px;background:var(--soft);border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;font-weight:600;color:var(--navy);font-size:12.5px;}
+.ws-match{display:flex;gap:24px;flex-wrap:wrap;}
+.ws-match-terms{list-style:none;margin:0;padding:0;flex:1;min-width:180px;}
+.ws-match-term{display:flex;align-items:center;gap:8px;margin:5px 0;font-weight:600;}
+.ws-match-bank{list-style:none;margin:0;padding:10px 12px;background:var(--soft);border:1px solid var(--line);border-radius:10px;flex:1;min-width:180px;}
+.ws-match-bank li{display:flex;align-items:center;gap:8px;margin:4px 0;}
+.ws-blank{display:inline-block;min-width:54px;border-bottom:1.5px solid var(--ink);text-align:center;font-weight:700;}
+.ws-blank-sm{min-width:40px;}
+.ws-steps{list-style:none;margin:6px 0;padding:0;}
+.ws-steps li{display:flex;gap:10px;align-items:baseline;padding:4px 0;}
+.ws-step-n{flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:var(--soft);font-weight:700;font-size:11px;display:inline-flex;align-items:center;justify-content:center;}
+.ws-step-l{flex:0 0 38%;font-weight:600;}
+.ws-step-w{flex:1;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
+.ws-table{width:100%;border-collapse:collapse;margin:8px 0;}
+.ws-table th{background:var(--navy);color:#fff;font-size:12px;padding:7px 9px;text-align:left;}
+.ws-table td{border:1px solid var(--line);padding:9px;height:34px;font-weight:600;}
+.ws-lines{margin:8px 0 0;}
+.ws-line{display:block;border-bottom:1.5px solid var(--line);height:24px;}
+.ws-work{margin:8px 0 0;border:1.5px dashed var(--line);border-radius:10px;min-height:70px;padding:6px 10px;position:relative;}
+.ws-work-label{color:var(--muted);font-size:11px;font-weight:600;}
+.ws-frame{background:var(--soft);border-left:3px solid var(--blue);padding:6px 10px;margin:6px 0;font-style:italic;color:var(--muted);border-radius:0 8px 8px 0;}
+.ws-sort{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:5px 18px;}
+.ws-sort li{display:flex;align-items:center;gap:8px;font-weight:600;}
+
+@media print{
+  body{background:#fff;font-size:12pt;}
+  .ws-page{box-shadow:none;border-radius:0;margin:0;max-width:none;padding:0;page-break-after:always;}
+  .ws-page:last-child{page-break-after:auto;}
+  @page{margin:1.5cm;}
+  a{color:#000;}
+}
+
+/* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
+   Appended last so it overrides each generator's base CSS. Finish-only:
+   serif headings + paper ground + AA-safe ink. No layout/size changes. */
+:root{ --ink:#19262f; --muted:#475663; }
+body{ background:#f5f0e6; color:#19262f; }
+h1,h2,h3,h4,h5,h6,
+header.packet h1,.section>h2,.li-title,.learnit-head,.learnit-stage-title,
+.mission-title,.answer-key h2,.think-block h3,.topbar .brand{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
+/* A thin editorial accent rule under the document's main title. */
+header.packet h1{ position:relative; }
+header.packet h1::after{
+  content:""; display:block; width:56px; height:2px; margin-top:8px;
+  background:linear-gradient(90deg,#1fa6a2,#f2c15b); border-radius:2px;
+}
+@media print{ body{ background:#fff !important; } }
+
+</style>
+</head>
+<body>
+<main>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.3</span>
+      <span class="ws-ver">Level 0</span>
+    </div>
+    <h1 class="ws-title">3.4 Small Group · Group 1</h1>
+    <p class="ws-sub">Practice — Level 0</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    <section class="ws-bank">
+    <h2 class="ws-bank-h">📕 Word Bank</h2>
+    <div class="ws-bankwords"><span class="ws-bankword">Ratio</span><span class="ws-bankword">Equivalent ratios</span><span class="ws-bankword">Rate</span><span class="ws-bankword">Proportion</span></div>
+  </section><section class="ws-example">
+    <h2 class="ws-example-h">✏️ Worked Example</h2>
+    <ol class="ws-example-steps"><li><b>Set up the ratio:</b> A student wants to write 12:18 in simplest form.</li><li><b>Find the common factor:</b> Both 12 and 18 can be divided by 6.</li><li><b>Divide each part:</b> 12 ÷ 6 = 2 and 18 ÷ 3 = 6, so they wrote 2:6.</li><li><b>Answer:</b> 12:18 simplifies to 2:6</li></ol>
+  </section>
+    <p class="ws-scaffold-note">🧩 Extra support: use the word bank and the worked example. A sentence starter is given under each problem.</p>
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Which ratio is equivalent to 2:5?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>4:10</li><li class="ws-opt"><span class="ws-bub">B</span>3:6</li><li class="ws-opt"><span class="ws-bub">C</span>2:10</li><li class="ws-opt"><span class="ws-bub">D</span>5:2</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A recipe uses 4 eggs for every 6 cups of flour. Which ratio is equivalent?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>2:3</li><li class="ws-opt"><span class="ws-bub">B</span>8:10</li><li class="ws-opt"><span class="ws-bub">C</span>4:3</li><li class="ws-opt"><span class="ws-bub">D</span>6:4</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Which ratio is NOT equivalent to 6:9?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>3:5</li><li class="ws-opt"><span class="ws-bub">B</span>2:3</li><li class="ws-opt"><span class="ws-bub">C</span>12:18</li><li class="ws-opt"><span class="ws-bub">D</span>18:27</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">What is the simplest form of the ratio 15:25?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>3:5</li><li class="ws-opt"><span class="ws-bub">B</span>5:3</li><li class="ws-opt"><span class="ws-bub">C</span>1:5</li><li class="ws-opt"><span class="ws-bub">D</span>15:25</li></ol></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.3</span>
+      <span class="ws-ver">Version A</span>
+    </div>
+    <h1 class="ws-title">3.4 Small Group · Group 1</h1>
+    <p class="ws-sub">Practice — Version A</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    <section class="ws-bank">
+    <h2 class="ws-bank-h">📕 Word Bank</h2>
+    <div class="ws-bankwords"><span class="ws-bankword">Ratio</span><span class="ws-bankword">Equivalent ratios</span><span class="ws-bankword">Rate</span><span class="ws-bankword">Proportion</span></div>
+  </section><section class="ws-example">
+    <h2 class="ws-example-h">✏️ Worked Example</h2>
+    <ol class="ws-example-steps"><li><b>Set up the ratio:</b> A student wants to write 12:18 in simplest form.</li><li><b>Find the common factor:</b> Both 12 and 18 can be divided by 6.</li><li><b>Divide each part:</b> 12 ÷ 6 = 2 and 18 ÷ 3 = 6, so they wrote 2:6.</li><li><b>Answer:</b> 12:18 simplifies to 2:6</li></ol>
+  </section>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Which ratio is equivalent to 2:5?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>4:10</li><li class="ws-opt"><span class="ws-bub">B</span>3:6</li><li class="ws-opt"><span class="ws-bub">C</span>2:10</li><li class="ws-opt"><span class="ws-bub">D</span>5:2</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A recipe uses 4 eggs for every 6 cups of flour. Which ratio is equivalent?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>2:3</li><li class="ws-opt"><span class="ws-bub">B</span>8:10</li><li class="ws-opt"><span class="ws-bub">C</span>4:3</li><li class="ws-opt"><span class="ws-bub">D</span>6:4</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Which ratio is NOT equivalent to 6:9?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>3:5</li><li class="ws-opt"><span class="ws-bub">B</span>2:3</li><li class="ws-opt"><span class="ws-bub">C</span>12:18</li><li class="ws-opt"><span class="ws-bub">D</span>18:27</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">What is the simplest form of the ratio 15:25?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>3:5</li><li class="ws-opt"><span class="ws-bub">B</span>5:3</li><li class="ws-opt"><span class="ws-bub">C</span>1:5</li><li class="ws-opt"><span class="ws-bub">D</span>15:25</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Spot the Common Mistake — Lemonade Ratio</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Set up the ratio</span><span class="ws-step-w">2 cups lemon : 5 cups water = 6 cups lemon : ? cups water</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find the multiplier</span><span class="ws-step-w">6 ÷ 2 = 3</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Apply to the water</span><span class="ws-step-w">5 + 3 = 8</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Answer</span><span class="ws-step-w">6 cups lemon : 8 cups water</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">Marcus earns $45 for every 3 hours of work. How much does he earn in 8 hours?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>$120</li><li class="ws-opt"><span class="ws-bub">B</span>$90</li><li class="ws-opt"><span class="ws-bub">C</span>$135</li><li class="ws-opt"><span class="ws-bub">D</span>$105</li></ol></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.3</span>
+      <span class="ws-ver">Version B</span>
+    </div>
+    <h1 class="ws-title">3.4 Small Group · Group 1</h1>
+    <p class="ws-sub">Practice — Version B</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Spot the Common Mistake — Simplifying a Ratio</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Set up the ratio</span><span class="ws-step-w">A student wants to write 12:18 in simplest form.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find the common factor</span><span class="ws-step-w">Both 12 and 18 can be divided by 6.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Divide each part</span><span class="ws-step-w">12 ÷ 6 = 2 and 18 ÷ 3 = 6, so they wrote 2:6.</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Answer</span><span class="ws-step-w">12:18 simplifies to 2:6</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Chef Montoya's dressing uses 3 spoons of oil to 4 spoons of vinegar (3:4). Which recipe card shows an EQUIVALENT ratio?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>9:12</li><li class="ws-opt"><span class="ws-bub">B</span>4:3</li><li class="ws-opt"><span class="ws-bub">C</span>3:8</li><li class="ws-opt"><span class="ws-bub">D</span>6:7</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">The lemonade station mixes 5 cups of lemon juice to 2 cups of sugar (5:2). Which batch keeps the SAME taste?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>15:6</li><li class="ws-opt"><span class="ws-bub">B</span>10:6</li><li class="ws-opt"><span class="ws-bub">C</span>5:4</li><li class="ws-opt"><span class="ws-bub">D</span>7:4</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Level 2 Extension — The Scaled-Up Pancake Batter</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Set up the ratio</span><span class="ws-step-w">3 cups flour : 8 cups water = ? : 24 cups water</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find the multiplier</span><span class="ws-step-w">24 ÷ 8 = 3</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Apply to the flour</span><span class="ws-step-w">3 + 3 = 6</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Answer</span><span class="ws-step-w">6 cups flour : 24 cups water</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Find Marcus's Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Set up the ratio</span><span class="ws-step-w">3 cups : 5 cups = ? : 20 cups</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find the multiplier</span><span class="ws-step-w">20 ÷ 5 = 4</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Apply to both parts</span><span class="ws-step-w">3 + 4 = 7</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Answer</span><span class="ws-step-w">7 cups : 20 cups</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem"></p><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.3</span>
+      <span class="ws-ver">Level 0 — Answer Key</span>
+    </div>
+    <h1 class="ws-title">3.4 Small Group · Group 1</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Which ratio is equivalent to 2:5?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>4:10</li><li class="ws-opt"><span class="ws-bub">B</span>3:6</li><li class="ws-opt"><span class="ws-bub">C</span>2:10</li><li class="ws-opt"><span class="ws-bub">D</span>5:2</li></ol><p class="ws-keynote">Multiply both parts by 2: 2×2 = 4 and 5×2 = 10, so 4:10 is equivalent to 2:5.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Equivalent Ratios is ADDING the scale factor to one part instead of MULTIPLYING both parts by it. For example, scaling 2:5 by a factor of 4 should give 8:20 (2×4 and 5×4) — not 6:9 (2+4 and 5+4). Adding changes the taste of the recipe (and the value of the ratio); only multiplying or dividing both numbers by the same amount keeps it equivalent.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A recipe uses 4 eggs for every 6 cups of flour. Which ratio is equivalent?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>2:3</li><li class="ws-opt"><span class="ws-bub">B</span>8:10</li><li class="ws-opt"><span class="ws-bub">C</span>4:3</li><li class="ws-opt"><span class="ws-bub">D</span>6:4</li></ol><p class="ws-keynote">Divide both by 2: 4÷2 = 2 and 6÷2 = 3. The ratio 2:3 is equivalent to 4:6.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Equivalent Ratios is ADDING the scale factor to one part instead of MULTIPLYING both parts by it. For example, scaling 2:5 by a factor of 4 should give 8:20 (2×4 and 5×4) — not 6:9 (2+4 and 5+4). Adding changes the taste of the recipe (and the value of the ratio); only multiplying or dividing both numbers by the same amount keeps it equivalent.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Which ratio is NOT equivalent to 6:9?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>3:5</li><li class="ws-opt"><span class="ws-bub">B</span>2:3</li><li class="ws-opt"><span class="ws-bub">C</span>12:18</li><li class="ws-opt"><span class="ws-bub">D</span>18:27</li></ol><p class="ws-keynote">6:9 simplifies to 2:3. Check each: 2:3 ✓, 12:18 = 2:3 ✓, 18:27 = 2:3 ✓. But 3:5 does not simplify to 2:3.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Equivalent Ratios is ADDING the scale factor to one part instead of MULTIPLYING both parts by it. For example, scaling 2:5 by a factor of 4 should give 8:20 (2×4 and 5×4) — not 6:9 (2+4 and 5+4). Adding changes the taste of the recipe (and the value of the ratio); only multiplying or dividing both numbers by the same amount keeps it equivalent.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">What is the simplest form of the ratio 15:25?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>3:5</li><li class="ws-opt"><span class="ws-bub">B</span>5:3</li><li class="ws-opt"><span class="ws-bub">C</span>1:5</li><li class="ws-opt"><span class="ws-bub">D</span>15:25</li></ol><p class="ws-keynote">The GCF of 15 and 25 is 5. Divide both by 5: 15÷5 = 3 and 25÷5 = 5. The simplest form is 3:5.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Equivalent Ratios is ADDING the scale factor to one part instead of MULTIPLYING both parts by it. For example, scaling 2:5 by a factor of 4 should give 8:20 (2×4 and 5×4) — not 6:9 (2+4 and 5+4). Adding changes the taste of the recipe (and the value of the ratio); only multiplying or dividing both numbers by the same amount keeps it equivalent.</p></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.3</span>
+      <span class="ws-ver">Version A — Answer Key</span>
+    </div>
+    <h1 class="ws-title">3.4 Small Group · Group 1</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Which ratio is equivalent to 2:5?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>4:10</li><li class="ws-opt"><span class="ws-bub">B</span>3:6</li><li class="ws-opt"><span class="ws-bub">C</span>2:10</li><li class="ws-opt"><span class="ws-bub">D</span>5:2</li></ol><p class="ws-keynote">Multiply both parts by 2: 2×2 = 4 and 5×2 = 10, so 4:10 is equivalent to 2:5.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Equivalent Ratios is ADDING the scale factor to one part instead of MULTIPLYING both parts by it. For example, scaling 2:5 by a factor of 4 should give 8:20 (2×4 and 5×4) — not 6:9 (2+4 and 5+4). Adding changes the taste of the recipe (and the value of the ratio); only multiplying or dividing both numbers by the same amount keeps it equivalent.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A recipe uses 4 eggs for every 6 cups of flour. Which ratio is equivalent?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>2:3</li><li class="ws-opt"><span class="ws-bub">B</span>8:10</li><li class="ws-opt"><span class="ws-bub">C</span>4:3</li><li class="ws-opt"><span class="ws-bub">D</span>6:4</li></ol><p class="ws-keynote">Divide both by 2: 4÷2 = 2 and 6÷2 = 3. The ratio 2:3 is equivalent to 4:6.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Equivalent Ratios is ADDING the scale factor to one part instead of MULTIPLYING both parts by it. For example, scaling 2:5 by a factor of 4 should give 8:20 (2×4 and 5×4) — not 6:9 (2+4 and 5+4). Adding changes the taste of the recipe (and the value of the ratio); only multiplying or dividing both numbers by the same amount keeps it equivalent.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Which ratio is NOT equivalent to 6:9?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>3:5</li><li class="ws-opt"><span class="ws-bub">B</span>2:3</li><li class="ws-opt"><span class="ws-bub">C</span>12:18</li><li class="ws-opt"><span class="ws-bub">D</span>18:27</li></ol><p class="ws-keynote">6:9 simplifies to 2:3. Check each: 2:3 ✓, 12:18 = 2:3 ✓, 18:27 = 2:3 ✓. But 3:5 does not simplify to 2:3.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Equivalent Ratios is ADDING the scale factor to one part instead of MULTIPLYING both parts by it. For example, scaling 2:5 by a factor of 4 should give 8:20 (2×4 and 5×4) — not 6:9 (2+4 and 5+4). Adding changes the taste of the recipe (and the value of the ratio); only multiplying or dividing both numbers by the same amount keeps it equivalent.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">What is the simplest form of the ratio 15:25?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>3:5</li><li class="ws-opt"><span class="ws-bub">B</span>5:3</li><li class="ws-opt"><span class="ws-bub">C</span>1:5</li><li class="ws-opt"><span class="ws-bub">D</span>15:25</li></ol><p class="ws-keynote">The GCF of 15 and 25 is 5. Divide both by 5: 15÷5 = 3 and 25÷5 = 5. The simplest form is 3:5.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Equivalent Ratios is ADDING the scale factor to one part instead of MULTIPLYING both parts by it. For example, scaling 2:5 by a factor of 4 should give 8:20 (2×4 and 5×4) — not 6:9 (2+4 and 5+4). Adding changes the taste of the recipe (and the value of the ratio); only multiplying or dividing both numbers by the same amount keeps it equivalent.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Spot the Common Mistake — Lemonade Ratio</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Set up the ratio</span><span class="ws-step-w">2 cups lemon : 5 cups water = 6 cups lemon : ? cups water</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find the multiplier</span><span class="ws-step-w">6 ÷ 2 = 3</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Apply to the water</span><span class="ws-step-w">5 + 3 = 8</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Answer</span><span class="ws-step-w">6 cups lemon : 8 cups water</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 3. Correct work: 5 × 3 = 15 (multiply both parts by the scale factor, do not add it), so the answer is 6 cups lemon : 15 cups water.</p></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">Marcus earns $45 for every 3 hours of work. How much does he earn in 8 hours?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>$120</li><li class="ws-opt"><span class="ws-bub">B</span>$90</li><li class="ws-opt"><span class="ws-bub">C</span>$135</li><li class="ws-opt"><span class="ws-bub">D</span>$105</li></ol><p class="ws-keynote">Unit rate: $45 ÷ 3 = $15/hour. In 8 hours: $15 × 8 = $120.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Equivalent Ratios is ADDING the scale factor to one part instead of MULTIPLYING both parts by it. For example, scaling 2:5 by a factor of 4 should give 8:20 (2×4 and 5×4) — not 6:9 (2+4 and 5+4). Adding changes the taste of the recipe (and the value of the ratio); only multiplying or dividing both numbers by the same amount keeps it equivalent.</p></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.3</span>
+      <span class="ws-ver">Version B — Answer Key</span>
+    </div>
+    <h1 class="ws-title">3.4 Small Group · Group 1</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Spot the Common Mistake — Simplifying a Ratio</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Set up the ratio</span><span class="ws-step-w">A student wants to write 12:18 in simplest form.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find the common factor</span><span class="ws-step-w">Both 12 and 18 can be divided by 6.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Divide each part</span><span class="ws-step-w">12 ÷ 6 = 2 and 18 ÷ 3 = 6, so they wrote 2:6.</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Answer</span><span class="ws-step-w">12:18 simplifies to 2:6</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 3. Correct work: Divide BOTH parts by the same number: 12 ÷ 6 = 2 and 18 ÷ 6 = 3, so 12:18 simplifies to 2:3.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Chef Montoya's dressing uses 3 spoons of oil to 4 spoons of vinegar (3:4). Which recipe card shows an EQUIVALENT ratio?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>9:12</li><li class="ws-opt"><span class="ws-bub">B</span>4:3</li><li class="ws-opt"><span class="ws-bub">C</span>3:8</li><li class="ws-opt"><span class="ws-bub">D</span>6:7</li></ol><p class="ws-keynote">Multiply both parts of 3:4 by 3: 3 x 3 = 9 and 4 x 3 = 12, so 9:12 is equivalent to 3:4.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Equivalent Ratios is ADDING the scale factor to one part instead of MULTIPLYING both parts by it. For example, scaling 2:5 by a factor of 4 should give 8:20 (2×4 and 5×4) — not 6:9 (2+4 and 5+4). Adding changes the taste of the recipe (and the value of the ratio); only multiplying or dividing both numbers by the same amount keeps it equivalent.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">The lemonade station mixes 5 cups of lemon juice to 2 cups of sugar (5:2). Which batch keeps the SAME taste?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>15:6</li><li class="ws-opt"><span class="ws-bub">B</span>10:6</li><li class="ws-opt"><span class="ws-bub">C</span>5:4</li><li class="ws-opt"><span class="ws-bub">D</span>7:4</li></ol><p class="ws-keynote">Multiply both parts of 5:2 by 3: 5 x 3 = 15 and 2 x 3 = 6, so 15:6 is equivalent to 5:2.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Equivalent Ratios is ADDING the scale factor to one part instead of MULTIPLYING both parts by it. For example, scaling 2:5 by a factor of 4 should give 8:20 (2×4 and 5×4) — not 6:9 (2+4 and 5+4). Adding changes the taste of the recipe (and the value of the ratio); only multiplying or dividing both numbers by the same amount keeps it equivalent.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Level 2 Extension — The Scaled-Up Pancake Batter</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Set up the ratio</span><span class="ws-step-w">3 cups flour : 8 cups water = ? : 24 cups water</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find the multiplier</span><span class="ws-step-w">24 ÷ 8 = 3</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Apply to the flour</span><span class="ws-step-w">3 + 3 = 6</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Answer</span><span class="ws-step-w">6 cups flour : 24 cups water</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 3. Correct work: 3 x 3 = 9 (multiply by the scale factor, do not add it)</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Find Marcus's Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Set up the ratio</span><span class="ws-step-w">3 cups : 5 cups = ? : 20 cups</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find the multiplier</span><span class="ws-step-w">20 ÷ 5 = 4</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Apply to both parts</span><span class="ws-step-w">3 + 4 = 7</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Answer</span><span class="ws-step-w">7 cups : 20 cups</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 3. Correct work: 3 × 4 = 12 (multiply, don't add)</p></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem"></p><p class="ws-keynote">Sample: Yes, they are equivalent. Method 1 (simplify): 9:6 ÷ 3 = 3:2, which matches 3:2. Method 2 (cross-multiply): 3 × 6 = 18 and 2 × 9 = 18. Since both cross products are equal, the ratios are equivalent. Look for: equivalent, simplify, 3:2, cross-multiply, 18, equal.</p></div></li></ol>
+  </section>
+</main>
+</body>
+</html>
