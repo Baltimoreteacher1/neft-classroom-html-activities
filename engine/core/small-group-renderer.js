@@ -3,7 +3,7 @@
 // engagement interactions, math practice, and visual system.
 
 import { installSmallGroupAnnotation } from "./small-group-annotation.js";
-import { buildStepVisual } from "./small-group-build-visuals.js";
+import { createBuildVisualizer } from "./small-group-build-visuals.js";
 import {
   createMissionSection,
   createReflectionSection,
@@ -62,6 +62,9 @@ import { mountTeacherClearButton } from "./teacher-clear.js";
 function stageCard(stage, fallbackTitle, kind, onStageDone, withVisuals = false) {
   const lines = stage?.lines || [];
   if (!lines.length) return null;
+  // One visualizer per stage so factor-tree steps accumulate into a single
+  // growing tree (each step redraws the whole tree, newest branch highlighted).
+  const visualFor = withVisuals ? createBuildVisualizer() : null;
   const card = el("div", "card sg-stage");
   card.appendChild(el("p", "block-lab", esc(stage.title || fallbackTitle)));
   const list = el("div", "sg-stage-steps");
@@ -92,7 +95,7 @@ function stageCard(stage, fallbackTitle, kind, onStageDone, withVisuals = false)
         item.querySelector(".tick").textContent = "✓";
         if (++checked >= lines.length) finish();
       };
-      const visual = withVisuals ? buildStepVisual(line) : null;
+      const visual = visualFor ? visualFor(line) : null;
       if (visual) {
         const wrap = el("div", "sg-checkstep-wrap");
         wrap.append(item, visual);
@@ -123,10 +126,10 @@ function stageCard(stage, fallbackTitle, kind, onStageDone, withVisuals = false)
     } else {
       body.appendChild(el("span", null, esc(line)));
     }
-    if (withVisuals) {
+    if (visualFor) {
       // For "think first, then reveal" wedo lines, the parenthetical answer
       // holds the math — model the full authored line so the picture matches.
-      const visual = buildStepVisual(reveal ? `${reveal[1]} ${reveal[2]}` : line);
+      const visual = visualFor(reveal ? `${reveal[1]} ${reveal[2]}` : line);
       if (visual) body.appendChild(visual);
     }
     step.appendChild(body);
