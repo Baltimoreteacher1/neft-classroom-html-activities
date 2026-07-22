@@ -156,8 +156,8 @@ export const MATH_GLOSSARY = [
   {
     term: "variable",
     termEs: "variable",
-    definition: "A letter that stands for an unknown number.",
-    definitionEs: "Una letra que representa un número desconocido.",
+    definition: "A letter that stands for a number that is unknown or can change.",
+    definitionEs: "Una letra que representa un número desconocido o que puede cambiar.",
   },
   {
     term: "expression",
@@ -237,15 +237,15 @@ export const MATH_GLOSSARY = [
   {
     term: "surface area",
     termEs: "área de superficie",
-    definition: "The total area of all the faces of a solid.",
-    definitionEs: "El área total de todas las caras de un sólido.",
+    definition: "The total area of all the flat sides of a solid.",
+    definitionEs: "El área total de todos los lados planos de un sólido.",
   },
   // — statistics —
   {
     term: "median",
     termEs: "mediana",
-    definition: "The middle number when the data is in order.",
-    definitionEs: "El número del medio cuando los datos están en orden.",
+    definition: "The middle number when you put them in order.",
+    definitionEs: "El número del medio cuando los pones en orden.",
   },
   {
     term: "outlier",

@@ -76,7 +76,7 @@ window.GN_STORY = {
               vocab: [
                 {
                   term: "ratio",
-                  en: "A way to compare two amounts. The ratio of 2 guides to 6 travelers is 2 to 6 (or 2 : 6).",
+                  en: "A way to compare two amounts, like 3 to 2. The ratio of 2 guides to 6 travelers is 2 to 6 (or 2 : 6).",
                   es: "Una forma de comparar dos cantidades. La razón de 2 guías a 6 viajeros es 2 a 6 (o 2 : 6).",
                 },
               ],
@@ -691,7 +691,7 @@ window.GN_STORY = {
       ico: "⚖️",
       en: "Ratio",
       es: "razón",
-      def: "A way to compare two amounts. The ratio of 2 guides to 6 travelers is 2 to 6 (or 2 : 6).",
+      def: "A way to compare two amounts, like 3 to 2. The ratio of 2 guides to 6 travelers is 2 to 6 (or 2 : 6).",
     },
     {
       ico: "💰",

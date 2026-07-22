@@ -43,7 +43,7 @@ export const GLOSSARY = {
   ratio: {
     term: "ratio",
     icon: "🍎:🍐",
-    def: "A way to compare two amounts. We can write 2 apples to 3 pears as 2:3.",
+    def: "A way to compare two amounts, like 3 to 2. We can write 2 apples to 3 pears as 2:3.",
   },
   rate: {
     term: "rate",

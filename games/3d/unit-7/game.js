@@ -164,7 +164,7 @@ export default {
     {
       term: "Absolute value",
       definition:
-        "How far a number is from zero. It is never negative. The absolute value of -7 is 7.",
+        "How far a number is from zero. It is never negative. It is never negative. The absolute value of -7 is 7.",
       emoji: "📐",
     },
   ],

@@ -702,7 +702,7 @@ window.GN_STORY = {
       ico: "📖",
       en: "Decimal",
       es: "Decimal",
-      def: "A number with a dot that shows a part between whole numbers.",
+      def: "A number with a dot, like 0.5, that shows a part less than one.",
     },
     {
       ico: "📖",

@@ -68,7 +68,7 @@
     { term: "x-axis", es: "eje x", def: "The horizontal line on the grid. You move left (−) or right (+) along it.", ex: "x = 3 means 3 steps right of the origin.", defEs: "La línea horizontal de la cuadrícula. Te mueves a la izquierda (−) o derecha (+).", exEs: "x = 3 significa 3 pasos a la derecha del origen." },
     { term: "y-axis", es: "eje y", def: "The vertical line on the grid. You move up (+) or down (−) along it.", ex: "y = −2 means 2 steps down from the origin.", defEs: "La línea vertical de la cuadrícula. Te mueves arriba (+) o abajo (−).", exEs: "y = −2 significa 2 pasos hacia abajo desde el origen." },
     { term: "reflection", es: "reflexión", def: "Flipping a point across an axis, like a mirror.", ex: "(3, 2) reflected across the x-axis is (3, −2).", defEs: "Voltear un punto a través de un eje, como un espejo.", exEs: "(3, 2) reflejado en el eje x es (3, −2)." },
-    { term: "absolute value", es: "valor absoluto", def: "How far a number is from zero. It is never negative.", ex: "The absolute value of −8 is 8.", defEs: "Qué tan lejos está un número de cero. Nunca es negativo.", exEs: "El valor absoluto de −8 es 8." },
+    { term: "absolute value", es: "valor absoluto", def: "How far a number is from zero. It is never negative. It is never negative.", ex: "The absolute value of −8 is 8.", defEs: "Qué tan lejos está un número de cero. Nunca es negativo. Nunca es negativo.", exEs: "El valor absoluto de −8 es 8." },
     { term: "evidence", es: "evidencia", def: "Proof from your data that supports your idea.", ex: "“The lowest sensor is −8” is evidence.", defEs: "Prueba de tus datos que apoya tu idea.", exEs: "“El sensor más bajo es −8” es evidencia." },
   ];
 

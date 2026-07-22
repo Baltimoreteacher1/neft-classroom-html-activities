@@ -78,7 +78,7 @@ window.GN_STORY = {
               vocab: [
                 {
                   term: "variable",
-                  en: "A letter that stands for an unknown number. Example: in c &minus; 7 = 12, the variable is c.",
+                  en: "A letter that stands for a number that is unknown or can change. Example: in c &minus; 7 = 12, the variable is c.",
                   es: "Una letra que representa un n&uacute;mero desconocido. Ejemplo: en c &minus; 7 = 12, la variable es c.",
                 },
               ],
@@ -171,7 +171,7 @@ window.GN_STORY = {
           },
           choices: [
             {
-              en: "A letter that stands for an unknown number.",
+              en: "A letter that stands for a number that is unknown or can change.",
               es: "Una letra que representa un n&uacute;mero desconocido.",
               correct: true,
             },
@@ -679,7 +679,7 @@ window.GN_STORY = {
       ico: "&#10067;",
       en: "Variable",
       es: "variable",
-      def: "A letter that stands for an unknown number. Example: in c &minus; 7 = 12, the variable is c.",
+      def: "A letter that stands for a number that is unknown or can change. Example: in c &minus; 7 = 12, the variable is c.",
     },
     {
       ico: "&#9878;&#65039;",
@@ -727,7 +727,7 @@ window.GN_STORY = {
       ico: "&#9989;",
       en: "Solution",
       es: "soluci&oacute;n",
-      def: "The value of the variable that makes the equation true. The code that opens the box!",
+      def: "A number that makes the equation or inequality true. The code that opens the box!",
     },
   ],
 

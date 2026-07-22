@@ -714,7 +714,7 @@ window.GN_STORY = {
       ico: "✕",
       en: "Coefficient",
       es: "coeficiente",
-      def: "The number multiplied by a variable. In 8n, the coefficient is 8.",
+      def: "The number in front of a letter, like the 3 in 3x. In 8n, the coefficient is 8.",
     },
     {
       ico: "🎤",
