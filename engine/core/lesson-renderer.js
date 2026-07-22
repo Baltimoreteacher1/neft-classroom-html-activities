@@ -2436,10 +2436,21 @@ function renderSkillPractice(host, config, state) {
       Array.isArray(it.choices) && typeof it.correctIndex === "number"
         ? it.choices[it.correctIndex]
         : it.sampleAnswer || it.answer || "";
+    // Show the answer choices for multiple-choice items. Without this, a stem
+    // whose numbers live only in the options ("Which of these numbers is
+    // composite?") renders with nothing to work from. Choices are reference
+    // options — the student still writes their answer in the free-text box the
+    // grader reads, so no interaction change, just the missing information.
+    const choicesHtml = Array.isArray(it.choices)
+      ? `<ul class="sp-choices" style="margin:var(--sp-2,8px) 0 var(--sp-3,12px); padding-left:1.4rem; line-height:1.7;">${it.choices
+          .map((c) => `<li>${esc(String(c))}</li>`)
+          .join("")}</ul>`
+      : "";
     const wrap = document.createElement("div");
     wrap.className = "sp-problem";
     wrap.innerHTML = `
       <p class="sp-stem"><span class="sp-num" aria-hidden="true">${i + 1}</span><span class="sp-stem-text" data-annotate="word-problem"><span class="sr-only">Problem ${i + 1} of ${total}. </span>${esc(it.stem)}</span></p>
+      ${choicesHtml}
       <textarea class="sp-work text-input" rows="3" placeholder="Show your steps here…" aria-label="Problem ${i + 1}: show your steps"></textarea>
       <div class="sp-row">
         <label class="sp-answer-label">My answer: <input class="sp-answer" type="text" aria-label="Problem ${i + 1}: my answer" /></label>
