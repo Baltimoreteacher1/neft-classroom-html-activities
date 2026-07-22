@@ -78,11 +78,11 @@ const MAP = {
     intro: "Place attractions across all four quadrants and read the distance between them.",
   },
   "math/unit-8/projects": {
-    kind: "balance", emoji: "🔐",
-    attrs: { theme: "lock" },
-    title: "Crack the lock",
-    es: "Descifra el candado",
-    intro: "Write the equation, then undo it on BOTH sides — the scale levels only when the variable is alone.",
+    kind: "escape-chain", emoji: "🕵️",
+    attrs: {},
+    title: "Detective: crack the vault",
+    es: "Detective: descifra la bóveda",
+    intro: "Solve each lock's equation by undoing it on BOTH sides — open every lock to reveal the vault code.",
   },
   "math/unit-9/projects": {
     kind: "line-grapher", emoji: "📈", attrs: {},
@@ -142,6 +142,15 @@ function heroBlock(cfg) {
   ];
 }
 
+// Remove this layer's own sentinel blocks so a re-run converges to the current
+// MAP (e.g. re-pointing a unit to a different widget). Only strips OUR markers.
+function stripSentinels(html) {
+  return html.replace(
+    /[ \t]*<!-- projects-interactive-hero-injected:begin[\s\S]*?projects-interactive-hero-injected:end -->\n?/g,
+    ""
+  );
+}
+
 function addHead(html) {
   if (html.includes("projects-interactive-hero.css")) return html;
   const indented = headBlock().map((l) => "    " + l).join("\n");
@@ -172,7 +181,9 @@ function process(rel, cfg) {
     skipped.push(`${rel} (no pro-projects body class)`);
     return;
   }
-  let after = addHead(before);
+  // Strip our own prior blocks first so a changed MAP (new widget/copy) applies.
+  let after = stripSentinels(before);
+  after = addHead(after);
   after = addBody(after, cfg.kind);
   const withHero = addHero(after, cfg);
   if (withHero === after && !after.includes("pki-hero-title")) {
