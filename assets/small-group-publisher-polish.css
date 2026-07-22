@@ -1,18 +1,21 @@
 /*!
  * small-group-publisher-polish.css — additive student-facing refinement.
  *
- * Loaded by injectSmallGroupStyles() on every Group 1 / Group 2 / Catch-Up
- * studio. Enhancement-only: does not change section order, interactives,
- * Save/Resume, or teacher-mode behavior. Prefer stronger hierarchy, contrast,
- * spacing rhythm, and Chromebook/mobile clarity.
+ * Loaded LAST by injectSmallGroupStyles() (after #sg-styles) so overrides win.
+ * Enhancement-only: does not change section order, interactives, Save/Resume,
+ * or teacher-mode behavior.
  */
 
-/* ── 1 · Legibility tokens ───────────────────────────────────────────────
-   Cream paper + mid-gray muted text was soft on Chromebooks. Darken muted
-   ink and keep student body copy at publisher-readable sizes. */
+/* ── 1 · Legibility tokens ─────────────────────────────────────────────── */
 :root {
   --sg-muted: #3f5166;
   --sg-line: #cfd7e2;
+  --sg-ink: #1f2a3d;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--sg-pop) 55%, #fff);
+  color: #1a2436;
 }
 
 /* ── 2 · Hero: clearer hierarchy, less chrome noise ───────────────────── */
@@ -23,7 +26,9 @@
 
 .sg-hero h1 {
   margin: 10px 0 6px;
+  color: #fff;
   text-wrap: balance;
+  text-shadow: 0 1px 0 rgba(8, 25, 54, 0.12);
 }
 
 .sg-obj {
@@ -62,7 +67,6 @@
   background: rgba(8, 25, 54, 0.28);
 }
 
-/* Math-move CTA: readable kicker + stronger student affordance */
 .sg-math-move {
   margin-top: 14px;
   padding: 13px 15px;
@@ -151,6 +155,23 @@
   box-shadow: 0 4px 12px color-mix(in srgb, var(--sg) 28%, transparent);
 }
 
+/* Progress meter: more visible “how far am I?” signal */
+.sg-meter {
+  margin-top: 4px;
+  padding: 6px 8px 8px;
+}
+
+.sg-meter-track {
+  height: 10px;
+  background: #d9e0e8;
+}
+
+.sg-meter-lab {
+  font-size: 13.5px;
+  color: #3f5166;
+  letter-spacing: 0.01em;
+}
+
 /* ── 4 · Section rhythm + card materiality ────────────────────────────── */
 section.sg-sec {
   margin-bottom: 36px;
@@ -159,15 +180,18 @@ section.sg-sec {
 .sg-h {
   margin-bottom: 16px;
   gap: 14px;
+  align-items: center;
 }
 
 .sg-h .n {
   width: 38px;
   height: 38px;
+  align-self: center;
 }
 
 .sg-h h2 {
   text-wrap: balance;
+  color: var(--sg-ink, #1f2a3d);
 }
 
 .sg-eyebrow {
@@ -181,7 +205,10 @@ section.sg-sec {
 .sg-talk,
 .prob,
 .sg-vcard,
-.sg-map {
+.sg-map,
+.sg-stage,
+.sg-cloze,
+.sg-reflect {
   box-shadow:
     0 1px 2px rgba(23, 32, 51, 0.04),
     0 10px 26px -12px rgba(23, 32, 51, 0.14);
@@ -218,11 +245,6 @@ section.sg-sec {
   box-shadow: 0 4px 14px rgba(23, 32, 51, 0.05);
 }
 
-.sg-meter-lab {
-  font-size: 13px;
-  color: #3f5166;
-}
-
 .sg-path .why,
 .sg-path .min,
 .sg-es,
@@ -244,6 +266,25 @@ section.sg-sec {
   line-height: 1.45;
 }
 
+/* Build stages: less empty whitespace, clearer CTA placement */
+.sg-stage {
+  padding: 18px 18px 16px;
+  border-radius: 16px;
+}
+
+.sg-stage .btn {
+  margin-top: 4px;
+}
+
+.sg-buildstep-body {
+  font-size: 18.5px;
+  line-height: 1.55;
+}
+
+.sg-buildstep.now {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--sg) 22%, transparent);
+}
+
 /* ── 5 · Buttons + choice affordance ──────────────────────────────────── */
 .btn {
   min-height: 46px;
@@ -259,6 +300,14 @@ section.sg-sec {
 
 .btn:hover:not(:disabled) {
   box-shadow: 0 8px 18px color-mix(in srgb, var(--sg) 30%, transparent);
+}
+
+.btn:disabled {
+  opacity: 0.72;
+  color: #4a5a70;
+  border-color: #c5ced9;
+  background: #e8edf3;
+  box-shadow: none;
 }
 
 .sg-next {
@@ -278,7 +327,8 @@ section.sg-sec {
 .sg-match-btn,
 .sg-checkstep,
 .sg-plan,
-.wchip {
+.wchip,
+.sg-langbtn {
   border-radius: 12px;
   transition:
     border-color 0.14s ease,
@@ -297,6 +347,24 @@ section.sg-sec {
   box-shadow: 0 6px 16px -8px color-mix(in srgb, var(--sg) 35%, transparent);
 }
 
+/* Readiness pulse: selected state reads clearly at a glance */
+.sg-pulse-btn {
+  min-height: 48px;
+  padding: 11px 14px;
+  font-size: 15.5px;
+}
+
+.sg-pulse-btn[aria-pressed="true"],
+.sg-role-btn.active,
+.sg-langbtn[aria-pressed="true"],
+.sg-plan.on {
+  border-width: 2px;
+  border-color: var(--sg);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--sg) 18%, transparent),
+    0 6px 16px -8px color-mix(in srgb, var(--sg) 30%, transparent);
+}
+
 .sg-foot {
   gap: 12px;
   margin-top: 32px;
@@ -306,6 +374,63 @@ section.sg-sec {
 .sg-foot .btn {
   min-width: min(280px, 100%);
   justify-content: center;
+}
+
+/* Textareas + fill-ins: calmer focus, clearer typing surface */
+.sg-ta {
+  min-height: 96px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  line-height: 1.5;
+}
+
+.sg-ta:focus,
+.fillin:focus,
+.stepfill:focus,
+.sg-step-input:focus,
+.sg-model-cell:focus {
+  outline: none;
+  border-color: var(--sg);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--sg-pop) 42%, transparent);
+}
+
+/* Feedback banners: denser, easier to scan */
+.fb {
+  padding: 13px 15px;
+  border-radius: 12px;
+  font-size: 15.5px;
+  line-height: 1.45;
+}
+
+.fb.ok {
+  border-width: 2px;
+}
+
+.fb.no {
+  border-width: 2px;
+}
+
+/* Talk / reflect */
+.sg-talk {
+  padding: 22px;
+}
+
+.sg-talk-q {
+  font-size: 20px;
+  line-height: 1.4;
+  text-wrap: balance;
+}
+
+.sg-reflect {
+  padding: 24px;
+}
+
+.sg-done {
+  margin-top: 22px;
+  padding: 22px;
+  border-radius: 18px;
+  font-size: 17px;
+  line-height: 1.45;
 }
 
 /* ── 6 · Vocab + practice polish ──────────────────────────────────────── */
@@ -348,6 +473,61 @@ section.sg-sec {
   font-size: 24px;
 }
 
+.q {
+  font-size: 17.5px;
+  line-height: 1.45;
+}
+
+.choice {
+  padding: 12px 15px;
+  min-height: 48px;
+}
+
+.choice .k {
+  width: 28px;
+  height: 28px;
+}
+
+/* Map / learning path */
+.sg-map {
+  padding: 22px 24px;
+}
+
+.sg-map-goal {
+  font-size: 19px;
+  line-height: 1.35;
+}
+
+.sg-path li {
+  padding: 9px 0;
+}
+
+.sg-path .why {
+  font-size: 15.5px;
+  line-height: 1.4;
+}
+
+/* Problem support chrome */
+.sg-problem-support-head {
+  margin: 18px 0 10px;
+}
+
+.sg-visual-title {
+  font-size: 20px;
+}
+
+.sg-what-changed {
+  padding: 10px 13px;
+  font-size: 14.5px;
+  line-height: 1.4;
+}
+
+.sg-adaptive-banner {
+  padding: 13px 15px;
+  font-size: 15.5px;
+  line-height: 1.45;
+}
+
 /* ── 7 · Mobile / Chromebook ──────────────────────────────────────────── */
 @media (max-width: 760px) {
   .sg-hero {
@@ -371,7 +551,6 @@ section.sg-sec {
     margin-top: 12px;
   }
 
-  /* Scene chip is decorative; keep hero focused on the learning goal. */
   .sg-hero-scene-chip {
     display: none;
   }
@@ -397,7 +576,8 @@ section.sg-sec {
   }
 
   .card,
-  .prob {
+  .prob,
+  .sg-stage {
     padding: 16px;
     border-radius: 16px;
   }
@@ -406,12 +586,26 @@ section.sg-sec {
     font-size: clamp(21px, 5.5vw, 26px);
   }
 
+  .sg-meter-lab {
+    font-size: 12.5px;
+  }
+
   .sg-next-btn {
     width: 100%;
     min-width: 0;
   }
 
   .sg-foot .btn {
+    width: 100%;
+  }
+
+  .sg-pulse {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .sg-pulse-btn {
     width: 100%;
   }
 }
@@ -448,6 +642,7 @@ section.sg-sec {
   .sg-checkstep,
   .sg-plan,
   .wchip,
+  .sg-langbtn,
   .btn {
     transition: none;
   }

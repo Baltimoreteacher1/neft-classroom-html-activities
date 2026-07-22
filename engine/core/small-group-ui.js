@@ -231,17 +231,26 @@ export function injectSmallGroupStyles(accent) {
     const storyboard = document.createElement("link");
     storyboard.id = "sg-storyboard-styles";
     storyboard.rel = "stylesheet";
-    storyboard.href = "/assets/small-group-storyboard.css?v=20260721-pub1";
+    storyboard.href = "/assets/small-group-storyboard.css?v=20260721-pub2";
     document.head.appendChild(storyboard);
   }
-  if (!document.getElementById("sg-publisher-polish")) {
-    const polish = document.createElement("link");
-    polish.id = "sg-publisher-polish";
-    polish.rel = "stylesheet";
-    polish.href = "/assets/small-group-publisher-polish.css?v=20260721-pub1";
-    document.head.appendChild(polish);
+  // Publisher polish must load AFTER base #sg-styles so additive overrides win.
+  const ensurePublisherPolish = () => {
+    let polish = document.getElementById("sg-publisher-polish");
+    if (!polish) {
+      polish = document.createElement("link");
+      polish.id = "sg-publisher-polish";
+      polish.rel = "stylesheet";
+      polish.href = "/assets/small-group-publisher-polish.css?v=20260721-pub2";
+      document.head.appendChild(polish);
+    } else if (polish.parentNode === document.head) {
+      document.head.appendChild(polish);
+    }
+  };
+  if (document.getElementById("sg-styles")) {
+    ensurePublisherPolish();
+    return;
   }
-  if (document.getElementById("sg-styles")) return;
 
   if (!document.getElementById("sg-fonts")) {
     const fonts = document.createElement("link");
@@ -523,4 +532,5 @@ export function injectSmallGroupStyles(accent) {
     @media print{body{background:#fff}.sg-mode,.sg-tabs,.sg-rail,.sg-meter,.sg-reveal,.sg-toolrow,.sg-pulse,.sg-timer,.sg-foot,.sg-teacher,.btn,.sg-speak,#mwb-launcher,.sg-problem-nav,.sg-annotation-tools{display:none!important}.sg-tabpanel[hidden]{display:block!important}.prob[hidden]{display:block!important}.sg-fill-step[hidden]{display:grid!important}.sg-fill-step.locked,.gs-row.locked,.sg-stage.locked,.sg-apply-step.locked{opacity:1!important;pointer-events:auto}.sg-reveal-answer[hidden]{display:inline-block!important}#app{max-width:none;padding:0}.sg-hero{margin:0 0 16px;padding:0 0 12px;color:#111;background:#fff;border-bottom:3px solid #111}.sg-hero h1,.sg-obj,.sg-langobj{color:#111}.sg-kicker,.sg-chip{color:#111;background:#eee;border-color:#bbb}.card,.sg-mission,.sg-talk,.prob,.sg-vcard{box-shadow:none;break-inside:avoid}.sg-mission{display:block}.sg-mission-visual{display:none}.sg-sec{margin-bottom:18px}}
   `;
   document.head.appendChild(styles);
+  ensurePublisherPolish();
 }
