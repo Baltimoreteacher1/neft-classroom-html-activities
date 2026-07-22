@@ -1,0 +1,165 @@
+#!/usr/bin/env node
+/**
+ * curriculum-scope-sequence.mjs
+ * --------------------------------------------------------------------------
+ * ONE human-readable view of the whole Grade-6 scope & sequence, generated
+ * from the single source of truth: each lessons/<id>/config.json.
+ *
+ * It does two jobs at once:
+ *   1. DOCTOR — validates the scope & sequence is internally consistent
+ *      (every standard resolves in the registry, no duplicate unit·lesson
+ *      slots, unit/lesson numbering has no silent gaps). Exits 1 on any error
+ *      so it can gate CI and prove a standards/sequence change is clean.
+ *   2. VIEW — writes docs/standards/scope-and-sequence.md, a diff-able
+ *      Unit → Lesson → Standard → Title table you can eyeball before/after
+ *      any MSDE change to confirm the curriculum reordered the way you meant.
+ *
+ * Source of truth (edit these, never the generated doc):
+ *   - lessons/<id>/config.json   → unit, lesson, standard, title  (the spine)
+ *   - data/ccss-standards.json   → which standard codes + domains exist
+ *
+ * Usage:
+ *   node scripts/curriculum-scope-sequence.mjs           # validate + write doc
+ *   node scripts/curriculum-scope-sequence.mjs --check   # validate only (CI)
+ *
+ * Only base lessons (folder id `<unit>-<lesson>`, e.g. 12-3) define the spine.
+ * Variant folders (-flagship / -group1 / -catchup / …) are alternate renderings
+ * of the same slot and are intentionally ignored here.
+ */
+import { readdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { isKnownStandard, domainName, standardLabel } from "./lib/ccss.mjs";
+
+const __dir = dirname(fileURLToPath(import.meta.url));
+const root = join(__dir, "..");
+const lessonsDir = join(root, "lessons");
+const outFile = join(root, "docs", "standards", "scope-and-sequence.md");
+
+const CHECK_ONLY = process.argv.includes("--check");
+const BASE_LESSON_RE = /^(\d+)-(\d+)$/; // spine only; excludes -flagship/-group/-catchup
+
+const errors = [];
+const warnings = [];
+
+/** Load + parse a lesson config, or record an error and return null. */
+function loadConfig(id) {
+  const p = join(lessonsDir, id, "config.json");
+  if (!existsSync(p)) {
+    errors.push(`${id}: no config.json`);
+    return null;
+  }
+  try {
+    return JSON.parse(readFileSync(p, "utf8"));
+  } catch (err) {
+    errors.push(`${id}: config.json is not valid JSON (${err.message})`);
+    return null;
+  }
+}
+
+// ---- Collect the spine from disk -----------------------------------------
+const lessons = [];
+for (const name of readdirSync(lessonsDir)) {
+  const m = name.match(BASE_LESSON_RE);
+  if (!m) continue;
+  const cfg = loadConfig(name);
+  if (!cfg) continue;
+
+  const unit = cfg.unit ?? Number(m[1]);
+  const lesson = cfg.lesson ?? Number(m[2]);
+  const standard = cfg.standard || null;
+  const title = cfg.title || null;
+
+  if (!Number.isInteger(unit)) errors.push(`${name}: missing/!int unit`);
+  if (!Number.isInteger(lesson)) errors.push(`${name}: missing/!int lesson`);
+  if (!standard) errors.push(`${name}: missing "standard"`);
+  else if (!isKnownStandard(standard))
+    errors.push(`${name}: standard "${standard}" not in data/ccss-standards.json`);
+  if (!title) warnings.push(`${name}: missing "title"`);
+
+  lessons.push({ id: name, unit, lesson, standard, title });
+}
+
+lessons.sort((a, b) => a.unit - b.unit || a.lesson - b.lesson || a.id.localeCompare(b.id));
+
+// ---- Consistency checks ---------------------------------------------------
+// Duplicate unit·lesson slot (two base lessons claiming the same position).
+const slot = new Map();
+for (const l of lessons) {
+  const key = `${l.unit}·${l.lesson}`;
+  if (slot.has(key)) errors.push(`Duplicate slot ${key}: ${slot.get(key)} and ${l.id}`);
+  else slot.set(key, l.id);
+}
+
+// Group by unit for gap checks + the rendered view.
+const byUnit = new Map();
+for (const l of lessons) {
+  if (!byUnit.has(l.unit)) byUnit.set(l.unit, []);
+  byUnit.get(l.unit).push(l);
+}
+const units = [...byUnit.keys()].sort((a, b) => a - b);
+
+// Gaps in unit numbering (info-level; units can legitimately be renumbered).
+for (let i = 1; i < units.length; i++) {
+  const gap = units[i] - units[i - 1];
+  if (gap > 1)
+    warnings.push(`Unit numbering jumps ${units[i - 1]} → ${units[i]} (missing ${gap - 1})`);
+}
+// Gaps in lesson numbering within a unit.
+for (const u of units) {
+  const nums = byUnit.get(u).map((l) => l.lesson).sort((a, b) => a - b);
+  for (let i = 1; i < nums.length; i++) {
+    if (nums[i] - nums[i - 1] > 1)
+      warnings.push(`Unit ${u}: lesson numbering jumps ${nums[i - 1]} → ${nums[i]}`);
+  }
+}
+
+// ---- Render the human-readable view --------------------------------------
+function renderDoc() {
+  const lines = [];
+  lines.push("# Grade 6 Math — Scope & Sequence");
+  lines.push("");
+  lines.push(
+    "> GENERATED by `scripts/curriculum-scope-sequence.mjs` — do not hand-edit.",
+  );
+  lines.push(
+    "> Source of truth: each `lessons/<id>/config.json` (`unit`, `lesson`, `standard`, `title`).",
+  );
+  lines.push(
+    "> To change the sequence, edit those configs then run `npm run curriculum:rebuild`.",
+  );
+  lines.push("");
+  lines.push(`**${lessons.length} lessons** across **${units.length} units**.`);
+  lines.push("");
+
+  for (const u of units) {
+    lines.push(`## Unit ${u}`);
+    lines.push("");
+    lines.push("| Lesson | Standard | Domain | Title |");
+    lines.push("| ------ | -------- | ------ | ----- |");
+    for (const l of byUnit.get(u)) {
+      // Standard codes look like 6.NOS.1 / 6.AT.A.1 — the domain is the 2nd segment.
+      const domCode = l.standard ? l.standard.split(".")[1] : null;
+      const dom = (domCode && domainName(domCode)) || "—";
+      const label = (l.standard && standardLabel(l.standard)) || "";
+      const std = l.standard ? `\`${l.standard}\`${label ? ` (${label})` : ""}` : "⚠️ none";
+      lines.push(`| ${l.unit}-${l.lesson} | ${std} | ${dom} | ${l.title || "⚠️ untitled"} |`);
+    }
+    lines.push("");
+  }
+  return lines.join("\n") + "\n";
+}
+
+// ---- Report ---------------------------------------------------------------
+if (!CHECK_ONLY) {
+  writeFileSync(outFile, renderDoc(), "utf8");
+  console.log(`✓ wrote docs/standards/scope-and-sequence.md (${lessons.length} lessons, ${units.length} units)`);
+}
+
+for (const w of warnings) console.warn(`  warn: ${w}`);
+if (errors.length) {
+  console.error(`\n✗ scope & sequence has ${errors.length} error(s):`);
+  for (const e of errors) console.error(`  - ${e}`);
+  process.exit(1);
+}
+console.log(`✓ scope & sequence consistent — ${lessons.length} lessons, ${units.length} units, ${warnings.length} warning(s)`);
