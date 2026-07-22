@@ -51,11 +51,11 @@ const MAP = {
     intro: "Build the recipe and scale it up — keep the ratio equivalent as the batch grows.",
   },
   "math/unit-4/projects": {
-    kind: "percent-bar", emoji: "🏷️",
-    attrs: { mode: "tax", base: "40", percent: "6" },
-    title: "Mark it down, add the tax",
-    es: "Aplica el descuento y suma el impuesto",
-    intro: "Drag the percent — see the discount and tax move the price bar live before you commit.",
+    kind: "market-day", emoji: "🏪",
+    attrs: {},
+    title: "Market Day: price to win",
+    es: "Día de mercado: pon el precio para ganar",
+    intro: "Set your discount to beat the rival kiosk AND stay above cost, then open the shop and clear the rent.",
   },
   "math/unit-5/projects": {
     kind: "area-tiler", emoji: "📐",
