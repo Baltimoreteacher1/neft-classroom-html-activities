@@ -33,7 +33,7 @@ function labelledValue(label, value) {
 function modelGraphic(family) {
   const wrapper = document.createElement("div");
   wrapper.className = "model-graphic";
-  wrapper.setAttribute("role", "img");
+  wrapper.setAttribute("role", "group");
   wrapper.setAttribute("aria-label", `Interactive ${family} model preview`);
   const cells = Array.from({ length: 12 }, (_, index) => {
     const cell = document.createElement("button");

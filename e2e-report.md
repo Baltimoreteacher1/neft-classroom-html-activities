@@ -28,6 +28,7 @@
 | Vocabulary definition | Test expected a retired reveal button | Assert the now-visible bilingual definition directly |
 | Curriculum order | Print-only lesson details are intentionally detached while browsing | Restore the supported print DOM before auditing its order |
 | Vocabulary accessibility | Text-bearing cards faded through low-contrast opacity states | Preserve full text opacity and animate position only |
+| Compiled runtime accessibility | The audit ran only before the generated interface became visible | Audit the compiled state, keep text fully opaque, darken small labels, and expose the number model as an interactive group |
 
 ## Quarantined Tests
 
@@ -45,4 +46,5 @@ None. No failing test was skipped, deleted, or marked `fixme`.
 - `npm test`: 50/50 test scripts passed.
 - `npm run validate`: all validation gates passed.
 - `npm run build`: production build passed.
+- Compiled runtime accessibility repeat: 15/15 passed across five repetitions.
 - TypeScript compiler check was unavailable because this repository does not install the `tsc` binary; Playwright loaded the TypeScript configuration and all 145 TypeScript specs successfully.
