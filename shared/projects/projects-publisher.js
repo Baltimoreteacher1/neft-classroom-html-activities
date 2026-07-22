@@ -666,6 +666,21 @@
             if (goal.trim()) block += "\n  My improvement goal: " + goal.trim();
             box.textContent += block;
           }
+          // Fold in the real prices/data the student captured during the
+          // research price-hunt (the [data-research-find] inputs) so their
+          // authentic findings appear in the printed/submitted report.
+          if (box.textContent.indexOf("RESEARCH I GATHERED") === -1) {
+            var rlines = [];
+            var rnodes = document.querySelectorAll("input[data-research-find]");
+            [].forEach.call(rnodes, function (node) {
+              var v = (node.value || "").trim();
+              if (v) rlines.push("  • " + v);
+            });
+            if (rlines.length) {
+              box.textContent +=
+                "\n\nRESEARCH I GATHERED (real prices & data)\n" + rlines.join("\n");
+            }
+          }
           if (
             window.NeftAwardStudio &&
             typeof window.NeftAwardStudio.getSummary === "function" &&
