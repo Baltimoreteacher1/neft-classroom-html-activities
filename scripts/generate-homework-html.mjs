@@ -2,6 +2,7 @@ import { readFileSync, writeFileSync, readdirSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { resolveVocabImage, vocabImageAlt } from "../engine/core/vocab-images.js";
+import { interactiveVisualHost } from "../engine/core/interactive-visual.js";
 import { EDITORIAL_FONT_IMPORT, EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
 import {
   selectQuickCheckProblems,
@@ -848,6 +849,41 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
   `;
 }
 
+function lessonModelCandidates(config) {
+  const candidates = [];
+  const add = (value) => {
+    if (Array.isArray(value)) value.forEach(add);
+    else if (value && typeof value === "object" && typeof value.kind === "string") {
+      candidates.push(value);
+    }
+  };
+
+  // Match the lesson flow: practice is the most actionable family model,
+  // followed by explore/connect and finally the launch visual.
+  add(config.practice?.diagram);
+  add(config.explore?.diagram);
+  add(config.connect?.diagram);
+  add(config.launch?.visual);
+  return candidates;
+}
+
+function selectLessonInteractiveModel(config) {
+  for (const candidate of lessonModelCandidates(config)) {
+    const html = interactiveVisualHost(candidate, {
+      ariaLabel: `Interactive ${candidate.title || config.title || "lesson model"}`,
+      fallback: "Turn on JavaScript to use the interactive lesson model.",
+    });
+    if (html) {
+      return {
+        kind: candidate.kind,
+        title: candidate.title || config.title || "Interactive Lesson Model",
+        html,
+      };
+    }
+  }
+  return null;
+}
+
 function generateHtml(lessonId, config) {
   const title = config.title || "Lesson Practice";
   const vocab = config.vocabulary || [];
@@ -859,6 +895,7 @@ function generateHtml(lessonId, config) {
   const coreSelected = [...warmup, ...challenge];
   const moreSelected = selectMorePracticeProblems(config.practice || {}, config, coreSelected);
   const topic = detectVisualTopic(config);
+  const lessonModel = selectLessonInteractiveModel(config);
 
   const welcomeHtml = renderWelcomeBanner(config, lessonId);
   const quickCheckIntroHtml = renderQuickCheckIntro();
@@ -879,7 +916,7 @@ function generateHtml(lessonId, config) {
     .join("\n");
 
   const tabPanels = [
-    renderLearnTab(config, renderVisualMathLab(topic, config)),
+    renderLearnTab(config, renderVisualMathLab(topic, config, lessonModel)),
     renderArcadeTabPanel(lessonId),
     renderWordsTab(vocab, resolveVocabImage, vocabImageAlt),
     renderTogetherTab(config),
@@ -3773,6 +3810,7 @@ window.onload = function() {
   });
 };
 </script>
+<script type="module" src="/assets/homework-lesson-models.js"></script>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
   <!-- nsr-injected:end -->

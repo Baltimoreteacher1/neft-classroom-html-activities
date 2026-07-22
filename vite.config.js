@@ -266,6 +266,17 @@ function copyStandaloneHtml() {
         }
       }
 
+      const requiredBundles = ["assets/homework-lesson-models.js"];
+      const missingBundles = requiredBundles.filter(
+        (rel) => !existsSync(resolve(__dirname, "dist", rel)),
+      );
+      if (missingBundles.length) {
+        throw new Error(
+          "copy-standalone-html: required homework model bundle missing from dist: " +
+            missingBundles.join(", "),
+        );
+      }
+
       // Post-build: auto-bust cache for all service workers in dist/
       const buildTimestamp = Date.now();
       function bustSwCaches(dir) {
@@ -296,7 +307,14 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(__dirname, "index.html"),
+        "homework-lesson-models": resolve(__dirname, "engine/homework-lesson-models.js"),
         ...getLessonEntries(),
+      },
+      output: {
+        entryFileNames: (chunk) =>
+          chunk.name === "homework-lesson-models"
+            ? "assets/homework-lesson-models.js"
+            : "assets/[name]-[hash].js",
       },
     },
     assetsInlineLimit: 100000,
