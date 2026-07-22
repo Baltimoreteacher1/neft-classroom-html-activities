@@ -6,119 +6,68 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '..');
 
-console.log('🚀 Upgrading EduWonderLab Arcade Games across all 10 Units...');
+console.log('🚀 Enhancing Practice Arcade Engine and all EduWonderLab Games...');
 
 const gamesToUpgrade = [
+  // Practice Arcade Universal Engine
   {
-    path: 'math/games/u1-factor-frenzy/index.html',
-    unit: 1,
-    name: 'Factor Frenzy',
-    visualizerType: 'factor-tree-venn',
-    coachHintEN: 'Prime factorization breaks composite numbers into prime leaves. 2 is the smallest prime number!',
-    coachHintES: 'La factorización prima descompone números compuestos en hojas primas. ¡El 2 es el número primo más pequeño!',
+    path: 'math/games/practice-arcade/index.html',
+    unit: 0,
+    name: 'Practice Arcade Review Lab',
+    coachEN: 'Calm self-paced review lab: sort into bins, match pairs, choose the answer, and spot the mistake!',
+    coachES: 'Laboratorio de repaso a tu propio ritmo: clasifica en contenedores, empareja, elige la respuesta y encuentra el error.'
   },
   {
-    path: 'math/games/u1-decimal-dash/index.html',
-    unit: 1,
-    name: 'Decimal Dash',
-    visualizerType: 'decimal-grid',
-    coachHintEN: 'When adding or subtracting decimals, line up the decimal points in columns!',
-    coachHintES: 'Al sumar o restar decimales, ¡alinea los puntos decimales en columnas!',
+    path: 'math/games/practice-arcade/map.html',
+    unit: 0,
+    name: 'Practice Arcade World Map',
+    coachEN: 'Choose any unit world on the Arcade Map to practice self-paced lesson challenges!',
+    coachES: '¡Elige cualquier mundo de la unidad en el Mapa Arcade para practicar desafíos a tu propio ritmo!'
   },
-  {
-    path: 'math/games/u2-fraction-frenzy/index.html',
-    unit: 2,
-    name: 'Fraction Frenzy',
-    visualizerType: 'fraction-partition',
-    coachHintEN: 'Dividing by a fraction is multiplying by its reciprocal (Keep, Change, Flip)!',
-    coachHintES: '¡Dividir por una fracción es multiplicar por su recíproco (Mantener, Cambiar, Voltear)!',
-  },
-  {
-    path: 'math/games/u3-ratio-rush/index.html',
-    unit: 3,
-    name: 'Ratio Rush',
-    visualizerType: 'ratio-table-graph',
-    coachHintEN: 'Ratio tables show equivalent ratios. Unit rate tells you the amount for 1 unit!',
-    coachHintES: 'Las tablas de razones muestran razones equivalentes. ¡La tasa unitaria te da la cantidad por 1 unidad!',
-  },
-  {
-    path: 'math/games/u4-percent-power/index.html',
-    unit: 4,
-    name: 'Percent Power',
-    visualizerType: 'percent-100-grid',
-    coachHintEN: 'Percent means per 100. To find x% of a number, multiply by (x / 100)!',
-    coachHintES: 'Porcentaje significa por 100. Para hallar el x% de un número, ¡multiplica por (x / 100)!',
-  },
-  {
-    path: 'math/games/u5-area-attack/index.html',
-    unit: 5,
-    name: 'Area Attack',
-    visualizerType: 'area-decomposer',
-    coachHintEN: 'Area of triangle = 1/2 * base * height. Height MUST be perpendicular to the base!',
-    coachHintES: 'Área del triángulo = 1/2 * base * altura. ¡La altura DEBE ser perpendicular a la base!',
-  },
-  {
-    path: 'math/games/u6-expression-express/index.html',
-    unit: 6,
-    name: 'Expression Express',
-    visualizerType: 'expression-tiles',
-    coachHintEN: 'Only combine LIKE terms (same variable and exponent)!',
-    coachHintES: '¡Solo combina términos SEMEJANTES (misma variable y exponente)!',
-  },
-  {
-    path: 'math/games/u7-equation-quest/index.html',
-    unit: 7,
-    name: 'Equation Quest',
-    visualizerType: 'balance-scale',
-    coachHintEN: 'Keep equations balanced by applying inverse operations to both sides!',
-    coachHintES: '¡Mantén las ecuaciones equilibradas aplicando operaciones inversas a ambos lados!',
-  },
-  {
-    path: 'math/games/u8-data-dash/index.html',
-    unit: 8,
-    name: 'Data Dash',
-    visualizerType: 'data-box-plot',
-    coachHintEN: 'The median is the middle value. Mean Absolute Deviation (MAD) measures spread!',
-    coachHintES: 'La mediana es el valor central. ¡La Desviación Media Absoluta (MAD) mide la dispersión!',
-  },
-  {
-    path: 'math/games/u9-coordinate-quest/index.html',
-    unit: 9,
-    name: 'Coordinate Quest',
-    visualizerType: '4-quadrant-rover',
-    coachHintEN: 'Plot (x, y) by moving horizontally along x first, then vertically along y!',
-    coachHintES: '¡Grafica (x, y) moviéndote horizontalmente en x primero, y luego verticalmente en y!',
-  },
-  {
-    path: 'math/games/u10-volume-blast/index.html',
-    unit: 10,
-    name: 'Volume Blast',
-    visualizerType: '3d-volume-net',
-    coachHintEN: 'Volume = length * width * height. Surface area is the total area of all unfolded 2D faces!',
-    coachHintES: 'Volumen = largo * ancho * alto. ¡El área de superficie es el área total de todas las caras desplegadas!',
-  }
+
+  // Core Arcade Games
+  { path: 'math/games/u1-factor-frenzy/index.html', unit: 1, name: 'Factor Frenzy', coachEN: 'Prime factorization breaks composite numbers into prime leaves. 2 is the smallest prime number!', coachES: 'La factorización prima descompone números compuestos en hojas primas. ¡El 2 es el número primo más pequeño!' },
+  { path: 'math/games/u1-decimal-dash/index.html', unit: 1, name: 'Decimal Dash', coachEN: 'When adding or subtracting decimals, line up the decimal points in columns!', coachES: 'Al sumar o restar decimales, ¡alinea los puntos decimales en columnas!' },
+  { path: 'math/games/u2-fraction-frenzy/index.html', unit: 2, name: 'Fraction Frenzy', coachEN: 'Dividing by a fraction is multiplying by its reciprocal (Keep, Change, Flip)!', coachES: '¡Dividir por una fracción es multiplicar por su recíproco (Mantener, Cambiar, Voltear)!' },
+  { path: 'math/games/u3-ratio-rush/index.html', unit: 3, name: 'Ratio Rush', coachEN: 'Ratio tables show equivalent ratios. Unit rate tells you the amount for 1 unit!', coachES: 'Las tablas de razones muestran razones equivalentes. ¡La tasa unitaria te da la cantidad por 1 unidad!' },
+  { path: 'math/games/u4-percent-power/index.html', unit: 4, name: 'Percent Power', coachEN: 'Percent means per 100. To find x% of a number, multiply by (x / 100)!', coachES: 'Porcentaje significa por 100. Para hallar el x% de un número, ¡multiplica por (x / 100)!' },
+  { path: 'math/games/u5-area-attack/index.html', unit: 5, name: 'Area Attack', coachEN: 'Area of triangle = 1/2 * base * height. Height MUST be perpendicular to the base!', coachES: 'Área del triángulo = 1/2 * base * altura. ¡La altura DEBE ser perpendicular a la base!' },
+  { path: 'math/games/u6-expression-express/index.html', unit: 6, name: 'Expression Express', coachEN: 'Only combine LIKE terms (same variable and exponent)!', coachES: '¡Solo combina términos SEMEJANTES (misma variable y exponente)!' },
+  { path: 'math/games/u7-equation-quest/index.html', unit: 7, name: 'Equation Quest', coachEN: 'Keep equations balanced by applying inverse operations to both sides!', coachES: '¡Mantén las ecuaciones equilibradas aplicando operaciones inversas a ambos lados!' },
+  { path: 'math/games/u8-data-dash/index.html', unit: 8, name: 'Data Dash', coachEN: 'The median is the middle value. Mean Absolute Deviation (MAD) measures spread!', coachES: 'La mediana es el valor central. ¡La Desviación Media Absoluta (MAD) mide la dispersión!' },
+  { path: 'math/games/u9-coordinate-quest/index.html', unit: 9, name: 'Coordinate Quest', coachEN: 'Plot (x, y) by moving horizontally along x first, then vertically along y!', coachES: '¡Grafica (x, y) moviéndote horizontalmente en x primero, y luego verticalmente en y!' },
+  { path: 'math/games/u10-volume-blast/index.html', unit: 10, name: 'Volume Blast', coachEN: 'Volume = length * width * height. Surface area is the total area of all unfolded 2D faces!', coachES: 'Volumen = largo * ancho * alto. ¡El área de superficie es el área total de todas las caras desplegadas!' },
+
+  // Standalone Unit Games
+  { path: 'math/unit-1/games/unit1-factor-frenzy.html', unit: 1, name: 'Factor Frenzy (Unit 1)', coachEN: 'Prime factorization breaks composite numbers into prime leaves. 2 is the smallest prime number!', coachES: 'La factorización prima descompone números compuestos en hojas primas.' },
+  { path: 'math/unit-2/games/unit2-fraction-foundry.html', unit: 2, name: 'Fraction Foundry', coachEN: 'Dividing by a fraction is multiplying by its reciprocal!', coachES: '¡Dividir por una fracción es multiplicar por su recíproco!' },
+  { path: 'math/unit-3/games/unit3-ratio-rally.html', unit: 3, name: 'Ratio Rally', coachEN: 'Ratio tables show equivalent ratios.', coachES: 'Las tablas de razones muestran razones equivalentes.' },
+  { path: 'math/unit-4/games/unit4-discount-dash.html', unit: 4, name: 'Discount Dash', coachEN: 'To find x% of a number, multiply by (x / 100).', coachES: 'Para hallar el x% de un número, multiplica por (x / 100).' },
+  { path: 'math/unit-5/games/unit5-area-architect.html', unit: 5, name: 'Area Architect', coachEN: 'Area of triangle = 1/2 * base * height.', coachES: 'Área del triángulo = 1/2 * base * altura.' },
+  { path: 'math/unit-6/games/unit6-expression-engine.html', unit: 6, name: 'Expression Engine', coachEN: 'Only combine LIKE terms (same variable and exponent)!', coachES: '¡Solo combina términos SEMEJANTES!' },
+  { path: 'math/unit-7/games/unit9-coordinate-quest.html', unit: 7, name: 'Coordinate Quest (Unit 7)', coachEN: 'Keep equations balanced by applying inverse operations!', coachES: '¡Mantén las ecuaciones equilibradas con operaciones inversas!' },
+  { path: 'math/unit-8/games/unit7-equation-escape.html', unit: 8, name: 'Equation Escape', coachEN: 'The median is the middle value.', coachES: 'La mediana es el valor central.' },
+  { path: 'math/unit-9/games/unit9-variable-velocity.html', unit: 9, name: 'Variable Velocity', coachEN: 'Plot (x, y) by moving horizontally first!', coachES: '¡Grafica (x, y) moviéndote horizontalmente primero!' },
+  { path: 'math/unit-10/games/unit10-volume-vault.html', unit: 10, name: 'Volume Vault', coachEN: 'Volume = length * width * height.', coachES: 'Volumen = largo * ancho * alto.' }
 ];
 
-let updatedCount = 0;
+let count = 0;
 
 for (const game of gamesToUpgrade) {
   const fullPath = path.join(rootDir, game.path);
-  if (!fs.existsSync(fullPath)) {
-    console.warn(`⚠️ Warning: Game file not found: ${game.path}`);
-    continue;
-  }
+  if (!fs.existsSync(fullPath)) continue;
 
   let html = fs.readFileSync(fullPath, 'utf-8');
 
-  // Check if stylesheet link is already included
+  // Inject stylesheet if missing
   if (!html.includes('arcade-enhanced-styles.css')) {
     html = html.replace('</head>', `  <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">\n</head>`);
   }
 
-  // Inject header bar with Level 1 / Level 2 badges & EN/ES toggle if missing
+  // Header bar
   const headerHtml = `
       <!-- EWL Universal Arcade Enhancements Header -->
-      <div class="ewl-arcade-header-bar">
+      <div class="ewl-arcade-header-bar" style="position: relative; z-index: 100;">
         <div class="ewl-arcade-title-group">
           <span class="ewl-arcade-badge ewl-badge-l1" id="ewl-level-badge">⭐ Level 1: Guided Support</span>
           <span style="font-size: 13px; font-weight: 600; opacity: 0.85;">| EduWonderLab Interactive Arcade</span>
@@ -141,14 +90,14 @@ for (const game of gamesToUpgrade) {
     }
   }
 
-  // Inject coach card container if missing
+  // Coach card
   const coachHtml = `
       <!-- EWL Diagnostic Misconception Coach -->
-      <div class="ewl-coach-card" id="ewl-coach-card" style="display: flex;">
+      <div class="ewl-coach-card" id="ewl-coach-card" style="display: flex; position: relative; z-index: 100;">
         <div class="ewl-coach-icon">💡</div>
         <div class="ewl-coach-content">
           <h4 id="ewl-coach-title">Math Coach Tip / Consejos del Profesor</h4>
-          <p id="ewl-coach-text" data-en="${game.coachHintEN}" data-es="${game.coachHintES}">${game.coachHintEN}</p>
+          <p id="ewl-coach-text" data-en="${game.coachEN}" data-es="${game.coachES}">${game.coachEN}</p>
         </div>
       </div>
   `;
@@ -161,7 +110,7 @@ for (const game of gamesToUpgrade) {
     }
   }
 
-  // Inject script logic for level switching, EN/ES language toggle, and SCORM telemetry
+  // Universal helper script
   const scriptInjection = `
   <script>
     (function() {
@@ -203,13 +152,10 @@ for (const game of gamesToUpgrade) {
         }
       };
 
-      // Telemetry & dual storage sync
       window.ewlSyncProgress = function(gameName, score, stars) {
         try {
           const data = { gameName, score, stars, timestamp: new Date().toISOString() };
           localStorage.setItem('ewl_arcade_' + gameName, JSON.stringify(data));
-          
-          // SCORM postMessage if embedded in Canvas
           if (window.parent && window.parent.postMessage) {
             window.parent.postMessage({ type: 'EWL_GAME_SCORE', payload: data }, '*');
           }
@@ -227,7 +173,7 @@ for (const game of gamesToUpgrade) {
 
   fs.writeFileSync(fullPath, html, 'utf-8');
   console.log(` ✅ Upgraded: ${game.path}`);
-  updatedCount++;
+  count++;
 }
 
-console.log(`\n🎉 Successfully upgraded ${updatedCount} EduWonderLab Arcade Games!`);
+console.log(`\n🎉 Upgraded ${count} Practice Arcade & Unit Game files across EduWonderLab!`);
