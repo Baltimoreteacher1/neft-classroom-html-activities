@@ -89,7 +89,7 @@ if (!existsSync(dataPath)) {
     }
 
     for (const lesson of familyLessons) {
-      for (const field of ["lessonId", "title", "standard", "objective", "unit", "unitName", "topic", "resources"]) {
+      for (const field of ["lessonId", "title", "standard", "objective", "languageObjective", "unit", "unitName", "topic", "resources"]) {
         if (lesson[field] === undefined || lesson[field] === null || lesson[field] === "") {
           fail(`Lesson ${lesson.lessonId || "(unknown)"} is missing data field ${field}`);
         }
@@ -146,11 +146,14 @@ for (const lessonId of expectedIds) {
   }
 
   const pageHtml = readFileSync(pagePath, "utf8");
+  const data = lessonsById.get(lessonId);
   for (const section of requiredSections) {
     assertIncludes(pageHtml, section, `families/lessons/${lessonId}/index.html`);
   }
 
-  const data = lessonsById.get(lessonId);
+  assertIncludes(pageHtml, data?.objective, `families/lessons/${lessonId}/index.html`);
+  assertIncludes(pageHtml, data?.languageObjective, `families/lessons/${lessonId}/index.html`);
+
   for (const resource of data?.resources || []) {
     assertIncludes(pageHtml, `href="${resource.href}"`, `families/lessons/${lessonId}/index.html`);
   }

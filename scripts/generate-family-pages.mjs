@@ -5,6 +5,15 @@ import { fileURLToPath } from "node:url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
 const lessonDirPattern = /^(\d+)-(\d+)(-flagship)?$/;
+const launchManifestPath = join(root, "data", "curriculum-launch-manifest.json");
+
+function loadCanonicalLessons() {
+  if (!existsSync(launchManifestPath)) return new Map();
+  const manifest = JSON.parse(readFileSync(launchManifestPath, "utf8"));
+  return new Map((manifest.lessons || []).map((lesson) => [lesson.id, lesson]));
+}
+
+const CANONICAL_LESSONS = loadCanonicalLessons();
 
 const UNIT_THEMES = {
   1: {
@@ -162,7 +171,23 @@ function topicFor(config) {
   return "Grade 6 math";
 }
 
-function resourcesFor(lessonId) {
+function resourcesFor(lessonId, canonicalLesson) {
+  const safeLabels = {
+    lesson: "Interactive Lesson",
+    guidedNotes: "Guided Notes",
+    handout: "Practice Handout",
+    homework: "Homework Practice",
+    studentHelp: "Student Help",
+    exitTicket: "Check Understanding",
+  };
+  if (canonicalLesson?.resources) {
+    return Object.entries(safeLabels)
+      .map(([key, label]) => ({ label, href: canonicalLesson.resources[key] }))
+      .filter(
+        (resource) =>
+          typeof resource.href === "string" && resource.href.startsWith("/lessons/"),
+      );
+  }
   const base = join(root, "lessons", lessonId);
   const candidates = [
     ["Interactive Lesson", `/lessons/${lessonId}/`, join(base, "index.html")],
@@ -333,25 +358,30 @@ function buildLessonRecords() {
     .sort(lessonSort)
     .map((lessonId) => {
       const config = JSON.parse(readFileSync(join(lessonsRoot, lessonId, "config.json"), "utf8"));
-      const unit = Number(config.unit || lessonId.match(lessonDirPattern)[1]);
+      const canonical = CANONICAL_LESSONS.get(lessonId);
+      const lessonSource = canonical ? { ...config, ...canonical } : config;
+      const unit = Number(lessonSource.unit || lessonId.match(lessonDirPattern)[1]);
       const unitInfo = UNIT_THEMES[unit] || { name: `Unit ${unit}`, blurb: "Grade 6 math practice and support." };
-      const topic = topicFor(config);
-      const isFlagship = lessonId.endsWith("-flagship") || Boolean(config.flagship);
+      const topic = topicFor(lessonSource);
+      const isFlagship = lessonId.endsWith("-flagship") || Boolean(lessonSource.flagship);
       return {
         lessonId,
         unit,
-        lesson: Number(config.lesson || lessonId.match(lessonDirPattern)[2]),
-        title: config.title || `Lesson ${lessonId}`,
-        standard: config.standard || "Grade 6 Math",
-        objective: config.objective || "I can explain my math thinking.",
+        lesson: Number(lessonSource.lesson || lessonId.match(lessonDirPattern)[2]),
+        title: lessonSource.title || `Lesson ${lessonId}`,
+        standard: lessonSource.standard || "Grade 6 Math",
+        objective: lessonSource.objective || "I can explain my math thinking.",
+        languageObjective:
+          lessonSource.languageObjective ||
+          "I can explain my strategy using math words and evidence.",
         unitName: unitInfo.name,
         unitBlurb: unitInfo.blurb,
         topic,
         isFlagship,
         ...(isFlagship ? { variantLabel: "Flagship / Enrichment Version" } : {}),
-        resources: resourcesFor(lessonId),
+        resources: resourcesFor(lessonId, canonical),
         vocabulary: normalizeVocabulary(config, topic),
-        practice: practiceFor(config, topic).map(([prompt, answer]) => ({ prompt, answer })),
+        practice: practiceFor(lessonSource, topic).map(([prompt, answer]) => ({ prompt, answer })),
       };
     });
 }
@@ -566,6 +596,7 @@ function renderLessonPage(lesson) {
     .pill.flagship { color: #92400e; background: #fffbeb; border-color: #f59e0b; }
     h1 { margin: 0; font-size: clamp(2rem, 5vw, 3.5rem); line-height: 1.05; }
     .objective { margin: 0; max-width: 820px; font-size: 1.15rem; color: #334e68; font-weight: 700; }
+    .language-goal { margin: 0; max-width: 820px; color: var(--muted); }
     .resource-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
     .resource-list a { background: var(--teal); color: #fff; text-decoration: none; font-weight: 900; padding: 9px 12px; border-radius: 8px; }
     .resource-list a:nth-child(2n) { background: var(--blue); }
@@ -609,6 +640,7 @@ function renderLessonPage(lesson) {
       </div>
       <h1>${esc(lesson.title)}</h1>
       <p class="objective">${esc(lesson.objective)}</p>
+      <p class="language-goal"><strong>Speaking and writing goal:</strong> ${esc(lesson.languageObjective)}</p>
       ${resourceLinks(lesson.resources)}
     </header>
 
@@ -650,8 +682,9 @@ function renderLessonPage(lesson) {
             (item) => `<article class="vocab-card">
           <strong>${esc(item.term)}</strong>
           <span class="translation">${esc(item.termEs)}</span>
-          <p>${esc(item.definition)}</p>
-          ${item.example ? `<p class="muted">Example: ${esc(item.example)}</p>` : ""}
+          <p>${esc(item.definition)}</p>${
+            item.example ? `\n          <p class="muted">Example: ${esc(item.example)}</p>` : ""
+          }
         </article>`
           )
           .join("\n        ")}

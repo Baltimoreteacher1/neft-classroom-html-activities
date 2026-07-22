@@ -4,13 +4,13 @@
   var MANIFEST_URL = "/data/curriculum-launch-manifest.json";
   var STORAGE_PREFIX = "curriculumStudentLaunch:";
   var RESOURCE_LABELS = {
-    lesson: "Start interactive lesson",
-    guidedNotes: "Guided notes",
-    handout: "Practice handout",
-    homework: "Homework practice",
-    familyPage: "Family help",
-    studentHelp: "Student help",
-    exitTicket: "Check understanding",
+    lesson: "Must do · Start interactive lesson",
+    guidedNotes: "If needed · Guided notes",
+    handout: "Practice · Handout",
+    homework: "At home · Homework practice",
+    familyPage: "At home · Family help",
+    studentHelp: "If needed · Student help",
+    exitTicket: "Show what you know · Final check",
   };
 
   var lessonsById = {};
@@ -45,6 +45,13 @@
   function setText(id, value) {
     var node = byId(id);
     if (node) node.textContent = value || "";
+  }
+
+  function forceStudentMode(path) {
+    if (!path || !path.startsWith("/lessons/")) return path;
+    var url = new URL(path, window.location.origin);
+    url.searchParams.set("student", "1");
+    return url.pathname + url.search + url.hash;
   }
 
   function addTextElement(parent, tag, className, value) {
@@ -82,8 +89,26 @@
         try {
           localStorage.setItem(progressKey(lessonId), JSON.stringify(next));
         } catch (error) {}
+        updateNextStep();
       };
     });
+    updateNextStep();
+  }
+
+  function updateNextStep() {
+    var boxes = {};
+    document.querySelectorAll("[data-progress]").forEach(function (box) {
+      boxes[box.dataset.progress] = box.checked;
+    });
+    var message = "Next: open the interactive lesson and follow each step.";
+    if (boxes.lesson && !boxes.explain) {
+      message = "Next: explain one answer with the sentence frame.";
+    } else if (boxes.lesson && boxes.explain && !boxes.check) {
+      message = "Next: complete the final check to show what you know.";
+    } else if (boxes.lesson && boxes.explain && boxes.check) {
+      message = "Lesson complete. If the final check felt difficult, use Student Help; if it felt solid, choose Practice or Challenge in the lesson.";
+    }
+    setText("next-step", message);
   }
 
   function renderVocabulary(lesson) {
@@ -106,11 +131,11 @@
       if (!path) return;
       var link = document.createElement("a");
       link.className = "resource-link";
-      link.href = path;
+      link.href = key === "lesson" || key === "exitTicket" ? forceStudentMode(path) : path;
       link.textContent = RESOURCE_LABELS[key];
       container.appendChild(link);
     });
-    byId("start-lesson").href = lesson.resources.lesson;
+    byId("start-lesson").href = forceStudentMode(lesson.resources.lesson);
   }
 
   function readLesson(lesson) {

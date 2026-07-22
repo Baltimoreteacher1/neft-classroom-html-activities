@@ -1289,6 +1289,7 @@
     <link rel="stylesheet" href="/assets/curriculum-polish.css?v=20260615-polish4" />
     <link rel="stylesheet" href="/assets/curriculum-top1.css?v=20260713-top1print" />
     <link rel="stylesheet" href="/assets/curriculum-teacher-workflow.css?v=20260715-toolsmenu" />
+    <link rel="stylesheet" href="/assets/curriculum-guided-path.css?v=20260722" />
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
     <link rel="stylesheet" href="/assets/mobile-access.css" />
     <!-- mobile-access-injected:end -->
@@ -1306,12 +1307,43 @@
     </style>
   </head>
   <body class="light-theme">
-    <a class="skip-link" href="#hub-content">Skip to lessons</a>
+    <a class="skip-link" href="#interactive-hub">Skip to units and lessons</a>
+    <header class="curriculum-guide" id="curriculum-start">
+      <p class="curriculum-guide__eyebrow">Neft Teacher · Grade 6 Math</p>
+      <h1>Curriculum Hub</h1>
+      <p class="curriculum-guide__lede">
+        Start with the next teaching decision. The full library stays available, but today’s lesson,
+        the weekly plan, and the unit sequence come first.
+      </p>
+      <nav class="curriculum-guide__actions" aria-label="Start with a curriculum workflow">
+        <button class="curriculum-guide__action" type="button" data-guide-teacher-view="today">
+          <strong>Teach today</strong>
+          <span>Open the selected lesson, student link, readiness, and supports.</span>
+        </button>
+        <button class="curriculum-guide__action" type="button" data-guide-teacher-view="week">
+          <strong>Plan the week</strong>
+          <span>Sequence lessons, pacing, practice, and checks for understanding.</span>
+        </button>
+        <a class="curriculum-guide__action" href="#interactive-hub">
+          <strong>Explore by unit</strong>
+          <span>Choose one unit and see only the lesson and resources you need.</span>
+        </a>
+      </nav>
+      <div class="curriculum-guide__model" aria-label="How learning works here">
+        <strong>How learning works here:</strong>
+        <span>Define → Model → Test → Revise → Defend → Transfer</span>
+      </div>
+      <nav class="curriculum-guide__links" aria-label="Curriculum support and evidence">
+        <a href="/evidence/">Evidence and learning model</a>
+        <a href="/families/">Family math support</a>
+        <a href="/curriculum/student-launch/?lesson=1-1">Preview the student experience</a>
+      </nav>
+    </header>
     <div class="wrap" role="main">
       <div class="hub-side" id="hub-side">
         <header class="hub">
           <p class="eyebrow">Neft Teacher · Grade 6 Math</p>
-          <h1>Curriculum Hub</h1>
+          <p class="hub-title" aria-hidden="true">Curriculum Hub</p>
           <p class="lede">
             Every resource organized by Unit → Lesson. Expand a unit to see its graphic novels, 3D
             game, pre/post-tests and study guide, then open each lesson to find its interactive
@@ -11341,7 +11373,7 @@
         // Homework&Family first, else fall back to Practice & Games.
         var OUTLINE_GROUPS = [
           {
-            title: "📊 Lesson & Slides",
+            title: "✅ Must Do · Learn",
             keywords: [
               "open the lesson",
               "interactive lesson",
@@ -11354,11 +11386,11 @@
             ],
           },
           {
-            title: "📝 Notes & Handouts",
+            title: "🧩 If Needed · Supports",
             keywords: ["notes", "handout"],
           },
           {
-            title: "🏠 Homework & Family",
+            title: "🏠 At Home · Continue",
             keywords: ["homework", "family", "forms"],
           },
           // Practice & Games is the catch-all; rendered last regardless of
@@ -11488,7 +11520,7 @@
           // order is: Lesson & Slides, Notes & Handouts, Practice & Games,
           // Homework & Family.
           sections.splice(2, 0, {
-            title: "🎮 Practice & Games",
+            title: "🎯 Practice · Apply",
             items: buckets[OUTLINE_GROUPS.length],
           });
 
@@ -12365,6 +12397,7 @@
     <script src="/assets/curriculum-top1.js?v=20260713-lessonprint" defer></script>
     <script src="/assets/curriculum-teacher-planning.js?v=20260715-toolsmenu" defer></script>
     <script src="/assets/curriculum-teacher-workflow.js?v=20260714" defer></script>
+    <script src="/assets/curriculum-guided-path.js?v=20260722" defer></script>
     <script src="/assets/futures-lab.js?v=20260619" defer></script>
     <script src="/assets/gradebook-embed.js?v=20260624" defer></script>
 

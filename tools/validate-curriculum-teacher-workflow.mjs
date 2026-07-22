@@ -28,6 +28,7 @@ const launcherJs = read("assets/curriculum-student-launch.js");
 const launcherCss = read("assets/curriculum-student-launch.css");
 const generator = read("scripts/generate-curriculum-launch-manifest.mjs");
 const workflowDataRaw = read("data/curriculum-teacher-workflow.json");
+const supportDataRaw = read("data/curriculum-supports.json");
 const launchDataRaw = read("data/curriculum-launch-manifest.json");
 
 check(hub.includes("curriculum-teacher-workflow.css"), "hub wires teacher workflow CSS");
@@ -69,11 +70,17 @@ check(/@media\s+print/.test(workflowCss) && /@media\s+print/.test(launcherCss), 
 check(/prefers-reduced-motion/.test(launcherCss), "student launcher respects reduced motion");
 
 let workflowData = null;
+let supportData = null;
 let launchData = null;
 try {
   workflowData = JSON.parse(workflowDataRaw);
 } catch (error) {
   failures.push(`invalid workflow JSON: ${error.message}`);
+}
+try {
+  supportData = JSON.parse(supportDataRaw);
+} catch (error) {
+  failures.push(`invalid support JSON: ${error.message}`);
 }
 try {
   launchData = JSON.parse(launchDataRaw);
@@ -83,6 +90,7 @@ try {
 
 if (workflowData) {
   const families = workflowData.families || {};
+  const familyRules = workflowData.familyRules || [];
   const required = [
     "materials",
     "prerequisite",
@@ -92,6 +100,10 @@ if (workflowData) {
   ];
   check(Object.keys(families).length >= 10, "workflow data covers at least 10 skill families");
   check(
+    familyRules.length >= 10 && familyRules.every((rule) => families[rule.family] && rule.pattern),
+    "workflow family rules resolve only to defined skill families",
+  );
+  check(
     Object.values(families).every((family) => required.every((key) => family[key])),
     "every workflow family has readiness guidance",
   );
@@ -99,6 +111,26 @@ if (workflowData) {
     Array.isArray(workflowData.sequences?.minutes45) &&
       Array.isArray(workflowData.sequences?.minutes90),
     "workflow data includes 45- and 90-minute sequences",
+  );
+}
+
+if (workflowData && supportData && launchData) {
+  const resolveFamily = (lesson) => {
+    const text = `${lesson.title} ${lesson.standard}`.toLowerCase();
+    const match = (workflowData.familyRules || []).find((rule) =>
+      new RegExp(rule.pattern, "i").test(text),
+    );
+    return match?.family || "general";
+  };
+  const lessonsById = new Map((launchData.lessons || []).map((lesson) => [lesson.id, lesson]));
+  check(resolveFamily(lessonsById.get("1-1")) === "numberTheory", "Prime Factorization uses number-theory readiness");
+  check(resolveFamily(lessonsById.get("1-5")) === "decimals", "decimal operations use decimal readiness");
+  check(
+    (launchData.lessons || []).every((lesson) => {
+      const family = resolveFamily(lesson);
+      return workflowData.families?.[family] && supportData.families?.[family];
+    }),
+    "every lesson resolves to complete readiness and language supports",
   );
 }
 
