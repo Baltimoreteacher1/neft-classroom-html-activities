@@ -1372,7 +1372,7 @@ function tabPanelAttrs(id, hidden = false) {
   return `class="tab-panel-inner" data-tab-panel="${id}" id="hw_panel_${id}" role="tabpanel"${hidden ? " hidden" : ""}`;
 }
 
-export function renderLearnTab(config) {
+export function renderLearnTab(config, visualLabHtml = "") {
   const learning = renderLearningTonight(config).replace(/<section[^>]*>|<\/section>/g, "");
   const concept = renderConceptExplainer(config).replace(/<section[^>]*>|<\/section>/g, "");
   const keyEn = keyIdea(config);
@@ -1381,6 +1381,7 @@ export function renderLearnTab(config) {
     <div ${tabPanelAttrs("learn")}>
       ${learning}
       ${concept}
+      ${visualLabHtml}
       <p class="tab-help-row">${helpButton("💡 Need more help? / ¿Más ayuda?", { titleEn: "The big idea", titleEs: "La idea principal", en: keyEn, es: keyEs })}</p>
     </div>`;
 }

@@ -53,9 +53,9 @@ export function detectVisualTopic(config) {
   const unit = Number(config.unit) || 0;
 
   if (standard === "6.AT.5" || /exponent|power/i.test(title)) return "exponents";
-  if (/inequal/i.test(title) || standard === "6.AT.8" || standard === "6.AT.9")
+  if (/inequal/i.test(title) || standard === "6.AT.9")
     return "inequalities";
-  if (/equation/i.test(title) || standard === "6.AT.8" || standard === "6.AT.8") return "equations";
+  if (/equation/i.test(title) || standard === "6.AT.8") return "equations";
   // A graphing lesson (e.g. "Graph Ratio Tables") is about plotting on the plane,
   // so the coordinate-plane visual fits better than a ratio table — check before ratios.
   if (/graph/i.test(title) && /ratio|coordinate|plane|plot|ordered pair/i.test(title))

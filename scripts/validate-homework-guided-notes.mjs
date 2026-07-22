@@ -37,6 +37,13 @@ const REQUIRED_MARKERS = [
   'class="concept-quick-path"',
   'class="learning-word-chips"',
   'class="step-lead lang-en"',
+  'class="family-visual-lab"',
+  'data-visual-lab="',
+  'class="visual-lab-stage"',
+  'data-lab-input="',
+  'class="visual-representation-grid"',
+  "TOUCH &amp; TRY",
+  "TOCA Y PRUEBA",
   'data-tab-panel="play"',
   'data-tab-panel="workbench"',
   "Math Workbench",
@@ -112,6 +119,19 @@ for (const id of lessonIds) {
   const learningBlocks = html.match(/<p class="learning-big">[\s\S]*?<\/p>/g) || [];
   if (learningBlocks.some((block) => /\.\.<\/p>/.test(block))) {
     issues.push({ id, level: "HIGH", msg: "Learning summary has doubled punctuation" });
+  }
+
+  const visualLabs = (html.match(/class="family-visual-lab"/g) || []).length;
+  const visualControls = (html.match(/data-lab-input="/g) || []).length;
+  const representationCards = (html.match(/class="visual-representation-card /g) || []).length;
+  if (visualLabs !== 1) {
+    issues.push({ id, level: "CRITICAL", msg: `Expected one visual math lab, found ${visualLabs}` });
+  }
+  if (visualControls < 1) {
+    issues.push({ id, level: "CRITICAL", msg: "Visual math lab has no interactive controls" });
+  }
+  if (representationCards !== 3) {
+    issues.push({ id, level: "HIGH", msg: `Expected three representations, found ${representationCards}` });
   }
 
   const script = html.match(/<script>([\s\S]*?)<\/script>/i)?.[1];
