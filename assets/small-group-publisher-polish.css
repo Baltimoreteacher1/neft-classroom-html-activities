@@ -1,0 +1,459 @@
+/*!
+ * small-group-publisher-polish.css — additive student-facing refinement.
+ *
+ * Loaded by injectSmallGroupStyles() on every Group 1 / Group 2 / Catch-Up
+ * studio. Enhancement-only: does not change section order, interactives,
+ * Save/Resume, or teacher-mode behavior. Prefer stronger hierarchy, contrast,
+ * spacing rhythm, and Chromebook/mobile clarity.
+ */
+
+/* ── 1 · Legibility tokens ───────────────────────────────────────────────
+   Cream paper + mid-gray muted text was soft on Chromebooks. Darken muted
+   ink and keep student body copy at publisher-readable sizes. */
+:root {
+  --sg-muted: #3f5166;
+  --sg-line: #cfd7e2;
+}
+
+/* ── 2 · Hero: clearer hierarchy, less chrome noise ───────────────────── */
+.sg-hero {
+  padding: 28px 28px 26px;
+  border-bottom-width: 6px;
+}
+
+.sg-hero h1 {
+  margin: 10px 0 6px;
+  text-wrap: balance;
+}
+
+.sg-obj {
+  font-size: clamp(17px, 2.4vw, 19px);
+  line-height: 1.45;
+}
+
+.sg-tagline {
+  margin-top: 8px;
+  font-size: 16px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.96);
+}
+
+.sg-obj-more > summary {
+  min-height: 36px;
+  align-items: center;
+  padding: 5px 12px;
+  font-size: 13px;
+  color: #fff;
+  background: rgba(8, 25, 54, 0.22);
+}
+
+.sg-chip {
+  padding: 6px 12px;
+  font-size: 13px;
+  letter-spacing: 0.01em;
+}
+
+.sg-hero-scene-chip {
+  margin-top: 8px;
+  padding: 5px 11px;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  color: #fff;
+  background: rgba(8, 25, 54, 0.28);
+}
+
+/* Math-move CTA: readable kicker + stronger student affordance */
+.sg-math-move {
+  margin-top: 14px;
+  padding: 13px 15px;
+  border-radius: 14px;
+  box-shadow:
+    0 1px 2px rgba(23, 32, 51, 0.04),
+    0 10px 22px -10px rgba(23, 32, 51, 0.18);
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.12s ease;
+}
+
+.sg-math-move:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 2px 4px rgba(23, 32, 51, 0.06),
+    0 14px 28px -12px rgba(23, 32, 51, 0.22);
+}
+
+.sg-math-move-kicker {
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  color: #3f5166;
+}
+
+.sg-math-move-label {
+  font-size: 19px;
+  letter-spacing: -0.01em;
+}
+
+.sg-math-move-hint {
+  font-size: 15px;
+  line-height: 1.4;
+  color: #3f5166;
+}
+
+/* ── 3 · Mode bar + sticky tabs ───────────────────────────────────────── */
+.sg-mode {
+  padding: 10px 22px;
+  letter-spacing: 0.01em;
+}
+
+.sg-mode-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 14px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.sg-mode-action:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.sg-tabs,
+.sg-rail {
+  gap: 6px;
+  padding: 11px;
+  border-color: rgba(23, 32, 51, 0.1);
+  background: rgba(250, 248, 242, 0.97);
+}
+
+.sg-step {
+  min-height: 48px;
+  gap: 8px;
+  padding: 6px 8px;
+  color: #3f5166;
+  font-size: 13.5px;
+  border-radius: 12px;
+}
+
+.sg-step .dot {
+  width: 26px;
+  height: 26px;
+  font-size: 13px;
+}
+
+.sg-step:hover:not([aria-selected="true"]) {
+  color: var(--sg-deep);
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.sg-step[aria-selected="true"] {
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--sg) 28%, transparent);
+}
+
+/* ── 4 · Section rhythm + card materiality ────────────────────────────── */
+section.sg-sec {
+  margin-bottom: 36px;
+}
+
+.sg-h {
+  margin-bottom: 16px;
+  gap: 14px;
+}
+
+.sg-h .n {
+  width: 38px;
+  height: 38px;
+}
+
+.sg-h h2 {
+  text-wrap: balance;
+}
+
+.sg-eyebrow {
+  margin-bottom: 4px;
+  font-size: 13px;
+  letter-spacing: 0.07em;
+}
+
+.card,
+.sg-mission,
+.sg-talk,
+.prob,
+.sg-vcard,
+.sg-map {
+  box-shadow:
+    0 1px 2px rgba(23, 32, 51, 0.04),
+    0 10px 26px -12px rgba(23, 32, 51, 0.14);
+}
+
+.card {
+  padding: 22px;
+  margin-bottom: 16px;
+}
+
+.prob {
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.keyidea {
+  margin: 18px 0 12px;
+  padding: 17px 18px;
+  font-size: 19px;
+  line-height: 1.5;
+}
+
+.sg-directions {
+  margin: 0 0 16px;
+  padding: 12px 15px;
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+.sg-welcome {
+  margin-bottom: 20px;
+  padding: 13px 16px;
+  border-radius: 14px;
+  box-shadow: 0 4px 14px rgba(23, 32, 51, 0.05);
+}
+
+.sg-meter-lab {
+  font-size: 13px;
+  color: #3f5166;
+}
+
+.sg-path .why,
+.sg-path .min,
+.sg-es,
+.sg-vtranslations,
+.sg-model-hint,
+.sg-tool-directions,
+.sg-step-intro,
+.wbank-lab {
+  color: var(--sg-muted);
+}
+
+.sg-vtranslations {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.sg-model-hint {
+  font-size: 15.5px;
+  line-height: 1.45;
+}
+
+/* ── 5 · Buttons + choice affordance ──────────────────────────────────── */
+.btn {
+  min-height: 46px;
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-size: 15.5px;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--sg) 22%, transparent);
+}
+
+.btn.ghost {
+  box-shadow: none;
+}
+
+.btn:hover:not(:disabled) {
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--sg) 30%, transparent);
+}
+
+.sg-next {
+  margin: 28px 0 10px;
+  padding-top: 22px;
+}
+
+.sg-next-btn {
+  min-height: 52px;
+  font-size: 17.5px;
+  border-radius: 14px;
+}
+
+.choice,
+.sg-pulse-btn,
+.sg-role-btn,
+.sg-match-btn,
+.sg-checkstep,
+.sg-plan,
+.wchip {
+  border-radius: 12px;
+  transition:
+    border-color 0.14s ease,
+    background 0.14s ease,
+    box-shadow 0.14s ease,
+    transform 0.12s ease;
+}
+
+.choice:hover:not(:disabled),
+.sg-pulse-btn:hover,
+.sg-role-btn:hover,
+.sg-match-btn:hover,
+.sg-checkstep:hover,
+.sg-plan:hover,
+.wchip:hover {
+  box-shadow: 0 6px 16px -8px color-mix(in srgb, var(--sg) 35%, transparent);
+}
+
+.sg-foot {
+  gap: 12px;
+  margin-top: 32px;
+  padding-top: 8px;
+}
+
+.sg-foot .btn {
+  min-width: min(280px, 100%);
+  justify-content: center;
+}
+
+/* ── 6 · Vocab + practice polish ──────────────────────────────────────── */
+.sg-vgrid {
+  gap: 14px;
+}
+
+.sg-vcard {
+  padding: 18px;
+  border-radius: 18px;
+}
+
+.sg-vterm {
+  font-size: 22px;
+  line-height: 1.2;
+}
+
+.sg-vdef {
+  margin-top: 14px;
+  padding-top: 14px;
+}
+
+.sg-cloze {
+  padding: 20px;
+  border-radius: 18px;
+}
+
+.sg-cloze-sentence {
+  font-size: 18.5px;
+  line-height: 1.65;
+}
+
+.sg-fill-prompt {
+  font-size: 18.5px;
+  line-height: 1.4;
+}
+
+.fillin {
+  width: min(160px, 42vw);
+  font-size: 24px;
+}
+
+/* ── 7 · Mobile / Chromebook ──────────────────────────────────────────── */
+@media (max-width: 760px) {
+  .sg-hero {
+    padding: 20px 16px 18px;
+  }
+
+  .sg-hero h1 {
+    font-size: clamp(26px, 7vw, 34px);
+  }
+
+  .sg-obj {
+    font-size: 17px;
+  }
+
+  .sg-tagline {
+    font-size: 15.5px;
+  }
+
+  .sg-chips {
+    gap: 7px;
+    margin-top: 12px;
+  }
+
+  /* Scene chip is decorative; keep hero focused on the learning goal. */
+  .sg-hero-scene-chip {
+    display: none;
+  }
+
+  .sg-math-move {
+    margin-top: 12px;
+    padding: 12px 13px;
+  }
+
+  .sg-math-move-label {
+    font-size: 17px;
+  }
+
+  .sg-tabs {
+    gap: 5px;
+    padding: 8px;
+  }
+
+  .sg-step {
+    min-height: 46px;
+    font-size: 12.5px;
+    padding: 5px 4px;
+  }
+
+  .card,
+  .prob {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .sg-h h2 {
+    font-size: clamp(21px, 5.5vw, 26px);
+  }
+
+  .sg-next-btn {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .sg-foot .btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 420px) {
+  .sg-mode {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+
+  .sg-mode-action {
+    width: 100%;
+  }
+
+  .sg-step {
+    font-size: 12px;
+  }
+
+  .sg-step .dot {
+    width: 22px;
+    height: 22px;
+    font-size: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sg-math-move,
+  .choice,
+  .sg-pulse-btn,
+  .sg-role-btn,
+  .sg-match-btn,
+  .sg-checkstep,
+  .sg-plan,
+  .wchip,
+  .btn {
+    transition: none;
+  }
+
+  .sg-math-move:hover,
+  .btn:hover:not(:disabled) {
+    transform: none;
+  }
+}

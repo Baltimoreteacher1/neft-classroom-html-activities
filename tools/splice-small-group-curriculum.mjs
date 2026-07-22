@@ -30,15 +30,20 @@ if (!html.includes(CSS_MARK)) {
       ${CSS_MARK}
       details.lesson.lesson-smallgroup {
         margin-left: 1.6rem;
-        border-left: 3px solid var(--line);
-        border-top-left-radius: 4px;
-        border-bottom-left-radius: 4px;
+        margin-bottom: 8px;
+        border-left: 4px solid var(--line);
+        border-top-left-radius: 8px;
+        border-bottom-left-radius: 8px;
+        background: rgba(255, 255, 255, 0.035);
       }
       details.lesson.lesson-sg1 { border-left-color: #3b82f6; }
       details.lesson.lesson-sg2 { border-left-color: #f59e0b; }
-      .lesson-smallgroup > summary .lesson-head { font-size: 14px; }
-      .badge-support { background: #e0edff; color: #1e40af; }
-      .badge-challenge { background: #fef3c7; color: #92400e; }
+      .lesson-smallgroup > summary.lesson-sum { min-height: 46px; padding: 12px 14px; }
+      .lesson-smallgroup > summary .lesson-head { font-size: 14.5px; line-height: 1.35; }
+      .lesson-smallgroup .lesson-obj { font-size: 14px; line-height: 1.45; color: var(--ink); opacity: 0.78; font-style: normal; }
+      .lesson-smallgroup .res { min-height: 40px; padding: 8px 14px; font-weight: 700; }
+      .badge-support { background: #e0edff; color: #1e40af; font-weight: 700; }
+      .badge-challenge { background: #fef3c7; color: #92400e; font-weight: 700; }
 `;
   const anchor = "      details.lesson {";
   const ai = html.indexOf(anchor);

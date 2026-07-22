@@ -231,8 +231,15 @@ export function injectSmallGroupStyles(accent) {
     const storyboard = document.createElement("link");
     storyboard.id = "sg-storyboard-styles";
     storyboard.rel = "stylesheet";
-    storyboard.href = "/assets/small-group-storyboard.css?v=20260721-adaptive1";
+    storyboard.href = "/assets/small-group-storyboard.css?v=20260721-pub1";
     document.head.appendChild(storyboard);
+  }
+  if (!document.getElementById("sg-publisher-polish")) {
+    const polish = document.createElement("link");
+    polish.id = "sg-publisher-polish";
+    polish.rel = "stylesheet";
+    polish.href = "/assets/small-group-publisher-polish.css?v=20260721-pub1";
+    document.head.appendChild(polish);
   }
   if (document.getElementById("sg-styles")) return;
 
@@ -248,7 +255,7 @@ export function injectSmallGroupStyles(accent) {
   const styles = document.createElement("style");
   styles.id = "sg-styles";
   styles.textContent = `
-    :root{--sg-line:#d9e0e8;--sg-paper:#f4f1e9;--sg-card:#fff;--sg-text:#24314a;--sg-muted:#5a687c;--sg-good:#16734b;--sg-warn:#9a4b05}
+    :root{--sg-line:#cfd7e2;--sg-paper:#f4f1e9;--sg-card:#fff;--sg-text:#24314a;--sg-muted:#3f5166;--sg-good:#16734b;--sg-warn:#9a4b05}
     *{box-sizing:border-box}
     html{scroll-behavior:smooth}
     body{margin:0;color:var(--sg-text);font-family:"Atkinson Hyperlegible",system-ui,sans-serif;font-size:17px;line-height:1.55;background-color:var(--sg-paper);background-image:radial-gradient(circle at 1px 1px,rgba(23,32,51,.08) 1px,transparent 0);background-size:24px 24px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;font-optical-sizing:auto}
@@ -303,7 +310,7 @@ export function injectSmallGroupStyles(accent) {
     .sg-h{display:flex;align-items:center;gap:12px;margin-bottom:14px}
     .sg-h .n{display:grid;width:36px;height:36px;flex:none;place-items:center;border-radius:12px 5px 12px 5px;color:#fff;background:var(--sg);font-family:"Nunito",sans-serif;font-weight:900;box-shadow:4px 4px 0 var(--sg-pop)}
     .sg-h h2{font-size:clamp(23px,4vw,31px);font-weight:900;letter-spacing:-.02em}
-    .sg-eyebrow{margin-bottom:3px;color:var(--sg);font-family:"Nunito",sans-serif;font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+    .sg-eyebrow{margin-bottom:4px;color:var(--sg);font-family:"Nunito",sans-serif;font-size:13px;font-weight:900;letter-spacing:.07em;text-transform:uppercase}
     .card,.sg-mission,.sg-talk,.prob{border:1px solid var(--sg-line);border-radius:18px;background:var(--sg-card);box-shadow:0 8px 24px rgba(23,32,51,.07)}
     .card{padding:20px;margin-bottom:14px}
     .sg-mission{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(250px,.75fr);overflow:hidden}
@@ -466,7 +473,7 @@ export function injectSmallGroupStyles(accent) {
     .sg-meter-fill{position:relative;overflow:hidden;height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,var(--sg),var(--sg-pop));transition:width .35s ease}
     .sg-meter-fill::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.45) 50%,transparent 70%);animation:sg-shine 2.6s linear infinite}
     @keyframes sg-shine{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
-    .sg-meter-lab{font-size:12px;font-weight:900;color:var(--sg-muted);font-family:"Nunito",sans-serif;white-space:nowrap}
+    .sg-meter-lab{font-size:13px;font-weight:900;color:var(--sg-muted);font-family:"Nunito",sans-serif;white-space:nowrap}
     .sg-streak{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border:1px solid #e0a63c;border-radius:999px;background:#fff3e2;color:#7a4c00;font-family:"Nunito",sans-serif;font-size:12px;font-weight:900;white-space:nowrap;animation:sg-stepin .3s ease}
     .sg-streak[hidden]{display:none}
     .sg-vlang-tag{color:var(--sg);font-family:"Nunito",sans-serif;font-size:12px;font-weight:900;letter-spacing:.05em}
@@ -506,7 +513,7 @@ export function injectSmallGroupStyles(accent) {
     @keyframes sg-pop{0%{opacity:0;transform:scale(.25) rotate(-8deg)}35%{opacity:1;transform:scale(1.12) rotate(4deg)}100%{opacity:0;transform:scale(1.35)}}
     .sg-confetti{position:absolute;left:50%;top:50%;width:10px;height:14px;border-radius:3px;opacity:0;animation:sg-confetti .9s cubic-bezier(.16,1,.3,1) forwards}
     @keyframes sg-confetti{0%{opacity:1;transform:translate(-50%,-50%) rotate(0)}100%{opacity:0;transform:translate(calc(-50% + var(--cx)),calc(-50% + var(--cy))) rotate(var(--cr))}}
-    @media(max-width:760px){#app{padding-inline:14px}.sg-mode{margin-inline:-14px;padding-inline:14px}.sg-hero{margin-inline:-14px;padding:24px 18px}.sg-hero-grid{grid-template-columns:1fr}.sg-hero-mark{display:none}.sg-mission{grid-template-columns:1fr}.sg-mission-visual{order:-1;min-height:190px}.sg-rail{margin-inline:-5px}.sg-tabs{grid-template-columns:repeat(3,1fr);margin-inline:-5px}.sg-step{min-height:44px}.sg-tabs .sg-step .lbl{display:inline}.sg-match-options{grid-template-columns:1fr}
+    @media(max-width:760px){#app{padding-inline:14px}.sg-mode{margin-inline:-14px;padding-inline:14px}.sg-hero{margin-inline:-14px;padding:20px 16px 18px}.sg-hero-grid{grid-template-columns:1fr}.sg-hero-mark{display:none}.sg-mission{grid-template-columns:1fr}.sg-mission-visual{order:-1;min-height:190px}.sg-rail{margin-inline:-5px}.sg-tabs{grid-template-columns:repeat(3,1fr);margin-inline:-5px}.sg-step{min-height:46px}.sg-tabs .sg-step .lbl{display:inline}.sg-match-options{grid-template-columns:1fr}
     /* Site-wide passport pill mounts fixed top-left, where it collides with
        the studio's mode bar on phones — drop it just below the bar. !important
        because the passport stylesheet lazy-loads after this one. */
