@@ -108,9 +108,25 @@ export function initTeacherAccess() {
   mountModeToggle();
 }
 
+/** Before a mode-switch reload, remember the running lesson identity so the
+ *  reload relaunches into the same lesson+phase instead of the name-entry
+ *  screen. No-ops (and keeps the prior behavior) outside a running lesson or
+ *  when sessionStorage is blocked. */
+function stashModeResume() {
+  try {
+    const s = window.__ntLessonSession;
+    if (s && s.lessonId && s.name) {
+      sessionStorage.setItem("nt-mode-resume", JSON.stringify(s));
+    }
+  } catch (_e) {
+    /* sessionStorage blocked — fall back to the login screen (prior behavior) */
+  }
+}
+
 /** Drop back to Student view and reload to re-render. */
 function switchToStudent() {
   setStickyTeacher(false);
+  stashModeResume();
   // Drop any one-shot params so the sticky key is the single source of truth.
   const url = new URL(window.location.href);
   url.searchParams.delete("teacher");
@@ -163,6 +179,7 @@ function mountModeToggle() {
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     if (unlockTeacher(pin.value.trim())) {
+      stashModeResume();
       window.location.reload();
     } else {
       pin.value = "";

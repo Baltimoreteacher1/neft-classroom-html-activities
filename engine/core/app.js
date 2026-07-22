@@ -411,6 +411,32 @@ function showIdentityScreen(root, config) {
     return;
   }
 
+  // Mode-switch resume: toggling between Student and Teacher view reloads the
+  // page so answer keys and the teacher panel render correctly. Rather than
+  // dropping the student back to this name-entry screen, teacher-mode.js stashes
+  // the running identity just before that reload — relaunch straight into the
+  // lesson here. state.currentPhase restores from localStorage, so they land
+  // exactly where they were, in the new mode.
+  try {
+    const raw = sessionStorage.getItem("nt-mode-resume");
+    if (raw) {
+      sessionStorage.removeItem("nt-mode-resume");
+      const intent = JSON.parse(raw);
+      if (intent && intent.lessonId === config.lessonId && intent.name) {
+        const studentId = normalizeStudentId(intent.name);
+        try {
+          window.NeftIdentity?.set({ name: intent.name, section: intent.period || "" });
+        } catch {
+          /* identity is an enhancement — never block launching the lesson */
+        }
+        initMainApp(root, config, studentId, intent.name, intent.period || "");
+        return;
+      }
+    }
+  } catch {
+    /* sessionStorage blocked or corrupt — fall through to the name-entry screen */
+  }
+
   const themeEmoji = config.themeEmoji || "📐";
   const saved = findSavedStudents(config.lessonId);
   const homeworkHtmlHref = `/lessons/${encodeURIComponent(config.lessonId)}/homework.html`;
@@ -595,6 +621,16 @@ function showIdentityScreen(root, config) {
 function initMainApp(root, config, studentId, studentName, studentPeriod) {
   const state = createState(config.lessonId, studentId);
   const engagement = createEngagement(state);
+
+  // Expose the running identity so a Student⇄Teacher mode switch can relaunch
+  // into the same lesson (and, via restored state, the same phase) instead of
+  // falling back to the name-entry screen — see teacher-mode.js stashModeResume()
+  // and showIdentityScreen()'s mode-resume block.
+  window.__ntLessonSession = {
+    lessonId: config.lessonId,
+    name: studentName,
+    period: studentPeriod || "",
+  };
 
   // Teacher-only "Clear answers" hook (invoked from the Tools menu item in
   // utility-menu.js). Wipes THIS lesson's saved responses/progress on this
