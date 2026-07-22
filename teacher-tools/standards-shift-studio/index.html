@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <meta
+      name="description"
+      content="Model a possible MSDE standards revision or scope-and-sequence change against the live curriculum, see the impact, and generate every file the rebuild pipeline needs."
+    />
+    <title>Standards Shift Studio | MSDE Readiness | Neft Teacher</title>
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <link rel="stylesheet" href="/teacher-tools/tools.css" />
+    <link rel="stylesheet" href="/teacher-tools/standards-shift-studio/studio.css" />
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
+  <body class="tools-page">
+    <a class="skip-link" href="#sss-main">Skip to the studio</a>
+    <main id="sss-main" class="sss-shell">
+      <nav class="breadcrumb tools-breadcrumb" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="/">Neft Hub</a></li>
+          <li><a href="/teacher-tools/">Professional</a></li>
+          <li><span aria-current="page">Standards Shift Studio</span></li>
+        </ol>
+      </nav>
+
+      <header class="sss-header">
+        <p class="eyebrow">MSDE readiness</p>
+        <h1>Standards Shift Studio</h1>
+        <p class="sss-lede">
+          When Maryland revises the Grade-6 standards or the scope &amp; sequence moves, model the
+          change here <em>before</em> it lands: paste the proposed standards, review the
+          auto-matched crosswalk, re-sequence units, see exactly which lessons are affected — then
+          generate the ready-to-apply files the curriculum rebuild pipeline consumes.
+        </p>
+        <div class="sss-statusline" id="sss-status" role="status">
+          Loading live curriculum data…
+        </div>
+      </header>
+
+      <div class="sss-tabs" role="tablist" aria-label="Studio workspaces">
+        <button
+          class="sss-tab"
+          role="tab"
+          id="tab-coverage"
+          aria-controls="panel-coverage"
+          aria-selected="true"
+        >
+          1 · What I have
+        </button>
+        <button
+          class="sss-tab"
+          role="tab"
+          id="tab-model"
+          aria-controls="panel-model"
+          aria-selected="false"
+        >
+          2 · Model the change
+        </button>
+        <button
+          class="sss-tab"
+          role="tab"
+          id="tab-sequence"
+          aria-controls="panel-sequence"
+          aria-selected="false"
+        >
+          3 · Re-sequence
+        </button>
+        <button
+          class="sss-tab"
+          role="tab"
+          id="tab-impact"
+          aria-controls="panel-impact"
+          aria-selected="false"
+        >
+          4 · Impact
+        </button>
+        <button
+          class="sss-tab"
+          role="tab"
+          id="tab-generate"
+          aria-controls="panel-generate"
+          aria-selected="false"
+        >
+          5 · Generate
+        </button>
+      </div>
+
+      <!-- 1 · Coverage atlas -->
+      <section class="sss-panel" id="panel-coverage" role="tabpanel" aria-labelledby="tab-coverage">
+        <div class="sss-card">
+          <h2>Coverage atlas — the curriculum you already have</h2>
+          <p class="sss-hint">
+            Live from <code>/data/ccss-standards.json</code> and
+            <code>/data/curriculum-manifest.json</code> — one row per current standard, with every
+            lesson that teaches it. This is the baseline every proposed change is measured against.
+          </p>
+          <div class="sss-toolbar">
+            <input
+              type="search"
+              id="coverage-search"
+              placeholder="Filter standards or lessons… (e.g. ratio, 6.AT, Unit 3)"
+              aria-label="Filter coverage"
+            />
+            <span class="sss-kpis" id="coverage-kpis"></span>
+          </div>
+          <div id="coverage-table" class="sss-tablewrap" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <!-- 2 · Model the change -->
+      <section
+        class="sss-panel"
+        id="panel-model"
+        role="tabpanel"
+        aria-labelledby="tab-model"
+        hidden
+      >
+        <div class="sss-card">
+          <h2>Paste the proposed standards</h2>
+          <p class="sss-hint">
+            One standard per line, in almost any format MSDE publishes —
+            <code>6.AT.A.1 — Understand the concept of a ratio…</code>, CSV (<code>code, text</code
+            >), or tab-separated. The matcher scores every line against the current registry and
+            drafts a crosswalk you review below.
+          </p>
+          <textarea
+            id="proposed-input"
+            rows="10"
+            spellcheck="false"
+            placeholder="6.AT.A.1  Understand the concept of a ratio and use ratio language…&#10;6.AT.A.2  Understand the concept of a unit rate a/b associated with a ratio a:b…&#10;6.NOS.B.4  Find the greatest common factor of two whole numbers…"
+          ></textarea>
+          <div class="sss-toolbar">
+            <label class="sss-inlinefield">
+              Change label
+              <input type="text" id="plan-label" placeholder="e.g. MSDE draft 2027" size="22" />
+            </label>
+            <button type="button" class="sss-btn sss-btn-primary" id="run-match">
+              Match against my curriculum
+            </button>
+            <button type="button" class="sss-btn" id="load-sample">
+              Load worked example (2025 re-code)
+            </button>
+            <span class="sss-note" id="match-msg"></span>
+          </div>
+        </div>
+
+        <div class="sss-card" id="review-card" hidden>
+          <h2>Review the drafted crosswalk</h2>
+          <p class="sss-hint">
+            Each proposed standard was matched by text similarity. Fix any mapping with the dropdown
+            — <strong>your choice always wins over the auto-match</strong>. Verdicts update live.
+          </p>
+          <div class="sss-toolbar">
+            <span class="sss-kpis" id="match-kpis"></span>
+          </div>
+          <div id="match-table" class="sss-tablewrap"></div>
+        </div>
+      </section>
+
+      <!-- 3 · Re-sequence -->
+      <section
+        class="sss-panel"
+        id="panel-sequence"
+        role="tabpanel"
+        aria-labelledby="tab-sequence"
+        hidden
+      >
+        <div class="sss-card">
+          <h2>Scope &amp; sequence editor</h2>
+          <p class="sss-hint">
+            The spine is each lesson's <code>unit</code> + <code>lesson</code> fields. Edit the
+            numbers to model a reorder — the doctor below runs the same checks as
+            <code>npm run curriculum:scope</code> (duplicate slots, numbering gaps) as you type.
+            Folder ids and URLs never change from here; only the ordering fields do.
+          </p>
+          <div class="sss-toolbar">
+            <button type="button" class="sss-btn" id="seq-reset">Reset to current sequence</button>
+            <span class="sss-kpis" id="seq-kpis"></span>
+          </div>
+          <div id="seq-doctor" class="sss-doctor" aria-live="polite"></div>
+          <div id="seq-table" class="sss-tablewrap"></div>
+        </div>
+      </section>
+
+      <!-- 4 · Impact -->
+      <section
+        class="sss-panel"
+        id="panel-impact"
+        role="tabpanel"
+        aria-labelledby="tab-impact"
+        hidden
+      >
+        <div class="sss-card">
+          <h2>Impact analysis</h2>
+          <p class="sss-hint">
+            Everything below is derived live from your crosswalk decisions and sequence edits —
+            re-run the match or tweak a mapping and this page updates.
+          </p>
+          <div id="impact-body"></div>
+        </div>
+      </section>
+
+      <!-- 5 · Generate -->
+      <section
+        class="sss-panel"
+        id="panel-generate"
+        role="tabpanel"
+        aria-labelledby="tab-generate"
+        hidden
+      >
+        <div class="sss-card">
+          <h2>Generate the change kit</h2>
+          <p class="sss-hint">
+            These files plug straight into the repo's standards pipeline
+            (<code>docs/standards/msde-standards-change-runbook.md</code>): drop them in
+            <code>data/</code>, run <code>npm run standards-crosswalk:apply</code> and
+            <code>npm run curriculum:rebuild</code>, and every manifest, hub, and scope view
+            regenerates. Nothing is hand-edited.
+          </p>
+          <div id="generate-body"></div>
+        </div>
+        <div class="sss-card">
+          <h2>Adaptation brief</h2>
+          <p class="sss-hint">
+            A human-readable summary of the whole modeled change — share it, print it, or keep it
+            with your planning docs.
+          </p>
+          <div class="sss-toolbar">
+            <button type="button" class="sss-btn" id="brief-download">Download brief (.md)</button>
+            <button type="button" class="sss-btn" id="brief-copy">Copy brief</button>
+            <button type="button" class="sss-btn" id="brief-print">Print</button>
+          </div>
+          <pre id="brief-preview" class="sss-brief" tabindex="0"></pre>
+        </div>
+        <div class="sss-card">
+          <h2>Hand off to your coding agent</h2>
+          <p class="sss-hint">
+            Copy this prompt into Claude Code alongside the downloaded files — it walks the agent
+            through the exact runbook steps, including validation, so the change applies safely.
+          </p>
+          <div class="sss-toolbar">
+            <button type="button" class="sss-btn" id="prompt-copy">Copy agent prompt</button>
+          </div>
+          <pre id="prompt-preview" class="sss-brief" tabindex="0"></pre>
+        </div>
+      </section>
+
+      <footer class="sss-footer">
+        <div class="sss-toolbar">
+          <button type="button" class="sss-btn" id="plan-export">Export plan (.json)</button>
+          <label class="sss-btn sss-filebtn">
+            Import plan
+            <input type="file" id="plan-import" accept="application/json" hidden />
+          </label>
+          <button type="button" class="sss-btn sss-btn-danger" id="plan-clear">Start over</button>
+          <span class="sss-note" id="save-msg">Your work autosaves on this device.</span>
+        </div>
+      </footer>
+    </main>
+
+    <script src="/teacher-tools/standards-shift-studio/studio-data.js"></script>
+    <script src="/teacher-tools/standards-shift-studio/studio-match.js"></script>
+    <script src="/teacher-tools/standards-shift-studio/studio-generate.js"></script>
+    <script src="/teacher-tools/standards-shift-studio/studio-app.js"></script>
+  </body>
+</html>
