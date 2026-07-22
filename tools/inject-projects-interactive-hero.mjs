@@ -33,10 +33,10 @@ const ANCHOR_RE = /<div class="step-panel active" id="step-\d+">/;
 // theme-appropriate defaults (e.g. gcf-bags = party goodie bags).
 const MAP = {
   "math/unit-1/projects": {
-    kind: "gcf-bags", emoji: "🎁", attrs: {},
-    title: "Split the party favors evenly",
-    es: "Reparte los recuerdos de fiesta en partes iguales",
-    intro: "Drag to make equal goodie bags with nothing left over — that's the greatest common factor.",
+    kind: "mission-control", emoji: "🚀", attrs: {},
+    title: "Mission Control: clear for launch",
+    es: "Control de misión: listos para el lanzamiento",
+    intro: "Tune the reactor (primes), pack the crew kits (GCF), and time the launch window (LCM) to lift off.",
   },
   "math/unit-2/projects": {
     kind: "frac-divide", emoji: "🧁", attrs: {},
