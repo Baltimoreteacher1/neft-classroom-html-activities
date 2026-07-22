@@ -13,8 +13,8 @@ const STRINGS = {
   },
   periodPlaceholder: { en: "e.g. 3", es: "ej. 3" },
   enterNamePrompt: {
-    en: "Enter your name to start. Your progress saves on <strong>this device</strong>. Ask your teacher before switching Chromebooks.",
-    es: "Escribe tu nombre para comenzar. Tu progreso se guarda en <strong>este dispositivo</strong>. Pregunta a tu maestro antes de cambiar de Chromebook.",
+    en: "Enter your <strong>first name and last initial</strong> to start. Lesson progress saves on this device and your name may be included in classroom submissions or exports. Google Forms, when used, open Google and follow your school account settings.",
+    es: "Escribe tu <strong>nombre y la inicial de tu apellido</strong> para comenzar. El progreso se guarda en este dispositivo y tu nombre puede incluirse en entregas o exportaciones de la clase. Los Formularios de Google se abren en Google y siguen la configuración de tu cuenta escolar.",
   },
   familyHomework: { en: "Family homework", es: "Tarea familiar" },
   guidedNotes: { en: "Guided notes", es: "Notas guiadas" },

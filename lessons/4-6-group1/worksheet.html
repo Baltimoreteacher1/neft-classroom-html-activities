@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>4.6 Small Group · Group 1 — Practice Worksheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --navy:#143a6b; --blue:#1f5fa6; --teal:#1c7a64; --ink:#16243d; --muted:#5a6b82;
+  --line:#d7e2ed; --soft:#eef3f9; --bank:#fff8e8; --bank-line:#f0d9a0; --ex:#eaf4ff;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:13.5px;line-height:1.5;}
+.ws-page{background:#fff;max-width:760px;margin:18px auto;padding:34px 40px 44px;box-shadow:0 6px 24px rgba(20,40,75,.12);border-radius:6px;}
+.ws-head{border-bottom:3px solid var(--navy);padding-bottom:12px;margin-bottom:18px;}
+.ws-head-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.ws-std{background:var(--navy);color:#fff;font-weight:700;font-size:11px;letter-spacing:.04em;padding:4px 11px;border-radius:999px;}
+.ws-ver{font-family:"Fraunces",serif;font-weight:700;color:var(--blue);font-size:14px;}
+.ws-title{font-family:"Fraunces",serif;font-weight:700;font-size:25px;margin:4px 0 2px;color:var(--navy);line-height:1.1;}
+.ws-sub{margin:0;color:var(--muted);font-weight:600;font-size:13px;}
+.ws-meta{display:flex;gap:28px;margin-top:12px;font-weight:600;color:var(--ink);font-size:13px;}
+.ws-fill{display:inline-block;width:220px;border-bottom:1.5px solid var(--ink);}
+.ws-fill-sm{width:120px;}
+.ws-bank{background:var(--bank);border:1.5px solid var(--bank-line);border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-bank-h,.ws-example-h{font-family:"Fraunces",serif;font-size:14px;margin:0 0 8px;color:var(--navy);}
+.ws-bankwords{display:flex;flex-wrap:wrap;gap:8px;}
+.ws-bankword{background:#fff;border:1.5px solid var(--bank-line);border-radius:999px;padding:4px 12px;font-weight:700;font-size:12.5px;}
+.ws-example{background:var(--ex);border:1.5px solid #cfe2f6;border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-example-steps{margin:0;padding-left:18px;}
+.ws-example-steps li{margin:2px 0;}
+.ws-problems{list-style:none;margin:0;padding:0;counter-reset:none;}
+.ws-problem{display:flex;gap:12px;padding:14px 0;border-bottom:1px dashed var(--line);break-inside:avoid;page-break-inside:avoid;}
+.ws-problem:last-child{border-bottom:0;}
+.ws-pnum{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.ws-pbody{flex:1;min-width:0;}
+.ws-stem{margin:0 0 8px;font-weight:600;}
+.ws-prompt{margin:6px 0;color:var(--muted);font-size:12.5px;}
+.ws-opts{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;}
+.ws-opt{display:flex;align-items:flex-start;gap:8px;}
+.ws-bub{flex:0 0 auto;width:22px;height:22px;border:2px solid var(--navy);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;}
+.ws-bub-sm{width:20px;height:20px;font-size:11px;}
+.ws-correct .ws-bub{background:var(--teal);border-color:var(--teal);color:#fff;}
+.ws-correct{font-weight:700;color:var(--teal);}
+.ws-keynote{margin:6px 0 0;color:var(--teal);font-size:12px;font-style:italic;}
+.ws-watch{margin:4px 0 0;color:#9a4a12;font-size:12px;background:#fff3e6;border-left:3px solid #e08a3c;padding:5px 10px;border-radius:0 8px 8px 0;}
+.ws-scaffold-note{margin:0 0 14px;background:var(--soft);border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;font-weight:600;color:var(--navy);font-size:12.5px;}
+.ws-match{display:flex;gap:24px;flex-wrap:wrap;}
+.ws-match-terms{list-style:none;margin:0;padding:0;flex:1;min-width:180px;}
+.ws-match-term{display:flex;align-items:center;gap:8px;margin:5px 0;font-weight:600;}
+.ws-match-bank{list-style:none;margin:0;padding:10px 12px;background:var(--soft);border:1px solid var(--line);border-radius:10px;flex:1;min-width:180px;}
+.ws-match-bank li{display:flex;align-items:center;gap:8px;margin:4px 0;}
+.ws-blank{display:inline-block;min-width:54px;border-bottom:1.5px solid var(--ink);text-align:center;font-weight:700;}
+.ws-blank-sm{min-width:40px;}
+.ws-steps{list-style:none;margin:6px 0;padding:0;}
+.ws-steps li{display:flex;gap:10px;align-items:baseline;padding:4px 0;}
+.ws-step-n{flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:var(--soft);font-weight:700;font-size:11px;display:inline-flex;align-items:center;justify-content:center;}
+.ws-step-l{flex:0 0 38%;font-weight:600;}
+.ws-step-w{flex:1;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
+.ws-table{width:100%;border-collapse:collapse;margin:8px 0;}
+.ws-table th{background:var(--navy);color:#fff;font-size:12px;padding:7px 9px;text-align:left;}
+.ws-table td{border:1px solid var(--line);padding:9px;height:34px;font-weight:600;}
+.ws-lines{margin:8px 0 0;}
+.ws-line{display:block;border-bottom:1.5px solid var(--line);height:24px;}
+.ws-work{margin:8px 0 0;border:1.5px dashed var(--line);border-radius:10px;min-height:70px;padding:6px 10px;position:relative;}
+.ws-work-label{color:var(--muted);font-size:11px;font-weight:600;}
+.ws-frame{background:var(--soft);border-left:3px solid var(--blue);padding:6px 10px;margin:6px 0;font-style:italic;color:var(--muted);border-radius:0 8px 8px 0;}
+.ws-sort{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:5px 18px;}
+.ws-sort li{display:flex;align-items:center;gap:8px;font-weight:600;}
+
+@media print{
+  body{background:#fff;font-size:12pt;}
+  .ws-page{box-shadow:none;border-radius:0;margin:0;max-width:none;padding:0;page-break-after:always;}
+  .ws-page:last-child{page-break-after:auto;}
+  @page{margin:1.5cm;}
+  a{color:#000;}
+}
+
+/* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
+   Appended last so it overrides each generator's base CSS. Finish-only:
+   serif headings + paper ground + AA-safe ink. No layout/size changes. */
+:root{ --ink:#19262f; --muted:#475663; }
+body{ background:#f5f0e6; color:#19262f; }
+h1,h2,h3,h4,h5,h6,
+header.packet h1,.section>h2,.li-title,.learnit-head,.learnit-stage-title,
+.mission-title,.answer-key h2,.think-block h3,.topbar .brand{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
+/* A thin editorial accent rule under the document's main title. */
+header.packet h1{ position:relative; }
+header.packet h1::after{
+  content:""; display:block; width:56px; height:2px; margin-top:8px;
+  background:linear-gradient(90deg,#1fa6a2,#f2c15b); border-radius:2px;
+}
+@media print{ body{ background:#fff !important; } }
+
+</style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
+  <!-- nsr-injected:end -->
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+
+  <!-- enthead-injected:begin (enterprise head/meta — tools/inject-enterprise-head.js) -->
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/favicon.svg">
+  <meta name="theme-color" content="#12355b">
+  <link rel="canonical" href="https://eduwonderlab.com/lessons/4-6-group1/worksheet.html">
+  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — 4.6 Small Group · Group 1 — Practice Worksheet.">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Neft Teacher">
+  <meta property="og:title" content="4.6 Small Group · Group 1 — Practice Worksheet">
+  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — 4.6 Small Group · Group 1 — Practice Worksheet.">
+  <meta property="og:url" content="https://eduwonderlab.com/lessons/4-6-group1/worksheet.html">
+  <meta property="og:image" content="https://eduwonderlab.com/assets/og-curriculum.png">
+  <!-- enthead-injected:end -->
+</head>
+<body>
+<main>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.3c</span>
+      <span class="ws-ver">Level 0</span>
+    </div>
+    <h1 class="ws-title">4.6 Small Group · Group 1</h1>
+    <p class="ws-sub">Practice — Level 0</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    <section class="ws-bank">
+    <h2 class="ws-bank-h">📕 Word Bank</h2>
+    <div class="ws-bankwords"><span class="ws-bankword">Conversion Factor</span><span class="ws-bankword">Unit</span><span class="ws-bankword">Equivalent</span><span class="ws-bankword">Ratio</span></div>
+  </section><section class="ws-example">
+    <h2 class="ws-example-h">✏️ Worked Example</h2>
+    <ol class="ws-example-steps"><li><b>Convert 80 ounces of bolts to pounds:</b> 80 ounces → pounds</li><li><b>Use the conversion factor:</b> 1 pound = 16 ounces</li><li><b>Operate:</b> 80 × 16 = 1,280 pounds</li><li><b>Final answer:</b> 80 ounces = 1,280 pounds</li></ol>
+  </section>
+    <p class="ws-scaffold-note">🧩 Extra support: use the word bank and the worked example. A sentence starter is given under each problem.</p>
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">How many inches are in 7 feet?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>84 inches</li><li class="ws-opt"><span class="ws-bub">B</span>72 inches</li><li class="ws-opt"><span class="ws-bub">C</span>70 inches</li><li class="ws-opt"><span class="ws-bub">D</span>96 inches</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">How many feet are in 3 yards?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>9 feet</li><li class="ws-opt"><span class="ws-bub">B</span>6 feet</li><li class="ws-opt"><span class="ws-bub">C</span>12 feet</li><li class="ws-opt"><span class="ws-bub">D</span>36 feet</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">How many ounces are in 4 pounds?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>64 ounces</li><li class="ws-opt"><span class="ws-bub">B</span>48 ounces</li><li class="ws-opt"><span class="ws-bub">C</span>32 ounces</li><li class="ws-opt"><span class="ws-bub">D</span>16 ounces</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Convert 24 inches to feet.</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>2 feet</li><li class="ws-opt"><span class="ws-bub">B</span>3 feet</li><li class="ws-opt"><span class="ws-bub">C</span>12 feet</li><li class="ws-opt"><span class="ws-bub">D</span>24 feet</li></ol></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.3c</span>
+      <span class="ws-ver">Version A</span>
+    </div>
+    <h1 class="ws-title">4.6 Small Group · Group 1</h1>
+    <p class="ws-sub">Practice — Version A</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    <section class="ws-bank">
+    <h2 class="ws-bank-h">📕 Word Bank</h2>
+    <div class="ws-bankwords"><span class="ws-bankword">Conversion Factor</span><span class="ws-bankword">Unit</span><span class="ws-bankword">Equivalent</span><span class="ws-bankword">Ratio</span></div>
+  </section><section class="ws-example">
+    <h2 class="ws-example-h">✏️ Worked Example</h2>
+    <ol class="ws-example-steps"><li><b>Convert 80 ounces of bolts to pounds:</b> 80 ounces → pounds</li><li><b>Use the conversion factor:</b> 1 pound = 16 ounces</li><li><b>Operate:</b> 80 × 16 = 1,280 pounds</li><li><b>Final answer:</b> 80 ounces = 1,280 pounds</li></ol>
+  </section>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">How many inches are in 7 feet?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>84 inches</li><li class="ws-opt"><span class="ws-bub">B</span>72 inches</li><li class="ws-opt"><span class="ws-bub">C</span>70 inches</li><li class="ws-opt"><span class="ws-bub">D</span>96 inches</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">How many feet are in 3 yards?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>9 feet</li><li class="ws-opt"><span class="ws-bub">B</span>6 feet</li><li class="ws-opt"><span class="ws-bub">C</span>12 feet</li><li class="ws-opt"><span class="ws-bub">D</span>36 feet</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">How many ounces are in 4 pounds?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>64 ounces</li><li class="ws-opt"><span class="ws-bub">B</span>48 ounces</li><li class="ws-opt"><span class="ws-bub">C</span>32 ounces</li><li class="ws-opt"><span class="ws-bub">D</span>16 ounces</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Convert 24 inches to feet.</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>2 feet</li><li class="ws-opt"><span class="ws-bub">B</span>3 feet</li><li class="ws-opt"><span class="ws-bub">C</span>12 feet</li><li class="ws-opt"><span class="ws-bub">D</span>24 feet</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Convert 2 yards of rope to feet</span><span class="ws-step-w">2 yards → feet</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Use the conversion factor</span><span class="ws-step-w">1 yard = 3 feet</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Operate</span><span class="ws-step-w">2 ÷ 3 = 0.67 feet</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Final answer</span><span class="ws-step-w">2 yards ≈ 0.67 feet</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">A shelf is 30 inches long. How many feet and inches is that?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>2 feet 6 inches</li><li class="ws-opt"><span class="ws-bub">B</span>3 feet 0 inches</li><li class="ws-opt"><span class="ws-bub">C</span>2 feet 8 inches</li><li class="ws-opt"><span class="ws-bub">D</span>1 foot 18 inches</li></ol></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.3c</span>
+      <span class="ws-ver">Version B</span>
+    </div>
+    <h1 class="ws-title">4.6 Small Group · Group 1</h1>
+    <p class="ws-sub">Practice — Version B</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Convert 80 ounces of bolts to pounds</span><span class="ws-step-w">80 ounces → pounds</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Use the conversion factor</span><span class="ws-step-w">1 pound = 16 ounces</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Operate</span><span class="ws-step-w">80 × 16 = 1,280 pounds</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Final answer</span><span class="ws-step-w">80 ounces = 1,280 pounds</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Leg 1: The joystick rod is 3 feet long, but the parts catalog lists it in inches. How many inches is that? (1 ft = 12 in)</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>36 inches</li><li class="ws-opt"><span class="ws-bub">B</span>15 inches</li><li class="ws-opt"><span class="ws-bub">C</span>30 inches</li><li class="ws-opt"><span class="ws-bub">D</span>33 inches</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Leg 2: A power cable on the cabinet plan measures 2.5 kilometers across the whole arcade network. How many meters is that? (1 km = 1,000 m)</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>2,500 meters</li><li class="ws-opt"><span class="ws-bub">B</span>250 meters</li><li class="ws-opt"><span class="ws-bub">C</span>25 meters</li><li class="ws-opt"><span class="ws-bub">D</span>25,000 meters</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Leg 3: The coin box weighs 5 pounds, but the shipping label needs the weight in ounces. How many ounces is that? (1 lb = 16 oz)</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>80 ounces</li><li class="ws-opt"><span class="ws-bub">B</span>21 ounces</li><li class="ws-opt"><span class="ws-bub">C</span>75 ounces</li><li class="ws-opt"><span class="ws-bub">D</span>16 ounces</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Level 2 Extension — Multiply or Divide?</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Convert 4 feet of side panel to inches</span><span class="ws-step-w">4 feet → inches</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Use the conversion factor</span><span class="ws-step-w">1 foot = 12 inches</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Operate</span><span class="ws-step-w">4 ÷ 12 = 0.33 inches</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Final answer</span><span class="ws-step-w">4 feet ≈ 0.33 inches</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">Final Leg: The finished cabinet ships in a crate holding 8 quarts of packing gel, but the supplier sells gel by the gallon. How many gallons is that? (4 qt = 1 gal)</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>2 gallons</li><li class="ws-opt"><span class="ws-bub">B</span>32 gallons</li><li class="ws-opt"><span class="ws-bub">C</span>4 gallons</li><li class="ws-opt"><span class="ws-bub">D</span>12 gallons</li></ol></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.3c</span>
+      <span class="ws-ver">Level 0 — Answer Key</span>
+    </div>
+    <h1 class="ws-title">4.6 Small Group · Group 1</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">How many inches are in 7 feet?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>84 inches</li><li class="ws-opt"><span class="ws-bub">B</span>72 inches</li><li class="ws-opt"><span class="ws-bub">C</span>70 inches</li><li class="ws-opt"><span class="ws-bub">D</span>96 inches</li></ol><p class="ws-keynote">7 × 12 = 84 inches.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Convert Measurement Units is applying the conversion factor in the wrong direction — for example, converting 4 feet to inches by dividing (4 ÷ 12 = 0.33 inches) instead of multiplying (4 × 12 = 48 inches), or converting 80 ounces to pounds by multiplying (80 × 16 = 1,280 pounds) instead of dividing (80 ÷ 16 = 5 pounds). Before you answer, ask: am I changing to a SMALLER unit (there will be MORE of them, so multiply) or a BIGGER unit (there will be FEWER of them, so divide)?</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">How many feet are in 3 yards?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>9 feet</li><li class="ws-opt"><span class="ws-bub">B</span>6 feet</li><li class="ws-opt"><span class="ws-bub">C</span>12 feet</li><li class="ws-opt"><span class="ws-bub">D</span>36 feet</li></ol><p class="ws-keynote">1 yard = 3 feet. 3 × 3 = 9 feet.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Convert Measurement Units is applying the conversion factor in the wrong direction — for example, converting 4 feet to inches by dividing (4 ÷ 12 = 0.33 inches) instead of multiplying (4 × 12 = 48 inches), or converting 80 ounces to pounds by multiplying (80 × 16 = 1,280 pounds) instead of dividing (80 ÷ 16 = 5 pounds). Before you answer, ask: am I changing to a SMALLER unit (there will be MORE of them, so multiply) or a BIGGER unit (there will be FEWER of them, so divide)?</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">How many ounces are in 4 pounds?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>64 ounces</li><li class="ws-opt"><span class="ws-bub">B</span>48 ounces</li><li class="ws-opt"><span class="ws-bub">C</span>32 ounces</li><li class="ws-opt"><span class="ws-bub">D</span>16 ounces</li></ol><p class="ws-keynote">1 pound = 16 ounces. 4 × 16 = 64 ounces.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Convert Measurement Units is applying the conversion factor in the wrong direction — for example, converting 4 feet to inches by dividing (4 ÷ 12 = 0.33 inches) instead of multiplying (4 × 12 = 48 inches), or converting 80 ounces to pounds by multiplying (80 × 16 = 1,280 pounds) instead of dividing (80 ÷ 16 = 5 pounds). Before you answer, ask: am I changing to a SMALLER unit (there will be MORE of them, so multiply) or a BIGGER unit (there will be FEWER of them, so divide)?</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Convert 24 inches to feet.</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>2 feet</li><li class="ws-opt"><span class="ws-bub">B</span>3 feet</li><li class="ws-opt"><span class="ws-bub">C</span>12 feet</li><li class="ws-opt"><span class="ws-bub">D</span>24 feet</li></ol><p class="ws-keynote">24 ÷ 12 = 2 feet.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Convert Measurement Units is applying the conversion factor in the wrong direction — for example, converting 4 feet to inches by dividing (4 ÷ 12 = 0.33 inches) instead of multiplying (4 × 12 = 48 inches), or converting 80 ounces to pounds by multiplying (80 × 16 = 1,280 pounds) instead of dividing (80 ÷ 16 = 5 pounds). Before you answer, ask: am I changing to a SMALLER unit (there will be MORE of them, so multiply) or a BIGGER unit (there will be FEWER of them, so divide)?</p></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.3c</span>
+      <span class="ws-ver">Version A — Answer Key</span>
+    </div>
+    <h1 class="ws-title">4.6 Small Group · Group 1</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">How many inches are in 7 feet?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>84 inches</li><li class="ws-opt"><span class="ws-bub">B</span>72 inches</li><li class="ws-opt"><span class="ws-bub">C</span>70 inches</li><li class="ws-opt"><span class="ws-bub">D</span>96 inches</li></ol><p class="ws-keynote">7 × 12 = 84 inches.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Convert Measurement Units is applying the conversion factor in the wrong direction — for example, converting 4 feet to inches by dividing (4 ÷ 12 = 0.33 inches) instead of multiplying (4 × 12 = 48 inches), or converting 80 ounces to pounds by multiplying (80 × 16 = 1,280 pounds) instead of dividing (80 ÷ 16 = 5 pounds). Before you answer, ask: am I changing to a SMALLER unit (there will be MORE of them, so multiply) or a BIGGER unit (there will be FEWER of them, so divide)?</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">How many feet are in 3 yards?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>9 feet</li><li class="ws-opt"><span class="ws-bub">B</span>6 feet</li><li class="ws-opt"><span class="ws-bub">C</span>12 feet</li><li class="ws-opt"><span class="ws-bub">D</span>36 feet</li></ol><p class="ws-keynote">1 yard = 3 feet. 3 × 3 = 9 feet.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Convert Measurement Units is applying the conversion factor in the wrong direction — for example, converting 4 feet to inches by dividing (4 ÷ 12 = 0.33 inches) instead of multiplying (4 × 12 = 48 inches), or converting 80 ounces to pounds by multiplying (80 × 16 = 1,280 pounds) instead of dividing (80 ÷ 16 = 5 pounds). Before you answer, ask: am I changing to a SMALLER unit (there will be MORE of them, so multiply) or a BIGGER unit (there will be FEWER of them, so divide)?</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">How many ounces are in 4 pounds?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>64 ounces</li><li class="ws-opt"><span class="ws-bub">B</span>48 ounces</li><li class="ws-opt"><span class="ws-bub">C</span>32 ounces</li><li class="ws-opt"><span class="ws-bub">D</span>16 ounces</li></ol><p class="ws-keynote">1 pound = 16 ounces. 4 × 16 = 64 ounces.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Convert Measurement Units is applying the conversion factor in the wrong direction — for example, converting 4 feet to inches by dividing (4 ÷ 12 = 0.33 inches) instead of multiplying (4 × 12 = 48 inches), or converting 80 ounces to pounds by multiplying (80 × 16 = 1,280 pounds) instead of dividing (80 ÷ 16 = 5 pounds). Before you answer, ask: am I changing to a SMALLER unit (there will be MORE of them, so multiply) or a BIGGER unit (there will be FEWER of them, so divide)?</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Convert 24 inches to feet.</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>2 feet</li><li class="ws-opt"><span class="ws-bub">B</span>3 feet</li><li class="ws-opt"><span class="ws-bub">C</span>12 feet</li><li class="ws-opt"><span class="ws-bub">D</span>24 feet</li></ol><p class="ws-keynote">24 ÷ 12 = 2 feet.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Convert Measurement Units is applying the conversion factor in the wrong direction — for example, converting 4 feet to inches by dividing (4 ÷ 12 = 0.33 inches) instead of multiplying (4 × 12 = 48 inches), or converting 80 ounces to pounds by multiplying (80 × 16 = 1,280 pounds) instead of dividing (80 ÷ 16 = 5 pounds). Before you answer, ask: am I changing to a SMALLER unit (there will be MORE of them, so multiply) or a BIGGER unit (there will be FEWER of them, so divide)?</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Convert 2 yards of rope to feet</span><span class="ws-step-w">2 yards → feet</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Use the conversion factor</span><span class="ws-step-w">1 yard = 3 feet</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Operate</span><span class="ws-step-w">2 ÷ 3 = 0.67 feet</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Final answer</span><span class="ws-step-w">2 yards ≈ 0.67 feet</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 3. Correct work: Feet are smaller than yards, so you multiply (not divide): 2 × 3 = 6 feet. Changing to a smaller unit always gives a bigger number, not a tiny decimal.</p></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">A shelf is 30 inches long. How many feet and inches is that?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>2 feet 6 inches</li><li class="ws-opt"><span class="ws-bub">B</span>3 feet 0 inches</li><li class="ws-opt"><span class="ws-bub">C</span>2 feet 8 inches</li><li class="ws-opt"><span class="ws-bub">D</span>1 foot 18 inches</li></ol><p class="ws-keynote">30 ÷ 12 = 2 remainder 6. So 30 inches = 2 feet 6 inches.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Convert Measurement Units is applying the conversion factor in the wrong direction — for example, converting 4 feet to inches by dividing (4 ÷ 12 = 0.33 inches) instead of multiplying (4 × 12 = 48 inches), or converting 80 ounces to pounds by multiplying (80 × 16 = 1,280 pounds) instead of dividing (80 ÷ 16 = 5 pounds). Before you answer, ask: am I changing to a SMALLER unit (there will be MORE of them, so multiply) or a BIGGER unit (there will be FEWER of them, so divide)?</p></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.3c</span>
+      <span class="ws-ver">Version B — Answer Key</span>
+    </div>
+    <h1 class="ws-title">4.6 Small Group · Group 1</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Convert 80 ounces of bolts to pounds</span><span class="ws-step-w">80 ounces → pounds</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Use the conversion factor</span><span class="ws-step-w">1 pound = 16 ounces</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Operate</span><span class="ws-step-w">80 × 16 = 1,280 pounds</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Final answer</span><span class="ws-step-w">80 ounces = 1,280 pounds</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 3. Correct work: Ounces are smaller than pounds, so you divide (not multiply): 80 ÷ 16 = 5 pounds. Changing to a bigger unit gives a smaller number.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Leg 1: The joystick rod is 3 feet long, but the parts catalog lists it in inches. How many inches is that? (1 ft = 12 in)</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>36 inches</li><li class="ws-opt"><span class="ws-bub">B</span>15 inches</li><li class="ws-opt"><span class="ws-bub">C</span>30 inches</li><li class="ws-opt"><span class="ws-bub">D</span>33 inches</li></ol><p class="ws-keynote">Inches are smaller than feet, so multiply: 3 × 12 = 36 inches.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Convert Measurement Units is applying the conversion factor in the wrong direction — for example, converting 4 feet to inches by dividing (4 ÷ 12 = 0.33 inches) instead of multiplying (4 × 12 = 48 inches), or converting 80 ounces to pounds by multiplying (80 × 16 = 1,280 pounds) instead of dividing (80 ÷ 16 = 5 pounds). Before you answer, ask: am I changing to a SMALLER unit (there will be MORE of them, so multiply) or a BIGGER unit (there will be FEWER of them, so divide)?</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Leg 2: A power cable on the cabinet plan measures 2.5 kilometers across the whole arcade network. How many meters is that? (1 km = 1,000 m)</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>2,500 meters</li><li class="ws-opt"><span class="ws-bub">B</span>250 meters</li><li class="ws-opt"><span class="ws-bub">C</span>25 meters</li><li class="ws-opt"><span class="ws-bub">D</span>25,000 meters</li></ol><p class="ws-keynote">Meters are smaller than kilometers, so multiply: 2.5 × 1,000 = 2,500 meters.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Convert Measurement Units is applying the conversion factor in the wrong direction — for example, converting 4 feet to inches by dividing (4 ÷ 12 = 0.33 inches) instead of multiplying (4 × 12 = 48 inches), or converting 80 ounces to pounds by multiplying (80 × 16 = 1,280 pounds) instead of dividing (80 ÷ 16 = 5 pounds). Before you answer, ask: am I changing to a SMALLER unit (there will be MORE of them, so multiply) or a BIGGER unit (there will be FEWER of them, so divide)?</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Leg 3: The coin box weighs 5 pounds, but the shipping label needs the weight in ounces. How many ounces is that? (1 lb = 16 oz)</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>80 ounces</li><li class="ws-opt"><span class="ws-bub">B</span>21 ounces</li><li class="ws-opt"><span class="ws-bub">C</span>75 ounces</li><li class="ws-opt"><span class="ws-bub">D</span>16 ounces</li></ol><p class="ws-keynote">Ounces are smaller than pounds, so multiply: 5 × 16 = 80 ounces.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Convert Measurement Units is applying the conversion factor in the wrong direction — for example, converting 4 feet to inches by dividing (4 ÷ 12 = 0.33 inches) instead of multiplying (4 × 12 = 48 inches), or converting 80 ounces to pounds by multiplying (80 × 16 = 1,280 pounds) instead of dividing (80 ÷ 16 = 5 pounds). Before you answer, ask: am I changing to a SMALLER unit (there will be MORE of them, so multiply) or a BIGGER unit (there will be FEWER of them, so divide)?</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Level 2 Extension — Multiply or Divide?</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Convert 4 feet of side panel to inches</span><span class="ws-step-w">4 feet → inches</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Use the conversion factor</span><span class="ws-step-w">1 foot = 12 inches</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Operate</span><span class="ws-step-w">4 ÷ 12 = 0.33 inches</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Final answer</span><span class="ws-step-w">4 feet ≈ 0.33 inches</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 3. Correct work: Inches are smaller than feet, so you multiply (not divide): 4 × 12 = 48 inches. The answer should be larger, not smaller, when changing to a smaller unit.</p></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">Final Leg: The finished cabinet ships in a crate holding 8 quarts of packing gel, but the supplier sells gel by the gallon. How many gallons is that? (4 qt = 1 gal)</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>2 gallons</li><li class="ws-opt"><span class="ws-bub">B</span>32 gallons</li><li class="ws-opt"><span class="ws-bub">C</span>4 gallons</li><li class="ws-opt"><span class="ws-bub">D</span>12 gallons</li></ol><p class="ws-keynote">Gallons are bigger than quarts, so divide: 8 ÷ 4 = 2 gallons.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Convert Measurement Units is applying the conversion factor in the wrong direction — for example, converting 4 feet to inches by dividing (4 ÷ 12 = 0.33 inches) instead of multiplying (4 × 12 = 48 inches), or converting 80 ounces to pounds by multiplying (80 × 16 = 1,280 pounds) instead of dividing (80 ÷ 16 = 5 pounds). Before you answer, ask: am I changing to a SMALLER unit (there will be MORE of them, so multiply) or a BIGGER unit (there will be FEWER of them, so divide)?</p></div></li></ol>
+  </section>
+</main>
+<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+  <!-- nsr-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
+  </body>
+</html>

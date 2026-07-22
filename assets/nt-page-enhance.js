@@ -32,7 +32,7 @@
     if (document.querySelector("link[data-nt-publisher-polish]")) return;
     var l = document.createElement("link");
     l.rel = "stylesheet";
-    l.href = "/assets/lesson-publisher-polish.css";
+    l.href = "/assets/lesson-publisher-polish.css?v=20260721-hmh";
     l.setAttribute("data-nt-publisher-polish", "1");
     document.head.appendChild(l);
   })();

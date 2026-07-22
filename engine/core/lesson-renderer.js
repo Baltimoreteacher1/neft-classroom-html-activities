@@ -27,6 +27,7 @@ import { createAdaptiveSequence } from "./adaptive.js";
 import { enableWordProblemAnnotation, observeWordProblemAnnotation } from "./annotate.js";
 import { createApp } from "./app.js";
 import { mountCertificateDownload } from "./certificate-export.js";
+import { mountChalkAnnotations } from "./chalk-annotate.js";
 import { deriveCommonMistake, deriveErrorExample } from "./content-enrichment.js";
 import { mountDiscussionMoment } from "./discourse.js";
 import { buildGradeCard } from "./grade.js";
@@ -91,6 +92,8 @@ export function bootLesson(config) {
   // phases render lazily and practice regenerates, so watch the whole page and
   // auto-wire any stem marked data-annotate="word-problem" the moment it mounts.
   observeWordProblemAnnotation(document.body);
+  // Hand-drawn chalk marks around key answers (warm-deck skin only, additive).
+  mountChalkAnnotations(document);
 }
 
 // ── Helpers ──

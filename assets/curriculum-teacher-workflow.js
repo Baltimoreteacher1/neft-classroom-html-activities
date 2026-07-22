@@ -70,16 +70,14 @@
 
   function familyFor(lesson) {
     var text = `${lesson.title} ${lesson.standard}`.toLowerCase();
-    if (/decimal|factor|multiple|multi-digit/.test(text)) return "decimals";
-    if (/fraction/.test(text)) return "fractions";
-    if (/ratio/.test(text)) return "ratios";
-    if (/percent|rate|measurement/.test(text)) return "percents";
-    if (/exponent|expression|variable relationship/.test(text)) return "expressions";
-    if (/equation|inequalit/.test(text)) return "equations";
-    if (/statistic|data|mean|median|histogram|distribution/.test(text)) return "statistics";
-    if (/integer|absolute|coordinate|ordered pair|rational number/.test(text)) return "integers";
-    if (/area|polygon|triangle|parallelogram|trapezoid/.test(text)) return "geometry";
-    if (/volume|surface|prism|pyramid|net/.test(text)) return "volume";
+    var rules = DATA.workflow?.familyRules || [];
+    for (var i = 0; i < rules.length; i += 1) {
+      try {
+        if (new RegExp(rules[i].pattern, "i").test(text)) return rules[i].family;
+      } catch (error) {
+        console.error("Invalid curriculum family rule", rules[i], error);
+      }
+    }
     return "general";
   }
 

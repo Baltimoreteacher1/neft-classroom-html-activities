@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>9.3 Small Group · Group 1 — Practice Worksheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --navy:#143a6b; --blue:#1f5fa6; --teal:#1c7a64; --ink:#16243d; --muted:#5a6b82;
+  --line:#d7e2ed; --soft:#eef3f9; --bank:#fff8e8; --bank-line:#f0d9a0; --ex:#eaf4ff;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:13.5px;line-height:1.5;}
+.ws-page{background:#fff;max-width:760px;margin:18px auto;padding:34px 40px 44px;box-shadow:0 6px 24px rgba(20,40,75,.12);border-radius:6px;}
+.ws-head{border-bottom:3px solid var(--navy);padding-bottom:12px;margin-bottom:18px;}
+.ws-head-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.ws-std{background:var(--navy);color:#fff;font-weight:700;font-size:11px;letter-spacing:.04em;padding:4px 11px;border-radius:999px;}
+.ws-ver{font-family:"Fraunces",serif;font-weight:700;color:var(--blue);font-size:14px;}
+.ws-title{font-family:"Fraunces",serif;font-weight:700;font-size:25px;margin:4px 0 2px;color:var(--navy);line-height:1.1;}
+.ws-sub{margin:0;color:var(--muted);font-weight:600;font-size:13px;}
+.ws-meta{display:flex;gap:28px;margin-top:12px;font-weight:600;color:var(--ink);font-size:13px;}
+.ws-fill{display:inline-block;width:220px;border-bottom:1.5px solid var(--ink);}
+.ws-fill-sm{width:120px;}
+.ws-bank{background:var(--bank);border:1.5px solid var(--bank-line);border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-bank-h,.ws-example-h{font-family:"Fraunces",serif;font-size:14px;margin:0 0 8px;color:var(--navy);}
+.ws-bankwords{display:flex;flex-wrap:wrap;gap:8px;}
+.ws-bankword{background:#fff;border:1.5px solid var(--bank-line);border-radius:999px;padding:4px 12px;font-weight:700;font-size:12.5px;}
+.ws-example{background:var(--ex);border:1.5px solid #cfe2f6;border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-example-steps{margin:0;padding-left:18px;}
+.ws-example-steps li{margin:2px 0;}
+.ws-problems{list-style:none;margin:0;padding:0;counter-reset:none;}
+.ws-problem{display:flex;gap:12px;padding:14px 0;border-bottom:1px dashed var(--line);break-inside:avoid;page-break-inside:avoid;}
+.ws-problem:last-child{border-bottom:0;}
+.ws-pnum{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.ws-pbody{flex:1;min-width:0;}
+.ws-stem{margin:0 0 8px;font-weight:600;}
+.ws-prompt{margin:6px 0;color:var(--muted);font-size:12.5px;}
+.ws-opts{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;}
+.ws-opt{display:flex;align-items:flex-start;gap:8px;}
+.ws-bub{flex:0 0 auto;width:22px;height:22px;border:2px solid var(--navy);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;}
+.ws-bub-sm{width:20px;height:20px;font-size:11px;}
+.ws-correct .ws-bub{background:var(--teal);border-color:var(--teal);color:#fff;}
+.ws-correct{font-weight:700;color:var(--teal);}
+.ws-keynote{margin:6px 0 0;color:var(--teal);font-size:12px;font-style:italic;}
+.ws-watch{margin:4px 0 0;color:#9a4a12;font-size:12px;background:#fff3e6;border-left:3px solid #e08a3c;padding:5px 10px;border-radius:0 8px 8px 0;}
+.ws-scaffold-note{margin:0 0 14px;background:var(--soft);border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;font-weight:600;color:var(--navy);font-size:12.5px;}
+.ws-match{display:flex;gap:24px;flex-wrap:wrap;}
+.ws-match-terms{list-style:none;margin:0;padding:0;flex:1;min-width:180px;}
+.ws-match-term{display:flex;align-items:center;gap:8px;margin:5px 0;font-weight:600;}
+.ws-match-bank{list-style:none;margin:0;padding:10px 12px;background:var(--soft);border:1px solid var(--line);border-radius:10px;flex:1;min-width:180px;}
+.ws-match-bank li{display:flex;align-items:center;gap:8px;margin:4px 0;}
+.ws-blank{display:inline-block;min-width:54px;border-bottom:1.5px solid var(--ink);text-align:center;font-weight:700;}
+.ws-blank-sm{min-width:40px;}
+.ws-steps{list-style:none;margin:6px 0;padding:0;}
+.ws-steps li{display:flex;gap:10px;align-items:baseline;padding:4px 0;}
+.ws-step-n{flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:var(--soft);font-weight:700;font-size:11px;display:inline-flex;align-items:center;justify-content:center;}
+.ws-step-l{flex:0 0 38%;font-weight:600;}
+.ws-step-w{flex:1;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
+.ws-table{width:100%;border-collapse:collapse;margin:8px 0;}
+.ws-table th{background:var(--navy);color:#fff;font-size:12px;padding:7px 9px;text-align:left;}
+.ws-table td{border:1px solid var(--line);padding:9px;height:34px;font-weight:600;}
+.ws-lines{margin:8px 0 0;}
+.ws-line{display:block;border-bottom:1.5px solid var(--line);height:24px;}
+.ws-work{margin:8px 0 0;border:1.5px dashed var(--line);border-radius:10px;min-height:70px;padding:6px 10px;position:relative;}
+.ws-work-label{color:var(--muted);font-size:11px;font-weight:600;}
+.ws-frame{background:var(--soft);border-left:3px solid var(--blue);padding:6px 10px;margin:6px 0;font-style:italic;color:var(--muted);border-radius:0 8px 8px 0;}
+.ws-sort{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:5px 18px;}
+.ws-sort li{display:flex;align-items:center;gap:8px;font-weight:600;}
+
+@media print{
+  body{background:#fff;font-size:12pt;}
+  .ws-page{box-shadow:none;border-radius:0;margin:0;max-width:none;padding:0;page-break-after:always;}
+  .ws-page:last-child{page-break-after:auto;}
+  @page{margin:1.5cm;}
+  a{color:#000;}
+}
+
+/* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
+   Appended last so it overrides each generator's base CSS. Finish-only:
+   serif headings + paper ground + AA-safe ink. No layout/size changes. */
+:root{ --ink:#19262f; --muted:#475663; }
+body{ background:#f5f0e6; color:#19262f; }
+h1,h2,h3,h4,h5,h6,
+header.packet h1,.section>h2,.li-title,.learnit-head,.learnit-stage-title,
+.mission-title,.answer-key h2,.think-block h3,.topbar .brand{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
+/* A thin editorial accent rule under the document's main title. */
+header.packet h1{ position:relative; }
+header.packet h1::after{
+  content:""; display:block; width:56px; height:2px; margin-top:8px;
+  background:linear-gradient(90deg,#1fa6a2,#f2c15b); border-radius:2px;
+}
+@media print{ body{ background:#fff !important; } }
+
+</style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
+  <!-- nsr-injected:end -->
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+
+  <!-- enthead-injected:begin (enterprise head/meta — tools/inject-enterprise-head.js) -->
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/favicon.svg">
+  <meta name="theme-color" content="#12355b">
+  <link rel="canonical" href="https://eduwonderlab.com/lessons/9-3-group1/worksheet.html">
+  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — 9.3 Small Group · Group 1 — Practice Worksheet.">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Neft Teacher">
+  <meta property="og:title" content="9.3 Small Group · Group 1 — Practice Worksheet">
+  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — 9.3 Small Group · Group 1 — Practice Worksheet.">
+  <meta property="og:url" content="https://eduwonderlab.com/lessons/9-3-group1/worksheet.html">
+  <meta property="og:image" content="https://eduwonderlab.com/assets/og-curriculum.png">
+  <!-- enthead-injected:end -->
+</head>
+<body>
+<main>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NOS.8</span>
+      <span class="ws-ver">Level 0</span>
+    </div>
+    <h1 class="ws-title">9.3 Small Group · Group 1</h1>
+    <p class="ws-sub">Practice — Level 0</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    <section class="ws-bank">
+    <h2 class="ws-bank-h">📕 Word Bank</h2>
+    <div class="ws-bankwords"><span class="ws-bankword">Number line</span><span class="ws-bankword">Compare</span><span class="ws-bankword">Order</span><span class="ws-bankword">Greater than</span></div>
+  </section><section class="ws-example">
+    <h2 class="ws-example-h">✏️ Worked Example</h2>
+    <ol class="ws-example-steps"><li><b>Problem:</b> Order the chest depths from least to greatest: -8 m and -15 m.</li><li><b>Crew thinking:</b> 15 has bigger digits than 8, so -15 must be the bigger number. I'll list -8 first because it must be smaller.</li><li><b>Crew answer:</b> Least to greatest: -8, -15</li></ol>
+  </section>
+    <p class="ws-scaffold-note">🧩 Extra support: use the word bank and the worked example. A sentence starter is given under each problem.</p>
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Which statement is TRUE?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>-3 &gt; -1</li><li class="ws-opt"><span class="ws-bub">B</span>-5 &lt; -2</li><li class="ws-opt"><span class="ws-bub">C</span>-4 &gt; 0</li><li class="ws-opt"><span class="ws-bub">D</span>-1 &lt; -6</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Which integer is the LEAST: -3, 5, -8, 2, 0?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>-8</li><li class="ws-opt"><span class="ws-bub">B</span>-3</li><li class="ws-opt"><span class="ws-bub">C</span>0</li><li class="ws-opt"><span class="ws-bub">D</span>5</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">What is |−8|?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>8</li><li class="ws-opt"><span class="ws-bub">B</span>−8</li><li class="ws-opt"><span class="ws-bub">C</span>0</li><li class="ws-opt"><span class="ws-bub">D</span>−16</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">Compare -5 and -2. Write the comparison using &gt; or &lt;.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">The student wrote -5 &gt; -2, reasoning that 5 is bigger than 2, so -5 must be bigger than -2.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">On a number line, -5 is farther LEFT than -2, so -5 is actually less. The correct comparison is -5 &lt; -2.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NOS.8</span>
+      <span class="ws-ver">Version A</span>
+    </div>
+    <h1 class="ws-title">9.3 Small Group · Group 1</h1>
+    <p class="ws-sub">Practice — Version A</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    <section class="ws-bank">
+    <h2 class="ws-bank-h">📕 Word Bank</h2>
+    <div class="ws-bankwords"><span class="ws-bankword">Number line</span><span class="ws-bankword">Compare</span><span class="ws-bankword">Order</span><span class="ws-bankword">Greater than</span></div>
+  </section><section class="ws-example">
+    <h2 class="ws-example-h">✏️ Worked Example</h2>
+    <ol class="ws-example-steps"><li><b>Problem:</b> Order the chest depths from least to greatest: -8 m and -15 m.</li><li><b>Crew thinking:</b> 15 has bigger digits than 8, so -15 must be the bigger number. I'll list -8 first because it must be smaller.</li><li><b>Crew answer:</b> Least to greatest: -8, -15</li></ol>
+  </section>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Which statement is TRUE?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>-3 &gt; -1</li><li class="ws-opt"><span class="ws-bub">B</span>-5 &lt; -2</li><li class="ws-opt"><span class="ws-bub">C</span>-4 &gt; 0</li><li class="ws-opt"><span class="ws-bub">D</span>-1 &lt; -6</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Which integer is the LEAST: -3, 5, -8, 2, 0?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>-8</li><li class="ws-opt"><span class="ws-bub">B</span>-3</li><li class="ws-opt"><span class="ws-bub">C</span>0</li><li class="ws-opt"><span class="ws-bub">D</span>5</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">What is |−8|?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>8</li><li class="ws-opt"><span class="ws-bub">B</span>−8</li><li class="ws-opt"><span class="ws-bub">C</span>0</li><li class="ws-opt"><span class="ws-bub">D</span>−16</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">Compare -5 and -2. Write the comparison using &gt; or &lt;.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">The student wrote -5 &gt; -2, reasoning that 5 is bigger than 2, so -5 must be bigger than -2.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">On a number line, -5 is farther LEFT than -2, so -5 is actually less. The correct comparison is -5 &lt; -2.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Three cities have temperatures of -12°F, -5°F, and 3°F. Which city is warmest?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>3°F</li><li class="ws-opt"><span class="ws-bub">B</span>-5°F</li><li class="ws-opt"><span class="ws-bub">C</span>-12°F</li><li class="ws-opt"><span class="ws-bub">D</span>They are equal</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">Order -8 and -15 from least to greatest.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">The student wrote -8, -15, because 8 is smaller than 15.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">-15 is farther left than -8 on the number line, so -15 is the least. The correct order is -15, -8.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NOS.8</span>
+      <span class="ws-ver">Version B</span>
+    </div>
+    <h1 class="ws-title">9.3 Small Group · Group 1</h1>
+    <p class="ws-sub">Practice — Version B</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Four spots: -3 m, 2 m, -7 m, 0 m. Order them from least to greatest.</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>-7, -3, 0, 2</li><li class="ws-opt"><span class="ws-bub">B</span>-3, -7, 0, 2</li><li class="ws-opt"><span class="ws-bub">C</span>2, 0, -3, -7</li><li class="ws-opt"><span class="ws-bub">D</span>-7, -3, 2, 0</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Three buried chests sit at -9 m, -4 m, and -15 m below sea level. Which chest is at the GREATEST elevation (closest to the surface)?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>-4 m</li><li class="ws-opt"><span class="ws-bub">B</span>-9 m</li><li class="ws-opt"><span class="ws-bub">C</span>-15 m</li><li class="ws-opt"><span class="ws-bub">D</span>They are equal</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">On the map, a sunken lantern is at -8 m and a coral shelf is at -3 m. Which symbol makes the comparison true:  -8 ___ -3 ?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>&lt;</li><li class="ws-opt"><span class="ws-bub">B</span>&gt;</li><li class="ws-opt"><span class="ws-bub">C</span>=</li><li class="ws-opt"><span class="ws-bub">D</span>≥</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Level 2 Extension — The Mis-Ranked Treasure Map</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">Order the chest depths from least to greatest: -8 m and -15 m.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Crew thinking</span><span class="ws-step-w">15 has bigger digits than 8, so -15 must be the bigger number. I'll list -8 first because it must be smaller.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Crew answer</span><span class="ws-step-w">Least to greatest: -8, -15</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Find the Comparison Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">Compare -3 and -8. Which is greater?</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Student thinking</span><span class="ws-step-w">8 is bigger than 3, so -8 must be greater than -3</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Student answer</span><span class="ws-step-w">-8 &gt; -3</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">A student says: 'Negative numbers are always less than positive numbers, so -100 is less than 1.' Is this correct? Now the student says: '-100 is less than -1 because 100 is greater than 1.' Is THIS correct? Explain the difference.</p><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NOS.8</span>
+      <span class="ws-ver">Level 0 — Answer Key</span>
+    </div>
+    <h1 class="ws-title">9.3 Small Group · Group 1</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Which statement is TRUE?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>-3 &gt; -1</li><li class="ws-opt ws-correct"><span class="ws-bub">B</span>-5 &lt; -2</li><li class="ws-opt"><span class="ws-bub">C</span>-4 &gt; 0</li><li class="ws-opt"><span class="ws-bub">D</span>-1 &lt; -6</li></ol><p class="ws-keynote">-5 is farther to the left on the number line than -2, so -5 &lt; -2 is true.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Compare and Order Integers is thinking that a negative number with a bigger digit is the bigger value — for example, believing -15 is greater than -8 because 15 is greater than 8. It's the opposite for negatives: the number farther to the left on the number line (farther from zero) is always the LESSER value, so -15 &lt; -8. Before you submit, check your comparison against the number line, not just the digits.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Which integer is the LEAST: -3, 5, -8, 2, 0?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>-8</li><li class="ws-opt"><span class="ws-bub">B</span>-3</li><li class="ws-opt"><span class="ws-bub">C</span>0</li><li class="ws-opt"><span class="ws-bub">D</span>5</li></ol><p class="ws-keynote">-8 is farthest to the left on the number line, making it the least (smallest) integer.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Compare and Order Integers is thinking that a negative number with a bigger digit is the bigger value — for example, believing -15 is greater than -8 because 15 is greater than 8. It's the opposite for negatives: the number farther to the left on the number line (farther from zero) is always the LESSER value, so -15 &lt; -8. Before you submit, check your comparison against the number line, not just the digits.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">What is |−8|?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>8</li><li class="ws-opt"><span class="ws-bub">B</span>−8</li><li class="ws-opt"><span class="ws-bub">C</span>0</li><li class="ws-opt"><span class="ws-bub">D</span>−16</li></ol><p class="ws-keynote">Absolute value is distance from 0, always positive. |−8| = 8.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Compare and Order Integers is thinking that a negative number with a bigger digit is the bigger value — for example, believing -15 is greater than -8 because 15 is greater than 8. It's the opposite for negatives: the number farther to the left on the number line (farther from zero) is always the LESSER value, so -15 &lt; -8. Before you submit, check your comparison against the number line, not just the digits.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">Compare -5 and -2. Write the comparison using &gt; or &lt;.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">The student wrote -5 &gt; -2, reasoning that 5 is bigger than 2, so -5 must be bigger than -2.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">On a number line, -5 is farther LEFT than -2, so -5 is actually less. The correct comparison is -5 &lt; -2.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 2. Correct work: -5 &lt; -2. For negative numbers the one farther to the left is less, even though 5 &gt; 2.</p></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NOS.8</span>
+      <span class="ws-ver">Version A — Answer Key</span>
+    </div>
+    <h1 class="ws-title">9.3 Small Group · Group 1</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Which statement is TRUE?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>-3 &gt; -1</li><li class="ws-opt ws-correct"><span class="ws-bub">B</span>-5 &lt; -2</li><li class="ws-opt"><span class="ws-bub">C</span>-4 &gt; 0</li><li class="ws-opt"><span class="ws-bub">D</span>-1 &lt; -6</li></ol><p class="ws-keynote">-5 is farther to the left on the number line than -2, so -5 &lt; -2 is true.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Compare and Order Integers is thinking that a negative number with a bigger digit is the bigger value — for example, believing -15 is greater than -8 because 15 is greater than 8. It's the opposite for negatives: the number farther to the left on the number line (farther from zero) is always the LESSER value, so -15 &lt; -8. Before you submit, check your comparison against the number line, not just the digits.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Which integer is the LEAST: -3, 5, -8, 2, 0?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>-8</li><li class="ws-opt"><span class="ws-bub">B</span>-3</li><li class="ws-opt"><span class="ws-bub">C</span>0</li><li class="ws-opt"><span class="ws-bub">D</span>5</li></ol><p class="ws-keynote">-8 is farthest to the left on the number line, making it the least (smallest) integer.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Compare and Order Integers is thinking that a negative number with a bigger digit is the bigger value — for example, believing -15 is greater than -8 because 15 is greater than 8. It's the opposite for negatives: the number farther to the left on the number line (farther from zero) is always the LESSER value, so -15 &lt; -8. Before you submit, check your comparison against the number line, not just the digits.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">What is |−8|?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>8</li><li class="ws-opt"><span class="ws-bub">B</span>−8</li><li class="ws-opt"><span class="ws-bub">C</span>0</li><li class="ws-opt"><span class="ws-bub">D</span>−16</li></ol><p class="ws-keynote">Absolute value is distance from 0, always positive. |−8| = 8.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Compare and Order Integers is thinking that a negative number with a bigger digit is the bigger value — for example, believing -15 is greater than -8 because 15 is greater than 8. It's the opposite for negatives: the number farther to the left on the number line (farther from zero) is always the LESSER value, so -15 &lt; -8. Before you submit, check your comparison against the number line, not just the digits.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">Compare -5 and -2. Write the comparison using &gt; or &lt;.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">The student wrote -5 &gt; -2, reasoning that 5 is bigger than 2, so -5 must be bigger than -2.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">On a number line, -5 is farther LEFT than -2, so -5 is actually less. The correct comparison is -5 &lt; -2.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 2. Correct work: -5 &lt; -2. For negative numbers the one farther to the left is less, even though 5 &gt; 2.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Three cities have temperatures of -12°F, -5°F, and 3°F. Which city is warmest?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>3°F</li><li class="ws-opt"><span class="ws-bub">B</span>-5°F</li><li class="ws-opt"><span class="ws-bub">C</span>-12°F</li><li class="ws-opt"><span class="ws-bub">D</span>They are equal</li></ol><p class="ws-keynote">3°F is the greatest because it is farthest to the right on the number line. The order from coldest to warmest is -12, -5, 3.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Compare and Order Integers is thinking that a negative number with a bigger digit is the bigger value — for example, believing -15 is greater than -8 because 15 is greater than 8. It's the opposite for negatives: the number farther to the left on the number line (farther from zero) is always the LESSER value, so -15 &lt; -8. Before you submit, check your comparison against the number line, not just the digits.</p></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">Order -8 and -15 from least to greatest.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">The student wrote -8, -15, because 8 is smaller than 15.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">-15 is farther left than -8 on the number line, so -15 is the least. The correct order is -15, -8.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 2. Correct work: Least to greatest: -15, -8. The more negative a number is, the less its value — so -15 &lt; -8.</p></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NOS.8</span>
+      <span class="ws-ver">Version B — Answer Key</span>
+    </div>
+    <h1 class="ws-title">9.3 Small Group · Group 1</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Four spots: -3 m, 2 m, -7 m, 0 m. Order them from least to greatest.</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>-7, -3, 0, 2</li><li class="ws-opt"><span class="ws-bub">B</span>-3, -7, 0, 2</li><li class="ws-opt"><span class="ws-bub">C</span>2, 0, -3, -7</li><li class="ws-opt"><span class="ws-bub">D</span>-7, -3, 2, 0</li></ol><p class="ws-keynote">The deepest spot is the cave at -7 (farthest left), then the tide pool -3, then the boat deck 0, then the flag at 2. Least to greatest: -7, -3, 0, 2.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Compare and Order Integers is thinking that a negative number with a bigger digit is the bigger value — for example, believing -15 is greater than -8 because 15 is greater than 8. It's the opposite for negatives: the number farther to the left on the number line (farther from zero) is always the LESSER value, so -15 &lt; -8. Before you submit, check your comparison against the number line, not just the digits.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Three buried chests sit at -9 m, -4 m, and -15 m below sea level. Which chest is at the GREATEST elevation (closest to the surface)?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>-4 m</li><li class="ws-opt"><span class="ws-bub">B</span>-9 m</li><li class="ws-opt"><span class="ws-bub">C</span>-15 m</li><li class="ws-opt"><span class="ws-bub">D</span>They are equal</li></ol><p class="ws-keynote">Closer to zero means greater for negatives. -4 is only 4 below the surface, so -4 is the greatest of -9, -4, and -15.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Compare and Order Integers is thinking that a negative number with a bigger digit is the bigger value — for example, believing -15 is greater than -8 because 15 is greater than 8. It's the opposite for negatives: the number farther to the left on the number line (farther from zero) is always the LESSER value, so -15 &lt; -8. Before you submit, check your comparison against the number line, not just the digits.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">On the map, a sunken lantern is at -8 m and a coral shelf is at -3 m. Which symbol makes the comparison true:  -8 ___ -3 ?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>&lt;</li><li class="ws-opt"><span class="ws-bub">B</span>&gt;</li><li class="ws-opt"><span class="ws-bub">C</span>=</li><li class="ws-opt"><span class="ws-bub">D</span>≥</li></ol><p class="ws-keynote">-8 is farther left (deeper) than -3, so -8 is less than -3. The symbol is &lt;.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Compare and Order Integers is thinking that a negative number with a bigger digit is the bigger value — for example, believing -15 is greater than -8 because 15 is greater than 8. It's the opposite for negatives: the number farther to the left on the number line (farther from zero) is always the LESSER value, so -15 &lt; -8. Before you submit, check your comparison against the number line, not just the digits.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Level 2 Extension — The Mis-Ranked Treasure Map</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">Order the chest depths from least to greatest: -8 m and -15 m.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Crew thinking</span><span class="ws-step-w">15 has bigger digits than 8, so -15 must be the bigger number. I'll list -8 first because it must be smaller.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Crew answer</span><span class="ws-step-w">Least to greatest: -8, -15</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 2. Correct work: For negative numbers, MORE distance from zero means SMALLER, not bigger. -15 is 15 below the surface (deeper and farther left), so -15 is actually less than -8. The correct order from least to greatest is -15, -8.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Find the Comparison Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">Compare -3 and -8. Which is greater?</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Student thinking</span><span class="ws-step-w">8 is bigger than 3, so -8 must be greater than -3</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Student answer</span><span class="ws-step-w">-8 &gt; -3</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 2. Correct work: With negative numbers, the number closer to zero is GREATER. -3 is closer to zero than -8, so -3 &gt; -8. The student compared the digits without considering that negatives work in the opposite direction.</p></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">A student says: 'Negative numbers are always less than positive numbers, so -100 is less than 1.' Is this correct? Now the student says: '-100 is less than -1 because 100 is greater than 1.' Is THIS correct? Explain the difference.</p><p class="ws-keynote">Look for: negative, positive, less than, greater than, number line, left, right, closer to zero, farther.</p></div></li></ol>
+  </section>
+</main>
+<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+  <!-- nsr-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
+  </body>
+</html>

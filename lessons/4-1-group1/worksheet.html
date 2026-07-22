@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>4.1 Small Group · Group 1 — Practice Worksheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --navy:#143a6b; --blue:#1f5fa6; --teal:#1c7a64; --ink:#16243d; --muted:#5a6b82;
+  --line:#d7e2ed; --soft:#eef3f9; --bank:#fff8e8; --bank-line:#f0d9a0; --ex:#eaf4ff;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:13.5px;line-height:1.5;}
+.ws-page{background:#fff;max-width:760px;margin:18px auto;padding:34px 40px 44px;box-shadow:0 6px 24px rgba(20,40,75,.12);border-radius:6px;}
+.ws-head{border-bottom:3px solid var(--navy);padding-bottom:12px;margin-bottom:18px;}
+.ws-head-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.ws-std{background:var(--navy);color:#fff;font-weight:700;font-size:11px;letter-spacing:.04em;padding:4px 11px;border-radius:999px;}
+.ws-ver{font-family:"Fraunces",serif;font-weight:700;color:var(--blue);font-size:14px;}
+.ws-title{font-family:"Fraunces",serif;font-weight:700;font-size:25px;margin:4px 0 2px;color:var(--navy);line-height:1.1;}
+.ws-sub{margin:0;color:var(--muted);font-weight:600;font-size:13px;}
+.ws-meta{display:flex;gap:28px;margin-top:12px;font-weight:600;color:var(--ink);font-size:13px;}
+.ws-fill{display:inline-block;width:220px;border-bottom:1.5px solid var(--ink);}
+.ws-fill-sm{width:120px;}
+.ws-bank{background:var(--bank);border:1.5px solid var(--bank-line);border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-bank-h,.ws-example-h{font-family:"Fraunces",serif;font-size:14px;margin:0 0 8px;color:var(--navy);}
+.ws-bankwords{display:flex;flex-wrap:wrap;gap:8px;}
+.ws-bankword{background:#fff;border:1.5px solid var(--bank-line);border-radius:999px;padding:4px 12px;font-weight:700;font-size:12.5px;}
+.ws-example{background:var(--ex);border:1.5px solid #cfe2f6;border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-example-steps{margin:0;padding-left:18px;}
+.ws-example-steps li{margin:2px 0;}
+.ws-problems{list-style:none;margin:0;padding:0;counter-reset:none;}
+.ws-problem{display:flex;gap:12px;padding:14px 0;border-bottom:1px dashed var(--line);break-inside:avoid;page-break-inside:avoid;}
+.ws-problem:last-child{border-bottom:0;}
+.ws-pnum{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.ws-pbody{flex:1;min-width:0;}
+.ws-stem{margin:0 0 8px;font-weight:600;}
+.ws-prompt{margin:6px 0;color:var(--muted);font-size:12.5px;}
+.ws-opts{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;}
+.ws-opt{display:flex;align-items:flex-start;gap:8px;}
+.ws-bub{flex:0 0 auto;width:22px;height:22px;border:2px solid var(--navy);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;}
+.ws-bub-sm{width:20px;height:20px;font-size:11px;}
+.ws-correct .ws-bub{background:var(--teal);border-color:var(--teal);color:#fff;}
+.ws-correct{font-weight:700;color:var(--teal);}
+.ws-keynote{margin:6px 0 0;color:var(--teal);font-size:12px;font-style:italic;}
+.ws-watch{margin:4px 0 0;color:#9a4a12;font-size:12px;background:#fff3e6;border-left:3px solid #e08a3c;padding:5px 10px;border-radius:0 8px 8px 0;}
+.ws-scaffold-note{margin:0 0 14px;background:var(--soft);border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;font-weight:600;color:var(--navy);font-size:12.5px;}
+.ws-match{display:flex;gap:24px;flex-wrap:wrap;}
+.ws-match-terms{list-style:none;margin:0;padding:0;flex:1;min-width:180px;}
+.ws-match-term{display:flex;align-items:center;gap:8px;margin:5px 0;font-weight:600;}
+.ws-match-bank{list-style:none;margin:0;padding:10px 12px;background:var(--soft);border:1px solid var(--line);border-radius:10px;flex:1;min-width:180px;}
+.ws-match-bank li{display:flex;align-items:center;gap:8px;margin:4px 0;}
+.ws-blank{display:inline-block;min-width:54px;border-bottom:1.5px solid var(--ink);text-align:center;font-weight:700;}
+.ws-blank-sm{min-width:40px;}
+.ws-steps{list-style:none;margin:6px 0;padding:0;}
+.ws-steps li{display:flex;gap:10px;align-items:baseline;padding:4px 0;}
+.ws-step-n{flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:var(--soft);font-weight:700;font-size:11px;display:inline-flex;align-items:center;justify-content:center;}
+.ws-step-l{flex:0 0 38%;font-weight:600;}
+.ws-step-w{flex:1;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
+.ws-table{width:100%;border-collapse:collapse;margin:8px 0;}
+.ws-table th{background:var(--navy);color:#fff;font-size:12px;padding:7px 9px;text-align:left;}
+.ws-table td{border:1px solid var(--line);padding:9px;height:34px;font-weight:600;}
+.ws-lines{margin:8px 0 0;}
+.ws-line{display:block;border-bottom:1.5px solid var(--line);height:24px;}
+.ws-work{margin:8px 0 0;border:1.5px dashed var(--line);border-radius:10px;min-height:70px;padding:6px 10px;position:relative;}
+.ws-work-label{color:var(--muted);font-size:11px;font-weight:600;}
+.ws-frame{background:var(--soft);border-left:3px solid var(--blue);padding:6px 10px;margin:6px 0;font-style:italic;color:var(--muted);border-radius:0 8px 8px 0;}
+.ws-sort{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:5px 18px;}
+.ws-sort li{display:flex;align-items:center;gap:8px;font-weight:600;}
+
+@media print{
+  body{background:#fff;font-size:12pt;}
+  .ws-page{box-shadow:none;border-radius:0;margin:0;max-width:none;padding:0;page-break-after:always;}
+  .ws-page:last-child{page-break-after:auto;}
+  @page{margin:1.5cm;}
+  a{color:#000;}
+}
+
+/* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
+   Appended last so it overrides each generator's base CSS. Finish-only:
+   serif headings + paper ground + AA-safe ink. No layout/size changes. */
+:root{ --ink:#19262f; --muted:#475663; }
+body{ background:#f5f0e6; color:#19262f; }
+h1,h2,h3,h4,h5,h6,
+header.packet h1,.section>h2,.li-title,.learnit-head,.learnit-stage-title,
+.mission-title,.answer-key h2,.think-block h3,.topbar .brand{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
+/* A thin editorial accent rule under the document's main title. */
+header.packet h1{ position:relative; }
+header.packet h1::after{
+  content:""; display:block; width:56px; height:2px; margin-top:8px;
+  background:linear-gradient(90deg,#1fa6a2,#f2c15b); border-radius:2px;
+}
+@media print{ body{ background:#fff !important; } }
+
+</style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
+  <!-- nsr-injected:end -->
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+
+  <!-- enthead-injected:begin (enterprise head/meta — tools/inject-enterprise-head.js) -->
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/favicon.svg">
+  <meta name="theme-color" content="#12355b">
+  <link rel="canonical" href="https://eduwonderlab.com/lessons/4-1-group1/worksheet.html">
+  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — 4.1 Small Group · Group 1 — Practice Worksheet.">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Neft Teacher">
+  <meta property="og:title" content="4.1 Small Group · Group 1 — Practice Worksheet">
+  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — 4.1 Small Group · Group 1 — Practice Worksheet.">
+  <meta property="og:url" content="https://eduwonderlab.com/lessons/4-1-group1/worksheet.html">
+  <meta property="og:image" content="https://eduwonderlab.com/assets/og-curriculum.png">
+  <!-- enthead-injected:end -->
+</head>
+<body>
+<main>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.2</span>
+      <span class="ws-ver">Level 0</span>
+    </div>
+    <h1 class="ws-title">4.1 Small Group · Group 1</h1>
+    <p class="ws-sub">Practice — Level 0</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    <section class="ws-bank">
+    <h2 class="ws-bank-h">📕 Word Bank</h2>
+    <div class="ws-bankwords"><span class="ws-bankword">Rate</span><span class="ws-bankword">Unit Rate</span><span class="ws-bankword">Per</span><span class="ws-bankword">Ratio</span></div>
+  </section><section class="ws-example">
+    <h2 class="ws-example-h">✏️ Worked Example</h2>
+    <ol class="ws-example-steps"><li><b>Read the problem:</b> Pack X is 10 tokens for $4.00. Pack Y is 16 tokens for $6.00. Which is the better buy (lower cost per token)?</li><li><b>Compare the deals:</b> Pack X costs $4.00 and Pack Y costs $6.00. The student says Pack X is the better buy because $4.00 is the lower total price.</li><li><b>State the answer:</b> The student chooses Pack X.</li></ol>
+  </section>
+    <p class="ws-scaffold-note">🧩 Extra support: use the word bank and the worked example. A sentence starter is given under each problem.</p>
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A booth charges $4.50 for 9 games. What is the unit rate?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>$0.50 per game</li><li class="ws-opt"><span class="ws-bub">B</span>$0.45 per game</li><li class="ws-opt"><span class="ws-bub">C</span>$2.00 per game</li><li class="ws-opt"><span class="ws-bub">D</span>$4.50 per game</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A car travels 180 miles using 6 gallons of gas. What is the unit rate in miles per gallon?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>30 miles per gallon</li><li class="ws-opt"><span class="ws-bub">B</span>6 miles per gallon</li><li class="ws-opt"><span class="ws-bub">C</span>180 miles per gallon</li><li class="ws-opt"><span class="ws-bub">D</span>36 miles per gallon</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">A pack of 8 markers costs $6.00. What is the cost per marker?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>$0.75</li><li class="ws-opt"><span class="ws-bub">B</span>$0.80</li><li class="ws-opt"><span class="ws-bub">C</span>$1.33</li><li class="ws-opt"><span class="ws-bub">D</span>$0.60</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Which is a unit rate?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>12 miles per 1 hour</li><li class="ws-opt"><span class="ws-bub">B</span>24 miles in 2 hours</li><li class="ws-opt"><span class="ws-bub">C</span>36 miles for 3 gallons</li><li class="ws-opt"><span class="ws-bub">D</span>100 points in 5 games</li></ol></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.2</span>
+      <span class="ws-ver">Version A</span>
+    </div>
+    <h1 class="ws-title">4.1 Small Group · Group 1</h1>
+    <p class="ws-sub">Practice — Version A</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    <section class="ws-bank">
+    <h2 class="ws-bank-h">📕 Word Bank</h2>
+    <div class="ws-bankwords"><span class="ws-bankword">Rate</span><span class="ws-bankword">Unit Rate</span><span class="ws-bankword">Per</span><span class="ws-bankword">Ratio</span></div>
+  </section><section class="ws-example">
+    <h2 class="ws-example-h">✏️ Worked Example</h2>
+    <ol class="ws-example-steps"><li><b>Read the problem:</b> Pack X is 10 tokens for $4.00. Pack Y is 16 tokens for $6.00. Which is the better buy (lower cost per token)?</li><li><b>Compare the deals:</b> Pack X costs $4.00 and Pack Y costs $6.00. The student says Pack X is the better buy because $4.00 is the lower total price.</li><li><b>State the answer:</b> The student chooses Pack X.</li></ol>
+  </section>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A booth charges $4.50 for 9 games. What is the unit rate?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>$0.50 per game</li><li class="ws-opt"><span class="ws-bub">B</span>$0.45 per game</li><li class="ws-opt"><span class="ws-bub">C</span>$2.00 per game</li><li class="ws-opt"><span class="ws-bub">D</span>$4.50 per game</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A car travels 180 miles using 6 gallons of gas. What is the unit rate in miles per gallon?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>30 miles per gallon</li><li class="ws-opt"><span class="ws-bub">B</span>6 miles per gallon</li><li class="ws-opt"><span class="ws-bub">C</span>180 miles per gallon</li><li class="ws-opt"><span class="ws-bub">D</span>36 miles per gallon</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">A pack of 8 markers costs $6.00. What is the cost per marker?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>$0.75</li><li class="ws-opt"><span class="ws-bub">B</span>$0.80</li><li class="ws-opt"><span class="ws-bub">C</span>$1.33</li><li class="ws-opt"><span class="ws-bub">D</span>$0.60</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Which is a unit rate?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>12 miles per 1 hour</li><li class="ws-opt"><span class="ws-bub">B</span>24 miles in 2 hours</li><li class="ws-opt"><span class="ws-bub">C</span>36 miles for 3 gallons</li><li class="ws-opt"><span class="ws-bub">D</span>100 points in 5 games</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read the problem</span><span class="ws-step-w">A booth charges $6.00 for 4 games. Find the unit rate (cost per game).</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Set up the division</span><span class="ws-step-w">$6.00 ÷ 4 = $1.50, but the student writes $1.05 per game.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">State the unit rate</span><span class="ws-step-w">The student says each game costs $1.05.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">Which token pack from the table above is the best deal?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>Pack A</li><li class="ws-opt"><span class="ws-bub">B</span>Pack B</li><li class="ws-opt"><span class="ws-bub">C</span>Pack C</li><li class="ws-opt"><span class="ws-bub">D</span>They are all the same</li></ol></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.2</span>
+      <span class="ws-ver">Version B</span>
+    </div>
+    <h1 class="ws-title">4.1 Small Group · Group 1</h1>
+    <p class="ws-sub">Practice — Version B</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Runner A completes 4 laps in 12 minutes. Runner B completes 5 laps in 14 minutes. Who runs more laps per minute?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>Runner B</li><li class="ws-opt"><span class="ws-bub">B</span>Runner A</li><li class="ws-opt"><span class="ws-bub">C</span>Same rate</li><li class="ws-opt"><span class="ws-bub">D</span>Cannot determine</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read the problem</span><span class="ws-step-w">Pack X is 10 tokens for $4.00. Pack Y is 16 tokens for $6.00. Which is the better buy (lower cost per token)?</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Compare the deals</span><span class="ws-step-w">Pack X costs $4.00 and Pack Y costs $6.00. The student says Pack X is the better buy because $4.00 is the lower total price.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">State the answer</span><span class="ws-step-w">The student chooses Pack X.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">The Star Blaster cabinet scored 90 points in 3 games. What is the unit rate in points per game?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>30 points per game</li><li class="ws-opt"><span class="ws-bub">B</span>270 points per game</li><li class="ws-opt"><span class="ws-bub">C</span>3 points per game</li><li class="ws-opt"><span class="ws-bub">D</span>93 points per game</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Nova: 78 points in 6 min. Pulse: 75 points in 5 min. Which scores faster (more points per minute)?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>Pulse, at 15 points per minute</li><li class="ws-opt"><span class="ws-bub">B</span>Nova, at 13 points per minute</li><li class="ws-opt"><span class="ws-bub">C</span>They score at the same rate</li><li class="ws-opt"><span class="ws-bub">D</span>There is not enough information</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Machine A: 150 coins for 5 plays. Machine B: 168 coins for 8 plays. Which is the better value (fewer coins per play)?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>Machine B, at 21 coins per play</li><li class="ws-opt"><span class="ws-bub">B</span>Machine A, at 30 coins per play</li><li class="ws-opt"><span class="ws-bub">C</span>They are the same value</li><li class="ws-opt"><span class="ws-bub">D</span>Machine A, because it costs fewer coins total</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">Level 2 Extension — Inverted Unit Rate: Points per Minute</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Find the scoring rate in points per minute: 96 points in 6 minutes</span><span class="ws-step-w">96 points in 6 minutes</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Set up the division</span><span class="ws-step-w">6 ÷ 96 = 0.0625</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Write the unit rate</span><span class="ws-step-w">The unit rate is 0.0625 points per minute</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.2</span>
+      <span class="ws-ver">Level 0 — Answer Key</span>
+    </div>
+    <h1 class="ws-title">4.1 Small Group · Group 1</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A booth charges $4.50 for 9 games. What is the unit rate?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>$0.50 per game</li><li class="ws-opt"><span class="ws-bub">B</span>$0.45 per game</li><li class="ws-opt"><span class="ws-bub">C</span>$2.00 per game</li><li class="ws-opt"><span class="ws-bub">D</span>$4.50 per game</li></ol><p class="ws-keynote">$4.50 ÷ 9 = $0.50 per game.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Rates and Unit Rates is comparing total costs instead of unit rates: a student sees Pack X at $4.00 for 10 tokens and Pack Y at $6.00 for 16 tokens and picks Pack X just because $4.00 is the smaller number, without dividing to find the cost per token ($0.40 for Pack X vs. $0.375 for Pack Y — Pack Y is actually the better buy). A second common mistake is dividing backwards — finding tokens ÷ cost instead of cost ÷ tokens — which turns 'dollars per token' into 'tokens per dollar' and gives an answer that looks reasonable but answers the wrong question. Always divide the total cost by the number of items, and check that your unit rate answers 'the cost for ONE item,' not the reverse.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A car travels 180 miles using 6 gallons of gas. What is the unit rate in miles per gallon?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>30 miles per gallon</li><li class="ws-opt"><span class="ws-bub">B</span>6 miles per gallon</li><li class="ws-opt"><span class="ws-bub">C</span>180 miles per gallon</li><li class="ws-opt"><span class="ws-bub">D</span>36 miles per gallon</li></ol><p class="ws-keynote">180 miles ÷ 6 gallons = 30 miles per gallon.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Rates and Unit Rates is comparing total costs instead of unit rates: a student sees Pack X at $4.00 for 10 tokens and Pack Y at $6.00 for 16 tokens and picks Pack X just because $4.00 is the smaller number, without dividing to find the cost per token ($0.40 for Pack X vs. $0.375 for Pack Y — Pack Y is actually the better buy). A second common mistake is dividing backwards — finding tokens ÷ cost instead of cost ÷ tokens — which turns 'dollars per token' into 'tokens per dollar' and gives an answer that looks reasonable but answers the wrong question. Always divide the total cost by the number of items, and check that your unit rate answers 'the cost for ONE item,' not the reverse.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">A pack of 8 markers costs $6.00. What is the cost per marker?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>$0.75</li><li class="ws-opt"><span class="ws-bub">B</span>$0.80</li><li class="ws-opt"><span class="ws-bub">C</span>$1.33</li><li class="ws-opt"><span class="ws-bub">D</span>$0.60</li></ol><p class="ws-keynote">$6.00 ÷ 8 = $0.75 per marker.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Rates and Unit Rates is comparing total costs instead of unit rates: a student sees Pack X at $4.00 for 10 tokens and Pack Y at $6.00 for 16 tokens and picks Pack X just because $4.00 is the smaller number, without dividing to find the cost per token ($0.40 for Pack X vs. $0.375 for Pack Y — Pack Y is actually the better buy). A second common mistake is dividing backwards — finding tokens ÷ cost instead of cost ÷ tokens — which turns 'dollars per token' into 'tokens per dollar' and gives an answer that looks reasonable but answers the wrong question. Always divide the total cost by the number of items, and check that your unit rate answers 'the cost for ONE item,' not the reverse.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Which is a unit rate?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>12 miles per 1 hour</li><li class="ws-opt"><span class="ws-bub">B</span>24 miles in 2 hours</li><li class="ws-opt"><span class="ws-bub">C</span>36 miles for 3 gallons</li><li class="ws-opt"><span class="ws-bub">D</span>100 points in 5 games</li></ol><p class="ws-keynote">A unit rate has 1 in the second quantity. '12 miles per 1 hour' is the only choice where the second quantity is 1.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Rates and Unit Rates is comparing total costs instead of unit rates: a student sees Pack X at $4.00 for 10 tokens and Pack Y at $6.00 for 16 tokens and picks Pack X just because $4.00 is the smaller number, without dividing to find the cost per token ($0.40 for Pack X vs. $0.375 for Pack Y — Pack Y is actually the better buy). A second common mistake is dividing backwards — finding tokens ÷ cost instead of cost ÷ tokens — which turns 'dollars per token' into 'tokens per dollar' and gives an answer that looks reasonable but answers the wrong question. Always divide the total cost by the number of items, and check that your unit rate answers 'the cost for ONE item,' not the reverse.</p></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.2</span>
+      <span class="ws-ver">Version A — Answer Key</span>
+    </div>
+    <h1 class="ws-title">4.1 Small Group · Group 1</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A booth charges $4.50 for 9 games. What is the unit rate?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>$0.50 per game</li><li class="ws-opt"><span class="ws-bub">B</span>$0.45 per game</li><li class="ws-opt"><span class="ws-bub">C</span>$2.00 per game</li><li class="ws-opt"><span class="ws-bub">D</span>$4.50 per game</li></ol><p class="ws-keynote">$4.50 ÷ 9 = $0.50 per game.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Rates and Unit Rates is comparing total costs instead of unit rates: a student sees Pack X at $4.00 for 10 tokens and Pack Y at $6.00 for 16 tokens and picks Pack X just because $4.00 is the smaller number, without dividing to find the cost per token ($0.40 for Pack X vs. $0.375 for Pack Y — Pack Y is actually the better buy). A second common mistake is dividing backwards — finding tokens ÷ cost instead of cost ÷ tokens — which turns 'dollars per token' into 'tokens per dollar' and gives an answer that looks reasonable but answers the wrong question. Always divide the total cost by the number of items, and check that your unit rate answers 'the cost for ONE item,' not the reverse.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A car travels 180 miles using 6 gallons of gas. What is the unit rate in miles per gallon?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>30 miles per gallon</li><li class="ws-opt"><span class="ws-bub">B</span>6 miles per gallon</li><li class="ws-opt"><span class="ws-bub">C</span>180 miles per gallon</li><li class="ws-opt"><span class="ws-bub">D</span>36 miles per gallon</li></ol><p class="ws-keynote">180 miles ÷ 6 gallons = 30 miles per gallon.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Rates and Unit Rates is comparing total costs instead of unit rates: a student sees Pack X at $4.00 for 10 tokens and Pack Y at $6.00 for 16 tokens and picks Pack X just because $4.00 is the smaller number, without dividing to find the cost per token ($0.40 for Pack X vs. $0.375 for Pack Y — Pack Y is actually the better buy). A second common mistake is dividing backwards — finding tokens ÷ cost instead of cost ÷ tokens — which turns 'dollars per token' into 'tokens per dollar' and gives an answer that looks reasonable but answers the wrong question. Always divide the total cost by the number of items, and check that your unit rate answers 'the cost for ONE item,' not the reverse.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">A pack of 8 markers costs $6.00. What is the cost per marker?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>$0.75</li><li class="ws-opt"><span class="ws-bub">B</span>$0.80</li><li class="ws-opt"><span class="ws-bub">C</span>$1.33</li><li class="ws-opt"><span class="ws-bub">D</span>$0.60</li></ol><p class="ws-keynote">$6.00 ÷ 8 = $0.75 per marker.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Rates and Unit Rates is comparing total costs instead of unit rates: a student sees Pack X at $4.00 for 10 tokens and Pack Y at $6.00 for 16 tokens and picks Pack X just because $4.00 is the smaller number, without dividing to find the cost per token ($0.40 for Pack X vs. $0.375 for Pack Y — Pack Y is actually the better buy). A second common mistake is dividing backwards — finding tokens ÷ cost instead of cost ÷ tokens — which turns 'dollars per token' into 'tokens per dollar' and gives an answer that looks reasonable but answers the wrong question. Always divide the total cost by the number of items, and check that your unit rate answers 'the cost for ONE item,' not the reverse.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Which is a unit rate?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>12 miles per 1 hour</li><li class="ws-opt"><span class="ws-bub">B</span>24 miles in 2 hours</li><li class="ws-opt"><span class="ws-bub">C</span>36 miles for 3 gallons</li><li class="ws-opt"><span class="ws-bub">D</span>100 points in 5 games</li></ol><p class="ws-keynote">A unit rate has 1 in the second quantity. '12 miles per 1 hour' is the only choice where the second quantity is 1.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Rates and Unit Rates is comparing total costs instead of unit rates: a student sees Pack X at $4.00 for 10 tokens and Pack Y at $6.00 for 16 tokens and picks Pack X just because $4.00 is the smaller number, without dividing to find the cost per token ($0.40 for Pack X vs. $0.375 for Pack Y — Pack Y is actually the better buy). A second common mistake is dividing backwards — finding tokens ÷ cost instead of cost ÷ tokens — which turns 'dollars per token' into 'tokens per dollar' and gives an answer that looks reasonable but answers the wrong question. Always divide the total cost by the number of items, and check that your unit rate answers 'the cost for ONE item,' not the reverse.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read the problem</span><span class="ws-step-w">A booth charges $6.00 for 4 games. Find the unit rate (cost per game).</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Set up the division</span><span class="ws-step-w">$6.00 ÷ 4 = $1.50, but the student writes $1.05 per game.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">State the unit rate</span><span class="ws-step-w">The student says each game costs $1.05.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 2. Correct work: $6.00 ÷ 4 = $1.50 per game. The student divided correctly but wrote the digits in the wrong place value ($1.05 instead of $1.50). The cost per game is $1.50.</p></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">Which token pack from the table above is the best deal?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>Pack A</li><li class="ws-opt ws-correct"><span class="ws-bub">B</span>Pack B</li><li class="ws-opt"><span class="ws-bub">C</span>Pack C</li><li class="ws-opt"><span class="ws-bub">D</span>They are all the same</li></ol><p class="ws-keynote">Pack B has a unit rate of $0.20 per token, which is the lowest cost per token.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Rates and Unit Rates is comparing total costs instead of unit rates: a student sees Pack X at $4.00 for 10 tokens and Pack Y at $6.00 for 16 tokens and picks Pack X just because $4.00 is the smaller number, without dividing to find the cost per token ($0.40 for Pack X vs. $0.375 for Pack Y — Pack Y is actually the better buy). A second common mistake is dividing backwards — finding tokens ÷ cost instead of cost ÷ tokens — which turns 'dollars per token' into 'tokens per dollar' and gives an answer that looks reasonable but answers the wrong question. Always divide the total cost by the number of items, and check that your unit rate answers 'the cost for ONE item,' not the reverse.</p></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.2</span>
+      <span class="ws-ver">Version B — Answer Key</span>
+    </div>
+    <h1 class="ws-title">4.1 Small Group · Group 1</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Runner A completes 4 laps in 12 minutes. Runner B completes 5 laps in 14 minutes. Who runs more laps per minute?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>Runner B</li><li class="ws-opt"><span class="ws-bub">B</span>Runner A</li><li class="ws-opt"><span class="ws-bub">C</span>Same rate</li><li class="ws-opt"><span class="ws-bub">D</span>Cannot determine</li></ol><p class="ws-keynote">Runner A: 4÷12 ≈ 0.33 laps/min. Runner B: 5÷14 ≈ 0.36 laps/min. Runner B runs slightly more laps per minute.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Rates and Unit Rates is comparing total costs instead of unit rates: a student sees Pack X at $4.00 for 10 tokens and Pack Y at $6.00 for 16 tokens and picks Pack X just because $4.00 is the smaller number, without dividing to find the cost per token ($0.40 for Pack X vs. $0.375 for Pack Y — Pack Y is actually the better buy). A second common mistake is dividing backwards — finding tokens ÷ cost instead of cost ÷ tokens — which turns 'dollars per token' into 'tokens per dollar' and gives an answer that looks reasonable but answers the wrong question. Always divide the total cost by the number of items, and check that your unit rate answers 'the cost for ONE item,' not the reverse.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read the problem</span><span class="ws-step-w">Pack X is 10 tokens for $4.00. Pack Y is 16 tokens for $6.00. Which is the better buy (lower cost per token)?</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Compare the deals</span><span class="ws-step-w">Pack X costs $4.00 and Pack Y costs $6.00. The student says Pack X is the better buy because $4.00 is the lower total price.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">State the answer</span><span class="ws-step-w">The student chooses Pack X.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 2. Correct work: Compare unit rates, not total prices. Pack X: $4.00 ÷ 10 = $0.40 per token. Pack Y: $6.00 ÷ 16 = $0.375 per token. Pack Y has the lower cost per token, so Pack Y is the better buy.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">The Star Blaster cabinet scored 90 points in 3 games. What is the unit rate in points per game?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>30 points per game</li><li class="ws-opt"><span class="ws-bub">B</span>270 points per game</li><li class="ws-opt"><span class="ws-bub">C</span>3 points per game</li><li class="ws-opt"><span class="ws-bub">D</span>93 points per game</li></ol><p class="ws-keynote">Divide points by games: 90 ÷ 3 = 30 points per game.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Rates and Unit Rates is comparing total costs instead of unit rates: a student sees Pack X at $4.00 for 10 tokens and Pack Y at $6.00 for 16 tokens and picks Pack X just because $4.00 is the smaller number, without dividing to find the cost per token ($0.40 for Pack X vs. $0.375 for Pack Y — Pack Y is actually the better buy). A second common mistake is dividing backwards — finding tokens ÷ cost instead of cost ÷ tokens — which turns 'dollars per token' into 'tokens per dollar' and gives an answer that looks reasonable but answers the wrong question. Always divide the total cost by the number of items, and check that your unit rate answers 'the cost for ONE item,' not the reverse.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Nova: 78 points in 6 min. Pulse: 75 points in 5 min. Which scores faster (more points per minute)?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>Pulse, at 15 points per minute</li><li class="ws-opt"><span class="ws-bub">B</span>Nova, at 13 points per minute</li><li class="ws-opt"><span class="ws-bub">C</span>They score at the same rate</li><li class="ws-opt"><span class="ws-bub">D</span>There is not enough information</li></ol><p class="ws-keynote">Nova: 78 ÷ 6 = 13 points per minute. Pulse: 75 ÷ 5 = 15 points per minute. 15 &gt; 13, so Pulse is faster.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Rates and Unit Rates is comparing total costs instead of unit rates: a student sees Pack X at $4.00 for 10 tokens and Pack Y at $6.00 for 16 tokens and picks Pack X just because $4.00 is the smaller number, without dividing to find the cost per token ($0.40 for Pack X vs. $0.375 for Pack Y — Pack Y is actually the better buy). A second common mistake is dividing backwards — finding tokens ÷ cost instead of cost ÷ tokens — which turns 'dollars per token' into 'tokens per dollar' and gives an answer that looks reasonable but answers the wrong question. Always divide the total cost by the number of items, and check that your unit rate answers 'the cost for ONE item,' not the reverse.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Machine A: 150 coins for 5 plays. Machine B: 168 coins for 8 plays. Which is the better value (fewer coins per play)?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>Machine B, at 21 coins per play</li><li class="ws-opt"><span class="ws-bub">B</span>Machine A, at 30 coins per play</li><li class="ws-opt"><span class="ws-bub">C</span>They are the same value</li><li class="ws-opt"><span class="ws-bub">D</span>Machine A, because it costs fewer coins total</li></ol><p class="ws-keynote">Machine A: 150 ÷ 5 = 30 coins per play. Machine B: 168 ÷ 8 = 21 coins per play. 21 &lt; 30, so Machine B is the better value.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Rates and Unit Rates is comparing total costs instead of unit rates: a student sees Pack X at $4.00 for 10 tokens and Pack Y at $6.00 for 16 tokens and picks Pack X just because $4.00 is the smaller number, without dividing to find the cost per token ($0.40 for Pack X vs. $0.375 for Pack Y — Pack Y is actually the better buy). A second common mistake is dividing backwards — finding tokens ÷ cost instead of cost ÷ tokens — which turns 'dollars per token' into 'tokens per dollar' and gives an answer that looks reasonable but answers the wrong question. Always divide the total cost by the number of items, and check that your unit rate answers 'the cost for ONE item,' not the reverse.</p></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">Level 2 Extension — Inverted Unit Rate: Points per Minute</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Find the scoring rate in points per minute: 96 points in 6 minutes</span><span class="ws-step-w">96 points in 6 minutes</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Set up the division</span><span class="ws-step-w">6 ÷ 96 = 0.0625</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Write the unit rate</span><span class="ws-step-w">The unit rate is 0.0625 points per minute</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 2. Correct work: To find points per minute, divide points by minutes: 96 ÷ 6 = 16 points per minute. The student divided minutes by points (the wrong way), which gives minutes per point, not points per minute.</p></div></li></ol>
+  </section>
+</main>
+<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+  <!-- nsr-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
+  </body>
+</html>

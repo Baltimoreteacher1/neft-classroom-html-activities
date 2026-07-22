@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="A teacher-controlled runtime for Grade 6 mathematics lessons." />
+    <title>Classroom Runtime · Neft Curriculum</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./runtime.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#runtime-main">Skip to runtime</a>
+    <header class="masthead">
+      <a class="brand" href="/curriculum/" aria-label="Return to curriculum">NEFT / CLASSROOM RUNTIME</a>
+      <p id="runtime-status" role="status" aria-live="polite">Loading canonical curriculum…</p>
+    </header>
+    <nav class="stage-nav" aria-label="Runtime stages">
+      <button type="button" data-stage-button="compose" aria-current="step">01 Compose</button>
+      <button type="button" data-stage-button="run">02 Run</button>
+      <button type="button" data-stage-button="evidence">03 Evidence</button>
+      <button type="button" data-stage-button="improve">04 Improve</button>
+      <button type="button" data-stage-button="fork">05 Fork</button>
+    </nav>
+
+    <main id="runtime-main" tabindex="-1">
+      <section class="stage" data-stage="compose" tabindex="-1" aria-labelledby="compose-title">
+        <div class="stage-heading">
+          <p class="eyebrow">Teacher intention → runnable lesson</p>
+          <h1 id="compose-title">Compose the classroom you need today.</h1>
+          <p>Select a canonical lesson, name the learning intention, and generate a working model lab with safeguards intact.</p>
+        </div>
+        <form id="compose-form" class="instrument" autocomplete="off">
+          <label>Canonical lesson<select id="lesson-select" required><option>Loading lessons…</option></select></label>
+          <label>What should students understand?<textarea id="teacher-intent" maxlength="180" rows="3" placeholder="Example: Compare two strategies and justify which is more efficient."></textarea></label>
+          <div class="form-row">
+            <label>Class time<select id="minutes-select"><option value="45">45 minutes</option><option value="90">90 minutes</option></select></label>
+            <label>Bilingual mode<select id="language-select"><option value="en">English</option><option value="es">Español</option></select></label>
+          </div>
+          <p id="privacy" class="privacy-note">English / Español only. No student names. Session data stays on this device unless you deliberately use an AI control.</p>
+          <button id="compose-submit" class="primary" type="submit">Compile classroom runtime</button>
+        </form>
+      </section>
+
+      <section class="stage" data-stage="run" tabindex="-1" aria-labelledby="run-title" hidden>
+        <div id="empty-state" class="empty"><h2 id="run-title">Compose a lesson first.</h2><button type="button" data-stage-button="compose">Return to compose</button></div>
+        <div id="runtime-output" hidden>
+          <div class="stage-heading"><p id="runtime-kicker" class="eyebrow"></p><h2 id="runtime-title"></h2><p id="runtime-intent"></p></div>
+          <dl id="runtime-data" class="data-strip"></dl>
+          <div class="run-grid">
+            <article class="instrument"><p class="eyebrow">Generated working interface</p><h3 id="lab-name"></h3><p id="lab-prompt"></p><div id="lab-frame"></div><p id="student-prompt" class="student-prompt"></p><p id="sentence-frame" class="sentence-frame"></p></article>
+            <aside class="instrument"><p class="eyebrow">Live sequence</p><ol id="runtime-sequence" class="timeline"></ol><div class="action-row"><a id="launch-lesson" class="primary link-button" href="/curriculum/">Launch lesson</a><a id="family-link" class="quiet-link" href="/families/">Family connection</a></div></aside>
+          </div>
+          <article class="instrument copilot"><p class="eyebrow">Real-time classroom co-pilot</p><h3>Ask for a coaching move—not an answer.</h3><label>What are you noticing?<textarea id="copilot-prompt" maxlength="600" rows="2" placeholder="Students can calculate, but cannot explain why the strategy works."></textarea></label><button id="ask-copilot" type="button">Suggest one move</button><p id="copilot-output" class="output" aria-live="polite">The deterministic lesson guidance remains available if AI is offline.</p></article>
+        </div>
+      </section>
+
+      <section class="stage" data-stage="evidence" tabindex="-1" aria-labelledby="evidence-title" hidden>
+        <div class="stage-heading"><p class="eyebrow">Observe without labeling children</p><h2 id="evidence-title">Build a model of the reasoning in the room.</h2><p>Use anonymous counts and a brief sample. Inferences are provisional and display their confidence.</p></div>
+        <div class="evidence-grid">
+          <article class="instrument"><h3>Anonymous class pulse</h3><div class="count-row"><label>Secure<input id="secure-count" type="number" min="0" max="99" value="0" /></label><label>Developing<input id="developing-count" type="number" min="0" max="99" value="0" /></label><label>Stuck<input id="stuck-count" type="number" min="0" max="99" value="0" /></label></div><label>De-identified reasoning sample<textarea id="reasoning-evidence" maxlength="600" rows="4" placeholder="Remove names. Record what the learner represented, said, or wrote."></textarea></label><div class="action-row"><button id="update-evidence" class="primary" type="button">Update reasoning model</button><button id="voice-input" type="button">Speak one observation</button></div></article>
+          <article class="instrument signal"><p class="eyebrow">Class adaptation</p><h3 id="adaptation-level">observe</h3><p id="adaptation-move">Collect one anonymous response from every learner.</p><small id="adaptation-total">0 anonymous responses</small><hr /><p class="eyebrow">Reasoning inference</p><h3 id="reasoning-state">not-yet-observed</h3><p id="reasoning-inference">More evidence is needed.</p><p id="reasoning-next"></p><small id="reasoning-confidence">0% confidence</small></article>
+        </div>
+        <article class="instrument"><p class="eyebrow">Optional vision coaching</p><h3>Inspect mathematical work with consent.</h3><p>Use a de-identified photo only. The image is sent to the tutor service for this request and is not placed in the local portfolio.</p><label>Student work image<input id="work-photo" type="file" accept="image/jpeg,image/png,image/webp" /></label><button id="inspect-photo" type="button">Suggest one coaching move</button><p id="vision-output" class="output" aria-live="polite"></p></article>
+      </section>
+
+      <section class="stage" data-stage="improve" tabindex="-1" aria-labelledby="improve-title" hidden>
+        <div class="stage-heading"><p class="eyebrow">Evidence → teacher-approved improvement</p><h2 id="improve-title">Let the curriculum learn, carefully.</h2><p>Specialist agents critique the plan. No revision becomes approved without you.</p></div>
+        <div class="improve-grid">
+          <article class="instrument"><h3>Specialist review</h3><ul id="agent-reviews" class="review-list"><li>Compose a runtime to run the review.</li></ul></article>
+          <article class="instrument"><p class="eyebrow">Revision proposal</p><h3 id="revision-status">awaiting evidence</h3><p id="revision-evidence">Update the evidence stage first.</p><p id="revision-proposal">No change proposed.</p><button id="approve-revision" class="primary" type="button" disabled>Teacher approves revision</button></article>
+        </div>
+        <article class="instrument"><p class="eyebrow">Collective classroom intelligence</p><h3>Cluster anonymous strategies.</h3><div class="action-row"><label class="grow">One de-identified strategy<input id="strategy-entry" maxlength="180" placeholder="Used a number line to show…" /></label><button id="add-strategy" type="button">Add strategy</button></div><ul id="strategy-clusters" class="cluster-list"><li class="muted">Add anonymous strategy notes to reveal patterns.</li></ul></article>
+      </section>
+
+      <section class="stage" data-stage="fork" tabindex="-1" aria-labelledby="fork-title" hidden>
+        <div class="stage-heading"><p class="eyebrow">Change the context, preserve the mathematics</p><h2 id="fork-title">Fork a lesson with visible invariants.</h2><p>The standard, objective, and assessment remain locked while the context and visual framing change.</p></div>
+        <article class="instrument fork-maker"><label>New context or theme<input id="fork-theme" maxlength="100" placeholder="Baltimore neighborhood garden" /></label><button id="create-fork" class="primary" type="button">Create controlled fork</button><div id="fork-output" class="fork-output" hidden><dl><div><dt>Theme</dt><dd id="fork-theme-output"></dd></div><div><dt>Changed</dt><dd id="fork-changes"></dd></div><div><dt>Preserved</dt><dd id="fork-invariants"></dd></div></dl><button id="export-fork" type="button">Export fork JSON</button></div></article>
+      </section>
+    </main>
+    <footer><p>Teacher-controlled · local-first · English / Español · <a href="/curriculum/">Return to curriculum</a></p></footer>
+    <script type="module" src="./runtime-controller.js"></script>
+  </body>
+</html>

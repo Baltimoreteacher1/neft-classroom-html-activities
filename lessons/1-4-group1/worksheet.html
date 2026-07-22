@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>1.4 Small Group · Group 1 — Practice Worksheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --navy:#143a6b; --blue:#1f5fa6; --teal:#1c7a64; --ink:#16243d; --muted:#5a6b82;
+  --line:#d7e2ed; --soft:#eef3f9; --bank:#fff8e8; --bank-line:#f0d9a0; --ex:#eaf4ff;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:13.5px;line-height:1.5;}
+.ws-page{background:#fff;max-width:760px;margin:18px auto;padding:34px 40px 44px;box-shadow:0 6px 24px rgba(20,40,75,.12);border-radius:6px;}
+.ws-head{border-bottom:3px solid var(--navy);padding-bottom:12px;margin-bottom:18px;}
+.ws-head-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.ws-std{background:var(--navy);color:#fff;font-weight:700;font-size:11px;letter-spacing:.04em;padding:4px 11px;border-radius:999px;}
+.ws-ver{font-family:"Fraunces",serif;font-weight:700;color:var(--blue);font-size:14px;}
+.ws-title{font-family:"Fraunces",serif;font-weight:700;font-size:25px;margin:4px 0 2px;color:var(--navy);line-height:1.1;}
+.ws-sub{margin:0;color:var(--muted);font-weight:600;font-size:13px;}
+.ws-meta{display:flex;gap:28px;margin-top:12px;font-weight:600;color:var(--ink);font-size:13px;}
+.ws-fill{display:inline-block;width:220px;border-bottom:1.5px solid var(--ink);}
+.ws-fill-sm{width:120px;}
+.ws-bank{background:var(--bank);border:1.5px solid var(--bank-line);border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-bank-h,.ws-example-h{font-family:"Fraunces",serif;font-size:14px;margin:0 0 8px;color:var(--navy);}
+.ws-bankwords{display:flex;flex-wrap:wrap;gap:8px;}
+.ws-bankword{background:#fff;border:1.5px solid var(--bank-line);border-radius:999px;padding:4px 12px;font-weight:700;font-size:12.5px;}
+.ws-example{background:var(--ex);border:1.5px solid #cfe2f6;border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-example-steps{margin:0;padding-left:18px;}
+.ws-example-steps li{margin:2px 0;}
+.ws-problems{list-style:none;margin:0;padding:0;counter-reset:none;}
+.ws-problem{display:flex;gap:12px;padding:14px 0;border-bottom:1px dashed var(--line);break-inside:avoid;page-break-inside:avoid;}
+.ws-problem:last-child{border-bottom:0;}
+.ws-pnum{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.ws-pbody{flex:1;min-width:0;}
+.ws-stem{margin:0 0 8px;font-weight:600;}
+.ws-prompt{margin:6px 0;color:var(--muted);font-size:12.5px;}
+.ws-opts{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;}
+.ws-opt{display:flex;align-items:flex-start;gap:8px;}
+.ws-bub{flex:0 0 auto;width:22px;height:22px;border:2px solid var(--navy);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;}
+.ws-bub-sm{width:20px;height:20px;font-size:11px;}
+.ws-correct .ws-bub{background:var(--teal);border-color:var(--teal);color:#fff;}
+.ws-correct{font-weight:700;color:var(--teal);}
+.ws-keynote{margin:6px 0 0;color:var(--teal);font-size:12px;font-style:italic;}
+.ws-watch{margin:4px 0 0;color:#9a4a12;font-size:12px;background:#fff3e6;border-left:3px solid #e08a3c;padding:5px 10px;border-radius:0 8px 8px 0;}
+.ws-scaffold-note{margin:0 0 14px;background:var(--soft);border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;font-weight:600;color:var(--navy);font-size:12.5px;}
+.ws-match{display:flex;gap:24px;flex-wrap:wrap;}
+.ws-match-terms{list-style:none;margin:0;padding:0;flex:1;min-width:180px;}
+.ws-match-term{display:flex;align-items:center;gap:8px;margin:5px 0;font-weight:600;}
+.ws-match-bank{list-style:none;margin:0;padding:10px 12px;background:var(--soft);border:1px solid var(--line);border-radius:10px;flex:1;min-width:180px;}
+.ws-match-bank li{display:flex;align-items:center;gap:8px;margin:4px 0;}
+.ws-blank{display:inline-block;min-width:54px;border-bottom:1.5px solid var(--ink);text-align:center;font-weight:700;}
+.ws-blank-sm{min-width:40px;}
+.ws-steps{list-style:none;margin:6px 0;padding:0;}
+.ws-steps li{display:flex;gap:10px;align-items:baseline;padding:4px 0;}
+.ws-step-n{flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:var(--soft);font-weight:700;font-size:11px;display:inline-flex;align-items:center;justify-content:center;}
+.ws-step-l{flex:0 0 38%;font-weight:600;}
+.ws-step-w{flex:1;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
+.ws-table{width:100%;border-collapse:collapse;margin:8px 0;}
+.ws-table th{background:var(--navy);color:#fff;font-size:12px;padding:7px 9px;text-align:left;}
+.ws-table td{border:1px solid var(--line);padding:9px;height:34px;font-weight:600;}
+.ws-lines{margin:8px 0 0;}
+.ws-line{display:block;border-bottom:1.5px solid var(--line);height:24px;}
+.ws-work{margin:8px 0 0;border:1.5px dashed var(--line);border-radius:10px;min-height:70px;padding:6px 10px;position:relative;}
+.ws-work-label{color:var(--muted);font-size:11px;font-weight:600;}
+.ws-frame{background:var(--soft);border-left:3px solid var(--blue);padding:6px 10px;margin:6px 0;font-style:italic;color:var(--muted);border-radius:0 8px 8px 0;}
+.ws-sort{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:5px 18px;}
+.ws-sort li{display:flex;align-items:center;gap:8px;font-weight:600;}
+
+@media print{
+  body{background:#fff;font-size:12pt;}
+  .ws-page{box-shadow:none;border-radius:0;margin:0;max-width:none;padding:0;page-break-after:always;}
+  .ws-page:last-child{page-break-after:auto;}
+  @page{margin:1.5cm;}
+  a{color:#000;}
+}
+
+/* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
+   Appended last so it overrides each generator's base CSS. Finish-only:
+   serif headings + paper ground + AA-safe ink. No layout/size changes. */
+:root{ --ink:#19262f; --muted:#475663; }
+body{ background:#f5f0e6; color:#19262f; }
+h1,h2,h3,h4,h5,h6,
+header.packet h1,.section>h2,.li-title,.learnit-head,.learnit-stage-title,
+.mission-title,.answer-key h2,.think-block h3,.topbar .brand{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
+/* A thin editorial accent rule under the document's main title. */
+header.packet h1{ position:relative; }
+header.packet h1::after{
+  content:""; display:block; width:56px; height:2px; margin-top:8px;
+  background:linear-gradient(90deg,#1fa6a2,#f2c15b); border-radius:2px;
+}
+@media print{ body{ background:#fff !important; } }
+
+</style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
+  <!-- nsr-injected:end -->
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+
+  <!-- enthead-injected:begin (enterprise head/meta — tools/inject-enterprise-head.js) -->
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/favicon.svg">
+  <meta name="theme-color" content="#12355b">
+  <link rel="canonical" href="https://eduwonderlab.com/lessons/1-4-group1/worksheet.html">
+  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — 1.4 Small Group · Group 1 — Practice Worksheet.">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Neft Teacher">
+  <meta property="og:title" content="1.4 Small Group · Group 1 — Practice Worksheet">
+  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — 1.4 Small Group · Group 1 — Practice Worksheet.">
+  <meta property="og:url" content="https://eduwonderlab.com/lessons/1-4-group1/worksheet.html">
+  <meta property="og:image" content="https://eduwonderlab.com/assets/og-curriculum.png">
+  <!-- enthead-injected:end -->
+</head>
+<body>
+<main>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NOS.2</span>
+      <span class="ws-ver">Level 0</span>
+    </div>
+    <h1 class="ws-title">1.4 Small Group · Group 1</h1>
+    <p class="ws-sub">Practice — Level 0</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    <section class="ws-bank">
+    <h2 class="ws-bank-h">📕 Word Bank</h2>
+    <div class="ws-bankwords"><span class="ws-bankword">Dividend</span><span class="ws-bankword">Divisor</span><span class="ws-bankword">Quotient</span><span class="ws-bankword">Remainder</span></div>
+  </section><section class="ws-example">
+    <h2 class="ws-example-h">✏️ Worked Example</h2>
+    <ol class="ws-example-steps"><li><b>Problem:</b> Divide 2,058 ÷ 14 using partial quotients. Dividend = 2,058, divisor = 14.</li><li><b>Step 1:</b> 14 × 100 = 1,400, so 2,058 − 1,400 = 658</li><li><b>Step 2:</b> 14 × 40 = 560, so 658 − 560 = 98</li><li><b>Step 3:</b> 14 × 8 = 112, so 98 − 112 = −14</li><li><b>Final answer:</b> Quotient = 100 + 40 + 8 = 148</li></ol>
+  </section>
+    <p class="ws-scaffold-note">🧩 Extra support: use the word bank and the worked example. A sentence starter is given under each problem.</p>
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">What is 936 ÷ 12?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>78</li><li class="ws-opt"><span class="ws-bub">B</span>87</li><li class="ws-opt"><span class="ws-bub">C</span>68</li><li class="ws-opt"><span class="ws-bub">D</span>76</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">What is 2,485 ÷ 5?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>497</li><li class="ws-opt"><span class="ws-bub">B</span>487</li><li class="ws-opt"><span class="ws-bub">C</span>507</li><li class="ws-opt"><span class="ws-bub">D</span>496</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">What is 756 ÷ 9?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>84</li><li class="ws-opt"><span class="ws-bub">B</span>83</li><li class="ws-opt"><span class="ws-bub">C</span>94</li><li class="ws-opt"><span class="ws-bub">D</span>86</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">What is 1,125 ÷ 9?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>125</li><li class="ws-opt"><span class="ws-bub">B</span>115</li><li class="ws-opt"><span class="ws-bub">C</span>135</li><li class="ws-opt"><span class="ws-bub">D</span>124</li></ol></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NOS.2</span>
+      <span class="ws-ver">Version A</span>
+    </div>
+    <h1 class="ws-title">1.4 Small Group · Group 1</h1>
+    <p class="ws-sub">Practice — Version A</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    <section class="ws-bank">
+    <h2 class="ws-bank-h">📕 Word Bank</h2>
+    <div class="ws-bankwords"><span class="ws-bankword">Dividend</span><span class="ws-bankword">Divisor</span><span class="ws-bankword">Quotient</span><span class="ws-bankword">Remainder</span></div>
+  </section><section class="ws-example">
+    <h2 class="ws-example-h">✏️ Worked Example</h2>
+    <ol class="ws-example-steps"><li><b>Problem:</b> Divide 2,058 ÷ 14 using partial quotients. Dividend = 2,058, divisor = 14.</li><li><b>Step 1:</b> 14 × 100 = 1,400, so 2,058 − 1,400 = 658</li><li><b>Step 2:</b> 14 × 40 = 560, so 658 − 560 = 98</li><li><b>Step 3:</b> 14 × 8 = 112, so 98 − 112 = −14</li><li><b>Final answer:</b> Quotient = 100 + 40 + 8 = 148</li></ol>
+  </section>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">What is 936 ÷ 12?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>78</li><li class="ws-opt"><span class="ws-bub">B</span>87</li><li class="ws-opt"><span class="ws-bub">C</span>68</li><li class="ws-opt"><span class="ws-bub">D</span>76</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">What is 2,485 ÷ 5?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>497</li><li class="ws-opt"><span class="ws-bub">B</span>487</li><li class="ws-opt"><span class="ws-bub">C</span>507</li><li class="ws-opt"><span class="ws-bub">D</span>496</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">What is 756 ÷ 9?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>84</li><li class="ws-opt"><span class="ws-bub">B</span>83</li><li class="ws-opt"><span class="ws-bub">C</span>94</li><li class="ws-opt"><span class="ws-bub">D</span>86</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">What is 1,125 ÷ 9?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>125</li><li class="ws-opt"><span class="ws-bub">B</span>115</li><li class="ws-opt"><span class="ws-bub">C</span>135</li><li class="ws-opt"><span class="ws-bub">D</span>124</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Spot the Mistake in 1,134 ÷ 9</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">Divide 1,134 ÷ 9 using partial quotients. Dividend = 1,134, divisor = 9.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Step 1</span><span class="ws-step-w">9 × 100 = 900, so 1,134 − 900 = 234</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Step 2</span><span class="ws-step-w">9 × 20 = 180, so 234 − 180 = 54</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Final answer</span><span class="ws-step-w">Quotient = 100 + 20 = 120</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">A warehouse has 2,184 items to pack into boxes of 14. How many boxes are needed?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>156 boxes</li><li class="ws-opt"><span class="ws-bub">B</span>146 boxes</li><li class="ws-opt"><span class="ws-bub">C</span>166 boxes</li><li class="ws-opt"><span class="ws-bub">D</span>155 boxes</li></ol></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NOS.2</span>
+      <span class="ws-ver">Version B</span>
+    </div>
+    <h1 class="ws-title">1.4 Small Group · Group 1</h1>
+    <p class="ws-sub">Practice — Version B</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Spot the Mistake in 2,058 ÷ 14</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">Divide 2,058 ÷ 14 using partial quotients. Dividend = 2,058, divisor = 14.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Step 1</span><span class="ws-step-w">14 × 100 = 1,400, so 2,058 − 1,400 = 658</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Step 2</span><span class="ws-step-w">14 × 40 = 560, so 658 − 560 = 98</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Step 3</span><span class="ws-step-w">14 × 8 = 112, so 98 − 112 = −14</span></li><li><span class="ws-step-n">5</span><span class="ws-step-l">Final answer</span><span class="ws-step-w">Quotient = 100 + 40 + 8 = 148</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">What is 4,896 ÷ 12?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>408</li><li class="ws-opt"><span class="ws-bub">B</span>48</li><li class="ws-opt"><span class="ws-bub">C</span>480</li><li class="ws-opt"><span class="ws-bub">D</span>380</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">What is 7,225 ÷ 25?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>289</li><li class="ws-opt"><span class="ws-bub">B</span>29</li><li class="ws-opt"><span class="ws-bub">C</span>2,890</li><li class="ws-opt"><span class="ws-bub">D</span>389</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A school orders 3,648 pencils packed 24 to a box. How many boxes are there?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>152</li><li class="ws-opt"><span class="ws-bub">B</span>148</li><li class="ws-opt"><span class="ws-bub">C</span>160</li><li class="ws-opt"><span class="ws-bub">D</span>144</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">What is 5,084 ÷ 31?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>164</li><li class="ws-opt"><span class="ws-bub">B</span>154</li><li class="ws-opt"><span class="ws-bub">C</span>174</li><li class="ws-opt"><span class="ws-bub">D</span>164 r2</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">Path 1: The first arcade door shows 4,928 ÷ 7. Which quotient lights the correct path?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>704</li><li class="ws-opt"><span class="ws-bub">B</span>74</li><li class="ws-opt"><span class="ws-bub">C</span>740</li><li class="ws-opt"><span class="ws-bub">D</span>703 r7</li></ol></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NOS.2</span>
+      <span class="ws-ver">Level 0 — Answer Key</span>
+    </div>
+    <h1 class="ws-title">1.4 Small Group · Group 1</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">What is 936 ÷ 12?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>78</li><li class="ws-opt"><span class="ws-bub">B</span>87</li><li class="ws-opt"><span class="ws-bub">C</span>68</li><li class="ws-opt"><span class="ws-bub">D</span>76</li></ol><p class="ws-keynote">12 × 78 = 936. You can verify: 12 × 70 = 840, 12 × 8 = 96, 840 + 96 = 936.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Divide Multi-Digit Numbers is skipping a placeholder zero in the quotient when a digit doesn't divide evenly, which shifts every digit after it out of place. For example, dividing 3,216 ÷ 3: 3 ÷ 3 = 1, but the next digit 2 doesn't divide by 3, so a 0 must be written before continuing — bring down the 1 to make 21 ÷ 3 = 7, then bring down 6 ÷ 3 = 2, giving the correct quotient 1,072. A student who skips writing that 0 and jumps straight to 21 ÷ 3 = 7 ends up with 172 instead of 1,072 — an answer off by a factor of ten. Always check: does a digit in your quotient go missing every time you 'can't divide'? If so, you dropped a placeholder zero.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">What is 2,485 ÷ 5?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>497</li><li class="ws-opt"><span class="ws-bub">B</span>487</li><li class="ws-opt"><span class="ws-bub">C</span>507</li><li class="ws-opt"><span class="ws-bub">D</span>496</li></ol><p class="ws-keynote">5 × 497 = 2,485. Check: 5 × 400 = 2,000, 5 × 90 = 450, 5 × 7 = 35. 2,000 + 450 + 35 = 2,485.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Divide Multi-Digit Numbers is skipping a placeholder zero in the quotient when a digit doesn't divide evenly, which shifts every digit after it out of place. For example, dividing 3,216 ÷ 3: 3 ÷ 3 = 1, but the next digit 2 doesn't divide by 3, so a 0 must be written before continuing — bring down the 1 to make 21 ÷ 3 = 7, then bring down 6 ÷ 3 = 2, giving the correct quotient 1,072. A student who skips writing that 0 and jumps straight to 21 ÷ 3 = 7 ends up with 172 instead of 1,072 — an answer off by a factor of ten. Always check: does a digit in your quotient go missing every time you 'can't divide'? If so, you dropped a placeholder zero.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">What is 756 ÷ 9?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>84</li><li class="ws-opt"><span class="ws-bub">B</span>83</li><li class="ws-opt"><span class="ws-bub">C</span>94</li><li class="ws-opt"><span class="ws-bub">D</span>86</li></ol><p class="ws-keynote">9 × 84 = 756. Check: 9 × 80 = 720, 9 × 4 = 36, 720 + 36 = 756.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Divide Multi-Digit Numbers is skipping a placeholder zero in the quotient when a digit doesn't divide evenly, which shifts every digit after it out of place. For example, dividing 3,216 ÷ 3: 3 ÷ 3 = 1, but the next digit 2 doesn't divide by 3, so a 0 must be written before continuing — bring down the 1 to make 21 ÷ 3 = 7, then bring down 6 ÷ 3 = 2, giving the correct quotient 1,072. A student who skips writing that 0 and jumps straight to 21 ÷ 3 = 7 ends up with 172 instead of 1,072 — an answer off by a factor of ten. Always check: does a digit in your quotient go missing every time you 'can't divide'? If so, you dropped a placeholder zero.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">What is 1,125 ÷ 9?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>125</li><li class="ws-opt"><span class="ws-bub">B</span>115</li><li class="ws-opt"><span class="ws-bub">C</span>135</li><li class="ws-opt"><span class="ws-bub">D</span>124</li></ol><p class="ws-keynote">9 × 125 = 1,125. Check: 9 × 100 = 900, 9 × 25 = 225, 900 + 225 = 1,125.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Divide Multi-Digit Numbers is skipping a placeholder zero in the quotient when a digit doesn't divide evenly, which shifts every digit after it out of place. For example, dividing 3,216 ÷ 3: 3 ÷ 3 = 1, but the next digit 2 doesn't divide by 3, so a 0 must be written before continuing — bring down the 1 to make 21 ÷ 3 = 7, then bring down 6 ÷ 3 = 2, giving the correct quotient 1,072. A student who skips writing that 0 and jumps straight to 21 ÷ 3 = 7 ends up with 172 instead of 1,072 — an answer off by a factor of ten. Always check: does a digit in your quotient go missing every time you 'can't divide'? If so, you dropped a placeholder zero.</p></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NOS.2</span>
+      <span class="ws-ver">Version A — Answer Key</span>
+    </div>
+    <h1 class="ws-title">1.4 Small Group · Group 1</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">What is 936 ÷ 12?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>78</li><li class="ws-opt"><span class="ws-bub">B</span>87</li><li class="ws-opt"><span class="ws-bub">C</span>68</li><li class="ws-opt"><span class="ws-bub">D</span>76</li></ol><p class="ws-keynote">12 × 78 = 936. You can verify: 12 × 70 = 840, 12 × 8 = 96, 840 + 96 = 936.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Divide Multi-Digit Numbers is skipping a placeholder zero in the quotient when a digit doesn't divide evenly, which shifts every digit after it out of place. For example, dividing 3,216 ÷ 3: 3 ÷ 3 = 1, but the next digit 2 doesn't divide by 3, so a 0 must be written before continuing — bring down the 1 to make 21 ÷ 3 = 7, then bring down 6 ÷ 3 = 2, giving the correct quotient 1,072. A student who skips writing that 0 and jumps straight to 21 ÷ 3 = 7 ends up with 172 instead of 1,072 — an answer off by a factor of ten. Always check: does a digit in your quotient go missing every time you 'can't divide'? If so, you dropped a placeholder zero.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">What is 2,485 ÷ 5?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>497</li><li class="ws-opt"><span class="ws-bub">B</span>487</li><li class="ws-opt"><span class="ws-bub">C</span>507</li><li class="ws-opt"><span class="ws-bub">D</span>496</li></ol><p class="ws-keynote">5 × 497 = 2,485. Check: 5 × 400 = 2,000, 5 × 90 = 450, 5 × 7 = 35. 2,000 + 450 + 35 = 2,485.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Divide Multi-Digit Numbers is skipping a placeholder zero in the quotient when a digit doesn't divide evenly, which shifts every digit after it out of place. For example, dividing 3,216 ÷ 3: 3 ÷ 3 = 1, but the next digit 2 doesn't divide by 3, so a 0 must be written before continuing — bring down the 1 to make 21 ÷ 3 = 7, then bring down 6 ÷ 3 = 2, giving the correct quotient 1,072. A student who skips writing that 0 and jumps straight to 21 ÷ 3 = 7 ends up with 172 instead of 1,072 — an answer off by a factor of ten. Always check: does a digit in your quotient go missing every time you 'can't divide'? If so, you dropped a placeholder zero.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">What is 756 ÷ 9?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>84</li><li class="ws-opt"><span class="ws-bub">B</span>83</li><li class="ws-opt"><span class="ws-bub">C</span>94</li><li class="ws-opt"><span class="ws-bub">D</span>86</li></ol><p class="ws-keynote">9 × 84 = 756. Check: 9 × 80 = 720, 9 × 4 = 36, 720 + 36 = 756.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Divide Multi-Digit Numbers is skipping a placeholder zero in the quotient when a digit doesn't divide evenly, which shifts every digit after it out of place. For example, dividing 3,216 ÷ 3: 3 ÷ 3 = 1, but the next digit 2 doesn't divide by 3, so a 0 must be written before continuing — bring down the 1 to make 21 ÷ 3 = 7, then bring down 6 ÷ 3 = 2, giving the correct quotient 1,072. A student who skips writing that 0 and jumps straight to 21 ÷ 3 = 7 ends up with 172 instead of 1,072 — an answer off by a factor of ten. Always check: does a digit in your quotient go missing every time you 'can't divide'? If so, you dropped a placeholder zero.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">What is 1,125 ÷ 9?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>125</li><li class="ws-opt"><span class="ws-bub">B</span>115</li><li class="ws-opt"><span class="ws-bub">C</span>135</li><li class="ws-opt"><span class="ws-bub">D</span>124</li></ol><p class="ws-keynote">9 × 125 = 1,125. Check: 9 × 100 = 900, 9 × 25 = 225, 900 + 225 = 1,125.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Divide Multi-Digit Numbers is skipping a placeholder zero in the quotient when a digit doesn't divide evenly, which shifts every digit after it out of place. For example, dividing 3,216 ÷ 3: 3 ÷ 3 = 1, but the next digit 2 doesn't divide by 3, so a 0 must be written before continuing — bring down the 1 to make 21 ÷ 3 = 7, then bring down 6 ÷ 3 = 2, giving the correct quotient 1,072. A student who skips writing that 0 and jumps straight to 21 ÷ 3 = 7 ends up with 172 instead of 1,072 — an answer off by a factor of ten. Always check: does a digit in your quotient go missing every time you 'can't divide'? If so, you dropped a placeholder zero.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Spot the Mistake in 1,134 ÷ 9</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">Divide 1,134 ÷ 9 using partial quotients. Dividend = 1,134, divisor = 9.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Step 1</span><span class="ws-step-w">9 × 100 = 900, so 1,134 − 900 = 234</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Step 2</span><span class="ws-step-w">9 × 20 = 180, so 234 − 180 = 54</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Final answer</span><span class="ws-step-w">Quotient = 100 + 20 = 120</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 4. Correct work: The student stopped one chunk early. After Step 2 there are still 54 left, and 9 × 6 = 54, so 54 − 54 = 0. That last partial quotient of 6 must be added: 100 + 20 + 6 = 126. Check: 9 × 126 = 1,134, which equals the dividend.</p></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">A warehouse has 2,184 items to pack into boxes of 14. How many boxes are needed?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>156 boxes</li><li class="ws-opt"><span class="ws-bub">B</span>146 boxes</li><li class="ws-opt"><span class="ws-bub">C</span>166 boxes</li><li class="ws-opt"><span class="ws-bub">D</span>155 boxes</li></ol><p class="ws-keynote">2,184 ÷ 14 = 156. Check: 14 × 156 = 14 × 150 + 14 × 6 = 2,100 + 84 = 2,184.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Divide Multi-Digit Numbers is skipping a placeholder zero in the quotient when a digit doesn't divide evenly, which shifts every digit after it out of place. For example, dividing 3,216 ÷ 3: 3 ÷ 3 = 1, but the next digit 2 doesn't divide by 3, so a 0 must be written before continuing — bring down the 1 to make 21 ÷ 3 = 7, then bring down 6 ÷ 3 = 2, giving the correct quotient 1,072. A student who skips writing that 0 and jumps straight to 21 ÷ 3 = 7 ends up with 172 instead of 1,072 — an answer off by a factor of ten. Always check: does a digit in your quotient go missing every time you 'can't divide'? If so, you dropped a placeholder zero.</p></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NOS.2</span>
+      <span class="ws-ver">Version B — Answer Key</span>
+    </div>
+    <h1 class="ws-title">1.4 Small Group · Group 1</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Spot the Mistake in 2,058 ÷ 14</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">Divide 2,058 ÷ 14 using partial quotients. Dividend = 2,058, divisor = 14.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Step 1</span><span class="ws-step-w">14 × 100 = 1,400, so 2,058 − 1,400 = 658</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Step 2</span><span class="ws-step-w">14 × 40 = 560, so 658 − 560 = 98</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Step 3</span><span class="ws-step-w">14 × 8 = 112, so 98 − 112 = −14</span></li><li><span class="ws-step-n">5</span><span class="ws-step-l">Final answer</span><span class="ws-step-w">Quotient = 100 + 40 + 8 = 148</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 4. Correct work: Step 3 picks a chunk that is too big: only 98 remained, but 14 × 8 = 112 is larger than 98 — you cannot subtract more than what is left. Use the largest chunk that still fits: 14 × 7 = 98, so 98 − 98 = 0. The quotient is 100 + 40 + 7 = 147 with remainder 0. Check: 14 × 147 = 2,058, which equals the dividend.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">What is 4,896 ÷ 12?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>408</li><li class="ws-opt"><span class="ws-bub">B</span>48</li><li class="ws-opt"><span class="ws-bub">C</span>480</li><li class="ws-opt"><span class="ws-bub">D</span>380</li></ol><p class="ws-keynote">12 × 408 = 4,896.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Divide Multi-Digit Numbers is skipping a placeholder zero in the quotient when a digit doesn't divide evenly, which shifts every digit after it out of place. For example, dividing 3,216 ÷ 3: 3 ÷ 3 = 1, but the next digit 2 doesn't divide by 3, so a 0 must be written before continuing — bring down the 1 to make 21 ÷ 3 = 7, then bring down 6 ÷ 3 = 2, giving the correct quotient 1,072. A student who skips writing that 0 and jumps straight to 21 ÷ 3 = 7 ends up with 172 instead of 1,072 — an answer off by a factor of ten. Always check: does a digit in your quotient go missing every time you 'can't divide'? If so, you dropped a placeholder zero.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">What is 7,225 ÷ 25?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>289</li><li class="ws-opt"><span class="ws-bub">B</span>29</li><li class="ws-opt"><span class="ws-bub">C</span>2,890</li><li class="ws-opt"><span class="ws-bub">D</span>389</li></ol><p class="ws-keynote">25 × 289 = 7,225.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Divide Multi-Digit Numbers is skipping a placeholder zero in the quotient when a digit doesn't divide evenly, which shifts every digit after it out of place. For example, dividing 3,216 ÷ 3: 3 ÷ 3 = 1, but the next digit 2 doesn't divide by 3, so a 0 must be written before continuing — bring down the 1 to make 21 ÷ 3 = 7, then bring down 6 ÷ 3 = 2, giving the correct quotient 1,072. A student who skips writing that 0 and jumps straight to 21 ÷ 3 = 7 ends up with 172 instead of 1,072 — an answer off by a factor of ten. Always check: does a digit in your quotient go missing every time you 'can't divide'? If so, you dropped a placeholder zero.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A school orders 3,648 pencils packed 24 to a box. How many boxes are there?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>152</li><li class="ws-opt"><span class="ws-bub">B</span>148</li><li class="ws-opt"><span class="ws-bub">C</span>160</li><li class="ws-opt"><span class="ws-bub">D</span>144</li></ol><p class="ws-keynote">3,648 ÷ 24 = 152 boxes.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Divide Multi-Digit Numbers is skipping a placeholder zero in the quotient when a digit doesn't divide evenly, which shifts every digit after it out of place. For example, dividing 3,216 ÷ 3: 3 ÷ 3 = 1, but the next digit 2 doesn't divide by 3, so a 0 must be written before continuing — bring down the 1 to make 21 ÷ 3 = 7, then bring down 6 ÷ 3 = 2, giving the correct quotient 1,072. A student who skips writing that 0 and jumps straight to 21 ÷ 3 = 7 ends up with 172 instead of 1,072 — an answer off by a factor of ten. Always check: does a digit in your quotient go missing every time you 'can't divide'? If so, you dropped a placeholder zero.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">What is 5,084 ÷ 31?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>164</li><li class="ws-opt"><span class="ws-bub">B</span>154</li><li class="ws-opt"><span class="ws-bub">C</span>174</li><li class="ws-opt"><span class="ws-bub">D</span>164 r2</li></ol><p class="ws-keynote">31 × 164 = 5,084 exactly, so there is no remainder.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Divide Multi-Digit Numbers is skipping a placeholder zero in the quotient when a digit doesn't divide evenly, which shifts every digit after it out of place. For example, dividing 3,216 ÷ 3: 3 ÷ 3 = 1, but the next digit 2 doesn't divide by 3, so a 0 must be written before continuing — bring down the 1 to make 21 ÷ 3 = 7, then bring down 6 ÷ 3 = 2, giving the correct quotient 1,072. A student who skips writing that 0 and jumps straight to 21 ÷ 3 = 7 ends up with 172 instead of 1,072 — an answer off by a factor of ten. Always check: does a digit in your quotient go missing every time you 'can't divide'? If so, you dropped a placeholder zero.</p></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">Path 1: The first arcade door shows 4,928 ÷ 7. Which quotient lights the correct path?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>704</li><li class="ws-opt"><span class="ws-bub">B</span>74</li><li class="ws-opt"><span class="ws-bub">C</span>740</li><li class="ws-opt"><span class="ws-bub">D</span>703 r7</li></ol><p class="ws-keynote">7 × 704 = 4,928 exactly, so the quotient is 704 with no remainder.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Divide Multi-Digit Numbers is skipping a placeholder zero in the quotient when a digit doesn't divide evenly, which shifts every digit after it out of place. For example, dividing 3,216 ÷ 3: 3 ÷ 3 = 1, but the next digit 2 doesn't divide by 3, so a 0 must be written before continuing — bring down the 1 to make 21 ÷ 3 = 7, then bring down 6 ÷ 3 = 2, giving the correct quotient 1,072. A student who skips writing that 0 and jumps straight to 21 ÷ 3 = 7 ends up with 172 instead of 1,072 — an answer off by a factor of ten. Always check: does a digit in your quotient go missing every time you 'can't divide'? If so, you dropped a placeholder zero.</p></div></li></ol>
+  </section>
+</main>
+<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+  <!-- nsr-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
+  </body>
+</html>

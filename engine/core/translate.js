@@ -8,18 +8,7 @@
 //
 // mountTranslate({ getPhaseEl })
 
-const LANGS = [
-  "Spanish",
-  "Arabic",
-  "Chinese (Simplified)",
-  "French",
-  "Vietnamese",
-  "Portuguese",
-  "Russian",
-  "Ukrainian",
-  "Haitian Creole",
-  "Nepali",
-];
+const LANGS = ["Spanish"];
 const LAST_KEY = "nt-translate-lang";
 
 export function mountTranslate({ getPhaseEl }) {

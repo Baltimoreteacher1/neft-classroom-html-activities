@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>8.7 Small Group · Group 2 — Practice Worksheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --navy:#143a6b; --blue:#1f5fa6; --teal:#1c7a64; --ink:#16243d; --muted:#5a6b82;
+  --line:#d7e2ed; --soft:#eef3f9; --bank:#fff8e8; --bank-line:#f0d9a0; --ex:#eaf4ff;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:13.5px;line-height:1.5;}
+.ws-page{background:#fff;max-width:760px;margin:18px auto;padding:34px 40px 44px;box-shadow:0 6px 24px rgba(20,40,75,.12);border-radius:6px;}
+.ws-head{border-bottom:3px solid var(--navy);padding-bottom:12px;margin-bottom:18px;}
+.ws-head-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.ws-std{background:var(--navy);color:#fff;font-weight:700;font-size:11px;letter-spacing:.04em;padding:4px 11px;border-radius:999px;}
+.ws-ver{font-family:"Fraunces",serif;font-weight:700;color:var(--blue);font-size:14px;}
+.ws-title{font-family:"Fraunces",serif;font-weight:700;font-size:25px;margin:4px 0 2px;color:var(--navy);line-height:1.1;}
+.ws-sub{margin:0;color:var(--muted);font-weight:600;font-size:13px;}
+.ws-meta{display:flex;gap:28px;margin-top:12px;font-weight:600;color:var(--ink);font-size:13px;}
+.ws-fill{display:inline-block;width:220px;border-bottom:1.5px solid var(--ink);}
+.ws-fill-sm{width:120px;}
+.ws-bank{background:var(--bank);border:1.5px solid var(--bank-line);border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-bank-h,.ws-example-h{font-family:"Fraunces",serif;font-size:14px;margin:0 0 8px;color:var(--navy);}
+.ws-bankwords{display:flex;flex-wrap:wrap;gap:8px;}
+.ws-bankword{background:#fff;border:1.5px solid var(--bank-line);border-radius:999px;padding:4px 12px;font-weight:700;font-size:12.5px;}
+.ws-example{background:var(--ex);border:1.5px solid #cfe2f6;border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-example-steps{margin:0;padding-left:18px;}
+.ws-example-steps li{margin:2px 0;}
+.ws-problems{list-style:none;margin:0;padding:0;counter-reset:none;}
+.ws-problem{display:flex;gap:12px;padding:14px 0;border-bottom:1px dashed var(--line);break-inside:avoid;page-break-inside:avoid;}
+.ws-problem:last-child{border-bottom:0;}
+.ws-pnum{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.ws-pbody{flex:1;min-width:0;}
+.ws-stem{margin:0 0 8px;font-weight:600;}
+.ws-prompt{margin:6px 0;color:var(--muted);font-size:12.5px;}
+.ws-opts{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;}
+.ws-opt{display:flex;align-items:flex-start;gap:8px;}
+.ws-bub{flex:0 0 auto;width:22px;height:22px;border:2px solid var(--navy);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;}
+.ws-bub-sm{width:20px;height:20px;font-size:11px;}
+.ws-correct .ws-bub{background:var(--teal);border-color:var(--teal);color:#fff;}
+.ws-correct{font-weight:700;color:var(--teal);}
+.ws-keynote{margin:6px 0 0;color:var(--teal);font-size:12px;font-style:italic;}
+.ws-watch{margin:4px 0 0;color:#9a4a12;font-size:12px;background:#fff3e6;border-left:3px solid #e08a3c;padding:5px 10px;border-radius:0 8px 8px 0;}
+.ws-scaffold-note{margin:0 0 14px;background:var(--soft);border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;font-weight:600;color:var(--navy);font-size:12.5px;}
+.ws-match{display:flex;gap:24px;flex-wrap:wrap;}
+.ws-match-terms{list-style:none;margin:0;padding:0;flex:1;min-width:180px;}
+.ws-match-term{display:flex;align-items:center;gap:8px;margin:5px 0;font-weight:600;}
+.ws-match-bank{list-style:none;margin:0;padding:10px 12px;background:var(--soft);border:1px solid var(--line);border-radius:10px;flex:1;min-width:180px;}
+.ws-match-bank li{display:flex;align-items:center;gap:8px;margin:4px 0;}
+.ws-blank{display:inline-block;min-width:54px;border-bottom:1.5px solid var(--ink);text-align:center;font-weight:700;}
+.ws-blank-sm{min-width:40px;}
+.ws-steps{list-style:none;margin:6px 0;padding:0;}
+.ws-steps li{display:flex;gap:10px;align-items:baseline;padding:4px 0;}
+.ws-step-n{flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:var(--soft);font-weight:700;font-size:11px;display:inline-flex;align-items:center;justify-content:center;}
+.ws-step-l{flex:0 0 38%;font-weight:600;}
+.ws-step-w{flex:1;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
+.ws-table{width:100%;border-collapse:collapse;margin:8px 0;}
+.ws-table th{background:var(--navy);color:#fff;font-size:12px;padding:7px 9px;text-align:left;}
+.ws-table td{border:1px solid var(--line);padding:9px;height:34px;font-weight:600;}
+.ws-lines{margin:8px 0 0;}
+.ws-line{display:block;border-bottom:1.5px solid var(--line);height:24px;}
+.ws-work{margin:8px 0 0;border:1.5px dashed var(--line);border-radius:10px;min-height:70px;padding:6px 10px;position:relative;}
+.ws-work-label{color:var(--muted);font-size:11px;font-weight:600;}
+.ws-frame{background:var(--soft);border-left:3px solid var(--blue);padding:6px 10px;margin:6px 0;font-style:italic;color:var(--muted);border-radius:0 8px 8px 0;}
+.ws-sort{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:5px 18px;}
+.ws-sort li{display:flex;align-items:center;gap:8px;font-weight:600;}
+
+@media print{
+  body{background:#fff;font-size:12pt;}
+  .ws-page{box-shadow:none;border-radius:0;margin:0;max-width:none;padding:0;page-break-after:always;}
+  .ws-page:last-child{page-break-after:auto;}
+  @page{margin:1.5cm;}
+  a{color:#000;}
+}
+
+/* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
+   Appended last so it overrides each generator's base CSS. Finish-only:
+   serif headings + paper ground + AA-safe ink. No layout/size changes. */
+:root{ --ink:#19262f; --muted:#475663; }
+body{ background:#f5f0e6; color:#19262f; }
+h1,h2,h3,h4,h5,h6,
+header.packet h1,.section>h2,.li-title,.learnit-head,.learnit-stage-title,
+.mission-title,.answer-key h2,.think-block h3,.topbar .brand{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
+/* A thin editorial accent rule under the document's main title. */
+header.packet h1{ position:relative; }
+header.packet h1::after{
+  content:""; display:block; width:56px; height:2px; margin-top:8px;
+  background:linear-gradient(90deg,#1fa6a2,#f2c15b); border-radius:2px;
+}
+@media print{ body{ background:#fff !important; } }
+
+</style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
+  <!-- nsr-injected:end -->
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+
+  <!-- enthead-injected:begin (enterprise head/meta — tools/inject-enterprise-head.js) -->
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/favicon.svg">
+  <meta name="theme-color" content="#12355b">
+  <link rel="canonical" href="https://eduwonderlab.com/lessons/8-7-group2/worksheet.html">
+  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — 8.7 Small Group · Group 2 — Practice Worksheet.">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Neft Teacher">
+  <meta property="og:title" content="8.7 Small Group · Group 2 — Practice Worksheet">
+  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — 8.7 Small Group · Group 2 — Practice Worksheet.">
+  <meta property="og:url" content="https://eduwonderlab.com/lessons/8-7-group2/worksheet.html">
+  <meta property="og:image" content="https://eduwonderlab.com/assets/og-curriculum.png">
+  <!-- enthead-injected:end -->
+</head>
+<body>
+<main>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.DS.3</span>
+      <span class="ws-ver">Version B</span>
+    </div>
+    <h1 class="ws-title">8.7 Small Group · Group 2</h1>
+    <p class="ws-sub">Practice — Version B</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A dot plot of goals scored per game shows: 0(5 dots), 1(7 dots), 2(4 dots), 3(2 dots), 4(1 dot). What is the shape?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>Skewed right — most values at the low end with a tail to the right</li><li class="ws-opt"><span class="ws-bub">B</span>Symmetric — equal on both sides</li><li class="ws-opt"><span class="ws-bub">C</span>Skewed left — most values at the high end</li><li class="ws-opt"><span class="ws-bub">D</span>Uniform — all bars the same height</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Data</span><span class="ws-step-w">Player salaries (millions): 1, 1, 2, 2, 2, 3, 3, 40.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Shape</span><span class="ws-step-w">Most salaries cluster at 1–3 million with one value way out at 40 million, so the distribution is skewed right. ✓</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Best measure</span><span class="ws-step-w">The student picks the MEAN to describe a typical salary because the shape is skewed right.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Find the Shape Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Data</span><span class="ws-step-w">Sprint times (seconds): 10.2, 10.5, 10.8, 11.0, 11.1, 11.2, 11.3, 11.5, 14.8</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Histogram</span><span class="ws-step-w">10.0–10.9: 3, 11.0–11.9: 5, 12.0–12.9: 0, 13.0–13.9: 0, 14.0–14.9: 1</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Shape</span><span class="ws-step-w">Skewed left because the tall bar is on the right side</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Best measure</span><span class="ws-step-w">Use the mean because skewed data uses the mean</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A teacher shows two dot plots of quiz scores from two different classes. Class A's data is symmetric with a cluster around 80. Class B's data is skewed right with most scores between 60–70 and a few scores near 100. Compare the classes: which has a higher median? Which has a higher mean? In which class does the mean better represent a typical score?</p><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.DS.3</span>
+      <span class="ws-ver">Challenge</span>
+    </div>
+    <h1 class="ws-title">8.7 Small Group · Group 2</h1>
+    <p class="ws-sub">Practice — Challenge</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A histogram has a long tail of high values stretching to the right. What is its shape?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>Skewed right</li><li class="ws-opt"><span class="ws-bub">B</span>Skewed left</li><li class="ws-opt"><span class="ws-bub">C</span>Symmetric</li><li class="ws-opt"><span class="ws-bub">D</span>Uniform</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A dot plot has one peak in the middle and even sides. What shape is it?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>Symmetric with one cluster around the peak</li><li class="ws-opt"><span class="ws-bub">B</span>Skewed right</li><li class="ws-opt"><span class="ws-bub">C</span>Skewed left</li><li class="ws-opt"><span class="ws-bub">D</span>Has a large gap</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">A histogram: most players are at 70-85%, a gap sits at 50-65%, and a few are at 40-50%. Name the shape and features.</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>A cluster (70-85%), a gap (50-65%), and a left tail — so skewed left</li><li class="ws-opt"><span class="ws-bub">B</span>A symmetric display with no gaps</li><li class="ws-opt"><span class="ws-bub">C</span>A right tail of high values — so skewed right</li><li class="ws-opt"><span class="ws-bub">D</span>Two equal peaks with no cluster or gap</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Level 2 Extension — Name the Skew by Its Tail</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Display</span><span class="ws-step-w">Analytics screen: minutes played per game. Bar heights left to right: 12, 8, 4, 2, 1.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Cluster</span><span class="ws-step-w">Most players are bunched on the left (low minutes).</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Tail</span><span class="ws-step-w">The short bars trail off toward the right (high minutes).</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Shape claim</span><span class="ws-step-w">Because the tall bars (the peak) are on the LEFT, this display is left-skewed.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">A histogram of basketball players' ages shows: most players are 22–28, with a long tail of older players up to age 40. What is the shape of this distribution?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>Skewed right</li><li class="ws-opt"><span class="ws-bub">B</span>Symmetric</li><li class="ws-opt"><span class="ws-bub">C</span>Skewed left</li><li class="ws-opt"><span class="ws-bub">D</span>Uniform</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">A data set is symmetric. What is likely true about the mean and median?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>They are approximately equal</li><li class="ws-opt"><span class="ws-bub">B</span>The mean is much higher than the median</li><li class="ws-opt"><span class="ws-bub">C</span>The median is much higher than the mean</li><li class="ws-opt"><span class="ws-bub">D</span>They are always exactly the same</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">7</span><div class="ws-pbody"><p class="ws-stem">Which word describes the direction of the TAIL, not the peak?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>Skew — the direction of the long tail tells you the skew direction</li><li class="ws-opt"><span class="ws-bub">B</span>Skew — the direction of the peak tells you the skew direction</li><li class="ws-opt"><span class="ws-bub">C</span>Skew — the direction the median points</li><li class="ws-opt"><span class="ws-bub">D</span>Skew — the direction of the mode</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">8</span><div class="ws-pbody"><p class="ws-stem">Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Data</span><span class="ws-step-w">Goals per game dot plot — 0: 8 dots, 1: 6 dots, 2: 3 dots, 3: 1 dot, 4: 1 dot.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Look</span><span class="ws-step-w">The tallest stacks of dots are on the LEFT (0 and 1 goals); the dots trail off to the right toward 4 goals.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Shape claim</span><span class="ws-step-w">The tallest bars are on the left, so the student calls this distribution skewed LEFT.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.DS.3</span>
+      <span class="ws-ver">Version B — Answer Key</span>
+    </div>
+    <h1 class="ws-title">8.7 Small Group · Group 2</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A dot plot of goals scored per game shows: 0(5 dots), 1(7 dots), 2(4 dots), 3(2 dots), 4(1 dot). What is the shape?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>Skewed right — most values at the low end with a tail to the right</li><li class="ws-opt"><span class="ws-bub">B</span>Symmetric — equal on both sides</li><li class="ws-opt"><span class="ws-bub">C</span>Skewed left — most values at the high end</li><li class="ws-opt"><span class="ws-bub">D</span>Uniform — all bars the same height</li></ol><p class="ws-keynote">The data peaks at 0–1 goals and tails off toward 4. Most data is on the left with fewer values stretching right — this is skewed right.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Shape of Data Distributions is naming the skew by looking at where the TALLEST bar (the peak) sits, instead of looking at which way the TAIL stretches. For example, given bar heights 8, 5, 3, 1 (tall on the left, trailing off to the right), students often say &quot;skewed left&quot; because the peak is on the left — but the correct name is skewed right, because skew is always named for the direction the tail points, not the peak.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Data</span><span class="ws-step-w">Player salaries (millions): 1, 1, 2, 2, 2, 3, 3, 40.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Shape</span><span class="ws-step-w">Most salaries cluster at 1–3 million with one value way out at 40 million, so the distribution is skewed right. ✓</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Best measure</span><span class="ws-step-w">The student picks the MEAN to describe a typical salary because the shape is skewed right.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 3. Correct work: The shape is correct (skewed right), but the MEDIAN — not the mean — is the better measure for skewed data. The single 40-million salary is an extreme value in the right tail that pulls the mean up to about 6.75 million, far above what most players earn. The median is 2 million, which truly represents a typical salary. Use the median whenever data is skewed.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Find the Shape Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Data</span><span class="ws-step-w">Sprint times (seconds): 10.2, 10.5, 10.8, 11.0, 11.1, 11.2, 11.3, 11.5, 14.8</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Histogram</span><span class="ws-step-w">10.0–10.9: 3, 11.0–11.9: 5, 12.0–12.9: 0, 13.0–13.9: 0, 14.0–14.9: 1</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Shape</span><span class="ws-step-w">Skewed left because the tall bar is on the right side</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Best measure</span><span class="ws-step-w">Use the mean because skewed data uses the mean</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 3. Correct work: This is skewed RIGHT, not left. The cluster of data is on the left (10–11 seconds) and the tail with the extreme value (14.8) stretches to the right. Also, for skewed data the MEDIAN is the better measure, not the mean, because the mean is pulled toward the tail.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A teacher shows two dot plots of quiz scores from two different classes. Class A's data is symmetric with a cluster around 80. Class B's data is skewed right with most scores between 60–70 and a few scores near 100. Compare the classes: which has a higher median? Which has a higher mean? In which class does the mean better represent a typical score?</p><p class="ws-keynote">Look for: symmetric, skewed right, median, mean, pulled, higher, typical, tail.</p></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.DS.3</span>
+      <span class="ws-ver">Challenge — Answer Key</span>
+    </div>
+    <h1 class="ws-title">8.7 Small Group · Group 2</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A histogram has a long tail of high values stretching to the right. What is its shape?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>Skewed right</li><li class="ws-opt"><span class="ws-bub">B</span>Skewed left</li><li class="ws-opt"><span class="ws-bub">C</span>Symmetric</li><li class="ws-opt"><span class="ws-bub">D</span>Uniform</li></ol><p class="ws-keynote">A tail of high values stretching to the right means the distribution is skewed right. The skew is named for the tail's direction.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Shape of Data Distributions is naming the skew by looking at where the TALLEST bar (the peak) sits, instead of looking at which way the TAIL stretches. For example, given bar heights 8, 5, 3, 1 (tall on the left, trailing off to the right), students often say &quot;skewed left&quot; because the peak is on the left — but the correct name is skewed right, because skew is always named for the direction the tail points, not the peak.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A dot plot has one peak in the middle and even sides. What shape is it?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>Symmetric with one cluster around the peak</li><li class="ws-opt"><span class="ws-bub">B</span>Skewed right</li><li class="ws-opt"><span class="ws-bub">C</span>Skewed left</li><li class="ws-opt"><span class="ws-bub">D</span>Has a large gap</li></ol><p class="ws-keynote">One peak in the middle with roughly even sides means the data mirrors around the center, so it is symmetric with a single cluster at the peak.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Shape of Data Distributions is naming the skew by looking at where the TALLEST bar (the peak) sits, instead of looking at which way the TAIL stretches. For example, given bar heights 8, 5, 3, 1 (tall on the left, trailing off to the right), students often say &quot;skewed left&quot; because the peak is on the left — but the correct name is skewed right, because skew is always named for the direction the tail points, not the peak.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">A histogram: most players are at 70-85%, a gap sits at 50-65%, and a few are at 40-50%. Name the shape and features.</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>A cluster (70-85%), a gap (50-65%), and a left tail — so skewed left</li><li class="ws-opt"><span class="ws-bub">B</span>A symmetric display with no gaps</li><li class="ws-opt"><span class="ws-bub">C</span>A right tail of high values — so skewed right</li><li class="ws-opt"><span class="ws-bub">D</span>Two equal peaks with no cluster or gap</li></ol><p class="ws-keynote">The data clusters at the high end (70-85%), there is an empty gap (50-65%), and the few low values form a tail on the left, so the display is skewed left.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Shape of Data Distributions is naming the skew by looking at where the TALLEST bar (the peak) sits, instead of looking at which way the TAIL stretches. For example, given bar heights 8, 5, 3, 1 (tall on the left, trailing off to the right), students often say &quot;skewed left&quot; because the peak is on the left — but the correct name is skewed right, because skew is always named for the direction the tail points, not the peak.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Level 2 Extension — Name the Skew by Its Tail</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Display</span><span class="ws-step-w">Analytics screen: minutes played per game. Bar heights left to right: 12, 8, 4, 2, 1.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Cluster</span><span class="ws-step-w">Most players are bunched on the left (low minutes).</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Tail</span><span class="ws-step-w">The short bars trail off toward the right (high minutes).</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Shape claim</span><span class="ws-step-w">Because the tall bars (the peak) are on the LEFT, this display is left-skewed.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 4. Correct work: This display is skewed RIGHT, not left. Skew is named for the direction the TAIL points, not where the peak sits. The peak is on the left, but the long tail of short bars stretches to the right, so it is skewed right. (A correct claim-evidence-reasoning answer: 'The distribution is skewed right because I see the tail stretching toward the high values on the right.')</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">A histogram of basketball players' ages shows: most players are 22–28, with a long tail of older players up to age 40. What is the shape of this distribution?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>Skewed right</li><li class="ws-opt"><span class="ws-bub">B</span>Symmetric</li><li class="ws-opt"><span class="ws-bub">C</span>Skewed left</li><li class="ws-opt"><span class="ws-bub">D</span>Uniform</li></ol><p class="ws-keynote">Most data is on the left (younger ages) with a tail stretching right (older ages). This is skewed right.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Shape of Data Distributions is naming the skew by looking at where the TALLEST bar (the peak) sits, instead of looking at which way the TAIL stretches. For example, given bar heights 8, 5, 3, 1 (tall on the left, trailing off to the right), students often say &quot;skewed left&quot; because the peak is on the left — but the correct name is skewed right, because skew is always named for the direction the tail points, not the peak.</p></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">A data set is symmetric. What is likely true about the mean and median?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>They are approximately equal</li><li class="ws-opt"><span class="ws-bub">B</span>The mean is much higher than the median</li><li class="ws-opt"><span class="ws-bub">C</span>The median is much higher than the mean</li><li class="ws-opt"><span class="ws-bub">D</span>They are always exactly the same</li></ol><p class="ws-keynote">In a symmetric distribution, the mean and median are approximately equal because the data is balanced on both sides.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Shape of Data Distributions is naming the skew by looking at where the TALLEST bar (the peak) sits, instead of looking at which way the TAIL stretches. For example, given bar heights 8, 5, 3, 1 (tall on the left, trailing off to the right), students often say &quot;skewed left&quot; because the peak is on the left — but the correct name is skewed right, because skew is always named for the direction the tail points, not the peak.</p></div></li><li class="ws-problem"><span class="ws-pnum">7</span><div class="ws-pbody"><p class="ws-stem">Which word describes the direction of the TAIL, not the peak?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>Skew — the direction of the long tail tells you the skew direction</li><li class="ws-opt"><span class="ws-bub">B</span>Skew — the direction of the peak tells you the skew direction</li><li class="ws-opt"><span class="ws-bub">C</span>Skew — the direction the median points</li><li class="ws-opt"><span class="ws-bub">D</span>Skew — the direction of the mode</li></ol><p class="ws-keynote">The skew direction is named after the TAIL. If the tail stretches to the right, it is skewed right, even though the peak is on the left.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Shape of Data Distributions is naming the skew by looking at where the TALLEST bar (the peak) sits, instead of looking at which way the TAIL stretches. For example, given bar heights 8, 5, 3, 1 (tall on the left, trailing off to the right), students often say &quot;skewed left&quot; because the peak is on the left — but the correct name is skewed right, because skew is always named for the direction the tail points, not the peak.</p></div></li><li class="ws-problem"><span class="ws-pnum">8</span><div class="ws-pbody"><p class="ws-stem">Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Data</span><span class="ws-step-w">Goals per game dot plot — 0: 8 dots, 1: 6 dots, 2: 3 dots, 3: 1 dot, 4: 1 dot.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Look</span><span class="ws-step-w">The tallest stacks of dots are on the LEFT (0 and 1 goals); the dots trail off to the right toward 4 goals.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Shape claim</span><span class="ws-step-w">The tallest bars are on the left, so the student calls this distribution skewed LEFT.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 3. Correct work: This distribution is skewed RIGHT, not left. The student named the skew after where the peak sits, but skew is named for the direction the TAIL points. The peak (tallest stacks) is on the left at 0–1 goals, and the tail of short stacks stretches to the right toward 4. A tail pointing right means skewed right.</p></div></li></ol>
+  </section>
+</main>
+<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+  <!-- nsr-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
+  </body>
+</html>

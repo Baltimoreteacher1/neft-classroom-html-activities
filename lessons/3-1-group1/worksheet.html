@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>3.1 Small Group · Group 1 — Practice Worksheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --navy:#143a6b; --blue:#1f5fa6; --teal:#1c7a64; --ink:#16243d; --muted:#5a6b82;
+  --line:#d7e2ed; --soft:#eef3f9; --bank:#fff8e8; --bank-line:#f0d9a0; --ex:#eaf4ff;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:13.5px;line-height:1.5;}
+.ws-page{background:#fff;max-width:760px;margin:18px auto;padding:34px 40px 44px;box-shadow:0 6px 24px rgba(20,40,75,.12);border-radius:6px;}
+.ws-head{border-bottom:3px solid var(--navy);padding-bottom:12px;margin-bottom:18px;}
+.ws-head-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.ws-std{background:var(--navy);color:#fff;font-weight:700;font-size:11px;letter-spacing:.04em;padding:4px 11px;border-radius:999px;}
+.ws-ver{font-family:"Fraunces",serif;font-weight:700;color:var(--blue);font-size:14px;}
+.ws-title{font-family:"Fraunces",serif;font-weight:700;font-size:25px;margin:4px 0 2px;color:var(--navy);line-height:1.1;}
+.ws-sub{margin:0;color:var(--muted);font-weight:600;font-size:13px;}
+.ws-meta{display:flex;gap:28px;margin-top:12px;font-weight:600;color:var(--ink);font-size:13px;}
+.ws-fill{display:inline-block;width:220px;border-bottom:1.5px solid var(--ink);}
+.ws-fill-sm{width:120px;}
+.ws-bank{background:var(--bank);border:1.5px solid var(--bank-line);border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-bank-h,.ws-example-h{font-family:"Fraunces",serif;font-size:14px;margin:0 0 8px;color:var(--navy);}
+.ws-bankwords{display:flex;flex-wrap:wrap;gap:8px;}
+.ws-bankword{background:#fff;border:1.5px solid var(--bank-line);border-radius:999px;padding:4px 12px;font-weight:700;font-size:12.5px;}
+.ws-example{background:var(--ex);border:1.5px solid #cfe2f6;border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-example-steps{margin:0;padding-left:18px;}
+.ws-example-steps li{margin:2px 0;}
+.ws-problems{list-style:none;margin:0;padding:0;counter-reset:none;}
+.ws-problem{display:flex;gap:12px;padding:14px 0;border-bottom:1px dashed var(--line);break-inside:avoid;page-break-inside:avoid;}
+.ws-problem:last-child{border-bottom:0;}
+.ws-pnum{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.ws-pbody{flex:1;min-width:0;}
+.ws-stem{margin:0 0 8px;font-weight:600;}
+.ws-prompt{margin:6px 0;color:var(--muted);font-size:12.5px;}
+.ws-opts{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;}
+.ws-opt{display:flex;align-items:flex-start;gap:8px;}
+.ws-bub{flex:0 0 auto;width:22px;height:22px;border:2px solid var(--navy);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;}
+.ws-bub-sm{width:20px;height:20px;font-size:11px;}
+.ws-correct .ws-bub{background:var(--teal);border-color:var(--teal);color:#fff;}
+.ws-correct{font-weight:700;color:var(--teal);}
+.ws-keynote{margin:6px 0 0;color:var(--teal);font-size:12px;font-style:italic;}
+.ws-watch{margin:4px 0 0;color:#9a4a12;font-size:12px;background:#fff3e6;border-left:3px solid #e08a3c;padding:5px 10px;border-radius:0 8px 8px 0;}
+.ws-scaffold-note{margin:0 0 14px;background:var(--soft);border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;font-weight:600;color:var(--navy);font-size:12.5px;}
+.ws-match{display:flex;gap:24px;flex-wrap:wrap;}
+.ws-match-terms{list-style:none;margin:0;padding:0;flex:1;min-width:180px;}
+.ws-match-term{display:flex;align-items:center;gap:8px;margin:5px 0;font-weight:600;}
+.ws-match-bank{list-style:none;margin:0;padding:10px 12px;background:var(--soft);border:1px solid var(--line);border-radius:10px;flex:1;min-width:180px;}
+.ws-match-bank li{display:flex;align-items:center;gap:8px;margin:4px 0;}
+.ws-blank{display:inline-block;min-width:54px;border-bottom:1.5px solid var(--ink);text-align:center;font-weight:700;}
+.ws-blank-sm{min-width:40px;}
+.ws-steps{list-style:none;margin:6px 0;padding:0;}
+.ws-steps li{display:flex;gap:10px;align-items:baseline;padding:4px 0;}
+.ws-step-n{flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:var(--soft);font-weight:700;font-size:11px;display:inline-flex;align-items:center;justify-content:center;}
+.ws-step-l{flex:0 0 38%;font-weight:600;}
+.ws-step-w{flex:1;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
+.ws-table{width:100%;border-collapse:collapse;margin:8px 0;}
+.ws-table th{background:var(--navy);color:#fff;font-size:12px;padding:7px 9px;text-align:left;}
+.ws-table td{border:1px solid var(--line);padding:9px;height:34px;font-weight:600;}
+.ws-lines{margin:8px 0 0;}
+.ws-line{display:block;border-bottom:1.5px solid var(--line);height:24px;}
+.ws-work{margin:8px 0 0;border:1.5px dashed var(--line);border-radius:10px;min-height:70px;padding:6px 10px;position:relative;}
+.ws-work-label{color:var(--muted);font-size:11px;font-weight:600;}
+.ws-frame{background:var(--soft);border-left:3px solid var(--blue);padding:6px 10px;margin:6px 0;font-style:italic;color:var(--muted);border-radius:0 8px 8px 0;}
+.ws-sort{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:5px 18px;}
+.ws-sort li{display:flex;align-items:center;gap:8px;font-weight:600;}
+
+@media print{
+  body{background:#fff;font-size:12pt;}
+  .ws-page{box-shadow:none;border-radius:0;margin:0;max-width:none;padding:0;page-break-after:always;}
+  .ws-page:last-child{page-break-after:auto;}
+  @page{margin:1.5cm;}
+  a{color:#000;}
+}
+
+/* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
+   Appended last so it overrides each generator's base CSS. Finish-only:
+   serif headings + paper ground + AA-safe ink. No layout/size changes. */
+:root{ --ink:#19262f; --muted:#475663; }
+body{ background:#f5f0e6; color:#19262f; }
+h1,h2,h3,h4,h5,h6,
+header.packet h1,.section>h2,.li-title,.learnit-head,.learnit-stage-title,
+.mission-title,.answer-key h2,.think-block h3,.topbar .brand{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
+/* A thin editorial accent rule under the document's main title. */
+header.packet h1{ position:relative; }
+header.packet h1::after{
+  content:""; display:block; width:56px; height:2px; margin-top:8px;
+  background:linear-gradient(90deg,#1fa6a2,#f2c15b); border-radius:2px;
+}
+@media print{ body{ background:#fff !important; } }
+
+</style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
+  <!-- nsr-injected:end -->
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+
+  <!-- enthead-injected:begin (enterprise head/meta — tools/inject-enterprise-head.js) -->
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/favicon.svg">
+  <meta name="theme-color" content="#12355b">
+  <link rel="canonical" href="https://eduwonderlab.com/lessons/3-1-group1/worksheet.html">
+  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — 3.1 Small Group · Group 1 — Practice Worksheet.">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Neft Teacher">
+  <meta property="og:title" content="3.1 Small Group · Group 1 — Practice Worksheet">
+  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — 3.1 Small Group · Group 1 — Practice Worksheet.">
+  <meta property="og:url" content="https://eduwonderlab.com/lessons/3-1-group1/worksheet.html">
+  <meta property="og:image" content="https://eduwonderlab.com/assets/og-curriculum.png">
+  <!-- enthead-injected:end -->
+</head>
+<body>
+<main>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.1</span>
+      <span class="ws-ver">Level 0</span>
+    </div>
+    <h1 class="ws-title">3.1 Small Group · Group 1</h1>
+    <p class="ws-sub">Practice — Level 0</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    <section class="ws-bank">
+    <h2 class="ws-bank-h">📕 Word Bank</h2>
+    <div class="ws-bankwords"><span class="ws-bankword">Ratio</span><span class="ws-bankword">Comparison</span><span class="ws-bankword">Part-to-part</span><span class="ws-bankword">Part-to-whole</span></div>
+  </section><section class="ws-example">
+    <h2 class="ws-example-h">✏️ Worked Example</h2>
+    <ol class="ws-example-steps"><li><b>Read the problem:</b> A class has 9 boys and 6 girls. Write the part-to-whole ratio of girls to the whole class.</li><li><b>Count the whole:</b> 9 + 6 = 15 students in all.</li><li><b>Write the ratio:</b> A student writes girls to the whole class as 6:9.</li><li><b>Answer:</b> The part-to-whole ratio of girls to the whole class is 6:9.</li></ol>
+  </section>
+    <p class="ws-scaffold-note">🧩 Extra support: use the word bank and the worked example. A sentence starter is given under each problem.</p>
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A recipe uses 4 cups of milk and 1 cup of cream. What is the ratio of milk to cream?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>4:1</li><li class="ws-opt"><span class="ws-bub">B</span>1:4</li><li class="ws-opt"><span class="ws-bub">C</span>4:5</li><li class="ws-opt"><span class="ws-bub">D</span>5:1</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Chef Reyes uses 6 strawberries and 2 bananas in a smoothie. What is the part-to-whole ratio of bananas to total fruit?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>2:8</li><li class="ws-opt"><span class="ws-bub">B</span>6:2</li><li class="ws-opt"><span class="ws-bub">C</span>2:6</li><li class="ws-opt"><span class="ws-bub">D</span>8:2</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">In a class of 30 students, 18 are girls. What is the part-to-part ratio of boys to girls?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>12:18</li><li class="ws-opt"><span class="ws-bub">B</span>18:12</li><li class="ws-opt"><span class="ws-bub">C</span>18:30</li><li class="ws-opt"><span class="ws-bub">D</span>12:30</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A pet store has 5 dogs and 9 cats. What is the ratio of dogs to cats?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>5:9</li><li class="ws-opt"><span class="ws-bub">B</span>9:5</li><li class="ws-opt"><span class="ws-bub">C</span>5:14</li><li class="ws-opt"><span class="ws-bub">D</span>14:5</li></ol></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.1</span>
+      <span class="ws-ver">Version A</span>
+    </div>
+    <h1 class="ws-title">3.1 Small Group · Group 1</h1>
+    <p class="ws-sub">Practice — Version A</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    <section class="ws-bank">
+    <h2 class="ws-bank-h">📕 Word Bank</h2>
+    <div class="ws-bankwords"><span class="ws-bankword">Ratio</span><span class="ws-bankword">Comparison</span><span class="ws-bankword">Part-to-part</span><span class="ws-bankword">Part-to-whole</span></div>
+  </section><section class="ws-example">
+    <h2 class="ws-example-h">✏️ Worked Example</h2>
+    <ol class="ws-example-steps"><li><b>Read the problem:</b> A class has 9 boys and 6 girls. Write the part-to-whole ratio of girls to the whole class.</li><li><b>Count the whole:</b> 9 + 6 = 15 students in all.</li><li><b>Write the ratio:</b> A student writes girls to the whole class as 6:9.</li><li><b>Answer:</b> The part-to-whole ratio of girls to the whole class is 6:9.</li></ol>
+  </section>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A recipe uses 4 cups of milk and 1 cup of cream. What is the ratio of milk to cream?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>4:1</li><li class="ws-opt"><span class="ws-bub">B</span>1:4</li><li class="ws-opt"><span class="ws-bub">C</span>4:5</li><li class="ws-opt"><span class="ws-bub">D</span>5:1</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Chef Reyes uses 6 strawberries and 2 bananas in a smoothie. What is the part-to-whole ratio of bananas to total fruit?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>2:8</li><li class="ws-opt"><span class="ws-bub">B</span>6:2</li><li class="ws-opt"><span class="ws-bub">C</span>2:6</li><li class="ws-opt"><span class="ws-bub">D</span>8:2</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">In a class of 30 students, 18 are girls. What is the part-to-part ratio of boys to girls?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>12:18</li><li class="ws-opt"><span class="ws-bub">B</span>18:12</li><li class="ws-opt"><span class="ws-bub">C</span>18:30</li><li class="ws-opt"><span class="ws-bub">D</span>12:30</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A pet store has 5 dogs and 9 cats. What is the ratio of dogs to cats?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>5:9</li><li class="ws-opt"><span class="ws-bub">B</span>9:5</li><li class="ws-opt"><span class="ws-bub">C</span>5:14</li><li class="ws-opt"><span class="ws-bub">D</span>14:5</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Spot the Mistake — Order of a Ratio</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read the problem</span><span class="ws-step-w">A salad bar has 5 bowls of soup and 8 sandwiches. Write the ratio of soup to sandwiches.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Identify the amounts</span><span class="ws-step-w">Soup = 5 and sandwiches = 8.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Write the ratio</span><span class="ws-step-w">A student writes the ratio of soup to sandwiches as 8:5.</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Answer</span><span class="ws-step-w">The ratio of soup to sandwiches is 8:5.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">A fruit salad has 5 pieces of melon, 3 pieces of pineapple, and 2 grapes. What is the ratio of pineapple to melon?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>3:5</li><li class="ws-opt"><span class="ws-bub">B</span>5:3</li><li class="ws-opt"><span class="ws-bub">C</span>3:10</li><li class="ws-opt"><span class="ws-bub">D</span>3:2</li></ol></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.1</span>
+      <span class="ws-ver">Version B</span>
+    </div>
+    <h1 class="ws-title">3.1 Small Group · Group 1</h1>
+    <p class="ws-sub">Practice — Version B</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A parking lot has 10 cars and 6 trucks. What is the part-to-whole ratio of trucks to total vehicles?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>6:16</li><li class="ws-opt"><span class="ws-bub">B</span>10:6</li><li class="ws-opt"><span class="ws-bub">C</span>6:10</li><li class="ws-opt"><span class="ws-bub">D</span>16:6</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Spot the Mistake — Part-to-Whole Ratio</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read the problem</span><span class="ws-step-w">A class has 9 boys and 6 girls. Write the part-to-whole ratio of girls to the whole class.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Count the whole</span><span class="ws-step-w">9 + 6 = 15 students in all.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Write the ratio</span><span class="ws-step-w">A student writes girls to the whole class as 6:9.</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Answer</span><span class="ws-step-w">The part-to-whole ratio of girls to the whole class is 6:9.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Prep Bowl A: Chef Reyes stirs 7 cups of flour with 4 cups of water to make dough. What is the part-to-part ratio of flour to water?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>7:4</li><li class="ws-opt"><span class="ws-bub">B</span>4:7</li><li class="ws-opt"><span class="ws-bub">C</span>7:11</li><li class="ws-opt"><span class="ws-bub">D</span>11:4</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A class has 5 chefs and 7 helpers (12 total). What is the part-to-whole ratio of chefs to the whole class?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>5:12</li><li class="ws-opt"><span class="ws-bub">B</span>5:7</li><li class="ws-opt"><span class="ws-bub">C</span>7:12</li><li class="ws-opt"><span class="ws-bub">D</span>12:5</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">“For every” language: Chef Reyes says, “My glaze uses 9 spoons of honey for every 4 spoons of lemon.” Written in colon notation, the ratio of honey to lemon is:</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>9:4</li><li class="ws-opt"><span class="ws-bub">B</span>4:9</li><li class="ws-opt"><span class="ws-bub">C</span>9:13</li><li class="ws-opt"><span class="ws-bub">D</span>13:4</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">Level 2 Extension — Chef Mateo's Pizza Topping Ratio</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read the problem</span><span class="ws-step-w">A pizza has 6 olives, 2 peppers, and 4 tomato slices. Write the part-to-whole ratio of peppers to the total toppings.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Count the whole</span><span class="ws-step-w">6 + 2 + 4 = 12 total toppings.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Write the ratio</span><span class="ws-step-w">Chef Mateo writes peppers to total as 2:6.</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Answer</span><span class="ws-step-w">The ratio of peppers to total toppings is 2:6.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.1</span>
+      <span class="ws-ver">Level 0 — Answer Key</span>
+    </div>
+    <h1 class="ws-title">3.1 Small Group · Group 1</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A recipe uses 4 cups of milk and 1 cup of cream. What is the ratio of milk to cream?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>4:1</li><li class="ws-opt"><span class="ws-bub">B</span>1:4</li><li class="ws-opt"><span class="ws-bub">C</span>4:5</li><li class="ws-opt"><span class="ws-bub">D</span>5:1</li></ol><p class="ws-keynote">A ratio compares quantities in the order given. Milk to cream = 4 to 1, or 4:1.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Understand Ratios is writing the ratio in the wrong order: when asked for the ratio of apple juice to sparkling water in a recipe that uses 3 cups of apple juice for every 2 cups of sparkling water, some students write 2:3 (sparkling water to apple juice) because they list the ingredients in whatever order comes to mind rather than the order the question asks for. The two ratios describe different drinks — 3:2 means 3 cups of juice for every 2 cups of water, while 2:3 would mean only 2 cups of juice for every 3 cups of water. Always match the order of your ratio to the order named in the question: &quot;apple juice to sparkling water&quot; means the apple juice number comes first, giving 3:2.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Chef Reyes uses 6 strawberries and 2 bananas in a smoothie. What is the part-to-whole ratio of bananas to total fruit?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>2:8</li><li class="ws-opt"><span class="ws-bub">B</span>6:2</li><li class="ws-opt"><span class="ws-bub">C</span>2:6</li><li class="ws-opt"><span class="ws-bub">D</span>8:2</li></ol><p class="ws-keynote">Total fruit = 6 + 2 = 8. The part-to-whole ratio of bananas to total fruit is 2:8.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Understand Ratios is writing the ratio in the wrong order: when asked for the ratio of apple juice to sparkling water in a recipe that uses 3 cups of apple juice for every 2 cups of sparkling water, some students write 2:3 (sparkling water to apple juice) because they list the ingredients in whatever order comes to mind rather than the order the question asks for. The two ratios describe different drinks — 3:2 means 3 cups of juice for every 2 cups of water, while 2:3 would mean only 2 cups of juice for every 3 cups of water. Always match the order of your ratio to the order named in the question: &quot;apple juice to sparkling water&quot; means the apple juice number comes first, giving 3:2.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">In a class of 30 students, 18 are girls. What is the part-to-part ratio of boys to girls?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>12:18</li><li class="ws-opt"><span class="ws-bub">B</span>18:12</li><li class="ws-opt"><span class="ws-bub">C</span>18:30</li><li class="ws-opt"><span class="ws-bub">D</span>12:30</li></ol><p class="ws-keynote">Boys = 30 − 18 = 12. Part-to-part ratio of boys to girls = 12:18. (Order matters!)</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Understand Ratios is writing the ratio in the wrong order: when asked for the ratio of apple juice to sparkling water in a recipe that uses 3 cups of apple juice for every 2 cups of sparkling water, some students write 2:3 (sparkling water to apple juice) because they list the ingredients in whatever order comes to mind rather than the order the question asks for. The two ratios describe different drinks — 3:2 means 3 cups of juice for every 2 cups of water, while 2:3 would mean only 2 cups of juice for every 3 cups of water. Always match the order of your ratio to the order named in the question: &quot;apple juice to sparkling water&quot; means the apple juice number comes first, giving 3:2.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A pet store has 5 dogs and 9 cats. What is the ratio of dogs to cats?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>5:9</li><li class="ws-opt"><span class="ws-bub">B</span>9:5</li><li class="ws-opt"><span class="ws-bub">C</span>5:14</li><li class="ws-opt"><span class="ws-bub">D</span>14:5</li></ol><p class="ws-keynote">The ratio of dogs to cats compares dogs first, then cats: 5 to 9, or 5:9.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Understand Ratios is writing the ratio in the wrong order: when asked for the ratio of apple juice to sparkling water in a recipe that uses 3 cups of apple juice for every 2 cups of sparkling water, some students write 2:3 (sparkling water to apple juice) because they list the ingredients in whatever order comes to mind rather than the order the question asks for. The two ratios describe different drinks — 3:2 means 3 cups of juice for every 2 cups of water, while 2:3 would mean only 2 cups of juice for every 3 cups of water. Always match the order of your ratio to the order named in the question: &quot;apple juice to sparkling water&quot; means the apple juice number comes first, giving 3:2.</p></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.1</span>
+      <span class="ws-ver">Version A — Answer Key</span>
+    </div>
+    <h1 class="ws-title">3.1 Small Group · Group 1</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A recipe uses 4 cups of milk and 1 cup of cream. What is the ratio of milk to cream?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>4:1</li><li class="ws-opt"><span class="ws-bub">B</span>1:4</li><li class="ws-opt"><span class="ws-bub">C</span>4:5</li><li class="ws-opt"><span class="ws-bub">D</span>5:1</li></ol><p class="ws-keynote">A ratio compares quantities in the order given. Milk to cream = 4 to 1, or 4:1.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Understand Ratios is writing the ratio in the wrong order: when asked for the ratio of apple juice to sparkling water in a recipe that uses 3 cups of apple juice for every 2 cups of sparkling water, some students write 2:3 (sparkling water to apple juice) because they list the ingredients in whatever order comes to mind rather than the order the question asks for. The two ratios describe different drinks — 3:2 means 3 cups of juice for every 2 cups of water, while 2:3 would mean only 2 cups of juice for every 3 cups of water. Always match the order of your ratio to the order named in the question: &quot;apple juice to sparkling water&quot; means the apple juice number comes first, giving 3:2.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Chef Reyes uses 6 strawberries and 2 bananas in a smoothie. What is the part-to-whole ratio of bananas to total fruit?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>2:8</li><li class="ws-opt"><span class="ws-bub">B</span>6:2</li><li class="ws-opt"><span class="ws-bub">C</span>2:6</li><li class="ws-opt"><span class="ws-bub">D</span>8:2</li></ol><p class="ws-keynote">Total fruit = 6 + 2 = 8. The part-to-whole ratio of bananas to total fruit is 2:8.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Understand Ratios is writing the ratio in the wrong order: when asked for the ratio of apple juice to sparkling water in a recipe that uses 3 cups of apple juice for every 2 cups of sparkling water, some students write 2:3 (sparkling water to apple juice) because they list the ingredients in whatever order comes to mind rather than the order the question asks for. The two ratios describe different drinks — 3:2 means 3 cups of juice for every 2 cups of water, while 2:3 would mean only 2 cups of juice for every 3 cups of water. Always match the order of your ratio to the order named in the question: &quot;apple juice to sparkling water&quot; means the apple juice number comes first, giving 3:2.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">In a class of 30 students, 18 are girls. What is the part-to-part ratio of boys to girls?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>12:18</li><li class="ws-opt"><span class="ws-bub">B</span>18:12</li><li class="ws-opt"><span class="ws-bub">C</span>18:30</li><li class="ws-opt"><span class="ws-bub">D</span>12:30</li></ol><p class="ws-keynote">Boys = 30 − 18 = 12. Part-to-part ratio of boys to girls = 12:18. (Order matters!)</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Understand Ratios is writing the ratio in the wrong order: when asked for the ratio of apple juice to sparkling water in a recipe that uses 3 cups of apple juice for every 2 cups of sparkling water, some students write 2:3 (sparkling water to apple juice) because they list the ingredients in whatever order comes to mind rather than the order the question asks for. The two ratios describe different drinks — 3:2 means 3 cups of juice for every 2 cups of water, while 2:3 would mean only 2 cups of juice for every 3 cups of water. Always match the order of your ratio to the order named in the question: &quot;apple juice to sparkling water&quot; means the apple juice number comes first, giving 3:2.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A pet store has 5 dogs and 9 cats. What is the ratio of dogs to cats?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>5:9</li><li class="ws-opt"><span class="ws-bub">B</span>9:5</li><li class="ws-opt"><span class="ws-bub">C</span>5:14</li><li class="ws-opt"><span class="ws-bub">D</span>14:5</li></ol><p class="ws-keynote">The ratio of dogs to cats compares dogs first, then cats: 5 to 9, or 5:9.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Understand Ratios is writing the ratio in the wrong order: when asked for the ratio of apple juice to sparkling water in a recipe that uses 3 cups of apple juice for every 2 cups of sparkling water, some students write 2:3 (sparkling water to apple juice) because they list the ingredients in whatever order comes to mind rather than the order the question asks for. The two ratios describe different drinks — 3:2 means 3 cups of juice for every 2 cups of water, while 2:3 would mean only 2 cups of juice for every 3 cups of water. Always match the order of your ratio to the order named in the question: &quot;apple juice to sparkling water&quot; means the apple juice number comes first, giving 3:2.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Spot the Mistake — Order of a Ratio</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read the problem</span><span class="ws-step-w">A salad bar has 5 bowls of soup and 8 sandwiches. Write the ratio of soup to sandwiches.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Identify the amounts</span><span class="ws-step-w">Soup = 5 and sandwiches = 8.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Write the ratio</span><span class="ws-step-w">A student writes the ratio of soup to sandwiches as 8:5.</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Answer</span><span class="ws-step-w">The ratio of soup to sandwiches is 8:5.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 3. Correct work: The order matters. The problem asks for soup to sandwiches, so soup (5) must come first: the correct ratio is 5:8, not 8:5.</p></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">A fruit salad has 5 pieces of melon, 3 pieces of pineapple, and 2 grapes. What is the ratio of pineapple to melon?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>3:5</li><li class="ws-opt"><span class="ws-bub">B</span>5:3</li><li class="ws-opt"><span class="ws-bub">C</span>3:10</li><li class="ws-opt"><span class="ws-bub">D</span>3:2</li></ol><p class="ws-keynote">The ratio of pineapple to melon compares pineapple (3) to melon (5), so the ratio is 3:5.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Understand Ratios is writing the ratio in the wrong order: when asked for the ratio of apple juice to sparkling water in a recipe that uses 3 cups of apple juice for every 2 cups of sparkling water, some students write 2:3 (sparkling water to apple juice) because they list the ingredients in whatever order comes to mind rather than the order the question asks for. The two ratios describe different drinks — 3:2 means 3 cups of juice for every 2 cups of water, while 2:3 would mean only 2 cups of juice for every 3 cups of water. Always match the order of your ratio to the order named in the question: &quot;apple juice to sparkling water&quot; means the apple juice number comes first, giving 3:2.</p></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.AT.1</span>
+      <span class="ws-ver">Version B — Answer Key</span>
+    </div>
+    <h1 class="ws-title">3.1 Small Group · Group 1</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A parking lot has 10 cars and 6 trucks. What is the part-to-whole ratio of trucks to total vehicles?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>6:16</li><li class="ws-opt"><span class="ws-bub">B</span>10:6</li><li class="ws-opt"><span class="ws-bub">C</span>6:10</li><li class="ws-opt"><span class="ws-bub">D</span>16:6</li></ol><p class="ws-keynote">Total vehicles = 10 + 6 = 16. The ratio of trucks to total is 6:16.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Understand Ratios is writing the ratio in the wrong order: when asked for the ratio of apple juice to sparkling water in a recipe that uses 3 cups of apple juice for every 2 cups of sparkling water, some students write 2:3 (sparkling water to apple juice) because they list the ingredients in whatever order comes to mind rather than the order the question asks for. The two ratios describe different drinks — 3:2 means 3 cups of juice for every 2 cups of water, while 2:3 would mean only 2 cups of juice for every 3 cups of water. Always match the order of your ratio to the order named in the question: &quot;apple juice to sparkling water&quot; means the apple juice number comes first, giving 3:2.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Spot the Mistake — Part-to-Whole Ratio</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read the problem</span><span class="ws-step-w">A class has 9 boys and 6 girls. Write the part-to-whole ratio of girls to the whole class.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Count the whole</span><span class="ws-step-w">9 + 6 = 15 students in all.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Write the ratio</span><span class="ws-step-w">A student writes girls to the whole class as 6:9.</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Answer</span><span class="ws-step-w">The part-to-whole ratio of girls to the whole class is 6:9.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 3. Correct work: Part-to-whole compares the part to the WHOLE (15), not to the other part. There are 6 girls and 15 students total, so the correct ratio is 6:15.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Prep Bowl A: Chef Reyes stirs 7 cups of flour with 4 cups of water to make dough. What is the part-to-part ratio of flour to water?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>7:4</li><li class="ws-opt"><span class="ws-bub">B</span>4:7</li><li class="ws-opt"><span class="ws-bub">C</span>7:11</li><li class="ws-opt"><span class="ws-bub">D</span>11:4</li></ol><p class="ws-keynote">Part-to-part compares the two ingredients in the order named. Flour to water = 7 to 4, written 7:4.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Understand Ratios is writing the ratio in the wrong order: when asked for the ratio of apple juice to sparkling water in a recipe that uses 3 cups of apple juice for every 2 cups of sparkling water, some students write 2:3 (sparkling water to apple juice) because they list the ingredients in whatever order comes to mind rather than the order the question asks for. The two ratios describe different drinks — 3:2 means 3 cups of juice for every 2 cups of water, while 2:3 would mean only 2 cups of juice for every 3 cups of water. Always match the order of your ratio to the order named in the question: &quot;apple juice to sparkling water&quot; means the apple juice number comes first, giving 3:2.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A class has 5 chefs and 7 helpers (12 total). What is the part-to-whole ratio of chefs to the whole class?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>5:12</li><li class="ws-opt"><span class="ws-bub">B</span>5:7</li><li class="ws-opt"><span class="ws-bub">C</span>7:12</li><li class="ws-opt"><span class="ws-bub">D</span>12:5</li></ol><p class="ws-keynote">The whole class is 5 + 7 = 12 students. Part-to-whole compares one part to the total, so chefs to whole class is 5:12.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Understand Ratios is writing the ratio in the wrong order: when asked for the ratio of apple juice to sparkling water in a recipe that uses 3 cups of apple juice for every 2 cups of sparkling water, some students write 2:3 (sparkling water to apple juice) because they list the ingredients in whatever order comes to mind rather than the order the question asks for. The two ratios describe different drinks — 3:2 means 3 cups of juice for every 2 cups of water, while 2:3 would mean only 2 cups of juice for every 3 cups of water. Always match the order of your ratio to the order named in the question: &quot;apple juice to sparkling water&quot; means the apple juice number comes first, giving 3:2.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">“For every” language: Chef Reyes says, “My glaze uses 9 spoons of honey for every 4 spoons of lemon.” Written in colon notation, the ratio of honey to lemon is:</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>9:4</li><li class="ws-opt"><span class="ws-bub">B</span>4:9</li><li class="ws-opt"><span class="ws-bub">C</span>9:13</li><li class="ws-opt"><span class="ws-bub">D</span>13:4</li></ol><p class="ws-keynote">“For every 9 honey to 4 lemon” is a part-to-part comparison. In colon notation, honey to lemon is 9:4.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Understand Ratios is writing the ratio in the wrong order: when asked for the ratio of apple juice to sparkling water in a recipe that uses 3 cups of apple juice for every 2 cups of sparkling water, some students write 2:3 (sparkling water to apple juice) because they list the ingredients in whatever order comes to mind rather than the order the question asks for. The two ratios describe different drinks — 3:2 means 3 cups of juice for every 2 cups of water, while 2:3 would mean only 2 cups of juice for every 3 cups of water. Always match the order of your ratio to the order named in the question: &quot;apple juice to sparkling water&quot; means the apple juice number comes first, giving 3:2.</p></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">Level 2 Extension — Chef Mateo's Pizza Topping Ratio</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read the problem</span><span class="ws-step-w">A pizza has 6 olives, 2 peppers, and 4 tomato slices. Write the part-to-whole ratio of peppers to the total toppings.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Count the whole</span><span class="ws-step-w">6 + 2 + 4 = 12 total toppings.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Write the ratio</span><span class="ws-step-w">Chef Mateo writes peppers to total as 2:6.</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Answer</span><span class="ws-step-w">The ratio of peppers to total toppings is 2:6.</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 3. Correct work: Part-to-whole compares the part to the WHOLE (12), not to one other part. The peppers are 2 and the whole is 12, so the correct ratio is 2:12.</p></div></li></ol>
+  </section>
+</main>
+<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+  <!-- nsr-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
+  </body>
+</html>

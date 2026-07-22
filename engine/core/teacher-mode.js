@@ -88,8 +88,9 @@ export function unlockTeacher(pin) {
  */
 export function initTeacherAccess() {
   if (typeof window === "undefined") return;
-  const params = new URLSearchParams(window.location.search);
-  if (params.get("teacher") === "0" || params.get("student") === "1") setStickyTeacher(false);
+  // `?student=1` is a route-level safety boundary, not a request to erase the
+  // teacher's saved mode across every tab. isTeacherMode() still forces this
+  // page into Student Mode while the teacher's hub state remains intact.
 
   document.addEventListener("keydown", (e) => {
     // Ignore while typing in a field so it never collides with student work.

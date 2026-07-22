@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>5.4 Small Group · Group 1 — Practice Worksheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --navy:#143a6b; --blue:#1f5fa6; --teal:#1c7a64; --ink:#16243d; --muted:#5a6b82;
+  --line:#d7e2ed; --soft:#eef3f9; --bank:#fff8e8; --bank-line:#f0d9a0; --ex:#eaf4ff;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:13.5px;line-height:1.5;}
+.ws-page{background:#fff;max-width:760px;margin:18px auto;padding:34px 40px 44px;box-shadow:0 6px 24px rgba(20,40,75,.12);border-radius:6px;}
+.ws-head{border-bottom:3px solid var(--navy);padding-bottom:12px;margin-bottom:18px;}
+.ws-head-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.ws-std{background:var(--navy);color:#fff;font-weight:700;font-size:11px;letter-spacing:.04em;padding:4px 11px;border-radius:999px;}
+.ws-ver{font-family:"Fraunces",serif;font-weight:700;color:var(--blue);font-size:14px;}
+.ws-title{font-family:"Fraunces",serif;font-weight:700;font-size:25px;margin:4px 0 2px;color:var(--navy);line-height:1.1;}
+.ws-sub{margin:0;color:var(--muted);font-weight:600;font-size:13px;}
+.ws-meta{display:flex;gap:28px;margin-top:12px;font-weight:600;color:var(--ink);font-size:13px;}
+.ws-fill{display:inline-block;width:220px;border-bottom:1.5px solid var(--ink);}
+.ws-fill-sm{width:120px;}
+.ws-bank{background:var(--bank);border:1.5px solid var(--bank-line);border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-bank-h,.ws-example-h{font-family:"Fraunces",serif;font-size:14px;margin:0 0 8px;color:var(--navy);}
+.ws-bankwords{display:flex;flex-wrap:wrap;gap:8px;}
+.ws-bankword{background:#fff;border:1.5px solid var(--bank-line);border-radius:999px;padding:4px 12px;font-weight:700;font-size:12.5px;}
+.ws-example{background:var(--ex);border:1.5px solid #cfe2f6;border-radius:12px;padding:12px 16px;margin:0 0 16px;}
+.ws-example-steps{margin:0;padding-left:18px;}
+.ws-example-steps li{margin:2px 0;}
+.ws-problems{list-style:none;margin:0;padding:0;counter-reset:none;}
+.ws-problem{display:flex;gap:12px;padding:14px 0;border-bottom:1px dashed var(--line);break-inside:avoid;page-break-inside:avoid;}
+.ws-problem:last-child{border-bottom:0;}
+.ws-pnum{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.ws-pbody{flex:1;min-width:0;}
+.ws-stem{margin:0 0 8px;font-weight:600;}
+.ws-prompt{margin:6px 0;color:var(--muted);font-size:12.5px;}
+.ws-opts{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;}
+.ws-opt{display:flex;align-items:flex-start;gap:8px;}
+.ws-bub{flex:0 0 auto;width:22px;height:22px;border:2px solid var(--navy);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;}
+.ws-bub-sm{width:20px;height:20px;font-size:11px;}
+.ws-correct .ws-bub{background:var(--teal);border-color:var(--teal);color:#fff;}
+.ws-correct{font-weight:700;color:var(--teal);}
+.ws-keynote{margin:6px 0 0;color:var(--teal);font-size:12px;font-style:italic;}
+.ws-watch{margin:4px 0 0;color:#9a4a12;font-size:12px;background:#fff3e6;border-left:3px solid #e08a3c;padding:5px 10px;border-radius:0 8px 8px 0;}
+.ws-scaffold-note{margin:0 0 14px;background:var(--soft);border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;font-weight:600;color:var(--navy);font-size:12.5px;}
+.ws-match{display:flex;gap:24px;flex-wrap:wrap;}
+.ws-match-terms{list-style:none;margin:0;padding:0;flex:1;min-width:180px;}
+.ws-match-term{display:flex;align-items:center;gap:8px;margin:5px 0;font-weight:600;}
+.ws-match-bank{list-style:none;margin:0;padding:10px 12px;background:var(--soft);border:1px solid var(--line);border-radius:10px;flex:1;min-width:180px;}
+.ws-match-bank li{display:flex;align-items:center;gap:8px;margin:4px 0;}
+.ws-blank{display:inline-block;min-width:54px;border-bottom:1.5px solid var(--ink);text-align:center;font-weight:700;}
+.ws-blank-sm{min-width:40px;}
+.ws-steps{list-style:none;margin:6px 0;padding:0;}
+.ws-steps li{display:flex;gap:10px;align-items:baseline;padding:4px 0;}
+.ws-step-n{flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:var(--soft);font-weight:700;font-size:11px;display:inline-flex;align-items:center;justify-content:center;}
+.ws-step-l{flex:0 0 38%;font-weight:600;}
+.ws-step-w{flex:1;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
+.ws-table{width:100%;border-collapse:collapse;margin:8px 0;}
+.ws-table th{background:var(--navy);color:#fff;font-size:12px;padding:7px 9px;text-align:left;}
+.ws-table td{border:1px solid var(--line);padding:9px;height:34px;font-weight:600;}
+.ws-lines{margin:8px 0 0;}
+.ws-line{display:block;border-bottom:1.5px solid var(--line);height:24px;}
+.ws-work{margin:8px 0 0;border:1.5px dashed var(--line);border-radius:10px;min-height:70px;padding:6px 10px;position:relative;}
+.ws-work-label{color:var(--muted);font-size:11px;font-weight:600;}
+.ws-frame{background:var(--soft);border-left:3px solid var(--blue);padding:6px 10px;margin:6px 0;font-style:italic;color:var(--muted);border-radius:0 8px 8px 0;}
+.ws-sort{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:5px 18px;}
+.ws-sort li{display:flex;align-items:center;gap:8px;font-weight:600;}
+
+@media print{
+  body{background:#fff;font-size:12pt;}
+  .ws-page{box-shadow:none;border-radius:0;margin:0;max-width:none;padding:0;page-break-after:always;}
+  .ws-page:last-child{page-break-after:auto;}
+  @page{margin:1.5cm;}
+  a{color:#000;}
+}
+
+/* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
+   Appended last so it overrides each generator's base CSS. Finish-only:
+   serif headings + paper ground + AA-safe ink. No layout/size changes. */
+:root{ --ink:#19262f; --muted:#475663; }
+body{ background:#f5f0e6; color:#19262f; }
+h1,h2,h3,h4,h5,h6,
+header.packet h1,.section>h2,.li-title,.learnit-head,.learnit-stage-title,
+.mission-title,.answer-key h2,.think-block h3,.topbar .brand{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
+/* A thin editorial accent rule under the document's main title. */
+header.packet h1{ position:relative; }
+header.packet h1::after{
+  content:""; display:block; width:56px; height:2px; margin-top:8px;
+  background:linear-gradient(90deg,#1fa6a2,#f2c15b); border-radius:2px;
+}
+@media print{ body{ background:#fff !important; } }
+
+</style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
+  <!-- nsr-injected:end -->
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+
+  <!-- enthead-injected:begin (enterprise head/meta — tools/inject-enterprise-head.js) -->
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/favicon.svg">
+  <meta name="theme-color" content="#12355b">
+  <link rel="canonical" href="https://eduwonderlab.com/lessons/5-4-group1/worksheet.html">
+  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — 5.4 Small Group · Group 1 — Practice Worksheet.">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Neft Teacher">
+  <meta property="og:title" content="5.4 Small Group · Group 1 — Practice Worksheet">
+  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — 5.4 Small Group · Group 1 — Practice Worksheet.">
+  <meta property="og:url" content="https://eduwonderlab.com/lessons/5-4-group1/worksheet.html">
+  <meta property="og:image" content="https://eduwonderlab.com/assets/og-curriculum.png">
+  <!-- enthead-injected:end -->
+</head>
+<body>
+<main>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.GR.1</span>
+      <span class="ws-ver">Level 0</span>
+    </div>
+    <h1 class="ws-title">5.4 Small Group · Group 1</h1>
+    <p class="ws-sub">Practice — Level 0</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    <section class="ws-bank">
+    <h2 class="ws-bank-h">📕 Word Bank</h2>
+    <div class="ws-bankwords"><span class="ws-bankword">Regular Polygon</span><span class="ws-bankword">Decompose</span><span class="ws-bankword">Triangle</span><span class="ws-bankword">Composite</span></div>
+  </section><section class="ws-example">
+    <h2 class="ws-example-h">✏️ Worked Example</h2>
+    <ol class="ws-example-steps"><li><b>Decompose the tile:</b> A regular hexagonal tile = 6 congruent triangles</li><li><b>Identify one triangle:</b> base = 8 in, height = 3.5 in</li><li><b>Find the area of one triangle:</b> A = ½ × 8 × 3.5 = 14 sq in</li><li><b>State the total tile area:</b> Total area = 14 sq in</li></ol>
+  </section>
+    <p class="ws-scaffold-note">🧩 Extra support: use the word bank and the worked example. A sentence starter is given under each problem.</p>
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A regular hexagon is divided into 6 equal triangles from the center. Each triangle has a base of 6 ft and a height of 5.2 ft. What is the area of one triangle?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>15.6 sq ft</li><li class="ws-opt"><span class="ws-bub">B</span>31.2 sq ft</li><li class="ws-opt"><span class="ws-bub">C</span>11.2 sq ft</li><li class="ws-opt"><span class="ws-bub">D</span>15.6 ft</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Using the triangle from the previous question, what is the total area of the hexagonal skylight?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>93.6 sq ft</li><li class="ws-opt"><span class="ws-bub">B</span>15.6 sq ft</li><li class="ws-opt"><span class="ws-bub">C</span>187.2 sq ft</li><li class="ws-opt"><span class="ws-bub">D</span>62.4 sq ft</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">A regular hexagon is split into 6 triangles, each with base 4 cm and height 3.5 cm. What is the total area?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>42 sq cm</li><li class="ws-opt"><span class="ws-bub">B</span>21 sq cm</li><li class="ws-opt"><span class="ws-bub">C</span>84 sq cm</li><li class="ws-opt"><span class="ws-bub">D</span>14 sq cm</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">How many triangles can you make from the center of a regular pentagon?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>5</li><li class="ws-opt"><span class="ws-bub">B</span>3</li><li class="ws-opt"><span class="ws-bub">C</span>6</li><li class="ws-opt"><span class="ws-bub">D</span>10</li></ol></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.GR.1</span>
+      <span class="ws-ver">Version A</span>
+    </div>
+    <h1 class="ws-title">5.4 Small Group · Group 1</h1>
+    <p class="ws-sub">Practice — Version A</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    <section class="ws-bank">
+    <h2 class="ws-bank-h">📕 Word Bank</h2>
+    <div class="ws-bankwords"><span class="ws-bankword">Regular Polygon</span><span class="ws-bankword">Decompose</span><span class="ws-bankword">Triangle</span><span class="ws-bankword">Composite</span></div>
+  </section><section class="ws-example">
+    <h2 class="ws-example-h">✏️ Worked Example</h2>
+    <ol class="ws-example-steps"><li><b>Decompose the tile:</b> A regular hexagonal tile = 6 congruent triangles</li><li><b>Identify one triangle:</b> base = 8 in, height = 3.5 in</li><li><b>Find the area of one triangle:</b> A = ½ × 8 × 3.5 = 14 sq in</li><li><b>State the total tile area:</b> Total area = 14 sq in</li></ol>
+  </section>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A regular hexagon is divided into 6 equal triangles from the center. Each triangle has a base of 6 ft and a height of 5.2 ft. What is the area of one triangle?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>15.6 sq ft</li><li class="ws-opt"><span class="ws-bub">B</span>31.2 sq ft</li><li class="ws-opt"><span class="ws-bub">C</span>11.2 sq ft</li><li class="ws-opt"><span class="ws-bub">D</span>15.6 ft</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Using the triangle from the previous question, what is the total area of the hexagonal skylight?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>93.6 sq ft</li><li class="ws-opt"><span class="ws-bub">B</span>15.6 sq ft</li><li class="ws-opt"><span class="ws-bub">C</span>187.2 sq ft</li><li class="ws-opt"><span class="ws-bub">D</span>62.4 sq ft</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">A regular hexagon is split into 6 triangles, each with base 4 cm and height 3.5 cm. What is the total area?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>42 sq cm</li><li class="ws-opt"><span class="ws-bub">B</span>21 sq cm</li><li class="ws-opt"><span class="ws-bub">C</span>84 sq cm</li><li class="ws-opt"><span class="ws-bub">D</span>14 sq cm</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">How many triangles can you make from the center of a regular pentagon?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>5</li><li class="ws-opt"><span class="ws-bub">B</span>3</li><li class="ws-opt"><span class="ws-bub">C</span>6</li><li class="ws-opt"><span class="ws-bub">D</span>10</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Decompose the octagon</span><span class="ws-step-w">A regular octagon = 8 congruent triangles</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Identify one triangle</span><span class="ws-step-w">base = 3 ft, height = 4 ft</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Find the area of one triangle</span><span class="ws-step-w">A = ½ × 3 × 4 = 6 sq ft</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Find total area</span><span class="ws-step-w">Total area = 5 × 6 = 30 sq ft</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Decompose the pentagon</span><span class="ws-step-w">A regular pentagon = 5 congruent triangles</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Identify one triangle</span><span class="ws-step-w">base = 6 ft, height = 4 ft</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Find the area of one triangle</span><span class="ws-step-w">A = 6 × 4 = 24 sq ft</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Find total area</span><span class="ws-step-w">Total area = 5 × 24 = 120 sq ft</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.GR.1</span>
+      <span class="ws-ver">Version B</span>
+    </div>
+    <h1 class="ws-title">5.4 Small Group · Group 1</h1>
+    <p class="ws-sub">Practice — Version B</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A regular hexagonal floor tile splits from its center into 6 congruent triangles, each with an area of 12 cm². What is the total area of the tile?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>72 cm²</li><li class="ws-opt"><span class="ws-bub">B</span>12 cm²</li><li class="ws-opt"><span class="ws-bub">C</span>36 cm²</li><li class="ws-opt"><span class="ws-bub">D</span>18 cm²</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A regular pentagonal tile splits into 5 congruent triangles. Each triangle has a base of 4 in and a height of 6 in. What is the total area of the tile?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>60 in²</li><li class="ws-opt"><span class="ws-bub">B</span>12 in²</li><li class="ws-opt"><span class="ws-bub">C</span>24 in²</li><li class="ws-opt"><span class="ws-bub">D</span>120 in²</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">An octagon tile splits into equal triangles, each with base 6 ft and height 5 ft. How many triangles, and what is the total area?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>120 sq ft</li><li class="ws-opt"><span class="ws-bub">B</span>15 sq ft</li><li class="ws-opt"><span class="ws-bub">C</span>90 sq ft</li><li class="ws-opt"><span class="ws-bub">D</span>105 sq ft</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Level 2 Extension — Find the Tile Area Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Decompose the tile</span><span class="ws-step-w">A regular hexagonal tile = 6 congruent triangles</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Identify one triangle</span><span class="ws-step-w">base = 8 in, height = 3.5 in</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Find the area of one triangle</span><span class="ws-step-w">A = ½ × 8 × 3.5 = 14 sq in</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">State the total tile area</span><span class="ws-step-w">Total area = 14 sq in</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Find the Area Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Decompose the hexagon</span><span class="ws-step-w">A regular hexagon = 6 triangles</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find area of one triangle</span><span class="ws-step-w">b = 5 m, h = 4.3 m</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Calculate one triangle</span><span class="ws-step-w">A = ½ × 5 × 4.3 = 10.75 sq m</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Find total area</span><span class="ws-step-w">Total = 10.75 + 6 = 16.75 sq m</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">A regular hexagon and a regular pentagon both have triangles with the same base (6 ft) and the same height (5 ft). Which polygon has the greater total area? Explain why the number of sides matters.</p><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.GR.1</span>
+      <span class="ws-ver">Level 0 — Answer Key</span>
+    </div>
+    <h1 class="ws-title">5.4 Small Group · Group 1</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A regular hexagon is divided into 6 equal triangles from the center. Each triangle has a base of 6 ft and a height of 5.2 ft. What is the area of one triangle?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>15.6 sq ft</li><li class="ws-opt"><span class="ws-bub">B</span>31.2 sq ft</li><li class="ws-opt"><span class="ws-bub">C</span>11.2 sq ft</li><li class="ws-opt"><span class="ws-bub">D</span>15.6 ft</li></ol><p class="ws-keynote">A = ½ × b × h = ½ × 6 × 5.2 = 15.6 square feet.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Area of Regular Polygons is stopping after finding the area of ONE triangle and reporting that as the total area — or adding the number of triangles instead of multiplying. Remember: total area = (one triangle's area) × (number of sides), not (one triangle's area) + (number of sides).</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Using the triangle from the previous question, what is the total area of the hexagonal skylight?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>93.6 sq ft</li><li class="ws-opt"><span class="ws-bub">B</span>15.6 sq ft</li><li class="ws-opt"><span class="ws-bub">C</span>187.2 sq ft</li><li class="ws-opt"><span class="ws-bub">D</span>62.4 sq ft</li></ol><p class="ws-keynote">Total area = 6 triangles × 15.6 sq ft = 93.6 square feet.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Area of Regular Polygons is stopping after finding the area of ONE triangle and reporting that as the total area — or adding the number of triangles instead of multiplying. Remember: total area = (one triangle's area) × (number of sides), not (one triangle's area) + (number of sides).</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">A regular hexagon is split into 6 triangles, each with base 4 cm and height 3.5 cm. What is the total area?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>42 sq cm</li><li class="ws-opt"><span class="ws-bub">B</span>21 sq cm</li><li class="ws-opt"><span class="ws-bub">C</span>84 sq cm</li><li class="ws-opt"><span class="ws-bub">D</span>14 sq cm</li></ol><p class="ws-keynote">Each triangle: ½ × 4 × 3.5 = 7 sq cm. Total: 6 × 7 = 42 sq cm.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Area of Regular Polygons is stopping after finding the area of ONE triangle and reporting that as the total area — or adding the number of triangles instead of multiplying. Remember: total area = (one triangle's area) × (number of sides), not (one triangle's area) + (number of sides).</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">How many triangles can you make from the center of a regular pentagon?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>5</li><li class="ws-opt"><span class="ws-bub">B</span>3</li><li class="ws-opt"><span class="ws-bub">C</span>6</li><li class="ws-opt"><span class="ws-bub">D</span>10</li></ol><p class="ws-keynote">A regular pentagon has 5 sides, so drawing lines from the center to each vertex creates 5 equal triangles.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Area of Regular Polygons is stopping after finding the area of ONE triangle and reporting that as the total area — or adding the number of triangles instead of multiplying. Remember: total area = (one triangle's area) × (number of sides), not (one triangle's area) + (number of sides).</p></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.GR.1</span>
+      <span class="ws-ver">Version A — Answer Key</span>
+    </div>
+    <h1 class="ws-title">5.4 Small Group · Group 1</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A regular hexagon is divided into 6 equal triangles from the center. Each triangle has a base of 6 ft and a height of 5.2 ft. What is the area of one triangle?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>15.6 sq ft</li><li class="ws-opt"><span class="ws-bub">B</span>31.2 sq ft</li><li class="ws-opt"><span class="ws-bub">C</span>11.2 sq ft</li><li class="ws-opt"><span class="ws-bub">D</span>15.6 ft</li></ol><p class="ws-keynote">A = ½ × b × h = ½ × 6 × 5.2 = 15.6 square feet.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Area of Regular Polygons is stopping after finding the area of ONE triangle and reporting that as the total area — or adding the number of triangles instead of multiplying. Remember: total area = (one triangle's area) × (number of sides), not (one triangle's area) + (number of sides).</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Using the triangle from the previous question, what is the total area of the hexagonal skylight?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>93.6 sq ft</li><li class="ws-opt"><span class="ws-bub">B</span>15.6 sq ft</li><li class="ws-opt"><span class="ws-bub">C</span>187.2 sq ft</li><li class="ws-opt"><span class="ws-bub">D</span>62.4 sq ft</li></ol><p class="ws-keynote">Total area = 6 triangles × 15.6 sq ft = 93.6 square feet.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Area of Regular Polygons is stopping after finding the area of ONE triangle and reporting that as the total area — or adding the number of triangles instead of multiplying. Remember: total area = (one triangle's area) × (number of sides), not (one triangle's area) + (number of sides).</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">A regular hexagon is split into 6 triangles, each with base 4 cm and height 3.5 cm. What is the total area?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>42 sq cm</li><li class="ws-opt"><span class="ws-bub">B</span>21 sq cm</li><li class="ws-opt"><span class="ws-bub">C</span>84 sq cm</li><li class="ws-opt"><span class="ws-bub">D</span>14 sq cm</li></ol><p class="ws-keynote">Each triangle: ½ × 4 × 3.5 = 7 sq cm. Total: 6 × 7 = 42 sq cm.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Area of Regular Polygons is stopping after finding the area of ONE triangle and reporting that as the total area — or adding the number of triangles instead of multiplying. Remember: total area = (one triangle's area) × (number of sides), not (one triangle's area) + (number of sides).</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">How many triangles can you make from the center of a regular pentagon?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>5</li><li class="ws-opt"><span class="ws-bub">B</span>3</li><li class="ws-opt"><span class="ws-bub">C</span>6</li><li class="ws-opt"><span class="ws-bub">D</span>10</li></ol><p class="ws-keynote">A regular pentagon has 5 sides, so drawing lines from the center to each vertex creates 5 equal triangles.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Area of Regular Polygons is stopping after finding the area of ONE triangle and reporting that as the total area — or adding the number of triangles instead of multiplying. Remember: total area = (one triangle's area) × (number of sides), not (one triangle's area) + (number of sides).</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Decompose the octagon</span><span class="ws-step-w">A regular octagon = 8 congruent triangles</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Identify one triangle</span><span class="ws-step-w">base = 3 ft, height = 4 ft</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Find the area of one triangle</span><span class="ws-step-w">A = ½ × 3 × 4 = 6 sq ft</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Find total area</span><span class="ws-step-w">Total area = 5 × 6 = 30 sq ft</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 4. Correct work: An octagon has 8 sides, not 5. Total area = 8 × 6 = 48 sq ft — multiply one triangle's area by the actual number of sides (triangles), not a random number.</p></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Decompose the pentagon</span><span class="ws-step-w">A regular pentagon = 5 congruent triangles</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Identify one triangle</span><span class="ws-step-w">base = 6 ft, height = 4 ft</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Find the area of one triangle</span><span class="ws-step-w">A = 6 × 4 = 24 sq ft</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Find total area</span><span class="ws-step-w">Total area = 5 × 24 = 120 sq ft</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 3. Correct work: The student forgot to multiply by ½ when finding the triangle's area. A = ½ × 6 × 4 = 12 sq ft, so Total = 5 × 12 = 60 sq ft.</p></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.GR.1</span>
+      <span class="ws-ver">Version B — Answer Key</span>
+    </div>
+    <h1 class="ws-title">5.4 Small Group · Group 1</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A regular hexagonal floor tile splits from its center into 6 congruent triangles, each with an area of 12 cm². What is the total area of the tile?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>72 cm²</li><li class="ws-opt"><span class="ws-bub">B</span>12 cm²</li><li class="ws-opt"><span class="ws-bub">C</span>36 cm²</li><li class="ws-opt"><span class="ws-bub">D</span>18 cm²</li></ol><p class="ws-keynote">A hexagon has 6 sides, so it splits into 6 equal triangles. Total = 6 × 12 = 72 cm².</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Area of Regular Polygons is stopping after finding the area of ONE triangle and reporting that as the total area — or adding the number of triangles instead of multiplying. Remember: total area = (one triangle's area) × (number of sides), not (one triangle's area) + (number of sides).</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A regular pentagonal tile splits into 5 congruent triangles. Each triangle has a base of 4 in and a height of 6 in. What is the total area of the tile?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>60 in²</li><li class="ws-opt"><span class="ws-bub">B</span>12 in²</li><li class="ws-opt"><span class="ws-bub">C</span>24 in²</li><li class="ws-opt"><span class="ws-bub">D</span>120 in²</li></ol><p class="ws-keynote">One triangle = ½ × 4 × 6 = 12 in². A pentagon has 5 triangles, so total = 5 × 12 = 60 in².</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Area of Regular Polygons is stopping after finding the area of ONE triangle and reporting that as the total area — or adding the number of triangles instead of multiplying. Remember: total area = (one triangle's area) × (number of sides), not (one triangle's area) + (number of sides).</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">An octagon tile splits into equal triangles, each with base 6 ft and height 5 ft. How many triangles, and what is the total area?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>120 sq ft</li><li class="ws-opt"><span class="ws-bub">B</span>15 sq ft</li><li class="ws-opt"><span class="ws-bub">C</span>90 sq ft</li><li class="ws-opt"><span class="ws-bub">D</span>105 sq ft</li></ol><p class="ws-keynote">An octagon has 8 sides, so it splits into 8 triangles. One triangle = ½ × 6 × 5 = 15 sq ft. Total = 8 × 15 = 120 sq ft.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Area of Regular Polygons is stopping after finding the area of ONE triangle and reporting that as the total area — or adding the number of triangles instead of multiplying. Remember: total area = (one triangle's area) × (number of sides), not (one triangle's area) + (number of sides).</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Level 2 Extension — Find the Tile Area Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Decompose the tile</span><span class="ws-step-w">A regular hexagonal tile = 6 congruent triangles</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Identify one triangle</span><span class="ws-step-w">base = 8 in, height = 3.5 in</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Find the area of one triangle</span><span class="ws-step-w">A = ½ × 8 × 3.5 = 14 sq in</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">State the total tile area</span><span class="ws-step-w">Total area = 14 sq in</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 4. Correct work: The student stopped after finding ONE triangle. A hexagon has 6 congruent triangles, so multiply by 6: Total = 6 × 14 = 84 sq in.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Find the Area Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Decompose the hexagon</span><span class="ws-step-w">A regular hexagon = 6 triangles</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Find area of one triangle</span><span class="ws-step-w">b = 5 m, h = 4.3 m</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Calculate one triangle</span><span class="ws-step-w">A = ½ × 5 × 4.3 = 10.75 sq m</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Find total area</span><span class="ws-step-w">Total = 10.75 + 6 = 16.75 sq m</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 4. Correct work: To find total area, multiply (not add): Total = 10.75 × 6 = 64.5 sq m. Six equal triangles means 6 times one triangle's area.</p></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">A regular hexagon and a regular pentagon both have triangles with the same base (6 ft) and the same height (5 ft). Which polygon has the greater total area? Explain why the number of sides matters.</p><p class="ws-keynote">Look for: hexagon, pentagon, triangles, multiply, sides, decompose, area.</p></div></li></ol>
+  </section>
+</main>
+<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+  <!-- nsr-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
+  </body>
+</html>

@@ -33,6 +33,7 @@ import "@engine/styles/motion.css";
 import "@engine/styles/themes.css";
 import "@engine/styles/editorial.css";
 import "@engine/styles/present-mode.css";
+import "@engine/styles/theme-warm.css";
 
 export function createApp(config) {
   const root = document.getElementById("app");
@@ -60,6 +61,12 @@ export function createApp(config) {
   // Publisher-grade editorial design layer (engine/styles/editorial.css) — the
   // approved look now applies to EVERY lesson, not just flagship pilots.
   document.body.classList.add("editorial");
+  // Visual skin (engine/styles/theme-warm.css) — warm-deck is the canonical
+  // look for every lesson; config.skin can name another `skin-*` class, and
+  // `"skin": "editorial"` opts a lesson back to the bare editorial layer.
+  // DOM, flow, and interactivity are untouched by skins.
+  const skin = config.skin || "warm-deck";
+  if (skin !== "editorial") document.body.classList.add(`skin-${skin}`);
 
   // High Contrast stylesheet overrides
   const hcSheet = document.createElement("style");
@@ -291,6 +298,7 @@ function formsCardHtml(config) {
   return `
       <div class="identity-forms" style="background:var(--cream,#fdf3e0); border:1px solid var(--gold,#d4952a); border-radius:12px; padding:12px 16px; margin:0 0 16px; text-align:left;">
         <div style="font-weight:800; margin-bottom:8px;">📋 ${t("lessonForms")}</div>
+        <p style="margin:0 0 8px; font-size:0.84rem; color:var(--muted,#52606d);">These optional links open Google Forms. Responses leave this site and follow your school Google account and form settings.</p>
         <div style="display:flex; gap:8px;">
           ${link(s.notes, t("notes"), "📝")}
           ${link(s.practice, t("practice"), "✏️")}
