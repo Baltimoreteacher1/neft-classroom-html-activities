@@ -388,6 +388,60 @@
   color: var(--ewl-color-white);
 }
 
+/* Collapsible tool groups — the rail opens as a short list of category
+   headers; tapping one reveals its tools (accordion, one open at a time). */
+.ewl-supports-group {
+  display: flex;
+  flex-direction: column;
+}
+.ewl-supports-group-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  min-height: 44px;
+  padding: 0 12px;
+  background: transparent;
+  border: none;
+  border-radius: 12px;
+  color: var(--ewl-color-text);
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.2s;
+}
+.ewl-supports-group-head:hover {
+  background-color: rgba(30, 41, 59, 0.08);
+}
+.ewl-supports-group-caret {
+  font-size: 12px;
+  opacity: 0.7;
+  transition: transform 0.2s;
+}
+.ewl-supports-group-head[aria-expanded="true"] {
+  background-color: rgba(30, 41, 59, 0.06);
+}
+.ewl-supports-group-head[aria-expanded="true"] .ewl-supports-group-caret {
+  transform: rotate(180deg);
+}
+.ewl-supports-group-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 4px 0 6px 8px;
+}
+.ewl-supports-group-body[hidden] {
+  display: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ewl-supports-group-head,
+  .ewl-supports-group-caret {
+    transition: none;
+  }
+}
+
 /* "Quick setups" — one-tap accessibility presets at the top of the rail. */
 .ewl-supports-quick-row {
   display: flex;
