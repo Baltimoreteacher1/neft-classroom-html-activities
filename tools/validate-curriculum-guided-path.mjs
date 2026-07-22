@@ -18,6 +18,7 @@ function check(condition, message) {
 const hub = read("curriculum/index.html");
 const guidedJs = read("assets/curriculum-guided-path.js");
 const guidedCss = read("assets/curriculum-guided-path.css");
+const sidebarJs = read("assets/curriculum-sidebar.js");
 const launcher = read("assets/curriculum-student-launch.js");
 const launcherCss = read("assets/curriculum-student-launch.css");
 const launcherHtml = read("curriculum/student-launch/index.html");
@@ -44,13 +45,12 @@ check(
   "teacher tool inventory is progressively disclosed",
 );
 check(
-  guidedJs.includes("card.hidden = !selected"),
-  "only the selected unit stays in the active experience",
+  hub.includes("curriculum-sidebar.js") && sidebarJs.includes('btn.className = "curr-rail-item"'),
+  "hub retains its canonical unit rail",
 );
 check(
-  guidedJs.includes('hub.querySelector(".units-grid")') &&
-    guidedJs.includes("grid.parentNode.insertBefore(nav, grid)"),
-  "unit navigation targets the rendered curriculum shell",
+  !guidedJs.includes("card.hidden") && !guidedJs.includes("curriculum-unit-nav"),
+  "guided path does not compete with the canonical unit rail",
 );
 check(
   guidedJs.includes("details.unit") && guidedJs.includes("printUnits.appendChild(unit)"),
