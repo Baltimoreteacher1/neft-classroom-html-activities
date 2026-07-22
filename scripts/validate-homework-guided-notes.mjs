@@ -17,6 +17,10 @@ const REQUIRED_MARKERS = [
   "Qué aprendemos hoy",
   "The big idea",
   "La idea principal",
+  "Follow the picture path",
+  "Sigan la ruta visual",
+  "In one sentence",
+  "En una frase",
   "Try this together",
   "Inténtenlo juntos",
   "Words to know",
@@ -30,6 +34,9 @@ const REQUIRED_MARKERS = [
   "Check This Problem",
   "normalizeMath",
   'class="homework-tab-bar"',
+  'class="concept-quick-path"',
+  'class="learning-word-chips"',
+  'class="step-lead lang-en"',
   'data-tab-panel="play"',
   'data-tab-panel="workbench"',
   "Math Workbench",
@@ -100,6 +107,11 @@ for (const id of lessonIds) {
     if (bad.test(html)) {
       issues.push({ id, level: "CRITICAL", msg: `Bad Spanish pattern: ${bad}` });
     }
+  }
+
+  const learningBlocks = html.match(/<p class="learning-big">[\s\S]*?<\/p>/g) || [];
+  if (learningBlocks.some((block) => /\.\.<\/p>/.test(block))) {
+    issues.push({ id, level: "HIGH", msg: "Learning summary has doubled punctuation" });
   }
 
   const script = html.match(/<script>([\s\S]*?)<\/script>/i)?.[1];

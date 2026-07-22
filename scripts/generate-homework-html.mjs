@@ -2436,6 +2436,26 @@ body { font-size: 15px; line-height: 1.58; }
 }
 ${EDITORIAL_OVERRIDES}
 </style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
+  <!-- nsr-injected:end -->
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+
+  <!-- enthead-injected:begin (enterprise head/meta — tools/inject-enterprise-head.js) -->
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/favicon.svg">
+  <meta name="theme-color" content="#12355b">
+  <link rel="canonical" href="https://eduwonderlab.com/lessons/${esc(lessonId)}/homework.html">
+  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — Help Your Student — Lesson ${esc(lessonId)}: ${esc(title)}.">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Neft Teacher">
+  <meta property="og:title" content="Help Your Student — Lesson ${esc(lessonId)}: ${esc(title)}">
+  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — Help Your Student — Lesson ${esc(lessonId)}: ${esc(title)}.">
+  <meta property="og:url" content="https://eduwonderlab.com/lessons/${esc(lessonId)}/homework.html">
+  <meta property="og:image" content="https://eduwonderlab.com/assets/og-curriculum.png">
+  <!-- enthead-injected:end -->
 </head>
 <body>
 
@@ -3746,8 +3766,18 @@ window.onload = function() {
   });
 };
 </script>
+<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+  <!-- nsr-injected:end -->
+    <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
+  <script src="/assets/canvas-bridge.js" defer></script>
+  <!-- canvas-bridge-injected:end -->
+<!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
 </body>
-</html>`;
+</html>
+`;
 }
 
 // Split an inline-bilingual label ("🔵 English / Español") into language spans so
@@ -3803,7 +3833,8 @@ function main() {
   for (const { id, config } of lessons) {
     const homeworkHtml = localizeBilingualLabels(generateHtml(id, config));
     const lessonPath = join(lessonsDir, id, "homework.html");
-    writeFileSync(lessonPath, homeworkHtml);
+    const normalizedHtml = `${homeworkHtml.replace(/^ {12}$/gm, "").trimEnd()}\n`;
+    writeFileSync(lessonPath, normalizedHtml);
     count++;
   }
 

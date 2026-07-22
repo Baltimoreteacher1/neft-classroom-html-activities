@@ -69,6 +69,43 @@ function learningTonight(config) {
   return { en, es };
 }
 
+function completeSentence(value) {
+  const text = String(value || "").trim();
+  if (!text) return "";
+  return /[.!?]$/.test(text) ? text : `${text}.`;
+}
+
+function splitExplanation(value) {
+  const text = completeSentence(value);
+  const firstSentence = text.match(/^(.+?[.!?])(?:\s+|$)([\s\S]*)$/);
+  if (!firstSentence) return { lead: text, detail: "" };
+  return {
+    lead: firstSentence[1].trim(),
+    detail: firstSentence[2].trim(),
+  };
+}
+
+const STEP_CUES = [
+  { icon: "👀", en: "Start", es: "Empieza" },
+  { icon: "🧩", en: "Show it", es: "Muéstralo" },
+  { icon: "✏️", en: "Solve", es: "Resuelve" },
+  { icon: "✅", en: "Check", es: "Revisa" },
+];
+
+function stepCue(index) {
+  return STEP_CUES[Math.min(index, STEP_CUES.length - 1)];
+}
+
+function renderVocabularyChips(vocab, language) {
+  const terms = vocab
+    .map((word) => (language === "es" ? word.termEs || word.term : word.term))
+    .filter(Boolean);
+  if (!terms.length) return "";
+
+  const label = language === "es" ? "Palabras clave" : "Key words";
+  return `<div class="learning-words"><span class="learning-words-label">${label}</span><ul class="learning-word-chips" aria-label="${label}">${terms.map((term) => `<li>${esc(term)}</li>`).join("")}</ul></div>`;
+}
+
 function languageTonightEs(config) {
   const vocab = config.vocabulary || [];
   return (
@@ -911,8 +948,8 @@ export function renderWelcomeBanner(config, lessonId) {
         </div>
       </div>
       <p class="welcome-lead bilingual-block">
-        <span class="lang-en"><strong>English:</strong> You don't need to be a math expert. This page helps you <em>guide</em> your student — with pictures, steps, and words in both languages.</span>
-        <span class="lang-es" lang="es"><strong>Español:</strong> No necesitas ser experto en matemáticas. Esta página te ayuda a <em>guiar</em> a tu estudiante — con dibujos, pasos y palabras en dos idiomas.</span>
+        <span class="lang-en"><strong>English:</strong> Use the pictures and short steps. Ask questions; let your student do the thinking.</span>
+        <span class="lang-es" lang="es"><strong>Español:</strong> Usen los dibujos y los pasos cortos. Hagan preguntas; dejen que su estudiante piense.</span>
       </p>
       
       <!-- Modern language mode selector -->
@@ -951,13 +988,13 @@ export function renderLearningTonight(config) {
       <div class="bilingual-grid">
         <div class="bilingual-col lang-en">
           <span class="lang-label">English</span>
-          <p class="learning-big">${esc(en.charAt(0).toUpperCase() + en.slice(1))}.</p>
-          ${wordsEn ? `<p class="learning-sub">Practice using these words while you work: <em>${esc(wordsEn)}</em>.</p>` : ""}
+          <p class="learning-big">${esc(completeSentence(en.charAt(0).toUpperCase() + en.slice(1)))}</p>
+          ${wordsEn ? renderVocabularyChips(vocab, "en") : ""}
         </div>
         <div class="bilingual-col lang-es" lang="es">
           <span class="lang-label">Español</span>
-          <p class="learning-big">${esc(es.endsWith(".") ? es : `${es}.`)}</p>
-          ${wordsEs ? `<p class="learning-sub">Practiquen usar estas palabras al trabajar: <em>${esc(wordsEs)}</em>.</p>` : ""}
+          <p class="learning-big">${esc(completeSentence(es))}</p>
+          ${wordsEs ? renderVocabularyChips(vocab, "es") : ""}
         </div>
       </div>
     </section>`;
@@ -967,25 +1004,45 @@ export function renderConceptExplainer(config) {
   const steps = buildConceptSteps(config);
   const keyEn = keyIdea(config);
   const keyEs = keyIdeaEs(config);
+  const quickPath = steps
+    .map((_, index) => {
+      const cue = stepCue(index);
+      return `<li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">${cue.icon}</span><span class="lang-en">${cue.en}</span><span class="lang-es" lang="es">${cue.es}</span></li>`;
+    })
+    .join("");
 
   return `
     <section class="guided-section card section-visual" aria-label="Visual concept explainer">
       <h2 class="section-title">🎯 The big idea / La idea principal</h2>
       <div class="concept-visual-wrap">${conceptVisualSvg(config)}</div>
+      <div class="concept-quick-wrap">
+        <p class="concept-quick-title"><span class="lang-en">Follow the picture path</span><span class="lang-es" lang="es">Sigan la ruta visual</span></p>
+        <ol class="concept-quick-path" aria-label="Four-step visual math path">${quickPath}</ol>
+      </div>
       <div class="key-idea-banner">
-        <p class="lang-en"><strong>Watch for this:</strong> ${esc(keyEn)}</p>
-        <p class="lang-es" lang="es"><strong>Observa esto:</strong> ${esc(keyEs)}</p>
+        <p class="lang-en"><strong>In one sentence:</strong> ${esc(completeSentence(keyEn))}</p>
+        <p class="lang-es" lang="es"><strong>En una frase:</strong> ${esc(completeSentence(keyEs))}</p>
       </div>
       <ol class="guided-steps">
         ${steps
-          .map(
-            (s) => `
+          .map((s, index) => {
+            const cue = stepCue(index);
+            const en = splitExplanation(s.en);
+            const es = splitExplanation(s.es);
+            const moreDetail = en.detail || es.detail
+              ? `<details class="step-detail"><summary><span class="lang-en">More detail</span><span class="lang-es" lang="es">Más detalle</span></summary>${en.detail ? `<p class="lang-en">${esc(en.detail)}</p>` : ""}${es.detail ? `<p class="lang-es" lang="es">${esc(es.detail)}</p>` : ""}</details>`
+              : "";
+            return `
           <li class="guided-step step-color-${s.stepNum}">
-            <span class="step-badge">Step ${s.stepNum} / Paso ${s.stepNum}</span>
-            <p class="lang-en">${esc(s.en)}</p>
-            <p class="lang-es" lang="es">${esc(s.es)}</p>
-          </li>`,
-          )
+            <div class="guided-step-head">
+              <span class="guided-step-icon" aria-hidden="true">${cue.icon}</span>
+              <div><span class="step-cue-label"><span class="lang-en">${cue.en}</span><span class="lang-es" lang="es">${cue.es}</span></span><span class="step-badge">Step ${s.stepNum} / Paso ${s.stepNum}</span></div>
+            </div>
+            <p class="step-lead lang-en">${esc(en.lead)}</p>
+            <p class="step-lead lang-es" lang="es">${esc(es.lead)}</p>
+            ${moreDetail}
+          </li>`;
+          })
           .join("")}
       </ol>
       <ul class="watch-for-list">
@@ -1960,7 +2017,32 @@ export const GUIDED_NOTES_CSS = `
 .lang-en + .lang-es, .worked-step .lang-es { padding-left: 10px; border-left: 3px solid var(--teal); }
 .welcome-lead .lang-es { color: rgba(255, 255, 255, 0.94); border-left: 3px solid var(--amber); padding-left: 10px; display: inline-block; margin-top: 6px; }
 .learning-big { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; line-height: 1.4; }
-.learning-sub { font-size: 14px; margin: 0; color: var(--ink); }
+.learning-words { margin-top: 12px; }
+.learning-words-label {
+  display: block;
+  margin-bottom: 7px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.learning-word-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.learning-word-chips li {
+  padding: 5px 9px;
+  border: 1px solid #b8ddd8;
+  border-radius: 999px;
+  background: var(--teal-light);
+  color: var(--teal-ink);
+  font-size: 12px;
+  font-weight: 700;
+}
 
 .guided-section { scroll-margin-top: 16px; }
 .section-learn { border-left: 4px solid var(--teal); }
@@ -1994,6 +2076,57 @@ export const GUIDED_NOTES_CSS = `
 .step-color-3 .step-dot, .step-color-3.step-badge { background: var(--amber); color: var(--navy); }
 .step-color-4 .step-dot, .step-color-4.step-badge { background: var(--coral); }
 
+.concept-quick-wrap {
+  margin: 0 0 16px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: #fbfdff;
+}
+.concept-quick-title {
+  margin: 0 0 10px;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.concept-quick-path {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.concept-quick-step {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 82px;
+  padding: 9px 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  color: var(--navy);
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 800;
+}
+.concept-quick-step:not(:last-child)::after {
+  content: "→";
+  position: absolute;
+  right: -9px;
+  z-index: 1;
+  color: var(--teal-ink);
+  font-size: 16px;
+}
+.concept-quick-icon { font-size: 24px; line-height: 1; margin-bottom: 5px; }
+.concept-quick-step .lang-es { color: var(--muted); font-size: 11px; }
+
 .key-idea-banner {
   background: var(--teal-light);
   border-radius: var(--radius-sm);
@@ -2011,6 +2144,48 @@ export const GUIDED_NOTES_CSS = `
   padding: 12px 14px;
   background: var(--white);
 }
+.guided-step { padding: 16px; }
+.guided-step-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.guided-step-head > div { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
+.guided-step-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  border-radius: 12px;
+  background: var(--cream);
+  font-size: 22px;
+}
+.step-cue-label {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.step-cue-label .lang-en, .step-cue-label .lang-es { display: inline; margin: 0; }
+.step-cue-label .lang-es::before { content: " / "; color: var(--muted); }
+.guided-step-head .step-badge { margin: 0; }
+.guided-step .step-lead { font-size: 16px; font-weight: 700; line-height: 1.45; }
+.step-detail {
+  margin-top: 10px;
+  border-top: 1px dashed var(--line);
+  padding-top: 9px;
+}
+.step-detail summary {
+  cursor: pointer;
+  color: var(--teal-ink);
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 800;
+}
+.step-detail p { margin-top: 8px; color: var(--ink); font-weight: 400; }
 .step-badge {
   display: inline-block;
   font-family: var(--font-display);
@@ -2039,6 +2214,17 @@ export const GUIDED_NOTES_CSS = `
   padding: 10px 12px; background: var(--cream); border-radius: var(--radius-sm);
 }
 .watch-icon { font-size: 20px; flex-shrink: 0; }
+
+@media (max-width: 560px) {
+  .concept-quick-path { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .concept-quick-step:nth-child(2)::after { display: none; }
+}
+
+@media print {
+  .concept-quick-path { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .step-detail > summary { display: none; }
+  .step-detail[open] > summary ~ *, .step-detail > * { display: block; }
+}
 
 .try-scenario { font-size: 15px; font-weight: 600; color: var(--navy); margin: 0 0 8px; }
 .try-together-note { font-size: 14px; margin: 0 0 14px; color: var(--muted); }
