@@ -40,7 +40,10 @@ const REQUIRED_MARKERS = [
   'class="family-visual-lab"',
   'data-visual-lab="',
   'class="visual-lab-stage"',
-  'data-lab-input="',
+  'data-lesson-model="',
+  'data-lesson-model-host',
+  'class="interactive-visual"',
+  '/assets/homework-lesson-models.js',
   'class="visual-representation-grid"',
   "TOUCH &amp; TRY",
   "TOCA Y PRUEBA",
@@ -122,13 +125,13 @@ for (const id of lessonIds) {
   }
 
   const visualLabs = (html.match(/class="family-visual-lab"/g) || []).length;
-  const visualControls = (html.match(/data-lab-input="/g) || []).length;
+  const lessonModels = (html.match(/data-lesson-model="/g) || []).length;
   const representationCards = (html.match(/class="visual-representation-card /g) || []).length;
   if (visualLabs !== 1) {
     issues.push({ id, level: "CRITICAL", msg: `Expected one visual math lab, found ${visualLabs}` });
   }
-  if (visualControls < 1) {
-    issues.push({ id, level: "CRITICAL", msg: "Visual math lab has no interactive controls" });
+  if (lessonModels !== 1) {
+    issues.push({ id, level: "CRITICAL", msg: `Expected one shared lesson model, found ${lessonModels}` });
   }
   if (representationCards !== 3) {
     issues.push({ id, level: "HIGH", msg: `Expected three representations, found ${representationCards}` });

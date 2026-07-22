@@ -138,7 +138,36 @@ function initialPreview() {
   return `<svg viewBox="0 0 520 220" role="img" aria-label="Interactive math model preview"><rect width="520" height="220" rx="24" fill="#f8fbf2"/><path d="M28 38H492M28 82H492M28 126H492M28 170H492" stroke="#d7e7df"/><path d="M76 20V200M124 20V200M172 20V200M220 20V200M268 20V200M316 20V200M364 20V200M412 20V200M460 20V200" stroke="#d7e7df"/>${dots}<path d="M84 190h352" stroke="#173a5e" stroke-width="5" stroke-linecap="round"/><text x="260" y="210" text-anchor="middle" font-size="14" font-weight="800" fill="#173a5e">Move a slider to change the math</text></svg>`;
 }
 
-export function renderVisualMathLab(topic, config) {
+function renderSharedLessonModel(topic, config, lessonModel) {
+  const kind = lessonModel.kind || "interactive model";
+  const isFactorTree = kind === "factor-tree" || kind === "factor-tree-lab";
+  const modelName = lessonModel.title || (isFactorTree ? "Factor Tree Builder" : "Interactive Lesson Model");
+  const modelNameEs = isFactorTree ? "Constructor de árboles de factores" : "Modelo interactivo de la lección";
+  const prompt = isFactorTree
+    ? "Enter two factors for each composite circle. Keep splitting until every leaf is prime."
+    : "Use the same interactive model from the lesson. Change it, notice the pattern, and explain what the model shows.";
+  const promptEs = isFactorTree
+    ? "Escribe dos factores para cada círculo compuesto. Sigue dividiendo hasta que cada hoja sea prima."
+    : "Usa el mismo modelo interactivo de la lección. Cámbialo, observa el patrón y explica lo que muestra.";
+  const idea = config.launch?.conceptIntro?.keyIdea || config.explore?.conceptIntro?.keyIdea || config.contentObjective || config.title;
+
+  return `<section class="family-visual-lab" data-visual-lab="${esc(topic)}" data-lesson-model="${esc(kind)}" aria-labelledby="visual_lab_title">
+    <div class="visual-lab-heading">
+      <div><span class="visual-lab-kicker"><span class="lang-en">TOUCH &amp; TRY</span><span class="lang-es" lang="es">TOCA Y PRUEBA</span></span>
+      <h2 id="visual_lab_title"><span aria-hidden="true">${isFactorTree ? "🌳" : "🖐️"}</span> <span class="lang-en">${esc(modelName)}</span><span class="lang-es" lang="es">${esc(modelNameEs)}</span></h2></div>
+      <p><span class="lang-en">${esc(prompt)}</span><span class="lang-es" lang="es">${esc(promptEs)}</span></p>
+    </div>
+    <div class="visual-lab-stage" data-lesson-model-host>${lessonModel.html}</div>
+    <div class="visual-representation-grid" aria-label="Three ways to understand the lesson model">
+      <article class="visual-representation-card visual-representation-model"><span class="representation-number">1</span><h3><span class="lang-en">Touch and change</span><span class="lang-es" lang="es">Toca y cambia</span></h3><p><span class="lang-en">${isFactorTree ? "Choose two factors that multiply to the number in the circle." : "Move, type, tap, or drag in the model. Watch what changes."}</span><span class="lang-es" lang="es">${isFactorTree ? "Elige dos factores cuyo producto sea el número del círculo." : "Mueve, escribe, toca o arrastra en el modelo. Observa qué cambia."}</span></p></article>
+      <article class="visual-representation-card visual-representation-math"><span class="representation-number">2</span><h3><span class="lang-en">Write the math</span><span class="lang-es" lang="es">Escribe las matemáticas</span></h3><p><span class="lang-en">Record one equation, value, or relationship you can see.</span><span class="lang-es" lang="es">Escribe una ecuación, un valor o una relación que puedas ver.</span></p></article>
+      <article class="visual-representation-card visual-representation-words"><span class="representation-number">3</span><h3><span class="lang-en">Explain the model</span><span class="lang-es" lang="es">Explica el modelo</span></h3><p><span class="lang-en">I notice ___ changes when ___ changes. This shows ___.</span><span class="lang-es" lang="es">Noto que ___ cambia cuando ___ cambia. Esto muestra ___.</span></p><details><summary><span class="lang-en">Lesson connection</span><span class="lang-es" lang="es">Conexión con la lección</span></summary><p class="visual-source-idea">${esc(idea)}</p></details></article>
+    </div>
+  </section>`;
+}
+
+export function renderVisualMathLab(topic, config, lessonModel = null) {
+  if (lessonModel?.html) return renderSharedLessonModel(topic, config, lessonModel);
   const lab = LABS[topic] || LABS.fallback;
   const controls = lab.controls
     .map(
@@ -184,6 +213,7 @@ export const VISUAL_LABS_CSS = String.raw`
 .visual-lab-controls{display:flex;flex-direction:column;gap:14px;padding:18px;border-radius:22px;background:var(--lab-ink);color:#fff}.visual-lab-control{display:grid;gap:7px;font-weight:800}.visual-lab-control-label{display:flex;justify-content:space-between;gap:10px;align-items:center}.visual-lab-control output{min-width:38px;padding:3px 8px;border-radius:8px;background:var(--lab-sun);color:#102f4e;text-align:center;font-size:18px}.visual-lab-control input[type=range]{width:100%;min-height:28px;accent-color:var(--lab-coral);cursor:pointer}.visual-lab-control input[type=range]:focus-visible{outline:4px solid #fff;outline-offset:4px}.visual-lab-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:auto}.visual-lab-button{min-height:48px;border:2px solid #fff;border-radius:13px;background:var(--lab-coral);color:#182f48;font:inherit;font-weight:800;cursor:pointer}.visual-lab-button-quiet{background:#fff}.visual-lab-button:hover{transform:translateY(-2px)}.visual-lab-button:focus-visible{outline:4px solid var(--lab-sun);outline-offset:3px}
 .visual-representation-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:18px}.visual-representation-card{position:relative;min-height:150px;padding:18px 16px 15px;border:2px solid var(--lab-ink);border-radius:18px;background:#fff}.visual-representation-card h3{margin:0 0 10px;padding-left:30px;font-size:17px}.visual-representation-card p{margin:7px 0;font-size:16px;line-height:1.4}.representation-number{position:absolute;top:12px;left:12px;display:grid;width:27px;height:27px;place-items:center;border-radius:50%;background:var(--lab-ink);color:#fff;font-weight:800}.visual-representation-model{background:#dff5ee}.visual-representation-math{background:#fff2c2}.visual-representation-words{background:#ffe4dd}.visual-representation-math [data-lab-equation]{font-size:clamp(22px,3vw,32px);font-weight:800;text-align:center}.mini-model{display:flex;flex-wrap:wrap;gap:7px;align-content:center;min-height:76px;padding:8px}.mini-dot{width:18px;height:18px;border:2px solid var(--lab-ink);border-radius:50%;background:var(--lab-teal)}.visual-representation-card details{margin-top:10px}.visual-representation-card summary{cursor:pointer;font-weight:800;text-decoration:underline}.visual-source-idea{font-size:13px!important;color:#344f69}
 .lab-label{font:800 16px "Outfit",sans-serif;fill:#173a5e}.lab-small{font:700 12px "Hanken Grotesk",sans-serif;fill:#173a5e}.lab-big{font:800 24px "Outfit",sans-serif;fill:#173a5e}.lab-grid{stroke:#bcd7d0;stroke-width:1}.lab-axis{stroke:#173a5e;stroke-width:3}.lab-accent{fill:#ff775f;stroke:#173a5e;stroke-width:2}.lab-teal{fill:#0b8f87;stroke:#173a5e;stroke-width:2}.lab-sun{fill:#f6c94c;stroke:#173a5e;stroke-width:2}
+[data-lesson-model-host]{display:block;min-height:300px;padding:16px;border:2px solid var(--lab-ink);border-radius:22px;background-color:#eef8f4;background-image:linear-gradient(#cee3dc 1px,transparent 1px),linear-gradient(90deg,#cee3dc 1px,transparent 1px);background-size:24px 24px;overflow:auto}[data-lesson-model-host]>.interactive-visual{width:100%;margin:0!important}[data-lesson-model-host] .ftb-wrap,[data-lesson-model-host] .ftlab{max-width:760px}[data-lesson-model-host] input,[data-lesson-model-host] button{font-size:max(16px,1em)}[data-lesson-model] .visual-representation-card p{font-weight:700}
 @media(max-width:760px){.family-visual-lab{border-radius:20px;box-shadow:5px 5px 0 var(--lab-ink)}.visual-lab-heading,.visual-lab-layout{grid-template-columns:1fr}.visual-lab-stage{min-height:230px}.visual-representation-grid{grid-template-columns:1fr}.visual-representation-card{min-height:120px}.visual-lab-actions{grid-template-columns:1fr 1fr}}
 @media(prefers-reduced-motion:reduce){.visual-lab-button{transition:none!important}.visual-lab-button:hover{transform:none}}
 @media print{.family-visual-lab{box-shadow:none;break-inside:avoid}.visual-lab-controls,.visual-lab-actions{display:none}.visual-lab-layout{grid-template-columns:1fr}.visual-representation-grid{grid-template-columns:repeat(3,1fr)}}
@@ -225,7 +255,7 @@ export const VISUAL_LABS_JS = String.raw`
   function values(lab){var out={};lab.querySelectorAll('[data-lab-input]').forEach(function(input){out[input.getAttribute('data-lab-input')]=Number(input.value);});return out;}
   function update(lab){var v=values(lab),topic=lab.getAttribute('data-visual-lab')||'fallback',r=render(topic,v);lab.querySelector('[data-lab-stage]').innerHTML=r.svg;lab.querySelector('[data-lab-equation]').textContent=r.equation;lab.querySelector('[data-lab-observation]').textContent=r.observation;lab.querySelector('[data-lab-status]').textContent=r.status;lab.querySelectorAll('[data-lab-output]').forEach(function(o){o.value=v[o.getAttribute('data-lab-output')];o.textContent=v[o.getAttribute('data-lab-output')];});var mini=lab.querySelector('[data-lab-mini]');mini.innerHTML='';for(var i=0;i<r.mini;i++){var dot=document.createElement('span');dot.className='mini-dot';mini.appendChild(dot);}}
   function init(lab){var initial={};lab.querySelectorAll('[data-lab-input]').forEach(function(input){initial[input.getAttribute('data-lab-input')]=input.value;input.addEventListener('input',function(){update(lab);});});lab.querySelector('[data-lab-reset]').addEventListener('click',function(){lab.querySelectorAll('[data-lab-input]').forEach(function(input){input.value=initial[input.getAttribute('data-lab-input')];});update(lab);});lab.querySelector('[data-lab-random]').addEventListener('click',function(){lab.querySelectorAll('[data-lab-input]').forEach(function(input){var min=Number(input.min),max=Number(input.max);input.value=Math.floor(Math.random()*(max-min+1))+min;});update(lab);});update(lab);}
-  function initAll(){document.querySelectorAll('[data-visual-lab]').forEach(function(lab){if(lab.getAttribute('data-visual-ready'))return;lab.setAttribute('data-visual-ready','1');init(lab);});}
+  function initAll(){document.querySelectorAll('[data-visual-lab]').forEach(function(lab){if(lab.getAttribute('data-visual-ready')||lab.querySelector('[data-lesson-model-host]'))return;lab.setAttribute('data-visual-ready','1');init(lab);});}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initAll);else initAll();
 })();
 `;
