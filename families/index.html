@@ -1,0 +1,1226 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Family Math Support</title>
+  <style>
+    :root {
+      --ink: #1f2933;
+      --muted: #52606d;
+      --line: #d7dee7;
+      --paper: #fffaf0;
+      --surface: #ffffff;
+      --teal: #0f766e;
+      --blue: #1d4ed8;
+      --amber: #b45309;
+      --rose: #be123c;
+      --shadow: 0 14px 30px rgba(31, 41, 51, 0.08);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--ink); background: var(--paper); line-height: 1.55; }
+    a { color: inherit; }
+    .topbar { background: #12343b; color: #fff; }
+    .topbar-inner { max-width: 1180px; margin: 0 auto; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .topbar a { color: #fff; text-decoration: none; font-weight: 700; }
+    main { max-width: 1180px; margin: 0 auto; padding: 34px 20px 56px; }
+    .hero { display: grid; gap: 14px; margin-bottom: 24px; }
+    .eyebrow { color: var(--teal); font-weight: 800; text-transform: uppercase; font-size: 0.78rem; }
+    h1 { margin: 0; font-size: clamp(2rem, 5vw, 4rem); line-height: 1.02; }
+    .subtitle { margin: 0; max-width: 760px; font-size: 1.2rem; color: #334e68; }
+    .intro { max-width: 860px; color: var(--muted); margin: 0; }
+    .controls { display: grid; grid-template-columns: minmax(220px, 1fr) repeat(2, minmax(180px, 240px)); gap: 12px; margin: 28px 0; align-items: end; }
+    label { display: grid; gap: 6px; color: #334e68; font-weight: 800; font-size: 0.92rem; }
+    input, select { width: 100%; min-height: 46px; border: 2px solid var(--line); border-radius: 8px; background: #fff; color: var(--ink); padding: 10px 12px; font: inherit; }
+    input:focus, select:focus, a:focus-visible { outline: 3px solid rgba(15, 118, 110, 0.3); outline-offset: 2px; }
+    .unit-section { border-top: 3px solid #12343b; padding-top: 22px; margin-top: 34px; }
+    .unit-heading { display: flex; justify-content: space-between; gap: 18px; align-items: end; margin-bottom: 16px; flex-wrap: wrap; }
+    h2 { margin: 0; font-size: 1.6rem; }
+    .unit-heading p { margin: 4px 0 0; color: var(--muted); max-width: 760px; }
+    .count { color: var(--amber); font-weight: 900; }
+    .lesson-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+    .lesson-card { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px; box-shadow: var(--shadow); display: grid; gap: 10px; }
+    .meta-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+    .lesson-id { color: var(--blue); font-weight: 900; }
+    .standard { color: var(--rose); font-weight: 800; font-size: 0.88rem; }
+    h3 { margin: 0; font-size: 1.15rem; line-height: 1.2; }
+    .objective { margin: 0; color: var(--muted); }
+    .badges { display: flex; flex-wrap: wrap; gap: 6px; }
+    .badge { border: 1px solid var(--line); border-radius: 999px; padding: 3px 8px; color: #334e68; font-size: 0.8rem; font-weight: 800; background: #f8fafc; }
+    .badge.flagship { border-color: #f59e0b; color: #92400e; background: #fffbeb; }
+    .open-button { justify-self: start; background: var(--teal); color: #fff; text-decoration: none; font-weight: 900; padding: 9px 12px; border-radius: 8px; }
+    .hidden { display: none; }
+    .empty { background: #fff; border: 2px dashed var(--line); border-radius: 8px; padding: 20px; color: var(--muted); }
+    @media (max-width: 760px) {
+      .controls { grid-template-columns: 1fr; }
+      main { padding-top: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <strong>Mr. Neft's Grade 6 Math</strong>
+      <a href="/curriculum/">Curriculum Hub</a>
+    </div>
+  </header>
+  <main>
+    <section class="hero" aria-labelledby="page-title">
+      <div class="eyebrow">Family and guardian guide</div>
+      <h1 id="page-title">Family Math Support</h1>
+      <p class="subtitle">Grade 6 Math help for families, parents, and guardians.</p>
+      <p class="intro">Use this page to see what each lesson is about, open the same class resources students use, and find a few calm ways to help at home. The explanations are written for busy families, not math experts.</p>
+    </section>
+
+    <section class="controls" aria-label="Find family support lessons">
+      <label for="family-search">Search by lesson, skill, or standard
+        <input id="family-search" type="search" placeholder="Try area, ratios, 6.SP.4, or 8-6">
+      </label>
+      <label for="unit-filter">Unit
+        <select id="unit-filter">
+          <option value="all">All units</option>
+          <option value="1">Unit 1: Number System Launch</option>
+          <option value="2">Unit 2: Fraction Detective Agency</option>
+          <option value="3">Unit 3: Culinary Academy</option>
+          <option value="4">Unit 4: Arcade Builder</option>
+          <option value="5">Unit 5: Architecture Firm</option>
+          <option value="6">Unit 6: Music Studio</option>
+          <option value="7">Unit 7: Equation Detective Agency</option>
+          <option value="8">Unit 8: Sports Analytics Lab</option>
+          <option value="9">Unit 9: Treasure Map Navigator</option>
+          <option value="10">Unit 10: Time Capsule Engineers</option>
+        </select>
+      </label>
+      <label for="topic-filter">Topic
+        <select id="topic-filter">
+          <option value="all">All topics</option>
+          <option value="Expressions and equations">Expressions and equations</option>
+          <option value="Geometry">Geometry</option>
+          <option value="Integers and coordinate plane">Integers and coordinate plane</option>
+          <option value="Number system">Number system</option>
+          <option value="Ratios, rates, and percents">Ratios, rates, and percents</option>
+          <option value="Statistics and data">Statistics and data</option>
+        </select>
+      </label>
+    </section>
+
+    <p id="empty-message" class="empty hidden">No lessons match those filters yet. Try a shorter search or choose all units and topics.</p>
+
+    <section class="unit-section" data-unit-section="1">
+      <div class="unit-heading">
+        <div>
+          <h2>Unit 1: Number System Launch</h2>
+          <p>Factors, multiples, and decimal operations that help students talk clearly about numbers.</p>
+        </div>
+        <span class="count">8 lessons</span>
+      </div>
+      <div class="lesson-grid">
+        <article class="lesson-card" data-lesson-card data-unit="1" data-topic="Number system" data-search="1-1 prime factorization 6.ns.4 i can explain my math thinking. number system">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 1-1</span>
+            <span class="standard">6.NS.4</span>
+          </div>
+          <h3>Prime Factorization</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/1-1/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="1" data-topic="Number system" data-search="1-1-flagship prime factorization 6.ns.4 i can explain my math thinking. number system">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 1-1-flagship</span>
+            <span class="standard">6.NS.4</span>
+          </div>
+          <h3>Prime Factorization</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            <span class="badge flagship">Flagship / Enrichment Version</span>
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/1-1-flagship/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="1" data-topic="Number system" data-search="1-2 greatest common factor 6.ns.4 i can explain my math thinking. number system">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 1-2</span>
+            <span class="standard">6.NS.4</span>
+          </div>
+          <h3>Greatest Common Factor</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/1-2/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="1" data-topic="Number system" data-search="1-3 least common multiple 6.ns.4 i can explain my math thinking. number system">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 1-3</span>
+            <span class="standard">6.NS.4</span>
+          </div>
+          <h3>Least Common Multiple</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/1-3/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="1" data-topic="Number system" data-search="1-4 divide multi-digit numbers 6.ns.2 i can explain my math thinking. number system">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 1-4</span>
+            <span class="standard">6.NS.2</span>
+          </div>
+          <h3>Divide Multi-Digit Numbers</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/1-4/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="1" data-topic="Number system" data-search="1-5 add and subtract decimals 6.ns.3 i can explain my math thinking. number system">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 1-5</span>
+            <span class="standard">6.NS.3</span>
+          </div>
+          <h3>Add and Subtract Decimals</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/1-5/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="1" data-topic="Number system" data-search="1-6 multiply decimals 6.ns.3 i can explain my math thinking. number system">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 1-6</span>
+            <span class="standard">6.NS.3</span>
+          </div>
+          <h3>Multiply Decimals</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/1-6/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="1" data-topic="Number system" data-search="1-7 divide decimals 6.ns.3 i can explain my math thinking. number system">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 1-7</span>
+            <span class="standard">6.NS.3</span>
+          </div>
+          <h3>Divide Decimals</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/1-7/">Open family guide</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="unit-section" data-unit-section="2">
+      <div class="unit-heading">
+        <div>
+          <h2>Unit 2: Fraction Detective Agency</h2>
+          <p>Dividing fractions and mixed numbers with models, stories, and careful reasoning.</p>
+        </div>
+        <span class="count">6 lessons</span>
+      </div>
+      <div class="lesson-grid">
+        <article class="lesson-card" data-lesson-card data-unit="2" data-topic="Number system" data-search="2-1 interpret division of fractions 6.ns.1 i can explain my math thinking. number system">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 2-1</span>
+            <span class="standard">6.NS.1</span>
+          </div>
+          <h3>Interpret Division of Fractions</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/2-1/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="2" data-topic="Number system" data-search="2-1-flagship interpret division of fractions 6.ns.1 i can explain my math thinking. number system">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 2-1-flagship</span>
+            <span class="standard">6.NS.1</span>
+          </div>
+          <h3>Interpret Division of Fractions</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            <span class="badge flagship">Flagship / Enrichment Version</span>
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/2-1-flagship/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="2" data-topic="Number system" data-search="2-2 divide whole numbers by fractions 6.ns.1 i can explain my math thinking. number system">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 2-2</span>
+            <span class="standard">6.NS.1</span>
+          </div>
+          <h3>Divide Whole Numbers by Fractions</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/2-2/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="2" data-topic="Number system" data-search="2-3 divide fractions 6.ns.1 i can explain my math thinking. number system">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 2-3</span>
+            <span class="standard">6.NS.1</span>
+          </div>
+          <h3>Divide Fractions</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/2-3/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="2" data-topic="Number system" data-search="2-4 divide mixed numbers 6.ns.1 i can explain my math thinking. number system">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 2-4</span>
+            <span class="standard">6.NS.1</span>
+          </div>
+          <h3>Divide Mixed Numbers</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/2-4/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="2" data-topic="Number system" data-search="2-5 fraction division problem solving 6.ns.1 i can explain my math thinking. number system">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 2-5</span>
+            <span class="standard">6.NS.1</span>
+          </div>
+          <h3>Fraction Division Problem Solving</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/2-5/">Open family guide</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="unit-section" data-unit-section="3">
+      <div class="unit-heading">
+        <div>
+          <h2>Unit 3: Culinary Academy</h2>
+          <p>Ratios and ratio reasoning through recipes, comparisons, and shared quantities.</p>
+        </div>
+        <span class="count">8 lessons</span>
+      </div>
+      <div class="lesson-grid">
+        <article class="lesson-card" data-lesson-card data-unit="3" data-topic="Ratios, rates, and percents" data-search="3-1 understand ratios 6.rp.1 i can explain my math thinking. ratios, rates, and percents">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 3-1</span>
+            <span class="standard">6.RP.1</span>
+          </div>
+          <h3>Understand Ratios</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/3-1/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="3" data-topic="Ratios, rates, and percents" data-search="3-1-flagship understand ratios 6.rp.1 i can explain my math thinking. ratios, rates, and percents">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 3-1-flagship</span>
+            <span class="standard">6.RP.1</span>
+          </div>
+          <h3>Understand Ratios</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            <span class="badge flagship">Flagship / Enrichment Version</span>
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/3-1-flagship/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="3" data-topic="Ratios, rates, and percents" data-search="3-2 ratio tables 6.rp.3a i can explain my math thinking. ratios, rates, and percents">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 3-2</span>
+            <span class="standard">6.RP.3a</span>
+          </div>
+          <h3>Ratio Tables</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/3-2/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="3" data-topic="Ratios, rates, and percents" data-search="3-3 graph ratio tables 6.rp.3a i can explain my math thinking. ratios, rates, and percents">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 3-3</span>
+            <span class="standard">6.RP.3a</span>
+          </div>
+          <h3>Graph Ratio Tables</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/3-3/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="3" data-topic="Ratios, rates, and percents" data-search="3-4 equivalent ratios 6.rp.3 i can explain my math thinking. ratios, rates, and percents">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 3-4</span>
+            <span class="standard">6.RP.3</span>
+          </div>
+          <h3>Equivalent Ratios</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/3-4/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="3" data-topic="Ratios, rates, and percents" data-search="3-5 compare ratios 6.rp.3 i can explain my math thinking. ratios, rates, and percents">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 3-5</span>
+            <span class="standard">6.RP.3</span>
+          </div>
+          <h3>Compare Ratios</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/3-5/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="3" data-topic="Ratios, rates, and percents" data-search="3-6 use ratio reasoning 6.rp.3 i can explain my math thinking. ratios, rates, and percents">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 3-6</span>
+            <span class="standard">6.RP.3</span>
+          </div>
+          <h3>Use Ratio Reasoning</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/3-6/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="3" data-topic="Ratios, rates, and percents" data-search="3-7 ratio and rate problem solving 6.rp.3 i can explain my math thinking. ratios, rates, and percents">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 3-7</span>
+            <span class="standard">6.RP.3</span>
+          </div>
+          <h3>Ratio and Rate Problem Solving</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/3-7/">Open family guide</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="unit-section" data-unit-section="4">
+      <div class="unit-heading">
+        <div>
+          <h2>Unit 4: Arcade Builder</h2>
+          <p>Rates, unit rates, and percents for shopping, games, speed, and decisions.</p>
+        </div>
+        <span class="count">8 lessons</span>
+      </div>
+      <div class="lesson-grid">
+        <article class="lesson-card" data-lesson-card data-unit="4" data-topic="Ratios, rates, and percents" data-search="4-1 rates and unit rates 6.rp.2 i can explain my math thinking. ratios, rates, and percents">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 4-1</span>
+            <span class="standard">6.RP.2</span>
+          </div>
+          <h3>Rates and Unit Rates</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/4-1/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="4" data-topic="Ratios, rates, and percents" data-search="4-1-flagship rates and unit rates 6.rp.2 i can explain my math thinking. ratios, rates, and percents">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 4-1-flagship</span>
+            <span class="standard">6.RP.2</span>
+          </div>
+          <h3>Rates and Unit Rates</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            <span class="badge flagship">Flagship / Enrichment Version</span>
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/4-1-flagship/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="4" data-topic="Ratios, rates, and percents" data-search="4-2 relate fractions, decimals, and percents 6.rp.3c i can explain my math thinking. ratios, rates, and percents">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 4-2</span>
+            <span class="standard">6.RP.3c</span>
+          </div>
+          <h3>Relate Fractions, Decimals, and Percents</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/4-2/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="4" data-topic="Ratios, rates, and percents" data-search="4-3 percents greater than 100% and less than 1% 6.rp.3c i can explain my math thinking. ratios, rates, and percents">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 4-3</span>
+            <span class="standard">6.RP.3c</span>
+          </div>
+          <h3>Percents Greater Than 100% and Less Than 1%</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/4-3/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="4" data-topic="Ratios, rates, and percents" data-search="4-4 find the percent of a number 6.rp.3c i can explain my math thinking. ratios, rates, and percents">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 4-4</span>
+            <span class="standard">6.RP.3c</span>
+          </div>
+          <h3>Find the Percent of a Number</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/4-4/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="4" data-topic="Ratios, rates, and percents" data-search="4-5 use percent to solve problems 6.rp.3c i can explain my math thinking. ratios, rates, and percents">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 4-5</span>
+            <span class="standard">6.RP.3c</span>
+          </div>
+          <h3>Use Percent to Solve Problems</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/4-5/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="4" data-topic="Ratios, rates, and percents" data-search="4-6 convert measurement units 6.rp.3d i can explain my math thinking. ratios, rates, and percents">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 4-6</span>
+            <span class="standard">6.RP.3d</span>
+          </div>
+          <h3>Convert Measurement Units</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/4-6/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="4" data-topic="Ratios, rates, and percents" data-search="4-7 solve problems with unit rates 6.rp.3b i can explain my math thinking. ratios, rates, and percents">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 4-7</span>
+            <span class="standard">6.RP.3b</span>
+          </div>
+          <h3>Solve Problems with Unit Rates</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/4-7/">Open family guide</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="unit-section" data-unit-section="5">
+      <div class="unit-heading">
+        <div>
+          <h2>Unit 5: Architecture Firm</h2>
+          <p>Area of polygons and composite figures using formulas, drawings, and labels.</p>
+        </div>
+        <span class="count">6 lessons</span>
+      </div>
+      <div class="lesson-grid">
+        <article class="lesson-card" data-lesson-card data-unit="5" data-topic="Geometry" data-search="5-1 area of parallelograms 6.g.1 i can explain my math thinking. geometry">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 5-1</span>
+            <span class="standard">6.G.1</span>
+          </div>
+          <h3>Area of Parallelograms</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/5-1/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="5" data-topic="Geometry" data-search="5-2 area of trapezoids 6.g.1 i can explain my math thinking. geometry">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 5-2</span>
+            <span class="standard">6.G.1</span>
+          </div>
+          <h3>Area of Trapezoids</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/5-2/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="5" data-topic="Geometry" data-search="5-3 area of triangles 6.g.1 i can explain my math thinking. geometry">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 5-3</span>
+            <span class="standard">6.G.1</span>
+          </div>
+          <h3>Area of Triangles</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/5-3/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="5" data-topic="Geometry" data-search="5-3-flagship area of triangles 6.g.1 i can explain my math thinking. geometry">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 5-3-flagship</span>
+            <span class="standard">6.G.1</span>
+          </div>
+          <h3>Area of Triangles</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            <span class="badge flagship">Flagship / Enrichment Version</span>
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/5-3-flagship/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="5" data-topic="Geometry" data-search="5-4 area of regular polygons 6.g.1 i can explain my math thinking. geometry">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 5-4</span>
+            <span class="standard">6.G.1</span>
+          </div>
+          <h3>Area of Regular Polygons</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/5-4/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="5" data-topic="Geometry" data-search="5-5 area of composite figures 6.g.1 i can explain my math thinking. geometry">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 5-5</span>
+            <span class="standard">6.G.1</span>
+          </div>
+          <h3>Area of Composite Figures</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/5-5/">Open family guide</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="unit-section" data-unit-section="6">
+      <div class="unit-heading">
+        <div>
+          <h2>Unit 6: Music Studio</h2>
+          <p>Expressions, exponents, and properties that describe patterns and repeated calculations.</p>
+        </div>
+        <span class="count">8 lessons</span>
+      </div>
+      <div class="lesson-grid">
+        <article class="lesson-card" data-lesson-card data-unit="6" data-topic="Expressions and equations" data-search="6-1 powers and exponents 6.ee.1 i can explain my math thinking. expressions and equations">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 6-1</span>
+            <span class="standard">6.EE.1</span>
+          </div>
+          <h3>Powers and Exponents</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/6-1/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="6" data-topic="Expressions and equations" data-search="6-1-flagship powers and exponents 6.ee.1 i can explain my math thinking. expressions and equations">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 6-1-flagship</span>
+            <span class="standard">6.EE.1</span>
+          </div>
+          <h3>Powers and Exponents</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            <span class="badge flagship">Flagship / Enrichment Version</span>
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/6-1-flagship/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="6" data-topic="Expressions and equations" data-search="6-2 evaluate expressions 6.ee.2c i can explain my math thinking. expressions and equations">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 6-2</span>
+            <span class="standard">6.EE.2c</span>
+          </div>
+          <h3>Evaluate Expressions</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/6-2/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="6" data-topic="Expressions and equations" data-search="6-3 write algebraic expressions 6.ee.2a i can explain my math thinking. expressions and equations">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 6-3</span>
+            <span class="standard">6.EE.2a</span>
+          </div>
+          <h3>Write Algebraic Expressions</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/6-3/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="6" data-topic="Ratios, rates, and percents" data-search="6-4 properties of operations 6.ee.3 i can explain my math thinking. ratios, rates, and percents">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 6-4</span>
+            <span class="standard">6.EE.3</span>
+          </div>
+          <h3>Properties of Operations</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/6-4/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="6" data-topic="Expressions and equations" data-search="6-5 the distributive property 6.ee.3 i can explain my math thinking. expressions and equations">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 6-5</span>
+            <span class="standard">6.EE.3</span>
+          </div>
+          <h3>The Distributive Property</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/6-5/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="6" data-topic="Expressions and equations" data-search="6-6 equivalent expressions 6.ee.4 i can explain my math thinking. expressions and equations">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 6-6</span>
+            <span class="standard">6.EE.4</span>
+          </div>
+          <h3>Equivalent Expressions</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/6-6/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="6" data-topic="Expressions and equations" data-search="6-7 simplify algebraic expressions 6.ee.3 i can explain my math thinking. expressions and equations">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 6-7</span>
+            <span class="standard">6.EE.3</span>
+          </div>
+          <h3>Simplify Algebraic Expressions</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/6-7/">Open family guide</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="unit-section" data-unit-section="7">
+      <div class="unit-heading">
+        <div>
+          <h2>Unit 7: Equation Detective Agency</h2>
+          <p>Equations and inequalities that help students represent unknowns and solve fairly.</p>
+        </div>
+        <span class="count">8 lessons</span>
+      </div>
+      <div class="lesson-grid">
+        <article class="lesson-card" data-lesson-card data-unit="7" data-topic="Expressions and equations" data-search="7-1 write equations 6.ee.6 i can explain my math thinking. expressions and equations">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 7-1</span>
+            <span class="standard">6.EE.6</span>
+          </div>
+          <h3>Write Equations</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/7-1/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="7" data-topic="Expressions and equations" data-search="7-1-flagship write equations 6.ee.6 i can explain my math thinking. expressions and equations">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 7-1-flagship</span>
+            <span class="standard">6.EE.6</span>
+          </div>
+          <h3>Write Equations</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            <span class="badge flagship">Flagship / Enrichment Version</span>
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/7-1-flagship/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="7" data-topic="Expressions and equations" data-search="7-2 solve one-step addition and subtraction equations 6.ee.7 i can explain my math thinking. expressions and equations">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 7-2</span>
+            <span class="standard">6.EE.7</span>
+          </div>
+          <h3>Solve One-Step Addition and Subtraction Equations</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/7-2/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="7" data-topic="Expressions and equations" data-search="7-3 solve multiplication and division equations 6.ee.7 i can explain my math thinking. expressions and equations">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 7-3</span>
+            <span class="standard">6.EE.7</span>
+          </div>
+          <h3>Solve Multiplication and Division Equations</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/7-3/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="7" data-topic="Expressions and equations" data-search="7-4 write inequalities 6.ee.8 i can explain my math thinking. expressions and equations">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 7-4</span>
+            <span class="standard">6.EE.8</span>
+          </div>
+          <h3>Write Inequalities</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/7-4/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="7" data-topic="Expressions and equations" data-search="7-5 graph inequalities 6.ee.8 i can explain my math thinking. expressions and equations">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 7-5</span>
+            <span class="standard">6.EE.8</span>
+          </div>
+          <h3>Graph Inequalities</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/7-5/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="7" data-topic="Expressions and equations" data-search="7-6 solve and graph inequalities 6.ee.5 i can explain my math thinking. expressions and equations">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 7-6</span>
+            <span class="standard">6.EE.5</span>
+          </div>
+          <h3>Solve and Graph Inequalities</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/7-6/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="7" data-topic="Expressions and equations" data-search="7-7 equations and inequalities problem solving 6.ee.7 i can explain my math thinking. expressions and equations">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 7-7</span>
+            <span class="standard">6.EE.7</span>
+          </div>
+          <h3>Equations and Inequalities Problem Solving</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/7-7/">Open family guide</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="unit-section" data-unit-section="8">
+      <div class="unit-heading">
+        <div>
+          <h2>Unit 8: Sports Analytics Lab</h2>
+          <p>Statistics and data displays that help students summarize and compare information.</p>
+        </div>
+        <span class="count">8 lessons</span>
+      </div>
+      <div class="lesson-grid">
+        <article class="lesson-card" data-lesson-card data-unit="8" data-topic="Statistics and data" data-search="8-1 statistical questions and data 6.sp.1 i can explain my math thinking. statistics and data">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 8-1</span>
+            <span class="standard">6.SP.1</span>
+          </div>
+          <h3>Statistical Questions and Data</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/8-1/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="8" data-topic="Statistics and data" data-search="8-1-flagship statistical questions and data 6.sp.1 i can explain my math thinking. statistics and data">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 8-1-flagship</span>
+            <span class="standard">6.SP.1</span>
+          </div>
+          <h3>Statistical Questions and Data</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            <span class="badge flagship">Flagship / Enrichment Version</span>
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/8-1-flagship/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="8" data-topic="Statistics and data" data-search="8-2 mean, median, and mode 6.sp.3 i can explain my math thinking. statistics and data">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 8-2</span>
+            <span class="standard">6.SP.3</span>
+          </div>
+          <h3>Mean, Median, and Mode</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/8-2/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="8" data-topic="Statistics and data" data-search="8-3 mean absolute deviation 6.sp.5c i can explain my math thinking. statistics and data">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 8-3</span>
+            <span class="standard">6.SP.5c</span>
+          </div>
+          <h3>Mean Absolute Deviation</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/8-3/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="8" data-topic="Statistics and data" data-search="8-4 appropriate measures 6.sp.5d i can explain my math thinking. statistics and data">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 8-4</span>
+            <span class="standard">6.SP.5d</span>
+          </div>
+          <h3>Appropriate Measures</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/8-4/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="8" data-topic="Statistics and data" data-search="8-5 display data: box plots 6.sp.4 i can explain my math thinking. statistics and data">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 8-5</span>
+            <span class="standard">6.SP.4</span>
+          </div>
+          <h3>Display Data: Box Plots</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/8-5/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="8" data-topic="Statistics and data" data-search="8-6 display data: histograms 6.sp.4 i can explain my math thinking. statistics and data">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 8-6</span>
+            <span class="standard">6.SP.4</span>
+          </div>
+          <h3>Display Data: Histograms</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/8-6/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="8" data-topic="Statistics and data" data-search="8-7 shape of data distributions 6.sp.2 i can explain my math thinking. statistics and data">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 8-7</span>
+            <span class="standard">6.SP.2</span>
+          </div>
+          <h3>Shape of Data Distributions</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/8-7/">Open family guide</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="unit-section" data-unit-section="9">
+      <div class="unit-heading">
+        <div>
+          <h2>Unit 9: Treasure Map Navigator</h2>
+          <p>Integers and the coordinate plane for direction, distance, and location.</p>
+        </div>
+        <span class="count">8 lessons</span>
+      </div>
+      <div class="lesson-grid">
+        <article class="lesson-card" data-lesson-card data-unit="9" data-topic="Integers and coordinate plane" data-search="9-1 graph on the coordinate plane 6.ns.6 i can explain my math thinking. integers and coordinate plane">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 9-1</span>
+            <span class="standard">6.NS.6</span>
+          </div>
+          <h3>Graph on the Coordinate Plane</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/9-1/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="9" data-topic="Integers and coordinate plane" data-search="9-1-flagship graph on the coordinate plane 6.ns.6 i can explain my math thinking. integers and coordinate plane">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 9-1-flagship</span>
+            <span class="standard">6.NS.6</span>
+          </div>
+          <h3>Graph on the Coordinate Plane</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            <span class="badge flagship">Flagship / Enrichment Version</span>
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/9-1-flagship/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="9" data-topic="Integers and coordinate plane" data-search="9-2 integers and absolute value 6.ns.7 i can explain my math thinking. integers and coordinate plane">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 9-2</span>
+            <span class="standard">6.NS.7</span>
+          </div>
+          <h3>Integers and Absolute Value</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/9-2/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="9" data-topic="Integers and coordinate plane" data-search="9-3 compare and order integers 6.ns.7 i can explain my math thinking. integers and coordinate plane">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 9-3</span>
+            <span class="standard">6.NS.7</span>
+          </div>
+          <h3>Compare and Order Integers</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/9-3/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="9" data-topic="Ratios, rates, and percents" data-search="9-4 rational numbers on the number line 6.ns.6 i can explain my math thinking. ratios, rates, and percents">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 9-4</span>
+            <span class="standard">6.NS.6</span>
+          </div>
+          <h3>Rational Numbers on the Number Line</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/9-4/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="9" data-topic="Number system" data-search="9-5 ordered pairs in all four quadrants 6.ns.6b i can explain my math thinking. number system">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 9-5</span>
+            <span class="standard">6.NS.6b</span>
+          </div>
+          <h3>Ordered Pairs in All Four Quadrants</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/9-5/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="9" data-topic="Integers and coordinate plane" data-search="9-6 distance on the coordinate plane 6.ns.8 i can explain my math thinking. integers and coordinate plane">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 9-6</span>
+            <span class="standard">6.NS.8</span>
+          </div>
+          <h3>Distance on the Coordinate Plane</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/9-6/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="9" data-topic="Number system" data-search="9-7 reflect points across axes 6.ns.6b i can explain my math thinking. number system">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 9-7</span>
+            <span class="standard">6.NS.6b</span>
+          </div>
+          <h3>Reflect Points Across Axes</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/9-7/">Open family guide</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="unit-section" data-unit-section="10">
+      <div class="unit-heading">
+        <div>
+          <h2>Unit 10: Time Capsule Engineers</h2>
+          <p>Volume and surface area for boxes, packages, containers, and designs.</p>
+        </div>
+        <span class="count">6 lessons</span>
+      </div>
+      <div class="lesson-grid">
+        <article class="lesson-card" data-lesson-card data-unit="10" data-topic="Geometry" data-search="10-1 volume with whole number edges 6.g.2 i can explain my math thinking. geometry">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 10-1</span>
+            <span class="standard">6.G.2</span>
+          </div>
+          <h3>Volume with Whole Number Edges</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/10-1/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="10" data-topic="Geometry" data-search="10-1-flagship volume with whole number edges 6.g.2 i can explain my math thinking. geometry">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 10-1-flagship</span>
+            <span class="standard">6.G.2</span>
+          </div>
+          <h3>Volume with Whole Number Edges</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            <span class="badge flagship">Flagship / Enrichment Version</span>
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/10-1-flagship/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="10" data-topic="Geometry" data-search="10-2 volume of rectangular prisms 6.g.2 i can explain my math thinking. geometry">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 10-2</span>
+            <span class="standard">6.G.2</span>
+          </div>
+          <h3>Volume of Rectangular Prisms</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/10-2/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="10" data-topic="Geometry" data-search="10-3 surface area using nets 6.g.4 i can explain my math thinking. geometry">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 10-3</span>
+            <span class="standard">6.G.4</span>
+          </div>
+          <h3>Surface Area Using Nets</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/10-3/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="10" data-topic="Geometry" data-search="10-4 surface area of prisms 6.g.4 i can explain my math thinking. geometry">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 10-4</span>
+            <span class="standard">6.G.4</span>
+          </div>
+          <h3>Surface Area of Prisms</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/10-4/">Open family guide</a>
+        </article>
+        <article class="lesson-card" data-lesson-card data-unit="10" data-topic="Geometry" data-search="10-5 surface area of pyramids 6.g.4 i can explain my math thinking. geometry">
+          <div class="meta-row">
+            <span class="lesson-id">Lesson 10-5</span>
+            <span class="standard">6.G.4</span>
+          </div>
+          <h3>Surface Area of Pyramids</h3>
+          <p class="objective">I can explain my math thinking.</p>
+          <div class="badges" aria-label="Available resources">
+            
+            <span class="badge">Interactive Lesson</span><span class="badge">Guided Notes</span><span class="badge">Notes PDF</span><span class="badge">Notes DOCX</span><span class="badge">Homework</span>
+          </div>
+          <a class="open-button" href="/families/lessons/10-5/">Open family guide</a>
+        </article>
+      </div>
+    </section>
+  </main>
+  <script>
+    const searchInput = document.querySelector("#family-search");
+    const unitFilter = document.querySelector("#unit-filter");
+    const topicFilter = document.querySelector("#topic-filter");
+    const cards = [...document.querySelectorAll("[data-lesson-card]")];
+    const sections = [...document.querySelectorAll("[data-unit-section]")];
+    const empty = document.querySelector("#empty-message");
+
+    function applyFilters() {
+      const query = searchInput.value.trim().toLowerCase();
+      const unit = unitFilter.value;
+      const topic = topicFilter.value;
+      let visibleCount = 0;
+
+      for (const card of cards) {
+        const matchesQuery = !query || card.dataset.search.includes(query);
+        const matchesUnit = unit === "all" || card.dataset.unit === unit;
+        const matchesTopic = topic === "all" || card.dataset.topic === topic;
+        const isVisible = matchesQuery && matchesUnit && matchesTopic;
+        card.classList.toggle("hidden", !isVisible);
+        if (isVisible) visibleCount += 1;
+      }
+
+      for (const section of sections) {
+        const hasVisibleCard = [...section.querySelectorAll("[data-lesson-card]")].some((card) => !card.classList.contains("hidden"));
+        section.classList.toggle("hidden", !hasVisibleCard);
+      }
+      empty.classList.toggle("hidden", visibleCount !== 0);
+    }
+
+    searchInput.addEventListener("input", applyFilters);
+    unitFilter.addEventListener("change", applyFilters);
+    topicFilter.addEventListener("change", applyFilters);
+  </script>
+</body>
+</html>
