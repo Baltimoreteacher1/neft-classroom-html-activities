@@ -162,7 +162,7 @@ test.describe("small-group guided math studio", () => {
     const tools = page.getByRole("region", { name: "Study mark-up tools" });
     await expect(tools).toBeVisible();
     // The toolbar is collapsed by default so the lesson leads — open it.
-    await tools.getByText("Mark up this page").click();
+    await tools.getByTestId("study-markup-toggle").click();
     await expect(tools.getByText(/select words in the lesson/i)).toBeVisible();
 
     const selectPhrase = async (phrase: string) => {
@@ -232,7 +232,6 @@ test.describe("small-group guided math studio", () => {
     const firstCard = page.locator(".sg-vcard").first();
     await expect(firstCard.getByText(/ES:\s*Número primo/)).toBeVisible();
     await expect(firstCard.getByText(/VI:|AR:/)).toHaveCount(0);
-    await firstCard.getByRole("button", { name: "Reveal meaning" }).click();
     await expect(
       firstCard.getByText("A number bigger than 1 that you can only divide by 1 and itself."),
     ).toBeVisible();
@@ -364,6 +363,10 @@ test.describe("small-group guided math studio", () => {
     page,
   }) => {
     await page.goto("/curriculum/");
+    // The legacy details tree is detached during interactive browsing and restored
+    // only for printing. Exercise that supported state before auditing its order.
+    await page.evaluate(() => window.dispatchEvent(new Event("beforeprint")));
+    await expect(page.locator("details.lesson").first()).toBeAttached();
     const order = await page.evaluate(() =>
       [...document.querySelectorAll("details.lesson")].map((lesson) => ({
         text: lesson.querySelector("summary")?.textContent?.replace(/\s+/g, " ").trim() || "",
@@ -378,6 +381,7 @@ test.describe("small-group guided math studio", () => {
     expect(order[parent + 1].text).toContain("1.1 Small Group: Group 1");
     expect(order[parent + 2].hrefs).toContain("/lessons/1-1-group2/");
     expect(order[parent + 2].text).toContain("1.1 Small Group: Group 2");
+    await page.evaluate(() => window.dispatchEvent(new Event("afterprint")));
   });
 
   test("visible lesson dropdowns place small groups directly after their main lesson", async ({
