@@ -3147,69 +3147,113 @@
             ? "¡Ingresa la longitud, el ancho y la altura para ver el plano del diseño 3D!"
             : "Enter length, width, and height to see your 3D design blueprint!";
           container.innerHTML = `
-            <svg class="visual-svg" viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e2e7ec;border-radius:12px;">
-              <text x="260" y="90" text-anchor="middle" font-size="14" fill="#5e6e7e">${txt}</text>
+            <svg class="visual-svg" viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #cbd5e1;border-radius:12px;font-family:system-ui, -apple-system, sans-serif;">
+              <text x="260" y="90" text-anchor="middle" font-size="14" font-weight="600" fill="#64748b">${txt}</text>
             </svg>
           `;
           return;
         }
 
-        const maxDim = Math.max(l, w, h);
-        const scale = Math.min(150 / maxDim, 80 / maxDim);
-
-        const sl = l * scale;
-        const sw = w * scale * 0.6;
-        const sh = h * scale;
-
-        const angleRad = Math.PI / 4;
-        const dx = sw * Math.cos(angleRad);
-        const dy = sw * Math.sin(angleRad);
-
-        const xBL = 260 - sl / 2 - dx / 2;
-        const yBL = 145 + dy / 2;
-        const xBR = xBL + sl;
-        const yBR = yBL;
-        const xTR = xBR;
-        const yTR = yBL - sh;
-        const xTL = xBL;
-        const yTL = yBL - sh;
-
-        const xBL_B = xBL + dx;
-        const yBL_B = yBL - dy;
-        const xBR_B = xBR + dx;
-        const yBR_B = yBR - dy;
-        const xTR_B = xBR_B;
-        const yTR_B = yBR_B - sh;
-        const xTL_B = xBL_B;
-        const yTL_B = yBL_B - sh;
-
-        const title = isSpanish
+        const titleText = isSpanish
           ? "📐 Plano del Diseño de tu Caja 3D"
           : "📐 Your 3D Box Design Blueprint";
-        const labelW = isSpanish ? `a = ${w}"` : `w = ${w}"`;
+
+        const volCalc = (l * w * h).toLocaleString("en-US", { maximumFractionDigits: 1 });
+
+        const svgW = 520, svgH = 210;
+        const originX = 175, originY = 155;
+        const maxDim = Math.max(l, w, h);
+        const scale = 115 / maxDim;
+        const sw = l * scale;
+        const sh = h * scale;
+        const sd = w * scale;
+        const dx = sd * 0.707;
+        const dy = -sd * 0.707;
 
         container.innerHTML = `
-          <svg class="visual-svg" viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e2e7ec;border-radius:12px;">
-            <g stroke-linejoin="round" stroke-linecap="round">
-              <!-- Back edges -->
-              <polygon points="${xBL_B},${yBL_B} ${xBR_B},${yBR_B} ${xTR_B},${yTR_B} ${xTL_B},${yTL_B}" fill="#fafafa" stroke="#d1d5db" stroke-width="1" stroke-dasharray="2,2"/>
-              <line x1="${xBL}" y1="${yBL}" x2="${xBL_B}" y2="${yBL_B}" stroke="#d1d5db" stroke-width="1" stroke-dasharray="2,2" />
-              
-              <!-- Top Face -->
-              <polygon points="${xTL},${yTL} ${xTR},${yTR} ${xTR_B},${yTR_B} ${xTL_B},${yTL_B}" fill="#e8f2fc" stroke="#1a6fb5" stroke-width="2"/>
-              
-              <!-- Right Face -->
-              <polygon points="${xBR},${yBR} ${xTR},${yTR} ${xTR_B},${yTR_B} ${xBR_B},${yBR_B}" fill="#e6f4eb" stroke="#1e7d40" stroke-width="2"/>
+          <svg class="visual-svg" viewBox="0 0 ${svgW} ${svgH}" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #cbd5e1;border-radius:12px;font-family:system-ui, -apple-system, sans-serif;">
+            <defs>
+              <marker id="box-arrow-start" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#c9820f"/>
+              </marker>
+              <marker id="box-arrow-end" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+                <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#c9820f"/>
+              </marker>
+              <linearGradient id="boxFrontGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#fef3c7"/>
+                <stop offset="100%" stop-color="#f59e0b"/>
+              </linearGradient>
+              <linearGradient id="boxTopGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#e0f2fe"/>
+                <stop offset="100%" stop-color="#0284c7"/>
+              </linearGradient>
+              <linearGradient id="boxSideGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#dcfce7"/>
+                <stop offset="100%" stop-color="#16a34a"/>
+              </linearGradient>
+              <filter id="boxShadowBlur" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="5"/>
+              </filter>
+            </defs>
 
-              <!-- Front Face -->
-              <polygon points="${xBL},${yBL} ${xBR},${yBR} ${xTR},${yTR} ${xTL},${yTL}" fill="#fdf3e0" stroke="#c9820f" stroke-width="2"/>
-              
-              <!-- Labels -->
-              <text x="${xBL + sl / 2}" y="${yBL + 18}" text-anchor="middle" font-size="12" font-weight="bold" fill="#c9820f">l = ${l}"</text>
-              <text x="${xBL - 15}" y="${yBL - sh / 2 + 4}" text-anchor="end" font-size="12" font-weight="bold" fill="#0f2b3c">h = ${h}"</text>
-              <text x="${xBR + dx / 2 + 10}" y="${yBR - dy / 2 + 15}" text-anchor="start" font-size="12" font-weight="bold" fill="#1e7d40">${labelW}</text>
-            </g>
-            <text x="260" y="24" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c">${title}</text>
+            <!-- Header Banner -->
+            <rect x="0" y="0" width="${svgW}" height="32" fill="#f8fafc" />
+            <line x1="0" y1="32" x2="${svgW}" y2="32" stroke="#e2e8f0" stroke-width="1" />
+            <text x="16" y="21" font-size="12" font-weight="800" fill="#0f172a">${titleText}</text>
+
+            <!-- Contact Shadow -->
+            <ellipse cx="${originX + sw/2 + dx/2}" cy="${originY + 6}" rx="${sw/2 + dx/2 + 10}" ry="${Math.abs(dy)/2 + 6}" fill="#0f172a" opacity="0.12" filter="url(#boxShadowBlur)"/>
+
+            <!-- Dashed Interior Back Lines -->
+            <line x1="${originX + dx}" y1="${originY + dy}" x2="${originX + dx + sw}" y2="${originY + dy}" stroke="#94a3b8" stroke-dasharray="4,4" stroke-width="1.5" />
+            <line x1="${originX + dx}" y1="${originY + dy}" x2="${originX + dx}" y2="${originY + dy - sh}" stroke="#94a3b8" stroke-dasharray="4,4" stroke-width="1.5" />
+            <line x1="${originX}" y1="${originY}" x2="${originX + dx}" y2="${originY + dy}" stroke="#94a3b8" stroke-dasharray="4,4" stroke-width="1.5" />
+
+            <!-- Bottom Face -->
+            <polygon points="${originX},${originY} ${originX + sw},${originY} ${originX + sw + dx},${originY + dy} ${originX + dx},${originY + dy}" fill="rgba(245, 158, 11, 0.08)" stroke="none" />
+
+            <!-- Top Face -->
+            <polygon points="${originX},${originY - sh} ${originX + sw},${originY - sh} ${originX + sw + dx},${originY + dy - sh} ${originX + dx},${originY + dy - sh}" fill="url(#boxTopGrad)" stroke="#0284c7" stroke-width="2" />
+
+            <!-- Right Face -->
+            <polygon points="${originX + sw},${originY} ${originX + sw + dx},${originY + dy} ${originX + sw + dx},${originY + dy - sh} ${originX + sw},${originY - sh}" fill="url(#boxSideGrad)" stroke="#16a34a" stroke-width="2" />
+
+            <!-- Front Face -->
+            <polygon points="${originX},${originY} ${originX + sw},${originY} ${originX + sw},${originY - sh} ${originX},${originY - sh}" fill="url(#boxFrontGrad)" stroke="#d97706" stroke-width="2" />
+
+            <!-- Specular Reflection Highlights -->
+            <line x1="${originX + 12}" y1="${originY - 15}" x2="${originX + 38}" y2="${originY - sh + 20}" stroke="rgba(255,255,255,0.6)" stroke-width="2.5" stroke-linecap="round"/>
+
+            <!-- Front Vertex Dots -->
+            <circle cx="${originX}" cy="${originY}" r="3" fill="#d97706" />
+            <circle cx="${originX + sw}" cy="${originY}" r="3" fill="#d97706" />
+            <circle cx="${originX + sw}" cy="${originY - sh}" r="3" fill="#d97706" />
+            <circle cx="${originX}" cy="${originY - sh}" r="3" fill="#d97706" />
+
+            <!-- Dimension Lines & Badges -->
+            <!-- Length (l) arrow -->
+            <line x1="${originX}" y1="${originY + 18}" x2="${originX + sw}" y2="${originY + 18}" stroke="#d97706" stroke-width="1.5" marker-start="url(#box-arrow-start)" marker-end="url(#box-arrow-end)" />
+            <rect x="${originX + sw/2 - 32}" y="${originY + 7}" width="64" height="20" rx="10" fill="#d97706" />
+            <text x="${originX + sw/2}" y="${originY + 21}" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">l = ${l}"</text>
+
+            <!-- Width (w) arrow -->
+            <line x1="${originX + sw + 10}" y1="${originY + 6}" x2="${originX + sw + dx + 10}" y2="${originY + dy + 6}" stroke="#16a34a" stroke-width="1.5" marker-start="url(#box-arrow-start)" marker-end="url(#box-arrow-end)" />
+            <rect x="${originX + sw + dx/2 - 24}" y="${originY + dy/2 - 4}" width="60" height="18" rx="9" fill="#16a34a" />
+            <text x="${originX + sw + dx/2 + 6}" y="${originY + dy/2 + 9}" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">w = ${w}"</text>
+
+            <!-- Height (h) arrow -->
+            <line x1="${originX - 16}" y1="${originY}" x2="${originX - 16}" y2="${originY - sh}" stroke="#0284c7" stroke-width="1.5" marker-start="url(#box-arrow-start)" marker-end="url(#box-arrow-end)" />
+            <rect x="${originX - 56}" y="${originY - sh/2 - 10}" width="60" height="20" rx="10" fill="#0284c7" />
+            <text x="${originX - 26}" y="${originY - sh/2 + 4}" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">h = ${h}"</text>
+
+            <!-- Volume Summary Box (Right Card) -->
+            <rect x="375" y="48" width="132" height="135" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1" />
+            <text x="441" y="68" text-anchor="middle" font-size="11" font-weight="800" fill="#0f172a">${isSpanish ? "RESUMEN DE VOLUMEN" : "VOLUME SUMMARY"}</text>
+            <line x1="387" y1="76" x2="495" y2="76" stroke="#cbd5e1" stroke-width="1" />
+            <text x="441" y="94" text-anchor="middle" font-size="10" font-weight="600" fill="#475569">V = l × w × h</text>
+            <text x="441" y="118" text-anchor="middle" font-size="15" font-weight="800" fill="#d97706">${volCalc} in³</text>
+            <rect x="391" y="132" width="100" height="24" rx="6" fill="#d97706" />
+            <text x="441" y="148" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">${l} × ${w} × ${h}</text>
           </svg>
         `;
       }
@@ -3222,8 +3266,8 @@
             ? "¡Ingresa la longitud, el ancho y la altura para ver tu plantilla 2D desplegada!"
             : "Enter length, width, and height to see your 2D unfolded net!";
           container.innerHTML = `
-            <svg class="visual-svg" viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e2e7ec;border-radius:12px;">
-              <text x="260" y="90" text-anchor="middle" font-size="14" fill="#5e6e7e">${txt}</text>
+            <svg class="visual-svg" viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #cbd5e1;border-radius:12px;font-family:system-ui, -apple-system, sans-serif;">
+              <text x="260" y="90" text-anchor="middle" font-size="14" font-weight="600" fill="#64748b">${txt}</text>
             </svg>
           `;
           return;
@@ -3232,86 +3276,111 @@
         const isLevel2 = document.getElementById("body").classList.contains("level-2");
         const isOpenTop = isLevel2 && document.getElementById("sa-lid-option")?.value === "open";
 
+        const titleText = isSpanish
+          ? "🗺️ Plano de la Plantilla 2D Desplegada"
+          : "🗺️ 2D Unfolded Net Blueprint";
+
         const netH = 2 * w + 2 * h;
         const netW = l + 2 * w;
-
-        const scale = Math.min(140 / netH, 200 / netW);
+        const scale = Math.min(135 / netH, 280 / netW);
 
         const sl = l * scale;
         const sw = w * scale;
         const sh = h * scale;
 
-        const xCenter = 260;
-        const yCenter = 100;
+        const cx = 230;
+        const cy = 105;
 
-        const x1 = xCenter - sl / 2;
-        const x2 = xCenter + sl / 2;
+        const x1 = cx - sl / 2;
+        const x2 = cx + sl / 2;
         const x0 = x1 - sw;
         const x3 = x2 + sw;
 
-        const y0 = yCenter - (sh + sw + sh + sw) / 2;
+        const y0 = cy - (sh + sw + sh + sw) / 2;
         const y1 = y0 + sh;
         const y2 = y1 + sw;
         const y3 = y2 + sh;
-        const y4 = y3 + sw;
 
-        const topFill = isOpenTop ? "none" : "#e8f2fc";
-        const topStroke = isOpenTop ? "#ef4444" : "#1a6fb5";
-        const topStrokeDash = isOpenTop ? "3,3" : "none";
-
-        const title = isSpanish
-          ? "🗺️ Plano de la Plantilla 2D Desplegada"
-          : "🗺️ 2D Unfolded Net Blueprint";
-
-        const labelBack = isSpanish ? `Posterior (${l}" × ${h}")` : `Back (${l}" × ${h}")`;
-        const labelTop = isOpenTop
-          ? isSpanish
-            ? "SIN TAPA (Abierta)"
-            : "NO LID (Open)"
-          : isSpanish
-            ? `Superior (${l}" × ${w}")`
-            : `Top (${l}" × ${w}")`;
-        const labelFront = isSpanish ? `Frontal (${l}" × ${h}")` : `Front (${l}" × ${h}")`;
-        const labelBottom = isSpanish ? `Inferior (${l}" × ${w}")` : `Bottom (${l}" × ${w}")`;
-        const labelLeft = isSpanish ? `Izquierda (${w}" × ${h}")` : `Left (${w}" × ${h}")`;
-        const labelRight = isSpanish ? `Derecha (${w}" × ${h}")` : `Right (${w}" × ${h}")`;
+        const saVal = (isOpenTop ? (l*w + 2*l*h + 2*w*h) : (2*l*w + 2*l*h + 2*w*h)).toLocaleString("en-US", { maximumFractionDigits: 1 });
 
         container.innerHTML = `
-          <svg class="visual-svg" viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e2e7ec;border-radius:12px;">
-            <g stroke-linejoin="round" stroke-linecap="round">
-              <!-- Back face -->
-              <rect x="${x1}" y="${y0}" width="${sl}" height="${sh}" fill="#fdf3e0" stroke="#c9820f" stroke-width="2"/>
-              <text x="${xCenter}" y="${y0 + sh / 2 + 4}" text-anchor="middle" font-size="10" font-weight="bold" fill="#0f2b3c">${labelBack}</text>
+          <defs>
+            <linearGradient id="netBottomGradA" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.25"/>
+              <stop offset="100%" stop-color="#0284c7" stop-opacity="0.45"/>
+            </linearGradient>
+            <linearGradient id="netSideGradA" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#dcfce7" stop-opacity="0.7"/>
+              <stop offset="100%" stop-color="#86efac" stop-opacity="0.9"/>
+            </linearGradient>
+            <linearGradient id="netFrontGradA" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#fef3c7" stop-opacity="0.8"/>
+              <stop offset="100%" stop-color="#fde047" stop-opacity="1.0"/>
+            </linearGradient>
+            <marker id="fold-arrow-a" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+              <path d="M 0 2 L 8 5 L 0 8 z" fill="#d97706"/>
+            </marker>
+          </defs>
 
-              <!-- Top face -->
-              <rect x="${x1}" y="${y1}" width="${sl}" height="${sw}" fill="${topFill}" stroke="${topStroke}" stroke-width="2" stroke-dasharray="${topStrokeDash}"/>
-              <text x="${xCenter}" y="${y1 + sw / 2 + 4}" text-anchor="middle" font-size="10" font-weight="bold" fill="${isOpenTop ? "#ef4444" : "#0f2b3c"}">${labelTop}</text>
+          <!-- Banner Header -->
+          <rect x="0" y="0" width="520" height="32" fill="#f8fafc" />
+          <line x1="0" y1="32" x2="520" y2="32" stroke="#e2e8f0" stroke-width="1" />
+          <text x="16" y="21" font-size="12" font-weight="800" fill="#0f172a">${titleText}</text>
+          
+          <rect x="360" y="6" width="144" height="20" rx="10" fill="${isOpenTop ? "#ef4444" : "#0284c7"}" />
+          <text x="432" y="19" text-anchor="middle" font-size="10" font-weight="700" fill="#ffffff">${isOpenTop ? (isSpanish ? "5 Caras (Abierta)" : "5 Faces (Open Top)") : (isSpanish ? "6 Caras (Cerrada)" : "6 Faces (Closed Box)")}</text>
 
-              <!-- Front face -->
-              <rect x="${x1}" y="${y2}" width="${sl}" height="${sh}" fill="#fdf3e0" stroke="#c9820f" stroke-width="2"/>
-              <text x="${xCenter}" y="${y2 + sh / 2 + 4}" text-anchor="middle" font-size="10" font-weight="bold" fill="#0f2b3c">${labelFront}</text>
+          <g stroke-linejoin="round" stroke-linecap="round">
+            <!-- Back face -->
+            <rect x="${x1}" y="${y0}" width="${sl}" height="${sh}" fill="url(#netFrontGradA)" stroke="#d97706" stroke-width="2" rx="2"/>
+            <text x="${cx}" y="${y0 + sh / 2 + 4}" text-anchor="middle" font-size="9" font-weight="800" fill="#78350f">${isSpanish ? "ATRÁS" : "BACK"} (${l}"×${h}")</text>
 
-              <!-- Bottom face -->
-              <rect x="${x1}" y="${y3}" width="${sl}" height="${sw}" fill="#e8f2fc" stroke="#1a6fb5" stroke-width="2"/>
-              <text x="${xCenter}" y="${y3 + sw / 2 + 4}" text-anchor="middle" font-size="10" font-weight="bold" fill="#0f2b3c">${labelBottom}</text>
+            <!-- Top face -->
+            ${isOpenTop ? `
+              <rect x="${x1}" y="${y1}" width="${sl}" height="${sw}" fill="#f8fafc" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4,4" rx="2"/>
+              <text x="${cx}" y="${y1 + sw / 2 + 4}" text-anchor="middle" font-size="9" font-weight="700" fill="#ef4444">${isSpanish ? "SIN TAPA (Abierta)" : "NO LID (Open)"}</text>
+            ` : `
+              <rect x="${x1}" y="${y1}" width="${sl}" height="${sw}" fill="url(#netBottomGradA)" stroke="#0284c7" stroke-width="2" rx="2"/>
+              <text x="${cx}" y="${y1 + sw / 2 + 4}" text-anchor="middle" font-size="9" font-weight="800" fill="#0369a1">${isSpanish ? "SUPERIOR" : "TOP"} (${l}"×${w}")</text>
+            `}
 
-              <!-- Left face -->
-              <rect x="${x0}" y="${y2}" width="${sw}" height="${sh}" fill="#e6f4eb" stroke="#1e7d40" stroke-width="2"/>
-              <text x="${x0 + sw / 2}" y="${y2 + sh / 2 + 4}" text-anchor="middle" font-size="9" font-weight="bold" fill="#0f2b3c">${labelLeft}</text>
+            <!-- Front face -->
+            <rect x="${x1}" y="${y2}" width="${sl}" height="${sh}" fill="url(#netFrontGradA)" stroke="#d97706" stroke-width="2" rx="2"/>
+            <text x="${cx}" y="${y2 + sh / 2 + 4}" text-anchor="middle" font-size="9" font-weight="800" fill="#78350f">${isSpanish ? "FRENTE" : "FRONT"} (${l}"×${h}")</text>
 
-              <!-- Right face -->
-              <rect x="${x2}" y="${y2}" width="${sw}" height="${sh}" fill="#e6f4eb" stroke="#1e7d40" stroke-width="2"/>
-              <text x="${x2 + sw / 2}" y="${y2 + sh / 2 + 4}" text-anchor="middle" font-size="9" font-weight="bold" fill="#0f2b3c">${labelRight}</text>
+            <!-- Bottom face -->
+            <rect x="${x1}" y="${y3}" width="${sl}" height="${sw}" fill="url(#netBottomGradA)" stroke="#0284c7" stroke-width="2" rx="2"/>
+            <text x="${cx}" y="${y3 + sw / 2 + 4}" text-anchor="middle" font-size="9" font-weight="800" fill="#0369a1">${isSpanish ? "FONDO" : "BOTTOM"} (${l}"×${w}")</text>
 
-              <!-- Folding lines -->
-              <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y1}" stroke="#5e6e7e" stroke-width="1.5" stroke-dasharray="3,3"/>
-              <line x1="${x1}" y1="${y2}" x2="${x2}" y2="${y2}" stroke="#5e6e7e" stroke-width="1.5" stroke-dasharray="3,3"/>
-              <line x1="${x1}" y1="${y3}" x2="${x2}" y2="${y3}" stroke="#5e6e7e" stroke-width="1.5" stroke-dasharray="3,3"/>
-              <line x1="${x1}" y1="${y2}" x2="${x1}" y2="${y3}" stroke="#5e6e7e" stroke-width="1.5" stroke-dasharray="3,3"/>
-              <line x1="${x2}" y1="${y2}" x2="${x2}" y2="${y3}" stroke="#5e6e7e" stroke-width="1.5" stroke-dasharray="3,3"/>
-            </g>
-            <text x="260" y="20" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">${title}</text>
-          </svg>
+            <!-- Left face -->
+            <rect x="${x0}" y="${y2}" width="${sw}" height="${sh}" fill="url(#netSideGradA)" stroke="#16a34a" stroke-width="2" rx="2"/>
+            <text x="${x0 + sw / 2}" y="${y2 + sh / 2 + 4}" text-anchor="middle" font-size="8" font-weight="800" fill="#14532d">${isSpanish ? "IZQ" : "LEFT"} (${w}"×${h}")</text>
+
+            <!-- Right face -->
+            <rect x="${x2}" y="${y2}" width="${sw}" height="${sh}" fill="url(#netSideGradA)" stroke="#16a34a" stroke-width="2" rx="2"/>
+            <text x="${x2 + sw / 2}" y="${y2 + sh / 2 + 4}" text-anchor="middle" font-size="8" font-weight="800" fill="#14532d">${isSpanish ? "DER" : "RIGHT"} (${w}"×${h}")</text>
+
+            <!-- Folding lines (Hinges) -->
+            <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y1}" stroke="#d97706" stroke-width="1.8" stroke-dasharray="4,3"/>
+            <line x1="${x1}" y1="${y2}" x2="${x2}" y2="${y2}" stroke="#d97706" stroke-width="1.8" stroke-dasharray="4,3"/>
+            <line x1="${x1}" y1="${y3}" x2="${x2}" y2="${y3}" stroke="#d97706" stroke-width="1.8" stroke-dasharray="4,3"/>
+            <line x1="${x1}" y1="${y2}" x2="${x1}" y2="${y3}" stroke="#d97706" stroke-width="1.8" stroke-dasharray="4,3"/>
+            <line x1="${x2}" y1="${y2}" x2="${x2}" y2="${y3}" stroke="#d97706" stroke-width="1.8" stroke-dasharray="4,3"/>
+          </g>
+
+          <!-- Curved Fold Direction Indicator Arcs -->
+          <path d="M ${x1 + sl/2 - 12} ${y2 - 3} Q ${x1 + sl/2} ${y2 - 10} ${x1 + sl/2 + 12} ${y2 - 3}" stroke="#d97706" stroke-width="1.5" fill="none" marker-end="url(#fold-arrow-a)" />
+
+          <!-- Surface Area Summary Card (Right Side) -->
+          <rect x="375" y="48" width="132" height="145" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1" />
+          <text x="441" y="68" text-anchor="middle" font-size="11" font-weight="800" fill="#0f172a">${isSpanish ? "ÁREA DE SUPERFICIE" : "SURFACE AREA"}</text>
+          <line x1="387" y1="76" x2="495" y2="76" stroke="#cbd5e1" stroke-width="1" />
+          <text x="387" y="93" font-size="9" fill="#475569">Bottom/Top: ${isOpenTop ? 1 : 2}×(${l*w})</text>
+          <text x="387" y="108" font-size="9" fill="#475569">Front/Back: 2×(${l*h})</text>
+          <text x="387" y="123" font-size="9" fill="#475569">Sides: 2×(${w*h})</text>
+          <rect x="387" y="133" width="108" height="24" rx="6" fill="#d97706" />
+          <text x="441" y="149" text-anchor="middle" font-size="11" font-weight="800" fill="#ffffff">SA = ${saVal} in²</text>
+          <text x="441" y="173" text-anchor="middle" font-size="9" font-style="italic" fill="#d97706">(${isOpenTop ? 5 : 6} ${isSpanish ? "caras" : "faces total"})</text>
         `;
       }
 

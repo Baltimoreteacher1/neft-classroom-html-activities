@@ -3261,33 +3261,97 @@
       <line x1="55" y1="145" x2="55" y2="55" stroke="#F2A93B" stroke-width="2" stroke-dasharray="6,5"/>
       <text x="119" y="164" ${commonText}>base</text><text x="62" y="102" ${commonText}>height</text>
     </svg>`,
-          rect_prism: `<svg width="300" height="210" viewBox="0 0 300 210" role="img" aria-label="Rectangular prism">
-      <polygon points="75,70 205,70 245,105 115,105" fill="#FFF7E7" stroke="#C85A3A" stroke-width="2.5"/>
-      <polygon points="115,105 245,105 245,170 115,170" fill="#F2D7BB" stroke="#C85A3A" stroke-width="2.5"/>
-      <polygon points="75,70 115,105 115,170 75,135" fill="#E8C49F" stroke="#C85A3A" stroke-width="2.5"/>
-      <line x1="115" y1="180" x2="245" y2="180" stroke="#1C2E42" stroke-width="2"/><text x="165" y="198" ${commonText}>length</text>
-      <text x="41" y="119" ${commonText}>height</text><text x="225" y="82" ${commonText}>width</text>
+          rect_prism: `<svg width="300" height="210" viewBox="0 0 300 210" role="img" aria-label="Rectangular prism" style="background:white; border-radius:8px;">
+      <defs>
+        <linearGradient id="rpFront" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fef3c7"/><stop offset="100%" stop-color="#f59e0b"/></linearGradient>
+        <linearGradient id="rpTop" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e0f2fe"/><stop offset="100%" stop-color="#0284c7"/></linearGradient>
+        <linearGradient id="rpSide" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#dcfce7"/><stop offset="100%" stop-color="#16a34a"/></linearGradient>
+        <filter id="rpShadow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="4"/></filter>
+      </defs>
+      <!-- Shadow -->
+      <ellipse cx="170" cy="182" rx="85" ry="12" fill="#0f172a" opacity="0.12" filter="url(#rpShadow)"/>
+      <!-- Dashed Back Lines -->
+      <line x1="75" y1="70" x2="165" y2="35" stroke="#94a3b8" stroke-dasharray="3,3" stroke-width="1.5"/>
+      <line x1="165" y1="35" x2="245" y2="70" stroke="#94a3b8" stroke-dasharray="3,3" stroke-width="1.5"/>
+      <line x1="165" y1="35" x2="165" y2="135" stroke="#94a3b8" stroke-dasharray="3,3" stroke-width="1.5"/>
+      <!-- Top Face -->
+      <polygon points="75,70 165,35 245,70 155,105" fill="url(#rpTop)" stroke="#0284c7" stroke-width="2"/>
+      <!-- Right Face -->
+      <polygon points="155,105 245,70 245,170 155,170" fill="url(#rpSide)" stroke="#16a34a" stroke-width="2"/>
+      <!-- Front Face -->
+      <polygon points="75,70 155,105 155,170 75,135" fill="url(#rpFront)" stroke="#d97706" stroke-width="2"/>
+      <!-- Specular Highlight -->
+      <line x1="88" y1="78" x2="108" y2="128" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round"/>
+      <!-- Labels -->
+      <line x1="75" y1="148" x2="155" y2="183" stroke="#1c2e42" stroke-width="1.5"/>
+      <text x="110" y="178" ${commonText}>length</text>
+      <text x="50" y="105" ${commonText}>height</text>
+      <text x="210" y="130" ${commonText}>width</text>
     </svg>`,
-          rect_prism_box: `<svg width="300" height="210" viewBox="0 0 300 210" role="img" aria-label="Gift box rectangular prism">
-      <polygon points="70,70 205,55 240,90 105,105" fill="#EEF6F6" stroke="#387F84" stroke-width="2.5"/>
-      <polygon points="105,105 240,90 240,165 105,180" fill="#CFE7E6" stroke="#387F84" stroke-width="2.5"/>
-      <polygon points="70,70 105,105 105,180 70,145" fill="#A9D3D1" stroke="#387F84" stroke-width="2.5"/>
-      <path d="M105 105 L240 165 M240 90 L105 180" stroke="#F2A93B" stroke-width="2" opacity=".7"/>
-      <text x="139" y="199" ${commonText}>surface area = all outside faces</text>
+          rect_prism_box: `<svg width="300" height="210" viewBox="0 0 300 210" role="img" aria-label="Gift box rectangular prism" style="background:white; border-radius:8px;">
+      <defs>
+        <linearGradient id="rpbTop" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ccfbf1"/><stop offset="100%" stop-color="#14b8a6"/></linearGradient>
+        <linearGradient id="rpbFront" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#99f6e4"/><stop offset="100%" stop-color="#0d9488"/></linearGradient>
+        <linearGradient id="rpbSide" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#5eead4"/><stop offset="100%" stop-color="#0f766e"/></linearGradient>
+        <filter id="rpbShadow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="4"/></filter>
+      </defs>
+      <!-- Shadow -->
+      <ellipse cx="170" cy="182" rx="85" ry="12" fill="#0f172a" opacity="0.12" filter="url(#rpbShadow)"/>
+      <!-- Top Face -->
+      <polygon points="70,70 160,35 240,70 150,105" fill="url(#rpbTop)" stroke="#0d9488" stroke-width="2"/>
+      <!-- Right Face -->
+      <polygon points="150,105 240,70 240,170 150,170" fill="url(#rpbSide)" stroke="#0f766e" stroke-width="2"/>
+      <!-- Front Face -->
+      <polygon points="70,70 150,105 150,170 70,135" fill="url(#rpbFront)" stroke="#0d9488" stroke-width="2"/>
+      <!-- Ribbon Accents -->
+      <path d="M110 87 L110 152 M195 87 L195 170" stroke="#f59e0b" stroke-width="2.5" opacity="0.9"/>
+      <!-- Surface Area Banner -->
+      <rect x="35" y="180" width="230" height="24" rx="6" fill="#0f766e"/>
+      <text x="150" y="196" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">surface area = sum of all 6 faces</text>
     </svg>`,
-          pyramid: `<svg width="300" height="220" viewBox="0 0 300 220" role="img" aria-label="Square pyramid">
-      <polygon points="150,25 245,170 55,170" fill="#FFF7E7" stroke="#C85A3A" stroke-width="3"/>
-      <polygon points="55,170 245,170 205,195 95,195" fill="#E4C49F" stroke="#C85A3A" stroke-width="3"/>
-      <line x1="150" y1="25" x2="150" y2="170" stroke="#387F84" stroke-width="2" stroke-dasharray="6,5"/>
-      <text x="160" y="105" ${commonText}>slant height</text><text x="127" y="190" ${commonText}>base</text>
+          pyramid: `<svg width="300" height="220" viewBox="0 0 300 220" role="img" aria-label="Square pyramid" style="background:white; border-radius:8px;">
+      <defs>
+        <linearGradient id="pyrFront" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fef3c7"/><stop offset="100%" stop-color="#f59e0b"/></linearGradient>
+        <linearGradient id="pyrSide" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fde047"/><stop offset="100%" stop-color="#d97706"/></linearGradient>
+        <filter id="pyrShadow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="4"/></filter>
+      </defs>
+      <!-- Shadow -->
+      <ellipse cx="150" cy="195" rx="90" ry="10" fill="#0f172a" opacity="0.12" filter="url(#pyrShadow)"/>
+      <!-- Dashed Back Edges -->
+      <line x1="150" y1="30" x2="190" y2="155" stroke="#94a3b8" stroke-dasharray="3,3" stroke-width="1.5"/>
+      <polygon points="50,170 190,155 250,170" fill="none" stroke="#94a3b8" stroke-dasharray="3,3" stroke-width="1.5"/>
+      <!-- Front Triangular Face -->
+      <polygon points="150,30 50,170 170,185" fill="url(#pyrFront)" stroke="#d97706" stroke-width="2.5"/>
+      <!-- Right Triangular Face -->
+      <polygon points="150,30 170,185 250,170" fill="url(#pyrSide)" stroke="#b45309" stroke-width="2.5"/>
+      <!-- Slant Height Dashed Line -->
+      <line x1="150" y1="30" x2="110" y2="177.5" stroke="#0284c7" stroke-width="2" stroke-dasharray="5,4"/>
+      <!-- Apex Point -->
+      <circle cx="150" cy="30" r="3.5" fill="#d97706"/>
+      <!-- Labels -->
+      <text x="105" y="105" text-anchor="end" font-size="11" font-weight="700" fill="#0284c7">slant height</text>
+      <text x="110" y="198" font-size="11" font-weight="700" fill="#b45309">base</text>
     </svg>`,
-          pyramid_glass: `<svg width="300" height="220" viewBox="0 0 300 220" role="img" aria-label="Glass pyramid">
-      <polygon points="150,25 250,170 50,170" fill="rgba(56,127,132,.14)" stroke="#387F84" stroke-width="3"/>
-      <line x1="150" y1="25" x2="150" y2="170" stroke="#387F84" stroke-width="2"/>
-      <line x1="150" y1="25" x2="100" y2="170" stroke="#BFD8D8" stroke-width="2"/>
-      <line x1="150" y1="25" x2="200" y2="170" stroke="#BFD8D8" stroke-width="2"/>
-      <path d="M75 132 H225 M95 96 H205 M118 62 H182" stroke="#BFD8D8" stroke-width="2"/>
-      <text x="95" y="193" ${commonText}>4 triangular faces</text>
+          pyramid_glass: `<svg width="300" height="220" viewBox="0 0 300 220" role="img" aria-label="Glass pyramid" style="background:white; border-radius:8px;">
+      <defs>
+        <linearGradient id="pyrGlassFront" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#38bdf8" stop-opacity="0.2"/><stop offset="100%" stop-color="#0284c7" stop-opacity="0.45"/></linearGradient>
+        <linearGradient id="pyrGlassSide" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#0284c7" stop-opacity="0.3"/><stop offset="100%" stop-color="#0369a1" stop-opacity="0.6"/></linearGradient>
+        <filter id="pyrGShadow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="4"/></filter>
+      </defs>
+      <!-- Shadow -->
+      <ellipse cx="150" cy="195" rx="90" ry="10" fill="#0f172a" opacity="0.12" filter="url(#pyrGShadow)"/>
+      <!-- Back Framework -->
+      <line x1="150" y1="30" x2="190" y2="155" stroke="#94a3b8" stroke-dasharray="3,3" stroke-width="1.5"/>
+      <!-- Translucent Glass Faces -->
+      <polygon points="150,30 50,170 170,185" fill="url(#pyrGlassFront)" stroke="#0284c7" stroke-width="2.5"/>
+      <polygon points="150,30 170,185 250,170" fill="url(#pyrGlassSide)" stroke="#0284c7" stroke-width="2.5"/>
+      <!-- Glass Lattice Grid Lines -->
+      <path d="M90 123 L180 133 M115 88 L163 94 M132 60 L156 64" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"/>
+      <!-- Specular Highlight -->
+      <line x1="140" y1="45" x2="80" y2="130" stroke="rgba(255,255,255,0.75)" stroke-width="2" stroke-linecap="round"/>
+      <!-- Badge -->
+      <rect x="75" y="185" width="150" height="22" rx="6" fill="#0284c7"/>
+      <text x="150" y="200" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">4 triangular faces total</text>
     </svg>`,
           triangle_sail: `<svg width="300" height="210" viewBox="0 0 300 210" role="img" aria-label="Triangle sail">
       <path d="M70 175 C120 110 150 55 220 28 L220 175 Z" fill="#EEF6F6" stroke="#387F84" stroke-width="3"/>
