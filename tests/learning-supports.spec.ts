@@ -1,7 +1,26 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
 const TEST_LESSON_PATH = "/lessons/1-1/";
+
+/**
+ * The student rail now groups tools under accordion headers (one group open at
+ * a time; collapsed bodies are hidden). A tool button being inside a collapsed
+ * group is normal — expand its group before asserting visibility or clicking.
+ * Tools outside any group (quick chips, identity chips) pass straight through.
+ */
+async function openTool(page: Page, tool: string) {
+  const btn = page.locator(`[data-tool="${tool}"]`);
+  await expect(btn).toBeAttached();
+  if (!(await btn.isVisible())) {
+    const head = page
+      .locator(".ewl-supports-group", { has: page.locator(`[data-tool="${tool}"]`) })
+      .locator(".ewl-supports-group-head");
+    await head.click();
+  }
+  await expect(btn).toBeVisible();
+  return btn;
+}
 
 test.describe("Learning Supports E2E & Accessibility QA", () => {
   // Teacher Mode now HIDES the student tools dock (replaced by the 🧮 Math
@@ -79,8 +98,7 @@ test.describe("Learning Supports E2E & Accessibility QA", () => {
   test("focus mode applies body class and is reversible", async ({ page }) => {
     await page.goto(`${TEST_LESSON_PATH}#supports=focus-organize`, { waitUntil: "networkidle" });
 
-    const focusBtn = page.locator('[data-tool="focus"]');
-    await expect(focusBtn).toBeVisible();
+    const focusBtn = await openTool(page, "focus");
 
     // Body should not have class initially
     await expect(page.locator("body")).not.toHaveClass(/ewl-supports-focus-active/);
@@ -129,15 +147,14 @@ test.describe("Learning Supports E2E & Accessibility QA", () => {
     });
 
     // Open Words panel and verify Spanish vocabulary text is shown
-    await page.locator('[data-tool="words"]').click();
+    await (await openTool(page, "words")).click();
     await expect(page.locator(".ewl-supports-vocab-term").first()).toContainText("Número primo");
   });
 
   test("synthesis playback rate cycles on dock click", async ({ page }) => {
     await page.goto(`${TEST_LESSON_PATH}#supports=read-understand`, { waitUntil: "networkidle" });
 
-    const rateBtn = page.locator('[data-tool="rate"]');
-    await expect(rateBtn).toBeVisible();
+    const rateBtn = await openTool(page, "rate");
     await expect(rateBtn).toContainText("1x");
 
     // Cycle rate: 1.0 -> 1.25 -> 1.5 -> 0.8 -> 1.0
@@ -157,8 +174,7 @@ test.describe("Learning Supports E2E & Accessibility QA", () => {
   test("ADHD reading ruler overlay activates on click", async ({ page }) => {
     await page.goto(`${TEST_LESSON_PATH}#supports=focus-organize`, { waitUntil: "networkidle" });
 
-    const rulerBtn = page.locator('[data-tool="ruler"]');
-    await expect(rulerBtn).toBeVisible();
+    const rulerBtn = await openTool(page, "ruler");
 
     const ruler = page.locator("#ewl-supports-ruler");
     await expect(ruler).toBeHidden();
@@ -177,8 +193,7 @@ test.describe("Learning Supports E2E & Accessibility QA", () => {
   test("confidence check-in tab records choices in storage", async ({ page }) => {
     await page.goto(`${TEST_LESSON_PATH}#supports=read-understand`, { waitUntil: "networkidle" });
 
-    const checkinBtn = page.locator('[data-tool="checkin"]');
-    await expect(checkinBtn).toBeVisible();
+    const checkinBtn = await openTool(page, "checkin");
     await checkinBtn.click();
 
     // Verify check-in tab opens in panel
@@ -205,8 +220,7 @@ test.describe("Learning Supports E2E & Accessibility QA", () => {
   test("visual comfort spacing toggle applies body class", async ({ page }) => {
     await page.goto(`${TEST_LESSON_PATH}#supports=focus-organize`, { waitUntil: "networkidle" });
 
-    const comfortBtn = page.locator('[data-tool="comfort"]');
-    await expect(comfortBtn).toBeVisible();
+    const comfortBtn = await openTool(page, "comfort");
 
     // Body should not have class initially
     await expect(page.locator("body")).not.toHaveClass(/ewl-supports-comfort-active/);
@@ -223,8 +237,7 @@ test.describe("Learning Supports E2E & Accessibility QA", () => {
   test("student notepad autosaves notes locally", async ({ page }) => {
     await page.goto(`${TEST_LESSON_PATH}#supports=read-understand`, { waitUntil: "networkidle" });
 
-    const notepadBtn = page.locator('[data-tool="notepad"]');
-    await expect(notepadBtn).toBeVisible();
+    const notepadBtn = await openTool(page, "notepad");
     await notepadBtn.click();
 
     // Verify Notepad opens
@@ -292,12 +305,13 @@ test.describe("Learning Supports v2 — student roster path", () => {
     await card.locator(".ewl-supports-selfpick-ini", { hasText: "JN" }).click();
     await expect(card).toBeHidden();
 
-    // Rail shows exactly the assigned interactive tools (+ listen's rate rider).
+    // Rail shows exactly the assigned interactive tools (+ listen's rate rider),
+    // each inside its accordion group; unassigned tools stay display:none.
     const dock = page.locator("[data-ewl-supports-tools]");
     await expect(dock).toBeVisible();
-    await expect(dock.locator('[data-tool="calculator"]')).toBeVisible();
-    await expect(dock.locator('[data-tool="words"]')).toBeVisible();
-    await expect(dock.locator('[data-tool="listen"]')).toBeVisible();
+    await openTool(page, "calculator");
+    await openTool(page, "words");
+    await openTool(page, "listen");
     await expect(dock.locator('[data-tool="focus"]')).toBeHidden();
 
     // The identity switch chip is intentionally disabled (v2EnsureIdentityChip
@@ -340,7 +354,7 @@ test.describe("Learning Supports v2 — student roster path", () => {
 
     // The URL-requested tool is active; the roster's tools are not.
     const dock = page.locator("[data-ewl-supports-tools]");
-    await expect(dock.locator('[data-tool="calculator"]')).toBeVisible();
+    await openTool(page, "calculator");
     await expect(dock.locator('[data-tool="focus"]')).toBeHidden();
   });
 
@@ -362,7 +376,7 @@ test.describe("Learning Supports v2 — student roster path", () => {
     // v1 baseline (calculator via stored prefs) survives the API outage.
     const dock = page.locator("[data-ewl-supports-tools]");
     await expect(dock).toBeVisible();
-    await expect(dock.locator('[data-tool="calculator"]')).toBeVisible();
+    await openTool(page, "calculator");
   });
 
   test("adaptive accommodations change lesson behavior automatically (v2.3)", async ({ page }) => {
@@ -418,13 +432,13 @@ test.describe("Learning Supports v2 — student roster path", () => {
     await page.goto(TEST_LESSON_PATH, { waitUntil: "networkidle" });
 
     const dock = page.locator("[data-ewl-supports-tools]");
-    await expect(dock.locator('[data-tool="highlighter"]')).toBeVisible();
-    await expect(dock.locator('[data-tool="organizer"]')).toBeVisible();
-    await expect(dock.locator('[data-tool="directions"]')).toBeVisible();
+    await openTool(page, "highlighter");
+    await openTool(page, "organizer");
+    await openTool(page, "directions");
     await expect(dock.locator('[data-tool="calculator"]')).toBeHidden();
 
     // Organizer opens its four-square panel and persists to this device.
-    await dock.locator('[data-tool="organizer"]').click();
+    await (await openTool(page, "organizer")).click();
     const panel = page.locator(".ewl-adapt-panel");
     await expect(panel).toBeVisible();
     await expect(panel.locator("textarea")).toHaveCount(4);
@@ -435,7 +449,7 @@ test.describe("Learning Supports v2 — student roster path", () => {
     await expect(panel).toBeHidden();
 
     // Highlighter toggles active state on its dock button.
-    const hl = dock.locator('[data-tool="highlighter"]');
+    const hl = await openTool(page, "highlighter");
     await hl.click();
     await expect(hl).toHaveClass(/is-active/);
     await expect(page.locator("body")).toHaveClass(/ewl-adapt-highlighting/);
@@ -443,7 +457,7 @@ test.describe("Learning Supports v2 — student roster path", () => {
     await expect(hl).not.toHaveClass(/is-active/);
 
     // Directions helper opens with a read-aloud control.
-    await dock.locator('[data-tool="directions"]').click();
+    await (await openTool(page, "directions")).click();
     await expect(page.locator(".ewl-adapt-panel")).toBeVisible();
     await expect(page.locator(".ewl-adapt-dir-row")).toBeVisible();
   });
