@@ -1518,7 +1518,32 @@ header.homework-header h1 {
 .lang-en + .lang-es, .worked-step .lang-es { padding-left: 10px; border-left: 3px solid var(--teal); }
 .welcome-lead .lang-es { color: rgba(255, 255, 255, 0.94); border-left: 3px solid var(--amber); padding-left: 10px; display: inline-block; margin-top: 6px; }
 .learning-big { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; line-height: 1.4; }
-.learning-sub { font-size: 14px; margin: 0; color: var(--ink); }
+.learning-words { margin-top: 12px; }
+.learning-words-label {
+  display: block;
+  margin-bottom: 7px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.learning-word-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.learning-word-chips li {
+  padding: 5px 9px;
+  border: 1px solid #b8ddd8;
+  border-radius: 999px;
+  background: var(--teal-light);
+  color: var(--teal-ink);
+  font-size: 12px;
+  font-weight: 700;
+}
 
 .guided-section { scroll-margin-top: 16px; }
 .section-learn { border-left: 4px solid var(--teal); }
@@ -1552,6 +1577,57 @@ header.homework-header h1 {
 .step-color-3 .step-dot, .step-color-3.step-badge { background: var(--amber); color: var(--navy); }
 .step-color-4 .step-dot, .step-color-4.step-badge { background: var(--coral); }
 
+.concept-quick-wrap {
+  margin: 0 0 16px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: #fbfdff;
+}
+.concept-quick-title {
+  margin: 0 0 10px;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.concept-quick-path {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.concept-quick-step {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 82px;
+  padding: 9px 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  color: var(--navy);
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 800;
+}
+.concept-quick-step:not(:last-child)::after {
+  content: "→";
+  position: absolute;
+  right: -9px;
+  z-index: 1;
+  color: var(--teal-ink);
+  font-size: 16px;
+}
+.concept-quick-icon { font-size: 24px; line-height: 1; margin-bottom: 5px; }
+.concept-quick-step .lang-es { color: var(--muted); font-size: 11px; }
+
 .key-idea-banner {
   background: var(--teal-light);
   border-radius: var(--radius-sm);
@@ -1569,6 +1645,48 @@ header.homework-header h1 {
   padding: 12px 14px;
   background: var(--white);
 }
+.guided-step { padding: 16px; }
+.guided-step-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.guided-step-head > div { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
+.guided-step-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  border-radius: 12px;
+  background: var(--cream);
+  font-size: 22px;
+}
+.step-cue-label {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.step-cue-label .lang-en, .step-cue-label .lang-es { display: inline; margin: 0; }
+.step-cue-label .lang-es::before { content: " / "; color: var(--muted); }
+.guided-step-head .step-badge { margin: 0; }
+.guided-step .step-lead { font-size: 16px; font-weight: 700; line-height: 1.45; }
+.step-detail {
+  margin-top: 10px;
+  border-top: 1px dashed var(--line);
+  padding-top: 9px;
+}
+.step-detail summary {
+  cursor: pointer;
+  color: var(--teal-ink);
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 800;
+}
+.step-detail p { margin-top: 8px; color: var(--ink); font-weight: 400; }
 .step-badge {
   display: inline-block;
   font-family: var(--font-display);
@@ -1597,6 +1715,17 @@ header.homework-header h1 {
   padding: 10px 12px; background: var(--cream); border-radius: var(--radius-sm);
 }
 .watch-icon { font-size: 20px; flex-shrink: 0; }
+
+@media (max-width: 560px) {
+  .concept-quick-path { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .concept-quick-step:nth-child(2)::after { display: none; }
+}
+
+@media print {
+  .concept-quick-path { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .step-detail > summary { display: none; }
+  .step-detail[open] > summary ~ *, .step-detail > * { display: block; }
+}
 
 .try-scenario { font-size: 15px; font-weight: 600; color: var(--navy); margin: 0 0 8px; }
 .try-together-note { font-size: 14px; margin: 0 0 14px; color: var(--muted); }
@@ -2433,8 +2562,8 @@ header.packet h1::after{
         </div>
       </div>
       <p class="welcome-lead bilingual-block">
-        <span class="lang-en"><strong>English:</strong> You don't need to be a math expert. This page helps you <em>guide</em> your student — with pictures, steps, and words in both languages.</span>
-        <span class="lang-es" lang="es"><strong>Español:</strong> No necesitas ser experto en matemáticas. Esta página te ayuda a <em>guiar</em> a tu estudiante — con dibujos, pasos y palabras en dos idiomas.</span>
+        <span class="lang-en"><strong>English:</strong> Use the pictures and short steps. Ask questions; let your student do the thinking.</span>
+        <span class="lang-es" lang="es"><strong>Español:</strong> Usen los dibujos y los pasos cortos. Hagan preguntas; dejen que su estudiante piense.</span>
       </p>
       
       <!-- Modern language mode selector -->
@@ -2534,13 +2663,13 @@ header.packet h1::after{
       <div class="bilingual-grid">
         <div class="bilingual-col lang-en">
           <span class="lang-label">English</span>
-          <p class="learning-big">Tonight we write inequalities. An inequality compares two amounts with the signs &lt;, &gt;, ≤, or ≥, when many values are allowed instead of just one..</p>
-          <p class="learning-sub">Practice using these words while you work: <em>Inequality, Greater than, Less than, At least / At most, Variable</em>.</p>
+          <p class="learning-big">Tonight we write inequalities. An inequality compares two amounts with the signs &lt;, &gt;, ≤, or ≥, when many values are allowed instead of just one.</p>
+          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Inequality</li><li>Greater than</li><li>Less than</li><li>At least / At most</li><li>Variable</li></ul></div>
         </div>
         <div class="bilingual-col lang-es" lang="es">
           <span class="lang-label">Español</span>
           <p class="learning-big">Esta noche escribimos desigualdades. Una desigualdad compara dos cantidades con los signos &lt;, &gt;, ≤ o ≥, cuando se permiten muchos valores en lugar de uno solo.</p>
-          <p class="learning-sub">Practiquen usar estas palabras al trabajar: <em>Desigualdad, Mayor que, Menor que, Al menos / A lo más, Variable</em>.</p>
+          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Desigualdad</li><li>Mayor que</li><li>Menor que</li><li>Al menos / A lo más</li><li>Variable</li></ul></div>
         </div>
       </div>
     
@@ -2558,31 +2687,51 @@ header.packet h1::after{
         <text x="40" y="155" font-size="12" fill="#21313f">Open circle · shade the solution side</text>
         <text x="40" y="172" font-size="12" fill="#21313f" lang="es">Círculo abierto · sombrea el lado de la solución</text>
       </svg></div>
+      <div class="concept-quick-wrap">
+        <p class="concept-quick-title"><span class="lang-en">Follow the picture path</span><span class="lang-es" lang="es">Sigan la ruta visual</span></p>
+        <ol class="concept-quick-path" aria-label="Four-step visual math path"><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">👀</span><span class="lang-en">Start</span><span class="lang-es" lang="es">Empieza</span></li><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">🧩</span><span class="lang-en">Show it</span><span class="lang-es" lang="es">Muéstralo</span></li><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">✏️</span><span class="lang-en">Solve</span><span class="lang-es" lang="es">Resuelve</span></li><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">✅</span><span class="lang-en">Check</span><span class="lang-es" lang="es">Revisa</span></li></ol>
+      </div>
       <div class="key-idea-banner">
-        <p class="lang-en"><strong>Watch for this:</strong> &#039;At least&#039; means ≥ and &#039;at most&#039; means ≤; &#039;more than&#039; means &gt; and &#039;fewer/less than&#039; means &lt;.</p>
-        <p class="lang-es" lang="es"><strong>Observa esto:</strong> &#039;Al menos&#039; significa ≥ y &#039;a lo más&#039; significa ≤; &#039;más que&#039; significa &gt; y &#039;menos que&#039; significa &lt;.</p>
+        <p class="lang-en"><strong>In one sentence:</strong> &#039;At least&#039; means ≥ and &#039;at most&#039; means ≤; &#039;more than&#039; means &gt; and &#039;fewer/less than&#039; means &lt;.</p>
+        <p class="lang-es" lang="es"><strong>En una frase:</strong> &#039;Al menos&#039; significa ≥ y &#039;a lo más&#039; significa ≤; &#039;más que&#039; significa &gt; y &#039;menos que&#039; significa &lt;.</p>
       </div>
       <ol class="guided-steps">
         
           <li class="guided-step step-color-1">
-            <span class="step-badge"><span class="lang-en">Step 1</span><span class="lang-es" lang="es">Paso 1</span></span>
-            <p class="lang-en">Real clue: &#039;The suspect is at least 18 years old.&#039; We let a stand for the age.</p>
-            <p class="lang-es" lang="es">Pista real: &#039;El sospechoso tiene al menos 18 años.&#039; Usamos a para representar la edad.</p>
+            <div class="guided-step-head">
+              <span class="guided-step-icon" aria-hidden="true">👀</span>
+              <div><span class="step-cue-label"><span class="lang-en">Start</span><span class="lang-es" lang="es">Empieza</span></span><span class="step-badge"><span class="lang-en">Step 1</span><span class="lang-es" lang="es">Paso 1</span></span></div>
+            </div>
+            <p class="step-lead lang-en">Real clue: &#039;The suspect is at least 18 years old.&#039; We let a stand for the age.</p>
+            <p class="step-lead lang-es" lang="es">Pista real: &#039;El sospechoso tiene al menos 18 años.&#039; Usamos a para representar la edad.</p>
+
           </li>
           <li class="guided-step step-color-2">
-            <span class="step-badge"><span class="lang-en">Step 2</span><span class="lang-es" lang="es">Paso 2</span></span>
-            <p class="lang-en">Think about what the phrase allows. &#039;At least 18&#039; means 18 is allowed AND any number bigger.</p>
-            <p class="lang-es" lang="es">Piensa en lo que permite la frase. &#039;Al menos 18&#039; significa que 18 está permitido Y cualquier número mayor.</p>
+            <div class="guided-step-head">
+              <span class="guided-step-icon" aria-hidden="true">🧩</span>
+              <div><span class="step-cue-label"><span class="lang-en">Show it</span><span class="lang-es" lang="es">Muéstralo</span></span><span class="step-badge"><span class="lang-en">Step 2</span><span class="lang-es" lang="es">Paso 2</span></span></div>
+            </div>
+            <p class="step-lead lang-en">Think about what the phrase allows.</p>
+            <p class="step-lead lang-es" lang="es">Piensa en lo que permite la frase.</p>
+            <details class="step-detail"><summary><span class="lang-en">More detail</span><span class="lang-es" lang="es">Más detalle</span></summary><p class="lang-en">&#039;At least 18&#039; means 18 is allowed AND any number bigger.</p><p class="lang-es" lang="es">&#039;Al menos 18&#039; significa que 18 está permitido Y cualquier número mayor.</p></details>
           </li>
           <li class="guided-step step-color-3">
-            <span class="step-badge"><span class="lang-en">Step 3</span><span class="lang-es" lang="es">Paso 3</span></span>
-            <p class="lang-en">Choose the symbol. Because 18 itself is included, we use ≥ (greater than or equal to).</p>
-            <p class="lang-es" lang="es">Elige el símbolo. Como el 18 mismo está incluido, usamos ≥ (mayor o igual que).</p>
+            <div class="guided-step-head">
+              <span class="guided-step-icon" aria-hidden="true">✏️</span>
+              <div><span class="step-cue-label"><span class="lang-en">Solve</span><span class="lang-es" lang="es">Resuelve</span></span><span class="step-badge"><span class="lang-en">Step 3</span><span class="lang-es" lang="es">Paso 3</span></span></div>
+            </div>
+            <p class="step-lead lang-en">Choose the symbol.</p>
+            <p class="step-lead lang-es" lang="es">Elige el símbolo.</p>
+            <details class="step-detail"><summary><span class="lang-en">More detail</span><span class="lang-es" lang="es">Más detalle</span></summary><p class="lang-en">Because 18 itself is included, we use ≥ (greater than or equal to).</p><p class="lang-es" lang="es">Como el 18 mismo está incluido, usamos ≥ (mayor o igual que).</p></details>
           </li>
           <li class="guided-step step-color-4">
-            <span class="step-badge"><span class="lang-en">Step 4</span><span class="lang-es" lang="es">Paso 4</span></span>
-            <p class="lang-en">Write it: a ≥ 18. So a could be 18, 19, 20, and up — not just one number.</p>
-            <p class="lang-es" lang="es">Escríbelo: a ≥ 18. Así que a podría ser 18, 19, 20 y más — no solo un número.</p>
+            <div class="guided-step-head">
+              <span class="guided-step-icon" aria-hidden="true">✅</span>
+              <div><span class="step-cue-label"><span class="lang-en">Check</span><span class="lang-es" lang="es">Revisa</span></span><span class="step-badge"><span class="lang-en">Step 4</span><span class="lang-es" lang="es">Paso 4</span></span></div>
+            </div>
+            <p class="step-lead lang-en">Write it: a ≥ 18.</p>
+            <p class="step-lead lang-es" lang="es">Escríbelo: a ≥ 18.</p>
+            <details class="step-detail"><summary><span class="lang-en">More detail</span><span class="lang-es" lang="es">Más detalle</span></summary><p class="lang-en">So a could be 18, 19, 20, and up — not just one number.</p><p class="lang-es" lang="es">Así que a podría ser 18, 19, 20 y más — no solo un número.</p></details>
           </li>
       </ol>
       <ul class="watch-for-list">
@@ -2918,7 +3067,7 @@ header.packet h1::after{
         
         <div class="drag-sort-workspace" id="dragsort_0">
           <div class="drag-columns">
-            
+
               <div class="drag-column" data-category-id="gt" ondragover="allowDrop(event)" ondrop="handleDrop(event, 0, 'gt')">
                 <div class="drag-column-header">&gt; (greater than)</div>
                 <div class="drag-column-slots" id="slots_0_gt" ondragover="allowDrop(event)" ondrop="handleDrop(event, 0, 'gt')"></div>
@@ -3926,7 +4075,7 @@ header.packet h1::after{
         <div class="family-hint-box"><p>💡 Substitute 10 for x and check if the statement is true.</p><p>💡 Remember: ≥ means 10 counts (10 ≥ 10 is true), but &gt; means 10 does not count (10 &gt; 10 is false).</p></div>
         <div class="drag-sort-workspace" id="dragsort_12">
           <div class="drag-columns">
-            
+
               <div class="drag-column" data-category-id="x-10-is-a-solution" ondragover="allowDrop(event)" ondrop="handleDrop(event, 12, 'x-10-is-a-solution')">
                 <div class="drag-column-header">x = 10 IS a solution</div>
                 <div class="drag-column-slots" id="slots_12_x-10-is-a-solution" ondragover="allowDrop(event)" ondrop="handleDrop(event, 12, 'x-10-is-a-solution')"></div>
@@ -5970,5 +6119,5 @@ window.onload = function() {
 <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <!-- mwb-injected:end -->
-  </body>
+</body>
 </html>

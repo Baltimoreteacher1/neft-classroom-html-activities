@@ -1518,7 +1518,32 @@ header.homework-header h1 {
 .lang-en + .lang-es, .worked-step .lang-es { padding-left: 10px; border-left: 3px solid var(--teal); }
 .welcome-lead .lang-es { color: rgba(255, 255, 255, 0.94); border-left: 3px solid var(--amber); padding-left: 10px; display: inline-block; margin-top: 6px; }
 .learning-big { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; line-height: 1.4; }
-.learning-sub { font-size: 14px; margin: 0; color: var(--ink); }
+.learning-words { margin-top: 12px; }
+.learning-words-label {
+  display: block;
+  margin-bottom: 7px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.learning-word-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.learning-word-chips li {
+  padding: 5px 9px;
+  border: 1px solid #b8ddd8;
+  border-radius: 999px;
+  background: var(--teal-light);
+  color: var(--teal-ink);
+  font-size: 12px;
+  font-weight: 700;
+}
 
 .guided-section { scroll-margin-top: 16px; }
 .section-learn { border-left: 4px solid var(--teal); }
@@ -1552,6 +1577,57 @@ header.homework-header h1 {
 .step-color-3 .step-dot, .step-color-3.step-badge { background: var(--amber); color: var(--navy); }
 .step-color-4 .step-dot, .step-color-4.step-badge { background: var(--coral); }
 
+.concept-quick-wrap {
+  margin: 0 0 16px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: #fbfdff;
+}
+.concept-quick-title {
+  margin: 0 0 10px;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.concept-quick-path {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.concept-quick-step {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 82px;
+  padding: 9px 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  color: var(--navy);
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 800;
+}
+.concept-quick-step:not(:last-child)::after {
+  content: "→";
+  position: absolute;
+  right: -9px;
+  z-index: 1;
+  color: var(--teal-ink);
+  font-size: 16px;
+}
+.concept-quick-icon { font-size: 24px; line-height: 1; margin-bottom: 5px; }
+.concept-quick-step .lang-es { color: var(--muted); font-size: 11px; }
+
 .key-idea-banner {
   background: var(--teal-light);
   border-radius: var(--radius-sm);
@@ -1569,6 +1645,48 @@ header.homework-header h1 {
   padding: 12px 14px;
   background: var(--white);
 }
+.guided-step { padding: 16px; }
+.guided-step-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.guided-step-head > div { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
+.guided-step-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  border-radius: 12px;
+  background: var(--cream);
+  font-size: 22px;
+}
+.step-cue-label {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.step-cue-label .lang-en, .step-cue-label .lang-es { display: inline; margin: 0; }
+.step-cue-label .lang-es::before { content: " / "; color: var(--muted); }
+.guided-step-head .step-badge { margin: 0; }
+.guided-step .step-lead { font-size: 16px; font-weight: 700; line-height: 1.45; }
+.step-detail {
+  margin-top: 10px;
+  border-top: 1px dashed var(--line);
+  padding-top: 9px;
+}
+.step-detail summary {
+  cursor: pointer;
+  color: var(--teal-ink);
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 800;
+}
+.step-detail p { margin-top: 8px; color: var(--ink); font-weight: 400; }
 .step-badge {
   display: inline-block;
   font-family: var(--font-display);
@@ -1597,6 +1715,17 @@ header.homework-header h1 {
   padding: 10px 12px; background: var(--cream); border-radius: var(--radius-sm);
 }
 .watch-icon { font-size: 20px; flex-shrink: 0; }
+
+@media (max-width: 560px) {
+  .concept-quick-path { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .concept-quick-step:nth-child(2)::after { display: none; }
+}
+
+@media print {
+  .concept-quick-path { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .step-detail > summary { display: none; }
+  .step-detail[open] > summary ~ *, .step-detail > * { display: block; }
+}
 
 .try-scenario { font-size: 15px; font-weight: 600; color: var(--navy); margin: 0 0 8px; }
 .try-together-note { font-size: 14px; margin: 0 0 14px; color: var(--muted); }
@@ -2433,8 +2562,8 @@ header.packet h1::after{
         </div>
       </div>
       <p class="welcome-lead bilingual-block">
-        <span class="lang-en"><strong>English:</strong> You don't need to be a math expert. This page helps you <em>guide</em> your student — with pictures, steps, and words in both languages.</span>
-        <span class="lang-es" lang="es"><strong>Español:</strong> No necesitas ser experto en matemáticas. Esta página te ayuda a <em>guiar</em> a tu estudiante — con dibujos, pasos y palabras en dos idiomas.</span>
+        <span class="lang-en"><strong>English:</strong> Use the pictures and short steps. Ask questions; let your student do the thinking.</span>
+        <span class="lang-es" lang="es"><strong>Español:</strong> Usen los dibujos y los pasos cortos. Hagan preguntas; dejen que su estudiante piense.</span>
       </p>
       
       <!-- Modern language mode selector -->
@@ -2534,13 +2663,13 @@ header.packet h1::after{
       <div class="bilingual-grid">
         <div class="bilingual-col lang-en">
           <span class="lang-label">English</span>
-          <p class="learning-big">Tonight we learn a quick trick to divide a whole number by a fraction. It is called Keep, Change, Flip..</p>
-          <p class="learning-sub">Practice using these words while you work: <em>Whole Number, Fraction, Reciprocal, Keep, Change, Flip, Quotient</em>.</p>
+          <p class="learning-big">Tonight we learn a quick trick to divide a whole number by a fraction. It is called Keep, Change, Flip.</p>
+          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Whole Number</li><li>Fraction</li><li>Reciprocal</li><li>Keep, Change, Flip</li><li>Quotient</li></ul></div>
         </div>
         <div class="bilingual-col lang-es" lang="es">
           <span class="lang-label">Español</span>
           <p class="learning-big">Esta noche aprendemos un truco rápido para dividir un número entero entre una fracción. Se llama Mantener, Cambiar, Invertir.</p>
-          <p class="learning-sub">Practiquen usar estas palabras al trabajar: <em>Número entero, Fracción, Recíproco, Mantener, cambiar, invertir, Cociente</em>.</p>
+          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Número entero</li><li>Fracción</li><li>Recíproco</li><li>Mantener, cambiar, invertir</li><li>Cociente</li></ul></div>
         </div>
       </div>
     
@@ -2554,31 +2683,51 @@ header.packet h1::after{
         <text x="50" y="120" font-size="13" fill="#21313f">How many halves fit in 3? Draw groups to check.</text>
         <text x="50" y="145" font-size="13" fill="#21313f" lang="es">¿Cuántos medios caben en 3? Dibujen grupos.</text>
       </svg></div>
+      <div class="concept-quick-wrap">
+        <p class="concept-quick-title"><span class="lang-en">Follow the picture path</span><span class="lang-es" lang="es">Sigan la ruta visual</span></p>
+        <ol class="concept-quick-path" aria-label="Four-step visual math path"><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">👀</span><span class="lang-en">Start</span><span class="lang-es" lang="es">Empieza</span></li><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">🧩</span><span class="lang-en">Show it</span><span class="lang-es" lang="es">Muéstralo</span></li><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">✏️</span><span class="lang-en">Solve</span><span class="lang-es" lang="es">Resuelve</span></li><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">✅</span><span class="lang-en">Check</span><span class="lang-es" lang="es">Revisa</span></li></ol>
+      </div>
       <div class="key-idea-banner">
-        <p class="lang-en"><strong>Watch for this:</strong> Dividing by a fraction is the same as multiplying by its reciprocal — the fraction turned upside down.</p>
-        <p class="lang-es" lang="es"><strong>Observa esto:</strong> Dividir entre una fracción es lo mismo que multiplicar por su recíproco — la fracción volteada de arriba abajo.</p>
+        <p class="lang-en"><strong>In one sentence:</strong> Dividing by a fraction is the same as multiplying by its reciprocal — the fraction turned upside down.</p>
+        <p class="lang-es" lang="es"><strong>En una frase:</strong> Dividir entre una fracción es lo mismo que multiplicar por su recíproco — la fracción volteada de arriba abajo.</p>
       </div>
       <ol class="guided-steps">
         
           <li class="guided-step step-color-1">
-            <span class="step-badge"><span class="lang-en">Step 1</span><span class="lang-es" lang="es">Paso 1</span></span>
-            <p class="lang-en">Real example: there are 4 pounds of powder, and each bag holds 1/2 pound. We want 4 ÷ 1/2 — how many bags can we fill?</p>
-            <p class="lang-es" lang="es">Ejemplo real: hay 4 libras de polvo, y cada bolsa contiene 1/2 libra. Queremos 4 ÷ 1/2 — ¿cuántas bolsas podemos llenar?</p>
+            <div class="guided-step-head">
+              <span class="guided-step-icon" aria-hidden="true">👀</span>
+              <div><span class="step-cue-label"><span class="lang-en">Start</span><span class="lang-es" lang="es">Empieza</span></span><span class="step-badge"><span class="lang-en">Step 1</span><span class="lang-es" lang="es">Paso 1</span></span></div>
+            </div>
+            <p class="step-lead lang-en">Real example: there are 4 pounds of powder, and each bag holds 1/2 pound.</p>
+            <p class="step-lead lang-es" lang="es">Ejemplo real: hay 4 libras de polvo, y cada bolsa contiene 1/2 libra.</p>
+            <details class="step-detail"><summary><span class="lang-en">More detail</span><span class="lang-es" lang="es">Más detalle</span></summary><p class="lang-en">We want 4 ÷ 1/2 — how many bags can we fill?</p><p class="lang-es" lang="es">Queremos 4 ÷ 1/2 — ¿cuántas bolsas podemos llenar?</p></details>
           </li>
           <li class="guided-step step-color-2">
-            <span class="step-badge"><span class="lang-en">Step 2</span><span class="lang-es" lang="es">Paso 2</span></span>
-            <p class="lang-en">Keep the first number: keep the 4. Change the ÷ to ×. Flip the fraction 1/2 upside down to make 2/1, which is just 2.</p>
-            <p class="lang-es" lang="es">Mantén el primer número: mantén el 4. Cambia el ÷ por ×. Voltea la fracción 1/2 de arriba abajo para hacer 2/1, que es solo 2.</p>
+            <div class="guided-step-head">
+              <span class="guided-step-icon" aria-hidden="true">🧩</span>
+              <div><span class="step-cue-label"><span class="lang-en">Show it</span><span class="lang-es" lang="es">Muéstralo</span></span><span class="step-badge"><span class="lang-en">Step 2</span><span class="lang-es" lang="es">Paso 2</span></span></div>
+            </div>
+            <p class="step-lead lang-en">Keep the first number: keep the 4.</p>
+            <p class="step-lead lang-es" lang="es">Mantén el primer número: mantén el 4.</p>
+            <details class="step-detail"><summary><span class="lang-en">More detail</span><span class="lang-es" lang="es">Más detalle</span></summary><p class="lang-en">Change the ÷ to ×. Flip the fraction 1/2 upside down to make 2/1, which is just 2.</p><p class="lang-es" lang="es">Cambia el ÷ por ×. Voltea la fracción 1/2 de arriba abajo para hacer 2/1, que es solo 2.</p></details>
           </li>
           <li class="guided-step step-color-3">
-            <span class="step-badge"><span class="lang-en">Step 3</span><span class="lang-es" lang="es">Paso 3</span></span>
-            <p class="lang-en">Now multiply: 4 × 2 = 8.</p>
-            <p class="lang-es" lang="es">Ahora multiplica: 4 × 2 = 8.</p>
+            <div class="guided-step-head">
+              <span class="guided-step-icon" aria-hidden="true">✏️</span>
+              <div><span class="step-cue-label"><span class="lang-en">Solve</span><span class="lang-es" lang="es">Resuelve</span></span><span class="step-badge"><span class="lang-en">Step 3</span><span class="lang-es" lang="es">Paso 3</span></span></div>
+            </div>
+            <p class="step-lead lang-en">Now multiply: 4 × 2 = 8.</p>
+            <p class="step-lead lang-es" lang="es">Ahora multiplica: 4 × 2 = 8.</p>
+
           </li>
           <li class="guided-step step-color-4">
-            <span class="step-badge"><span class="lang-en">Step 4</span><span class="lang-es" lang="es">Paso 4</span></span>
-            <p class="lang-en">So 4 ÷ 1/2 = 8. You can fill 8 bags. This makes sense: each pound fills 2 bags, and 4 pounds × 2 = 8.</p>
-            <p class="lang-es" lang="es">Entonces 4 ÷ 1/2 = 8. Puedes llenar 8 bolsas. Esto tiene sentido: cada libra llena 2 bolsas, y 4 libras × 2 = 8.</p>
+            <div class="guided-step-head">
+              <span class="guided-step-icon" aria-hidden="true">✅</span>
+              <div><span class="step-cue-label"><span class="lang-en">Check</span><span class="lang-es" lang="es">Revisa</span></span><span class="step-badge"><span class="lang-en">Step 4</span><span class="lang-es" lang="es">Paso 4</span></span></div>
+            </div>
+            <p class="step-lead lang-en">So 4 ÷ 1/2 = 8.</p>
+            <p class="step-lead lang-es" lang="es">Entonces 4 ÷ 1/2 = 8.</p>
+            <details class="step-detail"><summary><span class="lang-en">More detail</span><span class="lang-es" lang="es">Más detalle</span></summary><p class="lang-en">You can fill 8 bags. This makes sense: each pound fills 2 bags, and 4 pounds × 2 = 8.</p><p class="lang-es" lang="es">Puedes llenar 8 bolsas. Esto tiene sentido: cada libra llena 2 bolsas, y 4 libras × 2 = 8.</p></details>
           </li>
       </ol>
       <ul class="watch-for-list">
@@ -5929,5 +6078,5 @@ window.onload = function() {
 <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <!-- mwb-injected:end -->
-  </body>
+</body>
 </html>

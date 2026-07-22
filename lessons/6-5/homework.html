@@ -1518,7 +1518,32 @@ header.homework-header h1 {
 .lang-en + .lang-es, .worked-step .lang-es { padding-left: 10px; border-left: 3px solid var(--teal); }
 .welcome-lead .lang-es { color: rgba(255, 255, 255, 0.94); border-left: 3px solid var(--amber); padding-left: 10px; display: inline-block; margin-top: 6px; }
 .learning-big { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; line-height: 1.4; }
-.learning-sub { font-size: 14px; margin: 0; color: var(--ink); }
+.learning-words { margin-top: 12px; }
+.learning-words-label {
+  display: block;
+  margin-bottom: 7px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.learning-word-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.learning-word-chips li {
+  padding: 5px 9px;
+  border: 1px solid #b8ddd8;
+  border-radius: 999px;
+  background: var(--teal-light);
+  color: var(--teal-ink);
+  font-size: 12px;
+  font-weight: 700;
+}
 
 .guided-section { scroll-margin-top: 16px; }
 .section-learn { border-left: 4px solid var(--teal); }
@@ -1552,6 +1577,57 @@ header.homework-header h1 {
 .step-color-3 .step-dot, .step-color-3.step-badge { background: var(--amber); color: var(--navy); }
 .step-color-4 .step-dot, .step-color-4.step-badge { background: var(--coral); }
 
+.concept-quick-wrap {
+  margin: 0 0 16px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: #fbfdff;
+}
+.concept-quick-title {
+  margin: 0 0 10px;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.concept-quick-path {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.concept-quick-step {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 82px;
+  padding: 9px 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  color: var(--navy);
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 800;
+}
+.concept-quick-step:not(:last-child)::after {
+  content: "→";
+  position: absolute;
+  right: -9px;
+  z-index: 1;
+  color: var(--teal-ink);
+  font-size: 16px;
+}
+.concept-quick-icon { font-size: 24px; line-height: 1; margin-bottom: 5px; }
+.concept-quick-step .lang-es { color: var(--muted); font-size: 11px; }
+
 .key-idea-banner {
   background: var(--teal-light);
   border-radius: var(--radius-sm);
@@ -1569,6 +1645,48 @@ header.homework-header h1 {
   padding: 12px 14px;
   background: var(--white);
 }
+.guided-step { padding: 16px; }
+.guided-step-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.guided-step-head > div { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
+.guided-step-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  border-radius: 12px;
+  background: var(--cream);
+  font-size: 22px;
+}
+.step-cue-label {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.step-cue-label .lang-en, .step-cue-label .lang-es { display: inline; margin: 0; }
+.step-cue-label .lang-es::before { content: " / "; color: var(--muted); }
+.guided-step-head .step-badge { margin: 0; }
+.guided-step .step-lead { font-size: 16px; font-weight: 700; line-height: 1.45; }
+.step-detail {
+  margin-top: 10px;
+  border-top: 1px dashed var(--line);
+  padding-top: 9px;
+}
+.step-detail summary {
+  cursor: pointer;
+  color: var(--teal-ink);
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 800;
+}
+.step-detail p { margin-top: 8px; color: var(--ink); font-weight: 400; }
 .step-badge {
   display: inline-block;
   font-family: var(--font-display);
@@ -1597,6 +1715,17 @@ header.homework-header h1 {
   padding: 10px 12px; background: var(--cream); border-radius: var(--radius-sm);
 }
 .watch-icon { font-size: 20px; flex-shrink: 0; }
+
+@media (max-width: 560px) {
+  .concept-quick-path { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .concept-quick-step:nth-child(2)::after { display: none; }
+}
+
+@media print {
+  .concept-quick-path { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .step-detail > summary { display: none; }
+  .step-detail[open] > summary ~ *, .step-detail > * { display: block; }
+}
 
 .try-scenario { font-size: 15px; font-weight: 600; color: var(--navy); margin: 0 0 8px; }
 .try-together-note { font-size: 14px; margin: 0 0 14px; color: var(--muted); }
@@ -2433,8 +2562,8 @@ header.packet h1::after{
         </div>
       </div>
       <p class="welcome-lead bilingual-block">
-        <span class="lang-en"><strong>English:</strong> You don't need to be a math expert. This page helps you <em>guide</em> your student — with pictures, steps, and words in both languages.</span>
-        <span class="lang-es" lang="es"><strong>Español:</strong> No necesitas ser experto en matemáticas. Esta página te ayuda a <em>guiar</em> a tu estudiante — con dibujos, pasos y palabras en dos idiomas.</span>
+        <span class="lang-en"><strong>English:</strong> Use the pictures and short steps. Ask questions; let your student do the thinking.</span>
+        <span class="lang-es" lang="es"><strong>Español:</strong> Usen los dibujos y los pasos cortos. Hagan preguntas; dejen que su estudiante piense.</span>
       </p>
       
       <!-- Modern language mode selector -->
@@ -2534,13 +2663,13 @@ header.packet h1::after{
       <div class="bilingual-grid">
         <div class="bilingual-col lang-en">
           <span class="lang-label">English</span>
-          <p class="learning-big">Tonight we learn the distributive property. It lets us multiply a number by everything inside the parentheses, one piece at a time..</p>
-          <p class="learning-sub">Practice using these words while you work: <em>Distributive Property, Factor, Expand, Equivalent, Coefficient</em>.</p>
+          <p class="learning-big">Tonight we learn the distributive property. It lets us multiply a number by everything inside the parentheses, one piece at a time.</p>
+          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Distributive Property</li><li>Factor</li><li>Expand</li><li>Equivalent</li><li>Coefficient</li></ul></div>
         </div>
         <div class="bilingual-col lang-es" lang="es">
           <span class="lang-label">Español</span>
           <p class="learning-big">Esta noche aprendemos la propiedad distributiva. Nos deja multiplicar un número por todo lo que está dentro del paréntesis, una parte a la vez.</p>
-          <p class="learning-sub">Practiquen usar estas palabras al trabajar: <em>Propiedad distributiva, Factor, Desarrollar, Equivalente, Coeficiente</em>.</p>
+          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Propiedad distributiva</li><li>Factor</li><li>Desarrollar</li><li>Equivalente</li><li>Coeficiente</li></ul></div>
         </div>
       </div>
     
@@ -2557,31 +2686,51 @@ header.packet h1::after{
         <text x="28" y="150" font-size="18" font-weight="800" fill="#12355b">(a + b) + c = a + (b + c)</text>
         <text x="28" y="178" font-size="13" font-weight="700" fill="#1fa6a2">Distributive / Distributiva: a(b + c) = a·b + a·c</text>
       </svg></div>
+      <div class="concept-quick-wrap">
+        <p class="concept-quick-title"><span class="lang-en">Follow the picture path</span><span class="lang-es" lang="es">Sigan la ruta visual</span></p>
+        <ol class="concept-quick-path" aria-label="Four-step visual math path"><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">👀</span><span class="lang-en">Start</span><span class="lang-es" lang="es">Empieza</span></li><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">🧩</span><span class="lang-en">Show it</span><span class="lang-es" lang="es">Muéstralo</span></li><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">✏️</span><span class="lang-en">Solve</span><span class="lang-es" lang="es">Resuelve</span></li><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">✅</span><span class="lang-en">Check</span><span class="lang-es" lang="es">Revisa</span></li></ol>
+      </div>
       <div class="key-idea-banner">
-        <p class="lang-en"><strong>Watch for this:</strong> The number outside the parentheses must be &quot;shared&quot; with every term inside. So a(b + c) = a × b + a × c. Do not multiply only the first part.</p>
-        <p class="lang-es" lang="es"><strong>Observa esto:</strong> El número de afuera del paréntesis debe &quot;repartirse&quot; con cada término de adentro. Por eso a(b + c) = a × b + a × c. No multipliques solo la primera parte.</p>
+        <p class="lang-en"><strong>In one sentence:</strong> The number outside the parentheses must be &quot;shared&quot; with every term inside. So a(b + c) = a × b + a × c. Do not multiply only the first part.</p>
+        <p class="lang-es" lang="es"><strong>En una frase:</strong> El número de afuera del paréntesis debe &quot;repartirse&quot; con cada término de adentro. Por eso a(b + c) = a × b + a × c. No multipliques solo la primera parte.</p>
       </div>
       <ol class="guided-steps">
         
           <li class="guided-step step-color-1">
-            <span class="step-badge"><span class="lang-en">Step 1</span><span class="lang-es" lang="es">Paso 1</span></span>
-            <p class="lang-en">Real example: each concert bundle has a ticket ($15) and a snack ($5). For 3 bundles we can write 3(15 + 5).</p>
-            <p class="lang-es" lang="es">Ejemplo real: cada paquete de concierto tiene un boleto ($15) y un refrigerio ($5). Para 3 paquetes podemos escribir 3(15 + 5).</p>
+            <div class="guided-step-head">
+              <span class="guided-step-icon" aria-hidden="true">👀</span>
+              <div><span class="step-cue-label"><span class="lang-en">Start</span><span class="lang-es" lang="es">Empieza</span></span><span class="step-badge"><span class="lang-en">Step 1</span><span class="lang-es" lang="es">Paso 1</span></span></div>
+            </div>
+            <p class="step-lead lang-en">Real example: each concert bundle has a ticket ($15) and a snack ($5).</p>
+            <p class="step-lead lang-es" lang="es">Ejemplo real: cada paquete de concierto tiene un boleto ($15) y un refrigerio ($5).</p>
+            <details class="step-detail"><summary><span class="lang-en">More detail</span><span class="lang-es" lang="es">Más detalle</span></summary><p class="lang-en">For 3 bundles we can write 3(15 + 5).</p><p class="lang-es" lang="es">Para 3 paquetes podemos escribir 3(15 + 5).</p></details>
           </li>
           <li class="guided-step step-color-2">
-            <span class="step-badge"><span class="lang-en">Step 2</span><span class="lang-es" lang="es">Paso 2</span></span>
-            <p class="lang-en">One way: add inside the parentheses first. 15 + 5 = 20, then 3 × 20 = 60. The total is $60.</p>
-            <p class="lang-es" lang="es">Una forma: sumar primero dentro del paréntesis. 15 + 5 = 20, luego 3 × 20 = 60. El total es $60.</p>
+            <div class="guided-step-head">
+              <span class="guided-step-icon" aria-hidden="true">🧩</span>
+              <div><span class="step-cue-label"><span class="lang-en">Show it</span><span class="lang-es" lang="es">Muéstralo</span></span><span class="step-badge"><span class="lang-en">Step 2</span><span class="lang-es" lang="es">Paso 2</span></span></div>
+            </div>
+            <p class="step-lead lang-en">One way: add inside the parentheses first.</p>
+            <p class="step-lead lang-es" lang="es">Una forma: sumar primero dentro del paréntesis.</p>
+            <details class="step-detail"><summary><span class="lang-en">More detail</span><span class="lang-es" lang="es">Más detalle</span></summary><p class="lang-en">15 + 5 = 20, then 3 × 20 = 60. The total is $60.</p><p class="lang-es" lang="es">15 + 5 = 20, luego 3 × 20 = 60. El total es $60.</p></details>
           </li>
           <li class="guided-step step-color-3">
-            <span class="step-badge"><span class="lang-en">Step 3</span><span class="lang-es" lang="es">Paso 3</span></span>
-            <p class="lang-en">Other way: share the 3 with each part. Multiply 3 × 15 = 45 and 3 × 5 = 15.</p>
-            <p class="lang-es" lang="es">Otra forma: repartir el 3 con cada parte. Multiplica 3 × 15 = 45 y 3 × 5 = 15.</p>
+            <div class="guided-step-head">
+              <span class="guided-step-icon" aria-hidden="true">✏️</span>
+              <div><span class="step-cue-label"><span class="lang-en">Solve</span><span class="lang-es" lang="es">Resuelve</span></span><span class="step-badge"><span class="lang-en">Step 3</span><span class="lang-es" lang="es">Paso 3</span></span></div>
+            </div>
+            <p class="step-lead lang-en">Other way: share the 3 with each part.</p>
+            <p class="step-lead lang-es" lang="es">Otra forma: repartir el 3 con cada parte.</p>
+            <details class="step-detail"><summary><span class="lang-en">More detail</span><span class="lang-es" lang="es">Más detalle</span></summary><p class="lang-en">Multiply 3 × 15 = 45 and 3 × 5 = 15.</p><p class="lang-es" lang="es">Multiplica 3 × 15 = 45 y 3 × 5 = 15.</p></details>
           </li>
           <li class="guided-step step-color-4">
-            <span class="step-badge"><span class="lang-en">Step 4</span><span class="lang-es" lang="es">Paso 4</span></span>
-            <p class="lang-en">Then add those two pieces: 45 + 15 = 60. Both ways give $60, so 3(15 + 5) = 3 × 15 + 3 × 5.</p>
-            <p class="lang-es" lang="es">Luego suma esas dos partes: 45 + 15 = 60. Las dos formas dan $60, así que 3(15 + 5) = 3 × 15 + 3 × 5.</p>
+            <div class="guided-step-head">
+              <span class="guided-step-icon" aria-hidden="true">✅</span>
+              <div><span class="step-cue-label"><span class="lang-en">Check</span><span class="lang-es" lang="es">Revisa</span></span><span class="step-badge"><span class="lang-en">Step 4</span><span class="lang-es" lang="es">Paso 4</span></span></div>
+            </div>
+            <p class="step-lead lang-en">Then add those two pieces: 45 + 15 = 60.</p>
+            <p class="step-lead lang-es" lang="es">Luego suma esas dos partes: 45 + 15 = 60.</p>
+            <details class="step-detail"><summary><span class="lang-en">More detail</span><span class="lang-es" lang="es">Más detalle</span></summary><p class="lang-en">Both ways give $60, so 3(15 + 5) = 3 × 15 + 3 × 5.</p><p class="lang-es" lang="es">Las dos formas dan $60, así que 3(15 + 5) = 3 × 15 + 3 × 5.</p></details>
           </li>
       </ol>
       <ul class="watch-for-list">
@@ -3348,7 +3497,7 @@ header.packet h1::after{
         
         <div class="drag-sort-workspace" id="dragsort_4">
           <div class="drag-columns">
-            
+
               <div class="drag-column" data-category-id="correct" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'correct')">
                 <div class="drag-column-header">Distributed correctly</div>
                 <div class="drag-column-slots" id="slots_4_correct" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'correct')"></div>
@@ -3864,7 +4013,7 @@ header.packet h1::after{
         <div class="family-hint-box"><p>💡 Each card shows the expansion. The CONSTANT is the plain number without a variable, like the 21 in 3x + 21.</p><p>💡 Ignore the variable term; compare only the constant to 15. Exactly 15 would count as ≤ 15.</p><p>💡 First card: 3(x + 7) = 3x + 21. The constant is 21. Is 21 &gt; 15? Place it, then check each card&#039;s constant.</p></div>
         <div class="drag-sort-workspace" id="dragsort_10">
           <div class="drag-columns">
-            
+
               <div class="drag-column" data-category-id="greater" ondragover="allowDrop(event)" ondrop="handleDrop(event, 10, 'greater')">
                 <div class="drag-column-header">Constant &gt; 15</div>
                 <div class="drag-column-slots" id="slots_10_greater" ondragover="allowDrop(event)" ondrop="handleDrop(event, 10, 'greater')"></div>
@@ -4298,7 +4447,7 @@ header.packet h1::after{
         <span class="lang-es" lang="es">Refuercen el tema de hoy con un juego rápido en familia. ¡Ustedes preguntan; su estudiante decide!</span>
       </p>
       
-      <div class="hw-game hw-game-mc" id="hw_game_vocab" data-game-type="mc-speed" data-rounds='[{"q":"What does \"Distributive Property\" mean?","choices":[{"text":"Multiplying a number by everything inside the parentheses: a(b + c) = ab + ac.","isCorrect":true},{"text":"A number that gets multiplied by another number.","isCorrect":false},{"text":"To multiply out the parentheses in an expression.","isCorrect":false},{"text":"Expressions that always have the same value.","isCorrect":false}],"hint":""},{"q":"What does \"Factor\" mean?","choices":[{"text":"Expressions that always have the same value.","isCorrect":false},{"text":"To multiply out the parentheses in an expression.","isCorrect":false},{"text":"Multiplying a number by everything inside the parentheses: a(b + c) = ab + ac.","isCorrect":false},{"text":"A number that gets multiplied by another number.","isCorrect":true}],"hint":""},{"q":"What does \"Expand\" mean?","choices":[{"text":"A number that gets multiplied by another number.","isCorrect":false},{"text":"Multiplying a number by everything inside the parentheses: a(b + c) = ab + ac.","isCorrect":false},{"text":"Expressions that always have the same value.","isCorrect":false},{"text":"To multiply out the parentheses in an expression.","isCorrect":true}],"hint":""},{"q":"What does \"Equivalent\" mean?","choices":[{"text":"Expressions that always have the same value.","isCorrect":true},{"text":"Multiplying a number by everything inside the parentheses: a(b + c) = ab + ac.","isCorrect":false},{"text":"A number that gets multiplied by another number.","isCorrect":false},{"text":"To multiply out the parentheses in an expression.","isCorrect":false}],"hint":""}]'>
+      <div class="hw-game hw-game-mc" id="hw_game_vocab" data-game-type="mc-speed" data-rounds='[{"q":"What does \"Distributive Property\" mean?","choices":[{"text":"A number that gets multiplied by another number.","isCorrect":false},{"text":"Expressions that always have the same value.","isCorrect":false},{"text":"Multiplying a number by everything inside the parentheses: a(b + c) = ab + ac.","isCorrect":true},{"text":"To multiply out the parentheses in an expression.","isCorrect":false}],"hint":""},{"q":"What does \"Factor\" mean?","choices":[{"text":"Multiplying a number by everything inside the parentheses: a(b + c) = ab + ac.","isCorrect":false},{"text":"Expressions that always have the same value.","isCorrect":false},{"text":"A number that gets multiplied by another number.","isCorrect":true},{"text":"To multiply out the parentheses in an expression.","isCorrect":false}],"hint":""},{"q":"What does \"Expand\" mean?","choices":[{"text":"To multiply out the parentheses in an expression.","isCorrect":true},{"text":"Multiplying a number by everything inside the parentheses: a(b + c) = ab + ac.","isCorrect":false},{"text":"A number that gets multiplied by another number.","isCorrect":false},{"text":"Expressions that always have the same value.","isCorrect":false}],"hint":""},{"q":"What does \"Equivalent\" mean?","choices":[{"text":"To multiply out the parentheses in an expression.","isCorrect":false},{"text":"Expressions that always have the same value.","isCorrect":true},{"text":"Multiplying a number by everything inside the parentheses: a(b + c) = ab + ac.","isCorrect":false},{"text":"A number that gets multiplied by another number.","isCorrect":false}],"hint":""}]'>
         <div class="hw-game-header">
           <h3 class="hw-game-title">Word Match! <span lang="es">¡Palabras!</span></h3>
           <p class="hw-game-coach bilingual-block">
@@ -6111,5 +6260,5 @@ window.onload = function() {
 <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <!-- mwb-injected:end -->
-  </body>
+</body>
 </html>

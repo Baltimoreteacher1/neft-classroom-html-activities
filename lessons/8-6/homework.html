@@ -1518,7 +1518,32 @@ header.homework-header h1 {
 .lang-en + .lang-es, .worked-step .lang-es { padding-left: 10px; border-left: 3px solid var(--teal); }
 .welcome-lead .lang-es { color: rgba(255, 255, 255, 0.94); border-left: 3px solid var(--amber); padding-left: 10px; display: inline-block; margin-top: 6px; }
 .learning-big { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; line-height: 1.4; }
-.learning-sub { font-size: 14px; margin: 0; color: var(--ink); }
+.learning-words { margin-top: 12px; }
+.learning-words-label {
+  display: block;
+  margin-bottom: 7px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.learning-word-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.learning-word-chips li {
+  padding: 5px 9px;
+  border: 1px solid #b8ddd8;
+  border-radius: 999px;
+  background: var(--teal-light);
+  color: var(--teal-ink);
+  font-size: 12px;
+  font-weight: 700;
+}
 
 .guided-section { scroll-margin-top: 16px; }
 .section-learn { border-left: 4px solid var(--teal); }
@@ -1552,6 +1577,57 @@ header.homework-header h1 {
 .step-color-3 .step-dot, .step-color-3.step-badge { background: var(--amber); color: var(--navy); }
 .step-color-4 .step-dot, .step-color-4.step-badge { background: var(--coral); }
 
+.concept-quick-wrap {
+  margin: 0 0 16px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: #fbfdff;
+}
+.concept-quick-title {
+  margin: 0 0 10px;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.concept-quick-path {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.concept-quick-step {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 82px;
+  padding: 9px 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  color: var(--navy);
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 800;
+}
+.concept-quick-step:not(:last-child)::after {
+  content: "→";
+  position: absolute;
+  right: -9px;
+  z-index: 1;
+  color: var(--teal-ink);
+  font-size: 16px;
+}
+.concept-quick-icon { font-size: 24px; line-height: 1; margin-bottom: 5px; }
+.concept-quick-step .lang-es { color: var(--muted); font-size: 11px; }
+
 .key-idea-banner {
   background: var(--teal-light);
   border-radius: var(--radius-sm);
@@ -1569,6 +1645,48 @@ header.homework-header h1 {
   padding: 12px 14px;
   background: var(--white);
 }
+.guided-step { padding: 16px; }
+.guided-step-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.guided-step-head > div { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
+.guided-step-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  border-radius: 12px;
+  background: var(--cream);
+  font-size: 22px;
+}
+.step-cue-label {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.step-cue-label .lang-en, .step-cue-label .lang-es { display: inline; margin: 0; }
+.step-cue-label .lang-es::before { content: " / "; color: var(--muted); }
+.guided-step-head .step-badge { margin: 0; }
+.guided-step .step-lead { font-size: 16px; font-weight: 700; line-height: 1.45; }
+.step-detail {
+  margin-top: 10px;
+  border-top: 1px dashed var(--line);
+  padding-top: 9px;
+}
+.step-detail summary {
+  cursor: pointer;
+  color: var(--teal-ink);
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 800;
+}
+.step-detail p { margin-top: 8px; color: var(--ink); font-weight: 400; }
 .step-badge {
   display: inline-block;
   font-family: var(--font-display);
@@ -1597,6 +1715,17 @@ header.homework-header h1 {
   padding: 10px 12px; background: var(--cream); border-radius: var(--radius-sm);
 }
 .watch-icon { font-size: 20px; flex-shrink: 0; }
+
+@media (max-width: 560px) {
+  .concept-quick-path { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .concept-quick-step:nth-child(2)::after { display: none; }
+}
+
+@media print {
+  .concept-quick-path { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .step-detail > summary { display: none; }
+  .step-detail[open] > summary ~ *, .step-detail > * { display: block; }
+}
 
 .try-scenario { font-size: 15px; font-weight: 600; color: var(--navy); margin: 0 0 8px; }
 .try-together-note { font-size: 14px; margin: 0 0 14px; color: var(--muted); }
@@ -2433,8 +2562,8 @@ header.packet h1::after{
         </div>
       </div>
       <p class="welcome-lead bilingual-block">
-        <span class="lang-en"><strong>English:</strong> You don't need to be a math expert. This page helps you <em>guide</em> your student — with pictures, steps, and words in both languages.</span>
-        <span class="lang-es" lang="es"><strong>Español:</strong> No necesitas ser experto en matemáticas. Esta página te ayuda a <em>guiar</em> a tu estudiante — con dibujos, pasos y palabras en dos idiomas.</span>
+        <span class="lang-en"><strong>English:</strong> Use the pictures and short steps. Ask questions; let your student do the thinking.</span>
+        <span class="lang-es" lang="es"><strong>Español:</strong> Usen los dibujos y los pasos cortos. Hagan preguntas; dejen que su estudiante piense.</span>
       </p>
       
       <!-- Modern language mode selector -->
@@ -2534,13 +2663,13 @@ header.packet h1::after{
       <div class="bilingual-grid">
         <div class="bilingual-col lang-en">
           <span class="lang-label">English</span>
-          <p class="learning-big">Tonight we make a histogram: a bar graph that groups numbers into equal ranges so a big set of data is easy to read..</p>
-          <p class="learning-sub">Practice using these words while you work: <em>Histogram, Frequency, Interval, Distribution, Variability</em>.</p>
+          <p class="learning-big">Tonight we make a histogram: a bar graph that groups numbers into equal ranges so a big set of data is easy to read.</p>
+          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Histogram</li><li>Frequency</li><li>Interval</li><li>Distribution</li><li>Variability</li></ul></div>
         </div>
         <div class="bilingual-col lang-es" lang="es">
           <span class="lang-label">Español</span>
           <p class="learning-big">Esta noche hacemos un histograma: una gráfica de barras que agrupa números en rangos iguales para que un conjunto grande de datos sea fácil de leer.</p>
-          <p class="learning-sub">Practiquen usar estas palabras al trabajar: <em>Histograma, Frecuencia, Intervalo, Distribución, Variabilidad</em>.</p>
+          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Histograma</li><li>Frecuencia</li><li>Intervalo</li><li>Distribución</li><li>Variabilidad</li></ul></div>
         </div>
       </div>
     
@@ -2558,31 +2687,51 @@ header.packet h1::after{
         <text x="260" y="90" font-size="13" fill="#21313f">Mean · Median · Mode</text>
         <text x="260" y="115" font-size="13" fill="#21313f" lang="es">Media · Mediana · Moda</text>
       </svg></div>
+      <div class="concept-quick-wrap">
+        <p class="concept-quick-title"><span class="lang-en">Follow the picture path</span><span class="lang-es" lang="es">Sigan la ruta visual</span></p>
+        <ol class="concept-quick-path" aria-label="Four-step visual math path"><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">👀</span><span class="lang-en">Start</span><span class="lang-es" lang="es">Empieza</span></li><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">🧩</span><span class="lang-en">Show it</span><span class="lang-es" lang="es">Muéstralo</span></li><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">✏️</span><span class="lang-en">Solve</span><span class="lang-es" lang="es">Resuelve</span></li><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">✅</span><span class="lang-en">Check</span><span class="lang-es" lang="es">Revisa</span></li></ol>
+      </div>
       <div class="key-idea-banner">
-        <p class="lang-en"><strong>Watch for this:</strong> A histogram groups data into equal ranges called intervals. The height of each bar is the frequency: how many values fall in that interval. The bars touch.</p>
-        <p class="lang-es" lang="es"><strong>Observa esto:</strong> Un histograma agrupa datos en rangos iguales llamados intervalos. La altura de cada barra es la frecuencia: cuántos valores caen en ese intervalo. Las barras se tocan.</p>
+        <p class="lang-en"><strong>In one sentence:</strong> A histogram groups data into equal ranges called intervals. The height of each bar is the frequency: how many values fall in that interval. The bars touch.</p>
+        <p class="lang-es" lang="es"><strong>En una frase:</strong> Un histograma agrupa datos en rangos iguales llamados intervalos. La altura de cada barra es la frecuencia: cuántos valores caen en ese intervalo. Las barras se tocan.</p>
       </div>
       <ol class="guided-steps">
         
           <li class="guided-step step-color-1">
-            <span class="step-badge"><span class="lang-en">Step 1</span><span class="lang-es" lang="es">Paso 1</span></span>
-            <p class="lang-en">Real example, the data 3, 7, 12, 15, 18, 24. We use intervals of 10: 0–9, 10–19, 20–29.</p>
-            <p class="lang-es" lang="es">Ejemplo real, los datos 3, 7, 12, 15, 18, 24. Usamos intervalos de 10: 0–9, 10–19, 20–29.</p>
+            <div class="guided-step-head">
+              <span class="guided-step-icon" aria-hidden="true">👀</span>
+              <div><span class="step-cue-label"><span class="lang-en">Start</span><span class="lang-es" lang="es">Empieza</span></span><span class="step-badge"><span class="lang-en">Step 1</span><span class="lang-es" lang="es">Paso 1</span></span></div>
+            </div>
+            <p class="step-lead lang-en">Real example, the data 3, 7, 12, 15, 18, 24.</p>
+            <p class="step-lead lang-es" lang="es">Ejemplo real, los datos 3, 7, 12, 15, 18, 24.</p>
+            <details class="step-detail"><summary><span class="lang-en">More detail</span><span class="lang-es" lang="es">Más detalle</span></summary><p class="lang-en">We use intervals of 10: 0–9, 10–19, 20–29.</p><p class="lang-es" lang="es">Usamos intervalos de 10: 0–9, 10–19, 20–29.</p></details>
           </li>
           <li class="guided-step step-color-2">
-            <span class="step-badge"><span class="lang-en">Step 2</span><span class="lang-es" lang="es">Paso 2</span></span>
-            <p class="lang-en">Interval 0–9: the values 3 and 7 fit, so the frequency is 2.</p>
-            <p class="lang-es" lang="es">Intervalo 0–9: los valores 3 y 7 caen ahí, así que la frecuencia es 2.</p>
+            <div class="guided-step-head">
+              <span class="guided-step-icon" aria-hidden="true">🧩</span>
+              <div><span class="step-cue-label"><span class="lang-en">Show it</span><span class="lang-es" lang="es">Muéstralo</span></span><span class="step-badge"><span class="lang-en">Step 2</span><span class="lang-es" lang="es">Paso 2</span></span></div>
+            </div>
+            <p class="step-lead lang-en">Interval 0–9: the values 3 and 7 fit, so the frequency is 2.</p>
+            <p class="step-lead lang-es" lang="es">Intervalo 0–9: los valores 3 y 7 caen ahí, así que la frecuencia es 2.</p>
+
           </li>
           <li class="guided-step step-color-3">
-            <span class="step-badge"><span class="lang-en">Step 3</span><span class="lang-es" lang="es">Paso 3</span></span>
-            <p class="lang-en">Interval 10–19: the values 12, 15, and 18 fit, so the frequency is 3. Interval 20–29: only 24 fits, so the frequency is 1.</p>
-            <p class="lang-es" lang="es">Intervalo 10–19: los valores 12, 15 y 18 caen ahí, así que la frecuencia es 3. Intervalo 20–29: solo 24 cae ahí, así que la frecuencia es 1.</p>
+            <div class="guided-step-head">
+              <span class="guided-step-icon" aria-hidden="true">✏️</span>
+              <div><span class="step-cue-label"><span class="lang-en">Solve</span><span class="lang-es" lang="es">Resuelve</span></span><span class="step-badge"><span class="lang-en">Step 3</span><span class="lang-es" lang="es">Paso 3</span></span></div>
+            </div>
+            <p class="step-lead lang-en">Interval 10–19: the values 12, 15, and 18 fit, so the frequency is 3.</p>
+            <p class="step-lead lang-es" lang="es">Intervalo 10–19: los valores 12, 15 y 18 caen ahí, así que la frecuencia es 3.</p>
+            <details class="step-detail"><summary><span class="lang-en">More detail</span><span class="lang-es" lang="es">Más detalle</span></summary><p class="lang-en">Interval 20–29: only 24 fits, so the frequency is 1.</p><p class="lang-es" lang="es">Intervalo 20–29: solo 24 cae ahí, así que la frecuencia es 1.</p></details>
           </li>
           <li class="guided-step step-color-4">
-            <span class="step-badge"><span class="lang-en">Step 4</span><span class="lang-es" lang="es">Paso 4</span></span>
-            <p class="lang-en">Draw three bars with heights 2, 3, and 1, touching each other. The tallest bar (10–19) shows where most values are.</p>
-            <p class="lang-es" lang="es">Dibuja tres barras con alturas 2, 3 y 1, que se tocan entre sí. La barra más alta (10–19) muestra dónde están la mayoría de los valores.</p>
+            <div class="guided-step-head">
+              <span class="guided-step-icon" aria-hidden="true">✅</span>
+              <div><span class="step-cue-label"><span class="lang-en">Check</span><span class="lang-es" lang="es">Revisa</span></span><span class="step-badge"><span class="lang-en">Step 4</span><span class="lang-es" lang="es">Paso 4</span></span></div>
+            </div>
+            <p class="step-lead lang-en">Draw three bars with heights 2, 3, and 1, touching each other.</p>
+            <p class="step-lead lang-es" lang="es">Dibuja tres barras con alturas 2, 3 y 1, que se tocan entre sí.</p>
+            <details class="step-detail"><summary><span class="lang-en">More detail</span><span class="lang-es" lang="es">Más detalle</span></summary><p class="lang-en">The tallest bar (10–19) shows where most values are.</p><p class="lang-es" lang="es">La barra más alta (10–19) muestra dónde están la mayoría de los valores.</p></details>
           </li>
       </ol>
       <ul class="watch-for-list">
@@ -2900,7 +3049,7 @@ header.packet h1::after{
         <div class="family-hint-box"><p>💡 You must decide on intervals before counting data in each one.</p><p>💡 Histogram bars always touch because the data ranges are continuous.</p></div>
         <div class="drag-sort-workspace" id="dragsort_0">
           <div class="drag-columns">
-            
+
               <div class="drag-column" data-category-id="steps-in-order" ondragover="allowDrop(event)" ondrop="handleDrop(event, 0, 'steps-in-order')">
                 <div class="drag-column-header">Steps (in order)</div>
                 <div class="drag-column-slots" id="slots_0_steps-in-order" ondragover="allowDrop(event)" ondrop="handleDrop(event, 0, 'steps-in-order')"></div>
@@ -3608,7 +3757,7 @@ header.packet h1::after{
         <div class="family-hint-box"><p>💡 Symmetric: the tallest bars are in the middle and the two sides mirror each other.</p><p>💡 The &#039;skew&#039; direction is where the long tail points — toward the few unusual values, not the cluster.</p></div>
         <div class="drag-sort-workspace" id="dragsort_9">
           <div class="drag-columns">
-            
+
               <div class="drag-column" data-category-id="symmetric-peak-in-the-middle" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, 'symmetric-peak-in-the-middle')">
                 <div class="drag-column-header">Symmetric (peak in the middle)</div>
                 <div class="drag-column-slots" id="slots_9_symmetric-peak-in-the-middle" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, 'symmetric-peak-in-the-middle')"></div>
@@ -4086,7 +4235,7 @@ header.packet h1::after{
         <span class="lang-es" lang="es">Refuercen el tema de hoy con un juego rápido en familia. ¡Ustedes preguntan; su estudiante decide!</span>
       </p>
       
-      <div class="hw-game hw-game-sort" id="hw_game_stats" data-game-type="drag-bucket" data-items='[{"text":"Spell the word cat","bucket":"not"},{"text":"How many pets do students have?","bucket":"stat"},{"text":"What is your favorite color?","bucket":"stat"},{"text":"Heights of plants in cm","bucket":"stat"},{"text":"Minutes spent on homework","bucket":"stat"},{"text":"What is 2 + 2?","bucket":"not"}]'>
+      <div class="hw-game hw-game-sort" id="hw_game_stats" data-game-type="drag-bucket" data-items='[{"text":"Heights of plants in cm","bucket":"stat"},{"text":"How many pets do students have?","bucket":"stat"},{"text":"Spell the word cat","bucket":"not"},{"text":"What is 2 + 2?","bucket":"not"},{"text":"What is your favorite color?","bucket":"stat"},{"text":"Minutes spent on homework","bucket":"stat"}]'>
         <div class="hw-game-header">
           <h3 class="hw-game-title">Stat Sort! <span lang="es">¡Estadística!</span></h3>
           <p class="hw-game-coach bilingual-block">
@@ -4107,29 +4256,29 @@ header.packet h1::after{
         </div>
         <div class="hw-game-pile" id="hw_game_pile" ondragover="hwGameAllowDrop(event)" ondrop="hwGameDrop(event,'')">
           
-            <div class="hw-game-card" draggable="true" id="hwcard_0" data-bucket="not"
+            <div class="hw-game-card" draggable="true" id="hwcard_0" data-bucket="stat"
                  ondragstart="hwGameDragStart(event)" onclick="hwGameTapCard(this)">
-              Spell the word cat
+              Heights of plants in cm
             </div>
             <div class="hw-game-card" draggable="true" id="hwcard_1" data-bucket="stat"
                  ondragstart="hwGameDragStart(event)" onclick="hwGameTapCard(this)">
               How many pets do students have?
             </div>
-            <div class="hw-game-card" draggable="true" id="hwcard_2" data-bucket="stat"
+            <div class="hw-game-card" draggable="true" id="hwcard_2" data-bucket="not"
                  ondragstart="hwGameDragStart(event)" onclick="hwGameTapCard(this)">
-              What is your favorite color?
+              Spell the word cat
             </div>
-            <div class="hw-game-card" draggable="true" id="hwcard_3" data-bucket="stat"
+            <div class="hw-game-card" draggable="true" id="hwcard_3" data-bucket="not"
                  ondragstart="hwGameDragStart(event)" onclick="hwGameTapCard(this)">
-              Heights of plants in cm
+              What is 2 + 2?
             </div>
             <div class="hw-game-card" draggable="true" id="hwcard_4" data-bucket="stat"
                  ondragstart="hwGameDragStart(event)" onclick="hwGameTapCard(this)">
-              Minutes spent on homework
+              What is your favorite color?
             </div>
-            <div class="hw-game-card" draggable="true" id="hwcard_5" data-bucket="not"
+            <div class="hw-game-card" draggable="true" id="hwcard_5" data-bucket="stat"
                  ondragstart="hwGameDragStart(event)" onclick="hwGameTapCard(this)">
-              What is 2 + 2?
+              Minutes spent on homework
             </div>
         </div>
         <button type="button" class="btn btn-primary" onclick="hwGameCheckSort()">Check sort / Verificar</button>
@@ -5934,5 +6083,5 @@ window.onload = function() {
 <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <!-- mwb-injected:end -->
-  </body>
+</body>
 </html>

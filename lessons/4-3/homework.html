@@ -1518,7 +1518,32 @@ header.homework-header h1 {
 .lang-en + .lang-es, .worked-step .lang-es { padding-left: 10px; border-left: 3px solid var(--teal); }
 .welcome-lead .lang-es { color: rgba(255, 255, 255, 0.94); border-left: 3px solid var(--amber); padding-left: 10px; display: inline-block; margin-top: 6px; }
 .learning-big { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; line-height: 1.4; }
-.learning-sub { font-size: 14px; margin: 0; color: var(--ink); }
+.learning-words { margin-top: 12px; }
+.learning-words-label {
+  display: block;
+  margin-bottom: 7px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.learning-word-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.learning-word-chips li {
+  padding: 5px 9px;
+  border: 1px solid #b8ddd8;
+  border-radius: 999px;
+  background: var(--teal-light);
+  color: var(--teal-ink);
+  font-size: 12px;
+  font-weight: 700;
+}
 
 .guided-section { scroll-margin-top: 16px; }
 .section-learn { border-left: 4px solid var(--teal); }
@@ -1552,6 +1577,57 @@ header.homework-header h1 {
 .step-color-3 .step-dot, .step-color-3.step-badge { background: var(--amber); color: var(--navy); }
 .step-color-4 .step-dot, .step-color-4.step-badge { background: var(--coral); }
 
+.concept-quick-wrap {
+  margin: 0 0 16px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: #fbfdff;
+}
+.concept-quick-title {
+  margin: 0 0 10px;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.concept-quick-path {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.concept-quick-step {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 82px;
+  padding: 9px 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  color: var(--navy);
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 800;
+}
+.concept-quick-step:not(:last-child)::after {
+  content: "→";
+  position: absolute;
+  right: -9px;
+  z-index: 1;
+  color: var(--teal-ink);
+  font-size: 16px;
+}
+.concept-quick-icon { font-size: 24px; line-height: 1; margin-bottom: 5px; }
+.concept-quick-step .lang-es { color: var(--muted); font-size: 11px; }
+
 .key-idea-banner {
   background: var(--teal-light);
   border-radius: var(--radius-sm);
@@ -1569,6 +1645,48 @@ header.homework-header h1 {
   padding: 12px 14px;
   background: var(--white);
 }
+.guided-step { padding: 16px; }
+.guided-step-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.guided-step-head > div { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
+.guided-step-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  border-radius: 12px;
+  background: var(--cream);
+  font-size: 22px;
+}
+.step-cue-label {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.step-cue-label .lang-en, .step-cue-label .lang-es { display: inline; margin: 0; }
+.step-cue-label .lang-es::before { content: " / "; color: var(--muted); }
+.guided-step-head .step-badge { margin: 0; }
+.guided-step .step-lead { font-size: 16px; font-weight: 700; line-height: 1.45; }
+.step-detail {
+  margin-top: 10px;
+  border-top: 1px dashed var(--line);
+  padding-top: 9px;
+}
+.step-detail summary {
+  cursor: pointer;
+  color: var(--teal-ink);
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 800;
+}
+.step-detail p { margin-top: 8px; color: var(--ink); font-weight: 400; }
 .step-badge {
   display: inline-block;
   font-family: var(--font-display);
@@ -1597,6 +1715,17 @@ header.homework-header h1 {
   padding: 10px 12px; background: var(--cream); border-radius: var(--radius-sm);
 }
 .watch-icon { font-size: 20px; flex-shrink: 0; }
+
+@media (max-width: 560px) {
+  .concept-quick-path { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .concept-quick-step:nth-child(2)::after { display: none; }
+}
+
+@media print {
+  .concept-quick-path { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .step-detail > summary { display: none; }
+  .step-detail[open] > summary ~ *, .step-detail > * { display: block; }
+}
 
 .try-scenario { font-size: 15px; font-weight: 600; color: var(--navy); margin: 0 0 8px; }
 .try-together-note { font-size: 14px; margin: 0 0 14px; color: var(--muted); }
@@ -2433,8 +2562,8 @@ header.packet h1::after{
         </div>
       </div>
       <p class="welcome-lead bilingual-block">
-        <span class="lang-en"><strong>English:</strong> You don't need to be a math expert. This page helps you <em>guide</em> your student — with pictures, steps, and words in both languages.</span>
-        <span class="lang-es" lang="es"><strong>Español:</strong> No necesitas ser experto en matemáticas. Esta página te ayuda a <em>guiar</em> a tu estudiante — con dibujos, pasos y palabras en dos idiomas.</span>
+        <span class="lang-en"><strong>English:</strong> Use the pictures and short steps. Ask questions; let your student do the thinking.</span>
+        <span class="lang-es" lang="es"><strong>Español:</strong> Usen los dibujos y los pasos cortos. Hagan preguntas; dejen que su estudiante piense.</span>
       </p>
       
       <!-- Modern language mode selector -->
@@ -2534,13 +2663,13 @@ header.packet h1::after{
       <div class="bilingual-grid">
         <div class="bilingual-col lang-en">
           <span class="lang-label">English</span>
-          <p class="learning-big">Tonight we work with unusual percents: ones bigger than 100% (more than the whole) and ones smaller than 1% (a tiny part)..</p>
-          <p class="learning-sub">Practice using these words while you work: <em>Percent, Greater than 100%, Less than 1%, Equivalent, Mixed number</em>.</p>
+          <p class="learning-big">Tonight we work with unusual percents: ones bigger than 100% (more than the whole) and ones smaller than 1% (a tiny part).</p>
+          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Percent</li><li>Greater than 100%</li><li>Less than 1%</li><li>Equivalent</li><li>Mixed number</li></ul></div>
         </div>
         <div class="bilingual-col lang-es" lang="es">
           <span class="lang-label">Español</span>
           <p class="learning-big">Esta noche trabajamos con porcentajes poco comunes: unos mayores que 100% (más que el entero) y otros menores que 1% (una parte muy pequeña).</p>
-          <p class="learning-sub">Practiquen usar estas palabras al trabajar: <em>Porcentaje, Mayor que 100%, Menor que 1%, Equivalente, Número mixto</em>.</p>
+          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Porcentaje</li><li>Mayor que 100%</li><li>Menor que 1%</li><li>Equivalente</li><li>Número mixto</li></ul></div>
         </div>
       </div>
     
@@ -2554,31 +2683,51 @@ header.packet h1::after{
         <rect x="40" y="70" width="100" height="24" rx="4" fill="#12355b" stroke="#d7e2ed"/><text x="90" y="86" text-anchor="middle" font-size="12" font-weight="600" fill="#ffffff">Batch</text><rect x="150" y="70" width="100" height="24" rx="4" fill="#12355b" stroke="#d7e2ed"/><text x="200" y="86" text-anchor="middle" font-size="12" font-weight="600" fill="#ffffff">A</text><rect x="260" y="70" width="100" height="24" rx="4" fill="#12355b" stroke="#d7e2ed"/><text x="310" y="86" text-anchor="middle" font-size="12" font-weight="600" fill="#ffffff">B</text><rect x="40" y="98" width="100" height="24" rx="4" fill="#ffffff" stroke="#d7e2ed"/><text x="90" y="114" text-anchor="middle" font-size="12" font-weight="600" fill="#21313f">1</text><rect x="150" y="98" width="100" height="24" rx="4" fill="#ffffff" stroke="#d7e2ed"/><text x="200" y="114" text-anchor="middle" font-size="12" font-weight="600" fill="#21313f">2</text><rect x="260" y="98" width="100" height="24" rx="4" fill="#ffffff" stroke="#d7e2ed"/><text x="310" y="114" text-anchor="middle" font-size="12" font-weight="600" fill="#21313f">3</text><rect x="40" y="126" width="100" height="24" rx="4" fill="#ffffff" stroke="#d7e2ed"/><text x="90" y="142" text-anchor="middle" font-size="12" font-weight="600" fill="#21313f">2</text><rect x="150" y="126" width="100" height="24" rx="4" fill="#ffffff" stroke="#d7e2ed"/><text x="200" y="142" text-anchor="middle" font-size="12" font-weight="600" fill="#21313f">4</text><rect x="260" y="126" width="100" height="24" rx="4" fill="#ffffff" stroke="#d7e2ed"/><text x="310" y="142" text-anchor="middle" font-size="12" font-weight="600" fill="#21313f">6</text><rect x="40" y="154" width="100" height="24" rx="4" fill="#ffffff" stroke="#d7e2ed"/><text x="90" y="170" text-anchor="middle" font-size="12" font-weight="600" fill="#21313f">3</text><rect x="150" y="154" width="100" height="24" rx="4" fill="#ffffff" stroke="#d7e2ed"/><text x="200" y="170" text-anchor="middle" font-size="12" font-weight="600" fill="#21313f">6</text><rect x="260" y="154" width="100" height="24" rx="4" fill="#ffffff" stroke="#d7e2ed"/><text x="310" y="170" text-anchor="middle" font-size="12" font-weight="600" fill="#21313f">9</text>
         <text x="210" y="188" text-anchor="middle" font-size="11" fill="#5f6f80">× same number on BOTH columns → equivalent ratio</text>
       </svg></div>
+      <div class="concept-quick-wrap">
+        <p class="concept-quick-title"><span class="lang-en">Follow the picture path</span><span class="lang-es" lang="es">Sigan la ruta visual</span></p>
+        <ol class="concept-quick-path" aria-label="Four-step visual math path"><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">👀</span><span class="lang-en">Start</span><span class="lang-es" lang="es">Empieza</span></li><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">🧩</span><span class="lang-en">Show it</span><span class="lang-es" lang="es">Muéstralo</span></li><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">✏️</span><span class="lang-en">Solve</span><span class="lang-es" lang="es">Resuelve</span></li><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">✅</span><span class="lang-en">Check</span><span class="lang-es" lang="es">Revisa</span></li></ol>
+      </div>
       <div class="key-idea-banner">
-        <p class="lang-en"><strong>Watch for this:</strong> 100% means one whole. A percent over 100% is more than the whole. A percent under 1% is a tiny sliver. To change any percent to a decimal, divide by 100.</p>
-        <p class="lang-es" lang="es"><strong>Observa esto:</strong> 100% significa un entero. Un porcentaje mayor que 100% es más que el entero. Un porcentaje menor que 1% es una parte muy pequeña. Para convertir cualquier porcentaje en decimal, divide entre 100.</p>
+        <p class="lang-en"><strong>In one sentence:</strong> 100% means one whole. A percent over 100% is more than the whole. A percent under 1% is a tiny sliver. To change any percent to a decimal, divide by 100.</p>
+        <p class="lang-es" lang="es"><strong>En una frase:</strong> 100% significa un entero. Un porcentaje mayor que 100% es más que el entero. Un porcentaje menor que 1% es una parte muy pequeña. Para convertir cualquier porcentaje en decimal, divide entre 100.</p>
       </div>
       <ol class="guided-steps">
         
           <li class="guided-step step-color-1">
-            <span class="step-badge"><span class="lang-en">Step 1</span><span class="lang-es" lang="es">Paso 1</span></span>
-            <p class="lang-en">Real example: a player hit 150% of the goal. We want this as a decimal.</p>
-            <p class="lang-es" lang="es">Ejemplo real: un jugador alcanzó 150% de la meta. Queremos esto como decimal.</p>
+            <div class="guided-step-head">
+              <span class="guided-step-icon" aria-hidden="true">👀</span>
+              <div><span class="step-cue-label"><span class="lang-en">Start</span><span class="lang-es" lang="es">Empieza</span></span><span class="step-badge"><span class="lang-en">Step 1</span><span class="lang-es" lang="es">Paso 1</span></span></div>
+            </div>
+            <p class="step-lead lang-en">Real example: a player hit 150% of the goal.</p>
+            <p class="step-lead lang-es" lang="es">Ejemplo real: un jugador alcanzó 150% de la meta.</p>
+            <details class="step-detail"><summary><span class="lang-en">More detail</span><span class="lang-es" lang="es">Más detalle</span></summary><p class="lang-en">We want this as a decimal.</p><p class="lang-es" lang="es">Queremos esto como decimal.</p></details>
           </li>
           <li class="guided-step step-color-2">
-            <span class="step-badge"><span class="lang-en">Step 2</span><span class="lang-es" lang="es">Paso 2</span></span>
-            <p class="lang-en">To change a percent to a decimal, divide by 100: 150 ÷ 100 = 1.5.</p>
-            <p class="lang-es" lang="es">Para convertir un porcentaje en decimal, divide entre 100: 150 ÷ 100 = 1.5.</p>
+            <div class="guided-step-head">
+              <span class="guided-step-icon" aria-hidden="true">🧩</span>
+              <div><span class="step-cue-label"><span class="lang-en">Show it</span><span class="lang-es" lang="es">Muéstralo</span></span><span class="step-badge"><span class="lang-en">Step 2</span><span class="lang-es" lang="es">Paso 2</span></span></div>
+            </div>
+            <p class="step-lead lang-en">To change a percent to a decimal, divide by 100: 150 ÷ 100 = 1.5.</p>
+            <p class="step-lead lang-es" lang="es">Para convertir un porcentaje en decimal, divide entre 100: 150 ÷ 100 = 1.5.</p>
+
           </li>
           <li class="guided-step step-color-3">
-            <span class="step-badge"><span class="lang-en">Step 3</span><span class="lang-es" lang="es">Paso 3</span></span>
-            <p class="lang-en">Since 1.5 is more than 1, the player beat the whole goal. That is what &quot;more than 100%&quot; means.</p>
-            <p class="lang-es" lang="es">Como 1.5 es más que 1, el jugador superó la meta completa. Eso significa &quot;más que 100%&quot;.</p>
+            <div class="guided-step-head">
+              <span class="guided-step-icon" aria-hidden="true">✏️</span>
+              <div><span class="step-cue-label"><span class="lang-en">Solve</span><span class="lang-es" lang="es">Resuelve</span></span><span class="step-badge"><span class="lang-en">Step 3</span><span class="lang-es" lang="es">Paso 3</span></span></div>
+            </div>
+            <p class="step-lead lang-en">Since 1.5 is more than 1, the player beat the whole goal.</p>
+            <p class="step-lead lang-es" lang="es">Como 1.5 es más que 1, el jugador superó la meta completa.</p>
+            <details class="step-detail"><summary><span class="lang-en">More detail</span><span class="lang-es" lang="es">Más detalle</span></summary><p class="lang-en">That is what &quot;more than 100%&quot; means.</p><p class="lang-es" lang="es">Eso significa &quot;más que 100%&quot;.</p></details>
           </li>
           <li class="guided-step step-color-4">
-            <span class="step-badge"><span class="lang-en">Step 4</span><span class="lang-es" lang="es">Paso 4</span></span>
-            <p class="lang-en">Now a tiny boost of 0.5%: 0.5 ÷ 100 = 0.005, which is much less than 1. A percent under 1% is a tiny part.</p>
-            <p class="lang-es" lang="es">Ahora un pequeño aumento de 0.5%: 0.5 ÷ 100 = 0.005, que es mucho menos que 1. Un porcentaje menor que 1% es una parte muy pequeña.</p>
+            <div class="guided-step-head">
+              <span class="guided-step-icon" aria-hidden="true">✅</span>
+              <div><span class="step-cue-label"><span class="lang-en">Check</span><span class="lang-es" lang="es">Revisa</span></span><span class="step-badge"><span class="lang-en">Step 4</span><span class="lang-es" lang="es">Paso 4</span></span></div>
+            </div>
+            <p class="step-lead lang-en">Now a tiny boost of 0.5%: 0.5 ÷ 100 = 0.005, which is much less than 1.</p>
+            <p class="step-lead lang-es" lang="es">Ahora un pequeño aumento de 0.5%: 0.5 ÷ 100 = 0.005, que es mucho menos que 1.</p>
+            <details class="step-detail"><summary><span class="lang-en">More detail</span><span class="lang-es" lang="es">Más detalle</span></summary><p class="lang-en">A percent under 1% is a tiny part.</p><p class="lang-es" lang="es">Un porcentaje menor que 1% es una parte muy pequeña.</p></details>
           </li>
       </ol>
       <ul class="watch-for-list">
@@ -2896,7 +3045,7 @@ header.packet h1::after{
         <div class="family-hint-box"><p>💡 Convert each value to a percent first: decimals multiply by 100, and fractions divide top by bottom first.</p><p>💡 After converting, sort: over 100% means the decimal was over 1; under 1% means the decimal was under 0.01.</p><p>💡 Try 2.5 first: 2.5 × 100 = 250%, which is greater than 100%. Now convert 0.003 and the fractions the same way.</p></div>
         <div class="drag-sort-workspace" id="dragsort_0">
           <div class="drag-columns">
-            
+
               <div class="drag-column" data-category-id="greater" ondragover="allowDrop(event)" ondrop="handleDrop(event, 0, 'greater')">
                 <div class="drag-column-header">Greater than 100%</div>
                 <div class="drag-column-slots" id="slots_0_greater" ondragover="allowDrop(event)" ondrop="handleDrop(event, 0, 'greater')"></div>
@@ -3042,7 +3191,7 @@ header.packet h1::after{
         
         <div class="drag-sort-workspace" id="dragsort_1">
           <div class="drag-columns">
-            
+
               <div class="drag-column" data-category-id="less" ondragover="allowDrop(event)" ondrop="handleDrop(event, 1, 'less')">
                 <div class="drag-column-header">Less than 1%</div>
                 <div class="drag-column-slots" id="slots_1_less" ondragover="allowDrop(event)" ondrop="handleDrop(event, 1, 'less')"></div>
@@ -6200,5 +6349,5 @@ window.onload = function() {
 <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <!-- mwb-injected:end -->
-  </body>
+</body>
 </html>

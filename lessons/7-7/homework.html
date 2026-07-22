@@ -1518,7 +1518,32 @@ header.homework-header h1 {
 .lang-en + .lang-es, .worked-step .lang-es { padding-left: 10px; border-left: 3px solid var(--teal); }
 .welcome-lead .lang-es { color: rgba(255, 255, 255, 0.94); border-left: 3px solid var(--amber); padding-left: 10px; display: inline-block; margin-top: 6px; }
 .learning-big { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; line-height: 1.4; }
-.learning-sub { font-size: 14px; margin: 0; color: var(--ink); }
+.learning-words { margin-top: 12px; }
+.learning-words-label {
+  display: block;
+  margin-bottom: 7px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.learning-word-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.learning-word-chips li {
+  padding: 5px 9px;
+  border: 1px solid #b8ddd8;
+  border-radius: 999px;
+  background: var(--teal-light);
+  color: var(--teal-ink);
+  font-size: 12px;
+  font-weight: 700;
+}
 
 .guided-section { scroll-margin-top: 16px; }
 .section-learn { border-left: 4px solid var(--teal); }
@@ -1552,6 +1577,57 @@ header.homework-header h1 {
 .step-color-3 .step-dot, .step-color-3.step-badge { background: var(--amber); color: var(--navy); }
 .step-color-4 .step-dot, .step-color-4.step-badge { background: var(--coral); }
 
+.concept-quick-wrap {
+  margin: 0 0 16px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: #fbfdff;
+}
+.concept-quick-title {
+  margin: 0 0 10px;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.concept-quick-path {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.concept-quick-step {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 82px;
+  padding: 9px 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  color: var(--navy);
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 800;
+}
+.concept-quick-step:not(:last-child)::after {
+  content: "→";
+  position: absolute;
+  right: -9px;
+  z-index: 1;
+  color: var(--teal-ink);
+  font-size: 16px;
+}
+.concept-quick-icon { font-size: 24px; line-height: 1; margin-bottom: 5px; }
+.concept-quick-step .lang-es { color: var(--muted); font-size: 11px; }
+
 .key-idea-banner {
   background: var(--teal-light);
   border-radius: var(--radius-sm);
@@ -1569,6 +1645,48 @@ header.homework-header h1 {
   padding: 12px 14px;
   background: var(--white);
 }
+.guided-step { padding: 16px; }
+.guided-step-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.guided-step-head > div { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
+.guided-step-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  border-radius: 12px;
+  background: var(--cream);
+  font-size: 22px;
+}
+.step-cue-label {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.step-cue-label .lang-en, .step-cue-label .lang-es { display: inline; margin: 0; }
+.step-cue-label .lang-es::before { content: " / "; color: var(--muted); }
+.guided-step-head .step-badge { margin: 0; }
+.guided-step .step-lead { font-size: 16px; font-weight: 700; line-height: 1.45; }
+.step-detail {
+  margin-top: 10px;
+  border-top: 1px dashed var(--line);
+  padding-top: 9px;
+}
+.step-detail summary {
+  cursor: pointer;
+  color: var(--teal-ink);
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 800;
+}
+.step-detail p { margin-top: 8px; color: var(--ink); font-weight: 400; }
 .step-badge {
   display: inline-block;
   font-family: var(--font-display);
@@ -1597,6 +1715,17 @@ header.homework-header h1 {
   padding: 10px 12px; background: var(--cream); border-radius: var(--radius-sm);
 }
 .watch-icon { font-size: 20px; flex-shrink: 0; }
+
+@media (max-width: 560px) {
+  .concept-quick-path { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .concept-quick-step:nth-child(2)::after { display: none; }
+}
+
+@media print {
+  .concept-quick-path { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .step-detail > summary { display: none; }
+  .step-detail[open] > summary ~ *, .step-detail > * { display: block; }
+}
 
 .try-scenario { font-size: 15px; font-weight: 600; color: var(--navy); margin: 0 0 8px; }
 .try-together-note { font-size: 14px; margin: 0 0 14px; color: var(--muted); }
@@ -2433,8 +2562,8 @@ header.packet h1::after{
         </div>
       </div>
       <p class="welcome-lead bilingual-block">
-        <span class="lang-en"><strong>English:</strong> You don't need to be a math expert. This page helps you <em>guide</em> your student — with pictures, steps, and words in both languages.</span>
-        <span class="lang-es" lang="es"><strong>Español:</strong> No necesitas ser experto en matemáticas. Esta página te ayuda a <em>guiar</em> a tu estudiante — con dibujos, pasos y palabras en dos idiomas.</span>
+        <span class="lang-en"><strong>English:</strong> Use the pictures and short steps. Ask questions; let your student do the thinking.</span>
+        <span class="lang-es" lang="es"><strong>Español:</strong> Usen los dibujos y los pasos cortos. Hagan preguntas; dejen que su estudiante piense.</span>
       </p>
       
       <!-- Modern language mode selector -->
@@ -2534,13 +2663,13 @@ header.packet h1::after{
       <div class="bilingual-grid">
         <div class="bilingual-col lang-en">
           <span class="lang-label">English</span>
-          <p class="learning-big">Tonight we read a word problem and decide whether to model it with an equation or an inequality, then solve it and check that the answer makes sense..</p>
-          <p class="learning-sub">Practice using these words while you work: <em>Model, Equation, Inequality, Reasonableness, Variable</em>.</p>
+          <p class="learning-big">Tonight we read a word problem and decide whether to model it with an equation or an inequality, then solve it and check that the answer makes sense.</p>
+          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Model</li><li>Equation</li><li>Inequality</li><li>Reasonableness</li><li>Variable</li></ul></div>
         </div>
         <div class="bilingual-col lang-es" lang="es">
           <span class="lang-label">Español</span>
           <p class="learning-big">Esta noche leemos un problema verbal y decidimos si modelarlo con una ecuación o una desigualdad, luego lo resolvemos y revisamos que la respuesta tenga sentido.</p>
-          <p class="learning-sub">Practiquen usar estas palabras al trabajar: <em>Modelar, Ecuación, Desigualdad, Razonabilidad, Variable</em>.</p>
+          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Modelar</li><li>Ecuación</li><li>Desigualdad</li><li>Razonabilidad</li><li>Variable</li></ul></div>
         </div>
       </div>
     
@@ -2558,31 +2687,51 @@ header.packet h1::after{
         <text x="40" y="155" font-size="12" fill="#21313f">Open circle · shade the solution side</text>
         <text x="40" y="172" font-size="12" fill="#21313f" lang="es">Círculo abierto · sombrea el lado de la solución</text>
       </svg></div>
+      <div class="concept-quick-wrap">
+        <p class="concept-quick-title"><span class="lang-en">Follow the picture path</span><span class="lang-es" lang="es">Sigan la ruta visual</span></p>
+        <ol class="concept-quick-path" aria-label="Four-step visual math path"><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">👀</span><span class="lang-en">Start</span><span class="lang-es" lang="es">Empieza</span></li><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">🧩</span><span class="lang-en">Show it</span><span class="lang-es" lang="es">Muéstralo</span></li><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">✏️</span><span class="lang-en">Solve</span><span class="lang-es" lang="es">Resuelve</span></li><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">✅</span><span class="lang-en">Check</span><span class="lang-es" lang="es">Revisa</span></li></ol>
+      </div>
       <div class="key-idea-banner">
-        <p class="lang-en"><strong>Watch for this:</strong> &#039;Equals&#039; or &#039;exactly&#039; points to an equation (=); &#039;at least, at most, more than, fewer than&#039; points to an inequality.</p>
-        <p class="lang-es" lang="es"><strong>Observa esto:</strong> &#039;Es igual a&#039; o &#039;exactamente&#039; apunta a una ecuación (=); &#039;al menos, a lo más, más que, menos que&#039; apunta a una desigualdad.</p>
+        <p class="lang-en"><strong>In one sentence:</strong> &#039;Equals&#039; or &#039;exactly&#039; points to an equation (=); &#039;at least, at most, more than, fewer than&#039; points to an inequality.</p>
+        <p class="lang-es" lang="es"><strong>En una frase:</strong> &#039;Es igual a&#039; o &#039;exactamente&#039; apunta a una ecuación (=); &#039;al menos, a lo más, más que, menos que&#039; apunta a una desigualdad.</p>
       </div>
       <ol class="guided-steps">
         
           <li class="guided-step step-color-1">
-            <span class="step-badge"><span class="lang-en">Step 1</span><span class="lang-es" lang="es">Paso 1</span></span>
-            <p class="lang-en">Real clue: &#039;A total divided equally among 4 people gave each $85.&#039; This has one exact total, so it is an equation.</p>
-            <p class="lang-es" lang="es">Pista real: &#039;Un total repartido en partes iguales entre 4 personas dio a cada uno $85.&#039; Esto tiene un total exacto, así que es una ecuación.</p>
+            <div class="guided-step-head">
+              <span class="guided-step-icon" aria-hidden="true">👀</span>
+              <div><span class="step-cue-label"><span class="lang-en">Start</span><span class="lang-es" lang="es">Empieza</span></span><span class="step-badge"><span class="lang-en">Step 1</span><span class="lang-es" lang="es">Paso 1</span></span></div>
+            </div>
+            <p class="step-lead lang-en">Real clue: &#039;A total divided equally among 4 people gave each $85.&#039; This has one exact total, so it is an equation.</p>
+            <p class="step-lead lang-es" lang="es">Pista real: &#039;Un total repartido en partes iguales entre 4 personas dio a cada uno $85.&#039; Esto tiene un total exacto, así que es una ecuación.</p>
+
           </li>
           <li class="guided-step step-color-2">
-            <span class="step-badge"><span class="lang-en">Step 2</span><span class="lang-es" lang="es">Paso 2</span></span>
-            <p class="lang-en">Model it. Let t be the total. Divided among 4 to get 85 means t ÷ 4 = 85.</p>
-            <p class="lang-es" lang="es">Modélalo. Que t sea el total. Repartido entre 4 para dar 85 significa t ÷ 4 = 85.</p>
+            <div class="guided-step-head">
+              <span class="guided-step-icon" aria-hidden="true">🧩</span>
+              <div><span class="step-cue-label"><span class="lang-en">Show it</span><span class="lang-es" lang="es">Muéstralo</span></span><span class="step-badge"><span class="lang-en">Step 2</span><span class="lang-es" lang="es">Paso 2</span></span></div>
+            </div>
+            <p class="step-lead lang-en">Model it.</p>
+            <p class="step-lead lang-es" lang="es">Modélalo.</p>
+            <details class="step-detail"><summary><span class="lang-en">More detail</span><span class="lang-es" lang="es">Más detalle</span></summary><p class="lang-en">Let t be the total. Divided among 4 to get 85 means t ÷ 4 = 85.</p><p class="lang-es" lang="es">Que t sea el total. Repartido entre 4 para dar 85 significa t ÷ 4 = 85.</p></details>
           </li>
           <li class="guided-step step-color-3">
-            <span class="step-badge"><span class="lang-en">Step 3</span><span class="lang-es" lang="es">Paso 3</span></span>
-            <p class="lang-en">Solve it. The inverse of dividing by 4 is multiplying by 4: t = 85 × 4 = 340.</p>
-            <p class="lang-es" lang="es">Resuélvelo. El inverso de dividir entre 4 es multiplicar por 4: t = 85 × 4 = 340.</p>
+            <div class="guided-step-head">
+              <span class="guided-step-icon" aria-hidden="true">✏️</span>
+              <div><span class="step-cue-label"><span class="lang-en">Solve</span><span class="lang-es" lang="es">Resuelve</span></span><span class="step-badge"><span class="lang-en">Step 3</span><span class="lang-es" lang="es">Paso 3</span></span></div>
+            </div>
+            <p class="step-lead lang-en">Solve it.</p>
+            <p class="step-lead lang-es" lang="es">Resuélvelo.</p>
+            <details class="step-detail"><summary><span class="lang-en">More detail</span><span class="lang-es" lang="es">Más detalle</span></summary><p class="lang-en">The inverse of dividing by 4 is multiplying by 4: t = 85 × 4 = 340.</p><p class="lang-es" lang="es">El inverso de dividir entre 4 es multiplicar por 4: t = 85 × 4 = 340.</p></details>
           </li>
           <li class="guided-step step-color-4">
-            <span class="step-badge"><span class="lang-en">Step 4</span><span class="lang-es" lang="es">Paso 4</span></span>
-            <p class="lang-en">Check reasonableness: $340 split 4 ways is $85 each. That makes sense, so the answer is reasonable.</p>
-            <p class="lang-es" lang="es">Revisa la razonabilidad: $340 repartido en 4 partes da $85 cada uno. Tiene sentido, así que la respuesta es razonable.</p>
+            <div class="guided-step-head">
+              <span class="guided-step-icon" aria-hidden="true">✅</span>
+              <div><span class="step-cue-label"><span class="lang-en">Check</span><span class="lang-es" lang="es">Revisa</span></span><span class="step-badge"><span class="lang-en">Step 4</span><span class="lang-es" lang="es">Paso 4</span></span></div>
+            </div>
+            <p class="step-lead lang-en">Check reasonableness: $340 split 4 ways is $85 each.</p>
+            <p class="step-lead lang-es" lang="es">Revisa la razonabilidad: $340 repartido en 4 partes da $85 cada uno.</p>
+            <details class="step-detail"><summary><span class="lang-en">More detail</span><span class="lang-es" lang="es">Más detalle</span></summary><p class="lang-en">That makes sense, so the answer is reasonable.</p><p class="lang-es" lang="es">Tiene sentido, así que la respuesta es razonable.</p></details>
           </li>
       </ol>
       <ul class="watch-for-list">
@@ -2918,7 +3067,7 @@ header.packet h1::after{
         
         <div class="drag-sort-workspace" id="dragsort_0">
           <div class="drag-columns">
-            
+
               <div class="drag-column" data-category-id="eq" ondragover="allowDrop(event)" ondrop="handleDrop(event, 0, 'eq')">
                 <div class="drag-column-header">Needs an Equation (=)</div>
                 <div class="drag-column-slots" id="slots_0_eq" ondragover="allowDrop(event)" ondrop="handleDrop(event, 0, 'eq')"></div>
@@ -3060,7 +3209,7 @@ header.packet h1::after{
         <div class="family-hint-box"><p>💡 &#039;Exactly,&#039; &#039;equals,&#039; and &#039;is&#039; signal an equation.</p><p>💡 &#039;At most,&#039; &#039;at least,&#039; &#039;above,&#039; &#039;more than,&#039; and &#039;fewer than&#039; signal an inequality.</p></div>
         <div class="drag-sort-workspace" id="dragsort_1">
           <div class="drag-columns">
-            
+
               <div class="drag-column" data-category-id="equation" ondragover="allowDrop(event)" ondrop="handleDrop(event, 1, 'equation')">
                 <div class="drag-column-header">Equation (=)</div>
                 <div class="drag-column-slots" id="slots_1_equation" ondragover="allowDrop(event)" ondrop="handleDrop(event, 1, 'equation')"></div>
@@ -5963,5 +6112,5 @@ window.onload = function() {
 <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <!-- mwb-injected:end -->
-  </body>
+</body>
 </html>

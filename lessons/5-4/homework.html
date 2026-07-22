@@ -1518,7 +1518,32 @@ header.homework-header h1 {
 .lang-en + .lang-es, .worked-step .lang-es { padding-left: 10px; border-left: 3px solid var(--teal); }
 .welcome-lead .lang-es { color: rgba(255, 255, 255, 0.94); border-left: 3px solid var(--amber); padding-left: 10px; display: inline-block; margin-top: 6px; }
 .learning-big { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; line-height: 1.4; }
-.learning-sub { font-size: 14px; margin: 0; color: var(--ink); }
+.learning-words { margin-top: 12px; }
+.learning-words-label {
+  display: block;
+  margin-bottom: 7px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.learning-word-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.learning-word-chips li {
+  padding: 5px 9px;
+  border: 1px solid #b8ddd8;
+  border-radius: 999px;
+  background: var(--teal-light);
+  color: var(--teal-ink);
+  font-size: 12px;
+  font-weight: 700;
+}
 
 .guided-section { scroll-margin-top: 16px; }
 .section-learn { border-left: 4px solid var(--teal); }
@@ -1552,6 +1577,57 @@ header.homework-header h1 {
 .step-color-3 .step-dot, .step-color-3.step-badge { background: var(--amber); color: var(--navy); }
 .step-color-4 .step-dot, .step-color-4.step-badge { background: var(--coral); }
 
+.concept-quick-wrap {
+  margin: 0 0 16px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: #fbfdff;
+}
+.concept-quick-title {
+  margin: 0 0 10px;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.concept-quick-path {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.concept-quick-step {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 82px;
+  padding: 9px 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  color: var(--navy);
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 800;
+}
+.concept-quick-step:not(:last-child)::after {
+  content: "→";
+  position: absolute;
+  right: -9px;
+  z-index: 1;
+  color: var(--teal-ink);
+  font-size: 16px;
+}
+.concept-quick-icon { font-size: 24px; line-height: 1; margin-bottom: 5px; }
+.concept-quick-step .lang-es { color: var(--muted); font-size: 11px; }
+
 .key-idea-banner {
   background: var(--teal-light);
   border-radius: var(--radius-sm);
@@ -1569,6 +1645,48 @@ header.homework-header h1 {
   padding: 12px 14px;
   background: var(--white);
 }
+.guided-step { padding: 16px; }
+.guided-step-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.guided-step-head > div { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
+.guided-step-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  border-radius: 12px;
+  background: var(--cream);
+  font-size: 22px;
+}
+.step-cue-label {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.step-cue-label .lang-en, .step-cue-label .lang-es { display: inline; margin: 0; }
+.step-cue-label .lang-es::before { content: " / "; color: var(--muted); }
+.guided-step-head .step-badge { margin: 0; }
+.guided-step .step-lead { font-size: 16px; font-weight: 700; line-height: 1.45; }
+.step-detail {
+  margin-top: 10px;
+  border-top: 1px dashed var(--line);
+  padding-top: 9px;
+}
+.step-detail summary {
+  cursor: pointer;
+  color: var(--teal-ink);
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 800;
+}
+.step-detail p { margin-top: 8px; color: var(--ink); font-weight: 400; }
 .step-badge {
   display: inline-block;
   font-family: var(--font-display);
@@ -1597,6 +1715,17 @@ header.homework-header h1 {
   padding: 10px 12px; background: var(--cream); border-radius: var(--radius-sm);
 }
 .watch-icon { font-size: 20px; flex-shrink: 0; }
+
+@media (max-width: 560px) {
+  .concept-quick-path { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .concept-quick-step:nth-child(2)::after { display: none; }
+}
+
+@media print {
+  .concept-quick-path { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .step-detail > summary { display: none; }
+  .step-detail[open] > summary ~ *, .step-detail > * { display: block; }
+}
 
 .try-scenario { font-size: 15px; font-weight: 600; color: var(--navy); margin: 0 0 8px; }
 .try-together-note { font-size: 14px; margin: 0 0 14px; color: var(--muted); }
@@ -2433,8 +2562,8 @@ header.packet h1::after{
         </div>
       </div>
       <p class="welcome-lead bilingual-block">
-        <span class="lang-en"><strong>English:</strong> You don't need to be a math expert. This page helps you <em>guide</em> your student — with pictures, steps, and words in both languages.</span>
-        <span class="lang-es" lang="es"><strong>Español:</strong> No necesitas ser experto en matemáticas. Esta página te ayuda a <em>guiar</em> a tu estudiante — con dibujos, pasos y palabras en dos idiomas.</span>
+        <span class="lang-en"><strong>English:</strong> Use the pictures and short steps. Ask questions; let your student do the thinking.</span>
+        <span class="lang-es" lang="es"><strong>Español:</strong> Usen los dibujos y los pasos cortos. Hagan preguntas; dejen que su estudiante piense.</span>
       </p>
       
       <!-- Modern language mode selector -->
@@ -2534,13 +2663,13 @@ header.packet h1::after{
       <div class="bilingual-grid">
         <div class="bilingual-col lang-en">
           <span class="lang-label">English</span>
-          <p class="learning-big">Tonight we find the area of a regular polygon, like a hexagon (6 sides). We break it into equal triangles, find one triangle&#039;s area, then add them all up..</p>
-          <p class="learning-sub">Practice using these words while you work: <em>Regular Polygon, Decompose, Triangle, Composite, Formula</em>.</p>
+          <p class="learning-big">Tonight we find the area of a regular polygon, like a hexagon (6 sides). We break it into equal triangles, find one triangle&#039;s area, then add them all up.</p>
+          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Regular Polygon</li><li>Decompose</li><li>Triangle</li><li>Composite</li><li>Formula</li></ul></div>
         </div>
         <div class="bilingual-col lang-es" lang="es">
           <span class="lang-label">Español</span>
           <p class="learning-big">Esta noche hallamos el área de un polígono regular, como un hexágono (6 lados). Lo separamos en triángulos iguales, hallamos el área de un triángulo y luego los sumamos todos.</p>
-          <p class="learning-sub">Practiquen usar estas palabras al trabajar: <em>Polígono regular, Descomponer, Triángulo, Compuesto, Fórmula</em>.</p>
+          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Polígono regular</li><li>Descomponer</li><li>Triángulo</li><li>Compuesto</li><li>Fórmula</li></ul></div>
         </div>
       </div>
     
@@ -2557,31 +2686,51 @@ header.packet h1::after{
         <text x="260" y="110" font-size="13" fill="#21313f">Square units (in², cm²)</text>
         <text x="260" y="130" font-size="13" fill="#21313f" lang="es">Unidades cuadradas</text>
       </svg></div>
+      <div class="concept-quick-wrap">
+        <p class="concept-quick-title"><span class="lang-en">Follow the picture path</span><span class="lang-es" lang="es">Sigan la ruta visual</span></p>
+        <ol class="concept-quick-path" aria-label="Four-step visual math path"><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">👀</span><span class="lang-en">Start</span><span class="lang-es" lang="es">Empieza</span></li><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">🧩</span><span class="lang-en">Show it</span><span class="lang-es" lang="es">Muéstralo</span></li><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">✏️</span><span class="lang-en">Solve</span><span class="lang-es" lang="es">Resuelve</span></li><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">✅</span><span class="lang-en">Check</span><span class="lang-es" lang="es">Revisa</span></li></ol>
+      </div>
       <div class="key-idea-banner">
-        <p class="lang-en"><strong>Watch for this:</strong> A regular polygon splits into the same number of triangles as it has sides. So find one triangle&#039;s area, then multiply by the number of sides.</p>
-        <p class="lang-es" lang="es"><strong>Observa esto:</strong> Un polígono regular se separa en el mismo número de triángulos que de lados. Así que halla el área de un triángulo y luego multiplica por el número de lados.</p>
+        <p class="lang-en"><strong>In one sentence:</strong> A regular polygon splits into the same number of triangles as it has sides. So find one triangle&#039;s area, then multiply by the number of sides.</p>
+        <p class="lang-es" lang="es"><strong>En una frase:</strong> Un polígono regular se separa en el mismo número de triángulos que de lados. Así que halla el área de un triángulo y luego multiplica por el número de lados.</p>
       </div>
       <ol class="guided-steps">
         
           <li class="guided-step step-color-1">
-            <span class="step-badge"><span class="lang-en">Step 1</span><span class="lang-es" lang="es">Paso 1</span></span>
-            <p class="lang-en">Real example: a hexagon (6 sides) skylight. Each side is 6 feet, and each triangle from the center has a height of 5.2 feet. We want the total area.</p>
-            <p class="lang-es" lang="es">Ejemplo real: un tragaluz hexagonal (6 lados). Cada lado es 6 pies, y cada triángulo desde el centro tiene una altura de 5.2 pies. Queremos el área total.</p>
+            <div class="guided-step-head">
+              <span class="guided-step-icon" aria-hidden="true">👀</span>
+              <div><span class="step-cue-label"><span class="lang-en">Start</span><span class="lang-es" lang="es">Empieza</span></span><span class="step-badge"><span class="lang-en">Step 1</span><span class="lang-es" lang="es">Paso 1</span></span></div>
+            </div>
+            <p class="step-lead lang-en">Real example: a hexagon (6 sides) skylight.</p>
+            <p class="step-lead lang-es" lang="es">Ejemplo real: un tragaluz hexagonal (6 lados).</p>
+            <details class="step-detail"><summary><span class="lang-en">More detail</span><span class="lang-es" lang="es">Más detalle</span></summary><p class="lang-en">Each side is 6 feet, and each triangle from the center has a height of 5.2 feet. We want the total area.</p><p class="lang-es" lang="es">Cada lado es 6 pies, y cada triángulo desde el centro tiene una altura de 5.2 pies. Queremos el área total.</p></details>
           </li>
           <li class="guided-step step-color-2">
-            <span class="step-badge"><span class="lang-en">Step 2</span><span class="lang-es" lang="es">Paso 2</span></span>
-            <p class="lang-en">Find one triangle: area = ½ × base × height = ½ × 6 × 5.2.</p>
-            <p class="lang-es" lang="es">Halla un triángulo: área = ½ × base × altura = ½ × 6 × 5.2.</p>
+            <div class="guided-step-head">
+              <span class="guided-step-icon" aria-hidden="true">🧩</span>
+              <div><span class="step-cue-label"><span class="lang-en">Show it</span><span class="lang-es" lang="es">Muéstralo</span></span><span class="step-badge"><span class="lang-en">Step 2</span><span class="lang-es" lang="es">Paso 2</span></span></div>
+            </div>
+            <p class="step-lead lang-en">Find one triangle: area = ½ × base × height = ½ × 6 × 5.2.</p>
+            <p class="step-lead lang-es" lang="es">Halla un triángulo: área = ½ × base × altura = ½ × 6 × 5.2.</p>
+
           </li>
           <li class="guided-step step-color-3">
-            <span class="step-badge"><span class="lang-en">Step 3</span><span class="lang-es" lang="es">Paso 3</span></span>
-            <p class="lang-en">Multiply 6 × 5.2 = 31.2, then take half: ½ × 31.2 = 15.6 square feet for one triangle.</p>
-            <p class="lang-es" lang="es">Multiplica 6 × 5.2 = 31.2, luego toma la mitad: ½ × 31.2 = 15.6 pies cuadrados para un triángulo.</p>
+            <div class="guided-step-head">
+              <span class="guided-step-icon" aria-hidden="true">✏️</span>
+              <div><span class="step-cue-label"><span class="lang-en">Solve</span><span class="lang-es" lang="es">Resuelve</span></span><span class="step-badge"><span class="lang-en">Step 3</span><span class="lang-es" lang="es">Paso 3</span></span></div>
+            </div>
+            <p class="step-lead lang-en">Multiply 6 × 5.2 = 31.2, then take half: ½ × 31.2 = 15.6 square feet for one triangle.</p>
+            <p class="step-lead lang-es" lang="es">Multiplica 6 × 5.2 = 31.2, luego toma la mitad: ½ × 31.2 = 15.6 pies cuadrados para un triángulo.</p>
+
           </li>
           <li class="guided-step step-color-4">
-            <span class="step-badge"><span class="lang-en">Step 4</span><span class="lang-es" lang="es">Paso 4</span></span>
-            <p class="lang-en">A hexagon has 6 triangles, so multiply: 6 × 15.6 = 93.6. The total area is 93.6 square feet.</p>
-            <p class="lang-es" lang="es">Un hexágono tiene 6 triángulos, así que multiplica: 6 × 15.6 = 93.6. El área total es 93.6 pies cuadrados.</p>
+            <div class="guided-step-head">
+              <span class="guided-step-icon" aria-hidden="true">✅</span>
+              <div><span class="step-cue-label"><span class="lang-en">Check</span><span class="lang-es" lang="es">Revisa</span></span><span class="step-badge"><span class="lang-en">Step 4</span><span class="lang-es" lang="es">Paso 4</span></span></div>
+            </div>
+            <p class="step-lead lang-en">A hexagon has 6 triangles, so multiply: 6 × 15.6 = 93.6.</p>
+            <p class="step-lead lang-es" lang="es">Un hexágono tiene 6 triángulos, así que multiplica: 6 × 15.6 = 93.6.</p>
+            <details class="step-detail"><summary><span class="lang-en">More detail</span><span class="lang-es" lang="es">Más detalle</span></summary><p class="lang-en">The total area is 93.6 square feet.</p><p class="lang-es" lang="es">El área total es 93.6 pies cuadrados.</p></details>
           </li>
       </ol>
       <ul class="watch-for-list">
@@ -3456,7 +3605,7 @@ header.packet h1::after{
         <div class="family-hint-box"><p>💡 Each card already tells you the triangle count after the arrow — compare that number to 5.</p><p>💡 &#039;More than 5&#039; is strictly greater; a polygon with exactly 5 triangles belongs in &#039;5 or fewer&#039;.</p><p>💡 First card: a hexagon makes 6 triangles. Is 6 more than 5? Place it, then repeat with each polygon.</p></div>
         <div class="drag-sort-workspace" id="dragsort_7">
           <div class="drag-columns">
-            
+
               <div class="drag-column" data-category-id="more" ondragover="allowDrop(event)" ondrop="handleDrop(event, 7, 'more')">
                 <div class="drag-column-header">More than 5 triangles</div>
                 <div class="drag-column-slots" id="slots_7_more" ondragover="allowDrop(event)" ondrop="handleDrop(event, 7, 'more')"></div>
@@ -3583,7 +3732,7 @@ header.packet h1::after{
         
         <div class="drag-sort-workspace" id="dragsort_8">
           <div class="drag-columns">
-            
+
               <div class="drag-column" data-category-id="small" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, 'small')">
                 <div class="drag-column-header">One triangle ≤ 12 sq ft</div>
                 <div class="drag-column-slots" id="slots_8_small" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, 'small')"></div>
@@ -3771,7 +3920,7 @@ header.packet h1::after{
         <div class="family-hint-box"><p>💡 Each card shows the polygon&#039;s total area at the end — compare that number to 90 sq ft.</p><p>💡 &#039;Area ≥ 90&#039; includes exactly 90; anything below 90 goes in the other group.</p><p>💡 First card: the pentagon&#039;s total is 110 sq ft. Is 110 at least 90? Place it, then compare each remaining card.</p></div>
         <div class="drag-sort-workspace" id="dragsort_10">
           <div class="drag-columns">
-            
+
               <div class="drag-column" data-category-id="large" ondragover="allowDrop(event)" ondrop="handleDrop(event, 10, 'large')">
                 <div class="drag-column-header">Area ≥ 90 sq ft</div>
                 <div class="drag-column-slots" id="slots_10_large" ondragover="allowDrop(event)" ondrop="handleDrop(event, 10, 'large')"></div>
@@ -6098,5 +6247,5 @@ window.onload = function() {
 <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <!-- mwb-injected:end -->
-  </body>
+</body>
 </html>

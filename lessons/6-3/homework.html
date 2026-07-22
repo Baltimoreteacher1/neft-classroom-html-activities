@@ -1518,7 +1518,32 @@ header.homework-header h1 {
 .lang-en + .lang-es, .worked-step .lang-es { padding-left: 10px; border-left: 3px solid var(--teal); }
 .welcome-lead .lang-es { color: rgba(255, 255, 255, 0.94); border-left: 3px solid var(--amber); padding-left: 10px; display: inline-block; margin-top: 6px; }
 .learning-big { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; line-height: 1.4; }
-.learning-sub { font-size: 14px; margin: 0; color: var(--ink); }
+.learning-words { margin-top: 12px; }
+.learning-words-label {
+  display: block;
+  margin-bottom: 7px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.learning-word-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.learning-word-chips li {
+  padding: 5px 9px;
+  border: 1px solid #b8ddd8;
+  border-radius: 999px;
+  background: var(--teal-light);
+  color: var(--teal-ink);
+  font-size: 12px;
+  font-weight: 700;
+}
 
 .guided-section { scroll-margin-top: 16px; }
 .section-learn { border-left: 4px solid var(--teal); }
@@ -1552,6 +1577,57 @@ header.homework-header h1 {
 .step-color-3 .step-dot, .step-color-3.step-badge { background: var(--amber); color: var(--navy); }
 .step-color-4 .step-dot, .step-color-4.step-badge { background: var(--coral); }
 
+.concept-quick-wrap {
+  margin: 0 0 16px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: #fbfdff;
+}
+.concept-quick-title {
+  margin: 0 0 10px;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.concept-quick-path {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.concept-quick-step {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 82px;
+  padding: 9px 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  color: var(--navy);
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 800;
+}
+.concept-quick-step:not(:last-child)::after {
+  content: "→";
+  position: absolute;
+  right: -9px;
+  z-index: 1;
+  color: var(--teal-ink);
+  font-size: 16px;
+}
+.concept-quick-icon { font-size: 24px; line-height: 1; margin-bottom: 5px; }
+.concept-quick-step .lang-es { color: var(--muted); font-size: 11px; }
+
 .key-idea-banner {
   background: var(--teal-light);
   border-radius: var(--radius-sm);
@@ -1569,6 +1645,48 @@ header.homework-header h1 {
   padding: 12px 14px;
   background: var(--white);
 }
+.guided-step { padding: 16px; }
+.guided-step-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.guided-step-head > div { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
+.guided-step-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  border-radius: 12px;
+  background: var(--cream);
+  font-size: 22px;
+}
+.step-cue-label {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.step-cue-label .lang-en, .step-cue-label .lang-es { display: inline; margin: 0; }
+.step-cue-label .lang-es::before { content: " / "; color: var(--muted); }
+.guided-step-head .step-badge { margin: 0; }
+.guided-step .step-lead { font-size: 16px; font-weight: 700; line-height: 1.45; }
+.step-detail {
+  margin-top: 10px;
+  border-top: 1px dashed var(--line);
+  padding-top: 9px;
+}
+.step-detail summary {
+  cursor: pointer;
+  color: var(--teal-ink);
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 800;
+}
+.step-detail p { margin-top: 8px; color: var(--ink); font-weight: 400; }
 .step-badge {
   display: inline-block;
   font-family: var(--font-display);
@@ -1597,6 +1715,17 @@ header.homework-header h1 {
   padding: 10px 12px; background: var(--cream); border-radius: var(--radius-sm);
 }
 .watch-icon { font-size: 20px; flex-shrink: 0; }
+
+@media (max-width: 560px) {
+  .concept-quick-path { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .concept-quick-step:nth-child(2)::after { display: none; }
+}
+
+@media print {
+  .concept-quick-path { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .step-detail > summary { display: none; }
+  .step-detail[open] > summary ~ *, .step-detail > * { display: block; }
+}
 
 .try-scenario { font-size: 15px; font-weight: 600; color: var(--navy); margin: 0 0 8px; }
 .try-together-note { font-size: 14px; margin: 0 0 14px; color: var(--muted); }
@@ -2433,8 +2562,8 @@ header.packet h1::after{
         </div>
       </div>
       <p class="welcome-lead bilingual-block">
-        <span class="lang-en"><strong>English:</strong> You don't need to be a math expert. This page helps you <em>guide</em> your student — with pictures, steps, and words in both languages.</span>
-        <span class="lang-es" lang="es"><strong>Español:</strong> No necesitas ser experto en matemáticas. Esta página te ayuda a <em>guiar</em> a tu estudiante — con dibujos, pasos y palabras en dos idiomas.</span>
+        <span class="lang-en"><strong>English:</strong> Use the pictures and short steps. Ask questions; let your student do the thinking.</span>
+        <span class="lang-es" lang="es"><strong>Español:</strong> Usen los dibujos y los pasos cortos. Hagan preguntas; dejen que su estudiante piense.</span>
       </p>
       
       <!-- Modern language mode selector -->
@@ -2534,13 +2663,13 @@ header.packet h1::after{
       <div class="bilingual-grid">
         <div class="bilingual-col lang-en">
           <span class="lang-label">English</span>
-          <p class="learning-big">Tonight we turn words into a math expression. We use a letter to stand for a number we do not know yet..</p>
-          <p class="learning-sub">Practice using these words while you work: <em>Variable, Algebraic Expression, Coefficient, Constant, Like terms</em>.</p>
+          <p class="learning-big">Tonight we turn words into a math expression. We use a letter to stand for a number we do not know yet.</p>
+          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Variable</li><li>Algebraic Expression</li><li>Coefficient</li><li>Constant</li><li>Like terms</li></ul></div>
         </div>
         <div class="bilingual-col lang-es" lang="es">
           <span class="lang-label">Español</span>
           <p class="learning-big">Esta noche convertimos palabras en una expresión matemática. Usamos una letra para representar un número que todavía no conocemos.</p>
-          <p class="learning-sub">Practiquen usar estas palabras al trabajar: <em>Variable, Expresión algebraica, Coeficiente, Constante, Términos semejantes</em>.</p>
+          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Variable</li><li>Expresión algebraica</li><li>Coeficiente</li><li>Constante</li><li>Términos semejantes</li></ul></div>
         </div>
       </div>
     
@@ -2555,31 +2684,51 @@ header.packet h1::after{
         <text x="50" y="125" font-size="13" fill="#21313f">3 = coefficient · x = variable · no equal sign</text>
         <text x="50" y="148" font-size="13" fill="#21313f" lang="es">3 = coeficiente · x = variable · sin signo igual</text>
       </svg></div>
+      <div class="concept-quick-wrap">
+        <p class="concept-quick-title"><span class="lang-en">Follow the picture path</span><span class="lang-es" lang="es">Sigan la ruta visual</span></p>
+        <ol class="concept-quick-path" aria-label="Four-step visual math path"><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">👀</span><span class="lang-en">Start</span><span class="lang-es" lang="es">Empieza</span></li><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">🧩</span><span class="lang-en">Show it</span><span class="lang-es" lang="es">Muéstralo</span></li><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">✏️</span><span class="lang-en">Solve</span><span class="lang-es" lang="es">Resuelve</span></li><li class="concept-quick-step"><span class="concept-quick-icon" aria-hidden="true">✅</span><span class="lang-en">Check</span><span class="lang-es" lang="es">Revisa</span></li></ol>
+      </div>
       <div class="key-idea-banner">
-        <p class="lang-en"><strong>Watch for this:</strong> Key words tell us what to do. &quot;Each&quot; or &quot;per&quot; means multiply, and &quot;plus&quot; or &quot;more than&quot; means add. The letter holds a spot for an unknown number.</p>
-        <p class="lang-es" lang="es"><strong>Observa esto:</strong> Las palabras clave nos dicen qué hacer. &quot;Cada&quot; o &quot;por&quot; significa multiplicar, y &quot;más&quot; o &quot;más que&quot; significa sumar. La letra guarda el lugar de un número desconocido.</p>
+        <p class="lang-en"><strong>In one sentence:</strong> Key words tell us what to do. &quot;Each&quot; or &quot;per&quot; means multiply, and &quot;plus&quot; or &quot;more than&quot; means add. The letter holds a spot for an unknown number.</p>
+        <p class="lang-es" lang="es"><strong>En una frase:</strong> Las palabras clave nos dicen qué hacer. &quot;Cada&quot; o &quot;por&quot; significa multiplicar, y &quot;más&quot; o &quot;más que&quot; significa sumar. La letra guarda el lugar de un número desconocido.</p>
       </div>
       <ol class="guided-steps">
         
           <li class="guided-step step-color-1">
-            <span class="step-badge"><span class="lang-en">Step 1</span><span class="lang-es" lang="es">Paso 1</span></span>
-            <p class="lang-en">Real example: a concert charges $12 for each ticket, plus a flat $50 venue fee. Let t be the number of tickets. We want an expression for the total revenue.</p>
-            <p class="lang-es" lang="es">Ejemplo real: un concierto cobra $12 por cada boleto, más una tarifa fija de $50 por el lugar. Sea t el número de boletos. Queremos una expresión para los ingresos totales.</p>
+            <div class="guided-step-head">
+              <span class="guided-step-icon" aria-hidden="true">👀</span>
+              <div><span class="step-cue-label"><span class="lang-en">Start</span><span class="lang-es" lang="es">Empieza</span></span><span class="step-badge"><span class="lang-en">Step 1</span><span class="lang-es" lang="es">Paso 1</span></span></div>
+            </div>
+            <p class="step-lead lang-en">Real example: a concert charges $12 for each ticket, plus a flat $50 venue fee.</p>
+            <p class="step-lead lang-es" lang="es">Ejemplo real: un concierto cobra $12 por cada boleto, más una tarifa fija de $50 por el lugar.</p>
+            <details class="step-detail"><summary><span class="lang-en">More detail</span><span class="lang-es" lang="es">Más detalle</span></summary><p class="lang-en">Let t be the number of tickets. We want an expression for the total revenue.</p><p class="lang-es" lang="es">Sea t el número de boletos. Queremos una expresión para los ingresos totales.</p></details>
           </li>
           <li class="guided-step step-color-2">
-            <span class="step-badge"><span class="lang-en">Step 2</span><span class="lang-es" lang="es">Paso 2</span></span>
-            <p class="lang-en">&quot;$12 for each ticket&quot; means 12 times t. We write that as 12t (a number next to a letter means multiply).</p>
-            <p class="lang-es" lang="es">&quot;$12 por cada boleto&quot; significa 12 por t. Lo escribimos como 12t (un número junto a una letra significa multiplicar).</p>
+            <div class="guided-step-head">
+              <span class="guided-step-icon" aria-hidden="true">🧩</span>
+              <div><span class="step-cue-label"><span class="lang-en">Show it</span><span class="lang-es" lang="es">Muéstralo</span></span><span class="step-badge"><span class="lang-en">Step 2</span><span class="lang-es" lang="es">Paso 2</span></span></div>
+            </div>
+            <p class="step-lead lang-en">&quot;$12 for each ticket&quot; means 12 times t.</p>
+            <p class="step-lead lang-es" lang="es">&quot;$12 por cada boleto&quot; significa 12 por t.</p>
+            <details class="step-detail"><summary><span class="lang-en">More detail</span><span class="lang-es" lang="es">Más detalle</span></summary><p class="lang-en">We write that as 12t (a number next to a letter means multiply).</p><p class="lang-es" lang="es">Lo escribimos como 12t (un número junto a una letra significa multiplicar).</p></details>
           </li>
           <li class="guided-step step-color-3">
-            <span class="step-badge"><span class="lang-en">Step 3</span><span class="lang-es" lang="es">Paso 3</span></span>
-            <p class="lang-en">The $50 fee is added one time, no matter how many tickets sell. So we add 50.</p>
-            <p class="lang-es" lang="es">La tarifa de $50 se suma una sola vez, sin importar cuántos boletos se vendan. Entonces sumamos 50.</p>
+            <div class="guided-step-head">
+              <span class="guided-step-icon" aria-hidden="true">✏️</span>
+              <div><span class="step-cue-label"><span class="lang-en">Solve</span><span class="lang-es" lang="es">Resuelve</span></span><span class="step-badge"><span class="lang-en">Step 3</span><span class="lang-es" lang="es">Paso 3</span></span></div>
+            </div>
+            <p class="step-lead lang-en">The $50 fee is added one time, no matter how many tickets sell.</p>
+            <p class="step-lead lang-es" lang="es">La tarifa de $50 se suma una sola vez, sin importar cuántos boletos se vendan.</p>
+            <details class="step-detail"><summary><span class="lang-en">More detail</span><span class="lang-es" lang="es">Más detalle</span></summary><p class="lang-en">So we add 50.</p><p class="lang-es" lang="es">Entonces sumamos 50.</p></details>
           </li>
           <li class="guided-step step-color-4">
-            <span class="step-badge"><span class="lang-en">Step 4</span><span class="lang-es" lang="es">Paso 4</span></span>
-            <p class="lang-en">Put the two parts together: total revenue = 12t + 50. The 12 is the coefficient, t is the variable, and 50 is the constant.</p>
-            <p class="lang-es" lang="es">Junta las dos partes: ingresos totales = 12t + 50. El 12 es el coeficiente, t es la variable, y 50 es la constante.</p>
+            <div class="guided-step-head">
+              <span class="guided-step-icon" aria-hidden="true">✅</span>
+              <div><span class="step-cue-label"><span class="lang-en">Check</span><span class="lang-es" lang="es">Revisa</span></span><span class="step-badge"><span class="lang-en">Step 4</span><span class="lang-es" lang="es">Paso 4</span></span></div>
+            </div>
+            <p class="step-lead lang-en">Put the two parts together: total revenue = 12t + 50.</p>
+            <p class="step-lead lang-es" lang="es">Junta las dos partes: ingresos totales = 12t + 50.</p>
+            <details class="step-detail"><summary><span class="lang-en">More detail</span><span class="lang-es" lang="es">Más detalle</span></summary><p class="lang-en">The 12 is the coefficient, t is the variable, and 50 is the constant.</p><p class="lang-es" lang="es">El 12 es el coeficiente, t es la variable, y 50 es la constante.</p></details>
           </li>
       </ol>
       <ul class="watch-for-list">
@@ -2995,7 +3144,7 @@ header.packet h1::after{
         <div class="family-hint-box"><p>💡 Each card already pairs a phrase with an expression. Check that the expression truly matches the phrase.</p><p>💡 Translate the phrase yourself first, then compare your expression with the card&#039;s before placing it.</p><p>💡 First card: &#039;twice a number k&#039; means two of them. Does 2k say that? If yes, it&#039;s correctly matched.</p></div>
         <div class="drag-sort-workspace" id="dragsort_1">
           <div class="drag-columns">
-            
+
               <div class="drag-column" data-category-id="match" ondragover="allowDrop(event)" ondrop="handleDrop(event, 1, 'match')">
                 <div class="drag-column-header">Correctly Matched</div>
                 <div class="drag-column-slots" id="slots_1_match" ondragover="allowDrop(event)" ondrop="handleDrop(event, 1, 'match')"></div>
@@ -3556,7 +3705,7 @@ header.packet h1::after{
         <div class="family-hint-box"><p>💡 Each word is a code for add, subtract, or multiply. Think about what result the word describes.</p><p>💡 Test each word in a sentence with small numbers: &#039;the ___ of 6 and 2&#039; — does it give 8, 4, or 12?</p><p>💡 Start with &#039;sum&#039;: the sum of 6 and 2 is 8. Which operation made 8? Drop it there, then test the next word.</p></div>
         <div class="drag-sort-workspace" id="dragsort_6">
           <div class="drag-columns">
-            
+
               <div class="drag-column" data-category-id="add" ondragover="allowDrop(event)" ondrop="handleDrop(event, 6, 'add')">
                 <div class="drag-column-header">Addition</div>
                 <div class="drag-column-slots" id="slots_6_add" ondragover="allowDrop(event)" ondrop="handleDrop(event, 6, 'add')"></div>
@@ -3774,7 +3923,7 @@ header.packet h1::after{
         
         <div class="drag-sort-workspace" id="dragsort_8">
           <div class="drag-columns">
-            
+
               <div class="drag-column" data-category-id="add" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, 'add')">
                 <div class="drag-column-header">Addition</div>
                 <div class="drag-column-slots" id="slots_8_add" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, 'add')"></div>
@@ -6186,5 +6335,5 @@ window.onload = function() {
 <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <!-- mwb-injected:end -->
-  </body>
+</body>
 </html>
