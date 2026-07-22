@@ -23,6 +23,12 @@ const SKIP_DIRS = new Set([
   "reports",
 ]);
 
+// Fixed-name assets that only exist after `vite build` (emitted to dist/assets/),
+// so they are absent from the source tree the auditor walks. Keep in lockstep
+// with the fixed `entryFileNames` outputs in vite.config.js (hashed bundles are
+// never referenced by a static path, so only the fixed-name ones need listing).
+const BUILT_ASSETS = new Set(["/assets/homework-lesson-models.js"]);
+
 // ---- gather source HTML files ----
 const htmlFiles = [];
 (function walk(dir) {
@@ -104,6 +110,7 @@ for (const file of htmlFiles) {
     url = url.split("#")[0].split("?")[0];
     if (!url || seen.has(url)) continue;
     seen.add(url);
+    if (BUILT_ASSETS.has(url)) continue; // resolved by vite build, absent from source
     linkCount++;
 
     let pathname, fsPath;
