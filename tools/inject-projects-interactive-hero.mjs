@@ -71,11 +71,11 @@ const MAP = {
     intro: "Wire an expression, feed in a value, and watch the score flow through the machine.",
   },
   "math/unit-7/projects": {
-    kind: "coord-plot", emoji: "🗺️",
-    attrs: { range: "10" },
-    title: "Plot the park",
-    es: "Ubica las atracciones",
-    intro: "Place attractions across all four quadrants and read the distance between them.",
+    kind: "treasure-voyage", emoji: "🗺️",
+    attrs: {},
+    title: "Treasure Voyage: chart the course",
+    es: "Viaje del tesoro: traza el rumbo",
+    intro: "Plot each ordered pair to sail your ship there, leg by leg, until you reach the treasure.",
   },
   "math/unit-8/projects": {
     kind: "escape-chain", emoji: "🕵️",
