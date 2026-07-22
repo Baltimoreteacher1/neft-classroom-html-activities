@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync, readdirSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { resolveVocabImage, vocabImageAlt } from "../engine/core/vocab-images.js";
+import { resolveVocabImage, vocabImageAlt, hasRealVocabImage } from "../engine/core/vocab-images.js";
 import { interactiveVisualHost } from "../engine/core/interactive-visual.js";
 import { EDITORIAL_FONT_IMPORT, EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
 import {
@@ -56,6 +56,79 @@ function escAttr(s) {
   return String(s ?? "")
     .replace(/\\/g, "\\\\")
     .replace(/'/g, "\\'");
+}
+
+function escapeRegExp(s) {
+  return String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+// Precompute the tap-to-define vocab glossary the family homework page ships as
+// data. Mirrors the lesson engine's underlineVocabTerms matching (longest term
+// first, single trailing-plural tolerance, explicit `aliases`, and the curated
+// "<modifier> number" short forms like prime/composite) so the browser side only
+// needs to walk text nodes against `regexSource` and look terms up by index.
+// Returns null when no vocab term has any popup content. `entries` is indexed to
+// the ORIGINAL vocab list so the lookup's stored indices resolve directly.
+function buildVocabGlossary(vocab) {
+  const list = Array.isArray(vocab) ? vocab : [];
+  const hasContent = (v) => !!(v && (v.definition || v.definitionEs || v.visual));
+  const raw = list
+    .map((v, i) => ({ i, term: String((v && v.term) || "").trim() }))
+    .filter((e) => e.term.length > 2 && hasContent(list[e.i]));
+  if (!raw.length) return null;
+
+  const norm = (s) => s.toLowerCase().replace(/s$/, "").trim();
+  const lookup = {};
+  for (const e of raw) {
+    const k = norm(e.term);
+    if (!(k in lookup)) lookup[k] = e.i;
+  }
+
+  const surfaces = raw.map((e) => ({ surface: e.term, i: e.i }));
+  const SAFE_TERM_MODIFIERS = new Set(["prime", "composite", "rational", "irrational"]);
+  const addAlias = (surface, i) => {
+    const s = String(surface || "").trim();
+    if (s.length <= 2) return;
+    const k = norm(s);
+    if (k in lookup) return; // never override a real term sharing this key
+    lookup[k] = i;
+    surfaces.push({ surface: s, i });
+  };
+  for (const e of raw) {
+    const v = list[e.i] || {};
+    if (Array.isArray(v.aliases)) for (const a of v.aliases) addAlias(a, e.i);
+    const words = e.term.split(/\s+/);
+    if (
+      words.length === 2 &&
+      /^numbers?$/i.test(words[1]) &&
+      SAFE_TERM_MODIFIERS.has(words[0].toLowerCase())
+    ) {
+      addAlias(words[0], e.i);
+    }
+  }
+
+  const alt = surfaces
+    .slice()
+    .sort((a, b) => b.surface.length - a.surface.length)
+    .map((s) => escapeRegExp(s.surface))
+    .join("|");
+  const regexSource = `\\b(?:${alt})(?:es|s)?\\b`;
+
+  const entries = list.map((v) => {
+    const term = String((v && v.term) || "").trim();
+    const img = hasRealVocabImage(term, v && v.image) ? resolveVocabImage(term, v && v.image) : "";
+    return {
+      term,
+      termEs: v && v.termEs ? String(v.termEs) : "",
+      def: v && v.definition ? String(v.definition) : "",
+      defEs: v && v.definitionEs ? String(v.definitionEs) : "",
+      example: v && v.visual ? String(v.visual) : "",
+      img,
+      imgAlt: img ? vocabImageAlt(term, v && v.definition) : "",
+    };
+  });
+
+  return { entries, match: { regexSource, lookup } };
 }
 
 function slugId(label, idx) {
@@ -887,6 +960,10 @@ function selectLessonInteractiveModel(config) {
 function generateHtml(lessonId, config) {
   const title = config.title || "Lesson Practice";
   const vocab = config.vocabulary || [];
+  const vocabGlossary = buildVocabGlossary(vocab);
+  // Serialize for an inline <script>; escape "<" so authored text can never
+  // break out with a literal "</script>".
+  const jsonForScript = (v) => JSON.stringify(v).replace(/</g, "\\u003c");
 
   // Two-tier Quick Check: easy "warm-up" problems first to practice the concept,
   // then a harder "level up" set — clearly sectioned. Indices stay contiguous so
@@ -2556,6 +2633,8 @@ ${helpModalHtml}
 <script>
 window.LESSON_ID = "${escAttr(lessonId)}";
 window.LESSON_TITLE = "${escAttr(title)}";
+window.__HW_VOCAB__ = ${vocabGlossary ? jsonForScript(vocabGlossary.entries) : "[]"};
+window.__HW_VOCAB_MATCH__ = ${vocabGlossary ? jsonForScript(vocabGlossary.match) : "null"};
 ${HOMEWORK_TABS_JS}
 ${HOMEWORK_GAME_JS}
 ${VISUAL_LABS_JS}

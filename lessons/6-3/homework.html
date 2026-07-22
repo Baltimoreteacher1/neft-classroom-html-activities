@@ -1450,6 +1450,58 @@ header.homework-header h1 {
   }
 }
 
+/* Tap-to-define vocab glossary — parity with the lesson engine's .obj-term popups.
+   Math words in the notes/practice prose become dotted-underline buttons that open
+   a simple EN/ES definition + illustration, exactly like the lessons. */
+.obj-term {
+  display: inline; margin: 0; padding: 0; border: 0; background: none;
+  font: inherit; color: inherit; cursor: pointer;
+  text-decoration: underline; text-decoration-style: dotted;
+  text-decoration-thickness: 2px; text-underline-offset: 2px;
+  text-decoration-color: var(--teal, #1fa6a2);
+}
+.obj-term:hover, .obj-term:focus-visible {
+  text-decoration-style: solid; background: var(--teal-light, #dff2ee);
+  border-radius: 4px; outline: none;
+}
+@keyframes objFadeIn { from { opacity: 0; } to { opacity: 1; } }
+.obj-popup-backdrop {
+  position: fixed; inset: 0; z-index: 1200; display: flex;
+  align-items: center; justify-content: center; padding: 18px;
+  background: rgba(15, 23, 42, 0.55); animation: objFadeIn 0.15s ease;
+}
+.obj-popup-backdrop[hidden] { display: none; }
+.obj-popup {
+  position: relative; width: min(420px, 100%); max-height: 90vh;
+  overflow-y: auto; background: var(--white, #fff);
+  border-radius: var(--radius-lg, 22px);
+  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.3);
+  padding: 26px 20px 20px; text-align: center; animation: objFadeIn 0.2s ease;
+}
+.obj-popup-close {
+  position: absolute; top: 8px; right: 10px; width: 36px; height: 36px;
+  border: 0; border-radius: 50%; background: var(--cream, #f7f4ec);
+  color: var(--navy, #12355b); font-size: 1.5rem; line-height: 1; cursor: pointer;
+}
+.obj-popup-close:hover { background: var(--teal-light, #dff2ee); }
+.obj-popup-term { margin: 0 0 14px; color: var(--teal-ink, #0c6f6b); text-transform: capitalize; }
+.obj-popup-translation {
+  display: flex; align-items: baseline; gap: 10px; margin: 0 0 14px;
+  padding: 10px 14px; background: var(--teal-light, #dff2ee); border-radius: var(--radius-md, 14px);
+}
+.obj-popup-translation[hidden] { display: none; }
+.obj-popup-tr-label { font-weight: 700; color: var(--teal-ink, #0c6f6b); }
+.obj-popup-tr-es { font-size: 1.1rem; font-weight: 600; color: var(--navy, #12355b); }
+.obj-popup-def { margin: 0; font-size: 1.05rem; line-height: 1.5; color: var(--navy, #12355b); }
+.obj-popup-def-es { margin: 10px 0 0; font-style: italic; color: var(--muted, #5f6f80); }
+.obj-popup-def-es[hidden] { display: none; }
+.obj-popup-visual { margin: 14px 0 0; }
+.obj-popup-visual[hidden] { display: none; }
+.obj-popup-img { display: block; width: 100%; max-width: 200px; height: auto; margin: 0 auto 10px; }
+.obj-popup-example { margin: 0; font-weight: 600; color: var(--navy, #12355b); }
+.obj-popup-example[hidden] { display: none; }
+body.obj-popup-open { overflow: hidden; }
+
 /* Family guided notes layout */
 .family-welcome {
   background: linear-gradient(135deg, var(--navy), var(--navy-light));
@@ -2523,6 +2575,7 @@ header.packet h1::after{
   <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
   <link rel="stylesheet" href="/assets/mobile-access.css">
   <!-- mobile-access-injected:end -->
+
 
   <!-- enthead-injected:begin (enterprise head/meta — tools/inject-enterprise-head.js) -->
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
@@ -4704,6 +4757,8 @@ header.packet h1::after{
 <script>
 window.LESSON_ID = "6-3";
 window.LESSON_TITLE = "Write Algebraic Expressions";
+window.__HW_VOCAB__ = [{"term":"Variable","termEs":"Variable","def":"A letter that stands for a number that is unknown or can change.","defEs":"Una letra que representa un número desconocido o que puede cambiar.","example":"In 5t + 20, t could be hours worked — if t = 3, the expression equals 35; if t = 8, it equals 60","img":"/assets/vocab-images/variable.svg","imgAlt":"Illustration of Variable: A letter that stands for a number that is unknown or can change."},{"term":"Algebraic Expression","termEs":"Expresión algebraica","def":"A math phrase that has at least one letter.","defEs":"Una frase matemática que tiene al menos una letra.","example":"3n + 7 means 'triple a number, then add 7' — it has a variable (n), a coefficient (3), and a constant (7)","img":"/assets/vocab-images/expression.svg","imgAlt":"Illustration of Algebraic Expression: A math phrase that has at least one letter."},{"term":"Coefficient","termEs":"Coeficiente","def":"The number in front of a letter, like the 3 in 3x.","defEs":"El número frente a una letra, como el 3 en 3x.","example":"In 8x, the coefficient 8 means '8 groups of x' — if x = 3, then 8x = 8 × 3 = 24","img":"/assets/vocab-images/coefficient.svg","imgAlt":"Illustration of Coefficient: The number in front of a letter, like the 3 in 3x."},{"term":"Constant","termEs":"Constante","def":"A number on its own that does not change.","defEs":"Un número solo que no cambia.","example":"In 3n + 7, the 7 never changes no matter what n is — like a flat fee that stays the same","img":"/assets/vocab-images/constant.svg","imgAlt":"Illustration of Constant: A number on its own that does not change."},{"term":"Like terms","termEs":"Términos semejantes","def":"Terms with the same letter, like 2x and 5x.","defEs":"Términos con la misma letra, como 2x y 5x.","example":"4x + 2x = 6x (like terms, same variable); but 4x + 2y cannot be combined (different variables)","img":"/assets/vocab-images/like-terms.svg","imgAlt":"Illustration of Like terms: Terms with the same letter, like 2x and 5x."}];
+window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Algebraic Expression|Coefficient|Like terms|Variable|Constant)(?:es|s)?\\b","lookup":{"variable":0,"algebraic expression":1,"coefficient":2,"constant":3,"like term":4}};
 
 function syncHomeworkChromeHeights() {
   const status = document.querySelector('.bottom-status-bar');
@@ -4941,7 +4996,125 @@ document.addEventListener('DOMContentLoaded', function() {
   } catch(e) {}
   restoreParentSignoff();
   initDrawCanvases();
+  initHomeworkVocabPopups();
 });
+
+// Tap-to-define vocab glossary. Mirrors the lesson engine's underlineVocabTerms +
+// objective-term popup so math words in the family notes/practice get the SAME
+// simple EN/ES definition + picture. All term matching (regex source + normalized
+// lookup, including prime/composite-style aliases) is precomputed in Node and
+// handed over as window.__HW_VOCAB_MATCH__, so the browser only walks text nodes.
+function initHomeworkVocabPopups() {
+  var list = Array.isArray(window.__HW_VOCAB__) ? window.__HW_VOCAB__ : [];
+  var match = window.__HW_VOCAB_MATCH__ || null;
+  var container = document.getElementById('hw_tab_panels');
+  if (!container || !list.length || !match || !match.regexSource) return;
+  var lookup = match.lookup || {};
+  function norm(s) { return String(s).toLowerCase().replace(/s$/, '').trim(); }
+  var re = new RegExp(match.regexSource, 'gi');
+  // Never rewrite inside controls, inputs, the vocab flashcards (already defined
+  // there), an already-wrapped term, or the popup itself.
+  var EXCL = 'button, a[href], input, textarea, select, option, label, summary, script, style, svg, code, kbd, .obj-term, .obj-popup-backdrop, .vocab-card, .vocab-container, [data-no-vocab]';
+  var walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, {
+    acceptNode: function(node) {
+      var parent = node.parentElement;
+      if (!node.textContent || !node.textContent.trim() || !parent) return NodeFilter.FILTER_REJECT;
+      if (parent.closest(EXCL)) return NodeFilter.FILTER_REJECT;
+      re.lastIndex = 0;
+      return re.test(node.textContent) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+    }
+  });
+  var nodes = [];
+  for (var n = walker.nextNode(); n; n = walker.nextNode()) nodes.push(n);
+  nodes.forEach(function(textNode) {
+    var text = textNode.textContent;
+    var frag = document.createDocumentFragment();
+    var cursor = 0, changed = false, m;
+    re.lastIndex = 0;
+    while ((m = re.exec(text)) !== null) {
+      var key = norm(m[0]);
+      var idx = Object.prototype.hasOwnProperty.call(lookup, key) ? lookup[key] : -1;
+      if (idx < 0) continue;
+      frag.appendChild(document.createTextNode(text.slice(cursor, m.index)));
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'obj-term';
+      btn.setAttribute('data-term-idx', String(idx));
+      btn.setAttribute('aria-haspopup', 'dialog');
+      btn.setAttribute('aria-label', m[0] + ': open definition');
+      btn.textContent = m[0];
+      frag.appendChild(btn);
+      cursor = m.index + m[0].length;
+      changed = true;
+    }
+    if (!changed) return;
+    frag.appendChild(document.createTextNode(text.slice(cursor)));
+    textNode.parentNode.replaceChild(frag, textNode);
+  });
+
+  var backdrop = null, lastFocus = null, keyHandler = null;
+  function getPopup() {
+    if (backdrop) return backdrop;
+    backdrop = document.createElement('div');
+    backdrop.className = 'obj-popup-backdrop';
+    backdrop.hidden = true;
+    backdrop.innerHTML =
+      '<div class="obj-popup" role="dialog" aria-modal="true" aria-labelledby="hw-obj-term">' +
+      '<button type="button" class="obj-popup-close" aria-label="Close">&times;</button>' +
+      '<h3 id="hw-obj-term" class="obj-popup-term"></h3>' +
+      '<p class="obj-popup-translation"><span class="obj-popup-tr-label">Español:</span> <span class="obj-popup-tr-es" lang="es"></span></p>' +
+      '<p class="obj-popup-def"></p>' +
+      '<p class="obj-popup-def-es" lang="es"></p>' +
+      '<figure class="obj-popup-visual"><img class="obj-popup-img" alt="" /><figcaption class="obj-popup-example"></figcaption></figure>' +
+      '</div>';
+    document.body.appendChild(backdrop);
+    backdrop.addEventListener('click', function(e) { if (e.target === backdrop) closePopup(); });
+    backdrop.querySelector('.obj-popup-close').addEventListener('click', closePopup);
+    return backdrop;
+  }
+  function openPopup(entry) {
+    if (!entry) return;
+    var bd = getPopup();
+    bd.querySelector('.obj-popup-term').textContent = entry.term ? String(entry.term) : '';
+    var trRow = bd.querySelector('.obj-popup-translation');
+    var trEs = bd.querySelector('.obj-popup-tr-es');
+    if (entry.termEs) { trEs.textContent = String(entry.termEs); trRow.hidden = false; }
+    else { trEs.textContent = ''; trRow.hidden = true; }
+    var img = bd.querySelector('.obj-popup-img');
+    if (entry.img) { img.src = entry.img; img.alt = entry.imgAlt || ''; img.hidden = false; }
+    else { img.removeAttribute('src'); img.alt = ''; img.hidden = true; }
+    var ex = bd.querySelector('.obj-popup-example');
+    ex.textContent = entry.example ? String(entry.example) : '';
+    ex.hidden = !entry.example;
+    var fig = bd.querySelector('.obj-popup-visual');
+    if (fig) fig.hidden = !entry.img && !entry.example;
+    bd.querySelector('.obj-popup-def').textContent = entry.def ? String(entry.def) : '';
+    var esEl = bd.querySelector('.obj-popup-def-es');
+    if (entry.defEs) { esEl.textContent = String(entry.defEs); esEl.hidden = false; }
+    else { esEl.textContent = ''; esEl.hidden = true; }
+    lastFocus = document.activeElement;
+    bd.hidden = false;
+    document.body.classList.add('obj-popup-open');
+    bd.querySelector('.obj-popup-close').focus();
+    keyHandler = function(e) { if (e.key === 'Escape') closePopup(); };
+    document.addEventListener('keydown', keyHandler);
+  }
+  function closePopup() {
+    if (!backdrop) return;
+    backdrop.hidden = true;
+    document.body.classList.remove('obj-popup-open');
+    if (keyHandler) { document.removeEventListener('keydown', keyHandler); keyHandler = null; }
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+    lastFocus = null;
+  }
+  container.addEventListener('click', function(e) {
+    var btn = e.target && e.target.closest ? e.target.closest('.obj-term') : null;
+    if (!btn || !container.contains(btn)) return;
+    e.preventDefault();
+    var idx = Number(btn.getAttribute('data-term-idx'));
+    if (Number.isInteger(idx)) openPopup(list[idx]);
+  });
+}
 
 // Make every "Draw your model" grid an actual drawable surface (mouse + touch + stylus).
 function initDrawCanvases() {
