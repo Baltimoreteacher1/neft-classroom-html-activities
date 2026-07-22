@@ -22,7 +22,7 @@ const pageDir = resolve(repoRoot, "teacher-tools/canvas-scorm");
 const pkgDir = resolve(pageDir, "packages");
 const SITE = (process.env.NEFT_SITE || "https://eduwonderlab.com").replace(/\/$/, "");
 
-if (existsSync(pkgDir)) rmSync(pkgDir, { recursive: true, force: true });
+if (existsSync(pkgDir)) rmSync(pkgDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
 mkdirSync(pkgDir, { recursive: true });
 mkdirSync(scormOut, { recursive: true });
 
