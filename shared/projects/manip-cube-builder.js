@@ -271,7 +271,7 @@
       void ACCENT;
 
       svgBox.innerHTML =
-        '<svg viewBox="0 0 ' +
+        '<svg style="background:white" viewBox="0 0 ' +
         vbW.toFixed(1) +
         " " +
         vbH.toFixed(1) +

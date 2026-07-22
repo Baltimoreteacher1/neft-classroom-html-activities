@@ -2862,50 +2862,133 @@
           h = 12;
         }
 
-        const originX = 180,
-          originY = 140;
+        const isEs = document.getElementById("body").classList.contains("es");
+        const titleText = isEs
+          ? `Plano del Acuario 3D (${isExample ? "Ejemplo" : "Tu Tanque"})`
+          : `3D Aquarium Blueprint (${isExample ? "Example" : "Your Tank"})`;
+        const openTopText = isEs
+          ? "PARTE SUPERIOR ABIERTA (5 Caras de Vidrio)"
+          : "OPEN TOP (5 Glass Faces — No Lid)";
+        const volCalc = (l * w * h).toLocaleString("en-US", { maximumFractionDigits: 1 });
+        const galCalc = ((l * w * h) / 231).toFixed(1);
+
+        const svgW = 520, svgH = 210;
+        const originX = 175, originY = 155;
         const maxDim = Math.max(l, w, h);
-        const scale = 110 / maxDim;
+        const scale = 115 / maxDim;
         const sw = l * scale;
         const sh = h * scale;
         const sd = w * scale;
         const dx = sd * 0.707;
         const dy = -sd * 0.707;
-        const isEs = document.getElementById("body").classList.contains("es");
 
-        const titleText = isEs
-          ? `Forma del Acuario 3D (${isExample ? "Ejemplo" : "Tu Tanque"})`
-          : `3D Aquarium Shape (${isExample ? "Example" : "Your Tank"})`;
-        const openTopText = isEs
-          ? "PARTE SUPERIOR ABIERTA (Sin Tapa)"
-          : "OPEN TOP (No Lid)";
+        // Water level ratio inside aquarium (82% height)
+        const waterHeightRatio = 0.82;
+        const wsh = sh * waterHeightRatio;
+
+        svg.setAttribute("viewBox", `0 0 ${svgW} ${svgH}`);
+        svg.setAttribute("style", "background: white; border: 1px solid #cbd5e1; border-radius: 12px; font-family: system-ui, -apple-system, sans-serif;");
 
         svg.innerHTML = `
-          <rect x="0" y="0" width="520" height="180" fill="none" />
-          <text x="260" y="22" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2d4a">${titleText}</text>
-          
-          <!-- Back faces/inside lines in dashed -->
-          <line x1="${originX + dx}" y1="${originY + dy}" x2="${originX + dx + sw}" y2="${originY + dy}" stroke="#cbd5e1" stroke-dasharray="3,3" stroke-width="1.5" />
-          <line x1="${originX + dx}" y1="${originY + dy}" x2="${originX + dx}" y2="${originY + dy - sh}" stroke="#cbd5e1" stroke-dasharray="3,3" stroke-width="1.5" />
-          <line x1="${originX}" y1="${originY}" x2="${originX + dx}" y2="${originY + dy}" stroke="#cbd5e1" stroke-dasharray="3,3" stroke-width="1.5" />
+          <defs>
+            <marker id="vol-arrow-start" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+              <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#0284c7"/>
+            </marker>
+            <marker id="vol-arrow-end" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+              <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#0284c7"/>
+            </marker>
+            <linearGradient id="aqGlassFront" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.15"/>
+              <stop offset="100%" stop-color="#0284c7" stop-opacity="0.30"/>
+            </linearGradient>
+            <linearGradient id="aqGlassSide" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#0284c7" stop-opacity="0.22"/>
+              <stop offset="100%" stop-color="#0369a1" stop-opacity="0.42"/>
+            </linearGradient>
+            <linearGradient id="aqWaterFront" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.55"/>
+              <stop offset="100%" stop-color="#0284c7" stop-opacity="0.75"/>
+            </linearGradient>
+            <linearGradient id="aqWaterSide" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#0284c7" stop-opacity="0.65"/>
+              <stop offset="100%" stop-color="#0369a1" stop-opacity="0.85"/>
+            </linearGradient>
+            <linearGradient id="aqWaterTop" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#7dd3fc" stop-opacity="0.85"/>
+              <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.95"/>
+            </linearGradient>
+            <filter id="aqShadow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="5"/>
+            </filter>
+          </defs>
 
-          <!-- Bottom face -->
-          <polygon points="${originX},${originY} ${originX + sw},${originY} ${originX + sw + dx},${originY + dy} ${originX + dx},${originY + dy}" fill="rgba(14, 148, 136, 0.05)" stroke="none" />
+          <!-- Blueprint Header Banner -->
+          <rect x="0" y="0" width="${svgW}" height="32" fill="#f8fafc" />
+          <line x1="0" y1="32" x2="${svgW}" y2="32" stroke="#e2e8f0" stroke-width="1" />
+          <text x="16" y="21" font-size="12" font-weight="800" fill="#0f172a" letter-spacing="0.02em">${titleText}</text>
           
-          <!-- Front face -->
-          <polygon points="${originX},${originY} ${originX + sw},${originY} ${originX + sw},${originY - sh} ${originX},${originY - sh}" fill="rgba(14, 148, 136, 0.15)" stroke="#0ea5e9" stroke-width="1.5" />
-          
-          <!-- Right face -->
-          <polygon points="${originX + sw},${originY} ${originX + sw + dx},${originY + dy} ${originX + sw + dx},${originY + dy - sh} ${originX + sw},${originY - sh}" fill="rgba(14, 148, 136, 0.25)" stroke="#0ea5e9" stroke-width="1.5" />
-          
-          <!-- Top face (Open) -->
-          <polygon points="${originX},${originY - sh} ${originX + sw},${originY - sh} ${originX + sw + dx},${originY + dy - sh} ${originX + dx},${originY + dy - sh}" fill="rgba(255, 255, 255, 0.1)" stroke="#0ea5e9" stroke-dasharray="4,2" stroke-width="1.5" />
+          <!-- Open Top Pill Badge -->
+          <rect x="${svgW - 200}" y="6" width="184" height="20" rx="10" fill="#ccfbf1" stroke="#14b8a6" stroke-width="1" />
+          <text x="${svgW - 108}" y="19" text-anchor="middle" font-size="10" font-weight="700" fill="#0f766e">${openTopText}</text>
 
-          <!-- Labels -->
-          <text x="${originX + sw / 2}" y="${originY + 16}" text-anchor="middle" font-size="11" font-weight="bold" fill="#0ea5e9">${l} ${isEs ? "pulg" : "in"}</text>
-          <text x="${originX + sw + dx / 2 + 8}" y="${originY + dy / 2 + 4}" font-size="11" font-weight="bold" fill="#0ea5e9">${w} ${isEs ? "pulg" : "in"}</text>
-          <text x="${originX - 8}" y="${originY - sh / 2}" text-anchor="end" font-size="11" font-weight="bold" fill="#0ea5e9">${h} ${isEs ? "pulg" : "in"}</text>
-          <text x="${originX + sw / 2 + dx / 2}" y="${originY - sh - 10}" text-anchor="middle" font-size="10" font-weight="bold" fill="#0d9488">${openTopText}</text>
+          <!-- Ground Contact Shadow -->
+          <ellipse cx="${originX + sw/2 + dx/2}" cy="${originY + 6}" rx="${sw/2 + dx/2 + 10}" ry="${Math.abs(dy)/2 + 6}" fill="#0f172a" opacity="0.12" filter="url(#aqShadow)"/>
+
+          <!-- Dashed Interior Back Corner Lines -->
+          <line x1="${originX + dx}" y1="${originY + dy}" x2="${originX + dx + sw}" y2="${originY + dy}" stroke="#94a3b8" stroke-dasharray="4,4" stroke-width="1.5" />
+          <line x1="${originX + dx}" y1="${originY + dy}" x2="${originX + dx}" y2="${originY + dy - sh}" stroke="#94a3b8" stroke-dasharray="4,4" stroke-width="1.5" />
+          <line x1="${originX}" y1="${originY}" x2="${originX + dx}" y2="${originY + dy}" stroke="#94a3b8" stroke-dasharray="4,4" stroke-width="1.5" />
+
+          <!-- Bottom Face -->
+          <polygon points="${originX},${originY} ${originX + sw},${originY} ${originX + sw + dx},${originY + dy} ${originX + dx},${originY + dy}" fill="rgba(14, 165, 233, 0.08)" stroke="none" />
+
+          <!-- Water Volume Block (Inside Aquarium) -->
+          <polygon points="${originX},${originY} ${originX + sw},${originY} ${originX + sw},${originY - wsh} ${originX},${originY - wsh}" fill="url(#aqWaterFront)" stroke="none" />
+          <polygon points="${originX + sw},${originY} ${originX + sw + dx},${originY + dy} ${originX + sw + dx},${originY + dy - wsh} ${originX + sw},${originY - wsh}" fill="url(#aqWaterSide)" stroke="none" />
+          <polygon points="${originX},${originY - wsh} ${originX + sw},${originY - wsh} ${originX + sw + dx},${originY + dy - wsh} ${originX + dx},${originY + dy - wsh}" fill="url(#aqWaterTop)" stroke="#7dd3fc" stroke-width="1" />
+          <path d="M ${originX + 10} ${originY - wsh} Q ${originX + sw/2} ${originY - wsh - 3} ${originX + sw - 10} ${originY - wsh}" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" fill="none" />
+
+          <!-- Glass Outer Panels -->
+          <polygon points="${originX},${originY} ${originX + sw},${originY} ${originX + sw},${originY - sh} ${originX},${originY - sh}" fill="url(#aqGlassFront)" stroke="#0284c7" stroke-width="2" />
+          <polygon points="${originX + sw},${originY} ${originX + sw + dx},${originY + dy} ${originX + sw + dx},${originY + dy - sh} ${originX + sw},${originY - sh}" fill="url(#aqGlassSide)" stroke="#0284c7" stroke-width="2" />
+          <polygon points="${originX},${originY - sh} ${originX + sw},${originY - sh} ${originX + sw + dx},${originY + dy - sh} ${originX + dx},${originY + dy - sh}" fill="none" stroke="#0284c7" stroke-dasharray="5,3" stroke-width="1.8" />
+
+          <!-- Specular Glass Highlights (Reflections) -->
+          <line x1="${originX + 12}" y1="${originY - 15}" x2="${originX + 38}" y2="${originY - sh + 20}" stroke="rgba(255,255,255,0.65)" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="${originX + 22}" y1="${originY - 10}" x2="${originX + 44}" y2="${originY - sh + 35}" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" stroke-linecap="round"/>
+
+          <!-- Front Vertex Highlights -->
+          <circle cx="${originX}" cy="${originY}" r="3" fill="#0284c7" />
+          <circle cx="${originX + sw}" cy="${originY}" r="3" fill="#0284c7" />
+          <circle cx="${originX + sw}" cy="${originY - sh}" r="3" fill="#0284c7" />
+          <circle cx="${originX}" cy="${originY - sh}" r="3" fill="#0284c7" />
+          <circle cx="${originX + sw + dx}" cy="${originY + dy}" r="2.5" fill="#0369a1" />
+
+          <!-- Dimension Lines & Arrow Callouts -->
+          <!-- Length (l) dimension arrow -->
+          <line x1="${originX}" y1="${originY + 18}" x2="${originX + sw}" y2="${originY + 18}" stroke="#0284c7" stroke-width="1.5" marker-start="url(#vol-arrow-start)" marker-end="url(#vol-arrow-end)" />
+          <rect x="${originX + sw/2 - 30}" y="${originY + 7}" width="60" height="20" rx="10" fill="#0284c7" />
+          <text x="${originX + sw/2}" y="${originY + 21}" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">${l} ${isEs ? "pulg" : "in"}</text>
+
+          <!-- Width (w) dimension arrow -->
+          <line x1="${originX + sw + 10}" y1="${originY + 6}" x2="${originX + sw + dx + 10}" y2="${originY + dy + 6}" stroke="#0284c7" stroke-width="1.5" marker-start="url(#vol-arrow-start)" marker-end="url(#vol-arrow-end)" />
+          <rect x="${originX + sw + dx/2 - 22}" y="${originY + dy/2 - 4}" width="56" height="18" rx="9" fill="#0369a1" />
+          <text x="${originX + sw + dx/2 + 6}" y="${originY + dy/2 + 9}" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">${w} ${isEs ? "pulg" : "in"}</text>
+
+          <!-- Height (h) dimension arrow -->
+          <line x1="${originX - 16}" y1="${originY}" x2="${originX - 16}" y2="${originY - sh}" stroke="#0284c7" stroke-width="1.5" marker-start="url(#vol-arrow-start)" marker-end="url(#vol-arrow-end)" />
+          <rect x="${originX - 54}" y="${originY - sh/2 - 10}" width="56" height="20" rx="10" fill="#0284c7" />
+          <text x="${originX - 26}" y="${originY - sh/2 + 4}" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">${h} ${isEs ? "pulg" : "in"}</text>
+
+          <!-- Volume Summary Box (Right Card) -->
+          <rect x="375" y="48" width="132" height="135" rx="10" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1" />
+          <text x="441" y="68" text-anchor="middle" font-size="11" font-weight="800" fill="#0f172a">${isEs ? "RESUMEN DE VOLUMEN" : "VOLUME SUMMARY"}</text>
+          <line x1="387" y1="76" x2="495" y2="76" stroke="#cbd5e1" stroke-width="1" />
+          <text x="441" y="94" text-anchor="middle" font-size="10" font-weight="600" fill="#475569">V = l × w × h</text>
+          <text x="441" y="118" text-anchor="middle" font-size="15" font-weight="800" fill="#0284c7">${volCalc} in³</text>
+          <rect x="391" y="132" width="100" height="24" rx="6" fill="#0284c7" />
+          <text x="441" y="148" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">≈ ${galCalc} gal</text>
+          <text x="441" y="172" text-anchor="middle" font-size="9" fill="#64748b">(1 gal = 231 in³)</text>
         `;
       }
 
@@ -2924,68 +3007,109 @@
           h = 12;
         }
 
+        const isEs = document.getElementById("body").classList.contains("es");
+        const titleText = isEs
+          ? "Despliegue del Vidrio del Acuario (5 Caras de Vidrio)"
+          : "Aquarium Glass Net (5 Glass Panels — Open Top)";
+
         const totalW = l + 2 * w;
         const totalH = w + 2 * h;
-        const maxW = 320;
-        const maxH = 120;
+        const maxW = 300;
+        const maxH = 135;
         const scale = Math.min(maxW / totalW, maxH / totalH);
         const sw = l * scale;
         const sd = w * scale;
         const sh = h * scale;
 
-        const cx = 260;
-        const cy = 70;
-
+        const cx = 230;
+        const cy = 100;
         const bx = cx - sw / 2;
         const by = cy - sd / 2;
-        const isEs = document.getElementById("body").classList.contains("es");
 
-        const titleText = isEs
-          ? "Despliegue del Vidrio del Acuario (5 Caras)"
-          : "Aquarium Glass Net (5 Faces)";
-        const bottomText = isEs
-          ? `Fondo: ${l}&quot; &times; ${w}&quot;`
-          : `Bottom: ${l}&quot; &times; ${w}&quot;`;
-        const sideText = isEs
-          ? `Lat: ${w}&quot;&times;${h}&quot;`
-          : `Side: ${w}&quot;&times;${h}&quot;`;
-        const frontText = isEs
-          ? `Frente: ${l}&quot;&times;${h}&quot;`
-          : `Front: ${l}&quot;&times;${h}&quot;`;
-        const backText = isEs
-          ? `Atrás: ${l}&quot;&times;${h}&quot;`
-          : `Back: ${l}&quot;&times;${h}&quot;`;
-        const openTopText = isEs
-          ? "Parte superior abierta (Sin vidrio)"
-          : "Open Top (No glass)";
+        const saVal = (l * w + 2 * l * h + 2 * w * h).toLocaleString("en-US", { maximumFractionDigits: 1 });
+
+        svg.setAttribute("viewBox", "0 0 520 210");
+        svg.setAttribute("style", "background: white; border: 1px solid #cbd5e1; border-radius: 12px; font-family: system-ui, -apple-system, sans-serif;");
 
         svg.innerHTML = `
-          <rect x="0" y="0" width="520" height="180" fill="none" />
-          <text x="260" y="20" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2d4a">${titleText}</text>
+          <defs>
+            <linearGradient id="netBottomGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.25"/>
+              <stop offset="100%" stop-color="#0284c7" stop-opacity="0.35"/>
+            </linearGradient>
+            <linearGradient id="netSideGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#e0f2fe" stop-opacity="0.7"/>
+              <stop offset="100%" stop-color="#bae6fd" stop-opacity="0.9"/>
+            </linearGradient>
+            <linearGradient id="netFrontGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#f0fdf4" stop-opacity="0.8"/>
+              <stop offset="100%" stop-color="#dcfce7" stop-opacity="1.0"/>
+            </linearGradient>
+            <marker id="fold-arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+              <path d="M 0 2 L 8 5 L 0 8 z" fill="#0f766e"/>
+            </marker>
+          </defs>
+
+          <!-- Banner Header -->
+          <rect x="0" y="0" width="520" height="32" fill="#f8fafc" />
+          <line x1="0" y1="32" x2="520" y2="32" stroke="#e2e8f0" stroke-width="1" />
+          <text x="16" y="21" font-size="12" font-weight="800" fill="#0f172a" letter-spacing="0.02em">${titleText}</text>
+          
+          <rect x="360" y="6" width="144" height="20" rx="10" fill="#0f766e" />
+          <text x="432" y="19" text-anchor="middle" font-size="10" font-weight="700" fill="#ffffff">5 ${isEs ? "Paneles de Vidrio" : "Glass Panels Total"}</text>
+
+          <!-- 5 GLASS PANELS -->
           
           <!-- Bottom face (L x W) -->
-          <rect x="${bx}" y="${by}" width="${sw}" height="${sd}" fill="rgba(14, 148, 136, 0.2)" stroke="#0ea5e9" stroke-width="1.5" />
-          <text x="${cx}" y="${cy + 4}" text-anchor="middle" font-size="10" font-weight="bold" fill="#0f2d4a">${bottomText}</text>
+          <rect x="${bx}" y="${by}" width="${sw}" height="${sd}" fill="url(#netBottomGrad)" stroke="#0284c7" stroke-width="2" rx="2" />
+          <text x="${cx}" y="${cy - 3}" text-anchor="middle" font-size="10" font-weight="800" fill="#0369a1">${isEs ? "FONDO" : "BOTTOM"}</text>
+          <text x="${cx}" y="${cy + 10}" text-anchor="middle" font-size="9" font-weight="700" fill="#0284c7">${l}" × ${w}"</text>
 
-          <!-- Left face (W x H) -->
-          <rect x="${bx - sd}" y="${by}" width="${sd}" height="${sh}" transform="rotate(-90 ${bx} ${by})" fill="rgba(14, 148, 136, 0.1)" stroke="#0ea5e9" stroke-width="1.5" />
-          <text x="${bx - sd / 2}" y="${cy + 4}" text-anchor="middle" font-size="9" fill="#0d9488">${sideText}</text>
+          <!-- Front face (L x H) - Below bottom -->
+          <rect x="${bx}" y="${by + sd}" width="${sw}" height="${sh}" fill="url(#netFrontGrad)" stroke="#0284c7" stroke-width="2" rx="2" />
+          <text x="${cx}" y="${by + sd + sh / 2 - 2}" text-anchor="middle" font-size="10" font-weight="800" fill="#15803d">${isEs ? "FRENTE" : "FRONT"}</text>
+          <text x="${cx}" y="${by + sd + sh / 2 + 10}" text-anchor="middle" font-size="9" font-weight="700" fill="#166534">${l}" × ${h}"</text>
 
-          <!-- Right face (W x H) -->
-          <rect x="${bx + sw}" y="${by}" width="${sd}" height="${sh}" transform="rotate(90 ${bx + sw} ${by})" fill="rgba(14, 148, 136, 0.1)" stroke="#0ea5e9" stroke-width="1.5" />
-          <text x="${bx + sw + sd / 2}" y="${cy + 4}" text-anchor="middle" font-size="9" fill="#0d9488">${sideText}</text>
+          <!-- Back face (L x H) - Above bottom -->
+          <rect x="${bx}" y="${by - sh}" width="${sw}" height="${sh}" fill="url(#netFrontGrad)" stroke="#0284c7" stroke-width="2" rx="2" />
+          <text x="${cx}" y="${by - sh / 2 - 2}" text-anchor="middle" font-size="10" font-weight="800" fill="#15803d">${isEs ? "ATRÁS" : "BACK"}</text>
+          <text x="${cx}" y="${by - sh / 2 + 10}" text-anchor="middle" font-size="9" font-weight="700" fill="#166534">${l}" × ${h}"</text>
 
-          <!-- Front face (L x H) -->
-          <rect x="${bx}" y="${by - sh}" width="${sw}" height="${sh}" fill="rgba(14, 148, 136, 0.1)" stroke="#0ea5e9" stroke-width="1.5" />
-          <text x="${cx}" y="${by - sh / 2 + 4}" text-anchor="middle" font-size="9" fill="#0d9488">${frontText}</text>
+          <!-- Left face (W x H) - Left of bottom -->
+          <rect x="${bx - sh}" y="${by}" width="${sh}" height="${sd}" fill="url(#netSideGrad)" stroke="#0284c7" stroke-width="2" rx="2" />
+          <text x="${bx - sh / 2}" y="${cy - 2}" text-anchor="middle" font-size="9" font-weight="800" fill="#0369a1">${isEs ? "IZQ" : "LEFT"}</text>
+          <text x="${bx - sh / 2}" y="${cy + 10}" text-anchor="middle" font-size="8" font-weight="700" fill="#0284c7">${w}"×${h}"</text>
 
-          <!-- Back face (L x H) -->
-          <rect x="${bx}" y="${by + sd}" width="${sw}" height="${sh}" fill="rgba(14, 148, 136, 0.1)" stroke="#0ea5e9" stroke-width="1.5" />
-          <text x="${cx}" y="${by + sd + sh / 2 + 4}" text-anchor="middle" font-size="9" fill="#0d9488">${backText}</text>
+          <!-- Right face (W x H) - Right of bottom -->
+          <rect x="${bx + sw}" y="${by}" width="${sh}" height="${sd}" fill="url(#netSideGrad)" stroke="#0284c7" stroke-width="2" rx="2" />
+          <text x="${bx + sw + sh / 2}" y="${cy - 2}" text-anchor="middle" font-size="9" font-weight="800" fill="#0369a1">${isEs ? "DER" : "RIGHT"}</text>
+          <text x="${bx + sw + sh / 2}" y="${cy + 10}" text-anchor="middle" font-size="8" font-weight="700" fill="#0284c7">${w}"×${h}"</text>
 
-          <!-- Dashed Open Top Face (L x W) to show it's missing -->
-          <rect x="${bx}" y="${by - sh - sd}" width="${sw}" height="${sd}" fill="none" stroke="#cbd5e1" stroke-dasharray="3,3" stroke-width="1.5" />
-          <text x="${cx}" y="${by - sh - sd / 2 + 4}" text-anchor="middle" font-size="8" fill="#94a3b8" font-style="italic">${openTopText}</text>
+          <!-- DASHED FOLD LINES (Hinges) -->
+          <line x1="${bx}" y1="${by}" x2="${bx + sw}" y2="${by}" stroke="#0369a1" stroke-dasharray="4,3" stroke-width="2" />
+          <line x1="${bx}" y1="${by + sd}" x2="${bx + sw}" y2="${by + sd}" stroke="#0369a1" stroke-dasharray="4,3" stroke-width="2" />
+          <line x1="${bx}" y1="${by}" x2="${bx}" y2="${by + sd}" stroke="#0369a1" stroke-dasharray="4,3" stroke-width="2" />
+          <line x1="${bx + sw}" y1="${by}" x2="${bx + sw}" y2="${by + sd}" stroke="#0369a1" stroke-dasharray="4,3" stroke-width="2" />
+
+          <!-- MISSING 6TH TOP PANEL (Dashed Grey Box above Back face) -->
+          <rect x="${bx}" y="${by - sh - sd}" width="${sw}" height="${sd}" fill="#f8fafc" stroke="#94a3b8" stroke-dasharray="4,4" stroke-width="1.5" rx="2" />
+          <text x="${cx}" y="${by - sh - sd / 2 - 2}" text-anchor="middle" font-size="9" font-weight="700" fill="#64748b">${isEs ? "PARTE SUPERIOR FALTANTE" : "MISSING 6TH FACE"}</text>
+          <text x="${cx}" y="${by - sh - sd / 2 + 10}" text-anchor="middle" font-size="8" font-style="italic" fill="#94a3b8">(${isEs ? "Tanque Abierto - Sin Vidrio" : "Open Tank - No Glass Lid"})</text>
+
+          <!-- Curved Fold Direction Indicator Arcs -->
+          <path d="M ${bx + sw/2 - 12} ${by - 4} Q ${bx + sw/2} ${by - 12} ${bx + sw/2 + 12} ${by - 4}" stroke="#0f766e" stroke-width="1.5" fill="none" marker-end="url(#fold-arrow)" />
+          <path d="M ${bx + sw/2 - 12} ${by + sd + 4} Q ${bx + sw/2} ${by + sd + 12} ${bx + sw/2 + 12} ${by + sd + 4}" stroke="#0f766e" stroke-width="1.5" fill="none" marker-end="url(#fold-arrow)" />
+
+          <!-- Surface Area Summary Card (Right Side) -->
+          <rect x="375" y="48" width="132" height="145" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1" />
+          <text x="441" y="68" text-anchor="middle" font-size="11" font-weight="800" fill="#0f172a">${isEs ? "ÁREA DE SUPERFICIE" : "SURFACE AREA"}</text>
+          <line x1="387" y1="76" x2="495" y2="76" stroke="#cbd5e1" stroke-width="1" />
+          <text x="387" y="93" font-size="9" fill="#475569">Bottom (1): ${l*w} in²</text>
+          <text x="387" y="108" font-size="9" fill="#475569">Front/Back (2): ${2*l*h} in²</text>
+          <text x="387" y="123" font-size="9" fill="#475569">Sides (2): ${2*w*h} in²</text>
+          <rect x="387" y="133" width="108" height="24" rx="6" fill="#0f766e" />
+          <text x="441" y="149" text-anchor="middle" font-size="11" font-weight="800" fill="#ffffff">SA = ${saVal} in²</text>
+          <text x="441" y="173" text-anchor="middle" font-size="9" font-style="italic" fill="#0f766e">(5 ${isEs ? "caras" : "faces total"})</text>
         `;
       }
 
@@ -2996,13 +3120,16 @@
         const total = glass + acc;
         const isEs = document.getElementById("body").classList.contains("es");
 
+        svg.setAttribute("viewBox", "0 0 520 130");
+        svg.setAttribute("style", "background: white; border: 1px solid #cbd5e1; border-radius: 12px; font-family: system-ui, -apple-system, sans-serif;");
+
         if (total === 0) {
           const noDataText = isEs
             ? "Ingresa las dimensiones y calcula el costo para ver el desglose."
-            : "Enter dimensions and calculate cost to view breakdown.";
+            : "Enter dimensions and calculate cost to view budget breakdown.";
           svg.innerHTML = `
-            <rect x="0" y="0" width="520" height="120" fill="none" />
-            <text x="260" y="60" text-anchor="middle" font-size="12" fill="#5e6e7e">${noDataText}</text>
+            <rect x="0" y="0" width="520" height="130" fill="none" />
+            <text x="260" y="68" text-anchor="middle" font-size="12" font-weight="600" fill="#64748b">${noDataText}</text>
           `;
           return;
         }
@@ -3010,33 +3137,48 @@
         const accPct = (acc / total) * 100;
 
         const titleText = isEs
-          ? "Desglose de Costos: Vidrio vs. Accesorios"
-          : "Cost Breakdown: Glass vs. Accessories";
-        const glassLabelText = isEs
-          ? `Vidrio: $${glass.toFixed(2)} (${glassPct.toFixed(0)}%)`
-          : `Glass: $${glass.toFixed(2)} (${glassPct.toFixed(0)}%)`;
-        const accLabelText = isEs
-          ? `Accesorios: $${acc.toFixed(2)} (${accPct.toFixed(0)}%)`
-          : `Accessories: $${acc.toFixed(2)} (${accPct.toFixed(0)}%)`;
-        const totalLabelText = isEs
-          ? `Costo Total del Proyecto: $${total.toFixed(2)}`
-          : `Total Project Cost: $${total.toFixed(2)}`;
+          ? "Desglose de Presupuesto: Vidrio vs. Accesorios"
+          : "Budget Breakdown: Glass Materials vs. Accessories";
 
         svg.innerHTML = `
-          <rect x="0" y="0" width="520" height="120" fill="none" />
-          <text x="260" y="20" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2d4a">${titleText}</text>
+          <defs>
+            <linearGradient id="glassBarGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#0ea5e9"/>
+              <stop offset="100%" stop-color="#0284c7"/>
+            </linearGradient>
+            <linearGradient id="accBarGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#10b981"/>
+              <stop offset="100%" stop-color="#059669"/>
+            </linearGradient>
+          </defs>
+
+          <!-- Banner Header -->
+          <rect x="0" y="0" width="520" height="32" fill="#f8fafc" />
+          <line x1="0" y1="32" x2="520" y2="32" stroke="#e2e8f0" stroke-width="1" />
+          <text x="16" y="21" font-size="12" font-weight="800" fill="#0f172a">${titleText}</text>
           
-          <!-- Cost bar -->
-          <rect x="30" y="45" width="460" height="24" rx="6" fill="#cbd5e1" />
+          <!-- Total Cost Pill Badge -->
+          <rect x="340" y="6" width="164" height="20" rx="10" fill="#0f172a" />
+          <text x="422" y="19" text-anchor="middle" font-size="10" font-weight="800" fill="#ffffff">${isEs ? "Total" : "Total"}: $${total.toFixed(2)}</text>
+
+          <!-- Cost Bar Container -->
+          <rect x="24" y="48" width="472" height="28" rx="8" fill="#e2e8f0" />
+          
           <!-- Glass portion (blue) -->
-          <rect x="30" y="45" width="${460 * (glassPct / 100)}" height="24" rx="6" fill="#0ea5e9" />
-          <!-- Accessories portion (teal, overlay right) -->
-          <rect x="${30 + 460 * (glassPct / 100)}" y="45" width="${460 * (accPct / 100)}" height="24" rx="6" fill="#0d9488" />
+          <rect x="24" y="48" width="${Math.max(12, 472 * (glassPct / 100))}" height="28" rx="8" fill="url(#glassBarGrad)" />
           
-          <!-- Labels -->
-          <text x="30" y="95" font-size="11" font-weight="bold" fill="#0ea5e9">${glassLabelText}</text>
-          <text x="490" y="95" text-anchor="end" font-size="11" font-weight="bold" fill="#0d9488">${accLabelText}</text>
-          <text x="260" y="115" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2d4a">${totalLabelText}</text>
+          <!-- Accessories portion (green) -->
+          <rect x="${24 + 472 * (glassPct / 100)}" y="48" width="${Math.max(0, 472 * (accPct / 100))}" height="28" rx="8" fill="url(#accBarGrad)" />
+
+          <!-- Glass Label Pill -->
+          <rect x="24" y="88" width="180" height="24" rx="6" fill="#f0f9ff" stroke="#0ea5e9" stroke-width="1"/>
+          <circle cx="36" cy="100" r="5" fill="#0ea5e9"/>
+          <text x="47" y="104" font-size="11" font-weight="700" fill="#0369a1">${isEs ? "Vidrio" : "Glass"}: $${glass.toFixed(2)} (${glassPct.toFixed(0)}%)</text>
+
+          <!-- Accessories Label Pill -->
+          <rect x="316" y="88" width="180" height="24" rx="6" fill="#f0fdf4" stroke="#10b981" stroke-width="1"/>
+          <circle cx="328" cy="100" r="5" fill="#10b981"/>
+          <text x="339" y="104" font-size="11" font-weight="700" fill="#15803d">${isEs ? "Accesorios" : "Accessories"}: $${acc.toFixed(2)} (${accPct.toFixed(0)}%)</text>
         `;
       }
 
@@ -3046,13 +3188,16 @@
         if (!svg) return;
         const isEs = document.getElementById("body").classList.contains("es");
 
+        svg.setAttribute("viewBox", "0 0 520 130");
+        svg.setAttribute("style", "background: white; border: 1px solid #cbd5e1; border-radius: 12px; font-family: system-ui, -apple-system, sans-serif;");
+
         if (myVol === 0 || pVol === 0 || myCost === 0 || pCost === 0) {
           const noDataText = isEs
             ? "Ingresa los datos del compañero y haz clic en Comparar para ver el gráfico comparativo."
-            : "Enter partner data and click Compare to view side-by-side chart.";
+            : "Enter partner data and click Compare to view side-by-side comparison.";
           svg.innerHTML = `
-            <rect x="0" y="0" width="520" height="120" fill="none" />
-            <text x="260" y="60" text-anchor="middle" font-size="12" fill="#5e6e7e">${noDataText}</text>
+            <rect x="0" y="0" width="520" height="130" fill="none" />
+            <text x="260" y="68" text-anchor="middle" font-size="12" font-weight="600" fill="#64748b">${noDataText}</text>
           `;
           return;
         }
@@ -3060,37 +3205,41 @@
         const maxVol = Math.max(myVol, pVol);
         const maxCost = Math.max(myCost, pCost);
 
-        const myVolW = (myVol / maxVol) * 160;
-        const pVolW = (pVol / maxVol) * 160;
-        const myCostW = (myCost / maxCost) * 160;
-        const pCostW = (pCost / maxCost) * 160;
+        const myVolW = Math.max(16, (myVol / maxVol) * 140);
+        const pVolW = Math.max(16, (pVol / maxVol) * 140);
+        const myCostW = Math.max(16, (myCost / maxCost) * 140);
+        const pCostW = Math.max(16, (pCost / maxCost) * 140);
 
         const volTitle = isEs ? "Volumen (Galones)" : "Volume (Gallons)";
         const costTitle = isEs ? "Costo Total ($)" : "Total Cost ($)";
         const youLabel = isEs ? "Tú" : "You";
 
         svg.innerHTML = `
-          <rect x="0" y="0" width="520" height="120" fill="none" />
+          <!-- Header Banner -->
+          <rect x="0" y="0" width="520" height="30" fill="#f8fafc" />
+          <line x1="0" y1="30" x2="520" y2="30" stroke="#e2e8f0" stroke-width="1" />
+          <text x="120" y="20" text-anchor="middle" font-size="11" font-weight="800" fill="#0f172a">${volTitle}</text>
+          <text x="380" y="20" text-anchor="middle" font-size="11" font-weight="800" fill="#0f172a">${costTitle}</text>
           
           <!-- Volume Section (Left) -->
-          <text x="110" y="20" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2d4a">${volTitle}</text>
-          <text x="20" y="50" font-size="10" fill="#5e6e7e">${youLabel}</text>
-          <rect x="60" y="40" width="${myVolW}" height="14" rx="3" fill="#0ea5e9" />
-          <text x="${70 + myVolW}" y="51" font-size="10" font-weight="bold" fill="#0ea5e9">${myVol.toFixed(1)} gal</text>
+          <text x="16" y="54" font-size="10" font-weight="700" fill="#0284c7">${youLabel}</text>
+          <rect x="52" y="42" width="${myVolW}" height="16" rx="4" fill="#0ea5e9" />
+          <text x="${60 + myVolW}" y="55" font-size="10" font-weight="800" fill="#0284c7">${myVol.toFixed(1)} gal</text>
           
-          <text x="20" y="80" font-size="10" fill="#5e6e7e">${pName}</text>
-          <rect x="60" y="70" width="${pVolW}" height="14" rx="3" fill="#94a3b8" />
-          <text x="${70 + pVolW}" y="81" font-size="10" font-weight="bold" fill="#475569">${pVol.toFixed(1)} gal</text>
+          <text x="16" y="88" font-size="10" font-weight="700" fill="#64748b">${pName}</text>
+          <rect x="52" y="76" width="${pVolW}" height="16" rx="4" fill="#94a3b8" />
+          <text x="${60 + pVolW}" y="89" font-size="10" font-weight="800" fill="#475569">${pVol.toFixed(1)} gal</text>
           
+          <line x1="260" y1="30" x2="260" y2="130" stroke="#e2e8f0" stroke-width="1" />
+
           <!-- Cost Section (Right) -->
-          <text x="380" y="20" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2d4a">${costTitle}</text>
-          <text x="290" y="50" font-size="10" fill="#5e6e7e">${youLabel}</text>
-          <rect x="330" y="40" width="${myCostW}" height="14" rx="3" fill="#0d9488" />
-          <text x="${340 + myCostW}" y="51" font-size="10" font-weight="bold" fill="#0d9488">$${myCost.toFixed(2)}</text>
+          <text x="276" y="54" font-size="10" font-weight="700" fill="#0d9488">${youLabel}</text>
+          <rect x="312" y="42" width="${myCostW}" height="16" rx="4" fill="#10b981" />
+          <text x="${320 + myCostW}" y="55" font-size="10" font-weight="800" fill="#0f766e">$${myCost.toFixed(2)}</text>
           
-          <text x="290" y="80" font-size="10" fill="#5e6e7e">${pName}</text>
-          <rect x="330" y="70" width="${pCostW}" height="14" rx="3" fill="#94a3b8" />
-          <text x="${340 + pCostW}" y="81" font-size="10" font-weight="bold" fill="#475569">$${pCost.toFixed(2)}</text>
+          <text x="276" y="88" font-size="10" font-weight="700" fill="#64748b">${pName}</text>
+          <rect x="312" y="76" width="${pCostW}" height="16" rx="4" fill="#94a3b8" />
+          <text x="${320 + pCostW}" y="89" font-size="10" font-weight="800" fill="#475569">$${pCost.toFixed(2)}</text>
         `;
       }
 
