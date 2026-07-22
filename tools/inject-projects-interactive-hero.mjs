@@ -33,10 +33,10 @@ const ANCHOR_RE = /<div class="step-panel active" id="step-\d+">/;
 // theme-appropriate defaults (e.g. gcf-bags = party goodie bags).
 const MAP = {
   "math/unit-1/projects": {
-    kind: "mission-control", emoji: "🚀", attrs: {},
-    title: "Mission Control: clear for launch",
-    es: "Control de misión: listos para el lanzamiento",
-    intro: "Tune the reactor (primes), pack the crew kits (GCF), and time the launch window (LCM) to lift off.",
+    kind: "gcf-bags", emoji: "🎁", attrs: {},
+    title: "Split the goodie bags evenly",
+    es: "Reparte las bolsas de regalo en partes iguales",
+    intro: "Drag to make equal goodie bags with nothing left over — that's the greatest common factor.",
   },
   "math/unit-2/projects": {
     kind: "frac-divide", emoji: "🧁", attrs: {},
@@ -71,11 +71,11 @@ const MAP = {
     intro: "Wire an expression, feed in a value, and watch the score flow through the machine.",
   },
   "math/unit-7/projects": {
-    kind: "treasure-voyage", emoji: "🗺️",
-    attrs: {},
-    title: "Treasure Voyage: chart the course",
-    es: "Viaje del tesoro: traza el rumbo",
-    intro: "Plot each ordered pair to sail your ship there, leg by leg, until you reach the treasure.",
+    kind: "coord-plot", emoji: "🗺️",
+    attrs: { range: "10" },
+    title: "Plot the park",
+    es: "Ubica las atracciones del parque",
+    intro: "Place attractions across all four quadrants and read the distance between them.",
   },
   "math/unit-8/projects": {
     kind: "escape-chain", emoji: "🕵️",
@@ -166,7 +166,10 @@ function addHero(html, cfg) {
   const m = html.match(ANCHOR_RE);
   if (!m) return html; // anchor missing — skip content, log below
   const block = heroBlock(cfg).join("\n") + "\n";
-  return html.replace(ANCHOR_RE, block + m[0]);
+  // Insert INSIDE the first active step panel (after its opening tag) so the
+  // wizard's own `.step-panel:not(.active){display:none}` hides the card once
+  // the student advances past the first step — it shows on step 1 only.
+  return html.replace(ANCHOR_RE, m[0] + "\n" + block);
 }
 
 let changed = 0;
