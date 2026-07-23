@@ -125,6 +125,28 @@ function injectStyles() {
 .ntgd-spark{position:absolute;top:50%;left:50%;width:8px;height:8px;border-radius:50%;background:#5b21b6;pointer-events:none;animation:ntgd-pop .9s ease-out forwards}
 @keyframes ntgd-pop{to{transform:translate(var(--ntgd-x),var(--ntgd-y)) scale(0);opacity:0}}
 @media (prefers-reduced-motion:reduce){.ntgd-spark{display:none}}
+/* Dark theme — retint the purple panel's light surfaces; keep the purple
+   accent identity (tags/numbers/buttons stay #5b21b6 with white text). */
+:root[data-theme="dark"] .ntgd{background:#1b1533;border-color:#4c3a7a;color:#e8e3f6}
+:root[data-theme="dark"] .ntgd-step{background:#241d3d;border-color:#4c3a7a}
+:root[data-theme="dark"] .ntgd-stem{background:#241d3d}
+:root[data-theme="dark"] .ntgd textarea,:root[data-theme="dark"] .ntgd input[type="text"]{background:#15112a;color:#e8e3f6;border-color:#5b4a86}
+:root[data-theme="dark"] .ntgd-frame{background:#2a2247}
+:root[data-theme="dark"] .ntgd-move,:root[data-theme="dark"] .ntgd-ghost{background:#241d3d;color:#c4b5fd}
+:root[data-theme="dark"] .ntgd-es{color:#c4b5fd}
+:root[data-theme="dark"] .ntgd-status{color:#86efac}
+:root[data-theme="dark"] .ntgd-done{background:#12291b;border-color:#2f7d4e}
+:root[data-theme="dark"] .ntgd-btn:disabled{background:#3a2f5e}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .ntgd-btn:disabled{background:#3a2f5e}
+:root:not([data-theme="light"]) .ntgd{background:#1b1533;border-color:#4c3a7a;color:#e8e3f6}
+:root:not([data-theme="light"]) .ntgd-step{background:#241d3d;border-color:#4c3a7a}
+:root:not([data-theme="light"]) .ntgd-stem{background:#241d3d}
+:root:not([data-theme="light"]) .ntgd textarea,:root:not([data-theme="light"]) .ntgd input[type="text"]{background:#15112a;color:#e8e3f6;border-color:#5b4a86}
+:root:not([data-theme="light"]) .ntgd-frame{background:#2a2247}
+:root:not([data-theme="light"]) .ntgd-move,:root:not([data-theme="light"]) .ntgd-ghost{background:#241d3d;color:#c4b5fd}
+:root:not([data-theme="light"]) .ntgd-es{color:#c4b5fd}
+:root:not([data-theme="light"]) .ntgd-status{color:#86efac}
+:root:not([data-theme="light"]) .ntgd-done{background:#12291b;border-color:#2f7d4e}}
 `;
   document.head.appendChild(style);
 }

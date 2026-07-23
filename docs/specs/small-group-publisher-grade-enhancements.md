@@ -3,24 +3,30 @@
 Status: audit 2026-07-23. **Wave 1** (items 1–5), **Wave 2** (6, 7, 17, 18),
 **item 8** (Small-Group Rotation Console), and **Wave 3** (9, 13, 15) all
 shipped. **Item 16** investigated → finding invalid, no-op (see below).
-Remaining: 10 (family letter), 12 (printed manipulative masters), 14 (authored
-art), 19/20 (dark mode). Items 10/12/14 need content/asset creation, not
-engine work — deferred as a distinct authoring workstream.
+**Wave 4** shipped 19/20 (dark mode). Remaining: 10 (family letter), 12
+(printed manipulative masters), 14 (authored art) — these need content/asset
+creation (writing per-lesson family letters, drawing manipulative masters,
+commissioning scene art), not engine work, so they're a distinct authoring
+workstream rather than code.
 Scope: all 128 small-group lessons + 20 catch-ups (engine modules, generators,
 teacher route, worksheets), benchmarked against professional publishers
 (Illustrative Mathematics, Eureka Math², enVision, Amplify).
 
-> **Dark mode (19/20) — blocked on a token refactor, do not rush.** The inline
-> stylesheet in `small-group-ui.js` overloads `--sg-deep`: it serves both as
-> *dark ink on light surfaces* (must go light in dark mode) and as a *dark
-> surface behind white text* (`.sg-operator-chip`, `.col-rule`, tree branches —
-> must stay dark). A correct dark theme first needs `--sg-deep` split into
-> `--sg-ink-accent` vs `--sg-surface-accent` across ~40 usages, then per-panel
-> screenshot QA in both themes. Groundwork: the site already ships a theme
-> convention (`document.documentElement.dataset.theme` via `assets/neft-theme.js`,
-> plus `@media (prefers-color-scheme: dark)`), so the dark block should key on
-> both `:root[data-theme="dark"]` and the media query. Attempted in Wave 2,
-> deferred to keep from shipping a half-correct dark experience to students.
+> **Dark mode (19/20) — SHIPPED (Wave 4, 2026-07-23).** The `--sg-deep`
+> overload was resolved by splitting it into three roles: `--sg-ink` (text,
+> flips light in dark), `--sg-rule` (thin lines, flips light), and `--sg-deep`
+> (dark surface behind white text — hero gradient, operator chip — stays dark).
+> Status/figure/fill colors were tokenized (`--sg-good-bg`, `--sg-bad`,
+> `--sg-figure`, `--sg-fill`, …), the shared `--sg`/`--sg-deep`/`--sg-soft`
+> moved from inline `setProperty` into the stylesheet `:root` so the dark block
+> can override them, and the dark theme keys on BOTH `:root[data-theme="dark"]`
+> (site convention via `assets/neft-theme.js`) and
+> `@media (prefers-color-scheme: dark)`. Secondary components (innovation.css,
+> annotation, storyboard beats, the go-deeper + facilitation-rhythm injected
+> styles, publisher-polish) each got tokenized or a dark override. `@media
+> print` resets the tokens to light so a dark-theme user still prints on white.
+> Verified with Playwright screenshots in both themes (light mode pixel-identical
+> to before) and a light-surface probe.
 
 The system is already unusually deep for a classroom-built product: bilingual
 EN/ES scaffolds everywhere, real manipulative labs, typed visual workspaces,

@@ -44,6 +44,16 @@ function injectStyles() {
 .ntfr button[data-primary]{background:#0e7490;color:#fff}
 .ntfr button:focus-visible{outline:3px solid #164e63;outline-offset:2px}
 @media print{.ntfr{display:none}}
+/* Dark theme — retint the cyan rhythm coach (active segment/buttons keep the
+   #0e7490 accent with white text). */
+:root[data-theme="dark"] .ntfr{background:#0c2530;border-color:#1c7d99;color:#cdeef6}
+:root[data-theme="dark"] .ntfr-seg{background:#12303c;border-color:#1c7d99;color:#cdeef6}
+:root[data-theme="dark"] .ntfr-move{background:#12303c}
+:root[data-theme="dark"] .ntfr button{background:#12303c;color:#67e8f9;border-color:#1c7d99}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .ntfr{background:#0c2530;border-color:#1c7d99;color:#cdeef6}
+:root:not([data-theme="light"]) .ntfr-seg{background:#12303c;border-color:#1c7d99;color:#cdeef6}
+:root:not([data-theme="light"]) .ntfr-move{background:#12303c}
+:root:not([data-theme="light"]) .ntfr button{background:#12303c;color:#67e8f9;border-color:#1c7d99}}
 `;
   document.head.appendChild(style);
 }
