@@ -638,9 +638,13 @@
         card.className = "top1-uifr";
         card.appendChild(el("p", "top1-uifr-disc", esc((DATA.uifr && DATA.uifr.disclaimer) || "")));
         card.appendChild(
-          collapsible("📚 Lesson Plan & Activities (Teacher View)", function (b) {
-            b.appendChild(lessonCard(u, l, { teacher: true }));
-          }, true),
+          collapsible(
+            "📚 Lesson Plan & Activities (Teacher View)",
+            function (b) {
+              b.appendChild(lessonCard(u, l, { teacher: true }));
+            },
+            true,
+          ),
         );
 
         var sp = supportsPanel(l);
@@ -679,7 +683,9 @@
         card.appendChild(
           collapsible("📍 Formative Checkpoints", function (b) {
             (DATA.uifr.formativeCheckpoints || []).forEach(function (c) {
-              b.appendChild(el("p", "top1-kv", "<strong>" + esc(c.when) + ":</strong> " + esc(c.move)));
+              b.appendChild(
+                el("p", "top1-kv", "<strong>" + esc(c.when) + ":</strong> " + esc(c.move)),
+              );
             });
             b.appendChild(el("p", "top1-kv", "<strong>Feedback stems:</strong>"));
             var ul = el("ul", "top1-checklist");
@@ -1216,6 +1222,13 @@
   }
 
   function inject() {
+    // Persona picker ("Start here — pick who you are") retired: this is a
+    // teacher-only page, so the student/family/substitute role-switch was
+    // redundant with the lesson Command Center. The UIFR data + mode helpers
+    // remain wired (validator + teacher-mode gating unaffected); only the
+    // duplicate role-picker panel is no longer mounted.
+    return;
+    // eslint-disable-next-line no-unreachable
     if (document.getElementById("top1-start-here")) return;
     var header = document.querySelector("header.hub");
     var controls =

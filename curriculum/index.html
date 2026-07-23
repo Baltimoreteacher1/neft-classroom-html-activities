@@ -50,14 +50,17 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <link rel="manifest" href="/manifest.webmanifest" />
-    <link rel="stylesheet" href="/assets/curriculum-enhancements.css?v=mrxkbf3n" />
-    <link rel="stylesheet" href="/assets/curriculum-sidebar.css?v=mrxkbf3n" />
+    <link rel="stylesheet" href="/assets/curriculum-enhancements.css?v=mrxlzy0g" />
+    <link rel="stylesheet" href="/assets/curriculum-sidebar.css?v=mrxlzy0g" />
     <script>
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", function () {
-          navigator.serviceWorker.register("/sw.js").then(function (reg) {
-            reg.update();
-          }).catch(function () {});
+          navigator.serviceWorker
+            .register("/sw.js")
+            .then(function (reg) {
+              reg.update();
+            })
+            .catch(function () {});
         });
         var refreshing = false;
         navigator.serviceWorker.addEventListener("controllerchange", function () {
@@ -1307,11 +1310,11 @@
         color: #ffffff;
       }
     </style>
-    <link rel="stylesheet" href="/assets/curriculum-polish.css?v=mrxkbf3n" />
-    <link rel="stylesheet" href="/assets/curriculum-top1.css?v=mrxkbf3n" />
-    <link rel="stylesheet" href="/assets/curriculum-teacher-workflow.css?v=mrxkbf3n" />
-    <link rel="stylesheet" href="/assets/curriculum-guided-path.css?v=mrxkbf3n" />
-    <link rel="stylesheet" href="/assets/curriculum-studio-journey.css?v=mrxkbf3n" />
+    <link rel="stylesheet" href="/assets/curriculum-polish.css?v=mrxlzy0g" />
+    <link rel="stylesheet" href="/assets/curriculum-top1.css?v=mrxlzy0g" />
+    <link rel="stylesheet" href="/assets/curriculum-teacher-workflow.css?v=mrxlzy0g" />
+    <link rel="stylesheet" href="/assets/curriculum-guided-path.css?v=mrxlzy0g" />
+    <link rel="stylesheet" href="/assets/curriculum-studio-journey.css?v=mrxlzy0g" />
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
     <link rel="stylesheet" href="/assets/mobile-access.css" />
     <!-- mobile-access-injected:end -->
@@ -1357,10 +1360,232 @@
       </div>
       <nav class="curriculum-guide__links" aria-label="Curriculum support and evidence">
         <a href="/evidence/">Evidence &amp; Learning Model</a>
-        <a href="/families/" style="display:none" aria-hidden="true">Family math support</a>
-        <a href="/curriculum/student-launch/?lesson=1-1" target="_blank" rel="noopener">Student Experience Preview ↗</a>
+        <a href="/families/" style="display: none" aria-hidden="true">Family math support</a>
+        <a href="/curriculum/student-launch/?lesson=1-1" target="_blank" rel="noopener"
+          >Student Experience Preview ↗</a
+        >
       </nav>
     </header>
+
+    <style>
+      /* Teacher Toolbelt — compact quick-launch grid at top of the curriculum hub */
+      .teacher-toolbelt {
+        max-width: 1180px;
+        margin: 18px auto 0;
+        padding: 0 20px;
+      }
+      .teacher-toolbelt .ttb-heading {
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--teal, #0f6d78);
+        margin: 0 0 10px;
+      }
+      .teacher-toolbelt .ttb-group + .ttb-group {
+        margin-top: 14px;
+      }
+      .teacher-toolbelt .ttb-label {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: #55636b;
+        margin: 0 0 8px;
+      }
+      .teacher-toolbelt .ttb-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(184px, 1fr));
+        gap: 10px;
+      }
+      .teacher-toolbelt .ttb-tile {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        min-height: 58px;
+        padding: 10px 13px;
+        border: 1px solid var(--line, #e2e7ea);
+        border-radius: 14px;
+        background: #fff;
+        text-decoration: none;
+        color: inherit;
+        box-shadow: 0 1px 2px rgba(15, 40, 50, 0.04);
+        transition:
+          transform 0.14s ease,
+          box-shadow 0.14s ease,
+          border-color 0.14s ease;
+      }
+      .teacher-toolbelt .ttb-tile:hover {
+        transform: translateY(-2px);
+        border-color: var(--teal, #0f6d78);
+        box-shadow: 0 6px 16px rgba(15, 40, 50, 0.1);
+      }
+      .teacher-toolbelt .ttb-tile:focus-visible {
+        outline: 3px solid var(--teal, #0f6d78);
+        outline-offset: 2px;
+      }
+      .teacher-toolbelt .ttb-ic {
+        font-size: 22px;
+        line-height: 1;
+        flex-shrink: 0;
+      }
+      .teacher-toolbelt .ttb-tx {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+      }
+      .teacher-toolbelt .ttb-tx strong {
+        font-size: 14px;
+        font-weight: 700;
+        color: #17323a;
+        line-height: 1.15;
+      }
+      .teacher-toolbelt .ttb-tx small {
+        font-size: 11.5px;
+        color: #6a767d;
+        margin-top: 1px;
+      }
+      @media (max-width: 640px) {
+        .teacher-toolbelt {
+          padding: 0 14px;
+        }
+        .teacher-toolbelt .ttb-grid {
+          grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .teacher-toolbelt .ttb-tile {
+          transition: none;
+        }
+        .teacher-toolbelt .ttb-tile:hover {
+          transform: none;
+        }
+      }
+    </style>
+
+    <!-- Teacher Toolbelt: compact quick-launch for teacher tools + classroom experiences.
+         Surfaces the tools that were otherwise buried in the collapsed "More teacher tools"
+         disclosure. Static markup so it renders instantly at the top, above the lesson
+         Command Center (which teacher-workflow.js inserts before .wrap). -->
+    <section class="teacher-toolbelt" aria-labelledby="ttb-heading">
+      <h2 id="ttb-heading" class="ttb-heading">Teacher tools &amp; classroom features</h2>
+      <div class="ttb-group">
+        <p class="ttb-label"><span aria-hidden="true">🧰</span> Teacher Tools</p>
+        <div class="ttb-grid">
+          <a class="ttb-tile" href="/teacher-tools/insight-brief/"
+            ><span class="ttb-ic" aria-hidden="true">⚡</span
+            ><span class="ttb-tx"
+              ><strong>Insight Brief</strong><small>Analyze class work</small></span
+            ></a
+          >
+          <a class="ttb-tile" href="/teacher-tools/resource-finder/"
+            ><span class="ttb-ic" aria-hidden="true">🔎</span
+            ><span class="ttb-tx"
+              ><strong>Resource Finder</strong><small>Find any resource</small></span
+            ></a
+          >
+          <a class="ttb-tile" href="/teacher-tools/lesson-plan-generator/"
+            ><span class="ttb-ic" aria-hidden="true">📝</span
+            ><span class="ttb-tx"
+              ><strong>Lesson Plan Generator</strong><small>Build a plan fast</small></span
+            ></a
+          >
+          <a class="ttb-tile" href="/teacher-tools/standards-shift-studio/"
+            ><span class="ttb-ic" aria-hidden="true">🔀</span
+            ><span class="ttb-tx"
+              ><strong>Standards Shift Studio</strong><small>Standards crosswalk</small></span
+            ></a
+          >
+          <a class="ttb-tile" href="/teacher-tools/gradebook/"
+            ><span class="ttb-ic" aria-hidden="true">📊</span
+            ><span class="ttb-tx"
+              ><strong>Gradebook &amp; Codes</strong><small>Grades &amp; save codes</small></span
+            ></a
+          >
+          <a class="ttb-tile" href="/math/student-board/"
+            ><span class="ttb-ic" aria-hidden="true">📋</span
+            ><span class="ttb-tx"
+              ><strong>The Class Board</strong><small>Live class board</small></span
+            ></a
+          >
+          <a class="ttb-tile" href="/curriculum/math-workbench/"
+            ><span class="ttb-ic" aria-hidden="true">🧮</span
+            ><span class="ttb-tx"
+              ><strong>Math Workbench</strong><small>Live board &amp; tools</small></span
+            ></a
+          >
+          <a class="ttb-tile" href="/curriculum/study-pack/"
+            ><span class="ttb-ic" aria-hidden="true">📚</span
+            ><span class="ttb-tx"
+              ><strong>Study Pack Maker</strong><small>Make study packs</small></span
+            ></a
+          >
+          <a class="ttb-tile" href="/teacher-tools/canvas-console/"
+            ><span class="ttb-ic" aria-hidden="true">🗂️</span
+            ><span class="ttb-tx"
+              ><strong>Canvas Packages</strong><small>Auto-grade export</small></span
+            ></a
+          >
+          <a class="ttb-tile" href="/teacher-tools/unit-plan-builder/"
+            ><span class="ttb-ic" aria-hidden="true">🚀</span
+            ><span class="ttb-tx"
+              ><strong>Unit Plan → Canvas</strong><small>Deploy a full unit</small></span
+            ></a
+          >
+        </div>
+      </div>
+      <div class="ttb-group">
+        <p class="ttb-label"><span aria-hidden="true">🎓</span> Classroom Experiences</p>
+        <div class="ttb-grid">
+          <a class="ttb-tile" href="/curriculum/family-connections/"
+            ><span class="ttb-ic" aria-hidden="true">👪</span
+            ><span class="ttb-tx"
+              ><strong>Family Connections</strong><small>Home support</small></span
+            ></a
+          >
+          <a class="ttb-tile" href="/curriculum/arcade/"
+            ><span class="ttb-ic" aria-hidden="true">🕹️</span
+            ><span class="ttb-tx"
+              ><strong>Arcade Games</strong><small>Practice games</small></span
+            ></a
+          >
+          <a class="ttb-tile" href="/curriculum/projects/"
+            ><span class="ttb-ic" aria-hidden="true">🏆</span
+            ><span class="ttb-tx"
+              ><strong>Culminating Projects</strong><small>Real-world projects</small></span
+            ></a
+          >
+          <a class="ttb-tile" href="/curriculum/monster-math-academy/"
+            ><span class="ttb-ic" aria-hidden="true">👾</span
+            ><span class="ttb-tx"
+              ><strong>Monster Math Academy</strong><small>Adventure practice</small></span
+            ></a
+          >
+          <a class="ttb-tile" href="/curriculum/ai-hub/"
+            ><span class="ttb-ic" aria-hidden="true">🤖</span
+            ><span class="ttb-tx"
+              ><strong>AI Learning Hub</strong><small>AI tutor &amp; help</small></span
+            ></a
+          >
+          <a class="ttb-tile" href="/curriculum/class-brain/"
+            ><span class="ttb-ic" aria-hidden="true">🧠</span
+            ><span class="ttb-tx"
+              ><strong>Living Class Brain</strong><small>Class knowledge</small></span
+            ></a
+          >
+          <a class="ttb-tile" href="/math/my-progress/"
+            ><span class="ttb-ic" aria-hidden="true">📈</span
+            ><span class="ttb-tx"
+              ><strong>My Math Progress</strong><small>Student progress</small></span
+            ></a
+          >
+        </div>
+      </div>
+    </section>
+
     <div class="wrap" role="main">
       <!-- Search & Filtering Toolbar (Lifted out of #hub-side for full visibility) -->
       <div class="controls" id="hub-content" role="search">
@@ -1495,7 +1720,7 @@
                   ".ctw-quick",
                   ".eoy-callout",
                   "details.teacher-tools",
-                  ".unit-card"
+                  ".unit-card",
                 ];
 
                 var cards = document.querySelectorAll(selectors.join(", "));
@@ -1508,7 +1733,14 @@
                   var heading = card.querySelector("h2, h3, .unit-card-name, summary, .ctw-kicker");
                   if (!heading) return;
 
-                  var cardId = card.id || heading.textContent.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 35) || ("card-" + index);
+                  var cardId =
+                    card.id ||
+                    heading.textContent
+                      .trim()
+                      .toLowerCase()
+                      .replace(/[^a-z0-9]+/g, "-")
+                      .slice(0, 35) ||
+                    "card-" + index;
 
                   var compStyle = window.getComputedStyle(card);
                   if (compStyle.position === "static") {
@@ -2249,7 +2481,9 @@
                     b.setAttribute("aria-selected", match ? "true" : "false");
                   });
 
-                  var cards = grid.querySelectorAll("section.mailbox-feature, section.ai-hub-feature");
+                  var cards = grid.querySelectorAll(
+                    "section.mailbox-feature, section.ai-hub-feature",
+                  );
                   cards.forEach(function (card) {
                     var cardCat = card.dataset.category || "featured";
                     if (cat === "all") {
@@ -2398,7 +2632,11 @@
               background: rgba(15, 118, 110, 0.12);
             }
           </style>
-          <section class="mailbox-feature lpg-feature" data-category="teacher" aria-labelledby="lpg-feature-title">
+          <section
+            class="mailbox-feature lpg-feature"
+            data-category="teacher"
+            aria-labelledby="lpg-feature-title"
+          >
             <span class="mf-icon" aria-hidden="true">🧭</span>
             <div class="mf-body">
               <span class="mf-tag">Teacher Tool</span>
@@ -13068,7 +13306,7 @@
         window.scrollTo(0, 0);
       })();
     </script>
-    <script src="/assets/curriculum-progress-bridge.js?v=mrxkbf3n" defer></script>
+    <script src="/assets/curriculum-progress-bridge.js?v=mrxlzy0g" defer></script>
     <script>
       window.CURRICULUM_SYNC = {
         // Complete D1 content sync enabled: fetches /api/curriculum/content with static fallback.
@@ -13084,15 +13322,15 @@
          not minisearch.min.js), so browsers ORB-blocked the error page and
          MiniSearch never loaded. Serve it locally like the other vendor libs. -->
     <script src="/assets/vendor/minisearch-7.1.2.min.js" defer></script>
-    <script src="/assets/curriculum-enhancements.js?v=mrxkbf3n" defer></script>
+    <script src="/assets/curriculum-enhancements.js?v=mrxlzy0g" defer></script>
     <script src="/assets/curriculum-audit-badges.js" defer></script>
-    <script src="/assets/curriculum-sidebar.js?v=mrxkbf3n" defer></script>
-    <script src="/assets/curriculum-top1.js?v=mrxkbf3n" defer></script>
-    <script src="/assets/curriculum-teacher-planning.js?v=mrxkbf3n" defer></script>
-    <script src="/assets/curriculum-live-signal.js?v=mrxkbf3n" defer></script>
-    <script src="/assets/curriculum-teacher-workflow.js?v=mrxkbf3n" defer></script>
-    <script src="/assets/curriculum-guided-path.js?v=mrxkbf3n" defer></script>
-    <script src="/assets/curriculum-studio-journey.js?v=mrxkbf3n" defer></script>
+    <script src="/assets/curriculum-sidebar.js?v=mrxlzy0g" defer></script>
+    <script src="/assets/curriculum-top1.js?v=mrxlzy0g" defer></script>
+    <script src="/assets/curriculum-teacher-planning.js?v=mrxlzy0g" defer></script>
+    <script src="/assets/curriculum-live-signal.js?v=mrxlzy0g" defer></script>
+    <script src="/assets/curriculum-teacher-workflow.js?v=mrxlzy0g" defer></script>
+    <script src="/assets/curriculum-guided-path.js?v=mrxlzy0g" defer></script>
+    <script src="/assets/curriculum-studio-journey.js?v=mrxlzy0g" defer></script>
     <script src="/assets/futures-lab.js?v=20260619" defer></script>
     <script src="/assets/gradebook-embed.js?v=20260624" defer></script>
 
