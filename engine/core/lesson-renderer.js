@@ -109,6 +109,7 @@ export function bootLesson(config) {
       (el, state, ctx) => renderPracticePhase(el, state, ctx, config),
       (el, state, ctx) => renderConnectPhase(el, state, ctx, config),
       (el, state, ctx) => renderReflectPhase(el, state, ctx, config),
+      (el, state, ctx) => renderObjectivesReviewPhase(el, state, ctx, config),
     ],
   });
 
@@ -3730,4 +3731,76 @@ function showFinalSummary(el, state, config) {
       if (current >= s.xp) clearInterval(interval);
     }, 30);
   }
+}
+
+function renderObjectivesReviewPhase(el, state, ctx, config) {
+  phaseHeader(
+    el,
+    "7",
+    "section-icon-teal",
+    "Phase 7: Objectives Review",
+    "Revisit today's Content and Language Objectives to check your growth and celebrate what you learned!",
+  );
+
+  const card = document.createElement("div");
+  card.className = "card card-objectives-review-phase";
+  card.style.cssText = "margin: 16px 0 24px; border: 2px solid #0f6d78; border-radius: 16px; padding: 22px; background: #ffffff; box-shadow: 0 6px 20px rgba(15,109,120,0.12);";
+
+  card.innerHTML = `
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; border-bottom:1px solid #e2e8f0; padding-bottom:12px;">
+      <div>
+        <span style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; color:#0f6d78; background:#e6f4f6; padding:4px 10px; border-radius:6px;">Phase 7 · Objectives Review</span>
+        <h3 style="margin:6px 0 0; font-size:22px; font-weight:800; color:#14223a;">🎯 Learning Objectives Mastery Check</h3>
+      </div>
+      <div style="font-size:13px; font-weight:800; color:#0f6d78; background:#f0fdf4; border:1px solid #bbf7d0; padding:6px 14px; border-radius:10px;">
+        Self-Check &amp; Growth
+      </div>
+    </div>
+    <p style="margin:0 0 16px; font-size:15px; color:#56627a;">
+      Now that you've completed today's lesson, revisit the goals you set at the beginning and check off what you mastered!
+    </p>
+  `;
+
+  renderObjectives(card, config);
+
+  const checkWrap = document.createElement("div");
+  checkWrap.style.cssText = "margin-top:20px; padding:16px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:12px; display:flex; flex-direction:column; gap:10px;";
+  
+  const savedChecks = state.getResponse(6, "objectives_mastery") || {};
+
+  checkWrap.innerHTML = `
+    <div style="font-size:14px; font-weight:800; color:#0f172a;">Track Your Goal Mastery:</div>
+    <label style="display:flex; align-items:center; gap:10px; cursor:pointer; font-size:14px; color:#334155;">
+      <input type="checkbox" id="chkObjContent" ${savedChecks.content ? "checked" : ""}>
+      <span><strong>Content Goal:</strong> I can demonstrate and apply today's math concept!</span>
+    </label>
+    <label style="display:flex; align-items:center; gap:10px; cursor:pointer; font-size:14px; color:#334155;">
+      <input type="checkbox" id="chkObjLang" ${savedChecks.lang ? "checked" : ""}>
+      <span><strong>Language Goal:</strong> I used academic vocabulary and clear math reasoning!</span>
+    </label>
+  `;
+
+  checkWrap.querySelectorAll("input[type='checkbox']").forEach((chk) => {
+    chk.addEventListener("change", () => {
+      savedChecks.content = checkWrap.querySelector("#chkObjContent").checked;
+      savedChecks.lang = checkWrap.querySelector("#chkObjLang").checked;
+      state.saveResponse(6, "objectives_mastery", savedChecks);
+      state.markCompleted(6);
+    });
+  });
+
+  card.append(checkWrap);
+
+  const finishBtn = document.createElement("button");
+  finishBtn.type = "button";
+  finishBtn.className = "btn btn-teal";
+  finishBtn.style.cssText = "margin-top:20px; padding:12px 24px; font-weight:800; font-size:15px; background:#0f6d78; color:#ffffff; border:none; border-radius:10px; cursor:pointer;";
+  finishBtn.textContent = "Finish Lesson & Celebrate 🎉";
+  finishBtn.addEventListener("click", () => {
+    state.markCompleted(6);
+    showFinalSummary(el, state, config);
+  });
+
+  card.append(finishBtn);
+  el.append(card);
 }

@@ -88,6 +88,7 @@ export const PHASE_TIME_ESTIMATES = [
   { name: "Practice", icon: "✏️", minutes: 15 },
   { name: "Connect", icon: "🌎", minutes: 5 },
   { name: "Reflect", icon: "💡", minutes: 3 },
+  { name: "Objectives", icon: "🎯", minutes: 2 },
 ];
 
 /** Count practice problems across tiers. */

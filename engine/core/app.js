@@ -804,6 +804,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     { name: phaseName(3), icon: "✏️" }, // Practice (Phase 4)
     { name: phaseName(4), icon: "🌎" }, // Connect (Phase 5)
     { name: phaseName(5), icon: "💡" }, // Reflect (Phase 6)
+    { name: phaseName(6), icon: "🎯" }, // Objectives (Phase 7)
   ];
 
   state.initPhases(phaseConfigs);
