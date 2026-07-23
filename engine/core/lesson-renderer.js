@@ -2141,11 +2141,11 @@ function renderWarmupPhase(el, state, ctx, config) {
   const timerBar = document.createElement("div");
   timerBar.className = "warmup-timer-bar";
   timerBar.style.cssText =
-    "display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:16px; padding:10px 16px; background:linear-gradient(135deg, #f0f9ff, #e6f4f6); border:1px solid #bae6fd; border-radius:10px;";
+    "display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:16px; margin:4px 0 20px; padding:20px 28px; background:linear-gradient(135deg, #f0f9ff, #e6f4f6); border:2px solid #bae6fd; border-radius:16px;";
   timerBar.innerHTML = `
-    <span style="font-size:1.3rem;">⏱️</span>
-    <span id="warmupTimerDisplay" style="font-size:20px; font-weight:800; color:#0f6d78; font-variant-numeric:tabular-nums;">${fmtWarmupClock(getWarmupSeconds())}</span>
-    <span class="warmup-timer-label" style="font-size:13px; color:#56627a;">remaining</span>
+    <span style="font-size:2.6rem; line-height:1;">⏱️</span>
+    <span id="warmupTimerDisplay" style="font-size:56px; font-weight:900; color:#0f6d78; font-variant-numeric:tabular-nums; line-height:1;">${fmtWarmupClock(getWarmupSeconds())}</span>
+    <span class="warmup-timer-label" style="font-size:20px; font-weight:700; color:#56627a;">remaining</span>
   `;
   // Place the timer immediately under the "Phase 1 · Warmup" header (above the
   // intro line) so it's the first thing students and teachers see.
@@ -2209,7 +2209,7 @@ function renderWarmupPhase(el, state, ctx, config) {
       editBtn.title = "Teacher: set the warmup time allowed";
       editBtn.textContent = "✏️ Set time";
       editBtn.style.cssText =
-        "margin-left:6px; padding:4px 10px; font-size:12px; font-weight:800; color:#0f6d78; background:#ffffff; border:1px solid #0f6d78; border-radius:8px; cursor:pointer;";
+        "margin-left:8px; padding:10px 18px; font-size:16px; font-weight:800; color:#0f6d78; background:#ffffff; border:2px solid #0f6d78; border-radius:10px; cursor:pointer;";
       editBtn.addEventListener("click", () => {
         const currentMin = Math.round((getWarmupSeconds() / 60) * 10) / 10;
         const answer = window.prompt(
