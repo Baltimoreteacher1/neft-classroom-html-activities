@@ -1422,7 +1422,142 @@
               color: #ffffff;
               border-color: var(--teal);
             }
+            .card-collapse-toggle {
+              position: absolute;
+              top: 10px;
+              right: 12px;
+              z-index: 10;
+              background: rgba(255, 255, 255, 0.35);
+              border: 1px solid rgba(20, 34, 58, 0.15);
+              border-radius: 8px;
+              padding: 3px 9px;
+              font-family: "Nunito", system-ui, sans-serif;
+              font-weight: 800;
+              font-size: 11px;
+              color: inherit;
+              cursor: pointer;
+              display: inline-flex;
+              align-items: center;
+              gap: 4px;
+              transition: all 0.18s ease;
+              backdrop-filter: blur(8px);
+            }
+            .card-collapse-toggle:hover,
+            .card-collapse-toggle:focus-visible {
+              background: #ffffff;
+              color: var(--teal, #205fa6);
+              border-color: var(--teal, #205fa6);
+              box-shadow: 0 2px 8px rgba(20, 34, 58, 0.1);
+              outline: none;
+            }
+            .card-is-collapsed {
+              padding-bottom: 10px !important;
+            }
+            .card-is-collapsed > *:not(.card-keep-visible):not(.card-collapse-toggle) {
+              display: none !important;
+            }
           </style>
+          <script>
+            (function () {
+              var STORAGE_KEY = "nt-collapsed-cards";
+              function getCollapsedSet() {
+                try {
+                  var raw = localStorage.getItem(STORAGE_KEY);
+                  return raw ? JSON.parse(raw) : {};
+                } catch (e) {
+                  return {};
+                }
+              }
+              function saveCollapsedSet(set) {
+                try {
+                  localStorage.setItem(STORAGE_KEY, JSON.stringify(set));
+                } catch (e) {}
+              }
+
+              function setupCollapsibleCards() {
+                var selectors = [
+                  "section.mailbox-feature",
+                  "section.ai-hub-feature",
+                  ".ctw-readiness",
+                  ".ctw-today-card",
+                  ".ctw-quick",
+                  ".eoy-callout",
+                  "details.teacher-tools",
+                  ".unit-card"
+                ];
+
+                var cards = document.querySelectorAll(selectors.join(", "));
+                var collapsedSet = getCollapsedSet();
+
+                cards.forEach(function (card, index) {
+                  if (card.dataset.collapsibleInit) return;
+                  card.dataset.collapsibleInit = "1";
+
+                  var heading = card.querySelector("h2, h3, .unit-card-name, summary, .ctw-kicker");
+                  if (!heading) return;
+
+                  var cardId = card.id || heading.textContent.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 35) || ("card-" + index);
+
+                  var compStyle = window.getComputedStyle(card);
+                  if (compStyle.position === "static") {
+                    card.style.position = "relative";
+                  }
+
+                  // Keep header visible when collapsed
+                  if (heading.tagName === "SUMMARY") {
+                    heading.classList.add("card-keep-visible");
+                  } else if (heading.parentNode === card) {
+                    heading.classList.add("card-keep-visible");
+                  } else {
+                    var topChild = heading;
+                    while (topChild.parentNode && topChild.parentNode !== card) {
+                      topChild = topChild.parentNode;
+                    }
+                    if (topChild && topChild.parentNode === card) {
+                      topChild.classList.add("card-keep-visible");
+                    }
+                  }
+
+                  var toggleBtn = document.createElement("button");
+                  toggleBtn.type = "button";
+                  toggleBtn.className = "card-collapse-toggle";
+                  toggleBtn.setAttribute("aria-label", "Collapse or expand card");
+
+                  var isCollapsed = !!collapsedSet[cardId];
+
+                  function updateCardState() {
+                    if (isCollapsed) {
+                      card.classList.add("card-is-collapsed");
+                      toggleBtn.innerHTML = "<span>Expand</span> ▾";
+                      toggleBtn.setAttribute("aria-expanded", "false");
+                    } else {
+                      card.classList.remove("card-is-collapsed");
+                      toggleBtn.innerHTML = "<span>Collapse</span> ▴";
+                      toggleBtn.setAttribute("aria-expanded", "true");
+                    }
+                  }
+
+                  toggleBtn.addEventListener("click", function (e) {
+                    e.stopPropagation();
+                    isCollapsed = !isCollapsed;
+                    collapsedSet[cardId] = isCollapsed;
+                    saveCollapsedSet(collapsedSet);
+                    updateCardState();
+                  });
+
+                  card.appendChild(toggleBtn);
+                  updateCardState();
+                });
+              }
+
+              if (document.readyState === "loading") {
+                document.addEventListener("DOMContentLoaded", setupCollapsibleCards);
+              } else {
+                setTimeout(setupCollapsibleCards, 50);
+              }
+              setInterval(setupCollapsibleCards, 800);
+            })();
+          </script>
           <nav class="unit-jump-bar" aria-label="Quick jump to unit">
             <span class="unit-jump-label">Quick Jump:</span>
             <div class="unit-jump-pills">
