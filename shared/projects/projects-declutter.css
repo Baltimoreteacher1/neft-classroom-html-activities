@@ -1,0 +1,73 @@
+/* ==========================================================================
+   Neft Teacher — Projects DECLUTTER layer (shared)
+   Makes each step's Level-2 challenge opt-in: it collapses behind a
+   "⭐ Optional Challenge" button (shown only at Level 2, since the block is
+   already level-gated). No DOM is moved and no ids change — the block and its
+   inputs stay in place — so Save/Resume, grading, and the report are untouched.
+   Runs under body.declutter-projects. Injected by tools/inject-projects-declutter.mjs.
+   ========================================================================== */
+body.declutter-projects .lvl2-block.dc-collapsed {
+  display: none !important;
+}
+/* The button carries the page's `lvl2-only` class; keep it hidden by default
+   and only reveal it at Level 2 (matching the page's own level gating) so it
+   never leaks onto Level 0/1. */
+body.declutter-projects .dc-optbtn {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  border: 1px dashed rgba(224, 138, 0, 0.5);
+  background: rgba(224, 138, 0, 0.08);
+  color: #a05a00;
+  border-radius: 12px;
+  padding: 11px 14px;
+  margin: 12px 0;
+  font: inherit;
+  font-weight: 800;
+  font-size: 14px;
+}
+body.declutter-projects.level-2 .dc-optbtn {
+  display: flex;
+}
+body.declutter-projects .dc-optbtn:hover {
+  background: rgba(224, 138, 0, 0.14);
+}
+body.declutter-projects .dc-optbtn:focus-visible {
+  outline: 3px solid rgba(224, 138, 0, 0.4);
+  outline-offset: 2px;
+}
+body.declutter-projects .dc-optbtn .dc-star {
+  flex: 0 0 auto;
+}
+body.declutter-projects .dc-optbtn .dc-caret {
+  margin-left: auto;
+  flex: 0 0 auto;
+  transition: transform 0.2s;
+}
+body.declutter-projects .dc-optbtn[aria-expanded="true"] .dc-caret {
+  transform: rotate(90deg);
+}
+@media print {
+  /* print expanded so nothing is lost on paper */
+  body.declutter-projects .lvl2-block.dc-collapsed {
+    display: block !important;
+  }
+  body.declutter-projects .dc-optbtn {
+    display: none !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.declutter-projects .dc-optbtn .dc-caret {
+    transition: none;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  body.declutter-projects .dc-optbtn {
+    background: rgba(224, 138, 0, 0.12);
+    color: #f0b25a;
+    border-color: rgba(224, 138, 0, 0.45);
+  }
+}
