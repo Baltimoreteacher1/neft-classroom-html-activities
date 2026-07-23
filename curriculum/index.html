@@ -50,8 +50,8 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <link rel="manifest" href="/manifest.webmanifest" />
-    <link rel="stylesheet" href="/assets/curriculum-enhancements.css?v=mrxlzy0g" />
-    <link rel="stylesheet" href="/assets/curriculum-sidebar.css?v=mrxlzy0g" />
+    <link rel="stylesheet" href="/assets/curriculum-enhancements.css?v=mrxn5uhn" />
+    <link rel="stylesheet" href="/assets/curriculum-sidebar.css?v=mrxn5uhn" />
     <script>
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", function () {
@@ -1310,11 +1310,11 @@
         color: #ffffff;
       }
     </style>
-    <link rel="stylesheet" href="/assets/curriculum-polish.css?v=mrxlzy0g" />
-    <link rel="stylesheet" href="/assets/curriculum-top1.css?v=mrxlzy0g" />
-    <link rel="stylesheet" href="/assets/curriculum-teacher-workflow.css?v=mrxlzy0g" />
-    <link rel="stylesheet" href="/assets/curriculum-guided-path.css?v=mrxlzy0g" />
-    <link rel="stylesheet" href="/assets/curriculum-studio-journey.css?v=mrxlzy0g" />
+    <link rel="stylesheet" href="/assets/curriculum-polish.css?v=mrxn5uhn" />
+    <link rel="stylesheet" href="/assets/curriculum-top1.css?v=mrxn5uhn" />
+    <link rel="stylesheet" href="/assets/curriculum-teacher-workflow.css?v=mrxn5uhn" />
+    <link rel="stylesheet" href="/assets/curriculum-guided-path.css?v=mrxn5uhn" />
+    <link rel="stylesheet" href="/assets/curriculum-studio-journey.css?v=mrxn5uhn" />
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
     <link rel="stylesheet" href="/assets/mobile-access.css" />
     <!-- mobile-access-injected:end -->
@@ -1368,6 +1368,14 @@
     </header>
 
     <style>
+      /* The teacher toolbelt below replaces the old redundant tool bands. Hide the
+         teacher-workflow tool drawer and quick-links (Teacher Tools Hub / Printable
+         Resources) so tools are surfaced in exactly one place (the toolbelt) instead
+         of three. The lesson card keeps its own Print / Full-plan buttons. */
+      .ctw-tools-drawer,
+      .ctw-quicklinks {
+        display: none !important;
+      }
       /* Teacher Toolbelt — compact quick-launch grid at top of the curriculum hub */
       .teacher-toolbelt {
         max-width: 1180px;
@@ -1605,12 +1613,9 @@
 
       <div class="hub-side" id="hub-side">
         <header class="hub">
-          <p class="eyebrow">Neft Teacher · Grade 6 Math</p>
-          <p class="hub-title" aria-hidden="true">Curriculum Hub</p>
           <p class="lede">
-            Every resource organized by Unit → Lesson. Expand a unit to see its graphic novels, 3D
-            game, pre/post-tests and study guide, then open each lesson to find its interactive
-            activity, guided notes, downloads, and homework — all in one place.
+            <strong>Browse the library</strong> — expand a unit for its lessons, activities, notes,
+            downloads, and homework.
           </p>
           <style>
             .unit-jump-bar {
@@ -1726,6 +1731,23 @@
                 var cards = document.querySelectorAll(selectors.join(", "));
                 var collapsedSet = getCollapsedSet();
 
+                // Dense Command Center sections open collapsed by default so the
+                // page reads simply (lesson + launch buttons first); the heading
+                // and an Expand button stay visible. An explicit user toggle is
+                // stored in collapsedSet and always wins over these defaults.
+                // Matched by slug prefix so class-suffixed ids (e.g.
+                // "live-class-signal-601") still collapse.
+                var DEFAULT_COLLAPSED_PREFIXES = [
+                  "lesson-readiness",
+                  "favorites-recent-lessons",
+                  "live-class-signal",
+                ];
+                function defaultCollapsed(id) {
+                  return DEFAULT_COLLAPSED_PREFIXES.some(function (p) {
+                    return id === p || id.indexOf(p) === 0;
+                  });
+                }
+
                 cards.forEach(function (card, index) {
                   if (card.dataset.collapsibleInit) return;
                   card.dataset.collapsibleInit = "1";
@@ -1767,7 +1789,8 @@
                   toggleBtn.className = "card-collapse-toggle";
                   toggleBtn.setAttribute("aria-label", "Collapse or expand card");
 
-                  var isCollapsed = !!collapsedSet[cardId];
+                  var isCollapsed =
+                    cardId in collapsedSet ? !!collapsedSet[cardId] : defaultCollapsed(cardId);
 
                   function updateCardState() {
                     if (isCollapsed) {
@@ -13306,7 +13329,7 @@
         window.scrollTo(0, 0);
       })();
     </script>
-    <script src="/assets/curriculum-progress-bridge.js?v=mrxlzy0g" defer></script>
+    <script src="/assets/curriculum-progress-bridge.js?v=mrxn5uhn" defer></script>
     <script>
       window.CURRICULUM_SYNC = {
         // Complete D1 content sync enabled: fetches /api/curriculum/content with static fallback.
@@ -13322,15 +13345,15 @@
          not minisearch.min.js), so browsers ORB-blocked the error page and
          MiniSearch never loaded. Serve it locally like the other vendor libs. -->
     <script src="/assets/vendor/minisearch-7.1.2.min.js" defer></script>
-    <script src="/assets/curriculum-enhancements.js?v=mrxlzy0g" defer></script>
+    <script src="/assets/curriculum-enhancements.js?v=mrxn5uhn" defer></script>
     <script src="/assets/curriculum-audit-badges.js" defer></script>
-    <script src="/assets/curriculum-sidebar.js?v=mrxlzy0g" defer></script>
-    <script src="/assets/curriculum-top1.js?v=mrxlzy0g" defer></script>
-    <script src="/assets/curriculum-teacher-planning.js?v=mrxlzy0g" defer></script>
-    <script src="/assets/curriculum-live-signal.js?v=mrxlzy0g" defer></script>
-    <script src="/assets/curriculum-teacher-workflow.js?v=mrxlzy0g" defer></script>
-    <script src="/assets/curriculum-guided-path.js?v=mrxlzy0g" defer></script>
-    <script src="/assets/curriculum-studio-journey.js?v=mrxlzy0g" defer></script>
+    <script src="/assets/curriculum-sidebar.js?v=mrxn5uhn" defer></script>
+    <script src="/assets/curriculum-top1.js?v=mrxn5uhn" defer></script>
+    <script src="/assets/curriculum-teacher-planning.js?v=mrxn5uhn" defer></script>
+    <script src="/assets/curriculum-live-signal.js?v=mrxn5uhn" defer></script>
+    <script src="/assets/curriculum-teacher-workflow.js?v=mrxn5uhn" defer></script>
+    <script src="/assets/curriculum-guided-path.js?v=mrxn5uhn" defer></script>
+    <script src="/assets/curriculum-studio-journey.js?v=mrxn5uhn" defer></script>
     <script src="/assets/futures-lab.js?v=20260619" defer></script>
     <script src="/assets/gradebook-embed.js?v=20260624" defer></script>
 

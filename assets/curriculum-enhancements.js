@@ -1736,6 +1736,12 @@
   }
 
   function buildStandardFilter() {
+    // "By standard" chip row retired to declutter the hub — teachers browse by
+    // Unit → Lesson, and full-text search still matches standard codes
+    // (e.g. typing "6.NS" filters the library). syncStandardChips() no-ops when
+    // #hub-standards is absent, so nothing else depends on this being built.
+    return;
+    // eslint-disable-next-line no-unreachable
     if (!hubApi || !hubApi.searchBox) return;
     if (document.getElementById("hub-standards")) return;
     var anchor = document.querySelector(".hub-filter-chips");
