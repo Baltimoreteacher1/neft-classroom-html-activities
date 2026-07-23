@@ -1,9 +1,12 @@
 /* =============================================================================
  * EduWonderLab Service Worker — PWA & Offline Chromebook Cache
- * Strategy: Cache-first for core assets, Stale-While-Revalidate for HTML pages.
+ * Strategy: NETWORK-FIRST for HTML/navigations (a deploy is seen on the very
+ * next load — no stale first paint, no double refresh), Stale-While-Revalidate
+ * for versioned static assets, cache as offline fallback only.
+ * Bump CACHE on any deploy that must purge the precached shell.
  * ========================================================================== */
 
-const CACHE = "eduwonderlab-v1";
+const CACHE = "eduwonderlab-v20260723";
 const PRECACHE_URLS = [
   "/curriculum/",
   "/assets/curriculum-enhancements.css",
@@ -67,21 +70,15 @@ self.addEventListener("fetch", (event) => {
   // Skip cross-origin or API POST requests from cache forcing
   if (url.origin !== self.location.origin) return;
 
-  event.respondWith(
-    caches.match(req).then((cachedResponse) => {
-      if (cachedResponse) {
-        // Fetch fresh copy in background for next visit (stale-while-revalidate)
-        fetch(req)
-          .then((networkResponse) => {
-            if (networkResponse && networkResponse.status === 200) {
-              caches.open(CACHE).then((cache) => cache.put(req, networkResponse));
-            }
-          })
-          .catch(() => {});
-        return cachedResponse;
-      }
+  const accept = req.headers.get("accept") || "";
+  const isNavigation = req.mode === "navigate" || accept.includes("text/html");
 
-      return fetch(req)
+  // HTML / navigations: NETWORK-FIRST. Always fetch the live page so a deploy
+  // appears on the next load with no stale first paint and no double refresh.
+  // Fall back to cache only when the network is unavailable (offline Chromebooks).
+  if (isNavigation) {
+    event.respondWith(
+      fetch(req)
         .then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
             const resClone = networkResponse.clone();
@@ -89,12 +86,26 @@ self.addEventListener("fetch", (event) => {
           }
           return networkResponse;
         })
-        .catch(() => {
-          // If offline and request is HTML navigation, fallback to /curriculum/
-          if (req.headers.get("accept") && req.headers.get("accept").includes("text/html")) {
-            return caches.match("/curriculum/");
+        .catch(() => caches.match(req).then((cached) => cached || caches.match("/curriculum/"))),
+    );
+    return;
+  }
+
+  // Static assets (versioned CSS/JS/img): stale-while-revalidate for speed.
+  // A ?v= bump changes the URL, so updated assets are a fresh cache key and
+  // fetch immediately; unchanged assets get a cheap background refresh.
+  event.respondWith(
+    caches.match(req).then((cachedResponse) => {
+      const fetchPromise = fetch(req)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const resClone = networkResponse.clone();
+            caches.open(CACHE).then((cache) => cache.put(req, resClone));
           }
-        });
+          return networkResponse;
+        })
+        .catch(() => cachedResponse);
+      return cachedResponse || fetchPromise;
     }),
   );
 });
