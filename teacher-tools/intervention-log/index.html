@@ -1,0 +1,1107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Intervention Log · Neft Teacher</title>
+    <meta
+      name="description"
+      content="Teacher-only MTSS Tier 2/3 intervention documentation and progress monitoring. All data stays local in your browser."
+    />
+    <meta name="robots" content="noindex" />
+    <style>
+      :root {
+        --ink: #0f2b3c;
+        --muted: #5e6e7e;
+        --line: #e2e7ec;
+        --accent: #1a6fb5;
+        --good: #157347;
+        --warn: #b45309;
+        --bg: #f4f6f8;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.5;
+      }
+      header {
+        background: #0f2b3c;
+        color: #fff;
+        padding: 16px 22px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        justify-content: space-between;
+      }
+      header h1 {
+        font-size: 1.1rem;
+        margin: 0;
+      }
+      header small {
+        display: block;
+        color: #9db4c6;
+        font-weight: 500;
+        font-size: 0.78rem;
+      }
+      header a {
+        color: #cfe6f5;
+        text-decoration: none;
+        font-size: 0.85rem;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 22px;
+      }
+      .bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 14px 16px;
+        margin-bottom: 18px;
+      }
+      label {
+        font-size: 0.75rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      select,
+      input,
+      button,
+      textarea {
+        font: inherit;
+        color: var(--ink);
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 9px 12px;
+      }
+      button {
+        cursor: pointer;
+        font-weight: 600;
+        background: #0f2b3c;
+        color: #fff;
+        border: none;
+      }
+      button.ghost {
+        background: #eef2f5;
+        color: var(--ink);
+      }
+      button:active {
+        transform: translateY(1px);
+      }
+      .grow {
+        flex: 1;
+      }
+      #msg {
+        min-height: 1.2em;
+        color: var(--muted);
+        font-size: 0.9rem;
+        margin: 0 2px 14px;
+      }
+      #msg.err {
+        color: #b42318;
+      }
+      #msg.ok {
+        color: var(--good);
+      }
+      .card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 18px 20px;
+        margin: 0 0 20px;
+        box-shadow: 0 2px 10px rgba(15, 43, 60, 0.05);
+      }
+      @media print {
+        header,
+        .bar,
+        #msg,
+        .no-print {
+          display: none;
+        }
+        body {
+          background: #fff;
+        }
+        .card {
+          break-inside: avoid;
+          box-shadow: none;
+        }
+        body.printing-one .card:not(.print-target) {
+          display: none;
+        }
+      }
+
+      /* ---- tool-specific ---- */
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .field.grow {
+        flex: 1;
+        min-width: 150px;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+      }
+      textarea {
+        resize: vertical;
+        min-height: 52px;
+      }
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+      .chip {
+        display: inline-block;
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 3px 9px;
+        border-radius: 999px;
+        letter-spacing: 0.3px;
+      }
+      .chip.t2 {
+        background: #e6f0f8;
+        color: #1a6fb5;
+      }
+      .chip.t3 {
+        background: #fbe9e7;
+        color: #b42318;
+      }
+      .chip.area {
+        background: #eef2f5;
+        color: var(--muted);
+        margin-left: 6px;
+      }
+      .status {
+        display: inline-block;
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 3px 9px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+      }
+      .status.Active {
+        background: #e6f4ea;
+        color: var(--good);
+        border-color: #bfe3c9;
+      }
+      .status.Monitoring {
+        background: #fff4e5;
+        color: var(--warn);
+        border-color: #f2d7a8;
+      }
+      .status.Metgoal {
+        background: #e6f0f8;
+        color: var(--accent);
+        border-color: #bcd8ef;
+      }
+      .status.Discontinued {
+        background: #f1f1f3;
+        color: var(--muted);
+      }
+      .status.Referred {
+        background: #fbe9e7;
+        color: #b42318;
+        border-color: #f2c4bd;
+      }
+      .resp {
+        display: inline-block;
+        font-size: 0.74rem;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 999px;
+      }
+      .resp.on {
+        background: #e6f4ea;
+        color: var(--good);
+      }
+      .resp.below {
+        background: #fff4e5;
+        color: var(--warn);
+      }
+      .resp.collect {
+        background: #eef1f4;
+        color: var(--muted);
+      }
+      .card h2 {
+        font-size: 1.05rem;
+        margin: 0 0 4px;
+      }
+      .meta {
+        font-size: 0.85rem;
+        color: var(--muted);
+        margin: 2px 0;
+      }
+      .goal-line {
+        font-weight: 600;
+        font-size: 0.92rem;
+        margin: 6px 0;
+      }
+      .concern {
+        margin: 6px 0;
+      }
+      .card .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 14px;
+      }
+      .card .actions button {
+        padding: 7px 12px;
+        font-size: 0.85rem;
+      }
+      .card .actions button.del {
+        background: #fbe9e7;
+        color: #b42318;
+      }
+      .spark {
+        margin: 10px 0 4px;
+      }
+      .spark svg {
+        max-width: 100%;
+        height: auto;
+        background: #fbfcfd;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+      }
+      .dtable {
+        border-collapse: collapse;
+        font-size: 0.85rem;
+        margin: 8px 0;
+        width: 100%;
+        max-width: 420px;
+      }
+      .dtable th,
+      .dtable td {
+        border: 1px solid var(--line);
+        padding: 5px 10px;
+        text-align: left;
+      }
+      .dtable th {
+        background: #f4f6f8;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        color: var(--muted);
+      }
+      .empty {
+        text-align: center;
+        color: var(--muted);
+        padding: 40px 20px;
+      }
+      .print-only {
+        display: none;
+      }
+      @media print {
+        .print-only {
+          display: block;
+        }
+        .sig {
+          margin-top: 40px;
+          border-top: 1px solid #333;
+          width: 320px;
+          padding-top: 6px;
+          font-size: 0.85rem;
+        }
+        .card h2 {
+          font-size: 1.2rem;
+        }
+      }
+      form .full {
+        width: 100%;
+      }
+      #formCard {
+        display: none;
+      }
+      #formCard.open {
+        display: block;
+      }
+      :focus-visible {
+        outline: 3px solid #1a6fb5;
+        outline-offset: 2px;
+      }
+    </style>
+
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
+  <body>
+    <header>
+      <h1>
+        🧭 Intervention Log
+        <small>MTSS Tier 2/3 documentation &amp; progress monitoring · teacher-only</small>
+      </h1>
+      <div><a href="/teacher-tools/">← Teacher Tools</a></div>
+    </header>
+
+    <div class="wrap">
+      <div class="bar no-print">
+        <button id="newBtn" type="button">＋ New intervention</button>
+        <div class="field">
+          <label for="filterStatus">Status</label>
+          <select id="filterStatus">
+            <option value="">All</option>
+            <option>Active</option>
+            <option>Monitoring</option>
+            <option>Met goal</option>
+            <option>Discontinued</option>
+            <option>Referred</option>
+          </select>
+        </div>
+        <div class="field grow">
+          <label for="search">Search</label>
+          <input id="search" type="search" placeholder="Student or area…" />
+        </div>
+        <button id="printAllBtn" type="button" class="ghost">🖨 Print all</button>
+        <button id="csvBtn" type="button" class="ghost">⬇ Export CSV</button>
+        <button id="sampleBtn" type="button" class="ghost">Sample data</button>
+      </div>
+
+      <p id="msg" aria-live="polite"></p>
+
+      <div class="card no-print" id="formCard">
+        <h2 id="formTitle">New intervention</h2>
+        <form id="form">
+          <input type="hidden" id="f_id" />
+          <div class="row">
+            <div class="field grow">
+              <label for="f_student">Student</label>
+              <input id="f_student" required />
+            </div>
+            <div class="field">
+              <label for="f_grade">Grade</label>
+              <input id="f_grade" value="6" />
+            </div>
+            <div class="field">
+              <label for="f_tier">Tier</label>
+              <select id="f_tier">
+                <option>Tier 2</option>
+                <option>Tier 3</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="f_area">Area</label>
+              <select id="f_area">
+                <option>Math</option>
+                <option>Reading</option>
+                <option>Behavior</option>
+                <option>Attendance</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="field grow">
+              <label for="f_concern">Concern / target skill</label>
+              <input id="f_concern" placeholder="e.g. Fluency with fraction division" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label for="f_baseline">Baseline</label>
+              <input id="f_baseline" type="number" step="any" />
+            </div>
+            <div class="field">
+              <label for="f_goal">Goal</label>
+              <input id="f_goal" type="number" step="any" />
+            </div>
+            <div class="field grow">
+              <label for="f_unit">Unit</label>
+              <input id="f_unit" placeholder="% correct, words/min, points…" />
+            </div>
+            <div class="field">
+              <label for="f_status">Status</label>
+              <select id="f_status">
+                <option>Active</option>
+                <option>Monitoring</option>
+                <option>Met goal</option>
+                <option>Discontinued</option>
+                <option>Referred</option>
+              </select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="field grow">
+              <label for="f_strategy">Strategy / intervention</label>
+              <textarea id="f_strategy" placeholder="Evidence-based strategy used…"></textarea>
+            </div>
+          </div>
+          <div class="row">
+            <div class="field grow">
+              <label for="f_frequency">Frequency</label>
+              <input id="f_frequency" placeholder="3x/week, 20 min" />
+            </div>
+            <div class="field">
+              <label for="f_start">Start date</label>
+              <input id="f_start" type="date" />
+            </div>
+            <div class="field">
+              <label for="f_review">Review date</label>
+              <input id="f_review" type="date" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="field grow">
+              <label for="f_notes">Notes</label>
+              <textarea id="f_notes" placeholder="Progress notes, meeting decisions…"></textarea>
+            </div>
+          </div>
+          <div class="actions">
+            <button type="submit">Save</button>
+            <button type="button" class="ghost" id="cancelBtn">Cancel</button>
+          </div>
+        </form>
+      </div>
+
+      <div id="list"></div>
+    </div>
+
+    <script>
+      "use strict";
+      var KEY = "nt-mtss-log-v1";
+      var listEl = document.getElementById("list");
+      var msgEl = document.getElementById("msg");
+      var formCard = document.getElementById("formCard");
+      var form = document.getElementById("form");
+
+      function esc(s) {
+        return String(s == null ? "" : s)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+      function uid() {
+        return "iv_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 7);
+      }
+      function num(v) {
+        var n = parseFloat(v);
+        return isFinite(n) ? n : null;
+      }
+      function say(t, cls) {
+        msgEl.textContent = t || "";
+        msgEl.className = cls || "";
+      }
+
+      function load() {
+        try {
+          var raw = localStorage.getItem(KEY);
+          var a = raw ? JSON.parse(raw) : [];
+          return Array.isArray(a) ? a : [];
+        } catch (e) {
+          return [];
+        }
+      }
+      function save(arr) {
+        try {
+          localStorage.setItem(KEY, JSON.stringify(arr));
+          return true;
+        } catch (e) {
+          say("Could not save (storage blocked or full).", "err");
+          return false;
+        }
+      }
+      var records = load();
+
+      /* ---------- progress computation ---------- */
+      function toTime(d) {
+        var t = Date.parse(d);
+        return isFinite(t) ? t : null;
+      }
+      // aim value at a given time via linear interpolation baseline->goal
+      function aimAt(rec, t) {
+        var t0 = toTime(rec.startDate),
+          b = num(rec.baseline),
+          g = num(rec.goal);
+        if (t0 == null || b == null || g == null) return null;
+        var t1 = toTime(rec.reviewDate);
+        if (t1 == null) {
+          var pts = (rec.points || [])
+            .map(function (p) {
+              return toTime(p.date);
+            })
+            .filter(function (x) {
+              return x != null;
+            });
+          t1 = pts.length ? Math.max.apply(null, pts) : t0 + 1;
+        }
+        if (t1 <= t0) return g;
+        var frac = (t - t0) / (t1 - t0);
+        if (frac < 0) frac = 0;
+        if (frac > 1) frac = 1;
+        return b + (g - b) * frac;
+      }
+      function responding(rec) {
+        var pts = (rec.points || []).filter(function (p) {
+          return toTime(p.date) != null && num(p.score) != null;
+        });
+        if (pts.length < 3) return { cls: "collect", label: "Collecting data" };
+        pts = pts.slice().sort(function (a, b) {
+          return toTime(a.date) - toTime(b.date);
+        });
+        var last = pts[pts.length - 1];
+        var aim = aimAt(rec, toTime(last.date));
+        if (aim == null) return { cls: "collect", label: "Collecting data" };
+        var b = num(rec.baseline),
+          g = num(rec.goal);
+        var improvingUp = g != null && b != null ? g >= b : true; // direction of desired growth
+        var s = num(last.score);
+        var ok = improvingUp ? s >= aim : s <= aim;
+        return ok
+          ? { cls: "on", label: "On track" }
+          : { cls: "below", label: "Below aim — review" };
+      }
+
+      /* ---------- sparkline ---------- */
+      function sparkline(rec) {
+        var W = 320,
+          H = 90,
+          padL = 6,
+          padR = 6,
+          padT = 8,
+          padB = 16;
+        var pts = (rec.points || [])
+          .filter(function (p) {
+            return toTime(p.date) != null && num(p.score) != null;
+          })
+          .slice()
+          .sort(function (a, b) {
+            return toTime(a.date) - toTime(b.date);
+          });
+        var b = num(rec.baseline),
+          g = num(rec.goal);
+        var t0 = toTime(rec.startDate);
+        var t1 = toTime(rec.reviewDate);
+        var times = pts.map(function (p) {
+          return toTime(p.date);
+        });
+        if (t0 != null) times.push(t0);
+        if (t1 != null) times.push(t1);
+        if (!times.length) return '<div class="spark meta">No data points yet.</div>';
+        var tMin = Math.min.apply(null, times),
+          tMax = Math.max.apply(null, times);
+        if (tMax <= tMin) tMax = tMin + 1;
+        var vals = pts.map(function (p) {
+          return num(p.score);
+        });
+        if (b != null) vals.push(b);
+        if (g != null) vals.push(g);
+        var vMin = Math.min.apply(null, vals),
+          vMax = Math.max.apply(null, vals);
+        if (vMax <= vMin) {
+          vMax = vMin + 1;
+          vMin = vMin - 1;
+        }
+        var pad = (vMax - vMin) * 0.1;
+        vMin -= pad;
+        vMax += pad;
+        function x(t) {
+          return padL + ((t - tMin) / (tMax - tMin)) * (W - padL - padR);
+        }
+        function y(v) {
+          return padT + (1 - (v - vMin) / (vMax - vMin)) * (H - padT - padB);
+        }
+        var svg =
+          '<svg viewBox="0 0 ' +
+          W +
+          " " +
+          H +
+          '" width="' +
+          W +
+          '" height="' +
+          H +
+          '" role="img" aria-label="Progress monitoring chart for ' +
+          esc(rec.student) +
+          '">';
+        // aim line
+        if (b != null && g != null && t0 != null) {
+          var ax0 = x(t0),
+            ay0 = y(b);
+          var aimEndT = t1 != null ? t1 : tMax;
+          var ax1 = x(aimEndT),
+            ay1 = y(g);
+          svg +=
+            '<line x1="' +
+            ax0.toFixed(1) +
+            '" y1="' +
+            ay0.toFixed(1) +
+            '" x2="' +
+            ax1.toFixed(1) +
+            '" y2="' +
+            ay1.toFixed(1) +
+            '" stroke="#b45309" stroke-width="1.5" stroke-dasharray="5 4"/>';
+        }
+        // data polyline
+        if (pts.length) {
+          var d = pts
+            .map(function (p, i) {
+              return (
+                (i ? "L" : "M") + x(toTime(p.date)).toFixed(1) + " " + y(num(p.score)).toFixed(1)
+              );
+            })
+            .join(" ");
+          svg +=
+            '<path d="' +
+            d +
+            '" fill="none" stroke="#1a6fb5" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>';
+          pts.forEach(function (p) {
+            svg +=
+              '<circle cx="' +
+              x(toTime(p.date)).toFixed(1) +
+              '" cy="' +
+              y(num(p.score)).toFixed(1) +
+              '" r="3.2" fill="#1a6fb5"/>';
+          });
+        }
+        svg += "</svg>";
+        return '<div class="spark">' + svg + "</div>";
+      }
+
+      /* ---------- rendering ---------- */
+      function statusClass(s) {
+        return String(s || "").replace(/\s+/g, "");
+      }
+      function dataTable(rec) {
+        var pts = (rec.points || []).slice();
+        if (!pts.length) return "";
+        var rows = pts
+          .map(function (p) {
+            return "<tr><td>" + esc(p.date) + "</td><td>" + esc(p.score) + "</td></tr>";
+          })
+          .join("");
+        return (
+          '<table class="dtable"><thead><tr><th>Date</th><th>Score</th></tr></thead><tbody>' +
+          rows +
+          "</tbody></table>"
+        );
+      }
+      function cardHtml(rec) {
+        var r = responding(rec);
+        var tierCls = rec.tier === "Tier 3" ? "t3" : "t2";
+        var goalLine = "";
+        if (rec.baseline !== "" && rec.baseline != null) {
+          goalLine =
+            "Baseline " +
+            esc(rec.baseline) +
+            " → Goal " +
+            esc(rec.goal) +
+            " " +
+            esc(rec.unit || "");
+        }
+        return (
+          "" +
+          '<div class="card" data-id="' +
+          esc(rec.id) +
+          '">' +
+          "<h2>" +
+          esc(rec.student || "(unnamed)") +
+          ' <span class="chip ' +
+          tierCls +
+          '">' +
+          esc(rec.tier || "") +
+          "</span>" +
+          '<span class="chip area">' +
+          esc(rec.area || "") +
+          '</span> <span class="status ' +
+          statusClass(rec.status) +
+          '">' +
+          esc(rec.status || "") +
+          "</span></h2>" +
+          '<div class="meta">Grade ' +
+          esc(rec.grade || "6") +
+          " · Start " +
+          esc(rec.startDate || "—") +
+          " · Review " +
+          esc(rec.reviewDate || "—") +
+          "</div>" +
+          (rec.concern
+            ? '<div class="concern"><strong>Concern:</strong> ' + esc(rec.concern) + "</div>"
+            : "") +
+          (goalLine ? '<div class="goal-line">' + goalLine + "</div>" : "") +
+          (rec.strategy
+            ? '<div class="meta"><strong>Strategy:</strong> ' + esc(rec.strategy) + "</div>"
+            : "") +
+          (rec.frequency
+            ? '<div class="meta"><strong>Frequency:</strong> ' + esc(rec.frequency) + "</div>"
+            : "") +
+          '<div class="meta"><span class="resp ' +
+          r.cls +
+          '">' +
+          esc(r.label) +
+          "</span></div>" +
+          sparkline(rec) +
+          dataTable(rec) +
+          (rec.notes
+            ? '<div class="meta"><strong>Notes:</strong> ' + esc(rec.notes) + "</div>"
+            : "") +
+          '<div class="print-only sig">Teacher signature / date</div>' +
+          '<div class="actions no-print">' +
+          '<button type="button" data-act="edit">Edit</button>' +
+          '<button type="button" class="ghost" data-act="point">＋ Add data point</button>' +
+          '<button type="button" class="ghost" data-act="print">🖨 Print</button>' +
+          '<button type="button" class="del" data-act="delete">Delete</button>' +
+          "</div>" +
+          "</div>"
+        );
+      }
+      function render() {
+        var q = (document.getElementById("search").value || "").toLowerCase().trim();
+        var st = document.getElementById("filterStatus").value;
+        var shown = records.filter(function (r) {
+          if (st && r.status !== st) return false;
+          if (q) {
+            var hay = (
+              (r.student || "") +
+              " " +
+              (r.area || "") +
+              " " +
+              (r.concern || "")
+            ).toLowerCase();
+            if (hay.indexOf(q) === -1) return false;
+          }
+          return true;
+        });
+        if (!records.length) {
+          listEl.innerHTML =
+            '<div class="empty">No interventions yet. Click <strong>＋ New intervention</strong> to start, or load <strong>Sample data</strong>.</div>';
+          return;
+        }
+        if (!shown.length) {
+          listEl.innerHTML = '<div class="empty">No records match your filter.</div>';
+          return;
+        }
+        listEl.innerHTML = shown.map(cardHtml).join("");
+      }
+
+      /* ---------- form ---------- */
+      function openForm(rec) {
+        form.reset();
+        document.getElementById("formTitle").textContent = rec
+          ? "Edit intervention"
+          : "New intervention";
+        document.getElementById("f_id").value = rec ? rec.id : "";
+        document.getElementById("f_student").value = rec ? rec.student || "" : "";
+        document.getElementById("f_grade").value = rec ? rec.grade || "6" : "6";
+        document.getElementById("f_tier").value = rec ? rec.tier || "Tier 2" : "Tier 2";
+        document.getElementById("f_area").value = rec ? rec.area || "Math" : "Math";
+        document.getElementById("f_concern").value = rec ? rec.concern || "" : "";
+        document.getElementById("f_baseline").value = rec
+          ? rec.baseline == null
+            ? ""
+            : rec.baseline
+          : "";
+        document.getElementById("f_goal").value = rec ? (rec.goal == null ? "" : rec.goal) : "";
+        document.getElementById("f_unit").value = rec ? rec.unit || "" : "";
+        document.getElementById("f_status").value = rec ? rec.status || "Active" : "Active";
+        document.getElementById("f_strategy").value = rec ? rec.strategy || "" : "";
+        document.getElementById("f_frequency").value = rec ? rec.frequency || "" : "";
+        document.getElementById("f_start").value = rec ? rec.startDate || "" : "";
+        document.getElementById("f_review").value = rec ? rec.reviewDate || "" : "";
+        document.getElementById("f_notes").value = rec ? rec.notes || "" : "";
+        formCard.classList.add("open");
+        formCard.scrollIntoView({ behavior: "smooth", block: "start" });
+        document.getElementById("f_student").focus();
+      }
+      function closeForm() {
+        formCard.classList.remove("open");
+      }
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var id = document.getElementById("f_id").value;
+        var data = {
+          student: document.getElementById("f_student").value.trim(),
+          grade: document.getElementById("f_grade").value.trim() || "6",
+          tier: document.getElementById("f_tier").value,
+          area: document.getElementById("f_area").value,
+          concern: document.getElementById("f_concern").value.trim(),
+          baseline:
+            document.getElementById("f_baseline").value.trim() === ""
+              ? ""
+              : num(document.getElementById("f_baseline").value),
+          goal:
+            document.getElementById("f_goal").value.trim() === ""
+              ? ""
+              : num(document.getElementById("f_goal").value),
+          unit: document.getElementById("f_unit").value.trim(),
+          strategy: document.getElementById("f_strategy").value.trim(),
+          frequency: document.getElementById("f_frequency").value.trim(),
+          startDate: document.getElementById("f_start").value,
+          reviewDate: document.getElementById("f_review").value,
+          status: document.getElementById("f_status").value,
+          notes: document.getElementById("f_notes").value.trim(),
+        };
+        if (!data.student) {
+          say("Student name is required.", "err");
+          return;
+        }
+        if (id) {
+          var idx = records.findIndex(function (r) {
+            return r.id === id;
+          });
+          if (idx > -1) {
+            data.id = id;
+            data.points = records[idx].points || [];
+            records[idx] = data;
+          }
+        } else {
+          data.id = uid();
+          data.points = [];
+          records.push(data);
+        }
+        if (save(records)) {
+          say("Saved.", "ok");
+          closeForm();
+          render();
+        }
+      });
+
+      /* ---------- card actions ---------- */
+      listEl.addEventListener("click", function (e) {
+        var btn = e.target.closest("button[data-act]");
+        if (!btn) return;
+        var card = e.target.closest(".card");
+        var id = card && card.getAttribute("data-id");
+        var idx = records.findIndex(function (r) {
+          return r.id === id;
+        });
+        if (idx < 0) return;
+        var act = btn.getAttribute("data-act");
+        if (act === "edit") {
+          openForm(records[idx]);
+        } else if (act === "delete") {
+          if (
+            confirm(
+              "Delete intervention for " +
+                (records[idx].student || "this student") +
+                "? This cannot be undone.",
+            )
+          ) {
+            records.splice(idx, 1);
+            save(records);
+            say("Deleted.", "ok");
+            render();
+          }
+        } else if (act === "point") {
+          var today = new Date().toISOString().slice(0, 10);
+          var date = prompt("Data point date (YYYY-MM-DD):", today);
+          if (date == null) return;
+          date = date.trim();
+          if (!date) return;
+          var sc = prompt("Score for " + date + ":", "");
+          if (sc == null) return;
+          var scn = num(sc);
+          if (scn == null) {
+            say("Score must be a number.", "err");
+            return;
+          }
+          records[idx].points = records[idx].points || [];
+          records[idx].points.push({ date: date, score: scn });
+          records[idx].points.sort(function (a, b) {
+            return (Date.parse(a.date) || 0) - (Date.parse(b.date) || 0);
+          });
+          save(records);
+          say("Data point added.", "ok");
+          render();
+        } else if (act === "print") {
+          printOne(card);
+        }
+      });
+
+      function printOne(card) {
+        var all = listEl.querySelectorAll(".card");
+        all.forEach(function (c) {
+          c.classList.remove("print-target");
+        });
+        card.classList.add("print-target");
+        document.body.classList.add("printing-one");
+        var cleanup = function () {
+          document.body.classList.remove("printing-one");
+          card.classList.remove("print-target");
+          window.removeEventListener("afterprint", cleanup);
+        };
+        window.addEventListener("afterprint", cleanup);
+        window.print();
+        setTimeout(cleanup, 1500);
+      }
+
+      /* ---------- CSV ---------- */
+      function csvCell(v) {
+        v = v == null ? "" : String(v);
+        if (/[",\n]/.test(v)) v = '"' + v.replace(/"/g, '""') + '"';
+        return v;
+      }
+      function exportCsv() {
+        if (!records.length) {
+          say("Nothing to export.", "err");
+          return;
+        }
+        var head = [
+          "student",
+          "grade",
+          "tier",
+          "area",
+          "concern",
+          "baseline",
+          "goal",
+          "unit",
+          "strategy",
+          "frequency",
+          "startDate",
+          "reviewDate",
+          "status",
+          "responding",
+          "pointDate",
+          "pointScore",
+          "notes",
+        ];
+        var rows = [head.join(",")];
+        records.forEach(function (r) {
+          var resp = responding(r).label;
+          var base = [
+            r.student,
+            r.grade,
+            r.tier,
+            r.area,
+            r.concern,
+            r.baseline,
+            r.goal,
+            r.unit,
+            r.strategy,
+            r.frequency,
+            r.startDate,
+            r.reviewDate,
+            r.status,
+            resp,
+          ];
+          var pts = r.points || [];
+          if (!pts.length) {
+            rows.push(base.concat(["", "", r.notes]).map(csvCell).join(","));
+          } else {
+            pts.forEach(function (p) {
+              rows.push(base.concat([p.date, p.score, r.notes]).map(csvCell).join(","));
+            });
+          }
+        });
+        var blob = new Blob([rows.join("\n")], { type: "text/csv;charset=utf-8" });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.href = url;
+        a.download = "intervention-log.csv";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(function () {
+          URL.revokeObjectURL(url);
+        }, 1000);
+        say("Exported intervention-log.csv", "ok");
+      }
+
+      /* ---------- sample data ---------- */
+      function sampleData() {
+        if (records.length) {
+          say("Sample data only loads when the log is empty.", "err");
+          return;
+        }
+        var today = new Date();
+        function d(offset) {
+          var x = new Date(today.getTime() + offset * 86400000);
+          return x.toISOString().slice(0, 10);
+        }
+        records = [
+          {
+            id: uid(),
+            student: "Marisol Reyes",
+            grade: "6",
+            tier: "Tier 2",
+            area: "Math",
+            concern: "Fluency dividing fractions (6.NS.A.1)",
+            baseline: 40,
+            goal: 80,
+            unit: "% correct",
+            strategy:
+              "Small-group explicit instruction with fraction models; guided practice 3x/week.",
+            frequency: "3x/week, 20 min",
+            startDate: d(-35),
+            reviewDate: d(7),
+            status: "Active",
+            points: [
+              { date: d(-35), score: 40 },
+              { date: d(-28), score: 48 },
+              { date: d(-21), score: 55 },
+              { date: d(-14), score: 63 },
+              { date: d(-7), score: 72 },
+            ],
+            notes: "Responding well; consider fading support if next point holds above aim.",
+          },
+          {
+            id: uid(),
+            student: "Devon Clarke",
+            grade: "6",
+            tier: "Tier 3",
+            area: "Math",
+            concern: "Whole-number operations & place value (foundational gap)",
+            baseline: 2,
+            goal: 8,
+            unit: "points",
+            strategy: "1:1 intervention using concrete-representational-abstract sequence.",
+            frequency: "daily, 25 min",
+            startDate: d(-30),
+            reviewDate: d(10),
+            status: "Monitoring",
+            points: [
+              { date: d(-30), score: 2 },
+              { date: d(-23), score: 3 },
+              { date: d(-16), score: 3 },
+              { date: d(-9), score: 4 },
+            ],
+            notes: "Progress slower than aim line; schedule problem-solving team review.",
+          },
+        ];
+        save(records);
+        say("Loaded 2 sample records.", "ok");
+        render();
+      }
+
+      /* ---------- wire up ---------- */
+      document.getElementById("newBtn").addEventListener("click", function () {
+        openForm(null);
+      });
+      document.getElementById("cancelBtn").addEventListener("click", closeForm);
+      document.getElementById("search").addEventListener("input", render);
+      document.getElementById("filterStatus").addEventListener("change", render);
+      document.getElementById("printAllBtn").addEventListener("click", function () {
+        document.body.classList.remove("printing-one");
+        window.print();
+      });
+      document.getElementById("csvBtn").addEventListener("click", exportCsv);
+      document.getElementById("sampleBtn").addEventListener("click", sampleData);
+
+      render();
+    </script>
+  </body>
+</html>

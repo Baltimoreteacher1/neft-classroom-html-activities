@@ -1,0 +1,1065 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Parent Contact Log · Neft Teacher</title>
+    <meta
+      name="description"
+      content="Teacher-only, browser-local documented record of parent/guardian communication. Print-ready, CSV export, and an equity view. No accounts, no server — all data stays on this device."
+    />
+    <meta name="robots" content="noindex" />
+    <style>
+      :root {
+        --ink: #0f2b3c;
+        --muted: #5e6e7e;
+        --line: #e2e7ec;
+        --accent: #1a6fb5;
+        --good: #157347;
+        --warn: #b45309;
+        --bg: #f4f6f8;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.5;
+      }
+      header {
+        background: #0f2b3c;
+        color: #fff;
+        padding: 16px 22px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        justify-content: space-between;
+      }
+      header h1 {
+        font-size: 1.1rem;
+        margin: 0;
+      }
+      header small {
+        display: block;
+        color: #9db4c6;
+        font-weight: 500;
+        font-size: 0.78rem;
+      }
+      header a {
+        color: #cfe6f5;
+        text-decoration: none;
+        font-size: 0.85rem;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 22px;
+      }
+      .bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 14px 16px;
+        margin-bottom: 18px;
+      }
+      label {
+        font-size: 0.75rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      select,
+      input,
+      button,
+      textarea {
+        font: inherit;
+        color: var(--ink);
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 9px 12px;
+      }
+      button {
+        cursor: pointer;
+        font-weight: 600;
+        background: #0f2b3c;
+        color: #fff;
+        border: none;
+      }
+      button.ghost {
+        background: #eef2f5;
+        color: var(--ink);
+      }
+      button:active {
+        transform: translateY(1px);
+      }
+      .grow {
+        flex: 1;
+      }
+      #msg {
+        min-height: 1.2em;
+        color: var(--muted);
+        font-size: 0.9rem;
+        margin: 0 2px 14px;
+      }
+      #msg.err {
+        color: #b42318;
+      }
+      #msg.ok {
+        color: var(--good);
+      }
+      .card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 18px 20px;
+        margin: 0 0 20px;
+        box-shadow: 0 2px 10px rgba(15, 43, 60, 0.05);
+      }
+      @media print {
+        header,
+        .bar,
+        #msg,
+        .no-print {
+          display: none;
+        }
+        body {
+          background: #fff;
+        }
+        .card {
+          break-inside: avoid;
+          box-shadow: none;
+        }
+      }
+
+      /* ---- tool-specific ---- */
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+        margin-bottom: 20px;
+      }
+      .stat {
+        text-align: center;
+        padding: 16px 12px;
+      }
+      .stat b {
+        display: block;
+        font-size: 2rem;
+        line-height: 1.1;
+        color: var(--accent);
+      }
+      .stat.warn b {
+        color: var(--warn);
+      }
+      .stat span {
+        font-size: 0.78rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .field.grow {
+        flex: 1;
+        min-width: 150px;
+      }
+      .formgrid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+      }
+      .formgrid .full {
+        grid-column: 1 / -1;
+      }
+      .chk {
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+      }
+      .chk input {
+        width: auto;
+      }
+      .chk label {
+        text-transform: none;
+        letter-spacing: 0;
+        font-size: 0.9rem;
+        color: var(--ink);
+      }
+      .actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 16px;
+        flex-wrap: wrap;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.92rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 9px 10px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+      }
+      th {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--muted);
+      }
+      tbody tr:hover {
+        background: #f8fafb;
+      }
+      .chip {
+        display: inline-block;
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 2px 9px;
+        border-radius: 999px;
+        background: #eef2f5;
+        color: var(--ink);
+        white-space: nowrap;
+      }
+      .chip.m-Phone {
+        background: #e3f0fb;
+        color: #1a6fb5;
+      }
+      .chip.m-Email {
+        background: #eae6fb;
+        color: #5b4bb5;
+      }
+      .chip.m-Text {
+        background: #e0f5ea;
+        color: #157347;
+      }
+      .chip.r-Positive {
+        background: #e0f5ea;
+        color: #157347;
+      }
+      .chip.r-Behavior {
+        background: #fde8e8;
+        color: #b42318;
+      }
+      .chip.r-Attendance,
+      .chip.r-Missing.work {
+        background: #fdf0e0;
+        color: #b45309;
+      }
+      .badge {
+        display: inline-block;
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 6px;
+        background: #fdf0e0;
+        color: #b45309;
+        white-space: nowrap;
+      }
+      .sumcell {
+        max-width: 280px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .rowbtns {
+        display: flex;
+        gap: 6px;
+      }
+      .rowbtns button {
+        padding: 5px 10px;
+        font-size: 0.8rem;
+      }
+      .empty {
+        text-align: center;
+        color: var(--muted);
+        padding: 34px 12px;
+      }
+      details.equity summary {
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 1rem;
+        list-style: none;
+      }
+      details.equity summary::-webkit-details-marker {
+        display: none;
+      }
+      details.equity summary::before {
+        content: "▸ ";
+        color: var(--accent);
+      }
+      details.equity[open] summary::before {
+        content: "▾ ";
+      }
+      textarea {
+        width: 100%;
+        resize: vertical;
+        min-height: 90px;
+      }
+      .equity-flag {
+        color: var(--warn);
+        font-weight: 700;
+      }
+      .equity-ok {
+        color: var(--good);
+      }
+      .print-head {
+        display: none;
+      }
+      .hidden {
+        display: none;
+      }
+      @media print {
+        .print-head {
+          display: block;
+          margin-bottom: 14px;
+        }
+        .print-head h2 {
+          margin: 0 0 6px;
+        }
+        .print-head .line {
+          margin: 8px 0;
+        }
+      }
+      @media (max-width: 640px) {
+        .stats {
+          grid-template-columns: 1fr;
+        }
+        .formgrid {
+          grid-template-columns: 1fr;
+        }
+        .sumcell {
+          max-width: 140px;
+        }
+      }
+    </style>
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
+  <body>
+    <header>
+      <h1>
+        📇 Parent Contact Log
+        <small>Documented record of family communication · teacher-only</small>
+      </h1>
+      <div><a href="/teacher-tools/">← Teacher Tools</a></div>
+    </header>
+
+    <main class="wrap">
+      <div class="print-head">
+        <h2 id="printTitle">Parent/Guardian Contact Log</h2>
+        <div class="line">
+          Teacher: ____________________________&nbsp;&nbsp;&nbsp;School Year: ____________
+        </div>
+      </div>
+
+      <p id="msg" role="status" aria-live="polite" class="no-print"></p>
+
+      <!-- Dashboard -->
+      <section class="stats no-print" aria-label="Contact summary">
+        <div class="card stat"><b id="statWeek">0</b><span>Contacts this week</span></div>
+        <div class="card stat warn"><b id="statDue">0</b><span>Follow-ups due</span></div>
+        <div class="card stat"><b id="statStudents">0</b><span>Students contacted</span></div>
+      </section>
+
+      <!-- Toolbar -->
+      <div class="bar no-print" role="group" aria-label="Actions and filters">
+        <button id="btnAdd" type="button">＋ Log a contact</button>
+        <div class="field">
+          <label for="fMethod">Method</label>
+          <select id="fMethod">
+            <option value="">All methods</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="fReason">Reason</label>
+          <select id="fReason">
+            <option value="">All reasons</option>
+          </select>
+        </div>
+        <div class="field grow">
+          <label for="fSearch">Search</label>
+          <input id="fSearch" type="search" placeholder="student, guardian, or summary" />
+        </div>
+        <div class="field chk">
+          <input id="fDue" type="checkbox" />
+          <label for="fDue">Follow-ups due only</label>
+        </div>
+        <button id="btnPrint" class="ghost" type="button">🖨 Print log</button>
+        <button id="btnCsv" class="ghost" type="button">⬇ Export CSV</button>
+        <button id="btnSample" class="ghost" type="button">Sample data</button>
+      </div>
+
+      <!-- Add / Edit form -->
+      <section id="formCard" class="card no-print hidden" aria-label="Log a contact">
+        <h2 id="formTitle" style="margin: 0 0 14px; font-size: 1.05rem">Log a contact</h2>
+        <form id="contactForm">
+          <input type="hidden" id="fId" />
+          <div class="formgrid">
+            <div class="field">
+              <label for="iDate">Date</label>
+              <input id="iDate" type="date" required />
+            </div>
+            <div class="field">
+              <label for="iStudent">Student</label>
+              <input id="iStudent" type="text" required placeholder="Student name" />
+            </div>
+            <div class="field">
+              <label for="iGuardian">Parent / Guardian</label>
+              <input id="iGuardian" type="text" placeholder="Guardian name" />
+            </div>
+            <div class="field">
+              <label for="iMethod">Method</label>
+              <select id="iMethod" required></select>
+            </div>
+            <div class="field">
+              <label for="iReason">Reason</label>
+              <select id="iReason" required></select>
+            </div>
+            <div class="field chk" style="align-self: end">
+              <input id="iFollow" type="checkbox" />
+              <label for="iFollow">Follow-up needed</label>
+            </div>
+            <div class="field">
+              <label for="iFollowDate">Follow-up date</label>
+              <input id="iFollowDate" type="date" disabled />
+            </div>
+            <div class="field full">
+              <label for="iSummary">Summary — what was discussed</label>
+              <textarea
+                id="iSummary"
+                required
+                placeholder="Brief record of the conversation…"
+              ></textarea>
+            </div>
+            <div class="field full">
+              <label for="iOutcome">Outcome / next step (optional)</label>
+              <input
+                id="iOutcome"
+                type="text"
+                placeholder="e.g., Parent will check planner nightly"
+              />
+            </div>
+          </div>
+          <div class="actions">
+            <button type="submit">Save contact</button>
+            <button type="button" id="btnCancel" class="ghost">Cancel</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Log -->
+      <section class="card" aria-label="Contact log">
+        <div style="overflow-x: auto">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Student</th>
+                <th scope="col">Guardian</th>
+                <th scope="col">Method</th>
+                <th scope="col">Reason</th>
+                <th scope="col">Summary</th>
+                <th scope="col" class="no-print">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="logBody"></tbody>
+          </table>
+        </div>
+        <div id="logEmpty" class="empty hidden">
+          No contacts logged yet. Click “＋ Log a contact” to begin, or load Sample data.
+        </div>
+      </section>
+
+      <!-- Equity view -->
+      <details class="equity card no-print">
+        <summary>Equity check — has every family been reached?</summary>
+        <p style="color: var(--muted); font-size: 0.9rem">
+          Paste your class roster (one student per line) to track contact coverage. Leave blank to
+          use students already logged.
+        </p>
+        <div class="field">
+          <label for="roster">Class roster</label>
+          <textarea id="roster" placeholder="One student name per line"></textarea>
+        </div>
+        <div class="actions">
+          <button type="button" id="btnRoster">Save roster</button>
+        </div>
+        <div style="overflow-x: auto; margin-top: 14px">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Student</th>
+                <th scope="col">Contacts</th>
+                <th scope="col">Last contact</th>
+                <th scope="col">Status</th>
+              </tr>
+            </thead>
+            <tbody id="equityBody"></tbody>
+          </table>
+        </div>
+      </details>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+        var LS_LOG = "nt-parent-contact-log-v1";
+        var LS_ROSTER = "nt-contact-roster-v1";
+        var METHODS = ["Phone", "Email", "In person", "Note home", "ClassDojo", "Text", "Other"];
+        var REASONS = ["Academic", "Behavior", "Attendance", "Positive", "Missing work", "Other"];
+
+        var $ = function (id) {
+          return document.getElementById(id);
+        };
+        var msgEl = $("msg");
+        var supported = (function () {
+          try {
+            localStorage.setItem("__t", "1");
+            localStorage.removeItem("__t");
+            return true;
+          } catch (e) {
+            return false;
+          }
+        })();
+
+        function escapeHtml(s) {
+          return String(s == null ? "" : s)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+        }
+        function flash(text, kind) {
+          msgEl.textContent = text || "";
+          msgEl.className = "no-print" + (kind ? " " + kind : "");
+        }
+        function todayStr() {
+          var d = new Date();
+          return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+        }
+        function pad(n) {
+          return (n < 10 ? "0" : "") + n;
+        }
+
+        function load() {
+          if (!supported) return [];
+          try {
+            var raw = localStorage.getItem(LS_LOG);
+            var arr = raw ? JSON.parse(raw) : [];
+            return Array.isArray(arr) ? arr : [];
+          } catch (e) {
+            return [];
+          }
+        }
+        function save(arr) {
+          if (!supported) return false;
+          try {
+            localStorage.setItem(LS_LOG, JSON.stringify(arr));
+            return true;
+          } catch (e) {
+            flash("Could not save — storage may be full.", "err");
+            return false;
+          }
+        }
+        function loadRoster() {
+          if (!supported) return [];
+          try {
+            var raw = localStorage.getItem(LS_ROSTER);
+            var arr = raw ? JSON.parse(raw) : [];
+            return Array.isArray(arr) ? arr : [];
+          } catch (e) {
+            return [];
+          }
+        }
+        function saveRoster(arr) {
+          if (!supported) return;
+          try {
+            localStorage.setItem(LS_ROSTER, JSON.stringify(arr));
+          } catch (e) {}
+        }
+
+        var entries = load();
+
+        function fillSelect(sel, opts, allLabel) {
+          sel.innerHTML = "";
+          if (allLabel) {
+            var o = document.createElement("option");
+            o.value = "";
+            o.textContent = allLabel;
+            sel.appendChild(o);
+          }
+          opts.forEach(function (v) {
+            var op = document.createElement("option");
+            op.value = v;
+            op.textContent = v;
+            sel.appendChild(op);
+          });
+        }
+        fillSelect($("fMethod"), METHODS, "All methods");
+        fillSelect($("fReason"), REASONS, "All reasons");
+        fillSelect($("iMethod"), METHODS, "");
+        fillSelect($("iReason"), REASONS, "");
+
+        // ---- follow-up due logic ----
+        function isDue(e) {
+          if (!e.followUp) return false;
+          if (!e.followUpDate) return true;
+          return e.followUpDate <= todayStr();
+        }
+
+        // ---- dashboard ----
+        function weekAgoStr() {
+          var d = new Date();
+          d.setDate(d.getDate() - 6);
+          return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+        }
+        function renderStats() {
+          var since = weekAgoStr(),
+            today = todayStr();
+          var week = 0,
+            due = 0,
+            students = {};
+          entries.forEach(function (e) {
+            if (e.date && e.date >= since && e.date <= today) week++;
+            if (isDue(e)) due++;
+            if (e.student) students[e.student.trim().toLowerCase()] = true;
+          });
+          $("statWeek").textContent = week;
+          $("statDue").textContent = due;
+          var roster = loadRoster();
+          var distinct = Object.keys(students).length;
+          if (roster.length) {
+            $("statStudents").textContent = distinct + " / " + roster.length;
+          } else {
+            $("statStudents").textContent = distinct;
+          }
+        }
+
+        // ---- filters ----
+        function applyFilters(list) {
+          var m = $("fMethod").value,
+            r = $("fReason").value;
+          var q = $("fSearch").value.trim().toLowerCase();
+          var dueOnly = $("fDue").checked;
+          return list.filter(function (e) {
+            if (m && e.method !== m) return false;
+            if (r && e.reason !== r) return false;
+            if (dueOnly && !isDue(e)) return false;
+            if (q) {
+              var hay = (
+                (e.student || "") +
+                " " +
+                (e.guardian || "") +
+                " " +
+                (e.summary || "")
+              ).toLowerCase();
+              if (hay.indexOf(q) === -1) return false;
+            }
+            return true;
+          });
+        }
+        function sorted(list) {
+          return list.slice().sort(function (a, b) {
+            return (b.date || "").localeCompare(a.date || "");
+          });
+        }
+
+        // ---- log table ----
+        function renderLog() {
+          var body = $("logBody");
+          var rows = sorted(applyFilters(entries));
+          body.innerHTML = "";
+          $("logEmpty").classList.toggle("hidden", rows.length > 0);
+          rows.forEach(function (e) {
+            var tr = document.createElement("tr");
+            var methodCls = "chip m-" + String(e.method || "").replace(/\s+/g, ".");
+            var reasonCls = "chip r-" + String(e.reason || "").replace(/\s+/g, ".");
+            var dueBadge = isDue(e)
+              ? ' <span class="badge">⚑ follow-up due' +
+                (e.followUpDate ? " " + escapeHtml(e.followUpDate) : "") +
+                "</span>"
+              : "";
+            var summary = e.summary || "";
+            var outcome = e.outcome ? " — Outcome: " + e.outcome : "";
+            tr.innerHTML =
+              "<td>" +
+              escapeHtml(e.date || "") +
+              "</td>" +
+              "<td>" +
+              escapeHtml(e.student || "") +
+              "</td>" +
+              "<td>" +
+              escapeHtml(e.guardian || "") +
+              "</td>" +
+              '<td><span class="' +
+              methodCls +
+              '">' +
+              escapeHtml(e.method || "") +
+              "</span></td>" +
+              '<td><span class="' +
+              reasonCls +
+              '">' +
+              escapeHtml(e.reason || "") +
+              "</span>" +
+              dueBadge +
+              "</td>" +
+              '<td class="sumcell" title="' +
+              escapeHtml(summary + outcome) +
+              '">' +
+              escapeHtml(summary) +
+              "</td>" +
+              '<td class="no-print"><div class="rowbtns">' +
+              '<button type="button" class="ghost" data-edit="' +
+              escapeHtml(e.id) +
+              '">Edit</button>' +
+              '<button type="button" class="ghost" data-del="' +
+              escapeHtml(e.id) +
+              '">Delete</button>' +
+              "</div></td>";
+            body.appendChild(tr);
+          });
+        }
+
+        // ---- equity view ----
+        function renderEquity() {
+          var roster = loadRoster();
+          var byStudent = {};
+          entries.forEach(function (e) {
+            var k = (e.student || "").trim();
+            if (!k) return;
+            var key = k.toLowerCase();
+            if (!byStudent[key]) byStudent[key] = { name: k, count: 0, last: "" };
+            byStudent[key].count++;
+            if ((e.date || "") > byStudent[key].last) byStudent[key].last = e.date || "";
+          });
+          var names;
+          if (roster.length) {
+            names = roster.slice();
+          } else {
+            names = Object.keys(byStudent)
+              .map(function (k) {
+                return byStudent[k].name;
+              })
+              .sort();
+          }
+          var body = $("equityBody");
+          body.innerHTML = "";
+          if (!names.length) {
+            body.innerHTML =
+              '<tr><td colspan="4" class="empty">Add a roster or log contacts to see coverage.</td></tr>';
+            return;
+          }
+          names.forEach(function (name) {
+            var rec = byStudent[name.trim().toLowerCase()];
+            var count = rec ? rec.count : 0;
+            var last = rec ? rec.last : "";
+            var status =
+              count === 0
+                ? '<span class="equity-flag">⚠ not yet contacted</span>'
+                : '<span class="equity-ok">✓ reached</span>';
+            var tr = document.createElement("tr");
+            tr.innerHTML =
+              "<td>" +
+              escapeHtml(name) +
+              "</td>" +
+              "<td>" +
+              count +
+              "</td>" +
+              "<td>" +
+              escapeHtml(last || "—") +
+              "</td>" +
+              "<td>" +
+              status +
+              "</td>";
+            body.appendChild(tr);
+          });
+        }
+
+        function renderAll() {
+          renderStats();
+          renderLog();
+          renderEquity();
+        }
+
+        // ---- form ----
+        var formCard = $("formCard");
+        function openForm(entry) {
+          $("formTitle").textContent = entry ? "Edit contact" : "Log a contact";
+          $("fId").value = entry ? entry.id : "";
+          $("iDate").value = entry ? entry.date || "" : todayStr();
+          $("iStudent").value = entry ? entry.student || "" : "";
+          $("iGuardian").value = entry ? entry.guardian || "" : "";
+          $("iMethod").value = entry ? entry.method || METHODS[0] : METHODS[0];
+          $("iReason").value = entry ? entry.reason || REASONS[0] : REASONS[0];
+          $("iFollow").checked = entry ? !!entry.followUp : false;
+          $("iFollowDate").value = entry ? entry.followUpDate || "" : "";
+          $("iFollowDate").disabled = !$("iFollow").checked;
+          $("iSummary").value = entry ? entry.summary || "" : "";
+          $("iOutcome").value = entry ? entry.outcome || "" : "";
+          formCard.classList.remove("hidden");
+          formCard.scrollIntoView({ behavior: "smooth", block: "start" });
+          $("iStudent").focus();
+        }
+        function closeForm() {
+          formCard.classList.add("hidden");
+          $("contactForm").reset();
+        }
+
+        $("iFollow").addEventListener("change", function () {
+          $("iFollowDate").disabled = !this.checked;
+          if (!this.checked) $("iFollowDate").value = "";
+        });
+
+        $("contactForm").addEventListener("submit", function (ev) {
+          ev.preventDefault();
+          var id = $("fId").value;
+          var data = {
+            id: id || "c" + Date.now() + Math.floor(Math.random() * 1000),
+            date: $("iDate").value,
+            student: $("iStudent").value.trim(),
+            guardian: $("iGuardian").value.trim(),
+            method: $("iMethod").value,
+            reason: $("iReason").value,
+            summary: $("iSummary").value.trim(),
+            followUp: $("iFollow").checked,
+            followUpDate: $("iFollow").checked ? $("iFollowDate").value : "",
+            outcome: $("iOutcome").value.trim(),
+          };
+          if (!data.date || !data.student || !data.summary) {
+            flash("Please fill in date, student, and summary.", "err");
+            return;
+          }
+          if (id) {
+            for (var i = 0; i < entries.length; i++) {
+              if (entries[i].id === id) {
+                entries[i] = data;
+                break;
+              }
+            }
+          } else {
+            entries.push(data);
+          }
+          if (save(entries)) {
+            flash("Contact saved.", "ok");
+          }
+          closeForm();
+          renderAll();
+        });
+
+        $("btnCancel").addEventListener("click", closeForm);
+        $("btnAdd").addEventListener("click", function () {
+          openForm(null);
+        });
+
+        $("logBody").addEventListener("click", function (ev) {
+          var t = ev.target;
+          var editId = t.getAttribute("data-edit");
+          var delId = t.getAttribute("data-del");
+          if (editId) {
+            var e = entries.filter(function (x) {
+              return x.id === editId;
+            })[0];
+            if (e) openForm(e);
+          } else if (delId) {
+            var d = entries.filter(function (x) {
+              return x.id === delId;
+            })[0];
+            var who = d ? d.student || "this contact" : "this contact";
+            if (window.confirm("Delete the contact for " + who + "? This cannot be undone.")) {
+              entries = entries.filter(function (x) {
+                return x.id !== delId;
+              });
+              save(entries);
+              flash("Contact deleted.", "ok");
+              renderAll();
+            }
+          }
+        });
+
+        // ---- filters wiring ----
+        ["fMethod", "fReason", "fDue"].forEach(function (id) {
+          $(id).addEventListener("change", renderLog);
+        });
+        $("fSearch").addEventListener("input", renderLog);
+
+        // ---- roster ----
+        $("roster").value = loadRoster().join("\n");
+        $("btnRoster").addEventListener("click", function () {
+          var names = $("roster")
+            .value.split("\n")
+            .map(function (s) {
+              return s.trim();
+            })
+            .filter(function (s) {
+              return s.length;
+            });
+          saveRoster(names);
+          flash("Roster saved (" + names.length + " students).", "ok");
+          renderStats();
+          renderEquity();
+        });
+
+        // ---- print ----
+        $("btnPrint").addEventListener("click", function () {
+          // Print reflects current filters by rendering only filtered rows (already in table).
+          window.print();
+        });
+
+        // ---- CSV export ----
+        function csvCell(v) {
+          var s = String(v == null ? "" : v);
+          if (/[",\n]/.test(s)) s = '"' + s.replace(/"/g, '""') + '"';
+          return s;
+        }
+        $("btnCsv").addEventListener("click", function () {
+          var rows = sorted(applyFilters(entries));
+          if (!rows.length) {
+            flash("Nothing to export with current filters.", "err");
+            return;
+          }
+          var header = [
+            "Date",
+            "Student",
+            "Guardian",
+            "Method",
+            "Reason",
+            "Summary",
+            "Follow-up",
+            "Follow-up date",
+            "Outcome",
+          ];
+          var lines = [header.map(csvCell).join(",")];
+          rows.forEach(function (e) {
+            lines.push(
+              [
+                e.date,
+                e.student,
+                e.guardian,
+                e.method,
+                e.reason,
+                e.summary,
+                e.followUp ? "Yes" : "No",
+                e.followUpDate || "",
+                e.outcome || "",
+              ]
+                .map(csvCell)
+                .join(","),
+            );
+          });
+          var blob = new Blob([lines.join("\r\n")], { type: "text/csv;charset=utf-8;" });
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement("a");
+          a.href = url;
+          a.download = "parent-contact-log.csv";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          setTimeout(function () {
+            URL.revokeObjectURL(url);
+          }, 1500);
+          flash("Exported " + rows.length + " contacts to CSV.", "ok");
+        });
+
+        // ---- sample data ----
+        function daysAgo(n) {
+          var d = new Date();
+          d.setDate(d.getDate() - n);
+          return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+        }
+        $("btnSample").addEventListener("click", function () {
+          if (entries.length) {
+            flash("Sample data only loads when the log is empty.", "err");
+            return;
+          }
+          entries = [
+            {
+              id: "s1",
+              date: daysAgo(1),
+              student: "Marcus Lee",
+              guardian: "Angela Lee",
+              method: "Phone",
+              reason: "Positive",
+              summary:
+                "Called to share that Marcus led his group during the ratios lab and helped two peers. Mom was thrilled.",
+              followUp: false,
+              followUpDate: "",
+              outcome: "",
+            },
+            {
+              id: "s2",
+              date: daysAgo(2),
+              student: "Sofia Ramirez",
+              guardian: "Luis Ramirez",
+              method: "ClassDojo",
+              reason: "Missing work",
+              summary:
+                "Messaged about 3 missing exit tickets from Unit 2. Dad will check the planner nightly.",
+              followUp: true,
+              followUpDate: daysAgo(-4),
+              outcome: "Parent will sign planner each night",
+            },
+            {
+              id: "s3",
+              date: daysAgo(4),
+              student: "Deshawn Carter",
+              guardian: "Tanya Carter",
+              method: "Email",
+              reason: "Academic",
+              summary:
+                "Sent a note about slipping quiz scores on equations and offered Tuesday tutoring.",
+              followUp: true,
+              followUpDate: daysAgo(-1),
+              outcome: "",
+            },
+            {
+              id: "s4",
+              date: daysAgo(6),
+              student: "Emily Nguyen",
+              guardian: "Linh Nguyen",
+              method: "In person",
+              reason: "Behavior",
+              summary:
+                "Brief conference at pickup about talking during independent work. Agreed on a nonverbal cue.",
+              followUp: false,
+              followUpDate: "",
+              outcome: "Using a hand-signal reminder",
+            },
+          ];
+          save(entries);
+          flash("Loaded 4 sample contacts.", "ok");
+          renderAll();
+        });
+
+        // ---- init ----
+        if (!supported) {
+          flash(
+            "This browser is blocking local storage, so contacts cannot be saved on this device.",
+            "err",
+          );
+        }
+        renderAll();
+      })();
+    </script>
+  </body>
+</html>

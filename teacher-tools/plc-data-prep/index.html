@@ -1,0 +1,1234 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PLC Data Prep · Neft Teacher</title>
+    <meta
+      name="description"
+      content="Turn assessment scores into a ready-to-print PLC / data-meeting protocol with performance bands, re-teach groups, and CSV export. Local-only, teacher-only."
+    />
+    <meta name="robots" content="noindex" />
+    <style>
+      :root {
+        --ink: #0f2b3c;
+        --muted: #5e6e7e;
+        --line: #e2e7ec;
+        --accent: #1a6fb5;
+        --good: #157347;
+        --warn: #b45309;
+        --bg: #f4f6f8;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.5;
+      }
+      header {
+        background: #0f2b3c;
+        color: #fff;
+        padding: 16px 22px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        justify-content: space-between;
+      }
+      header h1 {
+        font-size: 1.1rem;
+        margin: 0;
+      }
+      header small {
+        display: block;
+        color: #9db4c6;
+        font-weight: 500;
+        font-size: 0.78rem;
+      }
+      header a {
+        color: #cfe6f5;
+        text-decoration: none;
+        font-size: 0.85rem;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 22px;
+      }
+      .bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 14px 16px;
+        margin-bottom: 18px;
+      }
+      label {
+        font-size: 0.75rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      select,
+      input,
+      button,
+      textarea {
+        font: inherit;
+        color: var(--ink);
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 9px 12px;
+      }
+      button {
+        cursor: pointer;
+        font-weight: 600;
+        background: #0f2b3c;
+        color: #fff;
+        border: none;
+      }
+      button.ghost {
+        background: #eef2f5;
+        color: var(--ink);
+      }
+      button:active {
+        transform: translateY(1px);
+      }
+      .grow {
+        flex: 1;
+      }
+      #msg {
+        min-height: 1.2em;
+        color: var(--muted);
+        font-size: 0.9rem;
+        margin: 0 2px 14px;
+      }
+      #msg.err {
+        color: #b42318;
+      }
+      #msg.ok {
+        color: var(--good);
+      }
+      .card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 18px 20px;
+        margin: 0 0 20px;
+        box-shadow: 0 2px 10px rgba(15, 43, 60, 0.05);
+      }
+      @media print {
+        header,
+        .bar,
+        #msg,
+        .no-print {
+          display: none;
+        }
+        body {
+          background: #fff;
+        }
+        .card {
+          break-inside: avoid;
+          box-shadow: none;
+        }
+      }
+
+      /* ---- tool-specific ---- */
+      h2 {
+        font-size: 1rem;
+        margin: 0 0 14px;
+      }
+      h3 {
+        font-size: 0.85rem;
+        margin: 16px 0 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        color: var(--muted);
+      }
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .field input,
+      .field select {
+        min-width: 0;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 14px;
+      }
+      textarea {
+        width: 100%;
+        min-height: 120px;
+        resize: vertical;
+        line-height: 1.4;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.9rem;
+      }
+      .protocol textarea {
+        font-family: inherit;
+        min-height: 80px;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 12px;
+        margin-bottom: 6px;
+      }
+      .stat {
+        background: #f4f6f8;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 10px 12px;
+      }
+      .stat b {
+        display: block;
+        font-size: 1.35rem;
+        line-height: 1.2;
+      }
+      .stat span {
+        font-size: 0.72rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 6px 8px;
+        border-bottom: 1px solid var(--line);
+      }
+      th {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        color: var(--muted);
+      }
+      .scoretbl input {
+        width: 70px;
+        padding: 5px 8px;
+      }
+      .bandrow {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 8px 0;
+      }
+      .bandrow .lbl {
+        flex: 0 0 130px;
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+      .track {
+        flex: 1;
+        background: #eef2f5;
+        border-radius: 8px;
+        overflow: hidden;
+        height: 26px;
+      }
+      .fill {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        padding-left: 8px;
+        color: #fff;
+        font-size: 0.8rem;
+        font-weight: 700;
+        white-space: nowrap;
+        min-width: 2px;
+        transition: width 0.3s;
+      }
+      .b-ex {
+        background: #157347;
+      }
+      .b-pr {
+        background: #1a6fb5;
+      }
+      .b-ap {
+        background: #b45309;
+      }
+      .b-be {
+        background: #b42318;
+      }
+      .bandrow .cnt {
+        flex: 0 0 74px;
+        text-align: right;
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      .groups {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 14px;
+      }
+      .group {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 12px 14px;
+        border-top: 4px solid var(--line);
+      }
+      .group.g-ex {
+        border-top-color: #157347;
+      }
+      .group.g-pr {
+        border-top-color: #1a6fb5;
+      }
+      .group.g-ap {
+        border-top-color: #b45309;
+      }
+      .group.g-be {
+        border-top-color: #b42318;
+      }
+      .group h4 {
+        margin: 0 0 6px;
+        font-size: 0.9rem;
+      }
+      .group .tag {
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        padding: 2px 8px;
+        border-radius: 20px;
+        background: #eef2f5;
+        color: var(--muted);
+        margin-left: 6px;
+      }
+      .group ul {
+        margin: 6px 0 0;
+        padding-left: 18px;
+        font-size: 0.9rem;
+      }
+      .group .empty {
+        color: var(--muted);
+        font-size: 0.85rem;
+        font-style: italic;
+      }
+      .protocol .field {
+        margin-bottom: 14px;
+      }
+      .row-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 6px;
+      }
+      .hint {
+        font-size: 0.8rem;
+        color: var(--muted);
+        margin: 2px 0 10px;
+      }
+      .print-only {
+        display: none;
+      }
+      .slider-wrap {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .slider-wrap input[type="range"] {
+        flex: 1;
+        padding: 0;
+      }
+      .pct-badge {
+        font-weight: 700;
+        min-width: 46px;
+        text-align: right;
+      }
+      .warnline {
+        color: var(--warn);
+        font-size: 0.82rem;
+        margin-top: 4px;
+      }
+      @media print {
+        .print-only {
+          display: block;
+        }
+        .wrap {
+          max-width: none;
+          padding: 0;
+        }
+        textarea,
+        input,
+        select {
+          border: none;
+          padding: 0;
+          background: transparent;
+          -webkit-appearance: none;
+          appearance: none;
+          resize: none;
+          font-family: inherit;
+        }
+        textarea {
+          min-height: 0;
+          height: auto;
+          overflow: visible;
+        }
+        .no-print {
+          display: none !important;
+        }
+        .card {
+          border: 1px solid #ccc;
+          border-radius: 0;
+          margin-bottom: 14px;
+          padding: 14px;
+        }
+        .scoretbl input {
+          width: auto;
+        }
+        h1.print-title {
+          font-size: 1.4rem;
+          margin: 0 0 4px;
+        }
+      }
+    </style>
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
+  <body>
+    <header>
+      <h1>
+        📊 PLC Data Prep
+        <small>Turn assessment scores into a data-meeting protocol · teacher-only</small>
+      </h1>
+      <div><a href="/teacher-tools/">← Teacher Tools</a></div>
+    </header>
+
+    <div class="wrap">
+      <div class="bar no-print">
+        <button id="btnNew" type="button">＋ New assessment</button>
+        <div class="field grow">
+          <label for="pick">Assessment</label>
+          <select id="pick" aria-label="Choose saved assessment"></select>
+        </div>
+        <button id="btnPrint" type="button" class="ghost">🖨 Print protocol</button>
+        <button id="btnCsv" type="button" class="ghost">⬇ Export CSV</button>
+        <button id="btnSample" type="button" class="ghost">Sample data</button>
+        <button id="btnDelete" type="button" class="ghost">🗑 Delete</button>
+      </div>
+
+      <div id="msg" role="status" aria-live="polite"></div>
+
+      <!-- Print header (print only) -->
+      <div class="print-only card">
+        <h1 class="print-title" id="pTitle"></h1>
+        <div id="pMeta"></div>
+        <div style="margin-top: 8px">
+          PLC / Data Team — Date: ____________________ &nbsp; Present:
+          ______________________________
+        </div>
+      </div>
+
+      <!-- Editor -->
+      <section class="card no-print" aria-label="Assessment details">
+        <h2>Assessment details</h2>
+        <div class="grid">
+          <div class="field">
+            <label for="fName">Assessment name</label>
+            <input id="fName" type="text" placeholder="Unit 3 Quiz" />
+          </div>
+          <div class="field">
+            <label for="fStd">Standard</label>
+            <input id="fStd" type="text" placeholder="6.RP.A.3" />
+          </div>
+          <div class="field">
+            <label for="fDate">Date</label>
+            <input id="fDate" type="date" />
+          </div>
+          <div class="field">
+            <label for="fMax">Max points</label>
+            <input id="fMax" type="number" min="1" step="0.5" placeholder="20" />
+          </div>
+        </div>
+        <div class="field" style="margin-top: 14px">
+          <label for="fThresh">Proficiency threshold</label>
+          <div class="slider-wrap">
+            <input id="fThresh" type="range" min="0" max="100" step="1" value="70" />
+            <span class="pct-badge" id="threshOut">70%</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Roster paste -->
+      <section class="card no-print" aria-label="Roster and scores">
+        <h2>Roster &amp; scores</h2>
+        <p class="hint">
+          Paste one student per line as <b>Name, score</b> or <b>Name&nbsp;⇥&nbsp;score</b> (tab).
+          Then click Parse. Blank or non-numeric scores are kept as “unscored.”
+        </p>
+        <label for="fRoster" class="no-print">Paste roster</label>
+        <textarea
+          id="fRoster"
+          aria-label="Paste roster and scores"
+          placeholder="Ava Ramirez, 18&#10;Liam Chen, 14&#10;Sofia Patel	20"
+        ></textarea>
+        <div class="row-actions">
+          <button id="btnParse" type="button">Parse roster</button>
+          <button id="btnClearRoster" type="button" class="ghost">Clear scores</button>
+        </div>
+        <div id="scoreTblWrap" style="margin-top: 14px"></div>
+      </section>
+
+      <!-- Analysis -->
+      <section class="card" aria-label="Analysis">
+        <h2>Analysis</h2>
+        <div class="stats" id="statsBox"></div>
+        <h3>Performance bands</h3>
+        <div id="bandsBox"></div>
+        <h3>Groups — re-teach &amp; extension</h3>
+        <div class="groups" id="groupsBox"></div>
+      </section>
+
+      <!-- Protocol -->
+      <section class="card protocol" aria-label="PLC protocol">
+        <h2>PLC protocol</h2>
+        <div class="field">
+          <label for="pStrength">Strengths</label>
+          <textarea id="pStrength" data-fld="strengths"></textarea>
+        </div>
+        <div class="field">
+          <label for="pGaps">Gaps / focus</label>
+          <textarea id="pGaps" data-fld="gaps"></textarea>
+        </div>
+        <div class="field">
+          <label for="pReteach">Re-teach plan / small groups</label>
+          <textarea id="pReteach" data-fld="reteachNotes"></textarea>
+        </div>
+        <div class="field">
+          <label for="pActions">Action steps / next commitments</label>
+          <textarea id="pActions" data-fld="actions"></textarea>
+        </div>
+        <div class="row-actions no-print">
+          <button id="btnResuggest" type="button" class="ghost">↻ Regenerate suggestions</button>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      "use strict";
+      var KEY = "nt-plc-prep-v1";
+      var store = []; // array of assessments
+      var currentId = null;
+
+      // ---------- utilities ----------
+      function escapeHtml(s) {
+        return String(s == null ? "" : s)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+      function uid() {
+        return "a" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+      }
+      function $(id) {
+        return document.getElementById(id);
+      }
+      function msg(text, kind) {
+        var m = $("msg");
+        m.textContent = text || "";
+        m.className = kind || "";
+      }
+      function load() {
+        try {
+          var raw = localStorage.getItem(KEY);
+          store = raw ? JSON.parse(raw) : [];
+        } catch (e) {
+          store = [];
+        }
+        if (!Array.isArray(store)) store = [];
+      }
+      function save() {
+        try {
+          localStorage.setItem(KEY, JSON.stringify(store));
+        } catch (e) {
+          msg("Could not save (storage full or blocked).", "err");
+        }
+      }
+      function current() {
+        for (var i = 0; i < store.length; i++) {
+          if (store[i].id === currentId) return store[i];
+        }
+        return null;
+      }
+      function num(v) {
+        var n = parseFloat(v);
+        return isFinite(n) ? n : null;
+      }
+
+      // ---------- model helpers ----------
+      function blankAssessment() {
+        return {
+          id: uid(),
+          name: "",
+          standard: "",
+          date: "",
+          max: 20,
+          threshold: 70,
+          students: [],
+          strengths: "",
+          gaps: "",
+          actions: "- \n- ",
+          reteachNotes: "",
+        };
+      }
+      function bandOf(pct, thr) {
+        if (pct == null) return null; // unscored
+        if (pct >= 90) return "ex";
+        if (pct >= thr) return "pr";
+        if (pct >= thr - 15) return "ap";
+        return "be";
+      }
+      var BAND = {
+        ex: { key: "ex", label: "Exceeds", cls: "b-ex", gcls: "g-ex", tag: "Extension" },
+        pr: { key: "pr", label: "Proficient", cls: "b-pr", gcls: "g-pr", tag: "On track" },
+        ap: { key: "ap", label: "Approaching", cls: "b-ap", gcls: "g-ap", tag: "Re-teach" },
+        be: { key: "be", label: "Below", cls: "b-be", gcls: "g-be", tag: "Re-teach" },
+      };
+      var BAND_ORDER = ["ex", "pr", "ap", "be"];
+
+      function analyze(a) {
+        var max = num(a.max) || 0;
+        var thr = num(a.threshold);
+        if (thr == null) thr = 70;
+        var scored = [],
+          unscored = 0;
+        var bands = { ex: [], pr: [], ap: [], be: [] };
+        (a.students || []).forEach(function (st) {
+          var sc = num(st.score);
+          if (sc == null || max <= 0) {
+            unscored++;
+            return;
+          }
+          var pct = (sc / max) * 100;
+          scored.push({ name: st.name, score: sc, pct: pct });
+          var b = bandOf(pct, thr);
+          if (b) bands[b].push(st.name || "(unnamed)");
+        });
+        var count = scored.length;
+        var sumPts = 0,
+          pcts = [];
+        scored.forEach(function (s) {
+          sumPts += s.score;
+          pcts.push(s.pct);
+        });
+        var avgPts = count ? sumPts / count : 0;
+        var avgPct = count && max ? (avgPts / max) * 100 : 0;
+        pcts.sort(function (x, y) {
+          return x - y;
+        });
+        var median = 0;
+        if (count) {
+          var mid = Math.floor(count / 2);
+          median = count % 2 ? pcts[mid] : (pcts[mid - 1] + pcts[mid]) / 2;
+        }
+        var atProf = bands.ex.length + bands.pr.length;
+        return {
+          max: max,
+          thr: thr,
+          count: count,
+          unscored: unscored,
+          avgPts: avgPts,
+          avgPct: avgPct,
+          median: median,
+          atProf: atProf,
+          atProfPct: count ? (atProf / count) * 100 : 0,
+          bands: bands,
+          scored: scored,
+        };
+      }
+      function r0(n) {
+        return Math.round(n);
+      }
+      function r1(n) {
+        return Math.round(n * 10) / 10;
+      }
+
+      // ---------- suggestions ----------
+      function suggestStrengths(a, an) {
+        var std = a.standard ? a.standard : "this standard";
+        return an.count
+          ? r0(an.atProfPct) +
+              "% of students (" +
+              an.atProf +
+              " of " +
+              an.count +
+              ") met or exceeded proficiency on " +
+              std +
+              ". Class average: " +
+              r0(an.avgPct) +
+              "%."
+          : "Add scores to generate a strengths summary.";
+      }
+      function suggestGaps(a, an) {
+        var below = an.bands.be.concat(an.bands.ap);
+        if (!an.count) return "Add scores to identify focus groups.";
+        if (!below.length)
+          return "No students fell below the " + an.thr + "% threshold — plan enrichment.";
+        return (
+          below.length +
+          " student(s) scored below " +
+          an.thr +
+          "% and need re-teaching. Focus group: " +
+          below.join(", ") +
+          "."
+        );
+      }
+      function suggestReteach(a, an) {
+        var lines = [];
+        if (an.bands.be.length)
+          lines.push("• Below (intensive re-teach): " + an.bands.be.join(", "));
+        if (an.bands.ap.length)
+          lines.push("• Approaching (targeted small group): " + an.bands.ap.join(", "));
+        if (an.bands.ex.length)
+          lines.push("• Exceeds (extension / challenge): " + an.bands.ex.join(", "));
+        return lines.length ? lines.join("\n") : "Groups will appear here after scores are parsed.";
+      }
+
+      // ---------- rendering ----------
+      function renderPicker() {
+        var sel = $("pick");
+        sel.innerHTML = "";
+        if (!store.length) {
+          var o = document.createElement("option");
+          o.value = "";
+          o.textContent = "— no assessments yet —";
+          sel.appendChild(o);
+          return;
+        }
+        store.forEach(function (a) {
+          var o = document.createElement("option");
+          o.value = a.id;
+          o.textContent =
+            (a.name || "Untitled") +
+            (a.standard ? " · " + a.standard : "") +
+            (a.date ? " · " + a.date : "");
+          if (a.id === currentId) o.selected = true;
+          sel.appendChild(o);
+        });
+      }
+
+      function renderEditor() {
+        var a = current();
+        if (!a) return;
+        $("fName").value = a.name || "";
+        $("fStd").value = a.standard || "";
+        $("fDate").value = a.date || "";
+        $("fMax").value = a.max != null ? a.max : "";
+        $("fThresh").value = a.threshold != null ? a.threshold : 70;
+        $("threshOut").textContent = $("fThresh").value + "%";
+        // roster textarea reflects current students (only if it doesn't already hold unparsed text)
+        renderScoreTable();
+        renderProtocol();
+      }
+
+      function renderScoreTable() {
+        var a = current();
+        var wrap = $("scoreTblWrap");
+        if (!a || !a.students || !a.students.length) {
+          wrap.innerHTML = "";
+          return;
+        }
+        var an = analyze(a);
+        var rows = a.students
+          .map(function (st, i) {
+            var sc = num(st.score);
+            var pct = sc != null && an.max ? r0((sc / an.max) * 100) + "%" : "—";
+            var b = sc != null && an.max ? bandOf((sc / an.max) * 100, an.thr) : null;
+            var blabel = b ? BAND[b].label : "unscored";
+            return (
+              "<tr><td>" +
+              escapeHtml(st.name || "(unnamed)") +
+              "</td>" +
+              "<td class='no-print'><input type='number' step='0.5' min='0' data-i='" +
+              i +
+              "' value='" +
+              (sc != null ? escapeHtml(sc) : "") +
+              "' aria-label='Score for " +
+              escapeHtml(st.name) +
+              "'></td>" +
+              "<td class='print-only'>" +
+              (sc != null ? escapeHtml(sc) : "—") +
+              "</td>" +
+              "<td>" +
+              pct +
+              "</td><td>" +
+              escapeHtml(blabel) +
+              "</td></tr>"
+            );
+          })
+          .join("");
+        wrap.innerHTML =
+          "<table class='scoretbl'><thead><tr><th>Student</th><th>Score</th><th>%</th><th>Band</th></tr></thead><tbody>" +
+          rows +
+          "</tbody></table>";
+        // wire inline edits
+        Array.prototype.forEach.call(wrap.querySelectorAll("input[data-i]"), function (inp) {
+          inp.addEventListener("input", function () {
+            var idx = parseInt(inp.getAttribute("data-i"), 10);
+            var a2 = current();
+            if (!a2 || !a2.students[idx]) return;
+            var v = inp.value.trim();
+            a2.students[idx].score = v === "" ? null : num(v);
+            save();
+            renderAnalysis();
+          });
+        });
+      }
+
+      function renderAnalysis() {
+        var a = current();
+        if (!a) {
+          $("statsBox").innerHTML = "";
+          $("bandsBox").innerHTML = "";
+          $("groupsBox").innerHTML = "";
+          return;
+        }
+        var an = analyze(a);
+        // stats
+        var stats = [
+          ["Students scored", an.count + (an.unscored ? " (+" + an.unscored + " unscored)" : "")],
+          [
+            "Class average",
+            an.count ? r1(an.avgPts) + " / " + (an.max || "?") + " · " + r0(an.avgPct) + "%" : "—",
+          ],
+          ["Median %", an.count ? r0(an.median) + "%" : "—"],
+          ["At/above " + an.thr + "%", an.count ? an.atProf + " · " + r0(an.atProfPct) + "%" : "—"],
+        ];
+        $("statsBox").innerHTML = stats
+          .map(function (s) {
+            return (
+              "<div class='stat'><b>" +
+              escapeHtml(s[1]) +
+              "</b><span>" +
+              escapeHtml(s[0]) +
+              "</span></div>"
+            );
+          })
+          .join("");
+        // bands
+        var total = an.count || 1;
+        $("bandsBox").innerHTML = BAND_ORDER.map(function (k) {
+          var n = an.bands[k].length;
+          var pct = an.count ? (n / total) * 100 : 0;
+          var b = BAND[k];
+          return (
+            "<div class='bandrow'><div class='lbl'>" +
+            b.label +
+            "</div>" +
+            "<div class='track'><div class='fill " +
+            b.cls +
+            "' style='width:" +
+            Math.max(pct, 0) +
+            "%'>" +
+            (n ? n : "") +
+            "</div></div>" +
+            "<div class='cnt'>" +
+            n +
+            " · " +
+            r0(pct) +
+            "%</div></div>"
+          );
+        }).join("");
+        // groups
+        $("groupsBox").innerHTML = BAND_ORDER.map(function (k) {
+          var b = BAND[k];
+          var names = an.bands[k];
+          var body = names.length
+            ? "<ul>" +
+              names
+                .map(function (n) {
+                  return "<li>" + escapeHtml(n) + "</li>";
+                })
+                .join("") +
+              "</ul>"
+            : "<div class='empty'>No students</div>";
+          return (
+            "<div class='group " +
+            b.gcls +
+            "'><h4>" +
+            b.label +
+            "<span class='tag'>" +
+            b.tag +
+            "</span></h4>" +
+            body +
+            "</div>"
+          );
+        }).join("");
+      }
+
+      function renderProtocol() {
+        var a = current();
+        if (!a) return;
+        $("pStrength").value = a.strengths || "";
+        $("pGaps").value = a.gaps || "";
+        $("pReteach").value = a.reteachNotes || "";
+        $("pActions").value = a.actions || "";
+      }
+
+      function renderPrintHead() {
+        var a = current();
+        if (!a) return;
+        $("pTitle").textContent = a.name || "Assessment";
+        var bits = [];
+        if (a.standard) bits.push("Standard: " + a.standard);
+        if (a.date) bits.push("Date: " + a.date);
+        bits.push("Max: " + (a.max || "?") + " pts");
+        bits.push("Proficiency: " + (a.threshold != null ? a.threshold : 70) + "%");
+        $("pMeta").textContent = bits.join("  ·  ");
+      }
+
+      function renderAll() {
+        renderPicker();
+        renderEditor();
+        renderAnalysis();
+        renderPrintHead();
+      }
+
+      // ---------- suggestions apply ----------
+      function fillSuggestions(force) {
+        var a = current();
+        if (!a) return;
+        var an = analyze(a);
+        if (force || !a.strengths) a.strengths = suggestStrengths(a, an);
+        if (force || !a.gaps) a.gaps = suggestGaps(a, an);
+        if (force || !a.reteachNotes) a.reteachNotes = suggestReteach(a, an);
+        if (!a.actions) a.actions = "- \n- ";
+        save();
+        renderProtocol();
+      }
+
+      // ---------- parsing ----------
+      function parseRoster() {
+        var a = current();
+        if (!a) {
+          msg("Create an assessment first.", "err");
+          return;
+        }
+        var text = $("fRoster").value || "";
+        var lines = text.split(/\r?\n/);
+        var students = [],
+          skipped = 0,
+          unscored = 0;
+        lines.forEach(function (line) {
+          if (!line.trim()) return;
+          var name, score;
+          if (line.indexOf("\t") >= 0) {
+            var t = line.split("\t");
+            name = t[0];
+            score = t[1];
+          } else {
+            var idx = line.lastIndexOf(",");
+            if (idx >= 0) {
+              name = line.slice(0, idx);
+              score = line.slice(idx + 1);
+            } else {
+              name = line;
+              score = "";
+            }
+          }
+          name = (name || "").trim();
+          if (!name) {
+            skipped++;
+            return;
+          }
+          var sc = num(String(score).trim());
+          if (sc == null) unscored++;
+          students.push({ name: name, score: sc });
+        });
+        if (!students.length) {
+          msg("No valid rows found. Use “Name, score” per line.", "err");
+          return;
+        }
+        a.students = students;
+        save();
+        fillSuggestions(false);
+        renderAll();
+        var note = students.length + " student(s) parsed.";
+        if (unscored) note += " " + unscored + " left unscored.";
+        if (skipped) note += " " + skipped + " blank line(s) skipped.";
+        msg(note, "ok");
+      }
+
+      // ---------- CSV ----------
+      function csvCell(v) {
+        var s = String(v == null ? "" : v);
+        return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+      }
+      function exportCsv() {
+        var a = current();
+        if (!a) {
+          msg("Nothing to export.", "err");
+          return;
+        }
+        var an = analyze(a);
+        var out = [];
+        out.push(["PLC Data Prep — " + (a.name || "Assessment")].map(csvCell).join(","));
+        out.push(["Standard", a.standard || ""].map(csvCell).join(","));
+        out.push(["Date", a.date || ""].map(csvCell).join(","));
+        out.push(["Max points", a.max || ""].map(csvCell).join(","));
+        out.push(["Threshold %", an.thr].map(csvCell).join(","));
+        out.push(["Students scored", an.count].map(csvCell).join(","));
+        out.push(["Class average %", r1(an.avgPct)].map(csvCell).join(","));
+        out.push(["Median %", r1(an.median)].map(csvCell).join(","));
+        out.push(
+          ["At/above threshold", an.atProf + " (" + r0(an.atProfPct) + "%)"].map(csvCell).join(","),
+        );
+        out.push("");
+        out.push(["Student", "Score", "Max", "Percent", "Band"].map(csvCell).join(","));
+        (a.students || []).forEach(function (st) {
+          var sc = num(st.score);
+          var pct = sc != null && an.max ? r1((sc / an.max) * 100) : "";
+          var b =
+            sc != null && an.max ? BAND[bandOf((sc / an.max) * 100, an.thr)].label : "unscored";
+          out.push([st.name, sc != null ? sc : "", a.max || "", pct, b].map(csvCell).join(","));
+        });
+        var blob = new Blob([out.join("\n")], { type: "text/csv;charset=utf-8" });
+        var url = URL.createObjectURL(blob);
+        var slug =
+          (a.name || "assessment")
+            .replace(/[^a-z0-9]+/gi, "-")
+            .replace(/^-|-$/g, "")
+            .toLowerCase() || "assessment";
+        var link = document.createElement("a");
+        link.href = url;
+        link.download = "plc-data-" + slug + ".csv";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setTimeout(function () {
+          URL.revokeObjectURL(url);
+        }, 1000);
+        msg("CSV exported.", "ok");
+      }
+
+      // ---------- sample ----------
+      function sampleData() {
+        if (store.length) {
+          msg("Sample only loads into an empty tool.", "err");
+          return;
+        }
+        var names = [
+          "Ava Ramirez",
+          "Liam Chen",
+          "Sofia Patel",
+          "Noah Brooks",
+          "Mia Johnson",
+          "Ethan Clark",
+          "Isabella Diaz",
+          "Mason Lee",
+          "Olivia Nguyen",
+          "Lucas Torres",
+          "Emma Wilson",
+          "Aiden Flores",
+          "Harper Reed",
+          "Elijah Cruz",
+          "Amelia Scott",
+          "James Rivera",
+          "Charlotte Kim",
+          "Benjamin Ortiz",
+          "Layla Hughes",
+          "Henry Adams",
+          "Ella Morgan",
+          "Daniel Perez",
+          "Zoe Bennett",
+          "Jackson Gray",
+          "Nora Foster",
+        ];
+        var scores = [
+          18, 14, 20, 9, 17, 13, 19, 11, 16, 7, 20, 12, 15, 10, 18, 14, 19, 8, 16, 13, 20, 11, 17,
+          6, 15,
+        ];
+        var a = blankAssessment();
+        a.name = "Unit 3 Quiz — Ratios & Rates";
+        a.standard = "6.RP.A.3";
+        a.date = new Date().toISOString().slice(0, 10);
+        a.max = 20;
+        a.threshold = 70;
+        a.students = names.map(function (n, i) {
+          return { name: n, score: scores[i] };
+        });
+        store.push(a);
+        currentId = a.id;
+        save();
+        $("fRoster").value = a.students
+          .map(function (s) {
+            return s.name + ", " + s.score;
+          })
+          .join("\n");
+        fillSuggestions(true);
+        renderAll();
+        msg("Sample assessment loaded (25 students, 20 pts).", "ok");
+      }
+
+      // ---------- CRUD ----------
+      function newAssessment() {
+        var a = blankAssessment();
+        store.push(a);
+        currentId = a.id;
+        save();
+        $("fRoster").value = "";
+        renderAll();
+        msg("New assessment created.", "ok");
+        $("fName").focus();
+      }
+      function deleteAssessment() {
+        var a = current();
+        if (!a) return;
+        if (!confirm("Delete “" + (a.name || "Untitled") + "”? This cannot be undone.")) return;
+        store = store.filter(function (x) {
+          return x.id !== a.id;
+        });
+        currentId = store.length ? store[0].id : null;
+        save();
+        $("fRoster").value = "";
+        if (!store.length) {
+          /* clear editor */ $("fName").value = "";
+          $("fStd").value = "";
+          $("fDate").value = "";
+          $("fMax").value = "";
+        }
+        renderAll();
+        msg("Assessment deleted.", "ok");
+      }
+
+      // ---------- field bindings ----------
+      function bindField(id, prop, cb) {
+        $(id).addEventListener("input", function () {
+          var a = current();
+          if (!a) return;
+          a[prop] = $(id).value;
+          if (id === "fMax" || id === "fThresh") a[prop] = $(id).value; // keep string; num() coerces
+          save();
+          if (cb) cb();
+        });
+      }
+
+      function initEvents() {
+        $("btnNew").addEventListener("click", newAssessment);
+        $("btnSample").addEventListener("click", sampleData);
+        $("btnParse").addEventListener("click", parseRoster);
+        $("btnCsv").addEventListener("click", exportCsv);
+        $("btnDelete").addEventListener("click", deleteAssessment);
+        $("btnPrint").addEventListener("click", function () {
+          renderPrintHead();
+          window.print();
+        });
+        $("btnResuggest").addEventListener("click", function () {
+          fillSuggestions(true);
+          msg("Suggestions regenerated.", "ok");
+        });
+        $("btnClearRoster").addEventListener("click", function () {
+          var a = current();
+          if (!a) return;
+          a.students = [];
+          save();
+          renderScoreTable();
+          renderAnalysis();
+          msg("Scores cleared.", "ok");
+        });
+
+        $("pick").addEventListener("change", function () {
+          currentId = $("pick").value || null;
+          var a = current();
+          $("fRoster").value =
+            a && a.students
+              ? a.students
+                  .map(function (s) {
+                    return s.name + (s.score != null ? ", " + s.score : ", ");
+                  })
+                  .join("\n")
+              : "";
+          renderAll();
+        });
+
+        bindField("fName", "name", function () {
+          renderPicker();
+          renderPrintHead();
+        });
+        bindField("fStd", "standard", function () {
+          renderPicker();
+          renderPrintHead();
+        });
+        bindField("fDate", "date", function () {
+          renderPicker();
+          renderPrintHead();
+        });
+        bindField("fMax", "max", function () {
+          renderScoreTable();
+          renderAnalysis();
+          renderPrintHead();
+        });
+
+        $("fThresh").addEventListener("input", function () {
+          var a = current();
+          $("threshOut").textContent = $("fThresh").value + "%";
+          if (!a) return;
+          a.threshold = num($("fThresh").value);
+          save();
+          renderScoreTable();
+          renderAnalysis();
+          renderPrintHead();
+        });
+
+        // protocol textareas
+        Array.prototype.forEach.call(
+          document.querySelectorAll(".protocol textarea[data-fld]"),
+          function (t) {
+            t.addEventListener("input", function () {
+              var a = current();
+              if (!a) return;
+              a[t.getAttribute("data-fld")] = t.value;
+              save();
+            });
+          },
+        );
+      }
+
+      // ---------- boot ----------
+      function boot() {
+        load();
+        if (store.length) currentId = store[0].id;
+        initEvents();
+        renderAll();
+        if (currentId) {
+          var a = current();
+          $("fRoster").value =
+            a && a.students
+              ? a.students
+                  .map(function (s) {
+                    return s.name + (s.score != null ? ", " + s.score : ", ");
+                  })
+                  .join("\n")
+              : "";
+          renderScoreTable();
+        }
+        if (!store.length) {
+          msg("No assessments yet. Click “＋ New assessment” or load Sample data.", "");
+        }
+      }
+      document.addEventListener("DOMContentLoaded", boot);
+    </script>
+  </body>
+</html>
