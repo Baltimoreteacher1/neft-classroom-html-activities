@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Area Architect — CAD Sandbox | 6.G.A.1</title>
+  <meta name="description" content="Area Architect is an interactive CAD-themed math activity for Grade 6 (6.G.A.1) where students calculate areas of composite polygons including L-shaped floor plans, trapezoidal gardens, and parallelogram mural walls." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700&display=swap');
+
+    :root {
+      --bg:        #0a0f1e;
+      --surface:   rgba(255,255,255,0.04);
+      --border:    rgba(255,255,255,0.09);
+      --cyan:      #00d4ff;
+      --amber:     #ffd700;
+      --green:     #39ff14;
+      --red:       #ff4f4f;
+      --text:      #e8eaf6;
+      --muted:     #7a8099;
+      --glass-bg:  rgba(255,255,255,0.05);
+      --glass-bdr: rgba(255,255,255,0.10);
+      --radius:    12px;
+      --font-mono: 'Share Tech Mono', monospace;
+      --font-body: 'Inter', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 15px; scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      background-image:
+        linear-gradient(rgba(57,255,20,0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(57,255,20,0.07) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+
+    .aa-page { max-width: 1200px; margin: 0 auto; padding: 18px 16px 48px; }
+
+    .aa-header {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 12px; margin-bottom: 22px;
+      border-bottom: 1px solid var(--border); padding-bottom: 18px;
+    }
+    .aa-header-left { display: flex; flex-direction: column; gap: 4px; }
+    .aa-badge {
+      font-family: var(--font-mono); font-size: 0.7rem; color: var(--green);
+      letter-spacing: 2px; text-transform: uppercase;
+    }
+    h1 { font-size: 1.55rem; font-weight: 700; color: #fff; letter-spacing: -0.5px; }
+    h1 span { color: var(--cyan); }
+    .aa-subtitle { font-size: 0.8rem; color: var(--muted); font-family: var(--font-mono); }
+    .aa-header-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .aa-name-wrap { display: flex; flex-direction: column; gap: 3px; }
+    .aa-name-wrap label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+
+    input[type="text"], input[type="number"], select {
+      background: rgba(255,255,255,0.06); border: 1px solid var(--glass-bdr);
+      border-radius: 7px; color: var(--text); padding: 7px 11px;
+      font-family: var(--font-mono); font-size: 0.85rem; outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    input[type="text"]:focus, input[type="number"]:focus, select:focus {
+      border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(0,212,255,0.12);
+    }
+    input[type="number"] { width: 72px; text-align: center; }
+    select { cursor: pointer; }
+    select option { background: #111827; }
+
+    .aa-btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 9px 20px; border-radius: 8px; border: none;
+      font-family: var(--font-mono); font-size: 0.82rem;
+      cursor: pointer; transition: all 0.2s; letter-spacing: 0.5px; font-weight: 600;
+    }
+    .aa-btn-primary { background: linear-gradient(135deg, var(--cyan), #0086a8); color: #fff; }
+    .aa-btn-primary:hover { filter: brightness(1.12); transform: translateY(-1px); }
+    .aa-btn-secondary { background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
+    .aa-btn-secondary:hover { border-color: var(--cyan); color: var(--cyan); }
+    .aa-btn-amber { background: linear-gradient(135deg, var(--amber), #c8a200); color: #0a0f1e; }
+    .aa-btn-amber:hover { filter: brightness(1.1); transform: translateY(-1px); }
+    .aa-btn-reveal { background: linear-gradient(135deg, #ff4f4f, #c03030); color: #fff; display: none; }
+
+    .aa-unit-row { display: flex; align-items: center; gap: 10px; font-size: 0.78rem; color: var(--muted); }
+    .aa-unit-row label { text-transform: uppercase; letter-spacing: 1px; }
+
+    .aa-tabs {
+      display: flex; gap: 0; border-bottom: 2px solid var(--border);
+      margin-bottom: 20px; overflow-x: auto;
+    }
+    .aa-tab {
+      display: flex; align-items: center; gap: 8px;
+      padding: 11px 22px; font-family: var(--font-mono); font-size: 0.8rem;
+      color: var(--muted); cursor: pointer; border: none; background: none;
+      border-bottom: 3px solid transparent; margin-bottom: -2px;
+      transition: all 0.2s; white-space: nowrap; letter-spacing: 0.5px;
+    }
+    .aa-tab:hover { color: var(--text); }
+    .aa-tab.active { color: var(--cyan); border-bottom-color: var(--cyan); }
+    .aa-tab-icon { font-size: 1rem; }
+    .aa-tab-num {
+      font-size: 0.65rem; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 4px; padding: 1px 5px; color: var(--muted);
+    }
+    .aa-tab.active .aa-tab-num { background: rgba(0,212,255,0.15); border-color: var(--cyan); color: var(--cyan); }
+
+    .aa-workspace { display: grid; grid-template-columns: 1fr 300px; gap: 18px; align-items: start; }
+    @media (max-width: 860px) { .aa-workspace { grid-template-columns: 1fr; } }
+
+    .aa-job { display: none; }
+    .aa-job.active { display: contents; }
+
+    .aa-card {
+      background: var(--glass-bg); border: 1px solid var(--glass-bdr);
+      border-radius: var(--radius); backdrop-filter: blur(12px); padding: 18px 20px;
+    }
+    .aa-card-title {
+      font-family: var(--font-mono); font-size: 0.72rem; color: var(--cyan);
+      text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .aa-card-title::before {
+      content: ''; display: block; width: 8px; height: 8px;
+      background: var(--cyan); border-radius: 50%;
+      box-shadow: 0 0 8px var(--cyan); flex-shrink: 0;
+    }
+
+    .aa-problem {
+      background: rgba(0,212,255,0.06); border-left: 3px solid var(--cyan);
+      border-radius: 0 8px 8px 0; padding: 10px 14px; font-size: 0.88rem;
+      color: var(--text); margin-bottom: 16px; line-height: 1.5;
+    }
+
+    .aa-canvas-wrap {
+      position: relative; background: rgba(0,0,0,0.3);
+      border: 1px solid var(--border); border-radius: 10px;
+      overflow: hidden; margin-bottom: 16px;
+    }
+    .aa-canvas-wrap svg { display: block; width: 100%; height: auto; cursor: crosshair; }
+    .aa-canvas-label {
+      position: absolute; top: 8px; left: 10px;
+      font-family: var(--font-mono); font-size: 0.62rem;
+      color: var(--muted); letter-spacing: 1px;
+    }
+
+    .aa-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 16px; }
+    .aa-input-group { display: flex; flex-direction: column; gap: 5px; }
+    .aa-input-group label { font-size: 0.7rem; font-family: var(--font-mono); color: var(--amber); letter-spacing: 1px; text-transform: uppercase; }
+    .aa-input-group .aa-hint { font-size: 0.65rem; color: var(--muted); }
+
+    .aa-answer-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+    .aa-answer-row label { font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); }
+    .aa-answer-input { width: 110px !important; text-align: left !important; }
+    .aa-answer-fb { font-family: var(--font-mono); font-size: 0.8rem; min-height: 1.2em; }
+    .aa-answer-fb.correct { color: var(--green); }
+    .aa-answer-fb.wrong   { color: var(--red); }
+
+    .aa-calc { display: none; background: rgba(0,0,0,0.35); border: 1px solid rgba(0,212,255,0.2); border-radius: 10px; padding: 14px 16px; margin-top: 14px; }
+    .aa-calc.show { display: block; animation: fadeSlideIn 0.3s ease; }
+    .aa-calc-line { font-family: var(--font-mono); font-size: 0.82rem; color: var(--text); padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.05); line-height: 1.5; }
+    .aa-calc-line:last-child { border-bottom: none; }
+    .aa-calc-line .lbl { color: var(--muted); }
+    .aa-calc-line .val { color: var(--amber); }
+    .aa-calc-line .res { color: var(--cyan); font-weight: 600; }
+    .aa-calc-line .total { color: var(--green); font-size: 0.9rem; font-weight: 700; }
+
+    .aa-ext { margin-top: 14px; padding: 12px 14px; background: rgba(192,132,252,0.06); border: 1px solid rgba(192,132,252,0.2); border-radius: 9px; }
+    .aa-ext-title { font-family: var(--font-mono); font-size: 0.68rem; color: #c084fc; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px; }
+    .aa-ext-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .aa-ext-row label { font-size: 0.78rem; color: var(--muted); font-family: var(--font-mono); }
+    .aa-ext-result { margin-top: 10px; font-family: var(--font-mono); font-size: 0.82rem; color: #c084fc; display: none; }
+    .aa-ext-result.show { display: block; }
+
+    .aa-action-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+
+    .aa-sidebar { display: flex; flex-direction: column; gap: 16px; }
+
+    .aa-formula-box { font-family: var(--font-mono); font-size: 0.8rem; line-height: 1.9; }
+    .aa-formula-box .f-head { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+    .aa-formula-box .f-line { color: var(--text); }
+    .aa-formula-box .f-line .f-name { color: var(--cyan); }
+    .aa-formula-box .f-line .f-sym  { color: var(--amber); }
+    .aa-formula-box .f-line .f-dim  { color: var(--green); }
+    .aa-formula-box .f-sep { border: none; border-top: 1px solid var(--border); margin: 8px 0; }
+
+    .aa-vocab details { margin-bottom: 8px; }
+    .aa-vocab summary {
+      cursor: pointer; font-family: var(--font-mono); font-size: 0.75rem;
+      color: var(--cyan); list-style: none;
+      display: flex; align-items: center; gap: 6px; padding: 5px 0;
+    }
+    .aa-vocab summary::before { content: 'â–¶'; font-size: 0.55rem; color: var(--muted); transition: transform 0.2s; }
+    details[open] summary::before { transform: rotate(90deg); }
+    .aa-vocab .def { font-size: 0.78rem; color: var(--muted); padding: 6px 0 4px 14px; line-height: 1.5; font-family: var(--font-body); }
+
+    @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+    .aa-live-dot { display: inline-block; width: 7px; height: 7px; background: var(--green); border-radius: 50%; animation: pulse-dot 1.6s ease infinite; box-shadow: 0 0 6px var(--green); }
+
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    @media print {
+      body { background: white; background-image: none; color: #000; }
+      .aa-tabs, .aa-sidebar, .aa-action-row, .aa-header-right, .aa-ext, .aa-answer-row, .aa-btn { display: none !important; }
+      .aa-job { display: none !important; }
+      .aa-job.active { display: block !important; }
+      .aa-workspace { grid-template-columns: 1fr !important; }
+      .aa-card { background: #f8f8f8; border: 1px solid #ccc; }
+      .aa-calc { display: block !important; border: 1px solid #ccc; background: #fff; }
+      .aa-canvas-wrap svg { max-width: 400px; }
+      h1, .aa-badge, .aa-subtitle { color: #000; }
+      .aa-problem { border-color: #999; background: #f0f0f0; }
+      .aa-calc-line { color: #000; }
+      .aa-calc-line .lbl { color: #555; }
+      .aa-calc-line .val { color: #333; }
+      .aa-calc-line .res { color: #000; }
+    }
+  </style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+<body>
+<div class="aa-page">
+
+  <header class="aa-header">
+    <div class="aa-header-left">
+      <span class="aa-badge">&#x2B21; Area Architect &middot; 6.G.A.1 &middot; Grade 6</span>
+      <h1><span>Area</span> Architect &mdash; CAD Sandbox</h1>
+      <span class="aa-subtitle">// Compose &amp; Decompose Polygons into Triangles &amp; Other Shapes</span>
+    </div>
+    <div class="aa-header-right">
+      <div class="aa-name-wrap">
+        <label for="aa-student-name">Engineer Name</label>
+        <input type="text" id="aa-student-name" placeholder="Your name&hellip;" style="width:160px;" />
+      </div>
+      <div class="aa-unit-row">
+        <label for="aa-unit-sel">Unit:</label>
+        <select id="aa-unit-sel" onchange="updateUnit()">
+          <option value="ft">ft</option>
+          <option value="m">m</option>
+          <option value="cm">cm</option>
+        </select>
+      </div>
+      <button class="aa-btn aa-btn-secondary" onclick="window.print()">&#x1F5A8; Print</button>
+      <button class="aa-btn aa-btn-secondary" onclick="resetAll()">&#x21BA; Reset All</button>
+    </div>
+  </header>
+
+  <nav class="aa-tabs" role="tablist" aria-label="Blueprint Jobs">
+    <button class="aa-tab active" id="aa-tab-1" role="tab" aria-selected="true" aria-controls="aa-job-1" onclick="switchTab(1)">
+      <span class="aa-tab-icon">&#x1F3E0;</span><span>Floor Plan</span><span class="aa-tab-num">JOB 01</span>
+    </button>
+    <button class="aa-tab" id="aa-tab-2" role="tab" aria-selected="false" aria-controls="aa-job-2" onclick="switchTab(2)">
+      <span class="aa-tab-icon">&#x1F33F;</span><span>Garden Plot</span><span class="aa-tab-num">JOB 02</span>
+    </button>
+    <button class="aa-tab" id="aa-tab-3" role="tab" aria-selected="false" aria-controls="aa-job-3" onclick="switchTab(3)">
+      <span class="aa-tab-icon">&#x1F3A8;</span><span>Mural Frame</span><span class="aa-tab-num">JOB 03</span>
+    </button>
+  </nav>
+
+  <div class="aa-workspace">
+
+    <!-- JOB 1: Floor Plan -->
+    <section class="aa-job active" id="aa-job-1" role="tabpanel" aria-labelledby="aa-tab-1">
+      <div class="aa-card">
+        <div class="aa-card-title"><span class="aa-live-dot"></span>Blueprint Job 01 &mdash; Floor Plan</div>
+        <p class="aa-problem">&#x1F3E0; <strong>Challenge:</strong> You're designing flooring for an L-shaped room. Calculate the <em>total flooring area</em> so the contractor can order the right amount of material.</p>
+        <div class="aa-canvas-wrap">
+          <span class="aa-canvas-label">LIVE PREVIEW &middot; SCALE TO FIT</span>
+          <svg id="aa-svg-1" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" aria-label="L-shaped floor plan drawing"></svg>
+        </div>
+        <div class="aa-inputs">
+          <div class="aa-input-group">
+            <label for="aa-fp-l">Rectangle Length (l)</label>
+            <input type="number" id="aa-fp-l" value="10" min="2" max="20" oninput="drawJob1(); syncFPBase()" />
+            <span class="aa-hint">Range: 2&ndash;20</span>
+          </div>
+          <div class="aa-input-group">
+            <label for="aa-fp-w">Rectangle Width (w)</label>
+            <input type="number" id="aa-fp-w" value="8" min="2" max="20" oninput="drawJob1(); syncFPBase()" />
+            <span class="aa-hint">Range: 2&ndash;20</span>
+          </div>
+          <div class="aa-input-group">
+            <label for="aa-fp-b">Triangle Base (b)</label>
+            <input type="number" id="aa-fp-b" value="8" min="2" max="20" oninput="drawJob1()" disabled style="opacity:0.6;" />
+            <span class="aa-hint" style="color:var(--cyan)">Auto-linked to width</span>
+          </div>
+          <div class="aa-input-group">
+            <label for="aa-fp-h">Triangle Height (h)</label>
+            <input type="number" id="aa-fp-h" value="5" min="1" max="10" oninput="drawJob1()" />
+            <span class="aa-hint">Range: 1&ndash;10</span>
+          </div>
+        </div>
+        <div class="aa-answer-row">
+          <label for="aa-fp-ans">Your answer:</label>
+          <input type="number" id="aa-fp-ans" class="aa-answer-input" placeholder="ft&sup2;" />
+          <button class="aa-btn aa-btn-primary" onclick="checkAnswer(1)">&#x2713; CHECK</button>
+          <button class="aa-btn aa-btn-amber" onclick="calculateJob1()">&#x2699; CALCULATE</button>
+          <span class="aa-answer-fb" id="aa-fp-fb"></span>
+          <button class="aa-btn aa-btn-reveal" id="aa-fp-reveal" onclick="revealJob1()">&#x1F441; REVEAL</button>
+        </div>
+        <div class="aa-calc" id="aa-calc-1"></div>
+        <div class="aa-ext">
+          <div class="aa-ext-title">&#x2B21; Extension &mdash; Flooring Cost</div>
+          <div class="aa-ext-row">
+            <label for="aa-fp-rate">Cost per <span id="aa-fp-unit-lbl">ft&sup2;</span>:</label>
+            <input type="number" id="aa-fp-rate" value="2.50" min="0.01" step="0.01" style="width:80px;" oninput="extJob1()" />
+            <span style="font-family:var(--font-mono);color:var(--muted);font-size:0.8rem;">$ / unit&sup2;</span>
+          </div>
+          <div class="aa-ext-result" id="aa-ext-1"></div>
+        </div>
+        <div class="aa-action-row">
+          <button class="aa-btn aa-btn-secondary" onclick="resetJob(1)">&#x21BA; Reset Job</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- JOB 2: Garden Plot -->
+    <section class="aa-job" id="aa-job-2" role="tabpanel" aria-labelledby="aa-tab-2">
+      <div class="aa-card">
+        <div class="aa-card-title"><span class="aa-live-dot"></span>Blueprint Job 02 &mdash; Garden Plot</div>
+        <p class="aa-problem">&#x1F33F; <strong>Challenge:</strong> A client wants a trapezoidal garden plot. Calculate its <em>area</em> to determine how many seed packets to order.</p>
+        <div class="aa-canvas-wrap">
+          <span class="aa-canvas-label">LIVE PREVIEW &middot; SCALE TO FIT</span>
+          <svg id="aa-svg-2" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" aria-label="Trapezoidal garden plot drawing"></svg>
+        </div>
+        <div class="aa-inputs">
+          <div class="aa-input-group">
+            <label for="aa-gp-b1">Top Base (b&#x2081;)</label>
+            <input type="number" id="aa-gp-b1" value="8" min="2" max="20" oninput="drawJob2()" />
+            <span class="aa-hint">Range: 2&ndash;20</span>
+          </div>
+          <div class="aa-input-group">
+            <label for="aa-gp-b2">Bottom Base (b&#x2082;)</label>
+            <input type="number" id="aa-gp-b2" value="14" min="2" max="20" oninput="drawJob2()" />
+            <span class="aa-hint">Range: 2&ndash;20</span>
+          </div>
+          <div class="aa-input-group">
+            <label for="aa-gp-h">Height (h)</label>
+            <input type="number" id="aa-gp-h" value="6" min="2" max="15" oninput="drawJob2()" />
+            <span class="aa-hint">Range: 2&ndash;15</span>
+          </div>
+        </div>
+        <div class="aa-answer-row">
+          <label for="aa-gp-ans">Your answer:</label>
+          <input type="number" id="aa-gp-ans" class="aa-answer-input" placeholder="ft&sup2;" />
+          <button class="aa-btn aa-btn-primary" onclick="checkAnswer(2)">&#x2713; CHECK</button>
+          <button class="aa-btn aa-btn-amber" onclick="calculateJob2()">&#x2699; CALCULATE</button>
+          <span class="aa-answer-fb" id="aa-gp-fb"></span>
+          <button class="aa-btn aa-btn-reveal" id="aa-gp-reveal" onclick="revealJob2()">&#x1F441; REVEAL</button>
+        </div>
+        <div class="aa-calc" id="aa-calc-2"></div>
+        <div class="aa-ext">
+          <div class="aa-ext-title">&#x2B21; Extension &mdash; Seed Packets</div>
+          <div class="aa-ext-row">
+            <span style="font-family:var(--font-mono);color:var(--muted);font-size:0.82rem;">1 packet covers 15 <span class="aa-unit-dyn">ft&sup2;</span></span>
+          </div>
+          <div class="aa-ext-result" id="aa-ext-2"></div>
+        </div>
+        <div class="aa-action-row">
+          <button class="aa-btn aa-btn-secondary" onclick="resetJob(2)">&#x21BA; Reset Job</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- JOB 3: Mural Frame -->
+    <section class="aa-job" id="aa-job-3" role="tabpanel" aria-labelledby="aa-tab-3">
+      <div class="aa-card">
+        <div class="aa-card-title"><span class="aa-live-dot"></span>Blueprint Job 03 &mdash; Mural Frame</div>
+        <p class="aa-problem">&#x1F3A8; <strong>Challenge:</strong> A parallelogram mural wall has a triangular window cutout. Find the <em>net paintable area</em> to estimate how many paint cans are needed.</p>
+        <div class="aa-canvas-wrap">
+          <span class="aa-canvas-label">LIVE PREVIEW &middot; SCALE TO FIT</span>
+          <svg id="aa-svg-3" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" aria-label="Parallelogram mural wall with triangular cutout"></svg>
+        </div>
+        <div class="aa-inputs">
+          <div class="aa-input-group">
+            <label for="aa-mf-pb">Parallelogram Base (b)</label>
+            <input type="number" id="aa-mf-pb" value="16" min="5" max="25" oninput="drawJob3()" />
+            <span class="aa-hint">Range: 5&ndash;25</span>
+          </div>
+          <div class="aa-input-group">
+            <label for="aa-mf-ph">Parallelogram Height (h)</label>
+            <input type="number" id="aa-mf-ph" value="9" min="3" max="15" oninput="drawJob3()" />
+            <span class="aa-hint">Range: 3&ndash;15</span>
+          </div>
+          <div class="aa-input-group">
+            <label for="aa-mf-tb">Cutout Base (b&#x2082;)</label>
+            <input type="number" id="aa-mf-tb" value="4" min="1" max="8" oninput="drawJob3()" />
+            <span class="aa-hint">Range: 1&ndash;8</span>
+          </div>
+          <div class="aa-input-group">
+            <label for="aa-mf-th">Cutout Height (h&#x2082;)</label>
+            <input type="number" id="aa-mf-th" value="3" min="1" max="8" oninput="drawJob3()" />
+            <span class="aa-hint">Range: 1&ndash;8</span>
+          </div>
+        </div>
+        <div class="aa-answer-row">
+          <label for="aa-mf-ans">Your answer:</label>
+          <input type="number" id="aa-mf-ans" class="aa-answer-input" placeholder="ft&sup2;" />
+          <button class="aa-btn aa-btn-primary" onclick="checkAnswer(3)">&#x2713; CHECK</button>
+          <button class="aa-btn aa-btn-amber" onclick="calculateJob3()">&#x2699; CALCULATE</button>
+          <span class="aa-answer-fb" id="aa-mf-fb"></span>
+          <button class="aa-btn aa-btn-reveal" id="aa-mf-reveal" onclick="revealJob3()">&#x1F441; REVEAL</button>
+        </div>
+        <div class="aa-calc" id="aa-calc-3"></div>
+        <div class="aa-ext">
+          <div class="aa-ext-title">&#x2B21; Extension &mdash; Paint Cans</div>
+          <div class="aa-ext-row">
+            <span style="font-family:var(--font-mono);color:var(--muted);font-size:0.82rem;">1 paint can covers 40 <span class="aa-unit-dyn">ft&sup2;</span></span>
+          </div>
+          <div class="aa-ext-result" id="aa-ext-3"></div>
+        </div>
+        <div class="aa-action-row">
+          <button class="aa-btn aa-btn-secondary" onclick="resetJob(3)">&#x21BA; Reset Job</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SIDEBAR -->
+    <aside class="aa-sidebar">
+      <div class="aa-card">
+        <div class="aa-card-title">Formula Bank</div>
+        <div id="aa-fb-1" class="aa-formula-box">
+          <div class="f-head">Rectangle</div>
+          <div class="f-line"><span class="f-name">A</span> = <span class="f-sym">l</span> &times; <span class="f-sym">w</span></div>
+          <hr class="f-sep" />
+          <div class="f-head">Triangle</div>
+          <div class="f-line"><span class="f-name">A</span> = &frac12; &times; <span class="f-sym">b</span> &times; <span class="f-sym">h</span></div>
+          <hr class="f-sep" />
+          <div class="f-head">Composite</div>
+          <div class="f-line"><span class="f-name">A<sub>total</sub></span> = <span class="f-dim">A<sub>rect</sub></span> + <span class="f-dim">A<sub>tri</sub></span></div>
+        </div>
+        <div id="aa-fb-2" class="aa-formula-box" style="display:none;">
+          <div class="f-head">Trapezoid</div>
+          <div class="f-line"><span class="f-name">A</span> = &frac12; &times; (<span class="f-sym">b&#x2081;</span> + <span class="f-sym">b&#x2082;</span>) &times; <span class="f-sym">h</span></div>
+          <hr class="f-sep" />
+          <div class="f-head">Note</div>
+          <div class="f-line" style="font-size:0.72rem;color:var(--muted);">b&#x2081; = top base<br/>b&#x2082; = bottom base<br/>h = perpendicular height</div>
+        </div>
+        <div id="aa-fb-3" class="aa-formula-box" style="display:none;">
+          <div class="f-head">Parallelogram</div>
+          <div class="f-line"><span class="f-name">A</span> = <span class="f-sym">b</span> &times; <span class="f-sym">h</span></div>
+          <hr class="f-sep" />
+          <div class="f-head">Triangle Cutout</div>
+          <div class="f-line"><span class="f-name">A</span> = &frac12; &times; <span class="f-sym">b&#x2082;</span> &times; <span class="f-sym">h&#x2082;</span></div>
+          <hr class="f-sep" />
+          <div class="f-head">Net Area</div>
+          <div class="f-line"><span class="f-name">A<sub>net</sub></span> = <span class="f-dim">A<sub>para</sub></span> &minus; <span class="f-dim">A<sub>tri</sub></span></div>
+        </div>
+      </div>
+
+      <div class="aa-card aa-vocab">
+        <div class="aa-card-title">Vocabulary</div>
+        <details><summary>Area</summary><p class="def">The amount of surface inside a 2D shape, measured in square units (ft&sup2;, m&sup2;, etc.).</p></details>
+        <details><summary>Composite Figure</summary><p class="def">A shape made of two or more basic shapes joined together. Decompose it to find the total area.</p></details>
+        <details><summary>Base (b)</summary><p class="def">Any side of a shape used as a reference for measuring height. For a triangle, h is perpendicular to b.</p></details>
+        <details><summary>Height (h)</summary><p class="def">The perpendicular distance from the base to the opposite vertex or parallel side.</p></details>
+        <details><summary>Triangle</summary><p class="def">A polygon with 3 sides. Area = &frac12; &times; base &times; height.</p></details>
+        <details><summary>Trapezoid</summary><p class="def">A quadrilateral with exactly one pair of parallel sides. Area = &frac12;(b&#x2081; + b&#x2082;)h.</p></details>
+        <details><summary>Parallelogram</summary><p class="def">A quadrilateral with two pairs of parallel sides. Area = base &times; height (not slant side!).</p></details>
+      </div>
+
+      <div class="aa-card">
+        <div class="aa-card-title">Engineer Tips</div>
+        <div style="font-size:0.78rem;color:var(--muted);line-height:1.7;font-family:var(--font-body);">
+          <p>&#x1F4A1; Decompose complex shapes into simpler ones.</p><br/>
+          <p>&#x1F4D0; Height is always <em>perpendicular</em> to the base &mdash; never a slanted side.</p><br/>
+          <p>&#x1F522; Double-check your units: always write unit&sup2; in your answer.</p><br/>
+          <p>&#x1F3D7; Real CAD tools use the same formulas you&apos;re practicing here!</p>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+</div>
+
+<script>
+'use strict';
+
+const attempts  = { 1: 0, 2: 0, 3: 0 };
+const correct   = { 1: false, 2: false, 3: false };
+let   activeTab = 1;
+let   unitLabel = 'ft';
+
+function round2(n) { return Math.round(n * 100) / 100; }
+function getVal(id) { return parseFloat(document.getElementById(id).value) || 0; }
+
+function svgEl(tag, attrs, textContent) {
+  const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+  if (textContent !== undefined) el.textContent = textContent;
+  return el;
+}
+
+function clearSVG(id) {
+  const svg = document.getElementById(id);
+  while (svg.firstChild) svg.removeChild(svg.firstChild);
+  return svg;
+}
+
+function switchTab(n) {
+  activeTab = n;
+  document.querySelectorAll('.aa-tab').forEach((t, i) => {
+    const on = i + 1 === n;
+    t.classList.toggle('active', on);
+    t.setAttribute('aria-selected', String(on));
+  });
+  document.querySelectorAll('.aa-job').forEach((j, i) => {
+    j.classList.toggle('active', i + 1 === n);
+  });
+  [1, 2, 3].forEach(i => {
+    document.getElementById('aa-fb-' + i).style.display = i === n ? '' : 'none';
+  });
+  if (n === 1) drawJob1();
+  if (n === 2) drawJob2();
+  if (n === 3) drawJob3();
+}
+
+function updateUnit() {
+  unitLabel = document.getElementById('aa-unit-sel').value;
+  document.querySelectorAll('.aa-unit-dyn').forEach(el => {
+    el.textContent = unitLabel + '\u00B2';
+  });
+  document.getElementById('aa-fp-unit-lbl').textContent = unitLabel + '\u00B2';
+  drawJob1(); drawJob2(); drawJob3();
+  extJob1();
+}
+
+/* ── JOB 1: Floor Plan ── */
+function syncFPBase() {
+  document.getElementById('aa-fp-b').value = getVal('aa-fp-w');
+}
+
+function drawJob1() {
+  const l  = getVal('aa-fp-l');
+  const w  = getVal('aa-fp-w');
+  const th = getVal('aa-fp-h');
+  const svg = clearSVG('aa-svg-1');
+  const U = unitLabel;
+
+  const M = 50, VW = 300, VH = 200;
+  const totalH = w + th, totalW = l;
+  const scale = Math.min(VW / totalW, VH / totalH);
+  const rw = l * scale, rh = w * scale, th_px = th * scale;
+  const rx = M + (VW - rw) / 2;
+  const ry = M + th_px;
+
+  const rectPts = [[rx,ry],[rx+rw,ry],[rx+rw,ry+rh],[rx,ry+rh]];
+  const triPts  = [[rx,ry],[rx+rw,ry],[rx+rw/2,ry-th_px]];
+
+  for (let gx=0;gx<=400;gx+=20) svg.appendChild(svgEl('line',{x1:gx,y1:0,x2:gx,y2:300,stroke:'rgba(57,255,20,0.04)','stroke-width':'1'}));
+  for (let gy=0;gy<=300;gy+=20) svg.appendChild(svgEl('line',{x1:0,y1:gy,x2:400,y2:gy,stroke:'rgba(57,255,20,0.04)','stroke-width':'1'}));
+
+  svg.appendChild(svgEl('polygon',{points:rectPts.map(p=>p.join(',')).join(' '),fill:'rgba(0,212,255,0.15)',stroke:'#00d4ff','stroke-width':'2','stroke-linejoin':'round'}));
+  svg.appendChild(svgEl('polygon',{points:triPts.map(p=>p.join(',')).join(' '),fill:'rgba(57,255,20,0.15)',stroke:'#39ff14','stroke-width':'2','stroke-linejoin':'round'}));
+  svg.appendChild(svgEl('line',{x1:rx,y1:ry,x2:rx+rw,y2:ry,stroke:'#ffd700','stroke-width':'1.5','stroke-dasharray':'6,4'}));
+
+  function lbl(x,y,txt,col){
+    col=col||'#ffd700';
+    var len=txt.length;
+    var bx=svgEl('rect',{x:x-(len*7+6)/2,y:y-11,width:len*7+6,height:15,fill:'rgba(10,15,30,0.8)',rx:'3'});
+    svg.appendChild(bx);
+    svg.appendChild(svgEl('text',{x:x,y:y,fill:col,'font-family':"'Share Tech Mono',monospace",'font-size':'11','text-anchor':'middle'},txt));
+  }
+
+  lbl(rx+rw/2, ry+rh+20, 'l='+l+' '+U);
+  svg.appendChild(svgEl('text',{x:rx+rw+28,y:ry+rh/2+4,fill:'#ffd700','font-family':"'Share Tech Mono',monospace",'font-size':'11','text-anchor':'middle',transform:'rotate(-90,'+(rx+rw+28)+','+(ry+rh/2+4)+')'},'w='+w+' '+U));
+  svg.appendChild(svgEl('line',{x1:rx-8,y1:ry,x2:rx-8,y2:ry-th_px,stroke:'#ffd700','stroke-width':'1','stroke-dasharray':'3,3'}));
+  lbl(rx-28, ry-th_px/2+4, 'h='+th, '#39ff14');
+  lbl(rx+rw/2, ry-th_px-10, 'b='+w+' '+U, '#39ff14');
+  lbl(rx+rw/2, ry+rh/2+4, 'RECT', '#00d4ff');
+  lbl(rx+rw/2, ry-th_px/2+4, 'TRI', '#39ff14');
+}
+
+function calculateJob1() {
+  const l=getVal('aa-fp-l'), w=getVal('aa-fp-w'), h=getVal('aa-fp-h'), U=unitLabel;
+  const rA=round2(l*w), tA=round2(0.5*w*h), tot=round2(rA+tA);
+  document.getElementById('aa-calc-1').innerHTML=
+    '<div class="aa-calc-line"><span class="lbl">Rectangle</span>: A = l \u00D7 w = <span class="val">'+l+'</span> \u00D7 <span class="val">'+w+'</span> = <span class="res">'+rA+' '+U+'\u00B2</span></div>'+
+    '<div class="aa-calc-line"><span class="lbl">Triangle</span>: A = \u00BD \u00D7 b \u00D7 h = \u00BD \u00D7 <span class="val">'+w+'</span> \u00D7 <span class="val">'+h+'</span> = <span class="res">'+tA+' '+U+'\u00B2</span></div>'+
+    '<div class="aa-calc-line"><span class="lbl">Total</span>: <span class="val">'+rA+'</span> + <span class="val">'+tA+'</span> = <span class="total">'+tot+' '+U+'\u00B2</span></div>';
+  document.getElementById('aa-calc-1').classList.add('show');
+  extJob1();
+}
+
+function extJob1() {
+  const l=getVal('aa-fp-l'),w=getVal('aa-fp-w'),h=getVal('aa-fp-h');
+  const tot=round2(l*w+0.5*w*h);
+  const rate=parseFloat(document.getElementById('aa-fp-rate').value)||0;
+  const cost=round2(tot*rate);
+  var ext=document.getElementById('aa-ext-1');
+  ext.innerHTML='<span style="font-family:var(--font-mono);font-size:0.82rem;">Total Cost = '+tot+' \u00D7 $'+rate.toFixed(2)+' = <span style="color:var(--green);">$'+cost.toFixed(2)+'</span></span>';
+  ext.classList.add('show');
+}
+
+function revealJob1() {
+  calculateJob1();
+  const tot=round2(getVal('aa-fp-l')*getVal('aa-fp-w')+0.5*getVal('aa-fp-w')*getVal('aa-fp-h'));
+  document.getElementById('aa-fp-ans').value=tot;
+  setFeedback('aa-fp-fb','\u2713 Answer: '+tot+' '+unitLabel+'\u00B2','correct');
+}
+
+/* ── JOB 2: Garden Plot ── */
+function drawJob2() {
+  const b1=getVal('aa-gp-b1'),b2=getVal('aa-gp-b2'),h=getVal('aa-gp-h');
+  const svg=clearSVG('aa-svg-2'),U=unitLabel;
+  const M=55,VW=290,VH=185;
+  const maxB=Math.max(b1,b2);
+  const scale=Math.min(VW/maxB,VH/h);
+  const b1px=b1*scale,b2px=b2*scale,hpx=h*scale;
+  const cx=200,botY=M+VH,topY=botY-hpx;
+  const bL=cx-b2px/2,bR=cx+b2px/2,tL=cx-b1px/2,tR=cx+b1px/2;
+
+  for(let gx=0;gx<=400;gx+=20) svg.appendChild(svgEl('line',{x1:gx,y1:0,x2:gx,y2:300,stroke:'rgba(57,255,20,0.04)','stroke-width':'1'}));
+  for(let gy=0;gy<=300;gy+=20) svg.appendChild(svgEl('line',{x1:0,y1:gy,x2:400,y2:gy,stroke:'rgba(57,255,20,0.04)','stroke-width':'1'}));
+
+  svg.appendChild(svgEl('polygon',{points:tL+','+topY+' '+tR+','+topY+' '+bR+','+botY+' '+bL+','+botY,fill:'rgba(255,215,0,0.12)',stroke:'#ffd700','stroke-width':'2','stroke-linejoin':'round'}));
+  svg.appendChild(svgEl('line',{x1:cx,y1:topY,x2:cx,y2:botY,stroke:'#00d4ff','stroke-width':'1.5','stroke-dasharray':'5,4'}));
+  var rm=8;
+  svg.appendChild(svgEl('rect',{x:cx,y:botY-rm,width:rm,height:rm,fill:'none',stroke:'#00d4ff','stroke-width':'1.2'}));
+
+  function lbl(x,y,txt,col){
+    col=col||'#ffd700';
+    var len=txt.length;
+    svg.appendChild(svgEl('rect',{x:x-(len*7+6)/2,y:y-11,width:len*7+6,height:15,fill:'rgba(10,15,30,0.8)',rx:'3'}));
+    svg.appendChild(svgEl('text',{x:x,y:y,fill:col,'font-family':"'Share Tech Mono',monospace",'font-size':'11','text-anchor':'middle'},txt));
+  }
+
+  lbl(cx,topY-12,'b1='+b1+' '+U);
+  lbl(cx,botY+20,'b2='+b2+' '+U);
+  lbl(cx-32,(topY+botY)/2+4,'h='+h,'#00d4ff');
+}
+
+function calculateJob2() {
+  const b1=getVal('aa-gp-b1'),b2=getVal('aa-gp-b2'),h=getVal('aa-gp-h'),U=unitLabel;
+  const area=round2(0.5*(b1+b2)*h);
+  document.getElementById('aa-calc-2').innerHTML=
+    '<div class="aa-calc-line"><span class="lbl">Trapezoid</span>: A = \u00BD \u00D7 (b\u2081 + b\u2082) \u00D7 h</div>'+
+    '<div class="aa-calc-line">A = \u00BD \u00D7 (<span class="val">'+b1+'</span> + <span class="val">'+b2+'</span>) \u00D7 <span class="val">'+h+'</span></div>'+
+    '<div class="aa-calc-line">A = \u00BD \u00D7 <span class="val">'+(b1+b2)+'</span> \u00D7 <span class="val">'+h+'</span> = <span class="total">'+area+' '+U+'\u00B2</span></div>';
+  document.getElementById('aa-calc-2').classList.add('show');
+  extJob2(area);
+}
+
+function extJob2(area) {
+  if(area===undefined) area=round2(0.5*(getVal('aa-gp-b1')+getVal('aa-gp-b2'))*getVal('aa-gp-h'));
+  const pkt=Math.ceil(area/15);
+  var ext=document.getElementById('aa-ext-2');
+  ext.innerHTML='<span style="font-family:var(--font-mono);font-size:0.82rem;">Packets needed = \u2308'+area+' \u00F7 15\u2309 = <span style="color:var(--green);">\u2308'+(area/15).toFixed(2)+'\u2309 = '+pkt+' packet'+(pkt!==1?'s':'')+'</span></span>';
+  ext.classList.add('show');
+}
+
+function revealJob2() {
+  calculateJob2();
+  const area=round2(0.5*(getVal('aa-gp-b1')+getVal('aa-gp-b2'))*getVal('aa-gp-h'));
+  document.getElementById('aa-gp-ans').value=area;
+  setFeedback('aa-gp-fb','\u2713 Answer: '+area+' '+unitLabel+'\u00B2','correct');
+}
+
+/* ── JOB 3: Mural Frame ── */
+function drawJob3() {
+  const pb=getVal('aa-mf-pb'),ph=getVal('aa-mf-ph'),tb=getVal('aa-mf-tb'),thv=getVal('aa-mf-th');
+  const svg=clearSVG('aa-svg-3'),U=unitLabel;
+  const M=55,VW=290,VH=185;
+  const slant=0.25;
+  const scale=Math.min(VW/(pb*(1+slant)),VH/ph);
+  const pbpx=pb*scale,phpx=ph*scale,slpx=pbpx*slant;
+  const botY=M+VH,topY=botY-phpx;
+  const leftX=M+(VW-pbpx-slpx)/2;
+  const pPts=[[leftX,botY],[leftX+pbpx,botY],[leftX+pbpx+slpx,topY],[leftX+slpx,topY]];
+  const ccx=leftX+pbpx/2+slpx/2;
+  const tbpx=tb*scale,thpx=thv*scale;
+  const cutBot=botY-phpx*0.2;
+  const cutPts=[[ccx-tbpx/2,cutBot],[ccx+tbpx/2,cutBot],[ccx,cutBot-thpx]];
+
+  for(let gx=0;gx<=400;gx+=20) svg.appendChild(svgEl('line',{x1:gx,y1:0,x2:gx,y2:300,stroke:'rgba(57,255,20,0.04)','stroke-width':'1'}));
+  for(let gy=0;gy<=300;gy+=20) svg.appendChild(svgEl('line',{x1:0,y1:gy,x2:400,y2:gy,stroke:'rgba(57,255,20,0.04)','stroke-width':'1'}));
+
+  svg.appendChild(svgEl('polygon',{points:pPts.map(p=>p.join(',')).join(' '),fill:'rgba(192,132,252,0.15)',stroke:'#c084fc','stroke-width':'2','stroke-linejoin':'round'}));
+  svg.appendChild(svgEl('polygon',{points:cutPts.map(p=>p.join(',')).join(' '),fill:'rgba(10,15,30,0.85)',stroke:'#ff4f4f','stroke-width':'1.8','stroke-dasharray':'5,3','stroke-linejoin':'round'}));
+
+  const hlineX=leftX+pbpx*0.75+slpx*0.75;
+  svg.appendChild(svgEl('line',{x1:hlineX,y1:topY,x2:hlineX,y2:botY,stroke:'#ffd700','stroke-width':'1.2','stroke-dasharray':'5,4'}));
+
+  function lbl(x,y,txt,col){
+    col=col||'#ffd700';
+    var len=txt.length;
+    svg.appendChild(svgEl('rect',{x:x-(len*7+6)/2,y:y-11,width:len*7+6,height:15,fill:'rgba(10,15,30,0.8)',rx:'3'}));
+    svg.appendChild(svgEl('text',{x:x,y:y,fill:col,'font-family':"'Share Tech Mono',monospace",'font-size':'11','text-anchor':'middle'},txt));
+  }
+
+  lbl((pPts[0][0]+pPts[1][0])/2, botY+20, 'b='+pb+' '+U, '#c084fc');
+  lbl(hlineX+22, (topY+botY)/2+4, 'h='+ph, '#ffd700');
+  lbl((cutPts[0][0]+cutPts[1][0])/2, cutBot+18, 'b2='+tb, '#ff4f4f');
+  lbl(cutPts[2][0]+22, (cutBot+cutPts[2][1])/2, 'h2='+thv, '#ff4f4f');
+
+  svg.appendChild(svgEl('rect',{x:8,y:8,width:12,height:8,fill:'rgba(192,132,252,0.35)',rx:'2'}));
+  svg.appendChild(svgEl('text',{x:24,y:16,fill:'#c084fc','font-family':"'Share Tech Mono',monospace",'font-size':'9'},'Mural'));
+  svg.appendChild(svgEl('rect',{x:8,y:22,width:12,height:8,fill:'rgba(10,15,30,0.85)',stroke:'#ff4f4f','stroke-width':'1.2',rx:'2'}));
+  svg.appendChild(svgEl('text',{x:24,y:30,fill:'#ff4f4f','font-family':"'Share Tech Mono',monospace",'font-size':'9'},'Cutout'));
+}
+
+function calculateJob3() {
+  const pb=getVal('aa-mf-pb'),ph=getVal('aa-mf-ph'),tb=getVal('aa-mf-tb'),thv=getVal('aa-mf-th'),U=unitLabel;
+  const pA=round2(pb*ph),tA=round2(0.5*tb*thv),net=round2(pA-tA);
+  document.getElementById('aa-calc-3').innerHTML=
+    '<div class="aa-calc-line"><span class="lbl">Parallelogram</span>: A = b \u00D7 h = <span class="val">'+pb+'</span> \u00D7 <span class="val">'+ph+'</span> = <span class="res">'+pA+' '+U+'\u00B2</span></div>'+
+    '<div class="aa-calc-line"><span class="lbl">Triangle Cutout</span>: A = \u00BD \u00D7 b\u2082 \u00D7 h\u2082 = \u00BD \u00D7 <span class="val">'+tb+'</span> \u00D7 <span class="val">'+thv+'</span> = <span class="res">'+tA+' '+U+'\u00B2</span></div>'+
+    '<div class="aa-calc-line"><span class="lbl">Net Area</span>: <span class="val">'+pA+'</span> \u2212 <span class="val">'+tA+'</span> = <span class="total">'+net+' '+U+'\u00B2</span></div>';
+  document.getElementById('aa-calc-3').classList.add('show');
+  extJob3(net);
+}
+
+function extJob3(net) {
+  if(net===undefined) net=round2(getVal('aa-mf-pb')*getVal('aa-mf-ph')-0.5*getVal('aa-mf-tb')*getVal('aa-mf-th'));
+  const cans=Math.ceil(net/40);
+  var ext=document.getElementById('aa-ext-3');
+  ext.innerHTML='<span style="font-family:var(--font-mono);font-size:0.82rem;">Paint cans = \u2308'+net+' \u00F7 40\u2309 = <span style="color:var(--green);">\u2308'+(net/40).toFixed(2)+'\u2309 = '+cans+' can'+(cans!==1?'s':'')+'</span></span>';
+  ext.classList.add('show');
+}
+
+function revealJob3() {
+  calculateJob3();
+  const net=round2(getVal('aa-mf-pb')*getVal('aa-mf-ph')-0.5*getVal('aa-mf-tb')*getVal('aa-mf-th'));
+  document.getElementById('aa-mf-ans').value=net;
+  setFeedback('aa-mf-fb','\u2713 Answer: '+net+' '+unitLabel+'\u00B2','correct');
+}
+
+/* ── Answer Check ── */
+function getCorrectAnswer(job) {
+  if(job===1){ const l=getVal('aa-fp-l'),w=getVal('aa-fp-w'),h=getVal('aa-fp-h'); return round2(l*w+0.5*w*h); }
+  if(job===2){ return round2(0.5*(getVal('aa-gp-b1')+getVal('aa-gp-b2'))*getVal('aa-gp-h')); }
+  if(job===3){ return round2(getVal('aa-mf-pb')*getVal('aa-mf-ph')-0.5*getVal('aa-mf-tb')*getVal('aa-mf-th')); }
+}
+
+const jobMap={
+  1:{ans:'aa-fp-ans',fb:'aa-fp-fb',reveal:'aa-fp-reveal'},
+  2:{ans:'aa-gp-ans',fb:'aa-gp-fb',reveal:'aa-gp-reveal'},
+  3:{ans:'aa-mf-ans',fb:'aa-mf-fb',reveal:'aa-mf-reveal'},
+};
+
+function setFeedback(id,msg,cls){
+  var el=document.getElementById(id);
+  el.textContent=msg;
+  el.className='aa-answer-fb '+cls;
+}
+
+function checkAnswer(job){
+  if(correct[job]) return;
+  var m=jobMap[job];
+  var userVal=parseFloat(document.getElementById(m.ans).value);
+  var right=getCorrectAnswer(job);
+  if(isNaN(userVal)){ setFeedback(m.fb,'\u26A0 Enter a number first.','wrong'); return; }
+  if(Math.abs(userVal-right)<=0.5){
+    correct[job]=true;
+    setFeedback(m.fb,'\u2713 Correct! '+right+' '+unitLabel+'\u00B2','correct');
+    if(job===1) calculateJob1();
+    if(job===2) calculateJob2();
+    if(job===3) calculateJob3();
+  } else {
+    attempts[job]++;
+    var rem=2-attempts[job];
+    if(rem>0){ setFeedback(m.fb,'\u2717 Try again. ('+rem+' attempt'+(rem!==1?'s':'')+' left)','wrong'); }
+    else { setFeedback(m.fb,'\u2717 Hint: correct answer is '+right+' '+unitLabel+'\u00B2','wrong'); document.getElementById(m.reveal).style.display='inline-flex'; }
+  }
+}
+
+/* ── Reset ── */
+const defaults={
+  1:{'aa-fp-l':10,'aa-fp-w':8,'aa-fp-b':8,'aa-fp-h':5,'aa-fp-ans':'','aa-fp-rate':2.50},
+  2:{'aa-gp-b1':8,'aa-gp-b2':14,'aa-gp-h':6,'aa-gp-ans':''},
+  3:{'aa-mf-pb':16,'aa-mf-ph':9,'aa-mf-tb':4,'aa-mf-th':3,'aa-mf-ans':''},
+};
+
+function resetJob(job){
+  var d=defaults[job];
+  for(var id in d){ var el=document.getElementById(id); if(el) el.value=d[id]; }
+  attempts[job]=0; correct[job]=false;
+  document.getElementById('aa-calc-'+job).classList.remove('show');
+  document.getElementById('aa-ext-'+job).classList.remove('show');
+  var m=jobMap[job];
+  setFeedback(m.fb,'','');
+  document.getElementById(m.reveal).style.display='none';
+  if(job===1){syncFPBase();drawJob1();}
+  if(job===2) drawJob2();
+  if(job===3) drawJob3();
+}
+
+function resetAll(){
+  [1,2,3].forEach(j=>resetJob(j));
+  document.getElementById('aa-student-name').value='';
+}
+
+/* ── Init ── */
+window.addEventListener('DOMContentLoaded',function(){
+  syncFPBase(); drawJob1(); drawJob2(); drawJob3(); updateUnit();
+});
+</script>
+<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+  </body>
+</html>

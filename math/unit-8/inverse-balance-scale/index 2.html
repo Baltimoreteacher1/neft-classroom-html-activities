@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inverse Balance Scale — Solve Multiplication & Division Equations</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Share+Tech+Mono&display=swap');
+
+    :root {
+      --bg: #0d0b07;
+      --surface: rgba(255, 255, 255, 0.03);
+      --border: rgba(255, 255, 255, 0.1);
+      --text: #ffffff;
+      --text-muted: #9c978f;
+      --brass: #d4af37;
+      --brass-dark: #8a6d1c;
+      --neon-cyan: #00f0ff;
+      --neon-green: #39ff14;
+      --neon-red: #ff3b30;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+
+    #space-bg {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: radial-gradient(circle at center, #2e2416 0%, #0d0b07 100%);
+      z-index: -1;
+    }
+
+    header {
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    h1 {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.8rem;
+      color: var(--brass);
+      text-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .name-field {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 12px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.9rem;
+    }
+
+    .name-field:focus {
+      outline: none;
+      border-color: var(--brass);
+      box-shadow: 0 0 8px rgba(212, 175, 55, 0.2);
+    }
+
+    .btn {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.9rem;
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--brass), var(--brass-dark));
+      color: #0d0b07;
+    }
+
+    .btn-primary:hover {
+      filter: brightness(1.2);
+      box-shadow: 0 0 12px rgba(212, 175, 55, 0.4);
+    }
+
+    .btn-secondary {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--brass);
+    }
+
+    main {
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1.3fr;
+      gap: 30px;
+      flex-grow: 1;
+    }
+
+    @media (max-width: 900px) {
+      main { grid-template-columns: 1fr; }
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .panel-title {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.2rem;
+      color: var(--text);
+      border-left: 3px solid var(--brass);
+      padding-left: 10px;
+      margin-bottom: 5px;
+    }
+
+    .scale-container {
+      background: #090805;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+    }
+
+    .scale-svg {
+      width: 100%;
+      max-width: 480px;
+      height: 380px;
+    }
+
+    .equation-banner {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      text-align: center;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 2rem;
+      color: var(--neon-cyan);
+      letter-spacing: 2px;
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.1) inset;
+    }
+
+    .operation-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .vocab-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 15px;
+      font-size: 0.85rem;
+      line-height: 1.4;
+    }
+
+    .vocab-word {
+      font-family: 'Share Tech Mono', monospace;
+      color: var(--brass);
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+
+    .feedback-message {
+      text-align: center;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.2rem;
+      min-height: 30px;
+      color: var(--neon-green);
+    }
+
+    @media print {
+      body { background: white; color: black; }
+      #space-bg, .btn, .header-controls, .operation-grid, .vocab-card { display: none !important; }
+      .panel, .scale-container { border: 1px solid #ccc; background: white; backdrop-filter: none; }
+      h1, .equation-banner { color: black !important; text-shadow: none !important; }
+    }
+  </style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+<body>
+
+  <div id="space-bg"></div>
+
+  <header>
+    <div>
+      <h1>⚖️ Inverse Balance Scale</h1>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Unit 7 Lesson 7-3 Solve Multiplication &amp; Division Equations Game</p>
+    </div>
+    <div class="header-controls">
+      <input type="text" id="student-name" class="name-field" placeholder="Enter Student Name" aria-label="Student Name" />
+      <button class="btn btn-secondary" onclick="window.print()" aria-label="Print/Save Results">🖨️ Save/Print</button>
+      <button class="btn btn-secondary" onclick="resetGame()" aria-label="Reset Game">↺ Reset</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Left Panel: Operations Console -->
+    <div class="panel">
+      <div>
+        <h2 class="panel-title">Operations Console</h2>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">Perform inverse operations to balance and solve the equation.</p>
+      </div>
+
+      <div class="equation-banner" id="equation-display">3x = 12</div>
+
+      <div class="feedback-message" id="feedback-display">Select an inverse operation below:</div>
+
+      <div class="operation-grid">
+        <button class="btn btn-primary" onclick="applyInverse('add')" aria-label="Add constants">+ Add Constants</button>
+        <button class="btn btn-primary" onclick="applyInverse('sub')" aria-label="Subtract constants">- Subtract Constants</button>
+        <button class="btn btn-primary" id="btn-multiply" onclick="applyInverse('mul')" aria-label="Multiply both sides">× Multiply both sides</button>
+        <button class="btn btn-primary" id="btn-divide" onclick="applyInverse('div')" aria-label="Divide both sides">÷ Divide both sides</button>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-word">💡 Inverse Operations (6.EE.B.7)</div>
+        <p>Operations that undo each other. The inverse of multiplication is division. The inverse of division is multiplication.</p>
+        <p style="margin-top: 8px;"><strong>Division Property of Equality:</strong> If you divide both sides of an equation by the same non-zero number, the sides remain equal.</p>
+      </div>
+    </div>
+
+    <!-- Right Panel: Visual Balance Scale -->
+    <div class="scale-container">
+      <svg class="scale-svg" viewBox="0 0 400 400" aria-label="Balance scale showing variables and constants">
+        <!-- Scale Stand Base -->
+        <path d="M160 350 L240 350 L220 220 L180 220 Z" fill="#4a3b20" stroke="#785e33" stroke-width="2" />
+        <circle cx="200" cy="120" r="12" fill="var(--brass)" />
+        
+        <!-- Rotating Arm Group -->
+        <g id="scale-arm" transform="rotate(0, 200, 120)">
+          <!-- Cross beam -->
+          <line x1="80" y1="120" x2="320" y2="120" stroke="var(--brass)" stroke-width="8" stroke-linecap="round" />
+          
+          <!-- Hangers -->
+          <line x1="80" y1="120" x2="80" y2="190" stroke="var(--brass)" stroke-width="3" />
+          <line x1="320" y1="120" x2="320" y2="190" stroke="var(--brass)" stroke-width="3" />
+          
+          <!-- Left Pan -->
+          <g id="left-pan-group" transform="translate(80, 190)">
+            <path d="M-60 0 C-60 30 60 30 60 0 Z" fill="#2d2212" stroke="var(--brass)" stroke-width="2" />
+            <!-- Dynamic elements (bags of gold) will be rendered inside here -->
+            <g id="left-pan-contents"></g>
+          </g>
+
+          <!-- Right Pan -->
+          <g id="right-pan-group" transform="translate(320, 190)">
+            <path d="M-60 0 C-60 30 60 30 60 0 Z" fill="#2d2212" stroke="var(--brass)" stroke-width="2" />
+            <!-- Dynamic elements (coins) will be rendered inside here -->
+            <g id="right-pan-contents"></g>
+          </g>
+        </g>
+      </svg>
+    </div>
+  </main>
+
+  <script>
+    let currentEquation = {};
+    let stepCount = 0;
+    let score = 0;
+
+    // Set of multiplication/division problems
+    const problems = [
+      { type: 'mul', leftCoeff: 3, rightConst: 12, equationText: "3x = 12", solutionVal: 4, correctOp: 'div' },
+      { type: 'mul', leftCoeff: 4, rightConst: 8, equationText: "4x = 8", solutionVal: 2, correctOp: 'div' },
+      { type: 'mul', leftCoeff: 2, rightConst: 10, equationText: "2x = 10", solutionVal: 5, correctOp: 'div' },
+      { type: 'div', leftCoeff: 1, rightConst: 3, divisor: 4, equationText: "x/4 = 3", solutionVal: 12, correctOp: 'mul' },
+      { type: 'div', leftCoeff: 1, rightConst: 2, divisor: 5, equationText: "x/5 = 2", solutionVal: 10, correctOp: 'mul' }
+    ];
+
+    function initGame() {
+      loadProblem(0);
+    }
+
+    function loadProblem(idx) {
+      currentEquation = problems[idx];
+      stepCount = 0;
+      
+      document.getElementById('equation-display').textContent = currentEquation.equationText;
+      document.getElementById('feedback-display').textContent = "Select an inverse operation to isolate the variable x:";
+      document.getElementById('feedback-display').style.color = 'var(--text-muted)';
+      
+      // Update balance arm rotation back to neutral
+      document.getElementById('scale-arm').setAttribute('transform', 'rotate(0, 200, 120)');
+
+      // Draw items on Left Pan
+      const leftContents = document.getElementById('left-pan-contents');
+      leftContents.innerHTML = '';
+      if (currentEquation.type === 'mul') {
+        // Draw leftCoeff gold bags
+        for (let i = 0; i < currentEquation.leftCoeff; i++) {
+          const bagX = (i - (currentEquation.leftCoeff - 1) / 2) * 28;
+          leftContents.appendChild(createGoldBag(bagX, -15, "x"));
+        }
+      } else {
+        // Draw 1 gold bag and write "/ divisor" next to it
+        leftContents.appendChild(createGoldBag(0, -15, `x / ${currentEquation.divisor}`));
+      }
+
+      // Draw items on Right Pan
+      const rightContents = document.getElementById('right-pan-contents');
+      rightContents.innerHTML = '';
+      const coinCount = currentEquation.rightConst;
+      for (let i = 0; i < coinCount; i++) {
+        const row = Math.floor(i / 5);
+        const col = i % 5;
+        const coinX = (col - 2) * 16;
+        const coinY = -8 - (row * 8);
+        rightContents.appendChild(createCoin(coinX, coinY));
+      }
+    }
+
+    function createGoldBag(x, y, label) {
+      const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      g.setAttribute('transform', `translate(${x}, ${y})`);
+      
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', 'M-12 10 C-12 2 -6 -10 0 -10 C6 -10 12 2 12 10 C12 18 -12 18 -12 10 Z');
+      path.setAttribute('fill', 'var(--brass)');
+      path.setAttribute('stroke', '#a07e15');
+      path.setAttribute('stroke-width', '1.5');
+      
+      const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      txt.setAttribute('y', '8');
+      txt.setAttribute('text-anchor', 'middle');
+      txt.setAttribute('fill', '#0d0b07');
+      txt.setAttribute('font-size', '10px');
+      txt.setAttribute('font-family', 'Share Tech Mono');
+      txt.setAttribute('font-weight', 'bold');
+      txt.textContent = label;
+
+      g.appendChild(path);
+      g.appendChild(txt);
+      return g;
+    }
+
+    function createCoin(x, y) {
+      const circ = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      circ.setAttribute('cx', x);
+      circ.setAttribute('cy', y);
+      circ.setAttribute('r', '6');
+      circ.setAttribute('fill', 'var(--brass-dark)');
+      circ.setAttribute('stroke', 'var(--brass)');
+      circ.setAttribute('stroke-width', '1');
+      return circ;
+    }
+
+    function applyInverse(op) {
+      if (op !== currentEquation.correctOp) {
+        // Wrong operation: tilt scale to show unbalanced reaction
+        const angle = op === 'add' || op === 'mul' ? -10 : 10;
+        document.getElementById('scale-arm').setAttribute('transform', `rotate(${angle}, 200, 120)`);
+        
+        document.getElementById('feedback-display').textContent = "⚠️ That operation doesn't help isolate x. Try the opposite of the current equation term.";
+        document.getElementById('feedback-display').style.color = 'var(--neon-red)';
+        return;
+      }
+
+      // Correct operation: balance scale and isolate x
+      document.getElementById('scale-arm').setAttribute('transform', 'rotate(0, 200, 120)');
+      
+      // Update equation display to isolated x = solution
+      document.getElementById('equation-display').textContent = `x = ${currentEquation.solutionVal}`;
+      document.getElementById('feedback-display').textContent = `✓ Correct! x = ${currentEquation.solutionVal}. Scale balanced.`;
+      document.getElementById('feedback-display').style.color = 'var(--neon-green)';
+
+      // Redraw isolated items
+      const leftContents = document.getElementById('left-pan-contents');
+      leftContents.innerHTML = '';
+      leftContents.appendChild(createGoldBag(0, -15, "x")); // Exactly 1 x bag
+
+      const rightContents = document.getElementById('right-pan-contents');
+      rightContents.innerHTML = '';
+      // Draw solutionVal coins
+      for (let i = 0; i < currentEquation.solutionVal; i++) {
+        const coinX = (i - (currentEquation.solutionVal - 1) / 2) * 16;
+        rightContents.appendChild(createCoin(coinX, -8));
+      }
+
+      // Progress problem
+      setTimeout(() => {
+        score++;
+        const nextIdx = (problems.indexOf(currentEquation) + 1) % problems.length;
+        loadProblem(nextIdx);
+      }, 2500);
+    }
+
+    function resetGame() {
+      score = 0;
+      loadProblem(0);
+    }
+
+    window.addEventListener('DOMContentLoaded', initGame);
+  </script>
+<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+  </body>
+</html>

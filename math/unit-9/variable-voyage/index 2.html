@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Variable Voyage — Cargo Dashboard | 6.EE.C.9</title>
+  <meta name="description" content="Interactive math activity for Grade 6 Standard 6.EE.C.9: Use variables to represent two quantities that change in relation to one another. Explore proportional and non-proportional relationships in a cyberpunk spaceship console." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #060c1a;
+      --panel-bg: rgba(255,255,255,0.04);
+      --panel-border: rgba(255,255,255,0.10);
+      --green: #39ff14;
+      --cyan: #00d4ff;
+      --orange: #ff6b35;
+      --red: #ff3860;
+      --purple: #b44dff;
+      --text: #c8d8e8;
+      --text-dim: rgba(200,216,232,0.55);
+      --mono: 'Share Tech Mono', monospace;
+      --body: 'Inter', sans-serif;
+      --glow-green: 0 0 8px #39ff14, 0 0 20px rgba(57,255,20,0.4);
+      --glow-cyan: 0 0 8px #00d4ff, 0 0 20px rgba(0,212,255,0.4);
+      --glow-orange: 0 0 8px #ff6b35, 0 0 20px rgba(255,107,53,0.4);
+      --radius: 12px;
+    }
+
+    html { font-size: 16px; scroll-behavior: smooth; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--body);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    #vv-starfield {
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 0; overflow: hidden;
+    }
+    .star {
+      position: absolute; border-radius: 50%; background: white;
+      animation: starDrift linear infinite;
+    }
+    @keyframes starDrift {
+      0%   { transform: translateY(0) translateX(0); opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: 1; }
+      100% { transform: translateY(100vh) translateX(30px); opacity: 0; }
+    }
+
+    #vv-app {
+      position: relative; z-index: 1;
+      max-width: 1440px; margin: 0 auto;
+      padding: 16px; display: flex; flex-direction: column; gap: 16px;
+    }
+
+    #vv-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 24px;
+      background: var(--panel-bg); border: 1px solid var(--panel-border);
+      border-radius: var(--radius); backdrop-filter: blur(12px);
+      flex-wrap: wrap; gap: 12px;
+    }
+    .header-brand { display: flex; align-items: center; gap: 14px; }
+    .header-icon {
+      width: 48px; height: 48px;
+      background: linear-gradient(135deg, #00d4ff22, #39ff1422);
+      border: 1px solid var(--cyan); border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; box-shadow: var(--glow-cyan);
+    }
+    .header-title { display: flex; flex-direction: column; }
+    #vv-main-h1 {
+      font-family: var(--mono); font-size: 1.4rem;
+      color: var(--cyan); text-shadow: var(--glow-cyan); letter-spacing: 2px;
+    }
+    .header-sub {
+      font-size: 0.75rem; color: var(--text-dim);
+      font-family: var(--mono); letter-spacing: 1px;
+    }
+    .header-badge {
+      background: linear-gradient(135deg, #ff6b3522, #ff6b3511);
+      border: 1px solid var(--orange); border-radius: 8px;
+      padding: 6px 14px; font-family: var(--mono); font-size: 0.75rem;
+      color: var(--orange); text-shadow: var(--glow-orange); letter-spacing: 1px;
+    }
+
+    #vv-columns {
+      display: grid;
+      grid-template-columns: 320px 1fr 380px;
+      gap: 16px; align-items: start;
+    }
+
+    .panel {
+      background: var(--panel-bg); border: 1px solid var(--panel-border);
+      border-radius: var(--radius); backdrop-filter: blur(12px); padding: 20px;
+    }
+    .panel-title {
+      font-family: var(--mono); font-size: 0.7rem;
+      letter-spacing: 3px; color: var(--text-dim); text-transform: uppercase;
+      margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+    }
+    .panel-title::before {
+      content: ''; display: inline-block; width: 6px; height: 6px;
+      border-radius: 50%; background: var(--green); box-shadow: var(--glow-green);
+      animation: blink 2s ease-in-out infinite;
+    }
+    .dot-cyan::before  { background: var(--cyan) !important; box-shadow: var(--glow-cyan) !important; }
+    .dot-orange::before { background: var(--orange) !important; box-shadow: var(--glow-orange) !important; }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    #vv-left { display: flex; flex-direction: column; gap: 16px; }
+
+    .field-label {
+      font-family: var(--mono); font-size: 0.68rem;
+      letter-spacing: 2px; color: var(--text-dim);
+      text-transform: uppercase; margin-bottom: 6px;
+    }
+    .vv-input {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 8px; color: var(--text);
+      font-family: var(--mono); font-size: 0.9rem;
+      padding: 8px 12px; outline: none;
+      transition: border-color 0.25s, box-shadow 0.25s;
+    }
+    .vv-input:focus {
+      border-color: var(--cyan); box-shadow: 0 0 0 2px rgba(0,212,255,0.2);
+    }
+    .vv-input::placeholder { color: rgba(200,216,232,0.3); }
+    input[type=number].vv-input { -moz-appearance: textfield; }
+    input[type=number].vv-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+    .mission-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+    .mission-tab {
+      flex: 1; min-width: 80px; padding: 8px 10px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.12); border-radius: 8px;
+      color: var(--text-dim); font-family: var(--mono); font-size: 0.65rem;
+      letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer;
+      transition: all 0.25s; text-align: center;
+    }
+    .mission-tab:hover { border-color: var(--cyan); color: var(--cyan); background: rgba(0,212,255,0.08); }
+    .mission-tab.active {
+      background: linear-gradient(135deg, rgba(0,212,255,0.18), rgba(57,255,20,0.08));
+      border-color: var(--cyan); color: var(--cyan); box-shadow: 0 0 12px rgba(0,212,255,0.25);
+    }
+
+    .mission-config-section { display: none; }
+    .mission-config-section.active { display: block; }
+
+    .config-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .config-row label {
+      font-family: var(--mono); font-size: 0.72rem;
+      color: var(--text-dim); white-space: nowrap; min-width: 60px;
+    }
+
+    .vv-slider {
+      -webkit-appearance: none; appearance: none;
+      flex: 1; height: 4px; background: rgba(255,255,255,0.12);
+      border-radius: 4px; outline: none; cursor: pointer;
+    }
+    .vv-slider::-webkit-slider-thumb {
+      -webkit-appearance: none; width: 16px; height: 16px;
+      border-radius: 50%; background: var(--cyan); box-shadow: var(--glow-cyan); cursor: pointer;
+    }
+    .vv-slider::-moz-range-thumb {
+      width: 16px; height: 16px; border-radius: 50%;
+      background: var(--cyan); box-shadow: var(--glow-cyan); border: none; cursor: pointer;
+    }
+    .slider-val { font-family: var(--mono); font-size: 0.85rem; color: var(--green); min-width: 28px; text-align: right; }
+
+    #vv-equation-display {
+      background: linear-gradient(135deg, rgba(57,255,20,0.08), rgba(0,212,255,0.05));
+      border: 1px solid rgba(57,255,20,0.3); border-radius: 10px;
+      padding: 14px 18px; text-align: center;
+      font-family: var(--mono); font-size: 1.5rem;
+      color: var(--green); text-shadow: var(--glow-green); letter-spacing: 2px;
+      transition: all 0.3s; animation: eqPulse 0.4s ease-out;
+    }
+    @keyframes eqPulse {
+      0%   { transform: scale(0.96); opacity: 0.5; }
+      100% { transform: scale(1);    opacity: 1; }
+    }
+
+    .var-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    #vv-vocab-toggle {
+      width: 100%; background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.12); border-radius: 8px;
+      color: var(--text-dim); font-family: var(--mono); font-size: 0.68rem;
+      letter-spacing: 2px; padding: 10px 14px; cursor: pointer; text-align: left;
+      transition: all 0.25s; display: flex; align-items: center; justify-content: space-between;
+    }
+    #vv-vocab-toggle:hover { border-color: var(--purple); color: var(--purple); }
+    #vv-vocab-toggle.open { color: var(--purple); border-color: var(--purple); }
+    .vocab-arrow { transition: transform 0.25s; }
+    #vv-vocab-toggle.open .vocab-arrow { transform: rotate(180deg); }
+    #vv-vocab-panel { display: none; flex-direction: column; gap: 8px; margin-top: 8px; }
+    #vv-vocab-panel.open { display: flex; }
+    .vocab-card {
+      background: rgba(180,77,255,0.06); border: 1px solid rgba(180,77,255,0.2);
+      border-radius: 8px; padding: 10px 12px;
+    }
+    .vocab-term { font-family: var(--mono); font-size: 0.72rem; color: var(--purple); letter-spacing: 1px; margin-bottom: 4px; }
+    .vocab-def { font-size: 0.78rem; color: var(--text-dim); line-height: 1.5; }
+
+    #vv-center { display: flex; flex-direction: column; gap: 16px; }
+    .table-wrapper { overflow-x: auto; }
+    table#vv-table { width: 100%; border-collapse: separate; border-spacing: 0 6px; }
+    #vv-table thead th {
+      font-family: var(--mono); font-size: 0.68rem; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--text-dim); padding: 4px 10px 10px; text-align: center;
+    }
+    #vv-table tbody td {
+      background: rgba(255,255,255,0.03);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding: 8px 10px; text-align: center; font-family: var(--mono); font-size: 0.9rem;
+    }
+    #vv-table tbody td:first-child { border-left: 1px solid rgba(255,255,255,0.06); border-radius: 8px 0 0 8px; }
+    #vv-table tbody td:last-child  { border-right: 1px solid rgba(255,255,255,0.06); border-radius: 0 8px 8px 0; }
+    .y-cell { color: var(--green); text-shadow: 0 0 8px rgba(57,255,20,0.5); }
+    .pair-cell { color: var(--cyan); font-size: 0.82rem; }
+    .x-input {
+      width: 56px; background: transparent; border: none;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+      color: var(--text); font-family: var(--mono); font-size: 0.9rem;
+      text-align: center; outline: none; padding: 2px 4px; transition: border-color 0.2s;
+    }
+    .x-input:focus { border-color: var(--cyan); }
+    .row-num {
+      width: 24px; height: 24px; border-radius: 50%;
+      background: rgba(0,212,255,0.12); border: 1px solid rgba(0,212,255,0.25);
+      color: var(--cyan); font-size: 0.7rem;
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+
+    .vv-btn {
+      padding: 8px 18px; border-radius: 8px; border: 1px solid;
+      font-family: var(--mono); font-size: 0.72rem; letter-spacing: 1.5px;
+      text-transform: uppercase; cursor: pointer; transition: all 0.2s; background: transparent;
+    }
+    .vv-btn-cyan { border-color: var(--cyan); color: var(--cyan); }
+    .vv-btn-cyan:hover { background: rgba(0,212,255,0.15); box-shadow: var(--glow-cyan); }
+    .vv-btn-green { border-color: var(--green); color: var(--green); }
+    .vv-btn-green:hover { background: rgba(57,255,20,0.12); box-shadow: var(--glow-green); }
+    .vv-btn-orange { border-color: var(--orange); color: var(--orange); }
+    .vv-btn-orange:hover { background: rgba(255,107,53,0.15); box-shadow: var(--glow-orange); }
+    .vv-btn-red { border-color: var(--red); color: var(--red); }
+    .vv-btn-red:hover { background: rgba(255,56,96,0.15); }
+
+    #vv-check-result {
+      font-family: var(--mono); font-size: 0.8rem;
+      margin-top: 6px; min-height: 20px; transition: all 0.3s;
+    }
+
+    #vv-challenge-panel {
+      background: linear-gradient(135deg, rgba(0,212,255,0.06), rgba(57,255,20,0.04));
+      border: 1px solid rgba(0,212,255,0.25); border-radius: 10px; padding: 18px;
+    }
+    .challenge-q {
+      font-family: var(--mono); font-size: 0.95rem; color: var(--cyan);
+      margin-bottom: 12px; line-height: 1.6;
+    }
+    .challenge-input-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    #vv-challenge-answer { flex: 1; min-width: 80px; }
+    #vv-challenge-result {
+      margin-top: 12px; font-family: var(--mono); font-size: 0.82rem;
+      line-height: 1.7; padding: 10px 14px; border-radius: 8px; display: none;
+    }
+    #vv-challenge-result.correct {
+      background: rgba(57,255,20,0.08); border: 1px solid rgba(57,255,20,0.3);
+      color: var(--green); display: block;
+    }
+    #vv-challenge-result.incorrect {
+      background: rgba(255,56,96,0.08); border: 1px solid rgba(255,56,96,0.3);
+      color: var(--red); display: block;
+    }
+
+    #vv-right { display: flex; flex-direction: column; gap: 14px; }
+    #vv-graph-container {
+      position: relative; width: 100%; aspect-ratio: 1;
+      background: rgba(0,0,0,0.3); border: 1px solid rgba(0,212,255,0.15);
+      border-radius: 10px; overflow: hidden;
+    }
+    #vv-graph-svg { width: 100%; height: 100%; }
+
+    .rocket-row { display: flex; align-items: center; gap: 12px; }
+    .rocket-row label { font-family: var(--mono); font-size: 0.7rem; color: var(--text-dim); white-space: nowrap; }
+    #vv-rocket-val { font-family: var(--mono); font-size: 0.85rem; color: var(--orange); min-width: 24px; }
+
+    @keyframes pointAppear {
+      0%   { r: 0; opacity: 0; }
+      60%  { r: 9; opacity: 1; }
+      100% { r: 6; opacity: 1; }
+    }
+    .graph-point { animation: pointAppear 0.5s ease-out forwards; }
+
+    #vv-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 20px;
+      background: var(--panel-bg); border: 1px solid var(--panel-border);
+      border-radius: var(--radius); backdrop-filter: blur(12px);
+      flex-wrap: wrap; gap: 10px;
+    }
+    .footer-left { display: flex; gap: 10px; align-items: center; }
+    .std-tag {
+      font-family: var(--mono); font-size: 0.7rem; color: var(--text-dim);
+      border: 1px solid rgba(255,255,255,0.1); border-radius: 6px;
+      padding: 4px 10px; letter-spacing: 1px;
+    }
+
+    .divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent); margin: 4px 0; }
+    .spacer { height: 10px; }
+
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--cyan); }
+
+    @media (max-width: 1100px) {
+      #vv-columns { grid-template-columns: 280px 1fr; }
+      #vv-right { grid-column: 1 / -1; }
+    }
+    @media (max-width: 700px) {
+      #vv-columns { grid-template-columns: 1fr; }
+      #vv-right { grid-column: 1; }
+      #vv-main-h1 { font-size: 1rem; }
+    }
+
+    @media print {
+      body { background: white; color: black; }
+      #vv-starfield, #vv-left, #vv-footer, #vv-check-row, #vv-challenge-panel, .rocket-row { display: none !important; }
+      #vv-columns { grid-template-columns: 1fr 1fr; }
+      .panel { border: 1px solid #ccc; background: white; backdrop-filter: none; color: black; }
+      #vv-equation-display { background: #f0f8ff; color: black; text-shadow: none; border: 1px solid #333; }
+      .y-cell { color: #006600; text-shadow: none; }
+      .pair-cell { color: #004488; }
+      #vv-header { background: white; border: 1px solid #ccc; }
+      #vv-main-h1 { color: #003388; text-shadow: none; }
+    }
+
+    #vv-toast {
+      position: fixed; bottom: 30px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: rgba(0,212,255,0.15); border: 1px solid var(--cyan);
+      color: var(--cyan); font-family: var(--mono); font-size: 0.82rem;
+      padding: 10px 22px; border-radius: 30px; backdrop-filter: blur(12px);
+      z-index: 9999; transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.35s;
+      opacity: 0; pointer-events: none; letter-spacing: 1px;
+    }
+    #vv-toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+  </style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+<body>
+
+<div id="vv-starfield" aria-hidden="true"></div>
+<div id="vv-toast" aria-live="polite"></div>
+
+<div id="vv-app">
+
+  <header id="vv-header" role="banner">
+    <div class="header-brand">
+      <div class="header-icon" aria-hidden="true">🚀</div>
+      <div class="header-title">
+        <h1 id="vv-main-h1">VARIABLE VOYAGE</h1>
+        <span class="header-sub">CARGO DASHBOARD // COMMAND CONSOLE</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+      <div class="header-badge">6.EE.C.9</div>
+      <div class="header-badge" style="border-color:var(--green);color:var(--green);">GRADE 6</div>
+    </div>
+  </header>
+
+  <main id="vv-columns" role="main">
+
+    <!-- LEFT -->
+    <aside id="vv-left" aria-label="Mission Configuration">
+
+      <div class="panel">
+        <div class="panel-title">PILOT ID</div>
+        <div class="field-label">CADET NAME</div>
+        <input type="text" id="vv-student-name" class="vv-input" placeholder="Enter your name…" autocomplete="off" />
+      </div>
+
+      <div class="panel">
+        <div class="panel-title dot-cyan">MISSION SELECT</div>
+        <div class="mission-tabs" role="tablist" aria-label="Mission type">
+          <button id="vv-tab-prop"    class="mission-tab active" role="tab" aria-selected="true"  aria-controls="vv-cfg-prop">PROPORTIONAL</button>
+          <button id="vv-tab-nonprop" class="mission-tab"        role="tab" aria-selected="false" aria-controls="vv-cfg-nonprop">NON-PROP</button>
+          <button id="vv-tab-custom"  class="mission-tab"        role="tab" aria-selected="false" aria-controls="vv-cfg-custom">CUSTOM</button>
+        </div>
+        <div class="spacer"></div>
+
+        <div id="vv-cfg-prop" class="mission-config-section active" role="tabpanel" aria-labelledby="vv-tab-prop">
+          <div class="field-label" style="margin-bottom:10px;">RATE CONSTANT k</div>
+          <div class="config-row">
+            <label for="vv-k-slider">k =</label>
+            <input type="range" id="vv-k-slider" class="vv-slider" min="1" max="10" step="1" value="3" />
+            <span id="vv-k-val" class="slider-val">3</span>
+          </div>
+          <div style="font-family:var(--mono);font-size:0.75rem;color:var(--text-dim);margin-top:4px;">y = k × x — rate constant multiplied by x</div>
+        </div>
+
+        <div id="vv-cfg-nonprop" class="mission-config-section" role="tabpanel" aria-labelledby="vv-tab-nonprop">
+          <div class="field-label" style="margin-bottom:10px;">CONSTANT OFFSET c</div>
+          <div class="config-row">
+            <label for="vv-c-input">c =</label>
+            <input type="number" id="vv-c-input" class="vv-input" min="0" max="20" value="5" style="width:80px;flex:none;" />
+          </div>
+          <div style="font-family:var(--mono);font-size:0.75rem;color:var(--text-dim);margin-top:4px;">y = x + c — adds a constant starting value</div>
+        </div>
+
+        <div id="vv-cfg-custom" class="mission-config-section" role="tabpanel" aria-labelledby="vv-tab-custom">
+          <div class="field-label" style="margin-bottom:10px;">CUSTOM COEFFICIENTS</div>
+          <div class="config-row">
+            <label for="vv-a-input">a =</label>
+            <input type="number" id="vv-a-input" class="vv-input" min="0.5" max="5" step="0.5" value="2" style="width:80px;flex:none;" />
+          </div>
+          <div class="config-row">
+            <label for="vv-b-input">b =</label>
+            <input type="number" id="vv-b-input" class="vv-input" min="0" max="20" value="3" style="width:80px;flex:none;" />
+          </div>
+          <div style="font-family:var(--mono);font-size:0.75rem;color:var(--text-dim);margin-top:4px;">y = a × x + b</div>
+        </div>
+
+        <div class="spacer"></div>
+        <div class="divider"></div>
+        <div class="spacer"></div>
+        <div class="field-label">CURRENT EQUATION</div>
+        <div id="vv-equation-display" aria-live="polite" aria-label="Current equation">y = 3x</div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title dot-orange">VARIABLE LABELS</div>
+        <div class="var-row">
+          <div>
+            <div class="field-label">INDEPENDENT (x)</div>
+            <input type="text" id="vv-var-x" class="vv-input" value="x" maxlength="12" />
+          </div>
+          <div>
+            <div class="field-label">DEPENDENT (y)</div>
+            <input type="text" id="vv-var-y" class="vv-input" value="y" maxlength="12" />
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <button id="vv-vocab-toggle" aria-expanded="false" aria-controls="vv-vocab-panel">
+          <span>📚 VOCABULARY DECK</span>
+          <span class="vocab-arrow">▼</span>
+        </button>
+        <div id="vv-vocab-panel" role="region" aria-label="Vocabulary terms">
+          <div class="spacer"></div>
+          <div class="vocab-card">
+            <div class="vocab-term">INDEPENDENT VARIABLE</div>
+            <div class="vocab-def">The input value (x) you choose freely. It causes the change.</div>
+          </div>
+          <div class="vocab-card">
+            <div class="vocab-term">DEPENDENT VARIABLE</div>
+            <div class="vocab-def">The output value (y) that depends on x. It is the effect.</div>
+          </div>
+          <div class="vocab-card">
+            <div class="vocab-term">EQUATION</div>
+            <div class="vocab-def">A mathematical rule showing how x and y are related, e.g. y = 3x.</div>
+          </div>
+          <div class="vocab-card">
+            <div class="vocab-term">ORDERED PAIR</div>
+            <div class="vocab-def">Two numbers (x, y) showing a point's location on the coordinate plane.</div>
+          </div>
+          <div class="vocab-card">
+            <div class="vocab-term">PROPORTIONAL</div>
+            <div class="vocab-def">A relationship where y = kx. The graph passes through the origin (0,0).</div>
+          </div>
+          <div class="vocab-card">
+            <div class="vocab-term">RATE OF CHANGE</div>
+            <div class="vocab-def">How much y changes for every 1 unit increase in x. It equals the coefficient 'a'.</div>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- CENTER -->
+    <section id="vv-center" aria-label="Input Output Table and Challenge">
+
+      <div class="panel">
+        <div class="panel-title dot-green">INPUT / OUTPUT TABLE</div>
+        <div class="table-wrapper">
+          <table id="vv-table" aria-label="Input Output Table">
+            <thead>
+              <tr>
+                <th style="width:36px;">#</th>
+                <th id="vv-th-x">x</th>
+                <th id="vv-th-y">y</th>
+                <th>ORDERED PAIR</th>
+              </tr>
+            </thead>
+            <tbody id="vv-tbody"></tbody>
+          </table>
+        </div>
+
+        <div class="spacer"></div>
+        <div class="divider"></div>
+        <div class="spacer"></div>
+
+        <div class="panel-title" style="margin-bottom:10px;">MANUAL CHECK STATION</div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <div style="font-family:var(--mono);font-size:0.82rem;color:var(--text-dim);">If</div>
+          <span id="vv-check-var-x" style="font-family:var(--mono);font-size:0.82rem;color:var(--cyan);">x</span>
+          <div style="font-family:var(--mono);font-size:0.82rem;color:var(--text-dim);">=</div>
+          <input type="number" id="vv-check-x" class="vv-input" style="width:72px;" placeholder="x" aria-label="Check x value" />
+          <div style="font-family:var(--mono);font-size:0.82rem;color:var(--text-dim);">then</div>
+          <span id="vv-check-var-y" style="font-family:var(--mono);font-size:0.82rem;color:var(--green);">y</span>
+          <div style="font-family:var(--mono);font-size:0.82rem;color:var(--text-dim);">=</div>
+          <input type="number" id="vv-check-y" class="vv-input" style="width:72px;" placeholder="y" aria-label="Check y value" step="any" />
+          <button id="vv-check-btn" class="vv-btn vv-btn-cyan" aria-label="Check my answer">CHECK</button>
+        </div>
+        <div id="vv-check-result" aria-live="polite"></div>
+      </div>
+
+      <div id="vv-challenge-panel" aria-label="Challenge Question">
+        <div class="panel-title dot-orange">CHALLENGE MISSION</div>
+        <div id="vv-challenge-q" class="challenge-q" aria-live="polite">Loading challenge…</div>
+        <div class="challenge-input-row">
+          <input type="number" id="vv-challenge-answer" class="vv-input" placeholder="Enter your answer…" step="any" aria-label="Challenge answer" />
+          <button id="vv-challenge-submit" class="vv-btn vv-btn-orange" aria-label="Submit challenge answer">SUBMIT</button>
+        </div>
+        <div id="vv-challenge-result" aria-live="polite"></div>
+      </div>
+
+    </section>
+
+    <!-- RIGHT -->
+    <section id="vv-right" aria-label="Coordinate Plane Graph">
+
+      <div class="panel" style="padding:14px;">
+        <div class="panel-title dot-cyan">COORDINATE PLANE</div>
+        <div id="vv-graph-container" role="img" aria-label="Live coordinate plane showing plotted points">
+          <svg id="vv-graph-svg" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"></svg>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title dot-orange">ROCKET TRACKER</div>
+        <div class="rocket-row">
+          <label for="vv-rocket-slider">🚀 x =</label>
+          <input type="range" id="vv-rocket-slider" class="vv-slider" min="1" max="10" step="1" value="1" aria-label="Rocket x position" />
+          <span id="vv-rocket-val">1</span>
+        </div>
+        <div style="margin-top:10px;font-family:var(--mono);font-size:0.8rem;color:var(--text-dim);">
+          When x = <span id="vv-rocket-x-disp" style="color:var(--orange);">1</span>,
+          y = <span id="vv-rocket-y-disp" style="color:var(--green);">—</span>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title dot-green">MISSION STATS</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:0.8rem;">
+            <span style="color:var(--text-dim);">RATE OF CHANGE</span>
+            <span id="vv-stat-roc" style="color:var(--green);">3</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:0.8rem;">
+            <span style="color:var(--text-dim);">Y-INTERCEPT</span>
+            <span id="vv-stat-yint" style="color:var(--cyan);">0</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:0.8rem;">
+            <span style="color:var(--text-dim);">PROPORTIONAL?</span>
+            <span id="vv-stat-prop" style="color:var(--orange);">YES</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:0.8rem;">
+            <span style="color:var(--text-dim);">PASSES ORIGIN?</span>
+            <span id="vv-stat-origin" style="color:var(--orange);">YES</span>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <footer id="vv-footer" role="contentinfo">
+    <div class="footer-left">
+      <button id="vv-reset-btn" class="vv-btn vv-btn-red" aria-label="Reset all inputs">⟳ RESET</button>
+      <button id="vv-print-btn" class="vv-btn vv-btn-cyan" aria-label="Print or save activity" onclick="window.print()">🖨 PRINT / SAVE</button>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <span class="std-tag">STANDARD: 6.EE.C.9</span>
+      <span class="std-tag">GRADE 6 MATH</span>
+      <span class="std-tag" style="color:var(--text-dim);font-size:0.65rem;">VARIABLE VOYAGE v1.0</span>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  const state = {
+    mode: 'prop',
+    k: 3, c: 5, a: 2, b: 3,
+    varX: 'x', varY: 'y',
+    xValues: [1, 2, 3, 4, 5],
+    challengeX: 8,
+  };
+
+  function getCoeffs() {
+    if (state.mode === 'prop')    return { a: state.k, b: 0 };
+    if (state.mode === 'nonprop') return { a: 1, b: state.c };
+    return { a: state.a, b: state.b };
+  }
+
+  function evaluate(a, b, x) { return a * x + b; }
+  function computeY(x) { const { a, b } = getCoeffs(); return evaluate(a, b, x); }
+
+  function fmt(n) {
+    if (!isFinite(n)) return '—';
+    return Number.isInteger(n) ? String(n) : n.toFixed(2);
+  }
+
+  function equationString() {
+    const { a, b } = getCoeffs();
+    const vx = state.varX || 'x', vy = state.varY || 'y';
+    const aStr = (a === 1) ? '' : (Number.isInteger(a) ? String(a) : a.toFixed(1));
+    if (b === 0) return vy + ' = ' + aStr + vx;
+    return vy + ' = ' + aStr + vx + ' + ' + b;
+  }
+
+  function buildTable() {
+    const tbody = document.getElementById('vv-tbody');
+    tbody.innerHTML = '';
+    state.xValues.forEach(function(xVal, i) {
+      const tr = document.createElement('tr');
+      tr.id = 'vv-row-' + i;
+
+      const tdNum = document.createElement('td');
+      tdNum.innerHTML = '<span class="row-num">' + (i+1) + '</span>';
+      tr.appendChild(tdNum);
+
+      const tdX = document.createElement('td');
+      const xInp = document.createElement('input');
+      xInp.type = 'number'; xInp.className = 'x-input';
+      xInp.value = xVal; xInp.min = 0; xInp.max = 30; xInp.step = 1;
+      xInp.id = 'vv-x-' + i;
+      xInp.setAttribute('aria-label', 'Row ' + (i+1) + ' x value');
+      xInp.addEventListener('input', (function(idx) {
+        return function() {
+          const v = parseFloat(xInp.value);
+          if (!isNaN(v)) { state.xValues[idx] = v; recompute(false); }
+        };
+      })(i));
+      tdX.appendChild(xInp); tr.appendChild(tdX);
+
+      const tdY = document.createElement('td');
+      tdY.className = 'y-cell'; tdY.id = 'vv-y-' + i;
+      tdY.setAttribute('aria-live','polite'); tr.appendChild(tdY);
+
+      const tdP = document.createElement('td');
+      tdP.className = 'pair-cell'; tdP.id = 'vv-pair-' + i;
+      tr.appendChild(tdP);
+
+      tbody.appendChild(tr);
+    });
+    updateTableValues();
+  }
+
+  function updateTableValues() {
+    state.xValues.forEach(function(xVal, i) {
+      const yVal = computeY(xVal);
+      const yEl = document.getElementById('vv-y-' + i);
+      const pEl = document.getElementById('vv-pair-' + i);
+      if (yEl) yEl.textContent = fmt(yVal);
+      if (pEl) pEl.textContent = '(' + fmt(xVal) + ', ' + fmt(yVal) + ')';
+    });
+  }
+
+  function updateLabels() {
+    const vx = state.varX || 'x', vy = state.varY || 'y';
+    document.getElementById('vv-th-x').textContent = vx.toUpperCase();
+    document.getElementById('vv-th-y').textContent = vy.toUpperCase();
+    document.getElementById('vv-check-var-x').textContent = vx;
+    document.getElementById('vv-check-var-y').textContent = vy;
+    updateChallenge();
+  }
+
+  function updateChallenge() {
+    const vx = state.varX || 'x', vy = state.varY || 'y';
+    state.challengeX = 8;
+    document.getElementById('vv-challenge-q').textContent =
+      '⚡ MISSION CRITICAL: What will ' + vy + ' be when ' + vx + ' = ' + state.challengeX + '?';
+    document.getElementById('vv-challenge-answer').value = '';
+    var res = document.getElementById('vv-challenge-result');
+    res.className = ''; res.style.display = 'none'; res.textContent = '';
+  }
+
+  function updateStats() {
+    const { a, b } = getCoeffs();
+    document.getElementById('vv-stat-roc').textContent  = fmt(a);
+    document.getElementById('vv-stat-yint').textContent = fmt(b);
+    const isProp = (b === 0);
+    document.getElementById('vv-stat-prop').textContent   = isProp ? 'YES' : 'NO';
+    document.getElementById('vv-stat-origin').textContent = isProp ? 'YES' : 'NO';
+    document.getElementById('vv-stat-prop').style.color   = isProp ? 'var(--green)' : 'var(--red)';
+    document.getElementById('vv-stat-origin').style.color = isProp ? 'var(--green)' : 'var(--red)';
+  }
+
+  function updateEquationDisplay() {
+    var el = document.getElementById('vv-equation-display');
+    el.textContent = equationString();
+    el.style.animation = 'none';
+    el.offsetHeight;
+    el.style.animation = 'eqPulse 0.4s ease-out';
+  }
+
+  function recompute(rebuildRows) {
+    if (rebuildRows) buildTable(); else updateTableValues();
+    updateEquationDisplay();
+    updateLabels();
+    updateStats();
+    drawGraph();
+    updateRocket();
+  }
+
+  /* ---- SVG GRAPH ---- */
+  var SVG_W = 400, SVG_H = 400, GRID_MAX = 30;
+  var PAD_L = 44, PAD_B = 44, PAD_T = 18, PAD_R = 18;
+  var PLOT_W = SVG_W - PAD_L - PAD_R;
+  var PLOT_H = SVG_H - PAD_T - PAD_B;
+
+  function toSVGX(x) { return PAD_L + (x / GRID_MAX) * PLOT_W; }
+  function toSVGY(y) { return SVG_H - PAD_B - (y / GRID_MAX) * PLOT_H; }
+
+  function drawGraph() {
+    var svg = document.getElementById('vv-graph-svg');
+    var h = '';
+
+    h += '<defs>' +
+      '<filter id="glow-cyan" x="-50%" y="-50%" width="200%" height="200%">' +
+        '<feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur"/>' +
+        '<feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>' +
+      '</filter>' +
+      '<filter id="glow-green" x="-50%" y="-50%" width="200%" height="200%">' +
+        '<feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>' +
+        '<feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>' +
+      '</filter>' +
+      '<filter id="glow-orange" x="-50%" y="-50%" width="200%" height="200%">' +
+        '<feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur"/>' +
+        '<feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>' +
+      '</filter>' +
+    '</defs>';
+
+    h += '<rect x="0" y="0" width="' + SVG_W + '" height="' + SVG_H + '" fill="rgba(0,0,0,0.3)"/>';
+
+    for (var v = 0; v <= GRID_MAX; v += 5) {
+      var gx = toSVGX(v), gy = toSVGY(v);
+      h += '<line x1="' + gx + '" y1="' + PAD_T + '" x2="' + gx + '" y2="' + (SVG_H - PAD_B) + '" stroke="rgba(255,255,255,0.07)" stroke-width="' + (v===0?1.5:0.8) + '"/>';
+      h += '<line x1="' + PAD_L + '" y1="' + gy + '" x2="' + (SVG_W-PAD_R) + '" y2="' + gy + '" stroke="rgba(255,255,255,0.07)" stroke-width="' + (v===0?1.5:0.8) + '"/>';
+    }
+    for (var v2 = 0; v2 <= GRID_MAX; v2++) {
+      if (v2 % 5 === 0) continue;
+      var gx2 = toSVGX(v2), gy2 = toSVGY(v2);
+      h += '<line x1="' + gx2 + '" y1="' + PAD_T + '" x2="' + gx2 + '" y2="' + (SVG_H-PAD_B) + '" stroke="rgba(255,255,255,0.025)" stroke-width="0.5"/>';
+      h += '<line x1="' + PAD_L + '" y1="' + gy2 + '" x2="' + (SVG_W-PAD_R) + '" y2="' + gy2 + '" stroke="rgba(255,255,255,0.025)" stroke-width="0.5"/>';
+    }
+
+    h += '<line x1="' + toSVGX(0) + '" y1="' + PAD_T + '" x2="' + toSVGX(0) + '" y2="' + (SVG_H-PAD_B) + '" stroke="#00d4ff" stroke-width="1.5"/>';
+    h += '<line x1="' + PAD_L + '" y1="' + toSVGY(0) + '" x2="' + (SVG_W-PAD_R) + '" y2="' + toSVGY(0) + '" stroke="#00d4ff" stroke-width="1.5"/>';
+
+    for (var v3 = 5; v3 <= GRID_MAX; v3 += 5) {
+      var gx3 = toSVGX(v3), gy3 = toSVGY(v3);
+      h += '<text x="' + gx3 + '" y="' + (SVG_H-PAD_B+14) + '" text-anchor="middle" fill="rgba(200,216,232,0.55)" font-family="Share Tech Mono,monospace" font-size="9">' + v3 + '</text>';
+      h += '<text x="' + (PAD_L-8) + '" y="' + (gy3+3) + '" text-anchor="end" fill="rgba(200,216,232,0.55)" font-family="Share Tech Mono,monospace" font-size="9">' + v3 + '</text>';
+    }
+
+    var vx = state.varX || 'x', vy = state.varY || 'y';
+    h += '<text x="' + (SVG_W-PAD_R) + '" y="' + (toSVGY(0)+22) + '" text-anchor="end" fill="#00d4ff" font-family="Share Tech Mono,monospace" font-size="11" font-weight="bold">' + vx + '</text>';
+    h += '<text x="' + (toSVGX(0)-8) + '" y="' + PAD_T + '" text-anchor="end" fill="#00d4ff" font-family="Share Tech Mono,monospace" font-size="11" font-weight="bold">' + vy + '</text>';
+
+    var coeffs = getCoeffs();
+    var ca = coeffs.a, cb = coeffs.b;
+    var linePts = [];
+    var y0 = evaluate(ca,cb,0);
+    if (y0 >= 0 && y0 <= GRID_MAX) linePts.push([0, y0]);
+    var yM = evaluate(ca,cb,GRID_MAX);
+    if (yM >= 0 && yM <= GRID_MAX) linePts.push([GRID_MAX, yM]);
+    if (ca !== 0) {
+      var xWy0 = -cb/ca;
+      if (xWy0 >= 0 && xWy0 <= GRID_MAX) linePts.push([xWy0, 0]);
+      var xWyM = (GRID_MAX - cb)/ca;
+      if (xWyM >= 0 && xWyM <= GRID_MAX) {
+        var yAtXM = evaluate(ca,cb,xWyM);
+        if (yAtXM >= 0 && yAtXM <= GRID_MAX) linePts.push([xWyM, yAtXM]);
+      }
+    }
+    if (linePts.length >= 2) {
+      linePts.sort(function(p,q){ return p[0]-q[0]; });
+      var sx1 = toSVGX(linePts[0][0]), sy1 = toSVGY(linePts[0][1]);
+      var sx2 = toSVGX(linePts[linePts.length-1][0]), sy2 = toSVGY(linePts[linePts.length-1][1]);
+      h += '<line x1="' + sx1 + '" y1="' + sy1 + '" x2="' + sx2 + '" y2="' + sy2 + '" stroke="#39ff14" stroke-width="1" stroke-opacity="0.3" filter="url(#glow-green)"/>';
+      h += '<line x1="' + sx1 + '" y1="' + sy1 + '" x2="' + sx2 + '" y2="' + sy2 + '" stroke="#39ff14" stroke-width="2" stroke-opacity="0.7" stroke-dasharray="6 3"/>';
+    }
+
+    state.xValues.forEach(function(xVal, i) {
+      var yVal = computeY(xVal);
+      if (xVal < 0 || xVal > GRID_MAX || yVal < 0 || yVal > GRID_MAX) return;
+      var cx = toSVGX(xVal), cy = toSVGY(yVal);
+      h += '<circle cx="' + cx + '" cy="' + cy + '" r="10" fill="rgba(0,212,255,0.12)" filter="url(#glow-cyan)"/>';
+      h += '<circle cx="' + cx + '" cy="' + cy + '" r="6" fill="#00d4ff" filter="url(#glow-cyan)" class="graph-point" style="animation-delay:' + (i*0.08) + 's"><title>(' + fmt(xVal) + ', ' + fmt(yVal) + ')</title></circle>';
+      if (yVal + 2 <= GRID_MAX) {
+        h += '<text x="' + (cx+8) + '" y="' + (cy-8) + '" fill="#00d4ff" font-family="Share Tech Mono,monospace" font-size="9" opacity="0.85">(' + fmt(xVal) + ',' + fmt(yVal) + ')</text>';
+      }
+    });
+
+    var rxVal = parseInt(document.getElementById('vv-rocket-slider').value) || 1;
+    var ryVal = computeY(rxVal);
+    if (rxVal >= 0 && rxVal <= GRID_MAX && ryVal >= 0 && ryVal <= GRID_MAX) {
+      var rcx = toSVGX(rxVal), rcy = toSVGY(ryVal);
+      h += '<line x1="' + rcx + '" y1="' + toSVGY(0) + '" x2="' + rcx + '" y2="' + rcy + '" stroke="#ff6b35" stroke-width="1" stroke-dasharray="3 4" opacity="0.5"/>';
+      h += '<line x1="' + toSVGX(0) + '" y1="' + rcy + '" x2="' + rcx + '" y2="' + rcy + '" stroke="#ff6b35" stroke-width="1" stroke-dasharray="3 4" opacity="0.5"/>';
+      h += '<g transform="translate(' + (rcx-8) + ',' + (rcy-16) + ')" filter="url(#glow-orange)">' +
+        '<path d="M8,0 C8,0 14,8 14,18 L8,22 L2,18 C2,8 8,0 8,0Z" fill="#ff6b35" opacity="0.9"/>' +
+        '<ellipse cx="8" cy="14" rx="3" ry="3" fill="rgba(255,255,255,0.4)"/>' +
+        '<path d="M2,18 L0,24 L8,20 L16,24 L14,18 Z" fill="#ff4400" opacity="0.75"/>' +
+        '<path d="M5,22 Q8,26 11,22" fill="#ffd700" opacity="0.8"/>' +
+      '</g>';
+    }
+
+    svg.innerHTML = h;
+  }
+
+  function updateRocket() {
+    var val = parseInt(document.getElementById('vv-rocket-slider').value) || 1;
+    var yVal = computeY(val);
+    document.getElementById('vv-rocket-val').textContent = val;
+    document.getElementById('vv-rocket-x-disp').textContent = val;
+    document.getElementById('vv-rocket-y-disp').textContent = fmt(yVal);
+    drawGraph();
+  }
+
+  function switchTab(mode) {
+    state.mode = mode;
+    ['prop','nonprop','custom'].forEach(function(m) {
+      var tab = document.getElementById('vv-tab-' + m);
+      var cfg = document.getElementById('vv-cfg-' + m);
+      if (m === mode) {
+        tab.classList.add('active'); tab.setAttribute('aria-selected','true'); cfg.classList.add('active');
+      } else {
+        tab.classList.remove('active'); tab.setAttribute('aria-selected','false'); cfg.classList.remove('active');
+      }
+    });
+    recompute(false);
+  }
+
+  function showToast(msg) {
+    var t = document.getElementById('vv-toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(function(){ t.classList.remove('show'); }, 2400);
+  }
+
+  function handleCheck() {
+    var xRaw = document.getElementById('vv-check-x').value;
+    var yRaw = document.getElementById('vv-check-y').value;
+    var resultEl = document.getElementById('vv-check-result');
+    if (xRaw === '' || yRaw === '') {
+      resultEl.textContent = '⚠ Please enter both x and y values.';
+      resultEl.style.color = 'var(--orange)'; return;
+    }
+    var xNum = parseFloat(xRaw), yNum = parseFloat(yRaw);
+    var expected = computeY(xNum);
+    var coeffs = getCoeffs(); var ca = coeffs.a, cb = coeffs.b;
+    var vx = state.varX || 'x', vy = state.varY || 'y';
+    var aStr = (ca === 1) ? '' : fmt(ca);
+    var workStr = cb === 0
+      ? vy + ' = ' + aStr + '(' + fmt(xNum) + ') = ' + fmt(expected)
+      : vy + ' = ' + aStr + '(' + fmt(xNum) + ') + ' + cb + ' = ' + fmt(ca*xNum) + ' + ' + cb + ' = ' + fmt(expected);
+    var correct = Math.abs(yNum - expected) < 0.001;
+    if (correct) {
+      resultEl.textContent = '✓ CORRECT! ' + workStr;
+      resultEl.style.color = 'var(--green)';
+      showToast('✓ Correct! Great work, cadet!');
+    } else {
+      resultEl.textContent = '✗ Not quite. ' + workStr;
+      resultEl.style.color = 'var(--red)';
+    }
+  }
+
+  function handleChallengeSubmit() {
+    var ansRaw = document.getElementById('vv-challenge-answer').value;
+    var resultEl = document.getElementById('vv-challenge-result');
+    if (ansRaw === '') {
+      resultEl.className = 'incorrect'; resultEl.style.display = 'block';
+      resultEl.textContent = '⚠ Enter your answer first, cadet!'; return;
+    }
+    var ansNum = parseFloat(ansRaw);
+    var xCh = state.challengeX;
+    var expected = computeY(xCh);
+    var coeffs = getCoeffs(); var ca = coeffs.a, cb = coeffs.b;
+    var vx = state.varX || 'x', vy = state.varY || 'y';
+    var aStr = (ca === 1) ? '' : fmt(ca);
+    var lines = ['SUBSTITUTION WORK:'];
+    lines.push(vy + ' = ' + equationString().replace(vx, '(' + xCh + ')'));
+    if (cb !== 0) lines.push(vy + ' = ' + fmt(ca*xCh) + ' + ' + cb);
+    lines.push(vy + ' = ' + fmt(expected));
+    var correct = Math.abs(ansNum - expected) < 0.001;
+    if (correct) {
+      resultEl.className = 'correct';
+      resultEl.innerHTML = '✓ MISSION COMPLETE!<br>' + lines.join('<br>');
+      showToast('🚀 Mission complete! Excellent work!');
+    } else {
+      resultEl.className = 'incorrect';
+      resultEl.innerHTML = '✗ MISSION FAILED — Try again.<br>' + lines.join('<br>');
+    }
+    resultEl.style.display = 'block';
+  }
+
+  function handleReset() {
+    state.mode = 'prop'; state.k = 3; state.c = 5; state.a = 2; state.b = 3;
+    state.varX = 'x'; state.varY = 'y'; state.xValues = [1,2,3,4,5];
+    document.getElementById('vv-student-name').value = '';
+    document.getElementById('vv-k-slider').value = 3;
+    document.getElementById('vv-k-val').textContent = '3';
+    document.getElementById('vv-c-input').value = 5;
+    document.getElementById('vv-a-input').value = 2;
+    document.getElementById('vv-b-input').value = 3;
+    document.getElementById('vv-var-x').value = 'x';
+    document.getElementById('vv-var-y').value = 'y';
+    document.getElementById('vv-check-x').value = '';
+    document.getElementById('vv-check-y').value = '';
+    document.getElementById('vv-check-result').textContent = '';
+    document.getElementById('vv-check-result').style.color = '';
+    document.getElementById('vv-rocket-slider').value = 1;
+    switchTab('prop');
+    showToast('↺ Console reset. Welcome aboard, cadet!');
+  }
+
+  function buildStarfield() {
+    var container = document.getElementById('vv-starfield');
+    for (var i = 0; i < 80; i++) {
+      var star = document.createElement('div');
+      star.className = 'star';
+      var size = Math.random() * 2 + 0.5;
+      star.style.width  = size + 'px';
+      star.style.height = size + 'px';
+      star.style.left   = (Math.random() * 100) + '%';
+      star.style.top    = (Math.random() * 100) + '%';
+      star.style.opacity = (Math.random() * 0.5 + 0.2).toFixed(2);
+      star.style.animationDuration = (Math.random() * 30 + 20).toFixed(1) + 's';
+      star.style.animationDelay   = (Math.random() * -30).toFixed(1) + 's';
+      container.appendChild(star);
+    }
+  }
+
+  function wireEvents() {
+    document.getElementById('vv-tab-prop').addEventListener('click', function(){ switchTab('prop'); });
+    document.getElementById('vv-tab-nonprop').addEventListener('click', function(){ switchTab('nonprop'); });
+    document.getElementById('vv-tab-custom').addEventListener('click', function(){ switchTab('custom'); });
+
+    document.getElementById('vv-k-slider').addEventListener('input', function(e){
+      state.k = parseInt(e.target.value);
+      document.getElementById('vv-k-val').textContent = state.k;
+      recompute(false);
+    });
+    document.getElementById('vv-c-input').addEventListener('input', function(e){
+      var v = parseFloat(e.target.value);
+      if (!isNaN(v)) { state.c = Math.max(0, Math.min(20, v)); recompute(false); }
+    });
+    document.getElementById('vv-a-input').addEventListener('input', function(e){
+      var v = parseFloat(e.target.value);
+      if (!isNaN(v)) { state.a = Math.max(0.5, Math.min(5, v)); recompute(false); }
+    });
+    document.getElementById('vv-b-input').addEventListener('input', function(e){
+      var v = parseFloat(e.target.value);
+      if (!isNaN(v)) { state.b = Math.max(0, Math.min(20, v)); recompute(false); }
+    });
+    document.getElementById('vv-var-x').addEventListener('input', function(e){
+      state.varX = e.target.value || 'x'; recompute(false);
+    });
+    document.getElementById('vv-var-y').addEventListener('input', function(e){
+      state.varY = e.target.value || 'y'; recompute(false);
+    });
+    document.getElementById('vv-check-btn').addEventListener('click', handleCheck);
+    document.getElementById('vv-check-y').addEventListener('keydown', function(e){ if(e.key==='Enter') handleCheck(); });
+    document.getElementById('vv-challenge-submit').addEventListener('click', handleChallengeSubmit);
+    document.getElementById('vv-challenge-answer').addEventListener('keydown', function(e){ if(e.key==='Enter') handleChallengeSubmit(); });
+    document.getElementById('vv-rocket-slider').addEventListener('input', updateRocket);
+    document.getElementById('vv-vocab-toggle').addEventListener('click', function(){
+      var toggle = document.getElementById('vv-vocab-toggle');
+      var panel  = document.getElementById('vv-vocab-panel');
+      var isOpen = toggle.classList.toggle('open');
+      panel.classList.toggle('open', isOpen);
+      toggle.setAttribute('aria-expanded', isOpen);
+    });
+    document.getElementById('vv-reset-btn').addEventListener('click', handleReset);
+  }
+
+  function init() {
+    buildStarfield();
+    buildTable();
+    wireEvents();
+    recompute(false);
+    setTimeout(function(){ showToast('🚀 Variable Voyage initialized. Good luck, cadet!'); }, 600);
+  }
+
+  document.addEventListener('DOMContentLoaded', init);
+})();
+</script>
+<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+  </body>
+</html>

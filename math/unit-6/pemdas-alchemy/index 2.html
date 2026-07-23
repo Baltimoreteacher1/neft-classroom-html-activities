@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PEMDAS Alchemy — Order of Operations Game</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Share+Tech+Mono&display=swap');
+
+    :root {
+      --bg: #090613;
+      --surface: rgba(255, 255, 255, 0.04);
+      --border: rgba(255, 255, 255, 0.1);
+      --text: #ffffff;
+      --text-muted: #8d94a5;
+      --neon-purple: #b026ff;
+      --neon-cyan: #00d4ff;
+      --neon-green: #39ff14;
+      --neon-gold: #ffaa00;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+
+    #space-bg {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: radial-gradient(circle at center, #1b0a2e 0%, #090613 100%);
+      z-index: -1;
+    }
+
+    header {
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    h1 {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.8rem;
+      color: var(--neon-purple);
+      text-shadow: 0 0 10px rgba(176, 38, 255, 0.5);
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .name-field {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 12px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.9rem;
+    }
+
+    .name-field:focus {
+      outline: none;
+      border-color: var(--neon-purple);
+      box-shadow: 0 0 8px rgba(176, 38, 255, 0.2);
+    }
+
+    .btn {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.9rem;
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--neon-purple), #7900d6);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      filter: brightness(1.2);
+      box-shadow: 0 0 12px rgba(176, 38, 255, 0.4);
+    }
+
+    .btn-secondary {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--neon-purple);
+    }
+
+    main {
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 30px;
+      flex-grow: 1;
+    }
+
+    @media (max-width: 900px) {
+      main { grid-template-columns: 1fr; }
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .panel-title {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.2rem;
+      color: var(--text);
+      border-left: 3px solid var(--neon-purple);
+      padding-left: 10px;
+      margin-bottom: 5px;
+    }
+
+    .cauldron-container {
+      background: #04020a;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+    }
+
+    .cauldron-svg {
+      width: 100%;
+      max-width: 380px;
+      height: 340px;
+    }
+
+    .item-dock {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 10px;
+    }
+
+    .draggable-token {
+      background: #110e20;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: var(--neon-cyan);
+      cursor: grab;
+      user-select: none;
+      transition: all 0.15s;
+    }
+
+    .draggable-token:hover {
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 10px rgba(0, 212, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .draggable-token.operator {
+      color: var(--neon-purple);
+    }
+
+    .drop-zone-cauldron {
+      width: 100%;
+      min-height: 80px;
+      border: 2px dashed rgba(176, 38, 255, 0.25);
+      border-radius: 10px;
+      padding: 15px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.4);
+    }
+
+    .drop-zone-cauldron.dragover {
+      border-color: var(--neon-purple);
+      background: rgba(176, 38, 255, 0.05);
+    }
+
+    .placed-token {
+      background: #191430;
+      border: 1px solid var(--neon-purple);
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1rem;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .placed-token .remove-btn {
+      color: #ff4d4d;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 0.8rem;
+    }
+
+    .steps-card {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .step-line {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .step-line.active-evaluation {
+      color: var(--neon-gold);
+    }
+
+    .step-line.final-answer {
+      color: var(--neon-green);
+      font-size: 1.4rem;
+      font-weight: bold;
+      border-top: 1px solid var(--border);
+      padding-top: 8px;
+    }
+
+    .challenge-box {
+      background: rgba(255, 215, 0, 0.02);
+      border: 1px solid rgba(255, 215, 0, 0.25);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .challenge-val {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 2rem;
+      color: var(--neon-gold);
+      font-weight: bold;
+      text-shadow: 0 0 10px rgba(255, 170, 0, 0.3);
+    }
+
+    .bubble-particle {
+      position: absolute;
+      background: rgba(176, 38, 255, 0.3);
+      border-radius: 50%;
+      pointer-events: none;
+      animation: floatUp 2.5s infinite linear;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(0) scale(0.5); opacity: 0; }
+      10% { opacity: 0.8; }
+      90% { opacity: 0.8; }
+      100% { transform: translateY(-120px) scale(1.2); opacity: 0; }
+    }
+
+    @media print {
+      body { background: white; color: black; }
+      #space-bg, .btn, .header-controls, .item-dock, .challenge-box { display: none !important; }
+      .panel, .cauldron-container { border: 1px solid #ccc; background: white; backdrop-filter: none; }
+      h1, .formula-expr, .formula-result { color: black !important; text-shadow: none !important; }
+    }
+  </style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+<body>
+
+  <div id="space-bg"></div>
+
+  <header>
+    <div>
+      <h1>🧪 PEMDAS Alchemy</h1>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Unit 6 Lesson 6-2 Numerical Expressions Game</p>
+    </div>
+    <div class="header-controls">
+      <input type="text" id="student-name" class="name-field" placeholder="Enter Student Name" aria-label="Student Name" />
+      <button class="btn btn-secondary" onclick="window.print()" aria-label="Print/Save Results">🖨️ Save/Print</button>
+      <button class="btn btn-secondary" onclick="resetGame()" aria-label="Reset Game">↺ Reset</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Left Panel: Ingredients Deck -->
+    <div class="panel">
+      <div>
+        <h2 class="panel-title">Potion Formula</h2>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">Construct an expression by dragging items below into the cauldron.</p>
+      </div>
+
+      <div class="challenge-box">
+        <div>
+          <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px;">TARGET ESSENCE</span>
+          <h3 style="font-size: 1.1rem; color: #fff;">Brew exactly:</h3>
+        </div>
+        <div class="challenge-val" id="target-value">24</div>
+      </div>
+
+      <div id="cauldron-drop-zone" class="drop-zone-cauldron" role="region" aria-label="Cauldron ingredients drop area">
+        <span style="color: var(--text-muted); font-size: 0.85rem;" id="drop-placeholder">Drop ingredients here to mix...</span>
+      </div>
+
+      <div>
+        <span style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; display: block; margin-bottom: 8px;">Numbers Dock</span>
+        <div class="item-dock" id="numbers-dock"></div>
+      </div>
+
+      <div>
+        <span style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; display: block; margin-bottom: 8px;">Operators Dock</span>
+        <div class="item-dock" id="operators-dock"></div>
+      </div>
+
+      <div class="steps-card">
+        <div class="panel-title" style="border-left-color: var(--neon-gold)">Alchemy Reaction steps</div>
+        <div id="evaluation-steps" style="display: flex; flex-direction: column; gap: 8px;">
+          <span style="color: var(--text-muted); font-size: 0.85rem;">Brew a valid PEMDAS expression...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Panel: Animated Cauldron -->
+    <div class="cauldron-container">
+      <svg class="cauldron-svg" viewBox="0 0 400 400" aria-label="Chemical alchemy cauldron mix">
+        <defs>
+          <linearGradient id="liquidGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="var(--neon-purple)" />
+            <stop offset="100%" stop-color="#3d0066" />
+          </linearGradient>
+        </defs>
+
+        <!-- Cauldron Body -->
+        <path d="M120 180 C120 180 100 280 200 280 C300 280 280 180 280 180 Z" fill="#241e3a" />
+        <ellipse cx="200" cy="180" rx="80" ry="16" fill="#1b162c" />
+
+        <!-- Liquid top surface -->
+        <ellipse id="cauldron-liquid" cx="200" cy="183" rx="76" ry="13" fill="url(#liquidGrad)" />
+        
+        <!-- Rim -->
+        <path d="M116 180 C116 172 284 172 284 180 C284 188 116 188 116 180 Z" fill="#1b162c" stroke="#332a52" stroke-width="2" />
+
+        <!-- Stand -->
+        <path d="M150 275 L130 330 L160 330 Z" fill="#141122" />
+        <path d="M250 275 L270 330 L240 330 Z" fill="#141122" />
+        
+        <!-- Handles -->
+        <path d="M120 200 C90 200 90 240 120 240" stroke="#332a52" stroke-width="6" fill="none" rx="2" />
+        <path d="M280 200 C310 200 310 240 280 240" stroke="#332a52" stroke-width="6" fill="none" rx="2" />
+      </svg>
+    </div>
+  </main>
+
+  <script>
+    let activeExpression = [];
+    let currentTarget = 24;
+    let score = 0;
+
+    const gameNumbers = [3, 4, 5, 8, 12];
+    const gameOperators = ['+', '-', '×', '÷', '(', ')'];
+    const targetValues = [7, 10, 15, 16, 20, 24, 25, 32, 40];
+
+    function initGame() {
+      // Build Numbers Dock
+      const numDock = document.getElementById('numbers-dock');
+      numDock.innerHTML = '';
+      gameNumbers.forEach(n => {
+        const token = createToken(n, 'number');
+        numDock.appendChild(token);
+      });
+
+      // Build Operators Dock
+      const opDock = document.getElementById('operators-dock');
+      opDock.innerHTML = '';
+      gameOperators.forEach(op => {
+        const token = createToken(op, 'operator');
+        opDock.appendChild(token);
+      });
+
+      // Set first random target
+      pickNewTarget();
+
+      // Configure drag events on cauldron drop zone
+      const cauldronZone = document.getElementById('cauldron-drop-zone');
+      cauldronZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        cauldronZone.classList.add('dragover');
+      });
+
+      cauldronZone.addEventListener('dragleave', () => {
+        cauldronZone.classList.remove('dragover');
+      });
+
+      cauldronZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        cauldronZone.classList.remove('dragover');
+        const tokenVal = e.dataTransfer.getData('text/plain');
+        const tokenType = e.dataTransfer.getData('type');
+        if (tokenVal) {
+          addTokenToExpression(tokenVal, tokenType);
+        }
+      });
+
+      // Create initial bubble emitters
+      createBubbles();
+    }
+
+    function createToken(val, type) {
+      const div = document.createElement('div');
+      div.className = `draggable-token ${type}`;
+      div.textContent = val;
+      div.setAttribute('draggable', 'true');
+      
+      div.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('text/plain', val);
+        e.dataTransfer.setData('type', type);
+      });
+
+      return div;
+    }
+
+    function addTokenToExpression(val, type) {
+      activeExpression.push({ val: val, type: type });
+      renderExpression();
+      evaluateExpression();
+    }
+
+    function removeToken(index) {
+      activeExpression.splice(index, 1);
+      renderExpression();
+      evaluateExpression();
+    }
+
+    function renderExpression() {
+      const zone = document.getElementById('cauldron-drop-zone');
+      const placeholder = document.getElementById('drop-placeholder');
+      
+      // Clear current placements
+      const tokens = zone.querySelectorAll('.placed-token');
+      tokens.forEach(t => t.remove());
+
+      if (activeExpression.length === 0) {
+        placeholder.style.display = 'block';
+        return;
+      }
+
+      placeholder.style.display = 'none';
+      activeExpression.forEach((item, idx) => {
+        const tokenSpan = document.createElement('span');
+        tokenSpan.className = 'placed-token';
+        tokenSpan.innerHTML = `${item.val} <span class="remove-btn" onclick="removeToken(${idx})">&times;</span>`;
+        zone.appendChild(tokenSpan);
+      });
+    }
+
+    function evaluateExpression() {
+      const stepsList = document.getElementById('evaluation-steps');
+      
+      if (activeExpression.length === 0) {
+        stepsList.innerHTML = '<span style="color: var(--text-muted); font-size: 0.85rem;">Brew a valid PEMDAS expression...</span>';
+        return;
+      }
+
+      // Convert visual operators into evaluable representations
+      let rawExpr = activeExpression.map(item => {
+        if (item.val === '×') return '*';
+        if (item.val === '÷') return '/';
+        return item.val;
+      }).join(' ');
+
+      // Build calculation tree and check syntax safety
+      try {
+        // Safe evaluation verification: only allowed characters
+        if (/[^0-9\+\-\*\/\(\)\s]/.test(rawExpr)) {
+          throw new Error("Invalid characters");
+        }
+
+        // Test-eval step
+        const result = Function(`"use strict"; return (${rawExpr})`)();
+
+        if (result === undefined || isNaN(result) || !isFinite(result)) {
+          stepsList.innerHTML = '<span style="color: #ff4d4d; font-size: 0.85rem;">⚠️ Expression syntax incomplete...</span>';
+          return;
+        }
+
+        // Step-by-step expansion logic for numerical representations
+        stepsList.innerHTML = '';
+        
+        // Show expression
+        const initialLine = document.createElement('div');
+        initialLine.className = 'step-line';
+        initialLine.innerHTML = `<span>Expression:</span> <span>${activeExpression.map(it=>it.val).join(' ')}</span>`;
+        stepsList.appendChild(initialLine);
+
+        // Show final evaluated result
+        const finalLine = document.createElement('div');
+        finalLine.className = 'step-line final-answer';
+        finalLine.innerHTML = `<span>Result:</span> <span>${result}</span>`;
+        stepsList.appendChild(finalLine);
+
+        // Highlight correct target brews
+        if (result === currentTarget) {
+          triggerSuccess();
+        }
+
+      } catch (err) {
+        stepsList.innerHTML = '<span style="color: #ff4d4d; font-size: 0.85rem;">⚠️ Expression syntax incomplete...</span>';
+      }
+    }
+
+    function triggerSuccess() {
+      score++;
+      // Celebrate with color shifts
+      const liquid = document.getElementById('cauldron-liquid');
+      liquid.style.fill = 'var(--neon-green)';
+      
+      setTimeout(() => {
+        liquid.style.fill = 'url(#liquidGrad)';
+        pickNewTarget();
+        activeExpression = [];
+        renderExpression();
+        evaluateExpression();
+      }, 1500);
+    }
+
+    function pickNewTarget() {
+      let newTarget = currentTarget;
+      while (newTarget === currentTarget) {
+        newTarget = targetValues[Math.floor(Math.random() * targetValues.length)];
+      }
+      currentTarget = newTarget;
+      document.getElementById('target-value').textContent = currentTarget;
+    }
+
+    function createBubbles() {
+      const container = document.querySelector('.cauldron-container');
+      
+      setInterval(() => {
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble-particle';
+        
+        // Random dimensions
+        const size = Math.random() * 10 + 6;
+        bubble.style.width = `${size}px`;
+        bubble.style.height = `${size}px`;
+        
+        // Emitted from cauldron surface coordinates (center: 200, 183; radius: 76)
+        const angle = Math.random() * Math.PI * 2;
+        const radius = Math.random() * 60;
+        const xOffset = Math.cos(angle) * radius;
+        const yOffset = Math.sin(angle) * radius / 4; // Flat ellipse projection
+        
+        bubble.style.left = `calc(50% + ${xOffset}px)`;
+        bubble.style.top = `calc(183px + ${yOffset}px)`;
+        
+        container.appendChild(bubble);
+        
+        // Clean up particles
+        setTimeout(() => bubble.remove(), 2500);
+      }, 350);
+    }
+
+    function resetGame() {
+      score = 0;
+      activeExpression = [];
+      renderExpression();
+      evaluateExpression();
+      pickNewTarget();
+    }
+
+    window.addEventListener('DOMContentLoaded', initGame);
+  </script>
+<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+  </body>
+</html>

@@ -293,8 +293,9 @@
     return el("span", "top1-badge top1-badge-" + (kind || "student"), esc(text));
   }
 
-  function collapsible(summary, buildBody) {
+  function collapsible(summary, buildBody, openByDefault) {
     var d = el("details", "top1-collapse");
+    if (openByDefault) d.setAttribute("open", "");
     var s = el("summary", null, esc(summary));
     d.appendChild(s);
     var body = el("div", "top1-collapse-body");
@@ -631,90 +632,99 @@
   }
 
   function uifrCard(u, l) {
-    var card = el("div", "top1-uifr");
-    card.appendChild(el("p", "top1-uifr-disc", esc((DATA.uifr && DATA.uifr.disclaimer) || "")));
-    card.appendChild(lessonCard(u, l, { teacher: true }));
-
-    var sp = supportsPanel(l);
-    if (sp) card.appendChild(sp);
-
-    // Questioning ladder
-    if (DATA.uifr.questioningLadder) {
-      card.appendChild(
-        collapsible("❓ Questioning Ladder", function (b) {
-          var ol = el("ol", "top1-ladder");
-          DATA.uifr.questioningLadder.forEach(function (q) {
-            ol.appendChild(el("li", null, "<strong>" + esc(q.rung) + ":</strong> " + esc(q.q)));
-          });
-          b.appendChild(ol);
-        }),
-      );
-    }
-    // Academic talk
-    card.appendChild(
-      collapsible("💬 Academic Talk", function (b) {
-        b.appendChild(
-          el(
-            "p",
-            "top1-kv",
-            "<strong>Partner roles:</strong> " + esc((DATA.uifr.partnerRoles || []).join(", ")),
-          ),
+    return collapsible(
+      "👩‍🏫 Teacher Mode — UIFR Level 4 Evidence",
+      function (card) {
+        card.className = "top1-uifr";
+        card.appendChild(el("p", "top1-uifr-disc", esc((DATA.uifr && DATA.uifr.disclaimer) || "")));
+        card.appendChild(
+          collapsible("📚 Lesson Plan & Activities (Teacher View)", function (b) {
+            b.appendChild(lessonCard(u, l, { teacher: true }));
+          }, true),
         );
-        var ul = el("ul", "top1-checklist");
-        (DATA.uifr.academicTalkStems || []).forEach(function (s) {
-          ul.appendChild(el("li", null, esc(s)));
-        });
-        b.appendChild(ul);
-      }),
-    );
-    // Formative checkpoints
-    card.appendChild(
-      collapsible("📍 Formative Checkpoints", function (b) {
-        (DATA.uifr.formativeCheckpoints || []).forEach(function (c) {
-          b.appendChild(el("p", "top1-kv", "<strong>" + esc(c.when) + ":</strong> " + esc(c.move)));
-        });
-        b.appendChild(el("p", "top1-kv", "<strong>Feedback stems:</strong>"));
-        var ul = el("ul", "top1-checklist");
-        (DATA.uifr.feedbackStems || []).forEach(function (s) {
-          ul.appendChild(el("li", null, esc(s)));
-        });
-        b.appendChild(ul);
-      }),
-    );
-    // Reflection + next steps
-    card.appendChild(
-      collapsible("🔁 Reflect & Next Step From Evidence", function (b) {
-        var ul = el("ul", "top1-checklist");
-        (DATA.uifr.reflectionCard || []).forEach(function (s) {
-          ul.appendChild(el("li", null, esc(s)));
-        });
-        b.appendChild(ul);
-        (DATA.uifr.dataNextSteps || []).forEach(function (n) {
-          b.appendChild(
-            el("p", "top1-kv", "<strong>If " + esc(n.if) + " →</strong> " + esc(n.then)),
-          );
-        });
-      }),
-    );
-    // Rubric components
-    card.appendChild(
-      collapsible("📋 UIFR Domains (Prepare · Teach · Reflect)", function (b) {
-        (DATA.uifr.components || []).forEach(function (c) {
-          b.appendChild(
-            el("p", "top1-kv", "<strong>" + esc(c.title) + ":</strong> " + esc(c.prompt)),
-          );
-        });
-      }),
-    );
 
-    var bar = el("div", "top1-btnrow");
-    bar.appendChild(
-      copyBtn("Copy UIFR Evidence Notes", function () {
-        return uifrNotes(u, l);
-      }),
+        var sp = supportsPanel(l);
+        if (sp) card.appendChild(sp);
+
+        // Questioning ladder
+        if (DATA.uifr.questioningLadder) {
+          card.appendChild(
+            collapsible("❓ Questioning Ladder", function (b) {
+              var ol = el("ol", "top1-ladder");
+              DATA.uifr.questioningLadder.forEach(function (q) {
+                ol.appendChild(el("li", null, "<strong>" + esc(q.rung) + ":</strong> " + esc(q.q)));
+              });
+              b.appendChild(ol);
+            }),
+          );
+        }
+        // Academic talk
+        card.appendChild(
+          collapsible("💬 Academic Talk", function (b) {
+            b.appendChild(
+              el(
+                "p",
+                "top1-kv",
+                "<strong>Partner roles:</strong> " + esc((DATA.uifr.partnerRoles || []).join(", ")),
+              ),
+            );
+            var ul = el("ul", "top1-checklist");
+            (DATA.uifr.academicTalkStems || []).forEach(function (s) {
+              ul.appendChild(el("li", null, esc(s)));
+            });
+            b.appendChild(ul);
+          }),
+        );
+        // Formative checkpoints
+        card.appendChild(
+          collapsible("📍 Formative Checkpoints", function (b) {
+            (DATA.uifr.formativeCheckpoints || []).forEach(function (c) {
+              b.appendChild(el("p", "top1-kv", "<strong>" + esc(c.when) + ":</strong> " + esc(c.move)));
+            });
+            b.appendChild(el("p", "top1-kv", "<strong>Feedback stems:</strong>"));
+            var ul = el("ul", "top1-checklist");
+            (DATA.uifr.feedbackStems || []).forEach(function (s) {
+              ul.appendChild(el("li", null, esc(s)));
+            });
+            b.appendChild(ul);
+          }),
+        );
+        // Reflection + next steps
+        card.appendChild(
+          collapsible("🔁 Reflect & Next Step From Evidence", function (b) {
+            var ul = el("ul", "top1-checklist");
+            (DATA.uifr.reflectionCard || []).forEach(function (s) {
+              ul.appendChild(el("li", null, esc(s)));
+            });
+            b.appendChild(ul);
+            (DATA.uifr.dataNextSteps || []).forEach(function (n) {
+              b.appendChild(
+                el("p", "top1-kv", "<strong>If " + esc(n.if) + " →</strong> " + esc(n.then)),
+              );
+            });
+          }),
+        );
+        // Rubric components
+        card.appendChild(
+          collapsible("📋 UIFR Domains (Prepare · Teach · Reflect)", function (b) {
+            (DATA.uifr.components || []).forEach(function (c) {
+              b.appendChild(
+                el("p", "top1-kv", "<strong>" + esc(c.title) + ":</strong> " + esc(c.prompt)),
+              );
+            });
+          }),
+        );
+
+        var bar = el("div", "top1-btnrow");
+        bar.appendChild(
+          copyBtn("Copy UIFR Evidence Notes", function () {
+            return uifrNotes(u, l);
+          }),
+        );
+        card.appendChild(bar);
+      },
+      true,
     );
-    card.appendChild(bar);
-    return card;
   }
 
   function renderTeacher(stage) {

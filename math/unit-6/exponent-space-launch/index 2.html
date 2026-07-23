@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Exponent Space Launch — Powers & Exponents Game</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Share+Tech+Mono&display=swap');
+
+    :root {
+      --bg: #060c1a;
+      --surface: rgba(255, 255, 255, 0.04);
+      --border: rgba(255, 255, 255, 0.1);
+      --text: #ffffff;
+      --text-muted: #8a99ad;
+      --neon-pink: #ff007f;
+      --neon-cyan: #00f0ff;
+      --neon-green: #39ff14;
+      --neon-gold: #ffd700;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+
+    #space-bg {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: radial-gradient(circle at center, #0f1c3f 0%, #060c1a 100%);
+      z-index: -1;
+    }
+
+    header {
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    h1 {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.8rem;
+      color: var(--neon-cyan);
+      text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .name-field {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 12px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.9rem;
+    }
+
+    .name-field:focus {
+      outline: none;
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 8px rgba(0, 240, 255, 0.2);
+    }
+
+    .btn {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.9rem;
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--neon-cyan), #0077c8);
+      color: #000;
+    }
+
+    .btn-primary:hover {
+      filter: brightness(1.2);
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
+    }
+
+    .btn-secondary {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--neon-cyan);
+    }
+
+    main {
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 30px;
+      flex-grow: 1;
+    }
+
+    @media (max-width: 900px) {
+      main { grid-template-columns: 1fr; }
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .panel-title {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.2rem;
+      color: var(--text);
+      border-left: 3px solid var(--neon-pink);
+      padding-left: 10px;
+      margin-bottom: 5px;
+    }
+
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    .input-box {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .input-box label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+    }
+
+    .input-num {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 1.2rem;
+      color: #fff;
+      text-align: center;
+      font-family: 'Share Tech Mono', monospace;
+    }
+
+    .input-num:focus {
+      outline: none;
+      border-color: var(--neon-pink);
+      box-shadow: 0 0 10px rgba(255, 0, 127, 0.25);
+    }
+
+    .formula-display {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .formula-expr {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.8rem;
+      color: var(--neon-pink);
+    }
+
+    .formula-step {
+      font-size: 1rem;
+      color: var(--neon-gold);
+      font-family: 'Share Tech Mono', monospace;
+    }
+
+    .formula-result {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 2.2rem;
+      color: var(--neon-green);
+      text-shadow: 0 0 10px rgba(57, 255, 20, 0.3);
+    }
+
+    .challenge-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 215, 0, 0.2);
+      border-radius: 12px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .challenge-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'Share Tech Mono', monospace;
+      color: var(--neon-gold);
+    }
+
+    .challenge-target {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #fff;
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+      margin: 5px 0;
+    }
+
+    .canvas-container {
+      background: #03060f;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+    }
+
+    .rocket-svg {
+      width: 100%;
+      max-width: 400px;
+      height: 380px;
+    }
+
+    .vocabulary-box {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 15px;
+      font-size: 0.85rem;
+      line-height: 1.4;
+    }
+
+    .vocab-title {
+      font-family: 'Share Tech Mono', monospace;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--neon-cyan);
+    }
+
+    .success-alert {
+      position: absolute;
+      top: 20px;
+      background: rgba(57, 255, 20, 0.95);
+      color: #000;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-family: 'Share Tech Mono', monospace;
+      font-weight: bold;
+      box-shadow: 0 0 15px rgba(57, 255, 20, 0.4);
+      display: none;
+      animation: popAlert 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    @keyframes popAlert {
+      0% { transform: scale(0.7); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @media print {
+      body { background: white; color: black; }
+      #space-bg, .btn, .header-controls, .input-row, .challenge-card { display: none !important; }
+      .panel, .canvas-container { border: 1px solid #ccc; background: white; backdrop-filter: none; }
+      h1, .formula-expr, .formula-result { color: black !important; text-shadow: none !important; }
+    }
+  </style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+<body>
+
+  <div id="space-bg"></div>
+
+  <header>
+    <div>
+      <h1>🚀 Exponent Space Launch</h1>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Unit 6 Lesson 6-1 Powers &amp; Exponents Game</p>
+    </div>
+    <div class="header-controls">
+      <input type="text" id="student-name" class="name-field" placeholder="Enter Student Name" aria-label="Student Name" />
+      <button class="btn btn-secondary" onclick="window.print()" aria-label="Print/Save Results">🖨️ Save/Print</button>
+      <button class="btn btn-secondary" onclick="resetGame()" aria-label="Reset Game">↺ Reset</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Left: Calculations Panel -->
+    <div class="panel">
+      <div>
+        <h2 class="panel-title">Thruster Configuration</h2>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">Enter a base and exponent to calculate thrust energy.</p>
+      </div>
+
+      <div class="input-row">
+        <div class="input-box">
+          <label for="base-in">Base (Factor)</label>
+          <input type="number" id="base-in" class="input-num" min="1" max="100" value="2" oninput="calculateThrust()" />
+        </div>
+        <div class="input-box">
+          <label for="exponent-in">Exponent (Power)</label>
+          <input type="number" id="exponent-in" class="input-num" min="0" max="10" value="3" oninput="calculateThrust()" />
+        </div>
+      </div>
+
+      <div class="formula-display">
+        <span class="formula-expr" id="display-power">2<sup>3</sup></span>
+        <span class="formula-step" id="display-expansion">2 × 2 × 2</span>
+        <span style="color: var(--text-muted); font-size: 0.75rem;">EQUALS</span>
+        <span class="formula-result" id="display-result">8</span>
+      </div>
+
+      <div class="challenge-card">
+        <div class="challenge-header">
+          <span>MISSION CONTROL TARGET</span>
+          <span id="score-display">Score: 0</span>
+        </div>
+        <div class="challenge-target" id="target-display">Generate exactly 64 Thrust!</div>
+        <p style="font-size: 0.8rem; color: var(--text-muted);">Configure your base and exponent to hit the target thrust level perfectly to launch the ship.</p>
+      </div>
+
+      <div class="vocabulary-box">
+        <div class="vocab-title">💡 Standard 6.EE.A.1 Words to Know</div>
+        <p><strong>Base:</strong> The number used as a factor that is multiplied repeatedly.</p>
+        <p><strong>Exponent:</strong> Tells how many times the base is used as a factor.</p>
+        <p><strong>Power:</strong> The product of repeated multiplication of the same factor.</p>
+      </div>
+    </div>
+
+    <!-- Right: SVG Visualizer Panel -->
+    <div class="canvas-container">
+      <div class="success-alert" id="success-alert">LAUNCH SUCCESSFUL!</div>
+      <svg class="rocket-svg" viewBox="0 0 400 400" aria-label="Spaceship and launch thruster engine visualizer">
+        <!-- Background Stars -->
+        <g fill="#fff" opacity="0.3">
+          <circle cx="50" cy="80" r="1.5" />
+          <circle cx="120" cy="180" r="1" />
+          <circle cx="80" cy="280" r="2" />
+          <circle cx="340" cy="70" r="1.5" />
+          <circle cx="310" cy="240" r="1" />
+          <circle cx="350" cy="310" r="2" />
+        </g>
+        
+        <!-- Launch Pad Platform -->
+        <rect x="100" y="360" width="200" height="20" fill="#1b233a" rx="4" />
+        <line x1="200" y1="360" x2="200" y2="380" stroke="#00f0ff" stroke-width="2" opacity="0.4" />
+
+        <!-- Flame/Thrust SVG element driven by calculation -->
+        <path id="thruster-flame" d="M185 300 L200 370 L215 300 Z" fill="url(#fireGradient)" opacity="0" filter="url(#glowFilter)" />
+
+        <!-- Spaceship Sprite -->
+        <g id="spaceship" transform="translate(0, 0)">
+          <!-- Wings -->
+          <path d="M150 280 L200 180 L250 280 Z" fill="#2d3748" />
+          <!-- Main Body -->
+          <path d="M175 140 C175 140 185 80 200 80 C215 80 225 140 225 140 L225 300 L175 300 Z" fill="#e2e8f0" />
+          <!-- Nose Cone -->
+          <path d="M175 140 C175 140 185 80 200 80 C215 80 225 140 225 140 Z" fill="var(--neon-pink)" />
+          <!-- Window -->
+          <circle cx="200" cy="170" r="14" fill="#0f172a" />
+          <circle cx="200" cy="170" r="12" fill="var(--neon-cyan)" opacity="0.7" />
+          <!-- Fins Detail -->
+          <path d="M175 260 L155 300 L175 300 Z" fill="var(--neon-pink)" />
+          <path d="M225 260 L245 300 L225 300 Z" fill="var(--neon-pink)" />
+        </g>
+
+        <!-- Gradients and Filters definition -->
+        <defs>
+          <linearGradient id="fireGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#ff007f" />
+            <stop offset="50%" stop-color="#ffd700" />
+            <stop offset="100%" stop-color="#39ff14" stop-opacity="0" />
+          </linearGradient>
+          <filter id="glowFilter" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+            <feMerge>
+              <feMergeNode in="coloredBlur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
+      </svg>
+    </div>
+  </main>
+
+  <script>
+    let targetThrust = 64;
+    let score = 0;
+    let launchInProgress = false;
+
+    // Standard preset targets that are perfect powers for grade 6
+    const targets = [8, 9, 16, 25, 27, 32, 36, 49, 64, 81, 100, 125, 243, 256, 1000];
+
+    function calculateThrust() {
+      if (launchInProgress) return;
+
+      const base = parseInt(document.getElementById('base-in').value) || 1;
+      const exponent = parseInt(document.getElementById('exponent-in').value);
+
+      // Handle exponent inputs elegantly
+      if (isNaN(exponent) || exponent < 0) {
+        document.getElementById('display-power').innerHTML = `${base}<sup>?</sup>`;
+        document.getElementById('display-expansion').textContent = 'Waiting for exponent...';
+        document.getElementById('display-result').textContent = '...';
+        return;
+      }
+
+      // Calculate power value safely
+      const result = Math.pow(base, exponent);
+
+      // Render exponent notation
+      document.getElementById('display-power').innerHTML = `${base}<sup>${exponent}</sup>`;
+
+      // Render expanded multiplication representation
+      let expansion = '';
+      if (exponent === 0) {
+        expansion = 'Any non-zero base to power of 0 equals 1';
+      } else {
+        const terms = Array(exponent).fill(base);
+        expansion = terms.join(' × ');
+      }
+      document.getElementById('display-expansion').textContent = expansion;
+
+      // Update final result display
+      document.getElementById('display-result').textContent = result.toLocaleString();
+
+      // Drive dynamic SVG fire size based on power magnitude
+      const flame = document.getElementById('thruster-flame');
+      if (result > 0) {
+        const scaleVal = Math.min(result / 100, 2.5); // Cap scale height
+        flame.style.opacity = Math.min(0.2 + (result / 200), 1);
+        flame.setAttribute('d', `M185 300 L200 ${300 + (100 * scaleVal)} L215 300 Z`);
+      } else {
+        flame.style.opacity = 0;
+      }
+
+      // Check if target matches energy output
+      if (result === targetThrust) {
+        triggerLaunch();
+      }
+    }
+
+    function triggerLaunch() {
+      launchInProgress = true;
+      score++;
+      document.getElementById('score-display').textContent = `Score: ${score}`;
+      
+      const alertBox = document.getElementById('success-alert');
+      alertBox.style.display = 'block';
+
+      const rocket = document.getElementById('spaceship');
+      const flame = document.getElementById('thruster-flame');
+      
+      // Animate spaceship ascending
+      let pos = 0;
+      let interval = setInterval(() => {
+        pos += 4;
+        rocket.setAttribute('transform', `translate(0, -${pos})`);
+        flame.setAttribute('transform', `translate(0, -${pos})`);
+        if (pos > 300) {
+          clearInterval(interval);
+          setTimeout(resetChallenge, 600);
+        }
+      }, 10);
+    }
+
+    function resetChallenge() {
+      // Pick a new target randomly
+      const currentIdx = targets.indexOf(targetThrust);
+      let newTarget = targetThrust;
+      while (newTarget === targetThrust) {
+        newTarget = targets[Math.floor(Math.random() * targets.length)];
+      }
+      targetThrust = newTarget;
+
+      // Reset DOM state
+      document.getElementById('target-display').textContent = `Generate exactly ${targetThrust} Thrust!`;
+      document.getElementById('success-alert').style.display = 'none';
+      
+      // Animate rocket landing
+      const rocket = document.getElementById('spaceship');
+      const flame = document.getElementById('thruster-flame');
+      rocket.setAttribute('transform', 'translate(0, 0)');
+      flame.setAttribute('transform', 'translate(0, 0)');
+      flame.style.opacity = 0;
+      
+      launchInProgress = false;
+      calculateThrust();
+    }
+
+    function resetGame() {
+      score = 0;
+      document.getElementById('score-display').textContent = 'Score: 0';
+      document.getElementById('base-in').value = 2;
+      document.getElementById('exponent-in').value = 3;
+      resetChallenge();
+    }
+
+    // Run calculation on load
+    window.addEventListener('DOMContentLoaded', () => {
+      calculateThrust();
+    });
+  </script>
+<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+  </body>
+</html>
