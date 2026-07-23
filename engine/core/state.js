@@ -134,12 +134,14 @@ export function createState(lessonId, studentId) {
   }
 
   // One-time migration: the graded "Vocabulary" phase (old index 1) was removed
-  // (vocabulary now lives only in the Vocab tab). For students with saved work
-  // under the old 6-phase layout, drop that phase + its responses and shift the
-  // rest down by one so their completion, stars, and typed answers stay aligned.
+  // (vocabulary now lives only in the Vocab tab). Only migrate if a phase named
+  // "Vocabulary" is explicitly in the saved phases array.
   function migrateVocabPhaseRemoval(s) {
-    if (!Array.isArray(s.phases) || s.phases.length !== 6) return s;
-    s.phases = s.phases.filter((_, i) => i !== 1).map((p, i) => ({ ...p, id: i }));
+    if (!Array.isArray(s.phases)) return s;
+    const vocabIdx = s.phases.findIndex((p) => p && (p.name === "Vocabulary" || p.name === "Vocabulario"));
+    if (vocabIdx === -1) return s;
+
+    s.phases = s.phases.filter((_, i) => i !== vocabIdx).map((p, i) => ({ ...p, id: i }));
     const remapped = {};
     for (const k in s.responses || {}) {
       const m = /^(\d+)_([\s\S]*)$/.exec(k);
@@ -148,12 +150,12 @@ export function createState(lessonId, studentId) {
         continue;
       }
       let p = Number(m[1]);
-      if (p === 1) continue; // drop the removed vocab phase's responses
-      if (p > 1) p -= 1; // shift Explore/Practice/Connect/Reflect down one
+      if (p === vocabIdx) continue;
+      if (p > vocabIdx) p -= 1;
       remapped[`${p}_${m[2]}`] = s.responses[k];
     }
     s.responses = remapped;
-    if (typeof s.currentPhase === "number" && s.currentPhase > 1) {
+    if (typeof s.currentPhase === "number" && s.currentPhase > vocabIdx) {
       s.currentPhase -= 1;
     }
     return s;
@@ -174,7 +176,44 @@ export function createState(lessonId, studentId) {
   }
 
   function initPhases(phaseConfigs) {
-    if (state.phases.length === phaseConfigs.length) return;
+    // Migration: If saved state has 5 phases starting with Launch, insert Warmup as Phase 1 (index 0)
+    if (Array.isArray(state.phases) && state.phases.length === 5 && state.phases[0]?.name === "Launch") {
+      const warmupPhase = {
+        id: 0,
+        name: phaseConfigs[0]?.name || "Warmup",
+        icon: phaseConfigs[0]?.icon || "⚡",
+        status: "active",
+        stars: 0,
+        xpEarned: 0,
+        attempts: 0,
+        correct: 0,
+      };
+
+      state.phases = [
+        warmupPhase,
+        ...state.phases.map((p, i) => ({ ...p, id: i + 1, name: phaseConfigs[i + 1]?.name || p.name })),
+      ];
+
+      const remapped = {};
+      for (const k in state.responses || {}) {
+        const m = /^(\d+)_(.*)$/.exec(k);
+        if (m) {
+          const oldP = Number(m[1]);
+          remapped[`${oldP + 1}_${m[2]}`] = state.responses[k];
+        } else {
+          remapped[k] = state.responses[k];
+        }
+      }
+      state.responses = remapped;
+      save();
+      notify();
+      return;
+    }
+
+    if (state.phases.length === phaseConfigs.length && state.phases[0]?.name === phaseConfigs[0]?.name) {
+      return;
+    }
+
     state.phases = phaseConfigs.map((cfg, i) => ({
       id: i,
       name: cfg.name,
