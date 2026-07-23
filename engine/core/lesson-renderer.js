@@ -2147,7 +2147,11 @@ function renderWarmupPhase(el, state, ctx, config) {
     <span id="warmupTimerDisplay" style="font-size:20px; font-weight:800; color:#0f6d78; font-variant-numeric:tabular-nums;">${fmtWarmupClock(getWarmupSeconds())}</span>
     <span class="warmup-timer-label" style="font-size:13px; color:#56627a;">remaining</span>
   `;
-  card.append(timerBar);
+  // Place the timer immediately under the "Phase 1 · Warmup" header (above the
+  // intro line) so it's the first thing students and teachers see.
+  const warmupHeaderBlock = card.firstElementChild;
+  if (warmupHeaderBlock) warmupHeaderBlock.after(timerBar);
+  else card.prepend(timerBar);
 
   let warmupTimerId = null;
   let warmupSecondsLeft = getWarmupSeconds();
