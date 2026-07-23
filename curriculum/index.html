@@ -46,8 +46,16 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Nunito:wght@600;700;800;900&display=swap"
     />
+    <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="stylesheet" href="/assets/curriculum-enhancements.css?v=20260712-toolstop" />
     <link rel="stylesheet" href="/assets/curriculum-sidebar.css?v=20260615-sidebar3" />
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", function () {
+          navigator.serviceWorker.register("/sw.js").catch(function () {});
+        });
+      }
+    </script>
     <style>
       :root {
         /* ACCESS Practice Lab palette — light, formal, academic */
@@ -12181,6 +12189,15 @@
                   "unit-resource-btn scorm-dl",
                 ),
               );
+              var zipBtn = document.createElement("a");
+              zipBtn.className = "unit-resource-btn";
+              zipBtn.style.background = "#256b5b";
+              zipBtn.style.color = "#ffffff";
+              zipBtn.style.fontWeight = "700";
+              zipBtn.href = "/scorm-packages/neft-lesson-math-unit-" + u.unitIndex + "-projects.zip";
+              zipBtn.setAttribute("download", "");
+              zipBtn.textContent = "📦 Unit Packet (ZIP)";
+              resRow.appendChild(zipBtn);
             }
             if (resRow.children.length > 0) {
               card.appendChild(resRow);
