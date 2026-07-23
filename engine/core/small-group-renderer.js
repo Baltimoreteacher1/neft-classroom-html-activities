@@ -59,6 +59,7 @@ import {
   voiceFor,
 } from "./small-group-ui.js";
 import { mountTeacherClearButton } from "./teacher-clear.js";
+import { isToolsMode, mountToolsMenuItem, renderToolsPage } from "./tools-mode.js";
 
 // One Build stage rendered as an interactive player instead of a static list.
 // "ido" and "wedo" reveal one step at a time; "wedo" also converts a trailing
@@ -1020,6 +1021,19 @@ export async function resolveAssignedVariant(config) {
 
 export function bootSmallGroup(config) {
   const params = new URLSearchParams(window.location.search);
+
+  // ?mode=tools deep-link: render the standalone Interactive Tools page instead
+  // of the studio, so small-group and catch-up lessons support it just like the
+  // full renderer. Returns before any studio UI is built (no double render).
+  if (isToolsMode()) {
+    renderToolsPage(config, document.getElementById("app"));
+    return;
+  }
+
+  // Add the "Interactive Tools" item to the studio's utility menu when this
+  // lesson has registered tools (self-guards to a no-op otherwise). Mounts via a
+  // MutationObserver, so it works regardless of which render branch runs below.
+  mountToolsMenuItem(config);
 
   // ?group=1|2 deep-link: one shared link lands each student on a fixed variant.
   const requestedGroup = params.get("group");

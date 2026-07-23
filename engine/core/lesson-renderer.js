@@ -52,6 +52,7 @@ import {
 import { createProblemCard, problemTypeLabel } from "./problem-shell.js";
 import { mountReadingProgress } from "./reading-progress.js";
 import { mountStuckSupport } from "./stuck-support.js";
+import { isToolsMode, mountToolsMenuItem, renderToolsPage } from "./tools-mode.js";
 import { isTeacherMode } from "./teacher-mode.js";
 import { renderThemeIllustration } from "./theme-illustrations.js";
 import { stampTeachL4Meta } from "./uifr.js";
@@ -89,6 +90,12 @@ export function bootLesson(config) {
   } catch (_error) {
     /* private mode — breadcrumb is optional */
   }
+  // Standalone "Interactive Tools" practice page (?mode=tools): surface just the
+  // lesson's manipulatives, skipping the graded flow. Reversible via a back link.
+  if (isToolsMode()) {
+    renderToolsPage(config, document.getElementById("app"));
+    return;
+  }
   createApp({
     ...config,
     // Vocabulary lives only in the Vocab tab now (the Vocab Explorer), so it is
@@ -110,6 +117,8 @@ export function bootLesson(config) {
   observeWordProblemAnnotation(document.body);
   // Hand-drawn chalk marks around key answers (warm-deck skin only, additive).
   mountChalkAnnotations(document);
+  // Tools menu → "Interactive Tools" (?mode=tools) when the lesson has any.
+  mountToolsMenuItem(config);
 }
 
 // ── Helpers ──
