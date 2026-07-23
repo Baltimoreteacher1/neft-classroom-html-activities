@@ -616,6 +616,20 @@ export function injectSmallGroupStyles(accent) {
        light glass fill (rgba cream) — retint them for dark so they don't glow. */
     :root[data-theme="dark"] .sg-rail,:root[data-theme="dark"] .sg-tabs{background:rgba(18,26,44,.94);border-color:rgba(255,255,255,.06)}
     @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .sg-rail,:root:not([data-theme="light"]) .sg-tabs{background:rgba(18,26,44,.94);border-color:rgba(255,255,255,.06)}}
+    /* prefers-contrast: darker lines + text and a heavier focus ring. */
+    @media (prefers-contrast:more){:root{--sg-line:#5a6b82;--sg-muted:#26313f;--sg-rule:var(--sg-deep)}
+      button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-visible{outline-width:4px}
+      .card,.prob,.sg-mission,.sg-talk,.choice,.sg-checkstep{border-width:2px}}
+    /* forced-colors (Windows High Contrast): background/border colors flatten to
+       the system palette, so selection/correctness conveyed by fill or border-
+       color alone becomes invisible. Re-assert each state with a system Highlight
+       outline, and keep interactive chrome from being coerced flat. */
+    @media (forced-colors:active){
+      .sg-step[aria-selected="true"],.sg-pulse-btn[aria-pressed="true"],.sg-role-btn.active,.sg-langbtn[aria-pressed="true"],.sg-vote-button[aria-pressed="true"],.choice.correct,.sg-match-btn.correct,.sg-checkstep.on,.sg-model-cell.ok,.sg-model-sym.ok,.fillin.ok,.sg-num.on,.sg-plan.on,.sg-fill-step.complete{outline:3px solid Highlight;outline-offset:-3px}
+      .choice.wrong,.sg-match-btn.wrong,.sg-model-cell.bad,.fillin.bad{outline:2px dashed GrayText;outline-offset:-2px}
+      .sg-step.done .dot::after{content:"✓";margin-left:2px}
+      .btn,.choice,.wchip,.sg-num,.sg-plan,.sg-model-cell,.sg-pulse-btn,.sg-tile{forced-color-adjust:auto}
+    }
   `;
   document.head.appendChild(styles);
   ensurePublisherPolish();
