@@ -2213,6 +2213,18 @@ function renderWarmupPhase(el, state, ctx, config) {
 
   btnRow.append(checkBtn, nextBtn);
   card.append(questionsContainer);
+
+  // Today's Learning Objectives embedded directly under the Warmup questions
+  const objWrap = document.createElement("div");
+  objWrap.className = "warmup-objectives-section";
+  objWrap.style.cssText = "margin-top:24px; padding-top:18px; border-top:1px dashed #cbd5e1;";
+  const objTitle = document.createElement("h4");
+  objTitle.style.cssText = "font-size:17px; font-weight:800; color:#0f172a; margin:0 0 12px 0; display:flex; align-items:center; gap:8px;";
+  objTitle.innerHTML = `<span>🎯</span> Today's Learning Objectives`;
+  objWrap.append(objTitle);
+  renderObjectives(objWrap, config);
+  card.append(objWrap);
+
   card.append(btnRow);
 
   if (savedAnswers.checked) {
@@ -2233,9 +2245,6 @@ function renderWarmupPhase(el, state, ctx, config) {
   }
 
   el.append(card);
-
-  // Objectives card sits right under the Warmup card
-  renderObjectives(el, config);
 }
 
 function renderReteachHelper(container, warmup, correctCount, total, config) {
