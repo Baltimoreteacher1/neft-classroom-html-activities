@@ -186,8 +186,16 @@ function buildPagePicker(pop, info, close) {
     close();
   });
 
+  const snapLink = document.createElement("a");
+  snapLink.href = "/teacher-tools/live-snapshot/";
+  snapLink.target = "_blank";
+  snapLink.rel = "noopener";
+  snapLink.className = "nt-teacher-clear-sub";
+  snapLink.style.cssText = "display:block; margin-top:10px; font-weight:800; color:#0f6d78; text-decoration:none;";
+  snapLink.textContent = "📊 Open Live Class Snapshot & Small Groups ↗";
+
   actions.append(clearSel, clearAll);
-  pop.append(title, sub, list, actions);
+  pop.append(title, sub, list, actions, snapLink);
 }
 
 function buildClearAll(pop, info, close) {

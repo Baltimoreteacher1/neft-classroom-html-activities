@@ -2194,6 +2194,10 @@ function renderWarmupPhase(el, state, ctx, config) {
       badge.style.background = correctCount === total ? "#dcfce7" : "#fef3c7";
       badge.style.color = correctCount === total ? "#15803d" : "#b45309";
     }
+
+    if (correctCount / total <= 0.75) {
+      renderReteachHelper(card, warmup, correctCount, total, config);
+    }
   });
 
   const nextBtn = document.createElement("button");
@@ -2222,12 +2226,95 @@ function renderWarmupPhase(el, state, ctx, config) {
       badge.style.background = correctCount === total ? "#dcfce7" : "#fef3c7";
       badge.style.color = correctCount === total ? "#15803d" : "#b45309";
     }
+
+    if (correctCount / total <= 0.75) {
+      renderReteachHelper(card, warmup, correctCount, total, config);
+    }
   }
 
   el.append(card);
 
   // Objectives card sits right under the Warmup card
   renderObjectives(el, config);
+}
+
+function renderReteachHelper(container, warmup, correctCount, total, config) {
+  if (container.querySelector(".warmup-reteach-card")) return;
+
+  const reteachBox = document.createElement("div");
+  reteachBox.className = "warmup-reteach-card";
+  reteachBox.style.cssText = "margin-top:20px; border:2px solid #eab308; border-radius:14px; padding:18px; background:#fefce8; box-shadow:0 4px 14px rgba(234,179,8,0.15);";
+
+  const prevTitle = warmup.prevLessonTitle ? esc(warmup.prevLessonTitle) : "Previous Lesson Concept";
+
+  reteachBox.innerHTML = `
+    <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+      <span style="font-size:22px;">💡</span>
+      <div>
+        <h4 style="margin:0; font-size:16px; font-weight:800; color:#713f12;">Quick Reteach: ${prevTitle}</h4>
+        <div style="font-size:12.5px; color:#854d0e;">Let's quickly review this step-by-step before moving to Phase 2 Launch!</div>
+      </div>
+    </div>
+    <div style="background:#ffffff; border:1px solid #fef08a; border-radius:10px; padding:14px; margin-bottom:14px; font-size:14px; color:#334155; line-height:1.6;">
+      <div style="font-weight:700; color:#0f172a; margin-bottom:6px;">📌 Core Strategy Recap:</div>
+      <div>To tackle ${prevTitle}, break the problem into clear steps:</div>
+      <ul style="margin:6px 0 0 20px; padding:0;">
+        <li>Identify what key quantity or relationship the problem asks for.</li>
+        <li>Use a visual representation (like a number line, array, or tape diagram) to model the values.</li>
+        <li>Verify your answer choice before finalizing.</li>
+      </ul>
+    </div>
+    <div id="reteachMiniCheck" style="background:#ffffff; border:1px solid #cbd5e1; border-radius:10px; padding:14px;">
+      <div style="font-weight:700; font-size:13.5px; color:#0f172a; margin-bottom:8px;">
+        <span style="color:#eab308; font-weight:800;">Mini-Check:</span> Try this quick practice item to rebuild your confidence:
+      </div>
+      <div style="font-size:14px; color:#334155; margin-bottom:10px;">
+        Which strategy helps verify your answer when solving math problems?
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <button type="button" class="btn-reteach-opt" data-correct="false" style="text-align:left; padding:8px 12px; border:1px solid #cbd5e1; border-radius:8px; background:#f8fafc; cursor:pointer; font-size:13.5px;">Guessing quickly without writing steps</button>
+        <button type="button" class="btn-reteach-opt" data-correct="true" style="text-align:left; padding:8px 12px; border:1px solid #cbd5e1; border-radius:8px; background:#f8fafc; cursor:pointer; font-size:13.5px;">Modeling the problem and checking key calculations</button>
+      </div>
+      <div id="reteachFb" style="display:none; margin-top:10px; padding:8px 12px; border-radius:8px; font-size:13px; font-weight:700;"></div>
+    </div>
+  `;
+
+  const miniCheck = reteachBox.querySelector("#reteachMiniCheck");
+  const fb = reteachBox.querySelector("#reteachFb");
+
+  miniCheck.querySelectorAll(".btn-reteach-opt").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const isCorrect = btn.dataset.correct === "true";
+      miniCheck.querySelectorAll(".btn-reteach-opt").forEach((b) => (b.disabled = true));
+      fb.style.display = "block";
+      if (isCorrect) {
+        btn.style.background = "#dcfce7";
+        btn.style.borderColor = "#22c55e";
+        fb.style.background = "#f0fdf4";
+        fb.style.color = "#15803d";
+        fb.innerHTML = "Great job! You're ready for Phase 2: Launch 🚀";
+      } else {
+        btn.style.background = "#fef2f2";
+        btn.style.borderColor = "#ef4444";
+        fb.style.background = "#fef2f2";
+        fb.style.color = "#b91c1c";
+        fb.innerHTML = "Remember to break the problem into steps! You've got this.";
+      }
+      try {
+        if (window.NTSignal && typeof window.NTSignal.record === "function") {
+          window.NTSignal.record({
+            standard: config.standard || "WARMUP_RETEACH",
+            correct: isCorrect,
+            misconceptionTag: "warmup_reteach",
+            lesson: config.lessonId || "",
+          });
+        }
+      } catch (_e) {}
+    });
+  });
+
+  const btnRow = container.querySelector(".btn-warmup-actions") || container.lastChild;
+  container.insertBefore(reteachBox, btnRow);
 }
 
 function evaluateWarmupQuestion(qBox, q, selectedIdx, feedbackBox) {

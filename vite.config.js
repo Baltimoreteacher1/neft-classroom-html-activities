@@ -308,6 +308,7 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, "index.html"),
         "homework-lesson-models": resolve(__dirname, "engine/homework-lesson-models.js"),
+        "teacher-live-snapshot": resolve(__dirname, "teacher-tools/live-snapshot/index.html"),
         ...getLessonEntries(),
       },
       output: {
