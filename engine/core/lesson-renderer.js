@@ -2066,6 +2066,42 @@ function renderNoticeWonderSupport(host, support, config, fieldRoot = host) {
   });
 }
 
+// Teacher-configurable warmup countdown length, in seconds. Stored per-device
+// in localStorage so a teacher can set the time allowed once and it applies to
+// every interactive lesson's Phase 1 Warmup. Editable only in Teacher Mode —
+// students never see the control and always inherit whatever the teacher set.
+const WARMUP_TIME_KEY = "nt-warmup-seconds";
+const WARMUP_TIME_DEFAULT = 180;
+const WARMUP_TIME_MIN = 15;
+const WARMUP_TIME_MAX = 3600;
+
+function getWarmupSeconds() {
+  try {
+    const raw = parseInt(localStorage.getItem(WARMUP_TIME_KEY), 10);
+    if (Number.isFinite(raw)) {
+      return Math.min(WARMUP_TIME_MAX, Math.max(WARMUP_TIME_MIN, raw));
+    }
+  } catch {
+    /* localStorage unavailable — fall through to the default */
+  }
+  return WARMUP_TIME_DEFAULT;
+}
+
+function setWarmupSeconds(seconds) {
+  const clamped = Math.min(WARMUP_TIME_MAX, Math.max(WARMUP_TIME_MIN, Math.round(seconds)));
+  try {
+    localStorage.setItem(WARMUP_TIME_KEY, String(clamped));
+  } catch {
+    /* localStorage unavailable — nothing to persist */
+  }
+  return clamped;
+}
+
+function fmtWarmupClock(seconds) {
+  const s = Math.max(0, Math.round(seconds));
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+}
+
 function renderWarmupPhase(el, state, ctx, config) {
   const warmup = config.warmup;
   if (!warmup || !Array.isArray(warmup.questions) || warmup.questions.length === 0) return;
@@ -2080,7 +2116,8 @@ function renderWarmupPhase(el, state, ctx, config) {
 
   const card = document.createElement("div");
   card.className = "card card-warmup-phase";
-  card.style.cssText = "margin: 16px 0 24px; border: 2px solid #0f6d78; border-radius: 16px; padding: 22px; background: #ffffff; box-shadow: 0 6px 20px rgba(15,109,120,0.12);";
+  card.style.cssText =
+    "margin: 16px 0 24px; border: 2px solid #0f6d78; border-radius: 16px; padding: 22px; background: #ffffff; box-shadow: 0 6px 20px rgba(15,109,120,0.12);";
 
   const prevTitle = warmup.prevLessonTitle ? ` (${warmup.prevLessonTitle})` : "";
   card.innerHTML = `
@@ -2100,52 +2137,95 @@ function renderWarmupPhase(el, state, ctx, config) {
 
   const savedAnswers = state.getResponse(0, "warmup_answers") || {};
 
-  // --- Warmup Timer ---
-  const timerBar = document.createElement('div');
-  timerBar.className = 'warmup-timer-bar';
-  timerBar.style.cssText = 'display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:16px; padding:10px 16px; background:linear-gradient(135deg, #f0f9ff, #e6f4f6); border:1px solid #bae6fd; border-radius:10px;';
+  // --- Warmup Timer (teacher-configurable duration) ---
+  const timerBar = document.createElement("div");
+  timerBar.className = "warmup-timer-bar";
+  timerBar.style.cssText =
+    "display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:16px; padding:10px 16px; background:linear-gradient(135deg, #f0f9ff, #e6f4f6); border:1px solid #bae6fd; border-radius:10px;";
   timerBar.innerHTML = `
     <span style="font-size:1.3rem;">⏱️</span>
-    <span id="warmupTimerDisplay" style="font-size:20px; font-weight:800; color:#0f6d78; font-variant-numeric:tabular-nums;">3:00</span>
-    <span style="font-size:13px; color:#56627a;">remaining</span>
+    <span id="warmupTimerDisplay" style="font-size:20px; font-weight:800; color:#0f6d78; font-variant-numeric:tabular-nums;">${fmtWarmupClock(getWarmupSeconds())}</span>
+    <span class="warmup-timer-label" style="font-size:13px; color:#56627a;">remaining</span>
   `;
   card.append(timerBar);
 
   let warmupTimerId = null;
-  let warmupSecondsLeft = 180;
+  let warmupSecondsLeft = getWarmupSeconds();
+  const timerDisplay = timerBar.querySelector("#warmupTimerDisplay");
+  const timerLabel = timerBar.querySelector(".warmup-timer-label");
 
-  if (!savedAnswers.checked) {
-    const timerDisplay = timerBar.querySelector('#warmupTimerDisplay');
+  // Start (or restart) the countdown from warmupSecondsLeft. Extracted so the
+  // teacher "Set time" control can relaunch it with a new duration.
+  function startWarmupCountdown() {
+    if (warmupTimerId) clearInterval(warmupTimerId);
+    // Reset to the calm starting palette in case a prior run went amber/red.
+    timerDisplay.style.color = "#0f6d78";
+    timerDisplay.style.animation = "none";
+    timerBar.style.background = "linear-gradient(135deg, #f0f9ff, #e6f4f6)";
+    timerBar.style.borderColor = "#bae6fd";
+    timerDisplay.textContent = fmtWarmupClock(warmupSecondsLeft);
+    timerLabel.textContent = "remaining";
     warmupTimerId = setInterval(() => {
       warmupSecondsLeft--;
-      const min = Math.floor(warmupSecondsLeft / 60);
-      const sec = warmupSecondsLeft % 60;
-      timerDisplay.textContent = `${min}:${String(sec).padStart(2, '0')}`;
-      
+      timerDisplay.textContent = fmtWarmupClock(warmupSecondsLeft);
+
       if (warmupSecondsLeft <= 30 && warmupSecondsLeft > 10) {
-        timerDisplay.style.color = '#b45309';
-        timerBar.style.background = 'linear-gradient(135deg, #fffbeb, #fef3c7)';
-        timerBar.style.borderColor = '#fcd34d';
+        timerDisplay.style.color = "#b45309";
+        timerBar.style.background = "linear-gradient(135deg, #fffbeb, #fef3c7)";
+        timerBar.style.borderColor = "#fcd34d";
       }
       if (warmupSecondsLeft <= 10) {
-        timerDisplay.style.color = '#dc2626';
-        timerBar.style.background = 'linear-gradient(135deg, #fef2f2, #fee2e2)';
-        timerBar.style.borderColor = '#fca5a5';
-        timerDisplay.style.animation = 'none';
+        timerDisplay.style.color = "#dc2626";
+        timerBar.style.background = "linear-gradient(135deg, #fef2f2, #fee2e2)";
+        timerBar.style.borderColor = "#fca5a5";
+        timerDisplay.style.animation = "none";
         timerDisplay.offsetHeight; // reflow
-        timerDisplay.style.animation = 'pulse 0.6s ease-in-out';
+        timerDisplay.style.animation = "pulse 0.6s ease-in-out";
       }
       if (warmupSecondsLeft <= 0) {
         clearInterval(warmupTimerId);
-        timerDisplay.textContent = '0:00';
-        timerBar.querySelector('span:last-child').textContent = 'time\\'s up!';
+        warmupTimerId = null;
+        timerDisplay.textContent = "0:00";
+        timerLabel.textContent = "time's up!";
         if (!savedAnswers.checked) checkBtn.click();
       }
     }, 1000);
+  }
+
+  if (!savedAnswers.checked) {
+    startWarmupCountdown();
+
+    // Teacher-only: change the time allowed. Persists per-device (localStorage)
+    // and immediately restarts the countdown with the new duration so every
+    // future warmup on this device uses it too. Hidden from students.
+    if (isTeacherMode()) {
+      const editBtn = document.createElement("button");
+      editBtn.type = "button";
+      editBtn.className = "warmup-timer-edit";
+      editBtn.title = "Teacher: set the warmup time allowed";
+      editBtn.textContent = "✏️ Set time";
+      editBtn.style.cssText =
+        "margin-left:6px; padding:4px 10px; font-size:12px; font-weight:800; color:#0f6d78; background:#ffffff; border:1px solid #0f6d78; border-radius:8px; cursor:pointer;";
+      editBtn.addEventListener("click", () => {
+        const currentMin = Math.round((getWarmupSeconds() / 60) * 10) / 10;
+        const answer = window.prompt(
+          "Warmup time allowed, in minutes.\nApplies to every interactive lesson on this device.",
+          String(currentMin),
+        );
+        if (answer == null) return;
+        const mins = parseFloat(answer);
+        if (!Number.isFinite(mins) || mins <= 0) {
+          window.alert("Please enter a number of minutes greater than 0 (e.g. 3 or 1.5).");
+          return;
+        }
+        warmupSecondsLeft = setWarmupSeconds(mins * 60);
+        startWarmupCountdown();
+      });
+      timerBar.append(editBtn);
+    }
   } else {
-    const timerDisplay = timerBar.querySelector('#warmupTimerDisplay');
-    timerDisplay.textContent = '✅';
-    timerBar.querySelector('span:last-child').textContent = 'Submitted';
+    timerDisplay.textContent = "✅";
+    timerLabel.textContent = "Submitted";
   }
 
   const questionsContainer = document.createElement("div");
@@ -2157,7 +2237,8 @@ function renderWarmupPhase(el, state, ctx, config) {
   warmup.questions.forEach((q, qIdx) => {
     const qBox = document.createElement("div");
     qBox.className = "warmup-question-card";
-    qBox.style.cssText = "border:1px solid #cbd5e1; border-radius:12px; padding:16px; background:#f8fafc;";
+    qBox.style.cssText =
+      "border:1px solid #cbd5e1; border-radius:12px; padding:16px; background:#f8fafc;";
 
     const qTitle = document.createElement("div");
     qTitle.style.cssText = "font-weight:700; font-size:15px; color:#0f172a; margin-bottom:10px;";
@@ -2169,13 +2250,15 @@ function renderWarmupPhase(el, state, ctx, config) {
 
     const feedbackBox = document.createElement("div");
     feedbackBox.className = "warmup-fb-box";
-    feedbackBox.style.cssText = "display:none; font-size:13.5px; padding:10px 12px; border-radius:8px; margin-top:10px;";
+    feedbackBox.style.cssText =
+      "display:none; font-size:13.5px; padding:10px 12px; border-radius:8px; margin-top:10px;";
 
     const selectedIdx = savedAnswers[qIdx];
 
     q.choices.forEach((choiceText, cIdx) => {
       const choiceLabel = document.createElement("label");
-      choiceLabel.style.cssText = "display:flex; align-items:center; gap:10px; padding:9px 12px; border:1px solid #cbd5e1; border-radius:8px; background:#ffffff; cursor:pointer; font-size:14px; transition:all 0.15s;";
+      choiceLabel.style.cssText =
+        "display:flex; align-items:center; gap:10px; padding:9px 12px; border:1px solid #cbd5e1; border-radius:8px; background:#ffffff; cursor:pointer; font-size:14px; transition:all 0.15s;";
 
       const radio = document.createElement("input");
       radio.type = "radio";
@@ -2206,12 +2289,14 @@ function renderWarmupPhase(el, state, ctx, config) {
   });
 
   const btnRow = document.createElement("div");
-  btnRow.style.cssText = "margin-top:20px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;";
+  btnRow.style.cssText =
+    "margin-top:20px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;";
 
   const checkBtn = document.createElement("button");
   checkBtn.type = "button";
   checkBtn.className = "btn btn-primary";
-  checkBtn.style.cssText = "padding:10px 20px; font-weight:800; font-size:14px; background:#0f6d78; color:#ffffff; border:none; border-radius:10px; cursor:pointer;";
+  checkBtn.style.cssText =
+    "padding:10px 20px; font-weight:800; font-size:14px; background:#0f6d78; color:#ffffff; border:none; border-radius:10px; cursor:pointer;";
   checkBtn.textContent = savedAnswers.checked ? "Score Final (Submitted)" : "Submit Warmup Answers";
   if (savedAnswers.checked) {
     checkBtn.disabled = true;
@@ -2220,13 +2305,20 @@ function renderWarmupPhase(el, state, ctx, config) {
   }
 
   checkBtn.addEventListener("click", () => {
-    if (warmupTimerId) { clearInterval(warmupTimerId); warmupTimerId = null; }
-    const td = card.querySelector('#warmupTimerDisplay');
-    if (td) { td.textContent = '✅'; }
-    const tl = timerBar.querySelector('span:last-child');
-    if (tl) tl.textContent = 'Submitted';
-    timerBar.style.background = 'linear-gradient(135deg, #f0fdf4, #dcfce7)';
-    timerBar.style.borderColor = '#86efac';
+    if (warmupTimerId) {
+      clearInterval(warmupTimerId);
+      warmupTimerId = null;
+    }
+    const td = card.querySelector("#warmupTimerDisplay");
+    if (td) {
+      td.textContent = "✅";
+    }
+    const tl = timerBar.querySelector(".warmup-timer-label");
+    if (tl) tl.textContent = "Submitted";
+    // Retire the teacher "Set time" control once the warmup is locked in.
+    timerBar.querySelector(".warmup-timer-edit")?.remove();
+    timerBar.style.background = "linear-gradient(135deg, #f0fdf4, #dcfce7)";
+    timerBar.style.borderColor = "#86efac";
 
     let correctCount = 0;
     savedAnswers.checked = true;
@@ -2249,7 +2341,7 @@ function renderWarmupPhase(el, state, ctx, config) {
 
     const badge = card.querySelector("#warmupScoreBadge");
     if (badge) {
-      badge.textContent = `Final Score: ${correctCount}/${total} (${Math.round((correctCount/total)*100)}%)`;
+      badge.textContent = `Final Score: ${correctCount}/${total} (${Math.round((correctCount / total) * 100)}%)`;
       badge.style.background = correctCount === total ? "#dcfce7" : "#fef3c7";
       badge.style.color = correctCount === total ? "#15803d" : "#b45309";
     }
@@ -2262,7 +2354,8 @@ function renderWarmupPhase(el, state, ctx, config) {
   const nextBtn = document.createElement("button");
   nextBtn.type = "button";
   nextBtn.className = "btn btn-teal";
-  nextBtn.style.cssText = "padding:10px 22px; font-weight:800; font-size:14px; background:#14223a; color:#ffffff; border:none; border-radius:10px; cursor:pointer;";
+  nextBtn.style.cssText =
+    "padding:10px 22px; font-weight:800; font-size:14px; background:#14223a; color:#ffffff; border:none; border-radius:10px; cursor:pointer;";
   nextBtn.textContent = "Continue to Phase 2: Objectives 🎯";
   nextBtn.addEventListener("click", () => {
     if (ctx && typeof ctx.nextPhase === "function") {
@@ -2281,7 +2374,7 @@ function renderWarmupPhase(el, state, ctx, config) {
     });
     const badge = card.querySelector("#warmupScoreBadge");
     if (badge) {
-      badge.textContent = `Final Score: ${correctCount}/${total} (${Math.round((correctCount/total)*100)}%)`;
+      badge.textContent = `Final Score: ${correctCount}/${total} (${Math.round((correctCount / total) * 100)}%)`;
       badge.style.background = correctCount === total ? "#dcfce7" : "#fef3c7";
       badge.style.color = correctCount === total ? "#15803d" : "#b45309";
     }
@@ -2305,7 +2398,8 @@ function renderObjectivesIntroPhase(el, state, ctx, config) {
 
   const card = document.createElement("div");
   card.className = "card card-objectives-intro-phase";
-  card.style.cssText = "margin: 16px 0 24px; border: 2px solid #0f6d78; border-radius: 16px; padding: 22px; background: #ffffff; box-shadow: 0 6px 20px rgba(15,109,120,0.12);";
+  card.style.cssText =
+    "margin: 16px 0 24px; border: 2px solid #0f6d78; border-radius: 16px; padding: 22px; background: #ffffff; box-shadow: 0 6px 20px rgba(15,109,120,0.12);";
 
   card.innerHTML = `
     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; border-bottom:1px solid #e2e8f0; padding-bottom:12px;">
@@ -2327,7 +2421,8 @@ function renderObjectivesIntroPhase(el, state, ctx, config) {
   const nextBtn = document.createElement("button");
   nextBtn.type = "button";
   nextBtn.className = "btn btn-teal";
-  nextBtn.style.cssText = "margin-top:20px; padding:12px 24px; font-weight:800; font-size:15px; background:#14223a; color:#ffffff; border:none; border-radius:10px; cursor:pointer;";
+  nextBtn.style.cssText =
+    "margin-top:20px; padding:12px 24px; font-weight:800; font-size:15px; background:#14223a; color:#ffffff; border:none; border-radius:10px; cursor:pointer;";
   nextBtn.textContent = "Continue to Phase 3: Launch 🚀";
   nextBtn.addEventListener("click", () => {
     state.markCompleted(1);
@@ -2345,9 +2440,12 @@ function renderReteachHelper(container, warmup, correctCount, total, config) {
 
   const reteachBox = document.createElement("div");
   reteachBox.className = "warmup-reteach-card";
-  reteachBox.style.cssText = "margin-top:20px; border:2px solid #eab308; border-radius:14px; padding:18px; background:#fefce8; box-shadow:0 4px 14px rgba(234,179,8,0.15);";
+  reteachBox.style.cssText =
+    "margin-top:20px; border:2px solid #eab308; border-radius:14px; padding:18px; background:#fefce8; box-shadow:0 4px 14px rgba(234,179,8,0.15);";
 
-  const prevTitle = warmup.prevLessonTitle ? esc(warmup.prevLessonTitle) : "Previous Lesson Concept";
+  const prevTitle = warmup.prevLessonTitle
+    ? esc(warmup.prevLessonTitle)
+    : "Previous Lesson Concept";
 
   reteachBox.innerHTML = `
     <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
@@ -3836,7 +3934,8 @@ function renderObjectivesReviewPhase(el, state, ctx, config) {
 
   const card = document.createElement("div");
   card.className = "card card-objectives-review-phase";
-  card.style.cssText = "margin: 16px 0 24px; border: 2px solid #0f6d78; border-radius: 16px; padding: 22px; background: #ffffff; box-shadow: 0 6px 20px rgba(15,109,120,0.12);";
+  card.style.cssText =
+    "margin: 16px 0 24px; border: 2px solid #0f6d78; border-radius: 16px; padding: 22px; background: #ffffff; box-shadow: 0 6px 20px rgba(15,109,120,0.12);";
 
   card.innerHTML = `
     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; border-bottom:1px solid #e2e8f0; padding-bottom:12px;">
@@ -3856,8 +3955,9 @@ function renderObjectivesReviewPhase(el, state, ctx, config) {
   renderObjectives(card, config);
 
   const checkWrap = document.createElement("div");
-  checkWrap.style.cssText = "margin-top:20px; padding:16px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:12px; display:flex; flex-direction:column; gap:10px;";
-  
+  checkWrap.style.cssText =
+    "margin-top:20px; padding:16px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:12px; display:flex; flex-direction:column; gap:10px;";
+
   const savedChecks = state.getResponse(6, "objectives_mastery") || {};
 
   checkWrap.innerHTML = `
@@ -3886,7 +3986,8 @@ function renderObjectivesReviewPhase(el, state, ctx, config) {
   const finishBtn = document.createElement("button");
   finishBtn.type = "button";
   finishBtn.className = "btn btn-teal";
-  finishBtn.style.cssText = "margin-top:20px; padding:12px 24px; font-weight:800; font-size:15px; background:#0f6d78; color:#ffffff; border:none; border-radius:10px; cursor:pointer;";
+  finishBtn.style.cssText =
+    "margin-top:20px; padding:12px 24px; font-weight:800; font-size:15px; background:#0f6d78; color:#ffffff; border:none; border-radius:10px; cursor:pointer;";
   finishBtn.textContent = "Finish Lesson & Celebrate 🎉";
   finishBtn.addEventListener("click", () => {
     state.markCompleted(6);
