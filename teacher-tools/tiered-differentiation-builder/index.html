@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tiered Differentiation Builder — Neft Teacher Tools</title>
+    <meta
+      name="description"
+      content="1-click Grade 6 Math Tiered Differentiation & Small-Group Workstation Generator. Automatically creates Tier 1 Support (with visual SVG math models), Tier 2 Core, and Tier 3 Challenge task cards."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Nunito:wght@600;700;800;900&display=swap"
+    />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <link rel="stylesheet" href="/teacher-tools/tools.css" />
+    <link rel="stylesheet" href="./styles.css" />
+    <!-- mobile-access-injected:begin -->
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
+  <body class="tdb-page">
+    <a class="skip-link" href="#tdb-main">Skip to Differentiation Generator</a>
+
+    <div class="app-shell">
+      <!-- Nav & Header -->
+      <header class="tdb-topbar">
+        <div class="tdb-brand">
+          <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol>
+              <li><a href="/">Neft Hub</a></li>
+              <li><a href="/teacher-tools/">Teacher Tools</a></li>
+              <li><span aria-current="page">Tiered Differentiation Builder</span></li>
+            </ol>
+          </nav>
+          <div class="brand-title-wrap">
+            <span class="badge badge-accent">Grade 6 Math · Small Group &amp; Tiering</span>
+            <h1>Tiered Differentiation Builder</h1>
+          </div>
+          <p class="brand-desc">
+            Instantly generate 3-tiered small-group workstation tasks, graphic organizers, and SVG visual math models for any Grade 6 lesson.
+          </p>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn btn-secondary" id="themeToggleBtn" type="button" aria-label="Toggle Light/Dark Theme">
+            <span class="theme-icon" aria-hidden="true">🌓</span> Theme
+          </button>
+          <a class="btn btn-outline" href="/curriculum/">Back to Curriculum</a>
+        </div>
+      </header>
+
+      <!-- Main Content Layout -->
+      <main id="tdb-main" class="tdb-grid-container">
+        <!-- Sidebar Controls -->
+        <aside class="tdb-sidebar">
+          <section class="card sidebar-card" aria-labelledby="config-heading">
+            <h2 id="config-heading" class="card-kicker">1 · Select Lesson &amp; Strategy</h2>
+            
+            <div class="form-group">
+              <label for="unitSelect" class="form-label">Grade 6 Math Unit</label>
+              <select id="unitSelect" class="form-select">
+                <option value="1">Unit 1: Ratios &amp; Rates (6.RP.A)</option>
+                <option value="2">Unit 2: Fractions &amp; Decimals (6.NS.A/B)</option>
+                <option value="3">Unit 3: Rational Numbers &amp; Integers (6.NS.C)</option>
+                <option value="4">Unit 4: Expressions &amp; Equations (6.EE.A/B)</option>
+                <option value="5">Unit 5: Area &amp; Polygons (6.G.A)</option>
+                <option value="6">Unit 6: Volume &amp; Surface Area (6.G.A)</option>
+                <option value="7">Unit 7: Rates, Percents &amp; Proportions (6.RP.A)</option>
+                <option value="8">Unit 8: Statistics &amp; Data Distributions (6.SP.A/B)</option>
+                <option value="9">Unit 9: Coordinate Plane &amp; Geometry (6.NS.C / 6.G.A)</option>
+                <option value="10">Unit 10: Cumulative End-of-Year Review</option>
+                <option value="custom">-- Custom Lesson Topic --</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="lessonSelect" class="form-label">Lesson Focus</label>
+              <select id="lessonSelect" class="form-select">
+                <!-- Dynamically populated based on Unit select -->
+              </select>
+            </div>
+
+            <div id="customTopicWrap" class="form-group" hidden>
+              <label for="customTopicInput" class="form-label">Custom Topic / Objective</label>
+              <input type="text" id="customTopicInput" class="form-input" placeholder="e.g., Finding GCF & LCM using prime factorization" />
+            </div>
+
+            <div class="form-group">
+              <label for="visualModelSelect" class="form-label">Visual Scaffolding Engine</label>
+              <select id="visualModelSelect" class="form-select">
+                <option value="auto">Auto-Select Best Visual Model</option>
+                <option value="tape">Tape Diagram / Ratio Bars</option>
+                <option value="double_line">Double Number Line</option>
+                <option value="integer_line">Integer &amp; Negative Number Line</option>
+                <option value="fraction_bar">Fraction &amp; Decimal Area Model</option>
+                <option value="balance_scale">Equation Balance Scale</option>
+                <option value="coord_grid">Coordinate Plane Grid (4 Quadrants)</option>
+                <option value="box_plot">Box Plot &amp; Data Distribution</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="esolLevelSelect" class="form-label">Language Support (ESOL/WIDA)</label>
+              <select id="esolLevelSelect" class="form-select">
+                <option value="wida2">WIDA 1-2 (Entering / Emerging — Heavy Sentence Frames)</option>
+                <option value="wida3" selected>WIDA 3-4 (Developing / Expanding — Bilingual Vocab &amp; Hints)</option>
+                <option value="standard">Standard Scaffolding</option>
+              </select>
+            </div>
+
+            <button type="button" id="generateBtn" class="btn btn-primary btn-block btn-lg">
+              <span class="btn-icon" aria-hidden="true">⚡</span> Generate 3-Tier Workstation
+            </button>
+
+            <!-- Saved Workstations History -->
+            <div class="history-section">
+              <h3 class="history-title">Saved Workstations</h3>
+              <div id="historyList" class="history-list">
+                <p class="history-empty">No saved packages yet.</p>
+              </div>
+            </div>
+          </section>
+        </aside>
+
+        <!-- Main Display Area -->
+        <section class="tdb-content">
+          <!-- Action Bar -->
+          <header class="card action-bar">
+            <div class="tier-nav-tabs" role="tablist" aria-label="Workstation Tiers">
+              <button role="tab" id="tab-overview" aria-selected="true" aria-controls="panel-overview" class="tier-tab active">
+                📋 Teacher Guide
+              </button>
+              <button role="tab" id="tab-tier1" aria-selected="false" aria-controls="panel-tier1" class="tier-tab tier-1-tab">
+                🔵 Tier 1: Support
+              </button>
+              <button role="tab" id="tab-tier2" aria-selected="false" aria-controls="panel-tier2" class="tier-tab tier-2-tab">
+                🟢 Tier 2: Core
+              </button>
+              <button role="tab" id="tab-tier3" aria-selected="false" aria-controls="panel-tier3" class="tier-tab tier-3-tab">
+                🟣 Tier 3: Extension
+              </button>
+            </div>
+
+            <div class="export-actions">
+              <button type="button" id="printBtn" class="btn btn-sm btn-outline" title="Print student worksheets">
+                🖨️ Print
+              </button>
+              <button type="button" id="copyDocBtn" class="btn btn-sm btn-outline" title="Copy formatted text for Docs">
+                📋 Copy Text
+              </button>
+              <button type="button" id="savePkgBtn" class="btn btn-sm btn-secondary" title="Save workstation to local library">
+                💾 Save
+              </button>
+            </div>
+          </header>
+
+          <!-- Output Display Container -->
+          <div id="outputContainer" class="output-container">
+            <!-- Panel: Overview / Teacher Plan -->
+            <article id="panel-overview" role="tabpanel" aria-labelledby="tab-overview" class="tab-panel active">
+              <div class="card panel-card">
+                <div class="panel-header">
+                  <span class="badge badge-primary" id="metaStandardBadge">6.RP.A.1</span>
+                  <h2 id="metaTitle">Lesson 1-1: Concept of Ratios &amp; Rates</h2>
+                  <p class="panel-subtitle" id="metaObjective">
+                    Objective: Students will model and express ratio relationships using visual tape diagrams, colon notation, and fractional comparisons.
+                  </p>
+                </div>
+
+                <div class="overview-grid">
+                  <div class="overview-box tier-1-box">
+                    <h3>🔵 Tier 1: Support Group</h3>
+                    <p><strong>Focus:</strong> Conceptual foundation, step-by-step visual models, sentence frames.</p>
+                    <ul>
+                      <li>Scaffolded Graphic Organizer with visual prompts</li>
+                      <li>Inline SVG Tape Diagrams with pre-chunked terms</li>
+                      <li>Sentence frames for verbalizing ratio comparisons</li>
+                    </ul>
+                  </div>
+
+                  <div class="overview-box tier-2-box">
+                    <h3>🟢 Tier 2: On-Level Core</h3>
+                    <p><strong>Focus:</strong> Standard grade-level practice &amp; error analysis.</p>
+                    <ul>
+                      <li>Independent problem solving in multiple representations</li>
+                      <li>"Spot the Mistake" misconception analysis</li>
+                      <li>Self-check rubric against Grade 6 standards</li>
+                    </ul>
+                  </div>
+
+                  <div class="overview-box tier-3-box">
+                    <h3>🟣 Tier 3: Challenge Extension</h3>
+                    <p><strong>Focus:</strong> DOK 3 application, open-ended modeling, mathematical defense.</p>
+                    <ul>
+                      <li>Real-world multi-step problem solving</li>
+                      <li>Written mathematical defense prompt</li>
+                      <li>Creative extension challenge card</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="teacher-notes-section">
+                  <h3>👩‍🏫 Small Group Rotation &amp; Facilitation Guide</h3>
+                  <div class="rotation-steps">
+                    <div class="step-card">
+                      <strong>Station 1 (Direct Teacher Group - Tier 1):</strong>
+                      <p>Guide students through the SVG visual model. Use concrete counters or ratio bars. Prompt with: <em>"For every ___ blue blocks, how many yellow blocks do we draw?"</em></p>
+                    </div>
+                    <div class="step-card">
+                      <strong>Station 2 (Collaborative Pair Work - Tier 2):</strong>
+                      <p>Students work in pairs on problem sets and exchange error-analysis cards to critique each other's reasoning.</p>
+                    </div>
+                    <div class="step-card">
+                      <strong>Station 3 (Independent Challenge Lab - Tier 3):</strong>
+                      <p>Students solve real-world optimization scenarios and construct a written defense card explaining their strategy.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <!-- Panel: Tier 1 (Support) -->
+            <article id="panel-tier1" role="tabpanel" aria-labelledby="tab-tier1" class="tab-panel">
+              <div class="card panel-card print-section">
+                <header class="sheet-header">
+                  <div class="sheet-title-block">
+                    <span class="sheet-badge tier-1-badge">TIER 1 · SUPPORT &amp; SCAFFOLDING</span>
+                    <h2 class="sheet-title" id="t1-title">Tier 1 Workstation: Visual Ratios</h2>
+                    <p class="sheet-subtitle" id="t1-sub">Name: ______________________ Date: _________ Class: _____</p>
+                  </div>
+                </header>
+
+                <div class="scaffold-box">
+                  <h3 class="box-title">💡 Step-by-Step Math Strategy Guide</h3>
+                  <div id="t1-svg-container" class="svg-display-box">
+                    <!-- Inline SVG generated programmatically -->
+                  </div>
+                  <div class="sentence-frame-box">
+                    <h4>🗣️ Sentence Frames for Math Talking:</h4>
+                    <p id="t1-sentence-frames">
+                      • "The ratio of <strong>[Part A]</strong> to <strong>[Part B]</strong> is _____ to _____."<br />
+                      • "For every _____ items in group 1, there are _____ items in group 2."
+                    </p>
+                  </div>
+                </div>
+
+                <div class="problem-set">
+                  <h3>📝 Guided Practice Problems</h3>
+                  <div id="t1-problems" class="problem-grid">
+                    <!-- Populated by JavaScript -->
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <!-- Panel: Tier 2 (Core) -->
+            <article id="panel-tier2" role="tabpanel" aria-labelledby="tab-tier2" class="tab-panel">
+              <div class="card panel-card print-section">
+                <header class="sheet-header">
+                  <div class="sheet-title-block">
+                    <span class="sheet-badge tier-2-badge">TIER 2 · ON-LEVEL PRACTICE</span>
+                    <h2 class="sheet-title" id="t2-title">Tier 2 Workstation: Grade-Level Mastery</h2>
+                    <p class="sheet-subtitle" id="t2-sub">Name: ______________________ Date: _________ Class: _____</p>
+                  </div>
+                </header>
+
+                <div class="problem-set">
+                  <h3>📝 Practice Problem Set</h3>
+                  <div id="t2-problems" class="problem-grid">
+                    <!-- Populated by JavaScript -->
+                  </div>
+                </div>
+
+                <div class="error-analysis-box">
+                  <h3 class="box-title">🔍 Spot the Mistake (Error Analysis)</h3>
+                  <div id="t2-error-analysis" class="mistake-card">
+                    <!-- Populated by JavaScript -->
+                  </div>
+                </div>
+
+                <div class="self-check-box">
+                  <h4>✔️ Self-Check Checklist:</h4>
+                  <label><input type="checkbox" /> I labeled my terms correctly with units.</label><br />
+                  <label><input type="checkbox" /> I checked if my answer makes sense logically.</label><br />
+                  <label><input type="checkbox" /> I showed all work step-by-step.</label>
+                </div>
+              </div>
+            </article>
+
+            <!-- Panel: Tier 3 (Extension) -->
+            <article id="panel-tier3" role="tabpanel" aria-labelledby="tab-tier3" class="tab-panel">
+              <div class="card panel-card print-section">
+                <header class="sheet-header">
+                  <div class="sheet-title-block">
+                    <span class="sheet-badge tier-3-badge">TIER 3 · EXTENSION &amp; CHALLENGE</span>
+                    <h2 class="sheet-title" id="t3-title">Tier 3 Workstation: Real-World Investigation</h2>
+                    <p class="sheet-subtitle" id="t3-sub">Name: ______________________ Date: _________ Class: _____</p>
+                  </div>
+                </header>
+
+                <div class="challenge-scenario-box">
+                  <h3 class="box-title">🚀 Real-World Challenge Scenario</h3>
+                  <div id="t3-scenario" class="scenario-content">
+                    <!-- Populated by JavaScript -->
+                  </div>
+                </div>
+
+                <div class="problem-set">
+                  <h3>🧠 Advanced Multi-Step Problems</h3>
+                  <div id="t3-problems" class="problem-grid">
+                    <!-- Populated by JavaScript -->
+                  </div>
+                </div>
+
+                <div class="defense-box">
+                  <h3 class="box-title">🛡️ Construct a Mathematical Defense</h3>
+                  <div id="t3-defense-prompt" class="defense-prompt-content">
+                    <!-- Populated by JavaScript -->
+                  </div>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+      </main>
+
+      <footer class="tdb-footer">
+        <p>Neft Teacher Tools · Grade 6 Math Tiered Differentiation Builder · Local-First Architecture</p>
+      </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="./app.js"></script>
+  </body>
+</html>
