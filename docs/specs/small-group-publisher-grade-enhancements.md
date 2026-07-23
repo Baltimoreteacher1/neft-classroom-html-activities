@@ -1,7 +1,10 @@
 # Small-Group Lessons — Publisher-Grade Enhancement List
 
 Status: audit 2026-07-23. **Wave 1 shipped** (items 1–5); **Wave 2 shipped**
-(items 6, 7, 17, 18). Remaining: 8–16, 19, 20.
+(items 6, 7, 17, 18); **item 8 shipped** (Small-Group Rotation Console at
+`teacher-tools/small-group-rotation/`, registered in the teacher-tools hub —
+lesson picker → variant/assigned/deep-link launcher + live name-free class
+evidence from `/api/progress/small-group-summary`). Remaining: 9–16, 19, 20.
 Scope: all 128 small-group lessons + 20 catch-ups (engine modules, generators,
 teacher route, worksheets), benchmarked against professional publishers
 (Illustrative Mathematics, Eureka Math², enVision, Amplify).
