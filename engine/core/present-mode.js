@@ -1,6 +1,6 @@
-// present-mode.js — Gold-Standard Presenter & Screen Share Engine (per Joel 2026-07-23).
+// present-mode.js — Presenter & Screen Share Engine.
 // Provides classroom presentation capabilities: live screen sharing (getDisplayMedia),
-// floating & minimizable Presenter widget, slide deck presentation mode, screen annotations,
+// floating & minimizable Presenter widget, full screen presentation mode, screen annotations,
 // and projector views for all small-group & interactive lessons on eduwonderlab.com/curriculum.
 
 function esc(s) {
@@ -27,7 +27,6 @@ export function isTeacherModeActive() {
 
 let activeScreenStream = null;
 let screenOverlayEl = null;
-let _annotationCanvasEl = null;
 let isAnnotating = false;
 let isLaserPointer = false;
 
@@ -259,6 +258,8 @@ export function mountPresentWidget({ onPresentToggle, container } = {}) {
   if (document.getElementById("nt-present-widget")) return;
   if (!isTeacherModeActive()) return;
 
+  initPresentMode({});
+
   let minimized = false;
   try {
     minimized = localStorage.getItem(MINIMIZED_KEY) === "1";
@@ -288,7 +289,7 @@ export function mountPresentWidget({ onPresentToggle, container } = {}) {
             <span>📺 Screen Share</span>
           </button>
           <button type="button" class="nt-present-act-btn nt-present-deck" title="Slide Deck Projector View">
-            <span>📽️ Slide Deck</span>
+            <span>📽️ Present Mode</span>
           </button>
           <button type="button" class="nt-present-min-btn" title="Minimize Bar" aria-label="Minimize Present Bar">
             <span>🗕</span>
@@ -348,133 +349,133 @@ export function mountPresentWidget({ onPresentToggle, container } = {}) {
   });
 }
 
-export function initPresentMode({
-  app,
-  config: _config,
-  phaseConfigs,
-  phaseContainer,
-  state,
-}) {
+let pmInitialized = false;
+
+export function initPresentMode({ app, config, phaseConfigs, phaseContainer, state } = {}) {
+  if (pmInitialized && !app && !phaseConfigs) return;
+  pmInitialized = true;
+
   let active = false;
-  let slideEls = [];
   let current = 0;
   let rail = null;
   let nav = null;
 
-  function groupSlides(phaseEl) {
-    if (!phaseEl) return [];
-    const groups = [];
-    [...phaseEl.children].forEach((child) => {
-      const startsSlide =
-        child.classList.contains("card") ||
-        child.querySelector(".card, h2, h3, .card-title, .sg-tab") ||
-        groups.length === 0;
-      if (startsSlide) groups.push([]);
-      groups[groups.length - 1].push(child);
-      child.dataset.pmSlide = String(groups.length - 1);
-    });
-    return groups;
-  }
-
-  function slideTitle(group, fallback) {
-    for (const el of group) {
-      const h = el.querySelector(
-        "h2, h3, h4, .card-title, [class*='section-title'], legend, [role='heading']",
-      );
-      const t = (h?.textContent || el.getAttribute?.("aria-label") || "")
-        .trim()
-        .replace(/\s+/g, " ");
-      if (t) return t.length > 34 ? `${t.slice(0, 32)}…` : t;
+  function getParts() {
+    // 1. Check for Small-Group Tabs
+    const sgTabs = [...document.querySelectorAll(".sg-tabs .sg-tab, .sg-tabs button, [id^='sg-tab-']")].filter(
+      (btn) => btn.offsetWidth > 0 || btn.offsetHeight > 0 || btn.id
+    );
+    if (sgTabs.length > 0) {
+      const seen = new Set();
+      const parts = [];
+      sgTabs.forEach((btn) => {
+        const text = (btn.textContent || "").trim().replace(/\s+/g, " ");
+        if (text && !seen.has(text) && !text.includes("★")) {
+          seen.add(text);
+          parts.push({
+            title: `${parts.length + 1} · ${text}`,
+            activate: () => btn.click(),
+          });
+        }
+      });
+      if (parts.length > 0) return parts;
     }
-    return fallback;
+
+    // 2. Check for Phase Configs
+    if (phaseConfigs && phaseConfigs.length > 0) {
+      return phaseConfigs.map((p, i) => ({
+        title: `${i + 1} · ${p?.name || `Part ${i + 1}`}`,
+        activate: () => {
+          if (app?.navigateTo) app.navigateTo(i);
+          document.dispatchEvent(new CustomEvent("rma:navigate", { detail: { phase: i } }));
+        },
+      }));
+    }
+
+    // 3. Fallback: check DOM for .phase elements
+    const phases = document.querySelectorAll(".phase-container .phase, #app .phase");
+    if (phases.length > 0) {
+      return [...phases].map((ph, i) => {
+        const h = ph.querySelector("h2, h3, .phase-title, .card-title");
+        const title = h ? h.textContent.trim() : `Part ${i + 1}`;
+        return {
+          title: `${i + 1} · ${title}`,
+          activate: () => {
+            if (app?.navigateTo) app.navigateTo(i);
+            document.dispatchEvent(new CustomEvent("rma:navigate", { detail: { phase: i } }));
+          },
+        };
+      });
+    }
+
+    // 4. Default: single full-lesson presentation view
+    return [
+      {
+        title: "1 · Lesson Presentation",
+        activate: () => {},
+      },
+    ];
   }
 
   function show(n) {
-    if (!active || !slideEls.length) return;
-    current = Math.max(0, Math.min(slideEls.length - 1, n));
-    slideEls.forEach((group, i) =>
-      group.forEach((el) => el.classList.toggle("pm-hidden", i !== current)),
-    );
-    rail?.querySelectorAll(".pm-thumb").forEach((t, i) => {
-      t.classList.toggle("pm-sel", i === current);
-      t.setAttribute("aria-selected", i === current ? "true" : "false");
-    });
-    if (nav) {
-      nav.querySelector(".pm-count").textContent = `${current + 1} / ${slideEls.length}`;
-      nav.querySelector("[data-pm-prev]").disabled = current === 0;
-      nav.querySelector("[data-pm-next]").disabled = current === slideEls.length - 1;
+    if (!active) return;
+    const parts = getParts();
+    if (!parts.length) return;
+    current = Math.max(0, Math.min(parts.length - 1, n));
+
+    parts[current].activate();
+
+    if (rail) {
+      rail.querySelectorAll(".pm-rail-phase").forEach((b, i) => {
+        b.classList.toggle("pm-sel", i === current);
+        b.setAttribute("aria-selected", i === current ? "true" : "false");
+      });
     }
+
+    if (nav) {
+      nav.querySelector(".pm-count").textContent = `${current + 1} / ${parts.length}`;
+      nav.querySelector("[data-pm-prev]").disabled = current === 0;
+      nav.querySelector("[data-pm-next]").disabled = current === parts.length - 1;
+    }
+
     window.scrollTo({ top: 0, behavior: "auto" });
   }
 
-  function deckify() {
-    const phaseEl = phaseContainer?.querySelector?.(".phase") || phaseContainer;
-    if (!phaseEl) return;
-    slideEls = groupSlides(phaseEl);
-    const phaseIdx = state?.get?.()?.currentPhase ?? 0;
-    if (rail?.querySelector(".pm-rail-slides")) {
-      rail.querySelector(".pm-rail-slides").innerHTML = slideEls
-        .map(
-          (g, i) => `
-          <button type="button" class="pm-thumb" role="tab" data-pm-slide-btn="${i}">
-            <span class="pm-thumb-num">${i + 1}</span>
-            <span class="pm-thumb-title">${esc(slideTitle(g, `Slide ${i + 1}`))}</span>
-          </button>`,
-        )
-        .join("");
-      rail
-        .querySelectorAll("[data-pm-slide-btn]")
-        .forEach((b) => b.addEventListener("click", () => show(+b.dataset.pmSlideBtn)));
-      rail
-        .querySelectorAll(".pm-rail-phase")
-        .forEach((b, i) => b.classList.toggle("pm-sel", i === phaseIdx));
-    }
-    show(0);
-  }
-
-  function unDeckify() {
-    if (phaseContainer) {
-      phaseContainer.querySelectorAll(".pm-hidden").forEach((el) => el.classList.remove("pm-hidden"));
-    }
-    slideEls = [];
-    current = 0;
-  }
-
-  function buildChrome() {
-    rail = document.createElement("aside");
-    rail.className = "pm-rail";
-    rail.setAttribute("aria-label", "Presentation slides");
-    const phaseListHtml = (phaseConfigs || [])
+  function renderRailContent() {
+    if (!rail) return;
+    const parts = getParts();
+    const phaseListHtml = parts
       .map(
         (p, i) =>
-          `<button type="button" class="pm-rail-phase" data-pm-goto-phase="${i}">${i + 1} · ${esc(p?.name || `Part ${i + 1}`)}</button>`,
+          `<button type="button" class="pm-rail-phase ${i === current ? "pm-sel" : ""}" data-pm-goto="${i}">${esc(p.title)}</button>`
       )
       .join("");
 
     rail.innerHTML = `
       <div class="pm-rail-head">Presenting</div>
-      <div class="pm-rail-slides" role="tablist"></div>
       <div class="pm-rail-phases">${phaseListHtml}</div>
       <button type="button" class="pm-exit" data-pm-exit>✕ Exit (Esc)</button>`;
 
-    rail
-      .querySelectorAll("[data-pm-goto-phase]")
-      .forEach((b) =>
-        b.addEventListener("click", () =>
-          document.dispatchEvent(
-            new CustomEvent("rma:navigate", { detail: { phase: +b.dataset.pmGotoPhase } }),
-          ),
-        ),
-      );
+    rail.querySelectorAll("[data-pm-goto]").forEach((b) =>
+      b.addEventListener("click", () => show(+b.dataset.pmGoto))
+    );
     rail.querySelector("[data-pm-exit]").addEventListener("click", () => setActive(false));
+  }
+
+  function buildChrome() {
+    if (document.querySelector(".pm-rail")) return;
+
+    rail = document.createElement("aside");
+    rail.className = "pm-rail";
+    rail.setAttribute("aria-label", "Presentation sections");
     document.body.append(rail);
 
     nav = document.createElement("div");
     nav.className = "pm-nav";
     nav.innerHTML = `
-      <button type="button" class="pm-arrow" data-pm-prev aria-label="Previous slide">←</button>
+      <button type="button" class="pm-arrow" data-pm-prev aria-label="Previous section">←</button>
       <span class="pm-count" aria-live="polite"></span>
-      <button type="button" class="pm-arrow" data-pm-next aria-label="Next slide">→</button>`;
+      <button type="button" class="pm-arrow" data-pm-next aria-label="Next section">→</button>`;
     nav.querySelector("[data-pm-prev]").addEventListener("click", () => show(current - 1));
     nav.querySelector("[data-pm-next]").addEventListener("click", () => show(current + 1));
     document.body.append(nav);
@@ -486,9 +487,18 @@ export function initPresentMode({
     document.body.classList.toggle("nt-present", on);
     if (on) {
       if (!rail) buildChrome();
-      deckify();
+      renderRailContent();
+      const phaseIdx = state?.get?.()?.currentPhase ?? 0;
+      show(phaseIdx);
     } else {
-      unDeckify();
+      if (rail) {
+        rail.remove();
+        rail = null;
+      }
+      if (nav) {
+        nav.remove();
+        nav = null;
+      }
     }
     document
       .querySelectorAll("[data-pm-toggle-label]")
@@ -499,23 +509,8 @@ export function initPresentMode({
     const origRenderPhase = app.renderPhase.bind(app);
     app.renderPhase = (index, renderFn) => {
       origRenderPhase(index, renderFn);
-      if (active) deckify();
+      if (active) renderRailContent();
     };
-  }
-
-  if (phaseContainer) {
-    new MutationObserver(() => {
-      if (!active || !slideEls.length) return;
-      const phaseEl = phaseContainer.querySelector?.(".phase") || phaseContainer;
-      if (!phaseEl) return;
-      [...phaseEl.children].forEach((child) => {
-        if (child.dataset.pmSlide === undefined) {
-          child.dataset.pmSlide = String(slideEls.length - 1);
-          slideEls[slideEls.length - 1]?.push(child);
-          child.classList.toggle("pm-hidden", current !== slideEls.length - 1);
-        }
-      });
-    }).observe(phaseContainer, { childList: true, subtree: true });
   }
 
   document.addEventListener("keydown", (e) => {
@@ -550,7 +545,7 @@ export function initPresentMode({
 
   if (new URLSearchParams(window.location.search).get("present") === "1") {
     const tick = setInterval(() => {
-      if (phaseContainer?.querySelector?.(".phase")) {
+      if (document.querySelector(".phase") || document.querySelector(".sg-tabs")) {
         clearInterval(tick);
         setActive(true);
       }
