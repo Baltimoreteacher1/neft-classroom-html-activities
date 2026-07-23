@@ -2,7 +2,7 @@ import { runComponentList } from "../components/activity-chooser.js";
 import { createEngagement } from "../engagement/engagement.js";
 import { PHASE_TIME_ESTIMATES } from "./content-enrichment.js";
 import { mountExportToolbar } from "./export.js";
-import { completeLesson } from "./grade-emit.js";
+import { completeLesson, reportExitTicketScore } from "./grade-emit.js";
 import { getPreferredLang, phaseName, setPreferredLang, stackHtml, t } from "./i18n.js";
 import {
   linkifyObjectiveTerms,
@@ -1025,6 +1025,18 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     }
   });
 
+  // Interim grade: fire to Canvas/LTI when exit ticket (Phase 7 Reflect) is done,
+  // so teachers see grades without waiting for Phase 8 Objectives Review.
+  let exitTicketReported = false;
+  state.subscribe(() => {
+    if (exitTicketReported) return;
+    const phases = state.get().phases;
+    if (phases.length > 6 && phases[6]?.status === "completed") {
+      exitTicketReported = true;
+      reportExitTicketScore(state, config);
+    }
+  });
+
   updateSidebar(sidebar, state, phaseConfigs);
   updateLessonHero(lessonHero, state, phaseConfigs);
   updateMinimap();
@@ -1956,3 +1968,25 @@ function escHtml(str) {
   d.textContent = str ?? "";
   return d.innerHTML;
 }
+
+function initDeployWatcher() {
+  if (typeof navigator === 'undefined' || !('serviceWorker' in navigator)) return;
+  // Periodic update check every 2 minutes
+  setInterval(() => {
+    navigator.serviceWorker.getRegistration().then(reg => { if (reg) reg.update(); });
+  }, 2 * 60 * 1000);
+  // Auto-reload when new SW takes control
+  let reloading = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (reloading) return;
+    reloading = true;
+    const toast = document.createElement('div');
+    toast.setAttribute('role', 'status');
+    toast.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:linear-gradient(135deg,#155fa0,#0f6d78);color:#fff;text-align:center;padding:12px 20px;font-weight:600;font-size:14px;box-shadow:0 2px 12px rgba(0,0,0,.2);';
+    toast.textContent = '🚀 New version deployed — refreshing now…';
+    document.body.appendChild(toast);
+    setTimeout(() => window.location.reload(), 1500);
+  });
+}
+
+initDeployWatcher();

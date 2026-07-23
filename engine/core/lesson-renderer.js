@@ -2098,11 +2098,60 @@ function renderWarmupPhase(el, state, ctx, config) {
     </p>
   `;
 
+  const savedAnswers = state.getResponse(0, "warmup_answers") || {};
+
+  // --- Warmup Timer ---
+  const timerBar = document.createElement('div');
+  timerBar.className = 'warmup-timer-bar';
+  timerBar.style.cssText = 'display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:16px; padding:10px 16px; background:linear-gradient(135deg, #f0f9ff, #e6f4f6); border:1px solid #bae6fd; border-radius:10px;';
+  timerBar.innerHTML = `
+    <span style="font-size:1.3rem;">⏱️</span>
+    <span id="warmupTimerDisplay" style="font-size:20px; font-weight:800; color:#0f6d78; font-variant-numeric:tabular-nums;">3:00</span>
+    <span style="font-size:13px; color:#56627a;">remaining</span>
+  `;
+  card.append(timerBar);
+
+  let warmupTimerId = null;
+  let warmupSecondsLeft = 180;
+
+  if (!savedAnswers.checked) {
+    const timerDisplay = timerBar.querySelector('#warmupTimerDisplay');
+    warmupTimerId = setInterval(() => {
+      warmupSecondsLeft--;
+      const min = Math.floor(warmupSecondsLeft / 60);
+      const sec = warmupSecondsLeft % 60;
+      timerDisplay.textContent = `${min}:${String(sec).padStart(2, '0')}`;
+      
+      if (warmupSecondsLeft <= 30 && warmupSecondsLeft > 10) {
+        timerDisplay.style.color = '#b45309';
+        timerBar.style.background = 'linear-gradient(135deg, #fffbeb, #fef3c7)';
+        timerBar.style.borderColor = '#fcd34d';
+      }
+      if (warmupSecondsLeft <= 10) {
+        timerDisplay.style.color = '#dc2626';
+        timerBar.style.background = 'linear-gradient(135deg, #fef2f2, #fee2e2)';
+        timerBar.style.borderColor = '#fca5a5';
+        timerDisplay.style.animation = 'none';
+        timerDisplay.offsetHeight; // reflow
+        timerDisplay.style.animation = 'pulse 0.6s ease-in-out';
+      }
+      if (warmupSecondsLeft <= 0) {
+        clearInterval(warmupTimerId);
+        timerDisplay.textContent = '0:00';
+        timerBar.querySelector('span:last-child').textContent = 'time\\'s up!';
+        if (!savedAnswers.checked) checkBtn.click();
+      }
+    }, 1000);
+  } else {
+    const timerDisplay = timerBar.querySelector('#warmupTimerDisplay');
+    timerDisplay.textContent = '✅';
+    timerBar.querySelector('span:last-child').textContent = 'Submitted';
+  }
+
   const questionsContainer = document.createElement("div");
   questionsContainer.className = "warmup-questions-list";
   questionsContainer.style.cssText = "display:flex; flex-direction:column; gap:16px;";
 
-  const savedAnswers = state.getResponse(0, "warmup_answers") || {};
   const total = warmup.questions.length;
 
   warmup.questions.forEach((q, qIdx) => {
@@ -2171,6 +2220,14 @@ function renderWarmupPhase(el, state, ctx, config) {
   }
 
   checkBtn.addEventListener("click", () => {
+    if (warmupTimerId) { clearInterval(warmupTimerId); warmupTimerId = null; }
+    const td = card.querySelector('#warmupTimerDisplay');
+    if (td) { td.textContent = '✅'; }
+    const tl = timerBar.querySelector('span:last-child');
+    if (tl) tl.textContent = 'Submitted';
+    timerBar.style.background = 'linear-gradient(135deg, #f0fdf4, #dcfce7)';
+    timerBar.style.borderColor = '#86efac';
+
     let correctCount = 0;
     savedAnswers.checked = true;
 

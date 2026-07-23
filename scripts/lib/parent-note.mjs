@@ -263,6 +263,95 @@ export function buildWeeklyDigest(s, { date = "", homeworkMap = null, site = "" 
 </article>`;
 }
 
+/* ---- Weekly Warmup + Exit Ticket Summary -------- */
+
+/**
+ * Build a bilingual (EN/ES) weekly summary card from warmup + exit ticket
+ * performance data. Designed for automated family emails.
+ *
+ * @param {object} student
+ * @param {string} student.studentName
+ * @param {string} student.section
+ * @param {Array<{lessonId:string, lessonTitle:string, warmupPct:number, exitTicketCorrect:boolean, date:string}>} student.weeklyLessons
+ * @param {object} [options]
+ * @param {string} [options.date] - e.g. 'Week of July 21'
+ * @param {string} [options.teacherName]
+ * @param {string} [options.site] - base URL
+ * @returns {string} HTML fragment
+ */
+export function buildWeeklyWarmupExitSummary(student, { date = "", teacherName = "", site = "" } = {}) {
+  const lessons = Array.isArray(student.weeklyLessons) ? student.weeklyLessons : [];
+  
+  const scoredWarmups = lessons.filter((l) => l && l.warmupPct != null && Number.isFinite(Number(l.warmupPct)));
+  const avg = scoredWarmups.length
+    ? Math.round(scoredWarmups.reduce((t, l) => t + Number(l.warmupPct), 0) / scoredWarmups.length)
+    : null;
+    
+  const b = bandInfo(avg);
+  const fn = firstName(student.studentName);
+  const avgText = avg == null ? "" : ` (average ${avg}%).`;
+  const avgTextEs = avg == null ? "" : ` (promedio ${avg}%).`;
+
+  const byScore = [...scoredWarmups].sort((a, z) => Number(a.warmupPct) - Number(z.warmupPct));
+  const weakest = byScore.length && Number(byScore[0].warmupPct) < PRACTICE_BELOW ? byScore[0] : null;
+
+  const rowHtml = lessons.map((l) => {
+    const wp = l.warmupPct != null && Number.isFinite(Number(l.warmupPct)) ? Number(l.warmupPct) : null;
+    let color = "";
+    if (wp != null) {
+      if (wp >= STRONG) color = "green";
+      else if (wp >= PRACTICE_BELOW) color = "orange";
+      else color = "red";
+    }
+    const scoreSpan = wp != null ? `<span style="color:${color}">${wp}%</span>` : "—";
+    const et = l.exitTicketCorrect === true ? "✅" : (l.exitTicketCorrect === false ? "❌" : "—");
+    return `<tr>
+      <td>${esc(l.lessonTitle || l.lessonId || "Lesson")}</td>
+      <td>${scoreSpan}</td>
+      <td>${et}</td>
+      <td>${esc(l.date || "")}</td>
+    </tr>`;
+  }).join("");
+
+  const tableEn = lessons.length
+    ? `<table><thead><tr><th>Lesson</th><th>Warmup</th><th>Exit Ticket</th><th>Date</th></tr></thead><tbody>${rowHtml}</tbody></table>`
+    : `<p>No lessons recorded this week.</p>`;
+    
+  const tableEs = lessons.length
+    ? `<table><thead><tr><th>Lección</th><th>Calentamiento</th><th>Boleto de Salida</th><th>Fecha</th></tr></thead><tbody>${rowHtml}</tbody></table>`
+    : `<p>No hay lecciones registradas esta semana.</p>`;
+
+  const hwEn = (avg != null && avg < PRACTICE_BELOW && weakest)
+    ? `<p><strong>5-minute home activity:</strong> <a href="${esc(site)}/lessons/${esc(weakest.lessonId)}/family/">Review “${esc(weakest.lessonTitle || weakest.lessonId)}” together</a>.</p>`
+    : "";
+  const hwEs = (avg != null && avg < PRACTICE_BELOW && weakest)
+    ? `<p><strong>Actividad de 5 minutos en casa:</strong> <a href="${esc(site)}/lessons/${esc(weakest.lessonId)}/family/">Repasen “${esc(weakest.lessonTitle || weakest.lessonId)}” juntos</a>.</p>`
+    : "";
+
+  return `<article class="parent-note pn-digest" data-name="${esc(student.studentName)}" data-section="${esc(student.section)}">
+  <header class="pn-head">
+    <div><strong>${esc(student.studentName || "Student")}</strong> · <span class="pn-class">${esc(student.section || "")}</span></div>
+    <div class="pn-meta">Weekly Summary${date ? ` · ${esc(date)}` : ""}${teacherName ? ` · ${esc(teacherName)}` : ""}</div>
+  </header>
+  <div class="cols">
+    <div class="lang">
+      <span class="flag">🇺🇸 English</span>
+      <h2>Here's how ${esc(fn)} did this week in math class</h2>
+      <p>${esc(fn)} ${b.en}${avgText}</p>
+      ${tableEn}
+      ${hwEn}
+    </div>
+    <div class="lang">
+      <span class="flag">🇲🇽 Español</span>
+      <h2>Así le fue a ${esc(fn)} esta semana en la clase de matemáticas</h2>
+      <p>${esc(fn)} ${b.es}${avgTextEs}</p>
+      ${tableEs}
+      ${hwEs}
+    </div>
+  </div>
+</article>`;
+}
+
 /** Compact standalone stylesheet for offline (CLI) documents. */
 export const NOTE_CSS = `
   :root{--ink:#0f2b3c;--muted:#5e6e7e;--line:#e2e7ec;--accent:#1a6fb5}

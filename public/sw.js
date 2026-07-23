@@ -57,7 +57,13 @@ self.addEventListener("activate", (event) => {
           }),
         ),
       )
-      .then(() => self.clients.claim()),
+      .then(() => self.clients.claim())
+      .then(() => {
+        // Broadcast update to all open tabs
+        self.clients.matchAll({ type: 'window' }).then(clients => {
+          clients.forEach(client => client.postMessage({ type: 'SW_UPDATED', cache: CACHE }));
+        });
+      }),
   );
 });
 

@@ -89,6 +89,34 @@ export function completeLesson(state, config) {
 }
 
 /**
+ * Fire an interim score report when the Exit Ticket is submitted, so teachers
+ * see grades in Canvas/LTI immediately — not only after all 8 phases complete.
+ * Idempotent: silently no-ops if the lesson was already fully completed.
+ */
+export function reportExitTicketScore(state, config) {
+  try {
+    const { lms, ltik } = readLaunch();
+    if (lms !== "lti" || !ltik) return;   // LTI-only for now; SCORM waits for full completion
+    const { scoreGiven, scoreMaximum } = scoreFrom(state);
+    const body = JSON.stringify({
+      ltik,
+      scoreGiven,
+      scoreMaximum,
+      activityId: config.lessonId || "lesson",
+      activityTitle: config.title || config.lessonId || "Lesson",
+      timestamp: new Date().toISOString(),
+      interim: true,
+    });
+    fetch(LTI_SCORE_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body,
+      keepalive: true,
+    }).catch(() => {});
+  } catch { /* never throw into lesson flow */ }
+}
+
+/**
  * Feed the device-local signal store (window.NTSignal) at completion so the
  * hub's "pick up where you left off" strip and the Practice Arcade's
  * skill-aware difficulty can see this lesson's outcome. No network, no PII.

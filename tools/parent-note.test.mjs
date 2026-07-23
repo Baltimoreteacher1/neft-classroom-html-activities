@@ -2,7 +2,7 @@
 // Assertions for the parent-note builder (scripts/lib/parent-note.mjs).
 
 import assert from "node:assert/strict";
-import { bandInfo, buildDocument, buildNoteHTML, buildWeeklyDigest, familyHomeworkFor, summarizeGrades } from "../scripts/lib/parent-note.mjs";
+import { bandInfo, buildDocument, buildNoteHTML, buildWeeklyDigest, buildWeeklyWarmupExitSummary, familyHomeworkFor, summarizeGrades } from "../scripts/lib/parent-note.mjs";
 
 // Band thresholds match engine/core/grade.js
 assert.equal(bandInfo(90).band, "Strong");
@@ -86,5 +86,43 @@ assert.ok(!evil2.includes("<img src=x"), "digest escapes titles");
 // familyHomeworkFor fallbacks
 assert.equal(familyHomeworkFor("lessons-4-2", hwMap).href, "/lessons/4-2/homework.html");
 assert.equal(familyHomeworkFor("nope", hwMap), null);
+
+// ---- weekly warmup + exit ticket summary ----
+const weSummary = buildWeeklyWarmupExitSummary({
+  studentName: "Jaylen Carter",
+  section: "603",
+  weeklyLessons: [
+    { lessonId: "3-1", lessonTitle: "Equivalent Ratios", warmupPct: 90, exitTicketCorrect: true, date: "Mon 7/21" },
+    { lessonId: "3-2", lessonTitle: "Ratio Tables", warmupPct: 72, exitTicketCorrect: true, date: "Tue 7/22" },
+    { lessonId: "3-3", lessonTitle: "Unit Rates", warmupPct: 40, exitTicketCorrect: false, date: "Wed 7/23" },
+  ],
+}, { date: "Week of July 21", teacherName: "Mr. Neft", site: "https://eduwonderlab.com" });
+assert.ok(weSummary.includes("parent-note"), "has .parent-note class");
+assert.ok(weSummary.includes("Jaylen Carter"), "student name present");
+assert.ok(weSummary.includes("🇺🇸 English") && weSummary.includes("🇲🇽 Español"), "warmup-exit summary bilingual");
+assert.ok(weSummary.includes("Equivalent Ratios"), "lesson titles listed");
+assert.ok(weSummary.includes("Unit Rates"), "all lessons listed");
+assert.ok(weSummary.includes("✅"), "exit ticket correct shown");
+assert.ok(weSummary.includes("❌"), "exit ticket incorrect shown");
+assert.ok(weSummary.includes("green"), "strong warmup score (100%) colored green");
+assert.ok(weSummary.includes("red"), "weak warmup score (50%) colored red");
+assert.ok(weSummary.includes("orange"), "approaching warmup score (60%) colored orange");
+assert.ok(weSummary.includes("Mr. Neft"), "teacher name in metadata");
+assert.ok(weSummary.includes("/lessons/3-3/family/"), "home activity links weakest warmup lesson");
+
+// empty lessons edge case
+const emptyWE = buildWeeklyWarmupExitSummary({ studentName: "Empty Kid", section: "604", weeklyLessons: [] });
+assert.ok(emptyWE.includes("parent-note"), "empty case renders article");
+assert.ok(emptyWE.includes("No lessons recorded"), "empty EN copy");
+assert.ok(emptyWE.includes("No hay lecciones"), "empty ES copy");
+
+// null warmupPct edge case
+const nullWarmup = buildWeeklyWarmupExitSummary({
+  studentName: "Null Kid",
+  section: "605",
+  weeklyLessons: [{ lessonId: "1-1", lessonTitle: "Test", warmupPct: null, exitTicketCorrect: null, date: "Mon" }],
+});
+assert.ok(nullWarmup.includes("parent-note"), "null warmup case renders");
+assert.ok(nullWarmup.includes("—"), "null scores show dash");
 
 console.log("parent-note.test.mjs: all assertions passed ✓");
