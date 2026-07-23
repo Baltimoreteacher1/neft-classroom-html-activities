@@ -138,16 +138,27 @@ const CSS = `
 .nt-edit-apply:hover { filter: brightness(.95); }
 .nt-edit-reset { background: #fff; color: var(--ink, #12355b); border-color: #cdd9e5; }
 .nt-edit-reset:hover { background: #eef4f9; }
-@media (prefers-color-scheme: dark) {
-  .nt-tool-card { background: #16202b; border-color: #26333f; }
-  .nt-tools-nav a { background: #16202b; border-color: #2b3a47; color: #e8eef4; }
-  .nt-tools-nav a:hover { background: #1c2833; }
-  .nt-tool-edit { background: #131c25; border-color: #2b3a47; }
-  .nt-tool-edit[open] > summary { border-color: #2b3a47; }
-  .nt-edit-field input { background: #0f171f; border-color: #2b3a47; color: #e8eef4; }
-  .nt-edit-reset { background: #16202b; color: #e8eef4; border-color: #2b3a47; }
-  .nt-edit-reset:hover { background: #1c2833; }
-}
+.nt-theme-row { display: flex; justify-content: flex-end; margin-bottom: 4px; }
+.nt-theme-toggle { display: inline-flex; align-items: center; gap: 6px; font: 600 13px/1 var(--font-ui, system-ui, sans-serif); cursor: pointer; padding: 8px 14px; border-radius: 999px; border: 1px solid #d7e2ed; background: #fff; color: var(--ink, #12355b); }
+.nt-theme-toggle:hover { background: #f2f7fb; border-color: #b9cee0; }
+/* Dark theme — teacher toggle ONLY (never auto), so classroom pages stay light
+   by default regardless of the device's OS dark-mode setting. */
+body.nt-tools-dark { background: #0f171f; }
+body.nt-tools-dark .nt-tools-eyebrow { color: #4fd0c4; }
+body.nt-tools-dark .nt-tools-title { color: #eef3f8; }
+body.nt-tools-dark .nt-tools-sub { color: #9fb0c0; }
+body.nt-tools-dark .nt-tool-card { background: #16202b; border-color: #26333f; }
+body.nt-tools-dark .nt-tool-card > h2 { color: #eef3f8; }
+body.nt-tools-dark .nt-tools-empty { color: #9fb0c0; border-color: #2b3a47; }
+body.nt-tools-dark .nt-tool-edit { background: #131c25; border-color: #2b3a47; }
+body.nt-tools-dark .nt-tool-edit > summary { color: #4fd0c4; }
+body.nt-tools-dark .nt-tool-edit[open] > summary { border-color: #2b3a47; }
+body.nt-tools-dark .nt-edit-field { color: #9fb0c0; }
+body.nt-tools-dark .nt-edit-field input { background: #0f171f; border-color: #2b3a47; color: #eef3f8; }
+body.nt-tools-dark .nt-edit-reset { background: #16202b; color: #eef3f8; border-color: #2b3a47; }
+body.nt-tools-dark .nt-edit-reset:hover { background: #1c2833; }
+body.nt-tools-dark .nt-theme-toggle { background: #16202b; border-color: #2b3a47; color: #eef3f8; }
+body.nt-tools-dark .nt-theme-toggle:hover { background: #1c2833; }
 `;
 
 function ensureStyles() {
@@ -398,6 +409,10 @@ function buildToolCard({ v, section }) {
         if (f.set) f.set(next, val);
         else setPath(next, f.path, val);
       }
+      // Several widgets (lcm-lab, step-solver, …) render presets[0] and IGNORE
+      // the top-level scalars when a `presets` array is present. Drop it so the
+      // teacher's edited numbers actually become the active problem.
+      delete next.presets;
       current = next;
       remount();
     });
@@ -431,6 +446,9 @@ export function renderToolsPage(config, root) {
 
   root.innerHTML = `<main class="nt-tools">
     <header class="nt-tools-head">
+      <div class="nt-theme-row">
+        <button type="button" class="nt-theme-toggle" id="nt-theme-toggle" aria-pressed="false"></button>
+      </div>
       <p class="nt-tools-eyebrow">${esc(lessonNo)} · Interactive Tools</p>
       <h1 class="nt-tools-title">${esc(title)}</h1>
       <p class="nt-tools-sub">Keep practicing with the hands-on models from this lesson. Use “Change the numbers” to build your own examples — nothing here is graded.</p>
@@ -439,6 +457,8 @@ export function renderToolsPage(config, root) {
     <div class="nt-tools-empty" id="nt-tools-empty" hidden>This lesson doesn't have standalone interactive tools yet.</div>
   </main>`;
 
+  setupThemeToggle();
+
   const grid = root.querySelector("#nt-tools-grid");
   if (!tools.length) {
     root.querySelector("#nt-tools-empty").hidden = false;
@@ -446,6 +466,38 @@ export function renderToolsPage(config, root) {
     return;
   }
   for (const t of tools) grid.appendChild(buildToolCard(t));
+}
+
+// Teacher light/dark toggle. Default is LIGHT (classroom pages never auto-follow
+// the device's OS dark mode); the choice persists per browser in localStorage.
+const THEME_KEY = "nt-tools-theme";
+function setupThemeToggle() {
+  const btn = document.getElementById("nt-theme-toggle");
+  const apply = (dark) => {
+    document.body.classList.toggle("nt-tools-dark", dark);
+    if (btn) {
+      btn.setAttribute("aria-pressed", dark ? "true" : "false");
+      btn.innerHTML = dark
+        ? '<span aria-hidden="true">☀️</span> Light mode'
+        : '<span aria-hidden="true">🌙</span> Dark mode';
+    }
+  };
+  let dark = false;
+  try {
+    dark = localStorage.getItem(THEME_KEY) === "dark";
+  } catch (_e) {
+    /* private mode — default light */
+  }
+  apply(dark);
+  btn?.addEventListener("click", () => {
+    dark = !document.body.classList.contains("nt-tools-dark");
+    apply(dark);
+    try {
+      localStorage.setItem(THEME_KEY, dark ? "dark" : "light");
+    } catch (_e) {
+      /* ignore */
+    }
+  });
 }
 
 /**
