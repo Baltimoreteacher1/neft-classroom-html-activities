@@ -82,14 +82,18 @@ export const LEVEL_VOICE = {
     meterStart: "Every tap counts — let’s get started",
   },
   group2: {
-    tagline: "Think like a mathematician: solve it, check it with today's strategy, and explain what it means.",
-    taglineEs: "Piensa como matemático: resuelve, comprueba con la estrategia de hoy y explica qué significa.",
+    tagline:
+      "Think like a mathematician: solve it, check it with today's strategy, and explain what it means.",
+    taglineEs:
+      "Piensa como matemático: resuelve, comprueba con la estrategia de hoy y explica qué significa.",
     buildCta: "I can use this idea →",
     buildDone: "Idea connected ✓",
     guidedDir: "Move efficiently, then check each answer with today's mathematical strategy.",
-    guidedDirEs: "Avanza con eficiencia y comprueba cada respuesta con la estrategia matemática de hoy.",
+    guidedDirEs:
+      "Avanza con eficiencia y comprueba cada respuesta con la estrategia matemática de hoy.",
     soloDir: "Solve it independently, then use the lesson's math check before you move on.",
-    soloDirEs: "Resuelve de forma independiente y usa la comprobación matemática de la lección antes de continuar.",
+    soloDirEs:
+      "Resuelve de forma independiente y usa la comprobación matemática de la lección antes de continuar.",
     moreDir: "Push for elegance — can you solve one a second way, faster or cleaner?",
     moreDirEs: "Busca la elegancia: ¿puedes resolver uno de otra manera, más rápida o más clara?",
     completeBody:
@@ -194,7 +198,11 @@ export function createVoiceMemo(prompt = "Record your best explanation") {
     typeof navigator.mediaDevices.getUserMedia === "function";
   if (!supported) {
     wrap.appendChild(
-      el("p", "sg-voice-note", "🎙 Voice recording isn’t available on this device — say it out loud instead."),
+      el(
+        "p",
+        "sg-voice-note",
+        "🎙 Voice recording isn’t available on this device — say it out loud instead.",
+      ),
     );
     return wrap;
   }
@@ -285,8 +293,7 @@ export function celebrate(symbol = "✨") {
 export function injectSmallGroupStyles(accent) {
   // Only --sg-pop is per-variant, so it stays an inline custom property. The
   // shared --sg / --sg-deep / --sg-soft are defined in the stylesheet :root
-  // instead of inline, so the dark-theme block can override them (an inline
-  // style on the element would always beat a stylesheet rule).
+  // (light mode only — no dark-theme overrides).
   document.documentElement.style.setProperty("--sg-pop", accent.pop);
   if (!document.getElementById("sg-innovation-styles")) {
     const innovation = document.createElement("link");
@@ -299,14 +306,14 @@ export function injectSmallGroupStyles(accent) {
     const annotation = document.createElement("link");
     annotation.id = "sg-annotation-styles";
     annotation.rel = "stylesheet";
-    annotation.href = "/assets/small-group-annotation.css?v=20260723-dark1";
+    annotation.href = "/assets/small-group-annotation.css?v=20260723-light1";
     document.head.appendChild(annotation);
   }
   if (!document.getElementById("sg-storyboard-styles")) {
     const storyboard = document.createElement("link");
     storyboard.id = "sg-storyboard-styles";
     storyboard.rel = "stylesheet";
-    storyboard.href = "/assets/small-group-storyboard.css?v=20260723-dark1";
+    storyboard.href = "/assets/small-group-storyboard.css?v=20260723-light1";
     document.head.appendChild(storyboard);
   }
   // Publisher polish must load AFTER base #sg-styles so additive overrides win.
@@ -339,14 +346,12 @@ export function injectSmallGroupStyles(accent) {
   const styles = document.createElement("style");
   styles.id = "sg-styles";
   styles.textContent = `
-    :root{--sg:${accent.hue};--sg-deep:${accent.deep};--sg-soft:${accent.soft};--sg-ink:${accent.deep};--sg-rule:${accent.deep};--sg-line:#cfd7e2;--sg-paper:#f4f1e9;--sg-card:#fff;--sg-text:#24314a;--sg-muted:#3f5166;--sg-good:#16734b;--sg-warn:#9a4b05;--sg-good-bg:#e9f8f0;--sg-good-ink:#0e5033;--sg-bad:#bd3c31;--sg-bad-bg:#fff0ee;--sg-bad-ink:#7c2d24;--sg-warn-bg:#fff5e7;--sg-warn-ink:#743706;--sg-warn-line:#d97706;--sg-figure:#fffdf8;--sg-fill:#e3e7ed}
-    /* Dark theme — keyed on the site convention (data-theme, set by
-       assets/neft-theme.js) AND OS preference. --sg / --sg-deep stay put: --sg
-       is a mid-tone that reads on dark and behind white text; --sg-deep stays a
-       dark surface (hero gradient, operator chip). Only the ink/line/surface/
-       status tokens flip. */
-    :root[data-theme="dark"]{--sg-ink:#cfe0fb;--sg-rule:#8298c0;--sg-line:#33425f;--sg-paper:#0e1522;--sg-card:#18223a;--sg-soft:#202c44;--sg-text:#e7edf7;--sg-muted:#a7b6d0;--sg-good-bg:#123021;--sg-good-ink:#7fdcab;--sg-bad:#e0685c;--sg-bad-bg:#3a1c1a;--sg-bad-ink:#f0b0a8;--sg-warn-bg:#33260f;--sg-warn-ink:#eec078;--sg-warn-line:#c78a3a;--sg-figure:#131d2e;--sg-fill:#2a3550}
-    @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--sg-ink:#cfe0fb;--sg-rule:#8298c0;--sg-line:#33425f;--sg-paper:#0e1522;--sg-card:#18223a;--sg-soft:#202c44;--sg-text:#e7edf7;--sg-muted:#a7b6d0;--sg-good-bg:#123021;--sg-good-ink:#7fdcab;--sg-bad:#e0685c;--sg-bad-bg:#3a1c1a;--sg-bad-ink:#f0b0a8;--sg-warn-bg:#33260f;--sg-warn-ink:#eec078;--sg-warn-line:#c78a3a;--sg-figure:#131d2e;--sg-fill:#2a3550}}
+    /* Light mode only — small-group lessons stay light regardless of the site
+       theme toggle (data-theme) or OS preference (per Joel 2026-07-23). */
+    :root{color-scheme:light;--sg:${accent.hue};--sg-deep:${accent.deep};--sg-soft:${accent.soft};--sg-ink:${accent.deep};--sg-rule:${accent.deep};--sg-line:#cfd7e2;--sg-paper:#f4f1e9;--sg-card:#fff;--sg-text:#24314a;--sg-muted:#3f5166;--sg-good:#16734b;--sg-warn:#9a4b05;--sg-good-bg:#e9f8f0;--sg-good-ink:#0e5033;--sg-bad:#bd3c31;--sg-bad-bg:#fff0ee;--sg-bad-ink:#7c2d24;--sg-warn-bg:#fff5e7;--sg-warn-ink:#743706;--sg-warn-line:#d97706;--sg-figure:#fffdf8;--sg-fill:#e3e7ed}
+    /* Neutralize any global dark theme applied to the shell so the sg tokens
+       above always win — light mode only. */
+    :root[data-theme="dark"]{color-scheme:light}
     *{box-sizing:border-box}
     html{scroll-behavior:smooth}
     body{margin:0;color:var(--sg-text);font-family:"Atkinson Hyperlegible",system-ui,sans-serif;font-size:17px;line-height:1.55;background-color:var(--sg-paper);background-image:radial-gradient(circle at 1px 1px,rgba(23,32,51,.08) 1px,transparent 0);background-size:24px 24px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;font-optical-sizing:auto}
@@ -612,10 +617,6 @@ export function injectSmallGroupStyles(accent) {
     @media(max-width:420px){body{font-size:16px}.sg-hero h1{font-size:29px}.sg-context,.sg-talk-q{font-size:17px}.sg-tabs{position:static;grid-template-columns:repeat(2,1fr)}.sg-problem-nav{grid-template-columns:1fr 1fr}.sg-problem-count{grid-column:1/-1;grid-row:1}.sg-problem-support-head{align-items:flex-start;flex-direction:column}.sg-problem-visual svg{min-height:210px}.sg-fill-step{grid-template-columns:auto minmax(0,1fr)}.sg-step-check{grid-column:2}.sg-step-status{grid-column:1/-1}.btn,.sg-pulse-btn,.sg-role-btn,.sg-match-btn,.choice{width:100%;justify-content:flex-start}.sg-timer{align-items:flex-start;flex-direction:column}.sg-timer-track{width:100%;flex:none}}
     @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.sg-burst{display:none!important}.sg-hero-mark{animation:none}.sg-tabpanel:not([hidden]){animation:none}.sg-meter-fill::after{animation:none}.choice.correct,.choice.wrong,.sg-match-btn.correct,.sg-match-btn.wrong,.fillin.ok,.fillin.bad,.stepfill.ok,.stepfill.bad,.sg-fill-step.complete{animation:none}.btn,.choice{transition:none}}
     @media print{:root{--sg-paper:#fff;--sg-card:#fff;--sg-figure:#fff;--sg-text:#111;--sg-ink:#12355b;--sg-muted:#3f5166;--sg-soft:#f2f4f8;--sg-line:#cfd7e2;--sg-rule:#284164;--sg-fill:#e9edf2;--sg-good-bg:#eef8f1;--sg-good-ink:#0e5033;--sg-bad-bg:#fdeeec;--sg-bad-ink:#7c2d24;--sg-warn-bg:#fdf3e3;--sg-warn-ink:#743706}body{background:#fff}.sg-mode,.sg-tabs,.sg-rail,.sg-meter,.sg-reveal,.sg-toolrow,.sg-pulse,.sg-timer,.sg-foot,.sg-teacher,.btn,.sg-speak,#mwb-launcher,.sg-problem-nav,.sg-annotation-tools{display:none!important}.sg-tabpanel[hidden]{display:block!important}.prob[hidden]{display:block!important}.sg-fill-step[hidden]{display:grid!important}.sg-fill-step.locked,.gs-row.locked,.sg-stage.locked,.sg-apply-step.locked{opacity:1!important;pointer-events:auto}.sg-reveal-answer[hidden]{display:inline-block!important}#app{max-width:none;padding:0}.sg-hero{margin:0 0 16px;padding:0 0 12px;color:#111;background:var(--sg-card);border-bottom:3px solid #111}.sg-hero h1,.sg-obj,.sg-langobj{color:#111}.sg-kicker,.sg-chip{color:#111;background:#eee;border-color:#bbb}.card,.sg-mission,.sg-talk,.prob,.sg-vcard{box-shadow:none;break-inside:avoid}.sg-mission{display:block}.sg-mission-visual{display:none}.sg-sec{margin-bottom:18px}}
-    /* Dark: the sticky tab/rail bars are the only chrome with a hard-coded
-       light glass fill (rgba cream) — retint them for dark so they don't glow. */
-    :root[data-theme="dark"] .sg-rail,:root[data-theme="dark"] .sg-tabs{background:rgba(18,26,44,.94);border-color:rgba(255,255,255,.06)}
-    @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .sg-rail,:root:not([data-theme="light"]) .sg-tabs{background:rgba(18,26,44,.94);border-color:rgba(255,255,255,.06)}}
     /* prefers-contrast: darker lines + text and a heavier focus ring. */
     @media (prefers-contrast:more){:root{--sg-line:#5a6b82;--sg-muted:#26313f;--sg-rule:var(--sg-deep)}
       button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-visible{outline-width:4px}

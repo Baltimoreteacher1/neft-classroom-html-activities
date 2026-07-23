@@ -703,7 +703,9 @@
 
 /* ── Vocab picture fade-in ── */
 .sg-vcard-picture img {
-  transition: opacity 0.35s ease, transform 0.35s ease;
+  transition:
+    opacity 0.35s ease,
+    transform 0.35s ease;
 }
 [data-sg-scene="vocab"].is-scene-in .sg-vcard-picture img:not([data-image-state="loading"]) {
   animation: sg-pic-in 0.5s ease both;
@@ -742,7 +744,9 @@
 .fillin.ok,
 .stepfill.ok,
 .sg-fill-step.complete {
-  animation: sg-okpulse 0.55s ease, sg-correct-glow 0.7s ease;
+  animation:
+    sg-okpulse 0.55s ease,
+    sg-correct-glow 0.7s ease;
 }
 @keyframes sg-correct-glow {
   0% {
@@ -755,7 +759,9 @@
 .choice.wrong,
 .fillin.bad,
 .stepfill.bad {
-  animation: sg-nudge 0.35s ease, sg-wrong-flash 0.45s ease;
+  animation:
+    sg-nudge 0.35s ease,
+    sg-wrong-flash 0.45s ease;
 }
 @keyframes sg-wrong-flash {
   0% {
@@ -838,25 +844,5 @@
   .sg-error-break,
   .we-steps .sg-error-break {
     animation: none !important;
-  }
-}
-
-/* ── Dark theme — storyboard beat cards (light mode untouched) ──────────── */
-:root[data-theme="dark"] .sg-mission-story .story-beat-card {
-  background: var(--sg-card);
-  color: var(--sg-ink);
-  border-color: var(--sg-line);
-}
-:root[data-theme="dark"] .sg-mission-story .story-beat-reveal {
-  color: var(--sg-ink);
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .sg-mission-story .story-beat-card {
-    background: var(--sg-card);
-    color: var(--sg-ink);
-    border-color: var(--sg-line);
-  }
-  :root:not([data-theme="light"]) .sg-mission-story .story-beat-reveal {
-    color: var(--sg-ink);
   }
 }
