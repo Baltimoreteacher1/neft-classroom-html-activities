@@ -2272,7 +2272,11 @@ function renderExplorePhase(el, state, ctx, config) {
 
   renderComponent(
     exploreShell,
-    { ...cfg, stem: cfg.instructions || cfg.stem },
+    // `diagram` is already rendered once as the section-level figure above
+    // (exploreDiagram). Drop it here so renderComponent's per-item diagram
+    // slot doesn't render the SAME figure a second time (was producing two
+    // identical balance widgets in Explore).
+    { ...cfg, diagram: undefined, stem: cfg.instructions || cfg.stem },
     () => {
       if (cfg.discourse) {
         // Post-activity discussion is now a SPOKEN Turn & Talk (not a writing
