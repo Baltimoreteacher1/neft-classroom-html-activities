@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Small-Group Rotation Console · Neft Teacher</title>
+    <meta name="robots" content="noindex" />
+    <link rel="icon" href="/assets/favicon.svg" />
+    <style>
+      :root {
+        --bg: #0f1623;
+        --panel: #18233a;
+        --panel-2: #1f2d49;
+        --line: #2c3c5e;
+        --ink: #eaf0fb;
+        --muted: #9fb0cf;
+        --accent: #4f8bff;
+        --g1: #2f8f7d;
+        --g2: #e0a63c;
+        --gc: #5a9e52;
+        --good: #2fbf71;
+        --warn: #e0a32e;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+      }
+      a {
+        color: var(--accent);
+      }
+      header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 12px;
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--line);
+      }
+      header h1 {
+        margin: 0;
+        font-size: 21px;
+      }
+      header .sub {
+        color: var(--muted);
+        font-size: 14px;
+      }
+      header .spacer {
+        flex: 1;
+      }
+      header a.top {
+        font-size: 14px;
+        font-weight: 600;
+      }
+      main {
+        display: grid;
+        grid-template-columns: minmax(240px, 320px) 1fr;
+        gap: 20px;
+        max-width: 1160px;
+        margin: 0 auto;
+        padding: 22px 24px 60px;
+      }
+      @media (max-width: 780px) {
+        main {
+          grid-template-columns: 1fr;
+        }
+      }
+      .card {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: var(--panel);
+        padding: 16px 18px;
+      }
+      .card h2 {
+        margin: 0 0 10px;
+        font-size: 15px;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      #search {
+        width: 100%;
+        margin-bottom: 10px;
+        padding: 9px 11px;
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        background: var(--bg);
+        color: var(--ink);
+        font: inherit;
+      }
+      .lesson-list {
+        max-height: 62vh;
+        overflow-y: auto;
+        display: grid;
+        gap: 2px;
+      }
+      .unit-label {
+        margin: 10px 0 2px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .lesson-btn {
+        display: flex;
+        gap: 8px;
+        align-items: baseline;
+        width: 100%;
+        padding: 7px 10px;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        background: transparent;
+        color: var(--ink);
+        font: inherit;
+        text-align: left;
+        cursor: pointer;
+      }
+      .lesson-btn:hover {
+        background: var(--panel-2);
+      }
+      .lesson-btn.active {
+        border-color: var(--accent);
+        background: var(--panel-2);
+      }
+      .lesson-btn .id {
+        flex: none;
+        width: 42px;
+        font-weight: 700;
+        color: var(--accent);
+      }
+      .lesson-btn .cc {
+        flex: none;
+        font-size: 11px;
+        color: var(--gc);
+      }
+      .detail h2.title {
+        margin: 0 0 2px;
+        font-size: 22px;
+        text-transform: none;
+        letter-spacing: 0;
+        color: var(--ink);
+      }
+      .detail .std {
+        margin: 0 0 16px;
+        color: var(--muted);
+      }
+      .links {
+        display: grid;
+        gap: 10px;
+        margin-bottom: 22px;
+      }
+      .linkrow {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        padding: 11px 13px;
+        border: 1px solid var(--line);
+        border-left: 4px solid var(--accent);
+        border-radius: 10px;
+        background: var(--panel-2);
+      }
+      .linkrow.g1 {
+        border-left-color: var(--g1);
+      }
+      .linkrow.g2 {
+        border-left-color: var(--g2);
+      }
+      .linkrow.gc {
+        border-left-color: var(--gc);
+      }
+      .linkrow .label {
+        flex: none;
+        width: 132px;
+        font-weight: 700;
+      }
+      .linkrow .desc {
+        flex: 1 1 180px;
+        min-width: 0;
+        color: var(--muted);
+        font-size: 13.5px;
+      }
+      .linkrow .acts {
+        display: flex;
+        gap: 6px;
+      }
+      .btn {
+        padding: 7px 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--bg);
+        color: var(--ink);
+        font: inherit;
+        font-size: 13.5px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+      }
+      .btn:hover {
+        border-color: var(--accent);
+      }
+      .btn.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #06122b;
+      }
+      .evidence table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+      .evidence th,
+      .evidence td {
+        border: 1px solid var(--line);
+        padding: 8px 10px;
+        text-align: left;
+      }
+      .evidence th {
+        background: var(--panel-2);
+        font-size: 12.5px;
+        color: var(--muted);
+      }
+      .evidence .num {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+      .status {
+        margin: 8px 0 0;
+        color: var(--muted);
+      }
+      .empty {
+        padding: 18px;
+        border: 1px dashed var(--line);
+        border-radius: 10px;
+        color: var(--muted);
+      }
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        margin-top: 10px;
+      }
+      .hint {
+        margin: 22px 0 0;
+        padding: 12px 14px;
+        border-radius: 10px;
+        background: var(--panel-2);
+        color: var(--muted);
+        font-size: 13.5px;
+      }
+      .toast {
+        position: fixed;
+        bottom: 18px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 9px 16px;
+        border-radius: 999px;
+        background: var(--good);
+        color: #062a17;
+        font-weight: 700;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.18s;
+      }
+      .toast.show {
+        opacity: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Small-Group Rotation Console</h1>
+      <span class="sub">Launch the right variant for each group · watch it land, name-free</span>
+      <span class="spacer"></span>
+      <a class="top" href="/teacher-tools/mastery/">Mastery dashboard →</a>
+    </header>
+    <main>
+      <section class="card" aria-label="Lesson picker">
+        <h2>Lesson</h2>
+        <input id="search" type="search" placeholder="Search lessons…" aria-label="Search lessons" />
+        <div class="lesson-list" id="lessonList"></div>
+      </section>
+      <section class="detail" id="detail" aria-live="polite">
+        <div class="empty">Pick a lesson to build its rotation links and see live class evidence.</div>
+      </section>
+    </main>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script>
+      // Base lessons embedded at author time (id, unit, lesson, title, hasCatchup).
+      var LESSONS = [{"id": "1-1", "u": 1, "l": 1, "t": "Prime Factorization", "c": false}, {"id": "1-2", "u": 1, "l": 2, "t": "Greatest Common Factor", "c": false}, {"id": "1-3", "u": 1, "l": 3, "t": "Least Common Multiple", "c": true}, {"id": "1-4", "u": 1, "l": 4, "t": "Divide Multi-Digit Numbers", "c": false}, {"id": "1-5", "u": 1, "l": 5, "t": "Add and Subtract Decimals", "c": false}, {"id": "1-6", "u": 1, "l": 6, "t": "Multiply Decimals", "c": false}, {"id": "1-7", "u": 1, "l": 7, "t": "Divide Decimals", "c": true}, {"id": "2-1", "u": 2, "l": 1, "t": "Interpret Division of Fractions", "c": false}, {"id": "2-2", "u": 2, "l": 2, "t": "Divide Whole Numbers by Fractions", "c": false}, {"id": "2-3", "u": 2, "l": 3, "t": "Divide Fractions", "c": true}, {"id": "2-4", "u": 2, "l": 4, "t": "Divide Mixed Numbers", "c": false}, {"id": "2-5", "u": 2, "l": 5, "t": "Fraction Division Problem Solving", "c": true}, {"id": "3-1", "u": 3, "l": 1, "t": "Understand Ratios", "c": false}, {"id": "3-2", "u": 3, "l": 2, "t": "Ratio Tables", "c": false}, {"id": "3-3", "u": 3, "l": 3, "t": "Graph Ratio Tables", "c": true}, {"id": "3-4", "u": 3, "l": 4, "t": "Equivalent Ratios", "c": false}, {"id": "3-5", "u": 3, "l": 5, "t": "Compare Ratios", "c": false}, {"id": "3-6", "u": 3, "l": 6, "t": "Use Ratio Reasoning", "c": false}, {"id": "3-7", "u": 3, "l": 7, "t": "Ratio and Rate Problem Solving", "c": true}, {"id": "4-1", "u": 4, "l": 1, "t": "Rates and Unit Rates", "c": false}, {"id": "4-2", "u": 4, "l": 2, "t": "Relate Fractions, Decimals, and Percents", "c": false}, {"id": "4-3", "u": 4, "l": 3, "t": "Percents Greater Than 100% and Less Than 1%", "c": true}, {"id": "4-4", "u": 4, "l": 4, "t": "Find the Percent of a Number", "c": false}, {"id": "4-5", "u": 4, "l": 5, "t": "Use Percent to Solve Problems", "c": false}, {"id": "4-6", "u": 4, "l": 6, "t": "Convert Measurement Units", "c": false}, {"id": "4-7", "u": 4, "l": 7, "t": "Solve Problems with Unit Rates", "c": true}, {"id": "5-1", "u": 5, "l": 1, "t": "Area of Parallelograms", "c": false}, {"id": "5-2", "u": 5, "l": 2, "t": "Area of Trapezoids", "c": false}, {"id": "5-3", "u": 5, "l": 3, "t": "Area of Triangles", "c": true}, {"id": "5-4", "u": 5, "l": 4, "t": "Area of Regular Polygons", "c": false}, {"id": "5-5", "u": 5, "l": 5, "t": "Area of Composite Figures", "c": true}, {"id": "6-1", "u": 6, "l": 1, "t": "Powers and Exponents", "c": false}, {"id": "6-2", "u": 6, "l": 2, "t": "Evaluate Expressions", "c": false}, {"id": "6-3", "u": 6, "l": 3, "t": "Write Algebraic Expressions", "c": true}, {"id": "6-4", "u": 6, "l": 4, "t": "Properties of Operations", "c": false}, {"id": "6-5", "u": 6, "l": 5, "t": "The Distributive Property", "c": false}, {"id": "6-6", "u": 6, "l": 6, "t": "Equivalent Expressions", "c": false}, {"id": "6-7", "u": 6, "l": 7, "t": "Simplify Algebraic Expressions", "c": true}, {"id": "7-1", "u": 7, "l": 1, "t": "Write Equations", "c": false}, {"id": "7-2", "u": 7, "l": 2, "t": "Solve One-Step Addition and Subtraction Equations", "c": false}, {"id": "7-3", "u": 7, "l": 3, "t": "Solve Multiplication and Division Equations", "c": true}, {"id": "7-4", "u": 7, "l": 4, "t": "Write Inequalities", "c": false}, {"id": "7-5", "u": 7, "l": 5, "t": "Graph Inequalities", "c": false}, {"id": "7-6", "u": 7, "l": 6, "t": "Solve and Graph Inequalities", "c": false}, {"id": "7-7", "u": 7, "l": 7, "t": "Equations and Inequalities Problem Solving", "c": true}, {"id": "8-1", "u": 8, "l": 1, "t": "Statistical Questions and Data", "c": false}, {"id": "8-2", "u": 8, "l": 2, "t": "Mean, Median, and Mode", "c": false}, {"id": "8-3", "u": 8, "l": 3, "t": "Mean Absolute Deviation", "c": true}, {"id": "8-4", "u": 8, "l": 4, "t": "Appropriate Measures", "c": false}, {"id": "8-5", "u": 8, "l": 5, "t": "Display Data: Box Plots", "c": false}, {"id": "8-6", "u": 8, "l": 6, "t": "Display Data: Histograms", "c": false}, {"id": "8-7", "u": 8, "l": 7, "t": "Shape of Data Distributions", "c": true}, {"id": "9-1", "u": 9, "l": 1, "t": "Graph on the Coordinate Plane", "c": false}, {"id": "9-2", "u": 9, "l": 2, "t": "Integers and Absolute Value", "c": false}, {"id": "9-3", "u": 9, "l": 3, "t": "Compare and Order Integers", "c": true}, {"id": "9-4", "u": 9, "l": 4, "t": "Rational Numbers on the Number Line", "c": false}, {"id": "9-5", "u": 9, "l": 5, "t": "Ordered Pairs in All Four Quadrants", "c": false}, {"id": "9-6", "u": 9, "l": 6, "t": "Distance on the Coordinate Plane", "c": false}, {"id": "9-7", "u": 9, "l": 7, "t": "Reflect Points Across Axes", "c": true}, {"id": "10-1", "u": 10, "l": 1, "t": "Volume with Whole Number Edges", "c": false}, {"id": "10-2", "u": 10, "l": 2, "t": "Volume of Rectangular Prisms", "c": false}, {"id": "10-3", "u": 10, "l": 3, "t": "Surface Area Using Nets", "c": true}, {"id": "10-4", "u": 10, "l": 4, "t": "Surface Area of Prisms", "c": false}, {"id": "10-5", "u": 10, "l": 5, "t": "Surface Area of Pyramids", "c": true}];
+
+      var listEl = document.getElementById("lessonList");
+      var detailEl = document.getElementById("detail");
+      var searchEl = document.getElementById("search");
+      var toastEl = document.getElementById("toast");
+      var current = null;
+
+      function toast(msg) {
+        toastEl.textContent = msg;
+        toastEl.classList.add("show");
+        window.setTimeout(function () {
+          toastEl.classList.remove("show");
+        }, 1400);
+      }
+
+      function origin() {
+        return window.location.origin;
+      }
+
+      function copy(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(
+            function () {
+              toast("Link copied");
+            },
+            function () {
+              toast("Copy failed — long-press to copy");
+            },
+          );
+        } else {
+          toast("Copy not supported here");
+        }
+      }
+
+      function renderList(filter) {
+        listEl.innerHTML = "";
+        var f = (filter || "").trim().toLowerCase();
+        var unit = 0;
+        LESSONS.forEach(function (L) {
+          var hay = (L.id + " " + L.t).toLowerCase();
+          if (f && hay.indexOf(f) === -1) return;
+          if (L.u !== unit) {
+            unit = L.u;
+            var ul = document.createElement("div");
+            ul.className = "unit-label";
+            ul.textContent = "Unit " + unit;
+            listEl.appendChild(ul);
+          }
+          var b = document.createElement("button");
+          b.className = "lesson-btn" + (current && current.id === L.id ? " active" : "");
+          b.innerHTML =
+            '<span class="id">' +
+            L.u +
+            "." +
+            L.l +
+            "</span><span>" +
+            escapeHtml(L.t) +
+            "</span>" +
+            (L.c ? '<span class="cc">catch-up</span>' : "");
+          b.onclick = function () {
+            select(L);
+          };
+          listEl.appendChild(b);
+        });
+      }
+
+      function escapeHtml(s) {
+        return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) {
+          return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+        });
+      }
+
+      function linkRow(cls, label, desc, url) {
+        var full = origin() + url;
+        return (
+          '<div class="linkrow ' +
+          cls +
+          '"><span class="label">' +
+          escapeHtml(label) +
+          '</span><span class="desc">' +
+          escapeHtml(desc) +
+          '</span><span class="acts">' +
+          '<a class="btn primary" href="' +
+          escapeHtml(url) +
+          '" target="_blank" rel="noopener">Open</a>' +
+          '<button class="btn" data-copy="' +
+          escapeHtml(full) +
+          '">Copy</button></span></div>'
+        );
+      }
+
+      function select(L) {
+        current = L;
+        renderList(searchEl.value);
+        var id = L.id;
+        var links =
+          linkRow(
+            "",
+            "Assigned (auto)",
+            "One link for the whole class — each student lands on their assigned variant from the supports roster.",
+            "/lessons/" + id + "-group1/?route=auto",
+          ) +
+          linkRow(
+            "g1",
+            "Foundations",
+            "Extra support: re-teach + heavily scaffolded practice.",
+            "/lessons/" + id + "-group1/",
+          ) +
+          linkRow(
+            "g2",
+            "Challenge",
+            "Extension, justification, and the topic-specific Math Check.",
+            "/lessons/" + id + "-group2/",
+          ) +
+          (L.c
+            ? linkRow(
+                "gc",
+                "Catch-Up",
+                "Big-ideas review across the band for students who missed it.",
+                "/lessons/" + id + "-catchup/",
+              )
+            : "") +
+          linkRow(
+            "",
+            "Teacher view",
+            "Facilitation guide, misconception table, pacing, live console, worksheet + keys.",
+            "/lessons/" + id + "-group1/?teacher=1",
+          );
+
+        detailEl.innerHTML =
+          '<h2 class="title">' +
+          L.u +
+          "." +
+          L.l +
+          " · " +
+          escapeHtml(L.t) +
+          "</h2>" +
+          '<p class="std">Rotation links open in a new tab. “Copy” grabs the full URL to paste into Canvas, Classroom, or a projector.</p>' +
+          '<div class="links">' +
+          links +
+          "</div>" +
+          '<div class="row"><span class="desc" style="color:var(--muted)">Fixed-variant deep-links (share one, everyone lands the same): </span>' +
+          '<button class="btn" data-copy="' +
+          origin() +
+          "/lessons/" +
+          id +
+          '-group1/?group=1">Copy ?group=1</button>' +
+          '<button class="btn" data-copy="' +
+          origin() +
+          "/lessons/" +
+          id +
+          '-group1/?group=2">Copy ?group=2</button></div>' +
+          '<section class="card evidence" style="margin-top:22px" aria-label="Live class evidence">' +
+          "<h2>Live class evidence · last 14 days</h2>" +
+          '<div id="evBody"><p class="status">Loading…</p></div>' +
+          '<div class="row"><button class="btn" id="evRefresh">Refresh</button></div>' +
+          "</section>" +
+          '<p class="hint">Evidence is anonymous section-level counts only — no names or individual responses ever leave a student device. Rows appear once students complete the studio while signed into a class section.</p>';
+
+        detailEl.querySelectorAll("[data-copy]").forEach(function (btn) {
+          btn.onclick = function () {
+            copy(btn.getAttribute("data-copy"));
+          };
+        });
+        document.getElementById("evRefresh").onclick = function () {
+          loadEvidence(id);
+        };
+        loadEvidence(id);
+      }
+
+      function loadEvidence(id) {
+        var body = document.getElementById("evBody");
+        if (!body) return;
+        body.innerHTML = '<p class="status">Loading…</p>';
+        fetch("/api/progress/small-group-summary?lesson=" + encodeURIComponent(id), {
+          credentials: "omit",
+        })
+          .then(function (r) {
+            return r.ok ? r.json() : null;
+          })
+          .then(function (data) {
+            if (!data || !data.ok) {
+              body.innerHTML = '<p class="status">Class evidence is unavailable right now.</p>';
+              return;
+            }
+            var groups = data.groups || [];
+            if (!groups.length) {
+              body.innerHTML =
+                '<div class="empty">No studio completions recorded for this lesson yet. Rows appear here as students finish while signed into a section.</div>';
+              return;
+            }
+            var rows = groups
+              .map(function (g) {
+                return (
+                  "<tr><td>" +
+                  escapeHtml(g.section || "—") +
+                  "</td><td>" +
+                  escapeHtml(g.variant || "") +
+                  '</td><td class="num">' +
+                  (g.completions || 0) +
+                  '</td><td class="num">' +
+                  (g.inProgress || 0) +
+                  '</td><td class="num">' +
+                  (g.avgSolved || 0) +
+                  "/" +
+                  (g.avgTotal || 0) +
+                  '</td><td class="num">' +
+                  (g.hintHeavy || 0) +
+                  "</td></tr>"
+                );
+              })
+              .join("");
+            body.innerHTML =
+              "<table><thead><tr><th>Section</th><th>Variant</th>" +
+              '<th class="num">Done</th><th class="num">In progress</th>' +
+              '<th class="num">Avg solved</th><th class="num">Hint-heavy</th></tr></thead>' +
+              "<tbody>" +
+              rows +
+              "</tbody></table>";
+          })
+          .catch(function () {
+            body.innerHTML = '<p class="status">Class evidence is unavailable right now.</p>';
+          });
+      }
+
+      searchEl.oninput = function () {
+        renderList(searchEl.value);
+      };
+      renderList("");
+    </script>
+  </body>
+</html>
