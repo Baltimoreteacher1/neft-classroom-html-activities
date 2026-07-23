@@ -159,15 +159,53 @@
     return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
 
+  // Parse an authored one-variable equation (e.g. "n + 8 = 20", "5x = 35",
+  // "y ÷ 4 = 3") into the widget's starting state: form + p + q + variable
+  // letter. Tolerant of Unicode operators (− ÷ × ·) and implicit "px" for
+  // multiplication. Returns null when the string doesn't match a supported
+  // form, so the caller keeps the generic default.
+  function parseEquation(src) {
+    if (!src) return null;
+    var s = String(src)
+      .trim()
+      .replace(/[−–—]/g, "-") // minus / en / em dash → hyphen
+      .replace(/[×·*]/g, "M") // × · * → M (multiply marker)
+      .replace(/[÷/]/g, "D"); // ÷ / → D (divide marker)
+    var sides = s.split("=");
+    if (sides.length !== 2) return null;
+    var lhs = sides[0].trim();
+    var q = parseInt(sides[1].trim(), 10);
+    if (!isFinite(q)) return null;
+    var m;
+    if ((m = lhs.match(/^([A-Za-z])\s*([+-])\s*(\d+)$/))) {
+      return { varName: m[1], formId: m[2] === "+" ? "add" : "sub", P: +m[3], Q: q };
+    }
+    if ((m = lhs.match(/^(\d+)\s*M?\s*([A-Za-z])$/))) {
+      // p·x = q (also matches implicit "5x")
+      return { varName: m[2], formId: "mul", P: +m[1], Q: q };
+    }
+    if ((m = lhs.match(/^([A-Za-z])\s*M\s*(\d+)$/))) {
+      return { varName: m[1], formId: "mul", P: +m[2], Q: q };
+    }
+    if ((m = lhs.match(/^([A-Za-z])\s*D\s*(\d+)$/))) {
+      return { varName: m[1], formId: "div", P: +m[2], Q: q };
+    }
+    return null;
+  }
+
   function init(el) {
     if (el.dataset.pkiManipDone) return;
     el.dataset.pkiManipDone = "1";
     injectStyle();
 
     var theme = THEMES[el.dataset.theme] || THEMES.lock;
-    var P = 5,
-      Q = 12,
-      formId = "add",
+    // Optional authored starting equation (data-equation) + variable letter.
+    // Falls back to the generic explorer default (x + 5 = 12) when absent.
+    var seed = parseEquation(el.dataset.equation);
+    var VAR = el.dataset.var || (seed && seed.varName) || "x";
+    var P = seed ? seed.P : 5,
+      Q = seed ? seed.Q : 12,
+      formId = seed ? seed.formId : "add",
       solved = false;
     var P_MIN = 1,
       P_MAX = 20,
@@ -181,7 +219,7 @@
       esc(theme.title) +
       "</h4>" +
       '<p class="pki-b-sub">' +
-      esc(theme.sub) +
+      esc(theme.sub.replace(/\bx\b/g, VAR)) +
       "</p>" +
       '<div class="pki-b-forms" data-forms>' +
       FORMS.map(function (f) {
@@ -189,7 +227,7 @@
           '<button type="button" class="pki-b-form" data-form="' +
           f.id +
           '" aria-pressed="false">' +
-          esc(f.label) +
+          esc(f.label.replace(/\bx\b/g, VAR)) +
           "</button>"
         );
       }).join("") +
@@ -294,25 +332,29 @@
         );
       }
       var xVal = f.x(P, Q);
-      // equation line: p,q are integers (safe); highlight the variable x.
+      // equation line: p,q are integers (safe); highlight the variable.
       eqBox.innerHTML =
-        f.leftExpr(P, "x").replace("x", '<span class="pki-b-x">x</span>') + " = " + Q;
+        f.leftExpr(P, VAR).replace(VAR, '<span class="pki-b-x">' + esc(VAR) + "</span>") +
+        " = " +
+        Q;
       // pan labels
-      panL.textContent = solved ? f.leftExpr(P, String(xVal)) : f.leftExpr(P, "x");
+      panL.textContent = solved ? f.leftExpr(P, String(xVal)) : f.leftExpr(P, VAR);
       panR.textContent = String(Q);
       // tilt: pre-solve uses x=0 placeholder; solved uses true x (balanced)
       beam.style.transform = "rotate(" + (solved ? 0 : tiltDeg(0)).toFixed(2) + "deg)";
       // steps
       if (solved) {
         stepsInner.innerHTML =
-          '<p class="pki-b-answer">✓ x = ' +
+          '<p class="pki-b-answer">✓ ' +
+          esc(VAR) +
+          " = " +
           xVal +
           "  —  that's " +
           esc(theme.xName) +
           ".</p>" +
           "<ol>" +
           "<li>Start: <code>" +
-          esc(f.leftExpr(P, "x")) +
+          esc(f.leftExpr(P, VAR)) +
           " = " +
           Q +
           "</code></li>" +
@@ -320,7 +362,7 @@
           esc(f.inverse(P)) +
           "</code>.</li>" +
           "<li>Both sides: <code>" +
-          esc(f.work(P, Q)) +
+          esc(f.work(P, Q).replace("x", VAR)) +
           " = " +
           xVal +
           "</code></li>" +
