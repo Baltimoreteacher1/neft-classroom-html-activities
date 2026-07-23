@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Printable Manipulative Masters · Grade 6 Math</title>
+    <meta name="robots" content="noindex" />
+    <link rel="icon" href="/assets/favicon.svg" />
+    <style>
+      :root {
+        --ink: #14243d;
+        --line: #234;
+        --muted: #5a6b82;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #e9eef5;
+        color: var(--ink);
+        font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      }
+      .toolbar {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 14px;
+        align-items: center;
+        padding: 12px 18px;
+        background: #0f1a2c;
+        color: #fff;
+      }
+      .toolbar h1 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 700;
+        margin-right: 8px;
+      }
+      .toolbar label {
+        font-size: 13.5px;
+        display: inline-flex;
+        gap: 5px;
+        align-items: center;
+        cursor: pointer;
+      }
+      .toolbar .spacer {
+        flex: 1;
+      }
+      .toolbar button,
+      .toolbar a {
+        font: inherit;
+        font-size: 14px;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        padding: 8px 12px;
+        background: #1b2c47;
+        color: #fff;
+        cursor: pointer;
+        text-decoration: none;
+      }
+      .toolbar button.primary {
+        background: #2f7d5b;
+        border-color: #2f7d5b;
+        font-weight: 700;
+      }
+      .sheet {
+        max-width: 860px;
+        margin: 18px auto;
+        background: #fff;
+        padding: 30px 34px 44px;
+        box-shadow: 0 6px 24px rgba(20, 40, 75, 0.12);
+        border-radius: 6px;
+      }
+      .master {
+        margin: 0 0 30px;
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+      .master h2 {
+        font-size: 18px;
+        margin: 0 0 2px;
+        border-bottom: 2px solid var(--ink);
+        padding-bottom: 4px;
+      }
+      .master .cut {
+        margin: 0 0 10px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      svg {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      svg text {
+        fill: var(--ink);
+        font-family: system-ui, sans-serif;
+        font-weight: 600;
+      }
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 6px;
+      }
+      .cards .cc {
+        border: 1.5px solid var(--ink);
+        border-radius: 8px;
+        text-align: center;
+        padding: 12px 4px;
+        font-size: 22px;
+        font-weight: 700;
+      }
+      .cards .cc.prime {
+        background: #eef3f9;
+      }
+      .cards .cc small {
+        display: block;
+        font-size: 10px;
+        font-weight: 600;
+        color: var(--muted);
+      }
+      @media print {
+        .toolbar {
+          display: none;
+        }
+        body {
+          background: #fff;
+        }
+        .sheet {
+          box-shadow: none;
+          border-radius: 0;
+          margin: 0;
+          max-width: none;
+          padding: 0;
+        }
+        .master.off {
+          display: none;
+        }
+        @page {
+          margin: 1.2cm;
+        }
+      }
+      .master.off {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="toolbar">
+      <h1>Manipulative Masters</h1>
+      <label><input type="checkbox" data-m="numberline" checked /> Number lines</label>
+      <label><input type="checkbox" data-m="grid" checked /> Coordinate grid</label>
+      <label><input type="checkbox" data-m="fractions" checked /> Fraction bars</label>
+      <label><input type="checkbox" data-m="cards" checked /> Number cards 1–24</label>
+      <label><input type="checkbox" data-m="tiles" checked /> Algebra tiles</label>
+      <label><input type="checkbox" data-m="placevalue" checked /> Place-value mat</label>
+      <span class="spacer"></span>
+      <button class="primary" id="printBtn" type="button">🖨 Print / Save PDF</button>
+      <a href="/curriculum/">← Curriculum</a>
+    </div>
+    <div class="sheet" id="sheet"></div>
+    <script>
+      var NS = "http://www.w3.org/2000/svg";
+      function svg(w, h) {
+        var s = document.createElementNS(NS, "svg");
+        s.setAttribute("viewBox", "0 0 " + w + " " + h);
+        return s;
+      }
+      function line(s, x1, y1, x2, y2, w) {
+        var l = document.createElementNS(NS, "line");
+        l.setAttribute("x1", x1);
+        l.setAttribute("y1", y1);
+        l.setAttribute("x2", x2);
+        l.setAttribute("y2", y2);
+        l.setAttribute("stroke", "#14243d");
+        l.setAttribute("stroke-width", w || 1);
+        s.appendChild(l);
+      }
+      function txt(s, x, y, t, size, anchor) {
+        var e = document.createElementNS(NS, "text");
+        e.setAttribute("x", x);
+        e.setAttribute("y", y);
+        e.setAttribute("font-size", size || 12);
+        e.setAttribute("text-anchor", anchor || "middle");
+        e.textContent = t;
+        s.appendChild(e);
+      }
+      function rect(s, x, y, w, h, fill) {
+        var r = document.createElementNS(NS, "rect");
+        r.setAttribute("x", x);
+        r.setAttribute("y", y);
+        r.setAttribute("width", w);
+        r.setAttribute("height", h);
+        r.setAttribute("fill", fill || "none");
+        r.setAttribute("stroke", "#14243d");
+        r.setAttribute("stroke-width", 1);
+        s.appendChild(r);
+      }
+
+      // ── Number lines: 0–20, −10..10, and a blank tick strip ──
+      function numberLine(min, max, label) {
+        var W = 800,
+          H = 70,
+          pad = 30;
+        var s = svg(W, H);
+        var n = max - min;
+        var step = (W - 2 * pad) / n;
+        line(s, pad, 40, W - pad, 40, 2);
+        for (var i = 0; i <= n; i++) {
+          var x = pad + i * step;
+          line(s, x, 34, x, 46, 1.5);
+          txt(s, x, 62, String(min + i), 12);
+        }
+        // arrows
+        txt(s, 10, 44, "◀", 14);
+        txt(s, W - 8, 44, "▶", 14);
+        txt(s, pad, 20, label, 12, "start");
+        return s;
+      }
+
+      // ── Four-quadrant coordinate grid −10..10 ──
+      function coordGrid() {
+        var W = 620,
+          H = 620,
+          pad = 30,
+          n = 20;
+        var s = svg(W, H);
+        var step = (W - 2 * pad) / n;
+        for (var i = 0; i <= n; i++) {
+          var p = pad + i * step;
+          line(s, p, pad, p, H - pad, i === n / 2 ? 2 : 0.6);
+          line(s, pad, p, W - pad, p, i === n / 2 ? 2 : 0.6);
+        }
+        // axis labels every 2
+        for (var k = -10; k <= 10; k += 2) {
+          if (k === 0) continue;
+          var xx = pad + (k + 10) * step;
+          txt(s, xx, H / 2 + 16, String(k), 11);
+          var yy = pad + (10 - k) * step;
+          txt(s, W / 2 - 14, yy + 4, String(k), 11);
+        }
+        txt(s, W - 16, H / 2 - 6, "x", 14);
+        txt(s, W / 2 + 12, 20, "y", 14);
+        return s;
+      }
+
+      // ── Fraction bars: 1 whole down to twelfths ──
+      function fractionBars() {
+        var W = 800,
+          rowH = 34,
+          denoms = [1, 2, 3, 4, 5, 6, 8, 10, 12];
+        var H = denoms.length * rowH + 20;
+        var s = svg(W, H);
+        var barW = W - 90;
+        denoms.forEach(function (d, r) {
+          var y = 10 + r * rowH;
+          txt(s, 4, y + rowH / 2 + 4, d === 1 ? "1" : "1/" + d, 13, "start");
+          var cw = barW / d;
+          for (var i = 0; i < d; i++) {
+            rect(s, 70 + i * cw, y, cw, rowH - 8);
+            txt(s, 70 + i * cw + cw / 2, y + rowH / 2 + 2, d === 1 ? "1" : "1/" + d, 11);
+          }
+        });
+        return s;
+      }
+
+      // ── Number cards 1–24 (primes shaded) for factor work ──
+      function numberCards() {
+        var wrap = document.createElement("div");
+        wrap.className = "cards";
+        var primes = { 2: 1, 3: 1, 5: 1, 7: 1, 11: 1, 13: 1, 17: 1, 19: 1, 23: 1 };
+        for (var n = 1; n <= 24; n++) {
+          var c = document.createElement("div");
+          c.className = "cc" + (primes[n] ? " prime" : "");
+          c.innerHTML = n + (primes[n] ? "<small>prime</small>" : n === 1 ? "<small>unit</small>" : "<small>&nbsp;</small>");
+          wrap.appendChild(c);
+        }
+        return wrap;
+      }
+
+      // ── Algebra tiles: +x, −x, +1, −1 (cut-outs) ──
+      function algebraTiles() {
+        var W = 800,
+          H = 150;
+        var s = svg(W, H);
+        function tile(x, w, label, fill) {
+          rect(s, x, 30, w, 60, fill);
+          txt(s, x + w / 2, 66, label, 16);
+        }
+        tile(20, 120, "x", "#dbe6f5");
+        tile(160, 120, "−x", "#fff");
+        tile(300, 60, "1", "#f6e7c8");
+        tile(380, 60, "−1", "#fff");
+        txt(s, 20, 118, "Trace and cut several of each. Shaded = positive, white = negative.", 12, "start");
+        return s;
+      }
+
+      // ── Place-value mat: millions → thousandths ──
+      function placeValue() {
+        var cols = ["Millions", "H-Thou", "T-Thou", "Thousands", "Hundreds", "Tens", "Ones", ".", "Tenths", "Hundredths", "Thousandths"];
+        var W = 840,
+          H = 120,
+          cw = W / cols.length;
+        var s = svg(W, H);
+        cols.forEach(function (c, i) {
+          rect(s, i * cw, 20, cw, 80);
+          txt(s, i * cw + cw / 2, 40, c, 10);
+        });
+        return s;
+      }
+
+      var MASTERS = [
+        {
+          id: "numberline",
+          title: "Number lines",
+          cut: "Cut into strips. Use for integers, jumps, and rounding.",
+          build: function (host) {
+            host.appendChild(numberLine(0, 20, "0 to 20"));
+            host.appendChild(numberLine(-10, 10, "−10 to 10"));
+          },
+        },
+        { id: "grid", title: "Four-quadrant coordinate grid", cut: "Plot ordered pairs; reflect across axes.", build: function (h) { h.appendChild(coordGrid()); } },
+        { id: "fractions", title: "Fraction bars", cut: "Cut into rows to compare and add fractions.", build: function (h) { h.appendChild(fractionBars()); } },
+        { id: "cards", title: "Number cards 1–24", cut: "Cut apart. Build factor trees and sort prime vs composite.", build: function (h) { h.appendChild(numberCards()); } },
+        { id: "tiles", title: "Algebra tiles", cut: "Model expressions and combining like terms.", build: function (h) { h.appendChild(algebraTiles()); } },
+        { id: "placevalue", title: "Place-value mat", cut: "Line up digits for decimal operations.", build: function (h) { h.appendChild(placeValue()); } },
+      ];
+
+      var sheet = document.getElementById("sheet");
+      MASTERS.forEach(function (m) {
+        var sec = document.createElement("section");
+        sec.className = "master";
+        sec.dataset.master = m.id;
+        var h = document.createElement("h2");
+        h.textContent = m.title;
+        var p = document.createElement("p");
+        p.className = "cut";
+        p.textContent = "✂ " + m.cut;
+        sec.append(h, p);
+        m.build(sec);
+        sheet.appendChild(sec);
+      });
+
+      document.querySelectorAll("[data-m]").forEach(function (cb) {
+        cb.addEventListener("change", function () {
+          var sec = sheet.querySelector('[data-master="' + cb.dataset.m + '"]');
+          if (sec) sec.classList.toggle("off", !cb.checked);
+        });
+      });
+      document.getElementById("printBtn").addEventListener("click", function () {
+        window.print();
+      });
+    </script>
+  </body>
+</html>

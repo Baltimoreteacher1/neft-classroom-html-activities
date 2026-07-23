@@ -3,11 +3,23 @@
 Status: audit 2026-07-23. **Wave 1** (items 1–5), **Wave 2** (6, 7, 17, 18),
 **item 8** (Small-Group Rotation Console), and **Wave 3** (9, 13, 15) all
 shipped. **Item 16** investigated → finding invalid, no-op (see below).
-**Wave 4** shipped 19/20 (dark mode). Remaining: 10 (family letter), 12
-(printed manipulative masters), 14 (authored art) — these need content/asset
-creation (writing per-lesson family letters, drawing manipulative masters,
-commissioning scene art), not engine work, so they're a distinct authoring
-workstream rather than code.
+**Wave 4** shipped 19/20 (dark mode). **Wave 5** shipped 10 + 12:
+- **10 — Family Math Letter** (`/curriculum/family-letter/`): a bilingual
+  EN/ES printable that fetches any lesson's config and renders objective +
+  standard text + a key-vocabulary table (real ES from `termEs`/`definitionEs`)
+  + derived "help at home" prompts + the common-mistake "gently check". Linked
+  from the curriculum Teacher Tools panel.
+- **12 — Printable Manipulative Masters** (`/curriculum/manipulatives/`):
+  print-optimized SVG cut-out masters (number lines, four-quadrant grid,
+  fraction bars, number cards 1–24 with primes shaded, algebra tiles,
+  place-value mat) with per-master toggles. Linked from Teacher Tools.
+
+Remaining: **14 (authored scene/character art)** — the one item that genuinely
+needs raster illustration created at quality (consistent characters, scenes for
+64 lessons). Deliberately NOT auto-generated: the audit itself notes the
+code-drawn SVG math models are a strength, and fabricating a pile of
+inconsistent AI images would lower quality, not raise it. This is a design
+commission, not an engineering task.
 Scope: all 128 small-group lessons + 20 catch-ups (engine modules, generators,
 teacher route, worksheets), benchmarked against professional publishers
 (Illustrative Mathematics, Eureka Math², enVision, Amplify).

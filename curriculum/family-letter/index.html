@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Family Math Letter · Carta de Matemáticas</title>
+    <meta name="robots" content="noindex" />
+    <link rel="icon" href="/assets/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --navy: #143a6b;
+        --blue: #1f5fa6;
+        --ink: #16243d;
+        --muted: #5a6b82;
+        --line: #d7e2ed;
+        --soft: #eef3f9;
+        --warn-bg: #fff5e7;
+        --warn-line: #e0a24a;
+        --es: #1c7a64;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #e9eef5;
+        color: var(--ink);
+        font-family: "Hanken Grotesk", system-ui, sans-serif;
+        line-height: 1.55;
+      }
+      .toolbar {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        padding: 12px 18px;
+        background: #0f1a2c;
+        color: #fff;
+      }
+      .toolbar h1 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 700;
+      }
+      .toolbar .spacer {
+        flex: 1;
+      }
+      .toolbar select,
+      .toolbar button,
+      .toolbar a {
+        font: inherit;
+        font-size: 14px;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        padding: 8px 12px;
+        background: #1b2c47;
+        color: #fff;
+        cursor: pointer;
+        text-decoration: none;
+      }
+      .toolbar button.primary {
+        background: #2f7d5b;
+        border-color: #2f7d5b;
+        font-weight: 700;
+      }
+      .toolbar select {
+        max-width: 60vw;
+      }
+      .sheet {
+        max-width: 800px;
+        margin: 20px auto;
+        background: #fff;
+        padding: 40px 46px 48px;
+        box-shadow: 0 6px 24px rgba(20, 40, 75, 0.12);
+        border-radius: 6px;
+      }
+      .fl-head {
+        border-bottom: 3px solid var(--navy);
+        padding-bottom: 14px;
+        margin-bottom: 18px;
+      }
+      .fl-badge {
+        display: inline-block;
+        background: var(--navy);
+        color: #fff;
+        font-weight: 700;
+        font-size: 11px;
+        letter-spacing: 0.04em;
+        padding: 4px 11px;
+        border-radius: 999px;
+      }
+      .fl-title {
+        font-family: "Fraunces", serif;
+        font-weight: 700;
+        font-size: 27px;
+        margin: 10px 0 2px;
+        color: var(--navy);
+        line-height: 1.12;
+      }
+      .fl-title .es {
+        display: block;
+        font-size: 18px;
+        color: var(--es);
+        font-style: italic;
+        font-weight: 600;
+      }
+      .fl-sub {
+        margin: 6px 0 0;
+        color: var(--muted);
+        font-weight: 600;
+      }
+      .fl-sec {
+        margin: 20px 0 0;
+      }
+      .fl-sec h2 {
+        font-family: "Fraunces", serif;
+        font-size: 17px;
+        margin: 0 0 6px;
+        color: var(--navy);
+      }
+      .fl-sec h2 .es {
+        color: var(--es);
+        font-weight: 600;
+        font-style: italic;
+      }
+      .fl-en {
+        margin: 0 0 4px;
+      }
+      .fl-es {
+        margin: 0;
+        color: var(--es);
+        font-style: italic;
+      }
+      .fl-words {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 6px;
+        font-size: 14.5px;
+      }
+      .fl-words th,
+      .fl-words td {
+        border: 1px solid var(--line);
+        padding: 8px 10px;
+        text-align: left;
+        vertical-align: top;
+      }
+      .fl-words th {
+        background: var(--soft);
+        font-size: 12.5px;
+      }
+      .fl-words .term {
+        font-weight: 700;
+        white-space: nowrap;
+      }
+      .fl-words .term .es {
+        display: block;
+        color: var(--es);
+        font-weight: 600;
+        font-size: 13px;
+      }
+      .fl-words td .es {
+        display: block;
+        color: var(--es);
+        font-style: italic;
+        margin-top: 3px;
+      }
+      .fl-help {
+        border: 1px solid var(--line);
+        border-left: 4px solid var(--blue);
+        border-radius: 0 10px 10px 0;
+        background: var(--soft);
+        padding: 12px 15px;
+        margin-top: 8px;
+      }
+      .fl-help ul {
+        margin: 6px 0 0;
+        padding-left: 18px;
+      }
+      .fl-help li {
+        margin: 4px 0;
+      }
+      .fl-watch {
+        border: 1px solid var(--warn-line);
+        border-radius: 10px;
+        background: var(--warn-bg);
+        padding: 12px 15px;
+        margin-top: 8px;
+      }
+      .fl-foot {
+        margin-top: 24px;
+        padding-top: 14px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 13.5px;
+      }
+      .fl-signature {
+        margin-top: 10px;
+        font-weight: 600;
+        color: var(--ink);
+      }
+      .loading {
+        color: var(--muted);
+        padding: 20px 0;
+      }
+      @media print {
+        .toolbar {
+          display: none;
+        }
+        body {
+          background: #fff;
+        }
+        .sheet {
+          box-shadow: none;
+          border-radius: 0;
+          margin: 0;
+          max-width: none;
+          padding: 0;
+        }
+        @page {
+          margin: 1.6cm;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="toolbar">
+      <h1>Family Math Letter · Carta de Matemáticas</h1>
+      <span class="spacer"></span>
+      <label for="picker" style="font-size: 13px">Lesson:</label>
+      <select id="picker" aria-label="Choose a lesson"></select>
+      <button class="primary" id="printBtn" type="button">🖨 Print / Save PDF</button>
+      <a href="/curriculum/">← Curriculum</a>
+    </div>
+    <div class="sheet" id="sheet">
+      <p class="loading">Loading…</p>
+    </div>
+    <script>
+      var LESSONS = [{"id": "1-1", "u": 1, "l": 1, "t": "Prime Factorization"}, {"id": "1-2", "u": 1, "l": 2, "t": "Greatest Common Factor"}, {"id": "1-3", "u": 1, "l": 3, "t": "Least Common Multiple"}, {"id": "1-4", "u": 1, "l": 4, "t": "Divide Multi-Digit Numbers"}, {"id": "1-5", "u": 1, "l": 5, "t": "Add and Subtract Decimals"}, {"id": "1-6", "u": 1, "l": 6, "t": "Multiply Decimals"}, {"id": "1-7", "u": 1, "l": 7, "t": "Divide Decimals"}, {"id": "2-1", "u": 2, "l": 1, "t": "Interpret Division of Fractions"}, {"id": "2-2", "u": 2, "l": 2, "t": "Divide Whole Numbers by Fractions"}, {"id": "2-3", "u": 2, "l": 3, "t": "Divide Fractions"}, {"id": "2-4", "u": 2, "l": 4, "t": "Divide Mixed Numbers"}, {"id": "2-5", "u": 2, "l": 5, "t": "Fraction Division Problem Solving"}, {"id": "3-1", "u": 3, "l": 1, "t": "Understand Ratios"}, {"id": "3-2", "u": 3, "l": 2, "t": "Ratio Tables"}, {"id": "3-3", "u": 3, "l": 3, "t": "Graph Ratio Tables"}, {"id": "3-4", "u": 3, "l": 4, "t": "Equivalent Ratios"}, {"id": "3-5", "u": 3, "l": 5, "t": "Compare Ratios"}, {"id": "3-6", "u": 3, "l": 6, "t": "Use Ratio Reasoning"}, {"id": "3-7", "u": 3, "l": 7, "t": "Ratio and Rate Problem Solving"}, {"id": "4-1", "u": 4, "l": 1, "t": "Rates and Unit Rates"}, {"id": "4-2", "u": 4, "l": 2, "t": "Relate Fractions, Decimals, and Percents"}, {"id": "4-3", "u": 4, "l": 3, "t": "Percents Greater Than 100% and Less Than 1%"}, {"id": "4-4", "u": 4, "l": 4, "t": "Find the Percent of a Number"}, {"id": "4-5", "u": 4, "l": 5, "t": "Use Percent to Solve Problems"}, {"id": "4-6", "u": 4, "l": 6, "t": "Convert Measurement Units"}, {"id": "4-7", "u": 4, "l": 7, "t": "Solve Problems with Unit Rates"}, {"id": "5-1", "u": 5, "l": 1, "t": "Area of Parallelograms"}, {"id": "5-2", "u": 5, "l": 2, "t": "Area of Trapezoids"}, {"id": "5-3", "u": 5, "l": 3, "t": "Area of Triangles"}, {"id": "5-4", "u": 5, "l": 4, "t": "Area of Regular Polygons"}, {"id": "5-5", "u": 5, "l": 5, "t": "Area of Composite Figures"}, {"id": "6-1", "u": 6, "l": 1, "t": "Powers and Exponents"}, {"id": "6-2", "u": 6, "l": 2, "t": "Evaluate Expressions"}, {"id": "6-3", "u": 6, "l": 3, "t": "Write Algebraic Expressions"}, {"id": "6-4", "u": 6, "l": 4, "t": "Properties of Operations"}, {"id": "6-5", "u": 6, "l": 5, "t": "The Distributive Property"}, {"id": "6-6", "u": 6, "l": 6, "t": "Equivalent Expressions"}, {"id": "6-7", "u": 6, "l": 7, "t": "Simplify Algebraic Expressions"}, {"id": "7-1", "u": 7, "l": 1, "t": "Write Equations"}, {"id": "7-2", "u": 7, "l": 2, "t": "Solve One-Step Addition and Subtraction Equations"}, {"id": "7-3", "u": 7, "l": 3, "t": "Solve Multiplication and Division Equations"}, {"id": "7-4", "u": 7, "l": 4, "t": "Write Inequalities"}, {"id": "7-5", "u": 7, "l": 5, "t": "Graph Inequalities"}, {"id": "7-6", "u": 7, "l": 6, "t": "Solve and Graph Inequalities"}, {"id": "7-7", "u": 7, "l": 7, "t": "Equations and Inequalities Problem Solving"}, {"id": "8-1", "u": 8, "l": 1, "t": "Statistical Questions and Data"}, {"id": "8-2", "u": 8, "l": 2, "t": "Mean, Median, and Mode"}, {"id": "8-3", "u": 8, "l": 3, "t": "Mean Absolute Deviation"}, {"id": "8-4", "u": 8, "l": 4, "t": "Appropriate Measures"}, {"id": "8-5", "u": 8, "l": 5, "t": "Display Data: Box Plots"}, {"id": "8-6", "u": 8, "l": 6, "t": "Display Data: Histograms"}, {"id": "8-7", "u": 8, "l": 7, "t": "Shape of Data Distributions"}, {"id": "9-1", "u": 9, "l": 1, "t": "Graph on the Coordinate Plane"}, {"id": "9-2", "u": 9, "l": 2, "t": "Integers and Absolute Value"}, {"id": "9-3", "u": 9, "l": 3, "t": "Compare and Order Integers"}, {"id": "9-4", "u": 9, "l": 4, "t": "Rational Numbers on the Number Line"}, {"id": "9-5", "u": 9, "l": 5, "t": "Ordered Pairs in All Four Quadrants"}, {"id": "9-6", "u": 9, "l": 6, "t": "Distance on the Coordinate Plane"}, {"id": "9-7", "u": 9, "l": 7, "t": "Reflect Points Across Axes"}, {"id": "10-1", "u": 10, "l": 1, "t": "Volume with Whole Number Edges"}, {"id": "10-2", "u": 10, "l": 2, "t": "Volume of Rectangular Prisms"}, {"id": "10-3", "u": 10, "l": 3, "t": "Surface Area Using Nets"}, {"id": "10-4", "u": 10, "l": 4, "t": "Surface Area of Prisms"}, {"id": "10-5", "u": 10, "l": 5, "t": "Surface Area of Pyramids"}];
+      var picker = document.getElementById("picker");
+      var sheet = document.getElementById("sheet");
+      var stdCache = null;
+
+      function esc(s) {
+        return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) {
+          return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+        });
+      }
+
+      LESSONS.forEach(function (L) {
+        var o = document.createElement("option");
+        o.value = L.id;
+        o.textContent = L.u + "." + L.l + " · " + L.t;
+        picker.appendChild(o);
+      });
+
+      function loadStandards() {
+        if (stdCache) return Promise.resolve(stdCache);
+        return fetch("/data/ccss-standards.json", { credentials: "omit" })
+          .then(function (r) {
+            return r.ok ? r.json() : null;
+          })
+          .then(function (d) {
+            stdCache = (d && d.standards) || {};
+            return stdCache;
+          })
+          .catch(function () {
+            stdCache = {};
+            return stdCache;
+          });
+      }
+
+      // Derive two concrete "help at home" prompts from the lesson's own content.
+      function homeActivities(cfg) {
+        var acts = [];
+        var v = (cfg.vocabulary || [])[0];
+        if (v && v.term)
+          acts.push(
+            "Ask your child to explain what <b>" +
+              esc(v.term) +
+              "</b> means and show you one example.",
+          );
+        var word =
+          cfg.revealWordProblem && cfg.revealWordProblem.text ? cfg.revealWordProblem.text : "";
+        if (word)
+          acts.push("Read this real-world problem together and talk through it: “" + esc(word.slice(0, 180)) + (word.length > 180 ? "…" : "") + "”");
+        acts.push(
+          "When your child gets an answer, ask “How do you know?” — explaining out loud is where the learning sticks.",
+        );
+        return acts;
+      }
+
+      function render(cfg, std) {
+        var title = cfg.title || "This week's math";
+        var obj = cfg.contentObjective || "";
+        var mistake =
+          cfg.practice && cfg.practice.commonMistake
+            ? typeof cfg.practice.commonMistake === "string"
+              ? cfg.practice.commonMistake
+              : cfg.practice.commonMistake.text || ""
+            : "";
+        var vocab = (cfg.vocabulary || []).slice(0, 6);
+        var stdLine = std && std.fullText ? std.fullText : "";
+
+        var words = vocab
+          .map(function (v) {
+            return (
+              '<tr><td class="term">' +
+              esc(v.term || "") +
+              (v.termEs ? '<span class="es">' + esc(v.termEs) + "</span>" : "") +
+              "</td><td>" +
+              esc(v.definition || "") +
+              (v.definitionEs ? '<span class="es">' + esc(v.definitionEs) + "</span>" : "") +
+              "</td></tr>"
+            );
+          })
+          .join("");
+
+        var acts = homeActivities(cfg)
+          .map(function (a) {
+            return "<li>" + a + "</li>";
+          })
+          .join("");
+
+        sheet.innerHTML =
+          '<div class="fl-head">' +
+          '<span class="fl-badge">' +
+          esc(cfg.standard || "Grade 6 Math") +
+          "</span>" +
+          '<h1 class="fl-title">Family Math Letter<span class="es">Carta de matemáticas para la familia</span></h1>' +
+          '<p class="fl-sub">' +
+          esc(title) +
+          "</p>" +
+          "</div>" +
+          '<p class="fl-en">Dear family, this week your child is learning the math skill below. Thank you for being part of it — a few minutes of talking about math at home makes a real difference.</p>' +
+          '<p class="fl-es">Estimada familia: esta semana su hijo/a está aprendiendo la destreza de matemáticas de abajo. Gracias por ser parte de esto: unos minutos hablando de matemáticas en casa hacen una gran diferencia.</p>' +
+          '<div class="fl-sec"><h2>What we are learning <span class="es">· Lo que estamos aprendiendo</span></h2>' +
+          '<p class="fl-en">' +
+          esc(obj) +
+          "</p>" +
+          (stdLine ? '<p class="fl-sub">Standard ' + esc(cfg.standard || "") + ": " + esc(stdLine) + "</p>" : "") +
+          "</div>" +
+          (words
+            ? '<div class="fl-sec"><h2>Key words to practice <span class="es">· Palabras clave para practicar</span></h2>' +
+              '<table class="fl-words"><thead><tr><th>Word · Palabra</th><th>Meaning · Significado</th></tr></thead><tbody>' +
+              words +
+              "</tbody></table></div>"
+            : "") +
+          '<div class="fl-sec"><h2>Help at home <span class="es">· Cómo ayudar en casa</span></h2>' +
+          '<div class="fl-help"><ul>' +
+          acts +
+          "</ul></div></div>" +
+          (mistake
+            ? '<div class="fl-sec"><h2>One thing to gently check <span class="es">· Algo para revisar con cariño</span></h2>' +
+              '<div class="fl-watch">' +
+              esc(mistake) +
+              "</div></div>"
+            : "") +
+          '<div class="fl-foot">Questions? Reach out any time. · ¿Preguntas? Escríbame cuando quiera.' +
+          '<p class="fl-signature">— Mr. Neft, Grade 6 Math</p></div>';
+      }
+
+      function load(id) {
+        sheet.innerHTML = '<p class="loading">Loading…</p>';
+        Promise.all([
+          fetch("/lessons/" + encodeURIComponent(id) + "/config.json", { credentials: "omit" }).then(
+            function (r) {
+              return r.ok ? r.json() : null;
+            },
+          ),
+          loadStandards(),
+        ])
+          .then(function (res) {
+            var cfg = res[0];
+            if (!cfg) {
+              sheet.innerHTML = '<p class="loading">Could not load this lesson.</p>';
+              return;
+            }
+            render(cfg, (res[1] || {})[cfg.standard]);
+            var url = new URL(window.location.href);
+            url.searchParams.set("lesson", id);
+            history.replaceState(null, "", url);
+          })
+          .catch(function () {
+            sheet.innerHTML = '<p class="loading">Could not load this lesson.</p>';
+          });
+      }
+
+      picker.addEventListener("change", function () {
+        load(picker.value);
+      });
+      document.getElementById("printBtn").addEventListener("click", function () {
+        window.print();
+      });
+
+      var start = new URLSearchParams(window.location.search).get("lesson");
+      if (!start || !LESSONS.some(function (L) { return L.id === start; })) start = LESSONS[0].id;
+      picker.value = start;
+      load(start);
+    </script>
+  </body>
+</html>
