@@ -393,9 +393,7 @@ export function createEvidenceCard(config, state, getBand = null) {
     const vocabulary = config.vocabulary?.[0]?.term || config.vocabulary?.[0] || "lesson language";
     const strategyCell = state.mathCheckDone
       ? `<div><span>Math check</span><b>${esc(mathCheckFor(config).title)}</b></div>`
-      : state.proofPath
-        ? `<div><span>Proof path</span><b>${esc(labelFor(state.proofPath))}</b></div>`
-        : "";
+      : "";
     const discussionMove = state.mathCheckDone
       ? "Connected the result to the topic"
       : state.revision === "revised"
@@ -440,7 +438,6 @@ export function createStudioPacket(config, state, store) {
       ["My challenge solution", get("mathSolveWork")],
       ["How I checked the math", get("mathCheckWork")],
       ["What my result means", get("mathCheckMeaning")],
-      ["My plan (proof path)", get("proofResponse")],
       ["What the model shows", get("modelResponse")],
       ["My solution (apply)", get("applyWork")],
       ["One move that helped me", get("growthNote")],
@@ -455,7 +452,9 @@ export function createStudioPacket(config, state, store) {
       : `<p class="sg-packet-empty">Written work you type into the studio will appear here.</p>`;
     const strategy = get("mathCheckWork")
       ? `<div><span>Math check</span><b>${esc(mathCheckFor(config).title)}</b></div>`
-      : `<div><span>Proof path</span><b>${esc(labelFor(state.proofPath))}</b></div>`;
+      : state.adaptivePath && PATHS[state.adaptivePath]
+        ? `<div><span>Adaptive move</span><b>${esc(PATHS[state.adaptivePath].label)}</b></div>`
+        : "";
     section.innerHTML = `<div class="sg-packet-head"><div class="sg-innovation-kicker">Study packet</div><h2>${esc(config.title || "Small-Group Math Studio")}</h2>${config.standard ? `<p class="sg-packet-standard">${esc(config.standard)}</p>` : ""}</div><div class="sg-evidence-grid"><div><span>Confidence journey</span><b>${before || "—"} → ${after || "—"}${change > 0 ? ` (+${change})` : ""}</b></div>${strategy}</div><div class="sg-packet-work">${work}</div>`;
     const print = el("button", "btn ghost", "Print study packet");
     print.type = "button";
@@ -560,6 +559,82 @@ function classEvidenceBlock(config) {
   row.append(refresh, dashboard);
   block.append(row, status, rows);
   return block;
+}
+
+// Publisher teacher-edition staple: an "anticipated responses" table so the
+// teacher walks in knowing the wrong turns for THIS lesson and how to respond.
+// Derivation-only (no config authoring): the richest signals already in every
+// config are (a) the common-mistake prose, (b) error-analysis items — each a
+// labeled mistaken step plus its authored repair (correctWork), and (c) MC
+// distractors that carry real per-choice feedback. Teacher-only.
+const FILLER_FEEDBACK = /^re-?read the problem carefully/i;
+
+function collectAnticipated(config) {
+  const practice = config.practice || {};
+  const rows = [];
+  const tiers = ["approaching", "onLevel", "extending", "optional"];
+  // Error-analysis items are the strongest signal: a named wrong step + repair.
+  for (const tier of tiers) {
+    for (const item of practice[tier] || []) {
+      if (item.type !== "error-analysis" || !Array.isArray(item.workedExample)) continue;
+      const step = item.workedExample[item.errorStep];
+      if (!step) continue;
+      const wrong = [step.label, step.work].filter(Boolean).join(" — ");
+      const fix = item.correctWork || item.explanation || "";
+      if (wrong && fix) rows.push({ kind: "Common error", wrong, fix });
+    }
+  }
+  // MC distractors with genuine (non-filler) feedback → likely-choice rationale.
+  for (const tier of tiers) {
+    for (const item of practice[tier] || []) {
+      if (item.type !== "multiple-choice" || !Array.isArray(item.choices)) continue;
+      const feedback = item.choiceFeedback || [];
+      item.choices.forEach((choice, index) => {
+        if (index === item.correctIndex) return;
+        const note = (feedback[index] || "").trim();
+        if (!note || FILLER_FEEDBACK.test(note)) return;
+        rows.push({ kind: "Likely wrong choice", wrong: `“${choice}”`, fix: note });
+      });
+    }
+  }
+  return rows;
+}
+
+export function createMisconceptionCard(config = {}) {
+  const mistake = config.practice?.commonMistake;
+  const mistakeText =
+    typeof mistake === "string" ? mistake : mistake?.text || mistake?.mistake || "";
+  const rows = collectAnticipated(config).slice(0, 8);
+  if (!mistakeText && !rows.length) return null;
+  const section = el("aside", "sg-misconceptions sg-innovation");
+  section.setAttribute("role", "region");
+  section.setAttribute("aria-label", "Misconceptions and anticipated responses");
+  let html =
+    '<div class="sg-innovation-kicker">Teacher-only · anticipated responses</div>' +
+    "<h2>Misconceptions &amp; anticipated responses</h2>";
+  if (mistakeText) {
+    html += `<p class="sg-misconception-lead"><b>Watch for:</b> ${esc(mistakeText)}</p>`;
+  }
+  if (rows.length) {
+    const body = rows
+      .map(
+        (row) =>
+          `<tr><td class="sg-mis-kind">${esc(row.kind)}</td>` +
+          `<td class="sg-mis-wrong">${esc(row.wrong)}</td>` +
+          `<td class="sg-mis-fix">${esc(row.fix)}</td></tr>`,
+      )
+      .join("");
+    html +=
+      '<div class="sg-mis-scroll"><table class="sg-mis-table">' +
+      '<caption class="sr-only">Anticipated wrong answers and how to respond</caption>' +
+      '<thead><tr><th scope="col">Type</th><th scope="col">Anticipated response</th>' +
+      '<th scope="col">Name it &amp; respond</th></tr></thead>' +
+      `<tbody>${body}</tbody></table></div>`;
+  }
+  html +=
+    '<p class="sg-privacy">Pull one of these into the discussion: show the wrong turn, ask the group to spot and repair it — the studio\'s error-analysis items do exactly this.</p>';
+  section.innerHTML = html;
+  return section;
 }
 
 export function createTeacherEvidenceConsole(config = {}, state = {}, getBand = null) {

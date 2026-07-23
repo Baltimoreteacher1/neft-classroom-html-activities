@@ -19,6 +19,7 @@ import {
   createAdaptiveCoach,
   createConsensusLab,
   createEvidenceCard,
+  createMisconceptionCard,
   createStudioPacket,
   createTeacherEvidenceConsole,
 } from "./small-group-innovation.js";
@@ -244,6 +245,26 @@ function teacherPanel(config, accent, talk) {
   const capstoneNote = isGroup2
     ? "<b>Math Check:</b> students solve one challenge, run the check named for this lesson, and explain what the result means. Look for correct units, labels, and use of the lesson strategy."
     : "<b>Team consensus protocol:</b> post the problem, then have each voice privately pick the single best way to prove it before revealing the tally. Disagreement is the discussion fuel — ask “why that proof for this problem?” and let the group defend or revise.";
+  // Publisher-style margin decisions: the in-the-moment moves a printed teacher
+  // edition prints beside the lesson. Variant-aware so the "finish early" branch
+  // sends each group somewhere real (Challenge bridge / Math Check / stretch).
+  const finishEarly = isGroup2
+    ? "point them at a second solution method — “solve it again, faster or cleaner” — or the Math Check’s connect step."
+    : "offer the on-page Challenge bridge (it appears after a streak) or the adaptive coach’s Stretch move.";
+  const pacingNotes = [
+    [
+      "If students struggle",
+      "drop to the Guided set and open the step guide + tap-to-try bank; re-walk one worked step in Build the idea before releasing them again.",
+    ],
+    [
+      "If you’re short on time",
+      "protect the exit ticket. Cut More Practice, keep Build → one guided problem → the check; the rail renumbers itself, so skipping a section never breaks the flow.",
+    ],
+    ["If they finish early", finishEarly],
+  ];
+  const pacingHtml = pacingNotes
+    .map(([label, body]) => `<li><b>${esc(label)}:</b> ${esc(body)}</li>`)
+    .join("");
   wrapper.innerHTML = `<details>
     <summary>👩‍🏫 Teacher studio guide · ${esc(group.label || accent.name)}</summary>
     <div class="sg-tbody">
@@ -253,6 +274,7 @@ function teacherPanel(config, accent, talk) {
       ${frames ? `<p><b>Reusable frames:</b></p><div class="sg-frames">${frames}</div>` : ""}
       ${talk?.listenFor ? `<p><b>Listen for during team talk:</b> ${esc(talk.listenFor)}</p>` : ""}
       ${listenFor ? `<p><b>Listen-for checkpoints:</b></p><ul>${listenFor}</ul>` : ""}
+      <p><b>Pacing decisions:</b></p><ul class="sg-pacing">${pacingHtml}</ul>
       <p class="sg-teacher-capstone">${capstoneNote}</p>
     </div>
   </details>`;
@@ -447,9 +469,7 @@ function renderStudio(config) {
     hints: 0,
     solved: 0,
     // Cross-session studio evidence — rehydrated so the Evidence Card and the
-    // proof/consensus/coach labs survive a reload instead of resetting to "—".
-    proofPath: store.get("proofPath") || null,
-    proofResponse: store.get("proofResponse") || "",
+    // consensus/coach labs survive a reload instead of resetting to "—".
     mathCheckDone: Boolean(store.get("mathCheckDone")),
     consensusVotes: store.get("consensusVotes") || [],
     revision: store.get("revision") || null,
@@ -888,10 +908,12 @@ function renderStudio(config) {
       teacherToolsAdded = true;
       const teacherConfig = { ...config, smallGroup: facilitation };
       const evidenceConsole = createTeacherEvidenceConsole(teacherConfig, state, getBand);
+      const misconceptions = createMisconceptionCard(config);
       const rhythm = createRhythmCoach(facilitation);
       if (rhythm) heroNode.after(rhythm);
       const panel = teacherPanel(teacherConfig, accent, talkData);
       if (panel) heroNode.after(panel);
+      if (misconceptions) heroNode.after(misconceptions);
       if (evidenceConsole) heroNode.after(evidenceConsole);
       // Teacher edition extras: full standard wording inside the studio guide.
       if (panel && config.standard) {

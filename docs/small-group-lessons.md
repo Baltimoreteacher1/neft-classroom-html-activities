@@ -43,8 +43,14 @@ teal. No identity screen, phase nav, notice/wonder, or discovery. Four sections:
 - **Math Workbench** launcher (bottom-right button)
 - **Learning-Supports** dock (highlighter, directions, organizer, adaptations)
 - **Save/Resume** (multi-day, sentineled — passes the save-resume audit)
-- **Print** button (print-optimized CSS) + **Download for Canvas (SCORM)**
-  (`/api/scorm?activity=<id>`)
+
+The compact **renderer** (`small-group-renderer.js`), not the shell, adds:
+
+- **Print / save as PDF** button (print-optimized CSS), in the footer for
+  everyone.
+- **Download for Canvas (SCORM)** (`/api/scorm?activity=<id>`) and the
+  **Worksheet + keys (A/B)** link — both **teacher-mode only** (the worksheet
+  bundles answer-key pages).
 
 ## Generators (source of truth — GENERATED, don't hand-edit)
 
