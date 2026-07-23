@@ -819,6 +819,33 @@
         var anchor = document.querySelector(".wrap");
         if (!anchor?.parentNode) return;
         anchor.parentNode.insertBefore(buildPanel(), anchor);
+        // Public selection bridge so the Units & Lessons library can drive the
+        // cockpit (Option 1 merge): the library's "Teach / Launch" control calls
+        // select(id) to load a lesson here and scroll up; the bridge reads
+        // getSelected() to open the cockpit's lesson down in the library.
+        window.CurriculumCockpit = {
+          getSelected: function () {
+            return state.selected;
+          },
+          select: function (id) {
+            if (!id || !lessonsById[id]) return false;
+            state.selected = id;
+            state.view = "today";
+            saveState();
+            updateRecent(id);
+            renderPanel();
+            try {
+              var node = panel || document.getElementById("curriculum-teacher-workflow");
+              node.scrollIntoView({
+                behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+                  ? "auto"
+                  : "smooth",
+                block: "start",
+              });
+            } catch (_e) {}
+            return true;
+          },
+        };
         window.CurriculumTeacherPlanning?.organizeTools?.();
         syncTeacherMode();
         new MutationObserver(syncTeacherMode).observe(document.body, {
