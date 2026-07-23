@@ -1,9 +1,22 @@
 # Small-Group Lessons — Publisher-Grade Enhancement List
 
-Status: research/audit — 2026-07-23. No code changed.
+Status: audit 2026-07-23. **Wave 1 shipped** (items 1–5); **Wave 2 shipped**
+(items 6, 7, 17, 18). Remaining: 8–16, 19, 20.
 Scope: all 128 small-group lessons + 20 catch-ups (engine modules, generators,
 teacher route, worksheets), benchmarked against professional publishers
 (Illustrative Mathematics, Eureka Math², enVision, Amplify).
+
+> **Dark mode (19/20) — blocked on a token refactor, do not rush.** The inline
+> stylesheet in `small-group-ui.js` overloads `--sg-deep`: it serves both as
+> *dark ink on light surfaces* (must go light in dark mode) and as a *dark
+> surface behind white text* (`.sg-operator-chip`, `.col-rule`, tree branches —
+> must stay dark). A correct dark theme first needs `--sg-deep` split into
+> `--sg-ink-accent` vs `--sg-surface-accent` across ~40 usages, then per-panel
+> screenshot QA in both themes. Groundwork: the site already ships a theme
+> convention (`document.documentElement.dataset.theme` via `assets/neft-theme.js`,
+> plus `@media (prefers-color-scheme: dark)`), so the dark block should key on
+> both `:root[data-theme="dark"]` and the media query. Attempted in Wave 2,
+> deferred to keep from shipping a half-correct dark experience to students.
 
 The system is already unusually deep for a classroom-built product: bilingual
 EN/ES scaffolds everywhere, real manipulative labs, typed visual workspaces,
