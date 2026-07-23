@@ -67,7 +67,7 @@ test.describe("small-group guided math studio", () => {
     await page.locator("#sg-tab-sg-tab-more").click();
     await expect(page.getByText("Challenge briefing")).toBeVisible();
     await expect(page.getByRole("button", { name: "Enter the challenge →" })).toBeVisible();
-    // The proof capstone has its own tab; teacher guidance stays private.
+    // The topic-aligned math check has its own tab; teacher guidance stays private.
     await expect(page.locator("#sg-tab-sg-tab-prove")).toBeVisible();
     await expect(page.getByText(/Teacher studio guide|Listen for during team talk/)).toHaveCount(0);
     await expect(page.getByLabel("Predict", { exact: true })).toHaveCount(0);
@@ -144,14 +144,16 @@ test.describe("small-group guided math studio", () => {
     await expect(page.locator('input[name*="name" i], input[type="email"]')).toHaveCount(0);
   });
 
-  test("Award Edition gives Group 2 an advanced proof brief", async ({ page }) => {
+  test("Award Edition gives Group 2 a topic-aligned math check", async ({ page }) => {
     await page.goto("/lessons/7-2-group2/");
     await page.locator("#sg-tab-sg-tab-prove").click();
-    const prove = page.locator("#sg-prove");
-    const steps = prove.locator(".sg-apply-step");
+    const mathCheck = page.locator("#sg-prove");
+    const steps = mathCheck.locator(".sg-apply-step");
     await expect(steps).toHaveCount(3);
     await expect(steps.nth(1)).toHaveClass(/locked/);
-    await expect(prove.getByText(/skeptic/i).first()).toBeVisible();
+    await expect(mathCheck.getByRole("heading", { name: /Equation.*Check Lab/ })).toBeVisible();
+    await expect(mathCheck.getByText(/substitute it into the original equation/i)).toBeVisible();
+    await expect(mathCheck.getByText(/skeptic|prove your answer/i)).toHaveCount(0);
   });
 
   test("students can highlight and bold selected lesson words", async ({ page }) => {
@@ -428,7 +430,9 @@ test.describe("small-group guided math studio", () => {
     // visible per-unit dropdowns above are the real student-facing surface.
   });
 
-  test("Group 2 replaces the old build cards with a guided Prove It tab", async ({ page }) => {
+  test("Group 2 replaces the old proof routine with a topic-aligned Math Check tab", async ({
+    page,
+  }) => {
     await page.addInitScript(() => {
       window.print = () => undefined;
     });
@@ -440,14 +444,16 @@ test.describe("small-group guided math studio", () => {
     await expect(page.getByText("Take the challenge")).toHaveCount(0);
     await expect(page.getByText("Choose your proof path")).toHaveCount(0);
 
-    // "Prove It" is the last tab and drives a 3-step guided flow.
-    const proveTab = page.getByRole("tab", { name: /Prove It/ });
-    await expect(proveTab).toBeVisible();
-    await proveTab.click();
+    // "Math Check" is the last tab and uses the lesson's actual mathematics.
+    const mathCheckTab = page.getByRole("tab", { name: /Math Check/ });
+    await expect(mathCheckTab).toBeVisible();
+    await mathCheckTab.click();
 
-    const prove = page.locator("#sg-prove");
-    const steps = prove.locator(".sg-apply-step");
+    const mathCheck = page.locator("#sg-prove");
+    const steps = mathCheck.locator(".sg-apply-step");
     await expect(steps).toHaveCount(3);
+    await expect(mathCheck.getByRole("heading", { name: "LCM Check Lab" })).toBeVisible();
+    await expect(mathCheck.getByText(/list multiples for both numbers/i)).toBeVisible();
 
     // Steps 2 and 3 start locked and unlock in order.
     await expect(steps.nth(1)).toHaveClass(/locked/);
@@ -460,25 +466,25 @@ test.describe("small-group guided math studio", () => {
       .click();
     await expect(steps.nth(1)).not.toHaveClass(/locked/);
 
-    await steps.nth(1).getByRole("button", { name: "Show a model" }).click();
     await steps
       .nth(1)
       .locator("textarea")
-      .fill("A number line marks 12 as the first shared multiple.");
+      .fill("4: 4, 8, 12. 6: 6, 12. The first shared multiple is 12.");
     await steps
       .nth(1)
-      .getByRole("button", { name: /This proves it/ })
+      .getByRole("button", { name: /My check matches/ })
       .click();
     await expect(steps.nth(2)).not.toHaveClass(/locked/);
 
-    const defendBoxes = steps.nth(2).locator("textarea");
-    await defendBoxes.nth(0).fill("Because 12 is the least common multiple of 4 and 6.");
-    await defendBoxes.nth(1).fill("It breaks if the machines don't start together.");
     await steps
       .nth(2)
-      .getByRole("button", { name: /I defended it/ })
+      .locator("textarea")
+      .fill("The machines will first run together again after 12 minutes.");
+    await steps
+      .nth(2)
+      .getByRole("button", { name: /Finish my math check/ })
       .click();
-    await expect(steps.nth(2).getByText(/Proof complete/)).toBeVisible();
+    await expect(steps.nth(2).getByRole("button", { name: "Math check complete ✓" })).toBeVisible();
   });
 
   test("student studio has no serious or critical accessibility violations", async ({ page }) => {

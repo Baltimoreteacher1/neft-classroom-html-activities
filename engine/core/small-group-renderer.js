@@ -19,10 +19,10 @@ import {
   createAdaptiveCoach,
   createConsensusLab,
   createEvidenceCard,
-  createProveItLab,
   createStudioPacket,
   createTeacherEvidenceConsole,
 } from "./small-group-innovation.js";
+import { createMathCheckLab } from "./small-group-math-check.js";
 import {
   createApplyLab,
   createExploreLab,
@@ -234,12 +234,12 @@ function teacherPanel(config, accent, talk) {
     .map((frame) => `<span class="sg-frame">${esc(frame)}</span>`)
     .join("");
   const listenFor = (group.listenFor || []).map((item) => `<li>${esc(item)}</li>`).join("");
-  // Facilitation note for this variant's proof capstone — how to run the
-  // Team Consensus Protocol (group 1) or the Prove-It & Defend-It flow (group 2)
+  // Facilitation note for this variant's capstone — how to run the
+  // Team Consensus Protocol (group 1) or topic-specific Math Check (group 2)
   // so the on-page activity is used as intended, not just clicked through.
   const isGroup2 = (config.variant || `group${group.group}`) === "group2";
   const capstoneNote = isGroup2
-    ? "<b>Prove-It &amp; Defend-It:</b> push past “I got the answer” to “here’s why it must be true.” Use the skeptic questions to demand a second representation or a boundary test before you accept the proof."
+    ? "<b>Math Check:</b> students solve one challenge, run the check named for this lesson, and explain what the result means. Look for correct units, labels, and use of the lesson strategy."
     : "<b>Team consensus protocol:</b> post the problem, then have each voice privately pick the single best way to prove it before revealing the tally. Disagreement is the discussion fuel — ask “why that proof for this problem?” and let the group defend or revise.";
   wrapper.innerHTML = `<details>
     <summary>👩‍🏫 Teacher studio guide · ${esc(group.label || accent.name)}</summary>
@@ -447,6 +447,7 @@ function renderStudio(config) {
     // proof/consensus/coach labs survive a reload instead of resetting to "—".
     proofPath: store.get("proofPath") || null,
     proofResponse: store.get("proofResponse") || "",
+    mathCheckDone: Boolean(store.get("mathCheckDone")),
     consensusVotes: store.get("consensusVotes") || [],
     revision: store.get("revision") || null,
     revisionReason: store.get("revisionReason") || "",
@@ -575,12 +576,11 @@ function renderStudio(config) {
     ),
   );
   const build = conceptSection(config, phaseDone("sg-tab-learn", "buildDone"), voice, variant);
-  // Group 2's challenge/justify work now lives in the guided "Prove It" tab,
-  // which also absorbs the "Defend it to a skeptic" talk. Group 1 keeps its
-  // supportive partner talk in Practice.
-  const proveIt =
+  // Group 2 checks its challenge with the specific mathematical process for
+  // this lesson. Group 1 keeps its supportive partner talk in Practice.
+  const mathCheck =
     variant === "group2"
-      ? createProveItLab(config, variant, state, phaseDone("sg-tab-prove", "proveDone"), store)
+      ? createMathCheckLab(config, state, phaseDone("sg-tab-prove", "mathCheckDone"), store)
       : null;
   const explore = createExploreLab(config, variant, {
     store,
@@ -667,7 +667,7 @@ function renderStudio(config) {
   });
 
   // Go Deeper stretch parity: group1/catch-up get the optional advanced path
-  // (group2 already has the full Prove It lab). Deliberately NOT registered in
+  // (group2 already has the topic-specific Math Check lab). Deliberately NOT registered in
   // trackedPhases — it's an invitation, never part of the progress denominator.
   const goDeeper =
     variant === "group2" ? null : createGoDeeper({ config, lessonId: config.lessonId, variant });
@@ -743,11 +743,11 @@ function renderStudio(config) {
       label: "More Practice",
       panel: makePanel("sg-tab-more", [morePractice, mission, apply, goDeeper]),
     },
-    // Group 2 only — panel is empty (and auto-filtered) for other variants.
+    // Group 2 only — keep the stable id for saved-tab compatibility.
     {
       id: "sg-tab-prove",
-      label: "Prove It",
-      panel: makePanel("sg-tab-prove", [proveIt]),
+      label: "Math Check",
+      panel: makePanel("sg-tab-prove", [mathCheck]),
     },
   ];
 
@@ -811,7 +811,7 @@ function renderStudio(config) {
     reflectDone: "sg-tab-practice",
     moreDone: "sg-tab-more",
     applyDone: "sg-tab-more",
-    proveDone: "sg-tab-prove",
+    mathCheckDone: "sg-tab-prove",
   };
   for (const [storeKey, tabId] of Object.entries(RESTORE_MARKS))
     if (store.get(storeKey)) mark(tabId);

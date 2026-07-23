@@ -2,6 +2,7 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { MATH_CHECKS } from "../engine/core/small-group-math-check.js";
 import { FACILITATION_BY_LESSON } from "../functions/teacher-small-group/_facilitation-data.js";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -96,6 +97,8 @@ function assertConfig(root, parent, row) {
   if (config.lessonId !== row.id) fail(`${row.id} config lessonId does not match`);
   if (config.variant !== `group${row.group}`)
     fail(`${row.id} variant does not match Group ${row.group}`);
+  if (row.group === 2 && !MATH_CHECKS[parent])
+    fail(`${row.id} is missing its topic-specific math check`);
   if (!String(config.title || "").startsWith(`${dotted} Small Group`))
     fail(`${row.id} title must begin with ${dotted} Small Group`);
   if (config.smallGroup || JSON.stringify(config).includes('"listenFor"'))

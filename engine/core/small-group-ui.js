@@ -55,7 +55,7 @@ export function coreObjective(text) {
 
 // Leveled student voice — same math, different coaching register per group.
 // Foundations hears a warm build-it-together coach, Challenge hears a
-// mathematician's press for proof, Catch-Up hears a fresh-start guide. Only
+// mathematician's press for a topic-specific check, Catch-Up hears a fresh-start guide. Only
 // the studio chrome speaks in these registers; authored content is untouched.
 export const LEVEL_VOICE = {
   group1: {
@@ -82,19 +82,19 @@ export const LEVEL_VOICE = {
     meterStart: "Every tap counts — let’s get started",
   },
   group2: {
-    tagline: "Think like a mathematician: solve it, prove it, and make your reasoning airtight.",
-    taglineEs: "Piensa como matemático: resuélvelo, pruébalo y haz tu razonamiento sólido.",
-    buildCta: "I can defend this idea →",
-    buildDone: "Idea defended ✓",
-    guidedDir: "Move quickly, but prove everything — every answer needs a because.",
-    guidedDirEs: "Avanza rápido, pero pruébalo todo: cada respuesta necesita un porqué.",
-    soloDir: "No scaffolds here. Solve it, then ask yourself: would my proof convince a skeptic?",
-    soloDirEs: "Sin apoyos. Resuelve y pregúntate: ¿mi prueba convencería a un escéptico?",
+    tagline: "Think like a mathematician: solve it, check it with today's strategy, and explain what it means.",
+    taglineEs: "Piensa como matemático: resuelve, comprueba con la estrategia de hoy y explica qué significa.",
+    buildCta: "I can use this idea →",
+    buildDone: "Idea connected ✓",
+    guidedDir: "Move efficiently, then check each answer with today's mathematical strategy.",
+    guidedDirEs: "Avanza con eficiencia y comprueba cada respuesta con la estrategia matemática de hoy.",
+    soloDir: "Solve it independently, then use the lesson's math check before you move on.",
+    soloDirEs: "Resuelve de forma independiente y usa la comprobación matemática de la lección antes de continuar.",
     moreDir: "Push for elegance — can you solve one a second way, faster or cleaner?",
     moreDirEs: "Busca la elegancia: ¿puedes resolver uno de otra manera, más rápida o más clara?",
     completeBody:
-      "You proved it, defended it, and named your growth. That is mathematical courage.",
-    welcome: "👋 Welcome back, mathematician — your evidence is saved. Keep building the proof.",
+      "You solved it, checked it, and explained what the result means. That is strong mathematical thinking.",
+    welcome: "👋 Welcome back, mathematician — your work is saved. Continue with your math check.",
     meterStart: "Ready when you are",
   },
   catchup: {

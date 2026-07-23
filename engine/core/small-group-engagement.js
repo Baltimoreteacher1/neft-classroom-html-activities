@@ -446,19 +446,18 @@ export function createTalkSection(config, variant, onDone) {
     heading(
       4,
       "Say it out loud",
-      variant === "group2" ? "Solve one — then defend it to a skeptic" : "Talk the math through",
+      variant === "group2" ? "Solve one — then check the math" : "Talk the math through",
     ),
   );
   const card = el("div", "sg-talk sg-scene-enter");
-  // Group 2's "defend" framing only makes sense once a student has an answer to
-  // defend: tell them to commit to one first, then treat the prompt as the
-  // skeptic's challenge to that answer.
+  // If this shared talk is used for Group 2, anchor it to a completed problem
+  // and the lesson's mathematical check.
   if (variant === "group2")
     card.appendChild(
       el(
         "p",
         "sg-talk-lead",
-        "First pick a problem you just solved and commit to an answer. Then defend that answer to a skeptic who keeps asking, “How do you know it is right — and complete?”",
+        "First pick a problem you just solved. Explain the check you used and what the result means in this problem.",
       ),
     );
   card.appendChild(el("p", "sg-talk-q", esc(talk.question)));
@@ -480,10 +479,10 @@ export function createTalkSection(config, variant, onDone) {
   const roles =
     variant === "group2"
       ? [
-          "Conjecturer: make the claim",
-          "Skeptic: challenge the claim",
-          "Modeler: show another representation",
-          "Reporter: share the evidence",
+          "Solver: show the steps",
+          "Checker: run the lesson check",
+          "Connector: explain what it means",
+          "Reporter: share the result",
         ]
       : [
           "Solver: explain one step",

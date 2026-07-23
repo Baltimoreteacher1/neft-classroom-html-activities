@@ -1,5 +1,6 @@
 import { selectedTalk } from "./small-group-engagement.js";
-import { celebrate, el, esc, sectionHeading } from "./small-group-ui.js";
+import { mathCheckFor } from "./small-group-math-check.js";
+import { el, esc } from "./small-group-ui.js";
 
 const PATHS = {
   stabilize: {
@@ -99,321 +100,6 @@ function printOnly(target, node) {
   document.body.classList.add(className);
   window.addEventListener("afterprint", cleanup, { once: true });
   window.print();
-}
-
-// Guided "Prove It & Defend It" flow — the challenge group's capstone tab.
-// Three step-cards unlock in order: solve one, show why it works (pick one of
-// three concrete moves), then defend it against a skeptic's two questions.
-// Replaces the old scattered proof-path picker + standalone talk section.
-const PROVE_MOVES = [
-  {
-    id: "model",
-    icon: "▧",
-    label: "Show a model",
-    prompt:
-      "Draw a diagram, table, or number line. Label what each part shows and point to where the answer appears.",
-  },
-  {
-    id: "explain",
-    icon: "✦",
-    label: "Explain in words",
-    prompt: "Use precise words: “I know ___ because ___, so ___.”",
-  },
-  {
-    id: "test",
-    icon: "◉",
-    label: "Test an example",
-    group2Prompt:
-      "Try a boundary case or a number that could break your answer. Show it still works — or find exactly where it would not.",
-    prompt:
-      "Put your answer back into the problem. Check every step and say what the result proves.",
-  },
-];
-
-const SKEPTIC_QUESTIONS = [
-  { q: "🤨 “How do you KNOW your answer is right?”", frame: "I know because…" },
-  {
-    q: "🤨 “When would this stop working — or how could someone doubt it?”",
-    frame: "This holds when… It would break if…",
-  },
-];
-
-function proveStep(labelText) {
-  const card = el("div", "card sg-apply-step");
-  card.appendChild(el("div", "sg-step-lab", labelText));
-  return card;
-}
-
-/** Drag/tap factors into a product tray, then check — deepens Prove It for factor trees. */
-function createFactorBuildStrip(problem, state, store) {
-  const stem = String(problem.stem || problem.title || "");
-  const answer = String(problem.answer || problem.sampleAnswer || "");
-  // Detect a product-of-primes style answer like "2 × 2 × 3 × 5" or "2^2 × 3".
-  const productMatch =
-    answer.match(/\d+(?:\s*[×x*]\s*\d+)+/) || stem.match(/prime factorization of\s+(\d+)/i);
-  if (!productMatch && !/factor|prime/i.test(stem)) return null;
-  const targetNum = Number(
-    (stem.match(/prime factorization of\s+(\d+)/i) || [])[1] ||
-      (stem.match(/\b(\d{2,3})\b/) || [])[1],
-  );
-  if (!Number.isFinite(targetNum) || targetNum < 4) return null;
-  // Candidate chips: small primes + a couple of composites that tempt mistakes.
-  const primes = [2, 3, 5, 7].filter((p) => p <= targetNum);
-  const chips = [...primes, Math.min(9, targetNum - 1), Math.min(4, targetNum - 1)].filter(
-    (n, i, arr) => n >= 2 && arr.indexOf(n) === i,
-  );
-  const wrap = el("div", "sg-factor-build");
-  wrap.appendChild(
-    el("p", "block-lab", `Build-then-check: tap factors so their product equals ${targetNum}.`),
-  );
-  const tray = el("div", "sg-factor-tray");
-  tray.setAttribute("aria-label", "Product tray");
-  tray.dataset.empty = "Drop factors here";
-  const bank = el("div", "sg-factor-bank");
-  const product = [];
-  const status = el("div", "fb");
-  status.setAttribute("aria-live", "polite");
-  const refresh = () => {
-    tray.innerHTML = "";
-    if (!product.length) {
-      tray.textContent = "Tap factors below →";
-      tray.dataset.empty = "1";
-    } else {
-      tray.dataset.empty = "0";
-      product.forEach((n, index) => {
-        const chip = el("button", "sg-factor-chip on", String(n));
-        chip.type = "button";
-        chip.title = "Remove";
-        chip.onclick = () => {
-          product.splice(index, 1);
-          refresh();
-        };
-        tray.appendChild(chip);
-        if (index < product.length - 1) tray.appendChild(el("span", "sg-factor-op", "×"));
-      });
-    }
-  };
-  chips.forEach((n) => {
-    const chip = el("button", "sg-factor-chip", String(n));
-    chip.type = "button";
-    chip.onclick = () => {
-      if (product.length >= 6) return;
-      product.push(n);
-      refresh();
-    };
-    bank.appendChild(chip);
-  });
-  const check = el("button", "btn", "Check my product");
-  check.type = "button";
-  check.onclick = () => {
-    if (!product.length) {
-      status.className = "fb show no";
-      status.textContent = "Add at least one factor first.";
-      return;
-    }
-    const value = product.reduce((a, b) => a * b, 1);
-    const allPrime = product.every((n) => {
-      if (n < 2) return false;
-      for (let i = 2; i * i <= n; i++) if (n % i === 0) return false;
-      return true;
-    });
-    if (value === targetNum && allPrime) {
-      status.className = "fb show ok";
-      status.innerHTML = `✅ <b>${product.join(" × ")} = ${targetNum}</b> — every factor is prime. That proves the factorization.`;
-      state.factorBuildOk = true;
-      store?.set("factorBuildOk", true);
-      celebrate("✓");
-    } else if (value === targetNum) {
-      status.className = "fb show no";
-      status.textContent = `Product is ${targetNum}, but a factor is still composite. Keep splitting until every chip is prime.`;
-    } else {
-      status.className = "fb show no";
-      status.textContent = `${product.join(" × ")} = ${value}, not ${targetNum}. Adjust the factors.`;
-    }
-  };
-  const row = el("div", "row");
-  row.appendChild(check);
-  wrap.append(tray, bank, row, status);
-  refresh();
-  if (store?.get("factorBuildOk") || state.factorBuildOk) {
-    status.className = "fb show ok";
-    status.textContent = "✓ Product build completed last session — explain it again out loud.";
-  }
-  return wrap;
-}
-
-export function createProveItLab(config, variant, state, onDone, store = null) {
-  const section = el("section", "sg-sec sg-lab");
-  section.id = "sg-prove";
-  section.appendChild(sectionHeading(1, "Prove it & defend it", "Make your thinking rock-solid"));
-  section.appendChild(
-    el(
-      "p",
-      null,
-      "Solve one, show why it works, then defend it to a skeptic — one step at a time.",
-    ),
-  );
-
-  const steps = [];
-  const unlock = (index) => steps[index]?.classList.remove("locked");
-
-  // Step 1 — Solve one challenge problem.
-  const problem = config.practice?.extending?.[0] || config.practice?.onLevel?.[0] || {};
-  const solve = proveStep("1 · Solve one");
-  solve.appendChild(
-    problem.stem
-      ? el("p", "sg-talk-q", esc(problem.stem))
-      : el(
-          "p",
-          "block-lab",
-          "Solve the hardest problem from today — the one that makes you think.",
-        ),
-  );
-  const work = el("textarea", "sg-ta");
-  work.setAttribute("aria-label", "Your answer and how you got it");
-  work.placeholder = "Write your answer and the steps you took…";
-  work.oninput = () => (state.proveWork = work.value.trim());
-  const solveBtn = el("button", "btn", "I've got an answer →");
-  solveBtn.type = "button";
-  const solveFb = el("div", "fb");
-  solveFb.setAttribute("aria-live", "polite");
-  solveBtn.onclick = () => {
-    if (work.value.trim().length < 8) {
-      solveFb.className = "fb show no";
-      solveFb.textContent = "Write your answer and at least one step first.";
-      return;
-    }
-    solveBtn.disabled = true;
-    unlock(1);
-    solveFb.className = "fb show info";
-    solveFb.textContent = "Nice — now show WHY it works below.";
-  };
-  const solveRow = el("div", "row");
-  solveRow.appendChild(solveBtn);
-  solve.append(work, solveRow, solveFb);
-  section.appendChild(solve);
-  steps.push(solve);
-
-  // Step 2 — Pick one move and write the proof.
-  const prove = proveStep("2 · Show why it works");
-  prove.classList.add("locked");
-  prove.appendChild(el("p", "block-lab", "Pick one way to prove your answer is right:"));
-  const grid = el("div", "sg-proof-grid");
-  const promptEl = el(
-    "div",
-    "sg-proof-prompt",
-    "Choose a way above to reveal your prove-it prompt.",
-  );
-  promptEl.setAttribute("aria-live", "polite");
-  const proveTa = el("textarea", "sg-ta");
-  proveTa.setAttribute("aria-label", "Your proof");
-  proveTa.placeholder = "Write, sketch a plan, or rehearse your proof here…";
-  proveTa.value = state.proveReason || "";
-  proveTa.oninput = () => {
-    state.proveReason = proveTa.value.trim();
-    store?.set("proveReason", state.proveReason);
-  };
-  const proveBtn = el("button", "btn", "This proves it →");
-  proveBtn.type = "button";
-  proveBtn.disabled = true;
-  const proveFb = el("div", "fb");
-  proveFb.setAttribute("aria-live", "polite");
-  const moveButtons = [];
-  for (const move of PROVE_MOVES) {
-    const text = variant === "group2" && move.group2Prompt ? move.group2Prompt : move.prompt;
-    const button = el(
-      "button",
-      "sg-proof-button",
-      `<span aria-hidden="true">${move.icon}</span><b>${esc(move.label)}</b>`,
-    );
-    button.type = "button";
-    button.setAttribute("aria-pressed", "false");
-    const select = (persist) => {
-      state.proofPath = move.id;
-      if (persist) store?.set("proofPath", move.id);
-      moveButtons.forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
-      promptEl.innerHTML = `<b>${esc(move.label)}:</b> ${esc(text)}${guidanceCols(move.id, variant)}`;
-      proveTa.placeholder = text;
-      proveBtn.disabled = false;
-    };
-    button.onclick = () => select(true);
-    moveButtons.push(button);
-    grid.appendChild(button);
-    if (state.proofPath === move.id) select(false);
-  }
-  proveBtn.onclick = () => {
-    if (!state.proofPath) {
-      proveFb.className = "fb show no";
-      proveFb.textContent = "Pick a way to prove it first.";
-      return;
-    }
-    if (proveTa.value.trim().length < 8) {
-      proveFb.className = "fb show no";
-      proveFb.textContent = "Write your proof before moving on.";
-      return;
-    }
-    proveBtn.disabled = true;
-    unlock(2);
-    proveFb.className = "fb show info";
-    proveFb.textContent = "Now defend it against a skeptic below.";
-  };
-  const proveRow = el("div", "row");
-  proveRow.appendChild(proveBtn);
-  prove.append(grid, promptEl, proveTa, proveRow, proveFb);
-  // Factor lessons: deepen “Model it” with a build-then-check product strip.
-  const factorBuild = createFactorBuildStrip(problem, state, store);
-  if (factorBuild) prove.appendChild(factorBuild);
-  section.appendChild(prove);
-  steps.push(prove);
-
-  // Step 3 — Defend it to a skeptic (folds in the old talk section, guided).
-  const defend = proveStep("3 · Defend it to a skeptic");
-  defend.classList.add("locked");
-  defend.appendChild(
-    el("p", "block-lab", "A skeptic isn’t convinced yet. Answer their two questions:"),
-  );
-  const answers = [];
-  const doneBtn = el("button", "btn", "I defended it ✓");
-  doneBtn.type = "button";
-  doneBtn.disabled = true;
-  const refreshDefend = () =>
-    (doneBtn.disabled = !(answers[0]?.length >= 4 && answers[1]?.length >= 4));
-  SKEPTIC_QUESTIONS.forEach((item, index) => {
-    const wrap = el("div", "sg-defend-q");
-    wrap.appendChild(el("p", "sg-talk-q", esc(item.q)));
-    const answer = el("textarea", "sg-ta");
-    answer.setAttribute("aria-label", `Answer to skeptic question ${index + 1}`);
-    answer.placeholder = item.frame;
-    answer.oninput = () => {
-      answers[index] = answer.value.trim();
-      refreshDefend();
-    };
-    wrap.appendChild(answer);
-    defend.appendChild(wrap);
-  });
-  const defendFb = el("div", "fb");
-  defendFb.setAttribute("aria-live", "polite");
-  let complete = false;
-  doneBtn.onclick = () => {
-    if (complete) return;
-    complete = true;
-    state.defended = true;
-    store?.set("defended", true);
-    doneBtn.disabled = true;
-    doneBtn.textContent = "Proof defended ✓";
-    defendFb.className = "fb show ok";
-    defendFb.innerHTML =
-      "🏆 <b>Proof complete.</b> You solved it, proved it, and defended it to a skeptic.";
-    celebrate("🏆");
-    onDone?.();
-  };
-  const defendRow = el("div", "row");
-  defendRow.appendChild(doneBtn);
-  defend.append(defendRow, defendFb);
-  section.appendChild(defend);
-  steps.push(defend);
-
-  return section;
 }
 
 // Short, ESOL-friendly "how to do it" guidance for each proof method, surfaced
@@ -704,10 +390,19 @@ export function createEvidenceCard(config, state) {
     const after = Number(state.after || 0);
     const change = after - before;
     const vocabulary = config.vocabulary?.[0]?.term || config.vocabulary?.[0] || "lesson language";
-    const proofCell = state.proofPath
-      ? `<div><span>Proof path</span><b>${esc(labelFor(state.proofPath))}</b></div>`
-      : "";
-    section.innerHTML = `<div class="sg-evidence-top"><div><div class="sg-innovation-kicker">Printable learning artifact</div><h2>Studio Evidence Card</h2></div><span>Evidence over points</span></div><p class="sg-evidence-title"><b>${esc(config.title || "Small-Group Math Studio")}</b>${config.standard ? ` · ${esc(config.standard)}` : ""}</p><div class="sg-evidence-grid"><div><span>Confidence journey</span><b>${before || "—"} → ${after || "—"}${change > 0 ? ` (+${change})` : ""}</b></div>${proofCell}<div><span>Math language</span><b>${esc(vocabulary)}</b></div><div><span>Discussion move</span><b>${state.revision === "revised" ? "Revised after discussion" : state.revision === "kept" ? "Kept after testing the evidence" : "Talked through out loud"}</b></div><div><span>Adaptive move</span><b>${esc(PATHS[state.adaptivePath]?.label || "Student choice")}</b></div><div><span>Best streak</span><b>${Number(state.bestStreak) >= 2 ? `🔥 ${Number(state.bestStreak)} in a row` : "Steady effort"}</b></div></div>`;
+    const strategyCell = state.mathCheckDone
+      ? `<div><span>Math check</span><b>${esc(mathCheckFor(config).title)}</b></div>`
+      : state.proofPath
+        ? `<div><span>Proof path</span><b>${esc(labelFor(state.proofPath))}</b></div>`
+        : "";
+    const discussionMove = state.mathCheckDone
+      ? "Connected the result to the topic"
+      : state.revision === "revised"
+        ? "Revised after discussion"
+        : state.revision === "kept"
+          ? "Kept after testing the evidence"
+          : "Talked through out loud";
+    section.innerHTML = `<div class="sg-evidence-top"><div><div class="sg-innovation-kicker">Printable learning artifact</div><h2>Studio Evidence Card</h2></div><span>Evidence over points</span></div><p class="sg-evidence-title"><b>${esc(config.title || "Small-Group Math Studio")}</b>${config.standard ? ` · ${esc(config.standard)}` : ""}</p><div class="sg-evidence-grid"><div><span>Confidence journey</span><b>${before || "—"} → ${after || "—"}${change > 0 ? ` (+${change})` : ""}</b></div>${strategyCell}<div><span>Math language</span><b>${esc(vocabulary)}</b></div><div><span>Discussion move</span><b>${discussionMove}</b></div><div><span>Adaptive move</span><b>${esc(PATHS[state.adaptivePath]?.label || "Student choice")}</b></div><div><span>Best streak</span><b>${Number(state.bestStreak) >= 2 ? `🔥 ${Number(state.bestStreak)} in a row` : "Steady effort"}</b></div></div>`;
     const print = el("button", "btn ghost", "Print Studio Evidence Card");
     print.type = "button";
     print.onclick = () => printOnly("evidence", section);
@@ -723,7 +418,7 @@ export function createEvidenceCard(config, state) {
 }
 
 // One-click study packet: the Evidence Card summary PLUS the student's own
-// written work (proof plan, model explanation, apply solution, reflection),
+// written work (math check, model explanation, apply solution, reflection),
 // bundled into a single clean printable takeaway. Reads the persisted studio
 // store so it captures everything the student did — even across sessions.
 export function createStudioPacket(config, state, store) {
@@ -737,6 +432,9 @@ export function createStudioPacket(config, state, store) {
     const after = Number(state.after || 0);
     const change = after - before;
     const written = [
+      ["My challenge solution", get("mathSolveWork")],
+      ["How I checked the math", get("mathCheckWork")],
+      ["What my result means", get("mathCheckMeaning")],
       ["My plan (proof path)", get("proofResponse")],
       ["What the model shows", get("modelResponse")],
       ["My solution (apply)", get("applyWork")],
@@ -750,7 +448,10 @@ export function createStudioPacket(config, state, store) {
           )
           .join("")
       : `<p class="sg-packet-empty">Written work you type into the studio will appear here.</p>`;
-    section.innerHTML = `<div class="sg-packet-head"><div class="sg-innovation-kicker">Study packet</div><h2>${esc(config.title || "Small-Group Math Studio")}</h2>${config.standard ? `<p class="sg-packet-standard">${esc(config.standard)}</p>` : ""}</div><div class="sg-evidence-grid"><div><span>Confidence journey</span><b>${before || "—"} → ${after || "—"}${change > 0 ? ` (+${change})` : ""}</b></div><div><span>Proof path</span><b>${esc(labelFor(state.proofPath))}</b></div></div><div class="sg-packet-work">${work}</div>`;
+    const strategy = get("mathCheckWork")
+      ? `<div><span>Math check</span><b>${esc(mathCheckFor(config).title)}</b></div>`
+      : `<div><span>Proof path</span><b>${esc(labelFor(state.proofPath))}</b></div>`;
+    section.innerHTML = `<div class="sg-packet-head"><div class="sg-innovation-kicker">Study packet</div><h2>${esc(config.title || "Small-Group Math Studio")}</h2>${config.standard ? `<p class="sg-packet-standard">${esc(config.standard)}</p>` : ""}</div><div class="sg-evidence-grid"><div><span>Confidence journey</span><b>${before || "—"} → ${after || "—"}${change > 0 ? ` (+${change})` : ""}</b></div>${strategy}</div><div class="sg-packet-work">${work}</div>`;
     const print = el("button", "btn ghost", "Print study packet");
     print.type = "button";
     print.onclick = () => printOnly("packet", section);
