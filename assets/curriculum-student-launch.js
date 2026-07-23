@@ -76,7 +76,7 @@
     var saved = {};
     try {
       saved = JSON.parse(localStorage.getItem(progressKey(lessonId))) || {};
-    } catch (error) {
+    } catch (_error) {
       saved = {};
     }
     document.querySelectorAll("[data-progress]").forEach(function (box) {
@@ -88,7 +88,7 @@
         });
         try {
           localStorage.setItem(progressKey(lessonId), JSON.stringify(next));
-        } catch (error) {}
+        } catch (_error) {}
         updateNextStep();
       };
     });

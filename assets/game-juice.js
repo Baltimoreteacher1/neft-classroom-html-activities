@@ -30,7 +30,7 @@
     if (AC) return AC;
     try {
       AC = new (window.AudioContext || window.webkitAudioContext)();
-    } catch (e) {
+    } catch (_e) {
       AC = null;
     }
     return AC;
@@ -59,7 +59,7 @@
       g.connect(c.destination);
       o.start(t0);
       o.stop(t0 + dur + 0.02);
-    } catch (e) {}
+    } catch (_e) {}
   }
   function chord(freqs, dur, type, vol) {
     var c = ctx();
@@ -240,7 +240,7 @@
         .image(W / 2, H / 2, key)
         .setDisplaySize(W, H)
         .setDepth(-100);
-    } catch (e) {
+    } catch (_e) {
       return scene.add
         .rectangle(
           scene.scale.width / 2,
@@ -272,7 +272,7 @@
         duration: reduce ? 1 : 320,
         delay: reduce ? 0 : delay || 0,
       });
-    } catch (e) {}
+    } catch (_e) {}
   }
   function tilePop(scene, obj) {
     if (!obj || reduce) return;
@@ -285,7 +285,7 @@
         duration: 110,
         ease: "Quad.Out",
       });
-    } catch (e) {}
+    } catch (_e) {}
   }
   function burst(scene, x, y, colors, n) {
     try {
@@ -305,9 +305,9 @@
       scene.time.delayedCall(800, function () {
         em.destroy();
       });
-    } catch (e) {}
+    } catch (_e) {}
   }
-  function confetti(scene, n) {
+  function confetti(scene, _n) {
     if (reduce) return;
     try {
       ensureParticleTexture(scene);
@@ -332,13 +332,13 @@
       scene.time.delayedCall(2700, function () {
         em.destroy();
       });
-    } catch (e) {}
+    } catch (_e) {}
   }
   function shake(scene, amount) {
     if (reduce) return;
     try {
       scene.cameras.main.shake(180, amount || 0.006);
-    } catch (e) {}
+    } catch (_e) {}
   }
   function floatText(scene, x, y, text, color, size) {
     try {
@@ -374,7 +374,7 @@
           t.destroy();
         },
       });
-    } catch (e) {}
+    } catch (_e) {}
   }
 
   // ── Progression (Student Passport wrapper) ────────────────────────────────
@@ -382,7 +382,7 @@
     try {
       if (window.NTPassport && typeof window.NTPassport.award === "function")
         window.NTPassport.award(xp, reason || "game");
-    } catch (e) {}
+    } catch (_e) {}
   }
 
   window.GameJuice = {

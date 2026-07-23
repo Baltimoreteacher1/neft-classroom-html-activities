@@ -73,7 +73,7 @@ const itemDirections = (type) =>
 const run = (text, opts = {}) =>
   new TextRun({ text, size: 21, color: INK, font: "Calibri", ...opts });
 
-const para = (children, opts = {}) =>
+const _para = (children, opts = {}) =>
   new Paragraph({
     children: Array.isArray(children) ? children : [children],
     spacing: { after: 120, line: 264 },

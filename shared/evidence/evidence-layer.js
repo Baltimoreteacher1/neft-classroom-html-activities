@@ -43,7 +43,7 @@
       if (global.crypto && typeof global.crypto.randomUUID === "function") {
         return global.crypto.randomUUID();
       }
-    } catch (e) {
+    } catch (_e) {
       /* fall through */
     }
     return "xxxxxxxx-xxxx-4xxx-yxxx".replace(/[xy]/g, function (c) {
@@ -56,7 +56,7 @@
   function nowISO() {
     try {
       return new Date().toISOString();
-    } catch (e) {
+    } catch (_e) {
       return "" + Date.now();
     }
   }
@@ -114,7 +114,7 @@
     try {
       var raw = global.localStorage.getItem(LS_KEY);
       return raw ? JSON.parse(raw) : {};
-    } catch (e) {
+    } catch (_e) {
       return {};
     }
   }
@@ -125,7 +125,7 @@
       all[session.sessionId] = session;
       global.localStorage.setItem(LS_KEY, JSON.stringify(all));
       return true;
-    } catch (e) {
+    } catch (_e) {
       return false;
     }
   }
@@ -382,7 +382,7 @@
         delete all[id];
         global.localStorage.setItem(LS_KEY, JSON.stringify(all));
       }
-    } catch (e) {
+    } catch (_e) {
       /* ignore */
     }
     if (id) {

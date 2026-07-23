@@ -40,7 +40,7 @@
   // Safety: clear any dark-mode state
   try {
     document.documentElement.classList.remove("nt-dark");
-  } catch (e) {}
+  } catch (_e) {}
 
   // ---- embed mode --------------------------------------------------------
   // When a page is opened with ?embed=1 (the lesson shell loads Readiness and
@@ -51,7 +51,7 @@
   var IS_EMBED = false;
   try {
     IS_EMBED = /(?:^|[?&])embed=1(?:&|$)/.test(location.search);
-  } catch (e) {}
+  } catch (_e) {}
   if (IS_EMBED) {
     try {
       document.documentElement.classList.add("nt-embed");
@@ -66,7 +66,7 @@
         ".nt-embed .wrap,.nt-embed .container,.nt-embed main{padding-top:16px !important;}",
       ].join("");
       (document.head || document.documentElement).appendChild(ecss);
-    } catch (e) {}
+    } catch (_e) {}
   }
 
   // ---- favicon (most legacy pages ship without one) ----------------------
@@ -77,7 +77,7 @@
       fav.href = "/assets/favicon.svg";
       document.head.appendChild(fav);
     }
-  } catch (e) {}
+  } catch (_e) {}
 
   var LS_STUDENT = "nt_student";
 
@@ -102,14 +102,14 @@
   function getStudent() {
     try {
       return JSON.parse(localStorage.getItem(LS_STUDENT) || "{}");
-    } catch (e) {
+    } catch (_e) {
       return {};
     }
   }
   function setStudent(s) {
     try {
       localStorage.setItem(LS_STUDENT, JSON.stringify(s));
-    } catch (e) {}
+    } catch (_e) {}
   }
   var stu = getStudent();
 
@@ -173,7 +173,7 @@
         deviceOnly: true,
       });
       localStorage.setItem("nt_results_v1", JSON.stringify(arr));
-    } catch (e) {}
+    } catch (_e) {}
     return (
       "<h3>Score: " +
       pct +
@@ -292,7 +292,7 @@
     if (el && window.ResizeObserver) {
       try {
         new ResizeObserver(publishBarHeight).observe(el);
-      } catch (e) {}
+      } catch (_e) {}
     }
   }
 

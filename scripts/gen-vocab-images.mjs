@@ -284,7 +284,7 @@ ${T(70, 100, 9, C.navy, "l")}${T(112, 80, 9, C.navy, "h")}${T(80, 48, 9, C.white
 // ---- Statistics ----
 items["mean"] = svg(
   "Mean: values balanced and leveled",
-  `${[26, 26, 26, 26].map((h, i) => `<rect x="${30 + i * 26}" y="${88 - 26}" width="18" height="26" fill="${C.teal}"/>`).join("")}
+  `${[26, 26, 26, 26].map((_h, i) => `<rect x="${30 + i * 26}" y="${88 - 26}" width="18" height="26" fill="${C.teal}"/>`).join("")}
 <line x1="22" y1="62" x2="146" y2="62" stroke="${C.coral}" stroke-width="2" stroke-dasharray="4 3"/>
 ${T(80, 110, 11, C.navy, "equal share")}`,
 );

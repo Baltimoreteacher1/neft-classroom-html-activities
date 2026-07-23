@@ -46,7 +46,7 @@ export function renderFractionBars(
 
   let barCount = 0;
 
-  function buildBar(spec, name, fixedDenominator) {
+  function buildBar(_spec, name, fixedDenominator) {
     const barIndex = barCount++;
     const block = document.createElement("div");
     block.style.cssText = "margin-bottom:var(--sp-4);";

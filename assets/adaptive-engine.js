@@ -47,7 +47,7 @@
   function reduceMotion() {
     try {
       return !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-    } catch (e) {
+    } catch (_e) {
       return false;
     }
   }
@@ -57,14 +57,14 @@
   function $(sel, root) {
     try {
       return (root || document).querySelector(sel);
-    } catch (e) {
+    } catch (_e) {
       return null;
     }
   }
   function $all(sel, root) {
     try {
       return Array.prototype.slice.call((root || document).querySelectorAll(sel));
-    } catch (e) {
+    } catch (_e) {
       return [];
     }
   }
@@ -72,7 +72,7 @@
     if (!el) return "";
     try {
       return (el.textContent || "").replace(/\s+/g, " ").trim();
-    } catch (e) {
+    } catch (_e) {
       return "";
     }
   }
@@ -84,7 +84,7 @@
         var name = event && typeof event === "object" ? event.event : event;
         window.NTtelemetry.track(name, event);
       }
-    } catch (e) {
+    } catch (_e) {
       /* telemetry is best-effort only */
     }
   }
@@ -94,7 +94,7 @@
       if (window.GameFX && typeof window.GameFX.celebrate === "function") {
         window.GameFX.celebrate(el);
       }
-    } catch (e) {
+    } catch (_e) {
       /* fx is optional */
     }
   }
@@ -109,7 +109,7 @@
         if (b.classList.contains("level-0")) return 0;
         if (b.classList.contains("level-1")) return 1;
       }
-    } catch (e) {
+    } catch (_e) {
       /* ignore */
     }
     return 1;
@@ -134,7 +134,7 @@
         return "place-value"; // NS.B — decimals, GCF/LCM
       }
       return null; // SP, G → generic re-teach
-    } catch (e) {
+    } catch (_e) {
       return null;
     }
   }
@@ -143,7 +143,7 @@
     try {
       var m = window.NT_MISCONCEPTIONS;
       if (m && typeof m === "object" && m[qid]) return String(m[qid]);
-    } catch (e) {
+    } catch (_e) {
       /* ignore */
     }
     return defaultMisconceptionForStandard();
@@ -160,7 +160,7 @@
         .replace(/[^a-z0-9]+/gi, "-")
         .toLowerCase();
       return slug || "lesson";
-    } catch (e) {
+    } catch (_e) {
       return "lesson";
     }
   }
@@ -170,7 +170,7 @@
     try {
       var raw = window.localStorage.getItem(key);
       return raw ? JSON.parse(raw) : {};
-    } catch (e) {
+    } catch (_e) {
       return memFallback[key] || {};
     }
   }
@@ -179,7 +179,7 @@
     memFallback[key] = obj;
     try {
       window.localStorage.setItem(key, JSON.stringify(obj));
-    } catch (e) {
+    } catch (_e) {
       /* private mode / quota — in-memory copy is enough for the session */
     }
   }
@@ -346,7 +346,7 @@
         }
         el = el.previousElementSibling;
       }
-    } catch (e) {
+    } catch (_e) {
       /* fall through to prefix */
     }
     if (!label) {
@@ -411,7 +411,7 @@
       var fills = $all(".fill-input.is-correct", card);
       var totalFills = $all(".fill-input[data-answer]", card);
       if (totalFills.length && fills.length === totalFills.length) return "correct";
-    } catch (e) {
+    } catch (_e) {
       /* ignore */
     }
     return null;
@@ -510,7 +510,7 @@
     try {
       var help = $(".lp-help", card);
       if (help && help.parentNode) help.parentNode.removeChild(help);
-    } catch (e) {
+    } catch (_e) {
       /* ignore */
     }
   }
@@ -577,7 +577,7 @@
         if (!reduce && window.GameFX && typeof window.GameFX.pop === "function") {
           try {
             window.GameFX.pop(p);
-          } catch (e) {
+          } catch (_e) {
             /* fx optional */
           }
         }
@@ -597,7 +597,7 @@
         } else {
           hintBtn.textContent = "Show another hint";
         }
-      } catch (e) {
+      } catch (_e) {
         /* never break the lesson */
       }
     });
@@ -618,7 +618,7 @@
         var focusTarget =
           $(".mc-btn", card) || $(".tf-btn", card) || $(".fill-input", card) || item.checkBtn;
         if (focusTarget && focusTarget.focus) focusTarget.focus();
-      } catch (e) {
+      } catch (_e) {
         /* ignore */
       }
     });
@@ -630,7 +630,7 @@
     try {
       help.setAttribute("tabindex", "-1");
       help.focus({ preventScroll: false });
-    } catch (e) {
+    } catch (_e) {
       /* ignore */
     }
   }
@@ -660,7 +660,7 @@
         // MCQ/TF check buttons start disabled until a fresh selection.
         if (item.kind === "mc" || item.kind === "tf") item.checkBtn.disabled = true;
       }
-    } catch (e) {
+    } catch (_e) {
       /* never break the lesson */
     }
   }
@@ -695,7 +695,7 @@
       badge.textContent = "Mastered";
       host.appendChild(badge);
       celebrate(badge);
-    } catch (e) {
+    } catch (_e) {
       /* ignore */
     }
   }
@@ -724,10 +724,10 @@
       } else if (anchor && anchor.appendChild) {
         anchor.appendChild(sum);
       }
-    } catch (e) {
+    } catch (_e) {
       try {
         document.body.appendChild(sum);
-      } catch (e2) {
+      } catch (_e2) {
         return null;
       }
     }
@@ -785,7 +785,7 @@
     items.forEach(function (data, idx) {
       try {
         wrap.appendChild(buildSpacedCard(data, idx));
-      } catch (e) {
+      } catch (_e) {
         /* skip a malformed review item, keep the rest */
       }
     });
@@ -794,7 +794,7 @@
     try {
       if (main.firstChild) main.insertBefore(wrap, main.firstChild);
       else main.appendChild(wrap);
-    } catch (e) {
+    } catch (_e) {
       /* ignore */
     }
   }
@@ -884,7 +884,7 @@
           if (card) {
             try {
               processOutcome(card);
-            } catch (e) {
+            } catch (_e) {
               /* one bad card must not stop the rest */
             }
           }
@@ -896,7 +896,7 @@
         attributes: true,
         attributeFilter: ["class"],
       });
-    } catch (e) {
+    } catch (_e) {
       /* no observer — engine still works on hydrate/summary */
     }
   }
@@ -912,14 +912,14 @@
       engine.items.forEach(function (it) {
         try {
           processOutcome(it.card);
-        } catch (e) {
+        } catch (_e) {
           /* ignore pre-existing */
         }
       });
       renderSpacedRetrieval();
       refreshSummary();
       startObserver();
-    } catch (e) {
+    } catch (_e) {
       /* engine must never break the lesson */
     }
     return window.NTAdaptive;
@@ -939,7 +939,7 @@
           mastered: s.mastered,
         };
       }
-    } catch (e) {
+    } catch (_e) {
       /* ignore */
     }
     return out;
@@ -964,7 +964,7 @@
     ready(function () {
       try {
         init();
-      } catch (e) {
+      } catch (_e) {
         /* never break the lesson */
       }
     });

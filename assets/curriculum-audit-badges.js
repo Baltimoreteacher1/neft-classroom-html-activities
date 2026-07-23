@@ -113,7 +113,7 @@
     }
   }
 
-  function addControls(byId) {
+  function addControls(_byId) {
     var controls = document.querySelector(".controls");
     if (!controls || document.querySelector(".audit-controls")) return;
     var bar = el("div", "audit-controls");

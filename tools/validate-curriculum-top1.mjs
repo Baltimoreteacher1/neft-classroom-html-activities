@@ -80,7 +80,7 @@ if (tax) {
     for (const r of tax.rules) {
       try {
         new RegExp(r.match, "i");
-      } catch (e) {
+      } catch (_e) {
         fail(`taxonomy: bad regex "${r.match}"`);
       }
     }

@@ -57,14 +57,14 @@
     var path = "";
     try {
       path = location.pathname || "";
-    } catch (e) {}
+    } catch (_e) {}
     return STORE_PREFIX + path + ":" + suffix;
   }
 
   function readStore(suffix) {
     try {
       return localStorage.getItem(storeKey(suffix));
-    } catch (e) {
+    } catch (_e) {
       return null;
     }
   }
@@ -72,7 +72,7 @@
   function writeStore(suffix, value) {
     try {
       localStorage.setItem(storeKey(suffix), value);
-    } catch (e) {}
+    } catch (_e) {}
   }
 
   function el(tag, className, text) {
@@ -99,31 +99,31 @@
     var apply = function () {
       try {
         buildStarters(content);
-      } catch (e) {}
+      } catch (_e) {}
       try {
         buildExemplar(content);
-      } catch (e) {}
+      } catch (_e) {}
       try {
         buildSelfAssessment();
-      } catch (e) {}
+      } catch (_e) {}
       try {
         foldIntoReport();
-      } catch (e) {}
+      } catch (_e) {}
       try {
         stepCoherence();
-      } catch (e) {}
+      } catch (_e) {}
       try {
         buildPeerGallery();
-      } catch (e) {}
+      } catch (_e) {}
       try {
         watchMilestones();
-      } catch (e) {}
+      } catch (_e) {}
     };
 
     document.addEventListener("neft:award-studio-mounted", function () {
       try {
         buildStarters(content);
-      } catch (e) {}
+      } catch (_e) {}
     });
 
     // publisher.json lives next to each page; a 404 / file:// failure just
@@ -210,7 +210,7 @@
     var mo = new MutationObserver(function () {
       try {
         applyLabels();
-      } catch (e) {}
+      } catch (_e) {}
     });
     mo.observe(trail, { childList: true, subtree: true, characterData: true });
     if (progLabel) mo.observe(progLabel, { childList: true, subtree: true, characterData: true });
@@ -254,10 +254,10 @@
           area.focus();
           try {
             area.setSelectionRange(area.value.length, area.value.length);
-          } catch (e) {}
+          } catch (_e) {}
           try {
             area.dispatchEvent(new Event("input", { bubbles: true }));
-          } catch (e) {}
+          } catch (_e) {}
         });
         wrap.appendChild(chip);
       });
@@ -381,7 +381,7 @@
     var saved = {};
     try {
       saved = JSON.parse(readStore("selfassess") || "{}") || {};
-    } catch (e) {
+    } catch (_e) {
       saved = {};
     }
 
@@ -485,7 +485,7 @@
     var path = "/";
     try {
       path = location.pathname || "/";
-    } catch (e) {}
+    } catch (_e) {}
     return (
       String(path.replace(/index\.html?$/i, "").replace(/\/+$/, "") || "home")
         .toLowerCase()
@@ -600,7 +600,7 @@
             if (stu.name) payload.studentName = String(stu.name).slice(0, 60);
             if (stu.section) payload.section = String(stu.section).slice(0, 40);
           }
-        } catch (e) {}
+        } catch (_e) {}
         fetch("/api/progress/telemetry", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -608,7 +608,7 @@
           keepalive: true,
           credentials: "omit",
         }).catch(function () {});
-      } catch (e) {}
+      } catch (_e) {}
     }
 
     function check() {
@@ -627,7 +627,7 @@
           ) {
             window.NeftCanvasBridge.reportScore(Math.min(65, Math.round((100 * maxStep) / total)));
           }
-        } catch (e) {}
+        } catch (_e) {}
       }
     }
 
@@ -635,7 +635,7 @@
     var mo = new MutationObserver(function () {
       try {
         check();
-      } catch (e) {}
+      } catch (_e) {}
     });
     panels.forEach(function (p) {
       mo.observe(p, { attributes: true, attributeFilter: ["class"] });
@@ -654,7 +654,7 @@
           var saved = {};
           try {
             saved = JSON.parse(readStore("selfassess") || "{}") || {};
-          } catch (e) {}
+          } catch (_e) {}
           var criteria = rubricCriteria();
           var lines = [];
           criteria.forEach(function (name, idx) {
@@ -689,7 +689,7 @@
             box.textContent += "\n\n" + window.NeftAwardStudio.getSummary();
           }
         }
-      } catch (e) {}
+      } catch (_e) {}
       return out;
     };
   }

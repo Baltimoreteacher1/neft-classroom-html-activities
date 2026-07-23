@@ -235,7 +235,7 @@ export function factorTreeSVG(cfg) {
     return 1 + Math.max(getDepth(node.left), getDepth(node.right));
   }
 
-  const maxDepth = getDepth(cfg);
+  const _maxDepth = getDepth(cfg);
   let elements = [];
 
   function traverse(node, x, y, dx, depth) {

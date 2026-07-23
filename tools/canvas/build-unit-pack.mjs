@@ -47,7 +47,7 @@ if (arg !== "all" && !allUnits.includes(Number(arg))) {
   process.exit(1);
 }
 
-const UNSUPPORTED = new Set([
+const _UNSUPPORTED = new Set([
   "drag-sort",
   "drag-and-drop",
   "sequence",

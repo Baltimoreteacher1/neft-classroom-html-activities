@@ -51,7 +51,7 @@
     try {
       var v = localStorage.getItem(key);
       return v ? JSON.parse(v) : fallback;
-    } catch (e) {
+    } catch (_e) {
       return fallback;
     }
   }
@@ -59,7 +59,7 @@
     try {
       localStorage.setItem(key, JSON.stringify(val));
       return true;
-    } catch (e) {
+    } catch (_e) {
       return false;
     }
   }
@@ -91,7 +91,7 @@
     // Share outward so grade sync + curriculum progress sync use the same name.
     try {
       if (window.NeftIdentity) window.NeftIdentity.set({ name: next.alias, section: next.section });
-    } catch (e) {}
+    } catch (_e) {}
     syncIdentityBar();
     return next;
   }
@@ -488,7 +488,7 @@
           .from(holder)
           .save();
         return;
-      } catch (e) {
+      } catch (_e) {
         /* fall through to print */
       }
     }
@@ -696,7 +696,7 @@
       l.rel = "stylesheet";
       l.href = href;
       (document.head || document.documentElement).appendChild(l);
-    } catch (e) {
+    } catch (_e) {
       /* styling is non-critical; never block the kit */
     }
   }

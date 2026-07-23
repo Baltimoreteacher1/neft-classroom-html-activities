@@ -495,7 +495,7 @@ export async function onRequest(context) {
       mode: parsed.value.mode,
       source: out.source,
     });
-  } catch (err) {
+  } catch (_err) {
     // Generic — never leak the error detail (may reference internals).
     return json({ ok: false, offline: true, error: "server-error" }, 503);
   }

@@ -90,7 +90,7 @@
     var v = min;
     try {
       v = parseInt(localStorage.getItem(keyFor(game)) || String(min), 10) || min;
-    } catch (e) {}
+    } catch (_e) {}
     return clamp(v, min, max);
   }
   // Record how a run went and adjust the stored Auto level for next time.
@@ -108,7 +108,7 @@
     next = clamp(next, min, max);
     try {
       localStorage.setItem(keyFor(game), String(next));
-    } catch (e) {}
+    } catch (_e) {}
     return next;
   }
 

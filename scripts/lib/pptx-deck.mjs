@@ -58,7 +58,7 @@ function panel(slide, pptx, x, y, w, h, fill = T.white, lineColor = T.line, radi
   });
 }
 
-function pill(slide, pptx, x, y, w, h, text, fill, color = T.white, size = 9) {
+function _pill(slide, pptx, x, y, w, h, text, _fill, color = T.white, size = 9) {
   slide.addShape(pptx.ShapeType.roundRect, {
     x,
     y,
@@ -189,7 +189,7 @@ function sectionLabel(slide, x, y, w, text, bg, fg = T.white) {
   });
 }
 
-function lines(slide, x, y, w, count, gap = 0.32) {
+function _lines(slide, x, y, w, count, gap = 0.32) {
   for (let i = 0; i < count; i++) {
     slide.addShape({ x, y: y + i * gap, w, h: 0 }, {});
   }

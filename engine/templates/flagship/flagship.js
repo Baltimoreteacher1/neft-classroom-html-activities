@@ -104,7 +104,7 @@ function showMissionIntro(fl, config, onStart) {
 
 // A persistent narrative banner that reflects the current scene. It listens to
 // the engine's navigation event so it stays in sync without touching internals.
-function attachSceneHud(scenes, fl) {
+function attachSceneHud(scenes, _fl) {
   const main = document.querySelector(".main");
   if (!main) return;
 
@@ -152,7 +152,7 @@ function attachCompletionWatcher(fl, config) {
   observer.observe(document.body, { childList: true, subtree: true });
 }
 
-function playFinale(finale, config) {
+function playFinale(finale, _config) {
   const banner = document.createElement("div");
   banner.className = "flagship-finale";
   banner.setAttribute("role", "status");

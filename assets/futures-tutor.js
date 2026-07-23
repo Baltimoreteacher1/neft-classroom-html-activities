@@ -54,7 +54,7 @@
   function warn(msg, e) {
     try {
       if (window.console && console.warn) console.warn("[futures-tutor] " + msg, e || "");
-    } catch (x) {}
+    } catch (_x) {}
   }
 
   // ---- best-effort problem/context extraction (never critical) -----------
@@ -64,7 +64,7 @@
         (typeof window.NT_LESSON_STANDARD === "string" && window.NT_LESSON_STANDARD) ||
         ""
       ).slice(0, 40);
-    } catch (e) {
+    } catch (_e) {
       return "";
     }
   }
@@ -74,7 +74,7 @@
       if (!n) return "";
       var t = (n.textContent || "").replace(/\s+/g, " ").trim();
       return t;
-    } catch (e) {
+    } catch (_e) {
       return "";
     }
   }
@@ -95,7 +95,7 @@
     }
     try {
       return (document.title || "this math problem").slice(0, CAP_ITEM);
-    } catch (e) {
+    } catch (_e) {
       return "this math problem";
     }
   }
@@ -179,7 +179,7 @@
   function ttsSupported() {
     try {
       return !!(window.speechSynthesis && window.SpeechSynthesisUtterance);
-    } catch (e) {
+    } catch (_e) {
       return false;
     }
   }
@@ -199,7 +199,7 @@
     state.listening = false;
     try {
       if (recog) recog.stop();
-    } catch (e) {}
+    } catch (_e) {}
     updateMicUi();
   }
   function startListening() {
@@ -215,7 +215,7 @@
           if (nodes.work) {
             nodes.work.value = (nodes.work.value ? nodes.work.value + " " : "") + said;
           }
-        } catch (e) {}
+        } catch (_e) {}
       };
       recog.onerror = function () {
         state.listening = false;
@@ -351,7 +351,7 @@
     if (nodes.work) {
       try {
         nodes.work.focus();
-      } catch (e) {}
+      } catch (_e) {}
     }
   }
   function closePanel() {
@@ -360,7 +360,7 @@
     stopListening();
     try {
       if (ttsSupported()) window.speechSynthesis.cancel();
-    } catch (e) {}
+    } catch (_e) {}
     nodes.panel.classList.remove("nt-fx-show");
     nodes.panel.setAttribute("aria-hidden", "true");
   }
@@ -404,7 +404,7 @@
       if (!state.tts) {
         try {
           window.speechSynthesis.cancel();
-        } catch (e) {}
+        } catch (_e) {}
       }
       ttsBtn.textContent = state.tts ? t().ttsOn : t().ttsOff;
     });

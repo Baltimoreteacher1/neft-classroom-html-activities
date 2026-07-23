@@ -176,7 +176,7 @@ function esc(s) {
 }
 
 // The lesson URL with `mode=tools` stripped — the "Back to lesson" target.
-function lessonUrl() {
+function _lessonUrl() {
   try {
     const u = new URL(window.location.href);
     u.searchParams.delete("mode");

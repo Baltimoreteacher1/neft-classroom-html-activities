@@ -317,7 +317,7 @@ function miniLessonBlueprint(t) {
   });
 }
 
-const head = (title, desc, depth, canonical) => {
+const head = (title, desc, _depth, canonical) => {
   const url = "https://eduwonderlab.com" + (canonical || "/math/intervention/");
   return `<!doctype html>
 <html lang="en">
@@ -842,7 +842,7 @@ function topicPage(t) {
   // Exit ticket — 4 short items from the post-quiz
   const exit = t.postQuiz.slice(0, 4);
   const exitHtml = exit
-    .map((q, i) => `<div class="ws-problem">${esc(q.prompt)}<span class="ws-answer"></span></div>`)
+    .map((q, _i) => `<div class="ws-problem">${esc(q.prompt)}<span class="ws-answer"></span></div>`)
     .join("");
   const exitKey = exit.map((q) => `<li>${esc(q.answer)}</li>`).join("");
 
@@ -857,7 +857,7 @@ function topicPage(t) {
     "I can check whether my answer is reasonable.",
   ]
     .map(
-      (c, i) =>
+      (c, _i) =>
         `<li><label><input type="checkbox" /> <span>${esc(c.replace(/^I can /, "I can "))}</span></label></li>`,
     )
     .join("");

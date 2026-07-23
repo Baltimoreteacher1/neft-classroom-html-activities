@@ -289,7 +289,7 @@
     }
 
     // ---- stage: BUILD THE RATIO ----
-    function buildSVG(f, y, ta, tb, max) {
+    function buildSVG(f, y, ta, tb, _max) {
       var th = 8,
         gp = 1.5,
         w = 46,

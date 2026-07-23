@@ -191,7 +191,7 @@ export function renderLaunchStoryBeats(host, config) {
 }
 
 /** Build enhanced phase transition context for engagement.showPhaseComplete. */
-export function buildPhaseTransitionMeta(state, phaseIdx, phaseName, xp, stars) {
+export function buildPhaseTransitionMeta(state, phaseIdx, _phaseName, _xp, stars) {
   const s = state.get();
   const next = PHASE_CONFIGS[phaseIdx + 1];
   const phase = s.phases[phaseIdx];

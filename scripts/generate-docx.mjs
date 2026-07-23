@@ -710,7 +710,7 @@ function guidedPracticeBlock(cfg, worked) {
   return out;
 }
 
-function gatherPractice(practice = {}) {
+function _gatherPractice(practice = {}) {
   return [].concat(
     practice.approaching || [],
     practice.onLevel || [],
@@ -943,7 +943,7 @@ function distractorWhyLines(it) {
   const why = it && it.choiceExplanations;
   if (!Array.isArray(why) || !Array.isArray(it.choices)) return [];
   const out = [];
-  it.choices.forEach((c, j) => {
+  it.choices.forEach((_c, j) => {
     if (j === it.correctIndex) return;
     const note = why[j];
     if (!note) return;

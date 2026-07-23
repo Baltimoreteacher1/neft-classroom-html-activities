@@ -160,7 +160,7 @@
   function readWorkspace(index) {
     try {
       return JSON.parse(localStorage.getItem(workspaceKey(index)) || "{}") || {};
-    } catch (e) {
+    } catch (_e) {
       return {};
     }
   }
@@ -168,7 +168,7 @@
   function saveWorkspace(index, data) {
     try {
       localStorage.setItem(workspaceKey(index), JSON.stringify(data));
-    } catch (e) {
+    } catch (_e) {
       /* private mode / full storage: the workspace remains usable */
     }
   }
@@ -375,7 +375,7 @@
     Array.prototype.forEach.call(document.querySelectorAll(".step-panel"), function (panel, index) {
       try {
         mountWorkspace(panel, index + 1);
-      } catch (e) {
+      } catch (_e) {
         /* a workspace never blocks the project step */
       }
     });
@@ -409,7 +409,7 @@
           cfg.tools.forEach(function (tool) {
             try {
               if (mountTool(tool)) needed[tool.manip] = 1;
-            } catch (e) {
+            } catch (_e) {
               /* one bad tool never blocks the rest */
             }
           });
@@ -418,7 +418,7 @@
         .catch(function () {
           /* no visuals.json for this page — fine */
         });
-    } catch (e) {
+    } catch (_e) {
       /* never break the page */
     }
   });

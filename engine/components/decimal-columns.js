@@ -174,7 +174,7 @@ export function renderDecimalColumns(host, cfg = {}) {
   host.appendChild(wrap);
 
   let current = null; // { destroy } of the mounted problem
-  let activeIdx = 0;
+  let _activeIdx = 0;
 
   function mount(problem) {
     if (current) current.destroy();
@@ -194,7 +194,7 @@ export function renderDecimalColumns(host, cfg = {}) {
       chip.setAttribute("aria-pressed", i === 0 ? "true" : "false");
       chip.textContent = p.label || `${p.a} ${p.op === "-" ? "−" : "+"} ${p.b}`;
       chip.addEventListener("click", () => {
-        activeIdx = i;
+        _activeIdx = i;
         [...bar.children].forEach((c, j) =>
           c.setAttribute("aria-pressed", j === i ? "true" : "false"),
         );
@@ -254,7 +254,7 @@ function renderProblem(wrap, problem, { typeIn }) {
   const digitAt = (row, col) => (col.type === "int" ? row.int[col.idx] : row.frac[col.idx]);
   const colKey = (col) => `${col.type}:${col.idx}`;
   // Is this a leading zero-pad place (a place the original number didn't reach)?
-  const isPad = (row, col, magInt) => {
+  const isPad = (_row, col, magInt) => {
     const raw = String(Math.round(magInt)); // scaled magnitude, no leading zeros
     const width = intDigits + p;
     const firstReal = width - raw.length; // index in the padded string of the first real digit

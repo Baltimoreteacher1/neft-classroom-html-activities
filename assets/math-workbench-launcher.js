@@ -87,7 +87,7 @@
         if (cached !== "none") applyHref(a, cached);
         return;
       }
-    } catch (e) {
+    } catch (_e) {
       /* private mode — just fetch */
     }
     fetch("/lessons/" + m[1] + "/config.json", { credentials: "same-origin" })
@@ -110,7 +110,7 @@
         }
         try {
           sessionStorage.setItem(key, url || "none");
-        } catch (e) {
+        } catch (_e) {
           /* best effort */
         }
       })
@@ -232,7 +232,7 @@
         var need = Math.round(b.height) + 10;
         if (need > clearance) clearance = need;
       }
-    } catch (e) {
+    } catch (_e) {
       /* defensive: keep default position on any failure */
     }
     a.style.bottom =

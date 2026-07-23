@@ -42,7 +42,7 @@ export function buildHomeworkGame(config) {
   return fn(config, { topic, vocab, title });
 }
 
-function buildExponentGame(config, { title }) {
+function buildExponentGame(_config, { title }) {
   const rounds = [
     { q: "What is 2³?", choices: ["8", "6", "9", "5"], correct: 0, hint: "2 × 2 × 2" },
     { q: "What is 5²?", choices: ["25", "10", "7", "52"], correct: 0, hint: "5 × 5" },
@@ -55,7 +55,7 @@ function buildExponentGame(config, { title }) {
   });
 }
 
-function buildRatioGame(config, { title }) {
+function buildRatioGame(_config, { title }) {
   const rounds = [
     { q: "Ratio 2:3 — if A=4, B=?", choices: ["6", "5", "8", "2"], correct: 0 },
     { q: "Ratio 1:4 — if A=3, B=?", choices: ["12", "7", "4", "9"], correct: 0 },
@@ -68,7 +68,7 @@ function buildRatioGame(config, { title }) {
   });
 }
 
-function buildEquationGame(config, { title }) {
+function buildEquationGame(_config, { title }) {
   const rounds = [
     {
       q: "'A number plus 5 equals 12' →",
@@ -97,7 +97,7 @@ function buildEquationGame(config, { title }) {
   });
 }
 
-function buildInequalityGame(config, { title }) {
+function buildInequalityGame(_config, { title }) {
   const rounds = [
     { q: "x > 5 — is 6 a solution?", choices: ["Yes", "No"], correct: 0 },
     { q: "x ≤ 4 — is 4 a solution?", choices: ["Yes", "No"], correct: 0 },
@@ -110,7 +110,7 @@ function buildInequalityGame(config, { title }) {
   });
 }
 
-function buildExpressionGame(config, { title }) {
+function buildExpressionGame(_config, { title }) {
   const rounds = [
     { q: "Evaluate 2x when x = 4", choices: ["8", "6", "24", "2"], correct: 0 },
     {
@@ -127,7 +127,7 @@ function buildExpressionGame(config, { title }) {
   });
 }
 
-function buildStatsSortGame(config, { title }) {
+function buildStatsSortGame(_config, { title }) {
   const items = [
     { text: "How many pets do students have?", bucket: "stat" },
     { text: "What is your favorite color?", bucket: "stat" },
@@ -153,7 +153,7 @@ function buildStatsSortGame(config, { title }) {
   );
 }
 
-function buildCoordinateGame(config, { title }) {
+function buildCoordinateGame(_config, { title }) {
   const rounds = [
     {
       q: "Point at (3, 2) — which quadrant?",
@@ -174,7 +174,7 @@ function buildCoordinateGame(config, { title }) {
   });
 }
 
-function buildNumberLineGame(config, { title }) {
+function buildNumberLineGame(_config, { title }) {
   const rounds = [
     { q: "Which is greater: −2 or −5?", choices: ["−2", "−5", "Equal"], correct: 0 },
     { q: "|−7| = ?", choices: ["7", "−7", "0", "14"], correct: 0 },
@@ -187,7 +187,7 @@ function buildNumberLineGame(config, { title }) {
   });
 }
 
-function buildFractionGame(config, { title }) {
+function buildFractionGame(_config, { title }) {
   const rounds = [
     { q: "6 ÷ ½ = ?", choices: ["12", "3", "6", "1/12"], correct: 0 },
     { q: "½ of 8 = ?", choices: ["4", "2", "16", "6"], correct: 0 },
@@ -200,7 +200,7 @@ function buildFractionGame(config, { title }) {
   });
 }
 
-function buildAreaGame(config, { title }) {
+function buildAreaGame(_config, { title }) {
   const rounds = [
     { q: "Rectangle 5 × 3 area?", choices: ["15", "8", "16", "53"], correct: 0 },
     { q: "Triangle: base 6, height 4", choices: ["12", "24", "10", "6"], correct: 0 },
@@ -217,7 +217,7 @@ function buildAreaGame(config, { title }) {
   });
 }
 
-function buildVolumeGame(config, { title }) {
+function buildVolumeGame(_config, { title }) {
   const rounds = [
     { q: "Prism 3×4×2 volume?", choices: ["24", "9", "12", "14"], correct: 0 },
     { q: "Volume units are…", choices: ["Cubic", "Square", "Linear", "Flat"], correct: 0 },
@@ -234,7 +234,7 @@ function buildVolumeGame(config, { title }) {
   });
 }
 
-function buildSurfaceAreaGame(config, { title }) {
+function buildSurfaceAreaGame(_config, { title }) {
   const rounds = [
     {
       q: "Surface area measures…",
@@ -263,7 +263,7 @@ function buildSurfaceAreaGame(config, { title }) {
   });
 }
 
-function buildDecimalGame(config, { title }) {
+function buildDecimalGame(_config, { title }) {
   const rounds = [
     { q: "1.5 + 2.3 = ?", choices: ["3.8", "3.5", "4.8", "2.8"], correct: 0 },
     { q: "0.6 × 10 = ?", choices: ["6", "0.06", "60", "1.6"], correct: 0 },
@@ -280,7 +280,7 @@ function buildDecimalGame(config, { title }) {
   });
 }
 
-function buildFactorGame(config, { title }) {
+function buildFactorGame(_config, { title }) {
   const rounds = [
     { q: "Prime number?", choices: ["7", "6", "9", "12"], correct: 0 },
     { q: "GCF of 12 and 18?", choices: ["6", "3", "36", "2"], correct: 0 },
@@ -293,7 +293,7 @@ function buildFactorGame(config, { title }) {
   });
 }
 
-function buildVocabMatchGame(config, { vocab, title }) {
+function buildVocabMatchGame(_config, { vocab, title }) {
   const rounds =
     vocab.length >= 3
       ? vocab.slice(0, 4).map((v) => {
@@ -329,13 +329,13 @@ function buildVocabMatchGame(config, { vocab, title }) {
   });
 }
 
-function shuffleChoices(correct, pool) {
+function _shuffleChoices(correct, pool) {
   const wrong = pool.filter((p) => p !== correct).slice(0, 3);
   const all = [correct, ...wrong].sort(() => Math.random() - 0.5);
   return all;
 }
 
-function mcSpeedGame(id, title, nameEn, nameEs, rounds, coach) {
+function mcSpeedGame(id, _title, nameEn, nameEs, rounds, coach) {
   const normalized = rounds.map((r) => {
     if (Array.isArray(r.choices) && typeof r.choices[0] === "string") {
       return {
@@ -368,7 +368,7 @@ function mcSpeedGame(id, title, nameEn, nameEs, rounds, coach) {
   };
 }
 
-function dragBucketGame(id, title, nameEn, nameEs, items, buckets, coach) {
+function dragBucketGame(id, _title, nameEn, nameEs, items, buckets, coach) {
   const shuffled = [...items].sort(() => Math.random() - 0.5);
   const data = JSON.stringify(shuffled).replace(/'/g, "&#39;");
   return {

@@ -53,7 +53,7 @@
   function lsGet(key) {
     try {
       return localStorage.getItem(key);
-    } catch (e) {
+    } catch (_e) {
       return null;
     }
   }
@@ -61,7 +61,7 @@
     try {
       localStorage.setItem(key, val);
       return true;
-    } catch (e) {
+    } catch (_e) {
       return false;
     }
   }
@@ -71,7 +71,7 @@
       var raw = lsGet(LS_QUEUE);
       var arr = raw ? JSON.parse(raw) : [];
       return Array.isArray(arr) ? arr : [];
-    } catch (e) {
+    } catch (_e) {
       return [];
     }
   }
@@ -80,7 +80,7 @@
       // Trim from the front (oldest) if we somehow exceed the cap.
       if (arr.length > MAX_QUEUE) arr = arr.slice(arr.length - MAX_QUEUE);
       lsSet(LS_QUEUE, JSON.stringify(arr));
-    } catch (e) {
+    } catch (_e) {
       /* quota / serialization issue — drop silently, never throw */
     }
   }
@@ -90,7 +90,7 @@
     try {
       var s = JSON.parse(lsGet(LS_STUDENT) || "{}");
       return s && typeof s === "object" ? s : {};
-    } catch (e) {
+    } catch (_e) {
       return {};
     }
   }
@@ -101,7 +101,7 @@
     try {
       var p = location.pathname.replace(/index\.html?$/i, "").replace(/^\/+|\/+$/g, "");
       return p ? p.replace(/[^A-Za-z0-9._/-]+/g, "-").replace(/\//g, "-") : "lesson";
-    } catch (e) {
+    } catch (_e) {
       return "lesson";
     }
   }
@@ -112,7 +112,7 @@
       if (!el) return "";
       var attr = el.getAttribute && el.getAttribute("data-standard");
       return (attr || el.textContent || "").trim().slice(0, 80);
-    } catch (e) {
+    } catch (_e) {
       return "";
     }
   }
@@ -120,7 +120,7 @@
     if (CFG.activityTitle) return String(CFG.activityTitle);
     try {
       return (document.title || deriveSlug()).slice(0, 200);
-    } catch (e) {
+    } catch (_e) {
       return deriveSlug();
     }
   }
@@ -131,7 +131,7 @@
   var SESSION_ID = (function () {
     try {
       return Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8);
-    } catch (e) {
+    } catch (_e) {
       return "s0";
     }
   })();
@@ -158,7 +158,7 @@
       q.push(rec);
       writeQueue(q);
       scheduleFlush();
-    } catch (e) {
+    } catch (_e) {
       /* never throw into the lesson */
     }
   }
@@ -180,7 +180,7 @@
           out[k] = String(v).slice(0, 120);
         }
       }
-    } catch (e) {
+    } catch (_e) {
       /* ignore */
     }
     return out;
@@ -198,7 +198,7 @@
   function online() {
     try {
       return navigator.onLine !== false;
-    } catch (e) {
+    } catch (_e) {
       return true;
     }
   }
@@ -225,7 +225,7 @@
     var body;
     try {
       body = JSON.stringify(buildPayload(batch));
-    } catch (e) {
+    } catch (_e) {
       // Unserializable batch — drop it rather than wedge the queue forever.
       return Promise.resolve(true);
     }
@@ -299,14 +299,14 @@
   function gradedCardsTotal() {
     try {
       return document.querySelectorAll("article.q-card[data-q]").length;
-    } catch (e) {
+    } catch (_e) {
       return 0;
     }
   }
   function gradedCardsCorrect() {
     try {
       return document.querySelectorAll("article.q-card.correct").length;
-    } catch (e) {
+    } catch (_e) {
       return 0;
     }
   }
@@ -331,7 +331,7 @@
         flush();
         postHubCompletion();
       }
-    } catch (e) {
+    } catch (_e) {
       /* ignore */
     }
   }
@@ -348,7 +348,7 @@
     try {
       var m = /^\/lessons\/([A-Za-z0-9._-]+)\/(?:index\.html?)?$/.exec(location.pathname);
       return m ? m[1] : "";
-    } catch (e) {
+    } catch (_e) {
       return "";
     }
   }
@@ -366,7 +366,7 @@
         if (window.CurriculumProgressBridge) fn(window.CurriculumProgressBridge);
       };
       document.head.appendChild(s);
-    } catch (e) {
+    } catch (_e) {
       /* never break a lesson over progress sync */
     }
   }
@@ -377,7 +377,7 @@
     withProgressBridge(function (bridge) {
       try {
         bridge.syncToggle(id, "/lessons/" + id + "/", true);
-      } catch (e) {
+      } catch (_e) {
         /* silent — telemetry already captured the completion */
       }
     });
@@ -421,7 +421,7 @@
           attributeFilter: ["class"],
         });
       }
-    } catch (e) {
+    } catch (_e) {
       /* observer unsupported — manual track() still works */
     }
 
@@ -435,14 +435,14 @@
         try {
           var dt = Math.round((Date.now() - startTs) / 1000);
           track("time_on_task", { seconds: dt });
-        } catch (e) {}
+        } catch (_e) {}
         flush();
       };
       window.addEventListener("pagehide", pageHide);
       document.addEventListener("visibilitychange", function () {
         if (document.visibilityState === "hidden") pageHide();
       });
-    } catch (e) {
+    } catch (_e) {
       /* ignore */
     }
 

@@ -160,7 +160,7 @@
       return k * x;
     }
 
-    function sx(x, yMax) {
+    function sx(x, _yMax) {
       var span = SZ_W - PADL - PADR;
       return PADL + (x / XMAX) * span;
     }

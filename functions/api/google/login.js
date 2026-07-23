@@ -7,7 +7,7 @@ import {
   sessionCookie,
 } from "../../_lib/google.js";
 
-export async function onRequestGet({ request, env }) {
+export async function onRequestGet({ request: _request, env }) {
   if (!isConfigured(env)) {
     return json(
       {

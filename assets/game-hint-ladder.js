@@ -60,7 +60,7 @@
     return (typeof s === "string" ? s : "").slice(0, n);
   }
 
-  function withTimeout(promise, ms) {
+  function withTimeout(_promise, ms) {
     var ctrl = new AbortController();
     var t = setTimeout(function () {
       ctrl.abort();
@@ -87,7 +87,7 @@
         .catch(function () {
           state.backend = false;
         });
-    } catch (e) {
+    } catch (_e) {
       state.backend = false;
     }
   }
@@ -357,7 +357,7 @@
     if (opts.accept) {
       try {
         acceptRe = new RegExp(opts.accept, "i");
-      } catch (e) {
+      } catch (_e) {
         acceptRe = null;
       }
     }
@@ -398,7 +398,7 @@
           ingest(el.textContent);
         });
         mo.observe(el, { childList: true, characterData: true, subtree: true });
-      } catch (e) {
+      } catch (_e) {
         /* MutationObserver unsupported — first-read still works */
       }
     }

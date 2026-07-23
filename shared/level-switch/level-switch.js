@@ -91,7 +91,7 @@
     } else {
       mount();
     }
-  } catch (e) {
+  } catch (_e) {
     /* never break the page over a nav bar */
   }
 })();

@@ -50,7 +50,7 @@
         { selected: "1-1", section: "601", favorites: [], recent: [], view: "today" },
         JSON.parse(localStorage.getItem(STORAGE)) || {},
       );
-    } catch (error) {
+    } catch (_error) {
       return { selected: "1-1", section: "601", favorites: [], recent: [], view: "today" };
     }
   }
@@ -58,7 +58,7 @@
   function saveState() {
     try {
       localStorage.setItem(STORAGE, JSON.stringify(state));
-    } catch (error) {}
+    } catch (_error) {}
   }
 
   function getJson(url) {

@@ -54,7 +54,7 @@
     if (storageKey) {
       try {
         localStorage.setItem(storageKey + ":level", level);
-      } catch (e) {
+      } catch (_e) {
         /* ignore storage errors */
       }
     }
@@ -74,7 +74,7 @@
     if (opts.storageKey) {
       try {
         saved = localStorage.getItem(opts.storageKey + ":level");
-      } catch (e) {
+      } catch (_e) {
         saved = null;
       }
     }
@@ -110,7 +110,7 @@
     if (TTS.supported) {
       try {
         window.speechSynthesis.cancel();
-      } catch (e) {
+      } catch (_e) {
         /* ignore */
       }
     }
@@ -133,7 +133,7 @@
         u.lang = v.lang;
       }
       window.speechSynthesis.speak(u);
-    } catch (e) {
+    } catch (_e) {
       /* ignore speech errors */
     }
   };
@@ -157,7 +157,7 @@
     if (storageKey) {
       try {
         localStorage.setItem(storageKey + ":tts", TTS.on ? "1" : "0");
-      } catch (e) {
+      } catch (_e) {
         /* ignore */
       }
     }
@@ -193,7 +193,7 @@
     if (opts.storageKey) {
       try {
         saved = localStorage.getItem(opts.storageKey + ":tts");
-      } catch (e) {
+      } catch (_e) {
         saved = null;
       }
     }
@@ -351,7 +351,7 @@
     try {
       localStorage.setItem(storageKey, JSON.stringify(data));
       if (opts.silent !== true) alert("Saved on this device.");
-    } catch (e) {
+    } catch (_e) {
       alert("Could not save on this device.");
     }
   };
@@ -361,7 +361,7 @@
     let data = {};
     try {
       data = JSON.parse(localStorage.getItem(storageKey) || "{}");
-    } catch (e) {
+    } catch (_e) {
       data = {};
     }
     Object.keys(data).forEach((k) => {
@@ -780,7 +780,7 @@
       clone = document.createElement("img");
       try {
         clone.src = visual.toDataURL("image/png");
-      } catch (e) {
+      } catch (_e) {
         return;
       }
     } else {
@@ -1016,7 +1016,7 @@
       const saved = parseInt(sessionStorage.getItem(storageKey), 10);
       if (!Number.isNaN(saved) && saved >= 0 && saved < total) active = saved;
       furthest = active;
-    } catch (e) {
+    } catch (_e) {
       /* ignore */
     }
 
@@ -1103,7 +1103,7 @@
       updateChrome(index);
       try {
         sessionStorage.setItem(storageKey, String(index));
-      } catch (e) {
+      } catch (_e) {
         /* ignore */
       }
       if (tabs[index] && tabs[index].scrollIntoView) {

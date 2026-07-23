@@ -72,13 +72,13 @@
     try {
       var args = ["[NeftSaveResume]"].concat([].slice.call(arguments));
       console.log.apply(console, args);
-    } catch (e) {}
+    } catch (_e) {}
   }
   function warn() {
     try {
       var args = ["[NeftSaveResume]"].concat([].slice.call(arguments));
       console.warn.apply(console, args);
-    } catch (e) {}
+    } catch (_e) {}
   }
   function now() {
     return new Date().toISOString();
@@ -213,7 +213,7 @@
         window.crypto.getRandomValues(a);
         return a[0] % max;
       }
-    } catch (e) {}
+    } catch (_e) {}
     return Math.floor(Math.random() * max);
   }
   function makeSuffix() {
@@ -699,7 +699,7 @@
       var ev;
       try {
         ev = new Event(type, { bubbles: true });
-      } catch (e) {
+      } catch (_e) {
         ev = document.createEvent("Event");
         ev.initEvent(type, true, true);
       }
@@ -734,7 +734,7 @@
       if (nav.hash && location.hash !== nav.hash) {
         try {
           location.hash = nav.hash;
-        } catch (e) {}
+        } catch (_e) {}
       }
       // Always return the student to the top of the lesson when they resume,
       // rather than dropping them at a saved mid-page scroll position.
@@ -975,7 +975,7 @@
         data: captureData(),
         custom: {},
       };
-      var self = this;
+      var _self = this;
       this._providers.forEach(function (fn, i) {
         state.custom["p" + i] = safe(
           function () {
@@ -1235,7 +1235,7 @@
   function isEmbedded() {
     try {
       return window.self !== window.top;
-    } catch (e) {
+    } catch (_e) {
       return true; // cross-origin embed — treat as embedded and stay quiet
     }
   }
@@ -1391,7 +1391,7 @@
         box.value = cleaned;
         try {
           box.setSelectionRange(Math.max(0, start - delta), Math.max(0, start - delta));
-        } catch (e) {}
+        } catch (_e) {}
       }
     });
     $("#nsr-copy").addEventListener("click", function () {
@@ -1462,13 +1462,13 @@
     }
   }
 
-  function showIntro(self) {
+  function showIntro(_self) {
     if (!ui.panel) return;
     ui.panel.querySelector("#nsr-intro").hidden = false;
     ui.panel.querySelector("#nsr-active").hidden = true;
     prefillIdentity();
   }
-  function showActive(self) {
+  function showActive(_self) {
     if (!ui.panel) return;
     ui.panel.querySelector("#nsr-intro").hidden = true;
     ui.panel.querySelector("#nsr-active").hidden = false;
@@ -1510,7 +1510,7 @@
       if (f) f.focus();
     }, "focus");
   }
-  function closePanel(self) {
+  function closePanel(_self) {
     if (!ui.root) return;
     ui.root.classList.remove("nsr-open");
     ui.panel.setAttribute("aria-hidden", "true");
@@ -1528,7 +1528,7 @@
     error: "Couldn't save — try again",
   };
   var pulseTimer;
-  function setStatus(self, key) {
+  function setStatus(_self, key) {
     var text = STATUS_TEXT[key] || key;
     if (ui.status) ui.status.textContent = text;
     if (ui.dot) ui.dot.className = "nsr-dot nsr-dot-" + key;
@@ -1546,7 +1546,7 @@
     }
   }
   var toastTimer;
-  function showToast(self, msg) {
+  function showToast(_self, msg) {
     var t = document.getElementById("nsr-toast");
     if (!t) {
       t = el("div", { id: "nsr-toast", role: "status", "aria-live": "polite" });

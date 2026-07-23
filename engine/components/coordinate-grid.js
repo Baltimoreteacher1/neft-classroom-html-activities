@@ -402,7 +402,7 @@ export function renderCoordinateGrid(container, config = {}) {
       }
     });
 
-    targets.forEach((t, i) => {
+    targets.forEach((_t, i) => {
       if (!used.has(i)) {
         const ring = targetMarkers[i].ring;
         ring.style.display = "";

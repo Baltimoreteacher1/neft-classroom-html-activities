@@ -95,7 +95,7 @@ async function noteLoadMiss(db, ip, bucket) {
       .prepare("DELETE FROM load_miss WHERE bucket < ?")
       .bind(bucket - 1)
       .run();
-  } catch (e) {
+  } catch (_e) {
     /* prune is best-effort */
   }
 }
@@ -200,7 +200,7 @@ async function ensureAdminColumns(db) {
   ]) {
     try {
       await db.prepare(ddl).run();
-    } catch (e) {
+    } catch (_e) {
       /* column already exists — fine */
     }
   }
@@ -333,7 +333,7 @@ function rosterRowValues(r) {
   let state = {};
   try {
     state = JSON.parse(r.state_json || "{}");
-  } catch (e) {
+  } catch (_e) {
     state = {};
   }
   return {
@@ -356,7 +356,7 @@ function recordFromRow(row) {
   let state = {};
   try {
     state = JSON.parse(row.state_json || "{}");
-  } catch (e) {
+  } catch (_e) {
     state = {};
   }
   return {
@@ -460,7 +460,7 @@ async function ensureInsightSchema(db) {
 function parseJsonOr(text, fallback) {
   try {
     return JSON.parse(text || "");
-  } catch (e) {
+  } catch (_e) {
     return fallback;
   }
 }
@@ -518,7 +518,7 @@ export async function onRequest(context) {
           let props = {};
           try {
             props = JSON.parse(r.payload_json || "{}");
-          } catch (e) {
+          } catch (_e) {
             props = {};
           }
           return {
@@ -545,7 +545,7 @@ export async function onRequest(context) {
     try {
       const body = await request.json().catch(() => null);
       await storeTelemetry(env, body);
-    } catch (e) {
+    } catch (_e) {
       // Swallow — telemetry must never fail loudly.
     }
     return new Response(null, { status: 204, headers: JSON_HEADERS });
@@ -615,7 +615,7 @@ export async function onRequest(context) {
           hintHeavy: group.hintHeavy,
         })),
       });
-    } catch (err) {
+    } catch (_err) {
       return json({ ok: true, groups: [] });
     }
   }
@@ -657,7 +657,7 @@ export async function onRequest(context) {
         let state = {};
         try {
           state = JSON.parse(r.state_json || "{}");
-        } catch (e) {
+        } catch (_e) {
           state = {};
         }
         return {
@@ -1061,7 +1061,7 @@ export async function onRequest(context) {
         try {
           const p = JSON.parse(payloadJson || "{}");
           return clamp(p.tag || p.misconceptionTag || "", 60);
-        } catch (e) {
+        } catch (_e) {
           return "";
         }
       };
@@ -1117,7 +1117,7 @@ export async function onRequest(context) {
           let state = {};
           try {
             state = JSON.parse(r.state_json || "{}");
-          } catch (e) {
+          } catch (_e) {
             state = {};
           }
           s.activities.push({
@@ -1192,7 +1192,7 @@ export async function onRequest(context) {
             let props = {};
             try {
               props = JSON.parse(r.payload_json || "{}");
-            } catch (e) {
+            } catch (_e) {
               props = {};
             }
             const result = props.result || props.props?.result;
@@ -1235,7 +1235,7 @@ export async function onRequest(context) {
             cell.attempts += 1;
             if (r.correct) cell.correct += 1;
           }
-        } catch (e) {
+        } catch (_e) {
           /* game_scores not created yet — matrix carries telemetry only */
         }
 
@@ -1327,7 +1327,7 @@ export async function onRequest(context) {
             if (r.correct) g.correct += 1;
             if (r.tag) g.tags[r.tag] = (g.tags[r.tag] || 0) + 1;
           }
-        } catch (e) {
+        } catch (_e) {
           /* game_scores not created yet — rollup carries telemetry only */
         }
         const bySection = new Map();
@@ -1438,7 +1438,7 @@ export async function onRequest(context) {
             source: "game",
           });
         }
-      } catch (e) {
+      } catch (_e) {
         /* game_scores not created yet — radar shows lesson signals only */
       }
       rows.sort((a, b) => String(b.at).localeCompare(String(a.at)));

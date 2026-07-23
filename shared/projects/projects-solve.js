@@ -132,14 +132,14 @@
   function readState(step) {
     try {
       return JSON.parse(localStorage.getItem(stateKey(step)) || "{}") || {};
-    } catch (e) {
+    } catch (_e) {
       return {};
     }
   }
   function saveState(step, data) {
     try {
       localStorage.setItem(stateKey(step), JSON.stringify(data));
-    } catch (e) {
+    } catch (_e) {
       /* private mode / full storage — feature still works, just no memory */
     }
   }
@@ -160,7 +160,7 @@
   function readSignals() {
     try {
       return JSON.parse(localStorage.getItem(SIGNAL_KEY) || "{}") || {};
-    } catch (e) {
+    } catch (_e) {
       return {};
     }
   }
@@ -176,7 +176,7 @@
       s.strands[label] = row;
       s.updated = Date.now();
       localStorage.setItem(SIGNAL_KEY, JSON.stringify(s));
-    } catch (e) {
+    } catch (_e) {
       /* signals are best-effort; never let one break a student's work */
     }
   }
@@ -185,7 +185,7 @@
     try {
       var v = (localStorage.getItem("nt-teacher-mode") || "").toLowerCase();
       return v === "1" || v === "true" || v === "on" || v === "yes";
-    } catch (e) {
+    } catch (_e) {
       return false;
     }
   }
@@ -336,7 +336,7 @@
       focus: function () {
         try {
           input.focus({ preventScroll: true });
-        } catch (e) {
+        } catch (_e) {
           /* focus is a nicety */
         }
       },
@@ -740,7 +740,7 @@
           return who.join(" · ");
         }
       }
-    } catch (e) {
+    } catch (_e) {
       /* attribution is optional */
     }
     return "";
@@ -882,7 +882,7 @@
         } else {
           window.prompt("Copy the report:", text);
         }
-      } catch (e) {
+      } catch (_e) {
         window.prompt("Copy the report:", text);
       }
     });
@@ -896,7 +896,7 @@
       if (window.confirm("Clear all recorded signals on this device?")) {
         try {
           localStorage.removeItem(SIGNAL_KEY);
-        } catch (e) {
+        } catch (_e) {
           /* ignore */
         }
         overlay.parentNode.removeChild(overlay);
@@ -938,7 +938,7 @@
       body.dataset.solveInit = "1";
       try {
         mountSignalBoard();
-      } catch (e) {
+      } catch (_e) {
         /* the teacher board never blocks the student experience */
       }
       if (typeof fetch !== "function") return;
@@ -953,7 +953,7 @@
             cfg.solves.forEach(function (spec) {
               try {
                 mountSolve(spec);
-              } catch (e) {
+              } catch (_e) {
                 /* one bad solve never blocks the rest */
               }
             });
@@ -962,7 +962,7 @@
             cfg.errorChecks.forEach(function (spec) {
               try {
                 mountErrorCheck(spec);
-              } catch (e) {
+              } catch (_e) {
                 /* one bad error-check never blocks the rest */
               }
             });
@@ -971,7 +971,7 @@
         .catch(function () {
           /* no solve-along.json for this page — fine */
         });
-    } catch (e) {
+    } catch (_e) {
       /* never break the page */
     }
   });

@@ -645,7 +645,7 @@ function typedFactorTree(item, steps, events) {
   const productAnswer =
     item.answer || item.steps?.[item.steps.length - 1]?.answer || primes.join(" × ");
   const levels = [];
-  let branchesBuilt = 0;
+  let _branchesBuilt = 0;
 
   splits.forEach((split, index) => {
     const level = el("div", `sg-tree-level${index ? " locked" : ""}`);
@@ -665,7 +665,7 @@ function typedFactorTree(item, steps, events) {
         next.classList.remove("locked");
         status.textContent = `Branch built ✓ — now split ${split.cofactor} the same way.`;
       } else {
-        branchesBuilt = splits.length;
+        _branchesBuilt = splits.length;
         status.textContent = "Every end number is prime ✓ — write the prime factorization below.";
       }
     };

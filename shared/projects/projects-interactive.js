@@ -192,18 +192,18 @@
     if (!document.body.classList.contains("pk")) return;
     try {
       enhanceInputs();
-    } catch (e) {}
+    } catch (_e) {}
     try {
       watchReadouts();
-    } catch (e) {}
+    } catch (_e) {}
     try {
       watchProgress();
-    } catch (e) {}
+    } catch (_e) {}
     // re-scan after the tab engine restructures the DOM into step panels
     setTimeout(function () {
       try {
         enhanceInputs();
-      } catch (e) {}
+      } catch (_e) {}
     }, 800);
   });
 })();

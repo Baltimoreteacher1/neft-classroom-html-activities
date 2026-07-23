@@ -73,7 +73,7 @@ function workBox(label = "Show your work") {
 }
 
 /* ---------- per-problem print renderers ----------------------------------- */
-function renderMC(it, n, key, commonMistake) {
+function renderMC(it, _n, key, commonMistake) {
   const opts = (it.choices || [])
     .map((c, i) => {
       const correct = key && i === it.correctIndex;
@@ -91,7 +91,7 @@ function renderMC(it, n, key, commonMistake) {
   return `<p class="ws-stem">${esc(it.stem)}</p><ol class="ws-opts">${opts}</ol>${notes}`;
 }
 
-function renderMatching(it, n, key) {
+function renderMatching(it, _n, key) {
   const pairs = it.pairs || [];
   // One deterministic bank order, shared by the practice sheet and the key, so
   // the answer-key letters line up with what the student sees.
@@ -109,7 +109,7 @@ function renderMatching(it, n, key) {
   <div class="ws-match"><ol class="ws-match-terms">${terms}</ol><ul class="ws-match-bank">${bankHtml}</ul></div>`;
 }
 
-function renderErrorAnalysis(it, n, key) {
+function renderErrorAnalysis(it, _n, key) {
   const steps = (it.workedExample || [])
     .map(
       (s, i) =>
@@ -133,7 +133,7 @@ function renderErrorAnalysis(it, n, key) {
   ${key ? keyHtml : blankLines(3)}`;
 }
 
-function renderFillTable(it, n, key) {
+function renderFillTable(it, _n, key) {
   const cols = it.columns || [];
   const head = cols.map((c) => `<th>${esc(c)}</th>`).join("");
   const rows = (it.rows || [])
@@ -153,7 +153,7 @@ function renderFillTable(it, n, key) {
   <table class="ws-table"><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table>`;
 }
 
-function renderOpen(it, n, key, supported) {
+function renderOpen(it, _n, key, supported) {
   const frame =
     supported && it.sentenceFrame ? `<p class="ws-frame">${esc(it.sentenceFrame)}</p>` : "";
   let keyHtml = "";
@@ -171,7 +171,7 @@ function renderOpen(it, n, key, supported) {
   return `<p class="ws-stem">${esc(it.prompt)}</p>${frame}${key ? keyHtml : blankLines(4)}`;
 }
 
-function renderSort(it, n, key) {
+function renderSort(it, _n, key) {
   const cats = [...new Set((it.items || []).map((i) => i.category))];
   const items = (it.items || [])
     .map(
@@ -184,7 +184,7 @@ function renderSort(it, n, key) {
   <ul class="ws-sort">${items}</ul>`;
 }
 
-function renderGeneric(it, n, key) {
+function renderGeneric(it, _n, key) {
   const stem = it.prompt || it.label || it.stem || it.instructions || "Solve. Show your work.";
   return `<p class="ws-stem">${esc(stem)}</p>${key ? "" : workBox()}`;
 }

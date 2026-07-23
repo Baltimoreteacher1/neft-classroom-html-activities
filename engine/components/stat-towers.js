@@ -138,7 +138,7 @@ export function renderStatTowers(container, cfg = {}) {
   function rebuildStage() {
     towers.forEach((t) => t.el.remove());
     towers.length = 0;
-    values.forEach((v, i) => {
+    values.forEach((_v, i) => {
       const t = document.createElement("div");
       t.className = "st-tower";
       t.style.left = `calc(50% + ${towerX(i)}px)`;

@@ -18,7 +18,7 @@ const esc = (s) =>
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
 
-const slug = (term) =>
+const _slug = (term) =>
   String(term ?? "")
     .toLowerCase()
     .replace(/\s+/g, "-")
@@ -242,7 +242,7 @@ function popoverize(text, vocab) {
     const e = esc(alias).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const re = new RegExp("\\b(" + e + "s?)\\b", "i");
     if (!re.test(out)) return;
-    out = out.replace(re, (m, g1) => {
+    out = out.replace(re, (_m, g1) => {
       const img = resolveVocabImage(item.term, item.image).replace(/^\//, "../../");
       const termEsAttr = item.termEs ? ` data-term-es="${esc(item.termEs)}"` : "";
       const defEsAttr = item.definitionEs ? ` data-def-es="${esc(item.definitionEs)}"` : "";
@@ -326,7 +326,7 @@ function lessonConfigs() {
 
 /* ---------- section builders ---------- */
 
-function vocabSection(vocab = []) {
+function _vocabSection(vocab = []) {
   if (!vocab.length) return "";
   const cards = vocab
     .map((v) => {
@@ -376,7 +376,7 @@ function choiceOl(choices) {
 // Render the gradual-release worked frame (I Do → We Do → You Do) using real
 // practice problems. The I-Do is fully solved in numbered steps; We-Do/You-Do
 // give the same scaffold with blank work space. Answers live in the Answer Key.
-function workedFrame(worked) {
+function _workedFrame(worked) {
   if (!worked || !worked.iDo) {
     // No usable practice items — fall back to a generic guided frame.
     return `<div class="notes-gradual">
@@ -995,9 +995,9 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
   </article>`;
 }
 
-function notesSection(cfg = {}, worked = null, fillHtml = "") {
-  const launch = cfg.launch || {};
-  const explore = cfg.explore || {};
+function notesSection(cfg = {}, _worked = null, fillHtml = "") {
+  const _launch = cfg.launch || {};
+  const _explore = cfg.explore || {};
 
   // Today's objectives — each shown WITH its label (Content / Language) so the
   // objective type is always clear, not merged into one anonymous line.
@@ -1062,7 +1062,7 @@ function tryItProblem(it, i) {
 </div>`;
 }
 
-function tryItSection(practice = {}, usedStems = new Set()) {
+function _tryItSection(practice = {}, usedStems = new Set()) {
   const items = gatherPractice(practice).filter((it) => it.stem && !usedStems.has(it.stem));
   // Pick a couple that were not used in the guided notes frame.
   const picks = items.slice(-2).length ? items.slice(-2) : items.slice(0, 2);
@@ -1129,7 +1129,7 @@ function distractorWhyHtml(it) {
   const why = it && it.choiceExplanations;
   if (!Array.isArray(why) || !Array.isArray(it.choices)) return "";
   const lines = it.choices
-    .map((c, j) =>
+    .map((_c, j) =>
       j === it.correctIndex || !why[j]
         ? ""
         : `<li><strong>${choiceLetter(j)}) why this is wrong:</strong> <span class="ak-why">${esc(
@@ -1142,7 +1142,7 @@ function distractorWhyHtml(it) {
 
 function answerKeySection(
   practice = {},
-  reflect = {},
+  _reflect = {},
   config = null,
   worked = null,
   usedStems = new Set(),
@@ -2122,7 +2122,7 @@ function missionBanner(cfg) {
 
 function buildPacket(id, cfg, isFlagship, teacher = false) {
   const worked = deriveWorkedSteps(cfg);
-  const usedStems = new Set(worked.usedStems || []);
+  const _usedStems = new Set(worked.usedStems || []);
   const gn = guidedNotesFill(cfg);
   const standard = cfg.standard ? `Standard ${esc(cfg.standard)}` : "";
   const standardPlain = cfg.standard ? `Standard ${cfg.standard}` : "";

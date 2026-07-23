@@ -79,7 +79,7 @@ function modelSvg(a, c) {
   const W = 520,
     padL = 34,
     padT = 30,
-    padR = 14,
+    _padR = 14,
     padB = 16;
   const xColW = 96; // the wide "x" column
   const unitW = Math.max(16, Math.min(30, Math.floor((360 - 8) / Math.max(c, 1))));

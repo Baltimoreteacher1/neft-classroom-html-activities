@@ -40,7 +40,7 @@
   var reduce = false;
   try {
     reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  } catch (e) {}
+  } catch (_e) {}
 
   function muted() {
     return !!window.NT_MUTED;
@@ -65,7 +65,7 @@
       var ta = Date.UTC(+pa[0], +pa[1] - 1, +pa[2]);
       var tb = Date.UTC(+pb[0], +pb[1] - 1, +pb[2]);
       return Math.round((tb - ta) / 86400000);
-    } catch (e) {
+    } catch (_e) {
       return 99;
     }
   }
@@ -97,19 +97,19 @@
           if (!state.badges || typeof state.badges !== "object") state.badges = {};
         }
       }
-    } catch (e) {}
+    } catch (_e) {}
   }
   function persist() {
     try {
       localStorage.setItem(STORE_KEY, JSON.stringify(state));
-    } catch (e) {}
+    } catch (_e) {}
   }
 
   function pageSlug() {
     try {
       var p = location.pathname.replace(/\/index\.html?$/i, "/");
       return p.replace(/^\/+|\/+$/g, "") || "home";
-    } catch (e) {
+    } catch (_e) {
       return "home";
     }
   }
@@ -257,13 +257,13 @@
         var o = JSON.parse(raw);
         if (o && o.name) return String(o.name);
       }
-    } catch (e) {}
+    } catch (_e) {}
     try {
       if (window.NeftSaveResume && typeof window.NeftSaveResume.getTeacherSummary === "function") {
         var sm = window.NeftSaveResume.getTeacherSummary();
         if (sm && sm.studentName) return String(sm.studentName);
       }
-    } catch (e) {}
+    } catch (_e) {}
     return "";
   }
   function initials(name) {
@@ -276,7 +276,7 @@
 
   /* ── Core mutation: award XP + recompute ───────────────────────────────── */
   var nodes = {};
-  function award(xp, reason) {
+  function award(xp, _reason) {
     xp = Math.max(0, Math.floor(xp || 0));
     var beforeLevel = levelForXp(state.xp);
     if (xp > 0) state.xp += xp;
@@ -314,12 +314,12 @@
       t.track = function (event, props) {
         try {
           ingest(event, props || {});
-        } catch (e) {}
+        } catch (_e) {}
         return orig.apply(this, arguments);
       };
       t.__passportTap = true;
       return true;
-    } catch (e) {
+    } catch (_e) {
       return false;
     }
   }
@@ -491,7 +491,7 @@
       if (window.GameFX && typeof window.GameFX.burst === "function") {
         window.GameFX.burst(40, 60);
       }
-    } catch (e) {}
+    } catch (_e) {}
   }
   function showToast(text, cls) {
     try {
@@ -507,7 +507,7 @@
           if (t.parentNode) t.parentNode.removeChild(t);
         }, 400);
       }, 2600);
-    } catch (e) {}
+    } catch (_e) {}
   }
 
   /* ── Boot ──────────────────────────────────────────────────────────────── */

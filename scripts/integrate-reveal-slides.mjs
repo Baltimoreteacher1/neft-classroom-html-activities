@@ -128,8 +128,8 @@ function resolvePlacement(raw) {
 const HTML_BEGIN = "<!-- reveal-slides:begin -->";
 const HTML_END = "<!-- reveal-slides:end -->";
 // Sidebar (thumbnail) markers — kept distinct so each region is replaced cleanly.
-const THUMB_BEGIN = "<!-- reveal-slides-thumbs:begin -->";
-const THUMB_END = "<!-- reveal-slides-thumbs:end -->";
+const _THUMB_BEGIN = "<!-- reveal-slides-thumbs:begin -->";
+const _THUMB_END = "<!-- reveal-slides-thumbs:end -->";
 // Marker storing the deck's ORIGINAL totalSlides/slideTitles so re-runs restore
 // the base before re-injecting (so the patched constants never compound).
 const STATE_BEGIN = "<!-- reveal-slides-state:begin ";
@@ -275,7 +275,7 @@ function stripExistingHtmlInjection(html) {
   }
   // 5. Renumber the remaining (base) slide-body ids 1..N in document order.
   let n = 0;
-  out = out.replace(/(<div class="slide-body[^"]*"\s+id=")slide-\d+(")/g, (full, pre, post) => {
+  out = out.replace(/(<div class="slide-body[^"]*"\s+id=")slide-\d+(")/g, (_full, pre, post) => {
     n += 1;
     return `${pre}slide-${n}${post}`;
   });
@@ -457,8 +457,8 @@ function interleaveRebuild(
   notesMatch,
   insertAfter,
   endGroups,
-  reveal,
-  id,
+  _reveal,
+  _id,
   baseNavInner,
 ) {
   // Parse base teacher notes map (keyed by original 1-based slide number).

@@ -452,7 +452,7 @@ export function regenerate(item, opts = {}) {
   let gen;
   try {
     gen = generatorFor(item, difficulty);
-  } catch (e) {
+  } catch (_e) {
     return null; // any parsing surprise ⇒ decline rather than risk a wrong answer
   }
   if (!gen || gen.answer == null) return null;

@@ -44,7 +44,7 @@ function themeNoun(config) {
   return theme;
 }
 
-function hasType(tier, type) {
+function _hasType(tier, type) {
   return tier.some((p) => p?.type === type);
 }
 
@@ -58,7 +58,7 @@ function stemExists(allProblems, stem) {
   });
 }
 
-function makeMc(config, stem, choices, correctIndex, explanation) {
+function makeMc(_config, stem, choices, correctIndex, explanation) {
   return {
     type: "multiple-choice",
     stem,
@@ -68,7 +68,7 @@ function makeMc(config, stem, choices, correctIndex, explanation) {
   };
 }
 
-function makeDragSort(config, instructions, items, categories) {
+function makeDragSort(_config, instructions, items, categories) {
   return {
     type: "drag-sort",
     instructions,
@@ -77,7 +77,7 @@ function makeDragSort(config, instructions, items, categories) {
   };
 }
 
-function makeMatching(config, stem, pairs) {
+function makeMatching(_config, stem, pairs) {
   return {
     type: "matching",
     stem,

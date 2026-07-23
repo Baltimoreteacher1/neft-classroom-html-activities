@@ -27,7 +27,7 @@ export function isTeacherModeActive() {
 
 let activeScreenStream = null;
 let screenOverlayEl = null;
-let annotationCanvasEl = null;
+let _annotationCanvasEl = null;
 let isAnnotating = false;
 let isLaserPointer = false;
 
@@ -348,7 +348,13 @@ export function mountPresentWidget({ onPresentToggle, container } = {}) {
   });
 }
 
-export function initPresentMode({ app, config, phaseConfigs, phaseContainer, state }) {
+export function initPresentMode({
+  app,
+  config: _config,
+  phaseConfigs,
+  phaseContainer,
+  state,
+}) {
   let active = false;
   let slideEls = [];
   let current = 0;

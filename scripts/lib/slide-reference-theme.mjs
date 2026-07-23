@@ -125,11 +125,10 @@ export function refTitleOpener(ctx) {
     contentObj,
     themeEmoji,
     timeEstimate,
-    googleSlidesUrl,
   } = ctx;
 
   // Extract lesson number cleanly from lessonId (e.g. "8-1-flagship" → "1")
-  const lessonNum = String(lessonId).split("-")[1] || sessionNum;
+  const _lessonNum = String(lessonId).split("-")[1] || sessionNum;
 
   return `
     <div class="ref-title-opener-v2">

@@ -18,7 +18,7 @@ export function mountReadingProgress() {
   // A rail inside an embedded frame would double the parent lesson's rail.
   try {
     if (window.self !== window.top) return;
-  } catch (e) {
+  } catch (_e) {
     return;
   }
   if (typeof document === "undefined" || !document.body) return;
@@ -71,7 +71,7 @@ export function mountReadingProgress() {
   try {
     const mo = new MutationObserver(onScroll);
     mo.observe(document.body, { childList: true, subtree: true });
-  } catch (e) {}
+  } catch (_e) {}
 
   // Initial paint (content may still be settling — recompute shortly after too).
   compute();

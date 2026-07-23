@@ -93,7 +93,7 @@
       w2 = 3,
       h2 = 3;
     var composite = false;
-    var active = 1;
+    var _active = 1;
 
     el.innerHTML =
       "<h4>" +
@@ -214,7 +214,7 @@
       return g;
     }
 
-    function hexToRgba(hex, a) {
+    function _hexToRgba(hex, a) {
       var m = /^#?([0-9a-f]{6})$/i.exec(hex.trim());
       if (!m) return hex;
       var n = parseInt(m[1], 16);

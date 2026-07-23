@@ -62,7 +62,7 @@
       if (scroll) {
         try {
           shell.scrollIntoView({ behavior: "smooth", block: "start" });
-        } catch (e) {}
+        } catch (_e) {}
       }
     }
 

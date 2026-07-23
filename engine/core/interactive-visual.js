@@ -379,7 +379,7 @@ export function mountInteractiveVisuals(root) {
     let cfg = {};
     try {
       cfg = JSON.parse(host.dataset.config || "{}");
-    } catch (e) {
+    } catch (_e) {
       cfg = {};
     }
     Promise.resolve()

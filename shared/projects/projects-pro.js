@@ -34,24 +34,24 @@
 
     try {
       buildReadBar();
-    } catch (e) {}
+    } catch (_e) {}
     try {
       buildBackToTop();
-    } catch (e) {}
+    } catch (_e) {}
     try {
       buildRibbon();
-    } catch (e) {}
+    } catch (_e) {}
     try {
       wireKeyboardNav();
-    } catch (e) {}
+    } catch (_e) {}
     if (!reduceMotion) {
       try {
         wireReveal();
-      } catch (e) {}
+      } catch (_e) {}
     }
     try {
       guardBodyClass();
-    } catch (e) {}
+    } catch (_e) {}
   }
 
   /* --- 0. Keep the pro layer alive across level switches ------------------ */

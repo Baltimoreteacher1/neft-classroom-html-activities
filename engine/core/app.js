@@ -462,7 +462,7 @@ function mountClassRoster(screen, nameInput, periodInput, startBtn) {
         return;
       }
     }
-  } catch (e) {
+  } catch (_e) {
     /* malformed ?class= — fall through to the other sources */
   }
 
@@ -1205,7 +1205,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
           try {
             frame.contentWindow.focus();
             frame.contentWindow.print();
-          } catch (e) {
+          } catch (_e) {
             window.open(meta.full, "_blank", "noopener");
           }
         });
@@ -1266,7 +1266,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
 
       // Underline + bold the lesson's key math words wherever they appear in an
       // objective, so English learners can spot the academic vocabulary.
-      const highlightKeyWords = (text) => {
+      const _highlightKeyWords = (text) => {
         const terms = (Array.isArray(config.vocabulary) ? config.vocabulary : [])
           .map((v) => v && v.term)
           .filter(Boolean)
@@ -1337,7 +1337,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       let objStore = {};
       try {
         objStore = JSON.parse(localStorage.getItem(objKey) || "{}") || {};
-      } catch (e) {}
+      } catch (_e) {}
       el.querySelectorAll("[data-obj-check]").forEach((cb) => {
         const k = cb.getAttribute("data-obj-check");
         cb.checked = !!objStore[k];
@@ -1345,7 +1345,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
           objStore[k] = cb.checked;
           try {
             localStorage.setItem(objKey, JSON.stringify(objStore));
-          } catch (e) {}
+          } catch (_e) {}
         });
       });
 
@@ -1639,7 +1639,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
   return app;
 }
 
-function buildSidebar(config, state, phaseConfigs) {
+function buildSidebar(config, state, _phaseConfigs) {
   const sidebar = document.createElement("nav");
   sidebar.className = "sidebar";
   sidebar.setAttribute("role", "navigation");
@@ -1796,7 +1796,7 @@ export const UNIT_CULMINATING_PROJECT = {
   10: "/math/unit-10/projects/",
 };
 
-function buildLessonHero(config, state, phaseConfigs) {
+function buildLessonHero(config, _state, phaseConfigs) {
   const hero = document.createElement("header");
   hero.className = "lesson-hero";
   hero.setAttribute("aria-label", "Lesson overview");

@@ -34,7 +34,7 @@ function buildExportHtml(state, config) {
   const accuracy = s.totalAttempts > 0 ? Math.round((s.totalCorrect / s.totalAttempts) * 100) : 100;
 
   // Collect responses by phase
-  const phaseNames = ["Launch", "Explore", "Practice", "Connect", "Reflect"];
+  const _phaseNames = ["Launch", "Explore", "Practice", "Connect", "Reflect"];
 
   let responseSections = "";
 

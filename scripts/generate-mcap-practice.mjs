@@ -69,7 +69,7 @@ const choiceLetter = (i) => String.fromCharCode(65 + i);
 const choiceBullet = (type) => (type === "multiselect" ? "□" : "○");
 
 // ── small helpers ─────────────────────────────────────────────────────────────
-const txt = (text, opts = {}) =>
+const _txt = (text, opts = {}) =>
   new TextRun({ text, size: 22, color: INK, font: "Calibri", ...opts });
 
 function noBorders() {
@@ -158,7 +158,7 @@ function titleBanner() {
 // header row: Lesson label (left) + clearly separated CCSS tag (right)
 function headerRow(data) {
   const lessonText = data.revealLabel ? `Lesson ${data.revealLabel}` : "MCAP-Style Practice";
-  const ccssText = data.ccss ? `CCSS: ${data.ccss}` : "CCSS: —";
+  const _ccssText = data.ccss ? `CCSS: ${data.ccss}` : "CCSS: —";
   return new Table({
     width: { size: 100, type: WidthType.PERCENTAGE },
     borders: boxBorders(HEADER_BORDER, 6),

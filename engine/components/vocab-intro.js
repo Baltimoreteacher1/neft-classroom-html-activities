@@ -14,7 +14,7 @@ function sayItFor(en, es, face) {
   face.append(row);
 }
 
-function esc(s) {
+function _esc(s) {
   const d = document.createElement("div");
   d.textContent = s ?? "";
   return d.innerHTML;

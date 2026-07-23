@@ -30,7 +30,7 @@
         hour: "numeric",
         minute: "2-digit",
       });
-    } catch (e) {
+    } catch (_e) {
       return iso;
     }
   }
@@ -417,7 +417,7 @@
       global.setTimeout(function () {
         global.URL.revokeObjectURL(url);
       }, 1000);
-    } catch (e) {
+    } catch (_e) {
       /* ignore */
     }
   }

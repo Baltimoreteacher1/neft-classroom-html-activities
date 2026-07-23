@@ -22,14 +22,14 @@
   function load() {
     try {
       return JSON.parse(localStorage.getItem(STORE_KEY)) || {};
-    } catch (e) {
+    } catch (_e) {
       return {};
     }
   }
   function save(state) {
     try {
       localStorage.setItem(STORE_KEY, JSON.stringify(state));
-    } catch (e) {
+    } catch (_e) {
       /* quota / private mode — ignore, feature degrades silently */
     }
   }
@@ -46,7 +46,7 @@
     try {
       var v = (localStorage.getItem("nt-teacher-mode") || "").toLowerCase();
       return v === "1" || v === "true" || v === "on" || v === "yes";
-    } catch (e) {
+    } catch (_e) {
       return false;
     }
   }
@@ -73,7 +73,7 @@
       var ret = orig.apply(this, arguments);
       try {
         hook.apply(null, arguments);
-      } catch (e) {
+      } catch (_e) {
         /* never let a hook break the underlying action */
       }
       return ret;
@@ -514,7 +514,7 @@
     try {
       commitStepTime();
       save(state);
-    } catch (e) {}
+    } catch (_e) {}
   });
 
   if (document.readyState === "loading") {

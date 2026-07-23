@@ -54,7 +54,7 @@
   var googleSlidesLegacyUrls = {};
   var lessonStandards = {};
   var searchIndex = null;
-  var searchDocsById = {};
+  var _searchDocsById = {};
   var activeFilter = FILTER_ALL;
   var teacherMode = false;
   var progress = {};
@@ -83,7 +83,7 @@
     try {
       var raw = localStorage.getItem(STORAGE_PROGRESS);
       progress = raw ? JSON.parse(raw) : {};
-    } catch (e) {
+    } catch (_e) {
       progress = {};
     }
   }
@@ -91,7 +91,7 @@
   function saveProgress() {
     try {
       localStorage.setItem(STORAGE_PROGRESS, JSON.stringify(progress));
-    } catch (e) {}
+    } catch (_e) {}
   }
 
   function parseProgressKey(key) {
@@ -136,7 +136,7 @@
       }
       if (saved === "0" || saved === "false") return false;
       if (saved === "1" || saved === "true") return true;
-    } catch (e) {}
+    } catch (_e) {}
     // Public-safe default: Student Mode. /curriculum/ is a public page, so it must
     // not expose teacher-only tools (Slides, Forms, dashboards, answer keys) by
     // default. Teachers opt in via the toggle or ?teacher=1 (persisted thereafter).
@@ -152,7 +152,7 @@
         localStorage.setItem(STORAGE_PIN_ROLE, role);
       }
       // on && !role: leave an existing role from requestTeacher alone
-    } catch (e) {}
+    } catch (_e) {}
   }
 
   function matchTeacherPin(pin) {
@@ -644,7 +644,7 @@
 
   function wrapRenderSearchResults() {
     if (!hubApi || hubApi._enhancedSearch) return;
-    var original = hubApi.renderSearchResults;
+    var _original = hubApi.renderSearchResults;
 
     hubApi.renderSearchResults = function (q) {
       var filtered = filterUnitsData(hubApi.unitsData, q, activeFilter);
@@ -908,11 +908,11 @@
         try {
           w.focus();
           w.print();
-        } catch (e) {
+        } catch (_e) {
           /* cross-origin or blocked — manual print */
         }
       });
-    } catch (e) {
+    } catch (_e) {
       /* window handle not scriptable — manual print */
     }
   }
@@ -1888,7 +1888,7 @@
       var raw = localStorage.getItem(RECENT_KEY);
       var arr = raw ? JSON.parse(raw) : [];
       return Array.isArray(arr) ? arr : [];
-    } catch (e) {
+    } catch (_e) {
       return [];
     }
   }
@@ -1896,7 +1896,7 @@
   function saveRecent(arr) {
     try {
       localStorage.setItem(RECENT_KEY, JSON.stringify(arr.slice(0, 6)));
-    } catch (e) {
+    } catch (_e) {
       /* storage unavailable — non-fatal */
     }
   }

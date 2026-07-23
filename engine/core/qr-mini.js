@@ -79,8 +79,8 @@ function countBits(n) {
 function getMaskFunc(mask) {
   const fns = [
     (i, j) => (i + j) % 2 === 0,
-    (i, j) => i % 2 === 0,
-    (i, j) => j % 3 === 0,
+    (i, _j) => i % 2 === 0,
+    (_i, j) => j % 3 === 0,
     (i, j) => (i + j) % 3 === 0,
     (i, j) => (Math.floor(i / 2) + Math.floor(j / 3)) % 2 === 0,
     (i, j) => ((i * j) % 2) + ((i * j) % 3) === 0,

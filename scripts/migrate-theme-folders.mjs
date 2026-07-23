@@ -218,7 +218,7 @@ function runMigration() {
       const srcWithTrail = "/" + srcRel + "/";
       const destWithTrail = "/" + destRel + "/";
       const srcNoTrail = "/" + srcRel;
-      const destNoTrail = "/" + destRel;
+      const _destNoTrail = "/" + destRel;
 
       if (!existingSources.has(srcWithTrail)) {
         existingRedirects.push({

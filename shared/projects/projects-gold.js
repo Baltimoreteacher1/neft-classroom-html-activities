@@ -44,7 +44,7 @@
     try {
       var v = (localStorage.getItem("nt-teacher-mode") || "").toLowerCase();
       return v === "1" || v === "true" || v === "on" || v === "yes";
-    } catch (e) {
+    } catch (_e) {
       return false;
     }
   }
@@ -61,28 +61,28 @@
 
     try {
       tagReadouts();
-    } catch (e) {}
+    } catch (_e) {}
     try {
       syncPressedStates();
-    } catch (e) {}
+    } catch (_e) {}
     try {
       gateConfetti();
-    } catch (e) {}
+    } catch (_e) {}
     try {
       focusOnStepChange();
-    } catch (e) {}
+    } catch (_e) {}
     try {
       wrapWideTables();
-    } catch (e) {}
+    } catch (_e) {}
     try {
       clampNumberInputs();
-    } catch (e) {}
+    } catch (_e) {}
     try {
       gateTeacherConsole();
-    } catch (e) {}
+    } catch (_e) {}
     try {
       initLevelLock();
-    } catch (e) {}
+    } catch (_e) {}
   }
 
   /* --- 1. Announce calculator feedback to screen readers ------------------ */
@@ -151,13 +151,13 @@
       var before = [];
       try {
         before = Array.prototype.slice.call(document.body.children);
-      } catch (e) {}
+      } catch (_e) {}
       var out = orig.apply(this, arguments);
       try {
         Array.prototype.forEach.call(document.body.children, function (node) {
           if (before.indexOf(node) === -1) node.classList.add("gold-confetti");
         });
-      } catch (e) {}
+      } catch (_e) {}
       return out;
     };
     window.addEventListener("beforeprint", function () {
@@ -165,7 +165,7 @@
         document.querySelectorAll(".gold-confetti").forEach(function (node) {
           node.remove();
         });
-      } catch (e) {}
+      } catch (_e) {}
     });
   }
 
@@ -181,7 +181,7 @@
           if (!panel.hasAttribute("tabindex")) panel.setAttribute("tabindex", "-1");
           panel.focus({ preventScroll: true });
         }
-      } catch (e) {}
+      } catch (_e) {}
       return out;
     };
   }
@@ -213,7 +213,7 @@
       var ok = false;
       try {
         ok = isTeacherMode() || sessionStorage.getItem(SESSION_KEY) === "1";
-      } catch (e) {}
+      } catch (_e) {}
       if (!ok) {
         var pin = window.prompt("Teacher PIN required to open the answer console:");
         if (pin === null) return; // cancelled
@@ -223,7 +223,7 @@
         }
         try {
           sessionStorage.setItem(SESSION_KEY, "1");
-        } catch (e) {}
+        } catch (_e) {}
       }
       return orig.apply(this, arguments);
     };
@@ -238,7 +238,7 @@
     try {
       var value = parseInt(localStorage.getItem(levelStorageKey()), 10);
       return value === 0 || value === 1 || value === 2 ? value : null;
-    } catch (e) {
+    } catch (_e) {
       return null;
     }
   }
@@ -268,7 +268,7 @@
   function persistLevel(level) {
     try {
       localStorage.setItem(levelStorageKey(), String(level));
-    } catch (e) {}
+    } catch (_e) {}
   }
 
   function applyLevel(level) {
