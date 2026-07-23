@@ -377,6 +377,7 @@
         </div>
         <button id="printAllBtn" type="button" class="ghost">🖨 Print all</button>
         <button id="csvBtn" type="button" class="ghost">⬇ Export CSV</button>
+        <button id="seedBtn" type="button" class="ghost">⚡ Seed from Intervention Radar</button>
         <button id="sampleBtn" type="button" class="ghost">Sample data</button>
       </div>
 
@@ -1087,10 +1088,167 @@
         render();
       }
 
+      /* ---------- seed from Intervention Radar (optional, local-first) ---------- */
+      var RADAR_KEY = "neft.teacher.key";
+      // find the first array-valued property of a parsed response object
+      function firstArray(obj) {
+        if (Array.isArray(obj)) return obj;
+        if (!obj || typeof obj !== "object") return [];
+        var keys = Object.keys(obj);
+        for (var i = 0; i < keys.length; i++) {
+          if (Array.isArray(obj[keys[i]])) return obj[keys[i]];
+        }
+        return [];
+      }
+      function signalLabel(sig) {
+        switch (sig) {
+          case "misconception":
+            return "misconception";
+          case "hint-exhausted":
+            return "hint-exhausted";
+          case "low-score":
+            return "low-score";
+          case "struggle":
+            return "struggle";
+          default:
+            return sig ? String(sig) : "signal";
+        }
+      }
+      function seedFromRadar() {
+        var key = localStorage.getItem(RADAR_KEY);
+        if (!key) {
+          key = prompt("Enter your teacher key (used by Intervention Radar):", "");
+          if (key == null) return;
+          key = key.trim();
+          if (!key) return;
+          try {
+            localStorage.setItem(RADAR_KEY, key);
+          } catch (e) {
+            /* non-fatal: still try the fetch with the entered key */
+          }
+        }
+        say("Contacting Intervention Radar…", "");
+        fetch("/api/progress/struggles", { headers: { "x-teacher-key": key } })
+          .then(function (res) {
+            if (!res.ok) {
+              if (res.status === 401) {
+                try {
+                  localStorage.removeItem(RADAR_KEY);
+                } catch (e) {
+                  /* ignore */
+                }
+                say("Teacher key was rejected — try again.", "err");
+              } else if (res.status === 503) {
+                say("Radar backend isn't configured.", "err");
+              } else {
+                say("Couldn't reach Intervention Radar (status " + res.status + ").", "err");
+              }
+              return null;
+            }
+            return res.json();
+          })
+          .then(function (data) {
+            if (data == null) return; // error already reported
+            var rows = firstArray(data);
+            // aggregate by student name
+            var byStudent = {};
+            rows.forEach(function (row) {
+              var name = row && row.studentName ? String(row.studentName).trim() : "";
+              if (!name) return;
+              var k = name.toLowerCase();
+              if (!byStudent[k]) {
+                byStudent[k] = { name: name, total: 0, tally: {}, standards: {} };
+              }
+              var agg = byStudent[k];
+              agg.total += 1;
+              var lbl = signalLabel(row.signal);
+              agg.tally[lbl] = (agg.tally[lbl] || 0) + 1;
+              if (row.standard) agg.standards[String(row.standard).trim()] = true;
+            });
+
+            // existing Active/Monitoring names to dedup against (case-insensitive)
+            var existing = {};
+            records.forEach(function (r) {
+              if (r.status === "Active" || r.status === "Monitoring") {
+                existing[
+                  String(r.student || "")
+                    .trim()
+                    .toLowerCase()
+                ] = true;
+              }
+            });
+
+            var today = new Date().toISOString().slice(0, 10);
+            var seeded = 0,
+              skipped = 0;
+            Object.keys(byStudent).forEach(function (k) {
+              if (existing[k]) {
+                skipped += 1;
+                return;
+              }
+              var agg = byStudent[k];
+              var parts = Object.keys(agg.tally).map(function (t) {
+                return agg.tally[t] + " " + t;
+              });
+              var concern = "Radar: " + agg.total + " signal" + (agg.total === 1 ? "" : "s");
+              if (parts.length) concern += " (" + parts.join(", ") + ")";
+              var stds = Object.keys(agg.standards);
+              if (stds.length) concern += " · standards: " + stds.join(", ");
+              // reuse the canonical record shape + id generator + persistence
+              records.push({
+                id: uid(),
+                student: agg.name,
+                grade: "6",
+                tier: "Tier 2",
+                area: "Math",
+                concern: concern,
+                baseline: "",
+                goal: "",
+                unit: "% correct",
+                strategy: "",
+                frequency: "",
+                startDate: today,
+                reviewDate: "",
+                status: "Monitoring",
+                points: [],
+                notes:
+                  "Auto-seeded from Intervention Radar — review, then set baseline, goal, and strategy.",
+              });
+              seeded += 1;
+            });
+
+            if (!seeded) {
+              save(records);
+              render();
+              say(
+                skipped
+                  ? "No new students — " + skipped + " already logged."
+                  : "No flagged students to seed.",
+                "ok",
+              );
+              return;
+            }
+            save(records);
+            render();
+            say(
+              "Seeded " +
+                seeded +
+                " student" +
+                (seeded === 1 ? "" : "s") +
+                (skipped ? " (skipped " + skipped + " already logged)." : "."),
+              "ok",
+            );
+          })
+          .catch(function () {
+            say("Couldn't reach Intervention Radar — check your connection and try again.", "err");
+          });
+      }
+
       /* ---------- wire up ---------- */
       document.getElementById("newBtn").addEventListener("click", function () {
         openForm(null);
       });
+      document.getElementById("seedBtn").addEventListener("click", seedFromRadar);
       document.getElementById("cancelBtn").addEventListener("click", closeForm);
       document.getElementById("search").addEventListener("input", render);
       document.getElementById("filterStatus").addEventListener("change", render);

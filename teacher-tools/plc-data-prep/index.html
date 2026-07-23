@@ -417,6 +417,11 @@
     <div class="wrap">
       <div class="bar no-print">
         <button id="btnNew" type="button">＋ New assessment</button>
+        <button id="btnImport" type="button" class="ghost">⬇ Import from gradebook</button>
+        <div class="field grow" id="importPickWrap" style="display: none">
+          <label for="importPick">Gradebook assessment</label>
+          <select id="importPick" aria-label="Choose gradebook assessment to import"></select>
+        </div>
         <div class="field grow">
           <label for="pick">Assessment</label>
           <select id="pick" aria-label="Choose saved assessment"></select>
@@ -971,6 +976,112 @@
         msg(note, "ok");
       }
 
+      // ---------- gradebook import (optional; local-first, fetch only on click) ----------
+      var TEACHER_KEY_LS = "neft.teacher.key";
+      var importGroups = {}; // activity title -> [records]
+
+      function importFromGradebook() {
+        var key = localStorage.getItem(TEACHER_KEY_LS);
+        if (!key) {
+          var entered = prompt("Enter your teacher key to import from the gradebook:");
+          if (entered == null) return; // cancelled — abort quietly
+          key = String(entered).trim();
+          if (!key) return; // empty — abort quietly
+          localStorage.setItem(TEACHER_KEY_LS, key);
+        }
+        msg("Loading gradebook…", "");
+        fetch("/api/progress/grades?format=json", { headers: { "x-teacher-key": key } })
+          .then(function (res) {
+            if (!res.ok) {
+              if (res.status === 401) {
+                localStorage.removeItem(TEACHER_KEY_LS);
+                msg("Teacher key was rejected — try again.", "err");
+              } else if (res.status === 503) {
+                msg("Gradebook backend isn't configured.", "err");
+              } else {
+                msg("Couldn't reach the gradebook (error " + res.status + ").", "err");
+              }
+              return null;
+            }
+            return res.json();
+          })
+          .then(function (data) {
+            if (!data) return; // error already reported
+            if (!data.ok || !Array.isArray(data.records)) {
+              msg("Gradebook returned no usable data.", "err");
+              return;
+            }
+            buildImportPicker(data.records);
+          })
+          .catch(function () {
+            msg("Couldn't reach the gradebook — check your connection.", "err");
+          });
+      }
+
+      function buildImportPicker(records) {
+        importGroups = {};
+        records.forEach(function (r) {
+          var act = r && r.activity != null ? String(r.activity).trim() : "";
+          if (!act) return;
+          if (!importGroups[act]) importGroups[act] = [];
+          importGroups[act].push(r);
+        });
+        var acts = Object.keys(importGroups).sort();
+        if (!acts.length) {
+          msg("No assessments found in the gradebook yet.", "err");
+          return;
+        }
+        var sel = $("importPick");
+        sel.innerHTML = "";
+        var ph = document.createElement("option");
+        ph.value = "";
+        ph.textContent = "— choose an assessment to import —";
+        sel.appendChild(ph);
+        acts.forEach(function (act) {
+          var o = document.createElement("option");
+          o.value = act;
+          o.textContent = act + " (" + importGroups[act].length + " students)";
+          sel.appendChild(o);
+        });
+        $("importPickWrap").style.display = "";
+        sel.focus();
+        msg(
+          "Loaded " + acts.length + " assessment(s) from the gradebook. Pick one to import.",
+          "ok",
+        );
+      }
+
+      function applyImport(act) {
+        var recs = importGroups[act];
+        if (!recs || !recs.length) return;
+        // create a NEW assessment so existing manual work is never clobbered
+        var prev = current();
+        var thr = prev && prev.threshold != null ? prev.threshold : 70; // keep current threshold
+        var a = blankAssessment();
+        a.name = act;
+        a.max = 100; // gradebook scores are percents 0–100
+        a.threshold = thr;
+        a.date = new Date().toISOString().slice(0, 10);
+        a.students = recs.map(function (r) {
+          var sc = r && r.score != null ? num(r.score) : null; // null → unscored (kept, not dropped)
+          return { name: r && r.name != null ? String(r.name) : "", score: sc };
+        });
+        store.push(a);
+        currentId = a.id;
+        save();
+        // reuse the same persistence/analysis path the manual "Parse roster" button uses
+        fillSuggestions(false);
+        renderAll();
+        $("fRoster").value = a.students
+          .map(function (s) {
+            return s.name + (s.score != null ? ", " + s.score : ", ");
+          })
+          .join("\n");
+        $("importPick").value = "";
+        $("importPickWrap").style.display = "none";
+        msg("Imported " + a.students.length + " students from “" + act + "”.", "ok");
+      }
+
       // ---------- CSV ----------
       function csvCell(v) {
         var s = String(v == null ? "" : v);
@@ -1127,6 +1238,11 @@
 
       function initEvents() {
         $("btnNew").addEventListener("click", newAssessment);
+        $("btnImport").addEventListener("click", importFromGradebook);
+        $("importPick").addEventListener("change", function () {
+          var act = $("importPick").value;
+          if (act) applyImport(act);
+        });
         $("btnSample").addEventListener("click", sampleData);
         $("btnParse").addEventListener("click", parseRoster);
         $("btnCsv").addEventListener("click", exportCsv);

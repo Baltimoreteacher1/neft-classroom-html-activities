@@ -172,6 +172,17 @@
         font-size: 12px;
         border-radius: 8px;
       }
+      .pn-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-items: flex-start;
+      }
+      .pn-log[disabled] {
+        color: var(--good);
+        cursor: default;
+        opacity: 1;
+      }
       .cols {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -227,9 +238,9 @@
       }
     </style>
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
   <body>
     <header>
       <h1>👪 Parent Updates <small>Bilingual family progress notes · teacher-only</small></h1>
@@ -353,7 +364,8 @@
           `<article class="parent-note"><header class="pn-head">` +
           `<div><strong>${esc(s.name || "Student")}</strong> · <span class="pn-class">${esc(s.section || "")}</span>` +
           ` <span class="pn-meta">avg ${avg} · ${s.completed} done</span></div>` +
-          `<button class="pn-print" type="button">🖨 Print this</button></header>` +
+          `<div class="pn-actions"><button class="pn-print pn-log" type="button" data-student="${esc(s.name || "Student")}">＋ Log contact</button>` +
+          `<button class="pn-print" type="button">🖨 Print this</button></div></header>` +
           `<div class="cols"><div class="lang"><span class="flag">🇺🇸 English</span>` +
           `<h2>How ${fn} is doing</h2><p>${fn} ${b.en}${s.average == null ? "" : ` (average ${avg}).`}</p>` +
           `<h3>Strengths</h3>${strEn}<h3>Let's practice at home</h3>${prEn}</div>` +
@@ -459,7 +471,8 @@
           `<article class="parent-note"><header class="pn-head">` +
           `<div><strong>${esc(s.studentName || "Student")}</strong> · <span class="pn-class">${esc(s.section || "")}</span>` +
           ` <span class="pn-meta">weekly digest · ${acts.length} activit${acts.length === 1 ? "y" : "ies"}</span></div>` +
-          `<button class="pn-print" type="button">🖨 Print this</button></header>` +
+          `<div class="pn-actions"><button class="pn-print pn-log" type="button" data-student="${esc(s.studentName || "Student")}">＋ Log contact</button>` +
+          `<button class="pn-print" type="button">🖨 Print this</button></div></header>` +
           `<div class="cols"><div class="lang"><span class="flag">🇺🇸 English</span>` +
           `<h2>${fn}'s week in math</h2><p>${fn} ${b.en}${avgText}</p>` +
           `<h3>What we worked on</h3>${workedEn}` +
@@ -606,7 +619,7 @@
       });
       $("#notes").addEventListener("click", (e) => {
         const btn = e.target.closest(".pn-print");
-        if (!btn) return;
+        if (!btn || btn.classList.contains("pn-log")) return;
         const note = btn.closest(".parent-note");
         document
           .querySelectorAll(".parent-note")
@@ -614,6 +627,47 @@
         note.classList.add("print-target");
         document.body.classList.add("printing-one");
         window.print();
+      });
+
+      /* ---- log a shared note into the Parent Contact Log (same-origin localStorage) ---- */
+      const CONTACT_LOG_KEY = "nt-parent-contact-log-v1";
+      const todayISO = () => {
+        const d = new Date();
+        const p = (n) => String(n).padStart(2, "0");
+        return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+      };
+      $("#notes").addEventListener("click", (e) => {
+        const btn = e.target.closest(".pn-log");
+        if (!btn || btn.disabled) return;
+        const student = btn.getAttribute("data-student") || "Student";
+        let log = [];
+        try {
+          const parsed = JSON.parse(localStorage.getItem(CONTACT_LOG_KEY));
+          if (Array.isArray(parsed)) log = parsed;
+        } catch (_) {
+          log = [];
+        }
+        log.push({
+          id: "pu" + Date.now() + "-" + Math.floor(Math.random() * 1e6),
+          date: todayISO(),
+          student,
+          guardian: "",
+          method: "Note home",
+          reason: "Academic",
+          summary: "Progress note shared (strengths + practice focus).",
+          followUp: false,
+          followUpDate: "",
+          outcome: "",
+        });
+        try {
+          localStorage.setItem(CONTACT_LOG_KEY, JSON.stringify(log));
+        } catch (_) {
+          /* storage full/blocked — keep UI responsive, do not throw */
+        }
+        btn.textContent = "✓ Logged";
+        btn.disabled = true;
+        $("#msg").textContent = "Logged to Parent Contact Log.";
+        $("#msg").className = "ok";
       });
 
       if (localStorage.getItem(LS_KEY)) {
