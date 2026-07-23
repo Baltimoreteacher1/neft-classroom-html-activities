@@ -2062,6 +2062,160 @@ function renderNoticeWonderSupport(host, support, config, fieldRoot = host) {
   });
 }
 
+function renderWarmupSection(el, state, config) {
+  const warmup = config.warmup;
+  if (!warmup || !Array.isArray(warmup.questions) || warmup.questions.length === 0) return;
+
+  const card = document.createElement("div");
+  card.className = "card card-warmup";
+  card.style.cssText = "margin: 16px 0 24px; border: 2px solid #0f6d78; border-radius: 16px; padding: 20px; background: #ffffff; box-shadow: 0 4px 16px rgba(15,109,120,0.1);";
+
+  const prevTitle = warmup.prevLessonTitle ? ` (${warmup.prevLessonTitle})` : "";
+  card.innerHTML = `
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; border-bottom:1px solid #e2e8f0; padding-bottom:10px;">
+      <div>
+        <span style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; color:#0f6d78; background:#e6f4f6; padding:3px 8px; border-radius:6px;">Warmup</span>
+        <h3 style="margin:4px 0 0; font-size:20px; font-weight:800; color:#14223a;">⚡ Warmup: Previous Lesson Check${esc(prevTitle)}</h3>
+      </div>
+      <div id="warmupScoreBadge" style="font-size:13px; font-weight:800; color:#0f6d78; background:#f0fdf4; border:1px solid #bbf7d0; padding:6px 12px; border-radius:10px;">
+        ${warmup.questions.length} Questions · Autograded
+      </div>
+    </div>
+    <p style="margin:0 0 16px; font-size:14.5px; color:#56627a;">
+      Answer these 3–4 warmup questions reviewing previous lesson material before starting today's lesson.
+    </p>
+  `;
+
+  const questionsContainer = document.createElement("div");
+  questionsContainer.className = "warmup-questions-list";
+  questionsContainer.style.cssText = "display:flex; flex-direction:column; gap:16px;";
+
+  const savedState = state.getResponse(0, "warmup_answers") || {};
+  const total = warmup.questions.length;
+
+  warmup.questions.forEach((q, qIdx) => {
+    const qBox = document.createElement("div");
+    qBox.className = "warmup-question-card";
+    qBox.style.cssText = "border:1px solid #cbd5e1; border-radius:12px; padding:16px; background:#f8fafc;";
+
+    const qTitle = document.createElement("div");
+    qTitle.style.cssText = "font-weight:700; font-size:15px; color:#0f172a; margin-bottom:10px;";
+    qTitle.innerHTML = `<span style="color:#0f6d78; font-weight:800; margin-right:6px;">Q${qIdx + 1}.</span> ${esc(q.stem)}`;
+    qBox.append(qTitle);
+
+    const choicesGroup = document.createElement("div");
+    choicesGroup.style.cssText = "display:flex; flex-direction:column; gap:8px;";
+
+    const feedbackBox = document.createElement("div");
+    feedbackBox.className = "warmup-fb-box";
+    feedbackBox.style.cssText = "display:none; font-size:13.5px; padding:10px 12px; border-radius:8px; margin-top:10px;";
+
+    const selectedIdx = savedState[qIdx];
+
+    q.choices.forEach((choiceText, cIdx) => {
+      const choiceLabel = document.createElement("label");
+      choiceLabel.style.cssText = "display:flex; align-items:center; gap:10px; padding:9px 12px; border:1px solid #cbd5e1; border-radius:8px; background:#ffffff; cursor:pointer; font-size:14px; transition:all 0.15s;";
+
+      const radio = document.createElement("input");
+      radio.type = "radio";
+      radio.name = `warmup_q_${qIdx}`;
+      radio.value = cIdx;
+      if (selectedIdx === cIdx) radio.checked = true;
+
+      radio.addEventListener("change", () => {
+        savedState[qIdx] = cIdx;
+        state.saveResponse(0, "warmup_answers", savedState);
+      });
+
+      choiceLabel.append(radio);
+      const span = document.createElement("span");
+      span.innerHTML = esc(choiceText);
+      choiceLabel.append(span);
+      choicesGroup.append(choiceLabel);
+    });
+
+    qBox.append(choicesGroup);
+    qBox.append(feedbackBox);
+
+    if (savedState.checked) {
+      evaluateWarmupQuestion(qBox, q, selectedIdx, feedbackBox);
+    }
+
+    questionsContainer.append(qBox);
+  });
+
+  const btnRow = document.createElement("div");
+  btnRow.style.cssText = "margin-top:16px; display:flex; align-items:center; gap:12px;";
+
+  const checkBtn = document.createElement("button");
+  checkBtn.type = "button";
+  checkBtn.className = "btn btn-primary";
+  checkBtn.style.cssText = "padding:10px 20px; font-weight:800; font-size:14px; background:#0f6d78; color:#ffffff; border:none; border-radius:10px; cursor:pointer;";
+  checkBtn.textContent = "Check Warmup Answers";
+
+  checkBtn.addEventListener("click", () => {
+    let correctCount = 0;
+    const currentSaved = state.getResponse(0, "warmup_answers") || {};
+    currentSaved.checked = true;
+
+    warmup.questions.forEach((q, qIdx) => {
+      const qBox = questionsContainer.children[qIdx];
+      const selIdx = currentSaved[qIdx];
+      const fb = qBox.querySelector(".warmup-fb-box");
+      if (selIdx === q.correctIndex) correctCount++;
+      evaluateWarmupQuestion(qBox, q, selIdx, fb);
+    });
+
+    state.saveResponse(0, "warmup_answers", currentSaved);
+    const badge = card.querySelector("#warmupScoreBadge");
+    if (badge) {
+      badge.textContent = `Score: ${correctCount}/${total} (${Math.round((correctCount/total)*100)}%)`;
+      badge.style.background = correctCount === total ? "#dcfce7" : "#fef3c7";
+      badge.style.color = correctCount === total ? "#15803d" : "#b45309";
+    }
+  });
+
+  btnRow.append(checkBtn);
+  card.append(questionsContainer);
+  card.append(btnRow);
+  el.append(card);
+}
+
+function evaluateWarmupQuestion(qBox, q, selectedIdx, feedbackBox) {
+  const choices = qBox.querySelectorAll("label");
+  choices.forEach((lbl, cIdx) => {
+    lbl.style.borderColor = "#cbd5e1";
+    lbl.style.background = "#ffffff";
+
+    if (cIdx === q.correctIndex) {
+      lbl.style.borderColor = "#22c55e";
+      lbl.style.background = "#f0fdf4";
+      lbl.style.fontWeight = "bold";
+    } else if (selectedIdx === cIdx && selectedIdx !== q.correctIndex) {
+      lbl.style.borderColor = "#ef4444";
+      lbl.style.background = "#fef2f2";
+    }
+  });
+
+  feedbackBox.style.display = "block";
+  if (selectedIdx === q.correctIndex) {
+    feedbackBox.style.background = "#f0fdf4";
+    feedbackBox.style.color = "#15803d";
+    feedbackBox.style.border = "1px solid #bbf7d0";
+    feedbackBox.innerHTML = `<strong>Correct!</strong> ${esc(q.explanation || "")}`;
+  } else if (selectedIdx !== undefined) {
+    feedbackBox.style.background = "#fef2f2";
+    feedbackBox.style.color = "#b91c1c";
+    feedbackBox.style.border = "1px solid #fecaca";
+    feedbackBox.innerHTML = `<strong>Not quite.</strong> ${esc(q.explanation || "")}`;
+  } else {
+    feedbackBox.style.background = "#fffbe0";
+    feedbackBox.style.color = "#92400e";
+    feedbackBox.style.border = "1px solid #fef08a";
+    feedbackBox.innerHTML = `<strong>Unanswered.</strong> Please select an answer.`;
+  }
+}
+
 function renderLaunchPhase(el, state, ctx, config) {
   const cfg = config.launch;
 
@@ -2072,6 +2226,9 @@ function renderLaunchPhase(el, state, ctx, config) {
 
   // Top: student identity (name / period), homework link, pre-lesson hint.
   renderLaunchHeader(el, state, config);
+
+  // ── Warmup: Previous Lesson Check ──────────────────────────────────────────
+  renderWarmupSection(el, state, config);
 
   // ── Be Curious ────────────────────────────────────────────────────────────
   // Its own part, right under the objectives: the Reveal Notice & Wonder
