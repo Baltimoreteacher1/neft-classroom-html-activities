@@ -202,6 +202,7 @@ const STRINGS = {
 };
 
 const PHASE_NAMES = {
+  warmup: { en: "Warmup", es: "Calentamiento" },
   launch: { en: "Launch", es: "Inicio" },
   vocab: { en: "Vocabulary", es: "Vocabulario" },
   explore: { en: "Explore", es: "Explorar" },
@@ -275,9 +276,9 @@ export function badgeName(id, lang) {
   return entry[l] || entry.en;
 }
 
-/** Phase name by engine index (0=Launch … 5=Reflect). */
+/** Phase name by engine index (0=Warmup, 1=Launch … 5=Reflect). */
 export function phaseName(index, lang) {
-  const keys = ["launch", "explore", "practice", "connect", "reflect"];
+  const keys = ["warmup", "launch", "explore", "practice", "connect", "reflect"];
   const key = keys[index];
   const entry = PHASE_NAMES[key];
   if (!entry) return `Phase ${index + 1}`;

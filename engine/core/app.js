@@ -798,11 +798,12 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
   }
 
   const phaseConfigs = [
-    { name: phaseName(0), icon: "🚀" }, // Launch
-    { name: phaseName(1), icon: "🔍" }, // Explore
-    { name: phaseName(2), icon: "✏️" }, // Practice
-    { name: phaseName(3), icon: "🌎" }, // Connect
-    { name: phaseName(4), icon: "💡" }, // Reflect
+    { name: phaseName(0), icon: "⚡" }, // Warmup (Phase 1)
+    { name: phaseName(1), icon: "🚀" }, // Launch (Phase 2)
+    { name: phaseName(2), icon: "🔍" }, // Explore (Phase 3)
+    { name: phaseName(3), icon: "✏️" }, // Practice (Phase 4)
+    { name: phaseName(4), icon: "🌎" }, // Connect (Phase 5)
+    { name: phaseName(5), icon: "💡" }, // Reflect (Phase 6)
   ];
 
   state.initPhases(phaseConfigs);

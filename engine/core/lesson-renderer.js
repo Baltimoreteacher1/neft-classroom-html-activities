@@ -103,6 +103,7 @@ export function bootLesson(config) {
     // no longer a graded phase. Phases: Launch, Explore, Practice, Connect,
     // Reflect (indices 0–4). See migrateVocabPhaseRemoval in state.js.
     phases: [
+      (el, state, ctx) => renderWarmupPhase(el, state, ctx, config),
       (el, state, ctx) => renderLaunchPhase(el, state, ctx, config),
       (el, state, ctx) => renderExplorePhase(el, state, ctx, config),
       (el, state, ctx) => renderPracticePhase(el, state, ctx, config),
@@ -110,9 +111,6 @@ export function bootLesson(config) {
       (el, state, ctx) => renderReflectPhase(el, state, ctx, config),
     ],
   });
-
-  // Mount the autograded Warmup as its own separate card at the very beginning of the lesson
-  mountWarmupCard(config);
 
   // Slim scroll-progress rail across the top of the lesson (additive, defensive).
   mountReadingProgress();
@@ -2066,25 +2064,27 @@ function renderNoticeWonderSupport(host, support, config, fieldRoot = host) {
   });
 }
 
-function mountWarmupCard(config) {
+function renderWarmupPhase(el, state, ctx, config) {
   const warmup = config.warmup;
   if (!warmup || !Array.isArray(warmup.questions) || warmup.questions.length === 0) return;
 
-  const main = document.querySelector(".main");
-  if (!main) return;
-
-  if (document.getElementById("lesson-warmup-standalone-card")) return;
+  phaseHeader(
+    el,
+    "⚡",
+    "section-icon-teal",
+    "Phase 1: Warmup",
+    "Complete these 3–4 quick warmup questions reviewing previous lesson material before starting today's lesson.",
+  );
 
   const card = document.createElement("div");
-  card.id = "lesson-warmup-standalone-card";
-  card.className = "card card-warmup-standalone";
-  card.style.cssText = "margin: 0 0 24px; border: 2px solid #0f6d78; border-radius: 16px; padding: 22px; background: #ffffff; box-shadow: 0 6px 20px rgba(15,109,120,0.12);";
+  card.className = "card card-warmup-phase";
+  card.style.cssText = "margin: 16px 0 24px; border: 2px solid #0f6d78; border-radius: 16px; padding: 22px; background: #ffffff; box-shadow: 0 6px 20px rgba(15,109,120,0.12);";
 
   const prevTitle = warmup.prevLessonTitle ? ` (${warmup.prevLessonTitle})` : "";
   card.innerHTML = `
     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; border-bottom:1px solid #e2e8f0; padding-bottom:12px;">
       <div>
-        <span style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; color:#0f6d78; background:#e6f4f6; padding:4px 10px; border-radius:6px;">Warmup</span>
+        <span style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; color:#0f6d78; background:#e6f4f6; padding:4px 10px; border-radius:6px;">Phase 1 · Warmup</span>
         <h3 style="margin:6px 0 0; font-size:22px; font-weight:800; color:#14223a;">⚡ Warmup: Previous Lesson Check${esc(prevTitle)}</h3>
       </div>
       <div id="warmupScoreBadge" style="font-size:13px; font-weight:800; color:#0f6d78; background:#f0fdf4; border:1px solid #bbf7d0; padding:6px 14px; border-radius:10px;">
@@ -2100,12 +2100,7 @@ function mountWarmupCard(config) {
   questionsContainer.className = "warmup-questions-list";
   questionsContainer.style.cssText = "display:flex; flex-direction:column; gap:16px;";
 
-  let savedAnswers = {};
-  try {
-    const raw = localStorage.getItem(`nt-warmup-${config.lessonId}`);
-    if (raw) savedAnswers = JSON.parse(raw);
-  } catch (_e) {}
-
+  const savedAnswers = state.getResponse(0, "warmup_answers") || {};
   const total = warmup.questions.length;
 
   warmup.questions.forEach((q, qIdx) => {
@@ -2133,15 +2128,13 @@ function mountWarmupCard(config) {
 
       const radio = document.createElement("input");
       radio.type = "radio";
-      radio.name = `warmup_q_sa_${qIdx}`;
+      radio.name = `warmup_q_p0_${qIdx}`;
       radio.value = cIdx;
       if (selectedIdx === cIdx) radio.checked = true;
 
       radio.addEventListener("change", () => {
         savedAnswers[qIdx] = cIdx;
-        try {
-          localStorage.setItem(`nt-warmup-${config.lessonId}`, JSON.stringify(savedAnswers));
-        } catch (_e) {}
+        state.saveResponse(0, "warmup_answers", savedAnswers);
       });
 
       choiceLabel.append(radio);
@@ -2162,7 +2155,7 @@ function mountWarmupCard(config) {
   });
 
   const btnRow = document.createElement("div");
-  btnRow.style.cssText = "margin-top:16px; display:flex; align-items:center; gap:12px;";
+  btnRow.style.cssText = "margin-top:20px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;";
 
   const checkBtn = document.createElement("button");
   checkBtn.type = "button";
@@ -2182,9 +2175,8 @@ function mountWarmupCard(config) {
       evaluateWarmupQuestion(qBox, q, selIdx, fb);
     });
 
-    try {
-      localStorage.setItem(`nt-warmup-${config.lessonId}`, JSON.stringify(savedAnswers));
-    } catch (_e) {}
+    state.saveResponse(0, "warmup_answers", savedAnswers);
+    state.markCompleted(0);
 
     const badge = card.querySelector("#warmupScoreBadge");
     if (badge) {
@@ -2194,16 +2186,21 @@ function mountWarmupCard(config) {
     }
   });
 
-  btnRow.append(checkBtn);
+  const nextBtn = document.createElement("button");
+  nextBtn.type = "button";
+  nextBtn.className = "btn btn-teal";
+  nextBtn.style.cssText = "padding:10px 22px; font-weight:800; font-size:14px; background:#14223a; color:#ffffff; border:none; border-radius:10px; cursor:pointer;";
+  nextBtn.textContent = "Continue to Phase 2: Launch 🚀";
+  nextBtn.addEventListener("click", () => {
+    if (ctx && typeof ctx.nextPhase === "function") {
+      ctx.nextPhase();
+    }
+  });
+
+  btnRow.append(checkBtn, nextBtn);
   card.append(questionsContainer);
   card.append(btnRow);
-
-  const phaseContainer = main.querySelector(".phase-container");
-  if (phaseContainer) {
-    main.insertBefore(card, phaseContainer);
-  } else {
-    main.append(card);
-  }
+  el.append(card);
 }
 
 function evaluateWarmupQuestion(qBox, q, selectedIdx, feedbackBox) {
