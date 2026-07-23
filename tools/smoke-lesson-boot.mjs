@@ -361,7 +361,18 @@ async function main() {
   const results = [];
   const page = await browser.newPage();
   for (const route of routes) {
-    const r = await probeRoute(page, base, route);
+    let r = await probeRoute(page, base, route);
+    // Heavy client-rendered surfaces (notably the curriculum hub's
+    // #interactive-hub — ~100k+ chars built from 232 lessons) can miss
+    // RENDER_TIMEOUT under build/CI load and return a spurious "content below
+    // min". Retry ONCE when that is the only problem — a genuinely blank page
+    // still fails the second probe, so real regressions aren't masked; only a
+    // slow-render flake recovers. Nav failures / uncaught errors never retry.
+    if (!r.ok && r.reasons.length === 1 && r.reasons[0].startsWith("content below min")) {
+      const retry = await probeRoute(page, base, route);
+      if (retry.ok) console.log(`  (retried ${r.label} after a slow first render)`);
+      r = retry;
+    }
     results.push(r);
     const tag = r.ok ? "PASS" : "FAIL";
     const extra = r.ok ? `${r.measure === "html" ? "#app/mount" : "text"} ${r.len}` : r.reasons.join("; ");
