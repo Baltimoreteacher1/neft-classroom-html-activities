@@ -1501,18 +1501,15 @@ export function renderWorkbenchTab() {
       <section class="guided-section card section-workbench" aria-label="Math Workbench">
         <h2 class="section-title">🧮 Math Workbench / Pizarra de matemáticas</h2>
         <p class="bilingual-block">
-          <span class="lang-en">A digital scratch pad to draw models, line up decimals, and show your work — right here while you practice.</span>
-          <span class="lang-es" lang="es">Una pizarra digital para dibujar modelos, alinear decimales y mostrar el trabajo — aquí mismo mientras practican.</span>
+          <span class="lang-en">A digital scratch pad to draw models, line up decimals, and show your work. It opens in a new tab so you keep your place on this homework.</span>
+          <span class="lang-es" lang="es">Una pizarra digital para dibujar modelos, alinear decimales y mostrar el trabajo. Se abre en una pestaña nueva para no perder tu lugar en esta tarea.</span>
         </p>
         <p class="workbench-openrow">
-          <a class="btn btn-secondary" href="/curriculum/math-workbench/" target="_blank" rel="noopener">
-            <span class="lang-en">↗ Open full screen</span>
-            <span class="lang-es" lang="es">↗ Abrir en pantalla completa</span>
+          <a class="btn btn-secondary workbench-open-btn" href="/curriculum/math-workbench/" target="_blank" rel="noopener">
+            <span class="lang-en">🧮 Open the Math Workbench ↗</span>
+            <span class="lang-es" lang="es">🧮 Abrir la Pizarra de matemáticas ↗</span>
           </a>
         </p>
-        <div class="workbench-frame-wrap">
-          <iframe class="workbench-frame" data-src="/curriculum/math-workbench/" title="Math Workbench" loading="lazy"></iframe>
-        </div>
       </section>
     </div>`;
 }
@@ -1699,10 +1696,6 @@ function switchHomeworkTab(tabId) {
   const total = document.querySelector('.homework-tabs-shell')?.dataset.tabCount || '8';
   if (prog) prog.textContent = idx + ' of ' + total + ' / ' + idx + ' de ' + total;
   if (tabId === 'play' && typeof initHomeworkGame === 'function') initHomeworkGame();
-  if (tabId === 'workbench') {
-    var wf = document.querySelector('.workbench-frame');
-    if (wf && !wf.getAttribute('src') && wf.dataset.src) wf.setAttribute('src', wf.dataset.src);
-  }
   if (tabId === 'arcade') {
     var af = document.querySelector('.arcade-frame');
     if (af && !af.getAttribute('src') && af.dataset.src) af.setAttribute('src', af.dataset.src);
