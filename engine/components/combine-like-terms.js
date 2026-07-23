@@ -143,7 +143,7 @@ function mountCombine(host, cfg = {}) {
     .replace(/([+-]?\s*\d*x)/gi, (m) => `<span class="xt">${esc(m.trim())}</span>`)
     .replace(
       /(^|[+-])\s*(\d+)(?!x)/g,
-      (full, sign, num) => `${sign}<span class="ct">${esc(num)}</span>`,
+      (_full, sign, num) => `${sign}<span class="ct">${esc(num)}</span>`,
     );
 
   wrap.innerHTML =

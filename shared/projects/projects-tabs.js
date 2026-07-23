@@ -34,7 +34,7 @@
     var cfg;
     try {
       cfg = JSON.parse(dataEl.textContent || "{}");
-    } catch (e) {
+    } catch (_e) {
       return null;
     }
     if (!cfg || !Array.isArray(cfg.links) || !cfg.links.length) return null;
@@ -339,7 +339,7 @@
         gain.connect(ctx.destination);
         osc.start();
         osc.stop(ctx.currentTime + duration);
-      } catch (e) {}
+      } catch (_e) {}
     }, delay || 0);
   }
 
@@ -421,7 +421,7 @@
             if (node.parentNode) node.parentNode.removeChild(node);
           };
         })(s);
-      } catch (e) {
+      } catch (_e) {
         if (s.parentNode) s.parentNode.removeChild(s);
       }
     }
@@ -450,7 +450,7 @@
           subtree: true,
         });
       }
-    } catch (e) {}
+    } catch (_e) {}
   }
 
   function injectSoundToggle() {

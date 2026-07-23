@@ -22,7 +22,7 @@ const PATHS = {
 
 const alternatives = () => Object.values(PATHS).map((path) => ({ ...path }));
 
-export function chooseAdaptivePath(state = {}, variant = "group1") {
+export function chooseAdaptivePath(state = {}, _variant = "group1") {
   const needsSupport =
     Number(state.before || 0) <= 2 ||
     Number(state.incorrectAttempts || 0) >= 2 ||

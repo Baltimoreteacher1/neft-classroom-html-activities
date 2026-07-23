@@ -57,7 +57,7 @@
         var m = v.match(/[0-9]+\.?[A-Za-z]{1,3}\.?[A-Za-z0-9.]*/);
         return clamp((m ? m[0] : v).trim(), 40);
       }
-    } catch (e) {}
+    } catch (_e) {}
     return "";
   }
 
@@ -88,7 +88,7 @@
       }
       if (!best) best = cards[0];
       return { text: extractCardText(best), work: extractStudentWork(best) };
-    } catch (e) {
+    } catch (_e) {
       return { text: "", work: "" };
     }
   }
@@ -129,7 +129,7 @@
       }
       var sel = card.querySelector(".mc-btn.selected,.tf-btn.selected");
       if (sel) bits.push("chose: " + (sel.textContent || "").replace(/\s+/g, " ").trim());
-    } catch (e) {}
+    } catch (_e) {}
     return clamp(bits.join("; "), 2000);
   }
 
@@ -240,7 +240,7 @@
     if (firstAction) {
       try {
         firstAction.focus();
-      } catch (e) {}
+      } catch (_e) {}
     }
     maybeProbeHealth();
   }
@@ -252,7 +252,7 @@
     state.launcher.setAttribute("aria-expanded", "false");
     try {
       state.launcher.focus();
-    } catch (e) {}
+    } catch (_e) {}
   }
 
   // ---- messages -----------------------------------------------------------
@@ -282,7 +282,7 @@
   function scrollLog() {
     try {
       state.log.scrollTop = state.log.scrollHeight;
-    } catch (e) {}
+    } catch (_e) {}
   }
 
   function setBusy(on) {
@@ -409,7 +409,7 @@
     if (n && n.parentNode) {
       try {
         n.parentNode.removeChild(n);
-      } catch (e) {}
+      } catch (_e) {}
     }
   }
 
@@ -422,7 +422,7 @@
       if (last && window.GameFX && typeof window.GameFX.pop === "function") {
         window.GameFX.pop(last);
       }
-    } catch (e) {}
+    } catch (_e) {}
   }
 
   // ---- boot ---------------------------------------------------------------
@@ -430,7 +430,7 @@
     try {
       if (!document.body) return;
       buildUI();
-    } catch (e) {
+    } catch (_e) {
       // Never let tutor setup break the lesson.
     }
   }
@@ -444,7 +444,7 @@
       try {
         openPanel();
         requestTutor(mode);
-      } catch (e) {}
+      } catch (_e) {}
     },
   };
 

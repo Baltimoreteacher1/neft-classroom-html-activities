@@ -19,7 +19,7 @@
       return window.NTKit.getResults();
     try {
       return JSON.parse(localStorage.getItem(RESULTS_KEY)) || [];
-    } catch (e) {
+    } catch (_e) {
       return [];
     }
   }

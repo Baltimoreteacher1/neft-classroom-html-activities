@@ -118,7 +118,7 @@
       anim.onfinish = function () {
         flash.remove();
       };
-    } catch (e) {
+    } catch (_e) {
       flash.remove();
     }
   }
@@ -332,7 +332,7 @@
         this.filter.connect(this.analyser);
 
         this.analyserData = new Uint8Array(this.analyser.frequencyBinCount);
-      } catch (e) {}
+      } catch (_e) {}
     },
     startHum: function () {
       this.init();
@@ -348,13 +348,13 @@
         this.humOsc.connect(this.humGain);
         this.humGain.connect(this.filter || this.ctx.destination);
         this.humOsc.start();
-      } catch (e) {}
+      } catch (_e) {}
     },
     stopHum: function () {
       if (this.humOsc) {
         try {
           this.humOsc.stop();
-        } catch (e) {}
+        } catch (_e) {}
         this.humOsc = null;
         this.humGain = null;
       }
@@ -405,7 +405,7 @@
 
         carrier.stop(t + duration);
         modulator.stop(t + duration);
-      } catch (e) {}
+      } catch (_e) {}
     },
     noise: function (duration, vol) {
       if (this.muted) return;
@@ -431,7 +431,7 @@
 
         noiseSource.start();
         noiseSource.stop(this.ctx.currentTime + duration);
-      } catch (e) {}
+      } catch (_e) {}
     },
     playSuccess: function () {
       this.playTone(523.25, "triangle", 0.08, 0.1);
@@ -486,7 +486,7 @@
               }
             }
           }
-        } catch (e) {}
+        } catch (_e) {}
 
         var speedMultiplier = 1.0;
         var pitchOctave = 1.0;
@@ -526,7 +526,7 @@
               gain.gain.linearRampToValueAtTime(0.001, time + 0.1);
               osc.start(time);
               osc.stop(time + 0.1);
-            } catch (e) {}
+            } catch (_e) {}
           } else if (beat === 2 || beat === 6) {
             self.noise(0.08, 0.008);
           } else if (beat % 2 !== 0) {
@@ -571,7 +571,7 @@
       anim.onfinish = function () {
         rip.remove();
       };
-    } catch (e) {
+    } catch (_e) {
       rip.remove();
     }
   }
@@ -639,7 +639,7 @@
       setTimeout(function () {
         live.textContent = msg;
       }, 30);
-    } catch (e) {}
+    } catch (_e) {}
   }
   function extractTeachText(fromEl) {
     if (!fromEl || fromEl.nodeType !== 1) return "";
@@ -697,16 +697,16 @@
   function findPhaserGame() {
     try {
       if (window.Phaser && Phaser.GAMES && Phaser.GAMES.length) return Phaser.GAMES[0];
-    } catch (e) {}
+    } catch (_e) {}
     try {
       for (var key in window) {
         try {
           if (window[key] && typeof Phaser !== "undefined" && window[key] instanceof Phaser.Game) {
             return window[key];
           }
-        } catch (e2) {}
+        } catch (_e2) {}
       }
-    } catch (e3) {}
+    } catch (_e3) {}
     return window.game || window.ffGame || null;
   }
   function setPhaserPaused(paused) {
@@ -720,7 +720,7 @@
         if (paused) sc.scene.pause();
         else sc.scene.resume();
       }
-    } catch (e) {}
+    } catch (_e) {}
   }
   function ensurePauseOverlay() {
     var el = document.getElementById("gfx-pause-overlay");
@@ -781,7 +781,7 @@
       if (/practice-arcade\/?(index\.html)?$/i.test(path)) return;
       var key = "gfx-brief:" + path;
       if (sessionStorage.getItem(key) === "1") return;
-    } catch (e) {}
+    } catch (_e) {}
     var isArcade =
       /practice-arcade|review-arcade|\/math\/games\//i.test(location.pathname || "") ||
       !!document.querySelector('script[src*="game-juice"]');
@@ -813,7 +813,7 @@
       }, 280);
       try {
         sessionStorage.setItem("gfx-brief:" + (location.pathname || "/"), "1");
-      } catch (e2) {}
+      } catch (_e2) {}
     }
     overlay.querySelector("#gfx-mission-go").addEventListener("click", dismiss);
     overlay.addEventListener("keydown", function (e) {
@@ -989,14 +989,14 @@
         }
         alert("Auto-win triggered on Game State S!");
         return;
-      } catch (e) {}
+      } catch (_e) {}
     }
 
     try {
       if (typeof window.winGame === "function") window.winGame();
       else if (typeof window.winLevel === "function") window.winLevel();
       else alert("No active game engine loop found to auto-win.");
-    } catch (e) {}
+    } catch (_e) {}
   }
 
   function cheatAddLives() {
@@ -1009,7 +1009,7 @@
           if (activeScene.livesLabel) activeScene.livesLabel.setText("Lives: 99");
           alert("Lives set to 99 inside Phaser Scene!");
         }
-      } catch (e) {}
+      } catch (_e) {}
     }
     if (typeof window.S !== "undefined") {
       window.S.lives = 99;
@@ -1024,7 +1024,7 @@
   function isTeacherDevice() {
     try {
       return localStorage.getItem("nt-teacher-mode") === "1";
-    } catch (e) {
+    } catch (_e) {
       return false;
     }
   }
@@ -1058,7 +1058,7 @@
             if (n.parentNode) n.parentNode.removeChild(n);
           };
         })(c);
-      } catch (e) {
+      } catch (_e) {
         if (c.parentNode) c.parentNode.removeChild(c);
       }
     }
@@ -1075,7 +1075,7 @@
           if (win.parent && win.parent !== win) win = win.parent;
           else break;
         }
-      } catch (e) {}
+      } catch (_e) {}
       return null;
     },
     reportScore: function (score, maxScore, stars) {
@@ -1114,7 +1114,7 @@
             "*",
           );
           console.log("[LMSBridge] postMessage reported score:", score);
-        } catch (e) {}
+        } catch (_e) {}
       }
     },
     initResizeHelper: function () {
@@ -1128,7 +1128,7 @@
               },
               "*",
             );
-          } catch (e) {}
+          } catch (_e) {}
         }
       }, 1000);
     },
@@ -1180,7 +1180,7 @@
     try {
       localStorage.setItem("gfx-muted", AudioSynth.muted ? "1" : "0");
       window.NT_MUTED = AudioSynth.muted;
-    } catch (e) {}
+    } catch (_e) {}
     var btn = document.getElementById("btn-game-sound");
     if (btn) btn.textContent = AudioSynth.muted ? "🔇 Sound: OFF" : "🔊 Sound: ON";
     var pauseMute = document.getElementById("gfx-pause-mute");
@@ -1213,7 +1213,7 @@
     var isShow = el.classList.toggle("show");
     if (isShow) {
       var xp = 450;
-      try { xp = (parseInt(localStorage.getItem("nt-passport-xp")) || 0) + 450; } catch (e) {}
+      try { xp = (parseInt(localStorage.getItem("nt-passport-xp")) || 0) + 450; } catch (_e) {}
       el.innerHTML = `
         <div class="passport-card">
           <div class="passport-header">
@@ -1368,7 +1368,7 @@
         AudioSynth.muted = true;
         window.NT_MUTED = true;
       }
-    } catch (e) {}
+    } catch (_e) {}
 
     if (!reduce && !hasJuice && !AudioSynth.muted) AudioSynth.startMusic();
 
@@ -1418,7 +1418,7 @@
     setTimeout(function () {
       try {
         showMissionBrief();
-      } catch (eBrief) {}
+      } catch (_eBrief) {}
     }, 400);
 
     // 2. Inject Combo Streak HUD banner overlay
@@ -1564,7 +1564,7 @@
                     finalScore = activeScene.score || activeScene.finalScore || 0;
                     finalStars = activeScene.stars || 3;
                   }
-                } catch (e) {}
+                } catch (_e) {}
               }
             }
             LMSBridge.reportScore(finalScore, null, finalStars);
@@ -1640,7 +1640,7 @@
           attributeFilter: ["class"],
         });
       }
-    } catch (e) {}
+    } catch (_e) {}
 
     // Pointer parallax
     try {
@@ -1659,6 +1659,6 @@
           layer.style.transform = "";
         });
       });
-    } catch (e) {}
+    } catch (_e) {}
   });
 })();

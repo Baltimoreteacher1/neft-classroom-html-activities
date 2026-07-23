@@ -348,7 +348,7 @@ export function renderCoordinatePlane(
         p.dot.setAttribute("stroke", "#b64e2f");
       }
     });
-    targets.forEach((t, i) => {
+    targets.forEach((_t, i) => {
       if (!used.has(i)) {
         targetRings[i].style.display = "";
       } else if (listItems[i]) {

@@ -20,7 +20,7 @@ import { getExternalResources } from "./homework-external-resources.mjs";
 import { renderPlayTab } from "./homework-games.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const root = join(__dirname, "..");
+const _root = join(__dirname, "..");
 
 export function esc(s) {
   return String(s ?? "")
@@ -106,7 +106,7 @@ function renderVocabularyChips(vocab, language) {
   return `<div class="learning-words"><span class="learning-words-label">${label}</span><ul class="learning-word-chips" aria-label="${label}">${terms.map((term) => `<li>${esc(term)}</li>`).join("")}</ul></div>`;
 }
 
-function languageTonightEs(config) {
+function _languageTonightEs(config) {
   const vocab = config.vocabulary || [];
   return (
     config.languageObjectiveEs ||

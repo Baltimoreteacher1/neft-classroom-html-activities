@@ -83,7 +83,7 @@ async function targetExists(lessonUrl) {
       });
     }
     return res.status !== 404;
-  } catch (e) {
+  } catch (_e) {
     return true;
   } finally {
     clearTimeout(timer);

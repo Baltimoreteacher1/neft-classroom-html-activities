@@ -53,7 +53,7 @@
       function lsGet(k) {
         try {
           return localStorage.getItem(k) || "";
-        } catch (e) {
+        } catch (_e) {
           return "";
         }
       }
@@ -61,20 +61,20 @@
         try {
           // Allow "" so a name/section can be explicitly cleared, not just set.
           if (v != null) localStorage.setItem(k, v);
-        } catch (e) {}
+        } catch (_e) {}
       }
       function jGet(k) {
         try {
           var r = localStorage.getItem(k);
           return r ? JSON.parse(r) : null;
-        } catch (e) {
+        } catch (_e) {
           return null;
         }
       }
       function jSet(k, o) {
         try {
           localStorage.setItem(k, JSON.stringify(o));
-        } catch (e) {}
+        } catch (_e) {}
       }
       function clean(s, n) {
         return String(s == null ? "" : s)
@@ -123,7 +123,7 @@
               }),
             );
           }
-        } catch (e) {}
+        } catch (_e) {}
         return { name: name, section: section };
       }
       function studentId() {
@@ -241,7 +241,7 @@
       v = makeVal();
       localStorage.setItem(key, v);
       return v;
-    } catch (e) {
+    } catch (_e) {
       return makeVal();
     }
   }
@@ -285,7 +285,7 @@
         aliasFromNtStudent() ||
         ""
       );
-    } catch (e) {
+    } catch (_e) {
       return "";
     }
   }
@@ -298,7 +298,7 @@
         sectionFromNtStudent() ||
         ""
       );
-    } catch (e) {
+    } catch (_e) {
       return "";
     }
   }
@@ -306,7 +306,7 @@
   function ntStudent() {
     try {
       return JSON.parse(localStorage.getItem("nt_student") || "{}") || {};
-    } catch (e) {
+    } catch (_e) {
       return {};
     }
   }
@@ -323,7 +323,7 @@
       var p = global.location.pathname.replace(/\/index\.html?$/i, "");
       p = p.replace(/\.html?$/i, "").replace(/^\/+|\/+$/g, "");
       return slug(p) || "root";
-    } catch (e) {
+    } catch (_e) {
       return "activity";
     }
   }
@@ -382,7 +382,7 @@
       if (/^\s*\d\.(NS|RP|EE|G|SP|NF|OA|MD)\b/i.test(std)) return true;
       var p = String(global.location.pathname || "");
       return /(^|\/)(math|games|math-lab-missions)(\/|$)/i.test(p);
-    } catch (e) {
+    } catch (_e) {
       return false;
     }
   }
@@ -409,7 +409,7 @@
       ensureCanvasCodeUI().then(function (ui) {
         if (ui && typeof ui.show === "function") ui.show(data);
       });
-    } catch (e) {
+    } catch (_e) {
       /* never break the activity */
     }
   }
@@ -463,7 +463,7 @@
         .catch(function () {
           /* fire-and-forget: never surface to the student */
         });
-    } catch (e) {
+    } catch (_e) {
       /* swallow — reporting must never break an activity */
     }
   }
@@ -476,7 +476,7 @@
     NT.finish = function (opts) {
       try {
         orig && orig.apply(NT, arguments);
-      } catch (e) {}
+      } catch (_e) {}
       try {
         opts = opts || {};
         var sections = Array.isArray(opts.sections) ? opts.sections : [];
@@ -502,7 +502,7 @@
           problemsAttempted: total,
           misconceptions: opts.misconception_tags || opts.misconceptions || [],
         });
-      } catch (e) {}
+      } catch (_e) {}
     };
     NT.__edupulseWrapped = true;
   }
@@ -534,7 +534,7 @@
             problemsAttempted: perItem.length ? perItem.length : result.possible,
           });
         }
-      } catch (e) {}
+      } catch (_e) {}
       return result;
     };
     K.__edupulseWrapped = true;
@@ -568,7 +568,7 @@
         }
         if (student.studentName) localStorage.setItem("edupulse_student_name", student.studentName);
         if (student.classPeriod) localStorage.setItem("edupulse_class_period", student.classPeriod);
-      } catch (e) {}
+      } catch (_e) {}
       return this;
     },
     /** Report a graded result. Call on submit / finish / win / final score. */

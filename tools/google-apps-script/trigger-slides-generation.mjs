@@ -88,7 +88,7 @@ async function main() {
       console.log(
         `Loaded ${Object.keys(urlMap).length} existing mapped URLs from data/google-slides-urls.json`,
       );
-    } catch (e) {
+    } catch (_e) {
       console.warn("Failed to parse existing data/google-slides-urls.json, starting fresh.");
     }
   }

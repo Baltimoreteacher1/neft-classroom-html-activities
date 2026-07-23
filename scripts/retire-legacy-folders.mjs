@@ -96,7 +96,7 @@ function runMigration() {
       console.log(`Deleting legacy parent index: ${parent}/index.html`);
       try {
         execSync(`git rm "${indexPath}"`);
-      } catch (e) {
+      } catch (_e) {
         execSync(`rm "${indexPath}"`);
       }
     }

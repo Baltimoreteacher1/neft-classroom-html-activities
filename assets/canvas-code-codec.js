@@ -88,7 +88,7 @@
         payload: payload,
         code: PREFIX + "." + body + "." + chk,
       };
-    } catch (e) {
+    } catch (_e) {
       return { ok: false, reason: "parse" };
     }
   }

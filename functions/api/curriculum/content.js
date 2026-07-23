@@ -37,7 +37,7 @@ export async function onRequestGet(context) {
           let lessons = [];
           try {
             lessons = JSON.parse(r.lessons_json || "[]");
-          } catch (e) {
+          } catch (_e) {
             lessons = [];
           }
           return {
@@ -50,7 +50,7 @@ export async function onRequestGet(context) {
         });
         return json({ ok: true, source: "d1", units });
       }
-    } catch (err) {
+    } catch (_err) {
       // D1 query failed or table missing -> fall through to canonical schema below
     }
   }

@@ -106,7 +106,7 @@ export function renderLcmLab(host, cfg = {}) {
   wrap.className = "lcmlab";
   host.appendChild(wrap);
 
-  let currentProblem = null;
+  let _currentProblem = null;
 
   if (problems.length > 1) {
     const bar = document.createElement("div");
@@ -134,7 +134,7 @@ export function renderLcmLab(host, cfg = {}) {
   wrap.appendChild(stage);
 
   function build(problem) {
-    currentProblem = problem;
+    _currentProblem = problem;
     const a = problem.a;
     const b = problem.b;
     const target = lcm(a, b);

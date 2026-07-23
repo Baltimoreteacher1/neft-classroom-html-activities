@@ -84,7 +84,7 @@
         global.URL.revokeObjectURL(url);
       }, 1000);
       return true;
-    } catch (e) {
+    } catch (_e) {
       return false;
     }
   }

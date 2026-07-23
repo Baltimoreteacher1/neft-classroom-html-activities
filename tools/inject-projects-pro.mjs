@@ -35,7 +35,7 @@ const BODY_BLOCK = [
   "<!-- projects-pro-injected:end -->",
 ];
 
-const MARK = "projects-pro-injected:begin";
+const _MARK = "projects-pro-injected:begin";
 
 const UNITS = Array.from({ length: 10 }, (_, i) => i + 1);
 

@@ -220,7 +220,7 @@ function reportImage(label, img) {
   );
 }
 
-function summarize(data, nwField, wpField) {
+function summarize(data, _nwField, _wpField) {
   console.log(`\n📊 Extracted from ${data.slide_count}-slide deck:`);
   if (data.noticeAndWonder) {
     console.log(`\n  👀 Notice & Wonder (slide ${data.noticeAndWonder.slide_number}):`);

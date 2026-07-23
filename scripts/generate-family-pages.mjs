@@ -325,7 +325,7 @@ function whyText(topic) {
   return "This skill supports everyday problem solving with money, measurements, games, planning, and checking whether an answer is reasonable.";
 }
 
-function classText(lesson) {
+function classText(_lesson) {
   return `Your child may use the interactive lesson, guided notes, examples from the board, partner talk, and short practice problems. They may be asked to solve, draw a model, label important numbers, and explain their reasoning in a sentence.`;
 }
 

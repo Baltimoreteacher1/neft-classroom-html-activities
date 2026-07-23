@@ -31,7 +31,7 @@
       // 6.AT.A.4 -> 6RP3C ; 6.NOS.B.2 -> 6NS2
       return String(id)
         .toUpperCase()
-        .replace(/\.([A-Z])(?=\.|$)/g, function (m, letter, off, str) {
+        .replace(/\.([A-Z])(?=\.|$)/g, function (_m, letter, _off, str) {
           // drop a standalone cluster letter only when a number follows somewhere
           return /\.\d/.test(str) ? "." : "." + letter + ".";
         })

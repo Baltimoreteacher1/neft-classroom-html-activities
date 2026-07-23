@@ -345,7 +345,7 @@ function teacherNotesPage(id, cfg, unit, lesson) {
   });
 }
 
-function studentHelpPage(id, cfg, unit, lesson) {
+function studentHelpPage(id, cfg, _unit, lesson) {
   const v = vocab(cfg);
   const steps = workedExampleLines(cfg);
   const et = cfg.reflect?.exitTicket;

@@ -106,7 +106,7 @@
         window.WebGLRenderingContext &&
         (c.getContext("webgl") || c.getContext("experimental-webgl"))
       );
-    } catch (e) {
+    } catch (_e) {
       return false;
     }
   }
@@ -290,7 +290,7 @@
               }
             })
             .catch(function () {});
-        } catch (e) {}
+        } catch (_e) {}
 
         session.addEventListener("select", function () {
           if (reticle.visible) {
@@ -329,10 +329,10 @@
           renderer.setAnimationLoop(null);
           try {
             if (hitSource && hitSource.cancel) hitSource.cancel();
-          } catch (e) {}
+          } catch (_e) {}
           try {
             renderer.dispose();
-          } catch (e) {}
+          } catch (_e) {}
         });
       })
       .catch(function () {
@@ -410,7 +410,7 @@
     try {
       ro = new ResizeObserver(size);
       ro.observe(holder);
-    } catch (e) {}
+    } catch (_e) {}
     window.addEventListener("resize", size);
     loop();
     return {
@@ -434,7 +434,7 @@
         try {
           renderer.render(scene, camera);
           return renderer.domElement.toDataURL("image/png");
-        } catch (e) {
+        } catch (_e) {
           return null;
         }
       },
@@ -444,7 +444,7 @@
         window.removeEventListener("resize", size);
         try {
           renderer.dispose();
-        } catch (e) {}
+        } catch (_e) {}
       },
     };
   }
@@ -591,7 +591,7 @@
         if (typeof factory !== "function") return;
         factory(THREE, mount, build.data || {}, window.P3D);
       })
-      .catch(function (e) {
+      .catch(function (_e) {
         try {
           mount.appendChild(el("div", "p3d-fallback", t(COPY.noWebGL)));
         } catch (_) {}
@@ -611,12 +611,12 @@
             if (b && b.step && b.kind && KINDS[b.kind]) {
               try {
                 insertCard(b);
-              } catch (e) {}
+              } catch (_e) {}
             }
           });
         })
         .catch(function () {});
-    } catch (e) {}
+    } catch (_e) {}
   }
 
   ready(boot);

@@ -321,7 +321,7 @@
       document.addEventListener("keydown", function (e) {
         if (e.key === "Escape" && panel.classList.contains("gv-open")) hide();
       });
-    } catch (e) {
+    } catch (_e) {
       /* never break a game */
     }
   });

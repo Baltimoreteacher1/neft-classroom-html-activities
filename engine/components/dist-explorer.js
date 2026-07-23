@@ -27,7 +27,7 @@ function esc(s) {
   );
 }
 
-export function renderDistExplorer(container, { max = 20, unit = "", label } = {}) {
+export function renderDistExplorer(container, { max = 20, unit = "", label: _label } = {}) {
   const MAX = Math.max(4, max);
   let values = [];
 
@@ -108,7 +108,7 @@ export function renderDistExplorer(container, { max = 20, unit = "", label } = {
     return { mean, median, mode, modeCount: best, n };
   }
 
-  function marker(x, color, glyph, labelText, yBase) {
+  function marker(x, color, glyph, _labelText, yBase) {
     // A small triangle pointing up at the axis, with a colored label above.
     return (
       '<polygon points="' +

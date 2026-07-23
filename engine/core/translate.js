@@ -15,14 +15,14 @@ export function mountTranslate({ getPhaseEl }) {
   function safeGet() {
     try {
       return localStorage.getItem(LAST_KEY) || "";
-    } catch (e) {
+    } catch (_e) {
       return "";
     }
   }
   function safeSet(v) {
     try {
       localStorage.setItem(LAST_KEY, v);
-    } catch (e) {
+    } catch (_e) {
       /* ignore */
     }
   }

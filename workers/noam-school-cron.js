@@ -169,7 +169,7 @@ async function syncOneSession(env, sessionKey) {
 }
 
 export default {
-  async scheduled(event, env, ctx) {
+  async scheduled(_event, env, ctx) {
     ctx.waitUntil(
       (async () => {
         // KV list is used here because this is a single-family tool, not a large multi-user product.

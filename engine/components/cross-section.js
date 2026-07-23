@@ -246,7 +246,7 @@ export function renderCrossSection(
     return name;
   }
 
-  function dimLabel(x1, y, x2, ny, text) {
+  function dimLabel(x1, y, x2, _ny, text) {
     const mid = (x1 + x2) / 2;
     return (
       '<line x1="' +

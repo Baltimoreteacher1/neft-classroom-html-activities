@@ -17,7 +17,7 @@
     try {
       var raw = localStorage.getItem(key);
       return raw ? JSON.parse(raw) : fallback;
-    } catch (e) {
+    } catch (_e) {
       return fallback;
     }
   }
@@ -146,7 +146,7 @@
     try {
       flagKey = "nt-curriculum-progress-migrated:" + (studentKey() || "") + ":" + (section() || "");
       if (localStorage.getItem(flagKey)) return;
-    } catch (error) {}
+    } catch (_error) {}
     Object.keys(progress).forEach(function (key) {
       if (!progress[key]) return;
       var parsed = parseKeyFn(key);
@@ -155,7 +155,7 @@
     });
     try {
       if (flagKey) localStorage.setItem(flagKey, "1");
-    } catch (error) {}
+    } catch (_error) {}
   }
 
   window.CurriculumProgressBridge = {

@@ -46,7 +46,7 @@ function wrapSlide(id, active, inner, meta = {}) {
   return `<div class="slide-body${active ? " active" : ""}" id="slide-${id}"${section}${type}${notes}>${inner}</div>`;
 }
 
-function thumb(id, label, preview, active = false) {
+function thumb(id, _label, preview, active = false) {
   return `
       <div class="thumb-card${active ? " active" : ""}" data-slide="${id}" onclick="goToSlide(${id})">
         <span class="thumb-label">Slide ${id}</span>

@@ -153,7 +153,7 @@ function extractQuestions(id) {
   let cfg;
   try {
     cfg = JSON.parse(readFileSync(p, "utf8"));
-  } catch (e) {
+  } catch (_e) {
     return [];
   }
   // mc / match keep build's existing ordering (all MC-shaped first, then all
@@ -380,7 +380,7 @@ if (quizzesMade > 0 && existsSync(validator)) {
       env: { ...process.env, QUIZ_MAX: String(QUIZ_MAX) },
     });
     validated = true;
-  } catch (e) {
+  } catch (_e) {
     console.error(
       `\n✗ ABORTED: answer-key validation failed for the staged package.\n` +
         `  The package was NOT written. Inspect: ${stage}\n` +

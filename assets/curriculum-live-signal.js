@@ -23,7 +23,7 @@
   function liveKey() {
     try {
       return (localStorage.getItem(LIVE_KEY_LS) || "").trim();
-    } catch (error) {
+    } catch (_error) {
       return "";
     }
   }
@@ -91,7 +91,7 @@
         if (!entered) return;
         try {
           localStorage.setItem(LIVE_KEY_LS, entered);
-        } catch (error) {}
+        } catch (_error) {}
         if (ctx.rerender) ctx.rerender();
       });
       hint.appendChild(connect);
@@ -182,7 +182,7 @@
         if (error && error.message === "key-rejected") {
           try {
             localStorage.removeItem(LIVE_KEY_LS);
-          } catch (e) {}
+          } catch (_e) {}
           body.appendChild(
             el(
               "p",

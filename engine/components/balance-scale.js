@@ -81,7 +81,7 @@ export function renderBalanceScale(container, config) {
   let tilt = 0;
 
   // Fulcrum triangle
-  const fulcrum = svgPoly(
+  const _fulcrum = svgPoly(
     svg,
     `${MID},${FULCRUM_Y} ${MID - 22},${FULCRUM_Y + 35} ${MID + 22},${FULCRUM_Y + 35}`,
     "#12355b",
@@ -109,7 +109,7 @@ export function renderBalanceScale(container, config) {
     "#5f6f80",
     1.5,
   );
-  const leftPan = svgRect(leftPanG, MID - 150 - PAN_W / 2, BEAM_Y + 30, PAN_W, 40, 10, "#dff2ee");
+  const _leftPan = svgRect(leftPanG, MID - 150 - PAN_W / 2, BEAM_Y + 30, PAN_W, 40, 10, "#dff2ee");
   svgRect(leftPanG, MID - 150 - PAN_W / 2, BEAM_Y + 30, PAN_W, 40, 10, "none", "#1fa6a2", 1.5);
   svg.append(leftPanG);
 
@@ -125,7 +125,7 @@ export function renderBalanceScale(container, config) {
     "#5f6f80",
     1.5,
   );
-  const rightPan = svgRect(rightPanG, MID + 150 - PAN_W / 2, BEAM_Y + 30, PAN_W, 40, 10, "#fef7e0");
+  const _rightPan = svgRect(rightPanG, MID + 150 - PAN_W / 2, BEAM_Y + 30, PAN_W, 40, 10, "#fef7e0");
   svgRect(rightPanG, MID + 150 - PAN_W / 2, BEAM_Y + 30, PAN_W, 40, 10, "none", "#f2c15b", 1.5);
   svg.append(rightPanG);
 
@@ -153,7 +153,7 @@ export function renderBalanceScale(container, config) {
   rightLabel.setAttribute("font-weight", "800");
 
   // Equation display above
-  const eqBg = svgRect(svg, MID - 100, 15, 200, 36, 12, "#12355b");
+  const _eqBg = svgRect(svg, MID - 100, 15, 200, 36, 12, "#12355b");
   const eqText = svgText(svg, MID, 39, equation, "16px", "white");
   eqText.setAttribute("text-anchor", "middle");
   eqText.setAttribute("font-weight", "800");
@@ -391,7 +391,7 @@ function valueOf(expr) {
 
 // Draw a static balance scale with two labeled pans. Returns a setTilt(angle)
 // so the caller can lean the beam toward the heavier side on reveal.
-function drawScale(container, leftText, rightText, ariaLabel) {
+function drawScale(_container, leftText, rightText, ariaLabel) {
   const W = 480,
     H = 260;
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -548,7 +548,7 @@ function renderBalanceVerify(container, config) {
     fb.className = "mt-3";
 
     let locked = false;
-    const answer = (saidBalanced, btnEls) => {
+    const answer = (saidBalanced, _btnEls) => {
       if (locked) return;
       locked = true;
       controls.querySelectorAll("button").forEach((b) => (b.disabled = true));

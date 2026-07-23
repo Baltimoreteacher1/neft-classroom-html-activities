@@ -25,7 +25,7 @@ export function renderErrorAnalysis(
 
   const steps = workedExample
     .map((step, i) => {
-      const isError = i === errorStep;
+      const _isError = i === errorStep;
       return `
       <div class="ea-step" data-step="${i}" role="button" tabindex="0"
         aria-pressed="false" aria-label="Step ${i + 1}: ${escHtml(step.label)}" style="
@@ -109,7 +109,7 @@ export function renderErrorAnalysis(
 
   let selectedStep = null;
   let answered = false;
-  let foundError = false;
+  let _foundError = false;
   let hintIndex = 0;
   let repairTries = 0;
 
@@ -196,7 +196,7 @@ export function renderErrorAnalysis(
       return;
     }
 
-    foundError = true;
+    _foundError = true;
     textarea.readOnly = true;
     checkBtn.style.display = "none";
 

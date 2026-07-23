@@ -25,7 +25,7 @@ const PALETTE = {
 // elements can animate flat. s = base size in px.
 function shapeDef(shape) {
   const s = 120;
-  const h = s; // height
+  const _h = s; // height
   switch (shape) {
     case "rectangular-prism":
       return rectPrism(150, 90, 100);
@@ -277,7 +277,10 @@ function squarePyramid(b, ph) {
   };
 }
 
-export function renderShape3D(container, { shape = "cube", label, taskDriven = false } = {}) {
+export function renderShape3D(
+  container,
+  { shape = "cube", label: _label, taskDriven = false } = {},
+) {
   const def = shapeDef(shape);
   const prefersReduced = reduceMotion();
   if (!prefersReduced) injectPolishStyles();
@@ -773,8 +776,8 @@ export function renderShape3D(container, { shape = "cube", label, taskDriven = f
 // uses aria-live for status. No raw HTML interpolation of dynamic data.
 function buildTaskPanel({
   def,
-  shape,
-  getTappedCount,
+  shape: _shape,
+  getTappedCount: _getTappedCount,
   setOnFaceTap,
   unfoldNet,
   celebrate = () => {},

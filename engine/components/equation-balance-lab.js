@@ -132,7 +132,7 @@ function applyOp(side, op, k) {
   return side;
 }
 
-const isSolved = (left, right, v) =>
+const isSolved = (left, right, _v) =>
   (left.a === 1 && left.b === 0 && right.a === 0) ||
   (right.a === 1 && right.b === 0 && left.a === 0);
 
@@ -188,7 +188,7 @@ export function renderEquationBalanceLab(container, cfg = {}) {
       const { left, right } = parseEquation(src, v);
       history = [{ left, right, note: "start" }];
       el("feed").innerHTML = "";
-    } catch (e) {
+    } catch (_e) {
       history = [{ left: { a: 1, b: 0 }, right: { a: 0, b: 0 }, note: "start" }];
       el("feed").innerHTML =
         `<div class="eqlab-msg eqlab-msg-warn">Could not read that equation.</div>`;

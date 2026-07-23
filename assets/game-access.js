@@ -86,7 +86,7 @@
       };
       synth.cancel();
       synth.speak(u);
-    } catch (e) {
+    } catch (_e) {
       /* speech unsupported — silently ignore */
     }
   }
@@ -98,7 +98,7 @@
   function setCalm(on, btn) {
     try {
       localStorage.setItem(CALM_KEY, on ? "1" : "0");
-    } catch (e) {}
+    } catch (_e) {}
     applyCalm(on);
     if (btn) btn.setAttribute("aria-pressed", on ? "true" : "false");
   }
@@ -120,14 +120,14 @@
     var v = 0;
     try {
       v = parseInt(localStorage.getItem(TEXT_KEY) || "0", 10) || 0;
-    } catch (e) {}
+    } catch (_e) {}
     return v < 0 || v > 2 ? 0 : v;
   }
   function cycleText(btn) {
     var next = (currentText() + 1) % 3;
     try {
       localStorage.setItem(TEXT_KEY, String(next));
-    } catch (e) {}
+    } catch (_e) {}
     applyText(next);
     if (btn) {
       btn.setAttribute("aria-pressed", next ? "true" : "false");
@@ -155,7 +155,7 @@
       toastTimer = setTimeout(function () {
         toastEl.classList.remove("nt-ga-show");
       }, 2600);
-    } catch (e) {}
+    } catch (_e) {}
   }
 
   /* ---------- build the floating control cluster ---------- */
@@ -206,9 +206,9 @@
       window.addEventListener("pagehide", function () {
         try {
           if (window.speechSynthesis) window.speechSynthesis.cancel();
-        } catch (e) {}
+        } catch (_e) {}
       });
-    } catch (e) {
+    } catch (_e) {
       /* never break the game */
     }
   }
@@ -227,7 +227,7 @@
   // Apply any saved text-size preference as early as possible.
   try {
     applyText(currentText());
-  } catch (e) {}
+  } catch (_e) {}
 
   ready(build);
 })();

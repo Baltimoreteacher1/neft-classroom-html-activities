@@ -96,7 +96,7 @@
           resolve(false);
         };
         document.head.appendChild(s1);
-      } catch (e) {
+      } catch (_e) {
         resolve(false);
       }
     });
@@ -115,7 +115,7 @@
           ],
           throwOnError: false,
         });
-      } catch (e) {
+      } catch (_e) {
         /* ignore */
       }
     });
@@ -127,14 +127,14 @@
       var raw = global.localStorage.getItem(key);
       var arr = raw ? JSON.parse(raw) : [];
       return Array.isArray(arr) ? arr : [];
-    } catch (e) {
+    } catch (_e) {
       return [];
     }
   }
   function persist(key, list) {
     try {
       global.localStorage.setItem(key, JSON.stringify(list.slice(0, MAX_SAVED)));
-    } catch (e) {
+    } catch (_e) {
       /* quota / private mode — non-fatal */
     }
   }
@@ -663,7 +663,7 @@
           selected = null;
         }
       }
-      shuffle(g.pairs).forEach(function (pr, i) {
+      shuffle(g.pairs).forEach(function (pr, _i) {
         leftCol.appendChild(
           el("button", {
             class: "stp-tile",
@@ -819,7 +819,7 @@
       if (global.speechSynthesis) {
         try {
           global.speechSynthesis.cancel();
-        } catch (e) {
+        } catch (_e) {
           /* ignore */
         }
       }
@@ -862,7 +862,7 @@
       var vs = [];
       try {
         vs = global.speechSynthesis.getVoices() || [];
-      } catch (e) {
+      } catch (_e) {
         vs = [];
       }
       var en = vs.filter(function (v) {
@@ -1019,7 +1019,7 @@
     }
 
     // ---- Tab: Ask (grounded chat) -----------------------------------------
-    function renderAsk(panel, pack, notes) {
+    function renderAsk(panel, _pack, notes) {
       panel.appendChild(el("h3", { text: "💬 Ask about your notes" }));
       panel.appendChild(
         el("p", {

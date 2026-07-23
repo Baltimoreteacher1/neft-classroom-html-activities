@@ -194,7 +194,7 @@ async function noteGuardHit(db, ip, bucket) {
       .prepare("DELETE FROM supports_guard WHERE bucket < ?")
       .bind(bucket - 1)
       .run();
-  } catch (e) {
+  } catch (_e) {
     /* prune is best-effort */
   }
 }
@@ -228,7 +228,7 @@ function parseIepItems(s) {
   try {
     const arr = JSON.parse(s || "[]");
     return Array.isArray(arr) ? arr.filter((x) => ALLOW_SET.has(x)) : [];
-  } catch (e) {
+  } catch (_e) {
     return [];
   }
 }
@@ -258,7 +258,7 @@ function parseLessons(s) {
     return Array.isArray(arr)
       ? arr.filter((x) => typeof x === "string" && LESSON_ID_RE.test(x))
       : [];
-  } catch (e) {
+  } catch (_e) {
     return [];
   }
 }
@@ -283,7 +283,7 @@ async function ensureSchema(db) {
     .run();
   try {
     await db.prepare("ALTER TABLE supports_roster ADD COLUMN lessons TEXT DEFAULT '[]'").run();
-  } catch (e) {
+  } catch (_e) {
     /* column already exists */
   }
   schemaEnsured = true;
@@ -347,7 +347,7 @@ export async function onRequest(context) {
       }
       for (const k of Object.keys(sections)) sections[k].sort();
       return json({ ok: true, sections });
-    } catch (e) {
+    } catch (_e) {
       return json({ ok: true, sections: {} });
     }
   }
@@ -386,7 +386,7 @@ export async function onRequest(context) {
         // Lesson ids only — generic navigation data, no accommodation info.
         lessons: parseLessons(row.lessons),
       });
-    } catch (e) {
+    } catch (_e) {
       return json({ ok: true, items: null, lessons: null });
     }
   }

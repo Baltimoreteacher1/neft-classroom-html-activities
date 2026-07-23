@@ -50,7 +50,7 @@ function html(s) {
   return String(s ?? "");
 }
 
-function renderOpts(mcKey, opts) {
+function renderOpts(_mcKey, opts) {
   return opts
     .map((o) => `<button class="opt" data-v="${esc(o.v)}">${html(o.t)}</button>`)
     .join("\n            ");

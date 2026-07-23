@@ -86,7 +86,7 @@ function wrapSlide(id, active, inner, meta = {}) {
   return `<div class="slide-body${active ? " active" : ""}" id="slide-${id}"${section}${type}${notes}>${body}</div>`;
 }
 
-function thumb(id, label, preview, active = false) {
+function thumb(id, _label, preview, active = false) {
   return `
       <div class="thumb-card${active ? " active" : ""}" data-slide="${id}" onclick="goToSlide(${id})">
         <span class="thumb-label">Slide ${id}</span>
@@ -120,7 +120,7 @@ function vocabSvgIllustration(term, visual, themeEmoji) {
   </svg>`;
 }
 
-function buildRevealSteps(lines, prefix, title, themeEmoji, themeName, contentObj) {
+function buildRevealSteps(lines, prefix, _title, _themeEmoji, _themeName, contentObj) {
   const steps = (lines || [])
     .map((line, idx) => {
       const stepNum = idx + 1;
@@ -214,7 +214,7 @@ function buildVocabExamplesStrip(vocabList) {
   return `<div class="vocab-ex-strip">${blocks}</div>`;
 }
 
-function buildVocabRichCard(v, themeEmoji) {
+function _buildVocabRichCard(v, themeEmoji) {
   const term = v.term || "";
   const termEs = v.termEs || "";
   const definition = v.definition || "";
@@ -320,7 +320,7 @@ function buildTurnAndTalkSlide(
     </div>`;
 }
 
-function buildRealDragSortSlide(problem, themeEmoji, themeName, contentObj, sortId) {
+function _buildRealDragSortSlide(problem, themeEmoji, themeName, contentObj, sortId) {
   if (!problem) return null;
   const items = (problem.items || []).slice(0, 8);
   const categories = problem.categories || [];
@@ -479,7 +479,7 @@ function buildStudentWorkspaceSlide(explore, themeEmoji, themeName, contentObj) 
     </div>`;
 }
 
-function buildErrorAnalysisSlide(practiceHtml) {
+function _buildErrorAnalysisSlide(practiceHtml) {
   return practiceHtml;
 }
 
@@ -496,7 +496,7 @@ function findErrorProblem(data) {
 
 // Error Analysis slide built from the lesson's actual worked example, error step,
 // and correct work — students find the error, name it, and fix it.
-function buildStructuredErrorSlide(data, themeEmoji, themeName, contentObj) {
+function buildStructuredErrorSlide(data, _themeEmoji, _themeName, _contentObj) {
   const prob = findErrorProblem(data);
   const title = prob?.title || "Find the Mistake";
   const steps = prob?.workedExample || [];
@@ -516,7 +516,7 @@ function buildStructuredErrorSlide(data, themeEmoji, themeName, contentObj) {
     .join("");
 
   const stepButtons = steps
-    .map((s, idx) => {
+    .map((_s, idx) => {
       // errorStep is 0-indexed into workedExample (config convention).
       const ok = idx === errorStep ? "true" : "false";
       return `<button type="button" class="assess-btn ea-pick" onclick="(function(b){var ok=${ok};document.querySelectorAll('.ea-pick').forEach(function(x){x.classList.remove('ea-correct','ea-wrong');});document.querySelectorAll('.ea-step').forEach(function(x){x.classList.remove('ea-step-flag');});b.classList.add(ok?'ea-correct':'ea-wrong');if(ok){var s=document.getElementById('ea-step-${idx + 1}');if(s){s.classList.add('ea-step-flag');}}document.getElementById('ea-fb').textContent=ok?'✓ Yes — step ${idx + 1} is where the work breaks down. Now explain why.':'Not yet — check each step against the rule, then try again.';})(this)">Step ${idx + 1}</button>`;
@@ -624,7 +624,7 @@ function buildSectionDivider(section, minutes, themeEmoji) {
   return refSectionOpener(section, minutes, themeEmoji);
 }
 
-function buildChoiceBoardSlide(contentObj, themeEmoji, themeName, vocabList, keyIdea) {
+function buildChoiceBoardSlide(_contentObj, _themeEmoji, _themeName, vocabList, keyIdea) {
   const terms = (vocabList || []).map((v) => v.term).filter(Boolean);
   const t1 = terms[0] || "today's key word";
   const t2 = terms[1] || t1;
@@ -668,9 +668,9 @@ function buildChoiceBoardSlide(contentObj, themeEmoji, themeName, vocabList, key
 }
 
 function buildThinkWriteSlide(
-  contentObj,
-  themeEmoji,
-  themeName,
+  _contentObj,
+  _themeEmoji,
+  _themeName,
   keyIdea,
   vocabList = [],
   data = {},
@@ -714,7 +714,7 @@ function buildThinkWriteSlide(
  * kinds of reasoning (cause, contrast, consequence). Each conjunction does a
  * different job, so students cannot just restate the kernel.
  */
-function buildBecauseButSoSlide(contentObj, themeEmoji, themeName, keyIdea, vocabList = []) {
+function buildBecauseButSoSlide(_contentObj, _themeEmoji, _themeName, keyIdea, vocabList = []) {
   const terms = (vocabList || []).map((v) => v.term).filter(Boolean);
   const t1 = terms[0] || "today's key idea";
   const kernel =
@@ -768,7 +768,7 @@ function buildBecauseButSoSlide(contentObj, themeEmoji, themeName, keyIdea, voca
  * the question words (who/what/when/where/why/how) plus a sentence-starter bank.
  * Builds detail and academic syntax for multilingual learners.
  */
-function buildSentenceExpansionSlide(contentObj, themeEmoji, themeName, keyIdea, vocabList = []) {
+function buildSentenceExpansionSlide(_contentObj, _themeEmoji, _themeName, _keyIdea, vocabList = []) {
   const terms = (vocabList || []).map((v) => v.term).filter(Boolean);
   const t1 = terms[0] || "this idea";
   const kernel = `Today we used ${esc(t1)}.`;
@@ -808,7 +808,7 @@ function buildSentenceExpansionSlide(contentObj, themeEmoji, themeName, keyIdea,
   return refTwoColumn(main, side, "🌱 Expand the Sentence");
 }
 
-function buildGoalTrackerSlide(contentObj, themeEmoji, themeName) {
+function buildGoalTrackerSlide(contentObj, _themeEmoji, _themeName) {
   const levels = [
     { num: 1, label: "Not Yet", desc: "I need more help. The idea does not make sense to me yet." },
     {
@@ -844,7 +844,7 @@ function buildAreaGridWidget() {
     </div>`;
 }
 
-function buildStatSortWidget(vocabList) {
+function buildStatSortWidget(_vocabList) {
   const items = [
     { text: "How many hours do students sleep?", cat: "statistical" },
     { text: "What is the capital of France?", cat: "not-statistical" },
@@ -970,7 +970,7 @@ function buildUnitActivitySlide(
     </div>`;
 }
 
-function buildExitTicketOpen(stem, themeEmoji, themeName, contentObj) {
+function _buildExitTicketOpen(stem, themeEmoji, themeName, contentObj) {
   return `
     ${learningHeader(contentObj)}
     ${slideHeader(themeEmoji, themeName, "Exit Ticket — Explain")}

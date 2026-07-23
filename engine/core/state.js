@@ -10,7 +10,7 @@ export async function loadFromServer(_lessonId, _studentName) {
   return null;
 }
 
-export function syncToServer(lessonId, state, studentName, studentPeriod) {
+export function syncToServer(lessonId, state, _studentName, _studentPeriod) {
   if (typeof globalThis === "undefined" || !globalThis.CurriculumProgressBridge) return;
   const bridge = globalThis.CurriculumProgressBridge;
   if (!bridge.canSync || !bridge.canSync()) return;

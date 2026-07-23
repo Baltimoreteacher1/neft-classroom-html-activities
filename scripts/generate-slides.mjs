@@ -23,15 +23,15 @@ const root = path.resolve(__dirname, "..");
 const lessonsDir = path.join(root, "lessons");
 
 // Define color tokens matching Design System
-const COLOR_BG = "#F7F4EC";
+const _COLOR_BG = "#F7F4EC";
 const COLOR_NAVY = "#17324D";
 const COLOR_TEAL = "#1FA6A2";
 const COLOR_TEAL_LIGHT = "#DFF2EE";
 const COLOR_AMBER = "#F2C15B";
 const COLOR_BODY_TEXT = "#24323F";
-const COLOR_WHITE = "#FFFFFF";
-const COLOR_CORAL = "#FCE6DE";
-const COLOR_GRAY = "#8A96A3";
+const _COLOR_WHITE = "#FFFFFF";
+const _COLOR_CORAL = "#FCE6DE";
+const _COLOR_GRAY = "#8A96A3";
 
 // Helper to escape HTML strings
 function esc(str) {
@@ -154,7 +154,7 @@ function generateMathVisualSvg(lessonId, data) {
       svg += `<text x="20" y="32" font-family="Outfit, sans-serif" font-size="12" fill="${COLOR_NAVY}" font-weight="bold">${esc(title)}</text>`;
 
       let currentY = 55;
-      rows.forEach((row, rowIdx) => {
+      rows.forEach((row, _rowIdx) => {
         const parts = row.parts || [];
         const totalVal = parts.reduce((sum, p) => sum + (p.value || 0), 0);
         const rowWidth = width - 80;
@@ -378,7 +378,7 @@ function generateMathVisualSvg(lessonId, data) {
   return svg;
 }
 
-function generateInteractiveWidgetHtml(lessonId, standard) {
+function generateInteractiveWidgetHtml(_lessonId, standard) {
   const std = (standard || "").toUpperCase();
   const isRatio = std.includes("6.AT.1") || std.includes("6.AT.2") || std.includes("6.AT.3");
   const isCoord = std.includes("6.NOS.6") || std.includes("6.NOS.9");
@@ -529,8 +529,8 @@ function generateSlidesHtml(lessonId, data, googleSlidesUrl) {
 
   // Slide 4 Vocabulary cards (dynamic)
   const vocabList = data.vocabulary || [];
-  let vocabCardsHtml = "";
-  vocabList.slice(0, 4).forEach((v, idx) => {
+  let _vocabCardsHtml = "";
+  vocabList.slice(0, 4).forEach((v, _idx) => {
     const term = v.term || "";
     const termEs = v.termEs || "";
     const definition = v.definition || "No definition available.";
@@ -538,7 +538,7 @@ function generateSlidesHtml(lessonId, data, googleSlidesUrl) {
     const visual = v.visual || "";
     const cloze = v.cloze || "";
 
-    vocabCardsHtml += `
+    _vocabCardsHtml += `
       <div class="vocab-card" onclick="this.classList.toggle('flipped')">
         <div class="vocab-card-inner">
           <div class="vocab-card-front">
@@ -672,7 +672,7 @@ function generateSlidesHtml(lessonId, data, googleSlidesUrl) {
           <div style="margin-top:6px; display:flex; flex-direction:column; gap:4px;">
             <strong style="font-size:10px; color:var(--navy); text-transform:uppercase;">Identify Error Step:</strong>
             <div style="display:flex; gap:6px;">
-              ${workedExample.map((s, idx) => `<button class="assess-btn px-btn" id="btn-errstep-${idx + 1}" onmouseover="highlightWorkedStep(${idx + 1})" onmouseout="clearStepHighlight(${idx + 1})" onclick="checkErrorStep(${idx + 1}, ${errorStep})">${idx + 1}</button>`).join("")}
+              ${workedExample.map((_s, idx) => `<button class="assess-btn px-btn" id="btn-errstep-${idx + 1}" onmouseover="highlightWorkedStep(${idx + 1})" onmouseout="clearStepHighlight(${idx + 1})" onclick="checkErrorStep(${idx + 1}, ${errorStep})">${idx + 1}</button>`).join("")}
             </div>
             <div id="error-step-feedback" style="font-size:10px; font-weight:700; min-height:14px; margin-top:2px;"></div>
           </div>

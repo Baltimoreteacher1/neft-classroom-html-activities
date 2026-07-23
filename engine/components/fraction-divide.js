@@ -277,7 +277,7 @@ function mountFractionDivide(host, cfg = {}) {
 
   function check2() {
     const v = parseFrac(inp("recip").value);
-    const ok = v && fracEq(v, recip) && v.n === recip.n && v.d === recip.d;
+    const _ok = v && fracEq(v, recip) && v.n === recip.n && v.d === recip.d;
     // accept the exact swapped form (or a value-equal reciprocal)
     const okLoose = v && fracEq(v, recip);
     mark(inp("recip"), okLoose);

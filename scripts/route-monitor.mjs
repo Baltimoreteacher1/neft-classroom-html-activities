@@ -122,7 +122,7 @@ function classifyFreshness({ stampRes, expectedCommit, graceHours, staleHours, n
 
 /** Evaluate a single route's probe result into { level, note }. */
 function classify(route, forbidMarkers, r) {
-  const label = route.label || route.path;
+  const _label = route.label || route.path;
   if (!r.ok) return { level: "fail", note: `unreachable — ${r.error}` };
 
   // Explicit status expectation — lets a route assert a NEGATIVE/runtime path,

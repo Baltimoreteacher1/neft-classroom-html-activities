@@ -62,7 +62,7 @@
   function isScormLaunch() {
     try {
       return /(?:^|[?&])lms=scorm(?:&|$)/.test(global.location.search);
-    } catch (e) {
+    } catch (_e) {
       return false;
     }
   }
@@ -87,7 +87,7 @@
           "*",
         );
       }
-    } catch (e) {
+    } catch (_e) {
       /* never break the activity */
     }
   }
@@ -186,14 +186,14 @@
             try {
               input.select();
               document.execCommand("copy");
-            } catch (e) {}
+            } catch (_e) {}
             done();
           });
       }
       try {
         input.select();
         document.execCommand("copy");
-      } catch (e) {}
+      } catch (_e) {}
       done();
       return Promise.resolve();
     };
@@ -205,7 +205,7 @@
         if (previouslyFocused && document.contains(previouslyFocused)) {
           previouslyFocused.focus();
         }
-      } catch (e) {}
+      } catch (_e) {}
     };
 
     function focusables() {
@@ -249,7 +249,7 @@
     // Move focus into the dialog for keyboard/screen-reader users.
     try {
       copyBtn.focus();
-    } catch (e) {}
+    } catch (_e) {}
 
     // Auto-copy on completion so the student only has to paste into Canvas.
     // The finish event usually follows a click, so the clipboard gesture is
@@ -289,7 +289,7 @@
         var code = codec.encode(norm);
         render(code, codec.decode(code).payload || {});
       });
-    } catch (e) {
+    } catch (_e) {
       /* never break the activity */
     }
   }

@@ -56,7 +56,7 @@ function stripHeavy(out) {
   out.readiness = false;
 }
 
-function firstLine(x) {
+function _firstLine(x) {
   if (!x) return null;
   if (Array.isArray(x.lines) && x.lines.length) return x.lines[0];
   return null;

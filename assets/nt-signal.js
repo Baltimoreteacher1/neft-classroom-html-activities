@@ -73,7 +73,7 @@
           };
         }
       }
-    } catch (e) {
+    } catch (_e) {
       /* blocked storage or corrupt JSON — fall back below */
     }
     return mem || emptyStore();
@@ -84,7 +84,7 @@
     mem = store;
     try {
       root.localStorage.setItem(KEY, JSON.stringify(store));
-    } catch (e) {
+    } catch (_e) {
       /* quota / private mode — in-memory copy still serves this page */
     }
   }
@@ -133,7 +133,7 @@
         store.lastLesson = input.lesson.slice(0, 80);
       }
       writeStore(store);
-    } catch (e) {
+    } catch (_e) {
       /* signals are best-effort — never break the page */
     }
   }
@@ -141,7 +141,7 @@
   function profile() {
     try {
       return JSON.parse(JSON.stringify(readStore()));
-    } catch (e) {
+    } catch (_e) {
       return emptyStore();
     }
   }
@@ -168,7 +168,7 @@
         return a.rate - b.rate || b.lastTs - a.lastTs;
       });
       return out.slice(0, Math.max(1, Number(n) || 3));
-    } catch (e) {
+    } catch (_e) {
       return [];
     }
   }
@@ -190,7 +190,7 @@
         return b.count - a.count || b.lastTs - a.lastTs;
       });
       return out.slice(0, Math.max(1, Number(n) || 3));
-    } catch (e) {
+    } catch (_e) {
       return [];
     }
   }
@@ -213,7 +213,7 @@
       if (rate < TIER_LOW) return "l1";
       if (rate > TIER_HIGH) return "l2";
       return "both";
-    } catch (e) {
+    } catch (_e) {
       return "both";
     }
   }
@@ -224,7 +224,7 @@
       var store = readStore();
       store.lastLesson = id.slice(0, 80);
       writeStore(store);
-    } catch (e) {
+    } catch (_e) {
       /* best-effort */
     }
   }
@@ -233,7 +233,7 @@
     mem = null;
     try {
       root.localStorage.removeItem(KEY);
-    } catch (e) {
+    } catch (_e) {
       /* best-effort */
     }
   }
@@ -260,7 +260,7 @@
       var fresh = generateCode();
       root.localStorage.setItem(CODE_KEY, fresh);
       return fresh;
-    } catch (e) {
+    } catch (_e) {
       return generateCode();
     }
   }
@@ -274,7 +274,7 @@
     }
     try {
       root.localStorage.setItem(CODE_KEY, cleaned);
-    } catch (e) {}
+    } catch (_e) {}
     return cleaned;
   }
 

@@ -269,7 +269,7 @@ function shuffleSteps(steps, correctOrder) {
   return out;
 }
 
-function isPrintable(it) {
+function _isPrintable(it) {
   if (!it || typeof it !== "object") return false;
   return [
     "multiple-choice",
@@ -281,7 +281,7 @@ function isPrintable(it) {
   ].includes(it.type);
 }
 
-function selectProblems(practice = {}, config = {}) {
+function _selectProblems(practice = {}, config = {}) {
   return selectQuickCheckProblems(practice, config);
 }
 

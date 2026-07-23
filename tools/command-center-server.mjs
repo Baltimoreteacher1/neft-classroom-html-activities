@@ -12,7 +12,7 @@ const port = 3030;
 // Helper to run shell commands synchronously (for git status checks)
 function runCommandSync(cmd, cwd) {
   return new Promise((resolve) => {
-    exec(cmd, { cwd }, (err, stdout, stderr) => {
+    exec(cmd, { cwd }, (err, stdout, _stderr) => {
       if (err) {
         resolve({ error: err.message, output: "" });
       } else {
@@ -141,7 +141,7 @@ const server = http.createServer(async (req, res) => {
             try {
               const cfg = JSON.parse(fs.readFileSync(configPath, "utf8"));
               list.push({ id: dir, title: cfg.title || dir });
-            } catch (e) {
+            } catch (_e) {
               list.push({ id: dir, title: dir });
             }
           }

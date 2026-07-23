@@ -26,7 +26,7 @@ function wrapSlide(id, active, inner) {
   return `<div class="slide-body${active ? " active" : ""}" id="slide-${id}">${inner}</div>`;
 }
 
-function thumb(id, label, preview, active = false) {
+function thumb(id, _label, preview, active = false) {
   return `
       <div class="thumb-card${active ? " active" : ""}" data-slide="${id}" onclick="goToSlide(${id})">
         <span class="thumb-label">Slide ${id}</span>
@@ -151,7 +151,7 @@ function buildDragSortSlide(problem, themeEmoji, themeName) {
   const itemButtons = items
     .slice(0, 6)
     .map(
-      (item, idx) =>
+      (item, _idx) =>
         `<button class="assess-btn" style="font-size:10px; padding:6px 8px; margin:3px;" onclick="this.classList.toggle('correct')">${esc(item.text || item)}</button>`,
     )
     .join("");
@@ -284,7 +284,7 @@ export function buildTptSlideDeck(ctx) {
   const thumbs = [];
   let n = 0;
 
-  const add = (preview, titleText, bodyHtml) => {
+  const add = (preview, _titleText, bodyHtml) => {
     n += 1;
     slides.push(wrapSlide(n, n === 1, bodyHtml));
     thumbs.push(thumb(n, `Slide ${n}`, preview, n === 1));
@@ -296,7 +296,7 @@ export function buildTptSlideDeck(ctx) {
   const dragSort =
     pickPractice(data.practice?.onLevel, "drag-sort") ||
     pickPractice(data.practice?.optional, "drag-sort");
-  const matchingGame = pickPractice(data.practice?.optional, "matching-game");
+  const _matchingGame = pickPractice(data.practice?.optional, "matching-game");
   const activityUrl = `/lessons/${lessonId}/index.html`;
   const homeworkUrl = `/lessons/${lessonId}/homework.html`;
 

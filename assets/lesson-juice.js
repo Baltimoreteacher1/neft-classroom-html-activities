@@ -33,20 +33,20 @@
   var reduce = false;
   try {
     reduce = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-  } catch (e) {}
+  } catch (_e) {}
 
   /* ── Tiny safe helpers ── */
   function $(sel, root) {
     try {
       return (root || document).querySelector(sel);
-    } catch (e) {
+    } catch (_e) {
       return null;
     }
   }
   function $all(sel, root) {
     try {
       return Array.prototype.slice.call((root || document).querySelectorAll(sel));
-    } catch (e) {
+    } catch (_e) {
       return [];
     }
   }
@@ -64,7 +64,7 @@
   function pageSlug() {
     try {
       return (location.pathname || "lesson").replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "");
-    } catch (e) {
+    } catch (_e) {
       return "lesson";
     }
   }
@@ -74,14 +74,14 @@
     try {
       var raw = localStorage.getItem(STORE_KEY + ":" + pageSlug());
       return raw ? JSON.parse(raw) : null;
-    } catch (e) {
+    } catch (_e) {
       return null;
     }
   }
   function saveStore(data) {
     try {
       localStorage.setItem(STORE_KEY + ":" + pageSlug(), JSON.stringify(data));
-    } catch (e) {}
+    } catch (_e) {}
   }
 
   /* ── WebAudio synthesized chimes (no asset files) ── */
@@ -91,7 +91,7 @@
     try {
       var AC = window.AudioContext || window.webkitAudioContext;
       if (AC) audioCtx = new AC();
-    } catch (e) {
+    } catch (_e) {
       audioCtx = null;
     }
     return audioCtx;
@@ -111,7 +111,7 @@
       g.connect(ac.destination);
       osc.start(ac.currentTime + start);
       osc.stop(ac.currentTime + start + dur + 0.02);
-    } catch (e) {}
+    } catch (_e) {}
   }
   function chime(kind) {
     if (isMuted()) return;
@@ -119,7 +119,7 @@
     if (!ac) return;
     try {
       if (ac.state === "suspended") ac.resume();
-    } catch (e) {}
+    } catch (_e) {}
     if (kind === "correct") {
       tone(523.25, 0, 0.16, 0.16, "sine"); // C5
       tone(659.25, 0.09, 0.18, 0.15, "sine"); // E5
@@ -153,7 +153,7 @@
           document.documentElement.style.setProperty("--ntj-accent", theme.color);
         }
       }
-    } catch (e) {}
+    } catch (_e) {}
   }
 
   /* ── State ── */
@@ -178,7 +178,7 @@
       try {
         live.textContent = "";
         live.textContent = msg;
-      } catch (e) {}
+      } catch (_e) {}
     }
   }
 
@@ -279,7 +279,7 @@
     if (isMuted() && window.speechSynthesis) {
       try {
         window.speechSynthesis.cancel();
-      } catch (e) {}
+      } catch (_e) {}
     }
     announce(isMuted() ? "Sounds muted" : "Sounds on");
     persist();
@@ -319,7 +319,7 @@
       reading = true;
       if (nodes.read) nodes.read.setAttribute("aria-pressed", "true");
       announce("Reading problems aloud");
-    } catch (e) {
+    } catch (_e) {
       reading = false;
     }
   }
@@ -336,14 +336,14 @@
       setTimeout(function () {
         if (f.parentNode) f.parentNode.removeChild(f);
       }, 1000);
-    } catch (e) {}
+    } catch (_e) {}
   }
   function celebrateCard(card) {
     try {
       if (window.GameFX && typeof window.GameFX.celebrate === "function") {
         window.GameFX.celebrate(card);
       }
-    } catch (e) {}
+    } catch (_e) {}
   }
   function shakeOnce(card) {
     if (reduce || !card) return;
@@ -358,7 +358,7 @@
         ],
         { duration: 320, easing: "ease-in-out" },
       );
-    } catch (e) {}
+    } catch (_e) {}
   }
 
   /* ── Progress + XP rendering ── */
@@ -377,7 +377,7 @@
     if (reduce || !node || !window.GameFX || typeof window.GameFX.pop !== "function") return;
     try {
       window.GameFX.pop(node);
-    } catch (e) {}
+    } catch (_e) {}
   }
   function persist() {
     saveStore({
@@ -412,7 +412,7 @@
     try {
       var r = card.getBoundingClientRect();
       if (r.width) xpFloat(r.left + r.width / 2, r.top + 14, XP_PER_ITEM);
-    } catch (e) {}
+    } catch (_e) {}
     announce("Correct. Streak " + state.streak + ". " + state.xp + " XP.");
 
     renderHud();
@@ -439,7 +439,7 @@
     var close = function () {
       try {
         if (ov.parentNode) ov.parentNode.removeChild(ov);
-      } catch (e) {}
+      } catch (_e) {}
       document.removeEventListener("keydown", onKey);
       if (typeof onClose === "function") onClose();
     };
@@ -456,7 +456,7 @@
     var focusTarget = $(".ntj-cta", ov) || ov;
     try {
       focusTarget.focus();
-    } catch (e) {}
+    } catch (_e) {}
     return close;
   }
 
@@ -501,13 +501,13 @@
         var o = JSON.parse(raw);
         if (o && o.name) return String(o.name);
       }
-    } catch (e) {}
+    } catch (_e) {}
     try {
       if (window.NeftSaveResume && typeof window.NeftSaveResume.getTeacherSummary === "function") {
         var s = window.NeftSaveResume.getTeacherSummary();
         if (s && s.studentName) return String(s.studentName);
       }
-    } catch (e) {}
+    } catch (_e) {}
     return "";
   }
 
@@ -521,13 +521,13 @@
           window.GameFX.burst(cx - 80, window.innerHeight * 0.4);
           window.GameFX.burst(cx + 80, window.innerHeight * 0.4);
         }, 160);
-      } catch (e) {}
+      } catch (_e) {}
     }
     var name = studentName();
     var title = "";
     try {
       title = (document.title || "this lesson").split("|")[0].trim();
-    } catch (e) {
+    } catch (_e) {
       title = "this lesson";
     }
     var emoji = theme.emoji || "🏆";
@@ -558,7 +558,7 @@
       printBtn.addEventListener("click", function () {
         try {
           window.print();
-        } catch (e) {}
+        } catch (_e) {}
       });
     announce("Lesson mastered! You completed every problem.");
   }
@@ -614,7 +614,7 @@
         attributes: true,
         attributeFilter: ["class"],
       });
-    } catch (e) {}
+    } catch (_e) {}
   }
 
   /* ── Init ── */
@@ -647,14 +647,14 @@
         if (ac && ac.state === "suspended") {
           try {
             ac.resume();
-          } catch (e) {}
+          } catch (_e) {}
         }
         document.removeEventListener("pointerdown", unlock);
         document.removeEventListener("keydown", unlock);
       };
       document.addEventListener("pointerdown", unlock, { once: true });
       document.addEventListener("keydown", unlock, { once: true });
-    } catch (e) {
+    } catch (_e) {
       /* never break the lesson */
     }
   }

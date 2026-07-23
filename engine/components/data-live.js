@@ -268,7 +268,7 @@ function dotPlot(host, cfg, viewOpts) {
       );
       if (state.whatif)
         svg.addEventListener("click", (e) => {
-          const { a, b, xOf } = scale(),
+          const { a, b } = scale(),
             pt = svg.getBoundingClientRect();
           const vx =
             a + ((((e.clientX - pt.left) / pt.width) * W - padL) / (W - padL - padR)) * (b - a);

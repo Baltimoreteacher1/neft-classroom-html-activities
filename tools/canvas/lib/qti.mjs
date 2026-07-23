@@ -58,7 +58,7 @@ export function matchItem(q, ident, qi) {
   q.pairs.forEach((p) => {
     if (!matches.includes(p.match)) matches.push(p.match);
   });
-  const optionXml = (rid) =>
+  const optionXml = (_rid) =>
     matches
       .map(
         (m, i) =>

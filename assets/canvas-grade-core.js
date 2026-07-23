@@ -127,14 +127,14 @@
   function loadRoster() {
     try {
       return JSON.parse(global.localStorage.getItem(ROSTER_KEY) || "[]") || [];
-    } catch (e) {
+    } catch (_e) {
       return [];
     }
   }
   function saveRoster(list) {
     try {
       global.localStorage.setItem(ROSTER_KEY, JSON.stringify(list || []));
-    } catch (e) {}
+    } catch (_e) {}
     return list;
   }
   var NON_ASSIGN =
@@ -191,14 +191,14 @@
   function loadManualMap() {
     try {
       return JSON.parse(global.localStorage.getItem(MANUAL_MAP_KEY) || "{}") || {};
-    } catch (e) {
+    } catch (_e) {
       return {};
     }
   }
   function saveManualMap(map) {
     try {
       global.localStorage.setItem(MANUAL_MAP_KEY, JSON.stringify(map || {}));
-    } catch (e) {}
+    } catch (_e) {}
     return map;
   }
   /** Build a normalized(sourceName) -> rosterIndex lookup from a manual map. */
@@ -222,14 +222,14 @@
   function loadSettings() {
     try {
       return JSON.parse(global.localStorage.getItem(SETTINGS_KEY) || "{}") || {};
-    } catch (e) {
+    } catch (_e) {
       return {};
     }
   }
   function saveSettings(obj) {
     try {
       global.localStorage.setItem(SETTINGS_KEY, JSON.stringify(obj || {}));
-    } catch (e) {}
+    } catch (_e) {}
     return obj;
   }
 

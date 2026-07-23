@@ -57,7 +57,7 @@
     });
     try {
       localStorage.setItem(LANG_KEY, view);
-    } catch (e) {}
+    } catch (_e) {}
   }
   views.forEach(function (v) {
     var b = document.createElement("button");
@@ -76,7 +76,7 @@
   var saved = "both";
   try {
     saved = localStorage.getItem(LANG_KEY) || "both";
-  } catch (e) {}
+  } catch (_e) {}
   setView(saved);
 
   // --- 2. Interactive "Try it together" answers ----------------------------
@@ -184,7 +184,7 @@
       try {
         var p = location.pathname.replace(/index\.html?$/i, "").replace(/^\/+|\/+$/g, "");
         if (p) slug = p.replace(/[^A-Za-z0-9._/-]+/g, "-").replace(/\//g, "-");
-      } catch (e) {}
+      } catch (_e) {}
       var nowIso = new Date().toISOString();
       var payload = {
         activityId: slug,
@@ -212,7 +212,7 @@
           if (stu.name) payload.studentName = String(stu.name).slice(0, 60);
           if (stu.section) payload.section = String(stu.section).slice(0, 40);
         }
-      } catch (e) {}
+      } catch (_e) {}
       fetch("/api/progress/telemetry", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -220,7 +220,7 @@
         keepalive: true,
         credentials: "omit",
       }).catch(function () {});
-    } catch (e) {
+    } catch (_e) {
       /* never let telemetry break the letter */
     }
   }
@@ -240,13 +240,13 @@
     }
     try {
       cb.checked = localStorage.getItem(DONE_KEY) === "1";
-    } catch (e) {}
+    } catch (_e) {}
     paint();
     cb.addEventListener("change", function () {
       paint();
       try {
         localStorage.setItem(DONE_KEY, cb.checked ? "1" : "0");
-      } catch (e) {}
+      } catch (_e) {}
       if (cb.checked) familyCheckinPing();
     });
     footer.parentNode.insertBefore(label, footer);

@@ -23,7 +23,7 @@
     try {
       var s = (localStorage.getItem("nt-board-section") || "").toLowerCase();
       return SECTIONS[s] ? s : "main";
-    } catch (e) {
+    } catch (_e) {
       return "main";
     }
   }

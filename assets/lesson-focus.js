@@ -38,7 +38,7 @@
   try {
     prefersReduced =
       window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  } catch (e) {
+  } catch (_e) {
     /* default false */
   }
 
@@ -48,7 +48,7 @@
         document.documentElement.classList.contains("nt-embed") ||
         /[?&]embed=1\b/.test(window.location.search)
       );
-    } catch (e) {
+    } catch (_e) {
       return false;
     }
   }
@@ -57,7 +57,7 @@
     // Per-lesson namespace for persisted notes. Mirrors how save-resume scopes.
     try {
       return "ntfocus:" + (window.location.pathname || "/");
-    } catch (e) {
+    } catch (_e) {
       return "ntfocus:default";
     }
   }
@@ -72,28 +72,28 @@
   function lsGet(k) {
     try {
       return window.localStorage.getItem(k);
-    } catch (e) {
+    } catch (_e) {
       return null;
     }
   }
   function lsSet(k, v) {
     try {
       window.localStorage.setItem(k, v);
-    } catch (e) {
+    } catch (_e) {
       /* private mode / quota — degrade silently */
     }
   }
   function ssGet(k) {
     try {
       return window.sessionStorage.getItem(k);
-    } catch (e) {
+    } catch (_e) {
       return null;
     }
   }
   function ssSet(k, v) {
     try {
       window.sessionStorage.setItem(k, v);
-    } catch (e) {
+    } catch (_e) {
       /* degrade silently */
     }
   }
@@ -109,7 +109,7 @@
     cards: function () {
       try {
         return Array.prototype.slice.call(document.querySelectorAll(".q-card[data-q]"));
-      } catch (e) {
+      } catch (_e) {
         return [];
       }
     },
@@ -133,7 +133,7 @@
           behavior: prefersReduced ? "auto" : "smooth",
           block: "center",
         });
-      } catch (e) {
+      } catch (_e) {
         /* older browsers: ignore */
       }
     },
@@ -269,7 +269,7 @@
         this.load();
         try {
           this.area.focus();
-        } catch (e) {
+        } catch (_e) {
           /* ignore */
         }
       }
@@ -336,7 +336,7 @@
       window.setTimeout(function () {
         if (toastEl) toastEl.classList.remove("ntf-toast-show");
       }, 4200);
-    } catch (e) {
+    } catch (_e) {
       /* ignore */
     }
   }
@@ -473,7 +473,7 @@
         attributes: true,
         attributeFilter: ["class"],
       });
-    } catch (e) {
+    } catch (_e) {
       /* MutationObserver unsupported: focus still works, just no auto-advance */
     }
   }
@@ -490,7 +490,7 @@
     } catch (e) {
       try {
         if (window.console && console.warn) console.warn("[lesson-focus] init failed", e);
-      } catch (e2) {
+      } catch (_e2) {
         /* never break the lesson */
       }
     }

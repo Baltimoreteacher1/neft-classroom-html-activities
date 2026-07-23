@@ -135,14 +135,14 @@ export function mountVoiceNav(opts) {
       if (listening) {
         try {
           rec.start();
-        } catch (err) {
+        } catch (_err) {
           /* start() throws if called too fast; ignore */
         }
       }
     };
     try {
       rec.start();
-    } catch (err) {
+    } catch (_err) {
       /* already started */
     }
   }
@@ -154,7 +154,7 @@ export function mountVoiceNav(opts) {
     if (rec) {
       try {
         rec.stop();
-      } catch (err) {
+      } catch (_err) {
         /* ignore */
       }
     }

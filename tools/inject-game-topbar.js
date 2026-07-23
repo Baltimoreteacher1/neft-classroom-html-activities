@@ -49,7 +49,7 @@ function unitNum(file) {
 }
 
 function header(file, html) {
-  const n = unitNum(file);
+  const _n = unitNum(file);
   const title = esc(gameTitle(html));
   return (
     `\n    <!-- nt-game-topbar-injected:begin (tools/inject-game-topbar.js) -->` +

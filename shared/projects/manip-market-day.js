@@ -265,7 +265,7 @@
               "⚠️ Supplier shock: your cost rose to " +
               money(state.cost) +
               ". Re-price to stay above cost!";
-            var mb = el.querySelector("[data-marginbox]");
+            var _mb = el.querySelector("[data-marginbox]");
             // rebuild facts cost + derived
             render();
           }

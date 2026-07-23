@@ -89,10 +89,10 @@
     wrap.dataset.seInit = "1";
     try {
       buildPrintAction(wrap);
-    } catch (e) {}
+    } catch (_e) {}
     try {
       collapseAnswerKey(wrap);
-    } catch (e) {}
+    } catch (_e) {}
   }
 
   if (document.readyState === "loading") {

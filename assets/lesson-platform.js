@@ -85,7 +85,7 @@
   function logWarn(msg, err) {
     try {
       if (window.console && console.warn) console.warn("[lesson-platform] " + msg, err || "");
-    } catch (e) {
+    } catch (_e) {
       /* ignore */
     }
   }
@@ -99,7 +99,7 @@
         var h = links[i].getAttribute("href") || "";
         if (h.indexOf(href) !== -1) return true;
       }
-    } catch (e) {
+    } catch (_e) {
       /* ignore */
     }
     return false;
@@ -112,7 +112,7 @@
         var s = scripts[i].getAttribute("src") || "";
         if (s.indexOf(src) !== -1) return true;
       }
-    } catch (e) {
+    } catch (_e) {
       /* ignore */
     }
     return false;
@@ -228,7 +228,7 @@
     return chain.then(function () {
       try {
         window.NeftLessonPlatform.layers = results;
-      } catch (e) {
+      } catch (_e) {
         /* ignore */
       }
       return results;
@@ -242,11 +242,11 @@
       } else {
         fn();
       }
-    } catch (e) {
+    } catch (_e) {
       // Last-ditch: try to run anyway.
       try {
         fn();
-      } catch (e2) {
+      } catch (_e2) {
         /* give up silently — never break the lesson */
       }
     }

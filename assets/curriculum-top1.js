@@ -116,7 +116,7 @@
     for (var i = 0; i < rules.length; i++) {
       try {
         if (new RegExp(rules[i].match, "i").test(hay)) return rules[i];
-      } catch (e) {}
+      } catch (_e) {}
     }
     return (
       (DATA.taxonomy && DATA.taxonomy.fallback) || {
@@ -228,7 +228,7 @@
     );
   }
 
-  function uifrNotes(unit, lesson) {
+  function uifrNotes(_unit, lesson) {
     var sup = supportFor(lesson);
     var std = lessonStandard(lesson);
     return [
@@ -285,7 +285,7 @@
     ta.select();
     try {
       document.execCommand("copy");
-    } catch (e) {}
+    } catch (_e) {}
     document.body.removeChild(ta);
   }
 
@@ -369,7 +369,7 @@
     var savedSection = "";
     try {
       savedSection = localStorage.getItem(LS_SECTION) || "";
-    } catch (e) {}
+    } catch (_e) {}
 
     var secWrap = el("label", "top1-field", "Class");
     var sec = el("select", "top1-select");
@@ -407,7 +407,7 @@
       try {
         localStorage.setItem(LS_SECTION, sec.value);
         localStorage.setItem(LS_TODAY, uSel.value + ":" + lSel.value);
-      } catch (e) {}
+      } catch (_e) {}
       var u = hub.unitsData[+uSel.value];
       var l = u.lessons[+lSel.value];
       if (l) onChange(u, l, sec.value);
@@ -424,7 +424,7 @@
     var saved = null;
     try {
       saved = localStorage.getItem(LS_TODAY);
-    } catch (e) {}
+    } catch (_e) {}
     var ui = 0,
       li = 0;
     if (saved && /^\d+:\d+$/.test(saved)) {
@@ -457,7 +457,7 @@
     return renderStudent(stage);
   }
 
-  function lessonCard(u, l, opts) {
+  function lessonCard(_u, l, opts) {
     opts = opts || {};
     var card = el("div", "top1-lesson-card");
     var std = lessonStandard(l);
@@ -1018,7 +1018,7 @@
   function loadDisplay() {
     try {
       return JSON.parse(localStorage.getItem(LS_DISPLAY)) || {};
-    } catch (e) {
+    } catch (_e) {
       return {};
     }
   }
@@ -1082,7 +1082,7 @@
             cfg[g.key] = o[0];
             try {
               localStorage.setItem(LS_DISPLAY, JSON.stringify(cfg));
-            } catch (e) {}
+            } catch (_e) {}
             applyDisplay(cfg);
             row.querySelectorAll(".top1-chip").forEach(function (c) {
               c.setAttribute("aria-pressed", "false");

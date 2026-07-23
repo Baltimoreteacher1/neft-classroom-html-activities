@@ -47,14 +47,14 @@
   function readQueue() {
     try {
       return JSON.parse(localStorage.getItem(QUEUE_KEY) || "[]");
-    } catch (e) {
+    } catch (_e) {
       return [];
     }
   }
   function writeQueue(q) {
     try {
       localStorage.setItem(QUEUE_KEY, JSON.stringify(q));
-    } catch (e) {}
+    } catch (_e) {}
   }
 
   /* student_ref: the alias/handle the student already typed elsewhere. Seamless
@@ -70,7 +70,7 @@
     var r = "";
     try {
       r = localStorage.getItem(REF_KEY) || "";
-    } catch (e) {}
+    } catch (_e) {}
     if (r) return r;
     if (global.NeftIdentity) return global.NeftIdentity.studentId();
     // No shared identity on this page: use a stable per-device anon id so each
@@ -79,12 +79,12 @@
     var anon = "";
     try {
       anon = localStorage.getItem(ANON_KEY) || "";
-    } catch (e) {}
+    } catch (_e) {}
     if (!anon) {
       anon = "anon-" + uuid().slice(0, 8);
       try {
         localStorage.setItem(ANON_KEY, anon);
-      } catch (e) {}
+      } catch (_e) {}
     }
     return anon;
   }
@@ -202,7 +202,7 @@
     NT.finish = function (opts) {
       try {
         orig && orig.apply(NT, arguments);
-      } catch (e) {}
+      } catch (_e) {}
       try {
         // Derive score/total from opts (never reads opts.student — that's PII).
         var correct = opts.correct,
@@ -222,7 +222,7 @@
           activity_slug: cfg.activity_slug,
           misconception_tags: opts.misconception_tags || [],
         });
-      } catch (e) {}
+      } catch (_e) {}
     };
     NT.__syncWrapped = true;
   }

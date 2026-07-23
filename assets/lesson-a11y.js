@@ -38,21 +38,21 @@
   function $(sel, root) {
     try {
       return (root || document).querySelector(sel);
-    } catch (e) {
+    } catch (_e) {
       return null;
     }
   }
   function $all(sel, root) {
     try {
       return Array.prototype.slice.call((root || document).querySelectorAll(sel));
-    } catch (e) {
+    } catch (_e) {
       return [];
     }
   }
   function txt(el) {
     try {
       return (el && el.textContent ? el.textContent : "").replace(/\s+/g, " ").trim();
-    } catch (e) {
+    } catch (_e) {
       return "";
     }
   }
@@ -70,14 +70,14 @@
         if (el.getAttribute("placeholder")) return true;
       }
       return false;
-    } catch (e) {
+    } catch (_e) {
       return true; // assume named rather than risk over-labeling
     }
   }
   function cssEscape(s) {
     try {
       if (window.CSS && CSS.escape) return CSS.escape(s);
-    } catch (e) {}
+    } catch (_e) {}
     return String(s).replace(/["\\\]\[]/g, "\\$&");
   }
   function setName(el, name) {
@@ -85,7 +85,7 @@
       if (el && name && !el.getAttribute("aria-label")) {
         el.setAttribute("aria-label", name);
       }
-    } catch (e) {}
+    } catch (_e) {}
   }
 
   // ---- live region ---------------------------------------------------------
@@ -103,7 +103,7 @@
         "position:absolute;width:1px;height:1px;margin:-1px;padding:0;" +
         "overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0;";
       if (document.body) document.body.appendChild(live);
-    } catch (e) {
+    } catch (_e) {
       return null;
     }
     return live;
@@ -123,7 +123,7 @@
       }, 30);
       // Guard against a non-running timer environment.
       if (!t) live.textContent = String(msg).slice(0, 300);
-    } catch (e) {
+    } catch (_e) {
       /* never throw */
     }
   }
@@ -156,10 +156,10 @@
         try {
           if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
           target.focus();
-        } catch (e) {}
+        } catch (_e) {}
       });
       if (document.body) document.body.insertBefore(link, document.body.firstChild);
-    } catch (e) {
+    } catch (_e) {
       /* ignore */
     }
   }
@@ -175,7 +175,7 @@
           setName(btn, ("Option " + (letter || "") + " " + rest).trim());
         }
         btn.setAttribute(DONE_ATTR, "1");
-      } catch (e) {}
+      } catch (_e) {}
     });
 
     // True/False buttons.
@@ -186,7 +186,7 @@
           setName(btn, v === "true" ? "True" : v === "false" ? "False" : "Answer option");
         }
         btn.setAttribute(DONE_ATTR, "1");
-      } catch (e) {}
+      } catch (_e) {}
     });
 
     // Check / Check All buttons.
@@ -194,7 +194,7 @@
       try {
         if (!hasName(btn)) setName(btn, "Check answer");
         btn.setAttribute(DONE_ATTR, "1");
-      } catch (e) {}
+      } catch (_e) {}
     });
 
     // Fill-in inputs (answer lives on data-answer; never expose it as a label).
@@ -206,7 +206,7 @@
           setName(inp, ("Answer" + (num ? " for " + num : "")).trim());
         }
         inp.setAttribute(DONE_ATTR, "1");
-      } catch (e) {}
+      } catch (_e) {}
     });
 
     // Drag items / zones get role + names so SR users get context.
@@ -222,7 +222,7 @@
           if (!parent.getAttribute("aria-label")) parent.setAttribute("aria-label", "Item bank");
         }
         it.setAttribute(DONE_ATTR, "1");
-      } catch (e) {}
+      } catch (_e) {}
     });
     $all(".drag-zone:not([" + DONE_ATTR + "])").forEach(function (z) {
       try {
@@ -232,7 +232,7 @@
           if (cat) setName(z, "Drop zone: " + cat);
         }
         z.setAttribute(DONE_ATTR, "1");
-      } catch (e) {}
+      } catch (_e) {}
     });
 
     // Generic safety net: any button/[role=button] with no name at all gets a
@@ -242,7 +242,7 @@
         try {
           if (!hasName(el)) setName(el, "Button");
           el.setAttribute(DONE_ATTR, "1");
-        } catch (e) {}
+        } catch (_e) {}
       },
     );
   }
@@ -273,7 +273,7 @@
         attributes: true,
         attributeFilter: ["class"],
       });
-    } catch (e) {
+    } catch (_e) {
       /* ignore */
     }
   }
@@ -303,7 +303,7 @@
           return;
         }
       }
-    } catch (e) {
+    } catch (_e) {
       /* ignore */
     }
   }
@@ -315,7 +315,7 @@
       ensureSkipLink();
       labelControls();
       wireFocusOnGrade();
-    } catch (e) {
+    } catch (_e) {
       /* never throw into the lesson */
     }
   }
@@ -333,7 +333,7 @@
     refresh: function () {
       try {
         labelControls();
-      } catch (e) {}
+      } catch (_e) {}
     },
     version: "1.0.0",
   };

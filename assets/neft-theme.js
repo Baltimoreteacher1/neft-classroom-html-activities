@@ -37,7 +37,7 @@
     try {
       var v = localStorage.getItem(STORAGE_KEY);
       return v === "light" || v === "dark" ? v : null;
-    } catch (e) {
+    } catch (_e) {
       return null;
     }
   }
@@ -52,7 +52,7 @@
     if (persist) {
       try {
         localStorage.setItem(STORAGE_KEY, theme);
-      } catch (e) {}
+      } catch (_e) {}
     }
     syncButton(theme);
     window.dispatchEvent(new CustomEvent("neft-theme-change", { detail: { theme: theme } }));
