@@ -2111,10 +2111,18 @@
 
     updateResultCount();
 
+    // Debounce: sibling modules (sidebar, studio-journey, top1) mutate this
+    // same subtree, so run one coalesced sweep per burst instead of a full
+    // synchronous querySelectorAll pass on every single mutation.
+    var observerTimer = null;
     var observer = new MutationObserver(function () {
-      patchStaticGoogleSlidesLinks();
-      injectReadinessLinks();
-      scheduleEnhance();
+      if (observerTimer) return;
+      observerTimer = setTimeout(function () {
+        observerTimer = null;
+        patchStaticGoogleSlidesLinks();
+        injectReadinessLinks();
+        scheduleEnhance();
+      }, 150);
     });
     if (hubApi.hubEl) {
       observer.observe(hubApi.hubEl, { childList: true, subtree: true });

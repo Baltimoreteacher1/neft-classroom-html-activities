@@ -133,15 +133,29 @@
       });
   }
 
-  /** Push all local checkmarks up (migration / first visit). */
+  /**
+   * Push all local checkmarks up ONCE per student identity (migration / first
+   * visit). Guarded so a student with N completions no longer re-POSTs all N on
+   * EVERY hub load — after the one-time migration, individual checks sync via
+   * syncToggle and remote state is merged down by hydrateFromServer. The flag
+   * is keyed by studentKey+section, so switching student or class re-migrates.
+   */
   function pushAllLocal(progress, parseKeyFn) {
     if (!canSync()) return;
+    var flagKey = null;
+    try {
+      flagKey = "nt-curriculum-progress-migrated:" + (studentKey() || "") + ":" + (section() || "");
+      if (localStorage.getItem(flagKey)) return;
+    } catch (error) {}
     Object.keys(progress).forEach(function (key) {
       if (!progress[key]) return;
       var parsed = parseKeyFn(key);
       if (!parsed) return;
       syncToggle(parsed.lessonId, parsed.href, true);
     });
+    try {
+      if (flagKey) localStorage.setItem(flagKey, "1");
+    } catch (error) {}
   }
 
   window.CurriculumProgressBridge = {

@@ -776,18 +776,30 @@
   }
 
   function init() {
+    // Only the launch manifest is required to build the panel; supports /
+    // workflow / uifr are enrichment, so a single missing/404 enrichment file
+    // must NOT take down the entire teacher planning UI (previously any one
+    // rejection killed the whole Promise.all and the panel silently vanished).
     Promise.all([
       getJson("/data/curriculum-launch-manifest.json"),
-      getJson("/data/curriculum-supports.json"),
-      getJson("/data/curriculum-teacher-workflow.json"),
-      getJson("/data/curriculum-uifr-level4.json"),
+      getJson("/data/curriculum-supports.json").catch(function () {
+        return {};
+      }),
+      getJson("/data/curriculum-teacher-workflow.json").catch(function () {
+        return {};
+      }),
+      getJson("/data/curriculum-uifr-level4.json").catch(function () {
+        return {};
+      }),
     ])
       .then(function (results) {
-        DATA.launch = results[0];
+        DATA.launch = results[0] || {};
         DATA.supports = results[1];
         DATA.workflow = results[2];
         DATA.uifr = results[3];
         lessons = DATA.launch.lessons || [];
+        // No lessons → nothing to plan against; bail before touching lessons[0].
+        if (!lessons.length) return;
         lessons.forEach(function (lesson) {
           lessonsById[lesson.id] = lesson;
         });

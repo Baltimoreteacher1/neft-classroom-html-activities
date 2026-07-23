@@ -22,11 +22,15 @@
     panel.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
-  function showTeacherView(view) {
+  function showTeacherView(view, attempts) {
+    attempts = attempts || 0;
     var modeButton = document.getElementById("hub-mode-toggle");
     if (!modeButton) {
+      // Bounded wait (~6s): if the mode toggle never renders (e.g. broken
+      // controls bar), give up instead of polling forever every 150ms.
+      if (attempts >= 40) return;
       setTimeout(function () {
-        showTeacherView(view);
+        showTeacherView(view, attempts + 1);
       }, 150);
       return;
     }
