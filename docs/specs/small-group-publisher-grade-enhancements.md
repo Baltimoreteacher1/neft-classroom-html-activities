@@ -39,6 +39,15 @@ teacher route, worksheets), benchmarked against professional publishers
 > print` resets the tokens to light so a dark-theme user still prints on white.
 > Verified with Playwright screenshots in both themes (light mode pixel-identical
 > to before) and a light-surface probe.
+>
+> **High-contrast completion (Wave 6):** the two accessibility modes the audit
+> also named under item 19 — `@media (prefers-contrast: more)` (darker lines/ink,
+> heavier focus ring, thicker card borders) and `@media (forced-colors: active)`
+> (Windows High Contrast) — are now in the inline stylesheet. Because
+> forced-colors flattens fill/border colors to the system palette, every state
+> conveyed by color alone (selected tab, correct/wrong, on/off, pressed votes)
+> re-asserts with a system `Highlight`/`GrayText` outline so it stays visible.
+> Verified via Playwright `forcedColors:'active'` + `contrast:'more'`.
 
 The system is already unusually deep for a classroom-built product: bilingual
 EN/ES scaffolds everywhere, real manipulative labs, typed visual workspaces,
