@@ -1,0 +1,1269 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sub Plans · Neft Teacher</title>
+    <meta
+      name="description"
+      content="Build a substitute-ready absence packet from your Grade 6 math lessons: daily schedule, per-period objectives and resource actions, standing procedures, and emergency info. Local-first, teacher-only."
+    />
+    <meta name="robots" content="noindex" />
+    <style>
+      :root {
+        --ink: #0f2b3c;
+        --muted: #5e6e7e;
+        --line: #e2e7ec;
+        --accent: #1a6fb5;
+        --good: #157347;
+        --warn: #b45309;
+        --bg: #f4f6f8;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.5;
+      }
+      header {
+        background: #0f2b3c;
+        color: #fff;
+        padding: 16px 22px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        justify-content: space-between;
+      }
+      header h1 {
+        font-size: 1.1rem;
+        margin: 0;
+      }
+      header small {
+        display: block;
+        color: #9db4c6;
+        font-weight: 500;
+        font-size: 0.78rem;
+      }
+      header a {
+        color: #cfe6f5;
+        text-decoration: none;
+        font-size: 0.85rem;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 22px;
+      }
+      .bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 14px 16px;
+        margin-bottom: 18px;
+      }
+      label {
+        font-size: 0.75rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      select,
+      input,
+      button,
+      textarea {
+        font: inherit;
+        color: var(--ink);
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 9px 12px;
+      }
+      button {
+        cursor: pointer;
+        font-weight: 600;
+        background: #0f2b3c;
+        color: #fff;
+        border: none;
+      }
+      button.ghost {
+        background: #eef2f5;
+        color: var(--ink);
+      }
+      button:active {
+        transform: translateY(1px);
+      }
+      .grow {
+        flex: 1;
+      }
+      #msg {
+        min-height: 1.2em;
+        color: var(--muted);
+        font-size: 0.9rem;
+        margin: 0 2px 14px;
+      }
+      #msg.err {
+        color: #b42318;
+      }
+      #msg.ok {
+        color: var(--good);
+      }
+      .card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 18px 20px;
+        margin: 0 0 20px;
+        box-shadow: 0 2px 10px rgba(15, 43, 60, 0.05);
+      }
+      @media print {
+        header,
+        .bar,
+        #msg,
+        .no-print {
+          display: none;
+        }
+        body {
+          background: #fff;
+        }
+        .card {
+          break-inside: avoid;
+          box-shadow: none;
+        }
+      }
+
+      /* ---- tool-specific ---- */
+      h2.sec {
+        font-size: 1rem;
+        margin: 0 0 4px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .hint {
+        font-size: 0.8rem;
+        color: var(--muted);
+        margin: 0 0 14px;
+      }
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        margin-bottom: 12px;
+      }
+      .field label {
+        margin: 0;
+      }
+      .field input,
+      .field textarea {
+        width: 100%;
+      }
+      textarea {
+        resize: vertical;
+        min-height: 60px;
+        line-height: 1.45;
+      }
+      .grid2 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: 0 16px;
+      }
+      .grid3 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 0 16px;
+      }
+      .period {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 14px 16px;
+        margin-bottom: 14px;
+        background: #fbfcfd;
+      }
+      .period .row1 {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: flex-end;
+      }
+      .period .row1 .field {
+        margin-bottom: 0;
+      }
+      .pnum {
+        font-weight: 700;
+        color: var(--accent);
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
+      .del {
+        background: #fce8e6;
+        color: #b42318;
+        padding: 7px 11px;
+        font-size: 0.85rem;
+      }
+      .readback {
+        margin-top: 12px;
+        padding: 12px 14px;
+        border: 1px dashed var(--line);
+        border-radius: 12px;
+        background: #fff;
+        font-size: 0.9rem;
+      }
+      .readback h4 {
+        margin: 0 0 6px;
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--muted);
+      }
+      .readback .meta {
+        margin: 0 0 8px;
+      }
+      .readback .meta b {
+        color: var(--ink);
+      }
+      ul.actions {
+        list-style: none;
+        margin: 6px 0 0;
+        padding: 0;
+      }
+      ul.actions li {
+        padding: 4px 0;
+        border-top: 1px solid var(--line);
+        font-size: 0.9rem;
+      }
+      ul.actions li:first-child {
+        border-top: none;
+      }
+      ul.actions a {
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 600;
+      }
+      ul.actions a:hover {
+        text-decoration: underline;
+      }
+      .actions .url {
+        color: var(--muted);
+        font-size: 0.78rem;
+        word-break: break-all;
+      }
+      .addbtn {
+        background: #eef2f5;
+        color: var(--accent);
+        border: 1px dashed var(--accent);
+        width: 100%;
+        padding: 11px;
+        margin-top: 4px;
+      }
+      .miniprint {
+        display: none;
+      }
+      .tag {
+        display: inline-block;
+        font-size: 0.72rem;
+        padding: 2px 8px;
+        border-radius: 20px;
+        background: #eef2f5;
+        color: var(--muted);
+        margin-left: 6px;
+      }
+      .tag.plan {
+        background: #fef3e2;
+        color: var(--warn);
+      }
+      .tag.duty {
+        background: #e8f0fb;
+        color: var(--accent);
+      }
+
+      /* print-only structure */
+      .print-cover,
+      .print-foot {
+        display: none;
+      }
+      @media print {
+        .wrap {
+          max-width: none;
+          padding: 0;
+        }
+        .no-print {
+          display: none !important;
+        }
+        select,
+        input,
+        textarea {
+          border: none;
+          padding: 0;
+          background: transparent;
+          -webkit-appearance: none;
+          appearance: none;
+        }
+        textarea {
+          min-height: 0;
+          height: auto;
+          overflow: visible;
+          white-space: pre-wrap;
+        }
+        .period {
+          background: #fff;
+          break-inside: avoid;
+        }
+        .addbtn,
+        .del,
+        .pnum select {
+          display: none !important;
+        }
+        .miniprint {
+          display: block;
+          font-size: 0.9rem;
+        }
+        .print-cover {
+          display: block;
+        }
+        .print-foot {
+          display: block;
+          text-align: center;
+          color: var(--muted);
+          font-size: 0.78rem;
+          margin-top: 14px;
+        }
+        a {
+          color: #0f2b3c !important;
+          text-decoration: none;
+        }
+        h2.sec {
+          font-size: 1.05rem;
+        }
+        body {
+          font-size: 12px;
+        }
+      }
+    </style>
+
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
+  <body>
+    <header>
+      <h1>
+        🗓️ Sub Plans <small>Substitute-ready absence packet from your lessons · teacher-only</small>
+      </h1>
+      <div><a href="/teacher-tools/">← Teacher Tools</a></div>
+    </header>
+
+    <div class="wrap">
+      <div class="bar no-print">
+        <div>
+          <label for="dateOut">Date out</label><br />
+          <input type="date" id="dateOut" />
+        </div>
+        <div class="grow"></div>
+        <button id="btnPrint" type="button">🖨 Print packet</button>
+        <button id="btnSaveTpl" class="ghost" type="button">Save template</button>
+        <button id="btnLoadTpl" class="ghost" type="button">Load template</button>
+        <button id="btnSample" class="ghost" type="button">Sample</button>
+        <button id="btnReset" class="ghost" type="button">Reset day</button>
+      </div>
+
+      <p id="msg" role="status" aria-live="polite"></p>
+
+      <!-- COVER / HEADER INFO -->
+      <section class="card">
+        <h2 class="sec">📋 Cover &amp; contacts</h2>
+        <p class="hint">
+          Who's out, who's covering, and who to ask. This prints at the top of the packet.
+        </p>
+        <div class="field">
+          <label for="cvIntro">Note to the substitute</label>
+          <textarea id="cvIntro" data-k="intro"></textarea>
+        </div>
+        <div class="grid2">
+          <div class="field">
+            <label for="cvTeacher">Teacher</label><input id="cvTeacher" data-k="teacher" />
+          </div>
+          <div class="field">
+            <label for="cvSub">Substitute</label><input id="cvSub" data-k="sub" />
+          </div>
+          <div class="field">
+            <label for="cvRoom">Room</label><input id="cvRoom" data-k="room" />
+          </div>
+          <div class="field">
+            <label for="cvSubject">Subject</label><input id="cvSubject" data-k="subject" />
+          </div>
+          <div class="field">
+            <label for="cvDates">Date(s) out</label><input id="cvDates" data-k="dates" />
+          </div>
+          <div class="field">
+            <label for="cvPlanning">Your planning period</label
+            ><input id="cvPlanning" data-k="planning" />
+          </div>
+          <div class="field">
+            <label for="cvColleague">Go-to colleague (name)</label
+            ><input id="cvColleague" data-k="colleague" />
+          </div>
+          <div class="field">
+            <label for="cvColleagueRoom">Colleague room</label
+            ><input id="cvColleagueRoom" data-k="colleagueRoom" />
+          </div>
+          <div class="field">
+            <label for="cvOffice">Main office ext.</label><input id="cvOffice" data-k="office" />
+          </div>
+          <div class="field">
+            <label for="cvNurse">Nurse ext.</label><input id="cvNurse" data-k="nurse" />
+          </div>
+        </div>
+      </section>
+
+      <!-- DAILY SCHEDULE -->
+      <section class="card">
+        <h2 class="sec">🕐 Daily schedule</h2>
+        <p class="hint">
+          Add each period in order. For a class, pick the lesson and its objective, agenda, and
+          print/project checklist auto-fill.
+        </p>
+        <div id="periods"></div>
+        <button id="btnAddPeriod" class="addbtn no-print" type="button">+ Add period</button>
+      </section>
+
+      <!-- STANDING PROCEDURES -->
+      <section class="card">
+        <h2 class="sec">🔁 Standing procedures</h2>
+        <p class="hint">
+          Your everyday classroom routines. Save these as a template so the next absence is
+          near-instant.
+        </p>
+        <div id="procWrap"></div>
+      </section>
+
+      <!-- CLASS SUPPORT -->
+      <section class="card">
+        <h2 class="sec">🤝 Class support</h2>
+        <p class="hint">
+          General, non-confidential notes only. Do not list private student information here.
+        </p>
+        <div class="field">
+          <label for="spHelpers">Students who can help</label
+          ><textarea id="spHelpers" data-k="helpers"></textarea>
+        </div>
+        <div class="field">
+          <label for="spWatch">Students to keep an eye on</label
+          ><textarea id="spWatch" data-k="watch"></textarea>
+        </div>
+        <div class="field">
+          <label for="spAccom">Accommodations reminder</label
+          ><textarea id="spAccom" data-k="accom"></textarea>
+        </div>
+      </section>
+
+      <div class="print-foot">Prepared with Neft Teacher Sub Plans</div>
+    </div>
+
+    <script>
+      "use strict";
+      (function () {
+        var PLAN_KEY = "nt-sub-plans-v1";
+        var TPL_KEY = "nt-sub-procedures-v1";
+
+        var LESSONS = []; // manifest lessons
+        var LESSON_BY_ID = {}; // id -> lesson
+
+        var $ = function (id) {
+          return document.getElementById(id);
+        };
+        var msgEl = $("msg");
+
+        function setMsg(text, cls) {
+          msgEl.textContent = text || "";
+          msgEl.className = cls || "";
+        }
+
+        function escapeHtml(s) {
+          return String(s == null ? "" : s)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+        }
+
+        // ---------- default content ----------
+        var DEFAULT_INTRO =
+          "Dear substitute — thank you for being here today! Everything you need is below. " +
+          "The students know the routines; keep it calm and positive and you'll have a great day.";
+        var DEFAULT_AGENDA =
+          "1) Warm-up (on the board)\n2) Guided notes together\n3) Independent practice\n4) Exit ticket";
+        var DEFAULT_EARLY =
+          "Students who finish early may check their work, help a neighbor, or start tonight's homework.";
+
+        var PROC_FIELDS = [
+          {
+            k: "entry",
+            label: "Entry routine & attendance",
+            def: "Students enter, sit in assigned seats, and start the warm-up silently. Take attendance in the first 5 minutes using the seating chart on the desk.",
+          },
+          {
+            k: "bathroom",
+            label: "Bathroom / hall passes",
+            def: "One student out at a time with the pass. They sign the log by the door. No passes in the first or last 10 minutes of class.",
+          },
+          {
+            k: "behavior",
+            label: "Behavior expectations & problems",
+            def: "Be respectful, stay in your seat, raise your hand. For minor issues give a quiet reminder. For anything serious, call the main office — do not send students to the hall unsupervised.",
+          },
+          {
+            k: "devices",
+            label: "Phone / device policy",
+            def: "Phones stay away and silent. Chromebooks are used only for the assigned activity.",
+          },
+          {
+            k: "techbackup",
+            label: "Technology backup plan",
+            def: "If devices or the site are down, use the printed handout for today's lesson and have students work in pairs. Do not spend class troubleshooting tech.",
+          },
+          {
+            k: "fire",
+            label: "Fire drill / emergency",
+            def: "Grab the red folder by the door, lead students to the posted exit route, keep them together, and take attendance outside. Do not let anyone leave the group.",
+          },
+          {
+            k: "dismissal",
+            label: "Dismissal routine",
+            def: "Students stay seated until the bell. Room is cleaned up and chairs pushed in before they line up at the door.",
+          },
+          {
+            k: "leavework",
+            label: "Where to leave work + a note",
+            def: "Leave collected work in the tray on my desk. Please jot a quick note on how each class went — who was helpful, any issues. It means a lot!",
+          },
+        ];
+
+        // current plan state (in memory)
+        var plan = null;
+
+        function blankPlan() {
+          return {
+            dateOut: "",
+            cover: {
+              intro: DEFAULT_INTRO,
+              teacher: "",
+              sub: "",
+              room: "",
+              subject: "Grade 6 Math",
+              dates: "",
+              planning: "",
+              colleague: "",
+              colleagueRoom: "",
+              office: "",
+              nurse: "",
+            },
+            periods: [],
+            support: {
+              helpers: "",
+              watch: "",
+              accom:
+                "Some students have IEP/504 accommodations — the school keeps the confidential specifics. Follow the posted seating chart and give extra time as noted on the desk.",
+            },
+          };
+        }
+
+        function blankPeriod() {
+          return {
+            id: "p" + Date.now() + "-" + Math.floor(Math.random() * 1000),
+            time: "",
+            classLabel: "",
+            type: "Class",
+            lessonId: "",
+            agenda: DEFAULT_AGENDA,
+            early: DEFAULT_EARLY,
+            notes: "",
+          };
+        }
+
+        function defaultProcedures() {
+          var o = {};
+          PROC_FIELDS.forEach(function (f) {
+            o[f.k] = f.def;
+          });
+          return o;
+        }
+
+        // procedures live separately so they can be templated
+        var procedures = defaultProcedures();
+
+        // ---------- persistence ----------
+        function savePlan() {
+          try {
+            localStorage.setItem(PLAN_KEY, JSON.stringify({ plan: plan, procedures: procedures }));
+          } catch (e) {
+            /* quota / disabled — non-fatal */
+          }
+        }
+
+        function loadPlan() {
+          try {
+            var raw = localStorage.getItem(PLAN_KEY);
+            if (!raw) return false;
+            var data = JSON.parse(raw);
+            if (data && data.plan) {
+              plan = mergePlan(data.plan);
+              if (data.procedures) procedures = mergeProcedures(data.procedures);
+              return true;
+            }
+          } catch (e) {
+            /* corrupt — fall back to blank */
+          }
+          return false;
+        }
+
+        function mergePlan(p) {
+          var base = blankPlan();
+          if (!p || typeof p !== "object") return base;
+          base.dateOut = p.dateOut || "";
+          if (p.cover)
+            Object.keys(base.cover).forEach(function (k) {
+              if (typeof p.cover[k] === "string") base.cover[k] = p.cover[k];
+            });
+          if (p.support)
+            Object.keys(base.support).forEach(function (k) {
+              if (typeof p.support[k] === "string") base.support[k] = p.support[k];
+            });
+          base.periods = Array.isArray(p.periods)
+            ? p.periods.map(function (pd) {
+                var b = blankPeriod();
+                [
+                  "id",
+                  "time",
+                  "classLabel",
+                  "type",
+                  "lessonId",
+                  "agenda",
+                  "early",
+                  "notes",
+                ].forEach(function (k) {
+                  if (typeof pd[k] === "string") b[k] = pd[k];
+                });
+                return b;
+              })
+            : [];
+          return base;
+        }
+
+        function mergeProcedures(p) {
+          var base = defaultProcedures();
+          if (p && typeof p === "object") {
+            PROC_FIELDS.forEach(function (f) {
+              if (typeof p[f.k] === "string") base[f.k] = p[f.k];
+            });
+          }
+          return base;
+        }
+
+        // template = procedures + schedule skeleton (times/labels/types, no lesson picks)
+        function saveTemplate() {
+          var skeleton = plan.periods.map(function (pd) {
+            return { time: pd.time, classLabel: pd.classLabel, type: pd.type };
+          });
+          try {
+            localStorage.setItem(
+              TPL_KEY,
+              JSON.stringify({
+                procedures: procedures,
+                cover: coverTemplate(),
+                skeleton: skeleton,
+              }),
+            );
+            setMsg(
+              "Template saved — procedures, contacts, and your period skeleton are ready for next time.",
+              "ok",
+            );
+          } catch (e) {
+            setMsg("Could not save template (storage unavailable).", "err");
+          }
+        }
+
+        function coverTemplate() {
+          // reusable cover bits (not sub name / dates which change each absence)
+          return {
+            intro: plan.cover.intro,
+            teacher: plan.cover.teacher,
+            room: plan.cover.room,
+            subject: plan.cover.subject,
+            planning: plan.cover.planning,
+            colleague: plan.cover.colleague,
+            colleagueRoom: plan.cover.colleagueRoom,
+            office: plan.cover.office,
+            nurse: plan.cover.nurse,
+          };
+        }
+
+        function loadTemplate() {
+          var raw;
+          try {
+            raw = localStorage.getItem(TPL_KEY);
+          } catch (e) {
+            raw = null;
+          }
+          if (!raw) {
+            setMsg(
+              "No saved template yet. Set up your procedures and schedule, then Save template.",
+              "err",
+            );
+            return;
+          }
+          var data;
+          try {
+            data = JSON.parse(raw);
+          } catch (e) {
+            setMsg("Saved template was unreadable.", "err");
+            return;
+          }
+          if (data.procedures) procedures = mergeProcedures(data.procedures);
+          if (data.cover)
+            Object.keys(data.cover).forEach(function (k) {
+              if (typeof data.cover[k] === "string") plan.cover[k] = data.cover[k];
+            });
+          if (Array.isArray(data.skeleton)) {
+            plan.periods = data.skeleton.map(function (s) {
+              var b = blankPeriod();
+              b.time = s.time || "";
+              b.classLabel = s.classLabel || "";
+              b.type = s.type || "Class";
+              return b;
+            });
+          }
+          renderAll();
+          savePlan();
+          setMsg("Template loaded. Pick today's lessons and you're done.", "ok");
+        }
+
+        // ---------- rendering ----------
+        function renderCover() {
+          $("dateOut").value = plan.dateOut || "";
+          var c = plan.cover;
+          $("cvIntro").value = c.intro;
+          $("cvTeacher").value = c.teacher;
+          $("cvSub").value = c.sub;
+          $("cvRoom").value = c.room;
+          $("cvSubject").value = c.subject;
+          $("cvDates").value = c.dates;
+          $("cvPlanning").value = c.planning;
+          $("cvColleague").value = c.colleague;
+          $("cvColleagueRoom").value = c.colleagueRoom;
+          $("cvOffice").value = c.office;
+          $("cvNurse").value = c.nurse;
+          $("spHelpers").value = plan.support.helpers;
+          $("spWatch").value = plan.support.watch;
+          $("spAccom").value = plan.support.accom;
+        }
+
+        function lessonOptionsHtml(selectedId) {
+          var html = '<option value="">— Choose a lesson —</option>';
+          if (!LESSONS.length) return html;
+          var byUnit = {};
+          LESSONS.forEach(function (l) {
+            (byUnit[l.unit] = byUnit[l.unit] || []).push(l);
+          });
+          Object.keys(byUnit)
+            .sort(function (a, b) {
+              return Number(a) - Number(b);
+            })
+            .forEach(function (u) {
+              html += '<optgroup label="Unit ' + escapeHtml(u) + '">';
+              byUnit[u].forEach(function (l) {
+                var label = "Unit " + l.unit + " · L" + l.lesson + " — " + l.title;
+                html +=
+                  '<option value="' +
+                  escapeHtml(l.id) +
+                  '"' +
+                  (l.id === selectedId ? " selected" : "") +
+                  ">" +
+                  escapeHtml(label) +
+                  "</option>";
+              });
+              html += "</optgroup>";
+            });
+          return html;
+        }
+
+        // resource -> action label + emoji
+        var RES_ACTIONS = [
+          { key: "guidedNotes", verb: "🖨 Print", label: "Guided Notes (handout)" },
+          { key: "guidedNotesPdf", verb: "🖨 Print", label: "Guided Notes — PDF" },
+          { key: "handout", verb: "🖨 Print", label: "Practice handout" },
+          { key: "slides", verb: "📽 Project", label: "Lesson slides" },
+          { key: "lesson", verb: "💻 Open", label: "Interactive lesson" },
+          { key: "homework", verb: "📝 Assign", label: "Homework" },
+          { key: "homeworkDocx", verb: "🖨 Print", label: "Homework — Word doc" },
+          { key: "exitTicket", verb: "🎟 Give", label: "Exit ticket" },
+          { key: "teacherNotes", verb: "👩‍🏫 Read", label: "Teacher notes" },
+        ];
+
+        function resourceActions(lesson) {
+          var out = [];
+          if (!lesson || !lesson.resources) return out;
+          RES_ACTIONS.forEach(function (a) {
+            var r = lesson.resources[a.key];
+            if (r && r.exists === true && r.path) {
+              out.push({ verb: a.verb, label: a.label, path: r.path });
+            }
+          });
+          return out;
+        }
+
+        function readbackHtml(lesson) {
+          if (!lesson) {
+            return '<div class="readback"><em>Pick a lesson to auto-fill the objective and the print/project checklist, or just type the agenda below.</em></div>';
+          }
+          var acts = resourceActions(lesson);
+          var actsHtml = acts.length
+            ? '<ul class="actions">' +
+              acts
+                .map(function (a) {
+                  return (
+                    "<li><b>" +
+                    escapeHtml(a.verb) +
+                    ":</b> " +
+                    '<a href="' +
+                    escapeHtml(a.path) +
+                    '" target="_blank" rel="noopener">' +
+                    escapeHtml(a.label) +
+                    "</a> " +
+                    '<span class="url">' +
+                    escapeHtml(a.path) +
+                    "</span></li>"
+                  );
+                })
+                .join("") +
+              "</ul>"
+            : '<p class="hint" style="margin:6px 0 0">No linked resources found for this lesson.</p>';
+
+          return (
+            '<div class="readback">' +
+            "<h4>" +
+            escapeHtml(
+              "Unit " + lesson.unit + " · Lesson " + lesson.lesson + " — " + lesson.title,
+            ) +
+            "</h4>" +
+            '<p class="meta"><b>Objective:</b> ' +
+            escapeHtml(lesson.objective || "—") +
+            "</p>" +
+            (lesson.languageObjective
+              ? '<p class="meta"><b>Language:</b> ' + escapeHtml(lesson.languageObjective) + "</p>"
+              : "") +
+            '<p class="meta"><b>Standard:</b> ' +
+            escapeHtml(lesson.standard || "—") +
+            " &nbsp;·&nbsp; <b>Time:</b> " +
+            escapeHtml(lesson.timeEstimate || "~45 min") +
+            "</p>" +
+            "<h4>What to print / project / assign</h4>" +
+            actsHtml +
+            "</div>"
+          );
+        }
+
+        function periodHtml(pd, index) {
+          var isClass = pd.type === "Class";
+          var lesson = pd.lessonId ? LESSON_BY_ID[pd.lessonId] : null;
+          var lessonPicker = "";
+          if (isClass) {
+            if (LESSONS.length) {
+              lessonPicker =
+                '<div class="field grow"><label>Lesson</label>' +
+                '<select data-p="' +
+                escapeHtml(pd.id) +
+                '" data-pk="lessonId">' +
+                lessonOptionsHtml(pd.lessonId) +
+                "</select></div>";
+            } else {
+              lessonPicker =
+                '<div class="field grow"><label>Lesson (type manually)</label>' +
+                '<input data-p="' +
+                escapeHtml(pd.id) +
+                '" data-pk="notesLessonManual" placeholder="e.g. Unit 2 · L3 — Dividing Fractions" value="' +
+                escapeHtml(pd.notesLessonManual || "") +
+                '" /></div>';
+            }
+          }
+
+          return (
+            '<div class="period" data-period="' +
+            escapeHtml(pd.id) +
+            '">' +
+            '<div class="row1">' +
+            '<span class="pnum">#' +
+            (index + 1) +
+            "</span>" +
+            '<div class="field"><label>Time</label><input data-p="' +
+            escapeHtml(pd.id) +
+            '" data-pk="time" placeholder="8:05–8:55" value="' +
+            escapeHtml(pd.time) +
+            '" style="width:120px" /></div>' +
+            '<div class="field grow"><label>Class / label</label><input data-p="' +
+            escapeHtml(pd.id) +
+            '" data-pk="classLabel" placeholder="Period 1 · Math 6A" value="' +
+            escapeHtml(pd.classLabel) +
+            '" /></div>' +
+            '<div class="field"><label>Type</label><select data-p="' +
+            escapeHtml(pd.id) +
+            '" data-pk="type">' +
+            ["Class", "Planning", "Duty/Other"]
+              .map(function (t) {
+                return (
+                  '<option value="' +
+                  t +
+                  '"' +
+                  (pd.type === t ? " selected" : "") +
+                  ">" +
+                  t +
+                  "</option>"
+                );
+              })
+              .join("") +
+            "</select></div>" +
+            (isClass ? lessonPicker : "") +
+            '<button type="button" class="del no-print" data-del="' +
+            escapeHtml(pd.id) +
+            '">Remove</button>' +
+            "</div>" +
+            (isClass ? readbackHtml(lesson) : "") +
+            (isClass
+              ? '<div class="field" style="margin-top:12px"><label>What students do (agenda)</label><textarea data-p="' +
+                escapeHtml(pd.id) +
+                '" data-pk="agenda">' +
+                escapeHtml(pd.agenda) +
+                "</textarea></div>" +
+                '<div class="grid2">' +
+                '<div class="field"><label>If students finish early</label><textarea data-p="' +
+                escapeHtml(pd.id) +
+                '" data-pk="early">' +
+                escapeHtml(pd.early) +
+                "</textarea></div>" +
+                '<div class="field"><label>Notes for the sub</label><textarea data-p="' +
+                escapeHtml(pd.id) +
+                '" data-pk="notes">' +
+                escapeHtml(pd.notes) +
+                "</textarea></div>" +
+                "</div>"
+              : '<div class="field" style="margin-top:12px"><label>Notes for the sub</label><textarea data-p="' +
+                escapeHtml(pd.id) +
+                '" data-pk="notes" placeholder="Planning period — no class. / Cafeteria duty, etc.">' +
+                escapeHtml(pd.notes) +
+                "</textarea></div>") +
+            "</div>"
+          );
+        }
+
+        function renderPeriods() {
+          var wrap = $("periods");
+          if (!plan.periods.length) {
+            wrap.innerHTML =
+              '<p class="hint no-print">No periods yet — add your first one below.</p>';
+            return;
+          }
+          wrap.innerHTML = plan.periods.map(periodHtml).join("");
+        }
+
+        function renderProcedures() {
+          var wrap = $("procWrap");
+          wrap.innerHTML = PROC_FIELDS.map(function (f) {
+            return (
+              '<div class="field"><label for="proc_' +
+              f.k +
+              '">' +
+              escapeHtml(f.label) +
+              "</label>" +
+              '<textarea id="proc_' +
+              f.k +
+              '" data-proc="' +
+              f.k +
+              '">' +
+              escapeHtml(procedures[f.k]) +
+              "</textarea></div>"
+            );
+          }).join("");
+        }
+
+        function renderAll() {
+          renderCover();
+          renderPeriods();
+          renderProcedures();
+        }
+
+        // ---------- event wiring ----------
+        function findPeriod(id) {
+          for (var i = 0; i < plan.periods.length; i++) {
+            if (plan.periods[i].id === id) return plan.periods[i];
+          }
+          return null;
+        }
+
+        // cover + support inputs
+        function bindCover() {
+          var map = {
+            cvIntro: ["cover", "intro"],
+            cvTeacher: ["cover", "teacher"],
+            cvSub: ["cover", "sub"],
+            cvRoom: ["cover", "room"],
+            cvSubject: ["cover", "subject"],
+            cvDates: ["cover", "dates"],
+            cvPlanning: ["cover", "planning"],
+            cvColleague: ["cover", "colleague"],
+            cvColleagueRoom: ["cover", "colleagueRoom"],
+            cvOffice: ["cover", "office"],
+            cvNurse: ["cover", "nurse"],
+            spHelpers: ["support", "helpers"],
+            spWatch: ["support", "watch"],
+            spAccom: ["support", "accom"],
+          };
+          Object.keys(map).forEach(function (id) {
+            var el = $(id);
+            el.addEventListener("input", function () {
+              plan[map[id][0]][map[id][1]] = el.value;
+              savePlan();
+            });
+          });
+          $("dateOut").addEventListener("input", function () {
+            plan.dateOut = $("dateOut").value;
+            // convenience: mirror into cover dates if empty
+            if (!plan.cover.dates) {
+              plan.cover.dates = formatDate(plan.dateOut);
+              $("cvDates").value = plan.cover.dates;
+            }
+            savePlan();
+          });
+        }
+
+        function formatDate(iso) {
+          if (!iso) return "";
+          var parts = iso.split("-");
+          if (parts.length !== 3) return iso;
+          var d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+          if (isNaN(d.getTime())) return iso;
+          return d.toLocaleDateString(undefined, {
+            weekday: "long",
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+          });
+        }
+
+        // delegated handler for period + procedure fields
+        function bindDelegation() {
+          var container = $("periods");
+          container.addEventListener("input", function (e) {
+            var el = e.target;
+            var pid = el.getAttribute("data-p");
+            var pk = el.getAttribute("data-pk");
+            if (!pid || !pk) return;
+            var pd = findPeriod(pid);
+            if (!pd) return;
+            pd[pk] = el.value;
+            if (pk === "type" || pk === "lessonId") {
+              // re-render just this period to refresh read-back / picker
+              rerenderPeriod(pid);
+            }
+            savePlan();
+          });
+          container.addEventListener("change", function (e) {
+            var el = e.target;
+            var pk = el.getAttribute("data-pk");
+            if (pk === "type" || pk === "lessonId") {
+              var pid = el.getAttribute("data-p");
+              var pd = findPeriod(pid);
+              if (pd) {
+                pd[pk] = el.value;
+                rerenderPeriod(pid);
+                savePlan();
+              }
+            }
+          });
+          container.addEventListener("click", function (e) {
+            var delId = e.target.getAttribute("data-del");
+            if (delId) {
+              plan.periods = plan.periods.filter(function (p) {
+                return p.id !== delId;
+              });
+              renderPeriods();
+              savePlan();
+            }
+          });
+
+          $("procWrap").addEventListener("input", function (e) {
+            var k = e.target.getAttribute("data-proc");
+            if (k) {
+              procedures[k] = e.target.value;
+              savePlan();
+            }
+          });
+        }
+
+        function rerenderPeriod(pid) {
+          var idx = -1;
+          for (var i = 0; i < plan.periods.length; i++) {
+            if (plan.periods[i].id === pid) {
+              idx = i;
+              break;
+            }
+          }
+          if (idx < 0) return;
+          var node = document.querySelector('.period[data-period="' + cssEscape(pid) + '"]');
+          if (!node) {
+            renderPeriods();
+            return;
+          }
+          var tmp = document.createElement("div");
+          tmp.innerHTML = periodHtml(plan.periods[idx], idx);
+          node.parentNode.replaceChild(tmp.firstChild, node);
+        }
+
+        function cssEscape(s) {
+          return String(s).replace(/["\\\]]/g, "\\$&");
+        }
+
+        // toolbar
+        function bindToolbar() {
+          $("btnAddPeriod").addEventListener("click", function () {
+            plan.periods.push(blankPeriod());
+            renderPeriods();
+            savePlan();
+          });
+          $("btnPrint").addEventListener("click", function () {
+            window.print();
+          });
+          $("btnSaveTpl").addEventListener("click", saveTemplate);
+          $("btnLoadTpl").addEventListener("click", loadTemplate);
+          $("btnSample").addEventListener("click", fillSample);
+          $("btnReset").addEventListener("click", function () {
+            if (
+              !confirm(
+                "Reset today's plan? Your saved template is kept. This clears the current day's periods and cover details.",
+              )
+            )
+              return;
+            plan = blankPlan();
+            renderAll();
+            savePlan();
+            setMsg("Day reset. Procedures template is untouched.", "ok");
+          });
+        }
+
+        // ---------- sample ----------
+        function fillSample() {
+          var hasContent =
+            plan.periods.length || plan.cover.teacher || plan.cover.sub || plan.support.helpers;
+          if (hasContent && !confirm("Fill with a sample plan? This replaces the current day."))
+            return;
+
+          plan = blankPlan();
+          plan.cover.teacher = "Mr. Neft";
+          plan.cover.sub = "";
+          plan.cover.room = "214";
+          plan.cover.dates = formatDate(new Date().toISOString().slice(0, 10));
+          plan.cover.planning = "Period 4 (10:50–11:40)";
+          plan.cover.colleague = "Ms. Alvarez";
+          plan.cover.colleagueRoom = "216";
+          plan.cover.office = "1000";
+          plan.cover.nurse = "1005";
+          plan.support.helpers =
+            "Ask the two students at the front table — they know where supplies are.";
+          plan.support.watch = "Please keep the back row focused during independent work.";
+
+          var pickLesson = LESSONS.length ? LESSONS[0].id : "";
+          var p1 = blankPeriod();
+          p1.time = "8:05–8:55";
+          p1.classLabel = "Period 1 · Math 6A";
+          p1.type = "Class";
+          p1.lessonId = pickLesson;
+          var p2 = blankPeriod();
+          p2.time = "9:00–9:50";
+          p2.classLabel = "Period 2 · Math 6B";
+          p2.type = "Class";
+          p2.lessonId = pickLesson;
+          var p3 = blankPeriod();
+          p3.time = "10:50–11:40";
+          p3.classLabel = "Period 4";
+          p3.type = "Planning";
+          p3.notes = "Planning period — no class. You may use my desk.";
+          var p4 = blankPeriod();
+          p4.time = "11:45–12:15";
+          p4.classLabel = "Lunch duty — cafeteria";
+          p4.type = "Duty/Other";
+          p4.notes = "Monitor the cafeteria with the other duty staff.";
+          plan.periods = [p1, p2, p3, p4];
+
+          renderAll();
+          savePlan();
+          setMsg("Sample plan loaded. Edit anything, then Print packet.", "ok");
+        }
+
+        // ---------- manifest ----------
+        function loadManifest() {
+          return fetch("/data/curriculum-manifest.json", { credentials: "same-origin" })
+            .then(function (r) {
+              if (!r.ok) throw new Error("HTTP " + r.status);
+              return r.json();
+            })
+            .then(function (data) {
+              LESSONS = data && Array.isArray(data.lessons) ? data.lessons : [];
+              LESSONS.forEach(function (l) {
+                LESSON_BY_ID[l.id] = l;
+              });
+              if (LESSONS.length) {
+                setMsg(
+                  LESSONS.length + " lessons loaded — pick one in any class period to auto-fill.",
+                  "ok",
+                );
+              } else {
+                setMsg(
+                  "Lesson list was empty — you can still type lessons and details manually.",
+                  "",
+                );
+              }
+            })
+            .catch(function () {
+              LESSONS = [];
+              setMsg("Lesson list unavailable — you can still type lessons manually.", "");
+            });
+        }
+
+        // ---------- init ----------
+        function init() {
+          plan = blankPlan();
+          loadPlan();
+          bindCover();
+          bindDelegation();
+          bindToolbar();
+          renderAll();
+          loadManifest().then(function () {
+            // re-render periods so lesson pickers / read-backs pick up manifest data
+            renderPeriods();
+          });
+        }
+
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", init);
+        } else {
+          init();
+        }
+      })();
+    </script>
+  </body>
+</html>
