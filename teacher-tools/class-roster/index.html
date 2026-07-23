@@ -125,54 +125,70 @@
       }
     </style>
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
   <body>
     <header>
       <h1>Class Roster Links</h1>
       <p>
-        Make a link that shows students a name dropdown — so names match Canvas
-        exactly. Teacher-only.
+        Make a link that shows students a name dropdown — so names match Canvas exactly.
+        Teacher-only.
       </p>
     </header>
     <main>
       <p class="note">
-        <strong>Privacy:</strong> your class list is never uploaded or saved on
-        any server. It is encoded inside the link only. Use first name + last
-        initial (e.g. <em>Jane D.</em>). Share the link with your class (or
-        paste it into the Canvas assignment).
+        <strong>Privacy:</strong> use first name + last initial (e.g. <em>Jane D.</em>) — never full
+        names. "Make the link" keeps the list inside the link only (nothing uploaded). "Make a class
+        code" syncs the name list to your private class database so students can pick their name on
+        <em>any</em> device by typing one short code — that is what keeps their progress with them
+        on shared Chromebooks.
       </p>
 
       <div class="card">
         <h2>1. Paste your class names</h2>
         <p class="hint">One per line. First name + last initial is best.</p>
-        <textarea
-          id="names"
-          placeholder="Jane D.&#10;Marcus L.&#10;Ava S."
-        ></textarea>
+        <textarea id="names" placeholder="Jane D.&#10;Marcus L.&#10;Ava S."></textarea>
         <div class="row" style="margin-top: 12px">
           <label
             >Class/period (optional)
-            <input
-              id="period"
-              type="text"
-              placeholder="P3"
-              style="width: 120px"
+            <input id="period" type="text" placeholder="P3" style="width: 120px"
           /></label>
           <label
             >Lesson
             <select id="lesson"></select
           ></label>
           <button id="gen">Make the link</button>
+          <button id="genCode" style="background: var(--teal); color: #fff">
+            Make a class code
+          </button>
         </div>
+      </div>
+
+      <div class="card" id="codeResult" style="display: none">
+        <h2>Your class code <span id="codeCount" class="ok"></span></h2>
+        <p class="hint">
+          Write this on the board. On any lesson's name screen, students tap "Have a class code?",
+          type it once, and pick their name — their progress then follows them across devices.
+        </p>
+        <div
+          class="out"
+          id="joinCode"
+          style="font-size: 28px; letter-spacing: 4px; text-align: center"
+        ></div>
+        <div class="row" style="margin-top: 12px">
+          <button id="copyJoin">Copy join link</button>
+          <span id="joinCopied" class="ok"></span>
+        </div>
+        <div class="out" id="joinLink"></div>
+        <p class="hint" id="codeMsg" style="margin-top: 10px"></p>
       </div>
 
       <div class="card" id="result" style="display: none">
         <h2>2. Your class link <span id="count" class="ok"></span></h2>
         <p class="hint">
-          Give this to students (or put it in the Canvas assignment). They'll
-          pick their name from a dropdown.
+          Give this to students (or put it in the Canvas assignment). They'll pick their name from a
+          dropdown.
         </p>
         <div class="row">
           <button id="copyLink">Copy link</button>
@@ -180,8 +196,7 @@
         </div>
         <div class="out" id="link"></div>
         <p class="hint" style="margin-top: 14px">
-          Just the code (to append <code>?class=…</code> to any lesson
-          yourself):
+          Just the code (to append <code>?class=…</code> to any lesson yourself):
         </p>
         <div class="out" id="code"></div>
       </div>
@@ -247,15 +262,96 @@
           $("result").scrollIntoView({ behavior: "smooth" });
         }
         $("gen").addEventListener("click", gen);
-        $("copyLink").addEventListener("click", function () {
-          navigator.clipboard
-            .writeText($("link").textContent)
-            .then(function () {
-              $("copied").textContent = "Copied ✓";
-              setTimeout(function () {
-                $("copied").textContent = "";
-              }, 1600);
+
+        // --- Class code: sync the roster to /api/roster so students can pick
+        // their name on ANY device with one short code. Teacher-key gated.
+        var KEY_LS = "neft.teacher.key"; // shared with Insight Brief
+        var CODES_LS = "nt-roster-codes"; // {section: code} — re-sync keeps ids
+
+        function savedCodes() {
+          try {
+            return JSON.parse(localStorage.getItem(CODES_LS)) || {};
+          } catch (e) {
+            return {};
+          }
+        }
+        function teacherKey() {
+          var key = (localStorage.getItem(KEY_LS) || "").trim();
+          if (!key) {
+            key = (prompt("Teacher key (same key as Insight Brief):") || "").trim();
+            if (key) localStorage.setItem(KEY_LS, key);
+          }
+          return key;
+        }
+        function genCode() {
+          var names = $("names")
+            .value.split("\n")
+            .map(function (s) {
+              return s.trim();
+            })
+            .filter(Boolean);
+          if (!names.length) {
+            alert("Paste at least one name.");
+            return;
+          }
+          var period = $("period").value.trim();
+          if (!period) {
+            alert("Class/period is required for a class code (e.g. 601).");
+            return;
+          }
+          var key = teacherKey();
+          if (!key) return;
+          var codes = savedCodes();
+          $("codeMsg").textContent = "Syncing roster…";
+          $("codeResult").style.display = "block";
+          fetch("/api/roster/save", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "x-teacher-key": key },
+            body: JSON.stringify({ code: codes[period] || "", section: period, names: names }),
+          })
+            .then(function (r) {
+              if (r.status === 401) {
+                localStorage.removeItem(KEY_LS);
+                throw new Error("That teacher key was rejected — try again.");
+              }
+              if (r.status === 503)
+                throw new Error("Class codes aren't configured on the server yet.");
+              return r.json();
+            })
+            .then(function (d) {
+              if (!d || !d.ok) throw new Error((d && d.error) || "Sync failed.");
+              codes[period] = d.code;
+              try {
+                localStorage.setItem(CODES_LS, JSON.stringify(codes));
+              } catch (e) {}
+              var joinUrl = SITE + "/lessons/" + sel.value + "/?join=" + d.code;
+              $("joinCode").textContent = d.code;
+              $("joinLink").textContent = joinUrl;
+              $("codeCount").textContent = "(" + d.students.length + " students · " + period + ")";
+              $("codeMsg").textContent =
+                "Synced ✓ — re-running with the same period updates this code's roster in place.";
+              $("codeResult").scrollIntoView({ behavior: "smooth" });
+            })
+            .catch(function (e) {
+              $("codeMsg").textContent = e.message || "Sync failed.";
             });
+        }
+        $("genCode").addEventListener("click", genCode);
+        $("copyJoin").addEventListener("click", function () {
+          navigator.clipboard.writeText($("joinLink").textContent).then(function () {
+            $("joinCopied").textContent = "Copied ✓";
+            setTimeout(function () {
+              $("joinCopied").textContent = "";
+            }, 1600);
+          });
+        });
+        $("copyLink").addEventListener("click", function () {
+          navigator.clipboard.writeText($("link").textContent).then(function () {
+            $("copied").textContent = "Copied ✓";
+            setTimeout(function () {
+              $("copied").textContent = "";
+            }, 1600);
+          });
         });
       })();
     </script>

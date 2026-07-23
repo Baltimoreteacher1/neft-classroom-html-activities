@@ -593,6 +593,13 @@
         printLessonPlan(lesson, readiness, support);
       }),
     );
+    actions.appendChild(
+      link(
+        "🔥 Daily Warm-Up",
+        "/spiral-review/?upto=" + encodeURIComponent(lesson.id) + "&donow=1",
+        "ctw-warmup",
+      ),
+    );
     actions.appendChild(generatorLink(lesson));
     actions.appendChild(
       button(
@@ -613,6 +620,20 @@
     qr.appendChild(el("p", "ctw-muted", "Scan to open the student-safe lesson."));
     hero.appendChild(qr);
     stage.appendChild(hero);
+
+    // Optional live-data layer (assets/curriculum-live-signal.js). The core
+    // workflow stays local & private by contract (validate:teacher-workflow);
+    // the live card is an additive module that renders only when loaded.
+    if (window.CurriculumLiveSignal?.render) {
+      window.CurriculumLiveSignal.render(stage, {
+        el: el,
+        button: button,
+        link: link,
+        section: state.section,
+        catchUps: (DATA.launch && DATA.launch.catchUps) || [],
+        rerender: renderPanel,
+      });
+    }
 
     var readinessCard = el("section", "ctw-readiness");
     readinessCard.appendChild(el("h3", null, "Lesson Readiness"));

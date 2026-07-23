@@ -961,7 +961,12 @@ export async function onRequest(context) {
   // owned by functions/api/scores and created lazily there, so its queries are
   // individually guarded — if the table does not exist yet, the rollups simply
   // carry no game data instead of erroring.
-  if (seg === "digest" || seg === "mastery-rollup" || seg === "struggles") {
+  if (
+    seg === "digest" ||
+    seg === "mastery-rollup" ||
+    seg === "standards-matrix" ||
+    seg === "struggles"
+  ) {
     const auth = teacherAuthorized(env, request, url);
     if (auth === "not-configured")
       return json(
@@ -1066,6 +1071,125 @@ export async function onRequest(context) {
             a.section.localeCompare(b.section) || a.studentName.localeCompare(b.studentName),
         );
         return json({ ok: true, since, section, count: list.length, students: list });
+      }
+
+      // GET standards-matrix?section=&days=N — (student, standard) mastery grid.
+      // The per-STUDENT companion to mastery-rollup: one row per student, one
+      // cell per standard, from the same lesson_telemetry + game_scores signal.
+      // Counts and rates only — raw student work never leaves the server.
+      if (seg === "standards-matrix") {
+        const days = Math.min(Math.max(Number(url.searchParams.get("days")) || 30, 1), 180);
+        const since = new Date(Date.now() - days * 86400000).toISOString();
+        const students = new Map();
+        const cellOf = (name, sec, std) => {
+          const sk = (sec || "") + "|" + name;
+          if (!students.has(sk))
+            students.set(sk, {
+              studentName: name,
+              section: sec || "",
+              cells: new Map(),
+            });
+          const stu = students.get(sk);
+          if (!stu.cells.has(std))
+            stu.cells.set(std, {
+              standard: std,
+              attempts: 0,
+              correct: 0,
+              masteryCount: 0,
+              struggleCount: 0,
+              misconceptionCount: 0,
+            });
+          return stu.cells.get(std);
+        };
+
+        const tel = await (
+          section
+            ? env.DB.prepare(
+                `SELECT standard, student_name, event_type, payload_json, section
+                 FROM lesson_telemetry
+                 WHERE created_at >= ? AND section = ? ORDER BY id DESC LIMIT 10000`,
+              ).bind(since, section)
+            : env.DB.prepare(
+                `SELECT standard, student_name, event_type, payload_json, section
+                 FROM lesson_telemetry
+                 WHERE created_at >= ? ORDER BY id DESC LIMIT 10000`,
+              ).bind(since)
+        ).all();
+        for (const r of tel.results || []) {
+          if (!r.student_name || !r.standard) continue;
+          const cell = cellOf(r.student_name, r.section, r.standard);
+          const type = r.event_type || "";
+          if (type === "item_attempt" || type === "item-attempt") {
+            let props = {};
+            try {
+              props = JSON.parse(r.payload_json || "{}");
+            } catch (e) {
+              props = {};
+            }
+            const result = props.result || props.props?.result;
+            const correct =
+              result === "correct" || props.correct === true || props.props?.correct === true;
+            const incorrect =
+              result === "incorrect" || props.correct === false || props.props?.correct === false;
+            if (correct || incorrect) {
+              cell.attempts += 1;
+              if (correct) cell.correct += 1;
+            }
+          } else if (isMastery(type)) cell.masteryCount += 1;
+          else if (type === "struggle" || type === "hint-exhausted") cell.struggleCount += 1;
+          else if (type === "misconception") cell.misconceptionCount += 1;
+        }
+
+        try {
+          const scores = await (
+            section
+              ? env.DB.prepare(
+                  `SELECT gs.standard AS standard, gs.correct AS correct,
+                          sp.student_name AS student_name, sp.section AS section
+                     FROM game_scores gs
+                     JOIN student_progress sp ON sp.save_code = gs.save_code
+                    WHERE gs.created_at >= ? AND sp.section = ?
+                    ORDER BY gs.id DESC LIMIT 10000`,
+                ).bind(since, section)
+              : env.DB.prepare(
+                  `SELECT gs.standard AS standard, gs.correct AS correct,
+                          sp.student_name AS student_name, sp.section AS section
+                     FROM game_scores gs
+                     JOIN student_progress sp ON sp.save_code = gs.save_code
+                    WHERE gs.created_at >= ?
+                    ORDER BY gs.id DESC LIMIT 10000`,
+                ).bind(since)
+          ).all();
+          for (const r of scores.results || []) {
+            if (!r.student_name || !r.standard) continue;
+            const cell = cellOf(r.student_name, r.section, r.standard);
+            cell.attempts += 1;
+            if (r.correct) cell.correct += 1;
+          }
+        } catch (e) {
+          /* game_scores not created yet — matrix carries telemetry only */
+        }
+
+        const list = [...students.values()]
+          .map((stu) => ({
+            studentName: stu.studentName,
+            section: stu.section,
+            standards: [...stu.cells.values()]
+              .map((c) => ({
+                standard: c.standard,
+                attempts: c.attempts,
+                correctRate: rate2(c.correct, c.attempts),
+                masteryCount: c.masteryCount,
+                struggleCount: c.struggleCount,
+                misconceptionCount: c.misconceptionCount,
+              }))
+              .sort((a, b) => a.standard.localeCompare(b.standard)),
+          }))
+          .sort(
+            (a, b) =>
+              a.section.localeCompare(b.section) || a.studentName.localeCompare(b.studentName),
+          );
+        return json({ ok: true, section, days, count: list.length, students: list });
       }
 
       // GET mastery-rollup?section= — (section, standard) grid for the heatmap.

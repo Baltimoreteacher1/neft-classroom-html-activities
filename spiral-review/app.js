@@ -19,7 +19,7 @@
     correct: 0,
     answered: false,
     studentName: "",
-    config: { count: 10, scope: "all", upto: null, from: null, to: null },
+    config: { count: 10, scope: "all", upto: null, from: null, to: null, uptoLesson: null },
   };
 
   /* ── DOM ── */
@@ -125,11 +125,27 @@
     return all.slice();
   }
 
+  // Lesson-level pacing cutoff ("3-4" = Unit 3 Lesson 4): keep only questions
+  // from lessons taught STRICTLY BEFORE the cutoff — that is what makes a
+  // do-now spaced RETRIEVAL (review of prior learning) instead of a preview
+  // of today's lesson. Unparseable lesson ids fall back to the unit filter.
+  function beforeCutoff(q, cutoff) {
+    const c = /^(\d+)-(\d+)/.exec(String(cutoff || ""));
+    if (!c) return true;
+    const m = /^(\d+)-(\d+)/.exec(String(q.lessonId || ""));
+    if (!m) return q.unit < Number(c[1]);
+    const [qu, qn] = [Number(m[1]), Number(m[2])];
+    const [cu, cn] = [Number(c[1]), Number(c[2])];
+    return qu < cu || (qu === cu && qn < cn);
+  }
+
   function buildSet(count) {
     const scope = new Set(unitsInScope());
     const maxUnit = Math.max(...scope);
+    const cutoff = state.config.uptoLesson;
     const candidates = state.bank.questions
       .filter((q) => scope.has(q.unit))
+      .filter((q) => !cutoff || beforeCutoff(q, cutoff))
       .map((q) => {
         const weight = 1 + (maxUnit - q.unit) * SPIRAL_STRENGTH;
         return Object.assign({}, q, { _weight: weight });
@@ -178,8 +194,7 @@
     state.correct = 0;
 
     if (state.set.length === 0) {
-      els.bankMeta.textContent =
-        "No questions match that selection. Try a wider range.";
+      els.bankMeta.textContent = "No questions match that selection. Try a wider range.";
       return;
     }
 
@@ -231,10 +246,7 @@
       label.textContent = choice;
       btn.appendChild(marker);
       btn.appendChild(label);
-      btn.setAttribute(
-        "aria-label",
-        `Option ${String.fromCharCode(65 + i)}: ${choice}`,
-      );
+      btn.setAttribute("aria-label", `Option ${String.fromCharCode(65 + i)}: ${choice}`);
       btn.addEventListener("click", () => answer(i, btn));
       els.choices.appendChild(btn);
     });
@@ -265,12 +277,7 @@
     });
 
     // feedback
-    const cheers = [
-      "Nice work!",
-      "You got it!",
-      "Exactly right!",
-      "Great thinking!",
-    ];
+    const cheers = ["Nice work!", "You got it!", "Exactly right!", "Great thinking!"];
     const encourage = [
       "Not quite — let's learn from it.",
       "Good try — here's the idea.",
@@ -336,8 +343,7 @@
     els.summaryScore.textContent = `${correct} / ${total}  ·  ${pct}%`;
     let msg = "Keep practicing — every set makes you stronger.";
     if (pct >= 85) msg = "Excellent! You are MCAP-ready on this mix.";
-    else if (pct >= 70)
-      msg = "Solid work — a little more review and you've got it.";
+    else if (pct >= 70) msg = "Solid work — a little more review and you've got it.";
     else if (pct >= 50) msg = "Good effort — focus on the standards below.";
     els.summaryLine.textContent = msg;
 
@@ -355,8 +361,7 @@
     const byStd = new Map();
     results.forEach((r) => {
       const key = r.standard || "review";
-      if (!byStd.has(key))
-        byStd.set(key, { standard: key, unit: r.unit, correct: 0, total: 0 });
+      if (!byStd.has(key)) byStd.set(key, { standard: key, unit: r.unit, correct: 0, total: 0 });
       const rec = byStd.get(key);
       rec.total += 1;
       if (r.correct) rec.correct += 1;
@@ -400,8 +405,7 @@
     results.forEach((r) => {
       const std = (r.standard || "").trim();
       if (!std) return;
-      if (!byStd.has(std))
-        byStd.set(std, { standard: std, unit: r.unit, correct: 0, total: 0 });
+      if (!byStd.has(std)) byStd.set(std, { standard: std, unit: r.unit, correct: 0, total: 0 });
       const rec = byStd.get(std);
       rec.total += 1;
       if (r.correct) rec.correct += 1;
@@ -418,8 +422,7 @@
     }
 
     const today = new Date().toISOString().slice(0, 10);
-    const keyOf = (r) =>
-      `${r.lessonId}||${(r.studentName || "").trim().toLowerCase()}`;
+    const keyOf = (r) => `${r.lessonId}||${(r.studentName || "").trim().toLowerCase()}`;
 
     let wrote = 0;
     byStd.forEach((rec) => {
@@ -520,11 +523,9 @@
 
     els.startBtn.addEventListener("click", () => {
       // sync defaults if user never touched the selects
-      if (state.config.upto == null)
-        state.config.upto = state.units[state.units.length - 1];
+      if (state.config.upto == null) state.config.upto = state.units[state.units.length - 1];
       if (state.config.from == null) state.config.from = state.units[0];
-      if (state.config.to == null)
-        state.config.to = state.units[state.units.length - 1];
+      if (state.config.to == null) state.config.to = state.units[state.units.length - 1];
       results.length = 0;
       startSet(state.config.count);
     });
@@ -568,6 +569,44 @@
     });
   }
 
+  // Deep-link support so the curriculum hub's Today panel (and any lesson
+  // page) can launch a pacing-aware warm-up in one click:
+  //   ?upto=3-4          spaced pool = everything taught BEFORE Unit 3 Lesson 4
+  //   ?upto=3            legacy unit-level scope (Units 1–3)
+  //   ?count=3           set size (defaults to 3 when auto-starting)
+  //   ?donow=1           auto-start immediately (skip the setup card)
+  function applyUrlParams() {
+    let params;
+    try {
+      params = new URLSearchParams(location.search);
+    } catch (err) {
+      return;
+    }
+    const upto = (params.get("upto") || "").trim();
+    if (/^\d+-\d+/.test(upto)) {
+      const unit = Number(upto.split("-")[0]);
+      state.config.scope = "upto";
+      state.config.upto = unit;
+      state.config.uptoLesson = upto;
+      els.scopeSelect.value = "upto";
+      els.uptoGroup.classList.remove("hidden");
+      fillUnitSelect(els.uptoSelect, state.units, unit);
+    } else if (/^\d+$/.test(upto)) {
+      state.config.scope = "upto";
+      state.config.upto = Number(upto);
+      els.scopeSelect.value = "upto";
+      els.uptoGroup.classList.remove("hidden");
+      fillUnitSelect(els.uptoSelect, state.units, Number(upto));
+    }
+    const count = Number(params.get("count"));
+    if (count >= 1 && count <= 20) state.config.count = count;
+    if (params.get("donow") === "1") {
+      if (!Number.isFinite(count) || count < 1) state.config.count = 3;
+      results.length = 0;
+      startSet(state.config.count);
+    }
+  }
+
   /* ── boot ── */
   async function init() {
     try {
@@ -575,12 +614,11 @@
       state.bank = bank;
       state.units = (bank.meta && bank.meta.units) || [];
       if (!state.units.length) {
-        state.units = Array.from(
-          new Set(bank.questions.map((q) => q.unit)),
-        ).sort((a, b) => a - b);
+        state.units = Array.from(new Set(bank.questions.map((q) => q.unit))).sort((a, b) => a - b);
       }
       initSetupControls();
       setupEvents();
+      applyUrlParams();
     } catch (err) {
       els.bankMeta.textContent =
         "Could not load the question bank. Run build-bank.mjs, then open this page from a local server.";

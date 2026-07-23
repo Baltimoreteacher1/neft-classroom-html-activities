@@ -90,6 +90,17 @@
       >
         <button id="viewDevice" type="button" aria-pressed="true">This device</button>
         <button id="viewClass" type="button" aria-pressed="false">Class view (teacher key)</button>
+        <button id="viewStudents" type="button" aria-pressed="false">
+          By student (teacher key)
+        </button>
+        <label class="note" style="margin: 0"
+          >Section
+          <input
+            id="sectionFilter"
+            type="text"
+            placeholder="601"
+            style="width: 70px; padding: 4px 6px"
+        /></label>
         <span id="viewMsg" class="note" style="margin: 0"></span>
       </div>
       <div id="heatmap"></div>
@@ -161,6 +172,80 @@
         function setPressed(mode) {
           document.getElementById("viewDevice").setAttribute("aria-pressed", mode === "device");
           document.getElementById("viewClass").setAttribute("aria-pressed", mode === "class");
+          document.getElementById("viewStudents").setAttribute("aria-pressed", mode === "students");
+        }
+
+        // By-student view: GET /api/progress/standards-matrix → one heatmap
+        // row per STUDENT (the per-student companion to the class rollup).
+        // correctRate is the primary signal; a standard with mastery events
+        // but no scored attempts shows at the proficient threshold.
+        function rosterFromMatrix(d) {
+          var B = (window.NeftBrain && NeftBrain.Mastery && NeftBrain.Mastery.BANDS) || {
+            PROFICIENT: 0.8,
+          };
+          return (d.students || []).map(function (stu) {
+            var standards = {};
+            (stu.standards || []).forEach(function (s) {
+              var m = null;
+              if (s.correctRate != null) m = Number(s.correctRate);
+              else if (s.masteryCount > 0) m = B.PROFICIENT;
+              else if (s.struggleCount > 0 || s.misconceptionCount > 0) m = 0.25;
+              if (m == null) return;
+              standards[s.standard] = { mastery: m, band: bandOf(m) };
+            });
+            return {
+              student_key: stu.studentName + (stu.section ? " · " + stu.section : ""),
+              mastery: { standards: standards },
+            };
+          });
+        }
+
+        function teacherKeyOrPrompt() {
+          var key = localStorage.getItem(LS_KEY);
+          if (!key) {
+            key = prompt("Teacher key:");
+            if (!key) return "";
+            localStorage.setItem(LS_KEY, key.trim());
+            key = key.trim();
+          }
+          return key;
+        }
+
+        function renderStudents() {
+          var msg = document.getElementById("viewMsg");
+          var key = teacherKeyOrPrompt();
+          if (!key) return;
+          var section = (document.getElementById("sectionFilter").value || "").trim();
+          msg.textContent = "Loading per-student matrix…";
+          var qs = section ? "?section=" + encodeURIComponent(section) : "";
+          fetch("/api/progress/standards-matrix" + qs, { headers: { "x-teacher-key": key } })
+            .then(function (r) {
+              if (r.status === 401) {
+                localStorage.removeItem(LS_KEY);
+                throw new Error("That key was rejected — try By student again.");
+              }
+              if (r.status === 503)
+                throw new Error("The student matrix isn't configured on the server yet.");
+              return r.json();
+            })
+            .then(function (d) {
+              if (!d || !d.ok) throw new Error("Could not load the student matrix.");
+              var roster = rosterFromMatrix(d);
+              if (!roster.length)
+                throw new Error(
+                  "No per-student data yet" +
+                    (section ? " for section " + section : "") +
+                    " — it appears as students work.",
+                );
+              setPressed("students");
+              msg.textContent = "";
+              return NeftBrain.renderHeatmap("#heatmap", { roster: roster });
+            })
+            .catch(function (e) {
+              msg.textContent = e.message || "By-student view unavailable.";
+              renderDevice();
+              setPressed("device");
+            });
         }
 
         function renderClass() {
@@ -205,6 +290,7 @@
           renderDevice();
         });
         document.getElementById("viewClass").addEventListener("click", renderClass);
+        document.getElementById("viewStudents").addEventListener("click", renderStudents);
 
         renderDevice();
         if (window.NeftBrain && NeftBrain.renderDifferentiation) {

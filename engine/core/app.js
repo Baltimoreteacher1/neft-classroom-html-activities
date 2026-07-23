@@ -26,7 +26,7 @@ import {
   initTeacherAccess,
   mountIdentityTeacherButton,
 } from "./teacher-mode.js";
-import { t, stackHtml, phaseName } from "./i18n.js";
+import { t, stackHtml, phaseName, getPreferredLang, setPreferredLang } from "./i18n.js";
 import { PHASE_TIME_ESTIMATES } from "./content-enrichment.js";
 import "@engine/styles/design-system.css";
 import "@engine/styles/motion.css";
@@ -353,25 +353,20 @@ function mountWelcomeGoogleSlidesLink(lessonId, slot) {
   });
 }
 
-// Decode a ?class=<code> roster (base64url JSON: {p:"period", n:["First L.", ...]})
-// and render a name dropdown so students pick their exact name. Privacy: the
-// roster lives only in the teacher's link, never on the server.
-function mountClassRoster(screen, nameInput, periodInput, startBtn) {
-  let roster;
-  try {
-    const m = /[?&]class=([A-Za-z0-9_-]+)/.exec(window.location.search);
-    if (!m) return;
-    let b64 = m[1].replace(/-/g, "+").replace(/_/g, "/");
-    while (b64.length % 4) b64 += "=";
-    roster = JSON.parse(decodeURIComponent(escape(window.atob(b64))));
-  } catch (e) {
-    return;
-  }
-  const names = Array.isArray(roster) ? roster : roster.n || roster.names || [];
-  if (!names.length) return;
-  const period = (!Array.isArray(roster) && (roster.p || roster.period)) || "";
+// Class roster on the name screen, from any of three sources (first wins):
+//   1. ?class=<code>  — base64url JSON {p:"period", n:["First L.", ...]} living
+//      only inside the teacher's link (nothing on the server).
+//   2. ?join=<CODE>   — a short class code; the name list is fetched from
+//      /api/roster (teacher-synced, first name + last initial only). The code
+//      persists on this device so every later lesson shows the picker too.
+//   3. A previously saved class code (localStorage "nt-class-code").
+// Picking from a roster keeps the name byte-identical on every device, which
+// keeps the derived studentId — and with it progress — stable across devices.
+const CLASS_CODE_LS = "nt-class-code";
+
+function renderRosterPicker(screen, nameInput, periodInput, startBtn, names, period) {
   const form = screen.querySelector(".identity-form");
-  if (!form) return;
+  if (!form || form.querySelector(".identity-roster")) return;
   const wrap = document.createElement("div");
   wrap.className = "identity-roster";
   wrap.style.cssText = "margin-bottom:12px;text-align:left;";
@@ -390,6 +385,116 @@ function mountClassRoster(screen, nameInput, periodInput, startBtn) {
       startBtn.disabled = false;
     }
   });
+}
+
+function fetchJoinRoster(code) {
+  return fetch(`/api/roster/get?code=${encodeURIComponent(code)}`)
+    .then((r) => (r.ok ? r.json() : null))
+    .then((d) => (d && d.ok && Array.isArray(d.students) && d.students.length ? d : null))
+    .catch(() => null);
+}
+
+function mountJoinCodeEntry(screen, nameInput, periodInput, startBtn) {
+  const form = screen.querySelector(".identity-form");
+  if (!form) return;
+  const wrap = document.createElement("div");
+  wrap.className = "identity-join";
+  wrap.style.cssText = "margin-bottom:12px;text-align:left;";
+  wrap.innerHTML =
+    `<button type="button" id="id-join-toggle" style="background:none;border:0;padding:0;font:inherit;font-size:0.82rem;font-weight:700;color:var(--teal-ink,#0f766e);cursor:pointer;text-decoration:underline;">` +
+    `${stackHtml("Have a class code?", "¿Tienes un código de clase?")}</button>` +
+    `<span id="id-join-row" hidden style="display:inline-flex;gap:8px;margin-left:10px;align-items:center;">` +
+    `<input id="id-join-code" type="text" autocomplete="off" autocapitalize="characters" placeholder="MK7Q9C" maxlength="8" style="width:110px;padding:8px;border-radius:8px;border:1px solid #cbd5e1;font:inherit;text-transform:uppercase;letter-spacing:2px;" />` +
+    `<button type="button" id="id-join-go" style="padding:8px 12px;border-radius:8px;border:0;background:var(--teal-ink,#0f766e);color:#fff;font:inherit;font-weight:700;cursor:pointer;">Go</button>` +
+    `<span id="id-join-msg" style="font-size:0.78rem;color:#64748b;"></span></span>`;
+  form.insertBefore(wrap, form.firstChild);
+  const row = wrap.querySelector("#id-join-row");
+  const codeInput = wrap.querySelector("#id-join-code");
+  const msg = wrap.querySelector("#id-join-msg");
+  wrap.querySelector("#id-join-toggle").addEventListener("click", () => {
+    row.hidden = !row.hidden;
+    if (!row.hidden) codeInput.focus();
+  });
+  const go = () => {
+    const code = (codeInput.value || "").trim().toUpperCase();
+    if (code.length < 4) return;
+    msg.textContent = "…";
+    fetchJoinRoster(code).then((d) => {
+      if (!d) {
+        msg.textContent = "Code not found — check with your teacher.";
+        return;
+      }
+      try {
+        localStorage.setItem(CLASS_CODE_LS, code);
+      } catch {}
+      wrap.remove();
+      renderRosterPicker(
+        screen,
+        nameInput,
+        periodInput,
+        startBtn,
+        d.students.map((s) => s.name),
+        d.section,
+      );
+    });
+  };
+  wrap.querySelector("#id-join-go").addEventListener("click", go);
+  codeInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      go();
+    }
+  });
+}
+
+function mountClassRoster(screen, nameInput, periodInput, startBtn) {
+  // 1. Link-embedded roster (?class=) — fully offline, unchanged behavior.
+  try {
+    const m = /[?&]class=([A-Za-z0-9_-]+)/.exec(window.location.search);
+    if (m) {
+      let b64 = m[1].replace(/-/g, "+").replace(/_/g, "/");
+      while (b64.length % 4) b64 += "=";
+      const roster = JSON.parse(decodeURIComponent(escape(window.atob(b64))));
+      const names = Array.isArray(roster) ? roster : roster.n || roster.names || [];
+      if (names.length) {
+        const period = (!Array.isArray(roster) && (roster.p || roster.period)) || "";
+        renderRosterPicker(screen, nameInput, periodInput, startBtn, names, period);
+        return;
+      }
+    }
+  } catch (e) {
+    /* malformed ?class= — fall through to the other sources */
+  }
+
+  // 2. Class code from the URL (?join=) or 3. remembered on this device.
+  let joinCode = "";
+  try {
+    const j = /[?&]join=([A-Za-z0-9]+)/.exec(window.location.search);
+    joinCode = (j && j[1]) || localStorage.getItem(CLASS_CODE_LS) || "";
+  } catch {}
+  if (joinCode) {
+    fetchJoinRoster(joinCode.toUpperCase()).then((d) => {
+      if (d) {
+        try {
+          localStorage.setItem(CLASS_CODE_LS, d.code);
+        } catch {}
+        renderRosterPicker(
+          screen,
+          nameInput,
+          periodInput,
+          startBtn,
+          d.students.map((s) => s.name),
+          d.section,
+        );
+      } else {
+        mountJoinCodeEntry(screen, nameInput, periodInput, startBtn);
+      }
+    });
+    return;
+  }
+
+  // No roster anywhere yet — offer the class-code entry.
+  mountJoinCodeEntry(screen, nameInput, periodInput, startBtn);
 }
 
 function showIdentityScreen(root, config) {
@@ -469,6 +574,9 @@ function showIdentityScreen(root, config) {
         <p class="instruction-callout" style="margin-bottom:var(--sp-4); font-size:0.88rem;">
           <span class="instruction-callout-icon" aria-hidden="true">👋</span>
           <span>${t("enterNamePrompt")}</span>
+          <button type="button" id="id-lang-toggle" aria-pressed="${getPreferredLang() === "es" ? "true" : "false"}"
+            style="margin-left:auto;flex:none;padding:6px 12px;border-radius:999px;border:1px solid #cbd5e1;background:${getPreferredLang() === "es" ? "var(--teal-ink,#0f766e)" : "#fff"};color:${getPreferredLang() === "es" ? "#fff" : "var(--teal-ink,#0f766e)"};font:inherit;font-size:0.8rem;font-weight:700;cursor:pointer;"
+            title="Cambiar el idioma de la lección / Switch lesson language">🌎 Español</button>
         </p>
         ${formsCardHtml(config)}
         <div id="welcome-teacher-slot"></div>
@@ -512,6 +620,17 @@ function showIdentityScreen(root, config) {
 
   // Password-gated Teacher entry, right under the Start button.
   mountIdentityTeacherButton(screen.querySelector("#identity-teacher-slot"));
+
+  // Language toggle (English ⇄ Español). Persists in localStorage "nt-lang"
+  // and reloads so every t()/phaseName() call re-renders in the chosen
+  // language — same reload pattern as the Student⇄Teacher mode switch.
+  const langBtn = screen.querySelector("#id-lang-toggle");
+  if (langBtn) {
+    langBtn.addEventListener("click", () => {
+      setPreferredLang(getPreferredLang() === "es" ? "en" : "es");
+      window.location.reload();
+    });
+  }
 
   const coverExtras = screen.querySelector("#cover-extras");
   if (coverExtras) {

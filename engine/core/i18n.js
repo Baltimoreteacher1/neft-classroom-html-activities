@@ -225,8 +225,17 @@ const HINT_LABELS = [
   { en: "👀 Show me", es: "👀 Muéstrame" },
 ];
 
-/** Detect preferred language from html[lang] or browser. */
+/** Persisted student language choice (English and Spanish only). */
+const LANG_LS = "nt-lang";
+
+/** Detect preferred language: saved choice first, then html[lang]/browser. */
 export function getPreferredLang() {
+  try {
+    const saved = localStorage.getItem(LANG_LS);
+    if (saved === "es" || saved === "en") return saved;
+  } catch {
+    /* storage blocked — fall through to auto-detect */
+  }
   if (typeof document !== "undefined") {
     const htmlLang = document.documentElement.lang || "";
     if (htmlLang.startsWith("es")) return "es";
@@ -235,6 +244,19 @@ export function getPreferredLang() {
     return "es";
   }
   return "en";
+}
+
+/** Persist the student's language choice ("en" | "es"); "" clears it. */
+export function setPreferredLang(lang) {
+  try {
+    if (lang === "es" || lang === "en") localStorage.setItem(LANG_LS, lang);
+    else localStorage.removeItem(LANG_LS);
+  } catch {
+    /* storage blocked — choice just won't persist */
+  }
+  if (typeof document !== "undefined" && (lang === "es" || lang === "en")) {
+    document.documentElement.lang = lang;
+  }
 }
 
 /** Single-language string (defaults EN). */

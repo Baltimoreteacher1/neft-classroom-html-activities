@@ -329,10 +329,58 @@
           time_seconds: Math.round((Date.now() - startTs) / 1000),
         });
         flush();
+        postHubCompletion();
       }
     } catch (e) {
       /* ignore */
     }
+  }
+
+  // ---- curriculum hub auto-complete -----------------------------------------
+  // When a core lesson is finished, mirror the completion into the curriculum
+  // progress store (the same one the hub's manual "Mark complete" checkmarks
+  // use) so the hub auto-checks the Interactive Lesson row on its next
+  // hydrate — no teacher click needed. Reuses the canonical bridge
+  // (assets/curriculum-progress-bridge.js) rather than duplicating its POST
+  // contract; the bridge is lazy-loaded here because lesson pages don't
+  // normally ship it. Best-effort: any failure is silent.
+  function coreLessonId() {
+    try {
+      var m = /^\/lessons\/([A-Za-z0-9._-]+)\/(?:index\.html?)?$/.exec(location.pathname);
+      return m ? m[1] : "";
+    } catch (e) {
+      return "";
+    }
+  }
+
+  function withProgressBridge(fn) {
+    if (window.CurriculumProgressBridge) {
+      fn(window.CurriculumProgressBridge);
+      return;
+    }
+    try {
+      var s = document.createElement("script");
+      s.src = "/assets/curriculum-progress-bridge.js";
+      s.async = true;
+      s.onload = function () {
+        if (window.CurriculumProgressBridge) fn(window.CurriculumProgressBridge);
+      };
+      document.head.appendChild(s);
+    } catch (e) {
+      /* never break a lesson over progress sync */
+    }
+  }
+
+  function postHubCompletion() {
+    var id = coreLessonId();
+    if (!id) return; // not a core /lessons/<id>/ page — nothing to auto-check
+    withProgressBridge(function (bridge) {
+      try {
+        bridge.syncToggle(id, "/lessons/" + id + "/", true);
+      } catch (e) {
+        /* silent — telemetry already captured the completion */
+      }
+    });
   }
 
   function ready(fn) {
