@@ -271,6 +271,22 @@ for (const id of baseIds) {
   inserted++;
 }
 
+// --- 3. Inline Tools link on small-group & catch-up rows -----------------
+// Those rows carry a single "Start …" launch link. Append a sibling
+// "Interactive Tools" pill (→ /lessons/<id>/?mode=tools) for every such lesson
+// that ships a tool. The optional trailing group in the pattern captures an
+// already-present tools link so a re-run is a no-op (idempotent).
+let inlineAdded = 0;
+html = html.replace(
+  /(<a class="res" href="\/lessons\/([\w-]+)\/">Start (?:small group|Catch-Up)<\/a>)(\s*<a class="res" href="\/lessons\/\2\/\?mode=tools">[^<]*<\/a>)?/g,
+  (match, startAnchor, id, existing) => {
+    if (existing) return match; // already has its tools link
+    if (!lessonHasTool(id)) return match;
+    inlineAdded++;
+    return `${startAnchor}\n                <a class="res" href="/lessons/${id}/?mode=tools">🧰 Interactive Tools</a>`;
+  },
+);
+
 if (html === before) {
   console.log("no changes");
 } else {
@@ -279,5 +295,5 @@ if (html === before) {
 
 const total = (html.match(/class="lesson lesson-tools"/g) || []).length;
 console.log(
-  `base-lessons=${baseIds.length} inserted=${inserted} skipped-no-tool=${skippedNoTool} total-tools-rows=${total}`,
+  `base-lessons=${baseIds.length} inserted=${inserted} skipped-no-tool=${skippedNoTool} total-tools-rows=${total} inline-added=${inlineAdded}`,
 );

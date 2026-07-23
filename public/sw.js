@@ -3,7 +3,7 @@
  * Strategy: Cache-first for core assets, Stale-While-Revalidate for HTML pages.
  * ========================================================================== */
 
-const CACHE_NAME = "eduwonderlab-v1";
+const CACHE = "eduwonderlab-v1";
 const PRECACHE_URLS = [
   "/curriculum/",
   "/assets/curriculum-enhancements.css",
@@ -28,16 +28,16 @@ const PRECACHE_URLS = [
   "/assets/class-board-strip.js",
   "/assets/vendor/minisearch-7.1.2.min.js",
   "/assets/favicon.svg",
-  "/manifest.webmanifest"
+  "/manifest.webmanifest",
 ];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches
-      .open(CACHE_NAME)
+      .open(CACHE)
       .then((cache) => cache.addAll(PRECACHE_URLS))
       .then(() => self.skipWaiting())
-      .catch(() => {})
+      .catch(() => {}),
   );
 });
 
@@ -48,13 +48,13 @@ self.addEventListener("activate", (event) => {
       .then((keys) =>
         Promise.all(
           keys.map((key) => {
-            if (key !== CACHE_NAME) {
+            if (key !== CACHE) {
               return caches.delete(key);
             }
-          })
-        )
+          }),
+        ),
       )
-      .then(() => self.clients.claim())
+      .then(() => self.clients.claim()),
   );
 });
 
@@ -74,7 +74,7 @@ self.addEventListener("fetch", (event) => {
         fetch(req)
           .then((networkResponse) => {
             if (networkResponse && networkResponse.status === 200) {
-              caches.open(CACHE_NAME).then((cache) => cache.put(req, networkResponse));
+              caches.open(CACHE).then((cache) => cache.put(req, networkResponse));
             }
           })
           .catch(() => {});
@@ -85,7 +85,7 @@ self.addEventListener("fetch", (event) => {
         .then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
             const resClone = networkResponse.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(req, resClone));
+            caches.open(CACHE).then((cache) => cache.put(req, resClone));
           }
           return networkResponse;
         })
@@ -95,6 +95,6 @@ self.addEventListener("fetch", (event) => {
             return caches.match("/curriculum/");
           }
         });
-    })
+    }),
   );
 });
