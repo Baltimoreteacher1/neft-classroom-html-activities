@@ -1092,6 +1092,7 @@
     hubApi.unitsData.forEach(function (u, idx) {
       var card = cards[idx];
       if (!card) return;
+      card.id = "unit-" + (idx + 1);
 
       injectPrintUnit(card, u, idx);
 
