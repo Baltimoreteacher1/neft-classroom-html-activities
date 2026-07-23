@@ -217,7 +217,7 @@ export function injectSmallGroupStyles(accent) {
     const innovation = document.createElement("link");
     innovation.id = "sg-innovation-styles";
     innovation.rel = "stylesheet";
-    innovation.href = "/assets/small-group-innovation.css?v=20260723-pubwave1";
+    innovation.href = "/assets/small-group-innovation.css?v=20260723-pubwave2";
     document.head.appendChild(innovation);
   }
   if (!document.getElementById("sg-annotation-styles")) {
