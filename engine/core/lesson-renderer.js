@@ -2225,6 +2225,9 @@ function renderWarmupPhase(el, state, ctx, config) {
   }
 
   el.append(card);
+
+  // Objectives card sits right under the Warmup card
+  renderObjectives(el, config);
 }
 
 function evaluateWarmupQuestion(qBox, q, selectedIdx, feedbackBox) {
