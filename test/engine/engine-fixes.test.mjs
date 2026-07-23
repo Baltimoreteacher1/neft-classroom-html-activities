@@ -22,12 +22,12 @@ function ok(name) {
  * "Vocab" phase) every label below it shifts by one, and the "/N phases"
  * denominators drift. */
 {
-  assert.equal(PHASE_TIME_ESTIMATES.length, 7, "expected exactly 7 lesson phases");
+  assert.equal(PHASE_TIME_ESTIMATES.length, 8, "expected exactly 8 lesson phases");
   assert.ok(
     !PHASE_TIME_ESTIMATES.some((p) => /vocab/i.test(p.name)),
     "the removed Vocab phase must not reappear in PHASE_TIME_ESTIMATES",
   );
-  const expectedOrder = ["Warmup", "Launch", "Explore", "Practice", "Connect", "Reflect", "Objectives"];
+  const expectedOrder = ["Warmup", "Objectives", "Launch", "Explore", "Practice", "Connect", "Reflect", "Objectives"];
   PHASE_TIME_ESTIMATES.forEach((p, i) => {
     assert.equal(p.name, expectedOrder[i], `phase ${i} name`);
     // The index-based label the consumers render must match the row's own name.
@@ -37,7 +37,7 @@ function ok(name) {
       `phaseName(${i}) must align with PHASE_TIME_ESTIMATES[${i}].name (off-by-one guard)`,
     );
   });
-  ok("PHASE_TIME_ESTIMATES is 7 phases and aligns with phaseName(i)");
+  ok("PHASE_TIME_ESTIMATES is 8 phases and aligns with phaseName(i)");
 }
 
 /* ── grade.js mastery bands (scoring contract) ── */

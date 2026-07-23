@@ -104,6 +104,7 @@ export function bootLesson(config) {
     // Reflect (indices 0–4). See migrateVocabPhaseRemoval in state.js.
     phases: [
       (el, state, ctx) => renderWarmupPhase(el, state, ctx, config),
+      (el, state, ctx) => renderObjectivesIntroPhase(el, state, ctx, config),
       (el, state, ctx) => renderLaunchPhase(el, state, ctx, config),
       (el, state, ctx) => renderExplorePhase(el, state, ctx, config),
       (el, state, ctx) => renderPracticePhase(el, state, ctx, config),
@@ -2205,7 +2206,7 @@ function renderWarmupPhase(el, state, ctx, config) {
   nextBtn.type = "button";
   nextBtn.className = "btn btn-teal";
   nextBtn.style.cssText = "padding:10px 22px; font-weight:800; font-size:14px; background:#14223a; color:#ffffff; border:none; border-radius:10px; cursor:pointer;";
-  nextBtn.textContent = "Continue to Phase 2: Launch 🚀";
+  nextBtn.textContent = "Continue to Phase 2: Objectives 🎯";
   nextBtn.addEventListener("click", () => {
     if (ctx && typeof ctx.nextPhase === "function") {
       ctx.nextPhase();
@@ -2214,18 +2215,6 @@ function renderWarmupPhase(el, state, ctx, config) {
 
   btnRow.append(checkBtn, nextBtn);
   card.append(questionsContainer);
-
-  // Today's Learning Objectives embedded directly under the Warmup questions
-  const objWrap = document.createElement("div");
-  objWrap.className = "warmup-objectives-section";
-  objWrap.style.cssText = "margin-top:24px; padding-top:18px; border-top:1px dashed #cbd5e1;";
-  const objTitle = document.createElement("h4");
-  objTitle.style.cssText = "font-size:17px; font-weight:800; color:#0f172a; margin:0 0 12px 0; display:flex; align-items:center; gap:8px;";
-  objTitle.innerHTML = `<span>🎯</span> Today's Learning Objectives`;
-  objWrap.append(objTitle);
-  renderObjectives(objWrap, config);
-  card.append(objWrap);
-
   card.append(btnRow);
 
   if (savedAnswers.checked) {
@@ -2245,6 +2234,52 @@ function renderWarmupPhase(el, state, ctx, config) {
     }
   }
 
+  el.append(card);
+}
+
+function renderObjectivesIntroPhase(el, state, ctx, config) {
+  phaseHeader(
+    el,
+    "2",
+    "section-icon-teal",
+    "Phase 2: Learning Objectives",
+    "Review today's Content and Language Objectives so you know what you are aiming for!",
+  );
+
+  const card = document.createElement("div");
+  card.className = "card card-objectives-intro-phase";
+  card.style.cssText = "margin: 16px 0 24px; border: 2px solid #0f6d78; border-radius: 16px; padding: 22px; background: #ffffff; box-shadow: 0 6px 20px rgba(15,109,120,0.12);";
+
+  card.innerHTML = `
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; border-bottom:1px solid #e2e8f0; padding-bottom:12px;">
+      <div>
+        <span style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; color:#0f6d78; background:#e6f4f6; padding:4px 10px; border-radius:6px;">Phase 2 · Objectives</span>
+        <h3 style="margin:6px 0 0; font-size:22px; font-weight:800; color:#14223a;">🎯 Today's Learning Objectives</h3>
+      </div>
+      <div style="font-size:13px; font-weight:800; color:#0f6d78; background:#e0f2fe; border:1px solid #bae6fd; padding:6px 14px; border-radius:10px;">
+        Goal Setting
+      </div>
+    </div>
+    <p style="margin:0 0 16px; font-size:15px; color:#56627a;">
+      Read through today's Content Goal and Language Goal. These are the skills you will master by the end of today's lesson!
+    </p>
+  `;
+
+  renderObjectives(card, config);
+
+  const nextBtn = document.createElement("button");
+  nextBtn.type = "button";
+  nextBtn.className = "btn btn-teal";
+  nextBtn.style.cssText = "margin-top:20px; padding:12px 24px; font-weight:800; font-size:15px; background:#14223a; color:#ffffff; border:none; border-radius:10px; cursor:pointer;";
+  nextBtn.textContent = "Continue to Phase 3: Launch 🚀";
+  nextBtn.addEventListener("click", () => {
+    state.markCompleted(1);
+    if (ctx && typeof ctx.nextPhase === "function") {
+      ctx.nextPhase();
+    }
+  });
+
+  card.append(nextBtn);
   el.append(card);
 }
 
@@ -2383,12 +2418,12 @@ function renderLaunchPhase(el, state, ctx, config) {
   // Top: student identity (name / period), homework link, pre-lesson hint.
   renderLaunchHeader(el, state, config);
 
-  // ── Phase 2: Launch ────────────────────────────────────────────────────────
+  // ── Phase 3: Launch ────────────────────────────────────────────────────────
   phaseHeader(
     el,
-    "2",
+    "3",
     "section-icon-teal",
-    "Phase 2: Launch",
+    "Phase 3: Launch",
     "Look at today's scene. What do you notice? What do you wonder?",
   );
 
@@ -3736,9 +3771,9 @@ function showFinalSummary(el, state, config) {
 function renderObjectivesReviewPhase(el, state, ctx, config) {
   phaseHeader(
     el,
-    "7",
+    "8",
     "section-icon-teal",
-    "Phase 7: Objectives Review",
+    "Phase 8: Objectives Review",
     "Revisit today's Content and Language Objectives to check your growth and celebrate what you learned!",
   );
 
@@ -3749,7 +3784,7 @@ function renderObjectivesReviewPhase(el, state, ctx, config) {
   card.innerHTML = `
     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; border-bottom:1px solid #e2e8f0; padding-bottom:12px;">
       <div>
-        <span style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; color:#0f6d78; background:#e6f4f6; padding:4px 10px; border-radius:6px;">Phase 7 · Objectives Review</span>
+        <span style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; color:#0f6d78; background:#e6f4f6; padding:4px 10px; border-radius:6px;">Phase 8 · Objectives Review</span>
         <h3 style="margin:6px 0 0; font-size:22px; font-weight:800; color:#14223a;">🎯 Learning Objectives Mastery Check</h3>
       </div>
       <div style="font-size:13px; font-weight:800; color:#0f6d78; background:#f0fdf4; border:1px solid #bbf7d0; padding:6px 14px; border-radius:10px;">

@@ -799,12 +799,13 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
 
   const phaseConfigs = [
     { name: phaseName(0), icon: "⚡" }, // Warmup (Phase 1)
-    { name: phaseName(1), icon: "🚀" }, // Launch (Phase 2)
-    { name: phaseName(2), icon: "🔍" }, // Explore (Phase 3)
-    { name: phaseName(3), icon: "✏️" }, // Practice (Phase 4)
-    { name: phaseName(4), icon: "🌎" }, // Connect (Phase 5)
-    { name: phaseName(5), icon: "💡" }, // Reflect (Phase 6)
-    { name: phaseName(6), icon: "🎯" }, // Objectives (Phase 7)
+    { name: phaseName(1), icon: "🎯" }, // Objectives (Phase 2)
+    { name: phaseName(2), icon: "🚀" }, // Launch (Phase 3)
+    { name: phaseName(3), icon: "🔍" }, // Explore (Phase 4)
+    { name: phaseName(4), icon: "✏️" }, // Practice (Phase 5)
+    { name: phaseName(5), icon: "🌎" }, // Connect (Phase 6)
+    { name: phaseName(6), icon: "💡" }, // Reflect (Phase 7)
+    { name: phaseName(7), icon: "🎯" }, // Objectives (Phase 8)
   ];
 
   state.initPhases(phaseConfigs);
@@ -1924,8 +1925,8 @@ function updateSidebar(sidebar, state, phaseConfigs) {
         <span class="phase-stars">${stars}</span>
       </button>
     `;
-      // Launch is phase index 1 (Phase 2) — drop Vocab/Notes right beneath it.
-      return i === 1 ? btn + launchSubTabs : btn;
+      // Launch is phase index 2 (Phase 3) — drop Vocab/Notes right beneath it.
+      return i === 2 ? btn + launchSubTabs : btn;
     })
     .join("");
 

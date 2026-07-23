@@ -83,6 +83,7 @@ export function deriveLaunchBeats(config) {
  */
 export const PHASE_TIME_ESTIMATES = [
   { name: "Warmup", icon: "⚡", minutes: 3 },
+  { name: "Objectives", icon: "🎯", minutes: 2 },
   { name: "Launch", icon: "🚀", minutes: 6 },
   { name: "Explore", icon: "🔍", minutes: 8 },
   { name: "Practice", icon: "✏️", minutes: 15 },
