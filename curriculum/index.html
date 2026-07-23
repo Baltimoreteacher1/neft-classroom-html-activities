@@ -1972,6 +1972,52 @@
             }
           </style>
           <style>
+            .hub-tab-nav {
+              grid-column: 1 / -1;
+              display: flex;
+              gap: 8px;
+              margin: 12px 0 16px;
+              padding: 6px;
+              background: rgba(255, 255, 255, 0.85);
+              border: 1px solid var(--line);
+              border-radius: 16px;
+              box-shadow: 0 4px 16px rgba(20, 34, 58, 0.05);
+              backdrop-filter: blur(12px);
+              overflow-x: auto;
+              scrollbar-width: thin;
+            }
+            .hub-tab-btn {
+              flex: 1;
+              min-width: 130px;
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              gap: 8px;
+              min-height: 44px;
+              padding: 8px 16px;
+              font-family: "Nunito", system-ui, sans-serif;
+              font-weight: 800;
+              font-size: 14px;
+              color: var(--muted);
+              background: transparent;
+              border: 0;
+              border-radius: 12px;
+              cursor: pointer;
+              white-space: nowrap;
+              transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            }
+            .hub-tab-btn:hover {
+              color: var(--ink);
+              background: rgba(20, 34, 58, 0.04);
+            }
+            .hub-tab-btn.is-active {
+              color: var(--teal);
+              background: #ffffff;
+              box-shadow: 0 4px 14px rgba(20, 34, 58, 0.1);
+            }
+            .hub-tab-btn:focus-visible {
+              outline: 2px solid var(--teal);
+            }
             .features-section-header {
               grid-column: 1 / -1;
               display: flex;
@@ -1998,6 +2044,108 @@
             }
           </style>
 
+          <div class="hub-tab-nav" role="tablist" aria-label="Curriculum Hub Categories">
+            <button
+              type="button"
+              class="hub-tab-btn is-active"
+              id="tab-btn-featured"
+              data-tab="featured"
+              role="tab"
+              aria-selected="true"
+            >
+              <span>⭐</span> Featured Hubs
+            </button>
+            <button
+              type="button"
+              class="hub-tab-btn hub-teacher-only"
+              id="tab-btn-teacher"
+              data-tab="teacher"
+              role="tab"
+              aria-selected="false"
+            >
+              <span>🧰</span> Teacher Console
+            </button>
+            <button
+              type="button"
+              class="hub-tab-btn"
+              id="tab-btn-games"
+              data-tab="games"
+              role="tab"
+              aria-selected="false"
+            >
+              <span>🎮</span> Arcade &amp; Projects
+            </button>
+            <button
+              type="button"
+              class="hub-tab-btn"
+              id="tab-btn-all"
+              data-tab="all"
+              role="tab"
+              aria-selected="false"
+            >
+              <span>📂</span> All Tools
+            </button>
+          </div>
+
+          <script>
+            (function () {
+              function initTabs() {
+                var nav = document.querySelector(".hub-tab-nav");
+                if (!nav) return;
+                var btns = nav.querySelectorAll(".hub-tab-btn");
+                var grid = nav.parentNode;
+                if (!grid) return;
+
+                function selectTab(cat) {
+                  btns.forEach(function (b) {
+                    var match = b.dataset.tab === cat;
+                    b.classList.toggle("is-active", match);
+                    b.setAttribute("aria-selected", match ? "true" : "false");
+                  });
+
+                  var cards = grid.querySelectorAll("section.mailbox-feature, section.ai-hub-feature");
+                  cards.forEach(function (card) {
+                    var cardCat = card.dataset.category || "featured";
+                    if (cat === "all") {
+                      card.style.display = "";
+                    } else if (cat === "teacher") {
+                      card.style.display = cardCat === "teacher" ? "" : "none";
+                    } else if (cat === "games") {
+                      card.style.display = cardCat === "games" ? "" : "none";
+                    } else {
+                      card.style.display = cardCat === "featured" || !cardCat ? "" : "none";
+                    }
+                  });
+
+                  var headers = grid.querySelectorAll(".features-section-header");
+                  headers.forEach(function (h) {
+                    if (cat === "all") {
+                      h.style.display = "";
+                    } else {
+                      h.style.display = "none";
+                    }
+                  });
+                }
+
+                btns.forEach(function (b) {
+                  b.addEventListener("click", function () {
+                    selectTab(b.dataset.tab);
+                  });
+                });
+
+                if (document.body.classList.contains("teacher-mode")) {
+                  selectTab("teacher");
+                }
+              }
+
+              if (document.readyState === "loading") {
+                document.addEventListener("DOMContentLoaded", initTabs);
+              } else {
+                setTimeout(initTabs, 0);
+              }
+            })();
+          </script>
+
           <div class="features-section-header hub-teacher-only">
             <span class="fsh-icon" aria-hidden="true">🧰</span>
             <h2>Teacher Tools &amp; Command Console</h2>
@@ -2005,6 +2153,7 @@
 
           <section
             class="mailbox-feature gradebook-feature hub-teacher-only"
+            data-category="teacher"
             aria-labelledby="gradebook-feature-title"
           >
             <span class="mf-icon" aria-hidden="true">📊</span>
@@ -2037,6 +2186,7 @@
           </style>
           <section
             class="mailbox-feature insight-feature hub-teacher-only"
+            data-category="teacher"
             aria-labelledby="insight-feature-title"
           >
             <span class="mf-icon" aria-hidden="true">⚡</span>
@@ -2070,6 +2220,7 @@
           </style>
           <section
             class="mailbox-feature resource-feature hub-teacher-only"
+            data-category="teacher"
             aria-labelledby="resource-feature-title"
           >
             <span class="mf-icon" aria-hidden="true">🧭</span>
@@ -2101,7 +2252,7 @@
               background: rgba(15, 118, 110, 0.12);
             }
           </style>
-          <section class="mailbox-feature lpg-feature" aria-labelledby="lpg-feature-title">
+          <section class="mailbox-feature lpg-feature" data-category="teacher" aria-labelledby="lpg-feature-title">
             <span class="mf-icon" aria-hidden="true">🧭</span>
             <div class="mf-body">
               <span class="mf-tag">Teacher Tool</span>
@@ -2285,6 +2436,7 @@
           </style>
           <section
             class="mailbox-feature projects-feature"
+            data-category="games"
             aria-labelledby="projects-feature-title"
           >
             <span class="mf-icon" aria-hidden="true">🎓</span>
@@ -2320,6 +2472,7 @@
           </style>
           <section
             class="mailbox-feature mma-feature hub-teacher-only"
+            data-category="teacher"
             aria-labelledby="mma-feature-title"
           >
             <span class="mf-icon" aria-hidden="true">👾</span>
