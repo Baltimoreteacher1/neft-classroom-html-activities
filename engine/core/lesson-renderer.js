@@ -2161,7 +2161,12 @@ function renderWarmupPhase(el, state, ctx, config) {
   checkBtn.type = "button";
   checkBtn.className = "btn btn-primary";
   checkBtn.style.cssText = "padding:10px 20px; font-weight:800; font-size:14px; background:#0f6d78; color:#ffffff; border:none; border-radius:10px; cursor:pointer;";
-  checkBtn.textContent = "Check Warmup Answers";
+  checkBtn.textContent = savedAnswers.checked ? "Score Final (Submitted)" : "Submit Warmup Answers";
+  if (savedAnswers.checked) {
+    checkBtn.disabled = true;
+    checkBtn.style.background = "#64748b";
+    checkBtn.style.cursor = "default";
+  }
 
   checkBtn.addEventListener("click", () => {
     let correctCount = 0;
@@ -2178,9 +2183,14 @@ function renderWarmupPhase(el, state, ctx, config) {
     state.saveResponse(0, "warmup_answers", savedAnswers);
     state.markCompleted(0);
 
+    checkBtn.disabled = true;
+    checkBtn.textContent = "Score Final (Submitted)";
+    checkBtn.style.background = "#64748b";
+    checkBtn.style.cursor = "default";
+
     const badge = card.querySelector("#warmupScoreBadge");
     if (badge) {
-      badge.textContent = `Score: ${correctCount}/${total} (${Math.round((correctCount/total)*100)}%)`;
+      badge.textContent = `Final Score: ${correctCount}/${total} (${Math.round((correctCount/total)*100)}%)`;
       badge.style.background = correctCount === total ? "#dcfce7" : "#fef3c7";
       badge.style.color = correctCount === total ? "#15803d" : "#b45309";
     }
@@ -2200,22 +2210,46 @@ function renderWarmupPhase(el, state, ctx, config) {
   btnRow.append(checkBtn, nextBtn);
   card.append(questionsContainer);
   card.append(btnRow);
+
+  if (savedAnswers.checked) {
+    let correctCount = 0;
+    warmup.questions.forEach((q, qIdx) => {
+      if (savedAnswers[qIdx] === q.correctIndex) correctCount++;
+    });
+    const badge = card.querySelector("#warmupScoreBadge");
+    if (badge) {
+      badge.textContent = `Final Score: ${correctCount}/${total} (${Math.round((correctCount/total)*100)}%)`;
+      badge.style.background = correctCount === total ? "#dcfce7" : "#fef3c7";
+      badge.style.color = correctCount === total ? "#15803d" : "#b45309";
+    }
+  }
+
   el.append(card);
 }
 
 function evaluateWarmupQuestion(qBox, q, selectedIdx, feedbackBox) {
   const choices = qBox.querySelectorAll("label");
+  const inputs = qBox.querySelectorAll("input[type='radio']");
+
+  // Disable choices once checked (score is final)
+  inputs.forEach((input) => {
+    input.disabled = true;
+  });
+
   choices.forEach((lbl, cIdx) => {
     lbl.style.borderColor = "#cbd5e1";
     lbl.style.background = "#ffffff";
+    lbl.style.cursor = "default";
 
-    if (cIdx === q.correctIndex) {
-      lbl.style.borderColor = "#22c55e";
-      lbl.style.background = "#f0fdf4";
-      lbl.style.fontWeight = "bold";
-    } else if (selectedIdx === cIdx && selectedIdx !== q.correctIndex) {
-      lbl.style.borderColor = "#ef4444";
-      lbl.style.background = "#fef2f2";
+    if (selectedIdx === cIdx) {
+      if (cIdx === q.correctIndex) {
+        lbl.style.borderColor = "#22c55e";
+        lbl.style.background = "#f0fdf4";
+        lbl.style.fontWeight = "bold";
+      } else {
+        lbl.style.borderColor = "#ef4444";
+        lbl.style.background = "#fef2f2";
+      }
     }
   });
 
@@ -2224,17 +2258,17 @@ function evaluateWarmupQuestion(qBox, q, selectedIdx, feedbackBox) {
     feedbackBox.style.background = "#f0fdf4";
     feedbackBox.style.color = "#15803d";
     feedbackBox.style.border = "1px solid #bbf7d0";
-    feedbackBox.innerHTML = `<strong>Correct!</strong> ${esc(q.explanation || "")}`;
+    feedbackBox.innerHTML = `<strong>Correct! ✓</strong>`;
   } else if (selectedIdx !== undefined) {
     feedbackBox.style.background = "#fef2f2";
     feedbackBox.style.color = "#b91c1c";
     feedbackBox.style.border = "1px solid #fecaca";
-    feedbackBox.innerHTML = `<strong>Not quite.</strong> ${esc(q.explanation || "")}`;
+    feedbackBox.innerHTML = `<strong>Incorrect. ✘</strong>`;
   } else {
     feedbackBox.style.background = "#fffbe0";
     feedbackBox.style.color = "#92400e";
     feedbackBox.style.border = "1px solid #fef08a";
-    feedbackBox.innerHTML = `<strong>Unanswered.</strong> Please select an answer.`;
+    feedbackBox.innerHTML = `<strong>Unanswered.</strong>`;
   }
 }
 
