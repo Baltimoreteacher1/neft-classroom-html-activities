@@ -1,18 +1,221 @@
-// present-mode.js — teacher-facing "Present" toggle (per Joel 2026-07-20).
-// Turns the current phase into one-section-per-screen slides for projecting:
-// a right-hand slide rail, bottom-center arrows, keyboard navigation, and
-// slightly larger type — all in the lesson's editorial styling. The default
-// student scroll experience is untouched; Present is opt-in from the Tools
-// menu (or ?present=1) and fully reversible with Exit / Esc.
-//
-// Purely presentational: children of `.phase` are tagged with `data-pm-slide`
-// and shown/hidden by class — no DOM re-parenting — so every interactive
-// feature, observer, and save/resume hook keeps working unchanged.
+// present-mode.js — teacher-facing "Present" toggle & Screen Share (per Joel 2026-07-23).
+// Turns lessons/phases into presentation slides and supports live screen sharing
+// via navigator.mediaDevices.getDisplayMedia().
+// Mounts a floating Present button (that can be minimized) in Teacher Mode.
 
 function esc(s) {
   const d = document.createElement("div");
   d.textContent = s == null ? "" : String(s);
   return d.innerHTML;
+}
+
+const MINIMIZED_KEY = "nt-present-widget-minimized";
+
+export function isTeacherModeActive() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("student") === "1" || params.get("teacher") === "0") return false;
+    return (
+      localStorage.getItem("nt-teacher-mode") === "1" ||
+      document.body.classList.contains("teacher-mode") ||
+      document.body.classList.contains("sg-is-teacher")
+    );
+  } catch {
+    return false;
+  }
+}
+
+let activeScreenStream = null;
+let screenOverlayEl = null;
+
+export async function startScreenShare({ onFallback } = {}) {
+  if (activeScreenStream) {
+    stopScreenShare();
+    return true;
+  }
+
+  if (navigator.mediaDevices && typeof navigator.mediaDevices.getDisplayMedia === "function") {
+    try {
+      const stream = await navigator.mediaDevices.getDisplayMedia({
+        video: { cursor: "always" },
+        audio: false,
+      });
+      activeScreenStream = stream;
+
+      buildScreenShareOverlay(stream);
+
+      const track = stream.getVideoTracks()[0];
+      if (track) {
+        track.onended = () => {
+          stopScreenShare();
+        };
+      }
+      return true;
+    } catch (err) {
+      console.warn("[PresentMode] Screen share cancelled or failed:", err);
+    }
+  }
+
+  if (typeof onFallback === "function") {
+    onFallback();
+  } else {
+    showPresentNotice("Screen share unavailable — entered standard Presentation Mode.");
+  }
+  return false;
+}
+
+export function stopScreenShare() {
+  if (activeScreenStream) {
+    try {
+      activeScreenStream.getTracks().forEach((t) => t.stop());
+    } catch (_) {}
+    activeScreenStream = null;
+  }
+  if (screenOverlayEl) {
+    screenOverlayEl.remove();
+    screenOverlayEl = null;
+  }
+  document.body.classList.remove("nt-screen-presenting");
+}
+
+function buildScreenShareOverlay(stream) {
+  if (screenOverlayEl) screenOverlayEl.remove();
+
+  document.body.classList.add("nt-screen-presenting");
+
+  screenOverlayEl = document.createElement("div");
+  screenOverlayEl.className = "nt-screen-overlay";
+  screenOverlayEl.innerHTML = `
+    <div class="nt-screen-stage">
+      <video class="nt-screen-video" autoplay playsinline muted></video>
+      <div class="nt-screen-hud">
+        <span class="nt-screen-badge">📡 Live Screen Share</span>
+        <button type="button" class="nt-screen-btn nt-screen-pip" title="Toggle Floating Window">🗖 PIP</button>
+        <button type="button" class="nt-screen-btn nt-screen-fs" title="Fullscreen">⛶ Fullscreen</button>
+        <button type="button" class="nt-screen-btn nt-screen-stop" title="Stop Sharing">🛑 Stop Presenting</button>
+      </div>
+    </div>`;
+
+  const video = screenOverlayEl.querySelector(".nt-screen-video");
+  video.srcObject = stream;
+
+  const pipBtn = screenOverlayEl.querySelector(".nt-screen-pip");
+  pipBtn.addEventListener("click", async () => {
+    try {
+      if (document.pictureInPictureElement) {
+        await document.exitPictureInPicture();
+      } else if (video.requestPictureInPicture) {
+        await video.requestPictureInPicture();
+      } else {
+        screenOverlayEl.classList.toggle("is-mini-pip");
+      }
+    } catch (_) {
+      screenOverlayEl.classList.toggle("is-mini-pip");
+    }
+  });
+
+  const fsBtn = screenOverlayEl.querySelector(".nt-screen-fs");
+  fsBtn.addEventListener("click", () => {
+    if (document.fullscreenElement) {
+      document.exitFullscreen?.();
+    } else {
+      screenOverlayEl.requestFullscreen?.() || screenOverlayEl.querySelector(".nt-screen-stage")?.requestFullscreen?.();
+    }
+  });
+
+  const stopBtn = screenOverlayEl.querySelector(".nt-screen-stop");
+  stopBtn.addEventListener("click", () => {
+    stopScreenShare();
+  });
+
+  document.body.appendChild(screenOverlayEl);
+}
+
+function showPresentNotice(msg) {
+  const existing = document.getElementById("nt-present-toast");
+  if (existing) existing.remove();
+  const toast = document.createElement("div");
+  toast.id = "nt-present-toast";
+  toast.className = "nt-present-toast";
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 4000);
+}
+
+export function mountPresentWidget({ onPresentToggle, container } = {}) {
+  if (document.getElementById("nt-present-widget")) return;
+  if (!isTeacherModeActive()) return;
+
+  let minimized = false;
+  try {
+    minimized = localStorage.getItem(MINIMIZED_KEY) === "1";
+  } catch (_) {}
+
+  const widget = document.createElement("div");
+  widget.id = "nt-present-widget";
+  widget.className = `nt-present-widget ${minimized ? "is-minimized" : ""}`;
+
+  function renderWidgetContent() {
+    if (minimized) {
+      widget.innerHTML = `
+        <button type="button" class="nt-present-btn-mini" title="Expand Present Mode" aria-label="Expand Present Mode">
+          <span>📺 Present</span>
+          <span class="nt-present-expand-icon">⤢</span>
+        </button>`;
+      widget.querySelector(".nt-present-btn-mini").onclick = () => {
+        setMinimized(false);
+      };
+    } else {
+      widget.innerHTML = `
+        <div class="nt-present-bar">
+          <span class="nt-present-label">👩‍🏫 Presenter</span>
+          <button type="button" class="nt-present-act-btn" title="Share Screen / Presentation Mode">
+            <span>📺 Present / Share Screen</span>
+          </button>
+          <button type="button" class="nt-present-min-btn" title="Minimize Present Bar" aria-label="Minimize Present Bar">
+            <span>🗕</span>
+          </button>
+        </div>`;
+
+      widget.querySelector(".nt-present-act-btn").onclick = async () => {
+        if (typeof onPresentToggle === "function") {
+          onPresentToggle();
+        } else {
+          startScreenShare({
+            onFallback: () => {
+              document.dispatchEvent(new CustomEvent("nt:present-deck-toggle"));
+            },
+          });
+        }
+      };
+
+      widget.querySelector(".nt-present-min-btn").onclick = () => {
+        setMinimized(true);
+      };
+    }
+  }
+
+  function setMinimized(val) {
+    minimized = val;
+    try {
+      localStorage.setItem(MINIMIZED_KEY, val ? "1" : "0");
+    } catch (_) {}
+    widget.classList.toggle("is-minimized", val);
+    renderWidgetContent();
+  }
+
+  renderWidgetContent();
+  (container || document.body).appendChild(widget);
+
+  window.addEventListener("storage", (e) => {
+    if (e.key === "nt-teacher-mode") {
+      if (isTeacherModeActive()) {
+        widget.style.display = "";
+      } else {
+        widget.style.display = "none";
+      }
+    }
+  });
 }
 
 export function initPresentMode({ app, config, phaseConfigs, phaseContainer, state }) {
@@ -22,10 +225,8 @@ export function initPresentMode({ app, config, phaseConfigs, phaseContainer, sta
   let rail = null;
   let nav = null;
 
-  /* ── Slide grouping: a phase child with a heading/card starts a slide; ──
-     small trailing elements (continue buttons, notes) ride with the one
-     before, so every slide ends on its own call-to-action. */
   function groupSlides(phaseEl) {
+    if (!phaseEl) return [];
     const groups = [];
     [...phaseEl.children].forEach((child) => {
       const startsSlide =
@@ -71,30 +272,34 @@ export function initPresentMode({ app, config, phaseConfigs, phaseContainer, sta
   }
 
   function deckify() {
-    const phaseEl = phaseContainer.querySelector(".phase");
+    const phaseEl = phaseContainer?.querySelector?.(".phase") || phaseContainer;
     if (!phaseEl) return;
     slideEls = groupSlides(phaseEl);
-    const phaseIdx = state.get().currentPhase ?? 0;
-    rail.querySelector(".pm-rail-slides").innerHTML = slideEls
-      .map(
-        (g, i) => `
-        <button type="button" class="pm-thumb" role="tab" data-pm-slide-btn="${i}">
-          <span class="pm-thumb-num">${i + 1}</span>
-          <span class="pm-thumb-title">${esc(slideTitle(g, `Slide ${i + 1}`))}</span>
-        </button>`,
-      )
-      .join("");
-    rail
-      .querySelectorAll("[data-pm-slide-btn]")
-      .forEach((b) => b.addEventListener("click", () => show(+b.dataset.pmSlideBtn)));
-    rail
-      .querySelectorAll(".pm-rail-phase")
-      .forEach((b, i) => b.classList.toggle("pm-sel", i === phaseIdx));
+    const phaseIdx = state?.get?.()?.currentPhase ?? 0;
+    if (rail?.querySelector(".pm-rail-slides")) {
+      rail.querySelector(".pm-rail-slides").innerHTML = slideEls
+        .map(
+          (g, i) => `
+          <button type="button" class="pm-thumb" role="tab" data-pm-slide-btn="${i}">
+            <span class="pm-thumb-num">${i + 1}</span>
+            <span class="pm-thumb-title">${esc(slideTitle(g, `Slide ${i + 1}`))}</span>
+          </button>`,
+        )
+        .join("");
+      rail
+        .querySelectorAll("[data-pm-slide-btn]")
+        .forEach((b) => b.addEventListener("click", () => show(+b.dataset.pmSlideBtn)));
+      rail
+        .querySelectorAll(".pm-rail-phase")
+        .forEach((b, i) => b.classList.toggle("pm-sel", i === phaseIdx));
+    }
     show(0);
   }
 
   function unDeckify() {
-    phaseContainer.querySelectorAll(".pm-hidden").forEach((el) => el.classList.remove("pm-hidden"));
+    if (phaseContainer) {
+      phaseContainer.querySelectorAll(".pm-hidden").forEach((el) => el.classList.remove("pm-hidden"));
+    }
     slideEls = [];
     current = 0;
   }
@@ -103,18 +308,19 @@ export function initPresentMode({ app, config, phaseConfigs, phaseContainer, sta
     rail = document.createElement("aside");
     rail.className = "pm-rail";
     rail.setAttribute("aria-label", "Presentation slides");
+    const phaseListHtml = (phaseConfigs || [])
+      .map(
+        (p, i) =>
+          `<button type="button" class="pm-rail-phase" data-pm-goto-phase="${i}">${i + 1} · ${esc(p?.name || `Part ${i + 1}`)}</button>`,
+      )
+      .join("");
+
     rail.innerHTML = `
       <div class="pm-rail-head">Presenting</div>
       <div class="pm-rail-slides" role="tablist"></div>
-      <div class="pm-rail-phases">
-        ${phaseConfigs
-          .map(
-            (p, i) =>
-              `<button type="button" class="pm-rail-phase" data-pm-goto-phase="${i}">${i + 1} · ${esc(p?.name || `Part ${i + 1}`)}</button>`,
-          )
-          .join("")}
-      </div>
+      <div class="pm-rail-phases">${phaseListHtml}</div>
       <button type="button" class="pm-exit" data-pm-exit>✕ Exit (Esc)</button>`;
+
     rail
       .querySelectorAll("[data-pm-goto-phase]")
       .forEach((b) =>
@@ -153,29 +359,29 @@ export function initPresentMode({ app, config, phaseConfigs, phaseContainer, sta
       .forEach((el) => (el.textContent = on ? "Exit Present" : "Present"));
   }
 
-  /* Re-deckify on phase change while presenting */
-  const origRenderPhase = app.renderPhase.bind(app);
-  app.renderPhase = (index, renderFn) => {
-    origRenderPhase(index, renderFn);
-    if (active) deckify();
-  };
+  if (app?.renderPhase) {
+    const origRenderPhase = app.renderPhase.bind(app);
+    app.renderPhase = (index, renderFn) => {
+      origRenderPhase(index, renderFn);
+      if (active) deckify();
+    };
+  }
 
-  /* Late-added phase children (e.g. served practice problems) join the last
-     slide so nothing renders invisible while presenting. */
-  new MutationObserver(() => {
-    if (!active || !slideEls.length) return;
-    const phaseEl = phaseContainer.querySelector(".phase");
-    if (!phaseEl) return;
-    [...phaseEl.children].forEach((child) => {
-      if (child.dataset.pmSlide === undefined) {
-        child.dataset.pmSlide = String(slideEls.length - 1);
-        slideEls[slideEls.length - 1]?.push(child);
-        child.classList.toggle("pm-hidden", current !== slideEls.length - 1);
-      }
-    });
-  }).observe(phaseContainer, { childList: true, subtree: true });
+  if (phaseContainer) {
+    new MutationObserver(() => {
+      if (!active || !slideEls.length) return;
+      const phaseEl = phaseContainer.querySelector?.(".phase") || phaseContainer;
+      if (!phaseEl) return;
+      [...phaseEl.children].forEach((child) => {
+        if (child.dataset.pmSlide === undefined) {
+          child.dataset.pmSlide = String(slideEls.length - 1);
+          slideEls[slideEls.length - 1]?.push(child);
+          child.classList.toggle("pm-hidden", current !== slideEls.length - 1);
+        }
+      });
+    }).observe(phaseContainer, { childList: true, subtree: true });
+  }
 
-  /* Keyboard: arrows navigate slides, Esc exits — never while typing */
   document.addEventListener("keydown", (e) => {
     if (!active || e.altKey || e.ctrlKey || e.metaKey) return;
     if (e.target.closest("input, textarea, select, [contenteditable]")) return;
@@ -185,8 +391,10 @@ export function initPresentMode({ app, config, phaseConfigs, phaseContainer, sta
     if (e.key === "Escape") setActive(false);
   });
 
-  /* Tools-menu entry — the utility menu adopts live controls, so keep trying
-     until its actions slot exists (it mounts with the lesson chrome). */
+  document.addEventListener("nt:present-deck-toggle", () => {
+    setActive(!active);
+  });
+
   let tries = 0;
   (function mountToolsItem() {
     const slot = document.querySelector('.nt-utility-pop [data-slot="actions"]');
@@ -204,15 +412,28 @@ export function initPresentMode({ app, config, phaseConfigs, phaseContainer, sta
     slot.appendChild(item);
   })();
 
-  /* Deep link for projector setups: ?present=1 starts presenting */
   if (new URLSearchParams(window.location.search).get("present") === "1") {
-    // Wait until a phase exists (post identity screen / auto-launch).
     const tick = setInterval(() => {
-      if (phaseContainer.querySelector(".phase")) {
+      if (phaseContainer?.querySelector?.(".phase")) {
         clearInterval(tick);
         setActive(true);
       }
     }, 400);
     setTimeout(() => clearInterval(tick), 60000);
   }
+
+  mountPresentWidget({
+    onPresentToggle: async () => {
+      const shared = await startScreenShare({
+        onFallback: () => {
+          setActive(!active);
+        },
+      });
+      if (!shared && !active) {
+        setActive(true);
+      }
+    },
+  });
 }
+
+export default initPresentMode;

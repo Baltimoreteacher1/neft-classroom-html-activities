@@ -502,8 +502,99 @@
     // React live if Teacher Mode is toggled in another tab/page (in-page toggles
     // reload the lesson, so this covers the cross-tab case).
     window.addEventListener("storage", (e) => {
-      if (e.key === TEACHER_MODE_KEY) teacherPanel.hidden = !isTeacherMode();
+      if (e.key === TEACHER_MODE_KEY) {
+        teacherPanel.hidden = !isTeacherMode();
+        if (isTeacherMode()) ensurePresentWidget();
+        else {
+          const w = document.getElementById("nt-present-widget");
+          if (w) w.style.display = "none";
+        }
+      }
     });
+
+    function ensurePresentWidget() {
+      if (document.getElementById("nt-present-widget")) return;
+      if (!isTeacherMode()) return;
+
+      const MINIMIZED_KEY = "nt-present-widget-minimized";
+      let minimized = false;
+      try {
+        minimized = localStorage.getItem(MINIMIZED_KEY) === "1";
+      } catch (_) {}
+
+      const widget = document.createElement("div");
+      widget.id = "nt-present-widget";
+      widget.className = "nt-present-widget" + (minimized ? " is-minimized" : "");
+
+      function renderWidget() {
+        if (minimized) {
+          widget.innerHTML =
+            '<button type="button" class="nt-present-btn-mini" title="Expand Present Mode" aria-label="Expand Present Mode">' +
+            '<span>📺 Present</span>' +
+            '<span class="nt-present-expand-icon">⤢</span>' +
+            '</button>';
+          widget.querySelector(".nt-present-btn-mini").onclick = () => setMin(false);
+        } else {
+          widget.innerHTML =
+            '<div class="nt-present-bar">' +
+            '<span class="nt-present-label">👩‍🏫 Presenter</span>' +
+            '<button type="button" class="nt-present-act-btn" title="Share Screen / Presentation Mode">' +
+            '<span>📺 Present / Share Screen</span>' +
+            '</button>' +
+            '<button type="button" class="nt-present-min-btn" title="Minimize Present Bar" aria-label="Minimize Present Bar">' +
+            '<span>🗕</span>' +
+            '</button>' +
+            '</div>';
+          widget.querySelector(".nt-present-act-btn").onclick = async () => {
+            if (navigator.mediaDevices && typeof navigator.mediaDevices.getDisplayMedia === "function") {
+              try {
+                const stream = await navigator.mediaDevices.getDisplayMedia({ video: { cursor: "always" }, audio: false });
+                const overlay = document.createElement("div");
+                overlay.className = "nt-screen-overlay";
+                overlay.innerHTML =
+                  '<div class="nt-screen-stage">' +
+                  '<video class="nt-screen-video" autoplay playsinline muted></video>' +
+                  '<div class="nt-screen-hud">' +
+                  '<span class="nt-screen-badge">📡 Live Screen Share</span>' +
+                  '<button type="button" class="nt-screen-btn nt-screen-fs">⛶ Fullscreen</button>' +
+                  '<button type="button" class="nt-screen-btn nt-screen-stop">🛑 Stop Presenting</button>' +
+                  '</div>' +
+                  '</div>';
+                const vid = overlay.querySelector(".nt-screen-video");
+                vid.srcObject = stream;
+                overlay.querySelector(".nt-screen-fs").onclick = () => {
+                  if (document.fullscreenElement) document.exitFullscreen?.();
+                  else overlay.requestFullscreen?.();
+                };
+                overlay.querySelector(".nt-screen-stop").onclick = () => {
+                  stream.getTracks().forEach((t) => t.stop());
+                  overlay.remove();
+                };
+                stream.getVideoTracks()[0].onended = () => overlay.remove();
+                document.body.appendChild(overlay);
+                return;
+              } catch (e) {
+                console.warn("[PresentWidget] Screen share error/cancelled:", e);
+              }
+            }
+            document.dispatchEvent(new CustomEvent("nt:present-deck-toggle"));
+          };
+          widget.querySelector(".nt-present-min-btn").onclick = () => setMin(true);
+        }
+      }
+
+      function setMin(val) {
+        minimized = val;
+        try { localStorage.setItem(MINIMIZED_KEY, val ? "1" : "0"); } catch (_) {}
+        widget.classList.toggle("is-minimized", val);
+        renderWidget();
+      }
+
+      renderWidget();
+      document.body.appendChild(widget);
+    }
+
+    if (isTeacherMode()) ensurePresentWidget();
 
     // 2. Prepare Supports Configuration Dialog
     const dialog = document.createElement("div");

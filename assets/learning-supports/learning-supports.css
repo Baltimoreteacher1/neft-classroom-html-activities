@@ -2198,3 +2198,231 @@ body.nt-overlays-compact .mode-toggle-pill.is-teacher .mode-toggle-state::after 
     width: min(250px, 80vw);
   }
 }
+
+/* ── Teacher Mode Present Widget & Screen Share ───────────────────────────────── */
+#nt-present-widget {
+  position: fixed;
+  top: 14px;
+  right: 180px;
+  z-index: 9999;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nt-present-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(18, 53, 91, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+  padding: 5px 8px 5px 14px;
+  box-shadow: 0 4px 16px rgba(12, 38, 66, 0.35);
+  color: #ffffff;
+}
+
+.nt-present-label {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #7dd3fc;
+  white-space: nowrap;
+}
+
+.nt-present-act-btn {
+  background: linear-gradient(135deg, #0d7a76 0%, #0f766e 100%);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 2px 8px rgba(13, 122, 118, 0.4);
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.nt-present-act-btn:hover {
+  transform: translateY(-1px) scale(1.02);
+  background: linear-gradient(135deg, #0f766e 0%, #115e59 100%);
+}
+
+.nt-present-min-btn {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  border: 0;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.nt-present-min-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+.nt-present-btn-mini {
+  background: rgba(18, 53, 91, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 14px rgba(12, 38, 66, 0.3);
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.nt-present-btn-mini:hover {
+  transform: scale(1.04);
+  background: #0f766e;
+}
+
+.nt-present-expand-icon {
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+/* Screen Share Stage Overlay */
+.nt-screen-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  background: #090d14;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.nt-screen-overlay.is-mini-pip {
+  position: fixed;
+  inset: auto 20px 20px auto;
+  width: 380px;
+  height: 240px;
+  border-radius: 16px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+  border: 2px solid #0f766e;
+  overflow: hidden;
+  z-index: 100000;
+}
+
+.nt-screen-stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+}
+
+.nt-screen-video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+}
+
+.nt-screen-hud {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  padding: 8px 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.nt-screen-overlay.is-mini-pip .nt-screen-hud {
+  bottom: 8px;
+  padding: 4px 10px;
+  gap: 6px;
+}
+
+.nt-screen-badge {
+  color: #38bdf8;
+  font-size: 13px;
+  font-weight: 700;
+  padding-right: 4px;
+}
+
+.nt-screen-btn {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.nt-screen-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.nt-screen-stop {
+  background: #dc2626;
+  border-color: #ef4444;
+}
+
+.nt-screen-stop:hover {
+  background: #b91c1c;
+}
+
+/* Toast Notice */
+.nt-present-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100001;
+  background: #1e293b;
+  color: #f8fafc;
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-size: 13.5px;
+  font-weight: 600;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  animation: ntToastFadeIn 0.3s ease;
+}
+
+@keyframes ntToastFadeIn {
+  from { opacity: 0; transform: translate(-50%, 10px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+@media (max-width: 768px) {
+  #nt-present-widget {
+    top: 10px;
+    right: 70px;
+  }
+}
