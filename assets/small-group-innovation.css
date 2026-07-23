@@ -538,3 +538,141 @@ fieldset.sg-innovation {
 .sg-studio-packet .sg-packet-empty {
   color: #55627a;
 }
+
+/* ── Publisher-grade wave: rubric, mastery band, live console evidence ──── */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.sg-rubric {
+  margin: 10px 0 0;
+  border: 1px solid var(--line, #dbe3ef);
+  border-radius: 12px;
+  background: #fbfdff;
+}
+.sg-rubric > summary {
+  padding: 9px 14px;
+  font-weight: 700;
+  cursor: pointer;
+  border-radius: 12px;
+}
+.sg-rubric > summary:focus-visible {
+  outline: 3px solid var(--sg-pop, #2b6cb0);
+  outline-offset: 2px;
+}
+.sg-rubric[open] > summary {
+  border-bottom: 1px solid var(--line, #dbe3ef);
+  border-radius: 12px 12px 0 0;
+}
+.sg-rubric-lede {
+  margin: 10px 14px 0;
+  color: #3f5166;
+  font-weight: 600;
+}
+.sg-rubric-scroll {
+  overflow-x: auto;
+  padding: 10px 14px 14px;
+}
+.sg-rubric-table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+.sg-rubric-table th,
+.sg-rubric-table td {
+  border: 1px solid var(--line, #dbe3ef);
+  padding: 7px 9px;
+  text-align: left;
+  vertical-align: top;
+}
+.sg-rubric-table thead th {
+  background: var(--sg-soft, #eef3f9);
+  font-size: 12.5px;
+  letter-spacing: 0.02em;
+}
+.sg-rubric-table tbody th {
+  background: #fff;
+  width: 148px;
+}
+.sg-rubric-table td[data-level="3"] {
+  background: #f2fbf5;
+}
+.sg-rubric-table td[data-level="4"] {
+  background: #f4f7ff;
+}
+
+.sg-standard-line {
+  margin: 8px 0 0;
+  padding: 8px 12px;
+  border-left: 3px solid rgba(255, 255, 255, 0.55);
+  background: rgba(8, 25, 54, 0.18);
+  border-radius: 0 10px 10px 0;
+  font-size: 13.5px;
+  line-height: 1.45;
+}
+.sg-teacher .sg-standard-line,
+.sg-tbody .sg-standard-line {
+  border-left-color: var(--sg, #1f5fa6);
+  background: var(--sg-soft, #eef3f9);
+  color: inherit;
+}
+
+.sg-console-device {
+  margin: 10px 0 0;
+  padding: 9px 12px;
+  border: 1px dashed var(--line, #dbe3ef);
+  border-radius: 10px;
+  background: #fbfdff;
+  font-size: 13.5px;
+}
+.sg-console-device-label {
+  margin-right: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #3f5166;
+}
+.sg-console-class {
+  margin: 10px 0 0;
+}
+.sg-console-class-status {
+  margin: 8px 0 0;
+  color: #3f5166;
+  font-weight: 600;
+  font-size: 13px;
+}
+.sg-console-class-rows {
+  margin-top: 6px;
+  display: grid;
+  gap: 5px;
+}
+.sg-console-class-row {
+  padding: 7px 10px;
+  border: 1px solid var(--line, #dbe3ef);
+  border-radius: 9px;
+  background: #fff;
+  font-size: 13px;
+}
+
+@media print {
+  .sg-rubric {
+    break-inside: avoid;
+  }
+  .sg-rubric > summary {
+    list-style: none;
+  }
+  .sg-console-class .row {
+    display: none;
+  }
+}

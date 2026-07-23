@@ -1,5 +1,6 @@
 import { attachRegenPractice } from "../components/regen-practice.js";
 import { isRight, numberOf } from "./small-group-answers.js";
+import { createRubricDetails } from "./small-group-rubric.js";
 import { bi, biHtml, celebrate, el, esc, speak } from "./small-group-ui.js";
 import { appendVisualPractice } from "./small-group-visual-practice.js";
 
@@ -532,6 +533,9 @@ function responseCard(item, index, variant, onSolved, scaffold, events = {}) {
   // Feedback lands directly under the answer control so it is on-screen the
   // moment it appears; the step guide and hints render below it.
   card.appendChild(status);
+  // Open-response work is judged on named criteria, not keyword luck: the
+  // 4-point rubric folds in under the feedback slot so the bar is public.
+  if (answer == null) card.appendChild(createRubricDetails(variant));
   revealGuide = appendStepGuide(card, item, scaffold);
   openHint = appendHints(card, item, events);
   // Hook for the adaptive coach: "stabilize" opens this card's supports
@@ -780,11 +784,12 @@ export function createPracticeSection(
     const solve = () => {
       card?.classList.add("sg-done-all");
       solveItem(storeIndex);
-      // Hot streak in a Foundations lesson: offer the Challenge bridge
-      // once, as an invitation — never a requirement.
+      // Hot streak in a Foundations or Catch-Up lesson: offer the Challenge
+      // bridge once, as an invitation — never a requirement. Catch-up maps to
+      // its base lesson's group2 sibling (every base lesson has one).
       if (
         !section.dataset.bridgeShown &&
-        config.variant === "group1" &&
+        (config.variant === "group1" || config.variant === "catchup") &&
         (events.streak?.() || 0) >= 4
       ) {
         section.dataset.bridgeShown = "true";
@@ -797,7 +802,7 @@ export function createPracticeSection(
           )}</p>`,
         );
         const go = el("a", "btn ghost", "Try the Challenge version →");
-        go.href = window.location.pathname.replace("-group1", "-group2");
+        go.href = window.location.pathname.replace(/-(?:group1|catchup)(\/|$)/, "-group2$1");
         bridge.appendChild(go);
         card?.after(bridge);
       }

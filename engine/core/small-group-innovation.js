@@ -27,8 +27,9 @@ export function chooseAdaptivePath(state = {}, variant = "group1") {
     Number(state.before || 0) <= 2 ||
     Number(state.incorrectAttempts || 0) >= 2 ||
     Number(state.hints || 0) >= 2;
+  // Any variant can earn the stretch recommendation — a clean, confident
+  // catch-up or Foundations session deserves the same invitation Group 2 gets.
   const readyToStretch =
-    variant === "group2" &&
     Number(state.before || 0) >= 4 &&
     Number(state.solved || 0) >= 2 &&
     Number(state.incorrectAttempts || 0) === 0 &&
@@ -380,7 +381,7 @@ export function createAdaptiveCoach(variant, state, store = null) {
   return section;
 }
 
-export function createEvidenceCard(config, state) {
+export function createEvidenceCard(config, state, getBand = null) {
   const section = el("section", "sg-evidence-card sg-innovation");
   section.setAttribute("role", "region");
   section.setAttribute("aria-label", "Studio Evidence Card");
@@ -402,7 +403,11 @@ export function createEvidenceCard(config, state) {
         : state.revision === "kept"
           ? "Kept after testing the evidence"
           : "Talked through out loud";
-    section.innerHTML = `<div class="sg-evidence-top"><div><div class="sg-innovation-kicker">Printable learning artifact</div><h2>Studio Evidence Card</h2></div><span>Evidence over points</span></div><p class="sg-evidence-title"><b>${esc(config.title || "Small-Group Math Studio")}</b>${config.standard ? ` · ${esc(config.standard)}` : ""}</p><div class="sg-evidence-grid"><div><span>Confidence journey</span><b>${before || "—"} → ${after || "—"}${change > 0 ? ` (+${change})` : ""}</b></div>${strategyCell}<div><span>Math language</span><b>${esc(vocabulary)}</b></div><div><span>Discussion move</span><b>${discussionMove}</b></div><div><span>Adaptive move</span><b>${esc(PATHS[state.adaptivePath]?.label || "Student choice")}</b></div><div><span>Best streak</span><b>${Number(state.bestStreak) >= 2 ? `🔥 ${Number(state.bestStreak)} in a row` : "Steady effort"}</b></div></div>`;
+    const band = getBand?.();
+    const bandCell = band
+      ? `<div><span>Today's band</span><b>${band.emoji || ""} ${esc(band.label)}</b></div>`
+      : "";
+    section.innerHTML = `<div class="sg-evidence-top"><div><div class="sg-innovation-kicker">Printable learning artifact</div><h2>Studio Evidence Card</h2></div><span>Evidence over points</span></div><p class="sg-evidence-title"><b>${esc(config.title || "Small-Group Math Studio")}</b>${config.standard ? ` · ${esc(config.standard)}` : ""}</p><div class="sg-evidence-grid"><div><span>Confidence journey</span><b>${before || "—"} → ${after || "—"}${change > 0 ? ` (+${change})` : ""}</b></div>${bandCell}${strategyCell}<div><span>Math language</span><b>${esc(vocabulary)}</b></div><div><span>Discussion move</span><b>${discussionMove}</b></div><div><span>Adaptive move</span><b>${esc(PATHS[state.adaptivePath]?.label || "Student choice")}</b></div><div><span>Best streak</span><b>${Number(state.bestStreak) >= 2 ? `🔥 ${Number(state.bestStreak)} in a row` : "Steady effort"}</b></div></div>`;
     const print = el("button", "btn ghost", "Print Studio Evidence Card");
     print.type = "button";
     print.onclick = () => printOnly("evidence", section);
@@ -472,12 +477,100 @@ export function createStudioPacket(config, state, store) {
   };
 }
 
-export function createTeacherEvidenceConsole() {
+// Live per-device evidence strip: the studio `state` the console previously
+// discarded, surfaced as a small stat row that refreshes while students work.
+// Presentation-only — reads state, never writes it.
+function deviceEvidenceStrip(state, getBand) {
+  const strip = el("div", "sg-console-device");
+  strip.setAttribute("aria-live", "off");
+  const render = () => {
+    const attempts = Number(state.attempts) || 0;
+    const incorrect = Number(state.incorrectAttempts) || 0;
+    const band = getBand?.();
+    strip.innerHTML =
+      `<span class="sg-console-device-label">This device, live:</span>` +
+      `<b>${Number(state.solved) || 0}</b> solved · ` +
+      `<b>${attempts}</b> attempts (${incorrect} missed) · ` +
+      `<b>${Number(state.hints) || 0}</b> hints · ` +
+      `confidence <b>${state.before || "—"}→${state.after || "—"}</b>` +
+      (band ? ` · <b>${band.emoji || ""} ${esc(band.label)}</b>` : "");
+  };
+  render();
+  const timer = window.setInterval(() => {
+    if (strip.isConnected) render();
+    else window.clearInterval(timer);
+  }, 5000);
+  return strip;
+}
+
+// Cross-device class view: aggregate, name-free completion evidence for this
+// base lesson from /api/progress/small-group-summary (counts and averages
+// only — individual events never leave the endpoint). Loads on demand.
+function classEvidenceBlock(config) {
+  const base = String(config.lessonId || "").replace(/-(?:group[12]|catchup)$/, "");
+  if (!base) return null;
+  const block = el("div", "sg-console-class");
+  const status = el("p", "sg-console-class-status", "");
+  status.setAttribute("aria-live", "polite");
+  const rows = el("div", "sg-console-class-rows");
+  const load = async () => {
+    status.textContent = "Loading class evidence…";
+    rows.innerHTML = "";
+    try {
+      const response = await fetch(
+        `/api/progress/small-group-summary?lesson=${encodeURIComponent(base)}`,
+        { credentials: "omit" },
+      );
+      const data = response.ok ? await response.json() : null;
+      const groups = data?.ok ? data.groups || [] : null;
+      if (!groups) {
+        status.textContent = "Class evidence is unavailable right now.";
+        return;
+      }
+      if (!groups.length) {
+        status.textContent = "No studio completions recorded for this lesson yet.";
+        return;
+      }
+      status.textContent = `Completions for lesson ${base}, by section (last 14 days):`;
+      for (const group of groups) {
+        rows.appendChild(
+          el(
+            "div",
+            "sg-console-class-row",
+            `<b>${esc(group.section || "—")}</b> · ${esc(group.variant || "")} · ` +
+              `${Number(group.completions) || 0} done · ${Number(group.inProgress) || 0} in progress · ` +
+              `avg ${Number(group.avgSolved) || 0}/${Number(group.avgTotal) || 0} solved · ` +
+              `${Number(group.hintHeavy) || 0} hint-heavy`,
+          ),
+        );
+      }
+    } catch {
+      status.textContent = "Class evidence is unavailable right now.";
+    }
+  };
+  const row = el("div", "row");
+  const refresh = el("button", "btn ghost", "🔄 Load class evidence");
+  refresh.type = "button";
+  refresh.onclick = () => {
+    refresh.textContent = "🔄 Refresh class evidence";
+    load();
+  };
+  const dashboard = el("a", "btn ghost", "Open mastery dashboard →");
+  dashboard.href = "/teacher-tools/mastery/";
+  row.append(refresh, dashboard);
+  block.append(row, status, rows);
+  return block;
+}
+
+export function createTeacherEvidenceConsole(config = {}, state = {}, getBand = null) {
   const section = el("aside", "sg-facilitation sg-innovation");
   section.setAttribute("role", "region");
   section.setAttribute("aria-label", "Facilitation Console");
   section.innerHTML =
     '<div class="sg-innovation-kicker">Teacher-only · anonymous observation evidence</div><h2>Facilitation Console</h2><p>Notice learning moves, then respond with one purposeful prompt.</p>';
+  section.appendChild(deviceEvidenceStrip(state, getBand));
+  const classBlock = classEvidenceBlock(config);
+  if (classBlock) section.appendChild(classBlock);
   const signals = [
     ["Students connected representations", "representation"],
     ["Students used precise vocabulary", "vocabulary"],
@@ -525,7 +618,7 @@ export function createTeacherEvidenceConsole() {
     el(
       "p",
       "sg-privacy",
-      "🔒 No names or individual responses are transmitted. This console stays on this device.",
+      "🔒 No names or individual responses are transmitted. Observation checks stay on this device; class evidence is anonymous section-level counts only.",
     ),
     print,
   );

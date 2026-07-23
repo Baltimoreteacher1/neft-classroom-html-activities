@@ -35,6 +35,8 @@ import {
   createCheckSection,
   createPracticeSection,
 } from "./small-group-practice.js";
+import { masteryBand } from "./small-group-rubric.js";
+import { resolveStandard } from "./small-group-standards.js";
 import { createStudioStore } from "./small-group-state.js";
 import {
   installStoryboardScenes,
@@ -180,9 +182,10 @@ function conceptSection(config, onDone, voice, variant) {
     [concept.weDo, "🤝 Try it with the guide", "wedo"],
     [concept.youDo, "🧠 Take the lead", "youdo"],
   ];
-  // Level 1 (group1) support studios get a canonical visual model beside each
-  // worked step; Level 2 keeps the leaner text-only build.
-  const withVisuals = variant === "group1";
+  // Support studios (group1) AND catch-up studios get a canonical visual model
+  // beside each worked step — catch-up students missed the original lesson and
+  // need the concrete model most. Level 2 keeps the leaner text-only build.
+  const withVisuals = variant === "group1" || variant === "catchup";
   const cards = [];
   stages.forEach(([stage, fallback, kind]) => {
     const card = stageCard(
@@ -519,7 +522,18 @@ function renderStudio(config) {
     },
   };
 
-  const evidence = createEvidenceCard(config, state);
+  // Session evidence → proficiency band (approaching/meeting/exceeding),
+  // computed on demand so the Evidence Card, console, and telemetry all read
+  // the same current answer.
+  const getBand = () =>
+    masteryBand({
+      solved: tally.solved,
+      total: tally.total,
+      attempts: state.attempts,
+      incorrectAttempts: state.incorrectAttempts,
+      hints: state.hints,
+    });
+  const evidence = createEvidenceCard(config, state, getBand);
   const packet = createStudioPacket(config, state, store);
   const reflection = createReflectionSection(
     config,
@@ -533,6 +547,7 @@ function renderStudio(config) {
       // Section-scoped, name-free evidence for the teacher mastery dashboard.
       // Sent once, only on genuine completion, only if a class identity exists.
       syncSmallGroupEvidence(config, {
+        kind: "complete",
         variant,
         phasesDone: phaseProgress.done.size,
         phasesTotal: phaseProgress.keys.size,
@@ -540,6 +555,12 @@ function renderStudio(config) {
         practiceTotal: tally.total,
         confidenceBefore: state.before,
         confidenceAfter: state.after,
+        attempts: state.attempts,
+        incorrectAttempts: state.incorrectAttempts,
+        hints: state.hints,
+        bestStreak: state.bestStreak,
+        adaptivePath: state.adaptivePath,
+        band: getBand().id,
       });
     },
     store,
@@ -600,9 +621,30 @@ function renderStudio(config) {
       ? null
       : createTalkSection(config, variant, phaseDone("sg-tab-practice", "talkDone"));
   if (talk) talk.appendChild(createConsensusLab(config, variant, state, store));
+  // Mid-rotation checkpoint: when the guided set lands, send one name-free
+  // section-scoped ping so the teacher's class view moves DURING the rotation,
+  // not only after completion. Same privacy gate as the completion sync.
+  let guidedCheckpointSent = false;
+  const guidedPhaseDone = phaseDone("sg-tab-guided", "guidedDone");
+  const guidedDoneWithCheckpoint = () => {
+    guidedPhaseDone();
+    if (guidedCheckpointSent) return;
+    guidedCheckpointSent = true;
+    syncSmallGroupEvidence(config, {
+      kind: "checkpoint",
+      variant,
+      practiceSolved: tally.solved,
+      practiceTotal: tally.total,
+      attempts: state.attempts,
+      incorrectAttempts: state.incorrectAttempts,
+      hints: state.hints,
+      confidenceBefore: state.before,
+      band: getBand().id,
+    });
+  };
   const guided = createPracticeSection(
     config,
-    phaseDone("sg-tab-guided", "guidedDone"),
+    guidedDoneWithCheckpoint,
     tally,
     events,
     store,
@@ -753,6 +795,27 @@ function renderStudio(config) {
 
   const heroNode = hero(config, accent, voice);
   app.appendChild(heroNode);
+  // Publisher-grade standards display: resolve the bare code to its full MCCRS
+  // wording (best-effort) and fold it into the hero's objectives detail, so
+  // students and families see what the badge means. Code-only display stays if
+  // the registry can't load.
+  if (config.standard) {
+    resolveStandard(config.standard).then((entry) => {
+      if (!entry) return;
+      const more = heroNode.querySelector(".sg-obj-more");
+      more?.appendChild(
+        el(
+          "p",
+          "sg-standard-line",
+          `📐 <b>${esc(entry.code)}${entry.shortLabel ? ` · ${esc(entry.shortLabel)}` : ""}:</b> ${esc(entry.fullText)}`,
+        ),
+      );
+      const chip = [...heroNode.querySelectorAll(".sg-chip")].find(
+        (node) => node.textContent.trim() === config.standard,
+      );
+      if (chip) chip.title = entry.fullText;
+    });
+  }
   if (store.isReturning()) {
     const welcome = el("div", "sg-welcome");
     welcome.appendChild(el("span", null, esc(voice.welcome)));
@@ -824,19 +887,40 @@ function renderStudio(config) {
       if (teacherToolsAdded) return;
       teacherToolsAdded = true;
       const teacherConfig = { ...config, smallGroup: facilitation };
-      const evidenceConsole = createTeacherEvidenceConsole(teacherConfig, state);
+      const evidenceConsole = createTeacherEvidenceConsole(teacherConfig, state, getBand);
       const rhythm = createRhythmCoach(facilitation);
       if (rhythm) heroNode.after(rhythm);
       const panel = teacherPanel(teacherConfig, accent, talkData);
       if (panel) heroNode.after(panel);
       if (evidenceConsole) heroNode.after(evidenceConsole);
+      // Teacher edition extras: full standard wording inside the studio guide.
+      if (panel && config.standard) {
+        resolveStandard(config.standard).then((entry) => {
+          if (!entry) return;
+          panel
+            .querySelector(".sg-tbody")
+            ?.prepend(
+              el(
+                "p",
+                "sg-standard-line",
+                `<b>Standard ${esc(entry.code)}:</b> ${esc(entry.fullText)}`,
+              ),
+            );
+        });
+      }
       const back = el("a", "btn ghost", "← Curriculum");
       back.href = "/curriculum/";
       const scorm = el("a", "btn ghost", "⬇ Canvas package");
       scorm.href = `/api/scorm?activity=${encodeURIComponent(config.lessonId)}&title=${encodeURIComponent(config.title || "")}`;
       scorm.rel = "nofollow";
+      // The per-lesson printable (Level 0 + parallel forms A/B + labeled answer
+      // keys) ships with every studio but was never linked. Teacher-mode only —
+      // the file bundles the answer-key pages.
+      const worksheet = el("a", "btn ghost", "📄 Worksheet + keys (A/B)");
+      worksheet.href = "worksheet.html";
+      worksheet.rel = "nofollow";
       foot.prepend(back);
-      foot.appendChild(scorm);
+      foot.append(worksheet, scorm);
     },
   });
 

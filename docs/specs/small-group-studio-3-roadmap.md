@@ -25,13 +25,14 @@ Directive honored: **no notice/wonder anywhere in small-group lessons** (Joel,
 
 ## Future iterations (ranked)
 
-1. **Teacher evidence sync** — pipe the studio `state` (attempts, hints,
-   pulses, proof path) into NTSignal/D1 so the Facilitation Console can show a
-   cross-device class view during rotations. All hooks already exist in
-   `events`/`store`; needs an opt-in POST + teacher dashboard card.
+1. ~~**Teacher evidence sync**~~ — SHIPPED 2026-07-23 (publisher-grade wave):
+   completion telemetry enriched (attempts/hints/band/…), mid-rotation
+   checkpoint ping, live this-device console strip, and an aggregate name-free
+   class view via `/api/progress/small-group-summary`.
 2. **Adaptive practice ladder** — use `chooseAdaptivePath` output to reorder
    or swap `practice.extending` items in when a Group 2 session is clean, and
    auto-scaffold (`scaffold=true`) every item after repeated misses.
+   (Partial: stretch eligibility is now variant-agnostic.)
 3. **Voice recording for Talk** — MediaRecorder "record our best explanation"
    (device-local playback only) in the Talk + Model sections; ties to the
    reciprocal-questioning work in the discussion pop-ups layer.
