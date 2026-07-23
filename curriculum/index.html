@@ -12372,10 +12372,25 @@
               // ungraded manipulatives page (?mode=tools). Added centrally so it
               // shows in the Lesson-phase dropdown AND the outline for all
               // lessons the hub renders (base, flagship, small-group, catch-up).
-              if (lesson.lessonId) {
+              // Catch-up reviews carry no lessonId, so fall back to their own
+              // /lessons/<id>/ launch link (avoids widening lessonId, which would
+              // also add arcade/SCORM entries those pages don't have).
+              var toolsId = lesson.lessonId;
+              if (!toolsId) {
+                var launchHref = (lesson.activities || [])
+                  .map(function (a) {
+                    return a.href || "";
+                  })
+                  .find(function (h) {
+                    return /^\/lessons\/[\w-]+\/$/.test(h);
+                  });
+                var toolsMatch = launchHref && launchHref.match(/^\/lessons\/([^/]+)\/$/);
+                if (toolsMatch) toolsId = toolsMatch[1];
+              }
+              if (toolsId) {
                 allActs.push({
                   text: "🧰 Interactive Tools",
-                  href: "/lessons/" + lesson.lessonId + "/?mode=tools",
+                  href: "/lessons/" + toolsId + "/?mode=tools",
                   phaseIndex: 1,
                 });
               }
