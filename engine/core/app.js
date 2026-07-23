@@ -560,7 +560,6 @@ function showIdentityScreen(root, config) {
         <p class="identity-sub">${escHtml(config.standard)}</p>
         <div class="identity-time" aria-label="Estimated time">⏱️ ${escHtml(lessonTimeEstimate(config))}</div>
         <div class="lesson-cover-extras" id="cover-extras"></div>
-        ${objectivesBlockHtml(config)}
       </div>
       <div class="identity-body">
         ${
@@ -1739,14 +1738,9 @@ function buildSidebar(config, state, _phaseConfigs) {
 // These open inline in the lesson shell (see app.openExtra) and never affect
 // XP, stars, or phase completion.
 function preLessonNavHtml(config) {
-  // Non-graded warm-up tabs: tap-to-open resources (icons, not numbers) so they
-  // read as distinct from the numbered 1–6 lesson phases below — one clean
-  // left nav, no two lists both restarting at 1.
-  // Vocab + Notes are no longer here — they render as sub-tabs directly under the
-  // Launch phase button (see updateSidebar) so they sit with the lesson flow.
   const tabs = [];
   if (config.readiness) tabs.push({ extra: "readiness", icon: "📚", label: "Get Ready" });
-  tabs.push({ extra: "objectives", icon: "🎯", label: "Objectives" });
+  if (!tabs.length) return "";
   const items = tabs.map(
     (t) =>
       `<button class="phase-btn extra-btn" data-extra="${t.extra}">
