@@ -33,10 +33,10 @@ const ANCHOR_RE = /<div class="step-panel active" id="step-\d+">/;
 // theme-appropriate defaults (e.g. gcf-bags = party goodie bags).
 const MAP = {
   "math/unit-1/projects": {
-    kind: "gcf-bags", emoji: "🎁", attrs: {},
-    title: "Split the goodie bags evenly",
-    es: "Reparte las bolsas de regalo en partes iguales",
-    intro: "Drag to make equal goodie bags with nothing left over — that's the greatest common factor.",
+    kind: "block-party", emoji: "🎉", attrs: {},
+    title: "Plan the block party",
+    es: "Planea la fiesta del barrio",
+    intro: "Split the goodie bags (GCF), sync the entertainment (LCM), and set the budget to get the party ready.",
   },
   "math/unit-2/projects": {
     kind: "recipe-rush", emoji: "🧁", attrs: {},
@@ -59,22 +59,21 @@ const MAP = {
   },
   "math/unit-5/projects": {
     kind: "blueprint-studio", emoji: "📐", attrs: {},
-    title: "Tile the floor",
-    es: "Cubre el piso con baldosas",
-    intro: "Drag the room's sides and watch the area recompute as the tiles fill the space.",
+    title: "Measure each room",
+    es: "Halla el área de cada cuarto",
+    intro: "Find the area of each room — rectangles, triangles, trapezoids — to pass the blueprint.",
   },
   "math/unit-6/projects": {
     kind: "combo-forge", emoji: "🎮", attrs: {},
     title: "Build the scoring machine",
     es: "Arma la máquina de puntaje",
-    intro: "Wire an expression, feed in a value, and watch the score flow through the machine.",
+    intro: "Evaluate each expression to hit the target score — powers, coefficients, and order of operations.",
   },
   "math/unit-7/projects": {
-    kind: "coord-plot", emoji: "🗺️",
-    attrs: { range: "10" },
-    title: "Plot the park",
-    es: "Ubica las atracciones del parque",
-    intro: "Place attractions across all four quadrants and read the distance between them.",
+    kind: "park-map", emoji: "🗺️", attrs: {},
+    title: "Design the park map",
+    es: "Diseña el mapa del parque",
+    intro: "Plot each attraction across the four quadrants and measure the distance between them to finish the map.",
   },
   "math/unit-8/projects": {
     kind: "escape-chain", emoji: "🕵️",
@@ -99,7 +98,7 @@ const MAP = {
     kind: "stat-draft", emoji: "🔍", attrs: {},
     title: "Read the data",
     es: "Interpreta los datos",
-    intro: "Drag the dots and watch the mean, median, and spread shift — then pick the measure that tells the truth.",
+    intro: "Spot the outlier that yanks the mean, then pick the measure — mean or median — that tells the truth.",
   },
 };
 
