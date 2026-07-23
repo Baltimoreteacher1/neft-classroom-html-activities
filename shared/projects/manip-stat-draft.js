@@ -1,10 +1,10 @@
 /* ==========================================================================
    Neft Teacher — Manipulative: STAT DRAFT (data-manip="stat-draft")
-   An analytics war-room for Statistics (6.DS.3-6). Scout a player's game
-   scores on a live dot plot with mean + median markers. On outlier cases,
-   press "Add the outlier game" and watch the MEAN lurch toward it while the
+   A class-data war-room for Statistics (6.DS.3-6). Read a data set of daily
+   values on a live dot plot with mean + median markers. On outlier cases,
+   press "Add the outlier day" and watch the MEAN lurch toward it while the
    MEDIAN barely moves — then pick the measure that best describes a TYPICAL
-   game. Correct reads win the scouting case; clear the board => draft locked.
+   day. Correct reads win the case; clear the board => board solved.
    Self-mounting + self-styling like the other manip-*.js. Level-aware
    (body.level-0/1/2), bilingual, no-fail (wrong pick = a coached retry).
    Usage:  <div class="pki-manip" data-manip="stat-draft"></div>
@@ -70,19 +70,19 @@
         answer: "median",
         need: {
           en: "The case: find a STEADY, typical value. Which measure fits?",
-          es: "El entrenador quiere un anotador CONSTANTE. ¿Qué medida sirve?",
+          es: "El caso pide un valor CONSTANTE y típico. ¿Qué medida sirve?",
         },
-        why: "One huge game pulled the mean way up. The median ignores that spike.",
+        why: "One huge day pulled the mean way up. The median ignores that spike.",
       },
       {
         name: "Mr. N.s class · Recess laps",
         scores: [12, 13, 11, 12, 13],
         answer: "mean",
         need: {
-          en: "Scores are close together — no wild games. Best typical measure?",
-          es: "Los puntajes son parecidos, sin juegos raros. ¿Mejor medida típica?",
+          en: "Scores are close together — no wild days. Best typical measure?",
+          es: "Los datos son parecidos, sin valores raros. ¿Mejor medida típica?",
         },
-        why: "With no outlier, the mean uses every game fairly.",
+        why: "With no outlier, the mean uses every day fairly.",
       },
     ],
     1: [
@@ -93,19 +93,19 @@
         answer: "median",
         need: {
           en: "The case: which single number best describes a typical day?",
-          es: "El entrenador necesita a alguien CONFIABLE cada noche. ¿Juego típico?",
+          es: "El caso: ¿qué número describe mejor un día típico?",
         },
-        why: "The 40-point night yanks the mean up; the median stays near her real level.",
+        why: "The 40-point day yanks the mean up; the median stays near the real level.",
       },
       {
         name: "Mr. N.s class · Recess laps",
         scores: [20, 22, 21, 23, 19, 21],
         answer: "mean",
         need: {
-          en: "Steady scorer, no blow-up games. Best measure of a typical game?",
-          es: "Anotador estable, sin juegos extremos. ¿Mejor medida típica?",
+          en: "Steady data, no blow-up days. Best measure of a typical day?",
+          es: "Datos estables, sin valores extremos. ¿Mejor medida típica?",
         },
-        why: "No outlier — the mean summarizes all six games well.",
+        why: "No outlier — the mean summarizes all six days well.",
       },
       {
         name: "Book Club · Reading minutes",
@@ -113,8 +113,8 @@
         outlier: 28,
         answer: "median",
         need: {
-          en: "One monster game vs an injury slump — describe the TYPICAL night.",
-          es: "Un juegazo vs una lesión — describe la noche TÍPICA.",
+          en: "One huge value vs an off day — describe the TYPICAL day.",
+          es: "Un valor enorme vs un día bajo — describe el día TÍPICO.",
         },
         why: "The outlier inflates the mean; the median resists it.",
       },
@@ -126,8 +126,8 @@
         outlier: 55,
         answer: "median",
         need: {
-          en: "A 55-point explosion is in the data. Which measure tells the TRUTH about a typical game?",
-          es: "Hay una explosión de 55 puntos. ¿Qué medida dice la VERDAD del juego típico?",
+          en: "A 55-point explosion is in the data. Which measure tells the TRUTH about a typical day?",
+          es: "Hay un valor extremo de 55. ¿Qué medida dice la VERDAD del día típico?",
         },
         why: "Extreme outlier → mean is misleading; median is the robust center.",
       },
@@ -136,7 +136,7 @@
         scores: [24, 26, 25, 27, 23, 26],
         answer: "mean",
         need: {
-          en: "Tight, consistent range. Best single number for a typical game?",
+          en: "Tight, consistent range. Best single number for a typical day?",
           es: "Rango ajustado y consistente. ¿Mejor número típico?",
         },
         why: "Symmetric with no outlier — the mean is the fair summary.",
@@ -147,8 +147,8 @@
         outlier: null,
         answer: "median",
         need: {
-          en: "A 2-point injury game drags things down. Best TYPICAL measure?",
-          es: "Un juego de 2 por lesión baja el promedio. ¿Mejor medida TÍPICA?",
+          en: "A very low day (2) drags things down. Best TYPICAL measure?",
+          es: "Un día bajo de 2 baja el promedio. ¿Mejor medida TÍPICA?",
         },
         why: "The low outlier pulls the mean down; the median holds the typical level.",
       },
@@ -328,7 +328,7 @@
         md = median(scores);
       var outBtn =
         cs.outlier != null && !state.added
-          ? '<button type="button" class="sd-outbtn" data-out>➕ Add the outlier game (' +
+          ? '<button type="button" class="sd-outbtn" data-out>➕ Add the outlier day (' +
             cs.outlier +
             " pts) — watch the mean</button>"
           : "";
@@ -355,7 +355,7 @@
         r1(md) +
         "</b></div></div>" +
         outBtn +
-        '<p class="sd-q">Best measure of a TYPICAL game?</p>' +
+        '<p class="sd-q">Best measure of a TYPICAL day?</p>' +
         '<div class="sd-picks"><button type="button" class="sd-pick" data-p="mean">Mean</button>' +
         '<button type="button" class="sd-pick" data-p="median">Median</button></div>' +
         '<p class="sd-msg" data-msg aria-live="polite"></p></div>';
@@ -393,8 +393,8 @@
             msg.className = "sd-msg hint";
             msg.textContent =
               cs.answer === "median"
-                ? "Look again — an extreme game pulls the MEAN. Which one ignores that spike?"
-                : "Look again — the games are close with no outlier. Which measure uses them all?";
+                ? "Look again — an extreme day pulls the MEAN. Which one ignores that spike?"
+                : "Look again — the days are close with no outlier. Which measure uses them all?";
           }
         });
       });
