@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Class Snapshot & Small-Group Auto-Grouper | EduWonderLab</title>
+  <link rel="stylesheet" href="/engine/styles/design-system.css">
+  <style>
+    :root {
+      --navy: #0f172a;
+      --teal: #0f6d78;
+      --teal-light: #f0fdf4;
+      --amber: #d97706;
+      --coral: #e11d48;
+      --green: #16a34a;
+      --bg: #f8fafc;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: #1e293b;
+    }
+    .header {
+      background: var(--navy);
+      color: white;
+      padding: 20px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 1.4rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .header-actions {
+      display: flex;
+      gap: 12px;
+    }
+    .btn {
+      padding: 9px 16px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+    .btn-teal { background: var(--teal); color: white; }
+    .btn-teal:hover { background: #0c565f; }
+    .btn-dark { background: rgba(255,255,255,0.15); color: white; }
+    .btn-dark:hover { background: rgba(255,255,255,0.25); }
+    
+    .container {
+      max-width: 1280px;
+      margin: 28px auto;
+      padding: 0 24px;
+    }
+    
+    .controls-bar {
+      background: white;
+      border-radius: 16px;
+      padding: 18px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      margin-bottom: 24px;
+    }
+    .lesson-selector {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .lesson-selector select {
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #0f172a;
+      background: #ffffff;
+    }
+    .stats-summary {
+      display: flex;
+      gap: 24px;
+    }
+    .stat-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+    .stat-pill .num {
+      padding: 4px 10px;
+      border-radius: 6px;
+      color: white;
+    }
+    
+    .tier-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 20px;
+    }
+    .tier-card {
+      background: white;
+      border-radius: 16px;
+      border: 2px solid #e2e8f0;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .tier-header {
+      padding: 16px 20px;
+      color: white;
+      font-weight: 800;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .tier-1 .tier-header { background: var(--coral); }
+    .tier-2 .tier-header { background: var(--amber); }
+    .tier-3 .tier-header { background: var(--green); }
+    
+    .tier-body {
+      padding: 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .strategy-box {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+    .strategy-box strong { color: #0f172a; }
+    
+    .student-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .student-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 0.92rem;
+      font-weight: 700;
+    }
+    .score-chip {
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 800;
+    }
+    .score-chip.t1 { background: #ffe4e6; color: #9f1239; }
+    .score-chip.t2 { background: #fef3c7; color: #92400e; }
+    .score-chip.t3 { background: #dcfce7; color: #166534; }
+    
+    @media print {
+      .header, .controls-bar button { display: none !important; }
+      body { background: white; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <h1>📊 Live Class Snapshot & Small-Group Auto-Grouper</h1>
+    <div class="header-actions">
+      <button class="btn btn-dark" onclick="simulateLiveProgress()">⚡ Simulate Live Sync</button>
+      <button class="btn btn-dark" onclick="copyRosters()">📋 Copy Rosters</button>
+      <button class="btn btn-teal" onclick="window.print()">🖨️ Print Small-Group Plan</button>
+    </div>
+  </header>
+
+  <main class="container">
+    
+    <div class="controls-bar">
+      <div class="lesson-selector">
+        <label for="lessonSelect"><strong>Select Target Lesson:</strong></label>
+        <select id="lessonSelect" onchange="updateLessonView(this.value)">
+          <option value="1-3" selected>Unit 1 Lesson 3: Greatest Common Factor (6.NOS.A.1)</option>
+          <option value="1-4">Unit 1 Lesson 4: Least Common Multiple (6.NOS.A.1)</option>
+          <option value="2-1">Unit 2 Lesson 1: Multiplying Fractions (6.NS.A.1)</option>
+          <option value="3-1">Unit 3 Lesson 1: Understanding Ratios (6.RP.A.1)</option>
+        </select>
+      </div>
+      
+      <div class="stats-summary">
+        <div class="stat-pill">
+          <span>Warmup Submissions:</span>
+          <span class="num" style="background:#0f6d78;" id="subCount">24/26</span>
+        </div>
+        <div class="stat-pill">
+          <span>Class Average:</span>
+          <span class="num" style="background:#16a34a;" id="avgScore">78%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tier-grid">
+      
+      <!-- Tier 1 -->
+      <div class="tier-card tier-1">
+        <div class="tier-header">
+          <span>🔴 Tier 1: Intensive Support Table</span>
+          <span style="font-size:0.9rem;" id="t1Count">5 Students (&lt;50% Warmup)</span>
+        </div>
+        <div class="tier-body">
+          <div class="strategy-box">
+            <strong>📋 Teacher Action Plan:</strong> Pull for 5-minute teacher table small group. Use Reteach Visual to model prime factorization steps before Phase 2 Launch.
+          </div>
+          <div class="student-list" id="t1List">
+            <div class="student-item">
+              <span>Marcus Brody</span>
+              <span class="score-chip t1">1/4 (25%)</span>
+            </div>
+            <div class="student-item">
+              <span>Elena Rostova</span>
+              <span class="score-chip t1">1/4 (25%)</span>
+            </div>
+            <div class="student-item">
+              <span>Jamal Vance</span>
+              <span class="score-chip t1">2/4 (50%)</span>
+            </div>
+            <div class="student-item">
+              <span>Sophia Chen</span>
+              <span class="score-chip t1">2/4 (50%)</span>
+            </div>
+            <div class="student-item">
+              <span>Tyler Reed</span>
+              <span class="score-chip t1">1/4 (25%)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tier 2 -->
+      <div class="tier-card tier-2">
+        <div class="tier-header">
+          <span>🟡 Tier 2: On-Level Guided Practice</span>
+          <span style="font-size:0.9rem;" id="t2Count">11 Students (50%–75%)</span>
+        </div>
+        <div class="tier-body">
+          <div class="strategy-box">
+            <strong>📋 Teacher Action Plan:</strong> Guided Phase 2 Launch + Partner Notice/Wonder discussion. Focus on checking calculations on multi-step items.
+          </div>
+          <div class="student-list" id="t2List">
+            <div class="student-item">
+              <span>Aria Montgomery</span>
+              <span class="score-chip t2">3/4 (75%)</span>
+            </div>
+            <div class="student-item">
+              <span>Brandon Cruz</span>
+              <span class="score-chip t2">3/4 (75%)</span>
+            </div>
+            <div class="student-item">
+              <span>Chloe Bennett</span>
+              <span class="score-chip t2">3/4 (75%)</span>
+            </div>
+            <div class="student-item">
+              <span>Daniel Kim</span>
+              <span class="score-chip t2">3/4 (75%)</span>
+            </div>
+            <div class="student-item">
+              <span>Ethan Wright</span>
+              <span class="score-chip t2">3/4 (75%)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tier 3 -->
+      <div class="tier-card tier-3">
+        <div class="tier-header">
+          <span>🟢 Tier 3: Ready for Extension</span>
+          <span style="font-size:0.9rem;" id="t3Count">8 Students (&gt;75%)</span>
+        </div>
+        <div class="tier-body">
+          <div class="strategy-box">
+            <strong>📋 Teacher Action Plan:</strong> Independent Launch + Design Twist Extension Challenge. Peer tutors available for Tier 2 partners.
+          </div>
+          <div class="student-list" id="t3List">
+            <div class="student-item">
+              <span>Gabriel Santos</span>
+              <span class="score-chip t3">4/4 (100%)</span>
+            </div>
+            <div class="student-item">
+              <span>Hannah Abbott</span>
+              <span class="score-chip t3">4/4 (100%)</span>
+            </div>
+            <div class="student-item">
+              <span>Isaac Newton</span>
+              <span class="score-chip t3">4/4 (100%)</span>
+            </div>
+            <div class="student-item">
+              <span>Julia Roberts</span>
+              <span class="score-chip t3">4/4 (100%)</span>
+            </div>
+            <div class="student-item">
+              <span>Kevin Patel</span>
+              <span class="score-chip t3">4/4 (100%)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    function updateLessonView(val) {
+      console.log("Switched snapshot lesson to:", val);
+    }
+
+    function simulateLiveProgress() {
+      const avgEl = document.getElementById("avgScore");
+      const subEl = document.getElementById("subCount");
+      avgEl.textContent = "82%";
+      subEl.textContent = "26/26";
+      alert("Live progress synced! Updated class warmup mastery.");
+    }
+
+    function copyRosters() {
+      const text = `EDUWONDERLAB SMALL-GROUP ROSTERS:\n\n` +
+        `🔴 TIER 1 (INTENSIVE SUPPORT):\nMarcus Brody, Elena Rostova, Jamal Vance, Sophia Chen, Tyler Reed\n\n` +
+        `🟡 TIER 2 (ON-LEVEL PRACTICE):\nAria Montgomery, Brandon Cruz, Chloe Bennett, Daniel Kim, Ethan Wright\n\n` +
+        `🟢 TIER 3 (EXTENSION):\nGabriel Santos, Hannah Abbott, Isaac Newton, Julia Roberts, Kevin Patel`;
+      navigator.clipboard.writeText(text);
+      alert("Small-group rosters copied to clipboard!");
+    }
+  </script>
+</body>
+</html>
