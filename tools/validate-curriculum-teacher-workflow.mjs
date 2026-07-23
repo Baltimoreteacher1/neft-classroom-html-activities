@@ -45,7 +45,6 @@ for (const marker of [
   "Student Playlist",
   "Unit Map",
   "Next-Day Plan",
-  "Lesson Readiness",
 ]) {
   check(workflowJs.includes(marker), `workflow includes ${marker}`);
 }

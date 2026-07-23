@@ -61,6 +61,18 @@
     } catch (_error) {}
   }
 
+  // Selection bridge — the docked Units & Lessons library subscribes here so the
+  // two parts share ONE unit/lesson selection: changing the lesson in the
+  // cockpit updates the library, and vice-versa (curriculum-lesson-merge.js).
+  var selectListeners = [];
+  function fireSelect() {
+    selectListeners.forEach(function (fn) {
+      try {
+        fn(state.selected);
+      } catch (_e) {}
+    });
+  }
+
   function getJson(url) {
     return fetch(url, { credentials: "same-origin" }).then(function (response) {
       if (!response.ok) throw new Error("Missing curriculum workflow data");
@@ -307,11 +319,13 @@
       state.selected = lessonSelect.value;
       updateRecent(state.selected);
       onChange();
+      fireSelect();
     });
     lessonSelect.addEventListener("change", function () {
       state.selected = lessonSelect.value;
       updateRecent(state.selected);
       onChange();
+      fireSelect();
     });
 
     container.appendChild(field("Class", section));
@@ -635,47 +649,12 @@
       });
     }
 
-    var readinessCard = el("section", "ctw-readiness");
-    readinessCard.appendChild(el("h3", null, "Lesson Readiness"));
-    var grid = el("div", "ctw-readiness-grid");
-    grid.appendChild(kv("Success criteria", readiness.successCriteria));
-    grid.appendChild(kv("Prerequisite", readiness.prerequisite));
-    grid.appendChild(kv("Common misconception", readiness.misconception));
-    grid.appendChild(kv("Teacher response", readiness.responseMove));
-    grid.appendChild(kv("Vocabulary", (support.vocabulary || lesson.vocabulary).join(", ")));
-    grid.appendChild(kv("TWR sentence frame", support.sentenceFrame || lesson.sentenceFrames[0]));
-    grid.appendChild(kv("WIDA 1–2", support.wida12));
-    grid.appendChild(kv("WIDA 3–4", support.wida34));
-    grid.appendChild(kv("SPED access", support.sped));
-    grid.appendChild(kv("Enrichment", support.extension));
-    readinessCard.appendChild(grid);
-    readinessCard.appendChild(sequence("45-minute sequence", DATA.workflow.sequences.minutes45));
-    readinessCard.appendChild(sequence("90-minute sequence", DATA.workflow.sequences.minutes90));
-    var sub = button("Copy substitute plan", function (event) {
-      copyText(substitutePlan(lesson, support), event.currentTarget);
-    });
-    readinessCard.appendChild(sub);
-    stage.appendChild(readinessCard);
-
-    var quick = el("section", "ctw-quick");
-    quick.appendChild(el("h3", null, "Favorites & recent lessons"));
-    var quickLinks = el("div", "ctw-quick-links");
-    Array.from(new Set((state.favorites || []).concat(state.recent || [])))
-      .slice(0, 8)
-      .forEach(function (id) {
-        if (!lessonsById[id]) return;
-        quickLinks.appendChild(
-          button(`${id} · ${lessonsById[id].title}`, function () {
-            state.selected = id;
-            updateRecent(id);
-            renderToday(stage);
-          }),
-        );
-      });
-    if (!quickLinks.children.length)
-      quickLinks.appendChild(el("p", "ctw-muted", "Favorite a lesson to keep it here."));
-    quick.appendChild(quickLinks);
-    stage.appendChild(quick);
+    // "Lesson Readiness" and "Favorites & recent lessons" sections retired to
+    // keep the cockpit lean — the full readiness detail (success criteria,
+    // misconceptions, WIDA supports, sequences, substitute plan) still ships in
+    // the printable lesson plan (Print lesson plan) and the Weekly Pacing /
+    // Next-Day Plan tabs. The docked Units & Lessons library below is the place
+    // to browse; the cockpit is just: pick a lesson → teach / launch it.
   }
 
   function renderPanel() {
@@ -827,22 +806,34 @@
           getSelected: function () {
             return state.selected;
           },
-          select: function (id) {
+          onSelect: function (cb) {
+            if (typeof cb === "function") selectListeners.push(cb);
+          },
+          // select(id, { scroll = true, silent = false })
+          //   scroll:false → sync selection without yanking the viewport (used
+          //     for live cockpit↔library sync).
+          //   silent:true  → don't notify listeners (prevents echo when the
+          //     call itself originates from a library-driven sync).
+          select: function (id, opts) {
             if (!id || !lessonsById[id]) return false;
+            opts = opts || {};
             state.selected = id;
             state.view = "today";
             saveState();
             updateRecent(id);
             renderPanel();
-            try {
-              var node = panel || document.getElementById("curriculum-teacher-workflow");
-              node.scrollIntoView({
-                behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
-                  ? "auto"
-                  : "smooth",
-                block: "start",
-              });
-            } catch (_e) {}
+            if (opts.scroll !== false) {
+              try {
+                var node = panel || document.getElementById("curriculum-teacher-workflow");
+                node.scrollIntoView({
+                  behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+                    ? "auto"
+                    : "smooth",
+                  block: "start",
+                });
+              } catch (_e) {}
+            }
+            if (!opts.silent) fireSelect();
             return true;
           },
         };
