@@ -1637,30 +1637,37 @@
     onScroll();
   }
 
+  // `code` is the Maryland 2025 MCCRS domain (what unit badges show); `cc` is the
+  // familiar CCSS domain the specific standards below still use. Both are shown
+  // together so 6.AT ↔ 6.RP/6.EE reads as one system, not two unexplained codes.
   var STANDARD_DOMAINS = [
-    { token: "", code: "All", short: "", label: "All standards" },
+    { token: "", code: "All", cc: "", short: "", label: "All standards" },
     {
       token: "6.rp",
       code: "6.AT",
+      cc: "6.RP",
       short: "Ratios",
       label: "Ratios & Proportional Relationships",
     },
     {
       token: "6.ns",
       code: "6.NOS",
+      cc: "6.NS",
       short: "Number System",
       label: "The Number System",
     },
     {
       token: "6.ee",
       code: "6.AT",
+      cc: "6.EE",
       short: "Expressions",
       label: "Expressions & Equations",
     },
-    { token: "6.g", code: "6.GR", short: "Geometry", label: "Geometry" },
+    { token: "6.g", code: "6.GR", cc: "6.G", short: "Geometry", label: "Geometry" },
     {
       token: "6.sp",
       code: "6.DS",
+      cc: "6.SP",
       short: "Statistics",
       label: "Statistics & Probability",
     },
@@ -1746,6 +1753,20 @@
     lead.textContent = "By standard:";
     wrap.appendChild(lead);
 
+    // One-line crosswalk so the two code systems read as one. Unit badges and
+    // chips use Maryland's 2025 MCCRS domains; the specific standards in each
+    // dropdown keep the familiar CCSS numbers. Muted, wraps on small screens.
+    var note = document.createElement("span");
+    note.className = "hub-standards-note";
+    note.style.flexBasis = "100%";
+    note.style.fontSize = "0.82em";
+    note.style.opacity = "0.75";
+    note.style.margin = "2px 0 6px";
+    note.textContent =
+      "Codes are Maryland’s 2025 MCCRS domains (6.AT, 6.NOS, 6.GR, 6.DS). " +
+      "The specific standards inside each keep the familiar CCSS numbers (6.RP, 6.EE, 6.NS, 6.G, 6.SP).";
+    wrap.appendChild(note);
+
     function applyToken(token) {
       box.value = token;
       box.dispatchEvent(new Event("input", { bubbles: true }));
@@ -1759,13 +1780,23 @@
       chip.className = "hub-standard-chip";
       chip.dataset.token = d.token;
       chip.setAttribute("aria-pressed", d.token === "" ? "true" : "false");
-      chip.title = d.label;
-      chip.setAttribute("aria-label", d.token ? d.code + ": " + d.label : "All standards");
+      chip.title = d.token ? d.label + " (MCCRS " + d.code + " · CCSS " + d.cc + ")" : d.label;
+      chip.setAttribute(
+        "aria-label",
+        d.token ? d.code + " (formerly CCSS " + d.cc + "): " + d.label : "All standards",
+      );
       chip.innerHTML =
         '<span class="hsc-code">' +
         d.code +
         "</span>" +
-        (d.token ? '<span class="hsc-label">' + d.label + "</span>" : "");
+        (d.token
+          ? '<span class="hsc-cc" style="opacity:.7;font-size:.82em;margin-left:4px">CCSS ' +
+            d.cc +
+            "</span>" +
+            '<span class="hsc-label">' +
+            d.label +
+            "</span>"
+          : "");
       chip.addEventListener("click", function () {
         applyToken(d.token);
       });
@@ -1786,11 +1817,14 @@
       if (codes.length) {
         var sel = document.createElement("select");
         sel.className = "hub-substd-select";
-        sel.setAttribute("aria-label", "Jump to a specific " + d.code + " standard");
+        sel.setAttribute(
+          "aria-label",
+          "Jump to a specific " + d.code + " (CCSS " + d.cc + ") standard",
+        );
 
         var ph = document.createElement("option");
         ph.value = d.token;
-        ph.textContent = "All " + d.code + " standards";
+        ph.textContent = "All " + d.code + " standards · CCSS " + d.cc;
         sel.appendChild(ph);
 
         codes.forEach(function (code) {

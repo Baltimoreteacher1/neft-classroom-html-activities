@@ -4,6 +4,24 @@
   var printUnits = document.createDocumentFragment();
   var printUnitsAnchor = null;
 
+  // Open the requested workflow view once the teacher panel exists. The panel
+  // is built asynchronously by curriculum-teacher-workflow.js after its data
+  // loads, so poll briefly for the tab before giving up.
+  function openWorkflowView(view, waited) {
+    waited = waited || 0;
+    var panel = document.getElementById("curriculum-teacher-workflow");
+    var tab = panel && panel.querySelector('[data-ctw-view="' + view + '"]');
+    if (!tab) {
+      if (waited > 8000) return;
+      setTimeout(function () {
+        openWorkflowView(view, waited + 120);
+      }, 120);
+      return;
+    }
+    tab.click();
+    panel.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
   function showTeacherView(view) {
     var modeButton = document.getElementById("hub-mode-toggle");
     if (!modeButton) {
@@ -12,15 +30,26 @@
       }, 150);
       return;
     }
-    if (!document.body.classList.contains("teacher-mode")) {
-      modeButton.click();
+    if (document.body.classList.contains("teacher-mode")) {
+      openWorkflowView(view);
       return;
     }
-    var panel = document.getElementById("curriculum-teacher-workflow");
-    if (!panel) return;
-    var tab = panel.querySelector('[data-ctw-view="' + view + '"]');
-    if (tab) tab.click();
-    panel.scrollIntoView({ behavior: "smooth", block: "start" });
+    // Not in teacher mode yet: request it, then open the view once teacher mode
+    // actually activates. The toggle may show a PIN prompt, so activation is
+    // async and may never resolve (teacher cancels) — poll with a bounded wait
+    // and no-op on timeout. Previously this returned immediately after the
+    // click, so the first click only flipped the mode and the requested
+    // workflow never opened until a second click.
+    modeButton.click();
+    var waited = 0;
+    var timer = setInterval(function () {
+      if (document.body.classList.contains("teacher-mode")) {
+        clearInterval(timer);
+        openWorkflowView(view);
+      } else if ((waited += 120) > 8000) {
+        clearInterval(timer);
+      }
+    }, 120);
   }
 
   function wireGuideActions() {
