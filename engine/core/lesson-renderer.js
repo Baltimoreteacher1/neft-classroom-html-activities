@@ -110,6 +110,10 @@ export function bootLesson(config) {
       (el, state, ctx) => renderReflectPhase(el, state, ctx, config),
     ],
   });
+
+  // Mount the autograded Warmup as its own separate card at the very beginning of the lesson
+  mountWarmupCard(config);
+
   // Slim scroll-progress rail across the top of the lesson (additive, defensive).
   mountReadingProgress();
   // Markup tools (highlight / underline / bold) on EVERY text-based problem —
@@ -2062,26 +2066,32 @@ function renderNoticeWonderSupport(host, support, config, fieldRoot = host) {
   });
 }
 
-function renderWarmupSection(el, state, config) {
+function mountWarmupCard(config) {
   const warmup = config.warmup;
   if (!warmup || !Array.isArray(warmup.questions) || warmup.questions.length === 0) return;
 
+  const main = document.querySelector(".main");
+  if (!main) return;
+
+  if (document.getElementById("lesson-warmup-standalone-card")) return;
+
   const card = document.createElement("div");
-  card.className = "card card-warmup";
-  card.style.cssText = "margin: 16px 0 24px; border: 2px solid #0f6d78; border-radius: 16px; padding: 20px; background: #ffffff; box-shadow: 0 4px 16px rgba(15,109,120,0.1);";
+  card.id = "lesson-warmup-standalone-card";
+  card.className = "card card-warmup-standalone";
+  card.style.cssText = "margin: 0 0 24px; border: 2px solid #0f6d78; border-radius: 16px; padding: 22px; background: #ffffff; box-shadow: 0 6px 20px rgba(15,109,120,0.12);";
 
   const prevTitle = warmup.prevLessonTitle ? ` (${warmup.prevLessonTitle})` : "";
   card.innerHTML = `
-    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; border-bottom:1px solid #e2e8f0; padding-bottom:10px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; border-bottom:1px solid #e2e8f0; padding-bottom:12px;">
       <div>
-        <span style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; color:#0f6d78; background:#e6f4f6; padding:3px 8px; border-radius:6px;">Warmup</span>
-        <h3 style="margin:4px 0 0; font-size:20px; font-weight:800; color:#14223a;">⚡ Warmup: Previous Lesson Check${esc(prevTitle)}</h3>
+        <span style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; color:#0f6d78; background:#e6f4f6; padding:4px 10px; border-radius:6px;">Warmup</span>
+        <h3 style="margin:6px 0 0; font-size:22px; font-weight:800; color:#14223a;">⚡ Warmup: Previous Lesson Check${esc(prevTitle)}</h3>
       </div>
-      <div id="warmupScoreBadge" style="font-size:13px; font-weight:800; color:#0f6d78; background:#f0fdf4; border:1px solid #bbf7d0; padding:6px 12px; border-radius:10px;">
+      <div id="warmupScoreBadge" style="font-size:13px; font-weight:800; color:#0f6d78; background:#f0fdf4; border:1px solid #bbf7d0; padding:6px 14px; border-radius:10px;">
         ${warmup.questions.length} Questions · Autograded
       </div>
     </div>
-    <p style="margin:0 0 16px; font-size:14.5px; color:#56627a;">
+    <p style="margin:0 0 16px; font-size:15px; color:#56627a;">
       Answer these 3–4 warmup questions reviewing previous lesson material before starting today's lesson.
     </p>
   `;
@@ -2090,7 +2100,12 @@ function renderWarmupSection(el, state, config) {
   questionsContainer.className = "warmup-questions-list";
   questionsContainer.style.cssText = "display:flex; flex-direction:column; gap:16px;";
 
-  const savedState = state.getResponse(0, "warmup_answers") || {};
+  let savedAnswers = {};
+  try {
+    const raw = localStorage.getItem(`nt-warmup-${config.lessonId}`);
+    if (raw) savedAnswers = JSON.parse(raw);
+  } catch (_e) {}
+
   const total = warmup.questions.length;
 
   warmup.questions.forEach((q, qIdx) => {
@@ -2110,7 +2125,7 @@ function renderWarmupSection(el, state, config) {
     feedbackBox.className = "warmup-fb-box";
     feedbackBox.style.cssText = "display:none; font-size:13.5px; padding:10px 12px; border-radius:8px; margin-top:10px;";
 
-    const selectedIdx = savedState[qIdx];
+    const selectedIdx = savedAnswers[qIdx];
 
     q.choices.forEach((choiceText, cIdx) => {
       const choiceLabel = document.createElement("label");
@@ -2118,13 +2133,15 @@ function renderWarmupSection(el, state, config) {
 
       const radio = document.createElement("input");
       radio.type = "radio";
-      radio.name = `warmup_q_${qIdx}`;
+      radio.name = `warmup_q_sa_${qIdx}`;
       radio.value = cIdx;
       if (selectedIdx === cIdx) radio.checked = true;
 
       radio.addEventListener("change", () => {
-        savedState[qIdx] = cIdx;
-        state.saveResponse(0, "warmup_answers", savedState);
+        savedAnswers[qIdx] = cIdx;
+        try {
+          localStorage.setItem(`nt-warmup-${config.lessonId}`, JSON.stringify(savedAnswers));
+        } catch (_e) {}
       });
 
       choiceLabel.append(radio);
@@ -2137,7 +2154,7 @@ function renderWarmupSection(el, state, config) {
     qBox.append(choicesGroup);
     qBox.append(feedbackBox);
 
-    if (savedState.checked) {
+    if (savedAnswers.checked) {
       evaluateWarmupQuestion(qBox, q, selectedIdx, feedbackBox);
     }
 
@@ -2155,18 +2172,20 @@ function renderWarmupSection(el, state, config) {
 
   checkBtn.addEventListener("click", () => {
     let correctCount = 0;
-    const currentSaved = state.getResponse(0, "warmup_answers") || {};
-    currentSaved.checked = true;
+    savedAnswers.checked = true;
 
     warmup.questions.forEach((q, qIdx) => {
       const qBox = questionsContainer.children[qIdx];
-      const selIdx = currentSaved[qIdx];
+      const selIdx = savedAnswers[qIdx];
       const fb = qBox.querySelector(".warmup-fb-box");
       if (selIdx === q.correctIndex) correctCount++;
       evaluateWarmupQuestion(qBox, q, selIdx, fb);
     });
 
-    state.saveResponse(0, "warmup_answers", currentSaved);
+    try {
+      localStorage.setItem(`nt-warmup-${config.lessonId}`, JSON.stringify(savedAnswers));
+    } catch (_e) {}
+
     const badge = card.querySelector("#warmupScoreBadge");
     if (badge) {
       badge.textContent = `Score: ${correctCount}/${total} (${Math.round((correctCount/total)*100)}%)`;
@@ -2178,7 +2197,13 @@ function renderWarmupSection(el, state, config) {
   btnRow.append(checkBtn);
   card.append(questionsContainer);
   card.append(btnRow);
-  el.append(card);
+
+  const phaseContainer = main.querySelector(".phase-container");
+  if (phaseContainer) {
+    main.insertBefore(card, phaseContainer);
+  } else {
+    main.append(card);
+  }
 }
 
 function evaluateWarmupQuestion(qBox, q, selectedIdx, feedbackBox) {
@@ -2226,9 +2251,6 @@ function renderLaunchPhase(el, state, ctx, config) {
 
   // Top: student identity (name / period), homework link, pre-lesson hint.
   renderLaunchHeader(el, state, config);
-
-  // ── Warmup: Previous Lesson Check ──────────────────────────────────────────
-  renderWarmupSection(el, state, config);
 
   // ── Be Curious ────────────────────────────────────────────────────────────
   // Its own part, right under the objectives: the Reveal Notice & Wonder
