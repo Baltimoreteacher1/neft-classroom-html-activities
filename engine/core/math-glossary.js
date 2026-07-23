@@ -36,8 +36,10 @@ export const MATH_GLOSSARY = [
   {
     term: "factor",
     termEs: "factor",
-    definition: "A number you multiply to make a product.",
-    definitionEs: "Un número que multiplicas para formar un producto.",
+    definition:
+      "A factor of a whole number divides it evenly, with no remainder. For example, 3 is a factor of 12 because 12 ÷ 3 = 4.",
+    definitionEs:
+      "Un factor de un número entero lo divide exactamente, sin dejar residuo. Por ejemplo, 3 es un factor de 12 porque 12 ÷ 3 = 4.",
   },
   {
     term: "multiple",
@@ -313,8 +315,10 @@ export const MATH_GLOSSARY = [
   {
     term: "prime factor",
     termEs: "factor primo",
-    definition: "A factor that is itself a prime number.",
-    definitionEs: "Un factor que es un número primo.",
+    definition:
+      "A prime factor is a factor that is also a prime number. For example, the prime factors of 12 are 2 and 3 because 12 = 2 × 2 × 3.",
+    definitionEs:
+      "Un factor primo es un factor que también es un número primo. Por ejemplo, los factores primos de 12 son 2 y 3 porque 12 = 2 × 2 × 3.",
     image: "/assets/vocab-images/factor.svg",
   },
   {

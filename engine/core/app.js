@@ -1,33 +1,33 @@
-import { clearLessonStorage, createState, findSavedStudents, normalizeStudentId } from "./state.js";
-import { createEngagement } from "../engagement/engagement.js";
-import { mountExportToolbar } from "./export.js";
-import { mountUtilityMenu } from "./utility-menu.js";
-import { initPresentMode } from "./present-mode.js";
-import { mountTeacherClearButton } from "./teacher-clear.js";
-import { mountVoiceNav } from "./voice-nav.js";
-import { mountTranslate } from "./translate.js";
-import { reportScore } from "./score-reporter.js";
-import { completeLesson } from "./grade-emit.js";
 import { runComponentList } from "../components/activity-chooser.js";
+import { createEngagement } from "../engagement/engagement.js";
+import { PHASE_TIME_ESTIMATES } from "./content-enrichment.js";
+import { mountExportToolbar } from "./export.js";
+import { completeLesson } from "./grade-emit.js";
+import { getPreferredLang, phaseName, setPreferredLang, stackHtml, t } from "./i18n.js";
 import {
+  linkifyObjectiveTerms,
+  observeVocabTerms,
   renderComponent,
   resolveContentObjective,
   resolveLanguageObjective,
-  linkifyObjectiveTerms,
-  wireObjectiveTermPopups,
   underlineVocabTerms,
-  observeVocabTerms,
+  wireObjectiveTermPopups,
 } from "./lesson-renderer.js";
 import { augmentVocabWithGlossary } from "./math-glossary.js";
-import { buildLessonCoverExtras, mountCoverArt, applyPhaseAccent } from "./premium.js";
+import { applyPhaseAccent, buildLessonCoverExtras, mountCoverArt } from "./premium.js";
+import { initPresentMode } from "./present-mode.js";
+import { reportScore } from "./score-reporter.js";
+import { clearLessonStorage, createState, findSavedStudents, normalizeStudentId } from "./state.js";
+import { mountTeacherClearButton } from "./teacher-clear.js";
 import {
   buildWelcomeTeacherNotes,
-  isTeacherMode,
   initTeacherAccess,
+  isTeacherMode,
   mountIdentityTeacherButton,
 } from "./teacher-mode.js";
-import { t, stackHtml, phaseName, getPreferredLang, setPreferredLang } from "./i18n.js";
-import { PHASE_TIME_ESTIMATES } from "./content-enrichment.js";
+import { mountTranslate } from "./translate.js";
+import { mountUtilityMenu } from "./utility-menu.js";
+import { mountVoiceNav } from "./voice-nav.js";
 import "@engine/styles/design-system.css";
 import "@engine/styles/motion.css";
 import "@engine/styles/themes.css";
@@ -317,7 +317,7 @@ function objectivesBlockHtml(config) {
   // Same treatment as the Launch header and Objectives page: key vocabulary
   // words are underlined + tap-to-open the glossary popup, and the goal text is
   // bold. wireObjectiveTermPopups(screen, …) is called after the cover mounts.
-  const vocab = config.vocabulary || [];
+  const vocab = augmentVocabWithGlossary(config.vocabulary);
   const content = linkifyObjectiveTerms(resolveContentObjective(config), vocab);
   const language = linkifyObjectiveTerms(resolveLanguageObjective(config), vocab);
   return `
@@ -604,7 +604,7 @@ function showIdentityScreen(root, config) {
 
   // Cover objectives share the Launch/Objectives glossary popups: tapping an
   // underlined vocab word opens the same EN/ES explanation card.
-  wireObjectiveTermPopups(screen, config.vocabulary || []);
+  wireObjectiveTermPopups(screen, augmentVocabWithGlossary(config.vocabulary));
 
   mountWelcomeGoogleSlidesLink(
     config.lessonId,
@@ -1255,6 +1255,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       // already HTML-escaped, so insert directly (do not re-escape).
       const content = resolveContentObjective(config);
       const language = resolveLanguageObjective(config);
+      const objectiveVocab = augmentVocabWithGlossary(config.vocabulary);
 
       this.setExtraActive("objectives");
       phaseContainer.innerHTML = "";
@@ -1281,7 +1282,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       const objectiveCard = ({ accent, color, icon, label, text, key, prompt, starter }) =>
         `<div class="card ${accent} obj-card" style="margin-bottom:var(--sp-4, 18px); padding:var(--sp-5, 22px);">
           <div style="font-size:1.15rem; font-weight:800; color:var(${color}); margin-bottom:var(--sp-2, 8px);">${icon} ${label}</div>
-          <p style="margin:0 0 var(--sp-4, 18px); font-size:1.45rem; line-height:1.6; font-weight:600; color:var(--navy, #264653);">${linkifyObjectiveTerms(text, config.vocabulary || [])}</p>
+          <p style="margin:0 0 var(--sp-4, 18px); font-size:1.45rem; line-height:1.6; font-weight:600; color:var(--navy, #264653);">${linkifyObjectiveTerms(text, objectiveVocab)}</p>
           <div style="display:flex; flex-direction:column; gap:var(--sp-2, 8px); background:#fff; border:2px solid var(${color}); border-radius:var(--radius-md, 12px); padding:var(--sp-3, 14px) var(--sp-4, 18px); margin-bottom:var(--sp-3, 12px);">
             <div style="font-weight:800; color:var(--navy, #264653); font-size:1.05rem;">Can I do this?</div>
             <label style="display:flex; align-items:center; gap:10px; font-size:1.2rem; cursor:pointer;"><input type="checkbox" data-obj-check="${key}-before" style="width:22px; height:22px; flex:0 0 auto;" /> <span>⏱️ <strong>Before</strong> the lesson — I can do this.</span></label>
@@ -1329,7 +1330,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
 
       // Make the underlined vocab terms tap-to-open the glossary popup here too,
       // exactly like the Launch objectives (shared engine machinery).
-      wireObjectiveTermPopups(el, config.vocabulary || []);
+      wireObjectiveTermPopups(el, objectiveVocab);
 
       // Persist the before/after self-check on this device.
       const objKey = "nt-obj:" + config.lessonId;

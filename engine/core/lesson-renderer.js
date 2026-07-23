@@ -37,6 +37,7 @@ import { mountHintLadder } from "./hint-ladder.js";
 import { badgeName, phaseName, stackHtml, t } from "./i18n.js";
 import { interactiveVisualHost, mountInteractiveVisuals } from "./interactive-visual.js";
 import { levelOverride, mountLevelSelector } from "./levels.js";
+import { augmentVocabWithGlossary } from "./math-glossary.js";
 import { renderMathText } from "./math-typography.js";
 import {
   normalizeAcademicWord,
@@ -52,9 +53,9 @@ import {
 import { createProblemCard, problemTypeLabel } from "./problem-shell.js";
 import { mountReadingProgress } from "./reading-progress.js";
 import { mountStuckSupport } from "./stuck-support.js";
-import { isToolsMode, mountToolsMenuItem, renderToolsPage } from "./tools-mode.js";
 import { isTeacherMode } from "./teacher-mode.js";
 import { renderThemeIllustration } from "./theme-illustrations.js";
+import { isToolsMode, mountToolsMenuItem, renderToolsPage } from "./tools-mode.js";
 import { stampTeachL4Meta } from "./uifr.js";
 import {
   barChartSVG,
@@ -1931,7 +1932,7 @@ export function observeVocabTerms(container, vocab) {
 // named in the objectives are underlined and open a tap-to-view popup with a
 // simple kid-friendly explanation + a visual (see linkifyObjectiveTerms).
 function renderObjectives(el, config) {
-  const vocab = Array.isArray(config.vocabulary) ? config.vocabulary : [];
+  const vocab = augmentVocabWithGlossary(config.vocabulary);
   const contentHtml = linkifyObjectiveTerms(resolveContentObjective(config), vocab);
   const languageHtml = linkifyObjectiveTerms(resolveLanguageObjective(config), vocab);
   const block = document.createElement("div");
@@ -3244,7 +3245,7 @@ function renderObjectiveReview(state, config) {
 
   // Same treatment as the Launch header and Objectives page: key vocabulary is
   // underlined + tap-to-open the glossary popup (wired on the card below).
-  const vocab = Array.isArray(config.vocabulary) ? config.vocabulary : [];
+  const vocab = augmentVocabWithGlossary(config.vocabulary);
   const items = [
     {
       key: "review_content",
