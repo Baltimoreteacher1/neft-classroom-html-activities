@@ -32,6 +32,13 @@ try {
     appVersion,
     dataModules,
   };
+  // Write the public build stamp. This line was accidentally dropped in
+  // c86637562 while adding SW cache-key stamping, which left every build
+  // shipping without a fresh config.json — so the live stamp went stale and
+  // ship:verify falsely reported production as "frozen" while the site was
+  // actually current. Restored so deploy verification works again.
+  writeFileSync(join(dir, "config.json"), JSON.stringify(stamp, null, 2));
+
   // Stamp Service Worker cache key & curriculum assets with build timestamp
   const buildStamp = process.env.CF_PAGES_COMMIT_SHA || process.env.GITHUB_SHA || Date.now().toString(36);
   const swCacheName = `eduwonderlab-v${buildStamp.slice(0, 10)}`;
