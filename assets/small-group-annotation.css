@@ -161,7 +161,7 @@
   border: 0;
   border-radius: 4px;
   color: inherit;
-  background: color-mix(in srgb, var(--sg-soft) 72%, white);
+  background: color-mix(in srgb, var(--sg-soft) 60%, var(--sg-card));
   font: inherit;
   font-weight: 800;
   line-height: inherit;
@@ -172,8 +172,8 @@
 }
 
 .sg-vocab-inline:hover {
-  color: var(--sg-deep);
-  background: color-mix(in srgb, var(--sg-pop) 25%, white);
+  color: var(--sg-ink);
+  background: color-mix(in srgb, var(--sg-pop) 25%, var(--sg-card));
 }
 
 .sg-hero .sg-vocab-inline {
@@ -328,4 +328,18 @@
   .sg-vocab-dialog {
     display: none !important;
   }
+}
+
+/* Dark theme — vocab dialog surface (light mode untouched). */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .sg-vocab-dialog {
+    background: var(--sg-card);
+    color: var(--sg-text);
+    border-color: var(--sg-line);
+  }
+}
+:root[data-theme="dark"] .sg-vocab-dialog {
+  background: var(--sg-card);
+  color: var(--sg-text);
+  border-color: var(--sg-line);
 }

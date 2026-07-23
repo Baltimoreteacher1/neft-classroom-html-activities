@@ -7,15 +7,12 @@
  */
 
 /* ── 1 · Legibility tokens ─────────────────────────────────────────────── */
-:root {
-  --sg-muted: #3f5166;
-  --sg-line: #cfd7e2;
-  --sg-ink: #1f2a3d;
-}
+/* --sg-muted / --sg-line / --sg-ink are defined (light + dark) in the base
+   inline stylesheet; polish must NOT redefine them or it pins them light. */
 
 ::selection {
-  background: color-mix(in srgb, var(--sg-pop) 55%, #fff);
-  color: #1a2436;
+  background: color-mix(in srgb, var(--sg-pop) 55%, var(--sg-card));
+  color: var(--sg-text);
 }
 
 /* ── 2 · Hero: clearer hierarchy, less chrome noise ───────────────────── */
@@ -71,6 +68,12 @@
   margin-top: 14px;
   padding: 13px 15px;
   border-radius: 14px;
+  /* Explicit themed surface — it is a <button> with no background of its own,
+     so without this it rendered the light UA button face in dark mode. */
+  background: var(--sg-figure);
+  border: 1px solid var(--sg-line);
+  color: var(--sg-text);
+  text-align: left;
   box-shadow:
     0 1px 2px rgba(23, 32, 51, 0.04),
     0 10px 22px -10px rgba(23, 32, 51, 0.18);
@@ -90,7 +93,7 @@
 .sg-math-move-kicker {
   font-size: 12px;
   letter-spacing: 0.05em;
-  color: #3f5166;
+  color: var(--sg-muted);
 }
 
 .sg-math-move-label {
@@ -101,7 +104,7 @@
 .sg-math-move-hint {
   font-size: 15px;
   line-height: 1.4;
-  color: #3f5166;
+  color: var(--sg-muted);
 }
 
 /* ── 3 · Mode bar + sticky tabs ───────────────────────────────────────── */
@@ -135,7 +138,7 @@
   min-height: 48px;
   gap: 8px;
   padding: 6px 8px;
-  color: #3f5166;
+  color: var(--sg-muted);
   font-size: 13.5px;
   border-radius: 12px;
 }
@@ -163,12 +166,12 @@
 
 .sg-meter-track {
   height: 10px;
-  background: #d9e0e8;
+  background: var(--sg-line);
 }
 
 .sg-meter-lab {
   font-size: 13.5px;
-  color: #3f5166;
+  color: var(--sg-muted);
   letter-spacing: 0.01em;
 }
 
@@ -191,7 +194,7 @@ section.sg-sec {
 
 .sg-h h2 {
   text-wrap: balance;
-  color: var(--sg-ink, #1f2a3d);
+  color: var(--sg-ink, var(--sg-text));
 }
 
 .sg-eyebrow {
@@ -304,9 +307,9 @@ section.sg-sec {
 
 .btn:disabled {
   opacity: 0.72;
-  color: #4a5a70;
-  border-color: #c5ced9;
-  background: #e8edf3;
+  color: var(--sg-muted);
+  border-color: var(--sg-line);
+  background: var(--sg-line);
   box-shadow: none;
 }
 
