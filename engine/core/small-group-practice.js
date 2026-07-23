@@ -984,7 +984,64 @@ export function createCheckSection(config, onSolved, tally, events = {}, store =
     tally.update?.();
     store?.set("checkSolved", true);
     onSolved();
+    // Second, constructed-response step: turns the single MC check into
+    // real explained evidence (MC answer + a written "how you know"), judged
+    // on the same rubric. Encouraged, not a gate — completion already fired.
+    explain?.reveal();
   };
+  // Written follow-up (only meaningful for the auto-checkable MC ticket; an
+  // open-response ticket already IS constructed response). Captured to the
+  // store so the Studio Packet and telemetry carry the student's reasoning.
+  let explain = null;
+  if (ticket.choices?.length) {
+    explain = (() => {
+      const wrap = el("div", "sg-check-explain");
+      wrap.hidden = true;
+      wrap.appendChild(
+        el("p", "block-lab", "One more — explain how you know (this is the evidence that counts most)."),
+      );
+      const ta = el("textarea", "sg-ta");
+      ta.setAttribute("aria-label", "Explain how you know your answer is correct");
+      ta.placeholder =
+        config.variant === "group2"
+          ? "Justify it: state your claim, your evidence, and why it holds…"
+          : "Use a full sentence and one math word from today…";
+      ta.value = store?.get("checkExplainResponse") || "";
+      const status = el("div", "fb");
+      status.setAttribute("aria-live", "polite");
+      const submit = el("button", "btn", "Submit my explanation");
+      submit.type = "button";
+      submit.onclick = () => {
+        if (ta.value.trim().length < 8) {
+          showFeedback(status, "no", "Add one complete sentence of reasoning first.");
+          return;
+        }
+        store?.set("checkExplainResponse", ta.value.trim());
+        store?.set("checkExplained", true);
+        ta.disabled = true;
+        submit.disabled = true;
+        showFeedback(
+          status,
+          "ok",
+          "✓ Reasoning captured — read it back out loud and check it against the rubric.",
+        );
+      };
+      const row = el("div", "row");
+      row.appendChild(submit);
+      wrap.append(ta, row, status, createRubricDetails(config.variant));
+      if (store?.get("checkExplained")) {
+        ta.disabled = true;
+        submit.disabled = true;
+        showFeedback(status, "ok", "✓ Explanation captured last session.");
+      }
+      return {
+        node: wrap,
+        reveal() {
+          wrap.hidden = false;
+        },
+      };
+    })();
+  }
   const card = ticket.choices?.length
     ? multipleChoiceCard({ ...ticket, type: "multiple-choice" }, 0, finish, events)
     : responseCard(ticket, 0, config.variant, finish, config.variant !== "group2", events);
@@ -999,5 +1056,9 @@ export function createCheckSection(config, onSolved, tally, events = {}, store =
     finish();
   }
   section.appendChild(card);
+  if (explain) {
+    section.appendChild(explain.node);
+    if (store?.get("checkSolved") || store?.get("checkExplained")) explain.reveal();
+  }
   return section;
 }

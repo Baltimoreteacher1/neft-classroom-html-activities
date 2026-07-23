@@ -180,6 +180,80 @@ export function speak(text, button, lang = "en-US") {
   window.speechSynthesis.speak(utterance);
 }
 
+// Device-local "record our best explanation" voice memo. Captures audio with
+// MediaRecorder, plays it back from an in-memory blob URL, and NEVER uploads or
+// persists anything — the clip lives only in this tab and is revoked on
+// re-record. Degrades cleanly: if the device has no recorder / mic permission
+// is denied, it shows a short note instead of a broken control. Privacy is the
+// whole point (the studio promises "private · saved on this device").
+export function createVoiceMemo(prompt = "Record your best explanation") {
+  const wrap = el("div", "sg-voice");
+  const supported =
+    typeof window.MediaRecorder !== "undefined" &&
+    navigator.mediaDevices &&
+    typeof navigator.mediaDevices.getUserMedia === "function";
+  if (!supported) {
+    wrap.appendChild(
+      el("p", "sg-voice-note", "🎙 Voice recording isn’t available on this device — say it out loud instead."),
+    );
+    return wrap;
+  }
+  wrap.appendChild(el("span", "block-lab", esc(prompt)));
+  const row = el("div", "row");
+  const recordBtn = el("button", "btn ghost", "🎙 Record");
+  recordBtn.type = "button";
+  const status = el("span", "sg-voice-status", "Private — stays on this device.");
+  status.setAttribute("aria-live", "polite");
+  const audio = document.createElement("audio");
+  audio.controls = true;
+  audio.hidden = true;
+  audio.className = "sg-voice-audio";
+  let recorder = null;
+  let stream = null;
+  let url = "";
+  let chunks = [];
+  const stopStream = () => {
+    if (stream) stream.getTracks().forEach((t) => t.stop());
+    stream = null;
+  };
+  const startRecording = async () => {
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    } catch {
+      status.textContent = "Microphone permission was declined — say it out loud instead.";
+      recordBtn.disabled = true;
+      return;
+    }
+    chunks = [];
+    recorder = new MediaRecorder(stream);
+    recorder.ondataavailable = (event) => {
+      if (event.data && event.data.size) chunks.push(event.data);
+    };
+    recorder.onstop = () => {
+      stopStream();
+      if (url) URL.revokeObjectURL(url);
+      url = URL.createObjectURL(new Blob(chunks, { type: recorder.mimeType || "audio/webm" }));
+      audio.src = url;
+      audio.hidden = false;
+      status.textContent = "Recorded — play it back, then re-record if you want a cleaner take.";
+      recordBtn.textContent = "🎙 Re-record";
+    };
+    recorder.start();
+    recordBtn.textContent = "⏹ Stop";
+    status.textContent = "Recording… tap Stop when you finish your explanation.";
+  };
+  recordBtn.onclick = () => {
+    if (recorder && recorder.state === "recording") {
+      recorder.stop();
+      return;
+    }
+    startRecording();
+  };
+  row.append(recordBtn);
+  wrap.append(row, status, audio);
+  return wrap;
+}
+
 export function celebrate(symbol = "✨") {
   const burst = el("div", "sg-burst");
   burst.setAttribute("aria-hidden", "true");
@@ -217,7 +291,7 @@ export function injectSmallGroupStyles(accent) {
     const innovation = document.createElement("link");
     innovation.id = "sg-innovation-styles";
     innovation.rel = "stylesheet";
-    innovation.href = "/assets/small-group-innovation.css?v=20260723-pubwave2";
+    innovation.href = "/assets/small-group-innovation.css?v=20260723-pubwave3";
     document.head.appendChild(innovation);
   }
   if (!document.getElementById("sg-annotation-styles")) {

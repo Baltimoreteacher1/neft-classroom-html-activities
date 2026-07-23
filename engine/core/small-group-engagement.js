@@ -3,6 +3,7 @@ import { markScene, mountThemeArt, themeDisplayName } from "./small-group-storyb
 import { renderLaunchStoryBeats } from "./premium.js";
 import {
   celebrate,
+  createVoiceMemo,
   el,
   esc,
   sectionHeading as heading,
@@ -562,6 +563,17 @@ export function createTalkSection(config, variant, onDone) {
   };
   timer.append(clock, track, start);
   card.appendChild(timer);
+
+  // Optional "record our best explanation" — device-local playback only, so a
+  // group can hear their reasoning back and refine it (ties into the reciprocal-
+  // questioning discourse work). Never uploads; nothing to grade.
+  card.appendChild(
+    createVoiceMemo(
+      variant === "group2"
+        ? "Optional: record your explanation of the check and what the result means."
+        : "Optional: record your group’s best explanation, then play it back.",
+    ),
+  );
 
   const done = el("button", "btn ghost", "✓ I said my thinking out loud");
   done.type = "button";
