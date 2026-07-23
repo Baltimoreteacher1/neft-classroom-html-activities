@@ -176,56 +176,25 @@ export function createState(lessonId, studentId) {
   }
 
   function initPhases(phaseConfigs) {
-    // Migration: If saved state has 5 phases starting with Launch, insert Warmup as Phase 1 (index 0)
-    if (Array.isArray(state.phases) && state.phases.length === 5 && state.phases[0]?.name === "Launch") {
-      const warmupPhase = {
-        id: 0,
-        name: phaseConfigs[0]?.name || "Warmup",
-        icon: phaseConfigs[0]?.icon || "⚡",
-        status: "active",
+    const isCorruptOrOld =
+      !Array.isArray(state.phases) ||
+      state.phases.length !== phaseConfigs.length ||
+      state.phases.some((p, i) => !p || p.name !== phaseConfigs[i].name);
+
+    if (isCorruptOrOld) {
+      state.phases = phaseConfigs.map((cfg, i) => ({
+        id: i,
+        name: cfg.name,
+        icon: cfg.icon,
+        status: i === 0 ? "active" : "available",
         stars: 0,
         xpEarned: 0,
         attempts: 0,
         correct: 0,
-      };
-
-      state.phases = [
-        warmupPhase,
-        ...state.phases.map((p, i) => ({ ...p, id: i + 1, name: phaseConfigs[i + 1]?.name || p.name })),
-      ];
-
-      const remapped = {};
-      for (const k in state.responses || {}) {
-        const m = /^(\d+)_(.*)$/.exec(k);
-        if (m) {
-          const oldP = Number(m[1]);
-          remapped[`${oldP + 1}_${m[2]}`] = state.responses[k];
-        } else {
-          remapped[k] = state.responses[k];
-        }
-      }
-      state.responses = remapped;
+      }));
       save();
       notify();
-      return;
     }
-
-    if (state.phases.length === phaseConfigs.length && state.phases[0]?.name === phaseConfigs[0]?.name) {
-      return;
-    }
-
-    state.phases = phaseConfigs.map((cfg, i) => ({
-      id: i,
-      name: cfg.name,
-      icon: cfg.icon,
-      status: i === 0 ? "active" : "available",
-      stars: 0,
-      xpEarned: 0,
-      attempts: 0,
-      correct: 0,
-    }));
-    save();
-    notify();
   }
 
   return {
