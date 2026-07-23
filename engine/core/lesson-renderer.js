@@ -2460,9 +2460,7 @@ function renderLaunchPhase(el, state, ctx, config) {
   renderNoticeWonderSupport(nwStack, cfg.beCurious, config, nwStack);
   el.append(nwStack);
 
-  // Objectives now sit AFTER Be Curious (their own cards): students get curious
-  // about the scene first, THEN see the formal "I can…" goals for today.
-  renderObjectives(el, config);
+  // Note: Objectives card sits directly in between Warmup and Launch (rendered at bottom of Warmup phase).
 
   // ── Launch is now "Be Curious" only ─────────────────────────────────────────
   // The application scenario (word problem) and the guided "Show Your Work" solve
