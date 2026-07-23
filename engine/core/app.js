@@ -1923,8 +1923,8 @@ function updateSidebar(sidebar, state, phaseConfigs) {
         <span class="phase-stars">${stars}</span>
       </button>
     `;
-      // Launch is phase index 0 — drop Vocab/Notes right beneath it.
-      return i === 0 ? btn + launchSubTabs : btn;
+      // Launch is phase index 1 (Phase 2) — drop Vocab/Notes right beneath it.
+      return i === 1 ? btn + launchSubTabs : btn;
     })
     .join("");
 

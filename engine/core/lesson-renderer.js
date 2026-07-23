@@ -2070,7 +2070,7 @@ function renderWarmupPhase(el, state, ctx, config) {
 
   phaseHeader(
     el,
-    "⚡",
+    "1",
     "section-icon-teal",
     "Phase 1: Warmup",
     "Complete these 3–4 quick warmup questions reviewing previous lesson material before starting today's lesson.",
@@ -2249,15 +2249,12 @@ function renderLaunchPhase(el, state, ctx, config) {
   // Top: student identity (name / period), homework link, pre-lesson hint.
   renderLaunchHeader(el, state, config);
 
-  // ── Be Curious ────────────────────────────────────────────────────────────
-  // Its own part, right under the objectives: the Reveal Notice & Wonder
-  // routine. Students get curious about today's math BEFORE the formal Launch
-  // problem below. No-op when the lesson has no Notice & Wonder.
+  // ── Phase 2: Launch ────────────────────────────────────────────────────────
   phaseHeader(
     el,
-    "🔭",
+    "2",
     "section-icon-teal",
-    "Be Curious",
+    "Phase 2: Launch",
     "Look at today's scene. What do you notice? What do you wonder?",
   );
 
