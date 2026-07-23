@@ -343,7 +343,11 @@ async function main() {
 
   let browser;
   try {
-    browser = await chromium.launch();
+    // PW_CHROMIUM_PATH: point at a system Chromium when the Playwright-managed
+    // download is missing/version-mismatched (e.g. sandboxed CI containers).
+    browser = await chromium.launch(
+      process.env.PW_CHROMIUM_PATH ? { executablePath: process.env.PW_CHROMIUM_PATH } : {},
+    );
   } catch (e) {
     console.error(`⚠️  Could not launch Chromium — render smoke SKIPPED (${e.message}).`);
     console.error("   Install with: npx playwright install chromium");

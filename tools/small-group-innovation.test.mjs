@@ -43,3 +43,9 @@ test("returns an explainable pathway and all student-selectable alternatives", (
     assert.ok(path.prompt);
   }
 });
+
+test("recommends stretch for clean group1 and catch-up sessions too (variant parity)", () => {
+  const clean = { before: 4, attempts: 3, incorrectAttempts: 0, hints: 0, solved: 2 };
+  assert.equal(chooseAdaptivePath(clean, "group1").id, "stretch");
+  assert.equal(chooseAdaptivePath(clean, "catchup").id, "stretch");
+});

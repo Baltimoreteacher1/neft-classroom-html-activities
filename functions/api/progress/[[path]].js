@@ -551,6 +551,75 @@ export async function onRequest(context) {
     return new Response(null, { status: 204, headers: JSON_HEADERS });
   }
 
+  // --- Small-group class view (aggregate-only) -------------------------------
+  // Section-level rollup of the name-free small_group_evidence events for one
+  // base lesson, consumed by the in-studio Facilitation Console. Ungated by
+  // design BECAUSE it can only ever return counts/averages: the source rows
+  // carry no student names (the studio never sends them) and no individual
+  // event, payload, or free text is echoed back. Anything per-student stays
+  // behind the TEACHER_KEY-gated /telemetry route above.
+  if (seg === "small-group-summary" && method === "GET") {
+    const base = clamp(url.searchParams.get("lesson"), 10);
+    if (!/^\d{1,2}-\d{1,2}$/.test(base)) return json({ ok: false, error: "invalid-lesson" }, 400);
+    if (!env.DB) return json({ ok: true, groups: [] });
+    try {
+      await ensureTelemetrySchema(env.DB);
+      const since = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString();
+      const rows = await env.DB.prepare(
+        `SELECT lesson_slug, section, payload_json
+           FROM lesson_telemetry
+          WHERE event_type = 'small_group_evidence'
+            AND (lesson_slug LIKE ? OR lesson_slug LIKE ?)
+            AND created_at >= ?
+          ORDER BY id DESC LIMIT 500`,
+      )
+        .bind(`${base}-group%`, `${base}-catchup`, since)
+        .all();
+      const groups = new Map();
+      for (const row of rows.results || []) {
+        const payload = parseJsonOr(row.payload_json, {});
+        const variant =
+          payload.variant || String(row.lesson_slug).replace(`${base}-`, "") || "unknown";
+        const key = `${row.section || "—"}|${variant}`;
+        const group = groups.get(key) || {
+          section: row.section || "—",
+          variant,
+          completions: 0,
+          inProgress: 0,
+          solvedSum: 0,
+          totalSum: 0,
+          hintHeavy: 0,
+        };
+        if (payload.kind === "checkpoint") {
+          group.inProgress++;
+        } else {
+          group.completions++;
+          group.solvedSum += Number(payload.practiceSolved) || 0;
+          group.totalSum += Number(payload.practiceTotal) || 0;
+          if ((Number(payload.hints) || 0) >= 3) group.hintHeavy++;
+        }
+        groups.set(key, group);
+      }
+      return json({
+        ok: true,
+        lesson: base,
+        groups: [...groups.values()].map((group) => ({
+          section: group.section,
+          variant: group.variant,
+          completions: group.completions,
+          inProgress: group.inProgress,
+          avgSolved: group.completions
+            ? Math.round(group.solvedSum / group.completions)
+            : 0,
+          avgTotal: group.completions ? Math.round(group.totalSum / group.completions) : 0,
+          hintHeavy: group.hintHeavy,
+        })),
+      });
+    } catch (err) {
+      return json({ ok: true, groups: [] });
+    }
+  }
+
   // --- Public exemplar gallery ----------------------------------------------
   // Approved-only, heavily redacted student work for the "From students like
   // you" cards on project pages. Rows appear here ONLY after a teacher flips

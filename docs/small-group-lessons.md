@@ -66,8 +66,34 @@ npm run build && npm run validate
 The shell adds save/resume + supports + workbench itself; only the **UIFR**
 stamp comes from an injector (idempotent — touches only unstamped lessons).
 
+## Publisher-grade wave (2026-07-23)
+
+Shared-engine upgrades — land on all 148 lessons with no regeneration:
+
+- **Mastery bands + rubric** (`small-group-rubric.js`): session evidence →
+  approaching/meeting/exceeding band on the Evidence Card, console, and
+  telemetry; a 4-point analytic rubric folds in under every open-response
+  prompt (config may override rows via `config.rubric`).
+- **Teacher evidence sync**: the completion telemetry now carries attempts,
+  misses, hints, best streak, adaptive path, and band; a mid-rotation
+  `checkpoint` ping fires when guided practice lands. The Facilitation Console
+  shows live this-device stats and an aggregate, name-free class view from
+  `GET /api/progress/small-group-summary?lesson=<base>` (counts/averages only).
+- **Standards as text** (`small-group-standards.js`): the hero's "Full
+  objectives" fold and the teacher studio guide show the full MCCRS wording
+  from `data/ccss-standards.json`, not just the code badge.
+- **Worksheets surfaced**: teacher-mode footer links each lesson's
+  `worksheet.html` (Level 0 + parallel forms A/B + labeled answer keys).
+- **Catch-up parity**: catch-up studios now get per-step build visuals, the
+  streak-earned Challenge bridge (maps `-catchup` → `-group2`), and stretch
+  eligibility in the adaptive coach (stretch is variant-agnostic when a
+  session is clean).
+
 ## Verification
 
 - `npm run build` — all 148 compile as Rollup entries.
 - `npm run validate` — full QA suite (save-resume, injection, ccss, uifr, …) — green.
-- `node tools/smoke-lesson-boot.mjs --lessons <ids>` — headless render, no boot errors.
+- `node tools/smoke-lesson-boot.mjs --lessons <ids>` — headless render, no boot errors
+  (`PW_CHROMIUM_PATH=<chromium>` points it at a system browser in sandboxes).
+- `node --test tools/small-group-innovation.test.mjs tools/small-group-rubric.test.mjs`
+  — adaptive-path + mastery-band unit tests.
