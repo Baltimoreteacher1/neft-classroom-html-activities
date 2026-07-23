@@ -330,7 +330,7 @@
       return unitsData
         .map(function (u) {
           var lessons = (u.lessons || []).filter(function (l) {
-            var lid = l.lessonId || lessonIdFromTitle(l.title);
+            var lid = l.lessonId || l.id || lessonIdFromTitle(l.title);
             var idMatch = lessonIds[lid] != null;
             var filterMatch = lessonMatchesFilter(l, filter);
             return idMatch && filterMatch;
@@ -345,7 +345,8 @@
     return unitsData
       .map(function (u) {
         var lessons = (u.lessons || []).filter(function (l) {
-          var textMatch = !ql || l.dataSearch.indexOf(ql) > -1;
+          var lText = (l.dataSearch || "") + " " + (l.title || "").toLowerCase();
+          var textMatch = !ql || lText.indexOf(ql) > -1;
           var filterMatch = lessonMatchesFilter(l, filter);
           return textMatch && filterMatch;
         });
