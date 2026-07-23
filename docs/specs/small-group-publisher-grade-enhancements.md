@@ -1,10 +1,11 @@
 # Small-Group Lessons — Publisher-Grade Enhancement List
 
-Status: audit 2026-07-23. **Wave 1 shipped** (items 1–5); **Wave 2 shipped**
-(items 6, 7, 17, 18); **item 8 shipped** (Small-Group Rotation Console at
-`teacher-tools/small-group-rotation/`, registered in the teacher-tools hub —
-lesson picker → variant/assigned/deep-link launcher + live name-free class
-evidence from `/api/progress/small-group-summary`). Remaining: 9–16, 19, 20.
+Status: audit 2026-07-23. **Wave 1** (items 1–5), **Wave 2** (6, 7, 17, 18),
+**item 8** (Small-Group Rotation Console), and **Wave 3** (9, 13, 15) all
+shipped. **Item 16** investigated → finding invalid, no-op (see below).
+Remaining: 10 (family letter), 12 (printed manipulative masters), 14 (authored
+art), 19/20 (dark mode). Items 10/12/14 need content/asset creation, not
+engine work — deferred as a distinct authoring workstream.
 Scope: all 128 small-group lessons + 20 catch-ups (engine modules, generators,
 teacher route, worksheets), benchmarked against professional publishers
 (Illustrative Mathematics, Eureka Math², enVision, Amplify).
@@ -114,12 +115,19 @@ still separates it from a commercial curriculum product, ranked by impact.
 
 ## Data hygiene & consistency (cheap wins)
 
-16. **Dead data in student configs.** `stripHeavy()`
-    (`generate-small-group-lessons.mjs:50-57`) deletes `googleForms` etc. but
-    **not** `noticeAndWonder`/`turnAndTalk`, so both ship in every group1/2
-    student config despite the "no notice/wonder anywhere" directive
-    (roadmap:23,61). The catch-up generator deletes them correctly. Extra
-    payload + drift risk — strip them.
+16. ~~**Dead data in student configs**~~ — **finding INVALID (verified
+    2026-07-23), do not strip.** The original audit claimed
+    `noticeAndWonder`/`turnAndTalk` are dead in group1/2 configs. They are NOT:
+    the compact renderer reads `noticeAndWonder.context` as the mission
+    narrative (`createMissionSection`, `small-group-engagement.js:68`) and reads
+    `turnAndTalk` for the entire Talk section (`talkFor`,
+    `small-group-engagement.js:426`) on group1/catch-up lessons — and
+    `validate-small-group-lessons.mjs:109-111` correctly *requires* both.
+    Stripping them deletes the Talk section from all 64 group1 lessons and
+    degrades the mission. Only `noticeAndWonder.noticeStarters/wonderStarters`
+    are truly dead (a few lines of payload) — not worth a risky 128-file regen.
+    Catch-up strips the whole objects only because it renders no Talk/mission
+    from them. No action taken.
 17. **Orphaned proof-path state.** `state.proofPath`/`proofResponse` are
     initialized and *read* by the Evidence Card and Studio Packet
     (`small-group-innovation.js:395,438`) but never *written* — those cells

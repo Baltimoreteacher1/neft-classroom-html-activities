@@ -9,8 +9,53 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const BASE_RE = /^\d+-\d+$/;
 const REQUIRED = ["launch", "explore", "practice", "connect", "reflect"];
 
+// Editorial copy gate (LESSON_PRODUCT_FACTORY.md:110-111 — "no AI filler").
+// Unambiguous AI-puffery only: words that never carry concrete classroom
+// meaning here, so a hit is real filler, not a false positive. Deliberately
+// EXCLUDES "unlock" — in these mission/game configs it is always concrete
+// ("unlock the door", "Division unlocks a multiplication equation").
+const BANNED_COPY = [
+  "delve",
+  "robust",
+  "seamless",
+  "game-changing",
+  "game changer",
+  "leverage",
+  "utilize",
+  "tapestry",
+  "elevate your",
+  "dive into",
+  "in today's fast-paced",
+  "furthermore",
+  "moreover",
+];
+const BANNED_RE = new RegExp(
+  "\\b(" + BANNED_COPY.map((w) => w.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&")).join("|") + ")\\b",
+  "i",
+);
+
 function fail(message) {
   throw new Error(`small-groups: ${message}`);
+}
+
+// Scan the student-facing string values of a config for banned filler words.
+function assertCopyQuality(config, id) {
+  const scan = (value) => {
+    if (typeof value === "string") {
+      const m = value.match(BANNED_RE);
+      if (m) fail(`${id} student copy uses flagged AI-filler word "${m[1]}" (see LESSON_PRODUCT_FACTORY.md). Rewrite in plain teacher voice.`);
+    } else if (Array.isArray(value)) {
+      value.forEach(scan);
+    } else if (value && typeof value === "object") {
+      for (const [key, child] of Object.entries(value)) {
+        // Skip non-prose identifiers/paths.
+        if (["href", "standard", "lessonId", "variant", "theme", "kind", "type"].includes(key))
+          continue;
+        scan(child);
+      }
+    }
+  };
+  scan(config);
 }
 
 function count(text, needle) {
@@ -111,6 +156,7 @@ function assertConfig(root, parent, row) {
     fail(`${row.id} missing lesson-specific math talk`);
   if (!Array.isArray(config.vocabulary) || config.vocabulary.length < 2)
     fail(`${row.id} needs at least two vocabulary entries`);
+  assertCopyQuality(config, row.id);
   const practiceCount = ["approaching", "onLevel", "extending", "optional"].reduce(
     (total, tier) => total + (config.practice?.[tier]?.length || 0),
     0,

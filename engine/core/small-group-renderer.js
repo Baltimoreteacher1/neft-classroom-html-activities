@@ -581,6 +581,7 @@ function renderStudio(config) {
         bestStreak: state.bestStreak,
         adaptivePath: state.adaptivePath,
         band: getBand().id,
+        explained: Boolean(store.get("checkExplained")),
       });
     },
     store,

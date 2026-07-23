@@ -440,6 +440,7 @@ export function createStudioPacket(config, state, store) {
       ["What my result means", get("mathCheckMeaning")],
       ["What the model shows", get("modelResponse")],
       ["My solution (apply)", get("applyWork")],
+      ["My exit-ticket reasoning", get("checkExplainResponse")],
       ["One move that helped me", get("growthNote")],
     ].filter(([, value]) => value);
     const work = written.length
