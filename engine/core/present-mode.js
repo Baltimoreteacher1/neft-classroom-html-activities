@@ -1,7 +1,7 @@
-// present-mode.js — teacher-facing "Present" toggle & Screen Share (per Joel 2026-07-23).
-// Turns lessons/phases into presentation slides and supports live screen sharing
-// via navigator.mediaDevices.getDisplayMedia().
-// Mounts a floating Present button (that can be minimized) in Teacher Mode.
+// present-mode.js — Gold-Standard Presenter & Screen Share Engine (per Joel 2026-07-23).
+// Provides classroom presentation capabilities: live screen sharing (getDisplayMedia),
+// floating & minimizable Presenter widget, slide deck presentation mode, screen annotations,
+// and projector views for all small-group & interactive lessons on eduwonderlab.com/curriculum.
 
 function esc(s) {
   const d = document.createElement("div");
@@ -27,6 +27,9 @@ export function isTeacherModeActive() {
 
 let activeScreenStream = null;
 let screenOverlayEl = null;
+let annotationCanvasEl = null;
+let isAnnotating = false;
+let isLaserPointer = false;
 
 export async function startScreenShare({ onFallback } = {}) {
   if (activeScreenStream) {
@@ -71,33 +74,83 @@ export function stopScreenShare() {
     } catch (_) {}
     activeScreenStream = null;
   }
+  stopAnnotation();
   if (screenOverlayEl) {
     screenOverlayEl.remove();
     screenOverlayEl = null;
   }
   document.body.classList.remove("nt-screen-presenting");
+  updateWidgetLiveState(false);
+}
+
+function updateWidgetLiveState(isLive) {
+  const widget = document.getElementById("nt-present-widget");
+  if (!widget) return;
+  widget.classList.toggle("is-live-sharing", isLive);
+  const liveBadge = widget.querySelector(".nt-present-live-badge");
+  if (liveBadge) liveBadge.hidden = !isLive;
 }
 
 function buildScreenShareOverlay(stream) {
   if (screenOverlayEl) screenOverlayEl.remove();
 
   document.body.classList.add("nt-screen-presenting");
+  updateWidgetLiveState(true);
 
   screenOverlayEl = document.createElement("div");
   screenOverlayEl.className = "nt-screen-overlay";
   screenOverlayEl.innerHTML = `
     <div class="nt-screen-stage">
       <video class="nt-screen-video" autoplay playsinline muted></video>
-      <div class="nt-screen-hud">
-        <span class="nt-screen-badge">📡 Live Screen Share</span>
-        <button type="button" class="nt-screen-btn nt-screen-pip" title="Toggle Floating Window">🗖 PIP</button>
-        <button type="button" class="nt-screen-btn nt-screen-fs" title="Fullscreen">⛶ Fullscreen</button>
-        <button type="button" class="nt-screen-btn nt-screen-stop" title="Stop Sharing">🛑 Stop Presenting</button>
+      <canvas class="nt-screen-draw-canvas" hidden></canvas>
+      <div class="nt-laser-pointer" hidden></div>
+
+      <div class="nt-screen-hud" role="toolbar" aria-label="Presenter Controls">
+        <span class="nt-screen-badge"><span class="nt-pulse-dot"></span> LIVE Screen Share</span>
+        <button type="button" class="nt-screen-btn nt-screen-annotate" title="Toggle Annotate / Laser Pointer">🖊️ Draw</button>
+        <button type="button" class="nt-screen-btn nt-screen-laser" title="Toggle Laser Pointer">🔴 Laser</button>
+        <button type="button" class="nt-screen-btn nt-screen-clear" title="Clear Drawing" hidden>🧹 Clear</button>
+        <button type="button" class="nt-screen-btn nt-screen-pip" title="Toggle Picture-in-Picture">🗖 PIP</button>
+        <button type="button" class="nt-screen-btn nt-screen-fs" title="Fullscreen Mode">⛶ Fullscreen</button>
+        <button type="button" class="nt-screen-btn nt-screen-stop" title="Stop Screen Share">🛑 Stop Sharing</button>
       </div>
     </div>`;
 
   const video = screenOverlayEl.querySelector(".nt-screen-video");
   video.srcObject = stream;
+
+  const canvas = screenOverlayEl.querySelector(".nt-screen-draw-canvas");
+  const laserDot = screenOverlayEl.querySelector(".nt-laser-pointer");
+  const annotateBtn = screenOverlayEl.querySelector(".nt-screen-annotate");
+  const laserBtn = screenOverlayEl.querySelector(".nt-screen-laser");
+  const clearBtn = screenOverlayEl.querySelector(".nt-screen-clear");
+
+  setupAnnotationCanvas(canvas, laserDot);
+
+  annotateBtn.addEventListener("click", () => {
+    isAnnotating = !isAnnotating;
+    isLaserPointer = false;
+    canvas.hidden = !isAnnotating;
+    laserDot.hidden = true;
+    clearBtn.hidden = !isAnnotating;
+    annotateBtn.classList.toggle("is-active", isAnnotating);
+    laserBtn.classList.remove("is-active");
+  });
+
+  laserBtn.addEventListener("click", () => {
+    isLaserPointer = !isLaserPointer;
+    isAnnotating = false;
+    laserDot.hidden = !isLaserPointer;
+    canvas.hidden = true;
+    clearBtn.hidden = true;
+    laserBtn.classList.toggle("is-active", isLaserPointer);
+    annotateBtn.classList.remove("is-active");
+  });
+
+  clearBtn.addEventListener("click", () => {
+    const ctx = canvas.getContext("2d");
+    if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+  });
 
   const pipBtn = screenOverlayEl.querySelector(".nt-screen-pip");
   pipBtn.addEventListener("click", async () => {
@@ -119,7 +172,8 @@ function buildScreenShareOverlay(stream) {
     if (document.fullscreenElement) {
       document.exitFullscreen?.();
     } else {
-      screenOverlayEl.requestFullscreen?.() || screenOverlayEl.querySelector(".nt-screen-stage")?.requestFullscreen?.();
+      screenOverlayEl.requestFullscreen?.() ||
+        screenOverlayEl.querySelector(".nt-screen-stage")?.requestFullscreen?.();
     }
   });
 
@@ -129,6 +183,65 @@ function buildScreenShareOverlay(stream) {
   });
 
   document.body.appendChild(screenOverlayEl);
+}
+
+function setupAnnotationCanvas(canvas, laserDot) {
+  let drawing = false;
+  let lastX = 0;
+  let lastY = 0;
+
+  function resizeCanvas() {
+    canvas.width = canvas.parentElement?.clientWidth || window.innerWidth;
+    canvas.height = canvas.parentElement?.clientHeight || window.innerHeight;
+  }
+  resizeCanvas();
+  window.addEventListener("resize", resizeCanvas);
+
+  const ctx = canvas.getContext("2d");
+
+  canvas.addEventListener("pointerdown", (e) => {
+    if (!isAnnotating) return;
+    drawing = true;
+    const rect = canvas.getBoundingClientRect();
+    lastX = e.clientX - rect.left;
+    lastY = e.clientY - rect.top;
+  });
+
+  canvas.addEventListener("pointermove", (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    if (isLaserPointer && laserDot) {
+      laserDot.style.left = `${e.clientX}px`;
+      laserDot.style.top = `${e.clientY}px`;
+    }
+
+    if (!drawing || !isAnnotating || !ctx) return;
+
+    ctx.beginPath();
+    ctx.strokeStyle = "#38bdf8";
+    ctx.lineWidth = 4;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.moveTo(lastX, lastY);
+    ctx.lineTo(x, y);
+    ctx.stroke();
+
+    lastX = x;
+    lastY = y;
+  });
+
+  const stopDrawing = () => {
+    drawing = false;
+  };
+  canvas.addEventListener("pointerup", stopDrawing);
+  canvas.addEventListener("pointerleave", stopDrawing);
+}
+
+function stopAnnotation() {
+  isAnnotating = false;
+  isLaserPointer = false;
 }
 
 function showPresentNotice(msg) {
@@ -158,8 +271,9 @@ export function mountPresentWidget({ onPresentToggle, container } = {}) {
   function renderWidgetContent() {
     if (minimized) {
       widget.innerHTML = `
-        <button type="button" class="nt-present-btn-mini" title="Expand Present Mode" aria-label="Expand Present Mode">
+        <button type="button" class="nt-present-btn-mini" title="Expand Presenter Controls (Alt+Shift+P)" aria-label="Expand Presenter Controls">
           <span>📺 Present</span>
+          <span class="nt-present-live-badge" ${activeScreenStream ? "" : "hidden"}>🟢</span>
           <span class="nt-present-expand-icon">⤢</span>
         </button>`;
       widget.querySelector(".nt-present-btn-mini").onclick = () => {
@@ -169,15 +283,19 @@ export function mountPresentWidget({ onPresentToggle, container } = {}) {
       widget.innerHTML = `
         <div class="nt-present-bar">
           <span class="nt-present-label">👩‍🏫 Presenter</span>
-          <button type="button" class="nt-present-act-btn" title="Share Screen / Presentation Mode">
-            <span>📺 Present / Share Screen</span>
+          <span class="nt-present-live-badge" ${activeScreenStream ? "" : "hidden"}>🟢 LIVE</span>
+          <button type="button" class="nt-present-act-btn nt-present-screen" title="Share Screen live (getDisplayMedia)">
+            <span>📺 Screen Share</span>
           </button>
-          <button type="button" class="nt-present-min-btn" title="Minimize Present Bar" aria-label="Minimize Present Bar">
+          <button type="button" class="nt-present-act-btn nt-present-deck" title="Slide Deck Projector View">
+            <span>📽️ Slide Deck</span>
+          </button>
+          <button type="button" class="nt-present-min-btn" title="Minimize Bar" aria-label="Minimize Present Bar">
             <span>🗕</span>
           </button>
         </div>`;
 
-      widget.querySelector(".nt-present-act-btn").onclick = async () => {
+      widget.querySelector(".nt-present-screen").onclick = async () => {
         if (typeof onPresentToggle === "function") {
           onPresentToggle();
         } else {
@@ -187,6 +305,10 @@ export function mountPresentWidget({ onPresentToggle, container } = {}) {
             },
           });
         }
+      };
+
+      widget.querySelector(".nt-present-deck").onclick = () => {
+        document.dispatchEvent(new CustomEvent("nt:present-deck-toggle"));
       };
 
       widget.querySelector(".nt-present-min-btn").onclick = () => {
@@ -206,6 +328,14 @@ export function mountPresentWidget({ onPresentToggle, container } = {}) {
 
   renderWidgetContent();
   (container || document.body).appendChild(widget);
+
+  // Keyboard shortcut Alt+Shift+P toggles minimize/expand
+  document.addEventListener("keydown", (e) => {
+    if (e.altKey && e.shiftKey && e.code === "KeyP" && isTeacherModeActive()) {
+      e.preventDefault();
+      setMinimized(!minimized);
+    }
+  });
 
   window.addEventListener("storage", (e) => {
     if (e.key === "nt-teacher-mode") {
@@ -231,7 +361,7 @@ export function initPresentMode({ app, config, phaseConfigs, phaseContainer, sta
     [...phaseEl.children].forEach((child) => {
       const startsSlide =
         child.classList.contains("card") ||
-        child.querySelector(".card, h2, h3, .card-title") ||
+        child.querySelector(".card, h2, h3, .card-title, .sg-tab") ||
         groups.length === 0;
       if (startsSlide) groups.push([]);
       groups[groups.length - 1].push(child);
@@ -386,7 +516,7 @@ export function initPresentMode({ app, config, phaseConfigs, phaseContainer, sta
     if (!active || e.altKey || e.ctrlKey || e.metaKey) return;
     if (e.target.closest("input, textarea, select, [contenteditable]")) return;
     if (document.documentElement.classList.contains("nt-extra-fullpage-open")) return;
-    if (e.key === "ArrowRight") show(current + 1);
+    if (e.key === "ArrowRight" || e.key === "Space") show(current + 1);
     if (e.key === "ArrowLeft") show(current - 1);
     if (e.key === "Escape") setActive(false);
   });
