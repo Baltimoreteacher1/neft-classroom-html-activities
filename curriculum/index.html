@@ -46,13 +46,25 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Nunito:wght@600;700;800;900&display=swap"
     />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <link rel="manifest" href="/manifest.webmanifest" />
-    <link rel="stylesheet" href="/assets/curriculum-enhancements.css?v=20260712-toolstop" />
-    <link rel="stylesheet" href="/assets/curriculum-sidebar.css?v=20260615-sidebar3" />
+    <link rel="stylesheet" href="/assets/curriculum-enhancements.css?v=mrxk4zey" />
+    <link rel="stylesheet" href="/assets/curriculum-sidebar.css?v=mrxk4zey" />
     <script>
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", function () {
-          navigator.serviceWorker.register("/sw.js").catch(function () {});
+          navigator.serviceWorker.register("/sw.js").then(function (reg) {
+            reg.update();
+          }).catch(function () {});
+        });
+        var refreshing = false;
+        navigator.serviceWorker.addEventListener("controllerchange", function () {
+          if (!refreshing) {
+            refreshing = true;
+            window.location.reload();
+          }
         });
       }
     </script>
@@ -1295,11 +1307,11 @@
         color: #ffffff;
       }
     </style>
-    <link rel="stylesheet" href="/assets/curriculum-polish.css?v=20260615-polish4" />
-    <link rel="stylesheet" href="/assets/curriculum-top1.css?v=20260713-top1print" />
-    <link rel="stylesheet" href="/assets/curriculum-teacher-workflow.css?v=20260722-livesignal" />
-    <link rel="stylesheet" href="/assets/curriculum-guided-path.css?v=20260722-unitrail" />
-    <link rel="stylesheet" href="/assets/curriculum-studio-journey.css?v=20260722-journey" />
+    <link rel="stylesheet" href="/assets/curriculum-polish.css?v=mrxk4zey" />
+    <link rel="stylesheet" href="/assets/curriculum-top1.css?v=mrxk4zey" />
+    <link rel="stylesheet" href="/assets/curriculum-teacher-workflow.css?v=mrxk4zey" />
+    <link rel="stylesheet" href="/assets/curriculum-guided-path.css?v=mrxk4zey" />
+    <link rel="stylesheet" href="/assets/curriculum-studio-journey.css?v=mrxk4zey" />
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
     <link rel="stylesheet" href="/assets/mobile-access.css" />
     <!-- mobile-access-injected:end -->
@@ -13051,7 +13063,7 @@
         window.scrollTo(0, 0);
       })();
     </script>
-    <script src="/assets/curriculum-progress-bridge.js?v=20260723-syncguard" defer></script>
+    <script src="/assets/curriculum-progress-bridge.js?v=mrxk4zey" defer></script>
     <script>
       window.CURRICULUM_SYNC = {
         // Complete D1 content sync enabled: fetches /api/curriculum/content with static fallback.
@@ -13067,15 +13079,15 @@
          not minisearch.min.js), so browsers ORB-blocked the error page and
          MiniSearch never loaded. Serve it locally like the other vendor libs. -->
     <script src="/assets/vendor/minisearch-7.1.2.min.js" defer></script>
-    <script src="/assets/curriculum-enhancements.js?v=20260723-hubfixes" defer></script>
+    <script src="/assets/curriculum-enhancements.js?v=mrxk4zey" defer></script>
     <script src="/assets/curriculum-audit-badges.js" defer></script>
-    <script src="/assets/curriculum-sidebar.js?v=20260615-sidebar3" defer></script>
-    <script src="/assets/curriculum-top1.js?v=20260713-lessonprint" defer></script>
-    <script src="/assets/curriculum-teacher-planning.js?v=20260715-toolsmenu" defer></script>
-    <script src="/assets/curriculum-live-signal.js?v=20260722-livesignal" defer></script>
-    <script src="/assets/curriculum-teacher-workflow.js?v=20260723-resilience" defer></script>
-    <script src="/assets/curriculum-guided-path.js?v=20260723-guidedcap" defer></script>
-    <script src="/assets/curriculum-studio-journey.js?v=20260722-journey" defer></script>
+    <script src="/assets/curriculum-sidebar.js?v=mrxk4zey" defer></script>
+    <script src="/assets/curriculum-top1.js?v=mrxk4zey" defer></script>
+    <script src="/assets/curriculum-teacher-planning.js?v=mrxk4zey" defer></script>
+    <script src="/assets/curriculum-live-signal.js?v=mrxk4zey" defer></script>
+    <script src="/assets/curriculum-teacher-workflow.js?v=mrxk4zey" defer></script>
+    <script src="/assets/curriculum-guided-path.js?v=mrxk4zey" defer></script>
+    <script src="/assets/curriculum-studio-journey.js?v=mrxk4zey" defer></script>
     <script src="/assets/futures-lab.js?v=20260619" defer></script>
     <script src="/assets/gradebook-embed.js?v=20260624" defer></script>
 

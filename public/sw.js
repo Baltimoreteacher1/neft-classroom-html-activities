@@ -6,7 +6,7 @@
  * Bump CACHE on any deploy that must purge the precached shell.
  * ========================================================================== */
 
-const CACHE = "eduwonderlab-v20260723";
+const CACHE = "eduwonderlab-vmrxk4zey";
 const PRECACHE_URLS = [
   "/curriculum/",
   "/assets/curriculum-enhancements.css",
@@ -73,10 +73,15 @@ self.addEventListener("fetch", (event) => {
   const accept = req.headers.get("accept") || "";
   const isNavigation = req.mode === "navigate" || accept.includes("text/html");
 
-  // HTML / navigations: NETWORK-FIRST. Always fetch the live page so a deploy
-  // appears on the next load with no stale first paint and no double refresh.
-  // Fall back to cache only when the network is unavailable (offline Chromebooks).
-  if (isNavigation) {
+  // HTML / navigations and curriculum assets: NETWORK-FIRST. Always fetch live page
+  // and curriculum assets so a deploy appears immediately on the next load with no
+  // stale first paint or double refresh. Fall back to cache only when offline.
+  const isCurriculumAsset =
+    url.pathname.startsWith("/curriculum") ||
+    url.pathname.startsWith("/assets/curriculum") ||
+    url.pathname.includes("routes.json");
+
+  if (isNavigation || isCurriculumAsset) {
     event.respondWith(
       fetch(req)
         .then((networkResponse) => {
@@ -91,7 +96,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Static assets (versioned CSS/JS/img): stale-while-revalidate for speed.
+  // Other static assets (versioned CSS/JS/img): stale-while-revalidate for speed.
   // A ?v= bump changes the URL, so updated assets are a fresh cache key and
   // fetch immediately; unchanged assets get a cheap background refresh.
   event.respondWith(

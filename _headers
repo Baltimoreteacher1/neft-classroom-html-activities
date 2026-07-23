@@ -47,10 +47,22 @@
 # Curriculum Hub HTML: never reuse a stored document. The hub's lesson menus
 # are assembled from inline page data, so serving fresh HTML is the cache-bust
 # boundary that guarantees newly organized lessons appear on every visit.
+/curriculum
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+  Pragma: no-cache
+  Expires: 0
 /curriculum/
-  Cache-Control: no-store
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+  Pragma: no-cache
+  Expires: 0
 /curriculum/index.html
-  Cache-Control: no-store
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+  Pragma: no-cache
+  Expires: 0
+/curriculum*
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+  Pragma: no-cache
+  Expires: 0
 
 # ACCESS Practice Lab HTML shell: NEVER cache the entry pages, so a deploy is
 # seen immediately (the versioned ?v= app.js/data underneath still cache fine).

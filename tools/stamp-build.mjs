@@ -32,8 +32,42 @@ try {
     appVersion,
     dataModules,
   };
-  writeFileSync(join(dir, "config.json"), JSON.stringify(stamp, null, 2));
-  console.log(`stamp-build: wrote config.json (commit ${stamp.commit.slice(0, 7)})`);
+  // Stamp Service Worker cache key & curriculum assets with build timestamp
+  const buildStamp = process.env.CF_PAGES_COMMIT_SHA || process.env.GITHUB_SHA || Date.now().toString(36);
+  const swCacheName = `eduwonderlab-v${buildStamp.slice(0, 10)}`;
+
+  const swFiles = [
+    join(root, "public", "sw.js"),
+    join(root, "dist", "sw.js"),
+    join(root, "dist", "public", "sw.js"),
+  ];
+
+  for (const swPath of swFiles) {
+    if (existsSync(swPath)) {
+      try {
+        let swContent = readFileSync(swPath, "utf8");
+        swContent = swContent.replace(/const CACHE = "eduwonderlab-v[^"]+";/, `const CACHE = "${swCacheName}";`);
+        writeFileSync(swPath, swContent, "utf8");
+      } catch (e) {}
+    }
+  }
+
+  const currFiles = [
+    join(root, "curriculum", "index.html"),
+    join(root, "dist", "curriculum", "index.html"),
+  ];
+
+  for (const currPath of currFiles) {
+    if (existsSync(currPath)) {
+      try {
+        let currContent = readFileSync(currPath, "utf8");
+        currContent = currContent.replace(/(\/assets\/curriculum-[^"']+\.(?:css|js))\?v=[^"']+/g, `$1?v=${buildStamp.slice(0, 10)}`);
+        writeFileSync(currPath, currContent, "utf8");
+      } catch (e) {}
+    }
+  }
+
+  console.log(`stamp-build: wrote config.json and updated SW cache to ${swCacheName}`);
 } catch (e) {
   console.warn("stamp-build: non-fatal —", e.message);
   process.exit(0);
