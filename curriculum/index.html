@@ -1341,6 +1341,22 @@
       </nav>
     </header>
     <div class="wrap" role="main">
+      <!-- Search & Filtering Toolbar (Lifted out of #hub-side for full visibility) -->
+      <div class="controls" id="hub-content" role="search">
+        <div class="search">
+          <label for="curr-search">Search</label>
+          <input
+            id="curr-search"
+            type="search"
+            placeholder="Filter by lesson, standard, or topic…"
+            aria-label="Filter lessons by title, standard, or topic"
+            autocomplete="off"
+          />
+        </div>
+      </div>
+      <p class="result-count" id="result-count" role="status" aria-live="polite"></p>
+      <p class="no-results" id="no-results" role="status">No lessons match your search.</p>
+
       <div class="hub-side" id="hub-side">
         <header class="hub">
           <p class="eyebrow">Neft Teacher · Grade 6 Math</p>
@@ -1353,21 +1369,6 @@
         </header>
 
         <div data-class-board-strip hidden></div>
-
-        <div class="controls" id="hub-content" role="search">
-          <div class="search">
-            <label for="curr-search">Search</label>
-            <input
-              id="curr-search"
-              type="search"
-              placeholder="Filter by lesson, standard, or topic…"
-              aria-label="Filter lessons by title, standard, or topic"
-              autocomplete="off"
-            />
-          </div>
-        </div>
-        <p class="result-count" id="result-count" role="status" aria-live="polite"></p>
-        <p class="no-results" id="no-results" role="status">No lessons match your search.</p>
 
         <!-- Featured tools: Student Digital Mailbox & Gemini AI Learning Hub -->
         <style>
@@ -1668,7 +1669,150 @@
               style="display: inline-flex; gap: 8px; flex-wrap: wrap"
             ></span>
           </div>
+
+          <!-- Student Mobility — 6-Character Save Code Transfer -->
+          <style>
+            .savecode-strip {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              gap: 12px;
+              flex-wrap: wrap;
+              background: linear-gradient(135deg, #15487f 0%, #205fa6 100%);
+              color: #ffffff;
+              border-radius: 14px;
+              padding: 12px 18px;
+              margin: 0 0 16px;
+              box-shadow: 0 8px 20px rgba(21, 72, 127, 0.2);
+            }
+            .savecode-body {
+              display: flex;
+              align-items: center;
+              gap: 10px;
+              flex-wrap: wrap;
+            }
+            .savecode-badge {
+              font-family: monospace;
+              font-size: 16px;
+              font-weight: 800;
+              letter-spacing: 0.08em;
+              background: rgba(255, 255, 255, 0.18);
+              padding: 4px 10px;
+              border-radius: 8px;
+              border: 1px solid rgba(255, 255, 255, 0.3);
+            }
+            .savecode-actions {
+              display: flex;
+              align-items: center;
+              gap: 8px;
+              flex-wrap: wrap;
+            }
+            .savecode-input {
+              width: 110px;
+              padding: 6px 10px;
+              border-radius: 8px;
+              border: 1px solid rgba(255, 255, 255, 0.4);
+              font-family: monospace;
+              font-weight: 700;
+              font-size: 14px;
+              text-transform: uppercase;
+              text-align: center;
+              background: #ffffff;
+              color: #14223a;
+            }
+            .savecode-btn {
+              padding: 6px 14px;
+              border-radius: 8px;
+              border: none;
+              font-family: "Nunito", system-ui, sans-serif;
+              font-weight: 800;
+              font-size: 13.5px;
+              cursor: pointer;
+              transition: all 0.15s;
+            }
+            .savecode-btn.primary {
+              background: #256b5b;
+              color: #ffffff;
+            }
+            .savecode-btn.primary:hover {
+              background: #2c7d6b;
+            }
+            .savecode-btn.secondary {
+              background: #ffffff;
+              color: #15487f;
+            }
+            .savecode-btn.secondary:hover {
+              background: #eaf0f7;
+            }
+          </style>
+          <div class="savecode-strip" id="savecode-strip" aria-label="Save and Transfer Progress">
+            <div class="savecode-body">
+              <span style="font-size: 1.4rem" aria-hidden="true">🔑</span>
+              <span><strong>Save Code:</strong> <span class="savecode-badge" id="savecode-display">NT-──────</span></span>
+              <span style="font-size: 12.5px; opacity: 0.9;">(Use on any Chromebook to transfer stars &amp; progress)</span>
+            </div>
+            <div class="savecode-actions">
+              <button type="button" class="savecode-btn primary" id="savecode-sync-btn">☁️ Backup</button>
+              <input type="text" class="savecode-input" id="savecode-input" placeholder="NT-XXXXXX" maxlength="9" aria-label="Enter 6-character save code" />
+              <button type="button" class="savecode-btn secondary" id="savecode-restore-btn">Restore</button>
+            </div>
+          </div>
           <script src="/assets/nt-signal.js" defer></script>
+          <script>
+            (function () {
+              function initSaveCodeUI() {
+                var sig = window.NTSignal;
+                if (!sig) return;
+                var disp = document.getElementById("savecode-display");
+                var syncBtn = document.getElementById("savecode-sync-btn");
+                var input = document.getElementById("savecode-input");
+                var restoreBtn = document.getElementById("savecode-restore-btn");
+                if (!disp || !syncBtn || !input || !restoreBtn) return;
+
+                var code = sig.getCode();
+                disp.textContent = code;
+
+                syncBtn.addEventListener("click", function () {
+                  syncBtn.disabled = true;
+                  syncBtn.textContent = "Syncing…";
+                  sig.syncToCloud(code).then(function (res) {
+                    syncBtn.disabled = false;
+                    if (res && res.ok) {
+                      syncBtn.textContent = "Saved! ✓";
+                      setTimeout(function () { syncBtn.textContent = "☁️ Backup"; }, 2500);
+                    } else {
+                      syncBtn.textContent = "Saved locally";
+                      setTimeout(function () { syncBtn.textContent = "☁️ Backup"; }, 2500);
+                    }
+                  });
+                });
+
+                restoreBtn.addEventListener("click", function () {
+                  var val = (input.value || "").trim();
+                  if (!val) return alert("Please enter your 6-character Save Code (e.g. NT-A8B9C1).");
+                  restoreBtn.disabled = true;
+                  restoreBtn.textContent = "Loading…";
+                  sig.restoreFromCloud(val).then(function (res) {
+                    restoreBtn.disabled = false;
+                    restoreBtn.textContent = "Restore";
+                    if (res && res.ok) {
+                      disp.textContent = res.code;
+                      alert("Progress successfully restored from Cloud code " + res.code + "! Refreshing page...");
+                      window.location.reload();
+                    } else {
+                      alert("Could not find progress for code '" + val + "'. Please check the code and try again.");
+                    }
+                  });
+                });
+              }
+
+              if (document.readyState === "loading") {
+                window.addEventListener("DOMContentLoaded", function () { setTimeout(initSaveCodeUI, 50); });
+              } else {
+                setTimeout(initSaveCodeUI, 50);
+              }
+            })();
+          </script>
           <script>
             // "Pick up where you left off" — device-local only (window.NTSignal).
             // Hidden unless this device has lesson signals; no network, no PII.
@@ -12438,16 +12582,12 @@
     <script src="/assets/curriculum-progress-bridge.js" defer></script>
     <script>
       window.CURRICULUM_SYNC = {
-        // Content is served from this page's complete static curriculum (the
-        // source of truth: full unit names, topics, lessons, and resources).
-        // The D1 content API currently holds only a sparse stub (placeholder
-        // unit names, empty blurbs, partial lessons), so hydrating from it
-        // overrode the real content. Keep off until the D1 content is complete.
-        useApiContent: false,
+        // Complete D1 content sync enabled: fetches /api/curriculum/content with static fallback.
+        useApiContent: true,
         apiBase:
           window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
             ? "http://localhost:8787"
-            : "https://neft-school-hub-api.neftjd.workers.dev",
+            : "",
       };
     </script>
     <script src="/assets/curriculum-api-loader.js" defer></script>

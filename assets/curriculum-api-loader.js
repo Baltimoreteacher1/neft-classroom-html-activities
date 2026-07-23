@@ -6,8 +6,9 @@
   "use strict";
 
   var API_BASE =
-    (window.CURRICULUM_SYNC && window.CURRICULUM_SYNC.apiBase) ||
-    "https://neft-school-hub-api.neftjd.workers.dev";
+    window.CURRICULUM_SYNC && typeof window.CURRICULUM_SYNC.apiBase === "string"
+      ? window.CURRICULUM_SYNC.apiBase
+      : "https://neft-school-hub-api.neftjd.workers.dev";
   var TENANT_ID = (window.CURRICULUM_SYNC && window.CURRICULUM_SYNC.tenantId) || "harbor-view";
   var COURSE = (window.CURRICULUM_SYNC && window.CURRICULUM_SYNC.course) || "grade6-math";
   var ENABLED = window.CURRICULUM_SYNC && window.CURRICULUM_SYNC.useApiContent === true;

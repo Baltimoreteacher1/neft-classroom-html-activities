@@ -238,6 +238,89 @@
     }
   }
 
+  var CODE_KEY = "nt-signal:code";
+  var ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // unambiguous: no 0/O/1/I/L
+
+  function generateCode() {
+    var suffix = "";
+    if (typeof crypto !== "undefined" && crypto.getRandomValues) {
+      var bytes = new Uint8Array(6);
+      crypto.getRandomValues(bytes);
+      for (var i = 0; i < bytes.length; i++) suffix += ALPHABET[bytes[i] % ALPHABET.length];
+    } else {
+      for (var j = 0; j < 6; j++) suffix += ALPHABET.charAt(Math.floor(Math.random() * ALPHABET.length));
+    }
+    return "NT-" + suffix;
+  }
+
+  function getCode() {
+    try {
+      var existing = root.localStorage.getItem(CODE_KEY);
+      if (existing && /^NT-[A-Z0-9]{6}$/.test(existing)) return existing;
+      var fresh = generateCode();
+      root.localStorage.setItem(CODE_KEY, fresh);
+      return fresh;
+    } catch (e) {
+      return generateCode();
+    }
+  }
+
+  function setCode(c) {
+    if (typeof c !== "string") return false;
+    var cleaned = c.trim().toUpperCase();
+    if (!/^NT-[A-Z0-9]{6}$/.test(cleaned)) {
+      if (/^[A-Z0-9]{6}$/.test(cleaned)) cleaned = "NT-" + cleaned;
+      else return false;
+    }
+    try {
+      root.localStorage.setItem(CODE_KEY, cleaned);
+    } catch (e) {}
+    return cleaned;
+  }
+
+  function syncToCloud(explicitCode) {
+    var code = explicitCode ? setCode(explicitCode) || getCode() : getCode();
+    var p = profile();
+    return fetch("/api/progress/save", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        saveCode: code,
+        activityId: "nt-signal",
+        activityTitle: "Student Progress Signal",
+        progressPercent: 100,
+        state: p,
+      }),
+    })
+      .then(function (r) {
+        return r.ok ? r.json() : null;
+      })
+      .then(function (res) {
+        return res && res.ok ? { ok: true, code: code, updatedAt: res.updatedAt } : { ok: false, code: code };
+      })
+      .catch(function () {
+        return { ok: false, code: code };
+      });
+  }
+
+  function restoreFromCloud(codeToLoad) {
+    if (!codeToLoad) return Promise.resolve({ ok: false, error: "no-code" });
+    var code = setCode(codeToLoad);
+    if (!code) return Promise.resolve({ ok: false, error: "invalid-code" });
+    return fetch("/api/progress/load?code=" + encodeURIComponent(code))
+      .then(function (r) {
+        return r.ok ? r.json() : null;
+      })
+      .then(function (res) {
+        if (!res || !res.ok || !res.record || !res.record.state) return { ok: false, error: "not-found" };
+        writeStore(res.record.state);
+        return { ok: true, code: code, profile: res.record.state };
+      })
+      .catch(function (err) {
+        return { ok: false, error: String(err) };
+      });
+  }
+
   root.NTSignal = {
     record: record,
     profile: profile,
@@ -246,5 +329,9 @@
     suggestTier: suggestTier,
     setLastLesson: setLastLesson,
     clear: clear,
+    getCode: getCode,
+    setCode: setCode,
+    syncToCloud: syncToCloud,
+    restoreFromCloud: restoreFromCloud,
   };
 })(typeof window !== "undefined" ? window : globalThis);
