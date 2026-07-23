@@ -103,8 +103,58 @@
     return true;
   }
 
+  /* ---- Teacher-mode arrow-key paging ------------------------------------- *
+   * In Teacher Mode, Left/Right arrow keys flip to the previous/next unit —
+   * the curriculum's "pages" in single-unit detail view. It fires a click on
+   * the adjacent rail button, reusing the exact same switch-and-scroll path as
+   * a manual rail click, so it stays correct even after the hub re-renders.
+   * A single document-level listener reads the live DOM on each press (never
+   * closing over a stale shell). Up/Down keep their native scroll; ends clamp
+   * (no wrap). Student mode is untouched.                                     */
+  function isEditableTarget(t) {
+    if (!t || !t.tagName) return false;
+    var tag = t.tagName;
+    if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return true;
+    if (t.isContentEditable) return true;
+    var role = t.getAttribute && t.getAttribute("role");
+    return role === "combobox" || role === "listbox" || role === "textbox";
+  }
+
+  function stepUnit(dir) {
+    var rail = document.querySelector("#interactive-hub .curr-rail");
+    if (!rail) return false;
+    var shell = rail.closest(".curr-shell");
+    // Only page in single-unit detail mode — not while searching/filtering,
+    // when every unit card is shown at once (browse mode).
+    if (shell && !shell.classList.contains("curr-detail-mode")) return false;
+    var items = Array.prototype.slice.call(rail.querySelectorAll(".curr-rail-item"));
+    if (items.length < 2) return false;
+    var cur = rail.querySelector('.curr-rail-item[aria-current="true"]');
+    var i = cur ? items.indexOf(cur) : 0;
+    var next = i + dir;
+    if (next < 0 || next >= items.length) return false; // clamp at the ends
+    items[next].click();
+    return true;
+  }
+
+  function initArrowPaging() {
+    if (window.__currArrowPaging) return;
+    window.__currArrowPaging = true;
+    document.addEventListener("keydown", function (e) {
+      if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+      if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return;
+      if (!document.body.classList.contains("teacher-mode")) return;
+      if (isEditableTarget(e.target)) return;
+      // Don't steal the arrow keys from an open modal/dialog.
+      if (document.querySelector(".modal-overlay.show") || document.querySelector("dialog[open]"))
+        return;
+      if (stepUnit(e.key === "ArrowRight" ? 1 : -1)) e.preventDefault();
+    });
+  }
+
   function boot() {
     tryBuild();
+    initArrowPaging();
     // Keep watching: the hub re-renders (e.g., API → DOM fallback), which would
     // wipe the shell. tryBuild() is idempotent (guarded by dataset.sidebar), so
     // re-running on mutations rebuilds only when a fresh, unwrapped grid appears.
