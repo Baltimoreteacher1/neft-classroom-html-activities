@@ -2312,42 +2312,44 @@ function renderWarmupPhase(el, state, ctx, config) {
   if (!savedAnswers.checked) {
     startWarmupCountdown();
 
-    // Pause/Start + Reset controls so whoever is running the lesson can hold the
-    // warmup timer (e.g. to finish a point) and restart it cleanly. Shown to
-    // everyone — non-destructive and local to this device.
-    const controlBtnCss =
-      "padding:10px 18px; font-size:16px; font-weight:800; color:#0f6d78; background:#ffffff; border:2px solid #0f6d78; border-radius:10px; cursor:pointer;";
+    // Pause/Start + Reset controls so the teacher running the lesson can hold the
+    // warmup timer (e.g. to finish a point) and restart it cleanly. Teacher-Mode
+    // only — non-destructive and local to this device; hidden from students.
+    if (isTeacherMode()) {
+      const controlBtnCss =
+        "padding:10px 18px; font-size:16px; font-weight:800; color:#0f6d78; background:#ffffff; border:2px solid #0f6d78; border-radius:10px; cursor:pointer;";
 
-    const pauseBtn = document.createElement("button");
-    pauseBtn.type = "button";
-    pauseBtn.className = "warmup-timer-pause";
-    pauseBtn.style.cssText = controlBtnCss;
+      const pauseBtn = document.createElement("button");
+      pauseBtn.type = "button";
+      pauseBtn.className = "warmup-timer-pause";
+      pauseBtn.style.cssText = controlBtnCss;
 
-    const resetBtn = document.createElement("button");
-    resetBtn.type = "button";
-    resetBtn.className = "warmup-timer-reset";
-    resetBtn.textContent = "↻ Reset";
-    resetBtn.title = "Restart the warmup timer from the full time";
-    resetBtn.style.cssText = controlBtnCss;
+      const resetBtn = document.createElement("button");
+      resetBtn.type = "button";
+      resetBtn.className = "warmup-timer-reset";
+      resetBtn.textContent = "↻ Reset";
+      resetBtn.title = "Restart the warmup timer from the full time";
+      resetBtn.style.cssText = controlBtnCss;
 
-    // Keep the Pause/Start button label in sync with the timer state.
-    syncWarmupControls = () => {
-      const running = !!warmupTimerId;
-      pauseBtn.textContent = running ? "⏸ Pause" : "▶ Start";
-      pauseBtn.title = running ? "Pause the warmup timer" : "Start the warmup timer";
-      pauseBtn.disabled = warmupSecondsLeft <= 0;
-      pauseBtn.style.opacity = pauseBtn.disabled ? "0.5" : "1";
-      pauseBtn.style.cursor = pauseBtn.disabled ? "default" : "pointer";
-    };
+      // Keep the Pause/Start button label in sync with the timer state.
+      syncWarmupControls = () => {
+        const running = !!warmupTimerId;
+        pauseBtn.textContent = running ? "⏸ Pause" : "▶ Start";
+        pauseBtn.title = running ? "Pause the warmup timer" : "Start the warmup timer";
+        pauseBtn.disabled = warmupSecondsLeft <= 0;
+        pauseBtn.style.opacity = pauseBtn.disabled ? "0.5" : "1";
+        pauseBtn.style.cursor = pauseBtn.disabled ? "default" : "pointer";
+      };
 
-    pauseBtn.addEventListener("click", () => {
-      if (warmupTimerId) pauseWarmupCountdown();
-      else resumeWarmupCountdown();
-    });
-    resetBtn.addEventListener("click", () => resetWarmupCountdown());
+      pauseBtn.addEventListener("click", () => {
+        if (warmupTimerId) pauseWarmupCountdown();
+        else resumeWarmupCountdown();
+      });
+      resetBtn.addEventListener("click", () => resetWarmupCountdown());
 
-    timerBar.append(pauseBtn, resetBtn);
-    syncWarmupControls();
+      timerBar.append(pauseBtn, resetBtn);
+      syncWarmupControls();
+    }
 
     // Adopt the GLOBAL (universal) warmup length. Render started from the local
     // cache for instant paint; if the shared backend returns a different value
