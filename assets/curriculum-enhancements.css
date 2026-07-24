@@ -751,6 +751,16 @@ body.light-theme .lesson-real-world {
   border-color: #2c7d6b;
   color: #176153;
 }
+.lesson-student-launch-copy {
+  color: #176153;
+  border-color: #b7e0d6;
+  background: #f3fbf8;
+}
+.lesson-student-launch-copy:hover,
+.lesson-student-launch-copy:focus-visible {
+  border-color: #2c7d6b;
+  background: #e8f7f4;
+}
 @media print {
   .lesson-copy-link {
     display: none !important;
@@ -809,9 +819,49 @@ body.light-theme .lesson-real-world {
   outline: none;
 }
 
+/* Compact "More" disclosure for SCORM + print chrome on outline rows */
+.lesson-outline-item .outline-more {
+  flex: 0 0 auto;
+  position: relative;
+}
+.lesson-outline-item .outline-more > summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #5a6b82;
+  background: transparent;
+  border: 1px dashed #cdd8e6;
+  border-radius: 8px;
+  user-select: none;
+}
+.lesson-outline-item .outline-more > summary::-webkit-details-marker {
+  display: none;
+}
+.lesson-outline-item .outline-more[open] > summary {
+  color: #176153;
+  border-style: solid;
+  border-color: #2c7d6b;
+}
+.lesson-outline-item .outline-more-body {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  z-index: 5;
+  display: flex;
+  gap: 6px;
+  padding: 6px;
+  background: #fff;
+  border: 1px solid #d8e3f1;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(21, 72, 127, 0.12);
+}
+
 @media print {
   .lesson-print-lesson,
-  .lesson-print-activity {
+  .lesson-print-activity,
+  .lesson-outline-item .outline-more {
     display: none !important;
   }
 }

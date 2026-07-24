@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="Neft Teacher Grade 6 math curriculum hub — every lesson, notes packet, graphic novel, arcade game, culminating project, and test organized by unit."
+      content="Neft Teacher Grade 6 math curriculum hub — 10 units · 74 lessons · 158 pathways (small-group / catch-up / projects). Every lesson, notes packet, graphic novel, arcade game, culminating project, and test organized by unit."
     />
     <title>Curriculum Hub — Neft Teacher Grade 6 Math</title>
     <link rel="canonical" href="https://eduwonderlab.com/curriculum/" />
@@ -20,7 +20,7 @@
     <meta property="og:title" content="Grade 6 Math Curriculum Hub — Neft Teacher" />
     <meta
       property="og:description"
-      content="Every lesson, graphic novel, arcade game, culminating project, notes packet, and test — organized by unit. 10 units · 74 lessons, all in one place."
+      content="Every lesson, graphic novel, arcade game, culminating project, notes packet, and test — organized by unit. 10 units · 74 lessons · 158 pathways (small-group / catch-up / projects)."
     />
     <meta property="og:url" content="https://eduwonderlab.com/curriculum/" />
     <meta property="og:image" content="https://eduwonderlab.com/assets/og-curriculum.png" />
@@ -28,7 +28,7 @@
     <meta property="og:image:height" content="630" />
     <meta
       property="og:image:alt"
-      content="Neft Teacher Grade 6 Math Curriculum Hub — 10 units, 74 lessons"
+      content="Neft Teacher Grade 6 Math Curriculum Hub — 10 units, 74 lessons, 158 pathways"
     />
 
     <!-- Twitter / X card -->
@@ -36,7 +36,7 @@
     <meta name="twitter:title" content="Grade 6 Math Curriculum Hub — Neft Teacher" />
     <meta
       name="twitter:description"
-      content="Every lesson, graphic novel, 3D game, notes packet, and test — organized by unit. 10 units · 74 lessons."
+      content="Every lesson, graphic novel, arcade game, notes packet, and test — organized by unit. 10 units · 74 lessons · 158 pathways (small-group / catch-up / projects)."
     />
     <meta name="twitter:image" content="https://eduwonderlab.com/assets/og-curriculum.png" />
 
@@ -50,7 +50,7 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <link rel="manifest" href="/manifest.webmanifest" />
-    <link rel="stylesheet" href="/assets/curriculum-enhancements.css?v=mryvwzeg" />
+    <link rel="stylesheet" href="/assets/curriculum-enhancements.css?v=20260724qw" />
     <link rel="stylesheet" href="/assets/curriculum-sidebar.css?v=mryvwzeg" />
     <script>
       if ("serviceWorker" in navigator) {
@@ -910,6 +910,49 @@
         border-style: solid;
         border-color: var(--teal);
       }
+      /* Demote SCORM / print chrome behind a compact "More" disclosure */
+      .lesson-outline-item .outline-more {
+        flex: 0 0 auto;
+        position: relative;
+      }
+      .lesson-outline-item .outline-more > summary {
+        list-style: none;
+        cursor: pointer;
+        padding: 6px 10px;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--muted);
+        background: transparent;
+        border: 1px dashed var(--line);
+        border-radius: 8px;
+        user-select: none;
+      }
+      .lesson-outline-item .outline-more > summary::-webkit-details-marker {
+        display: none;
+      }
+      .lesson-outline-item .outline-more[open] > summary {
+        color: var(--teal);
+        border-style: solid;
+        border-color: var(--teal);
+      }
+      .lesson-outline-item .outline-more-body {
+        position: absolute;
+        right: 0;
+        top: calc(100% + 4px);
+        z-index: 5;
+        display: flex;
+        gap: 6px;
+        padding: 6px;
+        background: var(--surface, #fff);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        box-shadow: 0 8px 20px rgba(21, 72, 127, 0.12);
+      }
+      @media print {
+        .lesson-outline-item .outline-more {
+          display: none !important;
+        }
+      }
       .scorm-lesson-btn {
         display: inline-flex;
         align-items: center;
@@ -1414,11 +1457,39 @@
           transform: none;
         }
       }
-      /* Teacher Toolbelt — compact quick-launch grid at top of the curriculum hub */
+      /* Teacher Toolbelt — compact quick-launch grid at top of the curriculum hub.
+         Collapsed by default on ≤768px so Teach / Plan / Explore + search stay
+         above the fold; open by default on wider screens. */
       .teacher-toolbelt {
         max-width: 1180px;
         margin: 18px auto 0;
         padding: 0 20px;
+      }
+      .teacher-toolbelt > summary.ttb-heading {
+        list-style: none;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--teal, #0f6d78);
+        margin: 0 0 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        user-select: none;
+      }
+      .teacher-toolbelt > summary.ttb-heading::-webkit-details-marker {
+        display: none;
+      }
+      .teacher-toolbelt > summary.ttb-heading::after {
+        content: "▸";
+        font-size: 11px;
+        color: #7a8a94;
+        transition: transform 0.15s ease;
+      }
+      .teacher-toolbelt[open] > summary.ttb-heading::after {
+        transform: rotate(90deg);
       }
       .teacher-toolbelt .ttb-heading {
         font-size: 12px;
@@ -1513,11 +1584,12 @@
     </style>
 
     <!-- Teacher Toolbelt: compact quick-launch for teacher tools + classroom experiences.
-         Surfaces the tools that were otherwise buried in the collapsed "More teacher tools"
-         disclosure. Static markup so it renders instantly at the top, above the lesson
-         Command Center (which teacher-workflow.js inserts before .wrap). -->
-    <section class="teacher-toolbelt" aria-labelledby="ttb-heading">
-      <h2 id="ttb-heading" class="ttb-heading">Teacher tools &amp; classroom features</h2>
+         Collapsed by default on narrow screens so daily Teach / Plan / Explore stay
+         above the fold; opens automatically on wider viewports. -->
+    <details class="teacher-toolbelt" id="teacher-toolbelt">
+      <summary id="ttb-heading" class="ttb-heading">
+        Teacher tools &amp; classroom features
+      </summary>
       <div class="ttb-group">
         <p class="ttb-label"><span aria-hidden="true">🧰</span> Teacher Tools</p>
         <div class="ttb-grid">
@@ -1636,7 +1708,20 @@
           >
         </div>
       </div>
-    </section>
+    </details>
+    <script>
+      (function () {
+        var el = document.getElementById("teacher-toolbelt");
+        if (!el || !window.matchMedia) return;
+        var wide = window.matchMedia("(min-width: 769px)");
+        function sync() {
+          el.open = wide.matches;
+        }
+        sync();
+        if (wide.addEventListener) wide.addEventListener("change", sync);
+        else if (wide.addListener) wide.addListener(sync);
+      })();
+    </script>
 
     <div class="wrap" role="main">
       <!-- Search & Filtering Toolbar (Lifted out of #hub-side for full visibility) -->
@@ -1870,16 +1955,16 @@
           <nav class="unit-jump-bar" aria-label="Quick jump to unit">
             <span class="unit-jump-label">Quick Jump:</span>
             <div class="unit-jump-pills">
-              <a href="#unit-1" class="unit-jump-pill">Unit 1 Ratios</a>
+              <a href="#unit-1" class="unit-jump-pill">Unit 1 Number System</a>
               <a href="#unit-2" class="unit-jump-pill">Unit 2 Fractions</a>
-              <a href="#unit-3" class="unit-jump-pill">Unit 3 Negatives</a>
-              <a href="#unit-4" class="unit-jump-pill">Unit 4 Equations</a>
+              <a href="#unit-3" class="unit-jump-pill">Unit 3 Ratios</a>
+              <a href="#unit-4" class="unit-jump-pill">Unit 4 Rates &amp; Percents</a>
               <a href="#unit-5" class="unit-jump-pill">Unit 5 Area</a>
-              <a href="#unit-6" class="unit-jump-pill">Unit 6 Volume</a>
-              <a href="#unit-7" class="unit-jump-pill">Unit 7 Rates II</a>
-              <a href="#unit-8" class="unit-jump-pill">Unit 8 Stats</a>
-              <a href="#unit-9" class="unit-jump-pill">Unit 9 Plane</a>
-              <a href="#unit-10" class="unit-jump-pill">Unit 10 Review</a>
+              <a href="#unit-6" class="unit-jump-pill">Unit 6 Expressions</a>
+              <a href="#unit-7" class="unit-jump-pill">Unit 7 Equations</a>
+              <a href="#unit-8" class="unit-jump-pill">Unit 8 Statistics</a>
+              <a href="#unit-9" class="unit-jump-pill">Unit 9 Integers</a>
+              <a href="#unit-10" class="unit-jump-pill">Unit 10 Volume</a>
             </div>
           </nav>
         </header>
@@ -10005,8 +10090,8 @@
         </div>
       </details>
       <footer class="hub">
-        Neft Teacher · Grade 6 Math · 10 units · 74 lessons (64 core + 10 flagship), plus 158
-        auto-served differentiated pathways (128 small-group, 20 catch-up, 10 unit projects) ·
+        Neft Teacher · Grade 6 Math · 10 units · 74 lessons (64 core + 10 flagship) · 158
+        pathways (128 small-group / 20 catch-up / 10 unit projects) ·
         <a href="/evidence/">Community Math Studio evidence</a>
       </footer>
     </div>
@@ -12974,8 +13059,37 @@
               (head && head.querySelector(".lesson-head")
                 ? head.querySelector(".lesson-head").textContent.replace(/\s+/g, " ").trim()
                 : link.textContent) || "Small Group";
-            link.after(makeScormLink(href, title, "⬇", "scorm-dl"));
+            var moreBody = ensureOutlineMore(link.parentElement);
+            moreBody.appendChild(makeScormLink(href, title, "⬇", "scorm-dl"));
           });
+
+        function ensureOutlineMore(li) {
+          if (!li) return null;
+          var more = li.querySelector(".outline-more");
+          if (!more) {
+            more = document.createElement("details");
+            more.className = "outline-more";
+            var sum = document.createElement("summary");
+            sum.textContent = "More";
+            sum.setAttribute("aria-label", "More actions");
+            var body = document.createElement("div");
+            body.className = "outline-more-body";
+            more.appendChild(sum);
+            more.appendChild(body);
+            li.appendChild(more);
+          }
+          var bodyEl = more.querySelector(".outline-more-body");
+          Array.prototype.slice.call(li.children).forEach(function (node) {
+            if (
+              node.classList &&
+              (node.classList.contains("scorm-dl") ||
+                node.classList.contains("lesson-print-activity"))
+            ) {
+              bodyEl.appendChild(node);
+            }
+          });
+          return bodyEl;
+        }
 
         function makeOutlineItem(act, isProject, scormTitlePrefix) {
           var li = document.createElement("li");
@@ -12991,7 +13105,7 @@
           a.innerHTML = outlineItemIcon(act, isProject) + " " + act.text;
           li.appendChild(a);
           if (canPackageForScorm(act.href)) {
-            li.appendChild(
+            ensureOutlineMore(li).appendChild(
               makeScormLink(
                 act.href,
                 (scormTitlePrefix ? scormTitlePrefix + " — " : "") + act.text,
@@ -13935,7 +14049,7 @@
          not minisearch.min.js), so browsers ORB-blocked the error page and
          MiniSearch never loaded. Serve it locally like the other vendor libs. -->
     <script src="/assets/vendor/minisearch-7.1.2.min.js" defer></script>
-    <script src="/assets/curriculum-enhancements.js?v=mryvwzeg" defer></script>
+    <script src="/assets/curriculum-enhancements.js?v=20260724qw" defer></script>
     <script src="/assets/curriculum-audit-badges.js" defer></script>
     <script src="/assets/curriculum-sidebar.js?v=mryvwzeg" defer></script>
     <script src="/assets/curriculum-top1.js?v=mryvwzeg" defer></script>

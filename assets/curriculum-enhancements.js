@@ -769,10 +769,10 @@
             if (act.isBonus) a.className = "res-bonus";
             a.textContent = act.text;
             li.appendChild(a);
-            // One-click Canvas (SCORM) download — same affordance as the hub
-            // outline (helpers exposed by the hub as window.NeftScorm).
+            // One-click Canvas (SCORM) download — demoted behind "More".
             if (window.NeftScorm && window.NeftScorm.canPackage(act.href)) {
-              li.appendChild(
+              appendOutlineAction(
+                li,
                 window.NeftScorm.makeLink(
                   act.href,
                   (l.title ? l.title + " — " : "") + act.text,
@@ -781,7 +781,7 @@
                 ),
               );
             }
-            // One-click print — same affordance as the hub outline.
+            // One-click print — demoted behind "More" with SCORM.
             if (isPrintableActivity(act.text, act.href)) {
               var printBtn = document.createElement("button");
               printBtn.type = "button";
@@ -798,7 +798,7 @@
                   };
                 })(act.href),
               );
-              li.appendChild(printBtn);
+              appendOutlineAction(li, printBtn);
             } else {
               // Interactive-lesson row → print the full lesson packet.
               var packet = lessonPacketHref(act.href);
@@ -818,7 +818,7 @@
                     };
                   })(packet),
                 );
-                li.appendChild(pktBtn);
+                appendOutlineAction(li, pktBtn);
               }
             }
             outlineList.appendChild(li);
@@ -848,6 +848,57 @@
     var aHref = launch && launch.style.display !== "none" ? launch.getAttribute("href") : "";
     if (aHref && aHref !== "#") qs += "&a=" + encodeURIComponent(aHref);
     return CANONICAL_ORIGIN + "/curriculum/" + qs;
+  }
+
+  // Student-safe launch URL used by /curriculum/student-launch/ — no teacher
+  // workflow / PIN required. Only core + flagship lesson IDs are valid there.
+  function buildStudentLaunchLink(card, unit) {
+    var lessonSelect = card.querySelector(".lesson-select");
+    if (!lessonSelect) return null;
+    var lessonIdx = parseInt(lessonSelect.value, 10) || 0;
+    var lesson = unit.lessons[lessonIdx];
+    if (!lesson || !lesson.lessonId) return null;
+    if (!/^[0-9]{1,2}-[0-9]{1,2}(?:-flagship)?$/i.test(lesson.lessonId)) return null;
+    return (
+      CANONICAL_ORIGIN + "/curriculum/student-launch/?lesson=" + encodeURIComponent(lesson.lessonId)
+    );
+  }
+
+  function ensureOutlineMore(li) {
+    if (!li) return null;
+    var more = li.querySelector(".outline-more");
+    if (!more) {
+      more = document.createElement("details");
+      more.className = "outline-more";
+      var sum = document.createElement("summary");
+      sum.textContent = "More";
+      sum.setAttribute("aria-label", "More actions");
+      var body = document.createElement("div");
+      body.className = "outline-more-body";
+      more.appendChild(sum);
+      more.appendChild(body);
+      li.appendChild(more);
+    }
+    var bodyEl = more.querySelector(".outline-more-body");
+    Array.prototype.slice.call(li.children).forEach(function (node) {
+      if (
+        node.classList &&
+        (node.classList.contains("scorm-dl") || node.classList.contains("lesson-print-activity"))
+      ) {
+        bodyEl.appendChild(node);
+      }
+    });
+    return bodyEl;
+  }
+
+  function appendOutlineAction(li, node) {
+    if (!li || !node) return;
+    ensureOutlineMore(li).appendChild(node);
+  }
+
+  function isCoreLessonRow(l) {
+    if (!l || l.isEndOfUnit) return false;
+    return /^\d+-\d+(-flagship)?$/i.test(l.lessonId || "");
   }
 
   function copyToClipboard(text) {
@@ -985,7 +1036,9 @@
     btn.addEventListener("click", function () {
       printLessonSheet(card, unit);
     });
-    var copy = infoBlock.querySelector(".lesson-copy-link");
+    var copy =
+      infoBlock.querySelector(".lesson-student-launch-copy") ||
+      infoBlock.querySelector(".lesson-copy-link");
     if (copy && copy.parentNode) copy.parentNode.insertBefore(btn, copy.nextSibling);
     else infoBlock.appendChild(btn);
   }
@@ -1024,6 +1077,56 @@
 
     if (launch && launch.parentNode) {
       launch.parentNode.insertBefore(btn, launch.nextSibling);
+    } else {
+      infoBlock.appendChild(btn);
+    }
+  }
+
+  // Surface student-launch copy on the unit lesson card without opening the
+  // teacher workflow / PIN wall. Builds /curriculum/student-launch/?lesson=…
+  function injectStudentLaunchCopy(card, unit) {
+    var infoBlock = card.querySelector(".lesson-info");
+    if (!infoBlock || infoBlock.querySelector(".lesson-student-launch-copy")) return;
+    var after =
+      infoBlock.querySelector(".lesson-copy-link") || infoBlock.querySelector(".btn-launch");
+
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "lesson-copy-link lesson-student-launch-copy";
+    btn.innerHTML = "🎒 Copy student launch";
+    btn.title =
+      "Copy the student-safe launch link (/curriculum/student-launch/) — no teacher PIN needed";
+    btn.addEventListener("click", function () {
+      var link = buildStudentLaunchLink(card, unit);
+      if (!link) {
+        var prevMissing = btn.innerHTML;
+        btn.innerHTML = "Pick a core lesson";
+        setTimeout(function () {
+          btn.innerHTML = prevMissing;
+        }, 1600);
+        return;
+      }
+      copyToClipboard(link).then(
+        function () {
+          var prev = btn.innerHTML;
+          btn.innerHTML = "✓ Student link copied";
+          btn.classList.add("copied");
+          setTimeout(function () {
+            btn.innerHTML = prev;
+            btn.classList.remove("copied");
+          }, 1600);
+        },
+        function () {
+          btn.innerHTML = "Press ⌘/Ctrl+C";
+          setTimeout(function () {
+            btn.innerHTML = "🎒 Copy student launch";
+          }, 2000);
+        },
+      );
+    });
+
+    if (after && after.parentNode) {
+      after.parentNode.insertBefore(btn, after.nextSibling);
     } else {
       infoBlock.appendChild(btn);
     }
@@ -1133,6 +1236,7 @@
       var lessonId = lessonIdFromTitle(lesson.title);
       injectStandardBadge(infoBlock, lesson.lessonId || lessonId);
       injectCopyLink(card, u);
+      injectStudentLaunchCopy(card, u);
       injectPrintLesson(card, u);
       var rw = realWorldMap[lessonId] || realWorldMap[lessonId.replace("-flagship", "")];
       var existingRw = infoBlock.querySelector(".lesson-real-world");
@@ -1203,7 +1307,7 @@
             e.preventDefault();
             printActivity(href);
           });
-          li.appendChild(printBtn);
+          appendOutlineAction(li, printBtn);
         } else {
           // The interactive-lesson row itself is not a "paper" resource, so it
           // never got a print affordance — but a full printable packet exists.
@@ -1225,9 +1329,11 @@
                 };
               })(packet),
             );
-            li.appendChild(pktBtn);
+            appendOutlineAction(li, pktBtn);
           }
         }
+        // Keep any pre-existing SCORM chip tucked behind More too.
+        ensureOutlineMore(li);
       });
 
       card.querySelectorAll(".activity-select").forEach(function (actSelect) {
@@ -1279,25 +1385,42 @@
     var el = document.getElementById("result-count");
     if (!el || !hubApi || !hubApi.unitsData) return;
     var q = (hubApi.searchBox && hubApi.searchBox.value) || "";
-    var total = hubApi.unitsData.reduce(function (n, u) {
-      return n + (u.lessons ? u.lessons.length : 0);
-    }, 0);
+    var coreTotal = 0;
+    var pathwayTotal = 0;
+    hubApi.unitsData.forEach(function (u) {
+      (u.lessons || []).forEach(function (l) {
+        if (isCoreLessonRow(l)) coreTotal++;
+        else pathwayTotal++;
+      });
+    });
+    var total = coreTotal + pathwayTotal;
     if (!q.trim() && activeFilter === FILTER_ALL) {
-      el.textContent = total + " lessons across " + hubApi.unitsData.length + " units";
+      el.textContent =
+        coreTotal + " lessons · " + pathwayTotal + " pathways (small-group / catch-up / projects)";
       return;
     }
     var filtered = filterUnitsData(hubApi.unitsData, q, activeFilter);
-    var shown = filtered.reduce(function (n, u) {
-      return n + (u.lessons ? u.lessons.length : 0);
-    }, 0);
+    var shownCore = 0;
+    var shownPath = 0;
+    filtered.forEach(function (u) {
+      (u.lessons || []).forEach(function (l) {
+        if (isCoreLessonRow(l)) shownCore++;
+        else shownPath++;
+      });
+    });
+    var shown = shownCore + shownPath;
     el.textContent = shown
       ? "Showing " +
-        shown +
-        " of " +
-        total +
+        shownCore +
         " lesson" +
-        (shown === 1 ? "" : "s") +
-        " in " +
+        (shownCore === 1 ? "" : "s") +
+        " · " +
+        shownPath +
+        " pathway" +
+        (shownPath === 1 ? "" : "s") +
+        " (of " +
+        total +
+        ") in " +
         filtered.length +
         " unit" +
         (filtered.length === 1 ? "" : "s")
@@ -2022,19 +2145,23 @@
       var header = document.createElement("div");
       header.id = "hub-print-header";
       var unitCount = (hubApi && hubApi.unitsData && hubApi.unitsData.length) || 0;
-      var lessonCount = (hubApi && hubApi.unitsData ? hubApi.unitsData : []).reduce(function (
-        n,
-        u,
-      ) {
-        return n + (u.lessons ? u.lessons.length : 0);
-      }, 0);
+      var coreCount = 0;
+      var pathwayCount = 0;
+      (hubApi && hubApi.unitsData ? hubApi.unitsData : []).forEach(function (u) {
+        (u.lessons || []).forEach(function (l) {
+          if (isCoreLessonRow(l)) coreCount++;
+          else pathwayCount++;
+        });
+      });
       header.innerHTML =
         "<h2>Grade 6 Math — Curriculum at a Glance</h2>" +
         "<p>Neft Teacher · " +
         unitCount +
         " units · " +
-        lessonCount +
-        " lessons · eduwonderlab.com/curriculum</p>";
+        coreCount +
+        " lessons · " +
+        pathwayCount +
+        " pathways · eduwonderlab.com/curriculum</p>";
       var wrap = document.querySelector(".wrap");
       var firstUnit = document.querySelector("details.unit");
       if (wrap && firstUnit) {
