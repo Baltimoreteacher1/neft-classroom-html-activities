@@ -1935,24 +1935,68 @@ export function observeVocabTerms(container, vocab) {
 // read the formal goals (see renderLaunchPhase ordering). Key vocabulary words
 // named in the objectives are underlined and open a tap-to-view popup with a
 // simple kid-friendly explanation + a visual (see linkifyObjectiveTerms).
-function renderObjectives(el, config) {
+// Two "I can…" goal cards (Content + Language). Each card carries a student
+// self-check checkbox ("Got it") that persists on Launch (phase 0) via the
+// canonical save/resume API, plus a short "Talk about it" discussion prompt so
+// students unpack what the goal means. The checkbox label wraps ONLY the "Got
+// it" text — never the objective sentence — because the objective may contain
+// tappable vocab-term buttons (linkifyObjectiveTerms), and a wrapping <label>
+// would otherwise toggle the checkbox when a student taps a term for its popup.
+function renderObjectives(el, config, state) {
   const vocab = augmentVocabWithGlossary(config.vocabulary);
   const contentHtml = linkifyObjectiveTerms(resolveContentObjective(config), vocab);
   const languageHtml = linkifyObjectiveTerms(resolveLanguageObjective(config), vocab);
+
+  const card = (o) => `
+    <div class="card ${o.cardClass} launch-objective">
+      <div class="launch-objective-head" style="display:flex; align-items:center; justify-content:space-between; gap:var(--sp-2); margin-bottom:var(--sp-2);">
+        <h4 style="color:${o.ink}; margin:0;">${o.label}</h4>
+        <label class="objective-check" style="display:inline-flex; align-items:center; gap:6px; margin:0; font-size:.8rem; font-weight:800; color:${o.ink}; cursor:pointer; white-space:nowrap;">
+          <input type="checkbox" class="objective-check-box" data-obj-key="${o.key}" aria-label="I understand the ${o.label.toLowerCase()}"
+                 style="width:18px; height:18px; accent-color:${o.ink}; cursor:pointer;" />
+          Got it
+        </label>
+      </div>
+      <p style="margin:0; font-weight:600;">${o.text}</p>
+      <div class="objective-discuss" style="margin-top:var(--sp-3); padding-top:var(--sp-2); border-top:1px dashed rgba(0,0,0,0.12);">
+        <span style="display:block; font-size:.82rem; font-weight:800; letter-spacing:.02em; color:${o.ink}; margin-bottom:2px;">💬 Talk about it</span>
+        <span style="font-size:.95rem;">${o.discuss}</span>
+      </div>
+    </div>`;
+
   const block = document.createElement("div");
   block.className = "launch-objectives grid-2";
-  block.innerHTML = `
-    <div class="card card-teal launch-objective">
-      <h4 style="color:var(--teal-ink); margin-bottom:var(--sp-2);">Content Objective</h4>
-      <p style="margin:0; font-weight:600;">${contentHtml}</p>
-    </div>
-    <div class="card card-coral launch-objective">
-      <h4 style="color:var(--coral); margin-bottom:var(--sp-2);">Language Objective</h4>
-      <p style="margin:0; font-weight:600;">${languageHtml}</p>
-    </div>
-  `;
+  block.innerHTML =
+    card({
+      cardClass: "card-teal",
+      ink: "var(--teal-ink)",
+      label: "Content Objective",
+      key: "content",
+      text: contentHtml,
+      discuss:
+        "In your own words, what will you be able to do by the end of this lesson? Give one example.",
+    }) +
+    card({
+      cardClass: "card-coral",
+      ink: "var(--coral)",
+      label: "Language Objective",
+      key: "language",
+      text: languageHtml,
+      discuss:
+        "Which math words in this goal are new to you? How would you explain this goal to a partner?",
+    });
   el.append(block);
   wireObjectiveTermPopups(block, vocab);
+
+  // Persist each self-check on Launch (phase 0) so it survives reload, exactly
+  // like every other lesson input. No-op when state is unavailable.
+  block.querySelectorAll(".objective-check-box").forEach((box) => {
+    const key = `objective_understood_${box.dataset.objKey}`;
+    if (state && state.getResponse && state.getResponse(0, key) === "1") box.checked = true;
+    box.addEventListener("change", () => {
+      if (state && state.saveResponse) state.saveResponse(0, key, box.checked ? "1" : "0");
+    });
+  });
 }
 
 // Be-Curious ESOL support: academic vocabulary + sentence phrases tied to the
@@ -2617,7 +2661,7 @@ function renderObjectivesIntroPhase(el, state, ctx, config) {
     </p>
   `;
 
-  renderObjectives(card, config);
+  renderObjectives(card, config, state);
 
   const nextBtn = document.createElement("button");
   nextBtn.type = "button";
@@ -4153,7 +4197,7 @@ function renderObjectivesReviewPhase(el, state, ctx, config) {
     </p>
   `;
 
-  renderObjectives(card, config);
+  renderObjectives(card, config, state);
 
   const checkWrap = document.createElement("div");
   checkWrap.style.cssText =

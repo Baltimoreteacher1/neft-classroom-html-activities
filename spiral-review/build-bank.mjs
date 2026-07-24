@@ -73,6 +73,48 @@ function makeId(lessonId, tier, n) {
   return `${lessonId}::${tier}::${n}`;
 }
 
+/* ── deterministic answer-position shuffle ───────────────────────────── */
+// Lesson-config practice always lists the correct answer first, so a raw copy
+// makes the correct answer choice #1 in almost every warm-up item. Shuffle the
+// choices with a seeded PRNG (seeded by the item id) so the correct answer is
+// distributed across positions — deterministic, so rebuilds stay stable.
+function seedFromString(str) {
+  let h = 2166136261 >>> 0; // FNV-1a
+  for (let i = 0; i < str.length; i += 1) {
+    h ^= str.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
+function mulberry32(seed) {
+  let a = seed >>> 0;
+  return function next() {
+    a |= 0;
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+// Returns { choices, correctIndex } with choices reordered (seeded Fisher-Yates)
+// and correctIndex tracked to the correct choice's new position.
+function shuffleChoices(choices, correctIndex, seed) {
+  const rng = mulberry32(seedFromString(seed));
+  const order = choices.map((_, i) => i);
+  for (let i = order.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(rng() * (i + 1));
+    const tmp = order[i];
+    order[i] = order[j];
+    order[j] = tmp;
+  }
+  return {
+    choices: order.map((i) => choices[i]),
+    correctIndex: order.indexOf(correctIndex),
+  };
+}
+
 /* ── vocab-check generation (vocab -> multiple-choice) ───────────────── */
 
 // From an "examples" list ({ text, isExample, why }) build a "which is X"
@@ -170,8 +212,10 @@ function build() {
           const stemKey = `${lessonId}|${q.stem.trim().toLowerCase()}`;
           if (seenStems.has(stemKey)) continue;
           seenStems.add(stemKey);
+          const id = makeId(lessonId, tier, n);
+          const shuffled = shuffleChoices(q.choices.slice(), q.correctIndex, id);
           questions.push({
-            id: makeId(lessonId, tier, n),
+            id,
             unit,
             lessonId,
             standard,
@@ -180,8 +224,8 @@ function build() {
             source: "practice",
             type: "multiple-choice",
             stem: q.stem,
-            choices: q.choices.slice(),
-            correctIndex: q.correctIndex,
+            choices: shuffled.choices,
+            correctIndex: shuffled.correctIndex,
             explanation: typeof q.explanation === "string" ? q.explanation : "",
           });
           n += 1;
