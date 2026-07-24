@@ -2066,35 +2066,85 @@ function renderNoticeWonderSupport(host, support, config, fieldRoot = host) {
   });
 }
 
-// Teacher-configurable warmup countdown length, in seconds. Stored per-device
-// in localStorage so a teacher can set the time allowed once and it applies to
-// every interactive lesson's Phase 1 Warmup. Editable only in Teacher Mode —
-// students never see the control and always inherit whatever the teacher set.
+// Teacher-configurable warmup countdown length, in seconds. The value is a
+// GLOBAL setting served by /api/settings/warmup (D1-backed): whatever a teacher
+// sets applies universally — every student and every teacher device renders the
+// same countdown on the interactive-lesson Phase 1 Warmup. localStorage mirrors
+// the last-known value so the timer renders instantly and still works offline
+// or when the shared backend is unavailable. Editing is Teacher-Mode only.
 const WARMUP_TIME_KEY = "nt-warmup-seconds";
 const WARMUP_TIME_DEFAULT = 180;
 const WARMUP_TIME_MIN = 15;
 const WARMUP_TIME_MAX = 3600;
+const WARMUP_SETTINGS_URL = "/api/settings/warmup";
 
+function clampWarmupSeconds(n) {
+  const v = Math.round(Number(n));
+  if (!Number.isFinite(v)) return null;
+  return Math.min(WARMUP_TIME_MAX, Math.max(WARMUP_TIME_MIN, v));
+}
+
+// The locally cached value (last global value we saw), used for instant render.
 function getWarmupSeconds() {
   try {
-    const raw = parseInt(localStorage.getItem(WARMUP_TIME_KEY), 10);
-    if (Number.isFinite(raw)) {
-      return Math.min(WARMUP_TIME_MAX, Math.max(WARMUP_TIME_MIN, raw));
-    }
+    const raw = clampWarmupSeconds(localStorage.getItem(WARMUP_TIME_KEY));
+    if (raw != null) return raw;
   } catch {
     /* localStorage unavailable — fall through to the default */
   }
   return WARMUP_TIME_DEFAULT;
 }
 
+// Write the local cache only (does not touch the shared backend).
 function setWarmupSeconds(seconds) {
-  const clamped = Math.min(WARMUP_TIME_MAX, Math.max(WARMUP_TIME_MIN, Math.round(seconds)));
+  const clamped = clampWarmupSeconds(seconds) ?? WARMUP_TIME_DEFAULT;
   try {
     localStorage.setItem(WARMUP_TIME_KEY, String(clamped));
   } catch {
     /* localStorage unavailable — nothing to persist */
   }
   return clamped;
+}
+
+// Read the GLOBAL warmup length from the shared backend and refresh the local
+// cache. Returns the clamped seconds, or null if the backend is unavailable.
+async function fetchGlobalWarmupSeconds() {
+  try {
+    const r = await fetch(WARMUP_SETTINGS_URL, { cache: "no-store" });
+    if (!r.ok) return null;
+    const j = await r.json();
+    const s = clampWarmupSeconds(j && j.seconds);
+    if (s == null) return null;
+    setWarmupSeconds(s); // mirror into the local cache for the next render
+    return s;
+  } catch {
+    return null;
+  }
+}
+
+// Persist the warmup length GLOBALLY (all devices). Requires the teacher key,
+// reusing the same `neft.teacher.key` / x-teacher-key mechanism as the other
+// teacher tools. Returns one of: "ok" | "need-key" | "unauthorized" | "error".
+async function saveGlobalWarmupSeconds(seconds) {
+  let key = "";
+  try {
+    key = (localStorage.getItem("neft.teacher.key") || "").trim();
+  } catch {
+    /* ignore */
+  }
+  if (!key) return "need-key";
+  try {
+    const r = await fetch(WARMUP_SETTINGS_URL, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", "x-teacher-key": key },
+      body: JSON.stringify({ seconds }),
+    });
+    if (r.ok) return "ok";
+    if (r.status === 401) return "unauthorized";
+    return "error";
+  } catch {
+    return "error";
+  }
 }
 
 function fmtWarmupClock(seconds) {
@@ -2154,7 +2204,8 @@ function renderWarmupPhase(el, state, ctx, config) {
   else card.prepend(timerBar);
 
   let warmupTimerId = null;
-  let warmupSecondsLeft = getWarmupSeconds();
+  const initialLocalSeconds = getWarmupSeconds();
+  let warmupSecondsLeft = initialLocalSeconds;
   const timerDisplay = timerBar.querySelector("#warmupTimerDisplay");
   const timerLabel = timerBar.querySelector(".warmup-timer-label");
 
@@ -2196,24 +2247,82 @@ function renderWarmupPhase(el, state, ctx, config) {
     }, 1000);
   }
 
+  // Small transient confirmation shown inside the timer bar (its own line).
+  function flashTimerNote(msg, ok = true) {
+    let note = timerBar.querySelector(".warmup-timer-note");
+    if (!note) {
+      note = document.createElement("span");
+      note.className = "warmup-timer-note";
+      note.style.cssText = "width:100%; text-align:center; font-size:14px; font-weight:800;";
+      timerBar.append(note);
+    }
+    note.style.color = ok ? "#15803d" : "#b45309";
+    note.textContent = msg;
+    clearTimeout(note._t);
+    note._t = setTimeout(() => note.remove(), 3200);
+  }
+
   if (!savedAnswers.checked) {
     startWarmupCountdown();
 
-    // Teacher-only: change the time allowed. Persists per-device (localStorage)
-    // and immediately restarts the countdown with the new duration so every
-    // future warmup on this device uses it too. Hidden from students.
+    // Adopt the GLOBAL (universal) warmup length. Render started from the local
+    // cache for instant paint; if the shared backend returns a different value
+    // and the student hasn't started working yet (countdown still essentially
+    // full), switch to it so every device shows the same teacher-set time.
+    fetchGlobalWarmupSeconds().then((g) => {
+      if (g == null || savedAnswers.checked) return;
+      const elapsed = initialLocalSeconds - warmupSecondsLeft;
+      if (g !== warmupSecondsLeft && elapsed <= 3) {
+        warmupSecondsLeft = g;
+        startWarmupCountdown();
+      }
+    });
+
+    // Teacher-only: change the time allowed for EVERYONE. Saves globally via
+    // /api/settings/warmup (teacher key) so every student and teacher device
+    // inherits it; the local cache + countdown update immediately for instant
+    // feedback. Hidden from students.
     if (isTeacherMode()) {
       const editBtn = document.createElement("button");
       editBtn.type = "button";
       editBtn.className = "warmup-timer-edit";
-      editBtn.title = "Teacher: set the warmup time allowed";
+      editBtn.title = "Teacher: set the warmup time allowed (applies to all devices)";
       editBtn.textContent = "✏️ Set time";
       editBtn.style.cssText =
         "margin-left:8px; padding:10px 18px; font-size:16px; font-weight:800; color:#0f6d78; background:#ffffff; border:2px solid #0f6d78; border-radius:10px; cursor:pointer;";
+
+      async function pushGlobal(seconds) {
+        let result = await saveGlobalWarmupSeconds(seconds);
+        if (result === "need-key" || result === "unauthorized") {
+          let existing = "";
+          try {
+            existing = localStorage.getItem("neft.teacher.key") || "";
+          } catch {
+            /* ignore */
+          }
+          const key = window.prompt(
+            "Enter your teacher key to apply this time to ALL devices (saved for next time):",
+            existing,
+          );
+          if (key && key.trim()) {
+            try {
+              localStorage.setItem("neft.teacher.key", key.trim());
+            } catch {
+              /* ignore */
+            }
+            result = await saveGlobalWarmupSeconds(seconds);
+          }
+        }
+        if (result === "ok") flashTimerNote("✓ Applied to all devices", true);
+        else if (result === "unauthorized")
+          flashTimerNote("Saved here only — teacher key not accepted", false);
+        else flashTimerNote("Saved on this device only", false);
+      }
+
       editBtn.addEventListener("click", () => {
         const currentMin = Math.round((getWarmupSeconds() / 60) * 10) / 10;
         const answer = window.prompt(
-          "Warmup time allowed, in minutes.\nApplies to every interactive lesson on this device.",
+          "Warmup time allowed, in minutes.\nApplies to ALL devices — you and every other teacher.",
           String(currentMin),
         );
         if (answer == null) return;
@@ -2222,8 +2331,10 @@ function renderWarmupPhase(el, state, ctx, config) {
           window.alert("Please enter a number of minutes greater than 0 (e.g. 3 or 1.5).");
           return;
         }
-        warmupSecondsLeft = setWarmupSeconds(mins * 60);
+        const seconds = setWarmupSeconds(mins * 60);
+        warmupSecondsLeft = seconds;
         startWarmupCountdown();
+        pushGlobal(seconds);
       });
       timerBar.append(editBtn);
     }

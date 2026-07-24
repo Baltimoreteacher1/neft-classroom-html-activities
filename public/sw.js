@@ -6,7 +6,7 @@
  * Bump CACHE on any deploy that must purge the precached shell.
  * ========================================================================== */
 
-const CACHE = "eduwonderlab-vmry4iao0";
+const CACHE = "eduwonderlab-vmry6mldn";
 const PRECACHE_URLS = [
   "/curriculum/",
   "/assets/curriculum-enhancements.css",
@@ -60,8 +60,8 @@ self.addEventListener("activate", (event) => {
       .then(() => self.clients.claim())
       .then(() => {
         // Broadcast update to all open tabs
-        self.clients.matchAll({ type: 'window' }).then(clients => {
-          clients.forEach(client => client.postMessage({ type: 'SW_UPDATED', cache: CACHE }));
+        self.clients.matchAll({ type: "window" }).then((clients) => {
+          clients.forEach((client) => client.postMessage({ type: "SW_UPDATED", cache: CACHE }));
         });
       }),
   );
@@ -75,6 +75,11 @@ self.addEventListener("fetch", (event) => {
 
   // Skip cross-origin or API POST requests from cache forcing
   if (url.origin !== self.location.origin) return;
+
+  // API calls are dynamic and must never be served stale from cache — a
+  // teacher-set warmup time, roster, or progress read has to be live. Let them
+  // go straight to the network (the SW does not intercept them).
+  if (url.pathname.startsWith("/api/")) return;
 
   const accept = req.headers.get("accept") || "";
   const isNavigation = req.mode === "navigate" || accept.includes("text/html");
