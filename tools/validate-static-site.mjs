@@ -11,7 +11,7 @@ const requiredFiles = [
   "robots.txt",
   "sitemap.xml",
   "teacher-tools/index.html",
-  "teacher-tools/tools.css",
+  "assets/tools.css",
   "teacher-tools/tools.js",
   "teacher-tools/neftos-command-center/index.html",
   "teacher-tools/neftos-command-center/app.js",

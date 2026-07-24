@@ -282,7 +282,7 @@ complete: {
 
 ## Preserved contracts (do not rename)
 
-The Neft results pipeline (`/teacher-tools/nt-results.js`, loaded at the bottom
+The Neft results pipeline (`/assets/nt-results.js`, loaded at the bottom
 of every file) scores by reading the rendered DOM. The engine guarantees:
 
 - every math group is `.choices` with `.choice` buttons; the solved correct one

@@ -72,7 +72,7 @@ localStorage dashboard is untouched. Data Studio is the richer second reader lat
 ### A. Copy-paste snippet (any activity)
 
 ```html
-<!-- after /teacher-tools/nt-results.js -->
+<!-- after /assets/nt-results.js -->
 <script>
   window.NT_SYNC = {
     endpoint: "https://neft-results.<acct>.workers.dev",

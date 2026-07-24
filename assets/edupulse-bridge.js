@@ -6,7 +6,7 @@
  *      Cloudflare Worker at EDUPULSE_CONFIG.apiBase, header x-ingest-key).
  *   2. Auto-wraps the two shared assessment kits so any activity built on either
  *      reports a gradebook event with NO per-activity scoring changes:
- *        - window.NTResults.finish()  (teacher-tools/nt-results.js)
+ *        - window.NTResults.finish()  (assets/nt-results.js)
  *        - window.NTKit.grade()       (assets/nt-activity-kit.js)
  *   3. Exposes window.EduPulse.{identify,record} so bespoke (non-kit) games and
  *      quizzes can opt in with a single line on their final-score event.

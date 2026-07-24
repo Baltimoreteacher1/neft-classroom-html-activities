@@ -16,7 +16,7 @@ import sys, re, pathlib, argparse
 HERE = pathlib.Path(__file__).resolve().parent
 
 TRACKER = """
-  <script src="/teacher-tools/nt-results.js"></script>
+  <script src="/assets/nt-results.js"></script>
   <script>
   /* Graphic-novel completion tracking -> NTResults (Neft Teacher). Unchanged. */
   (function () {
