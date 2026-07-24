@@ -50,8 +50,8 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <link rel="manifest" href="/manifest.webmanifest" />
-    <link rel="stylesheet" href="/assets/curriculum-enhancements.css?v=mry4iao0" />
-    <link rel="stylesheet" href="/assets/curriculum-sidebar.css?v=mry4iao0" />
+    <link rel="stylesheet" href="/assets/curriculum-enhancements.css?v=mryvwzeg" />
+    <link rel="stylesheet" href="/assets/curriculum-sidebar.css?v=mryvwzeg" />
     <script>
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", function () {
@@ -1310,11 +1310,11 @@
         color: #ffffff;
       }
     </style>
-    <link rel="stylesheet" href="/assets/curriculum-polish.css?v=mry4iao0" />
-    <link rel="stylesheet" href="/assets/curriculum-top1.css?v=mry4iao0" />
-    <link rel="stylesheet" href="/assets/curriculum-teacher-workflow.css?v=mry4iao0" />
-    <link rel="stylesheet" href="/assets/curriculum-guided-path.css?v=mry4iao0" />
-    <link rel="stylesheet" href="/assets/curriculum-studio-journey.css?v=mry4iao0" />
+    <link rel="stylesheet" href="/assets/curriculum-polish.css?v=mryvwzeg" />
+    <link rel="stylesheet" href="/assets/curriculum-top1.css?v=mryvwzeg" />
+    <link rel="stylesheet" href="/assets/curriculum-teacher-workflow.css?v=mryvwzeg" />
+    <link rel="stylesheet" href="/assets/curriculum-guided-path.css?v=mryvwzeg" />
+    <link rel="stylesheet" href="/assets/curriculum-studio-journey.css?v=mryvwzeg" />
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
     <link rel="stylesheet" href="/assets/mobile-access.css" />
     <!-- mobile-access-injected:end -->
@@ -2686,6 +2686,549 @@
               </div>
             </div>
           </section>
+
+          <!-- Pacing & Scope Map (#2) + Close the Loop (#4): additive teacher
+               cards. Both re-scrape the static units DOM (details.unit) on open,
+               so they stay decoupled from the hub's own render/load order. -->
+          <style>
+            .pacing-feature .mf-icon {
+              background: linear-gradient(135deg, #4f46e5, #3730a3);
+              color: #fff;
+            }
+            .pacing-feature .mf-tag {
+              color: #4f46e5;
+              background: rgba(79, 70, 229, 0.12);
+            }
+            .loop-feature .mf-icon {
+              background: linear-gradient(135deg, #0e9f6e, #046c4e);
+              color: #fff;
+            }
+            .loop-feature .mf-tag {
+              color: #0e9f6e;
+              background: rgba(14, 159, 110, 0.12);
+            }
+            .mf-btn.ghost {
+              background: transparent;
+              border: 1px solid currentColor;
+            }
+            .mf-panel {
+              margin-top: 14px;
+              padding-top: 14px;
+              border-top: 1px solid rgba(0, 0, 0, 0.08);
+            }
+            .mf-empty {
+              color: #556;
+              font-style: italic;
+              margin: 4px 0 10px;
+            }
+            .pace-summary {
+              margin: 0 0 10px;
+              line-height: 1.5;
+            }
+            .pace-note {
+              color: #667;
+              font-size: 0.85rem;
+            }
+            .pace-units {
+              display: flex;
+              flex-direction: column;
+              gap: 6px;
+            }
+            .pace-unit > summary {
+              cursor: pointer;
+              list-style: none;
+              display: flex;
+              flex-wrap: wrap;
+              align-items: baseline;
+              gap: 8px;
+              padding: 8px 10px;
+              border-radius: 8px;
+              background: rgba(79, 70, 229, 0.06);
+            }
+            .pace-unit > summary::-webkit-details-marker {
+              display: none;
+            }
+            .pace-wk {
+              font-weight: 700;
+              color: #4f46e5;
+              min-width: 92px;
+            }
+            .pace-unum {
+              font-weight: 700;
+            }
+            .pace-uname {
+              flex: 1 1 40%;
+            }
+            .pace-count {
+              color: #667;
+              font-size: 0.85rem;
+            }
+            .pace-list {
+              margin: 6px 0 4px;
+              padding: 0 0 0 4px;
+              list-style: none;
+              display: flex;
+              flex-direction: column;
+              gap: 4px;
+            }
+            .pace-list li {
+              display: flex;
+              flex-wrap: wrap;
+              align-items: baseline;
+              gap: 8px;
+              padding: 4px 8px;
+              border-left: 3px solid rgba(79, 70, 229, 0.25);
+            }
+            .pace-day {
+              color: #889;
+              font-size: 0.8rem;
+              min-width: 54px;
+            }
+            .pace-std {
+              font-size: 0.75rem;
+              font-weight: 700;
+              color: #3730a3;
+              background: rgba(79, 70, 229, 0.12);
+              padding: 1px 6px;
+              border-radius: 999px;
+            }
+            .pace-obj {
+              flex-basis: 100%;
+              color: #667;
+              font-size: 0.85rem;
+              padding-left: 62px;
+            }
+            .loop-lead {
+              margin: 0 0 10px;
+            }
+            .loop-rows {
+              display: flex;
+              flex-direction: column;
+              gap: 8px;
+            }
+            .loop-row {
+              display: grid;
+              grid-template-columns: minmax(140px, 1fr) auto minmax(160px, 2fr);
+              align-items: center;
+              gap: 10px;
+              padding: 10px 12px;
+              border-radius: 10px;
+              background: rgba(14, 159, 110, 0.05);
+              border-left: 4px solid #0e9f6e;
+            }
+            .loop-row.is-low {
+              border-left-color: #dc2626;
+              background: rgba(220, 38, 38, 0.05);
+            }
+            .loop-row.is-mid {
+              border-left-color: #d97706;
+              background: rgba(217, 119, 6, 0.05);
+            }
+            .loop-std {
+              font-weight: 700;
+              display: block;
+            }
+            .loop-label {
+              font-size: 0.78rem;
+              color: #556;
+            }
+            .loop-rate {
+              font-size: 0.85rem;
+              color: #556;
+            }
+            .loop-rate em {
+              font-style: normal;
+              color: #889;
+            }
+            .loop-arrow {
+              font-size: 1.2rem;
+              color: #0e9f6e;
+            }
+            .loop-none {
+              color: #889;
+              font-style: italic;
+            }
+            .loop-more,
+            .loop-find {
+              font-size: 0.82rem;
+            }
+            @media (max-width: 560px) {
+              .loop-row {
+                grid-template-columns: 1fr;
+              }
+              .loop-arrow {
+                display: none;
+              }
+            }
+          </style>
+          <section
+            class="mailbox-feature pacing-feature hub-teacher-only"
+            data-category="teacher"
+            aria-labelledby="pacing-feature-title"
+          >
+            <span class="mf-icon" aria-hidden="true">📅</span>
+            <div class="mf-body">
+              <span class="mf-tag">Teacher Tool</span>
+              <h2 id="pacing-feature-title">Pacing &amp; Scope Map</h2>
+              <p class="mf-sub">
+                The whole year at a glance — every unit, lesson, and standard on one pacing
+                timeline.
+              </p>
+              <p class="mf-text">
+                Builds a scope &amp; sequence straight from the live curriculum: units in order, one
+                instructional day per lesson plus an end-of-unit day, mapped to school weeks and
+                checked against a typical 36-week year. Expand any unit to see its lessons,
+                standards, and objectives in sequence.
+              </p>
+              <div class="mf-actions">
+                <button
+                  type="button"
+                  class="mf-btn ghost"
+                  id="pace-toggle"
+                  aria-expanded="false"
+                  aria-controls="pace-panel"
+                  data-open="Open pacing map"
+                  data-close="Hide pacing map"
+                >
+                  Open pacing map
+                </button>
+              </div>
+              <div
+                class="mf-panel"
+                id="pace-panel"
+                role="region"
+                aria-labelledby="pacing-feature-title"
+                hidden
+              ></div>
+            </div>
+          </section>
+
+          <section
+            class="mailbox-feature loop-feature hub-teacher-only"
+            data-category="teacher"
+            aria-labelledby="loop-feature-title"
+          >
+            <span class="mf-icon" aria-hidden="true">🔁</span>
+            <div class="mf-body">
+              <span class="mf-tag">Teacher Tool</span>
+              <h2 id="loop-feature-title">Close the Loop</h2>
+              <p class="mf-sub">
+                Turn class learning signals into the exact next lesson to reteach.
+              </p>
+              <p class="mf-text">
+                Reads the same on-device learning signal that powers Insight Brief, ranks the
+                weakest standards by mastery, then maps each one straight to the lesson that teaches
+                it — one click to reteach, one click to every resource. Insight → coverage → next
+                lesson, in a single view.
+              </p>
+              <div class="mf-actions">
+                <button
+                  type="button"
+                  class="mf-btn ghost"
+                  id="loop-toggle"
+                  aria-expanded="false"
+                  aria-controls="loop-panel"
+                  data-open="Show what to reteach"
+                  data-close="Hide"
+                >
+                  Show what to reteach
+                </button>
+              </div>
+              <div
+                class="mf-panel"
+                id="loop-panel"
+                role="region"
+                aria-labelledby="loop-feature-title"
+                hidden
+              ></div>
+            </div>
+          </section>
+
+          <script>
+            // Pacing & Scope Map (#2) + Close the Loop (#4). Self-contained,
+            // ES5, no build step: both read the static curriculum DOM and the
+            // per-device NTSignal store already loaded on this page.
+            (function () {
+              function ready(fn) {
+                if (document.readyState !== "loading") fn();
+                else document.addEventListener("DOMContentLoaded", fn);
+              }
+              function esc(s) {
+                return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) {
+                  return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+                });
+              }
+              function stdFromSearch(ds) {
+                var s = String(ds || "");
+                var m = s.match(/6\.[a-z]{1,4}\.[0-9]+[a-z]?/i) || s.match(/6\.[a-z]{1,4}/i);
+                return m ? m[0].toUpperCase() : "";
+              }
+              // Canonical standard→asset map (same source Resource Finder
+              // uses). Keyed by the curriculum's own MCCRS codes, which is
+              // what NTSignal records — so loop coverage matches real signals
+              // (the DOM's data-search carries CCSS aliases and can't be
+              // trusted for this). Loaded once, degrades gracefully offline.
+              var _mapPromise = null;
+              function loadMap() {
+                if (_mapPromise) return _mapPromise;
+                _mapPromise = fetch("/data/asset-concept-map.json", {
+                  credentials: "same-origin",
+                })
+                  .then(function (r) {
+                    return r.ok ? r.json() : null;
+                  })
+                  .then(function (j) {
+                    var byStd = {};
+                    var lessonStd = {};
+                    var bs = (j && j.byStandard) || {};
+                    Object.keys(bs).forEach(function (code) {
+                      var e = bs[code];
+                      byStd[String(code).toUpperCase()] = e;
+                      (e.assets || []).forEach(function (a) {
+                        if (a.category === "Lesson" && a.path && !lessonStd[a.path]) {
+                          lessonStd[a.path] = { standard: e.standard, label: e.label || "" };
+                        }
+                      });
+                    });
+                    return { byStd: byStd, lessonStd: lessonStd, ok: !!j };
+                  })
+                  .catch(function () {
+                    return { byStd: {}, lessonStd: {}, ok: false };
+                  });
+                return _mapPromise;
+              }
+
+              // Build the core lesson spine once, from the hub's canonical
+              // scrape (window.NTHubUnits) — the static details.unit DOM is
+              // consumed by the hub render, so we reuse its result rather than
+              // re-scraping. Dedupes base/flagship, keeps only real lesson
+              // slots (/lessons/<n>-<n>/), skips End-of-Unit + variant rows.
+              var _spine = null;
+              function spine() {
+                if (_spine) return _spine;
+                var src = window.NTHubUnits || [];
+                var units = [];
+                src.forEach(function (u) {
+                  var seen = {};
+                  var lessons = [];
+                  (u.lessons || []).forEach(function (l) {
+                    if (l.isEndOfUnit) return;
+                    var id = String(l.lessonId || "");
+                    var base = id.replace(/-(?:group[12]|flagship)$/i, "");
+                    if (!/^\d+-\d+$/.test(base) || seen[base]) return;
+                    var ds = String(l.dataSearch || "");
+                    if (/\b(small group|catch-?up|reteach|intervention)\b/i.test(ds)) return;
+                    seen[base] = 1;
+                    lessons.push({
+                      id: base,
+                      href: "/lessons/" + base + "/",
+                      title: (l.title || "Lesson " + base).replace(/\s+/g, " ").trim(),
+                      obj: (l.objective || "").replace(/\s+/g, " ").trim(),
+                      standard: stdFromSearch(ds),
+                    });
+                  });
+                  if (lessons.length)
+                    units.push({ num: u.num || "", name: u.name || "", lessons: lessons });
+                });
+                _spine = units;
+                return units;
+              }
+
+              function renderPacing(host) {
+                var units = spine();
+                if (!units.length) {
+                  host.innerHTML =
+                    '<p class="mf-empty">Curriculum data is not available on this page.</p>';
+                  return;
+                }
+                host.innerHTML = '<p class="mf-empty">Building the pacing map…</p>';
+                loadMap().then(function (m) {
+                  // Prefer the canonical standard for this lesson path; fall
+                  // back to the code scraped from the hub (CCSS alias) offline.
+                  function stdFor(l) {
+                    var c = m.lessonStd[l.href];
+                    return (c && c.standard) || l.standard || "";
+                  }
+                  var DPW = 5;
+                  var day = 0;
+                  var totalLessons = 0;
+                  var rows = [];
+                  units.forEach(function (u) {
+                    var startDay = day + 1;
+                    var n = u.lessons.length;
+                    day += n; // one instructional day per lesson
+                    day += 1; // + end-of-unit assessment / project day
+                    totalLessons += n;
+                    var startWeek = Math.ceil(startDay / DPW);
+                    var endWeek = Math.ceil(day / DPW);
+                    var stds = {};
+                    u.lessons.forEach(function (l) {
+                      var s = stdFor(l);
+                      if (s) stds[s] = 1;
+                    });
+                    var stdCount = Object.keys(stds).length;
+                    var det = u.lessons
+                      .map(function (l, i) {
+                        var s = stdFor(l);
+                        return (
+                          '<li><span class="pace-day">Day ' +
+                          (startDay + i) +
+                          '</span><a href="' +
+                          esc(l.href) +
+                          '" target="_blank" rel="noopener">' +
+                          esc(l.title) +
+                          "</a>" +
+                          (s ? ' <span class="pace-std">' + esc(s) + "</span>" : "") +
+                          (l.obj ? '<span class="pace-obj">' + esc(l.obj) + "</span>" : "") +
+                          "</li>"
+                        );
+                      })
+                      .join("");
+                    rows.push(
+                      '<details class="pace-unit"><summary>' +
+                        '<span class="pace-wk">Weeks ' +
+                        startWeek +
+                        "–" +
+                        endWeek +
+                        '</span><span class="pace-unum">' +
+                        esc(u.num) +
+                        '</span><span class="pace-uname">' +
+                        esc(u.name) +
+                        '</span><span class="pace-count">' +
+                        n +
+                        " lessons · " +
+                        stdCount +
+                        ' standards</span></summary><ul class="pace-list">' +
+                        det +
+                        "</ul></details>",
+                    );
+                  });
+                  var weeks = Math.ceil(day / DPW);
+                  host.innerHTML =
+                    '<p class="pace-summary"><strong>' +
+                    units.length +
+                    " units · " +
+                    totalLessons +
+                    " lessons · ≈" +
+                    day +
+                    " instructional days (" +
+                    weeks +
+                    " weeks)</strong> " +
+                    '<span class="pace-note">against a typical 36-week (180-day) year</span></p>' +
+                    '<div class="pace-units">' +
+                    rows.join("") +
+                    "</div>";
+                });
+              }
+
+              function renderLoop(host) {
+                var NT = window.NTSignal;
+                var weak = NT && typeof NT.weakStandards === "function" ? NT.weakStandards(6) : [];
+                if (!weak || !weak.length) {
+                  host.innerHTML =
+                    '<p class="mf-empty">No class learning signals on this device yet. Signals build as students work lessons here — or open the full class diagnosis in Insight Brief.</p>' +
+                    '<div class="mf-actions"><a class="mf-btn solid" href="/teacher-tools/insight-brief/">Open Insight Brief</a></div>';
+                  return;
+                }
+                host.innerHTML = '<p class="mf-empty">Matching signals to lessons…</p>';
+                loadMap().then(function (m) {
+                  // Best reteach target for a standard: a Lesson, else its Get
+                  // Ready readiness, else the first tagged asset.
+                  function pickLesson(assets) {
+                    var i;
+                    for (i = 0; i < assets.length; i++)
+                      if (assets[i].category === "Lesson") return assets[i];
+                    for (i = 0; i < assets.length; i++)
+                      if (assets[i].category === "Readiness") return assets[i];
+                    return assets.length ? assets[0] : null;
+                  }
+                  var rows = weak
+                    .map(function (w) {
+                      var pct = Math.round((Number(w.rate) || 0) * 100);
+                      var entry = m.byStd[String(w.standard).toUpperCase()];
+                      var assets = (entry && entry.assets) || [];
+                      var lesson = pickLesson(assets);
+                      var lessonCount = 0;
+                      assets.forEach(function (a) {
+                        if (a.category === "Lesson") lessonCount++;
+                      });
+                      var label =
+                        entry && entry.label
+                          ? ' <span class="loop-label">' + esc(entry.label) + "</span>"
+                          : "";
+                      var next = lesson
+                        ? 'Reteach → <a href="' +
+                          esc(lesson.path) +
+                          '" target="_blank" rel="noopener">' +
+                          esc(lesson.title) +
+                          "</a>" +
+                          (lessonCount > 1
+                            ? ' <span class="loop-more">+' + (lessonCount - 1) + " more</span>"
+                            : "")
+                        : '<span class="loop-none">No lesson tagged — open Resource Finder</span>';
+                      var rf =
+                        '<a class="loop-find" href="/teacher-tools/resource-finder/?standard=' +
+                        encodeURIComponent(w.standard) +
+                        '">all resources</a>';
+                      var cls = pct < 50 ? "is-low" : pct < 75 ? "is-mid" : "is-ok";
+                      return (
+                        '<div class="loop-row ' +
+                        cls +
+                        '"><div class="loop-sig"><span class="loop-std">' +
+                        esc(w.standard) +
+                        "</span>" +
+                        label +
+                        '<span class="loop-rate">' +
+                        pct +
+                        "% mastery <em>(" +
+                        (Number(w.correct) || 0) +
+                        "/" +
+                        (Number(w.attempts) || 0) +
+                        ')</em></span></div><div class="loop-arrow" aria-hidden="true">→</div><div class="loop-act">' +
+                        next +
+                        " " +
+                        rf +
+                        "</div></div>"
+                      );
+                    })
+                    .join("");
+                  host.innerHTML =
+                    '<p class="loop-lead">Weakest standards on this device → the exact lesson to reteach.</p>' +
+                    '<div class="loop-rows">' +
+                    rows +
+                    '</div><p class="pace-note">Device-local signal · full class diagnosis in <a href="/teacher-tools/insight-brief/">Insight Brief</a>.</p>';
+                });
+              }
+
+              function wire(btnId, panelId, render) {
+                var btn = document.getElementById(btnId);
+                var panel = document.getElementById(panelId);
+                if (!btn || !panel) return;
+                var built = false;
+                btn.addEventListener("click", function () {
+                  var opening = panel.hasAttribute("hidden");
+                  if (opening) {
+                    if (!built) {
+                      render(panel);
+                      built = true;
+                    }
+                    panel.removeAttribute("hidden");
+                    btn.setAttribute("aria-expanded", "true");
+                    btn.textContent = btn.getAttribute("data-close") || "Hide";
+                  } else {
+                    panel.setAttribute("hidden", "");
+                    btn.setAttribute("aria-expanded", "false");
+                    btn.textContent = btn.getAttribute("data-open") || "Open";
+                  }
+                });
+              }
+
+              ready(function () {
+                wire("pace-toggle", "pace-panel", renderPacing);
+                wire("loop-toggle", "loop-panel", renderLoop);
+              });
+            })();
+          </script>
 
           <style>
             .lpg-feature .mf-icon {
@@ -12795,6 +13338,11 @@
           });
         });
 
+        // Expose the canonical scrape so additive cards (Pacing & Scope Map,
+        // Close the Loop) can read units/lessons/standards without re-scraping
+        // the static details.unit DOM, which this render consumes.
+        window.NTHubUnits = unitsData;
+
         function syncHubUrl(unit, lessonId, actHref) {
           var params = new URLSearchParams(location.search);
           if (unit && unit.unitIndex) {
@@ -13371,7 +13919,7 @@
         window.scrollTo(0, 0);
       })();
     </script>
-    <script src="/assets/curriculum-progress-bridge.js?v=mry4iao0" defer></script>
+    <script src="/assets/curriculum-progress-bridge.js?v=mryvwzeg" defer></script>
     <script>
       window.CURRICULUM_SYNC = {
         // Complete D1 content sync enabled: fetches /api/curriculum/content with static fallback.
@@ -13387,16 +13935,16 @@
          not minisearch.min.js), so browsers ORB-blocked the error page and
          MiniSearch never loaded. Serve it locally like the other vendor libs. -->
     <script src="/assets/vendor/minisearch-7.1.2.min.js" defer></script>
-    <script src="/assets/curriculum-enhancements.js?v=mry4iao0" defer></script>
+    <script src="/assets/curriculum-enhancements.js?v=mryvwzeg" defer></script>
     <script src="/assets/curriculum-audit-badges.js" defer></script>
-    <script src="/assets/curriculum-sidebar.js?v=mry4iao0" defer></script>
-    <script src="/assets/curriculum-top1.js?v=mry4iao0" defer></script>
-    <script src="/assets/curriculum-teacher-planning.js?v=mry4iao0" defer></script>
-    <script src="/assets/curriculum-live-signal.js?v=mry4iao0" defer></script>
-    <script src="/assets/curriculum-teacher-workflow.js?v=mry4iao0" defer></script>
-    <script src="/assets/curriculum-guided-path.js?v=mry4iao0" defer></script>
-    <script src="/assets/curriculum-studio-journey.js?v=mry4iao0" defer></script>
-    <script src="/assets/curriculum-lesson-merge.js?v=mry4iao0" defer></script>
+    <script src="/assets/curriculum-sidebar.js?v=mryvwzeg" defer></script>
+    <script src="/assets/curriculum-top1.js?v=mryvwzeg" defer></script>
+    <script src="/assets/curriculum-teacher-planning.js?v=mryvwzeg" defer></script>
+    <script src="/assets/curriculum-live-signal.js?v=mryvwzeg" defer></script>
+    <script src="/assets/curriculum-teacher-workflow.js?v=mryvwzeg" defer></script>
+    <script src="/assets/curriculum-guided-path.js?v=mryvwzeg" defer></script>
+    <script src="/assets/curriculum-studio-journey.js?v=mryvwzeg" defer></script>
+    <script src="/assets/curriculum-lesson-merge.js?v=mryvwzeg" defer></script>
     <script src="/assets/futures-lab.js?v=20260619" defer></script>
     <script src="/assets/gradebook-embed.js?v=20260624" defer></script>
 
