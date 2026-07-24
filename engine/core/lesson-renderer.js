@@ -2231,135 +2231,136 @@ function renderWarmupPhase(el, state, ctx, config) {
 
   const savedAnswers = state.getResponse(0, "warmup_answers") || {};
 
-  // --- Warmup Timer (teacher-configurable duration) ---
-  const timerBar = document.createElement("div");
-  timerBar.className = "warmup-timer-bar";
-  timerBar.style.cssText =
-    "display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:16px; margin:4px 0 20px; padding:20px 28px; background:linear-gradient(135deg, #f0f9ff, #e6f4f6); border:2px solid #bae6fd; border-radius:16px;";
-  timerBar.innerHTML = `
+  // --- Warmup Timer (Teacher-Mode only) ---
+  // The whole countdown — bar, controls, and auto-submit-on-expiry — is a
+  // teacher facilitation tool. Students never see a timer; they just answer the
+  // warmup questions. Everything below is gated to Teacher Mode. `timerBar` /
+  // `warmupTimerId` are declared out here (null for students) because the
+  // submit handler further down still touches them, guarded by `if (timerBar)`.
+  let timerBar = null;
+  let warmupTimerId = null;
+  if (isTeacherMode()) {
+    timerBar = document.createElement("div");
+    timerBar.className = "warmup-timer-bar";
+    timerBar.style.cssText =
+      "display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:16px; margin:4px 0 20px; padding:20px 28px; background:linear-gradient(135deg, #f0f9ff, #e6f4f6); border:2px solid #bae6fd; border-radius:16px;";
+    timerBar.innerHTML = `
     <span style="font-size:2.6rem; line-height:1;">⏱️</span>
     <span id="warmupTimerDisplay" style="font-size:56px; font-weight:900; color:#0f6d78; font-variant-numeric:tabular-nums; line-height:1;">${fmtWarmupClock(getWarmupSeconds())}</span>
     <span class="warmup-timer-label" style="font-size:20px; font-weight:700; color:#56627a;">remaining</span>
   `;
-  // Place the timer immediately under the "Phase 1 · Warmup" header (above the
-  // intro line) so it's the first thing students and teachers see.
-  const warmupHeaderBlock = card.firstElementChild;
-  if (warmupHeaderBlock) warmupHeaderBlock.after(timerBar);
-  else card.prepend(timerBar);
+    // Place the timer immediately under the "Phase 1 · Warmup" header (above the
+    // intro line) so it's the first thing students and teachers see.
+    const warmupHeaderBlock = card.firstElementChild;
+    if (warmupHeaderBlock) warmupHeaderBlock.after(timerBar);
+    else card.prepend(timerBar);
 
-  let warmupTimerId = null;
-  let warmupPaused = false;
-  const initialLocalSeconds = getWarmupSeconds();
-  let warmupSecondsLeft = initialLocalSeconds;
-  const timerDisplay = timerBar.querySelector("#warmupTimerDisplay");
-  const timerLabel = timerBar.querySelector(".warmup-timer-label");
+    const initialLocalSeconds = getWarmupSeconds();
+    let warmupSecondsLeft = initialLocalSeconds;
+    const timerDisplay = timerBar.querySelector("#warmupTimerDisplay");
+    const timerLabel = timerBar.querySelector(".warmup-timer-label");
 
-  // Paint the bar in the palette matching the time left: calm teal (>30s),
-  // amber (11–30s), red (≤10s). Separated so pause/resume/reset restore the
-  // right colors for the current count.
-  function applyWarmupPalette(s) {
-    if (s <= 10) {
-      timerDisplay.style.color = "#dc2626";
-      timerBar.style.background = "linear-gradient(135deg, #fef2f2, #fee2e2)";
-      timerBar.style.borderColor = "#fca5a5";
-    } else if (s <= 30) {
-      timerDisplay.style.color = "#b45309";
-      timerBar.style.background = "linear-gradient(135deg, #fffbeb, #fef3c7)";
-      timerBar.style.borderColor = "#fcd34d";
-    } else {
-      timerDisplay.style.color = "#0f6d78";
-      timerBar.style.background = "linear-gradient(135deg, #f0f9ff, #e6f4f6)";
-      timerBar.style.borderColor = "#bae6fd";
+    // Paint the bar in the palette matching the time left: calm teal (>30s),
+    // amber (11–30s), red (≤10s). Separated so pause/resume/reset restore the
+    // right colors for the current count.
+    function applyWarmupPalette(s) {
+      if (s <= 10) {
+        timerDisplay.style.color = "#dc2626";
+        timerBar.style.background = "linear-gradient(135deg, #fef2f2, #fee2e2)";
+        timerBar.style.borderColor = "#fca5a5";
+      } else if (s <= 30) {
+        timerDisplay.style.color = "#b45309";
+        timerBar.style.background = "linear-gradient(135deg, #fffbeb, #fef3c7)";
+        timerBar.style.borderColor = "#fcd34d";
+      } else {
+        timerDisplay.style.color = "#0f6d78";
+        timerBar.style.background = "linear-gradient(135deg, #f0f9ff, #e6f4f6)";
+        timerBar.style.borderColor = "#bae6fd";
+      }
     }
-  }
 
-  // One countdown tick. Extracted so the interval can be re-armed on resume
-  // without duplicating the color/pulse/expiry logic.
-  function warmupTick() {
-    warmupSecondsLeft--;
-    timerDisplay.textContent = fmtWarmupClock(warmupSecondsLeft);
-    applyWarmupPalette(warmupSecondsLeft);
-    if (warmupSecondsLeft <= 10 && warmupSecondsLeft > 0) {
+    // One countdown tick. Extracted so the interval can be re-armed on resume
+    // without duplicating the color/pulse/expiry logic.
+    function warmupTick() {
+      warmupSecondsLeft--;
+      timerDisplay.textContent = fmtWarmupClock(warmupSecondsLeft);
+      applyWarmupPalette(warmupSecondsLeft);
+      if (warmupSecondsLeft <= 10 && warmupSecondsLeft > 0) {
+        timerDisplay.style.animation = "none";
+        timerDisplay.offsetHeight; // reflow
+        timerDisplay.style.animation = "pulse 0.6s ease-in-out";
+      }
+      if (warmupSecondsLeft <= 0) {
+        clearInterval(warmupTimerId);
+        warmupTimerId = null;
+        timerDisplay.textContent = "0:00";
+        timerLabel.textContent = "time's up!";
+        syncWarmupControls();
+        if (!savedAnswers.checked) checkBtn.click();
+      }
+    }
+
+    // Assigned once the Pause/Reset controls are built so button labels track the
+    // running/paused state; a no-op until then.
+    let syncWarmupControls = () => {};
+
+    // Start (or restart) the countdown from warmupSecondsLeft. Used by the
+    // teacher "Set time" control and the Reset button to relaunch it.
+    function startWarmupCountdown() {
+      if (warmupTimerId) clearInterval(warmupTimerId);
       timerDisplay.style.animation = "none";
-      timerDisplay.offsetHeight; // reflow
-      timerDisplay.style.animation = "pulse 0.6s ease-in-out";
+      applyWarmupPalette(warmupSecondsLeft);
+      timerDisplay.textContent = fmtWarmupClock(warmupSecondsLeft);
+      timerLabel.textContent = "remaining";
+      warmupTimerId = setInterval(warmupTick, 1000);
+      syncWarmupControls();
     }
-    if (warmupSecondsLeft <= 0) {
+
+    // Pause the running countdown, keeping the remaining time intact.
+    function pauseWarmupCountdown() {
+      if (!warmupTimerId) return;
       clearInterval(warmupTimerId);
       warmupTimerId = null;
-      timerDisplay.textContent = "0:00";
-      timerLabel.textContent = "time's up!";
+      timerDisplay.style.animation = "none";
+      timerLabel.textContent = "paused";
       syncWarmupControls();
-      if (!savedAnswers.checked) checkBtn.click();
     }
-  }
 
-  // Assigned once the Pause/Reset controls are built so button labels track the
-  // running/paused state; a no-op until then.
-  let syncWarmupControls = () => {};
-
-  // Start (or restart) the countdown from warmupSecondsLeft. Used by the
-  // teacher "Set time" control and the Reset button to relaunch it.
-  function startWarmupCountdown() {
-    if (warmupTimerId) clearInterval(warmupTimerId);
-    warmupPaused = false;
-    timerDisplay.style.animation = "none";
-    applyWarmupPalette(warmupSecondsLeft);
-    timerDisplay.textContent = fmtWarmupClock(warmupSecondsLeft);
-    timerLabel.textContent = "remaining";
-    warmupTimerId = setInterval(warmupTick, 1000);
-    syncWarmupControls();
-  }
-
-  // Pause the running countdown, keeping the remaining time intact.
-  function pauseWarmupCountdown() {
-    if (!warmupTimerId) return;
-    clearInterval(warmupTimerId);
-    warmupTimerId = null;
-    warmupPaused = true;
-    timerDisplay.style.animation = "none";
-    timerLabel.textContent = "paused";
-    syncWarmupControls();
-  }
-
-  // Resume from where it was paused. No-op if already running or time is up.
-  function resumeWarmupCountdown() {
-    if (warmupTimerId || warmupSecondsLeft <= 0) return;
-    warmupPaused = false;
-    applyWarmupPalette(warmupSecondsLeft);
-    timerLabel.textContent = "remaining";
-    warmupTimerId = setInterval(warmupTick, 1000);
-    syncWarmupControls();
-  }
-
-  // Reset back to the configured warmup duration and start running again.
-  function resetWarmupCountdown() {
-    warmupSecondsLeft = getWarmupSeconds();
-    startWarmupCountdown();
-  }
-
-  // Small transient confirmation shown inside the timer bar (its own line).
-  function flashTimerNote(msg, ok = true) {
-    let note = timerBar.querySelector(".warmup-timer-note");
-    if (!note) {
-      note = document.createElement("span");
-      note.className = "warmup-timer-note";
-      note.style.cssText = "width:100%; text-align:center; font-size:14px; font-weight:800;";
-      timerBar.append(note);
+    // Resume from where it was paused. No-op if already running or time is up.
+    function resumeWarmupCountdown() {
+      if (warmupTimerId || warmupSecondsLeft <= 0) return;
+      applyWarmupPalette(warmupSecondsLeft);
+      timerLabel.textContent = "remaining";
+      warmupTimerId = setInterval(warmupTick, 1000);
+      syncWarmupControls();
     }
-    note.style.color = ok ? "#15803d" : "#b45309";
-    note.textContent = msg;
-    clearTimeout(note._t);
-    note._t = setTimeout(() => note.remove(), 3200);
-  }
 
-  if (!savedAnswers.checked) {
-    startWarmupCountdown();
+    // Reset back to the configured warmup duration and start running again.
+    function resetWarmupCountdown() {
+      warmupSecondsLeft = getWarmupSeconds();
+      startWarmupCountdown();
+    }
 
-    // Pause/Start + Reset controls so the teacher running the lesson can hold the
-    // warmup timer (e.g. to finish a point) and restart it cleanly. Teacher-Mode
-    // only — non-destructive and local to this device; hidden from students.
-    if (isTeacherMode()) {
+    // Small transient confirmation shown inside the timer bar (its own line).
+    function flashTimerNote(msg, ok = true) {
+      let note = timerBar.querySelector(".warmup-timer-note");
+      if (!note) {
+        note = document.createElement("span");
+        note.className = "warmup-timer-note";
+        note.style.cssText = "width:100%; text-align:center; font-size:14px; font-weight:800;";
+        timerBar.append(note);
+      }
+      note.style.color = ok ? "#15803d" : "#b45309";
+      note.textContent = msg;
+      clearTimeout(note._t);
+      note._t = setTimeout(() => note.remove(), 3200);
+    }
+
+    if (!savedAnswers.checked) {
+      startWarmupCountdown();
+
+      // Pause/Start + Reset controls so the teacher running the lesson can hold the
+      // warmup timer (e.g. to finish a point) and restart it cleanly.
       const controlBtnCss =
         "padding:10px 18px; font-size:16px; font-weight:800; color:#0f6d78; background:#ffffff; border:2px solid #0f6d78; border-radius:10px; cursor:pointer;";
 
@@ -2393,26 +2394,23 @@ function renderWarmupPhase(el, state, ctx, config) {
 
       timerBar.append(pauseBtn, resetBtn);
       syncWarmupControls();
-    }
 
-    // Adopt the GLOBAL (universal) warmup length. Render started from the local
-    // cache for instant paint; if the shared backend returns a different value
-    // and the student hasn't started working yet (countdown still essentially
-    // full), switch to it so every device shows the same teacher-set time.
-    fetchGlobalWarmupSeconds().then((g) => {
-      if (g == null || savedAnswers.checked) return;
-      const elapsed = initialLocalSeconds - warmupSecondsLeft;
-      if (g !== warmupSecondsLeft && elapsed <= 3) {
-        warmupSecondsLeft = g;
-        startWarmupCountdown();
-      }
-    });
+      // Adopt the GLOBAL (universal) warmup length. Render started from the local
+      // cache for instant paint; if the shared backend returns a different value
+      // and the student hasn't started working yet (countdown still essentially
+      // full), switch to it so every device shows the same teacher-set time.
+      fetchGlobalWarmupSeconds().then((g) => {
+        if (g == null || savedAnswers.checked) return;
+        const elapsed = initialLocalSeconds - warmupSecondsLeft;
+        if (g !== warmupSecondsLeft && elapsed <= 3) {
+          warmupSecondsLeft = g;
+          startWarmupCountdown();
+        }
+      });
 
-    // Teacher-only: change the time allowed for EVERYONE. Saves globally via
-    // /api/settings/warmup (teacher key) so every student and teacher device
-    // inherits it; the local cache + countdown update immediately for instant
-    // feedback. Hidden from students.
-    if (isTeacherMode()) {
+      // Change the warmup time allowed for EVERYONE. Saves globally via
+      // /api/settings/warmup (teacher key) so every student and teacher device
+      // inherits it; the local cache + countdown update immediately.
       const editBtn = document.createElement("button");
       editBtn.type = "button";
       editBtn.className = "warmup-timer-edit";
@@ -2467,11 +2465,11 @@ function renderWarmupPhase(el, state, ctx, config) {
         pushGlobal(seconds);
       });
       timerBar.append(editBtn);
+    } else {
+      timerDisplay.textContent = "✅";
+      timerLabel.textContent = "Submitted";
     }
-  } else {
-    timerDisplay.textContent = "✅";
-    timerLabel.textContent = "Submitted";
-  }
+  } // end if (isTeacherMode()) — warmup timer is teacher-only
 
   const questionsContainer = document.createElement("div");
   questionsContainer.className = "warmup-questions-list";
@@ -2554,16 +2552,17 @@ function renderWarmupPhase(el, state, ctx, config) {
       clearInterval(warmupTimerId);
       warmupTimerId = null;
     }
-    const td = card.querySelector("#warmupTimerDisplay");
-    if (td) {
-      td.textContent = "✅";
+    // Timer chrome only exists in Teacher Mode; students have no bar to update.
+    if (timerBar) {
+      const td = card.querySelector("#warmupTimerDisplay");
+      if (td) td.textContent = "✅";
+      const tl = timerBar.querySelector(".warmup-timer-label");
+      if (tl) tl.textContent = "Submitted";
+      // Retire the teacher "Set time" control once the warmup is locked in.
+      timerBar.querySelector(".warmup-timer-edit")?.remove();
+      timerBar.style.background = "linear-gradient(135deg, #f0fdf4, #dcfce7)";
+      timerBar.style.borderColor = "#86efac";
     }
-    const tl = timerBar.querySelector(".warmup-timer-label");
-    if (tl) tl.textContent = "Submitted";
-    // Retire the teacher "Set time" control once the warmup is locked in.
-    timerBar.querySelector(".warmup-timer-edit")?.remove();
-    timerBar.style.background = "linear-gradient(135deg, #f0fdf4, #dcfce7)";
-    timerBar.style.borderColor = "#86efac";
 
     let correctCount = 0;
     savedAnswers.checked = true;
