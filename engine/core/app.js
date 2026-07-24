@@ -903,6 +903,27 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
 
     // Drawing event listeners
     canvas.addEventListener("pointerdown", (e) => {
+      // Let taps on real controls pass THROUGH the full-page draw overlay: it
+      // otherwise sits over every button in the phase (answer choices, "Check",
+      // "Continue to …", "Next") and swallows the tap, so the buttons feel dead
+      // whenever Draw is on. Momentarily disable the canvas to see what is under
+      // the pointer; if it's an interactive control, forward the click to it and
+      // do NOT start a stroke. z-index can't fix this because those buttons live
+      // in nested stacking contexts below the canvas.
+      canvas.style.pointerEvents = "none";
+      const under = document.elementFromPoint(e.clientX, e.clientY);
+      canvas.style.pointerEvents = "auto";
+      const control =
+        under &&
+        under.closest(
+          "button, a[href], input, select, textarea, label, summary, [role='button'], [role='link'], [role='tab']",
+        );
+      if (control) {
+        control.dispatchEvent(
+          new MouseEvent("click", { bubbles: true, cancelable: true, view: window }),
+        );
+        return;
+      }
       drawing = true;
       ctx.beginPath();
       const rect = canvas.getBoundingClientRect();
@@ -1597,7 +1618,10 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     nextBtn.style.cssText =
       // The lone bottom-right control (dock contract in design-system.css):
       // Save/Resume and the workbench live in the top-right Tools menu.
-      "position:fixed; right:16px; bottom:16px; z-index:9997; display:inline-flex; " +
+      // z-index sits ABOVE the lesson drawing canvas (z-index 9998) so the
+      // "continue to next part" control is never trapped under an active Draw
+      // overlay — turning Draw on used to cover this button and make it dead.
+      "position:fixed; right:16px; bottom:16px; z-index:9999; display:inline-flex; " +
       "align-items:center; gap:8px; min-height:48px; padding:0 22px; border:0; " +
       "border-radius:99px; background:#12355b; color:#fff; font-weight:800; " +
       "font-size:1rem; cursor:pointer; box-shadow:0 4px 14px rgba(12,27,42,.28);";

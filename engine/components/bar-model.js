@@ -96,7 +96,12 @@ export function renderBarModel(container, config) {
   const GAP = 3;
 
   const vizWrap = document.createElement("div");
-  vizWrap.style.cssText = "position:relative; margin-bottom:var(--sp-5);";
+  // Segments carry a 40px min-width, so a bar model with many parts is wider
+  // than a phone viewport. Contain that here (scroll the model, never the page)
+  // — otherwise the row pushes the whole lesson sideways (seen on 2-1 Explore
+  // at 390px in the 2026-07-24 formatting sweep).
+  vizWrap.style.cssText =
+    "position:relative; margin-bottom:var(--sp-5); overflow-x:auto; -webkit-overflow-scrolling:touch;";
 
   // Total bar (top)
   if (totalLabel) {
@@ -328,7 +333,12 @@ function renderRatioBarModel(container, config) {
   const palette = ["#1fa6a2", "#f2c15b", "#d9795d", "#2f80d1", "#0fa958", "#875f00"];
 
   const vizWrap = document.createElement("div");
-  vizWrap.style.cssText = "position:relative; margin-bottom:var(--sp-5);";
+  // Segments carry a 40px min-width, so a bar model with many parts is wider
+  // than a phone viewport. Contain that here (scroll the model, never the page)
+  // — otherwise the row pushes the whole lesson sideways (seen on 2-1 Explore
+  // at 390px in the 2026-07-24 formatting sweep).
+  vizWrap.style.cssText =
+    "position:relative; margin-bottom:var(--sp-5); overflow-x:auto; -webkit-overflow-scrolling:touch;";
 
   // Whole/total bar on top when a total is given.
   if (whole != null) {
