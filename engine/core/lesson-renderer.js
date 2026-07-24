@@ -2204,47 +2204,94 @@ function renderWarmupPhase(el, state, ctx, config) {
   else card.prepend(timerBar);
 
   let warmupTimerId = null;
+  let warmupPaused = false;
   const initialLocalSeconds = getWarmupSeconds();
   let warmupSecondsLeft = initialLocalSeconds;
   const timerDisplay = timerBar.querySelector("#warmupTimerDisplay");
   const timerLabel = timerBar.querySelector(".warmup-timer-label");
 
-  // Start (or restart) the countdown from warmupSecondsLeft. Extracted so the
-  // teacher "Set time" control can relaunch it with a new duration.
+  // Paint the bar in the palette matching the time left: calm teal (>30s),
+  // amber (11–30s), red (≤10s). Separated so pause/resume/reset restore the
+  // right colors for the current count.
+  function applyWarmupPalette(s) {
+    if (s <= 10) {
+      timerDisplay.style.color = "#dc2626";
+      timerBar.style.background = "linear-gradient(135deg, #fef2f2, #fee2e2)";
+      timerBar.style.borderColor = "#fca5a5";
+    } else if (s <= 30) {
+      timerDisplay.style.color = "#b45309";
+      timerBar.style.background = "linear-gradient(135deg, #fffbeb, #fef3c7)";
+      timerBar.style.borderColor = "#fcd34d";
+    } else {
+      timerDisplay.style.color = "#0f6d78";
+      timerBar.style.background = "linear-gradient(135deg, #f0f9ff, #e6f4f6)";
+      timerBar.style.borderColor = "#bae6fd";
+    }
+  }
+
+  // One countdown tick. Extracted so the interval can be re-armed on resume
+  // without duplicating the color/pulse/expiry logic.
+  function warmupTick() {
+    warmupSecondsLeft--;
+    timerDisplay.textContent = fmtWarmupClock(warmupSecondsLeft);
+    applyWarmupPalette(warmupSecondsLeft);
+    if (warmupSecondsLeft <= 10 && warmupSecondsLeft > 0) {
+      timerDisplay.style.animation = "none";
+      timerDisplay.offsetHeight; // reflow
+      timerDisplay.style.animation = "pulse 0.6s ease-in-out";
+    }
+    if (warmupSecondsLeft <= 0) {
+      clearInterval(warmupTimerId);
+      warmupTimerId = null;
+      timerDisplay.textContent = "0:00";
+      timerLabel.textContent = "time's up!";
+      syncWarmupControls();
+      if (!savedAnswers.checked) checkBtn.click();
+    }
+  }
+
+  // Assigned once the Pause/Reset controls are built so button labels track the
+  // running/paused state; a no-op until then.
+  let syncWarmupControls = () => {};
+
+  // Start (or restart) the countdown from warmupSecondsLeft. Used by the
+  // teacher "Set time" control and the Reset button to relaunch it.
   function startWarmupCountdown() {
     if (warmupTimerId) clearInterval(warmupTimerId);
-    // Reset to the calm starting palette in case a prior run went amber/red.
-    timerDisplay.style.color = "#0f6d78";
+    warmupPaused = false;
     timerDisplay.style.animation = "none";
-    timerBar.style.background = "linear-gradient(135deg, #f0f9ff, #e6f4f6)";
-    timerBar.style.borderColor = "#bae6fd";
+    applyWarmupPalette(warmupSecondsLeft);
     timerDisplay.textContent = fmtWarmupClock(warmupSecondsLeft);
     timerLabel.textContent = "remaining";
-    warmupTimerId = setInterval(() => {
-      warmupSecondsLeft--;
-      timerDisplay.textContent = fmtWarmupClock(warmupSecondsLeft);
+    warmupTimerId = setInterval(warmupTick, 1000);
+    syncWarmupControls();
+  }
 
-      if (warmupSecondsLeft <= 30 && warmupSecondsLeft > 10) {
-        timerDisplay.style.color = "#b45309";
-        timerBar.style.background = "linear-gradient(135deg, #fffbeb, #fef3c7)";
-        timerBar.style.borderColor = "#fcd34d";
-      }
-      if (warmupSecondsLeft <= 10) {
-        timerDisplay.style.color = "#dc2626";
-        timerBar.style.background = "linear-gradient(135deg, #fef2f2, #fee2e2)";
-        timerBar.style.borderColor = "#fca5a5";
-        timerDisplay.style.animation = "none";
-        timerDisplay.offsetHeight; // reflow
-        timerDisplay.style.animation = "pulse 0.6s ease-in-out";
-      }
-      if (warmupSecondsLeft <= 0) {
-        clearInterval(warmupTimerId);
-        warmupTimerId = null;
-        timerDisplay.textContent = "0:00";
-        timerLabel.textContent = "time's up!";
-        if (!savedAnswers.checked) checkBtn.click();
-      }
-    }, 1000);
+  // Pause the running countdown, keeping the remaining time intact.
+  function pauseWarmupCountdown() {
+    if (!warmupTimerId) return;
+    clearInterval(warmupTimerId);
+    warmupTimerId = null;
+    warmupPaused = true;
+    timerDisplay.style.animation = "none";
+    timerLabel.textContent = "paused";
+    syncWarmupControls();
+  }
+
+  // Resume from where it was paused. No-op if already running or time is up.
+  function resumeWarmupCountdown() {
+    if (warmupTimerId || warmupSecondsLeft <= 0) return;
+    warmupPaused = false;
+    applyWarmupPalette(warmupSecondsLeft);
+    timerLabel.textContent = "remaining";
+    warmupTimerId = setInterval(warmupTick, 1000);
+    syncWarmupControls();
+  }
+
+  // Reset back to the configured warmup duration and start running again.
+  function resetWarmupCountdown() {
+    warmupSecondsLeft = getWarmupSeconds();
+    startWarmupCountdown();
   }
 
   // Small transient confirmation shown inside the timer bar (its own line).
@@ -2264,6 +2311,43 @@ function renderWarmupPhase(el, state, ctx, config) {
 
   if (!savedAnswers.checked) {
     startWarmupCountdown();
+
+    // Pause/Start + Reset controls so whoever is running the lesson can hold the
+    // warmup timer (e.g. to finish a point) and restart it cleanly. Shown to
+    // everyone — non-destructive and local to this device.
+    const controlBtnCss =
+      "padding:10px 18px; font-size:16px; font-weight:800; color:#0f6d78; background:#ffffff; border:2px solid #0f6d78; border-radius:10px; cursor:pointer;";
+
+    const pauseBtn = document.createElement("button");
+    pauseBtn.type = "button";
+    pauseBtn.className = "warmup-timer-pause";
+    pauseBtn.style.cssText = controlBtnCss;
+
+    const resetBtn = document.createElement("button");
+    resetBtn.type = "button";
+    resetBtn.className = "warmup-timer-reset";
+    resetBtn.textContent = "↻ Reset";
+    resetBtn.title = "Restart the warmup timer from the full time";
+    resetBtn.style.cssText = controlBtnCss;
+
+    // Keep the Pause/Start button label in sync with the timer state.
+    syncWarmupControls = () => {
+      const running = !!warmupTimerId;
+      pauseBtn.textContent = running ? "⏸ Pause" : "▶ Start";
+      pauseBtn.title = running ? "Pause the warmup timer" : "Start the warmup timer";
+      pauseBtn.disabled = warmupSecondsLeft <= 0;
+      pauseBtn.style.opacity = pauseBtn.disabled ? "0.5" : "1";
+      pauseBtn.style.cursor = pauseBtn.disabled ? "default" : "pointer";
+    };
+
+    pauseBtn.addEventListener("click", () => {
+      if (warmupTimerId) pauseWarmupCountdown();
+      else resumeWarmupCountdown();
+    });
+    resetBtn.addEventListener("click", () => resetWarmupCountdown());
+
+    timerBar.append(pauseBtn, resetBtn);
+    syncWarmupControls();
 
     // Adopt the GLOBAL (universal) warmup length. Render started from the local
     // cache for instant paint; if the shared backend returns a different value
