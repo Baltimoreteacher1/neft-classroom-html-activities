@@ -16,6 +16,41 @@ export function themeDisplayName(theme) {
     .join(" ");
 }
 
+// Optional authored art slot. When a lesson config carries a real illustration
+// (`{ src, alt, decorative }` or a bare src string), render it as a lazy <img>
+// with a graceful fallback: if the asset is missing or fails to load, call
+// `onFallback` (which mounts the existing code-drawn theme SVG / emoji), so the
+// studio is "art-ready" with zero regression until real art is commissioned.
+// See docs/small-group-art-brief.md for the asset spec.
+export function mountAuthoredArt(host, art, onFallback) {
+  const spec = typeof art === "string" ? { src: art } : art || {};
+  const src = spec.src;
+  if (!host || !src || typeof src !== "string") return false;
+  const img = document.createElement("img");
+  img.className = "sg-art-img";
+  img.src = src;
+  img.loading = "lazy";
+  img.decoding = "async";
+  // Decorative art (no meaningful alt) is hidden from assistive tech; art that
+  // conveys the scene keeps a real alt so screen-reader users get the context.
+  if (spec.decorative || !spec.alt) {
+    img.alt = "";
+    img.setAttribute("aria-hidden", "true");
+  } else {
+    img.alt = spec.alt;
+  }
+  img.addEventListener("error", () => {
+    img.remove();
+    try {
+      onFallback?.();
+    } catch {
+      /* fallback is best-effort */
+    }
+  });
+  host.appendChild(img);
+  return true;
+}
+
 /** Mark a section for scene enter; CSS plays when `.is-scene-in` is added. */
 export function markScene(section, name, { enterSelector } = {}) {
   if (!section) return section;

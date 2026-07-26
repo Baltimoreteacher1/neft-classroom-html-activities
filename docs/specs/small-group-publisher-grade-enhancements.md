@@ -14,12 +14,17 @@ shipped. **Item 16** investigated → finding invalid, no-op (see below).
   fraction bars, number cards 1–24 with primes shaded, algebra tiles,
   place-value mat) with per-master toggles. Linked from Teacher Tools.
 
-Remaining: **14 (authored scene/character art)** — the one item that genuinely
-needs raster illustration created at quality (consistent characters, scenes for
-64 lessons). Deliberately NOT auto-generated: the audit itself notes the
-code-drawn SVG math models are a strength, and fabricating a pile of
-inconsistent AI images would lower quality, not raise it. This is a design
-commission, not an engineering task.
+**Item 14 (authored art) — engine now art-ready (Wave 7).** The one part that's
+code — the slot — is done: `mountAuthoredArt` renders an authored illustration
+(`config.sceneArt` / `heroImage` / `launch.sceneImage`) in the hero mark and
+mission visual, lazy-loaded, alt/`aria-hidden` per whether it's decorative, and
+falling back to today's code-drawn theme SVG / emoji if the asset is absent or
+404s (zero regression — no lesson has the field yet). The remaining part is the
+**art itself**, a design commission spec'd in
+[`docs/small-group-art-brief.md`](../small-group-art-brief.md) (themes, style,
+palette that works in dark mode, asset dimensions, a11y, drop-in config). Not
+auto-generated: the audit notes the code-drawn SVG math models are a strength,
+and a pile of inconsistent AI images would lower quality, not raise it.
 Scope: all 128 small-group lessons + 20 catch-ups (engine modules, generators,
 teacher route, worksheets), benchmarked against professional publishers
 (Illustrative Mathematics, Eureka Math², enVision, Amplify).
