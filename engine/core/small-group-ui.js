@@ -323,7 +323,7 @@ export function injectSmallGroupStyles(accent) {
       polish = document.createElement("link");
       polish.id = "sg-publisher-polish";
       polish.rel = "stylesheet";
-      polish.href = "/assets/small-group-publisher-polish.css?v=20260723-dark1";
+      polish.href = "/assets/small-group-publisher-polish.css?v=20260723-art1";
       document.head.appendChild(polish);
     } else if (polish.parentNode === document.head) {
       document.head.appendChild(polish);

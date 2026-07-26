@@ -1,5 +1,10 @@
 import { figureBlock } from "./small-group-labs.js";
-import { markScene, mountThemeArt, themeDisplayName } from "./small-group-storyboard.js";
+import {
+  markScene,
+  mountAuthoredArt,
+  mountThemeArt,
+  themeDisplayName,
+} from "./small-group-storyboard.js";
 import { renderLaunchStoryBeats } from "./premium.js";
 import {
   celebrate,
@@ -118,14 +123,25 @@ export function createMissionSection(config, variant, onDone) {
     : null;
   const visual = el("div", `sg-mission-visual sg-scene-enter${missionFigure ? " has-figure" : ""}`);
   const themeCaption = config.launch?.contextImage || themeDisplayName(config.theme) || "";
+  // A math figure that matches the problem always wins (it's part of the work);
+  // otherwise prefer authored scene art, then the code-drawn theme SVG, then a
+  // decorative emoji. Authored art falls back through the same chain on error.
+  const sceneArt = config.launch?.sceneImage || config.sceneArt;
+  const missionFallback = () => {
+    if (config.theme && mountThemeArt(visual, config.theme, themeCaption, config.heroFigure)) {
+      visual.classList.add("has-theme");
+    } else {
+      visual.classList.add("no-image");
+      visual.textContent = variant === "group2" ? "🔎" : "🧩";
+      visual.setAttribute("aria-hidden", "true");
+    }
+  };
   if (missionFigure) {
     visual.appendChild(missionFigure);
-  } else if (config.theme && mountThemeArt(visual, config.theme, themeCaption, config.heroFigure)) {
-    visual.classList.add("has-theme");
+  } else if (sceneArt && mountAuthoredArt(visual, sceneArt, missionFallback)) {
+    visual.classList.add("has-art");
   } else {
-    visual.classList.add("no-image");
-    visual.textContent = variant === "group2" ? "🔎" : "🧩";
-    visual.setAttribute("aria-hidden", "true");
+    missionFallback();
   }
   mission.append(copy, visual);
   section.appendChild(mission);

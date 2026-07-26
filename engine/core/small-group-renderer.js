@@ -42,6 +42,7 @@ import { createStudioStore } from "./small-group-state.js";
 import {
   installStoryboardScenes,
   markScene,
+  mountAuthoredArt,
   mountThemeArt,
   themeDisplayName,
 } from "./small-group-storyboard.js";
@@ -318,10 +319,20 @@ function hero(config, accent, voice) {
   const mathMove = mathMoveOfTheDay(config);
   if (mathMove) copy.appendChild(mathMove);
   const mark = el("div", "sg-hero-mark sg-scene-enter");
-  if (config.theme && mountThemeArt(mark, config.theme, "", config.heroFigure)) {
-    mark.classList.add("has-theme");
+  // Code-drawn theme SVG / emoji is the fallback; if the lesson carries authored
+  // hero art, that wins and this runs only if the asset fails to load.
+  const heroFallback = () => {
+    if (config.theme && mountThemeArt(mark, config.theme, "", config.heroFigure)) {
+      mark.classList.add("has-theme");
+    } else {
+      mark.textContent = accent.emoji;
+    }
+  };
+  const heroArt = config.heroImage || config.sceneArt;
+  if (heroArt && mountAuthoredArt(mark, heroArt, heroFallback)) {
+    mark.classList.add("has-art");
   } else {
-    mark.textContent = accent.emoji;
+    heroFallback();
   }
   grid.append(copy, mark);
   container.appendChild(grid);
