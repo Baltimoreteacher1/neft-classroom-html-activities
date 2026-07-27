@@ -549,27 +549,82 @@ function responseCard(item, index, variant, onSolved, scaffold, events = {}) {
 
 const itemKey = (item) => item.stem || item.title || JSON.stringify(item).slice(0, 60);
 
-function tagPracticeItem(item, tier, practiceIndex) {
+function tagPracticeItem(item, tier, practiceIndex, standard = "") {
   // Shallow copy so we never mutate authored config objects; tags are engine-
   // only and keep Save/Resume indices stable across adaptive reordering.
-  return { ...item, _tier: tier, _practiceIndex: practiceIndex };
+  // `_standard` gives every rendered item a standard alignment so evidence can
+  // roll up per standard instead of only per lesson.
+  return {
+    ...item,
+    _tier: tier,
+    _practiceIndex: practiceIndex,
+    _standard: item.standard || standard || "",
+  };
+}
+
+// Level 1 and Catch-Up rendered a bank that was 100% `guided-fill` — twelve
+// identical typed-step drills — while only Level 2 ever received the authored
+// multiple-choice / error-analysis / sort items sitting in the same config.
+// Pull a balanced, tier-appropriate slice of that authored bank so every level
+// gets format variety. Support tiers draw from the easier tiers only.
+const VARIETY_TIERS = {
+  group1: ["approaching", "onLevel"],
+  catchup: ["approaching", "onLevel"],
+};
+const VARIETY_LIMIT = 6;
+
+function varietySlice(config, variant, seen) {
+  const tiers = VARIETY_TIERS[variant];
+  if (!tiers) return [];
+  const lanes = new Map();
+  for (const tier of tiers) {
+    for (const item of config.practice?.[tier] || []) {
+      if (!item || seen.has(itemKey(item))) continue;
+      const type = item.type || "multiple-choice";
+      if (!lanes.has(type)) lanes.set(type, []);
+      lanes.get(type).push({ item, tier });
+    }
+  }
+  // Round-robin across item types so the slice can never collapse into six
+  // multiple-choice questions — format variety is the entire point.
+  const out = [];
+  const buckets = [...lanes.values()];
+  for (let round = 0; out.length < VARIETY_LIMIT; round += 1) {
+    let added = false;
+    for (const bucket of buckets) {
+      if (round >= bucket.length) continue;
+      out.push(bucket[round]);
+      added = true;
+      if (out.length >= VARIETY_LIMIT) break;
+    }
+    if (!added) break;
+  }
+  return out;
 }
 
 export function collectPracticeItems(config) {
+  const standard = config.standard || "";
   if (Array.isArray(config.parallelPractice) && config.parallelPractice.length) {
     const items = config.parallelPractice.map((item, index) =>
-      tagPracticeItem(item, "onLevel", index),
+      tagPracticeItem(item, "onLevel", index, standard),
     );
+    const seen = new Set(items.map(itemKey));
     // Group 2's authored enrichment (justify, error-analysis, challenge
     // panels) is real content — append it after the parallel set instead of
     // dropping it, so mastery students get genuine extension work.
     if (config.variant === "group2") {
-      const seen = new Set(items.map(itemKey));
       for (const item of config.practice?.extending || []) {
         const key = itemKey(item);
         if (seen.has(key)) continue;
         seen.add(key);
-        items.push(tagPracticeItem(item, "extending", items.length));
+        items.push(tagPracticeItem(item, "extending", items.length, standard));
+      }
+    } else {
+      // Level 1 / Catch-Up get the same courtesy: a balanced slice of the
+      // authored bank so their practice is not twelve identical guided fills.
+      for (const { item, tier } of varietySlice(config, config.variant, seen)) {
+        seen.add(itemKey(item));
+        items.push(tagPracticeItem(item, tier, items.length, standard));
       }
     }
     return items;
@@ -582,7 +637,7 @@ export function collectPracticeItems(config) {
       const key = itemKey(item);
       if (seen.has(key)) continue;
       seen.add(key);
-      items.push(tagPracticeItem(item, tier, items.length));
+      items.push(tagPracticeItem(item, tier, items.length, standard));
     }
   }
   return items;
@@ -639,7 +694,7 @@ export function bringInExtendingItems(items = [], config = {}) {
     const key = itemKey(item);
     if (seen.has(key)) continue;
     seen.add(key);
-    out.push(tagPracticeItem(item, "extending", nextIndex++));
+    out.push(tagPracticeItem(item, "extending", nextIndex++, config.standard || ""));
   }
   return out;
 }
@@ -998,7 +1053,11 @@ export function createCheckSection(config, onSolved, tally, events = {}, store =
       const wrap = el("div", "sg-check-explain");
       wrap.hidden = true;
       wrap.appendChild(
-        el("p", "block-lab", "One more — explain how you know (this is the evidence that counts most)."),
+        el(
+          "p",
+          "block-lab",
+          "One more — explain how you know (this is the evidence that counts most).",
+        ),
       );
       const ta = el("textarea", "sg-ta");
       ta.setAttribute("aria-label", "Explain how you know your answer is correct");
@@ -1042,9 +1101,23 @@ export function createCheckSection(config, onSolved, tally, events = {}, store =
       };
     })();
   }
+  // Record whether the exit ticket landed on the FIRST attempt — the transfer
+  // check below bands the two items together, and a hinted retry is not the
+  // same evidence as a clean first try.
+  let ticketAttempted = false;
+  const ticketEvents = {
+    ...events,
+    onAttempt: (info) => {
+      if (!ticketAttempted) {
+        ticketAttempted = true;
+        store?.set("checkFirstTry", Boolean(info?.correct));
+      }
+      events.onAttempt?.(info);
+    },
+  };
   const card = ticket.choices?.length
-    ? multipleChoiceCard({ ...ticket, type: "multiple-choice" }, 0, finish, events)
-    : responseCard(ticket, 0, config.variant, finish, config.variant !== "group2", events);
+    ? multipleChoiceCard({ ...ticket, type: "multiple-choice" }, 0, finish, ticketEvents)
+    : responseCard(ticket, 0, config.variant, finish, config.variant !== "group2", ticketEvents);
   if (store?.get("checkSolved")) {
     card.prepend(
       el(
@@ -1060,5 +1133,97 @@ export function createCheckSection(config, onSolved, tally, events = {}, store =
     section.appendChild(explain.node);
     if (store?.get("checkSolved") || store?.get("checkExplained")) explain.reveal();
   }
+  const transfer = createTransferCheck(config, ticket, events, store);
+  if (transfer) section.appendChild(transfer);
   return section;
+}
+
+/** Bands are earned on FIRST attempt across the two independent items. */
+const CHECK_BANDS = [
+  ["building", "Keep building", "Worth another pass with support before moving on."],
+  ["approaching", "Approaching", "One solid piece of evidence — one more to lock it in."],
+  ["meeting", "Meeting", "Two independent items, first try. That is mastery evidence."],
+];
+
+/**
+ * Second independent item + mastery band. One multiple-choice question is not a
+ * mastery decision, so pull a transfer item the student has NOT already
+ * practised and band the two together. Deliberately does not touch `tally` —
+ * this is evidence depth, not another completion gate.
+ */
+function createTransferCheck(config, ticket, events = {}, store = null) {
+  const rendered = new Set(collectPracticeItems(config).map(itemKey));
+  const ticketKey = itemKey(ticket || {});
+  let pick = null;
+  for (const tier of ["optional", "extending", "onLevel", "approaching"]) {
+    for (const item of config.practice?.[tier] || []) {
+      if (!item?.choices?.length) continue;
+      const key = itemKey(item);
+      if (key === ticketKey || rendered.has(key)) continue;
+      pick = item;
+      break;
+    }
+    if (pick) break;
+  }
+  if (!pick) return null;
+
+  const wrap = el("div", "sg-check-transfer");
+  wrap.appendChild(
+    el(
+      "p",
+      "block-lab",
+      bi(
+        "Transfer check — a new situation, same idea. This one decides your band.",
+        "Prueba de transferencia: una situación nueva, la misma idea.",
+      ),
+    ),
+  );
+  const banner = el("div", "fb");
+  banner.setAttribute("aria-live", "polite");
+
+  const settle = (transferFirstTry) => {
+    const ticketFirstTry = Boolean(store?.get("checkFirstTry"));
+    const score = (ticketFirstTry ? 1 : 0) + (transferFirstTry ? 1 : 0);
+    const [id, label, note] = CHECK_BANDS[score];
+    store?.set("checkBand", id);
+    store?.set("checkBandScore", score);
+    showFeedback(
+      banner,
+      score === 2 ? "ok" : "no",
+      `<b>${esc(label)} (${score}/2)</b> — ${esc(note)}`,
+    );
+  };
+
+  let attempted = false;
+  let firstTryCorrect = false;
+  const scoped = {
+    ...events,
+    onAttempt: (info) => {
+      if (!attempted) {
+        attempted = true;
+        firstTryCorrect = Boolean(info?.correct);
+      }
+      events.onAttempt?.(info);
+    },
+  };
+  wrap.appendChild(
+    multipleChoiceCard(
+      { ...pick, type: "multiple-choice" },
+      1,
+      () => settle(firstTryCorrect),
+      scoped,
+    ),
+  );
+  wrap.appendChild(banner);
+  const saved = store?.get("checkBand");
+  if (saved) {
+    const row = CHECK_BANDS.find(([id]) => id === saved);
+    if (row)
+      showFeedback(
+        banner,
+        saved === "meeting" ? "ok" : "no",
+        `<b>${esc(row[1])}</b> — ${esc(row[2])} <i>(from your last session)</i>`,
+      );
+  }
+  return wrap;
 }

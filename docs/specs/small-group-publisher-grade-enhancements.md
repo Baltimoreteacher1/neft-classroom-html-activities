@@ -1,14 +1,73 @@
 # Small-Group Lessons — Publisher-Grade Enhancement List
 
+> ## Wave 8 — depth pass (2026-07-27)
+>
+> A fresh measured pass over all 148 variant configs surfaced gaps the original
+> audit did not, because it read `practice.*` (largely unrendered) rather than the
+> bank the renderer actually builds. Corrected findings and what shipped:
+>
+> **D1. Level 1 and Catch-Up practice was 100% one item format.** All 768 Level 1
+> and 240 catch-up rendered items were `guided-fill` — twelve identical typed-step
+> drills — while only Level 2 ever received the authored multiple-choice /
+> error-analysis / sort items sitting in the _same_ config. `collectPracticeItems`
+> now appends a balanced, tier-appropriate slice (`varietySlice`, cap 6,
+> round-robin across item types so it cannot collapse into six MC questions).
+> Level 1 and Catch-Up go 12 → 18 items with 3–5 formats; Level 2's existing
+> `extending` append is untouched.
+>
+> **D2. Per-item standard alignment.** `tagPracticeItem` now stamps `_standard` on
+> every rendered item, so evidence can roll up per standard and not only per
+> lesson. (Closes the residue of item 5.)
+>
+> **D3. Exit ticket was one item on all 148 lessons.** Item 9 was only half-done —
+> Wave 3 added a written "how you know", but a single MC item is not a mastery
+> decision. Added `createTransferCheck`: a second, independent transfer item drawn
+> from an authored tier the student has _not_ practised, plus a 3-level band
+> (Keep building / Approaching / Meeting) scored on FIRST attempt across both
+> items and persisted as `checkBand`. Deliberately not wired into `tally` — this is
+> evidence depth, not another completion gate.
+>
+> **D4. Level 2 had no Build-the-idea visual at all.** Now gated rather than
+> absent: Level 2 gets the same arithmetic-verified models behind a "🧩 Check my
+> model" toggle, so the picture confirms reasoning instead of replacing it. Support
+> tiers keep them open. One `visualMode` value reverts it.
+>
+> **D5. EN/ES parity broke on enrichment items, and hint/feedback coverage was
+> thin.** 40% of Level 2's rendered items had no `stemEs`; 30% of its distractors
+> had blank `choiceFeedback`; 181 items had no hint ladder and 114 no explanation.
+> Root cause is architectural: every variant copies `practice.*` verbatim from its
+> BASE lesson, and the base bank was authored English-only. Enrichment was authored
+> against the 64 base configs and propagated by item identity
+> (`tools/merge-practice-enrichment.mjs`) — no regeneration, so no base drift.
+>
+> **D6. The generator was dropping authored vocabulary.**
+> `generate-small-group-lessons.mjs` sliced `base.vocabulary` to the first 4 terms,
+> so 1–3 authored terms per lesson never reached a variant even after Wave 4 raised
+> the _render_ cap to 8. Generator now slices to 8, and
+> `tools/backfill-variant-vocabulary.mjs` restored 188 terms across 126 configs
+> without a regen.
+>
+> **Considered and declined:** giving Level 2 a distinct warm-up / Connect scenario.
+> Level 1 and Level 2 share those byte-for-byte in all 64 pairs, but the only
+> non-authoring way to differentiate them is a generic "generalize it / take the
+> challenge" prompt — exactly the content-free Group 2 card that was killed on
+> 2026-07-17. Doing this properly needs per-lesson authored content, not an engine
+> wrapper. Left open deliberately.
+>
+> **Regression guard:** `tools/small-group-practice-depth.test.mjs` (auto-discovered
+> by `npm test`) asserts variety, standard tagging, dense `_practiceIndex` for
+> Save/Resume, no duplicate items, and that Level 2's bank is unchanged.
+
 Status: audit 2026-07-23. **Wave 1** (items 1–5), **Wave 2** (6, 7, 17, 18),
 **item 8** (Small-Group Rotation Console), and **Wave 3** (9, 13, 15) all
 shipped. **Item 16** investigated → finding invalid, no-op (see below).
 **Wave 4** shipped 19/20 (dark mode). **Wave 5** shipped 10 + 12:
+
 - **10 — Family Math Letter** (`/curriculum/family-letter/`): a bilingual
   EN/ES printable that fetches any lesson's config and renders objective +
   standard text + a key-vocabulary table (real ES from `termEs`/`definitionEs`)
-  + derived "help at home" prompts + the common-mistake "gently check". Linked
-  from the curriculum Teacher Tools panel.
+  - derived "help at home" prompts + the common-mistake "gently check". Linked
+    from the curriculum Teacher Tools panel.
 - **12 — Printable Manipulative Masters** (`/curriculum/manipulatives/`):
   print-optimized SVG cut-out masters (number lines, four-quadrant grid,
   fraction bars, number cards 1–24 with primes shaded, algebra tiles,
@@ -41,7 +100,7 @@ teacher route, worksheets), benchmarked against professional publishers
 > `@media (prefers-color-scheme: dark)`. Secondary components (innovation.css,
 > annotation, storyboard beats, the go-deeper + facilitation-rhythm injected
 > styles, publisher-polish) each got tokenized or a dark override. `@media
-> print` resets the tokens to light so a dark-theme user still prints on white.
+print` resets the tokens to light so a dark-theme user still prints on white.
 > Verified with Playwright screenshots in both themes (light mode pixel-identical
 > to before) and a light-surface probe.
 >
@@ -71,7 +130,7 @@ still separates it from a commercial curriculum product, ranked by impact.
    takes no arguments, `small-group-innovation.js:475`). Publishers ship live
    item analysis. Pipe studio state into NTSignal/D1 (opt-in POST — hooks
    already exist in `events`/`store`) and add a class rotation card so the
-   teacher sees who's stuck *during* the rotation. (Roadmap #1, unbuilt.)
+   teacher sees who's stuck _during_ the rotation. (Roadmap #1, unbuilt.)
 2. **Rubrics + mastery bands.** No rubric exists anywhere in the small-group
    line: open-response is keyword + min-length matched, the exit ticket is one
    MC item framed as encouragement, and there is no approaching/meeting/
@@ -123,8 +182,8 @@ still separates it from a commercial curriculum product, ranked by impact.
     small-group family letter exists — a standard publisher deliverable. The
     ES content pipeline already exists to feed it.
 11. **One-click consolidated studio packet.** Evidence card + solved practice
-    + Apply-Lab work already have `printOnly()` lanes; bundle them into one
-    printable (roadmap #6, unbuilt).
+    - Apply-Lab work already have `printOnly()` lanes; bundle them into one
+      printable (roadmap #6, unbuilt).
 12. **Printed manipulative masters.** The labs are screen-only; publishers
     ship cut-out masters (number lines, factor cards, balance mats) so the
     same lesson runs paper-first when devices are short.
@@ -136,7 +195,7 @@ still separates it from a commercial curriculum product, ranked by impact.
     ≥12.5pt, AI-filler word linter, teacher voice) but only the CardForge
     pipeline enforces it; `validate-small-group-lessons.mjs` checks structure
     only. Add the copy-QA pass to the small-group validator.
-14. **Authored art.** `launch.contextImage` is a prose *description* of an
+14. **Authored art.** `launch.contextImage` is a prose _description_ of an
     image, not an asset; the space-station theme is carried by copy + emoji.
     All visuals are code-drawn SVG (a strength for math models, a gap for
     narrative pages). Commission/generate consistent scene + character art
@@ -154,15 +213,15 @@ still separates it from a commercial curriculum product, ranked by impact.
     narrative (`createMissionSection`, `small-group-engagement.js:68`) and reads
     `turnAndTalk` for the entire Talk section (`talkFor`,
     `small-group-engagement.js:426`) on group1/catch-up lessons — and
-    `validate-small-group-lessons.mjs:109-111` correctly *requires* both.
+    `validate-small-group-lessons.mjs:109-111` correctly _requires_ both.
     Stripping them deletes the Talk section from all 64 group1 lessons and
     degrades the mission. Only `noticeAndWonder.noticeStarters/wonderStarters`
     are truly dead (a few lines of payload) — not worth a risky 128-file regen.
     Catch-up strips the whole objects only because it renders no Talk/mission
     from them. No action taken.
 17. **Orphaned proof-path state.** `state.proofPath`/`proofResponse` are
-    initialized and *read* by the Evidence Card and Studio Packet
-    (`small-group-innovation.js:395,438`) but never *written* — those cells
+    initialized and _read_ by the Evidence Card and Studio Packet
+    (`small-group-innovation.js:395,438`) but never _written_ — those cells
     always render "Not selected yet." Remove the cells or re-wire to the
     Consensus Lab choice. Related vestiges: `.sg-proof-button` CSS rules with
     no JS, dead group2 branches in `createTalkSection`, `weDo`/`youDo` omitted

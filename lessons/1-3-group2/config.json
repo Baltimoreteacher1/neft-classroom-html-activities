@@ -251,6 +251,23 @@
       "definitionEs": "Contar de un número en un número, como 2, 4, 6, para listar sus múltiplos.",
       "visual": "Skip count by 6: 6, 12, 18, 24, 30 — each jump adds 6",
       "cloze": "Counting forward by a number other than 1, like 6, 12, 18, is called ___."
+    },
+    {
+      "term": "Prime factorization",
+      "termEs": "Factorización prima",
+      "definition": "Writing a number as prime numbers multiplied together. It helps you find the LCM.",
+      "definitionEs": "Escribir un número como números primos multiplicados. Ayuda a encontrar el mcm.",
+      "visual": "4 = 2 × 2, 6 = 2 × 3. LCM uses the highest power of each prime: 2² × 3 = 12",
+      "sentences": [
+        {
+          "text": "Using prime factorization, 12 = 2 × 2 × 3.",
+          "correct": true
+        },
+        {
+          "text": "Using prime factorization, 12 = 6 × 2.",
+          "correct": false
+        }
+      ]
     }
   ],
   "launch": {
@@ -391,14 +408,16 @@
         "choiceFeedback": [
           "",
           "Try skip counting to find where the lists first overlap.",
-          "",
-          ""
+          "40 minutos funciona para el autobús B (40 = 2 × 20), pero 40 no es múltiplo de 15, así que el autobús A todavía no ha vuelto. El momento debe servir para los dos.",
+          "80 minutos es múltiplo de 20 pero no de 15. Extiende las dos listas desde el principio y busca la primera vez que coinciden."
         ],
         "hints": [
           "Both buses start together at 8:00 — they meet again after a number of minutes that both 15 and 20 divide evenly.",
           "List each bus's return times in minutes and look for the first time that appears in both lists, then add it to 8:00 AM.",
           "Bus A returns at 15, 30, 45, … minutes. Write Bus B's list (20, 40, …) underneath and find the first shared time, then add it to 8:00."
-        ]
+        ],
+        "stemEs": "Dos autobuses salen de la estación a las 8:00 AM. El autobús A regresa cada 15 minutos y el autobús B regresa cada 20 minutos. ¿Cuándo es la próxima vez que los dos autobuses están juntos en la estación?",
+        "explanationEs": "MCM(15, 20) = 60 minutos. Los dos autobuses regresan juntos 60 minutos después de las 8:00 AM, es decir, a las 9:00 AM."
       },
       {
         "type": "error-analysis",
@@ -498,7 +517,19 @@
           "",
           "Does both numbers divide into that evenly?",
           "That's a common multiple, but is it the LEAST? Find the smallest one.",
-          ""
+          "6 minutos funciona para la segunda máquina, pero el 4 no cabe exacto en 6. El momento tiene que ser múltiplo de los dos tiempos."
+        ],
+        "stemEs": "Una máquina funciona cada 4 min y otra cada 6 min. Acaban de funcionar juntas. ¿En cuántos minutos vuelven a funcionar juntas?",
+        "explanationEs": "Cuenta salteado: los múltiplos de 4 son 4, 8, 12; los múltiplos de 6 son 6, 12. El primer múltiplo compartido es MCM(4, 6) = 12 minutos.",
+        "hints": [
+          "They line up again at a time that is a multiple of 4 and also a multiple of 6 — that is the least common multiple.",
+          "List the multiples of each number and watch for the first value that shows up in both lists.",
+          "Start the lists: 4, 8, ... for the first machine and 6, ... for the second. Keep extending both until the same number appears in each one."
+        ],
+        "hintsEs": [
+          "Vuelven a coincidir en un momento que es múltiplo de 4 y también de 6: ese es el mínimo común múltiplo.",
+          "Escribe los múltiplos de cada número y busca el primer valor que aparezca en las dos listas.",
+          "Empieza las listas: 4, 8, ... para la primera máquina y 6, ... para la segunda. Sigue extendiendo las dos hasta que el mismo número aparezca en ambas."
         ]
       },
       {
@@ -516,7 +547,19 @@
           "",
           "Does both numbers divide into that evenly?",
           "That's a common multiple, but is it the LEAST? Find the smallest one.",
-          ""
+          "16 es múltiplo de 8, pero no de 12. Sigue extendiendo las dos listas hasta encontrar un número que esté en ambas."
+        ],
+        "stemEs": "Un barco atraca cada 8 min y otro cada 12 min. Acaban de atracar juntos. ¿En cuántos minutos vuelven a atracar juntos?",
+        "explanationEs": "MCM(8, 12) = 24. Múltiplos de 8: 8, 16, 24; múltiplos de 12: 12, 24. El primer múltiplo compartido es 24 minutos.",
+        "hints": [
+          "Both ships dock together at a time that is a multiple of 8 and also a multiple of 12.",
+          "Skip count by each number separately, then look for the first time the two counts land on the same value.",
+          "Multiples of 8 begin 8, 16, ... and multiples of 12 begin 12, ... Keep extending both lists until one number turns up in each."
+        ],
+        "hintsEs": [
+          "Los dos barcos atracan juntos en un momento que es múltiplo de 8 y también de 12.",
+          "Cuenta salteado con cada número por separado y busca la primera vez que los dos conteos caen en el mismo valor.",
+          "Los múltiplos de 8 empiezan 8, 16, ... y los de 12 empiezan 12, ... Sigue extendiendo las dos listas hasta que un número aparezca en las dos."
         ]
       },
       {
@@ -565,14 +608,16 @@
         "choiceFeedback": [
           "",
           "Re-read the problem carefully and try again.",
-          "",
-          ""
+          "5 aparece al contar de 5 en 5, pero no aparece al contar de 3 en 3. Busca un número que esté en las dos listas.",
+          "30 sí está en las dos listas, pero no es el más pequeño. Vuelve a las listas y deténte en el primer múltiplo que compartan."
         ],
         "hints": [
           "LCM is about MULTIPLES (counting UP by each number), not factors. You want the smallest number BOTH lists reach.",
           "Skip count by 3s in one row and by 5s in another row, then scan for the first number that appears in both rows.",
           "Write the 3s row: 3, 6, 9, 12, … Then start the 5s row: 5, 10, … Stop as soon as one number shows up in both rows."
-        ]
+        ],
+        "stemEs": "¿Cuál es el MCM (mínimo común múltiplo) de 3 y 5?",
+        "explanationEs": "Múltiplos de 3: 3, 6, 9, 12, 15, ... Múltiplos de 5: 5, 10, 15, ... El menor múltiplo común es 15."
       },
       {
         "type": "multiple-choice",
@@ -588,14 +633,16 @@
         "choiceFeedback": [
           "",
           "Re-read the problem carefully and try again.",
-          "",
-          ""
+          "Parece que sumaste 6 + 8. El MCM no se obtiene sumando: hay que buscar un número que aparezca en las dos listas de múltiplos.",
+          "6 es múltiplo de 6, pero no de 8. Sigue contando de 6 en 6 hasta llegar a un número que también salga al contar de 8 en 8."
         ],
         "hints": [
           "Careful: 6 + 8 is not a multiple of either number. You need a number that both 6 AND 8 divide into evenly.",
           "List multiples of the LARGER number, 8, and check each one: is it also divisible by 6? Stop at the first hit.",
           "Test 8: divisible by 6? No. Test 16: divisible by 6? No. Keep climbing the 8s list until a number divides evenly by 6."
-        ]
+        ],
+        "stemEs": "¿Cuál es el MCM de 6 y 8?",
+        "explanationEs": "Múltiplos de 6: 6, 12, 18, 24, ... Múltiplos de 8: 8, 16, 24, ... El menor múltiplo común es 24."
       },
       {
         "type": "multiple-choice",
@@ -611,14 +658,16 @@
         "choiceFeedback": [
           "",
           "Re-read the problem carefully and try again.",
-          "",
-          ""
+          "10 es múltiplo de 10, pero no de 4. Cuenta de 4 en 4 y fíjate si el 10 aparece en esa lista.",
+          "2 es un factor común de los dos números, no un múltiplo común. El MCM nunca puede ser menor que 4 ni que 10."
         ],
         "hints": [
           "The LCM is the smallest number both 4 and 10 count into — it is often much smaller than 4 × 10 = 40.",
           "List the multiples of 10 (the bigger number) and test each one for divisibility by 4.",
           "Is 10 divisible by 4? 10 ÷ 4 = 2.5, so no. Move up to the next multiple of 10 and run the same test."
-        ]
+        ],
+        "stemEs": "¿Cuál es el MCM de 4 y 10?",
+        "explanationEs": "Múltiplos de 4: 4, 8, 12, 16, 20, ... Múltiplos de 10: 10, 20, ... El menor múltiplo común es 20."
       },
       {
         "type": "multiple-choice",
@@ -634,14 +683,16 @@
         "choiceFeedback": [
           "",
           "Try listing the factors again—check each one.",
-          "",
-          ""
+          "2 es múltiplo de 2, pero no de 7. El MCM nunca puede ser menor que el mayor de los dos números.",
+          "Parece que sumaste 2 + 7. El MCM se busca contando múltiplos, no sumando los números."
         ],
         "hints": [
           "Notice that 2 and 7 are both prime — they share no common factor. That makes this a special, faster case.",
           "List the multiples of 7 and find the first one that 2 also divides — in other words, the first EVEN multiple of 7.",
           "Test 7: is it even? No. Move to the next multiple of 7 and check evenness again — stop at the first even one."
-        ]
+        ],
+        "stemEs": "¿Cuál es el MCM de 2 y 7?",
+        "explanationEs": "Como 2 y 7 no comparten factores comunes (son primos entre sí), el MCM = 2 × 7 = 14."
       },
       {
         "type": "error-analysis",

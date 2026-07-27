@@ -191,7 +191,7 @@ function buildGroup1(base, u, m) {
     // keep .hints so support is available on the check
   }
 
-  out.vocabulary = (base.vocabulary || []).slice(0, 4);
+  out.vocabulary = (base.vocabulary || []).slice(0, 8);
 
   out.smallGroup = {
     group: 1,
@@ -281,7 +281,7 @@ function buildGroup2(base, u, m) {
     out.reflect.exitTicket.stem = `Explain your thinking — ${out.reflect.exitTicket.stem}`;
   }
 
-  out.vocabulary = (base.vocabulary || []).slice(0, 4);
+  out.vocabulary = (base.vocabulary || []).slice(0, 8);
 
   out.smallGroup = {
     group: 2,

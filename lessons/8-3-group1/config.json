@@ -229,6 +229,22 @@
       "definitionEs": "Qué tan separados están los números.",
       "visual": "Low spread: 8, 9, 10, 11 (close together). High spread: 2, 9, 10, 25 (far apart)",
       "cloze": "How far apart the data values are from each other is the ___."
+    },
+    {
+      "term": "Data distribution",
+      "termEs": "Distribución de datos",
+      "definition": "How the data looks: where it sits and how spread out it is.",
+      "definitionEs": "Cómo se ven los datos: dónde están y qué tan separados están.",
+      "visual": "A set clustered tightly around the mean has low MAD; a set spread far from the mean has high MAD",
+      "cloze": "The way data values are spread out is the ___."
+    },
+    {
+      "term": "Variability",
+      "termEs": "Variabilidad",
+      "definition": "How spread out the numbers are.",
+      "definitionEs": "Qué tan separados están los números.",
+      "visual": "Low variability (MAD = 1): very consistent. High variability (MAD = 8): very spread out",
+      "cloze": "How much the data values differ is the ___."
     }
   ],
   "launch": {
@@ -454,7 +470,9 @@
           "Absolute deviation asks: how FAR is the value 11 from the mean of 15? A distance is always a positive number.",
           "Subtract: value − mean gives the deviation. Then take the absolute value (drop any negative sign) to get the absolute deviation.",
           "Step 1: set up 11 − 15 (the result will be negative). Step 2 is turning that result into a positive distance."
-        ]
+        ],
+        "stemEs": "La media de un conjunto de datos es 15. Uno de los valores es 11. ¿Cuál es la desviación absoluta de ese valor respecto a la media?",
+        "explanationEs": "Desviación = 11 − 15 = −4. Desviación absoluta = |−4| = 4."
       },
       {
         "type": "multiple-choice",
@@ -477,7 +495,9 @@
           "You're given the five absolute deviations already — no subtracting needed. MAD is their average.",
           "MAD = (sum of the absolute deviations) ÷ (how many there are). Count them: there are 5 deviations listed.",
           "Step 1: add 3 + 1 + 5 + 2 + 4. Step 2: divide that total by 5. Don't stop after adding — the sum alone is not the MAD."
-        ]
+        ],
+        "stemEs": "Un conjunto de datos tiene desviaciones absolutas de 3, 1, 5, 2 y 4. ¿Cuál es la desviación absoluta media (MAD)?",
+        "explanationEs": "Suma de las desviaciones absolutas = 3 + 1 + 5 + 2 + 4 = 15. MAD = 15 ÷ 5 = 3."
       },
       {
         "type": "multiple-choice",
@@ -506,7 +526,9 @@
           "Same skill as before: absolute deviation is the distance between the value 26 and the mean 20.",
           "Compute value − mean, then take the absolute value. If the difference is already positive, the absolute value keeps it the same.",
           "Step 1: set up 26 − 20. Step 2: check the sign — a positive difference is already a distance, so you're nearly done."
-        ]
+        ],
+        "stemEs": "La media de un conjunto de datos es 20. Uno de los valores es 26. ¿Cuál es la desviación absoluta?",
+        "explanationEs": "Desviación = 26 − 20 = 6. Desviación absoluta = |6| = 6."
       },
       {
         "type": "multiple-choice",
@@ -529,7 +551,9 @@
           "Consistent means scores stay close to the team's average game after game. MAD measures exactly that closeness.",
           "MAD is the average DISTANCE of scores from the mean. Decide whether a small distance or a large distance means 'more consistent.'",
           "Compare what each number says: scores about 2.1 points from the mean vs about 6.8 points away on a typical night. Which team wanders less?"
-        ]
+        ],
+        "stemEs": "El equipo A tiene una MAD de 2.1 puntos. El equipo B tiene una MAD de 6.8 puntos. ¿Qué equipo es más consistente?",
+        "explanationEs": "Una MAD menor significa menos dispersión: los puntajes del equipo A se mantienen más cerca de su promedio, lo que los hace más consistentes."
       },
       {
         "type": "error-analysis",
@@ -576,7 +600,9 @@
           "'Reliable' is the key word — the coach wants times that barely change from race to race, not just a good average.",
           "Both runners average 60 seconds, so the average can't decide this. MAD tells you how much each runner's times swing around 60.",
           "First step: read each MAD as a sentence — a MAD of 1.2 means times usually stay within about 1.2 seconds of 60. Do the same for 5.8, then decide."
-        ]
+        ],
+        "stemEs": "Dos corredores tienen el mismo tiempo promedio de 60 segundos. La MAD del corredor A es de 1.2 segundos y la del corredor B es de 5.8 segundos. ¿Qué corredor es más probable que el entrenador elija para una carrera de relevos que necesita un tiempo confiable?",
+        "explanationEs": "La MAD de 1.2 del corredor A significa que sus tiempos suelen estar dentro de 1.2 segundos de 60. Los tiempos del corredor B varían mucho más. Para tener confiabilidad, se elige al corredor A."
       }
     ],
     "onLevel": [
@@ -592,10 +618,22 @@
         "correctIndex": 1,
         "explanation": "Add the distances: 3 + 1 + 1 + 3 = 8. Divide by the 4 games: 8 ÷ 4 = 2. The MAD is 2 points.",
         "choiceFeedback": [
-          "",
+          "Check the total before you divide — all four distances go into the sum, including both of the larger ones. Then divide that full total by the number of games.",
           "",
           "Mean is 5, not the distances—use the distances for MAD.",
           "Did you divide by the number of values (4)?"
+        ],
+        "stemEs": "Un base anotó 2, 4, 6 y 8 puntos en cuatro partidos de práctica, así que la media es 5 puntos. Las distancias a la media son 3, 1, 1 y 3. ¿Cuál es la desviación absoluta media (MAD)?",
+        "explanationEs": "Suma las distancias: 3 + 1 + 1 + 3 = 8. Divide entre los 4 partidos: 8 ÷ 4 = 2. La MAD es 2 puntos.",
+        "hints": [
+          "MAD is the average of the distances from the mean, so it is built from those four distances rather than from the scores themselves.",
+          "Add all of the distances together, then divide by how many games there were.",
+          "Add 3 + 1 + 1 + 3 to get the total distance, then divide that total by the 4 scrimmages."
+        ],
+        "hintsEs": [
+          "La MAD es el promedio de las distancias a la media, así que se construye con esas cuatro distancias y no con los puntajes mismos.",
+          "Suma todas las distancias y luego divide entre la cantidad de partidos.",
+          "Suma 3 + 1 + 1 + 3 para obtener la distancia total y luego divide ese total entre los 4 partidos de práctica."
         ]
       },
       {
@@ -614,6 +652,18 @@
           "Bigger MAD means scores spread wider, not closer to average.",
           "Scores would vary more with a bigger MAD, not less.",
           "MAD directly tells you how spread out the data is."
+        ],
+        "stemEs": "Dos tiradores promedian 11 puntos por partido. La MAD del tirador A es de 2 puntos y la del tirador B es de 6 puntos. ¿Qué tirador es MÁS consistente?",
+        "explanationEs": "Una MAD menor significa que los puntajes se mantienen cerca de la media. La MAD de 2 del tirador A es menor que la de 6 del tirador B, así que el tirador A es más consistente.",
+        "hints": [
+          "MAD measures spread — how far the scores usually land from the average.",
+          "Both shooters have the same mean, so the mean cannot settle this. Compare the MAD values instead.",
+          "A MAD of 2 means scores usually sit about 2 points away from 11, while a MAD of 6 means they wander about 6 points away. Decide which of those describes scores that stay close to the average."
+        ],
+        "hintsEs": [
+          "La MAD mide la dispersión: qué tan lejos suelen quedar los puntajes del promedio.",
+          "Ambos tiradores tienen la misma media, así que la media no puede decidir esto. Compara los valores de la MAD.",
+          "Una MAD de 2 significa que los puntajes suelen quedar a unos 2 puntos de 11, mientras que una MAD de 6 significa que se alejan unos 6 puntos. Decide cuál de esas describe puntajes que se mantienen cerca del promedio."
         ]
       },
       {
