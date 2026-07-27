@@ -21,6 +21,14 @@ body.nt-present .app .sidebar {
   display: none !important;
 }
 
+/* .app is `grid-template-columns: 300px minmax(0, 1fr)`. Hiding the sidebar
+   removes it from the grid, which drops the lesson itself into the leftover
+   300px track — a thin ribbon of text on a classroom board. Collapse to one
+   full-width column so the lesson actually fills the projection. */
+body.nt-present .app {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 /* Projection legibility: step the reading size up while presenting */
 body.nt-present .phase,
 body.nt-present .sg-panel {
@@ -44,7 +52,9 @@ body.nt-present .pm-rail {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 14px 12px;
+  /* Top padding clears the floating Tools chip, which is fixed to the same
+     top-right corner and otherwise sits on top of the "Presenting" heading. */
+  padding: 58px 12px 14px;
   background: var(--fl-page, #fffdf8);
   border-left: 1px solid var(--fl-rule, #e4d9c2);
   z-index: 55;
@@ -185,5 +195,175 @@ html.nt-extra-fullpage-open body.nt-present .pm-rail {
   body.nt-present .pm-rail,
   body.nt-present .pm-nav {
     display: none !important;
+  }
+}
+
+/* ── Presenter widget (teacher-only floating control) ─────────────────────────
+   Moved here from assets/learning-supports/learning-supports.css so the styles
+   ship with the module that builds the widget (engine/core/present-mode.js) and
+   are available on every lesson type, not just the shells that happen to link
+   the learning-supports stylesheet. */
+#nt-present-widget {
+  position: fixed;
+  top: 14px;
+  right: 180px;
+  z-index: 9999;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nt-present-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(18, 53, 91, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+  padding: 5px 8px 5px 14px;
+  box-shadow: 0 4px 16px rgba(12, 38, 66, 0.35);
+  color: #ffffff;
+}
+
+.nt-present-label {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #7dd3fc;
+  white-space: nowrap;
+}
+
+.nt-present-act-btn {
+  background: linear-gradient(135deg, #0d7a76 0%, #0f766e 100%);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 2px 8px rgba(13, 122, 118, 0.4);
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease;
+}
+
+.nt-present-act-btn:hover {
+  transform: translateY(-1px) scale(1.02);
+  background: linear-gradient(135deg, #0f766e 0%, #115e59 100%);
+}
+
+/* Active state: the same button exits Present mode */
+.nt-present-act-btn.is-presenting {
+  background: linear-gradient(135deg, #b91c1c 0%, #dc2626 100%);
+  box-shadow: 0 2px 8px rgba(185, 28, 28, 0.45);
+}
+
+.nt-present-act-btn.is-presenting:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+}
+
+.nt-present-min-btn {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  border: 0;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    transform 0.15s ease;
+}
+
+.nt-present-min-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+.nt-present-btn-mini {
+  background: rgba(18, 53, 91, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 14px rgba(12, 38, 66, 0.3);
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease;
+}
+
+.nt-present-btn-mini:hover {
+  transform: scale(1.04);
+  background: #0f766e;
+}
+
+.nt-present-expand-icon {
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+/* While presenting, the widget itself must not sit on the projected board.
+   Bottom-left, out of the way of the Save/Resume pill in the right corner. */
+body.nt-present #nt-present-widget {
+  top: auto;
+  right: auto;
+  left: 12px;
+  bottom: 12px;
+  opacity: 0.5;
+}
+
+body.nt-present #nt-present-widget:hover,
+body.nt-present #nt-present-widget:focus-within {
+  opacity: 1;
+}
+
+.nt-present-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100001;
+  background: #1e293b;
+  color: #f8fafc;
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-size: 13.5px;
+  font-weight: 600;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  animation: ntToastFadeIn 0.3s ease;
+}
+
+@keyframes ntToastFadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 10px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
   }
 }

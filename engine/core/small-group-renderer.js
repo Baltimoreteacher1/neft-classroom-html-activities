@@ -60,7 +60,11 @@ import {
   voiceFor,
 } from "./small-group-ui.js";
 import { mountTeacherClearButton } from "./teacher-clear.js";
-import { mountPresentWidget, startScreenShare } from "./present-mode.js";
+// NOTE: present-mode.css is NOT imported here. tools/small-group-modes.test.mjs
+// imports this module under bare Node, which cannot resolve a CSS import at
+// all — the stylesheet reaches the page through Vite's shared CSS chunk, which
+// every lesson entry links.
+import { mountPresentWidget } from "./present-mode.js";
 import { isToolsMode, mountToolsMenuItem, renderToolsPage } from "./tools-mode.js";
 
 // One Build stage rendered as an interactive player instead of a static list.
@@ -474,11 +478,7 @@ function renderStudio(config) {
     window.location.reload();
   };
   mountTeacherClearButton(window.__ntClearLessonAnswers);
-  mountPresentWidget({
-    onPresentToggle: async () => {
-      await startScreenShare();
-    },
-  });
+  mountPresentWidget();
   const state = {
     before: null,
     after: null,
