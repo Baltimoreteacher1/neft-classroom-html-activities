@@ -1107,6 +1107,19 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       }
     },
 
+    // Canonical forward navigation for controls rendered inside a phase. Some
+    // lesson sections (Warmup and Objectives) previously called this API even
+    // though it did not exist, leaving their bottom Continue buttons inert.
+    // Resolve the next index from live state so the same control works after a
+    // resume, a sidebar jump, or future phase insertions.
+    nextPhase() {
+      const current = state.get().currentPhase ?? 0;
+      const next = current + 1;
+      if (next >= config.phases.length) return false;
+      this.navigateTo(next);
+      return true;
+    },
+
     // Mark/unmark which (if any) pre-lesson tab is currently being viewed.
     setExtraActive(kind) {
       sidebar
