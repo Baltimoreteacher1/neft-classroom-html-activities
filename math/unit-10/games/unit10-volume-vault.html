@@ -464,32 +464,21 @@
             ><small>Score</small> <span id="hud-score">0</span></span
           >
         </div>
-        <div class="card">
-          <div class="target">
-            <div class="nums">
-              Build a vault of exactly
-              <span id="t-vol">24</span> cubic units
-            </div>
-            <div class="prompt">
-              Set the length, width, and height. Each unit cube is 1 cubic unit
-              — seal the vault when the volume is exactly right.
-            </div>
-          </div>
-
-          <div class="builder">
-            <div class="stage">
-              <canvas
-                id="prism"
-                width="420"
-                height="300"
-                role="img"
-                aria-label="A rectangular prism built from unit cubes. Its size changes as you set the length, width, and height."
-              ></canvas>
+        <div class="card play-layout-grid">
+          <!-- SIDE PANEL: Dimension Steppers & Controls -->
+          <div class="side-panel-inputs">
+            <div class="target">
+              <div class="nums">
+                Target Volume: <span id="t-vol">24</span> cu units
+              </div>
+              <div class="prompt">
+                Adjust length, width, and height to match the target volume.
+              </div>
             </div>
 
             <div class="steppers">
               <div class="stepper">
-                <span class="slabel">Length</span>
+                <span class="slabel">Length (l)</span>
                 <div class="srow">
                   <button
                     class="sbtn"
@@ -511,7 +500,7 @@
                 </div>
               </div>
               <div class="stepper">
-                <span class="slabel">Width</span>
+                <span class="slabel">Width (w)</span>
                 <div class="srow">
                   <button
                     class="sbtn"
@@ -533,7 +522,7 @@
                 </div>
               </div>
               <div class="stepper">
-                <span class="slabel">Height</span>
+                <span class="slabel">Height (h)</span>
                 <div class="srow">
                   <button
                     class="sbtn"
@@ -557,10 +546,23 @@
             </div>
           </div>
 
-          <div class="formula" id="formula"></div>
-          <div class="seal-row">
-            <button class="btn big seal" id="seal">🔒 Seal the vault</button>
+          <!-- CENTER VAULT STAGE -->
+          <div class="vault-center-stage">
+            <div class="stage">
+              <canvas
+                id="prism"
+                width="420"
+                height="280"
+                role="img"
+                aria-label="A rectangular prism built from unit cubes."
+              ></canvas>
+            </div>
+            <div class="formula" id="formula"></div>
+            <div class="seal-row" style="margin-top: 14px;">
+              <button class="btn big seal ewl-open-vault-btn" id="seal">🔓 SEAL & OPEN VAULT</button>
+            </div>
           </div>
+        </div>
 
           <div
             class="feedback"
