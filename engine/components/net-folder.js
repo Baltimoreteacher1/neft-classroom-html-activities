@@ -3,8 +3,12 @@
 //
 // Config:
 //   instructions  string
-//   solid         "cube" (default) | "rectangular-prism"
-//   size          { w, h, d } edge lengths in arbitrary units (default 100 cube)
+//   solid         "cube" (default) | "rectangular-prism" | "square-pyramid"
+//                 An unrecognised value falls back to a rectangular prism and
+//                 warns — it must never silently draw the wrong solid.
+//   size          { w, h, d } edge lengths in arbitrary units (default 100 cube).
+//                 For square-pyramid: w is the base edge, h the vertical height
+//                 (d is ignored — the base is square).
 //   question      optional { stem, choices, correctIndex } — confirms which solid
 //                 the net folds into; correctness reported from this.
 //   onComplete(correct, total)
@@ -69,6 +73,113 @@ function ensureNetFolderStyles() {
   document.head.append(style);
 }
 
+// Face layout per solid.
+//
+// Box net (cube / rectangular-prism): the original six-face cross. Faces use a
+// centred transform-origin, so `flat` is a pure 2D translate.
+//
+// Square pyramid: a square base with four triangular flaps hinged on its edges.
+// The flaps use a bottom-centre transform-origin (set in the element factory)
+// so `translate(x,y)` places the hinge and `rotateX` swings the flap about it.
+// Their height is the SLANT height — apex to the midpoint of a base edge — not
+// the pyramid's vertical height, which is what makes the folded apex meet.
+function buildFaces(solid, { w, h, d }) {
+  if (solid === "square-pyramid") {
+    const slant = Math.sqrt(h * h + (w / 2) * (w / 2));
+    // Dihedral angle between the base plane and a lateral face, expressed as
+    // the rotation away from vertical: 0 => upright face, 90 => flat on the base.
+    const tilt = 90 - (Math.atan2(h, w / 2) * 180) / Math.PI;
+    const half = w / 2;
+    const lateral = [
+      { name: "front", yaw: 0, flatRot: 180, fx: 0, fy: half, color: "rgba(31,166,162,0.85)" },
+      { name: "right", yaw: 90, flatRot: 90, fx: half, fy: 0, color: "rgba(217,121,93,0.85)" },
+      { name: "back", yaw: 180, flatRot: 0, fx: 0, fy: -half, color: "rgba(18,53,91,0.85)" },
+      { name: "left", yaw: 270, flatRot: -90, fx: -half, fy: 0, color: "rgba(217,121,93,0.65)" },
+    ];
+    return [
+      {
+        name: "base",
+        wpx: w,
+        hpx: w,
+        color: "rgba(242,193,91,0.9)",
+        flat: `translate(0px, 0px)`,
+        fold: `translateY(${(h / 2).toFixed(2)}px) rotateX(90deg)`,
+      },
+      ...lateral.map((f) => ({
+        name: f.name,
+        wpx: w,
+        hpx: slant,
+        shape: "triangle",
+        color: f.color,
+        flat: `translate(${f.fx}px, ${f.fy}px) rotate(${f.flatRot}deg)`,
+        // Positive rotateX tips the flap's apex INWARD, toward the pyramid's
+        // axis. Negative would splay the flaps outward into a crown.
+        fold:
+          `translateY(${(h / 2).toFixed(2)}px) rotateY(${f.yaw}deg) ` +
+          `translateZ(${half}px) rotateX(${tilt.toFixed(2)}deg)`,
+      })),
+    ];
+  }
+
+  if (solid !== "cube" && solid !== "rectangular-prism") {
+    console.warn(
+      `[net-folder] unsupported solid "${solid}" — drawing a rectangular prism. ` +
+        `Supported: cube, rectangular-prism, square-pyramid.`,
+    );
+  }
+
+  return [
+    {
+      name: "front",
+      wpx: w,
+      hpx: h,
+      color: "rgba(31,166,162,0.85)",
+      flat: `translate(0px, 0px)`,
+      fold: `translateZ(${d / 2}px)`,
+    },
+    {
+      name: "back",
+      wpx: w,
+      hpx: h,
+      color: "rgba(18,53,91,0.85)",
+      flat: `translate(0px, ${2 * h}px)`,
+      fold: `rotateY(180deg) translateZ(${d / 2}px)`,
+    },
+    {
+      name: "top",
+      wpx: w,
+      hpx: d,
+      color: "rgba(242,193,91,0.9)",
+      flat: `translate(0px, ${-h}px)`,
+      fold: `rotateX(90deg) translateZ(${h / 2}px)`,
+    },
+    {
+      name: "bottom",
+      wpx: w,
+      hpx: d,
+      color: "rgba(242,193,91,0.7)",
+      flat: `translate(0px, ${h}px)`,
+      fold: `rotateX(-90deg) translateZ(${h / 2}px)`,
+    },
+    {
+      name: "left",
+      wpx: d,
+      hpx: h,
+      color: "rgba(217,121,93,0.85)",
+      flat: `translate(${-w}px, 0px)`,
+      fold: `rotateY(-90deg) translateZ(${w / 2}px)`,
+    },
+    {
+      name: "right",
+      wpx: d,
+      hpx: h,
+      color: "rgba(217,121,93,0.65)",
+      flat: `translate(${w}px, 0px)`,
+      fold: `rotateY(90deg) translateZ(${w / 2}px)`,
+    },
+  ];
+}
+
 export function renderNetFolder(
   container,
   { instructions, solid = "cube", size, question, onComplete },
@@ -82,6 +193,9 @@ export function renderNetFolder(
   if (solid === "cube") {
     dims.h = dims.w;
     dims.d = dims.w;
+  }
+  if (solid === "square-pyramid") {
+    dims.d = dims.w; // the base is square; only w and h are meaningful
   }
 
   const wrapper = document.createElement("div");
@@ -139,60 +253,34 @@ export function renderNetFolder(
   const { w, h, d } = dims;
   const faceBg = (c) => `background:${c}; border:2px solid var(--navy); box-sizing:border-box;`;
 
-  // Six faces. Each has: flat (unfolded) transform and folded transform.
-  // Unfolded layout is a cross net; folded is a closed box centered on origin.
-  const faces = [
-    {
-      name: "front",
-      wpx: w,
-      hpx: h,
-      color: "rgba(31,166,162,0.85)",
-      flat: `translate(0px, 0px)`,
-      fold: `translateZ(${d / 2}px)`,
-    },
-    {
-      name: "back",
-      wpx: w,
-      hpx: h,
-      color: "rgba(18,53,91,0.85)",
-      flat: `translate(0px, ${2 * h}px)`,
-      fold: `rotateY(180deg) translateZ(${d / 2}px)`,
-    },
-    {
-      name: "top",
-      wpx: w,
-      hpx: d,
-      color: "rgba(242,193,91,0.9)",
-      flat: `translate(0px, ${-h}px)`,
-      fold: `rotateX(90deg) translateZ(${h / 2}px)`,
-    },
-    {
-      name: "bottom",
-      wpx: w,
-      hpx: d,
-      color: "rgba(242,193,91,0.7)",
-      flat: `translate(0px, ${h}px)`,
-      fold: `rotateX(-90deg) translateZ(${h / 2}px)`,
-    },
-    {
-      name: "left",
-      wpx: d,
-      hpx: h,
-      color: "rgba(217,121,93,0.85)",
-      flat: `translate(${-w}px, 0px)`,
-      fold: `rotateY(-90deg) translateZ(${w / 2}px)`,
-    },
-    {
-      name: "right",
-      wpx: d,
-      hpx: h,
-      color: "rgba(217,121,93,0.65)",
-      flat: `translate(${w}px, 0px)`,
-      fold: `rotateY(90deg) translateZ(${w / 2}px)`,
-    },
-  ];
+  // Each face has: flat (unfolded, laid out in the screen plane as a net) and
+  // fold (its place on the closed solid, centered on the origin).
+  const faces = buildFaces(solid, dims);
 
+  const SVG_NS = "http://www.w3.org/2000/svg";
   const faceEls = faces.map((f) => {
+    // Triangular flaps hinge on their bottom edge, so they are positioned by
+    // that edge (margin-top pulls the whole height up) and rotate about it.
+    // They are drawn as SVG rather than a clip-path so the outline survives —
+    // clip-path would cut the border off along the two slanted sides.
+    if (f.shape === "triangle") {
+      const el = document.createElementNS(SVG_NS, "svg");
+      el.setAttribute("class", "nf-face");
+      el.setAttribute("viewBox", `0 0 ${f.wpx} ${f.hpx}`);
+      el.style.cssText = `
+        position:absolute; left:50%; top:50%; margin-left:${-f.wpx / 2}px; margin-top:${-f.hpx}px;
+        width:${f.wpx}px; height:${f.hpx}px; transform-origin:50% 100%; overflow:visible;
+        transition:transform 0.05s linear; backface-visibility:visible;`;
+      const poly = document.createElementNS(SVG_NS, "polygon");
+      poly.setAttribute("points", `${f.wpx / 2},0 ${f.wpx},${f.hpx} 0,${f.hpx}`);
+      poly.style.fill = f.color;
+      poly.style.stroke = "var(--navy)";
+      poly.style.strokeWidth = "2";
+      poly.style.strokeLinejoin = "round";
+      el.append(poly);
+      scene.append(el);
+      return el;
+    }
     const el = document.createElement("div");
     el.className = "nf-face";
     el.style.cssText = `
