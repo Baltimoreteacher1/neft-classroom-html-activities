@@ -45,6 +45,17 @@ const ROOTS = [
   "number-system",
   "ratios-proportions",
   "surface-area-review",
+  "math/unit-1/games",
+  "math/unit-2/games",
+  "math/unit-3/games",
+  "math/unit-4/games",
+  "math/unit-5/games",
+  "math/unit-6/games",
+  "math/unit-7/games",
+  "math/unit-8/games",
+  "math/unit-9/games",
+  "math/unit-10/games",
+  "math/statistics/games",
 ];
 
 const SKIP_DIRS = new Set(["node_modules", "dist", "vendor", "engine3d", ".git"]);
