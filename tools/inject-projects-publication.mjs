@@ -10,7 +10,22 @@ import { fileURLToPath } from "node:url";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DRY_RUN = process.argv.includes("--dry-run");
 const UNITS = [...Array.from({ length: 10 }, (_, i) => `unit-${i + 1}`), "statistics"];
-const VERSIONS = ["version-a", "version-b"];
+
+/* Enumerate version folders from disk (version-a, version-b, version-c, …).
+   A hardcoded ["version-a","version-b"] list is why unit-8/version-c was
+   invisible to nearly every projects-* layer — never reintroduce one. */
+function versionsOf(unit) {
+  try {
+    return fs
+      .readdirSync(path.join(ROOT, "math", unit, "projects"), { withFileTypes: true })
+      .filter((entry) => entry.isDirectory() && /^version-[a-z]$/.test(entry.name))
+      .map((entry) => entry.name)
+      .sort();
+  } catch (_error) {
+    return [];
+  }
+}
+
 const HEAD = [
   "    <!-- projects-publication-head:begin (Publication Studio — tools/inject-projects-publication.mjs) -->",
   '    <link rel="stylesheet" href="/shared/projects/projects-publication.css?v=20260714" />',
@@ -58,10 +73,12 @@ function inject(rel) {
 
 let changed = 0;
 let failed = 0;
+let targets = 0;
 console.log(`Projects Publication Studio injection${DRY_RUN ? " (dry-run)" : ""}:`);
 for (const unit of UNITS) {
-  for (const version of VERSIONS) {
+  for (const version of versionsOf(unit)) {
     const rel = `math/${unit}/projects/${version}/index.html`;
+    targets++;
     try {
       if (inject(rel)) changed++;
     } catch (error) {
@@ -70,5 +87,6 @@ for (const unit of UNITS) {
     }
   }
 }
+console.log(`${targets} project page(s) enumerated.`);
 console.log(`${changed} file(s) ${DRY_RUN ? "would be " : ""}updated.`);
 if (failed) process.exit(1);

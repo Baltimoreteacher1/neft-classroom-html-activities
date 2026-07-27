@@ -1,0 +1,1092 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
+    <title>Statistics Projects — Teacher Answer Key | Neft Teacher</title>
+    <meta
+      name="description"
+      content="Teacher answer key for the Statistics culminating projects (Version A: Class Data Detective and Version B: Real-World Data Investigation). Worked exemplars using the built-in example datasets, expected relationships per step, common misconceptions, and rubric anchors."
+    />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      /* ── Answer-Key specific styles (matches math/unit-N/projects/answer-key) ── */
+      .ak-hero {
+        background: linear-gradient(135deg, #1a1150 0%, #4f46e5 60%, #0e8a7d 100%);
+        color: #fff;
+        padding: 36px 24px 30px;
+        text-align: center;
+      }
+      .ak-hero h1 {
+        margin: 8px 0 6px;
+        font-size: clamp(24px, 4vw, 36px);
+        letter-spacing: -0.02em;
+      }
+      .ak-hero p {
+        max-width: 640px;
+        margin: 0 auto;
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 16px;
+      }
+      .ak-tags {
+        margin-top: 14px;
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .ak-tag {
+        background: rgba(255, 255, 255, 0.18);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50px;
+        padding: 4px 13px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .ak-tag.gold {
+        background: #d4952a;
+        border-color: #d4952a;
+        color: #2a1c00;
+      }
+
+      .wrap {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 20px 60px;
+      }
+
+      .ak-print-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #1a1150;
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 11px 22px;
+        font-weight: 800;
+        font-size: 15px;
+        cursor: pointer;
+        margin: 22px 0 10px;
+        font-family: inherit;
+      }
+      .ak-print-btn:hover {
+        filter: brightness(1.1);
+      }
+
+      .version-banner {
+        background: linear-gradient(90deg, #1a1150, #4f46e5);
+        color: #fff;
+        border-radius: 14px;
+        padding: 14px 20px;
+        margin: 30px 0 18px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .version-banner.green {
+        background: linear-gradient(90deg, #0f3b2c, #0e8a7d);
+      }
+      .version-banner .vb-icon {
+        font-size: 30px;
+        line-height: 1;
+        flex: 0 0 auto;
+      }
+      .version-banner h2 {
+        margin: 0;
+        font-size: 22px;
+      }
+      .version-banner p {
+        margin: 2px 0 0;
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.85);
+      }
+
+      .ak-phase {
+        background: #fff;
+        border: 1px solid #e2e7ec;
+        border-radius: 14px;
+        padding: 22px 24px;
+        margin: 16px 0;
+        box-shadow: 0 3px 14px rgba(26, 17, 80, 0.08);
+      }
+      .ak-phase-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+      .ak-phase-num {
+        flex: 0 0 auto;
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: #4f46e5;
+        color: #fff;
+        font-weight: 800;
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .ak-phase-num.teal {
+        background: #0e8a7d;
+      }
+      .ak-phase-num.gold {
+        background: #d4952a;
+        color: #2a1c00;
+      }
+      .ak-phase-num.coral {
+        background: #c45a3c;
+      }
+      .ak-phase-num.green {
+        background: #2d874b;
+      }
+      .ak-phase-num.navy {
+        background: #1a1150;
+      }
+
+      .ak-phase h3 {
+        margin: 0;
+        font-size: 18px;
+        color: #1a2633;
+      }
+      .ak-phase .skill-label {
+        font-size: 11px;
+        font-weight: 700;
+        color: #5e6e7e;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .ak-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        margin-top: 12px;
+      }
+      @media (max-width: 580px) {
+        .ak-row {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .ak-input-block {
+        background: #f7f9fb;
+        border: 1px solid #e2e7ec;
+        border-radius: 10px;
+        padding: 12px 14px;
+      }
+      .ak-input-block .label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #5e6e7e;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: 4px;
+      }
+      .ak-input-block .val {
+        font-size: 17px;
+        font-weight: 800;
+        color: #1a2633;
+      }
+
+      .ak-answer {
+        background: #e4f5f3;
+        border: 1px solid #bfe6e0;
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-top: 12px;
+      }
+      .ak-answer .big {
+        font-size: 26px;
+        font-weight: 800;
+        color: #0e8a7d;
+        margin-bottom: 6px;
+      }
+      .ak-answer .steps {
+        font-size: 14px;
+        color: #1a2633;
+        line-height: 1.7;
+      }
+
+      .ak-qc {
+        background: #fdf3e0;
+        border: 1px solid #f5d78a;
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-top: 12px;
+      }
+      .ak-qc .qc-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #7c5a00;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .ak-qc .qc-q {
+        font-size: 15px;
+        font-weight: 700;
+        color: #1a2633;
+        margin: 4px 0;
+      }
+      .ak-qc .qc-work {
+        font-size: 14px;
+        color: #5e6e7e;
+        margin-top: 4px;
+        line-height: 1.65;
+      }
+
+      .ak-sample {
+        background: #e6f4eb;
+        border: 1px solid #a6d9b7;
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-top: 12px;
+      }
+      .ak-sample .s-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #185c2e;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .ak-sample p {
+        margin: 6px 0 0;
+        font-size: 14px;
+        color: #1a2633;
+        line-height: 1.65;
+        font-style: italic;
+      }
+
+      .ak-rubric {
+        background: #eeecfd;
+        border: 1px solid #c5bff7;
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-top: 12px;
+      }
+      .ak-rubric .r-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #2d1a8a;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .ak-rubric p {
+        margin: 6px 0 0;
+        font-size: 14px;
+        color: #1a2633;
+        line-height: 1.65;
+      }
+
+      .ak-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        font-size: 14px;
+      }
+      .ak-table th,
+      .ak-table td {
+        border: 1px solid #e2e7ec;
+        padding: 7px 10px;
+        text-align: center;
+      }
+      .ak-table th {
+        background: #f7f9fb;
+        color: #5e6e7e;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .ak-scroll {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        max-width: 100%;
+      }
+
+      .section-divider {
+        border: none;
+        border-top: 2px dashed #e2e7ec;
+        margin: 32px 0;
+      }
+
+      @media print {
+        .ak-print-btn {
+          display: none !important;
+        }
+        .ak-hero {
+          background: #1a1150 !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        .ak-phase,
+        .version-banner {
+          box-shadow: none;
+          break-inside: avoid;
+        }
+        body {
+          background: #fff;
+        }
+        .version-banner {
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        .ak-answer,
+        .ak-qc,
+        .ak-sample,
+        .ak-rubric,
+        .ak-input-block {
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+      }
+    </style>
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+    <!-- answer-key-gate-injected:begin (teacher gate — tools/inject-projects-gold.mjs) -->
+    <link rel="stylesheet" href="/shared/projects/answer-key-gate.css" />
+    <!-- answer-key-gate-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <header class="ak-hero">
+      <div style="font-size: 44px; line-height: 1">📋</div>
+      <h1>Statistics Projects — Teacher Answer Key</h1>
+      <p>
+        Worked exemplars using each page's built-in example dataset, the expected relationship at
+        every step, the misconceptions to watch for, and rubric anchors at each score point. For
+        teachers only.
+      </p>
+      <div class="ak-tags">
+        <span class="ak-tag gold">Statistics · Data &amp; Distributions</span>
+        <span class="ak-tag">6.SP.A.1</span>
+        <span class="ak-tag">6.SP.B.4</span>
+        <span class="ak-tag">6.SP.B.5</span>
+        <span class="ak-tag">Teacher Use Only</span>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <div class="note-panel" style="margin: 20px 0">
+        <p>
+          <strong>These projects are open-ended, so this is not a single numeric key.</strong> Every
+          student chooses their own dataset, so their numbers will differ. What is fixed — and what
+          you actually grade — is the <strong>relationship</strong> at each step: the formula they
+          must apply, whether their statistic is consistent with their own data, and whether their
+          explanation says what the number means. Each phase below gives you (1) the exact numbers
+          produced by the page's own <em>"Use example numbers"</em> button so you can verify the
+          tool in front of a class, (2) the relationship a correct answer must satisfy for
+          <em>any</em> dataset, (3) the common wrong moves, and (4) 4/3/2 anchor examples.
+        </p>
+      </div>
+
+      <button class="ak-print-btn" onclick="window.print()">🖨️ Print answer key</button>
+
+      <!-- ═══════════════════════════════════════════════════ -->
+      <!-- VERSION A: Class Data Detective                     -->
+      <!-- ═══════════════════════════════════════════════════ -->
+      <div class="version-banner">
+        <div class="vb-icon">🔍</div>
+        <div>
+          <h2>Version A — Class Data Detective</h2>
+          <p>
+            Context: surveying classmates about nightly sleep hours (or screen time), then finding
+            center (mean, median), spread (range, MAD), and building a dot plot.
+          </p>
+        </div>
+      </div>
+
+      <!-- Phase 1 -->
+      <div class="ak-phase">
+        <div class="ak-phase-head">
+          <div class="ak-phase-num">1</div>
+          <div>
+            <div class="skill-label">Measures of Center · 6.DS.4 / 6.SP.B.5</div>
+            <h3>Step 1 — Input Dataset &amp; Find Center</h3>
+          </div>
+        </div>
+
+        <p style="color: #5e6e7e; margin: 0 0 10px">
+          Students enter 6–10 survey values and press <strong>Calculate Center</strong>. The tool
+          refuses to calculate with fewer than 6 values. Numbers below are the page's built-in
+          example dataset.
+        </p>
+
+        <div class="ak-row">
+          <div class="ak-input-block">
+            <div class="label">Example dataset (8 values, hours)</div>
+            <div class="val">8, 7, 9, 8, 10, 6, 8, 9</div>
+          </div>
+          <div class="ak-input-block">
+            <div class="label">Relationships used</div>
+            <div class="val">mean = sum ÷ count; median = middle of the ordered list</div>
+          </div>
+        </div>
+
+        <div class="ak-answer">
+          <div class="big">Mean ≈ 8.13 hours · Median = 8 hours</div>
+          <div class="steps">
+            <strong>Mean:</strong> 8 + 7 + 9 + 8 + 10 + 6 + 8 + 9 = <strong>65</strong>; 65 ÷ 8 =
+            <strong>8.125</strong> ≈ 8.13 hours.<br />
+            <strong>Median:</strong> order the data → 6, 7, 8, 8, <strong>8, 8</strong>, 9, 9, 10 —
+            careful, the ordered list is 6, 7, 8, 8, 8, 9, 9, 10. With an <em>even</em> count (8),
+            average the two middle values: (8 + 8) ÷ 2 = <strong>8</strong>.<br />
+            <strong>Why they are close:</strong> this dataset has no extreme value, so the balance
+            point (mean) sits almost exactly on the middle value (median).
+          </div>
+        </div>
+
+        <div class="ak-qc">
+          <div class="qc-label">Expected for ANY student dataset</div>
+          <div class="qc-q">Check these three things, not a specific number:</div>
+          <div class="qc-work">
+            1. The mean lies between their smallest and largest value — if it does not, they summed
+            or divided wrong.<br />
+            2. They ordered the list <em>before</em> taking the median (this is the #1 error).<br />
+            3. With an even count they averaged the two middle values; with an odd count they took
+            the single middle value.
+          </div>
+        </div>
+
+        <div class="ak-qc">
+          <div class="qc-label">Common misconceptions</div>
+          <div class="qc-work">
+            • <strong>Median from the unsorted list.</strong> Taking "the middle box on the screen"
+            instead of the middle of the ordered data.<br />
+            • <strong>Dividing by the wrong count.</strong> Dividing the sum by 10 because there are
+            10 input boxes, when only 8 were filled in.<br />
+            • <strong>"The mean is the most common value."</strong> That is the mode; the mean is
+            the balance point.<br />
+            • <strong>Rounding too early.</strong> Rounding each value before summing changes the
+            mean.
+          </div>
+        </div>
+
+        <div class="ak-sample">
+          <div class="s-label">Sample Expert Response</div>
+          <p>
+            "I surveyed 8 classmates about nightly sleep. The total was 65 hours, so the mean is 65
+            ÷ 8 = 8.13 hours. When I put the values in order (6, 7, 8, 8, 8, 9, 9, 10) there is an
+            even number of values, so the median is the average of the two middle 8s, which is 8
+            hours. The mean and median are almost the same, which tells me nobody in my sample is an
+            extreme outlier."
+          </p>
+        </div>
+
+        <div class="ak-rubric">
+          <div class="r-label">Rubric anchors — Measures of Center</div>
+          <p>
+            <strong>4 (Expert):</strong> Both statistics correct for their own data <em>and</em> the
+            student says what each one means in context ("8.13 hours is the balance point of my
+            class's sleep").<br />
+            <strong>3 (Proficient):</strong> Mean and median both computed correctly; explanation
+            restates the procedure rather than the meaning.<br />
+            <strong>2 (Developing):</strong> One statistic correct — typically the mean — with the
+            median taken from an unsorted list, or a division by the wrong count.
+          </p>
+        </div>
+      </div>
+
+      <!-- Phase 2 -->
+      <div class="ak-phase">
+        <div class="ak-phase-head">
+          <div class="ak-phase-num teal">2</div>
+          <div>
+            <div class="skill-label">Measures of Spread · 6.DS.4 / 6.SP.B.5c</div>
+            <h3>Step 2 — Range and Mean Absolute Deviation</h3>
+          </div>
+        </div>
+
+        <p style="color: #5e6e7e; margin: 0 0 10px">
+          The tool prints a deviation table row-by-row, so students can be graded on the
+          <em>steps</em>, not just the final MAD. Continuing with the example dataset (mean 8.125).
+        </p>
+
+        <div class="ak-answer">
+          <div class="big">Range = 4 hours · MAD ≈ 0.91 hours</div>
+          <div class="steps">
+            <strong>Range:</strong> 10 − 6 = <strong>4 hours</strong>.<br />
+            <strong>MAD:</strong> take |value − 8.125| for every value, add them, divide by 8.
+          </div>
+          <div class="ak-scroll">
+            <table class="ak-table">
+              <thead>
+                <tr>
+                  <th>Value</th>
+                  <th>8</th>
+                  <th>7</th>
+                  <th>9</th>
+                  <th>8</th>
+                  <th>10</th>
+                  <th>6</th>
+                  <th>8</th>
+                  <th>9</th>
+                  <th>Sum</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th>|value − 8.125|</th>
+                  <td>0.125</td>
+                  <td>1.125</td>
+                  <td>0.875</td>
+                  <td>0.125</td>
+                  <td>1.875</td>
+                  <td>2.125</td>
+                  <td>0.125</td>
+                  <td>0.875</td>
+                  <td><strong>7.25</strong></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="steps" style="margin-top: 8px">
+            MAD = 7.25 ÷ 8 = <strong>0.90625 ≈ 0.91 hours</strong> — on average, each classmate is
+            about 0.9 hours away from the class average.
+          </div>
+        </div>
+
+        <div class="ak-qc">
+          <div class="qc-label">Level 2 — Outlier Simulator (worked)</div>
+          <div class="qc-q">Add an outlier of 2 hours to the same dataset:</div>
+          <div class="qc-work">
+            New mean = 67 ÷ 9 = <strong>7.44</strong> hours (down 0.69).<br />
+            New median = middle of 2, 6, 7, 8, <strong>8</strong>, 8, 9, 9, 10 =
+            <strong>8 hours — unchanged</strong>.<br />
+            New range = 10 − 2 = <strong>8 hours</strong> (doubled).<br />
+            New MAD = 14.67 ÷ 9 ≈ <strong>1.63 hours</strong> (nearly doubled).<br />
+            <strong>The point of the simulator:</strong> one extreme value moves the mean, the
+            range, and the MAD, but leaves the median where it was. That is exactly why the median
+            is the better summary for skewed data — students must say this, not just record the
+            numbers.
+          </div>
+        </div>
+
+        <div class="ak-qc">
+          <div class="qc-label">Common misconceptions</div>
+          <div class="qc-work">
+            • <strong>Signed deviations.</strong> Forgetting the absolute value, so the deviations
+            sum to 0 and the MAD comes out as 0.<br />
+            • <strong>Deviations from the median.</strong> MAD is measured from the
+            <em>mean</em>.<br />
+            • <strong>"Range = the list of values."</strong> The range is one number: max − min.<br />
+            • <strong>Dividing the deviation sum by the wrong count</strong> after adding the
+            outlier (must be 9, not 8).
+          </div>
+        </div>
+
+        <div class="ak-rubric">
+          <div class="r-label">Rubric anchors — Measures of Spread</div>
+          <p>
+            <strong>4 (Expert):</strong> Range and MAD correct with the full deviation table shown,
+            and the student interprets MAD as a typical distance from the mean.<br />
+            <strong>3 (Proficient):</strong> Range and MAD both correct; minor arithmetic slips in
+            one or two deviation rows that do not change the conclusion.<br />
+            <strong>2 (Developing):</strong> Range correct but MAD missing or computed without
+            absolute values; steps not shown.
+          </p>
+        </div>
+      </div>
+
+      <!-- Phase 3 -->
+      <div class="ak-phase">
+        <div class="ak-phase-head">
+          <div class="ak-phase-num gold">3</div>
+          <div>
+            <div class="skill-label">Dot Plot &amp; World Comparison · 6.DS.5 / 6.SP.B.4</div>
+            <h3>Step 3 — Interactive Dot Plot &amp; Comparisons</h3>
+          </div>
+        </div>
+
+        <p style="color: #5e6e7e; margin: 0 0 10px">
+          Students stack dots with the + / − steppers under each axis value, then press
+          <strong>Check My Plot</strong>. The check passes only when the frequencies match their
+          Step 1 dataset exactly.
+        </p>
+
+        <div class="ak-answer">
+          <div class="big">8 dots total: 6→1, 7→1, 8→3, 9→2, 10→1</div>
+          <div class="steps">
+            For the example dataset the dot counts are 1 at 6, 1 at 7, <strong>3 at 8</strong>, 2 at
+            9, and 1 at 10 — and the dots must total the same count used for the mean (8).<br />
+            <strong>Shape:</strong> the tallest stack is at 8 with a short tail toward 6, so the
+            distribution is roughly symmetric with a slight left tail. That is why mean ≈ median
+            here.
+          </div>
+        </div>
+
+        <div class="ak-qc">
+          <div class="qc-label">World comparison — how to grade it</div>
+          <div class="qc-work">
+            The step links the CDC sleep page and names the recommended
+            <strong>8–10 hours</strong> range for this age group. Accept any figure the student
+            correctly cites from the linked source; grade the <em>comparison sentence</em>, which
+            must (a) state their own class mean, (b) state the outside figure, and (c) say
+            higher/lower and by how much. Example: "Our class mean is 8.13 hours, which is inside
+            the recommended 8–10 hour range but only 0.13 hours above the low end."
+          </div>
+        </div>
+
+        <div class="ak-qc">
+          <div class="qc-label">Common misconceptions</div>
+          <div class="qc-work">
+            • <strong>One dot per person per column.</strong> Placing a single dot at 8 instead of
+            three when three classmates reported 8.<br />
+            • <strong>Bars instead of stacks.</strong> Treating the dot plot like a bar graph of
+            categories.<br />
+            • <strong>Comparing a mean to a maximum.</strong> Comparing their class mean to the top
+            of the recommended range and concluding the class is "way below."<br />
+            • <strong>Skew named backwards.</strong> Students often call a left tail "skewed right."
+          </div>
+        </div>
+
+        <div class="ak-rubric">
+          <div class="r-label">Rubric anchors — Dot Plot Creation &amp; Comparison</div>
+          <p>
+            <strong>4 (Expert):</strong> Plot matches every frequency, and the student describes the
+            distribution's shape and center and ties it to a cited outside statistic.<br />
+            <strong>3 (Proficient):</strong> Plot matches the dataset; comparison to the national
+            figure is present but thin.<br />
+            <strong>2 (Developing):</strong> One or two frequencies off, or the comparison names a
+            source without any numbers.
+          </p>
+        </div>
+      </div>
+
+      <!-- Phase 4 -->
+      <div class="ak-phase">
+        <div class="ak-phase-head">
+          <div class="ak-phase-num coral">4</div>
+          <div>
+            <div class="skill-label">Classmate Comparison · 6.DS.1 / 6.SP.A.1</div>
+            <h3>Step 4 — Compare Statistics With a Partner</h3>
+          </div>
+        </div>
+
+        <p style="color: #5e6e7e; margin: 0 0 10px">
+          Students type a partner's mean, median, range, and MAD; the tool builds a side-by-side
+          table with the differences. Worked example uses our dataset versus a partner reporting
+          mean 7.50, median 7.50, range 5, MAD 1.25.
+        </p>
+
+        <div class="ak-answer">
+          <div class="big">My class is higher on average and more consistent</div>
+          <div class="steps">
+            <strong>Mean:</strong> 8.13 − 7.50 = <strong>+0.63 hours</strong> (my class sleeps more
+            on average).<br />
+            <strong>Median:</strong> 8 − 7.50 = <strong>+0.50 hours</strong>.<br />
+            <strong>Range:</strong> 4 − 5 = <strong>−1 hour</strong> (my data is packed into a
+            narrower window).<br />
+            <strong>MAD:</strong> 0.91 − 1.25 = <strong>−0.34 hours</strong> → the smaller MAD means
+            my class's sleep values cluster more tightly around their average.
+          </div>
+        </div>
+
+        <div class="ak-qc">
+          <div class="qc-label">Common misconceptions</div>
+          <div class="qc-work">
+            • <strong>"Bigger MAD = better."</strong> A larger MAD means <em>more</em> variability,
+            not better sleep.<br />
+            • <strong>Comparing spread with the mean.</strong> Concluding one group is more
+            consistent because its mean is higher.<br />
+            • <strong>Ignoring sample size.</strong> A partner who surveyed 6 people and one who
+            surveyed 10 are not equally reliable — an Expert response says so.
+          </div>
+        </div>
+
+        <div class="ak-sample">
+          <div class="s-label">Sample Expert Response</div>
+          <p>
+            "My MAD is 0.91 hours and my partner's is 1.25 hours. Both classes average around 8
+            hours, but my partner's data is more spread out, so their classmates are less alike in
+            how much they sleep. My mean is 0.63 hours higher than theirs, which is a small
+            difference compared to how much individual students vary — so I would not claim my class
+            'sleeps more' as a fact from this sample."
+          </p>
+        </div>
+
+        <div class="ak-rubric">
+          <div class="r-label">Rubric anchors — Comparisons</div>
+          <p>
+            <strong>4 (Expert):</strong> Compares center <em>and</em> spread to both the partner and
+            the outside data, and states a limitation (sample size, who was surveyed).<br />
+            <strong>3 (Proficient):</strong> Both comparisons completed with correct differences.<br />
+            <strong>2 (Developing):</strong> Only the means compared, or differences stated without
+            saying which is larger.
+          </p>
+        </div>
+      </div>
+
+      <!-- Phase 5 -->
+      <div class="ak-phase">
+        <div class="ak-phase-head">
+          <div class="ak-phase-num green">5</div>
+          <div>
+            <div class="skill-label">Summary Pitch · 6.DS.6 / 6.SP.B.5d</div>
+            <h3>Step 5 — Finish &amp; Submit</h3>
+          </div>
+        </div>
+
+        <div class="ak-qc">
+          <div class="qc-label">What the pitch must contain</div>
+          <div class="qc-work">
+            3–5 sentences that use <strong>the student's own numbers</strong>: the statistical
+            question, the mean and median, at least one spread statistic (range or MAD), what the
+            dot plot's shape shows, and one honest limitation. A pitch with no numbers cannot score
+            above a 2 regardless of how well written it is.
+          </div>
+        </div>
+
+        <div class="ak-sample">
+          <div class="s-label">Sample 4-point pitch (example dataset)</div>
+          <p>
+            "I asked 8 classmates: how many hours do you sleep on a school night? Their answers
+            ranged from 6 to 10 hours, a range of 4 hours. The mean is 8.13 hours and the median is
+            8 hours; because those are so close, no single person is pulling the average. The MAD is
+            0.91 hours, so a typical classmate is within about an hour of the average. My dot plot
+            piles up at 8 hours, which is right at the low end of the recommended 8–10 hours — and
+            with only 8 people surveyed, I would want a bigger sample before saying this is true for
+            the whole grade."
+          </p>
+        </div>
+
+        <div class="ak-rubric">
+          <div class="r-label">Rubric anchors — Summary Pitch</div>
+          <p>
+            <strong>4 (Expert):</strong> Uses center, spread, and shape together, in context, with a
+            stated limitation.<br />
+            <strong>3 (Proficient):</strong> Reports mean, median, and one spread statistic
+            correctly.<br />
+            <strong>2 (Developing):</strong> General statements about sleep with one or no
+            statistics, or numbers that do not match the student's own data.
+          </p>
+        </div>
+      </div>
+
+      <hr class="section-divider" />
+
+      <!-- ═══════════════════════════════════════════════════ -->
+      <!-- VERSION B: Real-World Data Investigation            -->
+      <!-- ═══════════════════════════════════════════════════ -->
+      <div class="version-banner green">
+        <div class="vb-icon">🌡️</div>
+        <div>
+          <h2>Version B — Real-World Data Investigation</h2>
+          <p>
+            Context: logging daily high temperatures for a chosen city, then finding the five-number
+            summary and IQR, choosing a display, and matching the climate to a region.
+          </p>
+        </div>
+      </div>
+
+      <!-- Phase 1 -->
+      <div class="ak-phase">
+        <div class="ak-phase-head">
+          <div class="ak-phase-num">1</div>
+          <div>
+            <div class="skill-label">Center &amp; Spread · 6.DS.4 / 6.SP.B.5</div>
+            <h3>Step 1 — Measures of Center &amp; Spread</h3>
+          </div>
+        </div>
+
+        <p style="color: #5e6e7e; margin: 0 0 10px">
+          Level 1 collects 5 temperatures, Level 2 opens 8 boxes. The tool refuses to calculate with
+          fewer than 5 values. Numbers below are the page's built-in example (San Diego, 5 days).
+        </p>
+
+        <div class="ak-row">
+          <div class="ak-input-block">
+            <div class="label">Example dataset (°F)</div>
+            <div class="val">72, 75, 78, 70, 75</div>
+          </div>
+          <div class="ak-input-block">
+            <div class="label">Ordered</div>
+            <div class="val">70, 72, 75, 75, 78</div>
+          </div>
+        </div>
+
+        <div class="ak-answer">
+          <div class="big">Mean 74.0 °F · Median 75 °F · Range 8 °F · IQR 5.5 °F</div>
+          <div class="steps">
+            <strong>Mean:</strong> 70 + 72 + 75 + 75 + 78 = 370; 370 ÷ 5 =
+            <strong>74.0 °F</strong>.<br />
+            <strong>Median:</strong> odd count (5) → the 3rd ordered value =
+            <strong>75 °F</strong>.<br />
+            <strong>Range:</strong> 78 − 70 = <strong>8 °F</strong>.<br />
+            <strong>Q1:</strong> median of the values <em>below</em> the median (70, 72) = (70 + 72)
+            ÷ 2 = <strong>71 °F</strong>.<br />
+            <strong>Q3:</strong> median of the values <em>above</em> the median (75, 78) = (75 + 78)
+            ÷ 2 = <strong>76.5 °F</strong>.<br />
+            <strong>IQR:</strong> 76.5 − 71 = <strong>5.5 °F</strong>.<br />
+            <strong>Five-number summary:</strong> 70 · 71 · 75 · 76.5 · 78.
+          </div>
+        </div>
+
+        <div class="ak-qc">
+          <div class="qc-label">Expected for ANY student dataset</div>
+          <div class="qc-work">
+            The page uses the standard middle-school quartile method: with an odd count, the median
+            itself is <em>excluded</em> from both halves before finding Q1 and Q3. Q1 ≤ median ≤ Q3
+            always, and IQR ≤ range always — if a student's IQR exceeds their range, they mixed up a
+            quartile.
+          </div>
+        </div>
+
+        <div class="ak-qc">
+          <div class="qc-label">Common misconceptions</div>
+          <div class="qc-work">
+            • <strong>Including the median in both halves</strong> when the count is odd, which
+            shifts Q1 and Q3.<br />
+            • <strong>Quartiles from the unsorted list.</strong><br />
+            • <strong>"IQR = Q3."</strong> The IQR is a difference, not a value from the data.<br />
+            • <strong>Mean 74 vs median 75.</strong> Students often assume they must match; the
+            small gap here is caused by the single low 70.
+          </div>
+        </div>
+
+        <div class="ak-rubric">
+          <div class="r-label">Rubric anchors — Statistical Question &amp; Calculations</div>
+          <p>
+            <strong>4 (Expert):</strong> Question anticipates variability ("What was the daily high
+            in San Diego over 5 days?" — not "What is today's high?"), and all five statistics are
+            correct for their own data.<br />
+            <strong>3 (Proficient):</strong> Statistical question posed; center and spread
+            correct.<br />
+            <strong>2 (Developing):</strong> Question is not statistical (a single-answer question),
+            or one quartile is wrong so the IQR is off.
+          </p>
+        </div>
+      </div>
+
+      <!-- Phase 2 -->
+      <div class="ak-phase">
+        <div class="ak-phase-head">
+          <div class="ak-phase-num teal">2</div>
+          <div>
+            <div class="skill-label">Visual Display · 6.DS.5 / 6.SP.B.4</div>
+            <h3>Step 2 — Choose the Display</h3>
+          </div>
+        </div>
+
+        <div class="ak-answer">
+          <div class="big">Correct choice: Box Plot</div>
+          <div class="steps">
+            The box plot is the only one of the three options that draws the five-number summary
+            directly: whiskers at 70 and 78, box edges at Q1 = 71 and Q3 = 76.5, median line at 75.
+            The box width <em>is</em> the IQR (5.5 °F).<br />
+            <strong>Why not the others:</strong> a dot plot shows every individual day but never
+            marks quartiles; a histogram groups days into bins (70–79 °F) and hides the individual
+            values <em>and</em> the quartiles.<br />
+            The page's checker accepts only "Box Plot" and runs a no-giveaway hint ladder on wrong
+            answers (nudge → structural hint → reveal), so a student who reaches the answer on the
+            third try has seen it revealed, not reasoned it — check the written explanation.
+          </div>
+        </div>
+
+        <div class="ak-qc">
+          <div class="qc-label">Common misconceptions</div>
+          <div class="qc-work">
+            • <strong>"The histogram shows spread best"</strong> — it shows frequency by bin, not
+            quartiles.<br />
+            • <strong>Reading the box as "half the temperatures are 5.5 degrees."</strong> The box
+            spans the middle 50% of days, from 71 °F to 76.5 °F.<br />
+            • <strong>Median = middle of the box.</strong> The median line is rarely centered; here
+            it sits right of center because the upper values are tightly packed.
+          </div>
+        </div>
+
+        <div class="ak-rubric">
+          <div class="r-label">Rubric anchors — Visual Display</div>
+          <p>
+            <strong>4 (Expert):</strong> Chooses the box plot and explains it by naming Q1, the
+            median, Q3, and the IQR on their own generated plot.<br />
+            <strong>3 (Proficient):</strong> Chooses the box plot with a correct but generic
+            reason.<br />
+            <strong>2 (Developing):</strong> Plot renders but the display choice or its
+            justification is wrong.
+          </p>
+        </div>
+      </div>
+
+      <!-- Phase 3 -->
+      <div class="ak-phase">
+        <div class="ak-phase-head">
+          <div class="ak-phase-num gold">3</div>
+          <div>
+            <div class="skill-label">Compare Regions · 6.DS.6b / 6.SP.B.5c</div>
+            <h3>Step 3 — Contrast Your Spread Against Regional Data</h3>
+          </div>
+        </div>
+
+        <div class="ak-answer">
+          <div class="big">IQR 5.5 °F → Coastal Region</div>
+          <div class="steps">
+            The page's reference table gives coastal regions an IQR of about
+            <strong>5–10 °F</strong> and desert regions about <strong>15–25 °F</strong>. Our example
+            IQR of 5.5 °F sits at the low end of the coastal band, which matches the San Diego
+            dataset.<br />
+            <strong>Grading rule for any dataset:</strong> the match must follow from
+            <em>their</em> IQR. A student with an IQR of 18 °F who selects "Coastal" is wrong even
+            if their city is on a coast; a student whose IQR is 12 °F should select "Neither /
+            Other" and say why.
+          </div>
+        </div>
+
+        <div class="ak-qc">
+          <div class="qc-label">Level 2 — Science inquiry (thermal absorption)</div>
+          <div class="qc-work">
+            Expected reasoning: water has a very high specific heat capacity, so a large body of
+            water absorbs and releases heat slowly. Sea breezes carry that moderated temperature
+            inland, which compresses the daily high-to-low swing and shrinks the IQR. Deserts have
+            dry air, little water, and sparse vegetation, so the ground heats fast during the day
+            and radiates heat away quickly at night — a large daily swing and a large IQR. Accept
+            any answer that connects <strong>water's slow heating/cooling</strong> to
+            <strong>a smaller spread</strong>.
+          </div>
+        </div>
+
+        <div class="ak-qc">
+          <div class="qc-label">Common misconceptions</div>
+          <div class="qc-work">
+            • <strong>Matching on the mean instead of the IQR.</strong> "Phoenix is hot and my mean
+            is high, so I am a desert" ignores what the step asks — deserts are identified by
+            <em>variability</em>, not by being hot.<br />
+            • <strong>Confusing range with IQR</strong> when reading the table (the table's bands
+            are IQRs).<br />
+            • <strong>Forcing a match.</strong> "Neither / Other" is a legitimate 4-point answer
+            when the IQR falls between the bands and the student explains that.
+          </div>
+        </div>
+
+        <div class="ak-rubric">
+          <div class="r-label">Rubric anchors — Regional Comparison</div>
+          <p>
+            <strong>4 (Expert):</strong> Region matched from their own IQR with the numeric band
+            quoted, plus a scientific reason for the variability.<br />
+            <strong>3 (Proficient):</strong> Correct region for their IQR with a brief
+            justification.<br />
+            <strong>2 (Developing):</strong> Region selected with no numeric support, or chosen from
+            the city's reputation rather than the data.
+          </p>
+        </div>
+      </div>
+
+      <!-- Phase 4 -->
+      <div class="ak-phase">
+        <div class="ak-phase-head">
+          <div class="ak-phase-num coral">4</div>
+          <div>
+            <div class="skill-label">Partner Compare · 6.DS.6b / 6.SP.A.3</div>
+            <h3>Step 4 — Swap Data Logs</h3>
+          </div>
+        </div>
+
+        <p style="color: #5e6e7e; margin: 0 0 10px">
+          Students enter a partner's median and IQR; the tool reports both differences. Worked
+          example pairs our San Diego log with a partner logging Phoenix: median 88 °F, IQR 19 °F.
+        </p>
+
+        <div class="ak-answer">
+          <div class="big">Median differs by 13.0 °F · IQR differs by 13.5 °F</div>
+          <div class="steps">
+            <strong>Center:</strong> |75 − 88| = <strong>13.0 °F</strong> — the partner's city is
+            typically 13 degrees warmer.<br />
+            <strong>Spread:</strong> |5.5 − 19| = <strong>13.5 °F</strong> — the partner's daily
+            highs swing more than three times as widely as ours.<br />
+            <strong>Conclusion a 4 must reach:</strong> the two differences answer different
+            questions. The median difference says <em>how warm</em>; the IQR difference says
+            <em>how predictable</em>. Our climate is cooler and far more consistent; theirs is
+            hotter and much more variable.
+          </div>
+        </div>
+
+        <div class="ak-qc">
+          <div class="qc-label">Common misconceptions</div>
+          <div class="qc-work">
+            • <strong>Adding the two differences</strong> into a single "difference score."<br />
+            • <strong>"Higher median = more variable."</strong> Center and spread are
+            independent.<br />
+            • <strong>Comparing logs of different lengths</strong> without noticing (5 days vs 8
+            days at Level 2).
+          </div>
+        </div>
+
+        <div class="ak-rubric">
+          <div class="r-label">Rubric anchors — Partner Comparison</div>
+          <p>
+            <strong>4 (Expert):</strong> Both differences correct and interpreted separately as "how
+            warm" versus "how predictable."<br />
+            <strong>3 (Proficient):</strong> Both differences correct with one combined
+            interpretation.<br />
+            <strong>2 (Developing):</strong> Only one statistic compared, or the difference is
+            reported with no meaning attached.
+          </p>
+        </div>
+      </div>
+
+      <!-- Phase 5 -->
+      <div class="ak-phase">
+        <div class="ak-phase-head">
+          <div class="ak-phase-num green">5</div>
+          <div>
+            <div class="skill-label">Weather Analysis Pitch · 6.DS.6 / 6.SP.B.5d</div>
+            <h3>Step 5 — Finish &amp; Submit</h3>
+          </div>
+        </div>
+
+        <div class="ak-qc">
+          <div class="qc-label">What the pitch must contain</div>
+          <div class="qc-work">
+            3–5 sentences using the student's own mean, median, and IQR, naming the display they
+            chose and the region they matched. The pitch is where the five-number summary becomes a
+            claim about a real place.
+          </div>
+        </div>
+
+        <div class="ak-sample">
+          <div class="s-label">Sample 4-point pitch (example dataset)</div>
+          <p>
+            "I asked what the daily high temperature in San Diego was over a 5-day stretch. The
+            highs were 70, 72, 75, 75, and 78 °F, giving a mean of 74.0 °F and a median of 75 °F. I
+            chose a box plot because it shows the whole five-number summary at once: whiskers at 70
+            and 78, a box from 71 to 76.5, and the median line at 75. My IQR is only 5.5 °F, which
+            lands in the coastal band of 5–10 °F — the ocean absorbs and releases heat slowly, so
+            the middle half of my days sit within about five degrees of each other. Five days is a
+            small sample, so I would log a full month before calling this the city's normal
+            pattern."
+          </p>
+        </div>
+
+        <div class="ak-rubric">
+          <div class="r-label">Rubric anchors — Pitch</div>
+          <p>
+            <strong>4 (Expert):</strong> Uses center, spread, display, and region together with a
+            stated limitation.<br />
+            <strong>3 (Proficient):</strong> Contains mean, median, and IQR correctly.<br />
+            <strong>2 (Developing):</strong> Incomplete pitch or statistics that do not match the
+            student's own data table.
+          </p>
+        </div>
+      </div>
+
+      <footer class="site-footer" style="margin-top: 40px">
+        <span>Neft Teacher · Statistics Projects · Teacher Answer Key</span>
+        <span><span data-current-year></span></span>
+      </footer>
+    </div>
+
+    <script src="/assets/app.js" defer></script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- answer-key-gate-injected:begin (teacher gate — tools/inject-projects-gold.mjs) -->
+    <script src="/shared/projects/answer-key-gate.js" defer></script>
+    <!-- answer-key-gate-injected:end -->
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+  <!-- nsr-injected:end -->
+  </body>
+</html>

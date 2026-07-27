@@ -6,8 +6,24 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const units = [...Array.from({ length: 10 }, (_, index) => `unit-${index + 1}`), "statistics"];
-const versions = ["version-a", "version-b"];
 const failures = [];
+
+/* Enumerate version folders from disk (version-a, version-b, version-c, …) so
+   every shipped project page is checked — a hardcoded two-version list is what
+   let unit-8/version-c drift out of this contract unnoticed. */
+function versionsOf(unit) {
+  try {
+    return fs
+      .readdirSync(path.join(ROOT, "math", unit, "projects"), { withFileTypes: true })
+      .filter((entry) => entry.isDirectory() && /^version-[a-z]$/.test(entry.name))
+      .map((entry) => entry.name)
+      .sort();
+  } catch (_error) {
+    return [];
+  }
+}
+
+const expectedProjectCount = units.reduce((total, unit) => total + versionsOf(unit).length, 0);
 
 function read(relativePath) {
   return fs.readFileSync(path.join(ROOT, relativePath), "utf8");
@@ -45,7 +61,7 @@ if (fs.existsSync(configPath)) {
 
 const entries = config.projects || {};
 for (const unit of units) {
-  for (const version of versions) {
+  for (const version of versionsOf(unit)) {
     const route = `/math/${unit}/projects/${version}/`;
     const relativePath = `math/${unit}/projects/${version}/index.html`;
     if (!fs.existsSync(path.join(ROOT, relativePath))) {
@@ -77,8 +93,10 @@ for (const unit of units) {
   }
 }
 
-if (Object.keys(entries).length !== 22)
-  failures.push(`award configuration: expected 22 projects, found ${Object.keys(entries).length}`);
+if (Object.keys(entries).length !== expectedProjectCount)
+  failures.push(
+    `award configuration: expected ${expectedProjectCount} projects, found ${Object.keys(entries).length}`,
+  );
 
 const curriculum = read("curriculum/index.html");
 const expectedLinks = [
@@ -110,5 +128,5 @@ if (failures.length) {
 }
 
 console.log(
-  "Award-readiness validation passed: 22 projects, bilingual modeling contract, evidence pages, and QA coverage.",
+  `Award-readiness validation passed: ${expectedProjectCount} projects, bilingual modeling contract, evidence pages, and QA coverage.`,
 );

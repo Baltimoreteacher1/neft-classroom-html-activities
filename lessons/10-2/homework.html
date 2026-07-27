@@ -1806,12 +1806,9 @@ body.obj-popup-open { overflow: hidden; }
 .celebrate-sub { font-size: 14px; margin: 0; }
 
 .problems-container .problem-section { border-left: 4px solid var(--teal); }
-.problems-container .problem-number-badge::after {
-  content: " / Repaso";
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--muted);
-}
+/* No ::after suffix here — badges already carry their own bilingual label
+   ("Warm-up / Calentamiento 1"), so appending " / Repaso" produced
+   "Warm-up / Calentamiento 1 / Repaso" on every problem. */
 
 /* Tabbed homework layout */
 .homework-tabs-shell {
@@ -2152,6 +2149,12 @@ body.lang-mode-es .bilingual-grid {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.25);
   color: var(--white);
+  /* 44px min height keeps these reachable as touch targets — families use phones. */
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   padding: 6px 14px;
   border-radius: 99px;
   font-size: 12px;
@@ -2635,7 +2638,7 @@ header.packet h1::after{
         <span class="lang-selector-title">Language / Idioma:</span>
         <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector">
           <button type="button" class="lang-toggle-btn active" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')">
-            🇺🇸🇪🇸 Bilingual / Bilíngüe
+            🇺🇸🇪🇸 Bilingual / Bilingüe
           </button>
           <button type="button" class="lang-toggle-btn" data-lang-mode="en" onclick="setLanguageMode('en')">
             🇺🇸 English Only
@@ -4260,6 +4263,14 @@ header.packet h1::after{
             <span class="lang-es" lang="es"><strong>Abre el Cuaderno de Matemáticas</strong> — una pizarra digital para dibujar, escribir y resolver problemas juntos.</span>
           </span>
           <span class="ai-lab-arrow" aria-hidden="true">→</span>
+        </a>
+        <a href="/lessons/10-2/homework.docx" download class="ai-lab-cta offline-cta">
+          <span class="ai-lab-emoji" aria-hidden="true">🖨️</span>
+          <span class="ai-lab-text">
+            <span class="lang-en"><strong>No internet at home? Download the paper version</strong> — the same problems in a document you can print or open offline.</span>
+            <span class="lang-es" lang="es"><strong>¿No hay internet en casa? Descarga la versión en papel</strong> — los mismos problemas en un documento que puedes imprimir o abrir sin conexión.</span>
+          </span>
+          <span class="ai-lab-arrow" aria-hidden="true">↓</span>
         </a>
         <p class="bilingual-block">
           <span class="lang-en">These links go to <strong>specific</strong> videos and lessons about tonight's topic — not general math pages.</span>

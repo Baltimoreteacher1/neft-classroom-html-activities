@@ -1806,12 +1806,9 @@ body.obj-popup-open { overflow: hidden; }
 .celebrate-sub { font-size: 14px; margin: 0; }
 
 .problems-container .problem-section { border-left: 4px solid var(--teal); }
-.problems-container .problem-number-badge::after {
-  content: " / Repaso";
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--muted);
-}
+/* No ::after suffix here — badges already carry their own bilingual label
+   ("Warm-up / Calentamiento 1"), so appending " / Repaso" produced
+   "Warm-up / Calentamiento 1 / Repaso" on every problem. */
 
 /* Tabbed homework layout */
 .homework-tabs-shell {
@@ -2152,6 +2149,12 @@ body.lang-mode-es .bilingual-grid {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.25);
   color: var(--white);
+  /* 44px min height keeps these reachable as touch targets — families use phones. */
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   padding: 6px 14px;
   border-radius: 99px;
   font-size: 12px;
@@ -2635,7 +2638,7 @@ header.packet h1::after{
         <span class="lang-selector-title">Language / Idioma:</span>
         <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector">
           <button type="button" class="lang-toggle-btn active" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')">
-            🇺🇸🇪🇸 Bilingual / Bilíngüe
+            🇺🇸🇪🇸 Bilingual / Bilingüe
           </button>
           <button type="button" class="lang-toggle-btn" data-lang-mode="en" onclick="setLanguageMode('en')">
             🇺🇸 English Only
@@ -3298,31 +3301,31 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem">Drag to order these integers from LEAST to GREATEST.</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Use the ▲ ▼ buttons to reorder steps, or drag the row handles on a computer.</span><span class="lang-es" lang="es">👪 Usen ▲ ▼ para reordenar, o arrastren las filas en la computadora.</span></p>
-        <div class="drag-order-workspace" id="dragorder_1" data-correct-order='[&quot;-6&quot;,&quot;-4&quot;,&quot;-1&quot;,&quot;0&quot;,&quot;3&quot;,&quot;5&quot;]' data-initial-order='[&quot;0&quot;,&quot;5&quot;,&quot;-4&quot;,&quot;-1&quot;,&quot;-6&quot;,&quot;3&quot;]'>
+        <div class="drag-order-workspace" id="dragorder_1" data-correct-order='[&quot;-6&quot;,&quot;-4&quot;,&quot;-1&quot;,&quot;0&quot;,&quot;3&quot;,&quot;5&quot;]' data-initial-order='[&quot;3&quot;,&quot;0&quot;,&quot;-6&quot;,&quot;-1&quot;,&quot;-4&quot;,&quot;5&quot;]'>
           <div class="drag-order-list" id="orderlist_1">
 
-              <div class="drag-order-row" draggable="true" id="order_1_0" data-step-text="0" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+              <div class="drag-order-row" draggable="true" id="order_1_0" data-step-text="3" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
                 <span class="drag-order-handle" aria-hidden="true">☰</span>
                 <span class="drag-order-num">1</span>
+                <span class="drag-order-text">3</span>
+                <div class="drag-order-controls">
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, -1)" aria-label="Move up">▲</button>
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, 1)" aria-label="Move down">▼</button>
+                </div>
+              </div>
+              <div class="drag-order-row" draggable="true" id="order_1_1" data-step-text="0" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+                <span class="drag-order-handle" aria-hidden="true">☰</span>
+                <span class="drag-order-num">2</span>
                 <span class="drag-order-text">0</span>
                 <div class="drag-order-controls">
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, -1)" aria-label="Move up">▲</button>
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, 1)" aria-label="Move down">▼</button>
                 </div>
               </div>
-              <div class="drag-order-row" draggable="true" id="order_1_1" data-step-text="5" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
-                <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">2</span>
-                <span class="drag-order-text">5</span>
-                <div class="drag-order-controls">
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, -1)" aria-label="Move up">▲</button>
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, 1)" aria-label="Move down">▼</button>
-                </div>
-              </div>
-              <div class="drag-order-row" draggable="true" id="order_1_2" data-step-text="-4" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+              <div class="drag-order-row" draggable="true" id="order_1_2" data-step-text="-6" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
                 <span class="drag-order-handle" aria-hidden="true">☰</span>
                 <span class="drag-order-num">3</span>
-                <span class="drag-order-text">-4</span>
+                <span class="drag-order-text">-6</span>
                 <div class="drag-order-controls">
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, -1)" aria-label="Move up">▲</button>
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, 1)" aria-label="Move down">▼</button>
@@ -3337,19 +3340,19 @@ header.packet h1::after{
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, 1)" aria-label="Move down">▼</button>
                 </div>
               </div>
-              <div class="drag-order-row" draggable="true" id="order_1_4" data-step-text="-6" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+              <div class="drag-order-row" draggable="true" id="order_1_4" data-step-text="-4" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
                 <span class="drag-order-handle" aria-hidden="true">☰</span>
                 <span class="drag-order-num">5</span>
-                <span class="drag-order-text">-6</span>
+                <span class="drag-order-text">-4</span>
                 <div class="drag-order-controls">
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, -1)" aria-label="Move up">▲</button>
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, 1)" aria-label="Move down">▼</button>
                 </div>
               </div>
-              <div class="drag-order-row" draggable="true" id="order_1_5" data-step-text="3" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+              <div class="drag-order-row" draggable="true" id="order_1_5" data-step-text="5" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
                 <span class="drag-order-handle" aria-hidden="true">☰</span>
                 <span class="drag-order-num">6</span>
-                <span class="drag-order-text">3</span>
+                <span class="drag-order-text">5</span>
                 <div class="drag-order-controls">
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, -1)" aria-label="Move up">▲</button>
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, 1)" aria-label="Move down">▼</button>
@@ -3614,40 +3617,40 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem">These integers represent bank account changes. Sort from the WORST change (biggest loss) to the BEST change (biggest gain).</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Use the ▲ ▼ buttons to reorder steps, or drag the row handles on a computer.</span><span class="lang-es" lang="es">👪 Usen ▲ ▼ para reordenar, o arrastren las filas en la computadora.</span></p>
-        <div class="drag-order-workspace" id="dragorder_4" data-correct-order='[&quot;-100 withdrawal&quot;,&quot;-25 withdrawal&quot;,&quot;-5 fee&quot;,&quot;0 no change&quot;,&quot;+10 deposit&quot;,&quot;+50 deposit&quot;]' data-initial-order='[&quot;-5 fee&quot;,&quot;+50 deposit&quot;,&quot;+10 deposit&quot;,&quot;-25 withdrawal&quot;,&quot;0 no change&quot;,&quot;-100 withdrawal&quot;]'>
+        <div class="drag-order-workspace" id="dragorder_4" data-correct-order='[&quot;-100 withdrawal&quot;,&quot;-25 withdrawal&quot;,&quot;-5 fee&quot;,&quot;0 no change&quot;,&quot;+10 deposit&quot;,&quot;+50 deposit&quot;]' data-initial-order='[&quot;+10 deposit&quot;,&quot;-100 withdrawal&quot;,&quot;-25 withdrawal&quot;,&quot;-5 fee&quot;,&quot;0 no change&quot;,&quot;+50 deposit&quot;]'>
           <div class="drag-order-list" id="orderlist_4">
 
-              <div class="drag-order-row" draggable="true" id="order_4_0" data-step-text="-5 fee" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+              <div class="drag-order-row" draggable="true" id="order_4_0" data-step-text="+10 deposit" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
                 <span class="drag-order-handle" aria-hidden="true">☰</span>
                 <span class="drag-order-num">1</span>
-                <span class="drag-order-text">-5 fee</span>
-                <div class="drag-order-controls">
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, -1)" aria-label="Move up">▲</button>
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, 1)" aria-label="Move down">▼</button>
-                </div>
-              </div>
-              <div class="drag-order-row" draggable="true" id="order_4_1" data-step-text="+50 deposit" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
-                <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">2</span>
-                <span class="drag-order-text">+50 deposit</span>
-                <div class="drag-order-controls">
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, -1)" aria-label="Move up">▲</button>
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, 1)" aria-label="Move down">▼</button>
-                </div>
-              </div>
-              <div class="drag-order-row" draggable="true" id="order_4_2" data-step-text="+10 deposit" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
-                <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">3</span>
                 <span class="drag-order-text">+10 deposit</span>
                 <div class="drag-order-controls">
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, -1)" aria-label="Move up">▲</button>
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, 1)" aria-label="Move down">▼</button>
                 </div>
               </div>
-              <div class="drag-order-row" draggable="true" id="order_4_3" data-step-text="-25 withdrawal" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+              <div class="drag-order-row" draggable="true" id="order_4_1" data-step-text="-100 withdrawal" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+                <span class="drag-order-handle" aria-hidden="true">☰</span>
+                <span class="drag-order-num">2</span>
+                <span class="drag-order-text">-100 withdrawal</span>
+                <div class="drag-order-controls">
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, -1)" aria-label="Move up">▲</button>
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, 1)" aria-label="Move down">▼</button>
+                </div>
+              </div>
+              <div class="drag-order-row" draggable="true" id="order_4_2" data-step-text="-25 withdrawal" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+                <span class="drag-order-handle" aria-hidden="true">☰</span>
+                <span class="drag-order-num">3</span>
+                <span class="drag-order-text">-25 withdrawal</span>
+                <div class="drag-order-controls">
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, -1)" aria-label="Move up">▲</button>
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, 1)" aria-label="Move down">▼</button>
+                </div>
+              </div>
+              <div class="drag-order-row" draggable="true" id="order_4_3" data-step-text="-5 fee" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
                 <span class="drag-order-handle" aria-hidden="true">☰</span>
                 <span class="drag-order-num">4</span>
-                <span class="drag-order-text">-25 withdrawal</span>
+                <span class="drag-order-text">-5 fee</span>
                 <div class="drag-order-controls">
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, -1)" aria-label="Move up">▲</button>
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, 1)" aria-label="Move down">▼</button>
@@ -3662,10 +3665,10 @@ header.packet h1::after{
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, 1)" aria-label="Move down">▼</button>
                 </div>
               </div>
-              <div class="drag-order-row" draggable="true" id="order_4_5" data-step-text="-100 withdrawal" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+              <div class="drag-order-row" draggable="true" id="order_4_5" data-step-text="+50 deposit" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
                 <span class="drag-order-handle" aria-hidden="true">☰</span>
                 <span class="drag-order-num">6</span>
-                <span class="drag-order-text">-100 withdrawal</span>
+                <span class="drag-order-text">+50 deposit</span>
                 <div class="drag-order-controls">
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, -1)" aria-label="Move up">▲</button>
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(4, this, 1)" aria-label="Move down">▼</button>
@@ -3705,58 +3708,58 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem">Sort these integers from GREATEST to LEAST.</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Use the ▲ ▼ buttons to reorder steps, or drag the row handles on a computer.</span><span class="lang-es" lang="es">👪 Usen ▲ ▼ para reordenar, o arrastren las filas en la computadora.</span></p>
-        <div class="drag-order-workspace" id="dragorder_5" data-correct-order='[&quot;8&quot;,&quot;5&quot;,&quot;0&quot;,&quot;-2&quot;,&quot;-6&quot;,&quot;-10&quot;]' data-initial-order='[&quot;-6&quot;,&quot;8&quot;,&quot;-10&quot;,&quot;-2&quot;,&quot;0&quot;,&quot;5&quot;]'>
+        <div class="drag-order-workspace" id="dragorder_5" data-correct-order='[&quot;8&quot;,&quot;5&quot;,&quot;0&quot;,&quot;-2&quot;,&quot;-6&quot;,&quot;-10&quot;]' data-initial-order='[&quot;8&quot;,&quot;-10&quot;,&quot;-6&quot;,&quot;5&quot;,&quot;-2&quot;,&quot;0&quot;]'>
           <div class="drag-order-list" id="orderlist_5">
 
-              <div class="drag-order-row" draggable="true" id="order_5_0" data-step-text="-6" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+              <div class="drag-order-row" draggable="true" id="order_5_0" data-step-text="8" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
                 <span class="drag-order-handle" aria-hidden="true">☰</span>
                 <span class="drag-order-num">1</span>
-                <span class="drag-order-text">-6</span>
-                <div class="drag-order-controls">
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(5, this, -1)" aria-label="Move up">▲</button>
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(5, this, 1)" aria-label="Move down">▼</button>
-                </div>
-              </div>
-              <div class="drag-order-row" draggable="true" id="order_5_1" data-step-text="8" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
-                <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">2</span>
                 <span class="drag-order-text">8</span>
                 <div class="drag-order-controls">
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(5, this, -1)" aria-label="Move up">▲</button>
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(5, this, 1)" aria-label="Move down">▼</button>
                 </div>
               </div>
-              <div class="drag-order-row" draggable="true" id="order_5_2" data-step-text="-10" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+              <div class="drag-order-row" draggable="true" id="order_5_1" data-step-text="-10" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
                 <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">3</span>
+                <span class="drag-order-num">2</span>
                 <span class="drag-order-text">-10</span>
                 <div class="drag-order-controls">
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(5, this, -1)" aria-label="Move up">▲</button>
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(5, this, 1)" aria-label="Move down">▼</button>
                 </div>
               </div>
-              <div class="drag-order-row" draggable="true" id="order_5_3" data-step-text="-2" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+              <div class="drag-order-row" draggable="true" id="order_5_2" data-step-text="-6" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+                <span class="drag-order-handle" aria-hidden="true">☰</span>
+                <span class="drag-order-num">3</span>
+                <span class="drag-order-text">-6</span>
+                <div class="drag-order-controls">
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(5, this, -1)" aria-label="Move up">▲</button>
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(5, this, 1)" aria-label="Move down">▼</button>
+                </div>
+              </div>
+              <div class="drag-order-row" draggable="true" id="order_5_3" data-step-text="5" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
                 <span class="drag-order-handle" aria-hidden="true">☰</span>
                 <span class="drag-order-num">4</span>
+                <span class="drag-order-text">5</span>
+                <div class="drag-order-controls">
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(5, this, -1)" aria-label="Move up">▲</button>
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(5, this, 1)" aria-label="Move down">▼</button>
+                </div>
+              </div>
+              <div class="drag-order-row" draggable="true" id="order_5_4" data-step-text="-2" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+                <span class="drag-order-handle" aria-hidden="true">☰</span>
+                <span class="drag-order-num">5</span>
                 <span class="drag-order-text">-2</span>
                 <div class="drag-order-controls">
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(5, this, -1)" aria-label="Move up">▲</button>
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(5, this, 1)" aria-label="Move down">▼</button>
                 </div>
               </div>
-              <div class="drag-order-row" draggable="true" id="order_5_4" data-step-text="0" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
-                <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">5</span>
-                <span class="drag-order-text">0</span>
-                <div class="drag-order-controls">
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(5, this, -1)" aria-label="Move up">▲</button>
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(5, this, 1)" aria-label="Move down">▼</button>
-                </div>
-              </div>
-              <div class="drag-order-row" draggable="true" id="order_5_5" data-step-text="5" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+              <div class="drag-order-row" draggable="true" id="order_5_5" data-step-text="0" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
                 <span class="drag-order-handle" aria-hidden="true">☰</span>
                 <span class="drag-order-num">6</span>
-                <span class="drag-order-text">5</span>
+                <span class="drag-order-text">0</span>
                 <div class="drag-order-controls">
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(5, this, -1)" aria-label="Move up">▲</button>
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(5, this, 1)" aria-label="Move down">▼</button>
@@ -4444,6 +4447,14 @@ header.packet h1::after{
             <span class="lang-es" lang="es"><strong>Abre el Cuaderno de Matemáticas</strong> — una pizarra digital para dibujar, escribir y resolver problemas juntos.</span>
           </span>
           <span class="ai-lab-arrow" aria-hidden="true">→</span>
+        </a>
+        <a href="/lessons/9-3/homework.docx" download class="ai-lab-cta offline-cta">
+          <span class="ai-lab-emoji" aria-hidden="true">🖨️</span>
+          <span class="ai-lab-text">
+            <span class="lang-en"><strong>No internet at home? Download the paper version</strong> — the same problems in a document you can print or open offline.</span>
+            <span class="lang-es" lang="es"><strong>¿No hay internet en casa? Descarga la versión en papel</strong> — los mismos problemas en un documento que puedes imprimir o abrir sin conexión.</span>
+          </span>
+          <span class="ai-lab-arrow" aria-hidden="true">↓</span>
         </a>
         <p class="bilingual-block">
           <span class="lang-en">These links go to <strong>specific</strong> videos and lessons about tonight's topic — not general math pages.</span>

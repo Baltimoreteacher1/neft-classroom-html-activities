@@ -6,9 +6,23 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const UNITS = [...Array.from({ length: 10 }, (_, i) => `unit-${i + 1}`), "statistics"];
-const VERSIONS = ["version-a", "version-b"];
 const failures = [];
 const pages = [];
+
+/* Enumerate version folders from disk (version-a, version-b, version-c, …) so
+   every shipped project page is checked — a hardcoded two-version list is what
+   let unit-8/version-c drift out of this contract unnoticed. */
+function versionsOf(unit) {
+  try {
+    return fs
+      .readdirSync(path.join(ROOT, "math", unit, "projects"), { withFileTypes: true })
+      .filter((entry) => entry.isDirectory() && /^version-[a-z]$/.test(entry.name))
+      .map((entry) => entry.name)
+      .sort();
+  } catch (_error) {
+    return [];
+  }
+}
 
 function count(text, needle) {
   return text.split(needle).length - 1;
@@ -19,7 +33,7 @@ function fail(rel, message) {
 }
 
 for (const unit of UNITS) {
-  for (const version of VERSIONS) {
+  for (const version of versionsOf(unit)) {
     const rel = `math/${unit}/projects/${version}/index.html`;
     const file = path.join(ROOT, rel);
     pages.push(rel);
@@ -52,7 +66,9 @@ for (const unit of UNITS) {
   }
 }
 
-if (pages.length !== 22) failures.push(`expected 22 project pages, enumerated ${pages.length}`);
+// 23 shipped pages: version-a + version-b for 11 unit folders, plus
+// unit-8/version-c (Escape Room Master Codebreaker).
+if (pages.length !== 23) failures.push(`expected 23 project pages, enumerated ${pages.length}`);
 
 if (failures.length) {
   console.error(`Publication Studio validation failed (${failures.length} issue${failures.length === 1 ? "" : "s"}):`);

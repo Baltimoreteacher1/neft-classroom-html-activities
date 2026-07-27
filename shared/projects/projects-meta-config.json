@@ -1,0 +1,2019 @@
+{
+  "$comment": [
+    "Neft Teacher — Projects META layer config (standards chips + Spanish parity + Level 0).",
+    "Consumed at runtime by /shared/projects/projects-meta.js and at build time by",
+    "tools/inject-projects-meta.mjs (which emits the static <meta name=\"standard\"> tags).",
+    "",
+    "STANDARDS FORMAT: codes are the canonical 2025 MCCRS keys of data/ccss-standards.json",
+    "(6.AT.* / 6.NOS.* / 6.GR.* / 6.DS.*) — the same keys data/asset-concept-map.json uses",
+    "in byStandard, and the same keys lessons/<id>/config.json `standard` fields use, so",
+    "scripts/validate-ccss.mjs + scripts/lib/ccss.mjs resolve them. `legacy` carries the",
+    "registry's `oldId` (pre-2025 CCSS) for backwards joins only — never display it alone.",
+    "Every code here was taken from the PAGE'S OWN inline hero/body codes and then checked",
+    "against the registry; where a page printed a non-registry stub (6.AT.6, 6.DS.6) the",
+    "registry's real children are used and the page stub is recorded in `pageCodes`.",
+    "",
+    "`unit` is the folder/page unit (the page's own visible heading wins, per this wave).",
+    "`revealUnit` is data/ccss-standards.json's scope-and-sequence unit, which differs for",
+    "unit-7 / unit-8 / unit-9 / statistics — the pacing map joins on revealUnit.",
+    "",
+    "ES DICTIONARY: `shared.es` + per-page `es` map normalized-English -> Spanish. The layer",
+    "only fills elements that have NO .en-text/.es-text descendant and contain only inline",
+    "children. <option> elements are deliberately excluded (page JS reads option.text as",
+    "data, and three pages already translate their own options inside toggleLanguage())."
+  ],
+  "version": "20260727",
+  "shared": {
+    "standardsHeading": ["Standards this project proves", "Estándares que demuestra este proyecto"],
+    "provesLabel": [
+      "What this project proves you can do",
+      "Lo que este proyecto demuestra que puedes hacer"
+    ],
+    "revealChip": ["Reveal Unit", "Unidad Reveal"],
+    "level0": {
+      "badge": ["🟠 Level 0 · Extra support", "🟠 Nivel 0 · Apoyo extra"],
+      "workedHeading": ["Worked example — read this first", "Ejemplo resuelto — lee esto primero"],
+      "workedAnswerLabel": ["So the answer is", "Entonces la respuesta es"],
+      "reduceHeading": ["Your shorter job today", "Tu tarea más corta de hoy"],
+      "frameHeading": ["Number frame — fill in the blanks", "Marco numérico — llena los espacios"],
+      "frameBlank": ["____", "____"],
+      "vocabHeading": ["Word re-cap", "Repaso de palabras"],
+      "startersHeading": ["Say it like this", "Dilo así"],
+      "starters": [
+        ["I chose ___ because ___.", "Elegí ___ porque ___."],
+        ["First I ___. Then I ___.", "Primero ___. Después ___."],
+        ["My answer is ___. I checked it by ___.", "Mi respuesta es ___. La revisé ___."]
+      ]
+    },
+    "es": {
+      "Prefill Sample Answers": "Rellenar respuestas de ejemplo",
+      "📥 Export JSON": "📥 Exportar JSON",
+      "📤 Import JSON": "📤 Importar JSON",
+      "Need a hint?": "¿Necesitas una pista?",
+      "← Back": "← Atrás",
+      "Next Step →": "Siguiente paso →",
+      "Step 5 — Finish & Submit": "Paso 5 — Termina y entrega",
+      "✅ Checklist — Check off everything you completed": "✅ Lista de verificación — Marca todo lo que completaste",
+      "Skill": "Habilidad",
+      "4 — Expert": "4 — Experto",
+      "3 — Proficient": "3 — Competente",
+      "2 — Developing": "2 — En Desarrollo",
+      "📝 Generate Summary": "📝 Generar resumen",
+      "📋 Copy": "📋 Copiar",
+      "⬇️ Download .txt": "⬇️ Descargar .txt",
+      "🖨️ Print": "🖨️ Imprimir",
+      "🎉 I'm Done!": "🎉 ¡Terminé!"
+    }
+  },
+  "pages": {
+    "unit-1-a": {
+      "path": "/math/unit-1/projects/version-a/",
+      "title": "Block Party Planner",
+      "unit": 1,
+      "revealUnit": 1,
+      "unitLabel": ["Unit 1", "Unidad 1"],
+      "standards": [
+        {
+          "code": "6.NOS.2",
+          "label": "Multi-Digit Division",
+          "labelEs": "División de varios dígitos",
+          "legacy": "6.NS.2"
+        },
+        {
+          "code": "6.NOS.3",
+          "label": "Decimal Operations",
+          "labelEs": "Operaciones con decimales",
+          "legacy": "6.NS.3"
+        },
+        { "code": "6.NOS.4", "label": "GCF & LCM", "labelEs": "MCD y mcm", "legacy": "6.NS.4" }
+      ],
+      "proves": [
+        "You can split two different totals into equal groups with the greatest common factor, then divide money to find a cost per guest.",
+        "Puedes separar dos totales distintos en grupos iguales usando el máximo común divisor y después dividir el dinero para hallar el costo por invitado."
+      ],
+      "es": {},
+      "level0": {
+        "step": "step-2",
+        "worked": {
+          "title": ["Making equal goodie bags", "Hacer bolsas de regalos iguales"],
+          "steps": [
+            [
+              "I have 12 stickers and 18 granola bars.",
+              "Tengo 12 pegatinas y 18 barras de granola."
+            ],
+            [
+              "Factors of 12: 1, 2, 3, 4, 6, 12. Factors of 18: 1, 2, 3, 6, 9, 18.",
+              "Factores de 12: 1, 2, 3, 4, 6, 12. Factores de 18: 1, 2, 3, 6, 9, 18."
+            ],
+            [
+              "The biggest factor in BOTH lists is 6, so I can make 6 equal bags.",
+              "El factor más grande en AMBAS listas es 6, así que puedo hacer 6 bolsas iguales."
+            ]
+          ],
+          "answer": [
+            "6 bags: 2 stickers and 3 bars in each.",
+            "6 bolsas: 2 pegatinas y 3 barras en cada una."
+          ]
+        },
+        "reduce": [
+          "Do just the goodie bags today. Use 12 and 18 (or your own two numbers), find the GCF, and stop there. Skip the partner compare.",
+          "Hoy haz solo las bolsas de regalos. Usa 12 y 18 (o tus propios dos números), halla el MCD y detente ahí. Puedes saltar la comparación con tu compañero."
+        ],
+        "frame": {
+          "headers": [
+            ["Number", "Número"],
+            ["Its factors", "Sus factores"]
+          ],
+          "rows": [
+            ["12", "1, 2, 3, 4, 6, 12"],
+            ["18", "1, 2, 3, 6, ___, 18"],
+            [["GCF", "MCD"], ""]
+          ]
+        },
+        "vocab": [
+          [
+            "Factor",
+            "Factor",
+            "A number that divides evenly with no leftovers.",
+            "Un número que divide sin dejar residuo."
+          ],
+          [
+            "Greatest common factor (GCF)",
+            "Máximo común divisor (MCD)",
+            "The biggest factor two numbers share.",
+            "El factor más grande que comparten dos números."
+          ],
+          [
+            "Quotient",
+            "Cociente",
+            "The answer to a division problem.",
+            "La respuesta de una división."
+          ]
+        ]
+      }
+    },
+    "unit-1-b": {
+      "path": "/math/unit-1/projects/version-b/",
+      "title": "Build-a-Bot Budget Lab",
+      "unit": 1,
+      "revealUnit": 1,
+      "unitLabel": ["Unit 1", "Unidad 1"],
+      "standards": [
+        {
+          "code": "6.NOS.2",
+          "label": "Multi-Digit Division",
+          "labelEs": "División de varios dígitos",
+          "legacy": "6.NS.2"
+        },
+        {
+          "code": "6.NOS.3",
+          "label": "Decimal Operations",
+          "labelEs": "Operaciones con decimales",
+          "legacy": "6.NS.3"
+        },
+        { "code": "6.NOS.4", "label": "GCF & LCM", "labelEs": "MCD y mcm", "legacy": "6.NS.4" }
+      ],
+      "proves": [
+        "You can build equal tool kits with the greatest common factor and add, subtract, and divide decimal money without losing the decimal point.",
+        "Puedes armar kits de herramientas iguales con el máximo común divisor y sumar, restar y dividir dinero decimal sin perder el punto decimal."
+      ],
+      "es": {},
+      "level0": {
+        "step": "step-2",
+        "worked": {
+          "title": ["Equal tool kits", "Kits de herramientas iguales"],
+          "steps": [
+            ["I have 8 bolts and 12 wires.", "Tengo 8 tornillos y 12 cables."],
+            [
+              "Factors of 8: 1, 2, 4, 8. Factors of 12: 1, 2, 3, 4, 6, 12.",
+              "Factores de 8: 1, 2, 4, 8. Factores de 12: 1, 2, 3, 4, 6, 12."
+            ],
+            [
+              "The biggest shared factor is 4, so I can build 4 kits.",
+              "El factor compartido más grande es 4, así que puedo armar 4 kits."
+            ]
+          ],
+          "answer": [
+            "4 kits: 2 bolts and 3 wires in each.",
+            "4 kits: 2 tornillos y 3 cables en cada uno."
+          ]
+        },
+        "reduce": [
+          "Today build the kits only. Find the GCF of your two part counts, then stop. The budget steps can wait for tomorrow.",
+          "Hoy arma solo los kits. Halla el MCD de tus dos cantidades de piezas y detente. Los pasos del presupuesto pueden esperar."
+        ],
+        "frame": {
+          "headers": [
+            ["Number", "Número"],
+            ["Its factors", "Sus factores"]
+          ],
+          "rows": [
+            ["8", "1, 2, 4, 8"],
+            ["12", "1, 2, 3, ___, 6, 12"],
+            [["GCF", "MCD"], ""]
+          ]
+        },
+        "vocab": [
+          [
+            "Factor",
+            "Factor",
+            "A number that divides evenly with no leftovers.",
+            "Un número que divide sin dejar residuo."
+          ],
+          [
+            "Greatest common factor (GCF)",
+            "Máximo común divisor (MCD)",
+            "The biggest factor two numbers share.",
+            "El factor más grande que comparten dos números."
+          ],
+          [
+            "Decimal point",
+            "Punto decimal",
+            "The dot that separates whole dollars from cents.",
+            "El punto que separa los dólares enteros de los centavos."
+          ]
+        ]
+      }
+    },
+    "unit-2-a": {
+      "path": "/math/unit-2/projects/version-a/",
+      "title": "Recipe Remix Bakery",
+      "unit": 2,
+      "revealUnit": 2,
+      "unitLabel": ["Unit 2", "Unidad 2"],
+      "standards": [
+        {
+          "code": "6.NOS.1",
+          "label": "Dividing Fractions",
+          "labelEs": "División de fracciones",
+          "legacy": "6.NS.1"
+        }
+      ],
+      "proves": [
+        "You can divide a whole number or a mixed number by a fraction, show it with a picture, and say what the quotient means in the bakery.",
+        "Puedes dividir un número entero o un número mixto entre una fracción, mostrarlo con un dibujo y decir qué significa el cociente en la panadería."
+      ],
+      "es": {
+        "Step 2 — Big Batch Servings": "Paso 2 — Porciones de una tanda grande",
+        "Your job: You made a large batch of batter (measured in whole cups). How many servings can you get if you measure them out using a unit fraction scoop?": "Tu trabajo: Hiciste una tanda grande de masa (medida en tazas enteras). ¿Cuántas porciones puedes servir si las mides con un cucharón de fracción unitaria?",
+        "🟢 Level 1 support: Choose a whole number batch (e.g. 4 cups flour) and a unit fraction scoop (e.g. 1/3 cup). The visualizer will draw 4 cups and divide each cup into 3 portions, showing exactly 12 servings.": "🟢 Apoyo del Nivel 1: Elige una tanda de número entero (por ejemplo, 4 tazas de harina) y un cucharón de fracción unitaria (por ejemplo, 1/3 de taza). El visualizador dibujará 4 tazas y dividirá cada taza en 3 porciones, mostrando exactamente 12 porciones.",
+        "LEVEL 2 CHALLENGE Input any whole number (dividend) and any unit fraction denominator (divisor). For example, a 7-cup batch divided by 1/5-cup scoops.": "RETO DE NIVEL 2 Ingresa cualquier número entero (dividendo) y cualquier denominador de fracción unitaria (divisor). Por ejemplo, una tanda de 7 tazas dividida entre cucharones de 1/5 de taza.",
+        "🥤 Total Batch Size (Whole Cups)": "🥤 Tamaño total de la tanda (tazas enteras)",
+        "🥄 Scoop size (Unit Fraction)": "🥄 Tamaño del cucharón (fracción unitaria)",
+        "🥤 Total Batch Size (Whole Number Dividend)": "🥤 Tamaño total de la tanda (dividendo entero)",
+        "🥄 Scoop size Denominator (Divisor Unit Fraction)": "🥄 Denominador del cucharón (fracción unitaria divisora)",
+        "🥣 Calculate Batch Servings": "🥣 Calcular porciones de la tanda",
+        "Step 3 — Roll Cuts": "Paso 3 — Cortes del rollo",
+        "Your job: You have a long cylinder of rolled dough (mixed number length) and want to slice it into equal pieces. Find the quotient to see how many slices you get, and compare your output to real-world bakery yields.": "Tu trabajo: Tienes un cilindro largo de masa enrollada (longitud en número mixto) y quieres cortarlo en piezas iguales. Halla el cociente para ver cuántas rebanadas obtienes y compara tu resultado con los rendimientos reales de una panadería.",
+        "🟢 Level 1 support: Use a roll of length 2 1/2 feet and cut slices of 1/4 foot. The baguette visualizer will show exactly 10 slices can be cut.": "🟢 Apoyo del Nivel 1: Usa un rollo de 2 1/2 pies de largo y corta rebanadas de 1/4 de pie. El visualizador de baguette mostrará que se pueden cortar exactamente 10 rebanadas.",
+        "LEVEL 2 CHALLENGE Specify custom mixed numbers for the roll length and custom proper fractions for the slice size. The calculator will automatically convert the mixed number to an improper fraction first.": "RETO DE NIVEL 2 Escoge tus propios números mixtos para la longitud del rollo y tus propias fracciones propias para el tamaño de la rebanada. La calculadora convertirá primero el número mixto en fracción impropia.",
+        "🥖 Total Roll Length (Mixed Number feet)": "🥖 Longitud total del rollo (número mixto en pies)",
+        "🔪 Slice Size (Fraction foot)": "🔪 Tamaño de la rebanada (fracción de pie)",
+        "🥖 Total Roll Length (Mixed Number Dividend)": "🥖 Longitud total del rollo (dividendo en número mixto)",
+        "🔪 Slice Size (Fraction Divisor)": "🔪 Tamaño de la rebanada (divisor fraccionario)",
+        "🥖 Cut the Dough": "🥖 Cortar la masa",
+        "🥯 Real-World Bakery Yields": "🥯 Rendimientos reales de panadería",
+        "Bakery Item": "Producto de panadería",
+        "Slice / Portion Yield Range": "Rango de rebanadas / porciones",
+        "Dough Prep Method": "Método de preparación de la masa",
+        "Compare your roll cuts to the table. Which bakery item does your yield match best? Write 1-2 sentences.": "Compara tus cortes con la tabla. ¿A qué producto de panadería se parece más tu rendimiento? Escribe 1 o 2 oraciones.",
+        "Step 4 — Compare With a Partner": "Paso 4 — Compara con un compañero",
+        "Your job: Interview a classmate about their bakery numbers. Enter their name and their calculated servings below to compare your bakery yields.": "Tu trabajo: Entrevista a un compañero sobre los números de su panadería. Escribe su nombre y las porciones que calculó para comparar los rendimientos.",
+        "Partner Chef's Name": "Nombre del chef compañero",
+        "Partner's Portions (Step 1)": "Porciones del compañero (Paso 1)",
+        "Partner's Servings (Step 2)": "Porciones del compañero (Paso 2)",
+        "Partner's Slices (Step 3)": "Rebanadas del compañero (Paso 3)",
+        "📊 Compare Our Plans": "📊 Comparar nuestros planes",
+        "How does divisor size affect servings? Compare your results and explain using your math vocabulary.": "¿Cómo afecta el tamaño del divisor a la cantidad de porciones? Compara tus resultados y explica usando tu vocabulario matemático.",
+        "Your job: Create a menu card pitch for your bakery using your mathematical results. Check off your completed steps and generate your final report!": "Tu trabajo: Crea la presentación de la carta del menú de tu panadería usando tus resultados matemáticos. Marca los pasos completados y genera tu informe final.",
+        "✍️ Bakery Menu Card Description (write 3–5 sentences using your real numbers!)": "✍️ Descripción de la carta del menú (escribe de 3 a 5 oraciones usando tus números reales)",
+        "📊 Scoring Rubric": "📊 Rúbrica de calificación"
+      },
+      "level0": {
+        "step": "step-2",
+        "worked": {
+          "title": ["Scooping one batch", "Servir una tanda"],
+          "steps": [
+            [
+              "I have 2 cups of batter and a 1/4-cup scoop.",
+              "Tengo 2 tazas de masa y un cucharón de 1/4 de taza."
+            ],
+            [
+              "Each whole cup holds 4 scoops, because 4 fourths make 1.",
+              "Cada taza entera tiene 4 cucharones, porque 4 cuartos hacen 1."
+            ],
+            [
+              "2 cups × 4 scoops = 8 scoops. That is 2 ÷ 1/4 = 8.",
+              "2 tazas × 4 cucharones = 8 cucharones. Es decir, 2 ÷ 1/4 = 8."
+            ]
+          ],
+          "answer": ["8 servings.", "8 porciones."]
+        },
+        "reduce": [
+          "Today do Step 2 with a WHOLE number of cups and a unit fraction scoop only (like 2 ÷ 1/4). You do not have to do the mixed-number roll cuts.",
+          "Hoy haz solo el Paso 2 con un número ENTERO de tazas y un cucharón de fracción unitaria (como 2 ÷ 1/4). No tienes que hacer los cortes con números mixtos."
+        ],
+        "frame": {
+          "headers": [
+            ["Whole cups", "Tazas enteras"],
+            ["Scoops in 1 cup", "Cucharones en 1 taza"],
+            ["Total servings", "Porciones totales"]
+          ],
+          "rows": [
+            ["1", "4", "4"],
+            ["2", "4", ""],
+            ["3", "___", ""]
+          ]
+        },
+        "vocab": [
+          [
+            "Dividend",
+            "Dividendo",
+            "The amount you are splitting up.",
+            "La cantidad que estás repartiendo."
+          ],
+          [
+            "Divisor",
+            "Divisor",
+            "The size of each piece you cut.",
+            "El tamaño de cada pedazo que cortas."
+          ],
+          [
+            "Unit fraction",
+            "Fracción unitaria",
+            "A fraction with 1 on top, like 1/4.",
+            "Una fracción con 1 arriba, como 1/4."
+          ]
+        ]
+      }
+    },
+    "unit-2-b": {
+      "path": "/math/unit-2/projects/version-b/",
+      "title": "Maker Workshop Cut List",
+      "unit": 2,
+      "revealUnit": 2,
+      "unitLabel": ["Unit 2", "Unidad 2"],
+      "standards": [
+        {
+          "code": "6.NOS.1",
+          "label": "Dividing Fractions",
+          "labelEs": "División de fracciones",
+          "legacy": "6.NS.1"
+        }
+      ],
+      "proves": [
+        "You can divide mixed numbers by fractions to build a cut list, and explain the leftover piece instead of ignoring it.",
+        "Puedes dividir números mixtos entre fracciones para armar una lista de cortes y explicar el pedazo sobrante en lugar de ignorarlo."
+      ],
+      "es": {
+        "LEVEL 2 CHALLENGE Use custom fractions that do not divide evenly (like 5 1/4 feet divided by 2/3 foot strips) to see the exact remaining scrap wood.": "RETO DE NIVEL 2 Usa fracciones que no dividen exactamente (como 5 1/4 pies entre tiras de 2/3 de pie) para ver la madera sobrante exacta.",
+        "Total Wood Board Size (Mixed Number: Whole & Fraction)": "Tamaño total de la tabla (número mixto: entero y fracción)",
+        "Step 3 — Fabric Cuts & Supplies": "Paso 3 — Cortes de tela y materiales",
+        "Your job: Write 3–5 sentences summarizing your workshop cut list and the mathematical patterns you noticed (such as the reciprocal rule).": "Tu trabajo: Escribe de 3 a 5 oraciones que resuman tu lista de cortes del taller y los patrones matemáticos que notaste (por ejemplo, la regla del recíproco)."
+      },
+      "level0": {
+        "step": "step-2",
+        "worked": {
+          "title": ["One rope, equal cuts", "Una cuerda, cortes iguales"],
+          "steps": [
+            [
+              "My rope is 3 feet long. I want 1/2-foot pieces.",
+              "Mi cuerda mide 3 pies. Quiero pedazos de 1/2 pie."
+            ],
+            [
+              "Each foot gives 2 pieces, because 2 halves make 1.",
+              "Cada pie da 2 pedazos, porque 2 medios hacen 1."
+            ],
+            [
+              "3 feet × 2 = 6 pieces. That is 3 ÷ 1/2 = 6.",
+              "3 pies × 2 = 6 pedazos. Es decir, 3 ÷ 1/2 = 6."
+            ]
+          ],
+          "answer": ["6 pieces, no scrap left over.", "6 pedazos, sin sobrantes."]
+        },
+        "reduce": [
+          "Today cut ONE material with a whole-number length. Skip the mixed-number board and the scrap-wood question.",
+          "Hoy corta UN material con una longitud de número entero. Puedes saltar la tabla con número mixto y la pregunta de la madera sobrante."
+        ],
+        "frame": {
+          "headers": [
+            ["Rope length (ft)", "Longitud de la cuerda (pies)"],
+            ["Piece size", "Tamaño del pedazo"],
+            ["Number of pieces", "Cantidad de pedazos"]
+          ],
+          "rows": [
+            ["3", "1/2", "6"],
+            ["4", "1/2", ""],
+            ["4", "1/4", ""]
+          ]
+        },
+        "vocab": [
+          [
+            "Mixed number",
+            "Número mixto",
+            "A whole number with a fraction, like 2 1/2.",
+            "Un número entero con una fracción, como 2 1/2."
+          ],
+          [
+            "Reciprocal",
+            "Recíproco",
+            "The flipped fraction: 2/3 flips to 3/2.",
+            "La fracción volteada: 2/3 se voltea a 3/2."
+          ],
+          [
+            "Quotient",
+            "Cociente",
+            "The answer to a division problem.",
+            "La respuesta de una división."
+          ]
+        ]
+      }
+    },
+    "unit-3-a": {
+      "path": "/math/unit-3/projects/version-a/",
+      "title": "Smoothie Bar Designer",
+      "unit": 3,
+      "revealUnit": 3,
+      "unitLabel": ["Unit 3", "Unidad 3"],
+      "standards": [
+        {
+          "code": "6.AT.1",
+          "label": "Ratio Concept",
+          "labelEs": "Concepto de razón",
+          "legacy": "6.RP.1"
+        },
+        { "code": "6.AT.2", "label": "Unit Rate", "labelEs": "Tasa unitaria", "legacy": "6.RP.2" },
+        {
+          "code": "6.AT.3a",
+          "label": "Ratio Tables",
+          "labelEs": "Tablas de razones",
+          "legacy": "6.RP.3a"
+        }
+      ],
+      "proves": [
+        "You can write one recipe ratio three ways, scale it with a ratio table, and use a unit rate to decide which bulk deal is cheaper.",
+        "Puedes escribir la razón de una receta de tres formas, escalarla con una tabla de razones y usar una tasa unitaria para decidir qué oferta al por mayor es más barata."
+      ],
+      "es": {
+        "Cups of Ingredient 1 = S ×": "Tazas del ingrediente 1 = S ×",
+        "Cups of Ingredient 2 = S ×": "Tazas del ingrediente 2 = S ×",
+        "Deal A: Bulk Strawberries": "Oferta A: Fresas al por mayor",
+        "Deal B: Bulk Strawberries": "Oferta B: Fresas al por mayor",
+        "Partner's cups of Strawberries": "Tazas de fresas de tu compañero",
+        "Partner's cups of Bananas": "Tazas de plátanos de tu compañero",
+        "Your job: Write a 3–5 sentence business pitch for your smoothie bar using your calculations. Then check off the list and score your work.": "Tu trabajo: Escribe una presentación de negocio de 3 a 5 oraciones para tu barra de licuados usando tus cálculos. Después marca la lista y califica tu trabajo.",
+        "✍️ Your Smoothie Bar Pitch (Use your real math numbers!)": "✍️ Tu presentación de la barra de licuados (usa tus números reales)",
+        "📊 How You Are Scored": "📊 Cómo se te califica"
+      },
+      "level0": {
+        "step": "step-1",
+        "worked": {
+          "title": ["Writing one ratio three ways", "Escribir una razón de tres formas"],
+          "steps": [
+            [
+              "My blend uses 2 cups of strawberries and 3 cups of banana.",
+              "Mi mezcla usa 2 tazas de fresas y 3 tazas de plátano."
+            ],
+            ["With a colon: 2 : 3", "Con dos puntos: 2 : 3"],
+            ["With words: 2 to 3. As a fraction: 2/3.", "Con palabras: 2 a 3. Como fracción: 2/3."]
+          ],
+          "answer": [
+            "2 : 3, 2 to 3, and 2/3 all say the same thing.",
+            "2 : 3, 2 a 3 y 2/3 dicen lo mismo."
+          ]
+        },
+        "reduce": [
+          "Today pick just TWO ingredients and write the ratio three ways. You do not have to do the bulk-deal comparison.",
+          "Hoy elige solo DOS ingredientes y escribe la razón de tres formas. No tienes que hacer la comparación de ofertas al por mayor."
+        ],
+        "frame": {
+          "headers": [
+            ["Batches", "Tandas"],
+            ["Strawberry cups", "Tazas de fresa"],
+            ["Banana cups", "Tazas de plátano"]
+          ],
+          "rows": [
+            ["1", "2", "3"],
+            ["2", "4", ""],
+            ["3", "___", ""]
+          ]
+        },
+        "vocab": [
+          [
+            "Ratio",
+            "Razón",
+            "A compare of two amounts, like 2 : 3.",
+            "Una comparación de dos cantidades, como 2 : 3."
+          ],
+          [
+            "Unit rate",
+            "Tasa unitaria",
+            "The cost or amount for exactly 1.",
+            "El costo o la cantidad para exactamente 1."
+          ],
+          [
+            "Scale up",
+            "Escalar",
+            "Multiply both numbers by the same amount.",
+            "Multiplicar los dos números por la misma cantidad."
+          ]
+        ]
+      }
+    },
+    "unit-3-b": {
+      "path": "/math/unit-3/projects/version-b/",
+      "title": "Sports Stats Scout",
+      "unit": 3,
+      "revealUnit": 3,
+      "unitLabel": ["Unit 3", "Unidad 3"],
+      "standards": [
+        {
+          "code": "6.AT.1",
+          "label": "Ratio Concept",
+          "labelEs": "Concepto de razón",
+          "legacy": "6.RP.1"
+        },
+        { "code": "6.AT.2", "label": "Unit Rate", "labelEs": "Tasa unitaria", "legacy": "6.RP.2" },
+        {
+          "code": "6.AT.3a",
+          "label": "Ratio Tables",
+          "labelEs": "Tablas de razones",
+          "legacy": "6.RP.3a"
+        },
+        {
+          "code": "6.DS.6c",
+          "label": "Summarizing Data Sets",
+          "labelEs": "Resumir conjuntos de datos",
+          "legacy": "6.SP.5c"
+        }
+      ],
+      "proves": [
+        "You can turn game totals into a points-per-game unit rate, build a ratio table to predict a season, and compare players fairly.",
+        "Puedes convertir totales de partidos en una tasa unitaria de puntos por partido, armar una tabla de razones para predecir la temporada y comparar jugadores de forma justa."
+      ],
+      "es": {},
+      "level0": {
+        "step": "step-2",
+        "worked": {
+          "title": ["Points per game", "Puntos por partido"],
+          "steps": [
+            ["A player scored 24 points in 4 games.", "Un jugador anotó 24 puntos en 4 partidos."],
+            [
+              "Unit rate means points for exactly 1 game.",
+              "La tasa unitaria significa puntos en exactamente 1 partido."
+            ],
+            ["24 ÷ 4 = 6 points per game.", "24 ÷ 4 = 6 puntos por partido."]
+          ],
+          "answer": ["6 points per game (6 PPG).", "6 puntos por partido (6 PPG)."]
+        },
+        "reduce": [
+          "Today find the unit rate for ONE player only. You do not have to fill the whole comparison table.",
+          "Hoy halla la tasa unitaria de UN solo jugador. No tienes que llenar toda la tabla de comparación."
+        ],
+        "frame": {
+          "headers": [
+            ["Games", "Partidos"],
+            ["Points", "Puntos"],
+            ["Points per game", "Puntos por partido"]
+          ],
+          "rows": [
+            ["4", "24", "6"],
+            ["5", "30", ""],
+            ["10", "___", "6"]
+          ]
+        },
+        "vocab": [
+          [
+            "Rate",
+            "Tasa",
+            "A compare of two different units, like points per game.",
+            "Una comparación de dos unidades distintas, como puntos por partido."
+          ],
+          [
+            "Unit rate",
+            "Tasa unitaria",
+            "The amount for exactly 1.",
+            "La cantidad para exactamente 1."
+          ],
+          [
+            "Mean",
+            "Media",
+            "The average — add them up, then divide.",
+            "El promedio: súmalos y luego divide."
+          ]
+        ]
+      }
+    },
+    "unit-4-a": {
+      "path": "/math/unit-4/projects/version-a/",
+      "title": "Pop-Up Shop Owner",
+      "unit": 4,
+      "revealUnit": 4,
+      "unitLabel": ["Unit 4", "Unidad 4"],
+      "standards": [
+        { "code": "6.AT.2", "label": "Unit Rate", "labelEs": "Tasa unitaria", "legacy": "6.RP.2" },
+        {
+          "code": "6.AT.4",
+          "label": "Percent of a Quantity",
+          "labelEs": "Porcentaje de una cantidad",
+          "legacy": "6.RP.3c"
+        },
+        {
+          "code": "6.AT.3c",
+          "label": "Measurement Conversion",
+          "labelEs": "Conversión de medidas",
+          "legacy": "6.RP.3d"
+        }
+      ],
+      "proves": [
+        "You can find a unit price, take a percent off, add a percent of sales tax, and convert between ounces and pounds to compare deals.",
+        "Puedes hallar un precio unitario, aplicar un porcentaje de descuento, sumar un porcentaje de impuesto y convertir entre onzas y libras para comparar ofertas."
+      ],
+      "es": {},
+      "level0": {
+        "step": "step-2",
+        "worked": {
+          "title": ["10% off a $20 item", "10% de descuento en un artículo de $20"],
+          "steps": [
+            ["10% means 10 out of every 100.", "10% significa 10 de cada 100."],
+            ["10% of $20 = 0.10 × 20 = $2.00 saved.", "10% de $20 = 0.10 × 20 = $2.00 de ahorro."],
+            ["New price = $20.00 − $2.00 = $18.00.", "Precio nuevo = $20.00 − $2.00 = $18.00."]
+          ],
+          "answer": ["$18.00 after the discount.", "$18.00 después del descuento."]
+        },
+        "reduce": [
+          "Today price ONE item and take ONE discount. The sales-tax and unit-conversion steps can wait.",
+          "Hoy pon precio a UN artículo y aplica UN descuento. Los pasos de impuesto y conversión de unidades pueden esperar."
+        ],
+        "frame": {
+          "headers": [
+            ["Price", "Precio"],
+            ["Percent off", "Porcentaje de descuento"],
+            ["Amount saved", "Cantidad ahorrada"],
+            ["New price", "Precio nuevo"]
+          ],
+          "rows": [
+            ["$20.00", "10%", "$2.00", "$18.00"],
+            ["$30.00", "10%", "", ""],
+            ["$40.00", "25%", "___", ""]
+          ]
+        },
+        "vocab": [
+          [
+            "Percent",
+            "Porcentaje",
+            "Out of 100. 25% means 25 out of 100.",
+            "De cada 100. 25% significa 25 de cada 100."
+          ],
+          [
+            "Discount",
+            "Descuento",
+            "The money you take OFF the price.",
+            "El dinero que se RESTA del precio."
+          ],
+          [
+            "Unit price",
+            "Precio unitario",
+            "The cost for exactly 1 ounce, pound, or item.",
+            "El costo de exactamente 1 onza, libra o artículo."
+          ]
+        ]
+      }
+    },
+    "unit-4-b": {
+      "path": "/math/unit-4/projects/version-b/",
+      "title": "Smart Shopper Showdown",
+      "unit": 4,
+      "revealUnit": 4,
+      "unitLabel": ["Unit 4", "Unidad 4"],
+      "standards": [
+        { "code": "6.AT.2", "label": "Unit Rate", "labelEs": "Tasa unitaria", "legacy": "6.RP.2" },
+        {
+          "code": "6.AT.4",
+          "label": "Percent of a Quantity",
+          "labelEs": "Porcentaje de una cantidad",
+          "legacy": "6.RP.3c"
+        }
+      ],
+      "proves": [
+        "You can compare two package sizes by unit price and use percent to prove which one is actually the better deal.",
+        "Puedes comparar dos tamaños de paquete por precio unitario y usar porcentajes para demostrar cuál es realmente la mejor oferta."
+      ],
+      "es": {},
+      "level0": {
+        "step": "step-2",
+        "worked": {
+          "title": ["Which package is cheaper?", "¿Qué paquete es más barato?"],
+          "steps": [
+            ["Package A: $6.00 for 12 ounces.", "Paquete A: $6.00 por 12 onzas."],
+            [
+              "Unit price = total cost ÷ number of ounces.",
+              "Precio unitario = costo total ÷ número de onzas."
+            ],
+            ["$6.00 ÷ 12 = $0.50 per ounce.", "$6.00 ÷ 12 = $0.50 por onza."]
+          ],
+          "answer": [
+            "$0.50 per ounce — now compare it to Package B.",
+            "$0.50 por onza; ahora compáralo con el Paquete B."
+          ]
+        },
+        "reduce": [
+          "Today find the unit price of ONE package. Comparing both packages can be tomorrow's job.",
+          "Hoy halla el precio unitario de UN paquete. Comparar los dos paquetes puede ser la tarea de mañana."
+        ],
+        "frame": {
+          "headers": [
+            ["Package", "Paquete"],
+            ["Cost", "Costo"],
+            ["Ounces", "Onzas"],
+            ["Cost per ounce", "Costo por onza"]
+          ],
+          "rows": [
+            ["A", "$6.00", "12", "$0.50"],
+            ["B", "$8.00", "20", ""],
+            [["Cheaper", "Más barato"], "", "", "___"]
+          ]
+        },
+        "vocab": [
+          [
+            "Unit price",
+            "Precio unitario",
+            "The cost for exactly 1 ounce or item.",
+            "El costo de exactamente 1 onza o artículo."
+          ],
+          [
+            "Better deal",
+            "Mejor oferta",
+            "The one with the LOWER unit price.",
+            "La que tiene el precio unitario MÁS BAJO."
+          ],
+          ["Percent", "Porcentaje", "Out of 100.", "De cada 100."]
+        ]
+      }
+    },
+    "unit-5-a": {
+      "path": "/math/unit-5/projects/version-a/",
+      "title": "Dream Room Designer",
+      "unit": 5,
+      "revealUnit": 5,
+      "unitLabel": ["Unit 5", "Unidad 5"],
+      "standards": [{ "code": "6.GR.1", "label": "Area", "labelEs": "Área", "legacy": "6.G.1" }],
+      "proves": [
+        "You can find the area of a rectangle and of a composite floor plan by breaking it into parts, then use area to price the flooring.",
+        "Puedes hallar el área de un rectángulo y de un plano compuesto separándolo en partes, y después usar el área para calcular el precio del piso."
+      ],
+      "es": {},
+      "level0": {
+        "step": "step-2",
+        "worked": {
+          "title": ["Area of one rectangle", "Área de un rectángulo"],
+          "steps": [
+            [
+              "My bedroom is 10 feet long and 8 feet wide.",
+              "Mi habitación mide 10 pies de largo y 8 pies de ancho."
+            ],
+            ["Area of a rectangle = length × width.", "Área de un rectángulo = largo × ancho."],
+            ["10 × 8 = 80 square feet.", "10 × 8 = 80 pies cuadrados."]
+          ],
+          "answer": [
+            "80 sq ft — write the units every time.",
+            "80 pies cuadrados; escribe siempre las unidades."
+          ]
+        },
+        "reduce": [
+          "Today find the area of ONE plain rectangle room. You do not need the L-shaped composite room.",
+          "Hoy halla el área de UNA habitación rectangular simple. No necesitas la habitación compuesta en forma de L."
+        ],
+        "frame": {
+          "headers": [
+            ["Length (ft)", "Largo (pies)"],
+            ["Width (ft)", "Ancho (pies)"],
+            ["Area (sq ft)", "Área (pies cuad.)"]
+          ],
+          "rows": [
+            ["10", "8", "80"],
+            ["12", "8", ""],
+            ["12", "___", "120"]
+          ]
+        },
+        "vocab": [
+          [
+            "Area",
+            "Área",
+            "How much flat space is inside a shape.",
+            "Cuánto espacio plano hay dentro de una figura."
+          ],
+          [
+            "Square feet",
+            "Pies cuadrados",
+            "The unit for area — always squared.",
+            "La unidad del área; siempre al cuadrado."
+          ],
+          [
+            "Composite figure",
+            "Figura compuesta",
+            "A shape made of two or more rectangles.",
+            "Una figura formada por dos o más rectángulos."
+          ]
+        ]
+      }
+    },
+    "unit-5-b": {
+      "path": "/math/unit-5/projects/version-b/",
+      "title": "Room Makeover Budget",
+      "unit": 5,
+      "revealUnit": 5,
+      "unitLabel": ["Unit 5", "Unidad 5"],
+      "standards": [
+        { "code": "6.GR.1", "label": "Area", "labelEs": "Área", "legacy": "6.G.1" },
+        {
+          "code": "6.GR.4",
+          "label": "Surface Area & Nets",
+          "labelEs": "Área de superficie y plantillas",
+          "legacy": "6.G.4"
+        }
+      ],
+      "proves": [
+        "You can find floor area and wall surface area, then multiply by a price per square foot to build a real makeover budget.",
+        "Puedes hallar el área del piso y el área de superficie de las paredes, y luego multiplicar por un precio por pie cuadrado para armar un presupuesto real."
+      ],
+      "es": {},
+      "level0": {
+        "step": "step-2",
+        "worked": {
+          "title": ["Floor area, then cost", "Área del piso y después el costo"],
+          "steps": [
+            [
+              "The floor is 10 ft by 9 ft, so area = 10 × 9 = 90 sq ft.",
+              "El piso mide 10 pies por 9 pies, así que el área = 10 × 9 = 90 pies cuadrados."
+            ],
+            ["Carpet costs $3.50 per square foot.", "La alfombra cuesta $3.50 por pie cuadrado."],
+            ["90 × $3.50 = $315.00.", "90 × $3.50 = $315.00."]
+          ],
+          "answer": ["$315.00 for the carpet.", "$315.00 por la alfombra."]
+        },
+        "reduce": [
+          "Today do the floor only: area × price. The four walls and the paint step can wait.",
+          "Hoy haz solo el piso: área × precio. Las cuatro paredes y el paso de la pintura pueden esperar."
+        ],
+        "frame": {
+          "headers": [
+            ["Area (sq ft)", "Área (pies cuad.)"],
+            ["Price per sq ft", "Precio por pie cuad."],
+            ["Total cost", "Costo total"]
+          ],
+          "rows": [
+            ["90", "$3.50", "$315.00"],
+            ["100", "$3.50", ""],
+            ["100", "$5.00", "___"]
+          ]
+        },
+        "vocab": [
+          [
+            "Area",
+            "Área",
+            "How much flat space is inside a shape.",
+            "Cuánto espacio plano hay dentro de una figura."
+          ],
+          [
+            "Surface area",
+            "Área de superficie",
+            "The total area of every face on the outside.",
+            "El área total de todas las caras exteriores."
+          ],
+          [
+            "Budget",
+            "Presupuesto",
+            "The plan for how much money you can spend.",
+            "El plan de cuánto dinero puedes gastar."
+          ]
+        ]
+      }
+    },
+    "unit-6-a": {
+      "path": "/math/unit-6/projects/version-a/",
+      "title": "Game Studio Scoring Engine",
+      "unit": 6,
+      "revealUnit": 6,
+      "unitLabel": ["Unit 6", "Unidad 6"],
+      "pageCodes": ["6.AT.5", "6.AT.6", "6.AT.7"],
+      "standards": [
+        { "code": "6.AT.5", "label": "Exponents", "labelEs": "Exponentes", "legacy": "6.EE.1" },
+        {
+          "code": "6.AT.6a",
+          "label": "Writing Expressions",
+          "labelEs": "Escribir expresiones",
+          "legacy": "6.EE.2a"
+        },
+        {
+          "code": "6.AT.6c",
+          "label": "Evaluating Expressions",
+          "labelEs": "Evaluar expresiones",
+          "legacy": "6.EE.2c"
+        },
+        {
+          "code": "6.AT.7",
+          "label": "Equivalent Expressions",
+          "labelEs": "Expresiones equivalentes",
+          "legacy": "6.EE.3"
+        }
+      ],
+      "proves": [
+        "You can write a scoring rule as an algebraic expression, evaluate it with the order of operations including exponents, and prove two versions are equivalent.",
+        "Puedes escribir una regla de puntuación como expresión algebraica, evaluarla con el orden de las operaciones incluyendo exponentes, y demostrar que dos versiones son equivalentes."
+      ],
+      "es": {},
+      "level0": {
+        "step": "step-2",
+        "worked": {
+          "title": ["Evaluating one expression", "Evaluar una expresión"],
+          "steps": [
+            [
+              "My rule is 10p + 50, where p = number of coins.",
+              "Mi regla es 10p + 50, donde p = cantidad de monedas."
+            ],
+            ["If p = 3, replace p with 3: 10(3) + 50.", "Si p = 3, reemplaza p por 3: 10(3) + 50."],
+            [
+              "Multiply first, then add: 30 + 50 = 80.",
+              "Multiplica primero y después suma: 30 + 50 = 80."
+            ]
+          ],
+          "answer": ["80 points.", "80 puntos."]
+        },
+        "reduce": [
+          "Today evaluate your rule for just ONE value of p. You do not have to prove the two versions are equivalent.",
+          "Hoy evalúa tu regla con UN solo valor de p. No tienes que demostrar que las dos versiones son equivalentes."
+        ],
+        "frame": {
+          "headers": [
+            ["p (coins)", "p (monedas)"],
+            ["10p", "10p"],
+            ["10p + 50", "10p + 50"]
+          ],
+          "rows": [
+            ["3", "30", "80"],
+            ["5", "50", ""],
+            ["10", "___", ""]
+          ]
+        },
+        "vocab": [
+          [
+            "Variable",
+            "Variable",
+            "A letter that stands for a number that can change.",
+            "Una letra que representa un número que puede cambiar."
+          ],
+          [
+            "Coefficient",
+            "Coeficiente",
+            "The number multiplied by the variable. In 10p it is 10.",
+            "El número que multiplica a la variable. En 10p es 10."
+          ],
+          [
+            "Evaluate",
+            "Evaluar",
+            "Put the number in for the letter, then compute.",
+            "Poner el número en lugar de la letra y después calcular."
+          ]
+        ]
+      }
+    },
+    "unit-6-b": {
+      "path": "/math/unit-6/projects/version-b/",
+      "title": "App Pricing Engine",
+      "unit": 6,
+      "revealUnit": 6,
+      "unitLabel": ["Unit 6", "Unidad 6"],
+      "pageCodes": ["6.AT.5", "6.AT.6", "6.AT.6.b", "6.AT.6.c", "6.AT.7"],
+      "standards": [
+        { "code": "6.AT.5", "label": "Exponents", "labelEs": "Exponentes", "legacy": "6.EE.1" },
+        {
+          "code": "6.AT.6a",
+          "label": "Writing Expressions",
+          "labelEs": "Escribir expresiones",
+          "legacy": "6.EE.2a"
+        },
+        {
+          "code": "6.AT.6c",
+          "label": "Evaluating Expressions",
+          "labelEs": "Evaluar expresiones",
+          "legacy": "6.EE.2c"
+        },
+        {
+          "code": "6.AT.7",
+          "label": "Equivalent Expressions",
+          "labelEs": "Expresiones equivalentes",
+          "legacy": "6.EE.3"
+        }
+      ],
+      "proves": [
+        "You can build a two-term revenue expression, name its coefficients and constant, and evaluate it for real subscriber counts.",
+        "Puedes armar una expresión de ingresos con dos términos, nombrar sus coeficientes y su constante, y evaluarla con cantidades reales de suscriptores."
+      ],
+      "es": {},
+      "level0": {
+        "step": "step-1",
+        "worked": {
+          "title": ["One price, one count", "Un precio, una cantidad"],
+          "steps": [
+            [
+              "Standard price is $5 and I have 20 standard subscribers.",
+              "El precio estándar es $5 y tengo 20 suscriptores estándar."
+            ],
+            [
+              "Revenue expression: 5s, where s = subscribers.",
+              "Expresión de ingresos: 5s, donde s = suscriptores."
+            ],
+            ["Evaluate with s = 20: 5(20) = 100.", "Evalúa con s = 20: 5(20) = 100."]
+          ],
+          "answer": ["$100 from standard subscribers.", "$100 de los suscriptores estándar."]
+        },
+        "reduce": [
+          "Today do the STANDARD subscribers only (one term). Add the premium term when you are ready.",
+          "Hoy trabaja solo con los suscriptores ESTÁNDAR (un término). Agrega el término premium cuando estés listo."
+        ],
+        "frame": {
+          "headers": [
+            ["s (subscribers)", "s (suscriptores)"],
+            ["Price", "Precio"],
+            ["Revenue = 5s", "Ingresos = 5s"]
+          ],
+          "rows": [
+            ["20", "$5", "$100"],
+            ["40", "$5", ""],
+            ["___", "$5", "$300"]
+          ]
+        },
+        "vocab": [
+          [
+            "Term",
+            "Término",
+            "One piece of an expression, like 5s.",
+            "Una parte de una expresión, como 5s."
+          ],
+          ["Constant", "Constante", "A number with no letter attached.", "Un número sin letra."],
+          [
+            "Expression",
+            "Expresión",
+            "Math with letters and numbers but NO equal sign.",
+            "Matemática con letras y números pero SIN signo de igual."
+          ]
+        ]
+      }
+    },
+    "unit-7-a": {
+      "path": "/math/unit-7/projects/version-a/",
+      "title": "Theme Park Map Designer",
+      "unit": 7,
+      "revealUnit": 9,
+      "unitLabel": ["Unit 7", "Unidad 7"],
+      "standards": [
+        {
+          "code": "6.NOS.6",
+          "label": "Rational Numbers on the Line",
+          "labelEs": "Números racionales en la recta",
+          "legacy": "6.NS.6"
+        },
+        {
+          "code": "6.NOS.9",
+          "label": "Coordinate Plane Problems",
+          "labelEs": "Problemas en el plano de coordenadas",
+          "legacy": "6.NS.8"
+        }
+      ],
+      "proves": [
+        "You can plot ordered pairs in all four quadrants, name the quadrant, and find the distance between two points on a map.",
+        "Puedes ubicar pares ordenados en los cuatro cuadrantes, nombrar el cuadrante y hallar la distancia entre dos puntos en un mapa."
+      ],
+      "es": {},
+      "level0": {
+        "step": "step-2",
+        "worked": {
+          "title": ["Plotting one point", "Ubicar un punto"],
+          "steps": [
+            ["My ride is at (3, −2).", "Mi atracción está en (3, −2)."],
+            [
+              "x = 3 means go RIGHT 3 from the origin.",
+              "x = 3 significa moverse 3 a la DERECHA desde el origen."
+            ],
+            [
+              "y = −2 means go DOWN 2. Right and down is Quadrant IV.",
+              "y = −2 significa bajar 2. Derecha y abajo es el Cuadrante IV."
+            ]
+          ],
+          "answer": ["(3, −2) is in Quadrant IV.", "(3, −2) está en el Cuadrante IV."]
+        },
+        "reduce": [
+          "Today plot TWO attractions and name their quadrants. The distance questions can wait.",
+          "Hoy ubica DOS atracciones y nombra sus cuadrantes. Las preguntas de distancia pueden esperar."
+        ],
+        "frame": {
+          "headers": [
+            ["Point", "Punto"],
+            ["x", "x"],
+            ["y", "y"],
+            ["Quadrant", "Cuadrante"]
+          ],
+          "rows": [
+            ["A", "3", "−2", "IV"],
+            ["B", "−4", "5", ""],
+            ["C", "___", "___", ""]
+          ]
+        },
+        "vocab": [
+          [
+            "Ordered pair",
+            "Par ordenado",
+            "Two numbers (x, y) — x always comes first.",
+            "Dos números (x, y); x siempre va primero."
+          ],
+          [
+            "Origin",
+            "Origen",
+            "The point (0, 0) where the axes cross.",
+            "El punto (0, 0) donde se cruzan los ejes."
+          ],
+          [
+            "Quadrant",
+            "Cuadrante",
+            "One of the four corners of the coordinate plane.",
+            "Una de las cuatro secciones del plano de coordenadas."
+          ]
+        ]
+      }
+    },
+    "unit-7-b": {
+      "path": "/math/unit-7/projects/version-b/",
+      "title": "Submarine Mission Control",
+      "unit": 7,
+      "revealUnit": 9,
+      "unitLabel": ["Unit 7", "Unidad 7"],
+      "standards": [
+        {
+          "code": "6.NOS.6",
+          "label": "Rational Numbers on the Line",
+          "labelEs": "Números racionales en la recta",
+          "legacy": "6.NS.6"
+        },
+        {
+          "code": "6.NOS.7",
+          "label": "Reflections in Coordinates",
+          "labelEs": "Reflexiones en coordenadas",
+          "legacy": "6.NS.6b"
+        },
+        {
+          "code": "6.NOS.9",
+          "label": "Coordinate Plane Problems",
+          "labelEs": "Problemas en el plano de coordenadas",
+          "legacy": "6.NS.8"
+        }
+      ],
+      "proves": [
+        "You can plot depth as a negative y-value, reflect a point across an axis, and use absolute value to find vertical distance.",
+        "Puedes ubicar la profundidad como un valor negativo de y, reflejar un punto sobre un eje y usar el valor absoluto para hallar la distancia vertical."
+      ],
+      "es": {},
+      "level0": {
+        "step": "step-1",
+        "worked": {
+          "title": ["Distance below sea level", "Distancia bajo el nivel del mar"],
+          "steps": [
+            [
+              "Checkpoint A is at y = −3 and checkpoint B is at y = −8.",
+              "El punto A está en y = −3 y el punto B en y = −8."
+            ],
+            [
+              "Both are BELOW sea level, so subtract the absolute values.",
+              "Ambos están BAJO el nivel del mar, así que resta los valores absolutos."
+            ],
+            ["|−8| − |−3| = 8 − 3 = 5.", "|−8| − |−3| = 8 − 3 = 5."]
+          ],
+          "answer": ["5 units apart.", "5 unidades de separación."]
+        },
+        "reduce": [
+          "Today plot TWO checkpoints and name their quadrants. The reflection step is optional today.",
+          "Hoy ubica DOS puntos de control y nombra sus cuadrantes. El paso de reflexión es opcional hoy."
+        ],
+        "frame": {
+          "headers": [
+            ["Checkpoint", "Punto de control"],
+            ["x", "x"],
+            ["y (depth)", "y (profundidad)"],
+            ["Above or below?", "¿Arriba o abajo?"]
+          ],
+          "rows": [
+            ["A", "2", "−3", ["Below", "Abajo"]],
+            ["B", "5", "−8", ""],
+            ["C", "___", "4", ""]
+          ]
+        },
+        "vocab": [
+          [
+            "Absolute value",
+            "Valor absoluto",
+            "How far a number is from 0. Always positive.",
+            "Qué tan lejos está un número del 0. Siempre positivo."
+          ],
+          [
+            "Reflection",
+            "Reflexión",
+            "Flipping a point over an axis like a mirror.",
+            "Voltear un punto sobre un eje como en un espejo."
+          ],
+          [
+            "Negative",
+            "Negativo",
+            "Less than zero — below sea level here.",
+            "Menor que cero; aquí, bajo el nivel del mar."
+          ]
+        ]
+      }
+    },
+    "unit-8-a": {
+      "path": "/math/unit-8/projects/version-a/",
+      "title": "Escape Room Architect",
+      "unit": 8,
+      "revealUnit": 7,
+      "unitLabel": ["Unit 8", "Unidad 8"],
+      "standards": [
+        {
+          "code": "6.AT.8",
+          "label": "Solutions of Equations & Inequalities",
+          "labelEs": "Soluciones de ecuaciones y desigualdades",
+          "legacy": "6.EE.5"
+        }
+      ],
+      "proves": [
+        "You can write a one-step equation for a lock, solve it with the inverse operation, and check the solution by substituting it back.",
+        "Puedes escribir una ecuación de un paso para una cerradura, resolverla con la operación inversa y comprobar la solución sustituyéndola."
+      ],
+      "es": {},
+      "level0": {
+        "step": "step-2",
+        "worked": {
+          "title": ["Solving one lock", "Resolver una cerradura"],
+          "steps": [
+            ["The lock says 3x = 36.", "La cerradura dice 3x = 36."],
+            [
+              "x is being MULTIPLIED by 3, so I DIVIDE both sides by 3.",
+              "x está MULTIPLICADA por 3, así que DIVIDO ambos lados entre 3."
+            ],
+            [
+              "36 ÷ 3 = 12, so x = 12. Check: 3(12) = 36 ✓",
+              "36 ÷ 3 = 12, así que x = 12. Comprobación: 3(12) = 36 ✓"
+            ]
+          ],
+          "answer": ["x = 12.", "x = 12."]
+        },
+        "reduce": [
+          "Today solve ONE lock equation and check it. You do not have to design the whole escape room.",
+          "Hoy resuelve UNA ecuación de cerradura y compruébala. No tienes que diseñar todo el cuarto de escape."
+        ],
+        "frame": {
+          "headers": [
+            ["Equation", "Ecuación"],
+            ["Inverse operation", "Operación inversa"],
+            ["x =", "x ="]
+          ],
+          "rows": [
+            ["3x = 36", ["Divide by 3", "Dividir entre 3"], "12"],
+            ["x + 7 = 20", ["Subtract 7", "Restar 7"], ""],
+            ["x ÷ 4 = 8", "___", ""]
+          ]
+        },
+        "vocab": [
+          [
+            "Equation",
+            "Ecuación",
+            "Math with an equal sign. Both sides balance.",
+            "Matemática con signo de igual. Los dos lados se equilibran."
+          ],
+          [
+            "Inverse operation",
+            "Operación inversa",
+            "The undo move: × undoes ÷, + undoes −.",
+            "El movimiento contrario: × deshace ÷, + deshace −."
+          ],
+          [
+            "Solution",
+            "Solución",
+            "The number that makes the equation true.",
+            "El número que hace verdadera la ecuación."
+          ]
+        ]
+      }
+    },
+    "unit-8-b": {
+      "path": "/math/unit-8/projects/version-b/",
+      "title": "Fundraiser Goal Tracker",
+      "unit": 8,
+      "revealUnit": 7,
+      "unitLabel": ["Unit 8", "Unidad 8"],
+      "standards": [
+        {
+          "code": "6.AT.8",
+          "label": "Solutions of Equations & Inequalities",
+          "labelEs": "Soluciones de ecuaciones y desigualdades",
+          "legacy": "6.EE.5"
+        },
+        {
+          "code": "6.AT.9",
+          "label": "Inequalities",
+          "labelEs": "Desigualdades",
+          "legacy": "6.EE.8"
+        }
+      ],
+      "proves": [
+        "You can write an inequality for a fundraising goal, solve it, and graph the solution set on a number line with the right open or closed circle.",
+        "Puedes escribir una desigualdad para una meta de recaudación, resolverla y graficar el conjunto solución en una recta numérica con el círculo abierto o cerrado correcto."
+      ],
+      "es": {},
+      "level0": {
+        "step": "step-2",
+        "worked": {
+          "title": ["How many to sell?", "¿Cuántos hay que vender?"],
+          "steps": [
+            [
+              "Popcorn is $5 each and our goal is at least $100.",
+              "Las palomitas cuestan $5 cada una y la meta es al menos $100."
+            ],
+            ["Inequality: 5n ≥ 100.", "Desigualdad: 5n ≥ 100."],
+            ["Divide both sides by 5: n ≥ 20.", "Divide ambos lados entre 5: n ≥ 20."]
+          ],
+          "answer": [
+            "Sell 20 or more — closed circle at 20.",
+            "Vende 20 o más; círculo cerrado en el 20."
+          ]
+        },
+        "reduce": [
+          "Today write and solve ONE inequality for your goal. Graphing every case can wait.",
+          "Hoy escribe y resuelve UNA desigualdad para tu meta. Graficar todos los casos puede esperar."
+        ],
+        "frame": {
+          "headers": [
+            ["Symbol", "Símbolo"],
+            ["Means", "Significa"],
+            ["Circle on the line", "Círculo en la recta"]
+          ],
+          "rows": [
+            ["≥", ["At least", "Al menos"], ["Closed ●", "Cerrado ●"]],
+            [">", ["More than", "Más que"], ""],
+            ["≤", "___", ["Closed ●", "Cerrado ●"]]
+          ]
+        },
+        "vocab": [
+          [
+            "Inequality",
+            "Desigualdad",
+            "Math with <, >, ≤, or ≥ instead of =.",
+            "Matemática con <, >, ≤ o ≥ en lugar de =."
+          ],
+          ["At least", "Al menos", "That number or MORE. Use ≥.", "Ese número o MÁS. Usa ≥."],
+          [
+            "Solution set",
+            "Conjunto solución",
+            "ALL the numbers that make it true.",
+            "TODOS los números que la hacen verdadera."
+          ]
+        ]
+      }
+    },
+    "unit-8-c": {
+      "path": "/math/unit-8/projects/version-c/",
+      "title": "Escape Room Master Codebreaker",
+      "unit": 8,
+      "revealUnit": 7,
+      "unitLabel": ["Unit 8", "Unidad 8"],
+      "standards": [
+        {
+          "code": "6.AT.8",
+          "label": "Solutions of Equations & Inequalities",
+          "labelEs": "Soluciones de ecuaciones y desigualdades",
+          "legacy": "6.EE.5"
+        },
+        {
+          "code": "6.AT.9",
+          "label": "Inequalities",
+          "labelEs": "Desigualdades",
+          "legacy": "6.EE.8"
+        }
+      ],
+      "proves": [
+        "You can chain several one-step equations and an inequality into one code, solve each with the inverse operation, and verify the whole chain.",
+        "Puedes encadenar varias ecuaciones de un paso y una desigualdad en un solo código, resolver cada una con la operación inversa y verificar toda la cadena."
+      ],
+      "es": {},
+      "level0": {
+        "step": "step-2",
+        "worked": {
+          "title": ["Solving one lock", "Resolver una cerradura"],
+          "steps": [
+            ["The lock says x ÷ 4 = 8.", "La cerradura dice x ÷ 4 = 8."],
+            [
+              "x is being DIVIDED by 4, so I MULTIPLY both sides by 4.",
+              "x está DIVIDIDA entre 4, así que MULTIPLICO ambos lados por 4."
+            ],
+            [
+              "8 × 4 = 32, so x = 32. Check: 32 ÷ 4 = 8 ✓",
+              "8 × 4 = 32, así que x = 32. Comprobación: 32 ÷ 4 = 8 ✓"
+            ]
+          ],
+          "answer": ["x = 32.", "x = 32."]
+        },
+        "reduce": [
+          "Today solve the FIRST lock only and check it. The rest of the code chain can wait.",
+          "Hoy resuelve solo la PRIMERA cerradura y compruébala. El resto de la cadena puede esperar."
+        ],
+        "frame": {
+          "headers": [
+            ["Equation", "Ecuación"],
+            ["Inverse operation", "Operación inversa"],
+            ["x =", "x ="]
+          ],
+          "rows": [
+            ["x ÷ 4 = 8", ["Multiply by 4", "Multiplicar por 4"], "32"],
+            ["12x = 180", ["Divide by 12", "Dividir entre 12"], ""],
+            ["x − 9 = 15", "___", ""]
+          ]
+        },
+        "vocab": [
+          [
+            "Equation",
+            "Ecuación",
+            "Math with an equal sign. Both sides balance.",
+            "Matemática con signo de igual. Los dos lados se equilibran."
+          ],
+          [
+            "Inverse operation",
+            "Operación inversa",
+            "The undo move: × undoes ÷, + undoes −.",
+            "El movimiento contrario: × deshace ÷, + deshace −."
+          ],
+          [
+            "Substitute",
+            "Sustituir",
+            "Put your answer back in to check it.",
+            "Poner tu respuesta de vuelta para comprobarla."
+          ]
+        ]
+      }
+    },
+    "unit-9-a": {
+      "path": "/math/unit-9/projects/version-a/",
+      "title": "Streaming Channel Growth Lab",
+      "unit": 9,
+      "revealUnit": null,
+      "unitLabel": ["Unit 9", "Unidad 9"],
+      "standards": [
+        {
+          "code": "6.AT.11",
+          "label": "Two-Variable Relationships",
+          "labelEs": "Relaciones de dos variables",
+          "legacy": "6.EE.9",
+          "inRegistry": false
+        }
+      ],
+      "proves": [
+        "You can name the independent and dependent variables, write an equation that links them, and read the same relationship in a table and a graph.",
+        "Puedes nombrar la variable independiente y la dependiente, escribir una ecuación que las relacione y leer la misma relación en una tabla y en una gráfica."
+      ],
+      "es": {},
+      "level0": {
+        "step": "step-2",
+        "worked": {
+          "title": ["One equation, one table row", "Una ecuación, una fila de la tabla"],
+          "steps": [
+            [
+              "My channel gains 50 subscribers each week.",
+              "Mi canal gana 50 suscriptores cada semana."
+            ],
+            [
+              "Weeks (w) is the independent variable. Subscribers (s) depends on it.",
+              "Las semanas (w) son la variable independiente. Los suscriptores (s) dependen de ella."
+            ],
+            [
+              "Equation: s = 50w. After 3 weeks: s = 50(3) = 150.",
+              "Ecuación: s = 50w. Después de 3 semanas: s = 50(3) = 150."
+            ]
+          ],
+          "answer": ["150 subscribers after 3 weeks.", "150 suscriptores después de 3 semanas."]
+        },
+        "reduce": [
+          "Today write the equation and fill just TWO rows of the table. The graph analysis can wait.",
+          "Hoy escribe la ecuación y llena solo DOS filas de la tabla. El análisis de la gráfica puede esperar."
+        ],
+        "frame": {
+          "headers": [
+            ["Weeks (w)", "Semanas (w)"],
+            ["s = 50w", "s = 50w"],
+            ["Subscribers", "Suscriptores"]
+          ],
+          "rows": [
+            ["1", "50(1)", "50"],
+            ["2", "50(2)", ""],
+            ["3", "___", ""]
+          ]
+        },
+        "vocab": [
+          [
+            "Independent variable",
+            "Variable independiente",
+            "The one you choose — usually time.",
+            "La que tú eliges; normalmente el tiempo."
+          ],
+          [
+            "Dependent variable",
+            "Variable dependiente",
+            "The one that changes because of the other.",
+            "La que cambia por causa de la otra."
+          ],
+          [
+            "Equation",
+            "Ecuación",
+            "Math with an equal sign linking the two.",
+            "Matemática con signo de igual que une las dos."
+          ]
+        ]
+      }
+    },
+    "unit-9-b": {
+      "path": "/math/unit-9/projects/version-b/",
+      "title": "Phone Plan Showdown",
+      "unit": 9,
+      "revealUnit": null,
+      "unitLabel": ["Unit 9", "Unidad 9"],
+      "standards": [
+        {
+          "code": "6.AT.11",
+          "label": "Two-Variable Relationships",
+          "labelEs": "Relaciones de dos variables",
+          "legacy": "6.EE.9",
+          "inRegistry": false
+        }
+      ],
+      "proves": [
+        "You can write a cost equation with a starting fee and a rate, build the table, graph it, and explain why the line does or does not start at the origin.",
+        "Puedes escribir una ecuación de costo con una cuota inicial y una tasa, armar la tabla, graficarla y explicar por qué la línea empieza o no en el origen."
+      ],
+      "es": {
+        "Phone Plan Showdown": "Duelo de planes telefónicos",
+        "Key Words": "Palabras clave",
+        "✅ Read each key term carefully. When you understand how independent data relates to dependent cost, click Next Step.": "✅ Lee con atención cada término clave. Cuando entiendas cómo los datos independientes se relacionan con el costo dependiente, presiona Siguiente paso.",
+        "Step 1 — Design Your Plan & Equation": "Paso 1 — Diseña tu plan y tu ecuación",
+        "Your job: Set the price levels for your custom phone plan. Enter a flat fee (base price) and a rate for each gigabyte of data you use.": "Tu trabajo: Establece los precios de tu plan telefónico. Escribe una cuota fija (precio base) y una tasa por cada gigabyte de datos que uses.",
+        "🟢 Level 1 tip: Try round, friendly values. For example, choose a $20 flat fee and a $10 cost per GB. Your equation will look like: C = 10g + 20.": "🟢 Consejo del Nivel 1: Prueba con valores redondos y amigables. Por ejemplo, elige una cuota fija de $20 y un costo de $10 por GB. Tu ecuación se verá así: C = 10g + 20.",
+        "LEVEL 2 CHALLENGE Feel free to pick decimal numbers (e.g. $8.50 per GB, $15 base fee). Write your equation to perfectly model your choices!": "RETO DE NIVEL 2 Puedes elegir números decimales (por ejemplo, $8.50 por GB, $15 de cuota base). ¡Escribe tu ecuación para modelar exactamente tus decisiones!",
+        "💵 Flat Monthly Fee ($)": "💵 Cuota mensual fija ($)",
+        "⚡ Cost per Gigabyte of Data ($/GB)": "⚡ Costo por gigabyte de datos ($/GB)",
+        "✍️ Write your Cost Equation (use C for cost and g for gigabytes)": "✍️ Escribe tu ecuación de costo (usa C para el costo y g para los gigabytes)",
+        "Need help writing the equation?": "¿Necesitas una pista para escribir la ecuación?",
+        "Step 2 — Generate Your Data Table": "Paso 2 — Crea tu tabla de datos",
+        "Your job: Calculate the monthly costs for 0 GB, 1 GB, 2 GB, 5 GB, and 10 GB of data based on your step 1 parameters.": "Tu trabajo: Calcula los costos mensuales para 0 GB, 1 GB, 2 GB, 5 GB y 10 GB de datos usando los valores del paso 1.",
+        "🟢 Level 1 tip: Multiply the gigabytes (g) by your rate, then add the base flat fee.": "🟢 Consejo del Nivel 1: Multiplica los gigabytes (g) por tu tasa y después suma la cuota fija base.",
+        "Data Used (g GB)": "Datos usados (g GB)",
+        "Equation Work / Process": "Trabajo con la ecuación / Proceso",
+        "Total Cost ($ C)": "Costo total ($ C)",
+        "Ordered Pair (g, C)": "Par ordenado (g, C)",
+        "🧮 Verify Data Table": "🧮 Verificar la tabla de datos",
+        "Need help with calculations?": "¿Necesitas una pista para los cálculos?",
+        "Step 3 — Graph and Analyze Your Plan": "Paso 3 — Grafica y analiza tu plan",
+        "Your job: Examine the line graph generated below and answer the analysis questions.": "Tu trabajo: Observa la gráfica de líneas de abajo y responde las preguntas de análisis.",
+        "📈 Coordinate of y-intercept": "📈 Coordenada de la intersección con y",
+        "💬 What does this point represent in real life?": "💬 ¿Qué representa este punto en la vida real?",
+        "📱 Cost for 8 GB of data ($)": "📱 Costo por 8 GB de datos ($)",
+        "💬 How can you find this using the graph or equation?": "💬 ¿Cómo puedes hallarlo usando la gráfica o la ecuación?",
+        "⚡ Is this relationship proportional or non-proportional?": "⚡ ¿Esta relación es proporcional o no proporcional?",
+        "💬 Why?": "💬 ¿Por qué?",
+        "📊 Check Graph Answers": "📊 Revisar respuestas de la gráfica",
+        "🌎 Real-World Market Prices": "🌎 Precios reales del mercado",
+        "Plan Tier": "Nivel del plan",
+        "Average Price": "Precio promedio",
+        "Description": "Descripción",
+        "How does your plan compare to market prices for 5 GB of data? Write 2 sentences.": "¿Cómo se compara tu plan con los precios del mercado para 5 GB de datos? Escribe 2 oraciones.",
+        "Step 4 — Compare with a Partner": "Paso 4 — Compara con un compañero",
+        "Your job: Enter details from a classmate's phone plan. Compare costs side-by-side using a double-line graph and table.": "Tu trabajo: Escribe los datos del plan telefónico de un compañero. Compara los costos lado a lado con una gráfica de dos líneas y una tabla.",
+        "👤 Partner's Name": "👤 Nombre del compañero",
+        "💵 Partner's Flat Monthly Fee ($)": "💵 Cuota mensual fija del compañero ($)",
+        "⚡ Partner's Cost per GB ($/GB)": "⚡ Costo por GB del compañero ($/GB)",
+        "📝 Partner's Equation (use C and g)": "📝 Ecuación del compañero (usa C y g)",
+        "📊 Compare Plans Side-by-Side": "📊 Comparar los planes lado a lado",
+        "📈 Cost Comparison Table": "📈 Tabla de comparación de costos",
+        "Data Used (GB)": "Datos usados (GB)",
+        "Your Plan Cost": "Costo de tu plan",
+        "Partner's Plan Cost": "Costo del plan del compañero",
+        "Cheaper Plan": "Plan más barato",
+        "❓ Based on your calculations, who has the cheaper plan for 5 GB?": "❓ Según tus cálculos, ¿quién tiene el plan más barato para 5 GB?",
+        "💬 Reflection: Under what conditions is your plan cheaper? Under what conditions is your partner's plan cheaper? Explain using the steepness (rate) and starting points (y-intercept) of your lines.": "💬 Reflexión: ¿En qué condiciones tu plan es más barato? ¿En qué condiciones el plan de tu compañero es más barato? Explica usando la inclinación (la tasa) y los puntos de inicio (la intersección con y) de tus líneas.",
+        "Step 5 — Complete and Submit": "Paso 5 — Termina y entrega",
+        "Your job: Write a pitch explaining why your plan is a great choice. Review your checklist, and generate the final report for your teacher.": "Tu trabajo: Escribe una presentación que explique por qué tu plan es una gran opción. Revisa tu lista de verificación y genera el informe final para tu maestro.",
+        "✍️ Your Pricing Presentation Pitch (3-5 sentences)": "✍️ Tu presentación de precios (de 3 a 5 oraciones)",
+        "✅ Project Checklist": "✅ Lista de verificación del proyecto",
+        "📊 Rubric — How You Are Scored": "📊 Rúbrica — Cómo se te califica",
+        "📝 Generate Summary Report": "📝 Generar informe de resumen",
+        "📋 Copy Report": "📋 Copiar informe"
+      },
+      "level0": {
+        "step": "step-1",
+        "worked": {
+          "title": ["One plan, one cost", "Un plan, un costo"],
+          "steps": [
+            [
+              "My flat fee is $20 and each gigabyte costs $10.",
+              "Mi cuota fija es $20 y cada gigabyte cuesta $10."
+            ],
+            ["Equation: C = 10g + 20.", "Ecuación: C = 10g + 20."],
+            [
+              "For 3 GB: C = 10(3) + 20 = 30 + 20 = 50.",
+              "Para 3 GB: C = 10(3) + 20 = 30 + 20 = 50."
+            ]
+          ],
+          "answer": ["$50 for 3 GB.", "$50 por 3 GB."]
+        },
+        "reduce": [
+          "Today set your fee and rate, write the equation, and fill just TWO rows of the table. The partner compare can wait.",
+          "Hoy establece tu cuota y tu tasa, escribe la ecuación y llena solo DOS filas de la tabla. La comparación con el compañero puede esperar."
+        ],
+        "frame": {
+          "headers": [
+            ["Data g (GB)", "Datos g (GB)"],
+            ["10g + 20", "10g + 20"],
+            ["Cost C", "Costo C"]
+          ],
+          "rows": [
+            ["0", "10(0) + 20", "$20"],
+            ["1", "10(1) + 20", ""],
+            ["3", "___", ""]
+          ]
+        },
+        "vocab": [
+          [
+            "Flat fee",
+            "Cuota fija",
+            "The money you pay even at 0 GB.",
+            "El dinero que pagas aunque uses 0 GB."
+          ],
+          ["Rate", "Tasa", "The cost for each 1 gigabyte.", "El costo por cada 1 gigabyte."],
+          [
+            "y-intercept",
+            "Intersección con y",
+            "Where the line crosses the y-axis — the starting cost.",
+            "Donde la línea cruza el eje y: el costo inicial."
+          ]
+        ]
+      }
+    },
+    "unit-10-a": {
+      "path": "/math/unit-10/projects/version-a/",
+      "title": "Package Design Challenge",
+      "unit": 10,
+      "revealUnit": 10,
+      "unitLabel": ["Unit 10", "Unidad 10"],
+      "standards": [
+        { "code": "6.GR.2", "label": "Volume", "labelEs": "Volumen", "legacy": "6.G.2" },
+        {
+          "code": "6.GR.4",
+          "label": "Surface Area & Nets",
+          "labelEs": "Área de superficie y plantillas",
+          "legacy": "6.G.4"
+        }
+      ],
+      "proves": [
+        "You can find the volume of a rectangular prism and the surface area of its net, then use both to price a package design.",
+        "Puedes hallar el volumen de un prisma rectangular y el área de superficie de su plantilla, y usar ambos para calcular el precio del empaque."
+      ],
+      "es": {},
+      "level0": {
+        "step": "step-2",
+        "worked": {
+          "title": ["Volume of one box", "Volumen de una caja"],
+          "steps": [
+            [
+              "My box is 5 in long, 4 in wide, and 3 in tall.",
+              "Mi caja mide 5 pulg de largo, 4 pulg de ancho y 3 pulg de alto."
+            ],
+            ["Volume = length × width × height.", "Volumen = largo × ancho × alto."],
+            ["5 × 4 × 3 = 60 cubic inches.", "5 × 4 × 3 = 60 pulgadas cúbicas."]
+          ],
+          "answer": ["60 cubic inches (in³).", "60 pulgadas cúbicas (pulg³)."]
+        },
+        "reduce": [
+          "Today find the VOLUME only. The surface-area and cost steps can wait until you are ready.",
+          "Hoy halla solo el VOLUMEN. Los pasos de área de superficie y costo pueden esperar."
+        ],
+        "frame": {
+          "headers": [
+            ["Length", "Largo"],
+            ["Width", "Ancho"],
+            ["Height", "Alto"],
+            ["Volume", "Volumen"]
+          ],
+          "rows": [
+            ["5", "4", "3", "60"],
+            ["6", "4", "3", ""],
+            ["6", "5", "___", "90"]
+          ]
+        },
+        "vocab": [
+          [
+            "Volume",
+            "Volumen",
+            "How much space fits INSIDE. Units are cubed.",
+            "Cuánto espacio cabe ADENTRO. Las unidades van al cubo."
+          ],
+          [
+            "Surface area",
+            "Área de superficie",
+            "The total area of all 6 outside faces.",
+            "El área total de las 6 caras exteriores."
+          ],
+          [
+            "Net",
+            "Plantilla",
+            "The flat, unfolded picture of the box.",
+            "El dibujo plano y desdoblado de la caja."
+          ]
+        ]
+      }
+    },
+    "unit-10-b": {
+      "path": "/math/unit-10/projects/version-b/",
+      "title": "Aquarium Build Lab",
+      "unit": 10,
+      "revealUnit": 10,
+      "unitLabel": ["Unit 10", "Unidad 10"],
+      "standards": [
+        { "code": "6.GR.2", "label": "Volume", "labelEs": "Volumen", "legacy": "6.G.2" },
+        {
+          "code": "6.GR.4",
+          "label": "Surface Area & Nets",
+          "labelEs": "Área de superficie y plantillas",
+          "legacy": "6.G.4"
+        }
+      ],
+      "proves": [
+        "You can find the volume of a tank, work out the glass surface area from its net, and explain why volume and surface area use different units.",
+        "Puedes hallar el volumen de un tanque, calcular el área de superficie del vidrio desde su plantilla y explicar por qué el volumen y el área usan unidades distintas."
+      ],
+      "es": {},
+      "level0": {
+        "step": "step-2",
+        "worked": {
+          "title": ["Volume of one tank", "Volumen de un tanque"],
+          "steps": [
+            [
+              "My tank is 10 in long, 6 in wide, and 5 in tall.",
+              "Mi tanque mide 10 pulg de largo, 6 pulg de ancho y 5 pulg de alto."
+            ],
+            ["Volume = length × width × height.", "Volumen = largo × ancho × alto."],
+            ["10 × 6 × 5 = 300 cubic inches.", "10 × 6 × 5 = 300 pulgadas cúbicas."]
+          ],
+          "answer": ["300 cubic inches (in³) of water.", "300 pulgadas cúbicas (pulg³) de agua."]
+        },
+        "reduce": [
+          "Today find the VOLUME only. Do the glass surface area when you are ready.",
+          "Hoy halla solo el VOLUMEN. Haz el área de superficie del vidrio cuando estés listo."
+        ],
+        "frame": {
+          "headers": [
+            ["Length", "Largo"],
+            ["Width", "Ancho"],
+            ["Height", "Alto"],
+            ["Volume", "Volumen"]
+          ],
+          "rows": [
+            ["10", "6", "5", "300"],
+            ["12", "6", "5", ""],
+            ["12", "___", "5", "480"]
+          ]
+        },
+        "vocab": [
+          [
+            "Volume",
+            "Volumen",
+            "How much water fits INSIDE. Units are cubed.",
+            "Cuánta agua cabe ADENTRO. Las unidades van al cubo."
+          ],
+          [
+            "Surface area",
+            "Área de superficie",
+            "The total area of the glass on the outside.",
+            "El área total del vidrio por fuera."
+          ],
+          [
+            "Cubic units",
+            "Unidades cúbicas",
+            "The units for volume, like in³.",
+            "Las unidades del volumen, como pulg³."
+          ]
+        ]
+      }
+    },
+    "statistics-a": {
+      "path": "/math/statistics/projects/version-a/",
+      "title": "Class Data Detective",
+      "unit": null,
+      "revealUnit": 8,
+      "unitLabel": ["Statistics", "Estadística"],
+      "pageCodes": ["6.DS.1", "6.DS.3", "6.DS.4", "6.DS.5", "6.DS.6"],
+      "standards": [
+        {
+          "code": "6.DS.1",
+          "label": "Statistical Questions",
+          "labelEs": "Preguntas estadísticas",
+          "legacy": "6.SP.1"
+        },
+        {
+          "code": "6.DS.3",
+          "label": "Distributions",
+          "labelEs": "Distribuciones",
+          "legacy": "6.SP.2"
+        },
+        {
+          "code": "6.DS.4",
+          "label": "Measures of Center & Variability",
+          "labelEs": "Medidas de centro y variabilidad",
+          "legacy": "6.SP.3"
+        },
+        {
+          "code": "6.DS.5",
+          "label": "Data Displays",
+          "labelEs": "Representaciones de datos",
+          "legacy": "6.SP.4"
+        },
+        {
+          "code": "6.DS.6c",
+          "label": "Summarizing Data Sets",
+          "labelEs": "Resumir conjuntos de datos",
+          "legacy": "6.SP.5c"
+        },
+        {
+          "code": "6.DS.6d",
+          "label": "Relating Measures to Context",
+          "labelEs": "Relacionar medidas con el contexto",
+          "legacy": "6.SP.5d"
+        }
+      ],
+      "proves": [
+        "You can ask a statistical question, collect a data set, find mean, median, mode, and range, and choose the display that tells the truth about it.",
+        "Puedes hacer una pregunta estadística, reunir un conjunto de datos, hallar la media, la mediana, la moda y el rango, y elegir la representación que dice la verdad sobre los datos."
+      ],
+      "es": {},
+      "level0": {
+        "step": "step-2",
+        "worked": {
+          "title": ["Finding the mean", "Hallar la media"],
+          "steps": [
+            ["My data set is 4, 6, 8, 6, 6.", "Mi conjunto de datos es 4, 6, 8, 6, 6."],
+            ["Add them all: 4 + 6 + 8 + 6 + 6 = 30.", "Súmalos todos: 4 + 6 + 8 + 6 + 6 = 30."],
+            ["Divide by how many there are: 30 ÷ 5 = 6.", "Divide entre cuántos hay: 30 ÷ 5 = 6."]
+          ],
+          "answer": ["The mean is 6.", "La media es 6."]
+        },
+        "reduce": [
+          "Today use only FIVE data points and find the mean and the range. Median, mode, and the display can wait.",
+          "Hoy usa solo CINCO datos y halla la media y el rango. La mediana, la moda y la representación pueden esperar."
+        ],
+        "frame": {
+          "headers": [
+            ["Measure", "Medida"],
+            ["How to find it", "Cómo hallarla"],
+            ["My answer", "Mi respuesta"]
+          ],
+          "rows": [
+            [["Mean", "Media"], ["Add, then divide", "Sumar y luego dividir"], "6"],
+            [["Range", "Rango"], ["Biggest − smallest", "El mayor − el menor"], ""],
+            [["Median", "Mediana"], "___", ""]
+          ]
+        },
+        "vocab": [
+          [
+            "Mean",
+            "Media",
+            "The average — add them up, then divide.",
+            "El promedio: súmalos y luego divide."
+          ],
+          [
+            "Median",
+            "Mediana",
+            "The middle number after you put them in order.",
+            "El número del medio después de ordenarlos."
+          ],
+          [
+            "Range",
+            "Rango",
+            "The biggest number minus the smallest.",
+            "El número mayor menos el menor."
+          ]
+        ]
+      }
+    },
+    "statistics-b": {
+      "path": "/math/statistics/projects/version-b/",
+      "title": "Real-World Data Investigation",
+      "unit": null,
+      "revealUnit": 8,
+      "unitLabel": ["Statistics", "Estadística"],
+      "pageCodes": ["6.DS.1", "6.DS.3", "6.DS.4", "6.DS.5", "6.DS.6", "6.DS.6b"],
+      "standards": [
+        {
+          "code": "6.DS.1",
+          "label": "Statistical Questions",
+          "labelEs": "Preguntas estadísticas",
+          "legacy": "6.SP.1"
+        },
+        {
+          "code": "6.DS.3",
+          "label": "Distributions",
+          "labelEs": "Distribuciones",
+          "legacy": "6.SP.2"
+        },
+        {
+          "code": "6.DS.4",
+          "label": "Measures of Center & Variability",
+          "labelEs": "Medidas de centro y variabilidad",
+          "legacy": "6.SP.3"
+        },
+        {
+          "code": "6.DS.5",
+          "label": "Data Displays",
+          "labelEs": "Representaciones de datos",
+          "legacy": "6.SP.4"
+        },
+        {
+          "code": "6.DS.6c",
+          "label": "Summarizing Data Sets",
+          "labelEs": "Resumir conjuntos de datos",
+          "legacy": "6.SP.5c"
+        },
+        {
+          "code": "6.DS.6d",
+          "label": "Relating Measures to Context",
+          "labelEs": "Relacionar medidas con el contexto",
+          "legacy": "6.SP.5d"
+        }
+      ],
+      "proves": [
+        "You can pose a statistical question about real temperature data, find center and spread including the IQR, and match the spread to a real climate.",
+        "Puedes plantear una pregunta estadística sobre datos reales de temperatura, hallar el centro y la dispersión incluyendo el RIC, y relacionar la dispersión con un clima real."
+      ],
+      "es": {},
+      "level0": {
+        "step": "step-1",
+        "worked": {
+          "title": ["Finding the mean", "Hallar la media"],
+          "steps": [
+            [
+              "My five daily highs are 70, 72, 74, 72, 72.",
+              "Mis cinco máximas diarias son 70, 72, 74, 72, 72."
+            ],
+            [
+              "Add them all: 70 + 72 + 74 + 72 + 72 = 360.",
+              "Súmalas todas: 70 + 72 + 74 + 72 + 72 = 360."
+            ],
+            [
+              "Divide by how many there are: 360 ÷ 5 = 72.",
+              "Divide entre cuántas hay: 360 ÷ 5 = 72."
+            ]
+          ],
+          "answer": ["The mean high is 72°F.", "La máxima media es 72°F."]
+        },
+        "reduce": [
+          "Today enter only FIVE days and find the mean and the range. The IQR and the climate match can wait.",
+          "Hoy escribe solo CINCO días y halla la media y el rango. El RIC y la comparación de clima pueden esperar."
+        ],
+        "frame": {
+          "headers": [
+            ["Measure", "Medida"],
+            ["How to find it", "Cómo hallarla"],
+            ["My answer", "Mi respuesta"]
+          ],
+          "rows": [
+            [["Mean", "Media"], ["Add, then divide", "Sumar y luego dividir"], "72"],
+            [["Range", "Rango"], ["Biggest − smallest", "El mayor − el menor"], ""],
+            [["Median", "Mediana"], "___", ""]
+          ]
+        },
+        "vocab": [
+          [
+            "Mean",
+            "Media",
+            "The average — add them up, then divide.",
+            "El promedio: súmalos y luego divide."
+          ],
+          [
+            "Range",
+            "Rango",
+            "The biggest number minus the smallest.",
+            "El número mayor menos el menor."
+          ],
+          [
+            "Spread",
+            "Dispersión",
+            "How far apart the numbers are from each other.",
+            "Qué tan separados están los números entre sí."
+          ]
+        ]
+      }
+    }
+  }
+}

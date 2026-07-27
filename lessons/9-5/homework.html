@@ -1806,12 +1806,9 @@ body.obj-popup-open { overflow: hidden; }
 .celebrate-sub { font-size: 14px; margin: 0; }
 
 .problems-container .problem-section { border-left: 4px solid var(--teal); }
-.problems-container .problem-number-badge::after {
-  content: " / Repaso";
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--muted);
-}
+/* No ::after suffix here — badges already carry their own bilingual label
+   ("Warm-up / Calentamiento 1"), so appending " / Repaso" produced
+   "Warm-up / Calentamiento 1 / Repaso" on every problem. */
 
 /* Tabbed homework layout */
 .homework-tabs-shell {
@@ -2152,6 +2149,12 @@ body.lang-mode-es .bilingual-grid {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.25);
   color: var(--white);
+  /* 44px min height keeps these reachable as touch targets — families use phones. */
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   padding: 6px 14px;
   border-radius: 99px;
   font-size: 12px;
@@ -2635,7 +2638,7 @@ header.packet h1::after{
         <span class="lang-selector-title">Language / Idioma:</span>
         <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector">
           <button type="button" class="lang-toggle-btn active" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')">
-            🇺🇸🇪🇸 Bilingual / Bilíngüe
+            🇺🇸🇪🇸 Bilingual / Bilingüe
           </button>
           <button type="button" class="lang-toggle-btn" data-lang-mode="en" onclick="setLanguageMode('en')">
             🇺🇸 English Only
@@ -3817,13 +3820,13 @@ header.packet h1::after{
       <div class="problem-body">
         <p class="problem-stem">Sort these points by their quadrant: I first, then II, III, IV.</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Use the ▲ ▼ buttons to reorder steps, or drag the row handles on a computer.</span><span class="lang-es" lang="es">👪 Usen ▲ ▼ para reordenar, o arrastren las filas en la computadora.</span></p>
-        <div class="drag-order-workspace" id="dragorder_6" data-correct-order='[&quot;(5, 1) → I&quot;,&quot;(4, 3) → I&quot;,&quot;(-1, 4) → II&quot;,&quot;(-3, -2) → III&quot;,&quot;(-5, -7) → III&quot;,&quot;(2, -6) → IV&quot;]' data-initial-order='[&quot;(5, 1) → I&quot;,&quot;(-3, -2) → III&quot;,&quot;(-1, 4) → II&quot;,&quot;(2, -6) → IV&quot;,&quot;(-5, -7) → III&quot;,&quot;(4, 3) → I&quot;]'>
+        <div class="drag-order-workspace" id="dragorder_6" data-correct-order='[&quot;(5, 1) → I&quot;,&quot;(4, 3) → I&quot;,&quot;(-1, 4) → II&quot;,&quot;(-3, -2) → III&quot;,&quot;(-5, -7) → III&quot;,&quot;(2, -6) → IV&quot;]' data-initial-order='[&quot;(2, -6) → IV&quot;,&quot;(-3, -2) → III&quot;,&quot;(-5, -7) → III&quot;,&quot;(-1, 4) → II&quot;,&quot;(5, 1) → I&quot;,&quot;(4, 3) → I&quot;]'>
           <div class="drag-order-list" id="orderlist_6">
 
-              <div class="drag-order-row" draggable="true" id="order_6_0" data-step-text="(5, 1) → I" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+              <div class="drag-order-row" draggable="true" id="order_6_0" data-step-text="(2, -6) → IV" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
                 <span class="drag-order-handle" aria-hidden="true">☰</span>
                 <span class="drag-order-num">1</span>
-                <span class="drag-order-text">(5, 1) → I</span>
+                <span class="drag-order-text">(2, -6) → IV</span>
                 <div class="drag-order-controls">
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(6, this, -1)" aria-label="Move up">▲</button>
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(6, this, 1)" aria-label="Move down">▼</button>
@@ -3838,28 +3841,28 @@ header.packet h1::after{
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(6, this, 1)" aria-label="Move down">▼</button>
                 </div>
               </div>
-              <div class="drag-order-row" draggable="true" id="order_6_2" data-step-text="(-1, 4) → II" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+              <div class="drag-order-row" draggable="true" id="order_6_2" data-step-text="(-5, -7) → III" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
                 <span class="drag-order-handle" aria-hidden="true">☰</span>
                 <span class="drag-order-num">3</span>
+                <span class="drag-order-text">(-5, -7) → III</span>
+                <div class="drag-order-controls">
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(6, this, -1)" aria-label="Move up">▲</button>
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(6, this, 1)" aria-label="Move down">▼</button>
+                </div>
+              </div>
+              <div class="drag-order-row" draggable="true" id="order_6_3" data-step-text="(-1, 4) → II" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+                <span class="drag-order-handle" aria-hidden="true">☰</span>
+                <span class="drag-order-num">4</span>
                 <span class="drag-order-text">(-1, 4) → II</span>
                 <div class="drag-order-controls">
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(6, this, -1)" aria-label="Move up">▲</button>
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(6, this, 1)" aria-label="Move down">▼</button>
                 </div>
               </div>
-              <div class="drag-order-row" draggable="true" id="order_6_3" data-step-text="(2, -6) → IV" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
-                <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">4</span>
-                <span class="drag-order-text">(2, -6) → IV</span>
-                <div class="drag-order-controls">
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(6, this, -1)" aria-label="Move up">▲</button>
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(6, this, 1)" aria-label="Move down">▼</button>
-                </div>
-              </div>
-              <div class="drag-order-row" draggable="true" id="order_6_4" data-step-text="(-5, -7) → III" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+              <div class="drag-order-row" draggable="true" id="order_6_4" data-step-text="(5, 1) → I" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
                 <span class="drag-order-handle" aria-hidden="true">☰</span>
                 <span class="drag-order-num">5</span>
-                <span class="drag-order-text">(-5, -7) → III</span>
+                <span class="drag-order-text">(5, 1) → I</span>
                 <div class="drag-order-controls">
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(6, this, -1)" aria-label="Move up">▲</button>
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(6, this, 1)" aria-label="Move down">▼</button>
@@ -4521,6 +4524,14 @@ header.packet h1::after{
             <span class="lang-es" lang="es"><strong>Abre el Cuaderno de Matemáticas</strong> — una pizarra digital para dibujar, escribir y resolver problemas juntos.</span>
           </span>
           <span class="ai-lab-arrow" aria-hidden="true">→</span>
+        </a>
+        <a href="/lessons/9-5/homework.docx" download class="ai-lab-cta offline-cta">
+          <span class="ai-lab-emoji" aria-hidden="true">🖨️</span>
+          <span class="ai-lab-text">
+            <span class="lang-en"><strong>No internet at home? Download the paper version</strong> — the same problems in a document you can print or open offline.</span>
+            <span class="lang-es" lang="es"><strong>¿No hay internet en casa? Descarga la versión en papel</strong> — los mismos problemas en un documento que puedes imprimir o abrir sin conexión.</span>
+          </span>
+          <span class="ai-lab-arrow" aria-hidden="true">↓</span>
         </a>
         <p class="bilingual-block">
           <span class="lang-en">These links go to <strong>specific</strong> videos and lessons about tonight's topic — not general math pages.</span>

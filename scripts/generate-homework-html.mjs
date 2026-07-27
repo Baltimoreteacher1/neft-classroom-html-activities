@@ -21,6 +21,7 @@ import {
   renderDoneTab,
   renderHelpModal,
   renderProblemHintButton,
+  displayLessonId,
   GUIDED_NOTES_CSS,
   HOMEWORK_TABS_JS,
 } from "./homework-guided-notes.mjs";
@@ -257,10 +258,35 @@ function renderFamilyTip(typeKey) {
   return `<p class="family-problem-tip"><span class="lang-en">👪 ${esc(tip.en)}</span><span class="lang-es" lang="es">👪 ${esc(tip.es)}</span></p>`;
 }
 
-function shuffleSteps(steps, correctOrder) {
+// Deterministic 32-bit string hash → seed. Keeps the generator reproducible so a
+// no-op regeneration produces a zero diff (Math.random() previously reshuffled
+// ~23 files on every run, burying real changes in noise).
+function seedFrom(str) {
+  let h = 2166136261;
+  for (let i = 0; i < str.length; i++) {
+    h ^= str.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
+// mulberry32 — small, fast, well-distributed seeded PRNG.
+function seededRandom(seed) {
+  let a = seed >>> 0;
+  return function next() {
+    a = (a + 0x6d2b79f5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function shuffleSteps(steps, correctOrder, seedKey = "") {
   const out = [...steps];
+  const rand = seededRandom(seedFrom(`${seedKey}|${steps.join("|")}`));
   for (let i = out.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = Math.floor(rand() * (i + 1));
     [out[i], out[j]] = [out[j], out[i]];
   }
   if (correctOrder.length > 1 && out.every((s, i) => s === correctOrder[i])) {
@@ -622,7 +648,11 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
 
     if (norm.kind === "order") {
       problemSubtype = "drag-order";
-      const shuffledSteps = shuffleSteps(norm.steps, norm.correctOrder);
+      const shuffledSteps = shuffleSteps(
+        norm.steps,
+        norm.correctOrder,
+        `${pIdx}|${norm.label}`,
+      );
       content = `
       <div class="problem-body">
         <p class="problem-stem">${esc(norm.label)}</p>
@@ -1013,7 +1043,7 @@ function generateHtml(lessonId, config) {
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Help Your Student — Lesson ${lessonId}: ${esc(title)}</title>
+<title>Help Your Student — Lesson ${esc(displayLessonId(lessonId))}: ${esc(title)}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Hanken+Grotesk:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -2568,11 +2598,11 @@ ${EDITORIAL_OVERRIDES}
   <link rel="apple-touch-icon" href="/assets/favicon.svg">
   <meta name="theme-color" content="#12355b">
   <link rel="canonical" href="https://eduwonderlab.com/lessons/${esc(lessonId)}/homework.html">
-  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — Help Your Student — Lesson ${esc(lessonId)}: ${esc(title)}.">
+  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — Help Your Student — Lesson ${esc(displayLessonId(lessonId))}: ${esc(title)}.">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="Neft Teacher">
-  <meta property="og:title" content="Help Your Student — Lesson ${esc(lessonId)}: ${esc(title)}">
-  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — Help Your Student — Lesson ${esc(lessonId)}: ${esc(title)}.">
+  <meta property="og:title" content="Help Your Student — Lesson ${esc(displayLessonId(lessonId))}: ${esc(title)}">
+  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — Help Your Student — Lesson ${esc(displayLessonId(lessonId))}: ${esc(title)}.">
   <meta property="og:url" content="https://eduwonderlab.com/lessons/${esc(lessonId)}/homework.html">
   <meta property="og:image" content="https://eduwonderlab.com/assets/og-curriculum.png">
   <!-- enthead-injected:end -->

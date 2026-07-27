@@ -132,18 +132,23 @@
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2" />
     <!-- nsr-injected:end -->
     <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
 </head>
   <body>
 
-      <!-- EWL Universal Arcade Enhancements Header -->
+            <!-- EWL Universal Arcade Enhancements Header -->
       <div class="ewl-arcade-header-bar">
         <div class="ewl-arcade-title-group">
+          <a href="/math/games/" class="ewl-back-hub-btn">⬅️ Arcade Hub</a>
           <span class="ewl-arcade-badge ewl-badge-l1" id="ewl-level-badge">⭐ Level 1: Guided Support</span>
           <span style="font-size: 13px; font-weight: 600; opacity: 0.85;">| EduWonderLab Interactive Arcade</span>
         </div>
         <div class="ewl-arcade-controls">
           <button type="button" class="ewl-btn-toggle active" id="ewl-btn-l1" onclick="if(window.ewlSetLevel) window.ewlSetLevel(1)">L1 Support</button>
           <button type="button" class="ewl-btn-toggle" id="ewl-btn-l2" onclick="if(window.ewlSetLevel) window.ewlSetLevel(2)">L2 Challenge</button>
+          <button type="button" class="ewl-sound-toggle-btn" id="ewl-btn-sound" onclick="if(window.GameFX && window.GameFX.AudioSynth){ window.GameFX.AudioSynth.muted = !window.GameFX.AudioSynth.muted; this.innerText = window.GameFX.AudioSynth.muted ? '🔇 Muted' : '🔊 Sound On'; }">🔊 Sound On</button>
           <button type="button" class="ewl-btn-toggle" id="ewl-btn-lang" onclick="if(window.ewlToggleLang) window.ewlToggleLang()">🌐 EN / ES</button>
         </div>
       </div>
@@ -1940,5 +1945,54 @@
         </div>
       </div>
   
+  <script>
+    (function() {
+      window.ewlShowMasteryModal = function(opts) {
+        opts = opts || {};
+        const score = opts.score || 0;
+        const maxScore = opts.maxScore || 1000;
+        const stars = opts.stars || (score >= maxScore * 0.8 ? 3 : score >= maxScore * 0.5 ? 2 : 1);
+        const accuracy = opts.accuracy != null ? opts.accuracy : Math.min(100, Math.round((score / Math.max(1, maxScore)) * 100));
+        const gameTitle = opts.title || "Unit Game Complete!";
+        const nextUrl = opts.nextUrl || "/math/games/";
+
+        const starStr = "⭐".repeat(stars) + "☆".repeat(3 - stars);
+        
+        const modalHtml = `
+          <div class="ewl-mastery-overlay" id="ewl-mastery-modal">
+            <div class="ewl-mastery-card">
+              <div class="ewl-mastery-stars">${starStr}</div>
+              <h2 class="ewl-mastery-title">${gameTitle}</h2>
+              <p class="ewl-mastery-subtitle">Grade 6 Math Review Mastery Achieved!</p>
+              <div class="ewl-mastery-stats">
+                <div class="ewl-stat-box">
+                  <div class="ewl-stat-num">${score}</div>
+                  <div class="ewl-stat-lbl">Final Score</div>
+                </div>
+                <div class="ewl-stat-box">
+                  <div class="ewl-stat-num">${accuracy}%</div>
+                  <div class="ewl-stat-lbl">Accuracy</div>
+                </div>
+              </div>
+              <div class="ewl-mastery-actions">
+                <button class="ewl-mastery-btn ewl-btn-secondary" onclick="location.reload()">🔄 Play Again</button>
+                <button class="ewl-mastery-btn ewl-btn-primary" onclick="location.href='${nextUrl}'">🎮 More Games</button>
+              </div>
+            </div>
+          </div>
+        `;
+        const existing = document.getElementById("ewl-mastery-modal");
+        if (existing) existing.remove();
+        document.body.insertAdjacentHTML("beforeend", modalHtml);
+        
+        if (window.GameFX && window.GameFX.AudioSynth) {
+          try { window.GameFX.AudioSynth.playSuccess(); } catch(e){}
+        }
+        if (window.GameFX && window.GameFX.burst) {
+          try { window.GameFX.burst(window.innerWidth / 2, window.innerHeight / 3); } catch(e){}
+        }
+      };
+    })();
+  </script>
 </body>
 </html>

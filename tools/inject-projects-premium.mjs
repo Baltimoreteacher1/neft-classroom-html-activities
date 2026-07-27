@@ -19,9 +19,15 @@ import { fileURLToPath } from "node:url";
 // so its idempotence guards no longer match — re-running it would inject the
 // dead projects-tabs assets and duplicate TTS/Level-0 controls into all 22
 // version pages. Kept for reference only. Hub premium CSS is already in place.
+// 2026-07-27: the assets it would inject (shared/projects/projects-tabs.css,
+// projects-tabs.js, projects-tplus.css) were wired to ZERO pages and have been
+// deleted. Everything below the throw is unreachable historical reference and
+// can be removed wholesale; nothing imports this module and it is not in
+// `npm run build`.
 throw new Error(
   "inject-projects-premium.mjs is DEPRECATED — superseded by inject-projects-pro.mjs " +
-    "+ inject-projects-gold.mjs. Refusing to run (would corrupt the version pages).",
+    "+ inject-projects-gold.mjs. Refusing to run (would corrupt the version pages, " +
+    "and the projects-tabs/projects-tplus assets it references no longer exist).",
 );
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

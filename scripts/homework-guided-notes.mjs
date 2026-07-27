@@ -31,6 +31,15 @@ export function esc(s) {
     .replace(/'/g, "&#039;");
 }
 
+// Lesson folder slugs carry internal variant suffixes ("2-1-flagship",
+// "2-1-group1", "2-1-catchup"). Those are build/routing details — families
+// should only ever see the lesson number, so strip the suffix for any
+// human-facing label. The raw id still drives URLs, storage keys, and
+// window.LESSON_ID.
+export function displayLessonId(lessonId) {
+  return String(lessonId ?? "").replace(/-(flagship|group\d+|catchup)$/, "");
+}
+
 function firstTurnAndTalk(config) {
   const talks = Array.isArray(config.turnAndTalk) ? config.turnAndTalk : [];
   return talks[0] || null;
@@ -944,7 +953,7 @@ export function renderWelcomeBanner(config, lessonId) {
           <p class="welcome-tag">Unit ${unit} · ${esc(standard)}</p>
           <h1 class="welcome-title-en">Family Math Night</h1>
           <h1 class="welcome-title-es" lang="es">Ayuda a tu estudiante</h1>
-          <p class="welcome-lesson">${esc(title)} · Lesson ${esc(lessonId)}</p>
+          <p class="welcome-lesson">${esc(title)} · Lesson ${esc(displayLessonId(lessonId))}</p>
         </div>
       </div>
       <p class="welcome-lead bilingual-block">
@@ -957,7 +966,7 @@ export function renderWelcomeBanner(config, lessonId) {
         <span class="lang-selector-title">Language / Idioma:</span>
         <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector">
           <button type="button" class="lang-toggle-btn active" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')">
-            🇺🇸🇪🇸 Bilingual / Bilíngüe
+            🇺🇸🇪🇸 Bilingual / Bilingüe
           </button>
           <button type="button" class="lang-toggle-btn" data-lang-mode="en" onclick="setLanguageMode('en')">
             🇺🇸 English Only
@@ -1536,6 +1545,21 @@ export function renderHelpTab(config) {
 
 export function renderMoreTab(config, lessonId) {
   const links = getExternalResources(config, lessonId);
+  // Every lesson with a homework page also ships a printable .docx, but nothing
+  // linked to it — families without a device at home had no paper path.
+  const docxHref = `/lessons/${lessonId}/homework.docx`;
+  const hasDocx = existsSync(join(_root, "lessons", lessonId, "homework.docx"));
+  const offlineCta = hasDocx
+    ? `
+        <a href="${esc(docxHref)}" download class="ai-lab-cta offline-cta">
+          <span class="ai-lab-emoji" aria-hidden="true">🖨️</span>
+          <span class="ai-lab-text">
+            <span class="lang-en"><strong>No internet at home? Download the paper version</strong> — the same problems in a document you can print or open offline.</span>
+            <span class="lang-es" lang="es"><strong>¿No hay internet en casa? Descarga la versión en papel</strong> — los mismos problemas en un documento que puedes imprimir o abrir sin conexión.</span>
+          </span>
+          <span class="ai-lab-arrow" aria-hidden="true">↓</span>
+        </a>`
+    : "";
   return `
     <div ${tabPanelAttrs("more", true)}>
       <section class="guided-section card section-more" aria-label="Learn more online">
@@ -1555,7 +1579,7 @@ export function renderMoreTab(config, lessonId) {
             <span class="lang-es" lang="es"><strong>Abre el Cuaderno de Matemáticas</strong> — una pizarra digital para dibujar, escribir y resolver problemas juntos.</span>
           </span>
           <span class="ai-lab-arrow" aria-hidden="true">→</span>
-        </a>
+        </a>${offlineCta}
         <p class="bilingual-block">
           <span class="lang-en">These links go to <strong>specific</strong> videos and lessons about tonight's topic — not general math pages.</span>
           <span class="lang-es" lang="es">Estos enlaces van a videos y lecciones <strong>específicas</strong> sobre el tema de hoy — no páginas generales.</span>
@@ -2417,12 +2441,9 @@ body.obj-popup-open { overflow: hidden; }
 .celebrate-sub { font-size: 14px; margin: 0; }
 
 .problems-container .problem-section { border-left: 4px solid var(--teal); }
-.problems-container .problem-number-badge::after {
-  content: " / Repaso";
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--muted);
-}
+/* No ::after suffix here — badges already carry their own bilingual label
+   ("Warm-up / Calentamiento 1"), so appending " / Repaso" produced
+   "Warm-up / Calentamiento 1 / Repaso" on every problem. */
 
 /* Tabbed homework layout */
 .homework-tabs-shell {
@@ -2763,6 +2784,12 @@ body.lang-mode-es .bilingual-grid {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.25);
   color: var(--white);
+  /* 44px min height keeps these reachable as touch targets — families use phones. */
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   padding: 6px 14px;
   border-radius: 99px;
   font-size: 12px;

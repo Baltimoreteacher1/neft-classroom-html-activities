@@ -4,6 +4,36 @@
  */
 import { detectVisualTopic } from "./homework-alignment.mjs";
 
+// Build-time shuffles must be reproducible: with Math.random() a no-op
+// regeneration rewrote the Play-tab games in ~10 lesson files every run, which
+// buried real changes in noise. Seed from the content being shuffled so the
+// order is stable across builds but still varies between games.
+function seedFrom(str) {
+  let h = 2166136261;
+  for (let i = 0; i < str.length; i++) {
+    h ^= str.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
+function seededShuffle(list, seedKey = "") {
+  const out = [...list];
+  let a = seedFrom(`${seedKey}|${JSON.stringify(list)}`) >>> 0;
+  const rand = () => {
+    a = (a + 0x6d2b79f5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
+}
+
 export function esc(s) {
   return String(s ?? "")
     .replace(/&/g, "&amp;")
@@ -299,7 +329,7 @@ function buildVocabMatchGame(_config, { vocab, title }) {
       ? vocab.slice(0, 4).map((v) => {
           const defs = vocab.map((x) => x.definition).filter(Boolean);
           const wrong = defs.filter((d) => d !== v.definition).slice(0, 3);
-          const choices = [v.definition, ...wrong].sort(() => Math.random() - 0.5);
+          const choices = seededShuffle([v.definition, ...wrong], v.term);
           return {
             q: `What does "${v.term}" mean?`,
             choices,
@@ -331,7 +361,7 @@ function buildVocabMatchGame(_config, { vocab, title }) {
 
 function _shuffleChoices(correct, pool) {
   const wrong = pool.filter((p) => p !== correct).slice(0, 3);
-  const all = [correct, ...wrong].sort(() => Math.random() - 0.5);
+  const all = seededShuffle([correct, ...wrong], String(correct));
   return all;
 }
 
@@ -369,7 +399,7 @@ function mcSpeedGame(id, _title, nameEn, nameEs, rounds, coach) {
 }
 
 function dragBucketGame(id, _title, nameEn, nameEs, items, buckets, coach) {
-  const shuffled = [...items].sort(() => Math.random() - 0.5);
+  const shuffled = seededShuffle(items, id);
   const data = JSON.stringify(shuffled).replace(/'/g, "&#39;");
   return {
     type: "drag-bucket",

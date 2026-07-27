@@ -1,0 +1,198 @@
+/* ==========================================================================
+   Neft Teacher — Projects DISCOURSE layer (shared styles)
+   Turn & Talk (collapsed pill) + structured partner compare.
+   Scoped under `body.pro-projects`. Visual language mirrors the lesson
+   engine's `.discourse-trigger` pill so students recognise the routine.
+   Injected by tools/inject-projects-discourse.mjs.
+   ========================================================================== */
+
+/* ---- Turn & Talk ------------------------------------------------------- */
+
+body.pro-projects .ntt-talk {
+  margin: 16px 0 4px;
+}
+
+body.pro-projects .ntt-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1.05rem;
+  border: 2px solid var(--coral, #ef476f);
+  border-radius: 999px;
+  background: var(--card, #fff);
+  color: var(--coral, #ef476f);
+  font: inherit;
+  font-weight: 800;
+  font-size: 1rem;
+  line-height: 1.2;
+  cursor: pointer;
+  transition:
+    transform 0.08s ease,
+    box-shadow 0.12s ease;
+}
+
+body.pro-projects .ntt-trigger:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+body.pro-projects .ntt-trigger:focus-visible {
+  outline: 3px solid var(--coral, #ef476f);
+  outline-offset: 3px;
+}
+
+body.pro-projects .ntt-talk.is-open .ntt-caret {
+  transform: rotate(90deg);
+}
+
+body.pro-projects .ntt-caret {
+  display: inline-block;
+  transition: transform 0.15s ease;
+}
+
+body.pro-projects .ntt-body {
+  margin: 10px 0 0;
+  padding: 12px 15px;
+  border: 2px solid var(--coral, #ef476f);
+  border-radius: 14px;
+  background: var(--surface-2, #fff7f9);
+}
+
+body.pro-projects .ntt-q {
+  margin: 0 0 10px;
+  font-size: 1.06rem;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+body.pro-projects .ntt-sub {
+  margin: 0 0 4px;
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--muted, #64748b);
+}
+
+body.pro-projects .ntt-body ul {
+  margin: 0 0 10px;
+  padding-left: 1.25rem;
+}
+
+body.pro-projects .ntt-body li {
+  margin: 0 0 4px;
+  font-size: 0.99rem;
+  line-height: 1.45;
+}
+
+body.pro-projects .ntt-probe {
+  margin: 0;
+  font-size: 0.99rem;
+  line-height: 1.45;
+}
+
+/* ---- Structured partner compare --------------------------------------- */
+
+body.pro-projects .ntp-peer {
+  margin: 20px 0 6px;
+  padding: 16px 18px;
+  border: 2px solid var(--teal, #0f766e);
+  border-radius: 16px;
+  background: var(--surface-2, #f0fdfa);
+}
+
+body.pro-projects .ntp-h {
+  margin: 0 0 6px;
+  font-size: 1.14rem;
+  font-weight: 900;
+  color: var(--teal, #0f766e);
+}
+
+body.pro-projects .ntp-intro {
+  margin: 0 0 12px;
+  font-size: 0.99rem;
+  line-height: 1.45;
+}
+
+body.pro-projects .ntp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 12px;
+  margin: 0 0 14px;
+}
+
+body.pro-projects .ntp-field .lbl {
+  display: block;
+  margin: 0 0 4px;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+body.pro-projects .ntp-peer input,
+body.pro-projects .ntp-peer textarea {
+  width: 100%;
+  padding: 0.5rem 0.65rem;
+  border: 2px solid var(--line, #d6d3d1);
+  border-radius: 9px;
+  background: #fff;
+  font: inherit;
+  font-size: 1rem;
+}
+
+body.pro-projects .ntp-peer input:focus-visible,
+body.pro-projects .ntp-peer textarea:focus-visible {
+  outline: 3px solid var(--teal, #0f766e);
+  outline-offset: 2px;
+}
+
+body.pro-projects .ntp-sub {
+  margin: 0 0 4px;
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--muted, #64748b);
+}
+
+body.pro-projects .ntp-peer ul {
+  margin: 0 0 14px;
+  padding-left: 1.25rem;
+}
+
+body.pro-projects .ntp-peer li {
+  margin: 0 0 4px;
+  font-size: 0.99rem;
+  line-height: 1.45;
+}
+
+body.pro-projects .ntp-q {
+  margin: 0 0 8px;
+  font-size: 1.04rem;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+/* The partner-compare capture belongs in the printout; the Turn & Talk
+   coaching pill does not. */
+@media print {
+  body.pro-projects .ntt-talk {
+    display: none !important;
+  }
+  body.pro-projects .ntp-peer {
+    border-width: 1px;
+    background: transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.pro-projects .ntt-trigger,
+  body.pro-projects .ntt-caret {
+    transition: none !important;
+  }
+  body.pro-projects .ntt-trigger:hover {
+    transform: none !important;
+  }
+  body.pro-projects .ntt-talk.is-open .ntt-caret {
+    transform: none !important;
+  }
+}

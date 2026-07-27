@@ -23,6 +23,9 @@ import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
+// NOTE: this module declares a local `function process(rel, cfg)`, which hoists
+// and shadows Node's global `process`. Read argv off globalThis explicitly.
+const DRY = globalThis.process.argv.includes("--dry-run");
 
 const SENT = "projects-interactive-hero";
 // First ACTIVE wizard panel — some pages start at step-0, others step-1.
@@ -190,20 +193,38 @@ function process(rel, cfg) {
   }
   after = withHero;
   if (after !== before) {
-    fs.writeFileSync(file, after);
+    if (!DRY) fs.writeFileSync(file, after);
     changed++;
     touched.push(`${rel} [${cfg.kind}]`);
   }
 }
 
+/* Enumerate version folders from disk (version-a, version-b, version-c, …).
+   A hardcoded ["version-a","version-b"] list is why unit-8/version-c was
+   invisible to nearly every projects-* layer — never reintroduce one. */
+function versionsOf(dir) {
+  try {
+    return fs
+      .readdirSync(path.join(ROOT, dir), { withFileTypes: true })
+      .filter((entry) => entry.isDirectory() && /^version-[a-z]$/.test(entry.name))
+      .map((entry) => entry.name)
+      .sort();
+  } catch (_e) {
+    return [];
+  }
+}
+
+let targets = 0;
 for (const [dir, cfg] of Object.entries(MAP)) {
-  // version-c exists for a few units (e.g. unit-8); process() skips missing files.
-  for (const v of ["version-a", "version-b", "version-c"]) {
+  for (const v of versionsOf(dir)) {
+    targets++;
     process(`${dir}/${v}/index.html`, cfg);
   }
 }
 
-console.log(`Projects interactive-hero injection: ${changed} file(s) updated.`);
+console.log(
+  `Projects interactive-hero injection${DRY ? " (dry-run)" : ""}: ${targets} page(s) enumerated, ${changed} ${DRY ? "would be updated" : "updated"}.`,
+);
 touched.forEach((t) => console.log("  +", t));
 if (skipped.length) {
   console.log(`Skipped ${skipped.length}:`);

@@ -124,6 +124,17 @@ html.akg-unlocked .akg-card {
   color: #1668a7;
 }
 
+/* ---- Motion preference ---------------------------------------------------
+   Collapse the fade, but KEEP the 1.5s delay: the delay is what hides the
+   no-JS fallback message during normal gate startup. Zeroing the animation
+   outright (animation: none) would leave opacity at 0 forever and silently
+   delete the fallback for reduced-motion users, so only the duration goes. */
+@media (prefers-reduced-motion: reduce) {
+  html:not(.akg-unlocked) body:not(:has(.akg-card))::before {
+    animation-duration: 0.01ms;
+  }
+}
+
 @media print {
   /* Never print solutions that were not unlocked on screen. */
   html:not(.akg-unlocked) body > :not(.akg-card):not(script):not(link) {

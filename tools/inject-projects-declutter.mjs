@@ -12,6 +12,9 @@ import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
+// NOTE: this module declares a local `function process(rel)`, which hoists and
+// shadows Node's global `process`. Read argv off globalThis explicitly.
+const DRY = globalThis.process.argv.includes("--dry-run");
 
 const UNITS = Array.from({ length: 10 }, (_, i) => i + 1);
 const DIRS = [...UNITS.map((u) => `math/unit-${u}/projects`), "math/statistics/projects"];
@@ -57,14 +60,35 @@ function process(rel) {
   after = addClass(after);
   after = addBody(after);
   if (after !== before) {
-    fs.writeFileSync(file, after);
+    if (!DRY) fs.writeFileSync(file, after);
     changed++;
     touched.push(rel);
   }
 }
 
-for (const dir of DIRS) {
-  for (const v of ["version-a", "version-b", "version-c"]) process(`${dir}/${v}/index.html`);
+/* Enumerate version folders from disk (version-a, version-b, version-c, …).
+   A hardcoded ["version-a","version-b"] list is why unit-8/version-c was
+   invisible to nearly every projects-* layer — never reintroduce one. */
+function versionsOf(dir) {
+  try {
+    return fs
+      .readdirSync(path.join(ROOT, dir), { withFileTypes: true })
+      .filter((entry) => entry.isDirectory() && /^version-[a-z]$/.test(entry.name))
+      .map((entry) => entry.name)
+      .sort();
+  } catch (_e) {
+    return [];
+  }
 }
-console.log(`Projects declutter injection: ${changed} file(s) updated.`);
+
+let targets = 0;
+for (const dir of DIRS) {
+  for (const v of versionsOf(dir)) {
+    targets++;
+    process(`${dir}/${v}/index.html`);
+  }
+}
+console.log(
+  `Projects declutter injection${DRY ? " (dry-run)" : ""}: ${targets} page(s) enumerated, ${changed} ${DRY ? "would be updated" : "updated"}.`,
+);
 touched.forEach((t) => console.log("  +", t));
