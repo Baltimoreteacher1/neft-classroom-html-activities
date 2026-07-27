@@ -50,8 +50,8 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <link rel="manifest" href="/manifest.webmanifest" />
-    <link rel="stylesheet" href="/assets/curriculum-enhancements.css?v=ms33gswy" />
-    <link rel="stylesheet" href="/assets/curriculum-sidebar.css?v=ms33gswy" />
+    <link rel="stylesheet" href="/assets/curriculum-enhancements.css?v=ms33w9pa" />
+    <link rel="stylesheet" href="/assets/curriculum-sidebar.css?v=ms33w9pa" />
     <script>
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", function () {
@@ -1353,11 +1353,11 @@
         color: #ffffff;
       }
     </style>
-    <link rel="stylesheet" href="/assets/curriculum-polish.css?v=ms33gswy" />
-    <link rel="stylesheet" href="/assets/curriculum-top1.css?v=ms33gswy" />
-    <link rel="stylesheet" href="/assets/curriculum-teacher-workflow.css?v=ms33gswy" />
-    <link rel="stylesheet" href="/assets/curriculum-guided-path.css?v=ms33gswy" />
-    <link rel="stylesheet" href="/assets/curriculum-studio-journey.css?v=ms33gswy" />
+    <link rel="stylesheet" href="/assets/curriculum-polish.css?v=ms33w9pa" />
+    <link rel="stylesheet" href="/assets/curriculum-top1.css?v=ms33w9pa" />
+    <link rel="stylesheet" href="/assets/curriculum-teacher-workflow.css?v=ms33w9pa" />
+    <link rel="stylesheet" href="/assets/curriculum-guided-path.css?v=ms33w9pa" />
+    <link rel="stylesheet" href="/assets/curriculum-studio-journey.css?v=ms33w9pa" />
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
     <link rel="stylesheet" href="/assets/mobile-access.css" />
     <!-- mobile-access-injected:end -->
@@ -13609,15 +13609,20 @@
                   "unit-resource-btn scorm-dl",
                 ),
               );
-              var zipBtn = document.createElement("a");
-              zipBtn.className = "unit-resource-btn";
+              // Unit project packet. This used to point at a static
+              // /scorm-packages/neft-lesson-math-unit-N-projects.zip that was
+              // never generated — all 10 buttons 404'd. Build it on demand from
+              // the live unit projects page, the same path the review-game chip
+              // above uses, so there is nothing to keep in sync.
+              var zipBtn = makeScormLink(
+                "/math/unit-" + u.unitIndex + "/projects/",
+                u.num + " Project",
+                "📦 Unit Packet (ZIP)",
+                "unit-resource-btn scorm-dl",
+              );
               zipBtn.style.background = "#256b5b";
               zipBtn.style.color = "#ffffff";
               zipBtn.style.fontWeight = "700";
-              zipBtn.href =
-                "/scorm-packages/neft-lesson-math-unit-" + u.unitIndex + "-projects.zip";
-              zipBtn.setAttribute("download", "");
-              zipBtn.textContent = "📦 Unit Packet (ZIP)";
               resRow.appendChild(zipBtn);
             }
             if (resRow.children.length > 0) {
@@ -14044,32 +14049,39 @@
         window.scrollTo(0, 0);
       })();
     </script>
-    <script src="/assets/curriculum-progress-bridge.js?v=ms33gswy" defer></script>
+    <script src="/assets/curriculum-progress-bridge.js?v=ms33w9pa" defer></script>
     <script>
       window.CURRICULUM_SYNC = {
-        // Complete D1 content sync enabled: fetches /api/curriculum/content with static fallback.
-        useApiContent: true,
+        // Content sync is OFF: same-origin /api/curriculum/content answers with a
+        // hardcoded stub ({id,num,title,std,obj} — no activities/projects, and
+        // pre-2025 standard codes like 6.NS.B.4 instead of the 6.NOS.4 SoT).
+        // Hydrating from it replaced CurriculumHub.unitsData with that shape and
+        // broke every consumer evaluated after load — search results rendered as
+        // bare titles with an empty outline list (no lesson links at all). The
+        // scraped DOM curriculum stays the single source of truth until the D1
+        // endpoint serves the canonical lesson shape.
+        useApiContent: false,
         apiBase:
           window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
             ? "http://localhost:8787"
             : "",
       };
     </script>
-    <script src="/assets/curriculum-api-loader.js" defer></script>
+    <script src="/assets/curriculum-api-loader.js?v=ms33w9pa" defer></script>
     <!-- Vendored: the jsdelivr URL 404'd (minisearch v7 ships dist/umd/index.js,
          not minisearch.min.js), so browsers ORB-blocked the error page and
          MiniSearch never loaded. Serve it locally like the other vendor libs. -->
     <script src="/assets/vendor/minisearch-7.1.2.min.js" defer></script>
-    <script src="/assets/curriculum-enhancements.js?v=ms33gswy" defer></script>
+    <script src="/assets/curriculum-enhancements.js?v=ms33w9pa" defer></script>
     <script src="/assets/curriculum-audit-badges.js" defer></script>
-    <script src="/assets/curriculum-sidebar.js?v=ms33gswy" defer></script>
-    <script src="/assets/curriculum-top1.js?v=ms33gswy" defer></script>
-    <script src="/assets/curriculum-teacher-planning.js?v=ms33gswy" defer></script>
-    <script src="/assets/curriculum-live-signal.js?v=ms33gswy" defer></script>
-    <script src="/assets/curriculum-teacher-workflow.js?v=ms33gswy" defer></script>
-    <script src="/assets/curriculum-guided-path.js?v=ms33gswy" defer></script>
-    <script src="/assets/curriculum-studio-journey.js?v=ms33gswy" defer></script>
-    <script src="/assets/curriculum-lesson-merge.js?v=ms33gswy" defer></script>
+    <script src="/assets/curriculum-sidebar.js?v=ms33w9pa" defer></script>
+    <script src="/assets/curriculum-top1.js?v=ms33w9pa" defer></script>
+    <script src="/assets/curriculum-teacher-planning.js?v=ms33w9pa" defer></script>
+    <script src="/assets/curriculum-live-signal.js?v=ms33w9pa" defer></script>
+    <script src="/assets/curriculum-teacher-workflow.js?v=ms33w9pa" defer></script>
+    <script src="/assets/curriculum-guided-path.js?v=ms33w9pa" defer></script>
+    <script src="/assets/curriculum-studio-journey.js?v=ms33w9pa" defer></script>
+    <script src="/assets/curriculum-lesson-merge.js?v=ms33w9pa" defer></script>
     <script src="/assets/futures-lab.js?v=20260619" defer></script>
     <script src="/assets/gradebook-embed.js?v=20260624" defer></script>
 

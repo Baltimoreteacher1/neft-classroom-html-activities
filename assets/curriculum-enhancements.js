@@ -322,7 +322,13 @@
     }
 
     if (searchIndex && q.length >= 2) {
-      var hits = searchIndex.search(q, { prefix: true, fuzzy: 0.15 });
+      // MiniSearch OR-combines terms by default, and every lesson's indexed text
+      // carries its "Unit N" label — so a two-word query like "unit rate"
+      // matched all 74 lessons and the result list was noise. Require every term
+      // first; fall back to OR only when that finds nothing, so a typo or an
+      // unindexed word still returns the near misses instead of an empty page.
+      var hits = searchIndex.search(q, { prefix: true, fuzzy: 0.15, combineWith: "AND" });
+      if (!hits.length) hits = searchIndex.search(q, { prefix: true, fuzzy: 0.15 });
       var lessonIds = {};
       hits.forEach(function (h) {
         if (h.id) lessonIds[h.id] = h.score;
