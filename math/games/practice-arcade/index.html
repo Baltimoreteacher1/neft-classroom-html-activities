@@ -112,23 +112,47 @@
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2" />
     <!-- nsr-injected:end -->
-    <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
-</head>
+    <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css" />
+  </head>
   <body>
-
-      <!-- EWL Universal Arcade Enhancements Header -->
-      <div class="ewl-arcade-header-bar" style="position: relative; z-index: 100;">
-        <div class="ewl-arcade-title-group">
-          <span class="ewl-arcade-badge ewl-badge-l1" id="ewl-level-badge">⭐ Level 1: Guided Support</span>
-          <span style="font-size: 13px; font-weight: 600; opacity: 0.85;">| EduWonderLab Interactive Arcade</span>
-        </div>
-        <div class="ewl-arcade-controls">
-          <button type="button" class="ewl-btn-toggle active" id="ewl-btn-l1" onclick="if(window.ewlSetLevel) window.ewlSetLevel(1)">L1 Support</button>
-          <button type="button" class="ewl-btn-toggle" id="ewl-btn-l2" onclick="if(window.ewlSetLevel) window.ewlSetLevel(2)">L2 Challenge</button>
-          <button type="button" class="ewl-btn-toggle" id="ewl-btn-lang" onclick="if(window.ewlToggleLang) window.ewlToggleLang()">🌐 EN / ES</button>
-        </div>
+    <!-- EWL Universal Arcade Enhancements Header -->
+    <div class="ewl-arcade-header-bar" style="position: relative; z-index: 100">
+      <div class="ewl-arcade-title-group">
+        <span class="ewl-arcade-badge ewl-badge-l1" id="ewl-level-badge"
+          >⭐ Level 1: Guided Support</span
+        >
+        <span style="font-size: 13px; font-weight: 600; opacity: 0.85"
+          >| EduWonderLab Interactive Arcade</span
+        >
       </div>
-  
+      <div class="ewl-arcade-controls">
+        <button
+          type="button"
+          class="ewl-btn-toggle active"
+          id="ewl-btn-l1"
+          onclick="if (window.ewlSetLevel) window.ewlSetLevel(1);"
+        >
+          L1 Support
+        </button>
+        <button
+          type="button"
+          class="ewl-btn-toggle"
+          id="ewl-btn-l2"
+          onclick="if (window.ewlSetLevel) window.ewlSetLevel(2);"
+        >
+          L2 Challenge
+        </button>
+        <button
+          type="button"
+          class="ewl-btn-toggle"
+          id="ewl-btn-lang"
+          onclick="if (window.ewlToggleLang) window.ewlToggleLang();"
+        >
+          🌐 EN / ES
+        </button>
+      </div>
+    </div>
+
     <div id="loader">
       <div class="spinner"></div>
       <div id="loader-text">Loading Practice Arcade…</div>
@@ -621,11 +645,27 @@
               .map((s) => s.trim())
               .filter(Boolean);
           } else if (unit) {
-            // Probe N-1 … N-12; missing lessons 404 and are skipped. Upper bound
-            // is 12 (not 9) so units with a 10th/11th/12th lesson aren't silently
-            // truncated — the ?unit= review now covers the whole unit.
-            ids = [];
-            for (let k = 1; k <= 12; k++) ids.push(unit + "-" + k);
+            // Ask the curriculum manifest which lessons this unit actually has.
+            // The old approach probed N-1 … N-12 and skipped the 404s, which both
+            // burned ~5 wasted round trips per run AND silently dropped every
+            // flagship lesson — "3-1-flagship" is not of the form N-<number>, so
+            // its practice items never reached the unit review pool.
+            ids = await fetch("/data/curriculum-manifest.json")
+              .then((r) => (r.ok ? r.json() : null))
+              .then((m) =>
+                Array.isArray(m && m.lessons)
+                  ? m.lessons
+                      .filter((l) => String(l.unit) === String(unit) && l.id)
+                      .map((l) => l.id)
+                  : null,
+              )
+              .catch(() => null);
+            // Manifest unreachable (offline, cache miss) → fall back to the probe
+            // so a unit review still assembles rather than failing closed.
+            if (!ids || !ids.length) {
+              ids = [];
+              for (let k = 1; k <= 12; k++) ids.push(unit + "-" + k);
+            }
           } else {
             ids = [params.get("lesson") || "1-1"];
             isGroup = false;
@@ -3857,15 +3897,25 @@
     <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
     <script src="/assets/math-workbench-launcher.js" defer></script>
     <!-- mwb-injected:end -->
-  
-      <!-- EWL Diagnostic Misconception Coach -->
-      <div class="ewl-coach-card" id="ewl-coach-card" style="display: flex; position: relative; z-index: 100;">
-        <div class="ewl-coach-icon">💡</div>
-        <div class="ewl-coach-content">
-          <h4 id="ewl-coach-title">Math Coach Tip / Consejos del Profesor</h4>
-          <p id="ewl-coach-text" data-en="Calm self-paced review lab: sort into bins, match pairs, choose the answer, and spot the mistake!" data-es="Laboratorio de repaso a tu propio ritmo: clasifica en contenedores, empareja, elige la respuesta y encuentra el error.">Calm self-paced review lab: sort into bins, match pairs, choose the answer, and spot the mistake!</p>
-        </div>
+
+    <!-- EWL Diagnostic Misconception Coach -->
+    <div
+      class="ewl-coach-card"
+      id="ewl-coach-card"
+      style="display: flex; position: relative; z-index: 100"
+    >
+      <div class="ewl-coach-icon">💡</div>
+      <div class="ewl-coach-content">
+        <h4 id="ewl-coach-title">Math Coach Tip / Consejos del Profesor</h4>
+        <p
+          id="ewl-coach-text"
+          data-en="Calm self-paced review lab: sort into bins, match pairs, choose the answer, and spot the mistake!"
+          data-es="Laboratorio de repaso a tu propio ritmo: clasifica en contenedores, empareja, elige la respuesta y encuentra el error."
+        >
+          Calm self-paced review lab: sort into bins, match pairs, choose the answer, and spot the
+          mistake!
+        </p>
       </div>
-  
-</body>
+    </div>
+  </body>
 </html>
