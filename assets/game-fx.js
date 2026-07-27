@@ -93,6 +93,42 @@
     }, 800);
   }
 
+  function triggerHapticPulse(pattern) {
+    try {
+      if (navigator.vibrate) {
+        if (pattern === "success") navigator.vibrate([20, 30, 40]);
+        else if (pattern === "error") navigator.vibrate([70, 40, 70]);
+        else navigator.vibrate([15]);
+      }
+    } catch (_e) {}
+  }
+
+  function spawnGhostReplay(el) {
+    if (reduce || !el) return;
+    try {
+      var rect = el.getBoundingClientRect();
+      var ghost = el.cloneNode(true);
+      ghost.className = "gfx-ghost-replay";
+      ghost.style.position = "fixed";
+      ghost.style.left = rect.left + "px";
+      ghost.style.top = rect.top + "px";
+      ghost.style.width = rect.width + "px";
+      ghost.style.height = rect.height + "px";
+      ghost.style.opacity = "0.75";
+      ghost.style.pointerEvents = "none";
+      ghost.style.zIndex = "9999";
+      ghost.style.transition = "all 0.8s ease-out";
+      document.body.appendChild(ghost);
+      
+      requestAnimationFrame(function () {
+        ghost.style.transform = "scale(1.2) translateY(-25px)";
+        ghost.style.opacity = "0";
+      });
+
+      setTimeout(function () { ghost.remove(); }, 850);
+    } catch (_e) {}
+  }
+
   function spawnShockwave(x, y) {
     if (reduce) return;
     var shock = document.createElement("div");
@@ -1629,6 +1665,8 @@
               }
             } else if (isIncorrect) {
               AudioSynth.playError();
+              triggerHapticPulse("error");
+              spawnGhostReplay(t);
               flashScreen("rgba(239, 68, 68, 0.35)");
               triggerScreenGlitch(300);
               shakeScreen();

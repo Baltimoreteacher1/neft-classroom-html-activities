@@ -791,6 +791,53 @@
         scormScaledScore: Math.min(1.0, (wonder.stars || 0) / 50.0)
       };
     },
+    initPeerRelay: function () {
+      try {
+        if (!window.BroadcastChannel) return;
+        var channel = new BroadcastChannel("ewl-peer-coop-relay");
+        channel.onmessage = function (msg) {
+          if (msg.data && msg.data.type === "TEAM_STARS") {
+            var teamEl = document.getElementById("ewl-peer-team-stars");
+            if (teamEl) teamEl.textContent = "👥 Team Stars: ⭐ " + msg.data.stars;
+          }
+        };
+        window.EWLPeerRelay = {
+          shareStars: function (count) {
+            channel.postMessage({ type: "TEAM_STARS", stars: count, sender: location.href });
+          }
+        };
+      } catch (_e) {}
+    },
+    generateCertificateSVG: function () {
+      var wonder = safe(function() { return window.WonderPass ? window.WonderPass.getProfile() : {}; }, "wonderpass", {}) || {};
+      var name = (this.record ? this.record.name : "Math Scholar") || "Math Scholar";
+      var stars = wonder.stars || 12;
+      var title = wonder.title || "Math Mastermind";
+      var dateStr = new Date().toLocaleDateString();
+
+      return '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600" style="background:white; font-family:\'Nunito\', sans-serif;">' +
+        '<rect x="20" y="20" width="760" height="560" rx="16" fill="#f8fafc" stroke="#15487f" stroke-width="8"/>' +
+        '<rect x="35" y="35" width="730" height="530" rx="12" fill="none" stroke="#256b5b" stroke-width="2" stroke-dasharray="8 4"/>' +
+        '<text x="400" y="110" font-size="32" font-weight="900" fill="#15487f" text-anchor="middle">OFFICIAL PROOF OF MASTERY</text>' +
+        '<text x="400" y="145" font-size="16" font-weight="700" fill="#56627a" text-anchor="middle">EduWonderLab Curriculum Games Achievement</text>' +
+        '<text x="400" y="230" font-size="20" fill="#14223a" text-anchor="middle">This certifies that</text>' +
+        '<text x="400" y="280" font-size="36" font-weight="900" fill="#205fa6" text-anchor="middle">' + name + '</text>' +
+        '<text x="400" y="330" font-size="22" font-weight="800" fill="#256b5b" text-anchor="middle">has earned ' + stars + ' Stars &amp; achieved rank of ' + title + '</text>' +
+        '<text x="400" y="420" font-size="16" fill="#56627a" text-anchor="middle">Verified Grade 6 Math Core Standards Proficiency • ' + dateStr + '</text>' +
+        '<circle cx="400" y="490" r="40" fill="#256b5b"/>' +
+        '<text x="400" y="498" font-size="24" fill="#ffffff" text-anchor="middle">🏆</text>' +
+        '</svg>';
+    },
+    openCertificateModal: function () {
+      try {
+        var svgStr = this.generateCertificateSVG();
+        var win = window.open("", "_blank");
+        if (win) {
+          win.document.write('<!DOCTYPE html><html><head><title>Proof of Mastery Certificate</title></head><body style="margin:0; display:flex; justify-content:center; align-items:center; min-height:100vh; background:#0f172a;">' + svgStr + '</body></html>');
+          win.document.close();
+        }
+      } catch (_e) {}
+    },
 
     init: function (userCfg) {
       if (this._started) return this;

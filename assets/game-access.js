@@ -202,6 +202,94 @@
     } catch (_e) {}
   }
 
+  /* ---------- Math Talk Coach (Voice Spoken Reasoning) ---------- */
+  var MATH_KEYWORDS = ["factor", "prime", "composite", "multiple", "ratio", "rate", "percent", "fraction", "area", "volume", "equation", "expression", "variable", "coordinate", "mean", "median", "range"];
+  
+  function startMathTalkCoach(btn) {
+    try {
+      var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        encourage("🎙️ Math Talk requires Chrome/Edge speech support.");
+        return;
+      }
+      var recog = new SpeechRecognition();
+      recog.lang = pickLang(readableText());
+      recog.interimResults = false;
+      recog.maxAlternatives = 1;
+
+      if (btn) btn.classList.add("nt-ga-listening");
+      encourage("🎙️ Listening... Explain your math solution out loud!");
+
+      recog.onresult = function (evt) {
+        var transcript = evt.results[0][0].transcript.toLowerCase();
+        var foundKeywords = MATH_KEYWORDS.filter(function (k) { return transcript.indexOf(k) !== -1; });
+        if (btn) btn.classList.remove("nt-ga-listening");
+        
+        if (foundKeywords.length > 0) {
+          encourage("🎙️ Orator Badge Earned! Used: " + foundKeywords.join(", ") + " 🌟");
+          addWonderPassStars(2, "math-talk");
+        } else {
+          encourage("🎙️ Recorded: \"" + transcript.slice(0, 45) + "...\" — Try using target math words!");
+        }
+      };
+
+      recog.onerror = recog.onend = function () {
+        if (btn) btn.classList.remove("nt-ga-listening");
+      };
+
+      recog.start();
+    } catch (_e) {
+      encourage("🎙️ Mic permission needed for Math Talk Coach.");
+    }
+  }
+
+  /* ---------- Neftie Socratic Co-Pilot Avatar Widget ---------- */
+  var SOCRATIC_PROMPTS = [
+    "💡 Neftie asks: What happens to your visual model if you double the dimensions?",
+    "💡 Neftie asks: Can you decompose this composite number into smaller prime building blocks?",
+    "💡 Neftie asks: How does the ratio compare when both quantities scale equally?",
+    "💡 Neftie asks: What operation will isolate the variable on the left side of the scale?",
+    "💡 Neftie asks: If we tile the base with unit cubes, how many layers tall is the prism?"
+  ];
+
+  function triggerNeftieCoPilot() {
+    try {
+      var pick = SOCRATIC_PROMPTS[Math.floor(Math.random() * SOCRATIC_PROMPTS.length)];
+      encourage(pick);
+    } catch (_e) {}
+  }
+
+  /* ---------- Universal Switch Accessibility Engine ---------- */
+  var switchElements = [];
+  var switchIndex = -1;
+
+  function initSwitchAccess() {
+    try {
+      window.addEventListener("keydown", function (evt) {
+        // Space / Tab for Switch Scanning
+        if (evt.key === "Tab" && evt.shiftKey === false) {
+          scanSwitchTargets();
+        }
+      });
+    } catch (_e) {}
+  }
+
+  function scanSwitchTargets() {
+    try {
+      switchElements = [].slice.call(doc.querySelectorAll("button, [role='button'], .opt, .choice, input"));
+      if (switchElements.length === 0) return;
+      if (switchIndex >= 0 && switchElements[switchIndex]) {
+        switchElements[switchIndex].classList.remove("nt-ga-switch-target");
+      }
+      switchIndex = (switchIndex + 1) % switchElements.length;
+      var target = switchElements[switchIndex];
+      if (target) {
+        target.classList.add("nt-ga-switch-target");
+        target.focus();
+      }
+    } catch (_e) {}
+  }
+
   /* ---------- build the floating control cluster ---------- */
   function build() {
     try {
@@ -217,6 +305,26 @@
       read.innerHTML = "🔊 <span>Read</span>";
       read.addEventListener("click", function () {
         speak(read);
+      });
+
+      var micBtn = doc.createElement("button");
+      micBtn.type = "button";
+      micBtn.className = "nt-ga-btn nt-ga-mic";
+      micBtn.setAttribute("aria-label", "Explain math with voice");
+      micBtn.title = "Math Talk Coach";
+      micBtn.innerHTML = "🎙️ <span>Talk</span>";
+      micBtn.addEventListener("click", function () {
+        startMathTalkCoach(micBtn);
+      });
+
+      var neftieBtn = doc.createElement("button");
+      neftieBtn.type = "button";
+      neftieBtn.className = "nt-ga-btn nt-ga-neftie";
+      neftieBtn.setAttribute("aria-label", "Ask Neftie Socratic Co-Pilot");
+      neftieBtn.title = "Neftie Socratic Hint";
+      neftieBtn.innerHTML = "🤖 <span>Neftie</span>";
+      neftieBtn.addEventListener("click", function () {
+        triggerNeftieCoPilot();
       });
 
       var textBtn = doc.createElement("button");
@@ -237,11 +345,14 @@
       wonderChip.className = "nt-ga-wonderpass";
 
       wrap.appendChild(read);
+      wrap.appendChild(micBtn);
+      wrap.appendChild(neftieBtn);
       wrap.appendChild(textBtn);
       wrap.appendChild(wonderChip);
       doc.body.appendChild(wrap);
 
       updateWonderPassChip();
+      initSwitchAccess();
 
       doc.body.classList.add("nt-ga-tap-hint");
 
@@ -265,7 +376,9 @@
       setCalm(!!on, null);
     },
     addStars: addWonderPassStars,
-    getWonderPass: getWonderPass
+    getWonderPass: getWonderPass,
+    triggerNeftie: triggerNeftieCoPilot,
+    startMathTalk: startMathTalkCoach
   };
 
   window.WonderPass = {
@@ -279,4 +392,5 @@
 
   ready(build);
 })();
+
 
