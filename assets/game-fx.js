@@ -1754,6 +1754,21 @@
       });
     window.GameFX = window.GameFX || {};
     window.GameFX.toggleLoFi = toggleLoFiFocusMusic;
+
+    // Auto-fit & window resize handler for Phaser & canvas games
+    function handleResize() {
+      if (window.Phaser && Phaser.GAMES) {
+        Phaser.GAMES.forEach(function (g) {
+          if (g && g.scale && typeof g.scale.refresh === "function") {
+            g.scale.refresh();
+          }
+        });
+      }
+    }
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("orientationchange", function () {
+      setTimeout(handleResize, 150);
+    });
   });
 })();
 

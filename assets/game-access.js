@@ -283,81 +283,8 @@
 
   /* ---------- build the floating control cluster ---------- */
   function build() {
-    try {
-      if (doc.querySelector(".nt-ga-controls")) return;
-      var wrap = doc.createElement("div");
-      wrap.className = "nt-ga-controls";
-
-      var read = doc.createElement("button");
-      read.type = "button";
-      read.className = "nt-ga-btn";
-      read.setAttribute("aria-label", "Read the problem aloud");
-      read.title = "Read aloud";
-      read.innerHTML = "🔊 <span>Read</span>";
-      read.addEventListener("click", function () {
-        speak(read);
-      });
-
-      var micBtn = doc.createElement("button");
-      micBtn.type = "button";
-      micBtn.className = "nt-ga-btn nt-ga-mic";
-      micBtn.setAttribute("aria-label", "Explain math with voice");
-      micBtn.title = "Math Talk Coach";
-      micBtn.innerHTML = "🎙️ <span>Talk</span>";
-      micBtn.addEventListener("click", function () {
-        startMathTalkCoach(micBtn);
-      });
-
-      var loFiBtn = doc.createElement("button");
-      loFiBtn.type = "button";
-      loFiBtn.className = "nt-ga-btn nt-ga-lofi";
-      loFiBtn.setAttribute("aria-label", "Toggle Lo-Fi Focus Music");
-      loFiBtn.title = "Lo-Fi Focus Beats";
-      loFiBtn.innerHTML = "🎵 <span>Lo-Fi</span>";
-      loFiBtn.addEventListener("click", function () {
-        if (window.GameFX && window.GameFX.toggleLoFi) {
-          var active = window.GameFX.toggleLoFi();
-          loFiBtn.setAttribute("aria-pressed", active ? "true" : "false");
-        }
-      });
-
-      var textBtn = doc.createElement("button");
-      textBtn.type = "button";
-      textBtn.className = "nt-ga-btn nt-ga-text";
-      var startStep = currentText();
-      var startLabels = ["Text size: normal", "Text size: large", "Text size: extra large"];
-      textBtn.title = startLabels[startStep];
-      textBtn.setAttribute("aria-label", startLabels[startStep]);
-      textBtn.setAttribute("aria-pressed", startStep ? "true" : "false");
-      textBtn.innerHTML = 'A<span aria-hidden="true">+</span>';
-      textBtn.addEventListener("click", function () {
-        cycleText(textBtn);
-      });
-
-      var wonderChip = doc.createElement("div");
-      wonderChip.id = "ewl-wonderpass-chip";
-      wonderChip.className = "nt-ga-wonderpass";
-
-      wrap.appendChild(read);
-      wrap.appendChild(micBtn);
-      wrap.appendChild(loFiBtn);
-      wrap.appendChild(textBtn);
-      wrap.appendChild(wonderChip);
-      doc.body.appendChild(wrap);
-
-      updateWonderPassChip();
-      initSwitchAccess();
-
-      doc.body.classList.add("nt-ga-tap-hint");
-
-      window.addEventListener("pagehide", function () {
-        try {
-          if (window.speechSynthesis) window.speechSynthesis.cancel();
-        } catch (_e) {}
-      });
-    } catch (_e) {
-      /* never break the game */
-    }
+    /* Side buttons (Read, Talk, Lo-Fi, etc.) removed from all games per user request */
+    return;
   }
 
   // Public, passive API for games that want to opt in.
