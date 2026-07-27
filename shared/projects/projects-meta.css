@@ -110,8 +110,16 @@ body.pro-projects.level-0 .ntm-l0 {
    the normal contents of the first panel so students face one task, not the
    full project with extra support cards layered on top. */
 body.pro-projects.level-0 .step-trail,
-body.pro-projects.level-0 .prog-wrap {
+body.pro-projects.level-0 .prog-wrap,
+body.pro-projects.level-0 .ntm-standards,
+body.pro-projects.level-0 .pro-ribbon,
+body.pro-projects.level-0 .pro-totop,
+body.pro-projects.level-0 #nsr-launcher {
   display: none !important;
+}
+
+body.pro-projects.level-0 .wizard {
+  font-size: 0;
 }
 
 body.pro-projects.level-0 .ntm-l0-panel.active > :not(.ntm-l0-shell) {
@@ -122,6 +130,7 @@ body.pro-projects .ntm-l0-shell {
   max-width: 760px;
   margin: 0 auto 22px;
   padding: 18px;
+  font-size: 16px;
 }
 
 body.pro-projects .ntm-l0-shell > .ntm-l0 {
@@ -135,6 +144,33 @@ body.pro-projects .ntm-l0-shell > .ntm-l0:last-child {
 body.pro-projects .ntm-l0-done {
   background: #eefbf2;
   border-left-color: #168447;
+}
+
+/* Level 1 keeps the core wizard and the unit's main interactive, but removes
+   the many secondary studios that made each step feel like several projects
+   at once. Level 2 remains the full experience. */
+body.pro-projects:is(.level-0, .level-1) :is(
+    .viz-card,
+    .mw-card,
+    .sa-card,
+    .ea-card,
+    .p3d-card,
+    .cms-goals,
+    .cms-studio,
+    .pps-ledger,
+    .pps-quality,
+    .pps-studio,
+    .ntdt,
+    .ntf-reflect,
+    .ntf-readiness,
+    .ntf-fab,
+    .ntf-teacher,
+    .sig-fab,
+    .ntc-launch,
+    .ntc-panel,
+    #mwb-launcher
+  ) {
+  display: none !important;
 }
 
 body.pro-projects .ntm-l0 {
@@ -176,6 +212,30 @@ body.pro-projects .ntm-l0-title {
 body.pro-projects .ntm-l0-sub {
   margin: 0 0 8px;
   font-weight: 600;
+}
+
+body.pro-projects .ntm-l0-response-label {
+  display: block;
+  font-weight: 800;
+  color: #5d330d;
+}
+
+body.pro-projects .ntm-l0-response {
+  display: block;
+  width: min(100%, 320px);
+  min-height: 48px;
+  margin-top: 7px;
+  padding: 9px 12px;
+  border: 2px solid #b85f0a;
+  border-radius: 9px;
+  background: #fff;
+  color: #24170c;
+  font: inherit;
+}
+
+body.pro-projects .ntm-l0-response:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 2px;
 }
 
 body.pro-projects .ntm-l0-steps {

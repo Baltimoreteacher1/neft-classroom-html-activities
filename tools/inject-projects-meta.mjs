@@ -30,7 +30,6 @@ const DRY = process.argv.includes("--dry-run");
 const ONLY = (process.argv.find((a) => a.startsWith("--only=")) || "").split("=")[1] || "";
 
 const CONFIG_PATH = path.join(ROOT, "shared", "projects", "projects-meta-config.json");
-const GUARD = "projects-meta.css";
 const BEGIN =
   "projects-meta-injected:begin (standards + ES parity + Level 0 — tools/inject-projects-meta.mjs)";
 const END = "projects-meta-injected:end";
@@ -70,6 +69,13 @@ function spliceBefore(html, closer, block) {
   return html.slice(0, idx) + block + "\n" + html.slice(idx);
 }
 
+function stripOwnBlocks(html) {
+  return html.replace(
+    /[ \t]*<!-- projects-meta-injected:begin[\s\S]*?projects-meta-injected:end -->\n?/g,
+    "",
+  );
+}
+
 function inject(rel, id, entry) {
   const file = path.join(ROOT, rel);
   if (!fs.existsSync(file)) {
@@ -77,8 +83,10 @@ function inject(rel, id, entry) {
     return false;
   }
   const before = fs.readFileSync(file, "utf8");
-  if (before.includes(GUARD)) return false; // already injected
-  let after = spliceBefore(before, "</head>", headBlock(id, entry));
+  /* Rebuild this layer's own blocks so cache-version bumps and standards
+     corrections reach pages that were injected by an earlier release. */
+  let after = stripOwnBlocks(before);
+  after = spliceBefore(after, "</head>", headBlock(id, entry));
   if (after === null) {
     console.error(`  ✗ no </head> in ${rel} — skipped`);
     return false;

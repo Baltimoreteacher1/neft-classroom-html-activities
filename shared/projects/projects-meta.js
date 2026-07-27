@@ -275,6 +275,14 @@
       var rp = el("p", "ntm-l0-sub");
       bi(rp, r[0], r[1]);
       rc.appendChild(rp);
+      var answerLabel = el("label", "ntm-l0-response-label");
+      var answerPrompt = pair(S.answerPrompt);
+      bi(answerLabel, answerPrompt[0], answerPrompt[1]);
+      var answerInput = el("input", "ntm-l0-response");
+      answerInput.type = "text";
+      answerInput.setAttribute("aria-label", answerPrompt[0]);
+      answerLabel.appendChild(answerInput);
+      rc.appendChild(answerLabel);
       frag.appendChild(rc);
       added++;
     }
@@ -344,9 +352,10 @@
 
     if (!added) return 0;
     var finish = pair(S.finish);
-    var done = l0Card("done", { badge: badge, title: finish });
-    done.appendChild(el("p", "ntm-l0-sub en-text", finish[0]));
-    done.appendChild(el("p", "ntm-l0-sub es-text", finish[1]));
+    var done = l0Card("done", { badge: badge, title: pair(S.finishHeading) });
+    var doneText = el("p", "ntm-l0-sub");
+    bi(doneText, finish[0], finish[1]);
+    done.appendChild(doneText);
     frag.appendChild(done);
     added++;
 
