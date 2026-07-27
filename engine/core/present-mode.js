@@ -350,8 +350,7 @@ export function initPresentMode({ app, phaseConfigs, state } = {}) {
     item.type = "button";
     item.className = "nt-utility-item";
     item.setAttribute("data-pm-toggle", "");
-    item.innerHTML =
-      '<span aria-hidden="true">📽️</span><span data-pm-toggle-label>📽️ Present</span>';
+    item.innerHTML = '<span aria-hidden="true">📽️</span><span data-pm-toggle-label>📽️ Present</span>';
     item.addEventListener("click", () => setActive(!active));
     slot.appendChild(item);
   })();

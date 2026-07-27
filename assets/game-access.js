@@ -120,9 +120,19 @@
       pass.stars = (pass.stars || 0) + (count || 1);
       pass.games = pass.games || {};
       pass.games[gameId || "general"] = (pass.games[gameId || "general"] || 0) + (count || 1);
-      if (pass.stars >= 50) { pass.title = "Math Mastermind"; pass.avatar = "👑"; pass.badge = "Level 4"; }
-      else if (pass.stars >= 25) { pass.title = "Problem Solver"; pass.avatar = "🦁"; pass.badge = "Level 3"; }
-      else if (pass.stars >= 10) { pass.title = "Arcade Hero"; pass.avatar = "🚀"; pass.badge = "Level 2"; }
+      if (pass.stars >= 50) {
+        pass.title = "Math Mastermind";
+        pass.avatar = "👑";
+        pass.badge = "Level 4";
+      } else if (pass.stars >= 25) {
+        pass.title = "Problem Solver";
+        pass.avatar = "🦁";
+        pass.badge = "Level 3";
+      } else if (pass.stars >= 10) {
+        pass.title = "Arcade Hero";
+        pass.avatar = "🚀";
+        pass.badge = "Level 2";
+      }
       localStorage.setItem(WONDERPASS_KEY, JSON.stringify(pass));
       updateWonderPassChip();
     } catch (_e) {}
@@ -133,7 +143,14 @@
       var pass = getWonderPass();
       var chip = doc.getElementById("ewl-wonderpass-chip");
       if (chip) {
-        chip.innerHTML = '<span class="wp-avatar">' + pass.avatar + '</span> <span class="wp-stars">⭐ ' + pass.stars + '</span> <span class="wp-title">' + pass.title + '</span>';
+        chip.innerHTML =
+          '<span class="wp-avatar">' +
+          pass.avatar +
+          '</span> <span class="wp-stars">⭐ ' +
+          pass.stars +
+          '</span> <span class="wp-title">' +
+          pass.title +
+          "</span>";
       }
     } catch (_e) {}
   }
@@ -167,7 +184,7 @@
     } catch (_e) {}
     return v < 0 || v > 2 ? 0 : v;
   }
-  function cycleText(btn) {
+  function _cycleText(btn) {
     var next = (currentText() + 1) % 3;
     try {
       localStorage.setItem(TEXT_KEY, String(next));
@@ -203,8 +220,26 @@
   }
 
   /* ---------- Math Talk Coach (Voice Spoken Reasoning) ---------- */
-  var MATH_KEYWORDS = ["factor", "prime", "composite", "multiple", "ratio", "rate", "percent", "fraction", "area", "volume", "equation", "expression", "variable", "coordinate", "mean", "median", "range"];
-  
+  var MATH_KEYWORDS = [
+    "factor",
+    "prime",
+    "composite",
+    "multiple",
+    "ratio",
+    "rate",
+    "percent",
+    "fraction",
+    "area",
+    "volume",
+    "equation",
+    "expression",
+    "variable",
+    "coordinate",
+    "mean",
+    "median",
+    "range",
+  ];
+
   function startMathTalkCoach(btn) {
     try {
       var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -222,14 +257,18 @@
 
       recog.onresult = function (evt) {
         var transcript = evt.results[0][0].transcript.toLowerCase();
-        var foundKeywords = MATH_KEYWORDS.filter(function (k) { return transcript.indexOf(k) !== -1; });
+        var foundKeywords = MATH_KEYWORDS.filter(function (k) {
+          return transcript.indexOf(k) !== -1;
+        });
         if (btn) btn.classList.remove("nt-ga-listening");
-        
+
         if (foundKeywords.length > 0) {
           encourage("🎙️ Orator Badge Earned! Used: " + foundKeywords.join(", ") + " 🌟");
           addWonderPassStars(2, "math-talk");
         } else {
-          encourage("🎙️ Recorded: \"" + transcript.slice(0, 45) + "...\" — Try using target math words!");
+          encourage(
+            '🎙️ Recorded: "' + transcript.slice(0, 45) + '..." — Try using target math words!',
+          );
         }
       };
 
@@ -254,7 +293,7 @@
   var switchElements = [];
   var switchIndex = -1;
 
-  function initSwitchAccess() {
+  function _initSwitchAccess() {
     try {
       window.addEventListener("keydown", function (evt) {
         // Space / Tab for Switch Scanning
@@ -267,7 +306,9 @@
 
   function scanSwitchTargets() {
     try {
-      switchElements = [].slice.call(doc.querySelectorAll("button, [role='button'], .opt, .choice, input"));
+      switchElements = [].slice.call(
+        doc.querySelectorAll("button, [role='button'], .opt, .choice, input"),
+      );
       if (switchElements.length === 0) return;
       if (switchIndex >= 0 && switchElements[switchIndex]) {
         switchElements[switchIndex].classList.remove("nt-ga-switch-target");
@@ -299,12 +340,12 @@
     addStars: addWonderPassStars,
     getWonderPass: getWonderPass,
     triggerCoach: triggerMathCoach,
-    startMathTalk: startMathTalkCoach
+    startMathTalk: startMathTalkCoach,
   };
 
   window.WonderPass = {
     addStars: addWonderPassStars,
-    getProfile: getWonderPass
+    getProfile: getWonderPass,
   };
 
   try {
@@ -313,5 +354,3 @@
 
   ready(build);
 })();
-
-
