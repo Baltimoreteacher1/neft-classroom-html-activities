@@ -53,14 +53,14 @@ function headBlock(id, entry) {
     lines.push(`    <meta name="nt-project-standards" content="${esc(codes.join(","))}" />`);
   if (entry.revealUnit != null)
     lines.push(`    <meta name="nt-project-reveal-unit" content="${esc(entry.revealUnit)}" />`);
-  lines.push('    <link rel="stylesheet" href="/shared/projects/projects-meta.css?v=20260727" />');
+  lines.push('    <link rel="stylesheet" href="/shared/projects/projects-meta.css?v=20260727-v2" />');
   lines.push(`    <!-- ${END} -->`);
   return lines.join("\n");
 }
 
 const BODY = [
   `  <!-- ${BEGIN} -->`,
-  '  <script src="/shared/projects/projects-meta.js?v=20260727" defer></script>',
+  '  <script src="/shared/projects/projects-meta.js?v=20260727-v2" defer></script>',
   `  <!-- ${END} -->`,
 ].join("\n");
 

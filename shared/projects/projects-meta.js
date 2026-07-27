@@ -30,7 +30,7 @@
   "use strict";
   if (typeof document === "undefined") return;
 
-  var CONFIG_URL = "/shared/projects/projects-meta-config.json?v=20260727";
+  var CONFIG_URL = "/shared/projects/projects-meta-config.json?v=20260727-v2";
 
   /* ---------------------------------------------------------------- utils */
 
@@ -255,17 +255,31 @@
   function renderLevel0(cfg, entry) {
     var l0 = entry.level0;
     if (!l0) return 0;
-    var panel = l0.step ? document.getElementById(l0.step) : null;
-    if (!panel) panel = document.querySelector(".step-panel");
+    /* Level 0 is a mini-project, not the regular project plus more text.
+       Mount it in the first wizard panel so students see one short path as
+       soon as they choose Level 0. */
+    var panel = document.querySelector(".step-panel");
     if (!panel || panel.dataset.ntmL0 === "1") return 0;
     panel.dataset.ntmL0 = "1";
+    panel.classList.add("ntm-l0-panel");
 
     var S = cfg.shared.level0;
     var badge = pair(S.badge);
     var frag = document.createDocumentFragment();
     var added = 0;
 
-    /* 3a. Worked example first ------------------------------------------ */
+    /* 3a. One short, concrete job first --------------------------------- */
+    if (l0.reduce) {
+      var r = pair(l0.reduce);
+      var rc = l0Card("reduce", { badge: badge, title: pair(S.reduceHeading) });
+      var rp = el("p", "ntm-l0-sub");
+      bi(rp, r[0], r[1]);
+      rc.appendChild(rp);
+      frag.appendChild(rc);
+      added++;
+    }
+
+    /* 3b. Worked example: two visible steps plus the answer -------------- */
     if (l0.worked) {
       var w = pair(l0.worked.title);
       var card = l0Card("worked", { badge: badge, title: pair(S.workedHeading) });
@@ -273,7 +287,7 @@
       bi(wt, w[0], w[1]);
       card.appendChild(wt);
       var ol = el("ol", "ntm-l0-steps");
-      (l0.worked.steps || []).forEach(function (s) {
+      (l0.worked.steps || []).slice(0, 2).forEach(function (s) {
         var p = pair(s);
         var li = el("li");
         bi(li, p[0], p[1]);
@@ -296,61 +310,11 @@
       added++;
     }
 
-    /* 3b. Reduced problem set ------------------------------------------- */
-    if (l0.reduce) {
-      var r = pair(l0.reduce);
-      var rc = l0Card("reduce", { badge: badge, title: pair(S.reduceHeading) });
-      var rp = el("p", "ntm-l0-sub");
-      bi(rp, r[0], r[1]);
-      rc.appendChild(rp);
-      frag.appendChild(rc);
-      added++;
-    }
-
-    /* 3c. Number frame / partially completed table ---------------------- */
-    if (l0.frame && l0.frame.headers) {
-      var fc = l0Card("frame", { badge: badge, title: pair(S.frameHeading) });
-      var blank = pair(S.frameBlank);
-      var table = el("table", "ntm-l0-frame");
-      var thead = el("thead");
-      var hr = el("tr");
-      l0.frame.headers.forEach(function (h) {
-        var p = pair(h);
-        var th = el("th");
-        bi(th, p[0], p[1]);
-        hr.appendChild(th);
-      });
-      thead.appendChild(hr);
-      table.appendChild(thead);
-      var tbody = el("tbody");
-      (l0.frame.rows || []).forEach(function (row) {
-        var tr = el("tr");
-        row.forEach(function (cell) {
-          var td = el("td");
-          if (cell === "" || cell == null) {
-            td.className = "ntm-l0-blank";
-            bi(td, blank[0], blank[1]);
-          } else {
-            var p = pair(cell);
-            bi(td, p[0], p[1]);
-          }
-          tr.appendChild(td);
-        });
-        tbody.appendChild(tr);
-      });
-      table.appendChild(tbody);
-      var wrap = el("div", "ntm-l0-scroll");
-      wrap.appendChild(table);
-      fc.appendChild(wrap);
-      frag.appendChild(fc);
-      added++;
-    }
-
-    /* 3d. Vocabulary re-cap + sentence starters ------------------------- */
+    /* 3c. One key word + one sentence starter ---------------------------- */
     if (l0.vocab && l0.vocab.length) {
       var vc = l0Card("vocab", { badge: badge, title: pair(S.vocabHeading) });
       var grid = el("div", "ntm-l0-vocab");
-      l0.vocab.forEach(function (v) {
+      l0.vocab.slice(0, 1).forEach(function (v) {
         var cardV = el("div", "ntm-l0-word");
         var term = el("div", "ntm-l0-term");
         bi(term, v[0], v[1]);
@@ -367,7 +331,7 @@
       bi(sHead, sh[0], sh[1]);
       vc.appendChild(sHead);
       var ul = el("ul", "ntm-l0-starters");
-      (S.starters || []).forEach(function (s) {
+      (S.starters || []).slice(0, 1).forEach(function (s) {
         var p = pair(s);
         var li = el("li");
         bi(li, p[0], p[1]);
@@ -379,11 +343,33 @@
     }
 
     if (!added) return 0;
-    var card2 = panel.querySelector(".card") || panel;
-    var header = card2.querySelector(".card-header");
-    if (header && header.parentNode === card2) card2.insertBefore(frag, header.nextSibling);
-    else card2.insertBefore(frag, card2.firstChild);
+    var finish = pair(S.finish);
+    var done = l0Card("done", { badge: badge, title: finish });
+    done.appendChild(el("p", "ntm-l0-sub en-text", finish[0]));
+    done.appendChild(el("p", "ntm-l0-sub es-text", finish[1]));
+    frag.appendChild(done);
+    added++;
+
+    var shell = el("section", "ntm-l0 ntm-l0-shell");
+    shell.setAttribute("aria-label", "Level 0 mini-project");
+    shell.appendChild(frag);
+    panel.insertBefore(shell, panel.firstChild);
     return added;
+  }
+
+  function installLevel0Navigation() {
+    if (window.__ntmLevel0Navigation) return;
+    window.__ntmLevel0Navigation = true;
+    var original = window.setLevel;
+    if (typeof original !== "function") return;
+    window.setLevel = function (n) {
+      original.apply(this, arguments);
+      if (Number(n) !== 0) return;
+      var panel = document.querySelector(".ntm-l0-panel");
+      var match = panel && String(panel.id || "").match(/^step-(\d+)$/);
+      if (match && typeof window.goStep === "function") window.goStep(Number(match[1]));
+      if (panel) panel.scrollIntoView({ behavior: "smooth", block: "start" });
+    };
   }
 
   /* ------------------------------------------------------------ bootstrap */
@@ -411,6 +397,7 @@
     if (!key) return;
     document.body.dataset.ntMetaInit = "1";
     STATE.key = key;
+    installLevel0Navigation();
 
     fetch(CONFIG_URL, { cache: "no-cache" })
       .then(function (r) {
