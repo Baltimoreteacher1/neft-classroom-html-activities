@@ -197,12 +197,54 @@
         var val = data ? data[i] : 0;
         var barH = (val / 255) * h * 0.85 + 2; // scale and add baseline height
         var x = i * barW + 1;
-        var y = h - barH;
+  var loFiPlaying = false;
+  var loFiAudioCtx = null;
+  var loFiTimer = null;
+  var LOFI_CHORDS = [
+    [261.63, 329.63, 392.00, 493.88],
+    [220.00, 261.63, 329.63, 392.00],
+    [293.66, 349.23, 440.00, 523.25],
+    [196.00, 246.94, 293.66, 349.23]
+  ];
 
-        ctx2d.fillRect(x, y, barW - 2, barH);
+  function toggleLoFiFocusMusic() {
+    try {
+      if (loFiPlaying) {
+        loFiPlaying = false;
+        if (loFiTimer) clearInterval(loFiTimer);
+        if (window.NeftCalm && window.NeftCalm.encourage) window.NeftCalm.encourage("🎵 Lo-Fi Focus Music Paused");
+        return false;
       }
+      loFiPlaying = true;
+      var AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!loFiAudioCtx) loFiAudioCtx = new AudioContext();
+      if (loFiAudioCtx.state === "suspended") loFiAudioCtx.resume();
+      
+      var chordIdx = 0;
+      function playChord() {
+        if (!loFiPlaying) return;
+        var chord = LOFI_CHORDS[chordIdx % LOFI_CHORDS.length];
+        chordIdx++;
+        chord.forEach(function (freq) {
+          var osc = loFiAudioCtx.createOscillator();
+          var gain = loFiAudioCtx.createGain();
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(freq, loFiAudioCtx.currentTime);
+          gain.gain.setValueAtTime(0.015, loFiAudioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.0001, loFiAudioCtx.currentTime + 3.8);
+          osc.connect(gain);
+          gain.connect(loFiAudioCtx.destination);
+          osc.start();
+          osc.stop(loFiAudioCtx.currentTime + 4.0);
+        });
+      }
+      playChord();
+      loFiTimer = setInterval(playChord, 4000);
+      if (window.NeftCalm && window.NeftCalm.encourage) window.NeftCalm.encourage("🎵 Lo-Fi Focus Music Active (Calm Beats)");
+      return true;
+    } catch (_e) {
+      return false;
     }
-    draw();
   }
 
   function translateDOM(isEs) {
@@ -1710,6 +1752,8 @@
           layer.style.transform = "";
         });
       });
-    } catch (_e) {}
+    window.GameFX = window.GameFX || {};
+    window.GameFX.toggleLoFi = toggleLoFiFocusMusic;
   });
 })();
+

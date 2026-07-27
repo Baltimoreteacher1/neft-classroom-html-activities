@@ -327,6 +327,19 @@
         triggerNeftieCoPilot();
       });
 
+      var loFiBtn = doc.createElement("button");
+      loFiBtn.type = "button";
+      loFiBtn.className = "nt-ga-btn nt-ga-lofi";
+      loFiBtn.setAttribute("aria-label", "Toggle Lo-Fi Focus Music");
+      loFiBtn.title = "Lo-Fi Focus Beats";
+      loFiBtn.innerHTML = "🎵 <span>Lo-Fi</span>";
+      loFiBtn.addEventListener("click", function () {
+        if (window.GameFX && window.GameFX.toggleLoFi) {
+          var active = window.GameFX.toggleLoFi();
+          loFiBtn.setAttribute("aria-pressed", active ? "true" : "false");
+        }
+      });
+
       var textBtn = doc.createElement("button");
       textBtn.type = "button";
       textBtn.className = "nt-ga-btn nt-ga-text";
@@ -347,6 +360,7 @@
       wrap.appendChild(read);
       wrap.appendChild(micBtn);
       wrap.appendChild(neftieBtn);
+      wrap.appendChild(loFiBtn);
       wrap.appendChild(textBtn);
       wrap.appendChild(wonderChip);
       doc.body.appendChild(wrap);

@@ -838,6 +838,33 @@
         }
       } catch (_e) {}
     },
+    openFamilyCardModal: function () {
+      try {
+        var wonder = safe(function() { return window.WonderPass ? window.WonderPass.getProfile() : {}; }, "wonderpass", {}) || {};
+        var name = (this.record ? this.record.name : "Your Child") || "Your Child";
+        var dateStr = new Date().toLocaleDateString();
+
+        var cardHtml = '<!DOCTYPE html><html><head><title>1-Minute Family Math Card</title></head><body style="margin:0; padding:20px; font-family:sans-serif; background:#0f172a; color:#fff; display:flex; justify-content:center; align-items:center; min-height:100vh;">' +
+          '<div style="max-width:500px; background:#1e293b; border:2px solid #38bdf8; border-radius:16px; padding:24px; box-shadow:0 20px 40px rgba(0,0,0,0.5);">' +
+          '<div style="text-align:center; font-size:12px; font-weight:800; color:#38bdf8; letter-spacing:0.1em; text-transform:uppercase;">📱 1-Minute Family Math Conversation Card</div>' +
+          '<h2 style="text-align:center; color:#f8fafc; margin:10px 0;">Ask ' + name + ' About Today\'s Math!</h2>' +
+          '<div style="background:#0f172a; border-radius:12px; padding:16px; margin:16px 0; border:1px stroke rgba(255,255,255,0.1);">' +
+          '<p style="font-size:15px; color:#cbd5e1; margin:0 0 10px;"><strong>💬 Question for Dinner or the Drive Home:</strong></p>' +
+          '<p style="font-size:16px; color:#38bdf8; font-style:italic; margin:0;">"If we buy 3 items on sale for 25% off, how can we quickly estimate the final cost in our head?"</p>' +
+          '</div>' +
+          '<div style="display:flex; justify-content:space-between; align-items:center; font-size:13px; color:#94a3b8;">' +
+          '<span>⭐ Stars Earned: ' + (wonder.stars || 0) + '</span>' +
+          '<span>📅 ' + dateStr + '</span>' +
+          '</div>' +
+          '</div></body></html>';
+
+        var win = window.open("", "_blank");
+        if (win) {
+          win.document.write(cardHtml);
+          win.document.close();
+        }
+      } catch (_e) {}
+    },
 
     init: function (userCfg) {
       if (this._started) return this;
