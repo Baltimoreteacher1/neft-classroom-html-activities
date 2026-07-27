@@ -778,6 +778,19 @@
     registerStateRestorer: function (fn) {
       if (typeof fn === "function") this._restorers.push(fn);
     },
+    getLmsGradePayload: function () {
+      var summary = safe(function() { return Engine.getTeacherSummary(); }, "getTeacherSummary", {}) || {};
+      var wonder = safe(function() { return window.WonderPass ? window.WonderPass.getProfile() : {}; }, "wonderpass", {}) || {};
+      return {
+        timestamp: now(),
+        activityId: this.cfg ? this.cfg.activityId : "game",
+        studentName: this.record ? this.record.name : "Anonymous",
+        stars: wonder.stars || 0,
+        title: wonder.title || "Math Adventurer",
+        summary: summary,
+        scormScaledScore: Math.min(1.0, (wonder.stars || 0) / 50.0)
+      };
+    },
 
     init: function (userCfg) {
       if (this._started) return this;

@@ -35,9 +35,22 @@
   function pickLang(text) {
     var htmlLang = (doc.documentElement.getAttribute("lang") || "").toLowerCase();
     if (htmlLang.indexOf("es") === 0) return "es-ES";
+    if (htmlLang.indexOf("fr") === 0) return "fr-FR";
+    if (htmlLang.indexOf("ar") === 0) return "ar-SA";
+    if (htmlLang.indexOf("ht") === 0) return "ht-HT";
+    if (htmlLang.indexOf("uk") === 0) return "uk-UA";
     // Heuristic: Spanish-specific characters / stopwords in the read text.
-    if (/[¿¡ñ]|(\b(el|la|los|las|una|resuelve|calcula|fracci[oó]n)\b)/i.test(text)) {
+    if (/[¿¡ñ]|(\b(el|la|los|las|una|resuelve|calcula|fracci[oó]n|consejos)\b)/i.test(text)) {
       return "es-ES";
+    }
+    if (/[éèêëàâùûç]|(\b(le|la|les|une|résous|calcule|fraction)\b)/i.test(text)) {
+      return "fr-FR";
+    }
+    if (/[\u0600-\u06FF]/.test(text)) {
+      return "ar-SA";
+    }
+    if (/[іїєґ]/.test(text)) {
+      return "uk-UA";
     }
     return "en-US";
   }
@@ -91,6 +104,40 @@
     }
   }
 
+  /* ---------- WonderPass Avatar & Star Aggregation ---------- */
+  var WONDERPASS_KEY = "ewl-wonderpass-v1";
+  function getWonderPass() {
+    try {
+      var raw = localStorage.getItem(WONDERPASS_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (_e) {}
+    return { stars: 0, avatar: "🧙‍♂️", title: "Math Adventurer", badge: "Level 1" };
+  }
+
+  function addWonderPassStars(count, gameId) {
+    try {
+      var pass = getWonderPass();
+      pass.stars = (pass.stars || 0) + (count || 1);
+      pass.games = pass.games || {};
+      pass.games[gameId || "general"] = (pass.games[gameId || "general"] || 0) + (count || 1);
+      if (pass.stars >= 50) { pass.title = "Math Mastermind"; pass.avatar = "👑"; pass.badge = "Level 4"; }
+      else if (pass.stars >= 25) { pass.title = "Problem Solver"; pass.avatar = "🦁"; pass.badge = "Level 3"; }
+      else if (pass.stars >= 10) { pass.title = "Arcade Hero"; pass.avatar = "🚀"; pass.badge = "Level 2"; }
+      localStorage.setItem(WONDERPASS_KEY, JSON.stringify(pass));
+      updateWonderPassChip();
+    } catch (_e) {}
+  }
+
+  function updateWonderPassChip() {
+    try {
+      var pass = getWonderPass();
+      var chip = doc.getElementById("ewl-wonderpass-chip");
+      if (chip) {
+        chip.innerHTML = '<span class="wp-avatar">' + pass.avatar + '</span> <span class="wp-stars">⭐ ' + pass.stars + '</span> <span class="wp-title">' + pass.title + '</span>';
+      }
+    } catch (_e) {}
+  }
+
   /* ---------- Calm mode ---------- */
   function applyCalm(on) {
     doc.documentElement.classList.toggle("nt-calm", !!on);
@@ -104,9 +151,6 @@
   }
 
   /* ---------- Text size ---------- */
-  // Scales the DOM/menu chrome (titles, instructions, buttons, our controls).
-  // Applied as a root class so any game's HTML UI inherits it. Canvas-rendered
-  // gameplay text is unaffected; this targets the readable HTML around it.
   var TEXT_CLASSES = ["nt-text-lg", "nt-text-xl"];
   function applyText(step) {
     var root = doc.documentElement;
@@ -165,11 +209,6 @@
       var wrap = doc.createElement("div");
       wrap.className = "nt-ga-controls";
 
-      // Read-aloud is the one student-facing control. Calm mode is handled
-      // silently by the OS "reduce motion" setting (see the CSS media query) —
-      // no button, since a manual toggle added clutter with little benefit on
-      // these already-calm games. window.NeftCalm.setCalm() still exists for
-      // programmatic use.
       var read = doc.createElement("button");
       read.type = "button";
       read.className = "nt-ga-btn";
@@ -180,8 +219,6 @@
         speak(read);
       });
 
-      // Text-size cycle — normal → large → x-large. Helps low-vision readers
-      // and anyone on a small screen read the HTML instructions/menus.
       var textBtn = doc.createElement("button");
       textBtn.type = "button";
       textBtn.className = "nt-ga-btn nt-ga-text";
@@ -195,14 +232,19 @@
         cycleText(textBtn);
       });
 
+      var wonderChip = doc.createElement("div");
+      wonderChip.id = "ewl-wonderpass-chip";
+      wonderChip.className = "nt-ga-wonderpass";
+
       wrap.appendChild(read);
       wrap.appendChild(textBtn);
+      wrap.appendChild(wonderChip);
       doc.body.appendChild(wrap);
 
-      // Comfortable tap targets on obvious answer controls.
+      updateWonderPassChip();
+
       doc.body.classList.add("nt-ga-tap-hint");
 
-      // Stop speech when leaving the page.
       window.addEventListener("pagehide", function () {
         try {
           if (window.speechSynthesis) window.speechSynthesis.cancel();
@@ -222,12 +264,19 @@
     setCalm: function (on) {
       setCalm(!!on, null);
     },
+    addStars: addWonderPassStars,
+    getWonderPass: getWonderPass
   };
 
-  // Apply any saved text-size preference as early as possible.
+  window.WonderPass = {
+    addStars: addWonderPassStars,
+    getProfile: getWonderPass
+  };
+
   try {
     applyText(currentText());
   } catch (_e) {}
 
   ready(build);
 })();
+

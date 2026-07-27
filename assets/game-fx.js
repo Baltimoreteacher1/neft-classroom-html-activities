@@ -67,6 +67,7 @@
 
   var textRegistry = new WeakMap();
   var comboStreak = 0;
+  var consecutiveMisses = 0;
   var musicTimer = null;
 
   var lastPointer = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
@@ -1622,6 +1623,10 @@
 
               comboStreak++;
               updateComboHUD(comboStreak);
+              consecutiveMisses = 0;
+              if (window.WonderPass && window.WonderPass.addStars) {
+                window.WonderPass.addStars(1, location.pathname.split("/").filter(Boolean).pop() || "game");
+              }
             } else if (isIncorrect) {
               AudioSynth.playError();
               flashScreen("rgba(239, 68, 68, 0.35)");
@@ -1629,8 +1634,16 @@
               shakeScreen();
               comboStreak = 0;
               updateComboHUD(0);
+              consecutiveMisses++;
               var tip = extractTeachText(t);
-              showCoachToast("tip", tip ? coachT("wrongHint") + tip : coachT("wrong"));
+              if (consecutiveMisses >= 2) {
+                var adaptTip = lang === "es" 
+                  ? "💡 Consejo Adaptativo: ¡Descompón en pasos más pequeños o activa el soporte visual!" 
+                  : "💡 Adaptive Hint: Try breaking into smaller steps or use visual models!";
+                showCoachToast("tip", adaptTip);
+              } else {
+                showCoachToast("tip", tip ? coachT("wrongHint") + tip : coachT("wrong"));
+              }
             }
           }
         });
