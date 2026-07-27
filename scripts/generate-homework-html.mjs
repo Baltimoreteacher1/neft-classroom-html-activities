@@ -253,6 +253,27 @@ const FAMILY_TIPS_BY_TYPE = {
   },
 };
 
+// The problem-type chip was the last English-only UI string on the Check tab
+// (the math stems themselves are still English — tracked separately). This is a
+// closed set of 6 values, so each gets a hand-written Spanish label rather than
+// a derived one.
+const PROBLEM_TYPE_LABELS = {
+  "multiple-choice": { en: "MULTIPLE CHOICE", es: "OPCIÓN MÚLTIPLE" },
+  "drag-sort": { en: "DRAG SORT", es: "CLASIFICAR ARRASTRANDO" },
+  "drag-order": { en: "DRAG ORDER", es: "ORDENAR ARRASTRANDO" },
+  "fill-table": { en: "FILL TABLE", es: "COMPLETAR LA TABLA" },
+  "matching-game": { en: "MATCHING GAME", es: "JUEGO DE PAREJAS" },
+  "open-response": { en: "OPEN RESPONSE", es: "RESPUESTA ABIERTA" },
+  "error-analysis": { en: "ERROR ANALYSIS", es: "ANÁLISIS DE ERRORES" },
+};
+
+function renderProblemTypeChip(displayType) {
+  const fallback = String(displayType || "").replace(/-/g, " ").toUpperCase();
+  const label = PROBLEM_TYPE_LABELS[displayType];
+  if (!label) return `<div class="problem-type-badge">${esc(fallback)}</div>`;
+  return `<div class="problem-type-badge"><span class="lang-en">${esc(label.en)}</span><span class="lang-es" lang="es">${esc(label.es)}</span></div>`;
+}
+
 function renderFamilyTip(typeKey) {
   const tip = FAMILY_TIPS_BY_TYPE[typeKey] || FAMILY_TIPS_BY_TYPE["multiple-choice"];
   return `<p class="family-problem-tip"><span class="lang-en">👪 ${esc(tip.en)}</span><span class="lang-es" lang="es">👪 ${esc(tip.es)}</span></p>`;
@@ -926,6 +947,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
   }
 
   const displayType = problemSubtype || type;
+  const typeChip = renderProblemTypeChip(displayType);
   const computational = [
     "multiple-choice",
     "fill-table",
@@ -937,7 +959,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
     <section class="problem-section card" id="problem_${pIdx}" data-problem-type="${type}"${problemSubtype ? ` data-problem-subtype="${problemSubtype}"` : ""}>
       <div class="problem-header-row">
         <div class="problem-number-badge">${esc(opts.badge || "Quick Check")} ${opts.num || pIdx + 1}</div>
-        <div class="problem-type-badge">${esc(displayType.replace(/-/g, " ").toUpperCase())}</div>
+        ${typeChip}
       </div>
       <div class="problem-hint-row">${renderProblemHintButton(it, TOPIC_VISUAL[topic] || SVG_GRID)}</div>
       ${content}
@@ -1005,7 +1027,7 @@ function generateHtml(lessonId, config) {
   const lessonModel = selectLessonInteractiveModel(config);
 
   const welcomeHtml = renderWelcomeBanner(config, lessonId);
-  const quickCheckIntroHtml = renderQuickCheckIntro();
+  const quickCheckIntroHtml = renderQuickCheckIntro(coreSelected.length);
   const warmupHtml = warmup
     .map((p, idx) =>
       renderProblem(p, idx, topic, { badge: "Warm-up / Calentamiento", num: idx + 1 }),

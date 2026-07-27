@@ -1604,6 +1604,14 @@ body.obj-popup-open { overflow: hidden; }
 .section-vocab { border-left: 4px solid var(--coral); }
 .section-stuck { border-left: 4px solid #9b59b6; }
 .section-quick-intro { border-left: 4px solid var(--success); }
+.quick-check-time {
+  background: var(--amber-light);
+  border: 1px solid var(--amber);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 0 0 12px;
+  font-size: 15px;
+}
 .section-celebrate {
   border-left: 4px solid var(--amber);
   background: linear-gradient(180deg, var(--amber-light), var(--white));
@@ -1851,6 +1859,16 @@ body.obj-popup-open { overflow: hidden; }
   padding: 2px;
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x proximity;
+}
+/* On a phone the 10 tabs are ~738px wide in a ~381px viewport, so half of them
+   (Help, More, Done) sit off-screen with nothing to suggest they exist. Fade the
+   trailing edge so the strip reads as scrollable. Only below 700px, where the
+   overflow is guaranteed — a permanent fade on desktop would just look broken. */
+@media (max-width: 700px) {
+  .homework-tab-bar {
+    -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+    mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+  }
 }
 .homework-tab-btn {
   flex: 0 0 auto;
@@ -2372,6 +2390,12 @@ body.lang-mode-es .bilingual-grid {
 @media print {
   .homework-tab-chrome, .homework-tab-bar, .bottom-status-bar, .help-modal-overlay, .print-all-btn, .parent-signoff-container { display: none !important; }
   .tab-panel-inner[hidden] { display: block !important; page-break-inside: avoid; }
+  /* Printing un-hides every panel, but these three are screen-only: an embedded
+     arcade iframe, a live game, and a link-out. On paper they were blank or
+     meaningless pages in the middle of the packet. */
+  [data-tab-panel="arcade"],
+  [data-tab-panel="play"],
+  [data-tab-panel="workbench"] { display: none !important; }
   body { padding-bottom: 0; }
   
   .print-only-certificate.is-signed {
@@ -3094,6 +3118,10 @@ header.packet h1::after{
       
     
       <h2 class="section-title">✅ <span class="lang-en">Quick check</span><span class="lang-es" lang="es">Repaso rápido</span></h2>
+      <p class="quick-check-time bilingual-block">
+        <span class="lang-en">⏱️ Plan on about <strong>15–20 minutes</strong> for the 6 problems below. The extra practice at the bottom is optional.</span>
+        <span class="lang-es" lang="es">⏱️ Calculen unos <strong>15–20 minutos</strong> para los 6 problemas de abajo. La práctica extra al final es opcional.</span>
+      </p>
       <p class="bilingual-block">
         <span class="lang-en">A few problems to practice together. Each one has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong>, and a <strong>space to show your work</strong>. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
         <span class="lang-es" lang="es">Unos problemas para practicar juntos. Cada uno tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para mostrar el trabajo</strong>. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
@@ -3118,7 +3146,7 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_0" data-problem-type="matching-game">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 1</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
+        <div class="problem-type-badge"><span class="lang-en">MATCHING GAME</span><span class="lang-es" lang="es">JUEGO DE PAREJAS</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
@@ -3216,7 +3244,7 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_1" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 2</div>
-        <div class="problem-type-badge">DRAG SORT</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
@@ -3358,9 +3386,9 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_2" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 3</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"From the net: SA = 2(2×3) + 2(2×4) + 2(3×4) = 12 + 16 + 24 = 52 in².","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Surface area from a net is the sum of the areas of all six faces, measured in square units.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
         <p class="problem-stem">A time capsule box measures 2 in × 3 in × 4 in. Using its net, you add up all six faces. What is the total surface area?</p>
@@ -3444,9 +3472,9 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_3" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 1</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"A rectangular prism has 6 faces — top, bottom, front, back, left, and right — so its net shows 6 faces.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Unfolding a box does not add or remove faces — every flat side of the box shows up on the net.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
         <p class="problem-stem">Your team unfolds a rectangular time capsule box into a flat net. How many faces (flat sides) will the net show in all?</p>
@@ -3514,7 +3542,7 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_4" data-problem-type="open-response">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 2</div>
-        <div class="problem-type-badge">OPEN RESPONSE</div>
+        <div class="problem-type-badge"><span class="lang-en">OPEN RESPONSE</span><span class="lang-es" lang="es">RESPUESTA ABIERTA</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Both boxes hold 60 in³, but wrapping paper depends on SURFACE AREA — the outside covering, not the inside space.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
@@ -3584,9 +3612,9 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_5" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 3</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"A cube net has 6 equal square faces. With each face 4 cm², the surface area is 6 × 4 = 24 cm².","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"A net shows every face of the solid laid out flat, so the surface area is simply the total of all the face areas.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
         <p class="problem-stem">You unfold a time capsule that is a cube. Its net shows 6 equal squares, and each square has an area of 4 cm². What is the cube&#039;s total surface area?</p>
@@ -3665,7 +3693,7 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_6" data-problem-type="matching-game">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 1</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
+        <div class="problem-type-badge"><span class="lang-en">MATCHING GAME</span><span class="lang-es" lang="es">JUEGO DE PAREJAS</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each face pair uses two of the three dimensions: top/bottom skips height, front/back skips width, left/right skips length.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
@@ -3763,7 +3791,7 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_7" data-problem-type="drag-sort" data-problem-subtype="drag-order">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 2</div>
-        <div class="problem-type-badge">DRAG ORDER</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG ORDER</span><span class="lang-es" lang="es">ORDENAR ARRASTRANDO</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the cards: one identifies face pairs, one finds areas, one doubles, one adds, one states the answer.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
@@ -3845,7 +3873,7 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_8" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 3</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Surface area covers all 6 faces of the 6 × 4 × 2 box — it&#39;s not the same as the space inside.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
@@ -3915,7 +3943,7 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_9" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 4</div>
-        <div class="problem-type-badge">FILL TABLE</div>
+        <div class="problem-type-badge"><span class="lang-en">FILL TABLE</span><span class="lang-es" lang="es">COMPLETAR LA TABLA</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each row needs SURFACE AREA, not volume — the total area of all six faces, in square units.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
@@ -4018,7 +4046,7 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_10" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 5</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"A cube&#39;s 6 faces are identical squares, each one 5 cm by 5 cm.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
@@ -4088,7 +4116,7 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_11" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 6</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Surface area measures the flat covering on the outside of a solid — like wrapping paper.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
@@ -4158,7 +4186,7 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_12" data-problem-type="drag-sort" data-problem-subtype="drag-order">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 7</div>
-        <div class="problem-type-badge">DRAG ORDER</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG ORDER</span><span class="lang-es" lang="es">ORDENAR ARRASTRANDO</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each card already shows its SA value, like &#39;2 × 2 × 2: SA = 24&#39;. Those SA numbers are what you sort.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
@@ -4240,7 +4268,7 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_13" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 8</div>
-        <div class="problem-type-badge">FILL TABLE</div>
+        <div class="problem-type-badge"><span class="lang-en">FILL TABLE</span><span class="lang-es" lang="es">COMPLETAR LA TABLA</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each row is a cube. Volume is edge × edge × edge; surface area is 6 × (edge × edge). Compare the two numbers.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       

@@ -1604,6 +1604,14 @@ body.obj-popup-open { overflow: hidden; }
 .section-vocab { border-left: 4px solid var(--coral); }
 .section-stuck { border-left: 4px solid #9b59b6; }
 .section-quick-intro { border-left: 4px solid var(--success); }
+.quick-check-time {
+  background: var(--amber-light);
+  border: 1px solid var(--amber);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 0 0 12px;
+  font-size: 15px;
+}
 .section-celebrate {
   border-left: 4px solid var(--amber);
   background: linear-gradient(180deg, var(--amber-light), var(--white));
@@ -1851,6 +1859,16 @@ body.obj-popup-open { overflow: hidden; }
   padding: 2px;
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x proximity;
+}
+/* On a phone the 10 tabs are ~738px wide in a ~381px viewport, so half of them
+   (Help, More, Done) sit off-screen with nothing to suggest they exist. Fade the
+   trailing edge so the strip reads as scrollable. Only below 700px, where the
+   overflow is guaranteed — a permanent fade on desktop would just look broken. */
+@media (max-width: 700px) {
+  .homework-tab-bar {
+    -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+    mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+  }
 }
 .homework-tab-btn {
   flex: 0 0 auto;
@@ -2372,6 +2390,12 @@ body.lang-mode-es .bilingual-grid {
 @media print {
   .homework-tab-chrome, .homework-tab-bar, .bottom-status-bar, .help-modal-overlay, .print-all-btn, .parent-signoff-container { display: none !important; }
   .tab-panel-inner[hidden] { display: block !important; page-break-inside: avoid; }
+  /* Printing un-hides every panel, but these three are screen-only: an embedded
+     arcade iframe, a live game, and a link-out. On paper they were blank or
+     meaningless pages in the middle of the packet. */
+  [data-tab-panel="arcade"],
+  [data-tab-panel="play"],
+  [data-tab-panel="workbench"] { display: none !important; }
   body { padding-bottom: 0; }
   
   .print-only-certificate.is-signed {
@@ -3044,6 +3068,10 @@ header.packet h1::after{
       
     
       <h2 class="section-title">✅ <span class="lang-en">Quick check</span><span class="lang-es" lang="es">Repaso rápido</span></h2>
+      <p class="quick-check-time bilingual-block">
+        <span class="lang-en">⏱️ Plan on about <strong>15–20 minutes</strong> for the 6 problems below. The extra practice at the bottom is optional.</span>
+        <span class="lang-es" lang="es">⏱️ Calculen unos <strong>15–20 minutos</strong> para los 6 problemas de abajo. La práctica extra al final es opcional.</span>
+      </p>
       <p class="bilingual-block">
         <span class="lang-en">A few problems to practice together. Each one has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong>, and a <strong>space to show your work</strong>. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
         <span class="lang-es" lang="es">Unos problemas para practicar juntos. Cada uno tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para mostrar el trabajo</strong>. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
@@ -3068,7 +3096,7 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_0" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 1</div>
-        <div class="problem-type-badge">FILL TABLE</div>
+        <div class="problem-type-badge"><span class="lang-en">FILL TABLE</span><span class="lang-es" lang="es">COMPLETAR LA TABLA</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each power is already unpacked into its factors. Careful multiplication is all that&#39;s left.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
@@ -3187,7 +3215,7 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_1" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 2</div>
-        <div class="problem-type-badge">DRAG SORT</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
@@ -3329,7 +3357,7 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_2" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 3</div>
-        <div class="problem-type-badge">FILL TABLE</div>
+        <div class="problem-type-badge"><span class="lang-en">FILL TABLE</span><span class="lang-es" lang="es">COMPLETAR LA TABLA</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The Repeated Multiplication column does the setup for you — just multiply those factors.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
@@ -3432,7 +3460,7 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_3" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 1</div>
-        <div class="problem-type-badge">FILL TABLE</div>
+        <div class="problem-type-badge"><span class="lang-en">FILL TABLE</span><span class="lang-es" lang="es">COMPLETAR LA TABLA</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"2⁵ and 5² use the same digits but mean different things: five 2&#39;s multiplied versus two 5&#39;s.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
@@ -3607,7 +3635,7 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_4" data-problem-type="open-response">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 2</div>
-        <div class="problem-type-badge">OPEN RESPONSE</div>
+        <div class="problem-type-badge"><span class="lang-en">OPEN RESPONSE</span><span class="lang-es" lang="es">RESPUESTA ABIERTA</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each hour multiplies the count by 2 — repeated multiplication is exactly what powers show.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
@@ -3677,7 +3705,7 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_5" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 3</div>
-        <div class="problem-type-badge">DRAG SORT</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The value after each equals sign is what you compare against 50 — not the base or the exponent.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
@@ -3830,7 +3858,7 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_6" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 1</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Identify the base (5) and the exponent (3). The exponent counts how many copies of the base to multiply.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
@@ -3900,7 +3928,7 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_7" data-problem-type="matching-game">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 2</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
+        <div class="problem-type-badge"><span class="lang-en">MATCHING GAME</span><span class="lang-es" lang="es">JUEGO DE PAREJAS</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Every power equals exactly one number card. Evaluate before matching instead of guessing.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
@@ -3998,7 +4026,7 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_8" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 3</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"2³ means 2 × 2 × 2 = 8, so 8 unlocks Track 1.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
@@ -4068,7 +4096,7 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_9" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 4</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The base is the number being multiplied repeatedly. In 10⁴ the base is 10 and the exponent is 4, so 10⁴ = 10 × 10 × 10 × 10 = 10000.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
@@ -4138,7 +4166,7 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_10" data-problem-type="matching-game">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 5</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
+        <div class="problem-type-badge"><span class="lang-en">MATCHING GAME</span><span class="lang-es" lang="es">JUEGO DE PAREJAS</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
@@ -4236,7 +4264,7 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_11" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 6</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"That small 3 is the exponent — it counts how many 4&#39;s get multiplied, not a number to multiply 4 by.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
@@ -4306,7 +4334,7 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_12" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 7</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The exponent 2 means 6 is used as a factor twice — not 6 plus 2 and not 6 times 2.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
@@ -4376,7 +4404,7 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_13" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 8</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Three operations are stacked: parentheses, an exponent, and a multiplication. Order of operations sets the sequence.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
