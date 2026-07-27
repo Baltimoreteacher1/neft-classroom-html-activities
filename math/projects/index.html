@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Culminating Projects Gallery | Grade 6 Math | Neft Teacher</title>
-    <meta name="description" content="Browse all 10 Grade 6 culminating math projects — one per unit, two versions each. Real-world design tasks covering number sense, fractions, ratios, percents, area, expressions, equations, data, coordinates, and volume." />
+    <meta name="description" content="Browse all 23 Grade 6 culminating math projects across 11 project sets. Real-world design tasks covering number sense, fractions, ratios, percents, area, expressions, equations, coordinates, rates, volume, and statistics." />
     <link rel="stylesheet" href="/assets/shared.css" />
     <link rel="stylesheet" href="/shared/projects/projects-premium.css" />
     <link rel="stylesheet" href="/assets/math-mobile.css" />
@@ -198,6 +198,7 @@
       }
       .tile-versions {
         display: flex;
+        flex-wrap: wrap;
         gap: 8px;
         padding: 14px 22px;
         border-top: 1px solid var(--gal-border);
@@ -220,6 +221,64 @@
       .tile-ver-btn.b {
         background: linear-gradient(135deg, #ef6b52, #c8462f);
         color: #fff;
+      }
+      .tile-ver-btn.c {
+        background: linear-gradient(135deg, #7c3aed, #4c1d95);
+        color: #fff;
+      }
+      .tile-ver-btn { flex: 1 1 120px; }
+      .tile-ver-btn .ver-name {
+        display: block;
+        font-size: 0.72rem;
+        font-weight: 700;
+        opacity: 0.85;
+        margin-top: 2px;
+        line-height: 1.25;
+      }
+      .tile-chips {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px;
+      }
+      .tile-unit-chip.secondary {
+        background: rgba(192, 132, 252, 0.15);
+        color: var(--gal-purple);
+        text-transform: none;
+        font-size: 0.7rem;
+      }
+      .canonical-banner {
+        max-width: 1100px;
+        margin: 20px auto 0;
+        padding: 14px 20px;
+        background: linear-gradient(135deg, rgba(124,58,237,0.18), rgba(56,189,248,0.12));
+        border: 1px solid rgba(192,132,252,0.35);
+        border-radius: 16px;
+        font-size: 0.92rem;
+        line-height: 1.55;
+        color: var(--gal-text);
+      }
+      .canonical-banner a {
+        color: var(--gal-cyan);
+        font-weight: 800;
+      }
+      a:focus-visible,
+      input:focus-visible {
+        outline: 3px solid var(--gal-amber);
+        outline-offset: 2px;
+        border-radius: 8px;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .project-tile,
+        .tile-ver-btn,
+        .gallery-footer a {
+          transition: none;
+        }
+        .project-tile:hover,
+        .tile-ver-btn:hover,
+        .gallery-footer a:hover {
+          transform: none;
+        }
       }
       .tile-ver-btn:hover { transform: translateY(-1px); filter: brightness(1.1); }
 
@@ -246,6 +305,26 @@
       }
       .gallery-footer a:hover { transform: translateY(-2px); }
 
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+        border: 0;
+      }
+      .search-status {
+        max-width: 1100px;
+        margin: 8px auto -8px;
+        padding: 0 24px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--gal-muted);
+        min-height: 1.2em;
+      }
       @media (max-width: 700px) {
         .projects-grid { grid-template-columns: 1fr; }
       }
@@ -263,12 +342,12 @@
       <h1>🎓 Culminating Projects Gallery</h1>
       <p class="hero-copy">
         Every unit ends with a real-world culminating project — two differentiated versions,
-        same standards, same rubric. Interactive, self-paced, printable, and built with
-        Save/Resume, EN/ES toggle, and SCORM support.
+        same standards, same rubric, plus one stretch version in Unit 8. Interactive, self-paced,
+        printable, and built with Save/Resume, EN/ES toggle, and SCORM support.
       </p>
       <div class="hero-stats">
-        <span class="hero-stat">📐 10 Units</span>
-        <span class="hero-stat">📝 20 Project Versions</span>
+        <span class="hero-stat">📐 11 Project Sets</span>
+        <span class="hero-stat">📝 23 Projects</span>
         <span class="hero-stat">💾 Save/Resume</span>
         <span class="hero-stat">🌐 EN/ES Bilingual</span>
         <span class="hero-stat">🏆 Built-in Rubric</span>
@@ -294,18 +373,40 @@
       </div>
     </header>
 
+    <p class="canonical-banner">
+      📚 <strong>Same catalogue, two front doors.</strong> The canonical project list lives at
+      <a href="/curriculum/projects/">Culminating Projects on the Curriculum Hub</a>. This gallery
+      shows the identical 23 projects with search — bookmark whichever you prefer.
+    </p>
+
     <div class="filter-bar">
+      <label class="sr-only" for="project-search">Search projects</label>
       <input type="text" class="filter-search" id="project-search" placeholder="🔍 Search projects by unit, topic, or standard..." autocomplete="off" />
     </div>
+    <p id="search-status" role="status" aria-live="polite" class="search-status"></p>
 
     <div class="projects-grid" id="projects-grid">
-      <!-- Unit 1 -->
-      <div class="project-tile" data-unit="1" data-keywords="number sense gcf lcm decimal division 6.NOS.2 6.NOS.3 6.NOS.4">
+      <!--
+        ==========================================================================
+        MIRROR OF THE CANONICAL PROJECT CATALOGUE — 11 project sets / 23 pages.
+        The canonical list lives in curriculum/projects/index.html. Edit that file
+        FIRST, then mirror the identical change here (same project set, same unit
+        chips, same titles, same version links) and in the UNITS table in
+        math/projects/portfolio/index.html. The two lists must never disagree.
+        Unit chips use the folder number (what each page's own <title> says); the
+        secondary chip carries the Reveal scope-and-sequence number where the two
+        differ. Never change an existing href — student bookmarks depend on it.
+        ==========================================================================
+      -->
+      <!-- unit-1 -->
+      <div class="project-tile" data-unit="unit-1" data-keywords="number sense gcf lcm decimals division budget block party build-a-bot robot event planner 6.NOS.2 6.NOS.3 6.NOS.4 unit 1">
         <div class="tile-accent" style="background: linear-gradient(90deg, #1763c7, #0e9a8c);"></div>
         <div class="tile-body">
-          <span class="tile-unit-chip">Unit 1 · Number Sense</span>
-          <h3 class="tile-title">🎉 Block Party Planner / 🤖 Build-a-Bot Budget</h3>
-          <p class="tile-desc">GCF bags, LCM scheduling, decimal budgets, and multi-digit division — plan a real event or engineer a robotics order.</p>
+          <div class="tile-chips">
+            <span class="tile-unit-chip" style="background:rgba(23,99,199,0.15);color:#1763c7;">Unit 1 · Number Sense</span>
+          </div>
+          <h3 class="tile-title">Block Party Planner / Build-a-Bot Budget Lab</h3>
+          <p class="tile-desc">GCF bags, LCM scheduling, decimal budgets, and multi-digit division in event planning and robotics orders.</p>
           <div class="tile-tags">
             <span class="tile-tag">6.NOS.2</span>
             <span class="tile-tag">6.NOS.3</span>
@@ -313,180 +414,222 @@
           </div>
         </div>
         <div class="tile-versions">
-          <a class="tile-ver-btn a" href="/math/unit-1/projects/version-a/">🎉 Version A</a>
-          <a class="tile-ver-btn b" href="/math/unit-1/projects/version-b/">🤖 Version B</a>
+          <a class="tile-ver-btn a" href="/math/unit-1/projects/version-a/">🎉 Version A<span class="ver-name">Block Party Planner</span></a>
+          <a class="tile-ver-btn b" href="/math/unit-1/projects/version-b/">🤖 Version B<span class="ver-name">Build-a-Bot Budget Lab</span></a>
         </div>
       </div>
 
-      <!-- Unit 2 -->
-      <div class="project-tile" data-unit="2" data-keywords="fractions divide multiply 6.NOS.5 6.NOS.6">
+      <!-- unit-2 -->
+      <div class="project-tile" data-unit="unit-2" data-keywords="fractions multiply divide recipe bakery remix maker workshop cut list mixed numbers 6.NOS.1 unit 2">
         <div class="tile-accent" style="background: linear-gradient(90deg, #f59e0b, #ef6b52);"></div>
         <div class="tile-body">
-          <span class="tile-unit-chip" style="background:rgba(245,158,11,0.15);color:#f59e0b;">Unit 2 · Fractions</span>
-          <h3 class="tile-title">🍕 Pizza Party Planner / 🎂 Bake-Off Budget</h3>
-          <p class="tile-desc">Divide and multiply fractions in real recipe and party-planning contexts with visual fraction models.</p>
+          <div class="tile-chips">
+            <span class="tile-unit-chip" style="background:rgba(245,158,11,0.15);color:#f59e0b;">Unit 2 · Fractions</span>
+          </div>
+          <h3 class="tile-title">Recipe Remix Bakery / Maker Workshop Cut List</h3>
+          <p class="tile-desc">Multiply and divide fractions with visual models in bakery recipes and workshop cut plans.</p>
           <div class="tile-tags">
-            <span class="tile-tag">6.NOS.5</span>
-            <span class="tile-tag">6.NOS.6</span>
+            <span class="tile-tag">6.NOS.1</span>
           </div>
         </div>
         <div class="tile-versions">
-          <a class="tile-ver-btn a" href="/math/unit-2/projects/version-a/">🍕 Version A</a>
-          <a class="tile-ver-btn b" href="/math/unit-2/projects/version-b/">🎂 Version B</a>
+          <a class="tile-ver-btn a" href="/math/unit-2/projects/version-a/">🍰 Version A<span class="ver-name">Recipe Remix Bakery</span></a>
+          <a class="tile-ver-btn b" href="/math/unit-2/projects/version-b/">🪚 Version B<span class="ver-name">Maker Workshop Cut List</span></a>
         </div>
       </div>
 
-      <!-- Unit 3 -->
-      <div class="project-tile" data-unit="3" data-keywords="ratios rates proportions 6.RP.1 6.RP.2 6.RP.3">
+      <!-- unit-3 -->
+      <div class="project-tile" data-unit="unit-3" data-keywords="ratios rates unit rate ratio tables double number line smoothie bar sports stats scout 6.AT.1 6.AT.2 6.AT.3a unit 3">
         <div class="tile-accent" style="background: linear-gradient(90deg, #2dd4bf, #0e9a8c);"></div>
         <div class="tile-body">
-          <span class="tile-unit-chip" style="background:rgba(45,212,191,0.15);color:#2dd4bf;">Unit 3 · Ratios</span>
-          <h3 class="tile-title">⚖️ Ratio & Rate Projects</h3>
-          <p class="tile-desc">Apply unit rates, equivalent ratios, and double number lines to real-world comparison tasks.</p>
+          <div class="tile-chips">
+            <span class="tile-unit-chip" style="background:rgba(45,212,191,0.15);color:#2dd4bf;">Unit 3 · Ratios</span>
+          </div>
+          <h3 class="tile-title">Smoothie Bar Designer / Sports Stats Scout</h3>
+          <p class="tile-desc">Unit rates, equivalent ratios, and ratio tables applied to menu design and sports comparisons.</p>
           <div class="tile-tags">
-            <span class="tile-tag">6.RP.1</span>
-            <span class="tile-tag">6.RP.2</span>
-            <span class="tile-tag">6.RP.3</span>
+            <span class="tile-tag">6.AT.1</span>
+            <span class="tile-tag">6.AT.2</span>
+            <span class="tile-tag">6.AT.3a</span>
           </div>
         </div>
         <div class="tile-versions">
-          <a class="tile-ver-btn a" href="/math/unit-3/projects/version-a/">⚖️ Version A</a>
-          <a class="tile-ver-btn b" href="/math/unit-3/projects/version-b/">📊 Version B</a>
+          <a class="tile-ver-btn a" href="/math/unit-3/projects/version-a/">🥤 Version A<span class="ver-name">Smoothie Bar Designer</span></a>
+          <a class="tile-ver-btn b" href="/math/unit-3/projects/version-b/">🏅 Version B<span class="ver-name">Sports Stats Scout</span></a>
         </div>
       </div>
 
-      <!-- Unit 4 -->
-      <div class="project-tile" data-unit="4" data-keywords="percent discount tax tip 6.RP.3c 6.RP.3d">
-        <div class="tile-accent" style="background: linear-gradient(90deg, #ec4899, #c084fc);"></div>
+      <!-- unit-4 -->
+      <div class="project-tile" data-unit="unit-4" data-keywords="percent percents discount markup tax tip better buy pop-up shop owner smart shopper showdown 6.AT.2 6.AT.3c 6.AT.4 unit 4">
+        <div class="tile-accent" style="background: linear-gradient(90deg, #ec4899, #7c3aed);"></div>
         <div class="tile-body">
-          <span class="tile-unit-chip" style="background:rgba(236,72,153,0.15);color:#ec4899;">Unit 4 · Percents</span>
-          <h3 class="tile-title">💰 Shopping Spree / 🏪 Small Business Launch</h3>
-          <p class="tile-desc">Calculate discounts, tax, tips, and percent of a number in real retail and entrepreneurship contexts.</p>
+          <div class="tile-chips">
+            <span class="tile-unit-chip" style="background:rgba(236,72,153,0.15);color:#ec4899;">Unit 4 · Percents</span>
+          </div>
+          <h3 class="tile-title">Pop-Up Shop Owner / Smart Shopper Showdown</h3>
+          <p class="tile-desc">Percent of a number, discounts, markups, and better-buy reasoning for shop owners and shoppers.</p>
           <div class="tile-tags">
-            <span class="tile-tag">6.RP.3c</span>
-            <span class="tile-tag">6.RP.3d</span>
+            <span class="tile-tag">6.AT.2</span>
+            <span class="tile-tag">6.AT.3c</span>
+            <span class="tile-tag">6.AT.4</span>
           </div>
         </div>
         <div class="tile-versions">
-          <a class="tile-ver-btn a" href="/math/unit-4/projects/version-a/">💰 Version A</a>
-          <a class="tile-ver-btn b" href="/math/unit-4/projects/version-b/">🏪 Version B</a>
+          <a class="tile-ver-btn a" href="/math/unit-4/projects/version-a/">💰 Version A<span class="ver-name">Pop-Up Shop Owner</span></a>
+          <a class="tile-ver-btn b" href="/math/unit-4/projects/version-b/">🛒 Version B<span class="ver-name">Smart Shopper Showdown</span></a>
         </div>
       </div>
 
-      <!-- Unit 5 -->
-      <div class="project-tile" data-unit="5" data-keywords="area triangle rectangle surface 6.GR.1 6.GR.4">
-        <div class="tile-accent" style="background: linear-gradient(90deg, #34d399, #0e9a8c);"></div>
+      <!-- unit-5 -->
+      <div class="project-tile" data-unit="unit-5" data-keywords="area polygons triangles composite figures surface area dream room designer makeover budget paint 6.GR.1 6.GR.4 unit 5">
+        <div class="tile-accent" style="background: linear-gradient(90deg, #34d399, #1763c7);"></div>
         <div class="tile-body">
-          <span class="tile-unit-chip" style="background:rgba(52,211,153,0.15);color:#34d399;">Unit 5 · Area</span>
-          <h3 class="tile-title">🏠 Dream Room Designer / 🎨 Room Makeover Budget</h3>
-          <p class="tile-desc">Calculate floor area, triangle nooks, and wall paint coverage with real measurement and pricing.</p>
+          <div class="tile-chips">
+            <span class="tile-unit-chip" style="background:rgba(52,211,153,0.15);color:#34d399;">Unit 5 · Area</span>
+          </div>
+          <h3 class="tile-title">Dream Room Designer / Room Makeover Budget</h3>
+          <p class="tile-desc">Area of polygons and composite figures in room design, paint coverage, and material budgets.</p>
           <div class="tile-tags">
             <span class="tile-tag">6.GR.1</span>
             <span class="tile-tag">6.GR.4</span>
           </div>
         </div>
         <div class="tile-versions">
-          <a class="tile-ver-btn a" href="/math/unit-5/projects/version-a/">🏠 Version A</a>
-          <a class="tile-ver-btn b" href="/math/unit-5/projects/version-b/">🎨 Version B</a>
+          <a class="tile-ver-btn a" href="/math/unit-5/projects/version-a/">🏠 Version A<span class="ver-name">Dream Room Designer</span></a>
+          <a class="tile-ver-btn b" href="/math/unit-5/projects/version-b/">🎨 Version B<span class="ver-name">Room Makeover Budget</span></a>
         </div>
       </div>
 
-      <!-- Unit 6 -->
-      <div class="project-tile" data-unit="6" data-keywords="expressions exponents order operations evaluate 6.AT.4 6.AT.5">
-        <div class="tile-accent" style="background: linear-gradient(90deg, #c084fc, #6d4ad6);"></div>
+      <!-- unit-6 -->
+      <div class="project-tile" data-unit="unit-6" data-keywords="expressions exponents order of operations evaluate variables game studio scoring engine app pricing 6.AT.5 6.AT.6 6.AT.7 unit 6">
+        <div class="tile-accent" style="background: linear-gradient(90deg, #c084fc, #38bdf8);"></div>
         <div class="tile-body">
-          <span class="tile-unit-chip" style="background:rgba(192,132,252,0.15);color:#c084fc;">Unit 6 · Expressions</span>
-          <h3 class="tile-title">⚙️ Expression & Exponent Projects</h3>
-          <p class="tile-desc">Evaluate expressions with exponents, apply order of operations, and write expressions from real contexts.</p>
+          <div class="tile-chips">
+            <span class="tile-unit-chip" style="background:rgba(192,132,252,0.15);color:#c084fc;">Unit 6 · Expressions</span>
+          </div>
+          <h3 class="tile-title">Game Studio Scoring Engine / App Pricing Engine</h3>
+          <p class="tile-desc">Write and evaluate expressions with exponents and order of operations for scoring engines and pricing models.</p>
           <div class="tile-tags">
-            <span class="tile-tag">6.AT.4</span>
             <span class="tile-tag">6.AT.5</span>
+            <span class="tile-tag">6.AT.6</span>
+            <span class="tile-tag">6.AT.7</span>
           </div>
         </div>
         <div class="tile-versions">
-          <a class="tile-ver-btn a" href="/math/unit-6/projects/version-a/">⚙️ Version A</a>
-          <a class="tile-ver-btn b" href="/math/unit-6/projects/version-b/">🧪 Version B</a>
+          <a class="tile-ver-btn a" href="/math/unit-6/projects/version-a/">🎮 Version A<span class="ver-name">Game Studio Scoring Engine</span></a>
+          <a class="tile-ver-btn b" href="/math/unit-6/projects/version-b/">📲 Version B<span class="ver-name">App Pricing Engine</span></a>
         </div>
       </div>
 
-      <!-- Unit 7 -->
-      <div class="project-tile" data-unit="7" data-keywords="equations inequalities balance solve 6.AT.1 6.AT.2 6.AT.3 escape fundraiser">
-        <div class="tile-accent" style="background: linear-gradient(90deg, #38bdf8, #1763c7);"></div>
-        <div class="tile-body">
-          <span class="tile-unit-chip">Unit 7 · Equations</span>
-          <h3 class="tile-title">⚖️ Escape Room / Fundraiser Goals</h3>
-          <p class="tile-desc">Write and solve one-step equations and inequalities with real-world balance-scale reasoning.</p>
-          <div class="tile-tags">
-            <span class="tile-tag">6.AT.1</span>
-            <span class="tile-tag">6.AT.2</span>
-            <span class="tile-tag">6.AT.3</span>
-          </div>
-        </div>
-        <div class="tile-versions">
-          <a class="tile-ver-btn a" href="/math/unit-8/projects/version-a/">⚖️ Version A</a>
-          <a class="tile-ver-btn b" href="/math/unit-8/projects/version-b/">🧩 Version B</a>
-        </div>
-      </div>
-
-      <!-- Unit 8 -->
-      <div class="project-tile" data-unit="8" data-keywords="data statistics mean median mode dot plot 6.SP.1 6.SP.2 6.SP.3 detective">
-        <div class="tile-accent" style="background: linear-gradient(90deg, #f59e0b, #34d399);"></div>
-        <div class="tile-body">
-          <span class="tile-unit-chip" style="background:rgba(245,158,11,0.15);color:#f59e0b;">Unit 8 · Data & Statistics</span>
-          <h3 class="tile-title">📊 Class Data Detective / Real-World Data</h3>
-          <p class="tile-desc">Collect real data, build dot plots, calculate mean/median/mode, and analyze variability.</p>
-          <div class="tile-tags">
-            <span class="tile-tag">6.SP.1</span>
-            <span class="tile-tag">6.SP.2</span>
-            <span class="tile-tag">6.SP.3</span>
-          </div>
-        </div>
-        <div class="tile-versions">
-          <a class="tile-ver-btn a" href="/math/statistics/projects/version-a/">📊 Version A</a>
-          <a class="tile-ver-btn b" href="/math/statistics/projects/version-b/">📈 Version B</a>
-        </div>
-      </div>
-
-      <!-- Unit 9 -->
-      <div class="project-tile" data-unit="9" data-keywords="coordinate plane integers quadrants ordered pairs 6.NS.5 6.NS.6 6.NS.8 theme park submarine">
+      <!-- unit-7 -->
+      <div class="project-tile" data-unit="unit-7" data-keywords="coordinate plane ordered pairs quadrants integers reflections distance theme park map submarine mission control 6.NOS.6 6.NOS.7 6.NOS.9 unit 7 reveal unit 9">
         <div class="tile-accent" style="background: linear-gradient(90deg, #0e9a8c, #2dd4bf);"></div>
         <div class="tile-body">
-          <span class="tile-unit-chip" style="background:rgba(45,212,191,0.15);color:#2dd4bf;">Unit 9 · Coordinate Plane</span>
-          <h3 class="tile-title">🧭 Theme Park Map / Submarine Mission</h3>
-          <p class="tile-desc">Plot ordered pairs across all four quadrants, calculate distances, and design coordinate art.</p>
+          <div class="tile-chips">
+            <span class="tile-unit-chip" style="background:rgba(14,154,140,0.15);color:#0e9a8c;">Unit 7 · Coordinate Plane</span>
+            <span class="tile-unit-chip secondary" title="Reveal Math scope-and-sequence number">Reveal Unit 9</span>
+          </div>
+          <h3 class="tile-title">Theme Park Map Designer / Submarine Mission Control</h3>
+          <p class="tile-desc">Ordered pairs across all four quadrants, reflections, and distance on the coordinate plane.</p>
           <div class="tile-tags">
-            <span class="tile-tag">6.NS.5</span>
-            <span class="tile-tag">6.NS.6</span>
-            <span class="tile-tag">6.NS.8</span>
+            <span class="tile-tag">6.NOS.6</span>
+            <span class="tile-tag">6.NOS.7</span>
+            <span class="tile-tag">6.NOS.9</span>
           </div>
         </div>
         <div class="tile-versions">
-          <a class="tile-ver-btn a" href="/math/unit-7/projects/version-a/">🧭 Version A</a>
-          <a class="tile-ver-btn b" href="/math/unit-7/projects/version-b/">🗺️ Version B</a>
+          <a class="tile-ver-btn a" href="/math/unit-7/projects/version-a/">🧭 Version A<span class="ver-name">Theme Park Map Designer</span></a>
+          <a class="tile-ver-btn b" href="/math/unit-7/projects/version-b/">🚢 Version B<span class="ver-name">Submarine Mission Control</span></a>
         </div>
       </div>
 
-      <!-- Unit 10 -->
-      <div class="project-tile" data-unit="10" data-keywords="volume surface area prism net 6.GR.2 6.GR.4">
+      <!-- unit-8 -->
+      <div class="project-tile" data-unit="unit-8" data-keywords="equations inequalities one-step balance scale solve escape room architect fundraiser goal tracker master codebreaker stretch challenge version c 6.AT.8 6.AT.9 unit 8 reveal unit 7">
+        <div class="tile-accent" style="background: linear-gradient(90deg, #38bdf8, #1763c7);"></div>
+        <div class="tile-body">
+          <div class="tile-chips">
+            <span class="tile-unit-chip">Unit 8 · Equations & Inequalities</span>
+            <span class="tile-unit-chip secondary" title="Reveal Math scope-and-sequence number">Reveal Unit 7</span>
+          </div>
+          <h3 class="tile-title">Escape Room Architect / Fundraiser Goal Tracker / Master Codebreaker</h3>
+          <p class="tile-desc">One-step equations and inequalities with balance-scale reasoning. Version C is the stretch challenge for students who want more.</p>
+          <div class="tile-tags">
+            <span class="tile-tag">6.AT.8</span>
+            <span class="tile-tag">6.AT.9</span>
+          </div>
+        </div>
+        <div class="tile-versions">
+          <a class="tile-ver-btn a" href="/math/unit-8/projects/version-a/">⚖️ Version A<span class="ver-name">Escape Room Architect</span></a>
+          <a class="tile-ver-btn b" href="/math/unit-8/projects/version-b/">🎯 Version B<span class="ver-name">Fundraiser Goal Tracker</span></a>
+          <a class="tile-ver-btn c" href="/math/unit-8/projects/version-c/">🧩 Version C<span class="ver-name">Master Codebreaker — stretch</span></a>
+        </div>
+      </div>
+
+      <!-- unit-9 -->
+      <div class="project-tile" data-unit="unit-9" data-keywords="rates growth ratio extension unit rate per month streaming channel growth lab phone plan showdown comparison table 6.AT.11 unit 9 reveal unit 3 extension">
+        <div class="tile-accent" style="background: linear-gradient(90deg, #7c3aed, #38bdf8);"></div>
+        <div class="tile-body">
+          <div class="tile-chips">
+            <span class="tile-unit-chip" style="background:rgba(124,58,237,0.15);color:#7c3aed;">Unit 9 · Rates & Growth</span>
+            <span class="tile-unit-chip secondary" title="Reveal Math scope-and-sequence number">Reveal Unit 3 extension</span>
+          </div>
+          <h3 class="tile-title">Streaming Channel Growth Lab / Phone Plan Showdown</h3>
+          <p class="tile-desc">Extend ratio and rate reasoning to growth tables, unit rates over time, and multi-plan cost comparisons.</p>
+          <div class="tile-tags">
+            <span class="tile-tag">6.AT.11</span>
+          </div>
+        </div>
+        <div class="tile-versions">
+          <a class="tile-ver-btn a" href="/math/unit-9/projects/version-a/">📈 Version A<span class="ver-name">Streaming Channel Growth Lab</span></a>
+          <a class="tile-ver-btn b" href="/math/unit-9/projects/version-b/">📶 Version B<span class="ver-name">Phone Plan Showdown</span></a>
+        </div>
+      </div>
+
+      <!-- unit-10 -->
+      <div class="project-tile" data-unit="unit-10" data-keywords="volume rectangular prism nets surface area package design challenge aquarium build lab cubic units 6.GR.2 6.GR.4 unit 10">
         <div class="tile-accent" style="background: linear-gradient(90deg, #ef6b52, #f59e0b);"></div>
         <div class="tile-body">
-          <span class="tile-unit-chip" style="background:rgba(239,107,82,0.15);color:#ef6b52;">Unit 10 · Volume</span>
-          <h3 class="tile-title">📦 Volume & Surface Area Projects</h3>
-          <p class="tile-desc">Design 3D packaging, calculate volume of rectangular prisms, and unfold nets for surface area.</p>
+          <div class="tile-chips">
+            <span class="tile-unit-chip" style="background:rgba(239,107,82,0.15);color:#ef6b52;">Unit 10 · Volume</span>
+          </div>
+          <h3 class="tile-title">Package Design Challenge / Aquarium Build Lab</h3>
+          <p class="tile-desc">Volume of rectangular prisms, fractional edge lengths, and nets for surface area in packaging and aquarium design.</p>
           <div class="tile-tags">
             <span class="tile-tag">6.GR.2</span>
             <span class="tile-tag">6.GR.4</span>
           </div>
         </div>
         <div class="tile-versions">
-          <a class="tile-ver-btn a" href="/math/unit-10/projects/version-a/">📦 Version A</a>
-          <a class="tile-ver-btn b" href="/math/unit-10/projects/version-b/">🏗️ Version B</a>
+          <a class="tile-ver-btn a" href="/math/unit-10/projects/version-a/">📦 Version A<span class="ver-name">Package Design Challenge</span></a>
+          <a class="tile-ver-btn b" href="/math/unit-10/projects/version-b/">🐠 Version B<span class="ver-name">Aquarium Build Lab</span></a>
+        </div>
+      </div>
+
+      <!-- statistics -->
+      <div class="project-tile" data-unit="statistics" data-keywords="statistics data mean median mode range dot plot box plot histogram variability class data detective real-world data investigation 6.DS.1 6.DS.3 6.DS.4 statistics reveal unit 8">
+        <div class="tile-accent" style="background: linear-gradient(90deg, #f59e0b, #34d399);"></div>
+        <div class="tile-body">
+          <div class="tile-chips">
+            <span class="tile-unit-chip" style="background:rgba(245,158,11,0.15);color:#f59e0b;">Statistics · Data Displays & Variability</span>
+            <span class="tile-unit-chip secondary" title="Reveal Math scope-and-sequence number">Reveal Unit 8</span>
+          </div>
+          <h3 class="tile-title">Class Data Detective / Real-World Data Investigation</h3>
+          <p class="tile-desc">Collect real data, build dot plots and box plots, and analyze center, spread, and variability.</p>
+          <div class="tile-tags">
+            <span class="tile-tag">6.DS.1</span>
+            <span class="tile-tag">6.DS.3</span>
+            <span class="tile-tag">6.DS.4</span>
+          </div>
+        </div>
+        <div class="tile-versions">
+          <a class="tile-ver-btn a" href="/math/statistics/projects/version-a/">📊 Version A<span class="ver-name">Class Data Detective</span></a>
+          <a class="tile-ver-btn b" href="/math/statistics/projects/version-b/">📈 Version B<span class="ver-name">Real-World Data Investigation</span></a>
         </div>
       </div>
     </div>
 
     <nav class="gallery-footer">
-      <a href="/curriculum/projects/">🎓 Curriculum Projects Home</a>
+      <a href="/curriculum/projects/">🎓 Canonical Projects Hub</a>
       <a href="/math/projects/portfolio/">📋 My Project Portfolio</a>
       <a href="/curriculum/">← Back to Curriculum</a>
       <a href="/curriculum/arcade/">🕹️ Arcade Games</a>
@@ -496,13 +639,23 @@
     <script>
       (function() {
         var search = document.getElementById('project-search');
+        var status = document.getElementById('search-status');
         var tiles = document.querySelectorAll('.project-tile');
+        if (!search) return;
         search.addEventListener('input', function() {
           var q = this.value.toLowerCase().trim();
+          var shown = 0;
           tiles.forEach(function(tile) {
             var text = (tile.textContent + ' ' + (tile.getAttribute('data-keywords') || '')).toLowerCase();
-            tile.style.display = (!q || text.indexOf(q) !== -1) ? '' : 'none';
+            var match = !q || text.indexOf(q) !== -1;
+            tile.style.display = match ? '' : 'none';
+            if (match) shown++;
           });
+          if (!status) return;
+          if (!q) { status.textContent = ''; return; }
+          status.textContent = shown === 0
+            ? 'No projects match "' + this.value + '". Try a unit number, a topic, or a standard.'
+            : shown + ' of ' + tiles.length + ' project sets match "' + this.value + '".';
         });
       })();
     </script>

@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My Project Portfolio | Grade 6 Math | Neft Teacher</title>
-    <meta name="description" content="Track your culminating project progress across all 10 Grade 6 math units. See completion status, rubric scores, and earned certificates." />
+    <meta name="description" content="Track your culminating project progress across all 11 Grade 6 math project sets and 23 projects. See completion status, stars, rubric scores, and earned certificates." />
     <link rel="stylesheet" href="/assets/shared.css" />
     <link rel="stylesheet" href="/assets/math-mobile.css" />
     <style>
@@ -197,6 +197,114 @@
         font-weight: 700;
         font-size: 0.85rem;
       }
+
+      /* Student name (printed on certificates) */
+      .name-field {
+        max-width: 420px;
+        margin: 16px auto 0;
+        text-align: left;
+      }
+      .name-field label {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+      .name-field input {
+        width: 100%;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 10px 14px;
+        color: var(--text);
+        font-family: inherit;
+        font-size: 1rem;
+      }
+
+      /* Unit rows */
+      .unit-row { align-items: flex-start; }
+      .unit-row.is-done { border-color: rgba(52, 211, 153, 0.45); }
+      .unit-info .reveal-note { color: var(--purple); font-weight: 700; }
+      .proj-list {
+        list-style: none;
+        margin: 8px 0 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .proj-list li { font-size: 0.85rem; line-height: 1.45; }
+      .proj-list a { color: var(--cyan); text-decoration: none; font-weight: 700; }
+      .proj-list a:hover { text-decoration: underline; }
+      .proj-list .proj-meta {
+        display: block;
+        color: var(--muted);
+        font-size: 0.76rem;
+        font-weight: 600;
+      }
+      .proj-list.todo li { color: var(--muted); }
+      .proj-list.todo a { color: var(--muted); font-weight: 600; }
+      .unit-status { flex-direction: column; align-items: flex-end; flex-shrink: 0; }
+      .status-chip.partial {
+        background: rgba(56, 189, 248, 0.15);
+        color: var(--cyan);
+      }
+
+      /* Empty state */
+      .empty-state {
+        max-width: 800px;
+        margin: 0 auto 24px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-left: 4px solid var(--green);
+        border-radius: 16px;
+        padding: 22px 26px;
+      }
+      .empty-state[hidden] { display: none; }
+      .empty-state h2 { font-size: 1.15rem; font-weight: 900; margin-bottom: 10px; }
+      .empty-state p { color: var(--muted); font-size: 0.95rem; line-height: 1.6; }
+      .empty-state ol { margin: 12px 0 0 20px; color: var(--muted); font-size: 0.95rem; line-height: 1.7; }
+      .empty-state a { color: var(--cyan); font-weight: 700; }
+      .empty-state .empty-note { margin-top: 12px; font-size: 0.85rem; }
+
+      a:focus-visible,
+      button:focus-visible,
+      input:focus-visible {
+        outline: 3px solid var(--amber);
+        outline-offset: 2px;
+        border-radius: 8px;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .unit-row,
+        .cert-btn,
+        .cert-actions button {
+          transition: none;
+        }
+        .unit-row:hover,
+        .cert-btn:hover,
+        .cert-actions button:hover {
+          transform: none;
+        }
+      }
+
+      /* Print: only the certificate, and only while it is open */
+      @media print {
+        body.printing-cert { background: #fff; padding: 0; }
+        body.printing-cert > *:not(#cert-modal) { display: none !important; }
+        body.printing-cert #cert-modal {
+          position: static;
+          display: block;
+          background: #fff;
+          backdrop-filter: none;
+          padding: 0;
+        }
+        body.printing-cert .cert-card { box-shadow: none; max-width: 100%; }
+        body.printing-cert .cert-actions { display: none !important; }
+      }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -208,15 +316,40 @@
   <body>
     <header class="portfolio-hero">
       <h1>📋 My Project Portfolio</h1>
-      <p>Track your culminating project progress across all 10 units</p>
+      <p>Track your culminating project progress — 11 project sets, 23 projects</p>
+      <div class="name-field">
+        <label for="student-name">Your name (printed on your certificates)</label>
+        <input id="student-name" type="text" autocomplete="name" placeholder="Type your name" />
+      </div>
     </header>
 
     <div class="stats-row" id="stats-row">
-      <div class="stat-card"><div class="num" id="stat-completed">0</div><div class="label">Completed</div></div>
-      <div class="stat-card"><div class="num" id="stat-total">10</div><div class="label">Total Units</div></div>
-      <div class="stat-card"><div class="num" id="stat-stars">0</div><div class="label">Stars Earned</div></div>
-      <div class="stat-card"><div class="num" id="stat-pct">0%</div><div class="label">Portfolio</div></div>
+      <div class="stat-card"><div class="num" id="stat-completed">0</div><div class="label">Units with a finished project</div></div>
+      <div class="stat-card"><div class="num" id="stat-total">11</div><div class="label">Project sets in all</div></div>
+      <div class="stat-card"><div class="num" id="stat-pages">0 / 23</div><div class="label">Projects finished</div></div>
+      <div class="stat-card"><div class="num" id="stat-stars">⭐ 0</div><div class="label">Stars earned</div></div>
+      <div class="stat-card"><div class="num" id="stat-pct">0%</div><div class="label">Portfolio complete</div></div>
     </div>
+
+    <section class="empty-state" id="empty-state" hidden>
+      <h2>🌱 Nothing here yet — and that is completely normal.</h2>
+      <p>
+        This page fills in by itself. Nothing to set up, nothing to submit. A project shows up here
+        the moment you finish it.
+      </p>
+      <ol>
+        <li>Pick a project from the <a href="/curriculum/projects/">Culminating Projects hub</a>.</li>
+        <li>Work through the steps. Your work saves as you go, so you can stop and come back.</li>
+        <li>
+          Finish the <strong>last step</strong> — the one where you build your report and score
+          yourself on the rubric. That is what adds the project to this page.
+        </li>
+        <li>Come back here to see it, count your stars, and print your certificate.</li>
+      </ol>
+      <p class="empty-note">
+        Nothing on this page is graded. It only keeps track of what you already finished.
+      </p>
+    </section>
 
     <div class="unit-list" id="unit-list"></div>
 
@@ -238,77 +371,295 @@
     </nav>
 
     <script>
+      /* ------------------------------------------------------------------
+         PORTFOLIO COMPLETION CONTRACT (v1) — shared with the project pages.
+
+           KEY:   "nt-project-complete:v1"
+           VALUE: a JSON object mapping a project page path to one record:
+
+           {
+             "/math/unit-4/projects/version-a/": {
+               "unit": "unit-4",       // folder key: unit-1..unit-10 | statistics
+               "version": "a",         // "a" | "b" | "c"
+               "title": "Pop-Up Shop Owner",
+               "completedAt": "2026-07-27T14:03:00.000Z",  // ISO 8601 string
+               "stars": 3,             // 0-3
+               "rubricTotal": 14,      // student self-score sum, or null
+               "rubricMax": 16,        // or null
+               "level": 1              // 0 | 1 | 2
+             }
+           }
+
+         The shared project layer writes one entry when a student finishes a
+         project's final step. THIS PAGE ONLY READS the key; it never writes it,
+         so a reader bug can never destroy a student's record.
+
+         Backward compatibility: the original portfolio read one blob per unit
+         number, "nt-project-u<N>". Nothing in the repo ever wrote that key, but
+         any value that does exist is still merged in (see mergeLegacy) using the
+         unit numbering that old page displayed.
+         ------------------------------------------------------------------ */
+      var COMPLETE_KEY = "nt-project-complete:v1";
+      var NAME_KEY = "nt-student-name";
+
       var UNITS = [
-        { n: 1, icon: "🧮", title: "Number Sense in Action", standards: "6.NOS.2 · 6.NOS.3 · 6.NOS.4", color: "#1763c7" },
-        { n: 2, icon: "🍕", title: "Fractions in Action", standards: "6.NOS.5 · 6.NOS.6", color: "#f59e0b" },
-        { n: 3, icon: "⚖️", title: "Ratios in Action", standards: "6.RP.1 · 6.RP.2 · 6.RP.3", color: "#2dd4bf" },
-        { n: 4, icon: "💯", title: "Percents in Action", standards: "6.RP.3c · 6.RP.3d", color: "#ec4899" },
-        { n: 5, icon: "📐", title: "Area in Action", standards: "6.GR.1 · 6.GR.4", color: "#34d399" },
-        { n: 6, icon: "⚙️", title: "Expressions in Action", standards: "6.AT.4 · 6.AT.5", color: "#c084fc" },
-        { n: 7, icon: "⚖️", title: "Equations in Action", standards: "6.AT.1 · 6.AT.2 · 6.AT.3", color: "#38bdf8" },
-        { n: 8, icon: "📊", title: "Data in Action", standards: "6.SP.1 · 6.SP.2 · 6.SP.3", color: "#f59e0b" },
-        { n: 9, icon: "🧭", title: "Coordinates in Action", standards: "6.NS.5 · 6.NS.6 · 6.NS.8", color: "#0e9a8c" },
-        { n: 10, icon: "📦", title: "Volume in Action", standards: "6.GR.2 · 6.GR.4", color: "#ef6b52" }
+        {"key": "unit-1", "label": "Unit 1", "domain": "Number Sense", "reveal": null, "legacyKey": 1, "icon": "🎉", "color": "#1763c7", "standards": "6.NOS.2 · 6.NOS.3 · 6.NOS.4", "projects": [{"path": "/math/unit-1/projects/version-a/", "version": "a", "title": "Block Party Planner"}, {"path": "/math/unit-1/projects/version-b/", "version": "b", "title": "Build-a-Bot Budget Lab"}]},
+        {"key": "unit-2", "label": "Unit 2", "domain": "Fractions", "reveal": null, "legacyKey": 2, "icon": "🍰", "color": "#f59e0b", "standards": "6.NOS.1", "projects": [{"path": "/math/unit-2/projects/version-a/", "version": "a", "title": "Recipe Remix Bakery"}, {"path": "/math/unit-2/projects/version-b/", "version": "b", "title": "Maker Workshop Cut List"}]},
+        {"key": "unit-3", "label": "Unit 3", "domain": "Ratios", "reveal": null, "legacyKey": 3, "icon": "🥤", "color": "#2dd4bf", "standards": "6.AT.1 · 6.AT.2 · 6.AT.3a", "projects": [{"path": "/math/unit-3/projects/version-a/", "version": "a", "title": "Smoothie Bar Designer"}, {"path": "/math/unit-3/projects/version-b/", "version": "b", "title": "Sports Stats Scout"}]},
+        {"key": "unit-4", "label": "Unit 4", "domain": "Percents", "reveal": null, "legacyKey": 4, "icon": "💰", "color": "#ec4899", "standards": "6.AT.2 · 6.AT.3c · 6.AT.4", "projects": [{"path": "/math/unit-4/projects/version-a/", "version": "a", "title": "Pop-Up Shop Owner"}, {"path": "/math/unit-4/projects/version-b/", "version": "b", "title": "Smart Shopper Showdown"}]},
+        {"key": "unit-5", "label": "Unit 5", "domain": "Area", "reveal": null, "legacyKey": 5, "icon": "🏠", "color": "#34d399", "standards": "6.GR.1 · 6.GR.4", "projects": [{"path": "/math/unit-5/projects/version-a/", "version": "a", "title": "Dream Room Designer"}, {"path": "/math/unit-5/projects/version-b/", "version": "b", "title": "Room Makeover Budget"}]},
+        {"key": "unit-6", "label": "Unit 6", "domain": "Expressions", "reveal": null, "legacyKey": 6, "icon": "🎮", "color": "#c084fc", "standards": "6.AT.5 · 6.AT.6 · 6.AT.7", "projects": [{"path": "/math/unit-6/projects/version-a/", "version": "a", "title": "Game Studio Scoring Engine"}, {"path": "/math/unit-6/projects/version-b/", "version": "b", "title": "App Pricing Engine"}]},
+        {"key": "unit-7", "label": "Unit 7", "domain": "Coordinate Plane", "reveal": "Reveal Unit 9", "legacyKey": 9, "icon": "🧭", "color": "#0e9a8c", "standards": "6.NOS.6 · 6.NOS.7 · 6.NOS.9", "projects": [{"path": "/math/unit-7/projects/version-a/", "version": "a", "title": "Theme Park Map Designer"}, {"path": "/math/unit-7/projects/version-b/", "version": "b", "title": "Submarine Mission Control"}]},
+        {"key": "unit-8", "label": "Unit 8", "domain": "Equations & Inequalities", "reveal": "Reveal Unit 7", "legacyKey": 7, "icon": "⚖️", "color": "#38bdf8", "standards": "6.AT.8 · 6.AT.9", "projects": [{"path": "/math/unit-8/projects/version-a/", "version": "a", "title": "Escape Room Architect"}, {"path": "/math/unit-8/projects/version-b/", "version": "b", "title": "Fundraiser Goal Tracker"}, {"path": "/math/unit-8/projects/version-c/", "version": "c", "title": "Master Codebreaker"}]},
+        {"key": "unit-9", "label": "Unit 9", "domain": "Rates & Growth", "reveal": "Reveal Unit 3 extension", "legacyKey": null, "icon": "📈", "color": "#7c3aed", "standards": "6.AT.11", "projects": [{"path": "/math/unit-9/projects/version-a/", "version": "a", "title": "Streaming Channel Growth Lab"}, {"path": "/math/unit-9/projects/version-b/", "version": "b", "title": "Phone Plan Showdown"}]},
+        {"key": "unit-10", "label": "Unit 10", "domain": "Volume", "reveal": null, "legacyKey": 10, "icon": "📦", "color": "#ef6b52", "standards": "6.GR.2 · 6.GR.4", "projects": [{"path": "/math/unit-10/projects/version-a/", "version": "a", "title": "Package Design Challenge"}, {"path": "/math/unit-10/projects/version-b/", "version": "b", "title": "Aquarium Build Lab"}]},
+        {"key": "statistics", "label": "Statistics", "domain": "Data Displays & Variability", "reveal": "Reveal Unit 8", "legacyKey": 8, "icon": "📊", "color": "#f59e0b", "standards": "6.DS.1 · 6.DS.3 · 6.DS.4", "projects": [{"path": "/math/statistics/projects/version-a/", "version": "a", "title": "Class Data Detective"}, {"path": "/math/statistics/projects/version-b/", "version": "b", "title": "Real-World Data Investigation"}]}
       ];
 
-      function getStatus(unit) {
-        try { return JSON.parse(localStorage.getItem("nt-project-u" + unit) || "null"); } catch(e) { return null; }
+      var TOTAL_PROJECTS = UNITS.reduce(function (n, u) { return n + u.projects.length; }, 0);
+      var CURRENT = {};
+
+      function safeGet(key) {
+        try { return localStorage.getItem(key); } catch (e) { return null; }
       }
 
-      function renderList() {
+      function esc(value) {
+        return String(value == null ? "" : value).replace(/[&<>"']/g, function (c) {
+          if (c === "&") return "&amp;";
+          if (c === "<") return "&lt;";
+          if (c === ">") return "&gt;";
+          if (c === '"') return "&quot;";
+          return "&#39;";
+        });
+      }
+
+      function normalizePath(p) {
+        if (!p) return "";
+        var s = String(p).split("?")[0].split("#")[0];
+        s = s.replace(/index\.html$/i, "");
+        if (s.charAt(0) !== "/") s = "/" + s;
+        if (s.charAt(s.length - 1) !== "/") s += "/";
+        return s;
+      }
+
+      function clampStars(value) {
+        var n = typeof value === "number" ? value : parseInt(value, 10);
+        if (!isFinite(n) || n < 0) return 0;
+        return n > 3 ? 3 : Math.round(n);
+      }
+
+      function fmtDate(iso) {
+        if (!iso) return "";
+        var d = new Date(iso);
+        if (isNaN(d.getTime())) return "";
+        try {
+          return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+        } catch (e) {
+          return d.toDateString();
+        }
+      }
+
+      function mergeLegacy(out) {
+        UNITS.forEach(function (u) {
+          if (u.legacyKey === null || u.legacyKey === undefined) return;
+          var raw = safeGet("nt-project-u" + u.legacyKey);
+          if (!raw) return;
+          var legacy = null;
+          try { legacy = JSON.parse(raw); } catch (e) { legacy = null; }
+          if (legacy === null || legacy === undefined) return;
+          var done = legacy === true || legacy.completed === true || legacy.complete === true;
+          if (!done) return;
+          var covered = u.projects.some(function (p) { return out[p.path]; });
+          if (covered) return;
+          var first = u.projects[0];
+          out[first.path] = {
+            unit: u.key,
+            version: first.version,
+            title: first.title,
+            completedAt: legacy.completedAt || legacy.date || null,
+            stars: clampStars(legacy.stars === undefined ? 3 : legacy.stars),
+            rubricTotal: typeof legacy.rubricTotal === "number" ? legacy.rubricTotal : null,
+            rubricMax: typeof legacy.rubricMax === "number" ? legacy.rubricMax : null,
+            level: typeof legacy.level === "number" ? legacy.level : null,
+            fromLegacy: true
+          };
+        });
+      }
+
+      function readRecords() {
+        var out = {};
+        var raw = safeGet(COMPLETE_KEY);
+        if (raw) {
+          var parsed = null;
+          try { parsed = JSON.parse(raw); } catch (e) { parsed = null; }
+          if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+            Object.keys(parsed).forEach(function (p) {
+              var rec = parsed[p];
+              if (!rec || typeof rec !== "object") return;
+              out[normalizePath(p)] = rec;
+            });
+          }
+        }
+        mergeLegacy(out);
+        return out;
+      }
+
+      function doneLine(project, rec) {
+        var when = fmtDate(rec.completedAt);
+        var stars = clampStars(rec.stars);
+        var meta = when ? "Finished " + esc(when) : "Finished";
+        meta += " · " + stars + " of 3 stars";
+        if (typeof rec.rubricTotal === "number" && typeof rec.rubricMax === "number") {
+          meta += " · rubric " + rec.rubricTotal + "/" + rec.rubricMax;
+        }
+        return (
+          '<li>✅ <a href="' + project.path + '">Version ' + project.version.toUpperCase() +
+          " — " + esc(rec.title || project.title) + "</a>" +
+          '<span class="proj-meta">' + meta + "</span></li>"
+        );
+      }
+
+      function todoLine(project) {
+        return (
+          '<li>⬜ <a href="' + project.path + '">Version ' + project.version.toUpperCase() +
+          " — " + esc(project.title) + "</a> · not finished yet</li>"
+        );
+      }
+
+      function render() {
+        var records = readRecords();
+        CURRENT = records;
         var list = document.getElementById("unit-list");
-        var completed = 0;
+        var unitsDone = 0;
+        var projectsDone = 0;
         var stars = 0;
         list.innerHTML = "";
-        UNITS.forEach(function(u) {
-          var status = getStatus(u.n);
-          var isDone = status && status.completed;
-          if (isDone) { completed++; stars += (status.stars || 3); }
+
+        UNITS.forEach(function (u) {
+          var done = u.projects.filter(function (p) { return records[p.path]; });
+          var todo = u.projects.filter(function (p) { return !records[p.path]; });
+          if (done.length) unitsDone++;
+          projectsDone += done.length;
+          done.forEach(function (p) { stars += clampStars(records[p.path].stars); });
+
+          var chipClass = done.length === 0 ? "pending" : (todo.length ? "partial" : "done");
+          var chipText =
+            done.length === 0
+              ? "⏳ Not started"
+              : todo.length
+                ? "🔵 " + done.length + " of " + u.projects.length + " done"
+                : "✅ All " + u.projects.length + " done";
+
           var row = document.createElement("div");
-          row.className = "unit-row";
+          row.className = "unit-row" + (done.length ? " is-done" : "");
           row.innerHTML =
-            '<div class="unit-badge" style="background:' + u.color + '22;color:' + u.color + ';">' + u.icon + '</div>' +
-            '<div class="unit-info"><h3>Unit ' + u.n + ' — ' + u.title + '</h3><span class="standards">' + u.standards + '</span></div>' +
+            '<div class="unit-badge" style="background:' + u.color + "22;color:" + u.color + ';">' +
+              u.icon +
+            "</div>" +
+            '<div class="unit-info">' +
+              "<h3>" + esc(u.label) + " — " + esc(u.domain) + "</h3>" +
+              '<span class="standards">' + esc(u.standards) +
+              (u.reveal ? ' · <span class="reveal-note">' + esc(u.reveal) + "</span>" : "") +
+              "</span>" +
+              (done.length
+                ? '<ul class="proj-list">' + done.map(function (p) { return doneLine(p, records[p.path]); }).join("") + "</ul>"
+                : "") +
+              (todo.length
+                ? '<ul class="proj-list todo">' + todo.map(todoLine).join("") + "</ul>"
+                : "") +
+            "</div>" +
             '<div class="unit-status">' +
-              '<span class="status-chip ' + (isDone ? 'done' : 'pending') + '">' + (isDone ? '✅ Complete' : '⏳ Not Started') + '</span>' +
-              (isDone ? '<button class="cert-btn" onclick="showCert(' + u.n + ')">🏅 Certificate</button>' : '') +
-            '</div>';
+              '<span class="status-chip ' + chipClass + '">' + chipText + "</span>" +
+              (done.length
+                ? '<button class="cert-btn" type="button" onclick="showCert(\'' + u.key + '\')">🏅 Certificate</button>'
+                : "") +
+            "</div>";
           list.appendChild(row);
         });
-        document.getElementById("stat-completed").textContent = completed;
+
+        document.getElementById("stat-completed").textContent = unitsDone;
+        document.getElementById("stat-total").textContent = UNITS.length;
+        document.getElementById("stat-pages").textContent = projectsDone + " / " + TOTAL_PROJECTS;
         document.getElementById("stat-stars").textContent = "⭐ " + stars;
-        document.getElementById("stat-pct").textContent = Math.round((completed / 10) * 100) + "%";
+        document.getElementById("stat-pct").textContent =
+          Math.round((unitsDone / UNITS.length) * 100) + "%";
+
+        var empty = document.getElementById("empty-state");
+        if (empty) empty.hidden = projectsDone > 0;
       }
 
-      function showCert(unitNum) {
-        var u = UNITS.find(function(x) { return x.n === unitNum; });
+      window.showCert = function (unitKey) {
+        var u = null;
+        UNITS.forEach(function (x) { if (x.key === unitKey) u = x; });
         if (!u) return;
+        var done = u.projects.filter(function (p) { return CURRENT[p.path]; });
+        if (!done.length) return;
+
+        var name = (safeGet(NAME_KEY) || "").trim() || "Student";
+        var stars = 0;
+        done.forEach(function (p) { stars += clampStars(CURRENT[p.path].stars); });
+        var titles = done
+          .map(function (p) { return CURRENT[p.path].title || p.title; })
+          .join(" · ");
+        var when = "";
+        done.forEach(function (p) {
+          var d = fmtDate(CURRENT[p.path].completedAt);
+          if (d) when = d;
+        });
+
+        var headline = u.label + " — " + u.domain;
         var modal = document.getElementById("cert-modal");
         var content = document.getElementById("cert-content");
-        var name = "";
-        try { name = localStorage.getItem("nt-student-name") || "Student"; } catch(e) { name = "Student"; }
         content.innerHTML =
-          '<svg width="100%" height="280" viewBox="0 0 520 280" style="background:white;" xmlns="http://www.w3.org/2000/svg">' +
-            '<rect x="8" y="8" width="504" height="264" rx="16" fill="#fefce8" stroke="#f59e0b" stroke-width="3" stroke-dasharray="8 4"/>' +
-            '<text x="260" y="50" text-anchor="middle" font-size="14" fill="#92400e" font-weight="700" font-family="system-ui">CERTIFICATE OF COMPLETION</text>' +
-            '<text x="260" y="85" text-anchor="middle" font-size="28" fill="#0f172a" font-weight="900" font-family="system-ui">🏆 ' + u.title + '</text>' +
-            '<text x="260" y="125" text-anchor="middle" font-size="16" fill="#475569" font-family="system-ui">Awarded to</text>' +
-            '<text x="260" y="160" text-anchor="middle" font-size="24" fill="#1e3a5f" font-weight="800" font-family="system-ui">' + name + '</text>' +
-            '<line x1="160" y1="168" x2="360" y2="168" stroke="#cbd5e1" stroke-width="1"/>' +
-            '<text x="260" y="200" text-anchor="middle" font-size="13" fill="#64748b" font-family="system-ui">For successfully completing the Unit ' + u.n + ' Culminating Project</text>' +
-            '<text x="260" y="220" text-anchor="middle" font-size="12" fill="#94a3b8" font-family="system-ui">Standards: ' + u.standards + '</text>' +
-            '<text x="260" y="255" text-anchor="middle" font-size="11" fill="#94a3b8" font-family="system-ui">Neft Teacher · Grade 6 Math · eduwonderlab.com</text>' +
-            '<text x="40" y="255" font-size="22">⭐</text>' +
-            '<text x="480" y="255" font-size="22">⭐</text>' +
-          '</svg>';
+          '<svg width="100%" height="300" viewBox="0 0 520 300" role="img" ' +
+          'aria-label="Certificate of completion for ' + esc(headline) + '" ' +
+          'style="background:white;" xmlns="http://www.w3.org/2000/svg">' +
+            '<rect x="8" y="8" width="504" height="284" rx="16" fill="#fefce8" stroke="#f59e0b" stroke-width="3" stroke-dasharray="8 4"/>' +
+            '<text x="260" y="46" text-anchor="middle" font-size="14" fill="#92400e" font-weight="700" font-family="system-ui">CERTIFICATE OF COMPLETION</text>' +
+            '<text x="260" y="80" text-anchor="middle" font-size="24" fill="#0f172a" font-weight="900" font-family="system-ui">🏆 ' + esc(headline) + "</text>" +
+            '<text x="260" y="106" text-anchor="middle" font-size="13" fill="#475569" font-family="system-ui">' + esc(titles) + "</text>" +
+            '<text x="260" y="140" text-anchor="middle" font-size="15" fill="#475569" font-family="system-ui">Awarded to</text>' +
+            '<text x="260" y="176" text-anchor="middle" font-size="24" fill="#1e3a5f" font-weight="800" font-family="system-ui">' + esc(name) + "</text>" +
+            '<line x1="150" y1="186" x2="370" y2="186" stroke="#cbd5e1" stroke-width="1"/>' +
+            '<text x="260" y="212" text-anchor="middle" font-size="12" fill="#64748b" font-family="system-ui">For finishing ' + done.length + " culminating project" + (done.length === 1 ? "" : "s") + " · " + stars + " stars earned</text>" +
+            '<text x="260" y="232" text-anchor="middle" font-size="11" fill="#94a3b8" font-family="system-ui">Standards: ' + esc(u.standards) + "</text>" +
+            '<text x="260" y="252" text-anchor="middle" font-size="11" fill="#94a3b8" font-family="system-ui">' + (when ? "Completed " + esc(when) : "") + "</text>" +
+            '<text x="260" y="276" text-anchor="middle" font-size="11" fill="#94a3b8" font-family="system-ui">Neft Teacher · Grade 6 Math · eduwonderlab.com</text>' +
+            '<text x="40" y="276" font-size="22">⭐</text>' +
+            '<text x="480" y="276" font-size="22">⭐</text>' +
+          "</svg>";
+        document.body.classList.add("printing-cert");
         modal.classList.add("show");
-      }
-
-      window.closeCert = function() {
-        document.getElementById("cert-modal").classList.remove("show");
       };
 
-      renderList();
+      window.closeCert = function () {
+        document.getElementById("cert-modal").classList.remove("show");
+        document.body.classList.remove("printing-cert");
+      };
+
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") window.closeCert();
+      });
+
+      (function () {
+        var input = document.getElementById("student-name");
+        if (!input) return;
+        input.value = safeGet(NAME_KEY) || "";
+        input.addEventListener("input", function () {
+          try { localStorage.setItem(NAME_KEY, input.value); } catch (e) {}
+        });
+      })();
+
+      window.addEventListener("storage", function (e) {
+        if (!e || !e.key) return;
+        if (e.key === COMPLETE_KEY || e.key.indexOf("nt-project-u") === 0) render();
+      });
+      document.addEventListener("visibilitychange", function () {
+        if (!document.hidden) render();
+      });
+
+      window.NTPortfolioRefresh = render;
+      render();
     </script>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
