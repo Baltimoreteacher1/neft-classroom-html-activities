@@ -3,6 +3,31 @@ import { expect, test } from "@playwright/test";
 const LESSON_PATH = "/lessons/1-1/?sn=Layout%20Tester";
 
 test.describe("shared lesson shell reflow", () => {
+  for (const lessonPath of ["/lessons/1-1/", "/lessons/10-3/"]) {
+    test(`bottom Continue buttons advance each shared lesson phase: ${lessonPath}`, async ({
+      page,
+    }) => {
+      await page.goto(`${lessonPath}?sn=Navigation%20Tester`, { waitUntil: "networkidle" });
+
+      await expect(page.locator('[data-bind="hero-phase-name"]')).toHaveText("Warmup");
+      await page.getByRole("button", { name: "Continue to Phase 2: Objectives 🎯" }).click();
+      await expect(page.locator('[data-bind="hero-phase-name"]')).toHaveText("Objectives");
+
+      await page.getByRole("button", { name: "Continue to Phase 3: Launch 🚀" }).click();
+      await expect(page.locator('[data-bind="hero-phase-name"]')).toHaveText("Launch");
+
+      const launchResponses = page.locator(".phase textarea");
+      await launchResponses.nth(0).fill("I notice a math pattern in the example.");
+      await launchResponses.nth(1).fill("I wonder how the pattern will help me solve it.");
+      await page.getByRole("button", { name: "Continue to Vocab →" }).click();
+      await expect(page.locator(".extra-panel")).toHaveAttribute("aria-label", "Vocab");
+      await page.getByRole("button", { name: "Continue to Learn It →" }).click();
+      await expect(page.locator(".extra-panel")).toHaveAttribute("aria-label", "Learn It");
+      await page.getByRole("button", { name: "Continue to the Lesson →" }).click();
+      await expect(page.locator('[data-bind="hero-phase-name"]')).toHaveText("Explore");
+    });
+  }
+
   test("keeps every lesson navigation item visible at 320 CSS pixels", async ({ page }) => {
     await page.setViewportSize({ width: 320, height: 900 });
     await page.goto(LESSON_PATH, { waitUntil: "networkidle" });

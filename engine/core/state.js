@@ -259,6 +259,19 @@ export function createState(lessonId, studentId) {
       notify();
     },
 
+    // Mark a non-graded phase complete without manufacturing a score. Warmup,
+    // Objectives, and the final goal review use this before their Continue or
+    // Finish action; the renderer has long called this API, but the state store
+    // did not expose it, so those buttons threw and never advanced.
+    markCompleted(index) {
+      const phase = state.phases[index];
+      if (!phase) return false;
+      phase.status = "completed";
+      save();
+      notify();
+      return true;
+    },
+
     saveResponse(phaseId, questionId, value) {
       const rKey = `${phaseId}_${questionId}`;
       state.responses[rKey] = value;

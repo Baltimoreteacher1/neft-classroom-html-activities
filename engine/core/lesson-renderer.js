@@ -793,21 +793,26 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone) {
 }
 
 async function completePhase(el, ctx, state, phaseIdx, name, correct, total, opts = {}) {
+  // phaseIdx is the legacy five-phase semantic index used by authored lesson
+  // renderers. The shared shell now has Warmup + Objectives before those
+  // phases, so navigation and progress must use the phase currently on screen.
+  // Reading live state also keeps completion correct after resume/sidebar use.
+  const activePhaseIdx = state.get().currentPhase ?? phaseIdx;
   // Participation coins for non-practice phases
-  if (phaseIdx !== 3) {
-    state.awardPhaseParticipation(phaseIdx, 2);
+  if (activePhaseIdx !== 4) {
+    state.awardPhaseParticipation(activePhaseIdx, 2);
   }
-  const xp = ctx.engagement.awardXP(phaseIdx, { correct, total });
+  const xp = ctx.engagement.awardXP(activePhaseIdx, { correct, total });
   // `quiet` skips the full "Phase Done! → up next" celebration. Used for the
   // Launch → Vocab hand-off, where the student is stepping into the Vocab →
   // Learn It pre-work, NOT the next graded phase — a "Continue to Explore" card
   // there would be misleading. Awards + phase advance still happen underneath.
   if (!opts.quiet) {
-    const stars = state.get().phases[phaseIdx]?.stars ?? 0;
-    const transitionMeta = buildPhaseTransitionMeta(state, phaseIdx, name, xp, stars);
+    const stars = state.get().phases[activePhaseIdx]?.stars ?? 0;
+    const transitionMeta = buildPhaseTransitionMeta(state, activePhaseIdx, name, xp, stars);
     await ctx.engagement.showPhaseComplete(el, name, xp, stars, transitionMeta);
   }
-  ctx.navigateTo(phaseIdx + 1);
+  ctx.nextPhase();
 }
 
 /**
@@ -4168,6 +4173,7 @@ function showFinalSummary(el, state, config) {
 }
 
 function renderObjectivesReviewPhase(el, state, ctx, config) {
+  const phaseIndex = state.get().currentPhase ?? 7;
   phaseHeader(
     el,
     "8",
@@ -4202,7 +4208,7 @@ function renderObjectivesReviewPhase(el, state, ctx, config) {
   checkWrap.style.cssText =
     "margin-top:20px; padding:16px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:12px; display:flex; flex-direction:column; gap:10px;";
 
-  const savedChecks = state.getResponse(6, "objectives_mastery") || {};
+  const savedChecks = state.getResponse(phaseIndex, "objectives_mastery") || {};
 
   checkWrap.innerHTML = `
     <div style="font-size:14px; font-weight:800; color:#0f172a;">Track Your Goal Mastery:</div>
@@ -4220,8 +4226,8 @@ function renderObjectivesReviewPhase(el, state, ctx, config) {
     chk.addEventListener("change", () => {
       savedChecks.content = checkWrap.querySelector("#chkObjContent").checked;
       savedChecks.lang = checkWrap.querySelector("#chkObjLang").checked;
-      state.saveResponse(6, "objectives_mastery", savedChecks);
-      state.markCompleted(6);
+      state.saveResponse(phaseIndex, "objectives_mastery", savedChecks);
+      state.markCompleted(phaseIndex);
     });
   });
 
@@ -4234,7 +4240,7 @@ function renderObjectivesReviewPhase(el, state, ctx, config) {
     "margin-top:20px; padding:12px 24px; font-weight:800; font-size:15px; background:#0f6d78; color:#ffffff; border:none; border-radius:10px; cursor:pointer;";
   finishBtn.textContent = "Finish Lesson & Celebrate 🎉";
   finishBtn.addEventListener("click", () => {
-    state.markCompleted(6);
+    state.markCompleted(phaseIndex);
     showFinalSummary(el, state, config);
   });
 
