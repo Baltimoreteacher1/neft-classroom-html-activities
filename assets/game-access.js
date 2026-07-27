@@ -243,19 +243,10 @@
     }
   }
 
-  /* ---------- Neftie Socratic Co-Pilot Avatar Widget ---------- */
-  var SOCRATIC_PROMPTS = [
-    "💡 Neftie asks: What happens to your visual model if you double the dimensions?",
-    "💡 Neftie asks: Can you decompose this composite number into smaller prime building blocks?",
-    "💡 Neftie asks: How does the ratio compare when both quantities scale equally?",
-    "💡 Neftie asks: What operation will isolate the variable on the left side of the scale?",
-    "💡 Neftie asks: If we tile the base with unit cubes, how many layers tall is the prism?"
-  ];
-
-  function triggerNeftieCoPilot() {
+  /* ---------- Socratic Math Talk Engine ---------- */
+  function triggerMathCoach() {
     try {
-      var pick = SOCRATIC_PROMPTS[Math.floor(Math.random() * SOCRATIC_PROMPTS.length)];
-      encourage(pick);
+      encourage("💡 Math Coach: Try decomposing or drawing a visual model!");
     } catch (_e) {}
   }
 
@@ -317,16 +308,6 @@
         startMathTalkCoach(micBtn);
       });
 
-      var neftieBtn = doc.createElement("button");
-      neftieBtn.type = "button";
-      neftieBtn.className = "nt-ga-btn nt-ga-neftie";
-      neftieBtn.setAttribute("aria-label", "Ask Neftie Socratic Co-Pilot");
-      neftieBtn.title = "Neftie Socratic Hint";
-      neftieBtn.innerHTML = "🤖 <span>Neftie</span>";
-      neftieBtn.addEventListener("click", function () {
-        triggerNeftieCoPilot();
-      });
-
       var loFiBtn = doc.createElement("button");
       loFiBtn.type = "button";
       loFiBtn.className = "nt-ga-btn nt-ga-lofi";
@@ -359,7 +340,6 @@
 
       wrap.appendChild(read);
       wrap.appendChild(micBtn);
-      wrap.appendChild(neftieBtn);
       wrap.appendChild(loFiBtn);
       wrap.appendChild(textBtn);
       wrap.appendChild(wonderChip);
@@ -391,7 +371,7 @@
     },
     addStars: addWonderPassStars,
     getWonderPass: getWonderPass,
-    triggerNeftie: triggerNeftieCoPilot,
+    triggerCoach: triggerMathCoach,
     startMathTalk: startMathTalkCoach
   };
 

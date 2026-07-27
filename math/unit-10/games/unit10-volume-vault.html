@@ -996,6 +996,15 @@
         } catch (e) {}
         srSay("All vaults sealed. Score " + S.score + ", " + stars + " stars.");
         show("result");
+        if (window.ewlShowMasteryModal) {
+          window.ewlShowMasteryModal({
+            score: typeof S !== "undefined" && S.score ? S.score : 1000,
+            maxScore: 1000,
+            stars: typeof stars !== "undefined" ? stars : 3,
+            accuracy: 100,
+            title: "Volume Vault — Build the Prism"
+          });
+        }
       }
 
       // ── Wiring ──
