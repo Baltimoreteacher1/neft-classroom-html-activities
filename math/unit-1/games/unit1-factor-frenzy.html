@@ -2,172 +2,566 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/assets/math-mobile.css" />
-    <title>Prime Brick Breaker | Unit 1</title>
+    <title>Factor Frenzy — Prime Factorization Game | Neft Teacher</title>
+    <meta
+      name="description"
+      content="Factor Frenzy: a calm, self-paced Grade 6 game where you build factor trees to find a number's prime factorization — split each number into factors or mark it prime until every branch is prime (6.NOS.4)."
+    />
     <style>
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
       }
-      html,
-      body {
-        width: 100%;
-        height: 100%;
-        margin: 0;
-        padding: 0;
-        background: #0a0a2e;
-        overflow: hidden;
-        font-family: "Segoe UI", system-ui, sans-serif;
-        /* Stop the browser treating a drag as scroll/zoom on tablets so Phaser
-           receives the touch-drag gesture (drag mechanics work on touch). */
-        touch-action: none;
+      :root {
+        --teal: #0b6f65;
+        --teal-bright: #12a596;
+        --gold: #d4952a;
+        --ink: #06202c;
+        --panel: #0f2b3c;
+        --line: #1f4a5b;
+        --comp: #5fb0e6;
+        --txt: #dff1f0;
+        --muted: #8fb6bf;
       }
-      /* ── Parallax prime-chain backdrop (bespoke depth behind the canvas) ──
-         Sits behind #game-container; GameFX moves [data-parallax-layer] on
-         pointer move, and disables it under prefers-reduced-motion. */
-      #fx-backdrop {
+      body {
+        background: var(--panel);
+        min-height: 100vh;
+        font-family: "Segoe UI", system-ui, sans-serif;
+        color: var(--txt);
+        overflow-x: hidden;
+      }
+      #ff-bg {
         position: fixed;
         inset: 0;
         z-index: 0;
         overflow: hidden;
         pointer-events: none;
-        background: radial-gradient(circle at 50% 18%, #16164a 0%, #0a0a2e 60%);
+        background: radial-gradient(130% 90% at 50% 0%, #134a5a 0%, #0f2b3c 55%, #08202c 100%);
       }
-      #fx-backdrop .deco {
+      .ff-mote {
         position: absolute;
-        inset: -6%;
-        will-change: transform;
-        opacity: 0.5;
+        border-radius: 50%;
+        background: #7fd6c8;
+        opacity: 0.4;
+        animation: ffTwinkle var(--tw, 3s) ease-in-out infinite;
       }
-      /* far layer: slow-drifting prime-chain glyphs */
-      #fx-chains {
-        font:
-          800 30px/1 "Arial Black",
-          system-ui,
-          sans-serif;
-        color: #2a2a72;
-        white-space: pre;
-        letter-spacing: 6px;
-        animation: fxDrift 46s linear infinite;
+      @keyframes ffTwinkle {
+        0%,
+        100% {
+          opacity: 0.12;
+          transform: scale(0.8);
+        }
+        50% {
+          opacity: 0.6;
+          transform: scale(1.2);
+        }
       }
-      /* near layer: scrolling factor reference cards */
-      #fx-cards {
-        animation: fxDriftR 64s linear infinite;
+      @media (prefers-reduced-motion: reduce) {
+        .ff-mote {
+          animation: none !important;
+          opacity: 0.35 !important;
+        }
+        * {
+          scroll-behavior: auto !important;
+        }
       }
-      #fx-cards span {
+      #ff-sr {
         position: absolute;
-        padding: 6px 12px;
-        border-radius: 10px;
-        font:
-          700 15px/1.2 "Arial",
-          system-ui,
-          sans-serif;
-        color: #aab6ee;
-        background: rgba(34, 34, 104, 0.45);
-        border: 1px solid rgba(90, 90, 170, 0.4);
-        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
       }
-      @keyframes fxDrift {
-        from {
-          transform: translateY(0);
-        }
-        to {
-          transform: translateY(-46px);
-        }
-      }
-      @keyframes fxDriftR {
-        from {
-          transform: translateY(0);
-        }
-        to {
-          transform: translateY(38px);
-        }
-      }
-      #game-container {
-        margin: 0 auto;
+      #wrap {
         position: relative;
         z-index: 1;
-      }
-      canvas {
-        display: block;
+        max-width: 920px;
         margin: 0 auto;
-        max-width: 100%;
-        border-radius: 10px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
-        touch-action: none;
+        padding: 18px 16px 48px;
+        min-height: 100vh;
       }
-      /* Back-to-hub link, kept above the canvas. */
-      .nt-back-hub {
-        position: fixed;
-        top: 8px;
-        left: 8px;
-        z-index: 50;
-        padding: 6px 12px;
-        border-radius: 8px;
+      .screen {
+        display: none;
+      }
+      .screen.on {
+        display: block;
+        animation: fade 0.35s ease;
+      }
+      @keyframes fade {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      h1 {
+        font-size: clamp(1.6rem, 4vw, 2.3rem);
+        color: #fff;
+        letter-spacing: 0.5px;
+      }
+      .sub {
+        color: var(--muted);
+        margin-top: 4px;
+        font-size: 0.95rem;
+      }
+      .card {
+        background: rgba(13, 41, 56, 0.82);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 20px;
+        margin: 16px 0;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+      }
+      .btn {
         font:
-          600 13px/1 "Segoe UI",
+          600 1rem "Segoe UI",
           system-ui,
           sans-serif;
-        color: #e6f1ff;
-        background: rgba(10, 10, 46, 0.7);
-        border: 1px solid rgba(120, 160, 220, 0.5);
-        text-decoration: none;
+        cursor: pointer;
+        border: none;
+        border-radius: 12px;
+        padding: 13px 22px;
+        color: var(--ink);
+        background: var(--teal);
+        transition:
+          transform 0.12s,
+          background 0.12s,
+          box-shadow 0.12s;
       }
-      .nt-back-hub:hover,
-      .nt-back-hub:focus {
-        background: rgba(34, 34, 104, 0.9);
-        outline: 2px solid #ffd23f;
+      .btn:hover {
+        background: var(--teal-bright);
+        transform: translateY(-1px);
       }
-      /* Respect reduced-motion: freeze every backdrop drift. */
-      @media (prefers-reduced-motion: reduce) {
-        #fx-chains,
-        #fx-cards {
-          animation: none !important;
+      .btn:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 3px;
+      }
+      .btn.ghost {
+        background: #1a3a48;
+        color: #9fc6cf;
+      }
+      .btn.ghost:hover {
+        background: #244c5c;
+      }
+      .btn.big {
+        padding: 18px 26px;
+        font-size: 1.1rem;
+      }
+      .btn.keep {
+        background: #2563a8;
+        color: #fff;
+        border: 2px solid #7dd3fc;
+      }
+      .btn.keep:hover {
+        background: #2f74c2;
+      }
+      .btn.auto {
+        margin-top: 14px;
+        background: #1a3a48;
+        color: var(--gold);
+      }
+      .btn.auto:hover {
+        background: #244c5c;
+        color: #ffd98a;
+      }
+      .vocab {
+        display: grid;
+        gap: 12px;
+        margin: 14px 0;
+      }
+      .vrow {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+        background: #0c2532;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 14px;
+      }
+      .vterm {
+        color: var(--gold);
+        font-weight: 700;
+        min-width: 150px;
+      }
+      .vdef {
+        color: var(--txt);
+      }
+      .levels {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 14px;
+      }
+      @media (max-width: 680px) {
+        .levels {
+          grid-template-columns: 1fr;
         }
-        #fx-backdrop .deco {
-          transform: none !important;
-        }
+      }
+      .level-pick {
+        text-align: left;
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 6px;
+        padding: 18px;
+        background: #0c2532;
+        border: 1px solid var(--line);
+        color: var(--txt);
+        border-radius: 14px;
+        cursor: pointer;
+      }
+      .level-pick:hover {
+        border-color: var(--teal-bright);
+        background: #102f3f;
+      }
+      .level-pick b {
+        color: #fff;
+        font-size: 1.15rem;
+      }
+      .level-pick .tag {
+        color: var(--teal-bright);
+        font-weight: 700;
+        font-size: 0.85rem;
+      }
+      .level-pick .desc {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .hud {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      .hud .pill {
+        background: #0c2532;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 6px 14px;
+        font-weight: 700;
+      }
+      .hud .pill small {
+        color: var(--muted);
+        font-weight: 600;
+      }
+      .hud .finish {
+        display: none;
+        font:
+          700 0.95rem "Segoe UI",
+          system-ui,
+          sans-serif;
+        cursor: pointer;
+        background: #0c2532;
+        border: 1px solid var(--gold);
+        border-radius: 999px;
+        padding: 6px 14px;
+        color: var(--gold);
+      }
+      .hud .finish:hover {
+        background: #14384a;
+        color: #ffd98a;
+      }
+      .hud .finish:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 3px;
+      }
+      .target {
+        text-align: center;
+        margin: 6px 0 10px;
+      }
+      .target .nums {
+        font-size: clamp(1.3rem, 4.4vw, 1.9rem);
+        font-weight: 800;
+        color: #fff;
+      }
+      .target .nums span {
+        color: var(--gold);
+      }
+      .prompt {
+        color: var(--muted);
+        margin-top: 4px;
+        font-size: 0.95rem;
+      }
+
+      /* ── Factor tree ── */
+      .tree-wrap {
+        overflow-x: auto;
+        padding: 14px 0 6px;
+      }
+      .tree {
+        display: flex;
+        justify-content: center;
+        min-width: max-content;
+        margin: 0 auto;
+      }
+      .node {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .bubble {
+        font:
+          800 1.2rem "Segoe UI",
+          system-ui,
+          sans-serif;
+        min-width: 54px;
+        height: 54px;
+        padding: 0 14px;
+        border: none;
+        border-radius: 14px;
+        cursor: pointer;
+        color: var(--ink);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition:
+          transform 0.1s,
+          box-shadow 0.1s;
+      }
+      .bubble.composite {
+        background: linear-gradient(180deg, #bfe6ff, var(--comp));
+        box-shadow: 0 4px 0 #2c6f9e;
+      }
+      .bubble.composite:hover {
+        transform: translateY(-2px);
+      }
+      .bubble.composite.sel {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow:
+          0 0 0 3px #fff,
+          0 5px 0 #2c6f9e;
+      }
+      .bubble.prime {
+        background: linear-gradient(180deg, #ffd98a, var(--gold));
+        box-shadow: 0 4px 0 #a86f16;
+        cursor: default;
+      }
+      .bubble.internal {
+        background: #16384a;
+        color: #9fc6cf;
+        border: 1px solid var(--line);
+        box-shadow: none;
+        cursor: default;
+      }
+      .bubble:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+      /* org-chart connectors (always two children per split) */
+      .children {
+        display: flex;
+        justify-content: center;
+        gap: 26px;
+        padding-top: 28px;
+        position: relative;
+      }
+      .children::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 2px;
+        height: 14px;
+        background: var(--line);
+      }
+      .children::after {
+        content: "";
+        position: absolute;
+        top: 14px;
+        left: 25%;
+        right: 25%;
+        height: 2px;
+        background: var(--line);
+      }
+      .children > .node {
+        position: relative;
+      }
+      .children > .node::before {
+        content: "";
+        position: absolute;
+        top: -14px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 2px;
+        height: 14px;
+        background: var(--line);
+      }
+
+      /* ── Action palette (split / mark prime) ── */
+      .palette {
+        display: none;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        justify-content: center;
+        background: #0c2532;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 14px;
+        margin: 14px 0 6px;
+      }
+      .palette.on {
+        display: flex;
+        animation: fade 0.2s ease;
+      }
+      .pal-q {
+        width: 100%;
+        text-align: center;
+        color: var(--txt);
+        font-weight: 600;
+      }
+      .pal-q b {
+        color: #fff;
+      }
+      .pal-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        justify-content: center;
+      }
+      .pal-or {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .pair-chip {
+        font:
+          700 1rem "Segoe UI",
+          system-ui,
+          sans-serif;
+        cursor: pointer;
+        border: none;
+        border-radius: 12px;
+        padding: 11px 16px;
+        color: var(--ink);
+        background: linear-gradient(180deg, #bfe6ff, var(--comp));
+        box-shadow: 0 3px 0 #2c6f9e;
+        transition: transform 0.1s;
+      }
+      .pair-chip:hover {
+        transform: translateY(-1px);
+      }
+      .prime-btn {
+        font:
+          700 1rem "Segoe UI",
+          system-ui,
+          sans-serif;
+        cursor: pointer;
+        border: none;
+        border-radius: 12px;
+        padding: 11px 18px;
+        color: var(--ink);
+        background: linear-gradient(180deg, #ffd98a, var(--gold));
+        box-shadow: 0 3px 0 #a86f16;
+        transition: transform 0.1s;
+      }
+      .prime-btn:hover {
+        transform: translateY(-1px);
+      }
+      .pair-chip:focus-visible,
+      .prime-btn:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+
+      .readout {
+        display: flex;
+        justify-content: center;
+        margin: 10px 0 2px;
+      }
+      .readout .r {
+        background: #0c2532;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 10px 18px;
+        font-weight: 800;
+        font-size: 1.05rem;
+        color: var(--gold);
+      }
+      .feedback {
+        min-height: 24px;
+        text-align: center;
+        margin: 10px 0;
+        font-weight: 600;
+      }
+      .feedback.bad {
+        color: #f0a06b;
+      }
+      .feedback.good {
+        color: #79d39a;
+      }
+      .hint {
+        color: var(--muted);
+        font-size: 0.9rem;
+        text-align: center;
+        margin-top: 6px;
+      }
+      .result-stars {
+        font-size: 2rem;
+        color: var(--gold);
+        letter-spacing: 6px;
+        text-align: center;
+        margin: 10px 0;
+      }
+      .result-stat {
+        display: flex;
+        justify-content: space-between;
+        max-width: 320px;
+        margin: 6px auto;
+        color: var(--muted);
+      }
+      .result-stat b {
+        color: var(--txt);
+      }
+      .row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 16px;
       }
     </style>
-    <script src="/games/vendor/phaser/phaser-3.80.1.min.js"></script>
-    <script>
-      // CDN fallback: if the primary CDN failed, synchronously load Phaser from a mirror
-      // (document.write blocks parsing so the mirror is ready before the game script runs).
-      if (typeof Phaser === "undefined") {
-        document.write(
-          '<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"><\/script>',
-        );
-      }
-      // If both CDNs are unreachable, show a clear message instead of a blank page.
-      window.addEventListener("load", function () {
-        if (typeof Phaser === "undefined") {
-          document.body.innerHTML =
-            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">⚠️ This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
-        }
-      });
-    </script>
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <link rel="stylesheet" href="/assets/game-fx.css" />
     <!-- gfx-injected:end -->
+    <!-- Games-2D metadata source of truth (must load before the game script) -->
+    <script src="/assets/games2d-data.js"></script>
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
     <link rel="stylesheet" href="/assets/mobile-access.css" />
     <!-- mobile-access-injected:end -->
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
-  <link rel="stylesheet" href="/assets/game-access.css">
-  <!-- gacc-injected:end -->
-    <link rel="stylesheet" href="/assets/game-topbar.css" />
+    <link rel="stylesheet" href="/assets/game-access.css" />
+    <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <link rel="stylesheet" href="/assets/game-hint-ladder.css" />
+    <!-- ghl-injected:end -->
+
+    <!-- uifr-injected:begin -->
+    <!-- BCPS Instructional Framework Rubric · TEACH support. Teacher/observer reference — NOT shown to students. Interactive practice activity (math/games/u1-factor-frenzy): supports Level 4 conditions on T2, T4 (students choose their approach + immediate no-fail feedback with retry). Full evidence: /teacher-tools/teaching-evidence/ · docs/uifr-teach-l4.md. -->
+    <!-- uifr-injected:end -->
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
-  <!-- nsr-injected:end -->
-  <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2" />
+    <!-- nsr-injected:end -->
+    <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
 </head>
   <body>
+    <div id="ff-bg" aria-hidden="true"></div>
+    <div id="ff-sr" role="status" aria-live="polite"></div>
 
+    
             <!-- EWL Universal Arcade Enhancements Header -->
       <div class="ewl-arcade-header-bar">
         <div class="ewl-arcade-title-group">
@@ -183,1748 +577,726 @@
         </div>
       </div>
   
-    <!-- nt-game-topbar-injected:begin (tools/inject-game-topbar.js) -->
-    <header class="nt-game-topbar" role="banner"><span class="ngt-title">Prime Brick Breaker</span></header>
-    <!-- nt-game-topbar-injected:end -->
-    <a class="nt-back-hub" href="../index.html" aria-label="Back to Unit 1 hub"
-      >← Back to Unit&nbsp;1</a
-    >
-    <!-- Parallax prime-chain backdrop (GameFX pointer-parallax target; both
-         layers freeze under prefers-reduced-motion via CSS + the FX kit). -->
-    <div id="fx-backdrop" data-parallax aria-hidden="true">
-      <div id="fx-chains" class="deco" data-parallax-layer></div>
-      <div id="fx-cards" class="deco" data-parallax-layer></div>
-    </div>
-    <div id="game-container"></div>
+<main id="wrap">
+      <!-- VOCAB GATE -->
+      <section id="screen-vocab" class="screen on" aria-labelledby="vh">
+        <h1 id="vh">⚒️ Factor Frenzy</h1>
+        <p class="sub">Build factor trees · Prime factorization · 6.NOS.4</p>
+        <div class="card">
+          <h2 style="color: #fff; font-size: 1.2rem">Words to know first</h2>
+          <div class="vocab" id="vocab-list"></div>
+          <button class="btn big" id="vocab-go">I'm ready →</button>
+        </div>
+      </section>
+
+      <!-- LEVEL SELECT -->
+      <section id="screen-level" class="screen" aria-labelledby="lh">
+        <h1 id="lh">Choose your level</h1>
+        <p class="sub">You can change this any time by playing again.</p>
+        <div class="card">
+          <div class="levels" id="level-list"></div>
+          <button class="btn auto" id="level-auto">✨ Auto — picks your level</button>
+        </div>
+      </section>
+
+      <!-- PLAY -->
+      <section id="screen-play" class="screen" aria-labelledby="ph">
+        <h1 id="ph" style="position: absolute; left: -9999px">Factor Frenzy play</h1>
+        <div class="hud">
+          <span class="pill"
+            ><small>Round</small> <span id="hud-round">1</span>/<span id="hud-total">4</span></span
+          >
+          <span class="pill"><small>Score</small> <span id="hud-score">0</span></span>
+          <button class="finish" id="hud-finish">Finish ✓</button>
+        </div>
+        <div class="card play-layout-grid">
+          <!-- SIDE PANEL: Factor Numbers & Tree Builder -->
+          <div class="side-panel-numbers">
+            <div class="target">
+              <div class="nums">Build prime factorization: <span id="t-n">12</span></div>
+              <div class="prompt">
+                Tap a number to split into factors or mark prime.
+              </div>
+            </div>
+
+            <div class="tree-wrap">
+              <div class="tree" id="tree" role="group" aria-label="Factor tree"></div>
+            </div>
+
+            <div
+              class="palette"
+              id="palette"
+              role="group"
+              aria-label="Choose what to do with the number you tapped"
+            ></div>
+
+            <div class="readout"><span class="r" id="ro-fact">12 = …</span></div>
+
+            <div class="feedback" id="feedback" role="status" aria-live="assertive"></div>
+            <p class="hint" id="hint"></p>
+          </div>
+
+          <!-- CENTER VAULT STAGE -->
+          <div class="vault-center-stage" id="vault-stage">
+            <div class="vault-graphic-box">
+              <div class="vault-icon" id="vault-icon">🔒</div>
+              <div class="vault-title" id="vault-title">Factor Vault Locked</div>
+              <div class="vault-subtitle" id="vault-subtitle">Complete all prime leaves on the side to unlock</div>
+            </div>
+            <button class="btn big seal ewl-open-vault-btn" id="btn-open-vault" style="display: none;">🔓 OPEN THE VAULT</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- RESULT -->
+      <section id="screen-result" class="screen" aria-labelledby="rh">
+        <h1 id="rh">Forge complete</h1>
+        <div class="card">
+          <div class="result-stars" id="r-stars">★★★</div>
+          <div class="result-stat"><span>Score</span><b id="r-score">0</b></div>
+          <div class="result-stat"><span>Correct steps</span><b id="r-correct">0</b></div>
+          <div class="result-stat"><span>Numbers factored</span><b id="r-rounds">0</b></div>
+          <div class="result-stat" id="r-high-row" style="display: none">
+            <span>★ New high score!</span><b id="r-high">0</b>
+          </div>
+          <div class="row">
+            <button class="btn big" id="r-again">Play again</button>
+            <button class="btn big keep" id="r-keep">♾️ Keep Playing</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
     <script>
-      // Populate the parallax backdrop with procedural prime-factor chains and
-      // floating factor reference cards. Purely decorative; no gameplay impact.
-      (function buildBackdrop() {
-        try {
-          var chains = document.getElementById("fx-chains");
-          var cards = document.getElementById("fx-cards");
-          if (!chains || !cards) return;
-          var rows = [];
-          var samples = [
-            "12 = 2·2·3",
-            "18 = 2·3·3",
-            "24 = 2·2·2·3",
-            "30 = 2·3·5",
-            "36 = 2·2·3·3",
-            "2 · 3 · 5 · 7 · 11 · 13",
-            "GCF · LCM · PRIME",
-          ];
-          for (var r = 0; r < 16; r++) {
-            rows.push(samples[r % samples.length]);
-          }
-          chains.textContent = rows.join("\n");
-          // scattered factor cards
-          var facts = [
-            "8 = 2³",
-            "20 = 2²·5",
-            "45 = 3²·5",
-            "60 = 2²·3·5",
-            "42 = 2·3·7",
-            "27 = 3³",
-            "50 = 2·5²",
-            "70 = 2·5·7",
-          ];
-          var frag = document.createDocumentFragment();
-          for (var i = 0; i < facts.length; i++) {
-            var s = document.createElement("span");
-            s.textContent = facts[i];
-            s.style.left = 4 + ((i * 137) % 86) + "%";
-            s.style.top = 6 + ((i * 91) % 84) + "%";
-            frag.appendChild(s);
-          }
-          cards.appendChild(frag);
-        } catch (e) {
-          /* decorative only — never block the game */
+      // ── Decorative drifting motes (reduced-motion safe) ──
+      (function () {
+        var host = document.getElementById("ff-bg");
+        if (!host) return;
+        var reduce =
+          window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        var n = reduce ? 10 : 26;
+        for (var i = 0; i < n; i++) {
+          var d = document.createElement("div");
+          d.className = "ff-mote";
+          var sz = 2 + Math.random() * 4;
+          d.style.width = d.style.height = sz.toFixed(1) + "px";
+          d.style.left = (Math.random() * 100).toFixed(2) + "%";
+          d.style.top = (Math.random() * 100).toFixed(2) + "%";
+          d.style.setProperty("--tw", (2 + Math.random() * 4).toFixed(2) + "s");
+          d.style.animationDelay = "-" + (Math.random() * 4).toFixed(2) + "s";
+          host.appendChild(d);
         }
       })();
     </script>
+
     <script>
-      (() => {
-        // ════════════════════════════════════════════════════════════════
-        //  FACTOR FRENZY — "PRIME FACTORY"  (standard 6.NOS.B.4)
-        //  THE MATH IS THE MECHANIC. There are NO 1-of-N number buttons and
-        //  no answer menus. The player physically SORTS prime-factor tiles,
-        //  and the product of what they seat IS the answer:
-        //   • GCF round: drag prime tiles into a shared OVERLAP zone. A prime
-        //     only LOCKS in the overlap if it divides BOTH numbers; others
-        //     bounce out. The product of the locked tiles = the GCF. The vault
-        //     opens when the largest common factorisation is seated.
-        //   • LCM round: build each number's prime TOWER, then drag missing
-        //     primes until every prime's tower is as tall as the taller side.
-        //     The merged tower's product = the LCM.
-        //   • Prime vs composite: drop a number onto a "rows" grid. A prime
-        //     visibly refuses to form any rectangle except 1×n.
-        //  Level 1 (Support): numbers <= 24, prime tiles pre-provided.
-        //  Level 2 (Challenge): larger numbers, player picks primes themselves.
-        //  Feedback never gives the answer — it teaches factoring.
-        // ════════════════════════════════════════════════════════════════
+      // ════════════════════════════════════════════════════════════════════
+      //  FACTOR FRENZY — Factor Tree Builder  ·  Grade 6  ·  6.NOS.4
+      //
+      //  Prime factorization, as a real mechanic: the player breaks a number
+      //  into a factor tree. Tap a number, then either SPLIT it into a factor
+      //  pair or MARK it PRIME. The number is factored when every leaf is a
+      //  prime the player has marked. No timer, no lives — wrong moves give a
+      //  gentle nudge and you try again. Stars reward doing it cleanly.
+      // ════════════════════════════════════════════════════════════════════
+      const STANDARD = "6.NOS.4";
+      const ACTIVITY_TITLE = "Factor Frenzy — Prime Factorization";
+      const LS_KEY = "ff_factor_frenzy_highscore";
+      const ROUNDS = 5; // pools hold 5–6 numbers; 5 keeps every level full-length
 
-        // ─── SOUND ENGINE ───
-        const AudioCtx = window.AudioContext || window.webkitAudioContext;
-        let actx = null;
-        function ensureAudio() {
-          if (!actx && AudioCtx) actx = new AudioCtx();
-          if (actx && actx.state === "suspended") actx.resume();
-        }
-        function beep(freq, dur, type = "sine", vol = 0.16) {
-          if (!actx) return;
-          const o = actx.createOscillator(),
-            g = actx.createGain();
-          o.connect(g);
-          g.connect(actx.destination);
-          o.frequency.value = freq;
-          o.type = type;
-          g.gain.setValueAtTime(vol, actx.currentTime);
-          g.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + dur);
-          o.start();
-          o.stop(actx.currentTime + dur);
-        }
-        const sfxGrab = () => beep(360 + Math.random() * 40, 0.05, "sine", 0.1);
-        const sfxLock = () => {
-          beep(523, 0.06);
-          setTimeout(() => beep(784, 0.08), 55);
-        };
-        const sfxBounce = () => beep(200, 0.14, "square", 0.1);
-        const sfxSolve = () => {
-          beep(523, 0.08);
-          setTimeout(() => beep(659, 0.08), 70);
-          setTimeout(() => beep(880, 0.16), 150);
-        };
-        const sfxWrong = () => beep(160, 0.22, "square", 0.1);
-        const sfxLevel = () =>
-          [523, 659, 784, 1047].forEach((f, i) =>
-            setTimeout(() => beep(f, 0.14), i * 90),
+      // Self-contained content (this game is prime-factorization only, so it
+      // does not use the GCF/LCM framing in window.Games2DData).
+      const VOCAB = [
+        {
+          term: "factor",
+          defn: "A number that divides another number evenly, with nothing left over. 3 is a factor of 12 because 12 ÷ 3 = 4.",
+        },
+        {
+          term: "prime number",
+          defn: "A number greater than 1 whose only factors are 1 and itself, like 2, 3, 5, and 7. A prime cannot be split.",
+        },
+        {
+          term: "composite number",
+          defn: "A number with more than two factors, like 12 (1, 2, 3, 4, 6, 12). A composite can always be split into factors.",
+        },
+        {
+          term: "prime factorization",
+          defn: "Writing a number using only prime numbers multiplied together, like 12 = 2 × 2 × 3.",
+        },
+      ];
+
+      const TIERS = {
+        1: {
+          label: "Level 1",
+          sub: "Support",
+          name: "Apprentice Smith",
+          desc: "Smaller numbers · factor-pair help shown",
+        },
+        2: {
+          label: "Level 2",
+          sub: "On level",
+          name: "Journeyman Smith",
+          desc: "Bigger numbers · find the factors yourself",
+        },
+        3: {
+          label: "Level 3",
+          sub: "Enrichment",
+          name: "Master Smith",
+          desc: "Large numbers · watch for an already-prime",
+        },
+      };
+
+      // Curated number pools (clean, friendly factor structures).
+      const POOLS = {
+        1: [12, 18, 20, 24, 16, 28],
+        2: [36, 48, 60, 72, 54, 40],
+        3: [84, 90, 120, 100, 126],
+      };
+      const L3_PRIMES = [23, 29, 31, 37];
+
+      // ── Tiny WebAudio SFX ──
+      const SFX = {
+        ctx: null,
+        init() {
+          if (!this.ctx)
+            try {
+              this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+            } catch (e) {}
+        },
+        play(t, f, d, v = 0.2) {
+          if (!this.ctx) return;
+          try {
+            const c = this.ctx,
+              o = c.createOscillator(),
+              g = c.createGain();
+            o.type = t;
+            o.frequency.value = f;
+            g.gain.setValueAtTime(v, c.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + d);
+            o.connect(g);
+            g.connect(c.destination);
+            o.start();
+            o.stop(c.currentTime + d);
+          } catch (e) {}
+        },
+        good() {
+          this.play("sine", 660, 0.1, 0.3);
+          this.play("sine", 880, 0.15, 0.25);
+        },
+        bad() {
+          this.play("sawtooth", 200, 0.22, 0.2);
+        },
+        win() {
+          [523, 659, 784, 1046].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.18, 0.25), i * 90),
           );
-        const sfxClick = () => beep(440, 0.05, "sine", 0.09);
+        },
+      };
 
-        // ─── MOTION PREFERENCE ───
-        // Single source of truth for "should we animate?" Every bespoke tween
-        // and particle burst below checks this so the game honors the OS
-        // prefers-reduced-motion setting (kept live via a change listener).
-        const reduceQuery =
-          window.matchMedia &&
-          window.matchMedia("(prefers-reduced-motion: reduce)");
-        let REDUCE_MOTION = !!(reduceQuery && reduceQuery.matches);
-        if (reduceQuery && reduceQuery.addEventListener) {
-          reduceQuery.addEventListener(
-            "change",
-            (e) => (REDUCE_MOTION = e.matches),
-          );
-        }
-
-        // ─── LAYOUT + PALETTE ───
-        const W = 960,
-          H = 720;
-        const C = {
-          bg: 0x0a0a2e,
-          panel: 0x161645,
-          panelHi: 0x222268,
-          gold: 0xffd23f,
-          white: 0xffffff,
-          dim: 0x8fa3d6,
-          green: 0x35c46b,
-          red: 0xe7556b,
-          slot: 0x05051c,
-          stroke: 0x3a3a7a,
-          // colourblind-safe prime palette (Okabe–Ito derived); each prime
-          // ALSO carries its number + a glyph shape, so colour is never the
-          // only cue.
-        };
-        // distinct primes used by tiles; colour + the printed number identify them
-        const PRIME_INFO = {
-          2: { color: 0x0072b2, css: "#0072b2" },
-          3: { color: 0xd55e00, css: "#d55e00" },
-          5: { color: 0x009e73, css: "#009e73" },
-          7: { color: 0xcc79a7, css: "#cc79a7" },
-          11: { color: 0xe69f00, css: "#e69f00" },
-          13: { color: 0x56b4e9, css: "#56b4e9" },
-        };
-        const pinfo = (p) => PRIME_INFO[p] || { color: 0x999999, css: "#999" };
-
-        // ─── MATH HELPERS ───
-        const gcdF = (a, b) => (b ? gcdF(b, a % b) : a);
-        const lcmF = (a, b) => (a / gcdF(a, b)) * b;
-        const rnd = (n) => Math.floor(Math.random() * n);
-        const pick = (arr) => arr[rnd(arr.length)];
-        function shuffle(arr) {
-          const a = [...arr];
-          for (let i = a.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [a[i], a[j]] = [a[j], a[i]];
+      // ── Math helpers ──
+      function isPrime(n) {
+        if (n < 2) return false;
+        for (let p = 2; p * p <= n; p++) if (n % p === 0) return false;
+        return true;
+      }
+      function factorPairs(n) {
+        // non-trivial pairs [a, b] with 1 < a <= b and a * b === n
+        const out = [];
+        for (let a = 2; a * a <= n; a++) if (n % a === 0) out.push([a, n / a]);
+        return out;
+      }
+      function primeFactors(n) {
+        const f = {};
+        let m = n;
+        for (let p = 2; p * p <= m; p++)
+          while (m % p === 0) {
+            f[p] = (f[p] || 0) + 1;
+            m /= p;
           }
-          return a;
-        }
-        function isPrime(n) {
-          if (n < 2) return false;
-          for (let i = 2; i * i <= n; i++) if (n % i === 0) return false;
-          return true;
-        }
-        // prime factorisation as a {prime: exponent} map
-        function primeFactor(n) {
-          const m = {};
-          let x = n;
-          for (let p = 2; p * p <= x; p++) {
-            while (x % p === 0) {
-              m[p] = (m[p] || 0) + 1;
-              x /= p;
-            }
-          }
-          if (x > 1) m[x] = (m[x] || 0) + 1;
-          return m;
-        }
-        // flatten a factor-map into a multiset list of primes
-        function primeList(n) {
-          const m = primeFactor(n),
-            out = [];
-          Object.keys(m).forEach((p) => {
-            for (let i = 0; i < m[p]; i++) out.push(+p);
+        if (m > 1) f[m] = (f[m] || 0) + 1;
+        return f;
+      }
+      function primeListOf(n) {
+        const f = primeFactors(n);
+        const arr = [];
+        Object.keys(f)
+          .map(Number)
+          .sort((a, b) => a - b)
+          .forEach((p) => {
+            for (let i = 0; i < f[p]; i++) arr.push(p);
           });
-          return out.sort((a, b) => a - b);
+        return arr;
+      }
+      function sup(n) {
+        const map = { 2: "²", 3: "³", 4: "⁴", 5: "⁵", 6: "⁶", 7: "⁷" };
+        return map[n] || "^" + n;
+      }
+      function exponentForm(primes) {
+        const f = {};
+        primes.forEach((p) => (f[p] = (f[p] || 0) + 1));
+        return Object.keys(f)
+          .map(Number)
+          .sort((a, b) => a - b)
+          .map((p) => (f[p] > 1 ? p + sup(f[p]) : "" + p))
+          .join(" × ");
+      }
+      function shuffle(a) {
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = (Math.random() * (i + 1)) | 0;
+          [a[i], a[j]] = [a[j], a[i]];
         }
-        // product of a list of primes (the player's seated factorisation)
-        const product = (list) => list.reduce((a, b) => a * b, 1);
+        return a;
+      }
 
-        // ─── ROUND GENERATOR (solvability-verified) ───
-        // Builds prime/gcf/lcm rounds whose tile interaction yields the true
-        // answer. Numbers are kept inside the visual capacity per tier.
-        function makeRound(tier, index) {
-          // every 3rd round is a prime-vs-composite warm-up; alternate gcf/lcm
-          let type;
-          const m = index % 3;
-          if (m === 0) type = "prime";
-          else type = m === 1 ? "gcf" : "lcm";
+      // ── Tree model ──
+      let nodeUid = 0;
+      function makeNode(value) {
+        return { id: "n" + nodeUid++, value, children: null, prime: false };
+      }
+      function makePuzzle(n) {
+        return { n, root: makeNode(n), targetPrimes: primeListOf(n) };
+      }
+      function findNode(node, id) {
+        if (node.id === id) return node;
+        if (node.children)
+          for (const c of node.children) {
+            const r = findNode(c, id);
+            if (r) return r;
+          }
+        return null;
+      }
+      function leaves(node, acc) {
+        acc = acc || [];
+        if (!node.children) acc.push(node);
+        else node.children.forEach((c) => leaves(c, acc));
+        return acc;
+      }
+      function isComplete(root) {
+        return leaves(root).every((l) => l.prime && isPrime(l.value));
+      }
+      function lockedPrimes() {
+        return leaves(S.cur.root)
+          .filter((l) => l.prime)
+          .map((l) => l.value)
+          .sort((a, b) => a - b);
+      }
 
-          if (type === "prime") return makePrimeRound(tier);
-          if (type === "gcf") return makeGcfRound(tier);
-          return makeLcmRound(tier);
+      // ✨ Auto / ♾️ Endless flags. Auto ONLY picks the starting level
+      // (NTAdaptive) before startGame; difficulty NEVER changes mid-run.
+      // Endless replays reuse the SAME level.
+      let ffAuto = false;
+      let ffEndless = false;
+
+      // ── State ──
+      const S = {
+        level: 1,
+        score: 0,
+        round: 0,
+        completed: 0,
+        over: false,
+        mistakes: 0,
+        correctActions: 0,
+        totalActions: 0,
+        puzzles: [],
+        cur: null,
+        selected: null,
+      };
+
+      const $ = (id) => document.getElementById(id);
+      const srSay = (m) => {
+        const el = $("ff-sr");
+        if (el) {
+          el.textContent = "";
+          setTimeout(() => (el.textContent = m), 30);
         }
+      };
+      function show(screen) {
+        document.querySelectorAll(".screen").forEach((s) => s.classList.remove("on"));
+        $("screen-" + screen).classList.add("on");
+      }
+      function flash(msg, cls) {
+        const f = $("feedback");
+        f.textContent = msg;
+        f.className = "feedback " + cls;
+        srSay(msg);
+      }
 
-        function makePrimeRound(tier) {
-          // show one number; player decides prime or composite by trying to
-          // build equal rows. Mix of primes + composites across the game.
-          const wantPrime = Math.random() < 0.5;
-          let n;
-          let guard = 0;
-          do {
-            n =
-              tier === 1
-                ? 4 + rnd(21) // 4..24
-                : 12 + rnd(48); // 12..59
-            guard++;
-          } while (guard < 200 && isPrime(n) !== wantPrime);
-          return { type: "prime", n, isPrime: isPrime(n) };
-        }
+      // ── Vocab gate ──
+      function renderVocab() {
+        $("vocab-list").innerHTML = VOCAB.map(
+          (v) =>
+            `<div class="vrow"><span class="vterm">${v.term}</span><span class="vdef">${v.defn}</span></div>`,
+        ).join("");
+      }
 
-        function makeGcfRound(tier) {
-          // pick two numbers sharing a non-trivial common factor so the
-          // overlap zone has real tiles to seat.
-          let a,
-            b,
-            g,
-            guard = 0;
-          do {
-            if (tier === 1) {
-              a = 4 + rnd(21);
-              b = 4 + rnd(21);
-            } else {
-              a = 12 + rnd(48);
-              b = 12 + rnd(48);
-            }
-            g = gcdF(a, b);
-            guard++;
-          } while (
-            guard < 400 &&
-            (a === b || g < 2 || Math.max(a, b) > (tier === 1 ? 24 : 60))
+      // ── Level select ──
+      function renderLevels() {
+        $("level-list").innerHTML = Object.keys(TIERS)
+          .map((k) => {
+            const t = TIERS[k];
+            return `<button class="level-pick" data-level="${k}">
+            <span class="tag">${t.label} · ${t.sub}</span>
+            <b>${t.name}</b>
+            <span class="desc">${t.desc}</span>
+          </button>`;
+          })
+          .join("");
+        $("level-list")
+          .querySelectorAll("[data-level]")
+          .forEach((el) =>
+            el.addEventListener("click", () => {
+              ffAuto = false;
+              ffEndless = false;
+              startGame(Number(el.dataset.level));
+            }),
           );
-          return {
-            type: "gcf",
-            a,
-            b,
-            gcf: g,
-            // the multiset of primes that should seat in the overlap
-            overlap: primeList(g),
+      }
+
+      // ── Game flow ──
+      function buildRounds(level) {
+        const picks = shuffle((POOLS[level] || POOLS[1]).slice()).slice(0, ROUNDS);
+        // Level 3 guarantees an "already prime" round so marking the root
+        // prime is sometimes the right first move.
+        if (level === 3 && !picks.some(isPrime)) picks[ROUNDS - 1] = shuffle(L3_PRIMES.slice())[0];
+        return shuffle(picks);
+      }
+
+      function startGame(level) {
+        SFX.init();
+        S.level = level;
+        S.score = 0;
+        S.round = 0;
+        S.completed = 0;
+        S.over = false;
+        S.mistakes = 0;
+        S.correctActions = 0;
+        S.totalActions = 0;
+        S.puzzles = buildRounds(level).map(makePuzzle);
+        $("hud-total").textContent = ffEndless ? "∞" : ROUNDS;
+        $("hud-finish").style.display = ffEndless ? "inline-block" : "none";
+        show("play");
+        loadRound(0);
+      }
+
+      function loadRound(i) {
+        if (S.over) return;
+        S.round = i;
+        S.cur = S.puzzles[i];
+        S.selected = null;
+        $("hud-round").textContent = i + 1;
+        $("hud-score").textContent = S.score;
+        $("t-n").textContent = S.cur.n;
+        $("feedback").textContent = "";
+        $("feedback").className = "feedback";
+        $("hint").textContent =
+          S.level === 1
+            ? "Tap the number. If it can be split, pick a factor pair. If it’s prime, mark it ✓."
+            : "Break each number down to primes. Decide: is it prime, or can it still be split?";
+        if ($("vault-icon")) $("vault-icon").textContent = "🔒";
+        if ($("vault-title")) $("vault-title").textContent = "Factor Vault Locked";
+        if ($("vault-subtitle")) $("vault-subtitle").textContent = "Complete all prime leaves on the side to unlock";
+        if ($("btn-open-vault")) $("btn-open-vault").style.display = "none";
+        renderTree();
+        renderPalette();
+        updateReadout();
+        srSay(`Round ${i + 1}. Build the prime factorization of ${S.cur.n}.`);
+      }
+
+      // ── Tree rendering ──
+      function renderNode(node) {
+        const wrap = document.createElement("div");
+        wrap.className = "node";
+        const b = document.createElement("button");
+        b.className = "bubble";
+        b.textContent = node.value;
+        if (node.children) {
+          b.classList.add("internal");
+          b.disabled = true;
+          b.setAttribute("aria-label", node.value + ", already split");
+        } else if (node.prime) {
+          b.classList.add("prime");
+          b.disabled = true;
+          b.setAttribute("aria-label", node.value + ", prime, locked in");
+        } else {
+          b.classList.add("composite");
+          if (S.selected === node.id) b.classList.add("sel");
+          b.setAttribute("aria-label", node.value + ", tap to split it or mark it prime");
+          b.addEventListener("click", () => selectNode(node.id));
+        }
+        wrap.appendChild(b);
+        if (node.children) {
+          const ch = document.createElement("div");
+          ch.className = "children";
+          node.children.forEach((c) => ch.appendChild(renderNode(c)));
+          wrap.appendChild(ch);
+        }
+        return wrap;
+      }
+      function renderTree() {
+        const host = $("tree");
+        host.innerHTML = "";
+        host.appendChild(renderNode(S.cur.root));
+      }
+
+      // ── Action palette ──
+      function selectNode(id) {
+        S.selected = S.selected === id ? null : id;
+        renderTree();
+        renderPalette();
+        if (S.selected) {
+          const node = findNode(S.cur.root, id);
+          srSay(`You tapped ${node.value}. Is it prime, or can it be split?`);
+        }
+      }
+      function renderPalette() {
+        const host = $("palette");
+        if (!S.selected) {
+          host.innerHTML = "";
+          host.classList.remove("on");
+          return;
+        }
+        const node = findNode(S.cur.root, S.selected);
+        if (!node) {
+          host.innerHTML = "";
+          host.classList.remove("on");
+          return;
+        }
+        const pairs = factorPairs(node.value);
+        let html = `<div class="pal-q">You tapped <b>${node.value}</b>. Is it prime, or can it be split?</div><div class="pal-actions">`;
+        html += `<button class="prime-btn" data-act="prime">It’s prime ✓</button>`;
+        if (pairs.length) {
+          html += `<span class="pal-or">or split into…</span>`;
+          pairs.forEach(
+            ([a, b]) =>
+              (html += `<button class="pair-chip" data-act="split" data-a="${a}" data-b="${b}">${a} × ${b}</button>`),
+          );
+        }
+        html += `</div>`;
+        host.innerHTML = html;
+        host.classList.add("on");
+        host.querySelectorAll("[data-act]").forEach((el) =>
+          el.addEventListener("click", () => {
+            if (el.dataset.act === "prime") actPrime(node);
+            else actSplit(node, Number(el.dataset.a), Number(el.dataset.b));
+          }),
+        );
+      }
+
+      function actPrime(node) {
+        S.totalActions++;
+        if (isPrime(node.value)) {
+          node.prime = true;
+          S.selected = null;
+          S.correctActions++;
+          S.score += 10;
+          $("hud-score").textContent = S.score;
+          SFX.good();
+          renderTree();
+          renderPalette();
+          updateReadout();
+          flash(node.value + " is prime — locked in ✓", "good");
+          if (isComplete(S.cur.root)) roundWon();
+        } else {
+          S.mistakes++;
+          SFX.bad();
+          flash(
+            node.value + " can still be split — it has factors other than 1 and itself.",
+            "bad",
+          );
+        }
+      }
+
+      function actSplit(node, a, b) {
+        S.totalActions++;
+        if (a > 1 && b > 1 && a * b === node.value) {
+          node.children = [makeNode(a), makeNode(b)];
+          S.selected = null;
+          S.correctActions++;
+          S.score += 10;
+          $("hud-score").textContent = S.score;
+          SFX.good();
+          renderTree();
+          renderPalette();
+          updateReadout();
+          flash(node.value + " = " + a + " × " + b, "good");
+          if (isComplete(S.cur.root)) roundWon();
+        } else {
+          S.mistakes++;
+          SFX.bad();
+          flash("Those don’t multiply to " + node.value + ".", "bad");
+        }
+      }
+
+      function updateReadout() {
+        const lp = lockedPrimes();
+        $("ro-fact").textContent = S.cur.n + " = " + (lp.length ? lp.join(" × ") : "…");
+      }
+
+      function roundWon() {
+        S.completed++;
+        S.score += 25; // forge bonus
+        $("hud-score").textContent = S.score;
+        $("ro-fact").textContent = S.cur.n + " = " + exponentForm(lockedPrimes());
+        flash(S.cur.n + " = " + exponentForm(lockedPrimes()) + " ⚒️", "good");
+
+        // Unlock Vault UI in the clear middle stage!
+        if ($("vault-icon")) $("vault-icon").textContent = "🔓";
+        if ($("vault-title")) $("vault-title").textContent = "Vault Unlocked & Ready!";
+        if ($("vault-subtitle")) $("vault-subtitle").textContent = "Tap below to open the vault and claim your reward!";
+        const btnOpen = $("btn-open-vault");
+        if (btnOpen) {
+          btnOpen.style.display = "inline-flex";
+          btnOpen.onclick = function() {
+            btnOpen.style.display = "none";
+            if ($("vault-icon")) $("vault-icon").textContent = "🔓✨";
+            if ($("vault-title")) $("vault-title").textContent = "Vault Opened!";
+            SFX.win();
+            if (window.GameFX && GameFX.burst) {
+              try { GameFX.burst(window.innerWidth / 2, window.innerHeight / 3); } catch(e){}
+            }
+            if (ffEndless) {
+              if (S.round + 1 >= S.puzzles.length)
+                S.puzzles = S.puzzles.concat(buildRounds(S.level).map(makePuzzle));
+              setTimeout(() => loadRound(S.round + 1), 1000);
+            } else if (S.round + 1 >= ROUNDS) setTimeout(() => endGame(), 1000);
+            else setTimeout(() => loadRound(S.round + 1), 1000);
           };
         }
+      }
 
-        function makeLcmRound(tier) {
-          // keep the LCM inside the tower height budget
-          let a,
-            b,
-            l,
-            guard = 0;
-          const cap = tier === 1 ? 36 : 90;
-          do {
-            if (tier === 1) {
-              a = 2 + rnd(11); // 2..12
-              b = 2 + rnd(11);
-            } else {
-              a = 4 + rnd(17); // 4..20
-              b = 4 + rnd(17);
-            }
-            l = lcmF(a, b);
-            guard++;
-          } while (guard < 400 && (a === b || l > cap || l === Math.max(a, b)));
-          return {
-            type: "lcm",
-            a,
-            b,
-            lcm: l,
-            mapA: primeFactor(a),
-            mapB: primeFactor(b),
-            mapL: primeFactor(l),
-          };
+      function endGame() {
+        if (S.over) return; // latch: Finish ✓ + a pending round timeout can't double-end
+        S.over = true;
+        const stars = S.mistakes === 0 ? 3 : S.mistakes <= 2 ? 2 : 1;
+        $("r-stars").textContent = "★".repeat(stars) + "☆".repeat(3 - stars);
+        $("r-score").textContent = S.score;
+        $("r-correct").textContent = S.correctActions;
+        $("r-rounds").textContent = S.completed;
+        let high = 0;
+        try {
+          high = Number(localStorage.getItem(LS_KEY) || 0);
+        } catch (e) {}
+        if (S.score > high) {
+          try {
+            localStorage.setItem(LS_KEY, String(S.score));
+          } catch (e) {}
+          $("r-high").textContent = S.score;
+          $("r-high-row").style.display = "flex";
         }
-
-        // ════════════════════════════════════════════════════════════════
-        //  TITLE SCENE — Level 1 (Support) vs Level 2 (Challenge)
-        // ════════════════════════════════════════════════════════════════
-        class TitleScene extends Phaser.Scene {
-          constructor() {
-            super("TitleScene");
-          }
-          create() {
-            this.cameras.main.setBackgroundColor(C.bg);
-            this.add
-              .text(W / 2, 96, "FACTOR FRENZY", {
-                fontSize: "62px",
-                fontFamily: "Arial Black, sans-serif",
-                color: "#ffd23f",
-                stroke: "#000",
-                strokeThickness: 7,
-              })
-              .setOrigin(0.5);
-            this.add
-              .text(W / 2, 148, "Prime Factory · 6.NOS.B.4", {
-                fontSize: "20px",
-                fontFamily: "Arial",
-                color: "#aaccff",
-              })
-              .setOrigin(0.5);
-            this.add
-              .text(
-                W / 2,
-                202,
-                "Sort the PRIME tiles. The product of what you seat IS the answer —\n" +
-                  "shared primes make the GCF, matched towers make the LCM.",
-                {
-                  fontSize: "16px",
-                  fontFamily: "Arial",
-                  color: "#8fa3d6",
-                  align: "center",
-                  lineSpacing: 6,
-                },
-              )
-              .setOrigin(0.5);
-
-            this.drawDemo(W / 2, 330);
-
-            const tiers = [
-              {
-                t: 1,
-                label: "Level 1",
-                sub: "Support",
-                desc: "Numbers up to 24 · prime tiles given for you · 5 lives",
-                col: C.green,
-              },
-              {
-                t: 2,
-                label: "Level 2",
-                sub: "Challenge",
-                desc: "Bigger numbers · you pick the primes yourself · 3 lives",
-                col: C.gold,
-              },
-            ];
-            tiers.forEach((d, i) => {
-              const x = W / 2 + (i === 0 ? -200 : 200),
-                y = 520;
-              const card = this.add
-                .rectangle(x, y, 330, 140, C.panel)
-                .setStrokeStyle(3, C.stroke)
-                .setInteractive({ useHandCursor: true });
-              this.add
-                .text(x, y - 42, d.label, {
-                  fontSize: "30px",
-                  fontFamily: "Arial Black",
-                  color: "#fff",
-                })
-                .setOrigin(0.5);
-              this.add
-                .text(x, y - 12, d.sub, {
-                  fontSize: "16px",
-                  fontFamily: "Arial",
-                  color: Phaser.Display.Color.IntegerToColor(d.col).rgba,
-                })
-                .setOrigin(0.5);
-              this.add
-                .text(x, y + 28, d.desc, {
-                  fontSize: "13px",
-                  fontFamily: "Arial",
-                  color: "#c9d4f5",
-                  align: "center",
-                  wordWrap: { width: 300 },
-                  lineSpacing: 3,
-                })
-                .setOrigin(0.5);
-              card.on("pointerover", () => {
-                card.setStrokeStyle(3, d.col);
-                card.setScale(1.04);
-              });
-              card.on("pointerout", () => {
-                card.setStrokeStyle(3, C.stroke);
-                card.setScale(1);
-              });
-              card.on("pointerdown", () => {
-                ensureAudio();
-                sfxClick();
-                this.cameras.main.fadeOut(350, 0, 0, 0);
-                this.time.delayedCall(350, () =>
-                  this.scene.start("GameScene", { tier: d.t }),
-                );
-              });
+        try {
+          window.EduPulse &&
+            EduPulse.record({
+              activityTitle: ACTIVITY_TITLE,
+              score: S.score,
+              stars: stars,
+              problemsCorrect: S.correctActions,
+              problemsAttempted: S.totalActions,
+              percent: S.totalActions ? Math.round((S.correctActions / S.totalActions) * 100) : 100,
+              standard: STANDARD,
             });
-
-            this.add
-              .text(
-                W / 2,
-                648,
-                "Drag tiles with mouse or finger · TAB picks a tile, ←/→ moves it, ENTER seats it · H for a hint",
-                { fontSize: "13px", color: "#6f7fb5" },
-              )
-              .setOrigin(0.5);
-            this.cameras.main.fadeIn(400);
-          }
-          drawDemo(cx, cy) {
-            // mini overlap showing 12 = 2·2·3, 18 = 2·3·3, shared 2·3 → GCF 6
-            this.add
-              .text(cx - 250, cy, "12 = 2·2·3", {
-                fontSize: "20px",
-                fontFamily: "Arial",
-                color: "#0072b2",
-              })
-              .setOrigin(0.5);
-            this.add
-              .text(cx + 250, cy, "18 = 2·3·3", {
-                fontSize: "20px",
-                fontFamily: "Arial",
-                color: "#d55e00",
-              })
-              .setOrigin(0.5);
-            const ring = this.add
-              .ellipse(cx, cy, 150, 86, C.panelHi)
-              .setStrokeStyle(3, C.gold);
-            this.add
-              .text(cx, cy - 16, "shared: 2 · 3", {
-                fontSize: "16px",
-                fontFamily: "Arial Black",
-                color: "#fff",
-              })
-              .setOrigin(0.5);
-            this.add
-              .text(cx, cy + 14, "GCF = 6", {
-                fontSize: "18px",
-                fontFamily: "Arial Black",
-                color: "#ffd23f",
-              })
-              .setOrigin(0.5);
-          }
+        } catch (e) {}
+        srSay("All numbers factored. Score " + S.score + ", " + stars + " stars.");
+        // Adaptive: only record a run when the level was auto-picked. This game
+        // has no lose state, so "won" = finished a full-length run (>= ROUNDS
+        // numbers factored).
+        if (ffAuto && window.NTAdaptive) {
+          try {
+            window.NTAdaptive.recordRun("u1-factor-frenzy", {
+              won: S.completed >= ROUNDS,
+              accuracy: S.totalActions ? S.correctActions / S.totalActions : 1,
+              min: 1,
+              max: 3,
+            });
+          } catch (e) {}
         }
-
-        // ════════════════════════════════════════════════════════════════
-        //  GAME SCENE — the Prime Factory
-        // ════════════════════════════════════════════════════════════════
-        class GameScene extends Phaser.Scene {
-          constructor() {
-            super("GameScene");
-          }
-          init(data) {
-            this.tier = data.tier || 1;
-          }
-
-          create() {
-            this.cameras.main.setBackgroundColor(C.bg);
-            this.cameras.main.fadeIn(350);
-
-            // ── run state ──
-            this.score = 0;
-            this.streak = 0;
-            this.bestStreak = 0;
-            this.solved = 0;
-            this.attempted = 0;
-            this.correct = 0;
-            this.faults = 0; // wrong actions on the current round
-            this.lives = this.tier === 1 ? 5 : 3;
-            this.level = 1;
-            this.roundIx = 0;
-            this.goal = this.tier === 1 ? 9 : 12;
-
-            // backdrop
-            this.add.rectangle(W / 2, H / 2, W, H, C.bg);
-            this.add.rectangle(W / 2, 700, W, 200, 0x121238); // tile tray base
-
-            // ── HUD ──
-            this.add.rectangle(W / 2, 26, W, 52, C.slot, 0.96);
-            this.hScore = this.add.text(20, 12, "0", {
-              fontSize: "24px",
-              fontFamily: "Arial Black",
-              color: "#ffd23f",
-            });
-            this.add.text(22, 40, "POINTS", {
-              fontSize: "10px",
-              color: "#7f8fc5",
-            });
-            this.hLevel = this.add
-              .text(W / 2, 10, "Round 1", {
-                fontSize: "16px",
-                fontFamily: "Arial Black",
-                color: "#fff",
-              })
-              .setOrigin(0.5, 0);
-            this.hSolved = this.add
-              .text(W / 2, 34, "Solved 0", {
-                fontSize: "12px",
-                color: "#8fa3d6",
-              })
-              .setOrigin(0.5, 0);
-            this.hLives = this.add
-              .text(W - 20, 14, "", { fontSize: "20px" })
-              .setOrigin(1, 0);
-            this.hStreak = this.add
-              .text(W - 20, 40, "", { fontSize: "13px", color: "#ffd23f" })
-              .setOrigin(1, 0);
-
-            // ── prompt + task ──
-            this.promptText = this.add
-              .text(W / 2, 70, "", {
-                fontSize: "26px",
-                fontFamily: "Arial Black",
-                color: "#fff",
-              })
-              .setOrigin(0.5, 0);
-            this.taskText = this.add
-              .text(W / 2, 108, "", {
-                fontSize: "15px",
-                fontFamily: "Arial",
-                color: "#c9d4f5",
-                align: "center",
-                wordWrap: { width: 760 },
-                lineSpacing: 3,
-              })
-              .setOrigin(0.5, 0);
-
-            // ── live computed-answer readout (product of what is seated) ──
-            this.resultText = this.add
-              .text(W / 2, 560, "", {
-                fontSize: "22px",
-                fontFamily: "Arial Black",
-                color: "#8fa3d6",
-              })
-              .setOrigin(0.5);
-
-            // ── feedback line ──
-            this.feedback = this.add
-              .text(W / 2, 596, "", {
-                fontSize: "15px",
-                fontFamily: "Arial",
-                fontStyle: "bold",
-                color: "#fff",
-                align: "center",
-                wordWrap: { width: 760 },
-              })
-              .setOrigin(0.5);
-
-            // ── action buttons ──
-            this.checkBtn = this.makeBtn(
-              W / 2,
-              664,
-              260,
-              52,
-              "✅ OPEN THE VAULT",
-              0xffd23f,
-              () => this.check(),
-              "20px",
-              0x1a1a40,
-            );
-            this.resetBtn = this.makeBtn(
-              W / 2 - 250,
-              664,
-              160,
-              46,
-              "↶ Reset tiles",
-              0x33335f,
-              () => this.resetTiles(),
-              "15px",
-            );
-            this.hintBtn = this.makeBtn(
-              W / 2 + 250,
-              664,
-              160,
-              46,
-              "\u{1F4A1} Hint",
-              0x33335f,
-              () => this.showHint(),
-              "15px",
-            );
-
-            // containers we rebuild each round
-            this.boardLayer = this.add.container();
-            this.tileLayer = this.add.container();
-            this.tiles = []; // active draggable tile objects
-            this.zones = []; // drop targets {x,y,w,h,accepts(tile),seated:[]}
-            this.kbIndex = 0;
-
-            // global drag wiring (touch + mouse)
-            this.input.on("dragstart", (p, obj) => this.onDragStart(obj));
-            this.input.on("drag", (p, obj, dx, dy) => {
-              obj.x = dx;
-              obj.y = dy;
-            });
-            this.input.on("dragend", (p, obj) => this.onDragEnd(obj));
-
-            // keyboard controls (TAB select, arrows move, ENTER seat)
-            this.input.keyboard.on("keydown", (e) => {
-              const k = e.key;
-              if (k === "Tab") {
-                e.preventDefault?.();
-                this.cycleTile(e.shiftKey ? -1 : 1);
-              } else if (k === "ArrowLeft" || k === "ArrowRight") {
-                e.preventDefault?.();
-                this.nudgeTile(k === "ArrowLeft" ? -1 : 1);
-              } else if (k === "ArrowUp" || k === "ArrowDown") {
-                e.preventDefault?.();
-                this.nudgeTileV(k === "ArrowUp" ? -1 : 1);
-              } else if (k === "Enter") {
-                this.seatKbTile();
-              } else if (k === " ") {
-                e.preventDefault?.();
-                this.check();
-              } else if (k.toLowerCase() === "h") this.showHint();
-              else if (k.toLowerCase() === "r") this.resetTiles();
-            });
-
-            this.updateHUD();
-            this.loadRound();
-          }
-
-          makeBtn(x, y, w, h, label, color, cb, fs = "16px", txt = 0xffffff) {
-            const r = this.add
-              .rectangle(x, y, w, h, color)
-              .setStrokeStyle(2, 0x000000, 0.25)
-              .setInteractive({ useHandCursor: true });
-            const t = this.add
-              .text(x, y, label, {
-                fontSize: fs,
-                fontFamily: "Arial Black",
-                color: Phaser.Display.Color.IntegerToColor(txt).rgba,
-              })
-              .setOrigin(0.5);
-            r.on("pointerover", () => r.setScale(1.04));
-            r.on("pointerout", () => r.setScale(1));
-            r.on("pointerdown", () => {
-              ensureAudio();
-              cb();
-            });
-            r._t = t;
-            return r;
-          }
-
-          // ── ROUND SETUP ────────────────────────────────────────────────
-          loadRound() {
-            this.round = makeRound(this.tier, this.roundIx);
-            this.faults = 0;
-            this.feedback.setText("");
-            this.resultText.setText("");
-            this.boardLayer.removeAll(true);
-            this.tileLayer.removeAll(true);
-            this.tiles = [];
-            this.zones = [];
-            this.kbIndex = 0;
-
-            const r = this.round;
-            if (r.type === "prime") this.buildPrimeRound(r);
-            else if (r.type === "gcf") this.buildGcfRound(r);
-            else this.buildLcmRound(r);
-
-            this.updateHUD();
-            this.refreshResult();
-          }
-
-          // factory for a single draggable prime tile
-          makeTile(p, home) {
-            const info = pinfo(p);
-            const cont = this.add.container(home.x, home.y);
-            const box = this.add
-              .rectangle(0, 0, 54, 54, info.color)
-              .setStrokeStyle(3, 0x000000, 0.35);
-            const num = this.add
-              .text(0, -4, String(p), {
-                fontSize: "26px",
-                fontFamily: "Arial Black",
-                color: "#ffffff",
-              })
-              .setOrigin(0.5);
-            const tag = this.add
-              .text(0, 18, "prime", { fontSize: "9px", color: "#ffffffcc" })
-              .setOrigin(0.5);
-            cont.add([box, num, tag]);
-            cont.setSize(54, 54);
-            cont.setInteractive({ useHandCursor: true, draggable: true });
-            this.input.setDraggable(cont);
-            cont.prime = p;
-            cont.home = { x: home.x, y: home.y };
-            cont.seatedIn = null;
-            cont._box = box;
-            this.tiles.push(cont);
-            this.tileLayer.add(cont);
-            return cont;
-          }
-
-          // a labelled drop zone; accepts(tile) decides if a tile may lock here
-          makeZone(x, y, w, h, label, sub, accepts) {
-            const g = this.add
-              .rectangle(x, y, w, h, C.slot, 0.85)
-              .setStrokeStyle(3, C.stroke);
-            this.boardLayer.add(g);
-            if (label)
-              this.boardLayer.add(
-                this.add
-                  .text(x, y - h / 2 - 16, label, {
-                    fontSize: "16px",
-                    fontFamily: "Arial Black",
-                    color: "#fff",
-                  })
-                  .setOrigin(0.5),
-              );
-            if (sub)
-              this.boardLayer.add(
-                this.add
-                  .text(x, y - h / 2 + 14, sub, {
-                    fontSize: "12px",
-                    color: "#8fa3d6",
-                  })
-                  .setOrigin(0.5),
-              );
-            const zone = {
-              x,
-              y,
-              w,
-              h,
-              rect: g,
-              accepts,
-              seated: [],
-              base: C.slot,
-            };
-            this.zones.push(zone);
-            return zone;
-          }
-
-          // ── PRIME vs COMPOSITE ROUND ───────────────────────────────────
-          // The number becomes a tile the player drops onto a "rows" grid.
-          // It only seats if it forms a true rectangle r×c (r>=2,c>=2) for a
-          // composite; a prime can only ever lie flat as 1×n, so the grid
-          // visibly rejects every "equal rows" attempt → it must go to PRIME.
-          buildPrimeRound(r) {
-            this.promptText.setText("Prime or Composite?");
-            this.taskText.setText(
-              `Drop the ${r.n}-block onto a tray. The COMPOSITE tray only accepts it if it splits into equal rows (rows × columns). The PRIME tray accepts it only if it can't.`,
-            );
-
-            // the number block
-            const block = this.add.container(W / 2, 470);
-            const bx = this.add
-              .rectangle(0, 0, 90, 64, C.gold)
-              .setStrokeStyle(3, 0x000000, 0.4);
-            const bn = this.add
-              .text(0, -6, String(r.n), {
-                fontSize: "30px",
-                fontFamily: "Arial Black",
-                color: "#1a1a40",
-              })
-              .setOrigin(0.5);
-            const bt = this.add
-              .text(0, 18, `${r.n} blocks`, {
-                fontSize: "10px",
-                color: "#1a1a40cc",
-              })
-              .setOrigin(0.5);
-            block.add([bx, bn, bt]);
-            block.setSize(90, 64);
-            block.setInteractive({ useHandCursor: true, draggable: true });
-            this.input.setDraggable(block);
-            block.prime = null;
-            block.isNumberBlock = true;
-            block.home = { x: W / 2, y: 470 };
-            block.seatedIn = null;
-            this.tiles.push(block);
-            this.tileLayer.add(block);
-
-            // COMPOSITE tray: accepts only if a true r×c (r,c>=2) exists → composite
-            this.makeZone(
-              W / 2 - 230,
-              300,
-              260,
-              150,
-              "\u{1F9F1} COMPOSITE",
-              "splits into equal rows",
-              (t) => t.isNumberBlock && !isPrime(r.n),
-            );
-            // PRIME tray: accepts only if the number is prime
-            this.makeZone(
-              W / 2 + 230,
-              300,
-              260,
-              150,
-              "\u{1F4A0} PRIME",
-              "only 1 row of n",
-              (t) => t.isNumberBlock && isPrime(r.n),
-            );
-
-            // a little live "rows" preview grid under the trays
-            this.rowsHint = this.add
-              .text(W / 2, 560, "", {
-                fontSize: "14px",
-                color: "#8fa3d6",
-                align: "center",
-              })
-              .setOrigin(0.5);
-            this.boardLayer.add(this.rowsHint);
-          }
-
-          // ── GCF ROUND ──────────────────────────────────────────────────
-          // Two number bins with their FULL prime factor tiles in trays. The
-          // OVERLAP ring accepts a prime only if it divides BOTH numbers and
-          // hasn't over-counted the shared multiplicity. Product of seated =
-          // GCF. Tier 1 hands you the exact prime tiles; Tier 2 gives a mixed
-          // bag of primes and you must pick the right multiset.
-          buildGcfRound(r) {
-            this.promptText.setText(`GCF of ${r.a} and ${r.b}`);
-            this.taskText.setText(
-              `Drag PRIME tiles into the shared ring. A prime locks only if it divides BOTH ${r.a} and ${r.b}. The product of the locked tiles is the GCF.`,
-            );
-
-            // bins (visual reference only)
-            this.add &&
-              this.boardLayer.add(
-                this.add
-                  .text(
-                    W / 2 - 300,
-                    200,
-                    `${r.a}\n= ${primeList(r.a).join("·")}`,
-                    {
-                      fontSize: "18px",
-                      fontFamily: "Arial",
-                      color: "#0072b2",
-                      align: "center",
-                      lineSpacing: 4,
-                    },
-                  )
-                  .setOrigin(0.5),
-              );
-            this.boardLayer.add(
-              this.add
-                .text(
-                  W / 2 + 300,
-                  200,
-                  `${r.b}\n= ${primeList(r.b).join("·")}`,
-                  {
-                    fontSize: "18px",
-                    fontFamily: "Arial",
-                    color: "#d55e00",
-                    align: "center",
-                    lineSpacing: 4,
-                  },
-                )
-                .setOrigin(0.5),
-            );
-
-            // overlap ring zone — the math gate
-            const seatedCount = {}; // prime -> how many already locked
-            this.makeZone(
-              W / 2,
-              250,
-              260,
-              160,
-              "\u{1F501} SHARED PRIMES",
-              "divides BOTH numbers",
-              (t) => {
-                if (t.prime == null) return false;
-                const p = t.prime;
-                // available shared multiplicity = min exponent in a and b
-                const shared =
-                  Math.min(
-                    this.round.mapA ? this.round.mapA[p] || 0 : 0,
-                    this.round.mapB ? this.round.mapB[p] || 0 : 0,
-                  ) ||
-                  Math.min(
-                    primeFactor(this.round.a)[p] || 0,
-                    primeFactor(this.round.b)[p] || 0,
-                  );
-                const already = seatedCount[p] || 0;
-                return shared - already >= 1;
-              },
-            );
-            this.gcfSeatedCount = seatedCount;
-            this.round.mapA = primeFactor(r.a);
-            this.round.mapB = primeFactor(r.b);
-
-            // build the tile tray
-            const tray = this.buildPrimeTray(r);
-            this.layoutTray(tray);
-          }
-
-          // ── LCM ROUND ──────────────────────────────────────────────────
-          // Build per-prime TOWERS. For every prime appearing in a or b, the
-          // tower must reach the MAX exponent across the two numbers. Player
-          // drags tiles into each prime's tower until it matches the target
-          // height. Product across all towers = LCM.
-          buildLcmRound(r) {
-            this.promptText.setText(`LCM of ${r.a} and ${r.b}`);
-            this.taskText.setText(
-              `Each number is a stack of prime towers. Add prime tiles so every tower is as tall as the TALLER number needs. The product of all towers is the LCM.`,
-            );
-            this.boardLayer.add(
-              this.add
-                .text(
-                  W / 2,
-                  156,
-                  `${r.a} = ${primeList(r.a).join("·")}     ${r.b} = ${primeList(r.b).join("·")}`,
-                  {
-                    fontSize: "15px",
-                    color: "#8fa3d6",
-                  },
-                )
-                .setOrigin(0.5),
-            );
-
-            // target = union of primes at max exponent
-            const target = {};
-            Object.keys(r.mapL).forEach((p) => (target[+p] = r.mapL[p]));
-            this.lcmTarget = target;
-            const primes = Object.keys(target)
-              .map(Number)
-              .sort((a, b) => a - b);
-
-            // one tower zone per prime; pre-seat the exponent that BOTH share
-            // is NOT pre-seated — player builds full towers (clear + concrete).
-            const n = primes.length;
-            const spacing = Math.min(200, 720 / n);
-            const startX = W / 2 - ((n - 1) * spacing) / 2;
-            this.lcmZones = {};
-            primes.forEach((p, i) => {
-              const x = startX + i * spacing;
-              const need = target[p];
-              const zh = Math.max(90, need * 50 + 30);
-              const z = this.makeZone(
-                x,
-                360,
-                88,
-                zh,
-                `prime ${p}`,
-                `need ${need} tall`,
-                (t) => {
-                  if (t.prime !== p) return false;
-                  return (z.seated.length || 0) < need;
-                },
-              );
-              z.targetPrime = p;
-              z.need = need;
-              this.lcmZones[p] = z;
-            });
-
-            const tray = this.buildPrimeTray(r);
-            this.layoutTray(tray);
-          }
-
-          // tray of prime tiles. Tier 1: exactly the primes needed (with the
-          // right multiplicity for the round). Tier 2: a superset including
-          // decoy primes so the player must choose.
-          buildPrimeTray(r) {
-            let needed = [];
-            if (r.type === "gcf") {
-              // give every prime of a and b (so overlap must be discovered)
-              needed = [...primeList(r.a), ...primeList(r.b)];
-            } else if (r.type === "lcm") {
-              // give enough of each prime to build the max towers
-              Object.keys(r.mapL).forEach((p) => {
-                for (let i = 0; i < r.mapL[p]; i++) needed.push(+p);
-              });
-              // extra copies so towers are buildable with spares to spare
-              Object.keys(r.mapL).forEach((p) => needed.push(+p));
-            }
-            if (this.tier === 2) {
-              // add decoy primes that do NOT belong, forcing real selection
-              const decoyPool = [2, 3, 5, 7, 11, 13].filter(
-                (p) => !needed.includes(p),
-              );
-              shuffle(decoyPool)
-                .slice(0, 2)
-                .forEach((p) => needed.push(p));
-              // and one extra copy of a relevant prime as a "do I need this?" test
-              if (needed.length) needed.push(pick(needed));
-            }
-            return shuffle(needed);
-          }
-
-          layoutTray(list) {
-            const y = 660;
-            const gap = 64;
-            const startX = W / 2 - ((list.length - 1) * gap) / 2;
-            list.forEach((p, i) =>
-              this.makeTile(p, { x: startX + i * gap, y }),
-            );
-          }
-
-          // ── DRAG HANDLERS ──────────────────────────────────────────────
-          onDragStart(obj) {
-            ensureAudio();
-            sfxGrab();
-            this.tileLayer.bringToTop(obj);
-            // if it was seated, free it from its zone
-            if (obj.seatedIn) this.unseat(obj);
-          }
-
-          onDragEnd(obj) {
-            const zone = this.zoneAt(obj.x, obj.y);
-            if (zone && zone.accepts(obj)) {
-              this.seat(obj, zone);
-            } else if (zone) {
-              // bounce out — the prime does NOT belong here
-              sfxBounce();
-              this.faults++;
-              this.bounceBack(obj, zone);
-              this.diagnoseBadDrop(obj, zone);
-              this.maybeLoseLife();
-            } else {
-              this.returnHome(obj);
-            }
-            this.refreshResult();
-          }
-
-          zoneAt(x, y) {
-            return this.zones.find(
-              (z) =>
-                x > z.x - z.w / 2 &&
-                x < z.x + z.w / 2 &&
-                y > z.y - z.h / 2 &&
-                y < z.y + z.h / 2,
-            );
-          }
-
-          seat(obj, zone) {
-            sfxLock();
-            obj.seatedIn = zone;
-            zone.seated.push(obj);
-            if (this.gcfSeatedCount && obj.prime != null)
-              this.gcfSeatedCount[obj.prime] =
-                (this.gcfSeatedCount[obj.prime] || 0) + 1;
-            this.arrangeZone(zone);
-            zone.rect.setStrokeStyle(3, C.green);
-            this.flash(
-              this.feedback,
-              "Locked in. Keep going…",
-              "#bff7cf",
-              1400,
-            );
-            this.checkZonePulse();
-          }
-
-          unseat(obj) {
-            const zone = obj.seatedIn;
-            zone.seated = zone.seated.filter((t) => t !== obj);
-            if (this.gcfSeatedCount && obj.prime != null)
-              this.gcfSeatedCount[obj.prime] = Math.max(
-                0,
-                (this.gcfSeatedCount[obj.prime] || 0) - 1,
-              );
-            obj.seatedIn = null;
-            this.arrangeZone(zone);
-            if (zone.seated.length === 0) zone.rect.setStrokeStyle(3, C.stroke);
-            this.checkZonePulse();
-          }
-
-          arrangeZone(zone) {
-            // stack seated tiles bottom-up (towers) or left-right (overlap).
-            // Tiles ease into their slot (cubic/elastic) for a tactile "snap";
-            // under reduced-motion the position is set instantly.
-            const isTower = zone.targetPrime != null;
-            zone.seated.forEach((t, i) => {
-              let tx, ty;
-              if (isTower) {
-                tx = zone.x;
-                ty = zone.y + zone.h / 2 - 32 - i * 50;
-              } else {
-                const perRow = 4;
-                const col = i % perRow,
-                  row = Math.floor(i / perRow);
-                tx = zone.x - 84 + col * 56;
-                ty = zone.y - 26 + row * 56;
-              }
-              this.easeTileTo(t, tx, ty);
-            });
-          }
-
-          // smooth seat/unseat motion with a settle bounce; respects motion pref
-          easeTileTo(t, tx, ty) {
-            if (REDUCE_MOTION) {
-              this.tweens.killTweensOf(t);
-              t.x = tx;
-              t.y = ty;
-              return;
-            }
-            this.tweens.killTweensOf(t);
-            this.tweens.add({
-              targets: t,
-              x: tx,
-              y: ty,
-              duration: 320,
-              ease: "Back.easeOut",
-              easeParams: [1.6],
-            });
-          }
-
-          // glow + scale pulse on a zone when its seated tiles hit the target
-          // product/height (GCF match or a full LCM tower). Visual only.
-          pulseZone(zone) {
-            if (!zone || !zone.rect) return;
-            zone.rect.setStrokeStyle(4, C.gold);
-            if (REDUCE_MOTION) return;
-            this.tweens.killTweensOf(zone.rect);
-            this.tweens.add({
-              targets: zone.rect,
-              scaleX: 1.06,
-              scaleY: 1.06,
-              duration: 160,
-              yoyo: true,
-              ease: "Sine.easeInOut",
-              onComplete: () => {
-                zone.rect.setScale(1);
-                zone.rect.setStrokeStyle(3, C.gold);
-              },
-            });
-            // aura ring that expands and fades out
-            const aura = this.add
-              .rectangle(zone.x, zone.y, zone.w + 10, zone.h + 10, 0x000000, 0)
-              .setStrokeStyle(3, C.gold, 0.9);
-            this.boardLayer.add(aura);
-            this.tweens.add({
-              targets: aura,
-              scaleX: 1.18,
-              scaleY: 1.18,
-              alpha: 0,
-              duration: 520,
-              ease: "Cubic.easeOut",
-              onComplete: () => aura.destroy(),
-            });
-          }
-
-          // after a seat/unseat, pulse zones that exactly reach their target
-          checkZonePulse() {
-            const r = this.round;
-            if (!r) return;
-            if (r.type === "gcf") {
-              const ring = this.zones[0];
-              if (ring && product(ring.seated.map((t) => t.prime)) === r.gcf)
-                this.pulseZone(ring);
-            } else if (r.type === "lcm" && this.lcmZones) {
-              Object.keys(this.lcmZones).forEach((p) => {
-                const z = this.lcmZones[p];
-                if (z && z.seated.length === z.need && z.need > 0)
-                  this.pulseZone(z);
-              });
-            }
-          }
-
-          bounceBack(obj, zone) {
-            // visible rejection: shove the tile back to its home with a shake
-            zone.rect.setStrokeStyle(3, C.red);
-            const restore = () =>
-              zone.rect.setStrokeStyle(
-                3,
-                zone.seated.length ? C.green : C.stroke,
-              );
-            if (REDUCE_MOTION) {
-              this.tweens.killTweensOf(obj);
-              obj.x = obj.home.x;
-              obj.y = obj.home.y;
-              this.time.delayedCall(220, restore);
-              return;
-            }
-            this.tweens.killTweensOf(obj);
-            this.tweens.add({
-              targets: obj,
-              x: obj.home.x,
-              y: obj.home.y,
-              duration: 350,
-              ease: "Back.easeOut",
-            });
-            this.tweens.add({
-              targets: zone.rect,
-              duration: 60,
-              x: zone.x + 6,
-              yoyo: true,
-              repeat: 3,
-              onComplete: restore,
-            });
-          }
-
-          returnHome(obj) {
-            if (REDUCE_MOTION) {
-              this.tweens.killTweensOf(obj);
-              obj.x = obj.home.x;
-              obj.y = obj.home.y;
-              return;
-            }
-            this.tweens.killTweensOf(obj);
-            this.tweens.add({
-              targets: obj,
-              x: obj.home.x,
-              y: obj.home.y,
-              duration: 250,
-              ease: "Cubic.easeOut",
-            });
-          }
-
-          // teach (never give the answer) why a drop bounced
-          diagnoseBadDrop(obj, zone) {
-            const r = this.round;
-            let msg = "";
-            if (r.type === "prime") {
-              if (zone.accepts === undefined) return;
-              const wantedComposite = !isPrime(r.n);
-              msg = wantedComposite
-                ? `${r.n} CAN make equal rows — try the other tray and find a row size that divides ${r.n}.`
-                : `Can ${r.n} make equal rows of 2 or more? Try dividing it — if nothing works, it's prime.`;
-            } else if (r.type === "gcf") {
-              const p = obj.prime;
-              const inA = r.a % p === 0,
-                inB = r.b % p === 0;
-              if (!inA && !inB)
-                msg = `${p} divides neither ${r.a} nor ${r.b}. Shared primes must divide BOTH.`;
-              else if (!inA)
-                msg = `${p} divides ${r.b} but not ${r.a}. It can't be shared.`;
-              else if (!inB)
-                msg = `${p} divides ${r.a} but not ${r.b}. It can't be shared.`;
-              else
-                msg = `You've already used every shared ${p}. Count how many ${p}'s are in BOTH numbers.`;
-            } else if (r.type === "lcm") {
-              const p = obj.prime;
-              if (!this.lcmTarget[p])
-                msg = `Neither ${r.a} nor ${r.b} has ${p} as a factor — its tower isn't needed.`;
-              else
-                msg = `That ${p}-tower is already as tall as the taller number needs.`;
-            }
-            if (msg) this.flash(this.feedback, "⚠️ " + msg, "#ffd9a0", 3200);
-          }
-
-          maybeLoseLife() {
-            // gentle: only after repeated faults on a round
-            const tol = this.tier === 1 ? 4 : 3;
-            if (this.faults >= tol) {
-              this.faults = 0;
-              this.lives--;
-              this.streak = 0;
-              if (this.lives <= 0) {
-                this.updateHUD();
-                this.time.delayedCall(700, () => this.endGame());
-                return;
-              }
-            }
-            this.updateHUD();
-          }
-
-          // ── KEYBOARD CONTROL ───────────────────────────────────────────
-          cycleTile(dir) {
-            const free = this.tiles.filter((t) => !t.seatedIn);
-            if (!free.length) return;
-            this.kbIndex = (this.kbIndex + dir + free.length) % free.length;
-            // The prime-round number block is draggable but has no `_box`
-            // outline, so guard before styling to keep TAB from throwing.
-            free.forEach((t, i) => {
-              if (!t._box) return;
-              t._box.setStrokeStyle(
-                i === this.kbIndex ? 4 : 3,
-                i === this.kbIndex ? C.gold : 0x000000,
-                i === this.kbIndex ? 1 : 0.35,
-              );
-            });
-            this.kbTile = free[this.kbIndex];
-            sfxClick();
-          }
-          currentKbTile() {
-            const free = this.tiles.filter((t) => !t.seatedIn);
-            if (!free.length) return null;
-            if (!this.kbTile || this.kbTile.seatedIn) this.kbTile = free[0];
-            return this.kbTile;
-          }
-          nudgeTile(dir) {
-            const t = this.currentKbTile();
-            if (t) t.x = Phaser.Math.Clamp(t.x + dir * 40, 40, W - 40);
-          }
-          nudgeTileV(dir) {
-            const t = this.currentKbTile();
-            if (t) t.y = Phaser.Math.Clamp(t.y + dir * 40, 120, H - 30);
-          }
-          seatKbTile() {
-            const t = this.currentKbTile();
-            if (!t) return;
-            this.onDragEnd(t);
-          }
-
-          // ── LIVE RESULT (product of seated tiles) ──────────────────────
-          refreshResult() {
-            const r = this.round;
-            if (r.type === "prime") {
-              const z = this.zones.find((z2) => z2.seated.length);
-              this.resultText.setText(
-                z ? "" : "Drop the number on the correct tray.",
-              );
-              if (this.rowsHint) {
-                // show whether equal rows exist (concrete, not the answer label)
-                const rows = [];
-                for (let k = 2; k <= Math.floor(r.n / 2); k++)
-                  if (r.n % k === 0) rows.push(`${k}×${r.n / k}`);
-                this.rowsHint.setText(
-                  rows.length
-                    ? "Equal rows possible: " + rows.slice(0, 4).join("  ")
-                    : "No equal rows of 2+ work for this number.",
-                );
-              }
-              return;
-            }
-            if (r.type === "gcf") {
-              const ring = this.zones[0];
-              const list = ring.seated.map((t) => t.prime);
-              const prod = product(list);
-              this.resultText.setText(
-                list.length
-                  ? `Shared product: ${list.join(" × ")} = ${prod}`
-                  : "Drag shared primes into the ring.",
-              );
-              return;
-            }
-            // lcm — multiply across all towers
-            let prod = 1;
-            const parts = [];
-            Object.keys(this.lcmZones).forEach((p) => {
-              const z = this.lcmZones[p];
-              if (z.seated.length) {
-                prod *= Math.pow(+p, z.seated.length);
-                parts.push(`${p}^${z.seated.length}`);
-              }
-            });
-            this.resultText.setText(
-              parts.length
-                ? `Tower product: ${parts.join(" × ")} = ${prod}`
-                : "Build each prime tower to the needed height.",
-            );
-          }
-
-          // ── CHECK / SOLVE ──────────────────────────────────────────────
-          check() {
-            const r = this.round;
-            this.attempted++;
-            let ok = false,
-              why = "";
-
-            if (r.type === "prime") {
-              const composite = this.zones[0]; // first zone = COMPOSITE
-              const primeZone = this.zones[1];
-              const inComposite = composite.seated.length > 0;
-              const inPrime = primeZone.seated.length > 0;
-              if (!inComposite && !inPrime) {
-                why = "Drop the number on a tray first.";
-              } else if (r.isPrime && inPrime) ok = true;
-              else if (!r.isPrime && inComposite) ok = true;
-              else
-                why = r.isPrime
-                  ? `${r.n} has no equal rows of 2+, so it can't be composite.`
-                  : `${r.n} DOES split into equal rows, so it isn't prime.`;
-            } else if (r.type === "gcf") {
-              const ring = this.zones[0];
-              const prod = product(ring.seated.map((t) => t.prime));
-              if (prod === r.gcf) ok = true;
-              else if (prod < r.gcf)
-                why = `Your shared product is ${prod}. Are there more primes that divide BOTH ${r.a} and ${r.b}?`;
-              else
-                why = `Your product ${prod} doesn't divide both numbers — remove a prime that isn't truly shared.`;
-            } else {
-              // lcm: every tower must equal its needed height
-              let prod = 1,
-                complete = true,
-                short = null;
-              Object.keys(this.lcmZones).forEach((p) => {
-                const z = this.lcmZones[p];
-                if (z.seated.length !== z.need) {
-                  complete = false;
-                  if (z.seated.length < z.need) short = p;
-                }
-                prod *= Math.pow(+p, z.seated.length);
-              });
-              if (complete && prod === r.lcm) ok = true;
-              else if (short)
-                why = `The ${short}-tower isn't tall enough yet. It must match the most ${short}'s in either number.`;
-              else
-                why = `A tower is too tall — no prime should appear more than its max in either number.`;
-            }
-
-            if (ok) this.onSolved();
-            else {
-              sfxWrong();
-              this.faults++;
-              this.cameras.main.shake(140, 0.005);
-              this.flash(this.feedback, "❌ " + why, "#ffb4b4");
-              this.maybeLoseLife();
-            }
-          }
-
-          onSolved() {
-            sfxSolve();
-            this.correct++;
-            this.solved++;
-            this.streak++;
-            if (this.streak > this.bestStreak) this.bestStreak = this.streak;
-            const combo = Math.min(4, 1 + Math.floor(this.streak / 3));
-            const clean = this.faults === 0 ? 60 : 0;
-            const pts = (100 + clean + this.streak * 8) * combo;
-            this.score += pts;
-            this.celebrate();
-            this.flash(
-              this.feedback,
-              `✅ Vault opened!  +${pts}${combo > 1 ? " x" + combo : ""}`,
-              "#bff7cf",
-            );
-            if (this.solved % 3 === 0) {
-              this.level++;
-              sfxLevel();
-            }
-            this.updateHUD();
-            const done = this.solved >= this.goal;
-            this.time.delayedCall(1100, () => {
-              if (done) this.endGame();
-              else {
-                this.roundIx++;
-                this.loadRound();
-              }
-            });
-          }
-
-          celebrate() {
-            // Honor reduced-motion: no canvas confetti, no DOM spark burst.
-            if (REDUCE_MOTION) return;
-            // Mirror the win with the shared GameFX spark burst over the canvas
-            // (DOM-level, so it also obeys the kit's own reduced-motion guard).
-            try {
-              const cv =
-                this.game &&
-                this.game.canvas &&
-                this.game.canvas.getBoundingClientRect();
-              if (window.GameFX && cv)
-                window.GameFX.burst(
-                  cv.left + cv.width / 2,
-                  cv.top + cv.height * 0.42,
-                );
-            } catch (e) {}
-            // capped canvas confetti (smooth on a Chromebook)
-            for (let i = 0; i < 22; i++) {
-              const col = pick([C.gold, C.green, 0x0072b2, 0xd55e00, 0x56b4e9]);
-              const p = this.add.circle(W / 2, 300, 3 + Math.random() * 3, col);
-              this.tweens.add({
-                targets: p,
-                x: W / 2 + (Math.random() - 0.5) * 420,
-                y: 300 + (Math.random() - 0.5) * 280,
-                alpha: 0,
-                scale: 0,
-                duration: 700 + Math.random() * 400,
-                onComplete: () => p.destroy(),
-              });
-            }
-          }
-
-          resetTiles() {
-            sfxClick();
-            this.zones.forEach((z) => {
-              z.seated.slice().forEach((t) => {
-                t.seatedIn = null;
-                this.returnHome(t);
-              });
-              z.seated = [];
-              z.rect.setStrokeStyle(3, C.stroke);
-            });
-            if (this.gcfSeatedCount)
-              Object.keys(this.gcfSeatedCount).forEach(
-                (k) => (this.gcfSeatedCount[k] = 0),
-              );
-            this.feedback.setText("");
-            this.refreshResult();
-          }
-
-          showHint() {
-            sfxClick();
-            const r = this.round;
-            let h;
-            if (r.type === "prime")
-              h = `\u{1F4A1} Try splitting ${r.n} into equal rows: 2 rows? 3 rows? If NO whole-number split works, it's prime.`;
-            else if (r.type === "gcf")
-              h = `\u{1F4A1} List the primes of ${r.a} (${primeList(r.a).join("·")}) and ${r.b} (${primeList(r.b).join("·")}). Seat only the primes that appear in BOTH lists — that many times.`;
-            else
-              h = `\u{1F4A1} For each prime, build the tower as tall as the MOST that prime appears in either ${r.a} or ${r.b}. Multiply the towers for the LCM.`;
-            this.flash(this.feedback, h, "#ffe9a8", 3600);
-          }
-
-          flash(obj, msg, color = "#ffffff", hold = 2400) {
-            obj.setText(msg).setColor(color).setAlpha(1);
-            this.tweens.killTweensOf(obj);
-            this.time.delayedCall(hold, () => {
-              if (obj.text === msg)
-                this.tweens.add({ targets: obj, alpha: 0, duration: 400 });
-            });
-          }
-
-          updateHUD() {
-            this.hScore.setText(this.score.toLocaleString());
-            this.hLevel.setText("Round " + (this.solved + 1));
-            this.hSolved.setText("Solved " + this.solved + " / " + this.goal);
-            this.hLives.setText("❤️".repeat(Math.max(0, this.lives)));
-            this.hStreak.setText(
-              this.streak >= 3 ? "\u{1F525} streak " + this.streak : "",
-            );
-          }
-
-          endGame() {
-            this.cameras.main.fadeOut(450, 0, 0, 0);
-            this.time.delayedCall(450, () =>
-              this.scene.start("ResultScene", {
-                tier: this.tier,
-                score: this.score,
-                correct: this.correct,
-                attempted: this.attempted,
-                goal: this.goal,
-                bestStreak: this.bestStreak,
-                level: this.level,
-              }),
-            );
-          }
+        show("result");
+        if (window.ewlShowMasteryModal) {
+          window.ewlShowMasteryModal({
+            score: typeof S !== "undefined" && S.score ? S.score : 1000,
+            maxScore: 1000,
+            stars: typeof stars !== "undefined" ? stars : 3,
+            accuracy: 100,
+            title: "Factor Frenzy — Prime Factorization Game"
+          });
         }
+      }
 
-        // ════════════════════════════════════════════════════════════════
-        //  RESULT SCENE
-        // ════════════════════════════════════════════════════════════════
-        class ResultScene extends Phaser.Scene {
-          constructor() {
-            super("ResultScene");
-          }
-          init(d) {
-            Object.assign(this, d);
-          }
-          create() {
-            this.cameras.main.setBackgroundColor(C.bg);
-            this.cameras.main.fadeIn(450);
-            const goal = this.goal || 1;
-            const pct = goal > 0 ? Math.round((this.correct / goal) * 100) : 0;
+      // ── Wiring ──
+      $("vocab-go").addEventListener("click", () => {
+        renderLevels();
+        show("level");
+      });
+      $("r-again").addEventListener("click", () => {
+        renderLevels();
+        show("level");
+      });
+      // ✨ Auto: the shared adaptive helper picks a whole level from past runs.
+      // Geometry-safe — it only chooses the level BEFORE the run starts.
+      $("level-auto").addEventListener("click", () => {
+        const lv = window.NTAdaptive ? window.NTAdaptive.pickLevel("u1-factor-frenzy", 1, 3) : 1;
+        ffAuto = true;
+        ffEndless = false;
+        startGame(lv);
+      });
+      // ♾️ Keep Playing: restart at the SAME level in endless mode (ffAuto
+      // carries so adaptive still records the endless run).
+      $("r-keep").addEventListener("click", () => {
+        ffEndless = true;
+        startGame(S.level);
+      });
+      // Finish ✓ (endless HUD): end the run now with current cumulative stats.
+      $("hud-finish").addEventListener("click", () => {
+        if (S.over) return;
+        endGame();
+      });
 
-            try {
-              window.EduPulse &&
-                EduPulse.record({
-                  activityTitle: document.title,
-                  score: this.correct,
-                  maxScore: goal,
-                  problemsCorrect: this.correct,
-                  problemsAttempted: this.attempted,
-                  percent: pct,
-                  standard: "6.NOS.B.4",
-                });
-            } catch (e) {}
-
-            let rank, emoji;
-            if (pct >= 90) {
-              rank = "MASTER FACTORER!";
-              emoji = "\u{1F451}";
-            } else if (pct >= 75) {
-              rank = "FACTORY FOREMAN!";
-              emoji = "\u{1F3C6}";
-            } else if (pct >= 50) {
-              rank = "APPRENTICE";
-              emoji = "⭐";
-            } else {
-              rank = "KEEP PRACTICING!";
-              emoji = "\u{1F4DA}";
-            }
-
-            this.add
-              .text(W / 2, 110, emoji, { fontSize: "76px" })
-              .setOrigin(0.5);
-            this.add
-              .text(W / 2, 196, "FACTORY CLOSED", {
-                fontSize: "46px",
-                fontFamily: "Arial Black",
-                color: "#ffd23f",
-                stroke: "#000",
-                strokeThickness: 4,
-              })
-              .setOrigin(0.5);
-            this.add
-              .text(W / 2, 250, rank, {
-                fontSize: "24px",
-                fontFamily: "Arial",
-                fontStyle: "bold",
-                color: "#fff",
-              })
-              .setOrigin(0.5);
-            this.add
-              .text(W / 2, 312, this.score.toLocaleString(), {
-                fontSize: "58px",
-                fontFamily: "Arial Black",
-                color: "#ffd23f",
-              })
-              .setOrigin(0.5);
-            this.add
-              .text(W / 2, 352, "POINTS", {
-                fontSize: "13px",
-                color: "#7f8fc5",
-              })
-              .setOrigin(0.5);
-
-            const stats = [
-              { l: "Vaults opened", v: `${this.correct}/${goal}` },
-              { l: "Best streak", v: this.bestStreak },
-              { l: "Level reached", v: this.level },
-            ];
-            stats.forEach((s, i) => {
-              const x = W / 2 - 240 + i * 240,
-                y = 440;
-              this.add
-                .rectangle(x, y, 210, 96, C.panel)
-                .setStrokeStyle(2, C.stroke);
-              this.add
-                .text(x, y - 12, String(s.v), {
-                  fontSize: "30px",
-                  fontFamily: "Arial Black",
-                  color: "#ffd23f",
-                })
-                .setOrigin(0.5);
-              this.add
-                .text(x, y + 26, s.l, { fontSize: "13px", color: "#c9d4f5" })
-                .setOrigin(0.5);
-            });
-
-            const again = this.add
-              .rectangle(W / 2 - 130, 580, 240, 58, C.gold)
-              .setInteractive({ useHandCursor: true });
-            this.add
-              .text(W / 2 - 130, 580, "FACTOR AGAIN", {
-                fontSize: "22px",
-                fontFamily: "Arial Black",
-                color: "#1a1a40",
-              })
-              .setOrigin(0.5);
-            again.on("pointerdown", () => {
-              ensureAudio();
-              sfxClick();
-              this.scene.start("GameScene", { tier: this.tier });
-            });
-            again.on("pointerover", () => again.setScale(1.05));
-            again.on("pointerout", () => again.setScale(1));
-
-            const menu = this.add
-              .rectangle(W / 2 + 130, 580, 240, 58, C.panel)
-              .setStrokeStyle(2, C.stroke)
-              .setInteractive({ useHandCursor: true });
-            this.add
-              .text(W / 2 + 130, 580, "CHANGE LEVEL", {
-                fontSize: "20px",
-                fontFamily: "Arial Black",
-                color: "#fff",
-              })
-              .setOrigin(0.5);
-            menu.on("pointerdown", () => {
-              ensureAudio();
-              sfxClick();
-              this.scene.start("TitleScene");
-            });
-            menu.on("pointerover", () => menu.setScale(1.05));
-            menu.on("pointerout", () => menu.setScale(1));
-
-            // ambient rising motes — skipped entirely under reduced-motion
-            if (!REDUCE_MOTION) {
-              for (let i = 0; i < 28; i++) {
-                const p = this.add
-                  .circle(
-                    Math.random() * W,
-                    Math.random() * H,
-                    2 + Math.random() * 3,
-                    pick([C.gold, 0x0072b2, 0xd55e00, C.green]),
-                  )
-                  .setAlpha(0.7);
-                this.tweens.add({
-                  targets: p,
-                  y: p.y - 200 - Math.random() * 300,
-                  alpha: 0,
-                  duration: 2000 + Math.random() * 2000,
-                  delay: Math.random() * 1000,
-                  repeat: -1,
-                  ease: "Power1",
-                });
-              }
-            }
-          }
-        }
-
-        // ─── BOOT ───
-        var ffGame = new Phaser.Game({
-          type: Phaser.AUTO,
-          parent: "game-container",
-          width: W,
-          height: H,
-          backgroundColor: "#0a0a2e",
-          scale: {
-            mode: Phaser.Scale.FIT,
-            autoCenter: Phaser.Scale.CENTER_BOTH,
-          },
-          scene: [TitleScene, GameScene, ResultScene],
-        });
-        // Keyboard accessibility: make the game canvas focusable.
-        ffGame.events.once("ready", function () {
-          var c = ffGame.canvas;
-          if (c) {
-            c.setAttribute("role", "application");
-            c.setAttribute(
-              "aria-label",
-              "Prime Brick Breaker: a prime, composite, GCF, and LCM arcade game. Use the on-screen controls or keyboard to play.",
-            );
-            c.setAttribute("tabindex", "0");
-            c.addEventListener("pointerdown", function () {
-              c.focus();
-            });
-          }
-        });
-      })();
+      renderVocab();
     </script>
+
     <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
+    <!-- Adaptive level picker (window.NTAdaptive: pickLevel / recordRun) -->
+    <script src="/assets/game-adaptive.js" defer></script>
     <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
     <script src="/assets/math-workbench-launcher.js" defer></script>
     <!-- mwb-injected:end -->
     <!-- gacc-injected:begin (calm & accessible games — tools/inject-game-access.js) -->
-  <script src="/assets/game-access.js" defer></script>
-  <!-- gacc-injected:end -->
-<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
-  <!-- nsr-injected:end -->
+    <script src="/assets/game-access.js" defer></script>
+    <!-- gacc-injected:end -->
+    <!-- ghl-injected:begin (Socratic hint ladder — tools/inject-game-hint-ladder.js) -->
+    <script src="/assets/game-hint-ladder.js" defer></script>
+    <script>
+      window.addEventListener("DOMContentLoaded", function () {
+        if (window.NeftHintLadder)
+          window.NeftHintLadder.watch({
+            sourceSelector: "#ff-sr",
+            standard: "6.NOS.4",
+            staticHints: [
+              "What factors do these numbers share? Start by listing the factors of each.",
+              "GCF is the biggest factor they share; LCM is the smallest multiple they share. Which does the task ask for?",
+              "Set it up: compare your lists (or prime factors) and pick the shared value — you name the final one.",
+            ],
+          });
+      });
+    </script>
+    <!-- ghl-injected:end -->
+    <!-- canvas-bridge-injected:begin (Canvas grade bridge — tools/inject-canvas-bridge.js) -->
+    <script src="/assets/canvas-bridge.js" defer></script>
+    <!-- canvas-bridge-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+    <!-- nsr-injected:end -->
   
       <!-- EWL Diagnostic Misconception Coach -->
-      <div class="ewl-coach-card" id="ewl-coach-card" style="display: flex; position: relative; z-index: 100;">
+      <div class="ewl-coach-card" id="ewl-coach-card" style="display: flex;">
         <div class="ewl-coach-icon">💡</div>
         <div class="ewl-coach-content">
           <h4 id="ewl-coach-title">Math Coach Tip / Consejos del Profesor</h4>
-          <p id="ewl-coach-text" data-en="Prime factorization breaks composite numbers into prime leaves. 2 is the smallest prime number!" data-es="La factorización prima descompone números compuestos en hojas primas.">Prime factorization breaks composite numbers into prime leaves. 2 is the smallest prime number!</p>
+          <p id="ewl-coach-text" data-en="Prime factorization breaks composite numbers into prime leaves. 2 is the smallest prime number!" data-es="La factorización prima descompone números compuestos en hojas primas. ¡El 2 es el número primo más pequeño!">Prime factorization breaks composite numbers into prime leaves. 2 is the smallest prime number!</p>
         </div>
       </div>
   
