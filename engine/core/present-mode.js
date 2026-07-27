@@ -157,7 +157,7 @@ export function mountPresentWidget({ container } = {}) {
 
 let pmInitialized = false;
 
-export function initPresentMode({ app, config, phaseConfigs, phaseContainer, state } = {}) {
+export function initPresentMode({ app, phaseConfigs, state } = {}) {
   if (pmInitialized && !app && !phaseConfigs) return;
   pmInitialized = true;
 

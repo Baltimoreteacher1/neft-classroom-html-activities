@@ -250,7 +250,6 @@ export function renderNetFolder(
   sceneWrap.append(scene);
   stage.append(sceneWrap);
 
-  const { w, h, d } = dims;
   const faceBg = (c) => `background:${c}; border:2px solid var(--navy); box-sizing:border-box;`;
 
   // Each face has: flat (unfolded, laid out in the screen plane as a net) and

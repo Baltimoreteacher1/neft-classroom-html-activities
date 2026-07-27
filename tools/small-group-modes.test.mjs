@@ -238,7 +238,15 @@ assert.equal(
 // Vocabulary keeps its illustrations (word + definition + image); everywhere
 // else, only problem-related SVG models may render — no photos or decor.
 const vocabCardImages = [...document.querySelectorAll("#sg-vocab .sg-vcard img")];
-assert.equal(vocabCardImages.length, 4, "every vocabulary card needs an illustration");
+// Assert the invariant (one illustration per card), not a fixed term count —
+// the generator's vocabulary cap moved from 4 to 8 once the render cap did.
+const vocabCards = [...document.querySelectorAll("#sg-vocab .sg-vcard")];
+assert.ok(vocabCards.length >= 4, "vocabulary section renders its cards");
+assert.equal(
+  vocabCardImages.length,
+  vocabCards.length,
+  "every vocabulary card needs an illustration",
+);
 for (const image of vocabCardImages) {
   assert.match(image.getAttribute("src"), /^\/assets\/vocab-images\/[a-z0-9-]+\.svg$/);
   assert.ok(image.getAttribute("alt"), "vocabulary images need useful alternative text");
