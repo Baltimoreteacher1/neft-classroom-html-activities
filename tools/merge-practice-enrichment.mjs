@@ -31,6 +31,33 @@ const dryRun = flags.includes("--dry-run");
 // fill-table, matching-game, …) were authored without the author ever seeing the
 // question. Their content is not trustworthy; skip it and re-author with context.
 const requireStem = flags.includes("--require-stem");
+// `--work-dir <dir>`: resolve a sidecar's `gapIndex` through the work order it
+// was authored against, then locate the live item by a fingerprint of its
+// immutable fields. Needed once an earlier wave has already filled gaps — the
+// recomputed gap list shrinks and raw indices no longer line up. Enrichment is
+// purely additive, so the immutable core is unchanged and matches exactly.
+const workDir = (() => {
+  const at = flags.indexOf("--work-dir");
+  return at >= 0 ? flags[at + 1] : null;
+})();
+const ENRICHMENT_KEYS = new Set([
+  "stemEs",
+  "explanation",
+  "explanationEs",
+  "hints",
+  "hintsEs",
+  "hint",
+  "hintEs",
+  "titleEs",
+  "choiceFeedback",
+]);
+function fingerprint(item) {
+  const core = {};
+  for (const key of Object.keys(item || {}).sort()) {
+    if (!ENRICHMENT_KEYS.has(key)) core[key] = item[key];
+  }
+  return JSON.stringify(core);
+}
 if (!sidecarDir) {
   console.error("usage: merge-practice-enrichment.mjs <sidecarDir> [--dry-run]");
   process.exit(2);
@@ -40,6 +67,7 @@ const problems = [];
 const stats = {
   sidecars: 0,
   stemEs: 0,
+  titleEs: 0,
   hints: 0,
   hintsEs: 0,
   explanation: 0,
@@ -94,6 +122,12 @@ function applyEntry(item, entry) {
     item.stemEs = entry.stemEs;
     written.push("stemEs");
   }
+  // error-analysis cards carry their prompt in `title`; the renderer falls back
+  // to `titleEs` when there is no `stemEs`, so this is their Spanish lane.
+  if (!isBlank(item.title) && isBlank(item.titleEs) && !isBlank(entry.titleEs)) {
+    item.titleEs = entry.titleEs;
+    written.push("titleEs");
+  }
   if (isBlank(item.explanation) && !isBlank(entry.explanation)) {
     item.explanation = entry.explanation;
     written.push("explanation");
@@ -139,7 +173,8 @@ const writeConfig = (file, config, raw) => {
 };
 
 // ── Pass 1: enrich the base lesson configs ────────────────────────────────
-/** identity -> enriched item, used to propagate into every variant. */
+/** fingerprint -> enriched item, used to propagate into every variant.
+ *  Keyed on the immutable core so the lookup is stable before/after enrichment. */
 const enriched = new Map();
 
 for (const name of fs.readdirSync(sidecarDir).sort()) {
@@ -174,9 +209,33 @@ for (const name of fs.readdirSync(sidecarDir).sort()) {
     continue;
   }
   stats.sidecars += 1;
-  const pairs = indexed
-    ? sidecar.items.map((entry) => [gaps[entry.gapIndex], entry])
-    : gaps.map((item, index) => [item, sidecar.items[index]]);
+  let pairs;
+  if (indexed && workDir) {
+    // Resolve gapIndex through the work order, then match the live item by the
+    // fingerprint of its immutable fields.
+    const orderFile = path.join(workDir, `${lessonId}.json`);
+    if (!fs.existsSync(orderFile)) {
+      problems.push(`${lessonId}: no work order in ${workDir}`);
+      continue;
+    }
+    const byGapIndex = new Map(
+      (readJson(orderFile).items || []).map((entry) => [entry.gapIndex, entry.item]),
+    );
+    const live = new Map();
+    for (const tier of TIERS) {
+      for (const item of config.practice?.[tier] || []) {
+        if (item) live.set(fingerprint(item), item);
+      }
+    }
+    pairs = sidecar.items.map((entry) => {
+      const source = byGapIndex.get(entry.gapIndex);
+      return [source ? live.get(fingerprint(source)) : null, entry];
+    });
+  } else if (indexed) {
+    pairs = sidecar.items.map((entry) => [gaps[entry.gapIndex], entry]);
+  } else {
+    pairs = gaps.map((item, index) => [item, sidecar.items[index]]);
+  }
   for (const [item, entry] of pairs) {
     if (!item) {
       problems.push(`${lessonId}: gapIndex ${entry?.gapIndex} out of range (${gaps.length} gaps)`);
@@ -189,7 +248,7 @@ for (const name of fs.readdirSync(sidecarDir).sort()) {
       continue;
     }
     for (const field of applyEntry(item, entry)) stats[field] += 1;
-    enriched.set(identity(item), item);
+    enriched.set(fingerprint(item), item);
   }
   if (writeConfig(baseFile, config, raw)) stats.baseFiles += 1;
 }
@@ -209,7 +268,7 @@ for (const dir of variantDirs) {
   let touched = false;
   for (const tier of TIERS) {
     for (const item of config.practice?.[tier] || []) {
-      const source = enriched.get(identity(item));
+      const source = enriched.get(fingerprint(item));
       if (!source) continue;
       // Reuse the same additive rules so a variant that already has content
       // (or diverged from its base) is never overwritten.
@@ -231,6 +290,7 @@ console.log(
     `variant configs    ${stats.variantFiles} (${stats.propagated} fields propagated)`,
     "",
     `stemEs written     ${stats.stemEs}`,
+    `titleEs written    ${stats.titleEs}`,
     `hints written      ${stats.hints} (es ${stats.hintsEs})`,
     `explanation        ${stats.explanation} (es ${stats.explanationEs})`,
     `choiceFeedback     ${stats.choiceFeedback}`,
