@@ -420,3 +420,125 @@ test.describe("support profile reaches real activity pages", () => {
     expect(layers).toEqual([]);
   });
 });
+
+/**
+ * The evidence adapters, exercised through the page that consumes them. These
+ * seed each source store the way real use would leave it, then assert the
+ * shared layer picked it up — including the privacy contract, which is the part
+ * most worth guarding.
+ */
+test.describe("evidence adapters populate the shared layer", () => {
+  test("a completed project reaches evidence without inventing a standard", async ({ page }) => {
+    await page.addInitScript(() => {
+      localStorage.setItem(
+        "nt-project-complete:v1",
+        JSON.stringify({
+          "/math/unit-3/projects/version-a/": {
+            unit: 3,
+            title: "Ratio City Build",
+            completedAt: "2026-05-04T13:15:00.000Z",
+            stars: 3,
+            rubricTotal: 17,
+            rubricMax: 20,
+          },
+        }),
+      );
+    });
+    await page.goto("/math/my-path/");
+
+    const submitted = await page.evaluate(async () => {
+      await (window as any).EWLEvidence.sync();
+      return (window as any).EWLEvidence.all({ productId: "design-studio" }).find(
+        (e: any) => e.eventType === "project_submitted",
+      );
+    });
+
+    expect(submitted).toBeTruthy();
+    expect(submitted.score).toBe(17);
+    expect(submitted.maxScore).toBe(20);
+    expect(submitted.unitId).toBe("unit-3");
+    expect(submitted.standardIds).toEqual([]);
+  });
+
+  test("an assessment result reaches evidence with the student name stripped", async ({ page }) => {
+    await page.addInitScript(() => {
+      localStorage.setItem(
+        "nt_results_log",
+        JSON.stringify([
+          {
+            "Student Name": "Alex Rivera",
+            Class: "6B",
+            Assessment: "Unit 3 Review",
+            Score: 16,
+            Standard: "6.AT.3",
+            Skill: "Overall",
+            "Question/Item": "20 items",
+            Date: "2026-05-04",
+            "ESOL Level": "3",
+            "IEP/504": "Yes",
+          },
+        ]),
+      );
+    });
+    await page.goto("/math/my-path/");
+
+    const result = await page.evaluate(async () => {
+      await (window as any).EWLEvidence.sync();
+      const events = (window as any).EWLEvidence.all({ eventType: "assessment_scored" });
+      return { events, serialized: JSON.stringify(events) };
+    });
+
+    expect(result.events.length).toBe(1);
+    expect(result.events[0].score).toBe(16);
+    expect(result.events[0].standardIds).toContain("6.AT.3");
+    // The results log holds a real name and an IEP marker. Neither may cross.
+    expect(result.serialized).not.toContain("Alex");
+    expect(result.serialized).not.toContain("Rivera");
+    expect(result.serialized).not.toContain("IEP");
+  });
+
+  test("evidence from several products aggregates per standard", async ({ page }) => {
+    await seedNumberRealmHero(page);
+    await page.addInitScript(() => {
+      localStorage.setItem(
+        "nt_results_log",
+        JSON.stringify([
+          {
+            Assessment: "Unit 3 Review",
+            Score: 16,
+            Standard: "6.AT.3",
+            Skill: "Overall",
+            "Question/Item": "20 items",
+            Date: "2026-05-04",
+          },
+        ]),
+      );
+    });
+    await page.goto("/math/my-path/");
+
+    const rollup = await page.evaluate(async () => {
+      await (window as any).EWLEvidence.sync();
+      return (window as any).EWLEvidence.byStandard()["6.AT.3"];
+    });
+
+    // Number Realm mastery (5/7) plus the assessment (16/20) land on the same
+    // standard — the point of having one shared evidence layer.
+    expect(rollup).toBeTruthy();
+    expect(rollup.maxScore).toBe(27);
+    expect(rollup.score).toBe(21);
+  });
+
+  test("syncing twice records nothing new", async ({ page }) => {
+    await seedNumberRealmHero(page);
+    await page.goto("/math/my-path/");
+    const counts = await page.evaluate(async () => {
+      const ev = (window as any).EWLEvidence;
+      await ev.sync();
+      const first = ev.all().length;
+      const second = (await ev.sync()).length;
+      return { first, second };
+    });
+    expect(counts.first).toBeGreaterThan(0);
+    expect(counts.second).toBe(0);
+  });
+});

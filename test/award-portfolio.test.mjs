@@ -30,6 +30,14 @@ function it(name, fn) {
   console.log(`  ✓ ${name}`);
 }
 
+/* The evidence layer's sync() is a Promise (the Thinking Trails adapter reads
+ * IndexedDB), so anything exercising it needs an awaited variant. */
+async function itAsync(name, fn) {
+  await fn();
+  passed += 1;
+  console.log(`  ✓ ${name}`);
+}
+
 /** A fresh jsdom window with the requested modules evaluated in order. */
 function makeWindow(modules, { storage = {} } = {}) {
   const dom = new JSDOM("<!doctype html><html><body></body></html>", {
@@ -246,24 +254,306 @@ it("normalizes a hero profile without modifying it", () => {
   assert.equal(w.localStorage.getItem("mrpg:hero"), HERO);
 });
 
-it("is idempotent: syncing twice does not duplicate events", () => {
+await itAsync("is idempotent: syncing twice does not duplicate events", async () => {
   const w = makeWindow([EVIDENCE, ADAPTER], { storage: { "mrpg:hero": HERO } });
-  const first = w.EWLEvidence.sync().length;
-  const second = w.EWLEvidence.sync().length;
+  const first = (await w.EWLEvidence.sync()).length;
+  const second = (await w.EWLEvidence.sync()).length;
   assert.ok(first > 0);
   assert.equal(second, 0, "a second sync with unchanged data must record nothing new");
 });
 
-it("records a new event when real progress happens", () => {
+await itAsync("records a new event when real progress happens", async () => {
   const w = makeWindow([EVIDENCE, ADAPTER], { storage: { "mrpg:hero": HERO } });
-  w.EWLEvidence.sync();
+  await w.EWLEvidence.sync();
   const before = w.EWLEvidence.all().length;
   w.localStorage.setItem(
     "mrpg:hero",
     JSON.stringify({ ...JSON.parse(HERO), mastery: { "6.AT.A.1": { correct: 7, total: 8 } } }),
   );
-  w.EWLEvidence.sync();
+  await w.EWLEvidence.sync();
   assert.ok(w.EWLEvidence.all().length > before);
+});
+
+console.log("\nportfolio adapter");
+
+const PORTFOLIO = "shared/evidence/adapters/portfolio-adapter.js";
+const ASSESSMENT = "shared/evidence/adapters/assessment-adapter.js";
+const TRAILS = "shared/evidence/adapters/thinking-trails-adapter.js";
+
+const COMPLETIONS = JSON.stringify({
+  "/math/unit-3/projects/version-a/": {
+    unit: 3,
+    version: "a",
+    title: "Ratio City Build",
+    completedAt: "2026-05-04T13:15:00.000Z",
+    stars: 3,
+    rubricTotal: 17,
+    rubricMax: 20,
+    level: 1,
+  },
+});
+
+it("normalizes a project completion without inventing a standard", () => {
+  const w = makeWindow([EVIDENCE, PORTFOLIO], {
+    storage: { "nt-project-complete:v1": COMPLETIONS },
+  });
+  const events = w.EWLPortfolioAdapter.collect();
+  const submit = events.find((e) => e.eventType === "project_submitted");
+  assert.ok(submit);
+  assert.equal(submit.score, 17);
+  assert.equal(submit.maxScore, 20);
+  assert.equal(submit.unitId, "unit-3");
+  assert.equal(submit.portfolioRef, "/math/unit-3/projects/version-a/");
+  // A completion record names a unit and a project, never a standard. Claiming
+  // one would manufacture per-standard evidence the student did not generate.
+  assert.equal(submit.standardIds, undefined);
+  assert.ok(events.some((e) => e.eventType === "portfolio_saved"));
+});
+
+it("reports an unscored project as unknown rather than zero", () => {
+  const noRubric = JSON.stringify({
+    "/math/unit-5/projects/version-a/": {
+      unit: 5,
+      completedAt: "2026-05-05T00:00:00.000Z",
+      rubricTotal: null,
+      rubricMax: null,
+    },
+  });
+  const w = makeWindow([EVIDENCE, PORTFOLIO], {
+    storage: { "nt-project-complete:v1": noRubric },
+  });
+  const submit = w.EWLPortfolioAdapter.collect().find((e) => e.eventType === "project_submitted");
+  assert.equal(submit.score, null);
+  assert.equal(submit.maxScore, null);
+});
+
+it("carries a reflection across as a written explanation", () => {
+  const w = makeWindow([EVIDENCE, PORTFOLIO], {
+    storage: {
+      "nt-project-complete:v1": COMPLETIONS,
+      "nt-project-reflect:/math/unit-3/projects/version-a/":
+        "I shortened the wall because my first plan was over budget.",
+    },
+  });
+  const explain = w.EWLPortfolioAdapter.collect().find(
+    (e) => e.eventType === "explanation_written",
+  );
+  assert.ok(explain);
+  assert.match(explain.writtenExplanation, /over budget/);
+});
+
+it("reports a re-completion as a revision", () => {
+  const revised = JSON.stringify({
+    "/math/unit-3/projects/version-a/": {
+      unit: 3,
+      completedAt: "2026-05-06T00:00:00.000Z",
+      firstCompletedAt: "2026-05-04T00:00:00.000Z",
+      rubricTotal: 19,
+      rubricMax: 20,
+    },
+  });
+  const w = makeWindow([EVIDENCE, PORTFOLIO], {
+    storage: { "nt-project-complete:v1": revised },
+  });
+  const events = w.EWLPortfolioAdapter.collect();
+  const revision = events.find((e) => e.eventType === "project_checkpoint");
+  assert.ok(revision);
+  assert.equal(revision.answerRevisions, 1);
+});
+
+it("produces nothing when no project has been completed", () => {
+  const w = makeWindow([EVIDENCE, PORTFOLIO]);
+  assert.equal(w.EWLPortfolioAdapter.collect().length, 0);
+});
+
+console.log("\nassessment adapter");
+
+const RESULTS_LOG = JSON.stringify([
+  {
+    "Student Name": "Alex Rivera",
+    Class: "6B",
+    Assessment: "Unit 3 Review",
+    Score: 4,
+    Percent: 80,
+    Standard: "6.AT.3",
+    Skill: "Vocabulary",
+    "Question/Item": "5 items",
+    Date: "2026-05-04",
+    "ESOL Level": "3",
+    "IEP/504": "Yes",
+    Teacher: "Mr. Neft",
+  },
+  {
+    "Student Name": "Alex Rivera",
+    Class: "6B",
+    Assessment: "Unit 3 Review",
+    Score: 16,
+    Percent: 80,
+    Standard: "6.AT.3",
+    Skill: "Overall",
+    "Question/Item": "20 items",
+    Date: "2026-05-04",
+    "ESOL Level": "3",
+    "IEP/504": "Yes",
+    Teacher: "Mr. Neft",
+  },
+]);
+
+it("records one event per assessment, not one per section", () => {
+  const w = makeWindow([EVIDENCE, ASSESSMENT], { storage: { nt_results_log: RESULTS_LOG } });
+  const events = w.EWLAssessmentAdapter.collect();
+  // Two rows in, one event out — the section row would double-count the total.
+  assert.equal(events.length, 1);
+  assert.equal(events[0].eventType, "assessment_scored");
+  assert.equal(events[0].score, 16);
+  assert.equal(events[0].maxScore, 20);
+  assert.deepEqual([...events[0].standardIds], ["6.AT.3"]);
+});
+
+it("never copies the student name or any sensitive column into evidence", () => {
+  const w = makeWindow([EVIDENCE, ASSESSMENT], { storage: { nt_results_log: RESULTS_LOG } });
+  w.EWLAssessmentAdapter.collect().forEach((event) => {
+    const serialized = JSON.stringify(event);
+    assert.ok(!serialized.includes("Alex"), "student first name leaked into an evidence event");
+    assert.ok(!serialized.includes("Rivera"), "student surname leaked into an evidence event");
+    assert.ok(!serialized.includes("Mr. Neft"), "teacher name leaked into an evidence event");
+    // The ESOL level and IEP/504 marker must never leave the results log.
+    assert.ok(!/"(ESOL|IEP)/.test(serialized));
+  });
+});
+
+it("parses the item count and tolerates a malformed one", () => {
+  const w = makeWindow([EVIDENCE, ASSESSMENT]);
+  assert.equal(w.EWLAssessmentAdapter.itemCount("20 items"), 20);
+  assert.equal(w.EWLAssessmentAdapter.itemCount("1 item"), 1);
+  assert.equal(w.EWLAssessmentAdapter.itemCount("lots"), null);
+  assert.equal(w.EWLAssessmentAdapter.itemCount(undefined), null);
+});
+
+it("ignores a log that is not an array", () => {
+  const w = makeWindow([EVIDENCE, ASSESSMENT], { storage: { nt_results_log: '{"not":"an array"}' } });
+  assert.equal(w.EWLAssessmentAdapter.collect().length, 0);
+});
+
+console.log("\nthinking trails adapter");
+
+const SESSION = {
+  sessionId: "s-1",
+  studentNameOrCode: "Alex Rivera",
+  lessonId: "3-2",
+  activityId: "ratio-tables",
+  standard: "6.AT.3",
+  languageSupport: "es",
+  startedAt: "2026-05-04T13:00:00.000Z",
+  endedAt: "2026-05-04T13:20:00.000Z",
+  attempts: [
+    {
+      problemId: "p1",
+      prompt: "What is the missing value?",
+      studentAnswer: "9",
+      correctAnswer: "12",
+      result: "incorrect",
+      hintUsed: true,
+      attempts: 1,
+      explanation: "",
+      misconceptionTag: "ratio-table-additive",
+      timestamp: "2026-05-04T13:05:00.000Z",
+    },
+    {
+      problemId: "p2",
+      prompt: "Explain your reasoning.",
+      studentAnswer: "12",
+      correctAnswer: "12",
+      result: "correct",
+      hintUsed: false,
+      attempts: 2,
+      explanation: "I multiplied both numbers by three.",
+      misconceptionTag: "",
+      timestamp: "2026-05-04T13:10:00.000Z",
+    },
+  ],
+};
+
+it("turns attempts into per-item, hint, and explanation evidence", () => {
+  const w = makeWindow([EVIDENCE, TRAILS]);
+  const events = w.EWLThinkingTrailsAdapter.eventsForSession(SESSION);
+  const types = events.map((e) => e.eventType);
+  assert.equal(types.filter((t) => t === "item_attempted").length, 2);
+  assert.equal(types.filter((t) => t === "hint_requested").length, 1);
+  assert.equal(types.filter((t) => t === "explanation_written").length, 1);
+
+  const wrong = events.find((e) => e.eventType === "item_attempted");
+  assert.equal(wrong.score, 0);
+  assert.equal(wrong.maxScore, 1);
+  assert.deepEqual([...wrong.misconceptionCodes], ["ratio-table-additive"]);
+  assert.equal(wrong.lessonId, "lesson-3-2");
+  assert.equal(wrong.languageSetting, "es");
+});
+
+it("rolls a finished session up into one completion event", () => {
+  const w = makeWindow([EVIDENCE, TRAILS]);
+  const done = w.EWLThinkingTrailsAdapter.eventsForSession(SESSION).find(
+    (e) => e.eventType === "activity_completed",
+  );
+  assert.ok(done);
+  assert.equal(done.score, 1);
+  assert.equal(done.maxScore, 2);
+  assert.equal(done.hintCount, 1);
+});
+
+it("leaves the student name and the item content behind", () => {
+  const w = makeWindow([EVIDENCE, TRAILS]);
+  const serialized = JSON.stringify(w.EWLThinkingTrailsAdapter.eventsForSession(SESSION));
+  assert.ok(!serialized.includes("Alex"), "student name leaked out of Thinking Trails");
+  assert.ok(!serialized.includes("Rivera"));
+  // Item content is the question bank, not evidence about the learner.
+  assert.ok(!serialized.includes("What is the missing value?"));
+  assert.ok(!serialized.includes("correctAnswer"));
+  // The student's own reasoning is the one free-text field that does cross.
+  assert.ok(serialized.includes("I multiplied both numbers by three."));
+});
+
+it("emits nothing for a session with no attempts", () => {
+  const w = makeWindow([EVIDENCE, TRAILS]);
+  const empty = w.EWLThinkingTrailsAdapter.eventsForSession({ sessionId: "s-0", attempts: [] });
+  assert.equal(empty.length, 0);
+});
+
+it("prefers whichever store holds the fuller copy of a session", () => {
+  const w = makeWindow([EVIDENCE, TRAILS]);
+  const thin = { sessionId: "s-1", attempts: [{ result: "correct" }] };
+  const merged = w.EWLThinkingTrailsAdapter.mergeSessions([thin], [SESSION]);
+  assert.equal(merged.length, 1);
+  assert.equal(merged[0].attempts.length, 2);
+});
+
+await itAsync("resolves to an array even with no IndexedDB available", async () => {
+  const w = makeWindow([EVIDENCE, TRAILS]);
+  const events = await w.EWLThinkingTrailsAdapter.collect();
+  assert.ok(Array.isArray(events));
+});
+
+console.log("\nadapter composition");
+
+await itAsync("one broken adapter does not stop the others", async () => {
+  const w = makeWindow([EVIDENCE, PORTFOLIO], {
+    storage: { "nt-project-complete:v1": COMPLETIONS },
+  });
+  w.EWLEvidence.registerAdapter("explodes", () => {
+    throw new Error("boom");
+  });
+  w.EWLEvidence.registerAdapter("rejects", () => Promise.reject(new Error("nope")));
+  const recorded = await w.EWLEvidence.sync();
+  assert.ok(recorded.length > 0, "the healthy adapter still recorded");
+});
+
+await itAsync("sync() is always a Promise, even with only sync adapters", async () => {
+  const w = makeWindow([EVIDENCE, PORTFOLIO], {
+    storage: { "nt-project-complete:v1": COMPLETIONS },
+  });
+  const result = w.EWLEvidence.sync();
+  assert.equal(typeof result.then, "function");
+  assert.ok(Array.isArray(await result));
 });
 
 console.log("\nsupport profile");

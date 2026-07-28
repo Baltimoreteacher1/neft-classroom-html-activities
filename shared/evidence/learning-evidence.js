@@ -478,9 +478,16 @@
 
   /**
    * Register a read-only adapter over an existing store.
-   * `fn` returns an array of raw event-ish objects; they are normalized and
-   * recorded like any other event. An adapter that throws is skipped — one
-   * broken adapter must never stop the others.
+   *
+   * `fn` returns an array of raw event-ish objects, OR a Promise of one. The
+   * async form exists because not every store is synchronously readable — the
+   * Thinking Trails layer keeps its sessions in IndexedDB and only falls back
+   * to localStorage when IndexedDB is unavailable, so a sync-only contract
+   * would have been blind to the richest evidence in the system (per-attempt
+   * results, misconception tags, written explanations).
+   *
+   * An adapter that throws or rejects is skipped — one broken adapter must
+   * never stop the others.
    */
   function registerAdapter(name, fn) {
     if (typeof fn === "function") adapters[String(name)] = fn;
@@ -489,10 +496,14 @@
   /**
    * Run every adapter once and record whatever is new.
    *
-   * Returns only the events that were GENUINELY new. record() returns the
-   * existing event for a duplicate eventId, so a caller cannot use its return
-   * value to tell "recorded" from "already had it" — and adapters are designed
-   * to be re-run, which makes that distinction the whole point of sync().
+   * Returns a Promise for the events that were GENUINELY new. record() returns
+   * the existing event for a duplicate eventId, so a caller cannot use its
+   * return value to tell "recorded" from "already had it" — and adapters are
+   * designed to be re-run, which makes that distinction the whole point of
+   * sync().
+   *
+   * Always a Promise, even when every adapter is synchronous, so a caller never
+   * has to branch on which kind it got.
    */
   function sync() {
     var known = {};
@@ -500,26 +511,39 @@
       known[e.eventId] = true;
     });
 
-    var recorded = [];
-    Object.keys(adapters).forEach(function (name) {
-      var raw;
+    var names = Object.keys(adapters);
+    var results = names.map(function (name) {
+      var out;
       try {
-        raw = adapters[name]() || [];
+        out = adapters[name]();
       } catch (_e) {
-        return;
+        return Promise.resolve([]);
       }
-      (Array.isArray(raw) ? raw : [raw]).forEach(function (item) {
-        if (!item) return;
-        if (!item.source) item.source = name;
-        if (item.eventId && known[item.eventId]) return;
-        var saved = record(item);
-        if (saved) {
-          known[saved.eventId] = true;
-          recorded.push(saved);
-        }
-      });
+      return Promise.resolve(out)
+        .then(function (raw) {
+          return Array.isArray(raw) ? raw : raw ? [raw] : [];
+        })
+        .catch(function () {
+          return [];
+        });
     });
-    return recorded;
+
+    return Promise.all(results).then(function (batches) {
+      var recorded = [];
+      batches.forEach(function (batch, i) {
+        batch.forEach(function (item) {
+          if (!item) return;
+          if (!item.source) item.source = names[i];
+          if (item.eventId && known[item.eventId]) return;
+          var saved = record(item);
+          if (saved) {
+            known[saved.eventId] = true;
+            recorded.push(saved);
+          }
+        });
+      });
+      return recorded;
+    });
   }
 
   /* ---------------------------------------------------------------- exports */

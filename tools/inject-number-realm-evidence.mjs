@@ -36,16 +36,22 @@ const BLOCK = `  ${BEGIN}
   <script defer>
     /* Normalize Number Realm progress into the shared evidence layer once the
      * realm has finished loading. Read-only: the hero profile and realm saves
-     * are never modified. Any failure is swallowed so the game is unaffected. */
+     * are never modified. sync() is asynchronous (some adapters read
+     * IndexedDB); nothing here depends on its result, so it is fired and
+     * forgotten with its rejection absorbed. Any failure is swallowed so the
+     * game is unaffected. */
     window.addEventListener("load", function () {
-      try {
-        if (window.EWLRegistry) {
-          window.EWLRegistry.load().then(function () {
-            window.EWLEvidence && window.EWLEvidence.sync();
-          });
-        } else if (window.EWLEvidence) {
-          window.EWLEvidence.sync();
+      function syncEvidence() {
+        if (!window.EWLEvidence) return;
+        try {
+          Promise.resolve(window.EWLEvidence.sync()).catch(function () {});
+        } catch (_e) {
+          /* evidence is optional — never break a realm over it */
         }
+      }
+      try {
+        if (window.EWLRegistry) window.EWLRegistry.load().then(syncEvidence, syncEvidence);
+        else syncEvidence();
       } catch (_e) {
         /* evidence is optional — never break a realm over it */
       }

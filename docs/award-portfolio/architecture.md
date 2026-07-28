@@ -42,7 +42,7 @@ no bundling — the same constraints the rest of this static site works under.
 | Product registry (hand-maintained) | `data/product-registry.json` |
 | Registry client | `shared/evidence/curriculum-registry-client.js` |
 | Evidence interface | `shared/evidence/learning-evidence.js` |
-| Number Realm adapter | `shared/evidence/adapters/number-realm-adapter.js` |
+| Evidence adapters | `shared/evidence/adapters/{number-realm,portfolio,assessment,thinking-trails}-adapter.js` |
 | Instructional-need classifier | `shared/evidence/instructional-need.js` |
 | Support profile | `shared/support/support-profile.js` + `.css` |
 | Scaffold ladder | `shared/support/scaffold-ladder.js` + `.css` |
@@ -193,11 +193,39 @@ transform v1 rows inside `migrate()` — do not discard them.
 
 ### Adapters
 
-`registerAdapter(name, fn)` where `fn()` returns raw event-ish objects.
-`sync()` runs every adapter and records only what is genuinely new (event ids
-encode the value they describe, so a re-run with unchanged data records
-nothing). An adapter that throws is skipped; one broken adapter never stops the
-others. **Adapters are read-only with respect to the store they wrap.**
+`registerAdapter(name, fn)` where `fn()` returns raw event-ish objects **or a
+Promise of them**. `sync()` runs every adapter and records only what is
+genuinely new (event ids encode the value they describe, so a re-run with
+unchanged data records nothing), and **always returns a Promise** so a caller
+never has to branch on which kind it got. An adapter that throws or rejects is
+skipped; one broken adapter never stops the others. **Adapters are read-only
+with respect to the store they wrap.**
+
+Four ship today:
+
+| Adapter | Reads | Emits |
+| --- | --- | --- |
+| `number-realm-adapter.js` | `mrpg:hero`, `mrpg:unit<N>` | `mastery_updated`, `hint_requested`, `badge_earned`, realm completion |
+| `portfolio-adapter.js` | `nt-project-complete:v1`, `nt-project-reflect:<path>` | `project_submitted`, `portfolio_saved`, `project_checkpoint`, `explanation_written` |
+| `assessment-adapter.js` | `nt_results_log` | `assessment_scored` |
+| `thinking-trails-adapter.js` | IndexedDB `neft-thinking-trails` + its localStorage fallback | `item_attempted`, `hint_requested`, `explanation_written`, `activity_completed` |
+
+Three deliberate restraints, each asserted by a test:
+
+- **The portfolio adapter emits no `standardIds`.** A completion record names a
+  unit and a project, not a standard. Attributing a project to every standard in
+  its unit would manufacture per-standard evidence the student never generated,
+  and the recommendation rules would then reason from it. `unitId` is the honest
+  granularity.
+- **The assessment adapter records only the `Overall` rows.** `nt-results`
+  writes one row per section plus a roll-up whose score is their sum; taking
+  both would double-count every assessment. It also drops `Student Name`,
+  `ESOL Level`, `IEP/504`, `Intervention Group`, `Attendance %`, `Teacher`, and
+  `Class` — enumerated explicitly, so a new sensitive column upstream is a
+  visible decision rather than a silent leak.
+- **The Thinking Trails adapter leaves item content behind.** `prompt`,
+  `studentAnswer`, and `correctAnswer` are the question bank, not evidence about
+  the learner. Only the student's written explanation crosses over.
 
 ---
 

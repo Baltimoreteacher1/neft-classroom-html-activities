@@ -1430,6 +1430,9 @@
   <script src="/shared/evidence/learning-evidence.js"></script>
   <script src="/shared/evidence/curriculum-registry-client.js"></script>
   <script src="/shared/evidence/adapters/number-realm-adapter.js"></script>
+  <script src="/shared/evidence/adapters/portfolio-adapter.js"></script>
+  <script src="/shared/evidence/adapters/assessment-adapter.js"></script>
+  <script src="/shared/evidence/adapters/thinking-trails-adapter.js"></script>
   <script src="/shared/evidence/instructional-need.js"></script>
   <script>
     /* Personalized Math Path — the "why" panel.
@@ -1452,14 +1455,23 @@
         return node;
       }
 
+      /* Bring adapter-backed progress into the shared layer, then draw.
+       *
+       * sync() is asynchronous because the Thinking Trails adapter reads
+       * IndexedDB, so the panel must draw AFTER it settles or it would render
+       * from stale evidence on first paint. A failing sync still draws —
+       * whatever evidence is already stored is worth showing. */
       function render() {
-        // Bring adapter-backed progress (e.g. Number Realm) into the shared layer.
+        var settled;
         try {
-          window.EWLEvidence.sync();
+          settled = Promise.resolve(window.EWLEvidence.sync());
         } catch (_e) {
-          /* an adapter failure must not break the page */
+          settled = Promise.resolve([]);
         }
+        return settled.then(draw, draw);
+      }
 
+      function draw() {
         var byStandard = window.EWLEvidence.byStandard();
         var standards = Object.keys(byStandard);
         if (!standards.length) return;
