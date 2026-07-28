@@ -53,6 +53,15 @@
     else fn();
   }
 
+  /* A check whose field is not currently displayed (e.g. a lvl2-only box while
+     the page is at Level 1) must not be counted in the step summary — otherwise
+     the student reads "2 of 3 look right" pointing at a box they cannot see. */
+  function isVisible(el) {
+    if (!el) return false;
+    if (el.type === "hidden") return false;
+    return !!(el.offsetParent || (el.getClientRects && el.getClientRects().length));
+  }
+
   function isEs() {
     var b = document.getElementById("body") || document.body;
     return !!(b && b.classList.contains("es"));
@@ -784,14 +793,26 @@
     btn.addEventListener("click", function () {
       var pass = 0;
       var attempted = 0;
-      keys.forEach(function (k) {
+      var shown = keys.filter(function (k) {
+        return isVisible(field(k.chk.ref));
+      });
+      if (!shown.length) {
+        summary.hidden = false;
+        summary.className = "ntchk-summary";
+        summary.innerHTML = bi(
+          "Nothing to check on this step yet — fill in your answers first.",
+          "Todavía no hay nada que revisar en este paso — primero escribe tus respuestas.",
+        );
+        return;
+      }
+      shown.forEach(function (k) {
         var res = runCheck(k.chk);
         var status = applyResult(k.chk, k.key, res);
         if (status === "pass") pass++;
         if (status !== "blank" && status !== "needs-inputs") attempted++;
       });
       summary.hidden = false;
-      var total = keys.length;
+      var total = shown.length;
       if (pass === total) {
         summary.className = "ntchk-summary is-pass";
         summary.innerHTML =
