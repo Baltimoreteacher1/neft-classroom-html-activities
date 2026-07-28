@@ -90,6 +90,8 @@ export const SKIP_FILE_RE = /(^|[/\\])(404|sitemap|robots)\b|(^|[/\\])printable\
 //   - focus-school/*             → self-persisting dashboard app (all state in
 //     app.js + multi-device sync); its only field is a command-bar search box,
 //     not durable student work
+//   - shai-school/*              → the same planner app, deployed as its own
+//     Pages project (shai.eduwonderlab.com); same self-persisting model
 //   - games-live/*               → ephemeral live multiplayer host/join lobby
 //   - games/3d/*                 → 3D game launchers (no form fields / canvas)
 //   - math/intervention/index.html → the intervention nav hub (links only)
@@ -99,4 +101,4 @@ export const SKIP_FILE_RE = /(^|[/\\])(404|sitemap|robots)\b|(^|[/\\])printable\
 // (The math/intervention/<topic>/ pages DO carry student self-assessment +
 // quiz state and are intentionally NOT excluded.)
 export const SKIP_PATH_RE =
-  /(^|\/)(?:teacher(\/|$)|living-school\/neft-city-|focus-school\/|games-live\/|games\/3d\/|math\/(?:intervention|student-board)\/index\.html$)/i;
+  /(^|\/)(?:teacher(\/|$)|living-school\/neft-city-|focus-school\/|shai-school\/|games-live\/|games\/3d\/|math\/(?:intervention|student-board)\/index\.html$)/i;
