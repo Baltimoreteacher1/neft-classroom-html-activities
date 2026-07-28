@@ -41,5 +41,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+      # scripts/smoke-live.mjs supersedes the former tools/smoke-live-site.mjs:
+      # same status contracts, plus content markers, live-bundle parsing (the
+      # game-fx truncation class of failure) and the build stamp. No deps, so
+      # this job still needs no `npm ci`.
       - name: Live-site smoke test
-        run: node tools/smoke-live-site.mjs
+        run: node scripts/smoke-live.mjs

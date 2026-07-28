@@ -1,0 +1,50 @@
+name: Backup D1
+# Nightly capture of neft-student-progress — the only data on this project that
+# cannot be rebuilt from source (student progress, rosters, telemetry, site
+# settings). Until this existed there was no export path at all, so a bad
+# `wrangler d1 execute --remote` was unrecoverable.
+#
+# The dump is replayed into SQLite before it is accepted, so a backup that
+# cannot be restored fails the run instead of sitting in storage looking fine.
+#
+# Backups are uploaded as workflow ARTIFACTS, never committed: they contain
+# student data, and this repo auto-commits during agent sessions.
+on:
+  schedule:
+    # 07:10 UTC (~3:10am ET) — after the night-shift jobs, before the school day.
+    - cron: "10 7 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backup-d1
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+
+      - name: Export + verify restore
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        # --out keeps the dump inside the runner workspace so upload-artifact can
+        # find it; locally the default is ~/neft-backups, outside the repo.
+        run: npm run backup:d1 -- --out "$RUNNER_TEMP/d1-backup"
+
+      - name: Upload backup artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: d1-backup-${{ github.run_id }}
+          path: ${{ runner.temp }}/d1-backup
+          retention-days: 90
+          if-no-files-found: error
