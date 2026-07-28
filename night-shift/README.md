@@ -9,11 +9,29 @@ Spec: `docs/superpowers/specs/2026-06-19-night-shift-ops-design.md`
 
 | Module                  | Job                                                                                                          |
 | ----------------------- | ------------------------------------------------------------------------------------------------------------ |
-| **Regression Sentinel** | Diffs hand-maintained critical files vs a baseline tag; flags/optionally restores clobbered files.           |
-| **Build + Visual QA**   | Runs validators, optionally builds, browser-smokes a rotating lesson sample for the runtime DOM-crash class. |
+| **Regression Sentinel** | Diffs hand-maintained critical files vs a baseline tag; flags clobbered files. *Audits `origin/main`.*       |
+| **Build + Visual QA**   | Runs validators, builds, browser-smokes a rotating lesson sample for the runtime DOM-crash class. *Audits `origin/main`.* |
+| **Route Monitor**       | Probes live routes on eduwonderlab.com, including deploy freshness vs `main`.                                |
+| **Lesson Render**       | Loads live lesson pages and confirms they actually render.                                                   |
 | **Divergence Watch**    | Finds stray `* 2` git refs, checks `main` vs `origin`, flags CF-Git vs wrangler drift.                       |
+| **Backup Sentinel**     | Fails if the newest restore-verified D1 backup is stale, unverified, or the only generation.                 |
 | **Backlog Advancer**    | Runs idempotent regenerators in a worktree; if clean, opens a PR. Never deploys.                             |
 | **Briefing**            | Aggregates everything into `briefings/latest.md`.                                                            |
+
+### What gets audited, and where
+
+The source-truth modules (Regression Sentinel, Build + Visual QA) run inside a
+**clean detached worktree at `origin/main`**, never the live working tree.
+
+This is not a detail — it is the module's correctness condition. Running them in
+place meant the nightly job judged whatever branch happened to be checked out,
+with whatever uncommitted edits were in flight, and reported in-progress work as
+`❌ Build is broken — deploy would fail` while `origin/main` was green. Eight of
+nine briefings ended in ❌ that way, which is how a monitor teaches you to stop
+reading it. The briefing header now states the exact ref and SHA it judged.
+
+If the worktree cannot be created, those modules report **inconclusive (⚠️)** —
+never ❌. Unknown must not masquerade as broken.
 
 ## Use
 
@@ -33,6 +51,7 @@ launchctl start com.neft.nightshift   # trigger a run now
 - `buildQa.runBuild` / `playwrightSampleSize` — browser smoke needs `npx playwright install chromium`.
 - `divergenceWatch.autoFixStrayRefs` — **off** by default (report-only).
 - `backlogAdvancer.enableClaudeTasks` — **off** by default; only idempotent `regen` tasks run otherwise.
+- `backupSentinel.warnAfterHours` / `failAfterHours` — backup-age thresholds (default 36h / 72h).
 
 ## Backlog — `backlog.json`
 
