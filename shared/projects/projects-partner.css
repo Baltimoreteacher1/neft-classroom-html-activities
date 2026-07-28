@@ -1,0 +1,163 @@
+/* ==========================================================================
+   Projects PARTNER GUIDE — companion styles for projects-partner.js.
+   Scoped under .ntp- so nothing here can reach the pages' own rules.
+   Only rendered at Level 0 / Level 1; Level 2 never builds the markup.
+   ========================================================================== */
+
+.ntp-card {
+  margin: 0 0 18px;
+  border: 2px solid #7c5cff;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #f6f3ff 0%, #ffffff 60%);
+  box-shadow: 0 2px 0 rgba(124, 92, 255, 0.18);
+  overflow: hidden;
+}
+
+.ntp-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  /* 44px minimum touch target — same rule the rest of the platform follows. */
+  min-height: 44px;
+  font-weight: 800;
+  font-size: 1.02rem;
+  color: #2c1c66;
+  cursor: pointer;
+  list-style: none;
+  background: #ece6ff;
+}
+
+.ntp-summary::-webkit-details-marker {
+  display: none;
+}
+
+.ntp-summary::after {
+  content: "▾";
+  margin-left: auto;
+  font-size: 0.9rem;
+  opacity: 0.7;
+  transition: transform 0.15s ease;
+}
+
+.ntp-card[open] .ntp-summary::after {
+  transform: rotate(180deg);
+}
+
+.ntp-summary:focus-visible {
+  outline: 3px solid #2c1c66;
+  outline-offset: 2px;
+}
+
+.ntp-ico {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.ntp-body {
+  padding: 14px;
+}
+
+.ntp-roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.ntp-role {
+  flex: 1 1 220px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  line-height: 1.35;
+  border: 1px solid rgba(44, 28, 102, 0.18);
+}
+
+.ntp-role-driver {
+  background: #fff5d6;
+}
+
+.ntp-role-checker {
+  background: #d9f2ff;
+}
+
+.ntp-role strong {
+  display: block;
+  font-size: 1rem;
+  color: #2c1c66;
+}
+
+.ntp-moves {
+  margin: 0 0 12px;
+  padding-left: 22px;
+}
+
+.ntp-moves li {
+  margin: 0 0 8px;
+  font-size: 1rem;
+  line-height: 1.45;
+}
+
+.ntp-watch {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border-left: 4px solid #f0a202;
+  background: #fff8e8;
+  border-radius: 0 8px 8px 0;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.ntp-starters > summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #2c1c66;
+  cursor: pointer;
+}
+
+.ntp-starters ul {
+  margin: 6px 0 0;
+  padding-left: 22px;
+}
+
+.ntp-starters li {
+  margin: 0 0 6px;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+/* The page's own language switch drives which half of every bilingual pair is
+   visible; these layers only supply both halves. */
+.ntp-card .es-text {
+  display: none;
+}
+
+body.es .ntp-card .en-text {
+  display: none;
+}
+
+body.es .ntp-card .es-text {
+  display: inline;
+}
+
+@media print {
+  .ntp-card {
+    display: none !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .ntp-roles {
+    flex-direction: column;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ntp-summary::after {
+    transition: none;
+  }
+}
