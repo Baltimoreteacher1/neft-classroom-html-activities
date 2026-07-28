@@ -86,10 +86,17 @@
   }
 
   // ---- identity (no new PII) ----------------------------------------------
+  // The shared "nt_student" record is written as { alias, section } by
+  // edupulse-bridge.js, and most readers (nt-activity-kit, the curriculum
+  // progress bridge) use `alias`. This module historically read `name`, so it
+  // always saw undefined and every telemetry row landed with an empty
+  // student_name — which is why per-student reporting had nothing to group.
+  // Accept either spelling; prefer `alias` since that is what is written.
   function student() {
     try {
       var s = JSON.parse(lsGet(LS_STUDENT) || "{}");
-      return s && typeof s === "object" ? s : {};
+      if (!s || typeof s !== "object") return {};
+      return { name: s.alias || s.name || "", section: s.section || "" };
     } catch (_e) {
       return {};
     }
