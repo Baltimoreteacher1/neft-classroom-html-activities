@@ -107,8 +107,27 @@ async function upsertProgress(db, body) {
   return nowIso;
 }
 
+/**
+ * `total` on a game_scores row is the number of ATTEMPTS the row represents —
+ * the denominator of an accuracy ratio — and `correct` is how many of them were
+ * right. A client that posts a running score here (engine3d did until 2026-07-28)
+ * silently destroys every accuracy figure downstream: SUM(total) became a sum of
+ * scores, so the usage report showed "18 correct / 1455 attempted", and negative
+ * scores wrote total = -4. Storage is the last place that can refuse nonsense,
+ * so the invariant is enforced here rather than trusted from the client:
+ *   total >= 1  and  0 <= correct <= total
+ * Clamping (not rejecting) keeps this fail-open — a miscounting game still
+ * records that play happened instead of vanishing from telemetry entirely.
+ */
+function normalizeAttempts(body) {
+  const total = Math.max(1, intOr(body.total, 1));
+  const correct = Math.min(body.correct ? intOr(body.correct, 1) || 1 : 0, total);
+  return { total, correct: Math.max(0, correct) };
+}
+
 async function insertEvent(db, body) {
   const nowIso = new Date().toISOString();
+  const { total, correct } = normalizeAttempts(body);
   await db
     .prepare(
       `INSERT INTO game_scores
@@ -121,8 +140,8 @@ async function insertEvent(db, body) {
       clamp(body.standard, 120),
       intOr(body.level, 1),
       intOr(body.points, 0),
-      body.correct ? 1 : 0,
-      intOr(body.total, 0),
+      correct,
+      total,
       intOr(body.steps, 0),
       clamp(body.misconceptionTag, 120) || null,
       clamp(body.saveCode, 40) || null,

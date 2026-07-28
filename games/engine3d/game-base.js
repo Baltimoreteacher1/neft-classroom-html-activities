@@ -5,12 +5,7 @@ import { createFeel } from "./feel.js";
 import { createAnnouncer } from "./a11y.js";
 import { showVocabGate } from "./vocab-gate.js";
 import { showLevelSelect, levelInfo } from "./levels.js";
-import {
-  reportScore,
-  saveProgress,
-  loadProgress,
-  flushQueue,
-} from "./progress.js";
+import { reportScore, saveProgress, loadProgress, flushQueue } from "./progress.js";
 
 /**
  * Boots a unit game end-to-end:
@@ -108,10 +103,8 @@ export function mountGame(mountEl, gameModule, options = {}) {
       if (correct) {
         stepsDone += 1;
         streak += 1;
-        if (typeof hud.setProgress === "function")
-          hud.setProgress(stepsDone, totalSteps);
-        if (typeof hud.setStreak === "function" && streak >= 2)
-          hud.setStreak(streak);
+        if (typeof hud.setProgress === "function") hud.setProgress(stepsDone, totalSteps);
+        if (typeof hud.setStreak === "function" && streak >= 2) hud.setStreak(streak);
       } else {
         streak = 0;
         if (typeof hud.setStreak === "function") hud.setStreak(0);
@@ -120,15 +113,23 @@ export function mountGame(mountEl, gameModule, options = {}) {
       // passes meta.misconceptionTag (or meta.skillTag) per step so a teacher
       // can see WHICH sub-skill failed, not just the raw score. We surface a
       // single canonical `misconceptionTag` field on the payload.
-      const misconceptionTag =
-        meta.misconceptionTag || meta.skillTag || meta.tag || null;
+      const misconceptionTag = meta.misconceptionTag || meta.skillTag || meta.tag || null;
+      // `total` on a game_scores row means ATTEMPTS REPRESENTED BY THIS ROW,
+      // not the running score — one onScore() call is exactly one attempt, so
+      // it is always 1 (this is the contract math/games/practice-arcade posts).
+      // It previously carried `totalScore`, which made SUM(total) a sum of
+      // running scores: the usage report read unit-1-smoothie-stand as
+      // "18 correct / 1455 attempted", and rows even landed with total = -4
+      // once a step scored negative. The cumulative score is still recoverable
+      // as SUM(points), and saveProgress() below deliberately keeps
+      // `total: totalScore` — game_progress.total IS the resume score.
       const payload = {
         gameId,
         standard,
         level,
         points,
         correct,
-        total: totalScore,
+        total: 1,
         steps: stepsDone,
         misconceptionTag,
         ...meta,

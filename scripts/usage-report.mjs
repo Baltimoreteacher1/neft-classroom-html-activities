@@ -26,6 +26,13 @@ const LOCAL_DB = argv.includes("--db") ? argv[argv.indexOf("--db") + 1] : null;
 
 /* ------------------------------------------------------------------ queries */
 
+// The day game_scores gained an enforced attempts contract: engine3d stopped
+// posting its running score into `total` (games/engine3d/game-base.js) and the
+// API began clamping the invariant server-side (functions/api/scores). Score
+// rows older than this cannot be interpreted as accuracy, only as evidence of
+// play. Do not move this date to make a report look fuller.
+const TRUSTED_FROM = "2026-07-28";
+
 const QUERIES = {
   lessonEvents: `SELECT lesson_slug AS slug, lesson_title AS title, COUNT(*) AS events,
       COUNT(DISTINCT json_extract(payload_json,'$.session')) AS sessions,
@@ -38,8 +45,24 @@ const QUERIES = {
     FROM lesson_telemetry WHERE event_type='time_on_task' GROUP BY 1 ORDER BY seconds DESC`,
   milestones: `SELECT lesson_slug AS slug, json_extract(payload_json,'$.props.milestone') AS milestone, COUNT(*) AS n
     FROM lesson_telemetry WHERE event_type='milestone' GROUP BY 1,2`,
+  // Accuracy is computed ONLY over rows this project can vouch for.
+  //
+  // Until 2026-07-28 the engine3d runtime posted its RUNNING SCORE into
+  // `total`, a column that means "attempts represented by this row". The usage
+  // report therefore read unit-1-smoothie-stand as "18 correct / 1455
+  // attempted", and negative-scoring steps wrote total = -4. Structural checks
+  // alone cannot rescue those rows: a score of 141 is indistinguishable from a
+  // legitimate 141-attempt row, so a row is trustworthy only if it was written
+  // after the client fix AND satisfies the contract. Pre-cutoff rows keep their
+  // play counts (play really did happen) and are excluded from accuracy.
   games: `SELECT game_id AS id, COUNT(*) AS plays, SUM(points) AS points,
-      SUM(correct) AS correct, SUM(total) AS attempted, MAX(created_at) AS last_seen
+      SUM(CASE WHEN created_at >= '${TRUSTED_FROM}' AND total >= 1 AND correct <= total
+               THEN correct END) AS correct,
+      SUM(CASE WHEN created_at >= '${TRUSTED_FROM}' AND total >= 1 AND correct <= total
+               THEN total END) AS attempted,
+      SUM(CASE WHEN created_at <  '${TRUSTED_FROM}' OR total < 1 OR correct > total
+               THEN 1 ELSE 0 END) AS untrusted,
+      MAX(created_at) AS last_seen
     FROM game_scores GROUP BY 1 ORDER BY plays DESC`,
   activeDays: `SELECT substr(created_at,1,10) AS day, COUNT(*) AS events
     FROM lesson_telemetry GROUP BY 1 ORDER BY day DESC LIMIT 21`,
@@ -173,11 +196,29 @@ lines.push("");
 lines.push("## Games with recorded play");
 lines.push("");
 if (data.games.length) {
-  lines.push("| Game | Plays | Correct / attempted | Last seen |");
-  lines.push("| --- | ---: | ---: | --- |");
+  lines.push("| Game | Plays | Correct / attempted | Accuracy | Last seen |");
+  lines.push("| --- | ---: | ---: | ---: | --- |");
+  let anyUntrusted = 0;
   for (const g of data.games) {
-    const acc = g.attempted ? `${g.correct}/${g.attempted}` : "—";
-    lines.push(`| ${g.id} | ${fmt(g.plays)} | ${acc} | ${(g.last_seen || "").slice(0, 10)} |`);
+    const att = Number(g.attempted) || 0;
+    const cor = Number(g.correct) || 0;
+    const bad = Number(g.untrusted) || 0;
+    anyUntrusted += bad;
+    const acc = att ? `${fmt(cor)}/${fmt(att)}` : "—";
+    const pct = att ? `${Math.round((100 * cor) / att)}%` : "—";
+    const note = bad ? ` <br>⚠️ ${fmt(bad)} pre-contract row(s)` : "";
+    lines.push(
+      `| ${g.id}${note} | ${fmt(g.plays)} | ${acc} | ${pct} | ${(g.last_seen || "").slice(0, 10)} |`,
+    );
+  }
+  if (anyUntrusted) {
+    lines.push("");
+    lines.push(
+      `> ⚠️ **${fmt(anyUntrusted)} score row(s) predate the \`game_scores\` attempts contract** ` +
+        `(before ${TRUSTED_FROM}, engine3d posted its running score into \`total\`), so they are ` +
+        "excluded from accuracy above. Their play counts are real; their ratios never were. " +
+        "Accuracy will stay `—` until games are played again post-fix.",
+    );
   }
 } else {
   lines.push("_No game scores recorded._");
