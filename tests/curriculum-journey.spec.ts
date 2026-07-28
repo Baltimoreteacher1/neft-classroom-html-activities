@@ -23,13 +23,34 @@ function acceptTeacherPin(page: Page) {
   });
 }
 
-test.describe("guide first-click journeys from Student Mode", () => {
-  test("Teach today opens the workflow on Today's Teaching in one click", async ({ page }) => {
-    acceptTeacherPin(page);
+/**
+ * Open the hub already in Teacher Mode.
+ *
+ * The "Teach today" / "Plan the week" guide actions carry `hub-teacher-only`,
+ * so they are hidden from students — a deliberate change made in cf7c2e22
+ * ("stop showing students teacher-only chrome on the hub"). These journeys
+ * therefore start from Teacher Mode. The first-click regression they guard is
+ * unchanged and still asserted below: one click must open the REQUESTED view,
+ * not fall back to Today's Teaching.
+ */
+async function openHubAsTeacher(page: Page) {
+  await page.addInitScript(() => localStorage.setItem("nt-teacher-mode", "1"));
+  await page.goto("/curriculum/");
+}
+
+test.describe("guide first-click journeys", () => {
+  test("public default keeps teacher chrome hidden from students", async ({ page }) => {
     await page.goto("/curriculum/");
-    // Baseline: public default is Student Mode with the workflow hidden.
     await expect(page.locator("#hub-mode-toggle")).toContainText("Student Mode");
     await expect(page.locator("#curriculum-teacher-workflow")).toBeHidden();
+    // The teacher-only guide actions must not be reachable by a student.
+    await expect(page.locator("button[data-guide-teacher-view='today']")).toBeHidden();
+    await expect(page.locator("button[data-guide-teacher-view='week']")).toBeHidden();
+  });
+
+  test("Teach today opens the workflow on Today's Teaching in one click", async ({ page }) => {
+    acceptTeacherPin(page);
+    await openHubAsTeacher(page);
 
     await page.locator("button[data-guide-teacher-view='today']").click();
 
@@ -46,8 +67,7 @@ test.describe("guide first-click journeys from Student Mode", () => {
 
   test("Plan the week opens Weekly Pacing in one click (not Today)", async ({ page }) => {
     acceptTeacherPin(page);
-    await page.goto("/curriculum/");
-    await expect(page.locator("#curriculum-teacher-workflow")).toBeHidden();
+    await openHubAsTeacher(page);
 
     await page.locator("button[data-guide-teacher-view='week']").click();
 
@@ -79,7 +99,7 @@ test.describe("guide first-click journeys from Student Mode", () => {
 
 test("the guide header is keyboard operable", async ({ page }) => {
   acceptTeacherPin(page);
-  await page.goto("/curriculum/");
+  await openHubAsTeacher(page);
   const teachToday = page.locator("button[data-guide-teacher-view='today']");
   await teachToday.focus();
   await expect(teachToday).toBeFocused();
@@ -87,19 +107,32 @@ test("the guide header is keyboard operable", async ({ page }) => {
   await expect(page.locator("#curriculum-teacher-workflow")).toBeVisible();
 });
 
-test("mobile layout keeps the guide actions visible without horizontal overflow", async ({
+async function horizontalOverflow(page: Page) {
+  return page.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  );
+}
+
+test("mobile layout keeps the student guide action visible without horizontal overflow", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/curriculum/");
+  // Student Mode on a phone: the one student-facing action is reachable and the
+  // teacher-only actions stay hidden.
+  await expect(page.getByRole("link", { name: /Explore by unit/ })).toBeVisible();
+  await expect(page.locator("button[data-guide-teacher-view='today']")).toBeHidden();
+  // The page must not scroll sideways on a phone.
+  expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
+});
+
+test("mobile layout keeps all three guide actions visible in Teacher Mode", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openHubAsTeacher(page);
   await expect(page.locator("button[data-guide-teacher-view='today']")).toBeVisible();
   await expect(page.locator("button[data-guide-teacher-view='week']")).toBeVisible();
   await expect(page.getByRole("link", { name: /Explore by unit/ })).toBeVisible();
-  // The page must not scroll sideways on a phone.
-  const overflow = await page.evaluate(
-    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
-  );
-  expect(overflow).toBeLessThanOrEqual(1);
+  expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
 });
 
 test("public curriculum landing is accessible", async ({ page }) => {

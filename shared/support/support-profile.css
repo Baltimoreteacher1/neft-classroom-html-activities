@@ -1,0 +1,132 @@
+/*
+ * EduWonderLab — Persistent Support Profile, passive presentation layer.
+ *
+ * support-profile.js writes data attributes onto <html>; this stylesheet turns
+ * them into visible behaviour. Any page that links this file honours a
+ * learner's saved supports with no per-page JavaScript.
+ *
+ * Deliberately conservative: these rules change presentation only. They never
+ * hide content, never simplify mathematics, and never alter what a task asks a
+ * student to understand.
+ */
+
+/* --- Larger text ---------------------------------------------------------
+ * Scales the root font size so anything sized in rem/em grows with it.
+ * Pages using fixed px keep their size, which is why this is additive rather
+ * than a rewrite of every activity's typography. */
+:root[data-ewl-larger-text="on"] {
+  font-size: 118%;
+}
+
+/* --- High contrast -------------------------------------------------------
+ * Strengthens borders and text weight rather than inverting colours, so an
+ * activity's own colour-coded mathematics (ratio tiles, number lines, graph
+ * series) stays readable and meaningful. */
+:root[data-ewl-high-contrast="on"] body {
+  --line: #1a1a1a;
+  --muted: #333333;
+  color: #101010;
+}
+
+:root[data-ewl-high-contrast="on"] a {
+  text-decoration: underline;
+}
+
+:root[data-ewl-high-contrast="on"] :is(button, .button-link, .btn, input, select, textarea) {
+  border-width: 2px;
+  border-style: solid;
+  border-color: currentColor;
+}
+
+:root[data-ewl-high-contrast="on"] :is(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 3px solid #101010;
+  outline-offset: 2px;
+}
+
+/* --- Reduced motion ------------------------------------------------------
+ * Mirrors the OS-level preference for learners whose device does not expose
+ * one, or who want it only inside this site. */
+:root[data-ewl-reduced-motion="on"] *,
+:root[data-ewl-reduced-motion="on"] *::before,
+:root[data-ewl-reduced-motion="on"] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* --- Focus mode ----------------------------------------------------------
+ * Quiets decoration that competes with the task. Navigation stays reachable —
+ * a support must never trap a student on a page. */
+:root[data-ewl-focus-mode="on"] :is(.decor, .hero-art, .confetti, [data-decorative="true"]) {
+  display: none !important;
+}
+
+:root[data-ewl-focus-mode="on"] body {
+  background-image: none !important;
+}
+
+/* --- Chunked directions --------------------------------------------------
+ * Opens progressive-disclosure blocks so a multi-step direction is visible as
+ * separate steps rather than one dense paragraph. */
+:root[data-ewl-chunked-directions="on"] details[data-ewl-step] {
+  display: block;
+}
+
+:root[data-ewl-chunked-directions="on"] [data-ewl-directions] > * + * {
+  margin-block-start: 0.9em;
+}
+
+/* --- Simplified / translated directions ----------------------------------
+ * Pages may ship parallel direction blocks. These rules choose which one is
+ * shown; when a page ships only the standard block, nothing changes. */
+[data-ewl-directions-variant] {
+  display: none;
+}
+
+[data-ewl-directions-variant="standard"] {
+  display: revert;
+}
+
+:root[data-ewl-simplified-directions="on"] [data-ewl-directions-variant="standard"] {
+  display: none;
+}
+
+:root[data-ewl-simplified-directions="on"] [data-ewl-directions-variant="simplified"] {
+  display: revert;
+}
+
+:root[data-ewl-translated-directions="on"] [data-ewl-directions-variant="translated"] {
+  display: revert;
+}
+
+/* --- Vocabulary preview --------------------------------------------------
+ * Surfaces the vocabulary block a lesson already carries, above the task. */
+:root[data-ewl-vocabulary-preview="on"] [data-ewl-vocabulary] {
+  display: block;
+  order: -1;
+}
+
+/* --- Read aloud ----------------------------------------------------------
+ * Only reveals the controls a page already provides; the profile never
+ * synthesizes speech on its own. */
+[data-ewl-read-aloud-control] {
+  display: none;
+}
+
+:root[data-ewl-read-aloud="on"] [data-ewl-read-aloud-control] {
+  display: revert;
+}
+
+/* --- Print ---------------------------------------------------------------
+ * Supports are a screen affordance; a printed page returns to the standard
+ * layout so a handout looks the same for every student in the room. */
+@media print {
+  :root[data-ewl-larger-text="on"] {
+    font-size: 100%;
+  }
+
+  [data-ewl-directions-variant="standard"] {
+    display: revert;
+  }
+}

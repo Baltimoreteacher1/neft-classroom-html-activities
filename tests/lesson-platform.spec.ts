@@ -165,9 +165,20 @@ test.describe("lesson engine launcher — award layer", () => {
     await page.getByRole("button", { name: /Start Activity/ }).click();
 
     // Jump straight to Practice via the platform's own navigation event.
-    await page.evaluate(() =>
-      document.dispatchEvent(new CustomEvent("rma:navigate", { detail: { phase: 2 } })),
-    );
+    //
+    // The index is read from the lesson's own sidebar rather than hard-coded.
+    // It used to be a literal 2; the lesson has since gained phases and Practice
+    // moved to 4, which silently navigated this test to Notice & Wonder and made
+    // it look like the tier-voice feature had broken. Deriving the index means a
+    // future phase insertion cannot produce that false alarm again.
+    await page.evaluate(() => {
+      const button = [...document.querySelectorAll("[data-phase]")].find((el) =>
+        /practice/i.test(el.textContent || ""),
+      );
+      if (!button) throw new Error("no Practice phase button found in the lesson sidebar");
+      const phase = Number((button as HTMLElement).dataset.phase);
+      document.dispatchEvent(new CustomEvent("rma:navigate", { detail: { phase } }));
+    });
 
     // The leveled coaching line follows the served problem's tier.
     const tierVoice = page.locator(".practice-tier-voice");

@@ -509,6 +509,9 @@
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
+  <!-- support-profile-injected:begin (persistent support profile — tools/inject-support-profile.js) -->
+  <link rel="stylesheet" href="/shared/support/support-profile.css">
+  <!-- support-profile-injected:end -->
 </head>
   <body>
     <a class="skip" href="#paths">Skip to my lessons</a>
@@ -585,6 +588,21 @@
         </p>
         <div id="brainWhatsNext"></div>
       </section>
+
+      <!-- ewl-loop-injected:begin (Personalized Math Path — transparent reasons)
+           Additive panel. It reads the shared evidence layer and names the KIND
+           of instructional need behind each suggestion, in plain language. If
+           there is no evidence yet, the whole section stays hidden and this
+           page behaves exactly as it did before. -->
+      <section class="card" id="ewlLoopCard" aria-labelledby="ewl-loop-h" hidden>
+        <h2 id="ewl-loop-h">Why these were picked 🔎</h2>
+        <p class="sub">
+          Every suggestion here says out loud what it is based on. If you disagree with the reason,
+          you are probably right — tell your teacher.
+        </p>
+        <div id="ewlLoopList"></div>
+      </section>
+      <!-- ewl-loop-injected:end -->
 
       <!-- Paths -->
       <section id="paths" aria-label="My lessons" tabindex="-1"></section>
@@ -1408,11 +1426,149 @@
           }
         });
     </script>
+  <!-- ewl-loop-injected:begin (shared evidence + transparent recommendation reasons) -->
+  <script src="/shared/evidence/learning-evidence.js"></script>
+  <script src="/shared/evidence/curriculum-registry-client.js"></script>
+  <script src="/shared/evidence/adapters/number-realm-adapter.js"></script>
+  <script src="/shared/evidence/adapters/portfolio-adapter.js"></script>
+  <script src="/shared/evidence/adapters/assessment-adapter.js"></script>
+  <script src="/shared/evidence/adapters/thinking-trails-adapter.js"></script>
+  <script src="/shared/evidence/instructional-need.js"></script>
+  <script>
+    /* Personalized Math Path — the "why" panel.
+     *
+     * Pulls Number Realm (and any other registered adapter) into the shared
+     * evidence layer, classifies the instructional need per standard, and
+     * renders a reason for each one. Everything is additive: if no evidence has
+     * been recorded, the panel stays hidden and nothing on this page changes.
+     */
+    (function () {
+      "use strict";
+      var card = document.getElementById("ewlLoopCard");
+      var list = document.getElementById("ewlLoopList");
+      if (!card || !list || !window.EWLEvidence || !window.EWLInstructionalNeed) return;
+
+      function el(tag, className, text) {
+        var node = document.createElement(tag);
+        if (className) node.className = className;
+        if (text != null) node.textContent = text;
+        return node;
+      }
+
+      /* Bring adapter-backed progress into the shared layer, then draw.
+       *
+       * sync() is asynchronous because the Thinking Trails adapter reads
+       * IndexedDB, so the panel must draw AFTER it settles or it would render
+       * from stale evidence on first paint. A failing sync still draws —
+       * whatever evidence is already stored is worth showing. */
+      function render() {
+        var settled;
+        try {
+          settled = Promise.resolve(window.EWLEvidence.sync());
+        } catch (_e) {
+          settled = Promise.resolve([]);
+        }
+        return settled.then(draw, draw);
+      }
+
+      function draw() {
+        var byStandard = window.EWLEvidence.byStandard();
+        var standards = Object.keys(byStandard);
+        if (!standards.length) return;
+
+        var registry = window.EWLRegistry;
+        var rows = standards
+          .map(function (standard) {
+            var lessons = registry ? registry.lessonsForStandard(standard) : [];
+            var prereqs = [];
+            if (lessons.length && lessons[0].prerequisiteSkills) {
+              prereqs = lessons[0].prerequisiteSkills
+                .map(function (p) {
+                  var lesson = registry.lesson(p.lessonId);
+                  return lesson ? lesson.standard : null;
+                })
+                .filter(Boolean);
+            }
+            return window.EWLInstructionalNeed.classify({
+              standardId: standard,
+              prerequisiteStandards: prereqs,
+            });
+          })
+          .filter(function (r) {
+            return r.need !== "insufficient-evidence";
+          });
+
+        if (!rows.length) return;
+
+        // Most actionable first: a prerequisite gap outranks an enrichment nudge.
+        var ORDER = [
+          "prerequisite-gap",
+          "high-confidence-incorrect",
+          "current-lesson-gap",
+          "representation-difficulty",
+          "vocabulary-barrier",
+          "calculation-error",
+          "explanation-difficulty",
+          "low-confidence-correct",
+          "enrichment-ready",
+        ];
+        rows.sort(function (a, b) {
+          return ORDER.indexOf(a.need) - ORDER.indexOf(b.need);
+        });
+
+        list.textContent = "";
+        rows.slice(0, 5).forEach(function (row) {
+          var item = el("div", "ewl-loop-item");
+          var label = registry && registry.standard(row.standardId);
+          item.appendChild(
+            el("h3", null, (label && label.shortLabel ? label.shortLabel : row.standardId) + " — " + row.label),
+          );
+          item.appendChild(el("p", null, row.studentReason));
+          var lessons = registry ? registry.lessonsForStandard(row.standardId) : [];
+          if (lessons.length) {
+            var link = el("a", null, "Go to " + lessons[0].title);
+            link.href = lessons[0].canonicalRoute;
+            item.appendChild(link);
+          }
+          list.appendChild(item);
+        });
+        card.hidden = false;
+      }
+
+      if (window.EWLRegistry) {
+        window.EWLRegistry.load().then(render, render);
+      } else {
+        render();
+      }
+    })();
+  </script>
+  <style>
+    #ewlLoopCard .ewl-loop-item {
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      background: rgba(255, 255, 255, 0.06);
+      border-left: 4px solid currentColor;
+      border-radius: 10px;
+    }
+    #ewlLoopCard .ewl-loop-item h3 {
+      margin: 0 0 4px;
+      font-size: 1.02rem;
+    }
+    #ewlLoopCard .ewl-loop-item p {
+      margin: 0 0 6px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+  </style>
+  <!-- ewl-loop-injected:end -->
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
   <!-- nsr-injected:end -->
   <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <!-- mwb-injected:end -->
-  </body>
+    <!-- support-profile-injected:begin (persistent support profile — tools/inject-support-profile.js) -->
+  <script src="/shared/support/support-profile.js" defer></script>
+  <!-- support-profile-injected:end -->
+</body>
 </html>

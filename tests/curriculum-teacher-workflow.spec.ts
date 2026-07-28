@@ -22,9 +22,13 @@ test.describe("teacher command center", () => {
     await expect(today.getByRole("heading", { name: /1-1 · Prime Factorization/ })).toBeVisible();
     const launch = today.getByRole("link", { name: "Launch for students" });
     await expect(launch).toHaveAttribute("href", /\/curriculum\/student-launch\/\?lesson=1-1$/);
-    await expect(workflow.getByRole("heading", { name: "Lesson Readiness" })).toBeVisible();
-    await expect(workflow.getByRole("heading", { name: "WIDA 1–2" })).toBeVisible();
-    await expect(workflow.getByRole("heading", { name: "Common misconception" })).toBeVisible();
+    // The "Lesson Readiness" block (success criteria, WIDA supports, common
+    // misconception) was deliberately retired from the cockpit to keep it to
+    // "pick a lesson → teach / launch it" — see the note in
+    // assets/curriculum-teacher-workflow.js. That detail now ships in the
+    // printable lesson plan and the Weekly Pacing / Next-Day Plan tabs, so it
+    // is asserted there rather than here.
+    await expect(workflow.getByRole("button", { name: "Weekly Pacing" })).toBeVisible();
   });
 
   test("saves weekly pacing locally", async ({ page }) => {
