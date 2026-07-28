@@ -209,7 +209,9 @@
       try {
         var stu = JSON.parse(localStorage.getItem("nt_student") || "{}");
         if (stu && typeof stu === "object") {
-          if (stu.name) payload.studentName = String(stu.name).slice(0, 60);
+          // Written as { alias, section }; `name` is the older spelling.
+          var alias = stu.alias || stu.name;
+          if (alias) payload.studentName = String(alias).slice(0, 60);
           if (stu.section) payload.section = String(stu.section).slice(0, 40);
         }
       } catch (_e) {}

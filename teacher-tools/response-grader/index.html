@@ -1,0 +1,594 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Open-Response Grader &middot; Neft Teacher</title>
+    <meta name="robots" content="noindex" />
+    <link rel="icon" href="/assets/favicon.svg" />
+    <style>
+      :root {
+        --bg: #0b111d;
+        --panel: #161f33;
+        --panel-2: #1d2942;
+        --field: #0b1220;
+        --line: #2a3550;
+        --ink: #e8eef9;
+        --muted: #93a3c0;
+        --accent: #7fb4ff;
+        --good: #6ee7a8;
+        --warn: #ffcc66;
+        --bad: #ff8a8a;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font:
+          16px/1.55 ui-sans-serif,
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+      }
+      header {
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        gap: 16px;
+        align-items: baseline;
+        flex-wrap: wrap;
+      }
+      h1 {
+        font-size: 20px;
+        margin: 0;
+      }
+      .sub {
+        color: var(--muted);
+        font-size: 14px;
+      }
+      a.back {
+        color: var(--accent);
+        text-decoration: none;
+        font-size: 14px;
+        margin-left: auto;
+      }
+      main {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 24px;
+        display: grid;
+        gap: 20px;
+      }
+      section {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 18px;
+      }
+      h2 {
+        font-size: 15px;
+        margin: 0 0 12px;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      label {
+        display: block;
+        font-size: 13px;
+        color: var(--muted);
+        margin: 10px 0 4px;
+      }
+      input,
+      textarea,
+      select {
+        width: 100%;
+        background: var(--field);
+        color: var(--ink);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 9px 11px;
+        font: inherit;
+      }
+      textarea {
+        min-height: 120px;
+        resize: vertical;
+        font-size: 14px;
+      }
+      .row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px;
+      }
+      button {
+        background: var(--panel-2);
+        color: var(--ink);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 9px 15px;
+        font: inherit;
+        cursor: pointer;
+      }
+      button:hover:not(:disabled) {
+        border-color: var(--accent);
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      button.primary {
+        background: var(--accent);
+        color: #0b1220;
+        border-color: var(--accent);
+        font-weight: 650;
+      }
+      .actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 14px;
+        align-items: center;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 9px 10px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+      }
+      th {
+        color: var(--muted);
+        font-size: 12px;
+        text-transform: uppercase;
+      }
+      td.score input {
+        width: 68px;
+        padding: 4px 6px;
+        text-align: center;
+      }
+      .pill {
+        display: inline-block;
+        padding: 1px 8px;
+        border-radius: 999px;
+        font-size: 12px;
+        border: 1px solid var(--line);
+      }
+      .pill.good {
+        color: var(--good);
+        border-color: var(--good);
+      }
+      .pill.warn {
+        color: var(--warn);
+        border-color: var(--warn);
+      }
+      .pill.bad {
+        color: var(--bad);
+        border-color: var(--bad);
+      }
+      .cluster {
+        border: 1px solid var(--line);
+        border-left: 3px solid var(--warn);
+        border-radius: 8px;
+        padding: 12px 14px;
+        margin-bottom: 10px;
+        background: var(--field);
+      }
+      .cluster h3 {
+        margin: 0 0 6px;
+        font-size: 15px;
+      }
+      .cluster .who {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .crit-row {
+        display: grid;
+        grid-template-columns: 1fr 90px 110px 1fr;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+      .status {
+        font-size: 14px;
+        color: var(--muted);
+      }
+      .status.err {
+        color: var(--bad);
+      }
+      .hidden {
+        display: none;
+      }
+      .hint {
+        font-size: 13px;
+        color: var(--muted);
+        margin: 4px 0 0;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Open-Response Grader</h1>
+      <span class="sub">Rubric scoring + misconception clusters for written work</span>
+      <a class="back" href="/teacher-tools/">&larr; Professional Hub</a>
+    </header>
+
+    <main>
+      <section>
+        <h2>1 &middot; The task</h2>
+        <label for="prompt">Prompt students answered</label>
+        <textarea
+          id="prompt"
+          style="min-height: 70px"
+          placeholder="Explain why 3/4 and 6/8 are equivalent. Use a model or an equation in your explanation."
+        ></textarea>
+        <div class="row">
+          <div>
+            <label for="grade">Grade</label>
+            <input id="grade" value="6" />
+          </div>
+          <div>
+            <label for="standard">Standard (optional)</label>
+            <input id="standard" placeholder="6.RP.A.3" />
+          </div>
+          <div>
+            <label for="level">Feedback level</label>
+            <select id="level">
+              <option value="L0">Level 0 &mdash; IEP tier</option>
+              <option value="L1" selected>Level 1 &mdash; support</option>
+              <option value="L2">Level 2 &mdash; enrichment</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>2 &middot; Rubric</h2>
+        <div id="rubric"></div>
+        <div class="actions">
+          <button id="addCrit" type="button">+ Add criterion</button>
+          <button id="presetMath" type="button">Math explanation preset</button>
+          <button id="presetWriting" type="button">Writing preset</button>
+        </div>
+      </section>
+
+      <section>
+        <h2>3 &middot; Student responses</h2>
+        <p class="hint">
+          One student per line: <strong>name</strong>, a tab or a pipe (<code>|</code>), then the
+          response. First name + last initial only &mdash; never full legal names. Pasting a
+          two-column export from Forms or Sheets works as-is.
+        </p>
+        <textarea
+          id="responses"
+          placeholder="Maya R.	They are the same because you times the top and bottom by 2...&#10;Devon T.	i think 6/8 is bigger because 6 is bigger than 3"
+        ></textarea>
+        <div class="actions">
+          <button class="primary" id="run" type="button">Grade the set</button>
+          <span class="status" id="status"></span>
+        </div>
+      </section>
+
+      <section id="resultsWrap" class="hidden">
+        <h2>Results</h2>
+        <div id="clusters"></div>
+        <div style="overflow-x: auto">
+          <table id="results"></table>
+        </div>
+        <div class="actions">
+          <button id="exportCsv" type="button">Export CSV</button>
+          <button id="copyFeedback" type="button">Copy all feedback</button>
+          <span class="status" id="resultMeta"></span>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      /* -------------------------------------------------------------- state */
+      const KEY_STORE = "neft.teacher.key";
+      const $ = (id) => document.getElementById(id);
+      let last = null; // { maxTotal, grades, clusters }
+
+      const PRESETS = {
+        math: [
+          {
+            id: "answer",
+            label: "Correct answer or claim",
+            points: 2,
+            descriptor: "States a correct, complete answer to what was asked.",
+          },
+          {
+            id: "reasoning",
+            label: "Mathematical reasoning",
+            points: 4,
+            descriptor:
+              "Explains WHY using a model, a rule, or an equation. Not just what they did.",
+          },
+          {
+            id: "vocabulary",
+            label: "Precise vocabulary",
+            points: 2,
+            descriptor: "Uses the unit's terms correctly (numerator, equivalent, ratio, etc.).",
+          },
+        ],
+        writing: [
+          {
+            id: "claim",
+            label: "Clear claim",
+            points: 3,
+            descriptor: "States a position that answers the prompt.",
+          },
+          {
+            id: "evidence",
+            label: "Evidence",
+            points: 4,
+            descriptor: "Supports the claim with specific detail from the text or task.",
+          },
+          {
+            id: "organization",
+            label: "Organization",
+            points: 3,
+            descriptor: "Ideas are in an order the reader can follow.",
+          },
+        ],
+      };
+
+      /* ------------------------------------------------------------- rubric */
+      function critRow(c = {}) {
+        const wrap = document.createElement("div");
+        wrap.className = "crit-row";
+        wrap.innerHTML = `
+          <input class="c-label" placeholder="Criterion" value="${esc(c.label || "")}" />
+          <input class="c-points" type="number" min="1" max="10" value="${c.points || 4}" />
+          <input class="c-id" placeholder="id" value="${esc(c.id || "")}" />
+          <input class="c-desc" placeholder="What earns full points" value="${esc(c.descriptor || "")}" />`;
+        return wrap;
+      }
+
+      function setRubric(list) {
+        const host = $("rubric");
+        host.innerHTML = "";
+        list.forEach((c) => host.appendChild(critRow(c)));
+      }
+
+      function readRubric() {
+        return [...$("rubric").children]
+          .map((row, i) => ({
+            id: row.querySelector(".c-id").value.trim() || `c${i + 1}`,
+            label: row.querySelector(".c-label").value.trim(),
+            points: Number(row.querySelector(".c-points").value) || 4,
+            descriptor: row.querySelector(".c-desc").value.trim(),
+          }))
+          .filter((c) => c.label);
+      }
+
+      /* ---------------------------------------------------------- responses */
+      // Accepts tab, pipe, or 2+ spaces as the name/response separator so a
+      // paste from Sheets, Forms, or a plain typed list all work unchanged.
+      function readResponses() {
+        return $("responses")
+          .value.split("\n")
+          .map((line) => line.trim())
+          .filter(Boolean)
+          .map((line, i) => {
+            const m = line.match(/^(.{1,60}?)\s*(?:\t|\||\s{2,})\s*(.+)$/);
+            return m
+              ? { id: `r${i + 1}`, label: m[1].trim(), text: m[2].trim() }
+              : { id: `r${i + 1}`, label: `Student ${i + 1}`, text: line };
+          });
+      }
+
+      /* --------------------------------------------------------------- run */
+      async function run() {
+        const prompt = $("prompt").value.trim();
+        const rubric = readRubric();
+        const responses = readResponses();
+
+        if (!prompt) return fail("Add the prompt students answered.");
+        if (!rubric.length) return fail("Add at least one rubric criterion.");
+        if (!responses.length) return fail("Paste at least one student response.");
+
+        let key = localStorage.getItem(KEY_STORE) || "";
+        setStatus(`Grading ${responses.length} response${responses.length === 1 ? "" : "s"}…`);
+        $("run").disabled = true;
+
+        try {
+          let res = await post(key, { prompt, rubric, responses });
+          if (res.status === 401) {
+            key = window.prompt("Teacher key required:") || "";
+            if (key) {
+              localStorage.setItem(KEY_STORE, key);
+              res = await post(key, { prompt, rubric, responses });
+            }
+          }
+          const data = await res.json().catch(() => null);
+          if (!res.ok || !data?.ok) {
+            return fail(data?.message || data?.error || `Request failed (${res.status}).`);
+          }
+          last = data;
+          render(data);
+          setStatus(`Graded ${data.grades.length} of ${responses.length}.`);
+        } catch (err) {
+          fail("Network error. Check the connection and try again.");
+        } finally {
+          $("run").disabled = false;
+        }
+      }
+
+      function post(key, body) {
+        return fetch("/api/grade/rubric", {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            ...(key ? { "x-teacher-key": key } : {}),
+          },
+          body: JSON.stringify({
+            ...body,
+            grade: $("grade").value.trim() || "6",
+            standard: $("standard").value.trim(),
+            level: $("level").value,
+          }),
+        });
+      }
+
+      /* ------------------------------------------------------------ render */
+      function render(data) {
+        $("resultsWrap").classList.remove("hidden");
+
+        const clusters = $("clusters");
+        clusters.innerHTML = data.clusters.length
+          ? `<h2>Misconception clusters &mdash; tomorrow's reteach</h2>` +
+            data.clusters
+              .map(
+                (c) => `<div class="cluster">
+                  <h3>${esc(c.misconception)}</h3>
+                  <div class="who">${c.students.length} student${c.students.length === 1 ? "" : "s"}: ${esc(c.students.join(", "))}</div>
+                  <p style="margin:8px 0 0">${esc(c.reteach_move)}</p>
+                </div>`,
+              )
+              .join("")
+          : `<p class="hint">No misconception shared by two or more students in this set.</p>`;
+
+        const critIds = readRubric();
+        const head = `<tr><th>Student</th>${critIds
+          .map((c) => `<th>${esc(c.label)}</th>`)
+          .join("")}<th>Total</th><th>Feedback</th></tr>`;
+
+        const rows = data.grades
+          .map((g, gi) => {
+            const cells = critIds
+              .map((c) => {
+                const hit = g.criteria.find((x) => x.id === c.id);
+                return `<td class="score" title="${esc(hit?.why || "")}">
+                  <input type="number" min="0" max="${c.points}" value="${hit ? hit.points : 0}"
+                         data-g="${gi}" data-c="${esc(c.id)}" /></td>`;
+              })
+              .join("");
+            return `<tr>
+              <td><strong>${esc(g.label)}</strong>${
+                g.misconception ? `<div class="hint">${esc(g.misconception)}</div>` : ""
+              }</td>
+              ${cells}
+              <td><span class="pill ${band(g.percent)}" data-total="${gi}">${g.total}/${data.maxTotal}</span></td>
+              <td>${esc(g.feedback)}</td>
+            </tr>`;
+          })
+          .join("");
+
+        $("results").innerHTML = head + rows;
+        $("resultMeta").textContent = `${data.model} · totals are editable`;
+
+        // Teacher override: edit any criterion score and the total re-computes.
+        $("results")
+          .querySelectorAll("input[data-g]")
+          .forEach((input) =>
+            input.addEventListener("input", () => {
+              const gi = Number(input.dataset.g);
+              const grade = last.grades[gi];
+              const crit = grade.criteria.find((x) => x.id === input.dataset.c);
+              const cap = Number(input.max);
+              const val = Math.max(0, Math.min(cap, Number(input.value) || 0));
+              if (crit) crit.points = val;
+              else
+                grade.criteria.push({ id: input.dataset.c, points: val, why: "teacher override" });
+              grade.total = grade.criteria.reduce((s, c) => s + c.points, 0);
+              grade.percent = last.maxTotal ? Math.round((grade.total / last.maxTotal) * 100) : 0;
+              const pill = $("results").querySelector(`[data-total="${gi}"]`);
+              pill.textContent = `${grade.total}/${last.maxTotal}`;
+              pill.className = `pill ${band(grade.percent)}`;
+            }),
+          );
+      }
+
+      const band = (p) => (p >= 80 ? "good" : p >= 60 ? "warn" : "bad");
+
+      /* ------------------------------------------------------------ export */
+      function exportCsv() {
+        if (!last) return;
+        const crits = readRubric();
+        const header = [
+          "Student",
+          ...crits.map((c) => c.label),
+          "Total",
+          "Percent",
+          "Misconception",
+          "Feedback",
+        ];
+        const lines = [
+          header,
+          ...last.grades.map((g) => [
+            g.label,
+            ...crits.map((c) => g.criteria.find((x) => x.id === c.id)?.points ?? 0),
+            g.total,
+            `${g.percent}%`,
+            g.misconception || "",
+            g.feedback,
+          ]),
+        ];
+        const csv = lines
+          .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","))
+          .join("\n");
+        const url = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `grades-${new Date().toISOString().slice(0, 10)}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+
+      async function copyFeedback() {
+        if (!last) return;
+        const text = last.grades.map((g) => `${g.label}: ${g.feedback}`).join("\n");
+        try {
+          await navigator.clipboard.writeText(text);
+          setStatus("Feedback copied.");
+        } catch {
+          setStatus("Copy blocked by the browser. Use Export CSV instead.", true);
+        }
+      }
+
+      /* ------------------------------------------------------------- utils */
+      function esc(s) {
+        return String(s ?? "").replace(
+          /[&<>"']/g,
+          (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c],
+        );
+      }
+      function setStatus(msg, isErr) {
+        const el = $("status");
+        el.textContent = msg;
+        el.className = isErr ? "status err" : "status";
+      }
+      function fail(msg) {
+        setStatus(msg, true);
+        return null;
+      }
+
+      /* -------------------------------------------------------------- init */
+      setRubric(PRESETS.math);
+      $("addCrit").addEventListener("click", () => $("rubric").appendChild(critRow()));
+      $("presetMath").addEventListener("click", () => setRubric(PRESETS.math));
+      $("presetWriting").addEventListener("click", () => setRubric(PRESETS.writing));
+      $("run").addEventListener("click", run);
+      $("exportCsv").addEventListener("click", exportCsv);
+      $("copyFeedback").addEventListener("click", copyFeedback);
+
+      fetch("/api/grade/health")
+        .then((r) => r.json())
+        .then((h) => {
+          if (!h.live) {
+            setStatus("Grading backend is not configured yet (ANTHROPIC_API_KEY).", true);
+            $("run").disabled = true;
+          }
+        })
+        .catch(() => {});
+    </script>
+  </body>
+</html>
