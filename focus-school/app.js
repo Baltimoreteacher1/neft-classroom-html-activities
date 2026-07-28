@@ -2663,7 +2663,15 @@
       .map(computeWeek)
       .filter((w) => w.total > 0);
   }
-  const readyTotal = () => round2(readyWeeks().reduce((s, w) => s + w.total, 0));
+  // Everything a parent can settle in one go. Payday is a single hand-over of
+  // the whole outstanding balance, so this is the list the "pay everything"
+  // button covers (oldest week first, so the paystub reads chronologically).
+  function payableWeeks() {
+    return readyWeeks()
+      .slice()
+      .sort((a, b) => String(a.weekKey).localeCompare(String(b.weekKey)));
+  }
+  const payableTotal = () => round2(payableWeeks().reduce((s, w) => s + w.total, 0));
 
   const GRADIENTS = [
     ["", "Default Navy"],
@@ -6128,9 +6136,22 @@ Due May 31"></textarea>
         })
         .join("");
 
-      const ready = readyWeeks();
+      // Payday is one hand-over that covers every unpaid week at once. The
+      // per-week buttons stay available (as a secondary option) only when there
+      // is more than one week, so the total button is never a duplicate.
+      const payable = payableWeeks();
+      const payTotal = payableTotal();
+      const ready = payable;
       const readyHtml = ready.length
-        ? ready
+        ? `<button class="btn primary block" data-act="reward-payout-all" style="margin-bottom:12px">💵 Pay out everything — ${money(
+            payTotal,
+          )} (parent)</button>
+          ${
+            ready.length > 1
+              ? `<p class="sub" style="margin:0 0 10px">Covers ${ready.length} unpaid weeks in one payment.</p>`
+              : ""
+          }` +
+          ready
             .map(
               (w) => `
           <div class="pay-week">
@@ -6141,9 +6162,13 @@ Due May 31"></textarea>
               <div class="pay-amt">${money(w.total)}</div>
             </div>
             ${stub(w)}
-            <button class="btn primary block" data-act="reward-payout" data-arg="${
-              w.weekKey
-            }" style="margin-top:10px">💵 Pay out ${money(w.total)} (parent)</button>
+            ${
+              ready.length > 1
+                ? `<button class="btn block" data-act="reward-payout" data-arg="${
+                    w.weekKey
+                  }" style="margin-top:10px">Pay just this week — ${money(w.total)}</button>`
+                : ""
+            }
           </div>`,
             )
             .join("")
@@ -6175,7 +6200,7 @@ Due May 31"></textarea>
           "pay-ready",
           ready.length ? "💵 Ready for payday" : "💵 Payday",
           ready.length
-            ? `${money(readyTotal())} to hand over — a grown-up taps to pay.`
+            ? `${money(payTotal)} to hand over — a grown-up taps to pay it all at once.`
             : "Finished weeks get added up here automatically.",
           readyHtml,
         ) +
@@ -6735,7 +6760,7 @@ Due May 31"></textarea>
     const r = state.rewards;
     if (!r) return "";
     const wk = computeWeek(thisWeekKey());
-    const ready = readyTotal();
+    const ready = payableTotal();
     const body = !r.enabled
       ? `<p class="sub" style="margin:0">Allowance is paused. Tap ⚙️ to turn it back on.</p>`
       : ready > 0
@@ -9605,6 +9630,79 @@ Due May 31"></textarea>
     "view-about": () => setView("about"),
     "view-insights": () => setView("insights"),
     "view-rewards": () => setView("rewards"),
+
+    // Pay out EVERYTHING owed in one hand-over. Opens a parent-gated paystub
+    // that totals every unpaid week, so payday is a single amount of money.
+    "reward-payout-all": () => {
+      const weeks = payableWeeks();
+      if (!weeks.length) return;
+      const total = round2(weeks.reduce((s, w) => s + w.total, 0));
+      if (total <= 0) return;
+      const r = state.rewards;
+      const lines = weeks
+        .map(
+          (w) =>
+            `<div class="pay-line"><span>Week of ${weekLabel(w.weekKey)}</span><b>${money(
+              w.total,
+            )}</b></div>`,
+        )
+        .join("");
+      openModal(
+        "Payday",
+        `<p class="sub">Hand <b>${money(total)}</b> to ${esc(
+          state.settings.studentName || "your child",
+        )} — everything owed across ${weeks.length} week${
+          weeks.length === 1 ? "" : "s"
+        }. A grown-up does this part.</p>
+        <div class="pay-stub">${lines}<div class="pay-line pay-total"><span>Total</span><b>${money(
+          total,
+        )}</b></div></div>
+        ${
+          r.pin
+            ? `<div class="field" style="margin-top:10px"><label>Parent PIN</label><input id="rwPin" type="password" inputmode="numeric" placeholder="••••" autocomplete="off"></div>`
+            : ""
+        }
+        <p id="rwErr" class="sub" style="color:#c0473a;display:none">That PIN didn't match.</p>
+        <div class="row"><button class="btn" data-act="close-modal">Cancel</button><button class="btn primary" data-act="reward-confirm-payout-all">💵 Mark paid ${money(
+          total,
+        )}</button></div>`,
+      );
+    },
+    "reward-confirm-payout-all": () => {
+      const r = state.rewards;
+      const weeks = payableWeeks();
+      if (!weeks.length) return closeModal();
+      if (r.pin) {
+        const entered = ($("#rwPin")?.value || "").trim();
+        if (entered !== r.pin) {
+          const e = $("#rwErr");
+          if (e) e.style.display = "block";
+          return;
+        }
+      }
+      const paidAt = new Date().toISOString();
+      let total = 0;
+      let count = 0;
+      for (const w of weeks) {
+        if (isWeekPaid(w.weekKey) || w.total <= 0) continue;
+        r.payouts.unshift({
+          id: uid("pay"),
+          weekKey: w.weekKey,
+          amount: w.total,
+          paidAt,
+          breakdown: { ...w.by, bonus: w.bonus },
+        });
+        total = round2(total + w.total);
+        count++;
+      }
+      if (total <= 0) return closeModal();
+      r.paidOut = round2(r.paidOut + total);
+      save();
+      closeModal();
+      render();
+      toast(`Paid ${money(total)} for ${count} week${count === 1 ? "" : "s"} 💵`);
+      triggerConfetti();
+    },
 
     // Pay out one finished week. Opens a parent-gated paystub.
     "reward-payout": (_, weekKey) => {
