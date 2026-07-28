@@ -1,7 +1,7 @@
 /* Shai School — service worker.
  * Offline-first app shell: precache core files, serve them cache-first,
  * fall back to the cached app for navigations when offline. */
-const VERSION = "shai-school-v6";
+const VERSION = "shai-school-v7";
 const CORE = [
   "./",
   "index.html",

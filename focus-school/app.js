@@ -6229,6 +6229,7 @@ Due May 31"></textarea>
             ${rateRow("routine", "🔁 Complete a routine")}
             ${rateRow("focus", "▶ Finish a focus session")}
             ${rateRow("reminder", "🔔 Handle a reminder")}
+            ${rateRow("health", "💪 Log biking or lifting")}
             ${
               r.bonusPerfectWeek > 0
                 ? `<div class="rw-rate"><span>⭐ Perfect week (every weekday)</span><b>+${money(
@@ -9789,6 +9790,7 @@ Due May 31"></textarea>
           ${rate("Reminder", "reminder")}
           ${rate("Routine", "routine")}
           ${rate("Focus session", "focus")}
+          ${rate("Biking / lifting", "health")}
         </div>
         <div class="g2 grid">
           <div class="field"><label>Most per day</label><input id="rwCap" type="number" min="0" step="0.25" value="${
@@ -9820,6 +9822,7 @@ Due May 31"></textarea>
       r.rates.reminder = num("rw_reminder");
       r.rates.routine = num("rw_routine");
       r.rates.focus = num("rw_focus");
+      r.rates.health = num("rw_health");
       r.dailyCap = num("rwCap");
       r.weeklyCap = num("rwWeekCap");
       r.bonusPerfectWeek = num("rwBonus");
