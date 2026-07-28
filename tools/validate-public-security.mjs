@@ -217,6 +217,34 @@ check(
   "the excluded product appears in the product registry entries",
 );
 
+/* "Do not modify its code" taken literally: no award-portfolio layer may be
+ * injected into the excluded product's pages. The support-profile injector
+ * originally swept it up with every other student-facing page — passive and
+ * backward-compatible, but a modification nonetheless. This asserts the
+ * exclusion holds for every layer this initiative added. */
+const EXCLUDED_DIR = resolve(ROOT, "curriculum/monster-math-academy");
+const PORTFOLIO_LAYERS = [
+  "/shared/support/support-profile",
+  "/shared/support/scaffold-ladder",
+  "/shared/evidence/learning-evidence",
+  "/shared/evidence/curriculum-registry-client",
+  "/shared/evidence/instructional-need",
+  "/shared/portfolio/",
+];
+for (const file of walk(EXCLUDED_DIR)) {
+  const rel = file.replace(`${ROOT}/`, "");
+  const html = readFileSync(file, "utf8");
+  for (const layer of PORTFOLIO_LAYERS) {
+    if (html.includes(layer)) {
+      errors.push(`${rel}: the excluded product must not carry the award-portfolio layer "${layer}"`);
+    }
+  }
+}
+checks.push({
+  ok: true,
+  message: `excluded product scanned for ${PORTFOLIO_LAYERS.length} portfolio layers — none present`,
+});
+
 /* --------------------------------- report ---------------------------------- */
 
 for (const c of checks) {

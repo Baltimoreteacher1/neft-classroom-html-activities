@@ -364,3 +364,59 @@ test.describe("legacy routes and accessibility", () => {
     await expect(page).toHaveURL(/\/language-bridge\//);
   });
 });
+
+/**
+ * Rollout coverage — the support profile is only a support *system* if it
+ * reaches the pages a learner actually works on. These assert it crosses from
+ * the hub into a real lesson, a real game, Number Realm, and a project, which
+ * is what tools/inject-support-profile.js exists to guarantee.
+ */
+test.describe("support profile reaches real activity pages", () => {
+  const surfaces = [
+    { name: "a lesson", route: "/lessons/3-1/" },
+    { name: "Number Realm", route: "/math-rpg/unit-3/" },
+    { name: "the Math Workbench", route: "/curriculum/math-workbench/" },
+    { name: "a culminating project", route: "/math/unit-3/projects/version-a/" },
+    { name: "My Math Progress", route: "/math/my-progress/" },
+  ];
+
+  for (const surface of surfaces) {
+    test(`a support chosen on the hub applies on ${surface.name}`, async ({ page }) => {
+      // Choose the supports once, the way a learner would.
+      await page.addInitScript(() => {
+        localStorage.setItem(
+          "ewl:support-profile:v1",
+          JSON.stringify({ v: 1, largerText: true, highContrast: true, interfaceLanguage: "es" }),
+        );
+      });
+
+      await page.goto(surface.route);
+      const root = page.locator("html");
+      await expect(root).toHaveAttribute("data-ewl-larger-text", "on");
+      await expect(root).toHaveAttribute("data-ewl-high-contrast", "on");
+      await expect(root).toHaveAttribute("data-ewl-language", "es");
+    });
+  }
+
+  test("a learner who has chosen nothing sees no profile attributes at all", async ({ page }) => {
+    await page.goto("/lessons/3-1/");
+    const root = page.locator("html");
+    // The layer must be completely inert until a support is turned on.
+    await expect(root).not.toHaveAttribute("data-ewl-larger-text", "on");
+    await expect(root).not.toHaveAttribute("data-ewl-high-contrast", "on");
+    await expect(root).toHaveAttribute("data-ewl-language", "en");
+  });
+
+  test("the excluded product carries no award-portfolio layer", async ({ page }) => {
+    // Monster Math Academy is out of scope: its code must not be modified, so
+    // the support profile is deliberately absent there. See the note in
+    // tools/inject-support-profile.js.
+    await page.goto("/curriculum/monster-math-academy/");
+    const layers = await page.evaluate(() =>
+      [...document.querySelectorAll("script[src], link[href]")]
+        .map((el) => el.getAttribute("src") || el.getAttribute("href") || "")
+        .filter((u) => u.includes("/shared/support/") || u.includes("/shared/portfolio/")),
+    );
+    expect(layers).toEqual([]);
+  });
+});
