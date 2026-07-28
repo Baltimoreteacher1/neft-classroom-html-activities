@@ -17,7 +17,7 @@ assert.match(app, /removeAttribute\("aria-busy"\)/);
 assert.match(app, /focusedFirstRunOrder/);
 assert.match(css, /#connChip[\s\S]*min-height:\s*44px/);
 assert.match(css, /\.cal-day[\s\S]*min-height:\s*44px/);
-assert.match(sw, /focus-school-v57/);
+assert.match(sw, /focus-school-v58/);
 assert.match(sw, /"styles\.css\?v=57"/);
 assert.match(sw, /"app\.js\?v=57"/);
 
