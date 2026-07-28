@@ -140,7 +140,7 @@
     ["bikeRide", "🚴", "Went for a bike ride", "15 minutes or more outside"],
     ["bikeLoop", "🚲", "Quick bike loop", "A spin around the block counts"],
     ["lift", "🏋️", "Lifted weights", "Dumbbells or a strength set"],
-    ["pushups", "💪", "Push-ups or sit-ups", "Knock out a set or two"],
+    ["pushups", "💪", "10 push-ups", "$0.50 · $2 at 2 days · $5 at 4 days"],
     ["stretch", "🤸", "Warmed up / stretched", "Loosen up before or after"],
   ];
   // The Health page list is fully user-editable. The built-in HEALTH_ITEMS are
@@ -156,6 +156,11 @@
       state.health.seeded = true;
     }
     if (!Array.isArray(state.health.items)) state.health.items = [];
+    const pushups = state.health.items.find((item) => item[0] === "pushups");
+    if (pushups && pushups[2] === "Push-ups or sit-ups") {
+      pushups[2] = "10 push-ups";
+      pushups[3] = "$0.50 · $2 at 2 days · $5 at 4 days";
+    }
     return state.health.items;
   }
   // Emoji fields are interpolated into innerHTML without esc() in many card
@@ -545,6 +550,7 @@
         payouts: [],
       },
       readingProgress: {},
+      readingPlan: [],
       bookTransition: {
         finishedB: "",
         responseB: false,
@@ -641,6 +647,17 @@
       deletedIds: x.deletedIds && typeof x.deletedIds === "object" ? x.deletedIds : {},
       readingProgress:
         x.readingProgress && typeof x.readingProgress === "object" ? x.readingProgress : {},
+      readingPlan: (Array.isArray(x.readingPlan) ? x.readingPlan : [])
+        .filter((item) => item && typeof item === "object")
+        .slice(0, 100)
+        .map((item) => ({
+          id: String(item.id || uid("read")).slice(0, 80),
+          title: String(item.title || "").slice(0, 160),
+          assignment: String(item.assignment || "").slice(0, 300),
+          notes: String(item.notes || "").slice(0, 2000),
+          done: !!item.done,
+          updatedAt: Number(item.updatedAt) || Date.now(),
+        })),
       bookTransition:
         x.bookTransition && typeof x.bookTransition === "object"
           ? x.bookTransition
@@ -1759,6 +1776,7 @@
   const TABS = [
     ["health", "Workout", "💪"],
     ["reading", "Reading", "📚"],
+    ["rewards", "Payout", "💵"],
   ];
   let view = "health";
   const NAV_USAGE_KEY = "focus-school:nav-usage";
@@ -2544,12 +2562,18 @@
     const r = state.rewards;
     if (!r || !r.enabled) return;
     const rate = Number(r.rates?.[kind]) || 0;
-    if (rate <= 0) return;
-    let amt = rate;
+    awardRewardAmount(kind, label, rate);
+  }
+
+  function awardRewardAmount(kind, label, amount) {
+    const r = state.rewards;
+    if (!r || !r.enabled) return 0;
+    let amt = Number(amount) || 0;
+    if (amt <= 0) return 0;
     const cap = Number(r.dailyCap) || 0;
     if (cap > 0) amt = Math.min(amt, Math.max(0, cap - rewardsEarnedToday()));
     amt = Math.round(amt * 100) / 100;
-    if (amt <= 0) return;
+    if (amt <= 0) return 0;
     r.balance = Math.round((r.balance + amt) * 100) / 100;
     r.ledger.unshift({
       id: uid("e"),
@@ -2563,6 +2587,7 @@
     // Don't save() here — callers already save() right after their own state
     // changes; this keeps earning atomic with the action that triggered it.
     toast(`${money(amt)} earned 💰`);
+    return amt;
   }
 
   // ---- Weekly payday (auto-computed allowance cycle) ----------------------
@@ -2581,6 +2606,49 @@
     return ymd(d);
   }
   const thisWeekKey = () => mondayOf(todayKey());
+
+  function completedPushupDaysThisWeek() {
+    const weekKey = thisWeekKey();
+    return Object.entries(state.health?.log || {}).filter(
+      ([dayKey, day]) => mondayOf(dayKey) === weekKey && !!day?.pushups,
+    ).length;
+  }
+
+  function pushupEarningsThisWeek() {
+    const weekKey = thisWeekKey();
+    return round2(
+      (state.rewards?.ledger || []).reduce(
+        (sum, entry) =>
+          entry.type === "earn" &&
+          entry.kind === "pushups" &&
+          mondayOf(ledgerDayKey(entry.ts)) === weekKey
+            ? sum + entry.amount
+            : sum,
+        0,
+      ),
+    );
+  }
+
+  function awardPushupReward() {
+    const rules = globalThis.ShaiRewardRules;
+    if (!rules) return 0;
+    const amount = rules.pushupRewardIncrement(
+      completedPushupDaysThisWeek(),
+      pushupEarningsThisWeek(),
+    );
+    return awardRewardAmount("pushups", "10 push-ups weekly reward", amount);
+  }
+
+  function notifyPushupMilestone() {
+    fetch("/api/pushup-notification", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        weekKey: thisWeekKey(),
+        completedDays: completedPushupDaysThisWeek(),
+      }),
+    }).catch(() => {});
+  }
 
   // A friendly "Jun 16 – 22" label for a week key.
   function weekLabel(weekKey) {
@@ -2655,7 +2723,20 @@
       .map(computeWeek)
       .filter((w) => w.total > 0);
   }
-  const readyTotal = () => round2(readyWeeks().reduce((s, w) => s + w.total, 0));
+  // Everything a parent can settle in one go. Payday is a single hand-over of
+  // the whole outstanding balance: every finished unpaid week, plus the current
+  // week once it clears the 4-push-up-day unlock. Oldest week first, so the
+  // paystub reads chronologically.
+  function payableWeeks() {
+    const weeks = readyWeeks();
+    const now = thisWeekKey();
+    if (!isWeekPaid(now) && completedPushupDaysThisWeek() >= 4) {
+      const cur = computeWeek(now);
+      if (cur.total > 0) weeks.push(cur);
+    }
+    return weeks.sort((a, b) => String(a.weekKey).localeCompare(String(b.weekKey)));
+  }
+  const payableTotal = () => round2(payableWeeks().reduce((s, w) => s + w.total, 0));
 
   const GRADIENTS = [
     ["", "Default Navy"],
@@ -4644,6 +4725,46 @@
     };
   }
 
+  function renderReadingEditor() {
+    const plan = state.readingPlan || [];
+    const rows = plan.length
+      ? plan
+          .map(
+            (item) => `
+          <section class="card reading-editor-card" data-reading-plan-id="${esc(item.id)}">
+            <div class="head">
+              <label class="row" style="gap:10px;cursor:pointer">
+                <input class="check" type="checkbox" data-reading-plan-done="${esc(item.id)}" ${item.done ? "checked" : ""}>
+                <strong>${item.done ? "Completed" : "Reading assignment"}</strong>
+              </label>
+              <button class="btn sm danger" data-act="reading-plan-delete" data-id="${esc(item.id)}">Delete</button>
+            </div>
+            <div class="field">
+              <label>Book or title</label>
+              <input data-reading-plan-field="title" data-id="${esc(item.id)}" value="${esc(item.title)}" placeholder="What is Shai reading?">
+            </div>
+            <div class="field">
+              <label>Pages or assignment</label>
+              <input data-reading-plan-field="assignment" data-id="${esc(item.id)}" value="${esc(item.assignment)}" placeholder="Example: Chapters 1–3 or pages 20–45">
+            </div>
+            <div class="field">
+              <label>Notes or response</label>
+              <textarea data-reading-plan-field="notes" data-id="${esc(item.id)}" placeholder="Add directions, a question, or Shai's response…">${esc(item.notes)}</textarea>
+            </div>
+            <p class="meta">Changes save automatically.</p>
+          </section>`,
+          )
+          .join("")
+      : emptyState("📖", "No reading assignments yet. Add the first one when you are ready.");
+    return `
+      <div class="view-head">
+        <h2 class="view-title">📚 Shai's Reading</h2>
+        <button class="btn primary" data-act="reading-plan-add">＋ Add reading</button>
+      </div>
+      <p class="view-intro">This list is yours to edit. Add the book, pages, directions, and notes that match Shai's current reading.</p>
+      ${rows}`;
+  }
+
   const VIEWS = {
     home() {
       const open = openTasks();
@@ -4670,8 +4791,7 @@
             : emptyState("📭", "Nothing due in the next week."),
         ),
       };
-      const showingWelcome =
-        state.assignments.length === 0 && !state.settings.welcomeDismissed;
+      const showingWelcome = state.assignments.length === 0 && !state.settings.welcomeDismissed;
       const order = focusedHomeOrder(
         state.settings.homeOrder,
         state.settings.hiddenCards,
@@ -4872,6 +4992,8 @@
     },
 
     reading() {
+      return renderReadingEditor();
+
       const completedDays = Object.values(state.readingProgress || {}).filter((x) => x.done).length;
       const totalDays = READING_DAYS.length;
       const percent = totalDays ? Math.round((completedDays / totalDays) * 100) : 0;
@@ -5320,8 +5442,8 @@
             esc(label) +
             "</b><small>" +
             esc(hint) +
-            '</small></span><span class="health-pay">+' +
-            money(rate) +
+            '</small></span><span class="health-pay">' +
+            (id === "pushups" ? "$0.50 → $2 → $5" : "+" + money(rate)) +
             "</span></label>" +
             '<span class="health-edit">' +
             '<button class="btn sm ghost" data-act="health-edit" data-id="' +
@@ -5346,12 +5468,14 @@
             ? "Wow — you did them all today! 🏆"
             : "Nice work — " + doneCount + " done today! 🔥";
       return (
-        '<div class="view-head"><h2 class="view-title">💪 Workout</h2></div>' +
+        '<div class="view-head"><h2 class="view-title">💪 Workout</h2><button class="btn primary" data-act="view-rewards">💵 Payouts</button></div>' +
         '<p class="view-intro">Move your body, build a strong habit, and check off each activity when you finish. Your list resets every day.</p>' +
         card(
           "health-today",
           "🚴 Today’s movement",
-          "Check one off when you do it. Each is worth " + money(rate) + ".",
+          "Check one off when you do it. Push-ups use the weekly ladder shown below; other movements earn " +
+            money(rate) +
+            ".",
           '<div class="health-list">' +
             items +
             '</div><button class="btn block" data-act="health-add" style="margin-top:10px">＋ Add a movement</button>' +
@@ -6062,6 +6186,7 @@ Due May 31"></textarea>
 
       // Category breakdown rows for a computed week (a tiny "paystub").
       const KIND_LABEL = {
+        pushups: "💪 10 push-ups",
         task: "✅ Assignments & to-dos",
         routine: "🔁 Routines",
         focus: "▶ Focus sessions",
@@ -6069,7 +6194,7 @@ Due May 31"></textarea>
         health: "💪 Biking & lifting",
       };
       const stub = (w) =>
-        `<div class="pay-stub">${["task", "routine", "focus", "reminder", "health"]
+        `<div class="pay-stub">${["pushups", "task", "routine", "focus", "reminder", "health"]
           .filter((k) => w.by[k] > 0)
           .map(
             (k) =>
@@ -6094,6 +6219,9 @@ Due May 31"></textarea>
 
       // This week so far — accruing, not payable until the week ends.
       const wk = computeWeek(thisWeekKey());
+      const currentPushupDays = completedPushupDaysThisWeek();
+      const currentWeekPaid = isWeekPaid(thisWeekKey());
+      const currentAvailable = currentWeekPaid ? 0 : wk.total;
       const dayChips = [0, 1, 2, 3, 4, 5, 6]
         .map((i) => {
           const d = parseLocal(thisWeekKey());
@@ -6109,22 +6237,42 @@ Due May 31"></textarea>
         })
         .join("");
 
-      const ready = readyWeeks();
+      // Payday is one hand-over that covers every payable week at once —
+      // finished weeks plus this week when its push-up unlock has cleared. The
+      // per-week buttons stay available (secondary) only when there is more
+      // than one week, so the total button is never a duplicate.
+      const ready = payableWeeks();
+      const payTotal = payableTotal();
+      const thisWk = thisWeekKey();
       const readyHtml = ready.length
-        ? ready
+        ? `<button class="btn primary block" data-act="reward-payout-all" style="margin-bottom:12px">💵 Pay out everything — ${money(
+            payTotal,
+          )} (parent)</button>
+          ${
+            ready.length > 1
+              ? `<p class="sub" style="margin:0 0 10px">Covers ${ready.length} unpaid weeks in one payment.</p>`
+              : ""
+          }` +
+          ready
             .map(
               (w) => `
           <div class="pay-week">
             <div class="pay-week-head">
-              <div><b>Week of ${weekLabel(w.weekKey)}</b><small>${
-                w.daysActive
-              } active day${w.daysActive === 1 ? "" : "s"}</small></div>
+              <div><b>${
+                w.weekKey === thisWk ? "This week" : `Week of ${weekLabel(w.weekKey)}`
+              }</b><small>${w.daysActive} active day${w.daysActive === 1 ? "" : "s"}</small></div>
               <div class="pay-amt">${money(w.total)}</div>
             </div>
             ${stub(w)}
-            <button class="btn primary block" data-act="reward-payout" data-arg="${
-              w.weekKey
-            }" style="margin-top:10px">💵 Pay out ${money(w.total)} (parent)</button>
+            ${
+              ready.length > 1
+                ? `<button class="btn block" data-act="reward-payout" data-arg="${
+                    w.weekKey
+                  }" style="margin-top:10px">Pay just this ${
+                    w.weekKey === thisWk ? "week" : "one"
+                  } — ${money(w.total)}</button>`
+                : ""
+            }
           </div>`,
             )
             .join("")
@@ -6148,7 +6296,7 @@ Due May 31"></textarea>
         : emptyState("🧾", "No payouts yet.");
 
       return (
-        backHeader("Allowance", "more") +
+        backHeader("Payouts", "health") +
         (r.enabled
           ? ""
           : `<div class="card"><p class="sub" style="margin:0">💤 Rewards are turned off. Turn them on in <b>Parent settings</b> below.</p></div>`) +
@@ -6156,7 +6304,7 @@ Due May 31"></textarea>
           "pay-ready",
           ready.length ? "💵 Ready for payday" : "💵 Payday",
           ready.length
-            ? `${money(readyTotal())} to hand over — a grown-up taps to pay.`
+            ? `${money(payTotal)} to hand over — a grown-up taps to pay it all at once.`
             : "Finished weeks get added up here automatically.",
           readyHtml,
         ) +
@@ -6165,15 +6313,21 @@ Due May 31"></textarea>
           "📅 This week so far",
           weekLabel(thisWeekKey()),
           `<div class="pay-this">
-            <div class="pay-this-amt">${money(wk.total)}</div>
+            <div class="pay-this-amt">${money(currentAvailable)}</div>
             <div class="pay-days">${dayChips}</div>
           </div>
-          ${wk.total > 0 ? stub(wk) : `<p class="sub" style="text-align:center;margin:8px 0 0">Finish some work to start earning this week.</p>`}
-          <p class="sub" style="margin:10px 0 0;text-align:center">💡 This week is paid out next Monday.</p>`,
+          ${currentWeekPaid ? "" : wk.total > 0 ? stub(wk) : `<p class="sub" style="text-align:center;margin:8px 0 0">Finish some work to start earning this week.</p>`}
+          ${
+            currentWeekPaid
+              ? `<p class="note" style="margin:10px 0 0;text-align:center">✅ This week has been paid.</p>`
+              : currentPushupDays >= 4
+                ? `<p class="sub" style="margin:10px 0 0;text-align:center">✅ Unlocked — this week's ${money(wk.total)} is included in the <b>Pay out everything</b> button at the top.</p>`
+                : `<p class="sub" style="margin:10px 0 0;text-align:center">${currentPushupDays} of 4 push-up days complete. The payout button unlocks at 4 days.</p>`
+          }`,
         ) +
         card(
           "pay-rates",
-          "What things are worth",
+          "Push-up payment schedule",
           [
             r.dailyCap > 0 ? `${money(r.dailyCap)}/day max` : "",
             r.weeklyCap > 0 ? `${money(r.weeklyCap)}/week max` : "",
@@ -6181,19 +6335,11 @@ Due May 31"></textarea>
             .filter(Boolean)
             .join(" · "),
           `<div class="rw-rates">
-            ${rateRow("task", "✅ Finish an assignment / to-do")}
-            ${rateRow("routine", "🔁 Complete a routine")}
-            ${rateRow("focus", "▶ Finish a focus session")}
-            ${rateRow("reminder", "🔔 Handle a reminder")}
-            ${
-              r.bonusPerfectWeek > 0
-                ? `<div class="rw-rate"><span>⭐ Perfect week (every weekday)</span><b>+${money(
-                    r.bonusPerfectWeek,
-                  )}</b></div>`
-                : ""
-            }
+            <div class="rw-rate"><span>💪 10 push-ups on 1 day</span><b>$0.50 total</b></div>
+            <div class="rw-rate"><span>💪 10 push-ups on 2 separate days</span><b>$2.00 total</b></div>
+            <div class="rw-rate"><span>💪 10 push-ups on 4 separate days</span><b>$5.00 total</b></div>
           </div>
-          <button class="btn block" data-act="reward-settings" style="margin-top:10px">⚙️ Parent settings</button>`,
+          <button class="btn primary block" data-act="reward-settings" style="margin-top:10px">🔒 Set parent PIN / settings</button>`,
         ) +
         card(
           "pay-paidtotal",
@@ -6209,7 +6355,7 @@ Due May 31"></textarea>
   };
 
   function backHeader(title, back) {
-    return `<div class="view-head"><div class="row" style="gap:10px"><button class="btn sm ghost" data-act="nav" data-arg="${back}" aria-label="Back to More">← Back</button><h2 class="view-title">${esc(title)}</h2></div></div>`;
+    return `<div class="view-head"><div class="row" style="gap:10px"><button class="btn sm ghost" data-act="nav" data-arg="${back}" aria-label="Back">← Back</button><h2 class="view-title">${esc(title)}</h2></div></div>`;
   }
 
   function routineCard(r) {
@@ -6716,7 +6862,7 @@ Due May 31"></textarea>
     const r = state.rewards;
     if (!r) return "";
     const wk = computeWeek(thisWeekKey());
-    const ready = readyTotal();
+    const ready = payableTotal();
     const body = !r.enabled
       ? `<p class="sub" style="margin:0">Allowance is paused. Tap ⚙️ to turn it back on.</p>`
       : ready > 0
@@ -8583,8 +8729,7 @@ Due May 31"></textarea>
     },
     url() {
       const code = state.settings.sync.code;
-      const scheme = location.protocol === "https:" ? "wss" : "ws";
-      return `${scheme}://${location.host}/api/live?code=${encodeURIComponent(code)}`;
+      return `wss://shai-school-sync.neftjd.workers.dev/live?code=${encodeURIComponent(code)}`;
     },
     connect() {
       if (!state.settings.sync.enabled || !state.settings.sync.code) return;
@@ -9587,20 +9732,97 @@ Due May 31"></textarea>
     "view-insights": () => setView("insights"),
     "view-rewards": () => setView("rewards"),
 
+    // Pay out EVERYTHING owed in one hand-over. Opens a parent-gated paystub
+    // that totals every payable week, so payday is a single amount of money.
+    "reward-payout-all": () => {
+      const weeks = payableWeeks();
+      if (!weeks.length) return;
+      const total = round2(weeks.reduce((s, w) => s + w.total, 0));
+      if (total <= 0) return;
+      const r = state.rewards;
+      const now = thisWeekKey();
+      const lines = weeks
+        .map(
+          (w) =>
+            `<div class="pay-line"><span>${
+              w.weekKey === now ? "This week" : `Week of ${weekLabel(w.weekKey)}`
+            }</span><b>${money(w.total)}</b></div>`,
+        )
+        .join("");
+      openModal(
+        "Payday",
+        `<p class="sub">Hand <b>${money(total)}</b> to ${esc(
+          state.settings.studentName || "your child",
+        )} — everything owed across ${weeks.length} week${
+          weeks.length === 1 ? "" : "s"
+        }. A grown-up does this part.</p>
+        <div class="pay-stub">${lines}<div class="pay-line pay-total"><span>Total</span><b>${money(
+          total,
+        )}</b></div></div>
+        ${
+          r.pin
+            ? `<div class="field" style="margin-top:10px"><label>Parent PIN</label><input id="rwPin" type="password" inputmode="numeric" placeholder="••••" autocomplete="off"></div>`
+            : ""
+        }
+        <p id="rwErr" class="sub" style="color:#c0473a;display:none">That PIN didn't match.</p>
+        <div class="row"><button class="btn" data-act="close-modal">Cancel</button><button class="btn primary" data-act="reward-confirm-payout-all">💵 Mark paid ${money(
+          total,
+        )}</button></div>`,
+      );
+    },
+    "reward-confirm-payout-all": () => {
+      const r = state.rewards;
+      const weeks = payableWeeks();
+      if (!weeks.length) return closeModal();
+      if (r.pin) {
+        const entered = ($("#rwPin")?.value || "").trim();
+        if (entered !== r.pin) {
+          const e = $("#rwErr");
+          if (e) e.style.display = "block";
+          return;
+        }
+      }
+      const paidAt = new Date().toISOString();
+      let total = 0;
+      let count = 0;
+      for (const w of weeks) {
+        if (isWeekPaid(w.weekKey) || w.total <= 0) continue;
+        r.payouts.unshift({
+          id: uid("pay"),
+          weekKey: w.weekKey,
+          amount: w.total,
+          paidAt,
+          breakdown: { ...w.by, bonus: w.bonus },
+        });
+        total = round2(total + w.total);
+        count++;
+      }
+      if (total <= 0) return closeModal();
+      r.paidOut = round2(r.paidOut + total);
+      save();
+      closeModal();
+      render();
+      toast(`Paid ${money(total)} for ${count} week${count === 1 ? "" : "s"} 💵`);
+      triggerConfetti();
+    },
+
     // Pay out one finished week. Opens a parent-gated paystub.
     "reward-payout": (_, weekKey) => {
       if (!weekKey || isWeekPaid(weekKey)) return;
+      if (weekKey === thisWeekKey() && completedPushupDaysThisWeek() < 4)
+        return toast("Complete four push-up days before payout.");
       const w = computeWeek(weekKey);
       if (w.total <= 0) return;
       const r = state.rewards;
       const KIND_LABEL = {
+        pushups: "10 push-ups",
         task: "Assignments & to-dos",
         routine: "Routines",
         focus: "Focus sessions",
         reminder: "Reminders",
         health: "Biking & lifting",
       };
-      const lines = ["task", "routine", "focus", "reminder", "health"]
+      const lines = ["pushups", "task", "routine", "focus", "reminder", "health"]
         .filter((k) => w.by[k] > 0)
         .map(
           (k) =>
@@ -9633,6 +9855,7 @@ Due May 31"></textarea>
     "reward-confirm-payout": (_, weekKey) => {
       const r = state.rewards;
       if (!weekKey || isWeekPaid(weekKey)) return closeModal();
+      if (weekKey === thisWeekKey() && completedPushupDaysThisWeek() < 4) return closeModal();
       if (r.pin) {
         const entered = ($("#rwPin")?.value || "").trim();
         if (entered !== r.pin) {
@@ -9651,7 +9874,7 @@ Due May 31"></textarea>
         breakdown: { ...w.by, bonus: w.bonus },
       });
       r.paidOut = round2(r.paidOut + w.total);
-      save();
+      save({ immediate: true });
       closeModal();
       render();
       toast(`Paid ${money(w.total)} for ${weekLabel(weekKey)} 💵`);
@@ -9709,7 +9932,7 @@ Due May 31"></textarea>
       r.currency = ($("#rwCur")?.value || "$").slice(0, 3) || "$";
       const pin = ($("#rwSetPin")?.value || "").trim();
       if (/^\d{0,8}$/.test(pin)) r.pin = pin;
-      save();
+      save({ immediate: true });
       closeModal();
       render(); // reflect changes on whatever view opened settings (home or Payday)
       toast("Settings saved ✓");
@@ -10448,6 +10671,26 @@ Due May 31"></textarea>
     "study-pack": () => {
       openStudyPack();
     },
+    "reading-plan-add": () => {
+      state.readingPlan = state.readingPlan || [];
+      state.readingPlan.push({
+        id: uid("read"),
+        title: "",
+        assignment: "",
+        notes: "",
+        done: false,
+        updatedAt: Date.now(),
+      });
+      save({ immediate: true });
+      render();
+      setTimeout(() => document.querySelector("[data-reading-plan-field='title']")?.focus(), 0);
+    },
+    "reading-plan-delete": (id) => {
+      state.readingPlan = (state.readingPlan || []).filter((item) => item.id !== id);
+      save({ immediate: true });
+      render();
+      toast("Reading assignment removed");
+    },
     "toggle-reading-expand": (id) => {
       state.expandedReadingDay = state.expandedReadingDay === id ? null : id;
       render();
@@ -10794,10 +11037,10 @@ ${name}`;
     "change-sync-code": () => {
       openModal(
         "Customize sync code",
-        `<p class="sub">Change your sync code to a memorable word or phrase (e.g. <b>noam-focus-2026</b>) to sync other devices easily without typing long keys.</p>
+        `<p class="sub">Change your sync code to a memorable word or phrase (e.g. <b>shai-school-2026</b>) to sync other devices easily without typing long keys.</p>
         <div class="field">
           <label>Memorable Sync Code</label>
-          <input id="customSyncCodeInput" value="${esc(state.settings.sync.code)}" placeholder="e.g. noam-focus-2026" autocomplete="off" autocapitalize="off" style="text-align: center; font-size: 1.1rem;">
+          <input id="customSyncCodeInput" value="${esc(state.settings.sync.code)}" placeholder="e.g. shai-school-2026" autocomplete="off" autocapitalize="off" style="text-align: center; font-size: 1.1rem;">
           <small class="muted" style="display:block; margin-top: 4px;">Any length works — short and memorable is fine. Letters, numbers, and dashes.</small>
           <small class="muted" style="display:block; margin-top: 2px; color: var(--accent);">Tip: Use your name/school name to keep it unique!</small>
         </div>
@@ -11311,6 +11554,18 @@ ${name}`;
     });
 
     document.addEventListener("change", (ev) => {
+      if (ev.target.dataset.readingPlanDone) {
+        const item = (state.readingPlan || []).find(
+          (entry) => entry.id === ev.target.dataset.readingPlanDone,
+        );
+        if (item) {
+          item.done = ev.target.checked;
+          item.updatedAt = Date.now();
+          save({ immediate: true });
+          render();
+        }
+        return;
+      }
       const box = ev.target.closest("[data-check]");
       if (!box) return;
       const kind = box.dataset.check,
@@ -11408,7 +11663,10 @@ ${name}`;
           if (!paid.includes(id)) {
             paid.push(id);
             addPoints(1);
-            earnReward("health", item ? item[2] : "Movement");
+            if (id === globalThis.ShaiRewardRules?.PUSHUP_ITEM_ID) {
+              const earned = awardPushupReward();
+              if (earned > 0 && completedPushupDaysThisWeek() >= 4) notifyPushupMilestone();
+            } else earnReward("health", item ? item[2] : "Movement");
             triggerConfetti();
           }
         } else {
@@ -11526,6 +11784,16 @@ ${name}`;
 
     // range/live binds and theme picker
     document.addEventListener("input", (ev) => {
+      if (ev.target.dataset.readingPlanField) {
+        const item = (state.readingPlan || []).find((entry) => entry.id === ev.target.dataset.id);
+        const field = ev.target.dataset.readingPlanField;
+        if (item && ["title", "assignment", "notes"].includes(field)) {
+          item[field] = ev.target.value;
+          item.updatedAt = Date.now();
+          save();
+        }
+        return;
+      }
       if (ev.target.dataset.readingField) {
         const id = ev.target.dataset.id;
         const field = ev.target.dataset.readingField;
