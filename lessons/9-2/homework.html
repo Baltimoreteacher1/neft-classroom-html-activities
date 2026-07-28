@@ -1604,6 +1604,14 @@ body.obj-popup-open { overflow: hidden; }
 .section-vocab { border-left: 4px solid var(--coral); }
 .section-stuck { border-left: 4px solid #9b59b6; }
 .section-quick-intro { border-left: 4px solid var(--success); }
+.quick-check-time {
+  background: var(--amber-light);
+  border: 1px solid var(--amber);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 0 0 12px;
+  font-size: 15px;
+}
 .section-celebrate {
   border-left: 4px solid var(--amber);
   background: linear-gradient(180deg, var(--amber-light), var(--white));
@@ -1851,6 +1859,16 @@ body.obj-popup-open { overflow: hidden; }
   padding: 2px;
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x proximity;
+}
+/* On a phone the 10 tabs are ~738px wide in a ~381px viewport, so half of them
+   (Help, More, Done) sit off-screen with nothing to suggest they exist. Fade the
+   trailing edge so the strip reads as scrollable. Only below 700px, where the
+   overflow is guaranteed — a permanent fade on desktop would just look broken. */
+@media (max-width: 700px) {
+  .homework-tab-bar {
+    -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+    mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+  }
 }
 .homework-tab-btn {
   flex: 0 0 auto;
@@ -2372,6 +2390,12 @@ body.lang-mode-es .bilingual-grid {
 @media print {
   .homework-tab-chrome, .homework-tab-bar, .bottom-status-bar, .help-modal-overlay, .print-all-btn, .parent-signoff-container { display: none !important; }
   .tab-panel-inner[hidden] { display: block !important; page-break-inside: avoid; }
+  /* Printing un-hides every panel, but these three are screen-only: an embedded
+     arcade iframe, a live game, and a link-out. On paper they were blank or
+     meaningless pages in the middle of the packet. */
+  [data-tab-panel="arcade"],
+  [data-tab-panel="play"],
+  [data-tab-panel="workbench"] { display: none !important; }
   body { padding-bottom: 0; }
   
   .print-only-certificate.is-signed {
@@ -2448,7 +2472,7 @@ body.lang-mode-es .bilingual-grid {
 
 
 .family-visual-lab{--lab-ink:#173a5e;--lab-teal:#0b8f87;--lab-coral:#ff775f;--lab-sun:#f6c94c;margin:26px 0;padding:clamp(18px,3vw,30px);border:3px solid var(--lab-ink);border-radius:28px;background:#fffdf5;box-shadow:8px 8px 0 var(--lab-ink);color:var(--lab-ink)}
-.visual-lab-heading{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(260px,1.15fr);gap:20px;align-items:end;margin-bottom:20px}.visual-lab-heading h2{margin:6px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.05}.visual-lab-heading p{margin:0;padding:14px 16px;border-left:5px solid var(--lab-sun);background:#fff8d9;font-size:17px;font-weight:700;line-height:1.45}.visual-lab-kicker{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--lab-ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em}
+.visual-lab-heading{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(260px,1.15fr);gap:20px;align-items:end;margin-bottom:20px}.visual-lab-heading h2{margin:6px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.05}.visual-lab-heading p{margin:0;padding:14px 16px;border-left:5px solid var(--lab-sun);background:#fff8d9;font-size:17px;font-weight:700;line-height:1.45}.visual-lab-kicker{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--lab-ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em}.visual-lab-kicker .lang-en,.visual-lab-kicker .lang-es{color:inherit}
 .visual-lab-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(230px,.8fr);gap:18px;align-items:stretch}.visual-lab-canvas-wrap{min-width:0;padding:12px;border-radius:22px;background-color:#eef8f4;background-image:linear-gradient(#cee3dc 1px,transparent 1px),linear-gradient(90deg,#cee3dc 1px,transparent 1px);background-size:24px 24px;border:2px solid var(--lab-ink)}.visual-lab-stage{display:grid;place-items:center;min-height:280px}.visual-lab-stage svg{display:block;width:100%;max-height:320px;overflow:visible}.visual-lab-status{min-height:26px;margin:5px 8px 0;padding:7px 10px;border-radius:10px;background:#fff;font-weight:800;text-align:center}
 .visual-lab-controls{display:flex;flex-direction:column;gap:14px;padding:18px;border-radius:22px;background:var(--lab-ink);color:#fff}.visual-lab-control{display:grid;gap:7px;font-weight:800}.visual-lab-control-label{display:flex;justify-content:space-between;gap:10px;align-items:center}.visual-lab-control output{min-width:38px;padding:3px 8px;border-radius:8px;background:var(--lab-sun);color:#102f4e;text-align:center;font-size:18px}.visual-lab-control input[type=range]{width:100%;min-height:28px;accent-color:var(--lab-coral);cursor:pointer}.visual-lab-control input[type=range]:focus-visible{outline:4px solid #fff;outline-offset:4px}.visual-lab-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:auto}.visual-lab-button{min-height:48px;border:2px solid #fff;border-radius:13px;background:var(--lab-coral);color:#182f48;font:inherit;font-weight:800;cursor:pointer}.visual-lab-button-quiet{background:#fff}.visual-lab-button:hover{transform:translateY(-2px)}.visual-lab-button:focus-visible{outline:4px solid var(--lab-sun);outline-offset:3px}
 .visual-representation-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:18px}.visual-representation-card{position:relative;min-height:150px;padding:18px 16px 15px;border:2px solid var(--lab-ink);border-radius:18px;background:#fff}.visual-representation-card h3{margin:0 0 10px;padding-left:30px;font-size:17px}.visual-representation-card p{margin:7px 0;font-size:16px;line-height:1.4}.representation-number{position:absolute;top:12px;left:12px;display:grid;width:27px;height:27px;place-items:center;border-radius:50%;background:var(--lab-ink);color:#fff;font-weight:800}.visual-representation-model{background:#dff5ee}.visual-representation-math{background:#fff2c2}.visual-representation-words{background:#ffe4dd}.visual-representation-math [data-lab-equation]{font-size:clamp(22px,3vw,32px);font-weight:800;text-align:center}.mini-model{display:flex;flex-wrap:wrap;gap:7px;align-content:center;min-height:76px;padding:8px}.mini-dot{width:18px;height:18px;border:2px solid var(--lab-ink);border-radius:50%;background:var(--lab-teal)}.visual-representation-card details{margin-top:10px}.visual-representation-card summary{cursor:pointer;font-weight:800;text-decoration:underline}.visual-source-idea{font-size:13px!important;color:#344f69}
@@ -2731,12 +2755,12 @@ header.packet h1::after{
         <div class="bilingual-col lang-en">
           <span class="lang-label">English</span>
           <p class="learning-big">Tonight we learn about integers (positive and negative whole numbers) and about absolute value, which is how far a number is from zero.</p>
-          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Integer</li><li>Positive</li><li>Negative</li><li>Absolute value</li><li>Opposite</li></ul></div>
+          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Integers and Absolute Value</li><li>Integer</li><li>Positive</li><li>Negative</li><li>Absolute value</li></ul></div>
         </div>
         <div class="bilingual-col lang-es" lang="es">
           <span class="lang-label">Español</span>
           <p class="learning-big">Esta noche aprendemos sobre los números enteros (números positivos y negativos) y sobre el valor absoluto, que es qué tan lejos está un número de cero.</p>
-          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Número entero</li><li>Positivo</li><li>Negativo</li><li>Valor absoluto</li><li>Opuesto</li></ul></div>
+          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Enteros y valor absoluto</li><li>Número entero</li><li>Positivo</li><li>Negativo</li><li>Valor absoluto</li></ul></div>
         </div>
       </div>
     
@@ -2866,6 +2890,24 @@ header.packet h1::after{
       </p>
       <div class="vocab-container">
         
+            <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+              <div class="vocab-card-inner">
+                <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/cat-number.svg" alt="Illustration of Integers and Absolute Value: Integers are whole numbers and their opposites; absolute value is their distance from zero." loading="lazy" width="72" height="72" />
+                  </div>
+                  <h3>Integers and Absolute Value</h3>
+                  <p class="vocab-es" lang="es">Enteros y valor absoluto</p>
+                  <div class="vocab-visual-hint">💡 |−6| = 6 because −6 is 6 units from zero.</div>
+                  <div class="flip-prompt"><span class="lang-en">Tap</span><span class="lang-es" lang="es">Toca ➔</span></div>
+                </div>
+                <div class="vocab-card-back">
+                  <p class="vocab-def">Integers are whole numbers and their opposites; absolute value is their distance from zero.</p>
+                  <p class="vocab-def-es" lang="es">Los enteros son números enteros y sus opuestos; el valor absoluto es su distancia desde cero.</p>
+                  <p class="vocab-back-visual">📌 |−6| = 6 because −6 is 6 units from zero.</p>
+                </div>
+              </div>
+            </div>
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -3092,6 +3134,10 @@ header.packet h1::after{
       
     
       <h2 class="section-title">✅ <span class="lang-en">Quick check</span><span class="lang-es" lang="es">Repaso rápido</span></h2>
+      <p class="quick-check-time bilingual-block">
+        <span class="lang-en">⏱️ Plan on about <strong>15–20 minutes</strong> for the 6 problems below. The extra practice at the bottom is optional.</span>
+        <span class="lang-es" lang="es">⏱️ Calculen unos <strong>15–20 minutos</strong> para los 6 problemas de abajo. La práctica extra al final es opcional.</span>
+      </p>
       <p class="bilingual-block">
         <span class="lang-en">A few problems to practice together. Each one has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong>, and a <strong>space to show your work</strong>. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
         <span class="lang-es" lang="es">Unos problemas para practicar juntos. Cada uno tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para mostrar el trabajo</strong>. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
@@ -3116,37 +3162,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_0" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 1</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Remember the definition: absolute value measures DISTANCE from zero, and a distance is never negative.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Remember the definition: absolute value measures DISTANCE from zero, and a distance is never negative.","es":"El valor absoluto mide la distancia desde cero. Tanto -4 como 4 están a 4 unidades de cero, así que |-4| = |4| = 4.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Which statement about absolute value is TRUE?</p>
+        <p class="problem-stem"><span class="lang-en">Which statement about absolute value is TRUE?</span><span class="lang-es" lang="es">¿Cuál afirmación sobre el valor absoluto es VERDADERA?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Absolute value measures distance from zero. Both -4 and 4 are 4 units from zero, so |-4| = |4| = 4.">
+        <div class="mc-options" data-correct="0" data-explanation="Absolute value measures distance from zero. Both -4 and 4 are 4 units from zero, so |-4| = |4| = 4." data-explanation-es="El valor absoluto mide la distancia desde cero. Tanto -4 como 4 están a 4 unidades de cero, así que |-4| = |4| = 4.">
           
             <label class="mc-option-label" id="label_q_0_0">
               <input type="radio" name="q_0" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">|-4| = |4| because both are 4 units from zero</span>
+              <span class="choice-text"><span class="lang-en">|-4| = |4| because both are 4 units from zero</span><span class="lang-es" lang="es">|-4| = |4| porque los dos están a 4 unidades del cero</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_0_1">
               <input type="radio" name="q_0" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">|-4| = -4 because the number is negative</span>
+              <span class="choice-text"><span class="lang-en">|-4| = -4 because the number is negative</span><span class="lang-es" lang="es">|-4| = -4 porque el número es negativo</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_0_2">
               <input type="radio" name="q_0" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">|4| &gt; |-4| because positive is always bigger</span>
+              <span class="choice-text"><span class="lang-en">|4| &gt; |-4| because positive is always bigger</span><span class="lang-es" lang="es">|4| &gt; |-4| porque lo positivo siempre es mayor</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_0_3">
               <input type="radio" name="q_0" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">|-4| = 0 because negatives cancel out</span>
+              <span class="choice-text"><span class="lang-en">|-4| = 0 because negatives cancel out</span><span class="lang-es" lang="es">|-4| = 0 porque los negativos se cancelan</span></span>
             </label>
           
         </div>
@@ -3188,12 +3234,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_1" data-problem-type="drag-sort" data-problem-subtype="drag-order">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 2</div>
-        <div class="problem-type-badge">DRAG ORDER</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG ORDER</span><span class="lang-es" lang="es">ORDENAR ARRASTRANDO</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Sort by DISTANCE from zero, greatest first — ignore whether the numbers are negative.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Sort by DISTANCE from zero, greatest first — ignore whether the numbers are negative.","es":"Ordenar por valor absoluto significa ordenar por la distancia al cero, así que los signos no importan: |-10| = 10, |8| = 8, |-5| = 5, |3| = 3, |-2| = 2, |1| = 1. Por eso -10 encabeza el orden aunque sea el entero más pequeño del conjunto.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Sort these integers from the GREATEST absolute value to the LEAST absolute value.</p>
+        <p class="problem-stem"><span class="lang-en">Sort these integers from the GREATEST absolute value to the LEAST absolute value.</span><span class="lang-es" lang="es">Ordena estos enteros del MAYOR valor absoluto al MENOR valor absoluto.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Use the ▲ ▼ buttons to reorder steps, or drag the row handles on a computer.</span><span class="lang-es" lang="es">👪 Usen ▲ ▼ para reordenar, o arrastren las filas en la computadora.</span></p>
         <div class="drag-order-workspace" id="dragorder_1" data-correct-order='[&quot;-10&quot;,&quot;8&quot;,&quot;-5&quot;,&quot;3&quot;,&quot;-2&quot;,&quot;1&quot;]' data-initial-order='[&quot;-2&quot;,&quot;1&quot;,&quot;-5&quot;,&quot;3&quot;,&quot;-10&quot;,&quot;8&quot;]'>
           <div class="drag-order-list" id="orderlist_1">
@@ -3279,12 +3325,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_2" data-problem-type="matching-game">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 3</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
+        <div class="problem-type-badge"><span class="lang-en">MATCHING GAME</span><span class="lang-es" lang="es">JUEGO DE PAREJAS</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each temperature matches its absolute value, which is how far it sits from 0 on the thermometer: -4 is 4 units from 0, -10 is 10 units, 6 is 6 units, and -15 is 15 units. The negative sign tells you which side of zero the temperature is on, but not how far.","es":"Cada temperatura se empareja con su valor absoluto, que es lo lejos que está de 0 en el termómetro: -4 está a 4 unidades de 0, -10 a 10 unidades, 6 a 6 unidades y -15 a 15 unidades. El signo negativo indica de qué lado del cero está la temperatura, pero no a qué distancia.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Match each treasure-site temperature to its distance from zero (its absolute value).</p>
+        <p class="problem-stem"><span class="lang-en">Match each treasure-site temperature to its distance from zero (its absolute value).</span><span class="lang-es" lang="es">Une la temperatura de cada sitio del tesoro con su distancia al cero (su valor absoluto).</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Say each term out loud, then talk through which match makes sense before choosing.</span><span class="lang-es" lang="es">👪 Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.</span></p>
         <div class="matching-pairs">
           
@@ -3371,12 +3417,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_3" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 1</div>
-        <div class="problem-type-badge">FILL TABLE</div>
+        <div class="problem-type-badge"><span class="lang-en">FILL TABLE</span><span class="lang-es" lang="es">COMPLETAR LA TABLA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Two different jobs per row: absolute value = distance from 0; opposite = same distance on the other side.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Two different jobs per row: absolute value = distance from 0; opposite = same distance on the other side.","es":"Las dos columnas piden cosas distintas: el valor absoluto quita el signo (|-7| = 7, |-12| = 12, |4| = 4, |9| = 9), mientras que el opuesto cambia el signo al otro lado del cero (-7 → 7, 4 → -4, -12 → 12, 9 → -9). El cero es el único entero donde las dos columnas coinciden, porque 0 es su propio opuesto y está a distancia 0.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Complete the table with each integer&#039;s absolute value and its opposite.</p>
+        <p class="problem-stem"><span class="lang-en">Complete the table with each integer&#039;s absolute value and its opposite.</span><span class="lang-es" lang="es">Completa la tabla con el valor absoluto de cada entero y su opuesto.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
         <div class="table-responsive">
           <table class="fill-table">
@@ -3568,37 +3614,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_4" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 2</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"On a number line, -5 is to the left of -2, so -5 is the smaller (colder) temperature.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Colder means the smaller number, and on a number line smaller always means farther to the left.","es":"Más frío significa el número menor, y en una recta numérica menor siempre significa más a la izquierda.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Two treasure sites report their temperatures: -5 degrees F at the Ice Cave and -2 degrees F at the Frozen Dock. Which site is COLDER?</p>
+        <p class="problem-stem"><span class="lang-en">Two treasure sites report their temperatures: -5 degrees F at the Ice Cave and -2 degrees F at the Frozen Dock. Which site is COLDER?</span><span class="lang-es" lang="es">Dos sitios del tesoro reportan sus temperaturas: -5 grados F en la Cueva de Hielo y -2 grados F en el Muelle Congelado. ¿Cuál sitio está MÁS FRÍO?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="On a number line, -5 is to the left of -2, so -5 is the smaller (colder) temperature.">
+        <div class="mc-options" data-correct="0" data-explanation="On a number line, -5 is to the left of -2, so -5 is the smaller (colder) temperature." data-explanation-es="En una recta numérica, -5 está a la izquierda de -2, así que -5 es la temperatura menor (más fría).">
           
             <label class="mc-option-label" id="label_q_4_0">
               <input type="radio" name="q_4" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">-5 degrees F (Ice Cave)</span>
+              <span class="choice-text"><span class="lang-en">-5 degrees F (Ice Cave)</span><span class="lang-es" lang="es">-5 grados F (Cueva de Hielo)</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_4_1">
               <input type="radio" name="q_4" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">-2 degrees F (Frozen Dock)</span>
+              <span class="choice-text"><span class="lang-en">-2 degrees F (Frozen Dock)</span><span class="lang-es" lang="es">-2 grados F (Muelle Congelado)</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_4_2">
               <input type="radio" name="q_4" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">They are the same</span>
+              <span class="choice-text"><span class="lang-en">They are the same</span><span class="lang-es" lang="es">Son iguales</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_4_3">
               <input type="radio" name="q_4" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Neither is below zero</span>
+              <span class="choice-text"><span class="lang-en">Neither is below zero</span><span class="lang-es" lang="es">Ninguno está bajo cero</span></span>
             </label>
           
         </div>
@@ -3640,37 +3686,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_5" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 3</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"|-12| = 12 and |7| = 7. Since 12 > 7, the absolute value of -12 is greater.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Absolute value turns each number into a distance from zero, and distances are never negative.","es":"El valor absoluto convierte cada número en una distancia desde cero, y las distancias nunca son negativas.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Captain Vega compares |-12| (a deep cave) and |7| (a hilltop). Which absolute value is GREATER?</p>
+        <p class="problem-stem"><span class="lang-en">Captain Vega compares |-12| (a deep cave) and |7| (a hilltop). Which absolute value is GREATER?</span><span class="lang-es" lang="es">La capitana Vega compara |-12| (una cueva profunda) y |7| (una cima). ¿Cuál valor absoluto es MAYOR?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="|-12| = 12 and |7| = 7. Since 12 &gt; 7, the absolute value of -12 is greater.">
+        <div class="mc-options" data-correct="0" data-explanation="|-12| = 12 and |7| = 7. Since 12 &gt; 7, the absolute value of -12 is greater." data-explanation-es="|-12| = 12 y |7| = 7. Como 12 &gt; 7, el valor absoluto de -12 es mayor.">
           
             <label class="mc-option-label" id="label_q_5_0">
               <input type="radio" name="q_5" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">|-12| because 12 &gt; 7</span>
+              <span class="choice-text"><span class="lang-en">|-12| because 12 &gt; 7</span><span class="lang-es" lang="es">|-12| porque 12 &gt; 7</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_5_1">
               <input type="radio" name="q_5" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">|7| because 7 is positive</span>
+              <span class="choice-text"><span class="lang-en">|7| because 7 is positive</span><span class="lang-es" lang="es">|7| porque 7 es positivo</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_5_2">
               <input type="radio" name="q_5" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">They are equal</span>
+              <span class="choice-text"><span class="lang-en">They are equal</span><span class="lang-es" lang="es">Son iguales</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_5_3">
               <input type="radio" name="q_5" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">|-12| = -12, so |7| is greater</span>
+              <span class="choice-text"><span class="lang-en">|-12| = -12, so |7| is greater</span><span class="lang-es" lang="es">|-12| = -12, así que |7| es mayor</span></span>
             </label>
           
         </div>
@@ -3723,14 +3769,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_6" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 1</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"&#39;Greatest absolute value&#39; means farthest from zero — the sign doesn&#39;t matter.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"&#39;Greatest absolute value&#39; means farthest from zero — the sign doesn&#39;t matter.","es":"|-3| = 3, |7| = 7, |-5| = 5, |2| = 2. El mayor valor absoluto es 7.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Which integer has the GREATEST absolute value: -3, 7, -5, 2?</p>
+        <p class="problem-stem"><span class="lang-en">Which integer has the GREATEST absolute value: -3, 7, -5, 2?</span><span class="lang-es" lang="es">¿Cuál entero tiene el MAYOR valor absoluto: -3, 7, -5, 2?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="|-3| = 3, |7| = 7, |-5| = 5, |2| = 2. The greatest absolute value is 7.">
+        <div class="mc-options" data-correct="0" data-explanation="|-3| = 3, |7| = 7, |-5| = 5, |2| = 2. The greatest absolute value is 7." data-explanation-es="|-3| = 3, |7| = 7, |-5| = 5, |2| = 2. El mayor valor absoluto es 7.">
           
             <label class="mc-option-label" id="label_q_6_0">
               <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
@@ -3795,12 +3841,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_7" data-problem-type="matching-game">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 2</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
+        <div class="problem-type-badge"><span class="lang-en">MATCHING GAME</span><span class="lang-es" lang="es">JUEGO DE PAREJAS</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each integer matches its distance from zero. Negative signs disappear; positives stay the same.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each integer matches its distance from zero. Negative signs disappear; positives stay the same.","es":"El valor absoluto es la distancia de un número al cero, y una distancia nunca es negativa. Por eso -5 se empareja con 5, -8 con 8 y -1 con 1, mientras que 3, 7 y 0 ya están a su propia distancia del cero y se emparejan consigo mismos.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Match each integer to its absolute value.</p>
+        <p class="problem-stem"><span class="lang-en">Match each integer to its absolute value.</span><span class="lang-es" lang="es">Une cada entero con su valor absoluto.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Say each term out loud, then talk through which match makes sense before choosing.</span><span class="lang-es" lang="es">👪 Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.</span></p>
         <div class="matching-pairs">
           
@@ -3893,12 +3939,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_8" data-problem-type="open-response">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 3</div>
-        <div class="problem-type-badge">OPEN RESPONSE</div>
+        <div class="problem-type-badge"><span class="lang-en">OPEN RESPONSE</span><span class="lang-es" lang="es">RESPUESTA ABIERTA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"&#39;Closer to sea level&#39; is about DISTANCE from 0, not about which number is less.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"&#39;Closer to sea level&#39; is about DISTANCE from 0, not about which number is less.","es":"El estudiante no tiene razón. El valor absoluto mide la distancia al nivel del mar, y |-150| = 150 mientras que |150| = 150, así que el submarino y el ave están exactamente a la misma distancia de 0. La comparación -150 < 150 describe la posición —debajo o encima del nivel del mar—, no la cercanía a él.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A submarine is at -150 meters and a bird is flying at +150 meters. A student says the submarine is closer to sea level because -150 is less than 150. Is the student correct? Explain using absolute value.</p>
+        <p class="problem-stem"><span class="lang-en">A submarine is at -150 meters and a bird is flying at +150 meters. A student says the submarine is closer to sea level because -150 is less than 150. Is the student correct? Explain using absolute value.</span><span class="lang-es" lang="es">Un submarino está a -150 metros y un ave vuela a +150 metros. Un estudiante dice que el submarino está más cerca del nivel del mar porque -150 es menor que 150. ¿Tiene razón? Explica usando el valor absoluto.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 A complete sentence with math vocabulary is the goal — not a perfect paragraph.</span><span class="lang-es" lang="es">👪 Una oración completa con vocabulario matemático es la meta — no un párrafo perfecto.</span></p>
         
         
@@ -3965,14 +4011,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_9" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 4</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Absolute value asks: how FAR is -9 from zero? It&#39;s about distance, not direction.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Absolute value asks: how FAR is -9 from zero? It&#39;s about distance, not direction.","es":"El valor absoluto es la distancia desde cero. -9 está a 9 unidades de cero, así que |-9| = 9.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">What is the absolute value of -9?</p>
+        <p class="problem-stem"><span class="lang-en">What is the absolute value of -9?</span><span class="lang-es" lang="es">¿Cuál es el valor absoluto de -9?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Absolute value is the distance from zero. -9 is 9 units from zero, so |-9| = 9.">
+        <div class="mc-options" data-correct="0" data-explanation="Absolute value is the distance from zero. -9 is 9 units from zero, so |-9| = 9." data-explanation-es="El valor absoluto es la distancia desde cero. -9 está a 9 unidades de cero, así que |-9| = 9.">
           
             <label class="mc-option-label" id="label_q_9_0">
               <input type="radio" name="q_9" value="0" onchange="saveState(); updateProgress();">
@@ -4037,14 +4083,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_10" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 5</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Absolute value is the distance from zero, so |-8| = 8.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Absolute value asks how far a number is from zero, not which side of zero it is on.","es":"El valor absoluto pregunta qué tan lejos está un número de cero, no de qué lado de cero está.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">On a frosty morning at the mountain cache, the thermometer reads -8 degrees. What is the absolute value of -8?</p>
+        <p class="problem-stem"><span class="lang-en">On a frosty morning at the mountain cache, the thermometer reads -8 degrees. What is the absolute value of -8?</span><span class="lang-es" lang="es">En una mañana helada en el escondite de la montaña, el termómetro marca -8 grados. ¿Cuál es el valor absoluto de -8?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Absolute value is the distance from zero, so |-8| = 8.">
+        <div class="mc-options" data-correct="0" data-explanation="Absolute value is the distance from zero, so |-8| = 8." data-explanation-es="El valor absoluto es la distancia desde cero, así que |-8| = 8.">
           
             <label class="mc-option-label" id="label_q_10_0">
               <input type="radio" name="q_10" value="0" onchange="saveState(); updateProgress();">
@@ -4109,12 +4155,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_11" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 6</div>
-        <div class="problem-type-badge">DRAG SORT</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Sorting here is about position on the thermometer, not distance from zero: -9, -3, and -1 are all to the left of 0, so those sites are below freezing. The 5-degree tide pool, the 11-degree beach, and the 0-degree camp are at 0 or to the right of it, so they belong in the freezing-or-above group.","es":"Aquí la clasificación es por la posición en el termómetro, no por la distancia al cero: -9, -3 y -1 están a la izquierda de 0, así que esos sitios están bajo cero. La poza de marea de 5 grados, la playa de 11 grados y el campamento de 0 grados están en 0 o a su derecha, así que van en el grupo de cero grados o más.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Drag each treasure-site temperature into the right group: below freezing (colder than 0 degrees) or above freezing (0 degrees or warmer).</p>
+        <p class="problem-stem"><span class="lang-en">Drag each treasure-site temperature into the right group: below freezing (colder than 0 degrees) or above freezing (0 degrees or warmer).</span><span class="lang-es" lang="es">Arrastra la temperatura de cada sitio del tesoro al grupo correcto: bajo cero (más frío que 0 grados) o sobre cero (0 grados o más cálido).</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
         
         <div class="drag-sort-workspace" id="dragsort_11">
@@ -4251,14 +4297,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_12" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 7</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Absolute value = distance from zero. Here the number inside the bars IS zero.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Absolute value = distance from zero. Here the number inside the bars IS zero.","es":"El cero está a 0 unidades de sí mismo en la recta numérica, así que |0| = 0.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">What is |0|?</p>
+        <p class="problem-stem"><span class="lang-en">What is |0|?</span><span class="lang-es" lang="es">¿Cuánto es |0|?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Zero is 0 units from itself on the number line, so |0| = 0.">
+        <div class="mc-options" data-correct="0" data-explanation="Zero is 0 units from itself on the number line, so |0| = 0." data-explanation-es="El cero está a 0 unidades de sí mismo en la recta numérica, así que |0| = 0.">
           
             <label class="mc-option-label" id="label_q_12_0">
               <input type="radio" name="q_12" value="0" onchange="saveState(); updateProgress();">
@@ -4281,7 +4327,7 @@ header.packet h1::after{
             <label class="mc-option-label" id="label_q_12_3">
               <input type="radio" name="q_12" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">There is no answer</span>
+              <span class="choice-text"><span class="lang-en">There is no answer</span><span class="lang-es" lang="es">No hay respuesta</span></span>
             </label>
           
         </div>
@@ -4584,8 +4630,8 @@ header.packet h1::after{
 <script>
 window.LESSON_ID = "9-2";
 window.LESSON_TITLE = "Integers and Absolute Value";
-window.__HW_VOCAB__ = [{"term":"Integer","termEs":"Número entero","def":"Whole numbers and their opposites, like -2, -1, 0, 1, 2.","defEs":"Un número entero que puede ser positivo, negativo o cero.","example":"... -3, -2, -1, 0, 1, 2, 3 ... shown on a number line with 0 in the center","img":"/assets/vocab-images/integer.svg","imgAlt":"Illustration of Integer: Whole numbers and their opposites, like -2, -1, 0, 1, 2."},{"term":"Positive","termEs":"Positivo","def":"A number bigger than zero, to the right of zero on a number line.","defEs":"Un número mayor que cero, a la derecha del cero en la recta numérica.","example":"+5 means 5 above zero, like 5 floors above ground level","img":"/assets/vocab-images/positive.svg","imgAlt":"Illustration of Positive: A number bigger than zero, to the right of zero on a number line."},{"term":"Negative","termEs":"Negativo","def":"A number smaller than zero, to the left of zero on a number line.","defEs":"Un número menor que cero, a la izquierda del cero en la recta numérica.","example":"-3 means 3 below zero, like 3 floors underground","img":"/assets/vocab-images/negative.svg","imgAlt":"Illustration of Negative: A number smaller than zero, to the left of zero on a number line."},{"term":"Absolute value","termEs":"Valor absoluto","def":"How far a number is from zero. It is never negative. It is never negative.","defEs":"Qué tan lejos está un número de cero. Nunca es negativo. Nunca es negativo.","example":"|-5| = 5 and |5| = 5 — both are 5 units from 0","img":"/assets/vocab-images/absolute-value.svg","imgAlt":"Illustration of Absolute value: How far a number is from zero. It is never negative. It is never negative."},{"term":"Opposite","termEs":"Opuesto","def":"Two numbers the same distance from zero, on opposite sides, like 3 and -3.","defEs":"Dos números a la misma distancia de cero, en lados opuestos, como 3 y -3.","example":"3 and -3 are opposites — both are 3 units from 0","img":"/assets/vocab-images/opposite.svg","imgAlt":"Illustration of Opposite: Two numbers the same distance from zero, on opposite sides, like 3 and -3."}];
-window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Absolute value|Positive|Negative|Opposite|Integer)(?:es|s)?\\b","lookup":{"integer":0,"positive":1,"negative":2,"absolute value":3,"opposite":4}};
+window.__HW_VOCAB__ = [{"term":"Integers and Absolute Value","termEs":"Enteros y valor absoluto","def":"Integers are whole numbers and their opposites; absolute value is their distance from zero.","defEs":"Los enteros son números enteros y sus opuestos; el valor absoluto es su distancia desde cero.","example":"|−6| = 6 because −6 is 6 units from zero.","img":"","imgAlt":""},{"term":"Integer","termEs":"Número entero","def":"Whole numbers and their opposites, like -2, -1, 0, 1, 2.","defEs":"Un número entero que puede ser positivo, negativo o cero.","example":"... -3, -2, -1, 0, 1, 2, 3 ... shown on a number line with 0 in the center","img":"/assets/vocab-images/integer.svg","imgAlt":"Illustration of Integer: Whole numbers and their opposites, like -2, -1, 0, 1, 2."},{"term":"Positive","termEs":"Positivo","def":"A number bigger than zero, to the right of zero on a number line.","defEs":"Un número mayor que cero, a la derecha del cero en la recta numérica.","example":"+5 means 5 above zero, like 5 floors above ground level","img":"/assets/vocab-images/positive.svg","imgAlt":"Illustration of Positive: A number bigger than zero, to the right of zero on a number line."},{"term":"Negative","termEs":"Negativo","def":"A number smaller than zero, to the left of zero on a number line.","defEs":"Un número menor que cero, a la izquierda del cero en la recta numérica.","example":"-3 means 3 below zero, like 3 floors underground","img":"/assets/vocab-images/negative.svg","imgAlt":"Illustration of Negative: A number smaller than zero, to the left of zero on a number line."},{"term":"Absolute value","termEs":"Valor absoluto","def":"How far a number is from zero. It is never negative. It is never negative.","defEs":"Qué tan lejos está un número de cero. Nunca es negativo. Nunca es negativo.","example":"|-5| = 5 and |5| = 5 — both are 5 units from 0","img":"/assets/vocab-images/absolute-value.svg","imgAlt":"Illustration of Absolute value: How far a number is from zero. It is never negative. It is never negative."},{"term":"Opposite","termEs":"Opuesto","def":"Two numbers the same distance from zero, on opposite sides, like 3 and -3.","defEs":"Dos números a la misma distancia de cero, en lados opuestos, como 3 y -3.","example":"3 and -3 are opposites — both are 3 units from 0","img":"/assets/vocab-images/opposite.svg","imgAlt":"Illustration of Opposite: Two numbers the same distance from zero, on opposite sides, like 3 and -3."}];
+window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Integers and Absolute Value|Absolute value|Positive|Negative|Opposite|Integer)(?:es|s)?\\b","lookup":{"integers and absolute value":0,"integer":1,"positive":2,"negative":3,"absolute value":4,"opposite":5}};
 
 function syncHomeworkChromeHeights() {
   const status = document.querySelector('.bottom-status-bar');
@@ -4719,7 +4765,33 @@ function saveParentSignoff() {
   try {
     localStorage.setItem('hw_parent_signoff_' + lessonId, JSON.stringify(payload));
   } catch(e) {}
-  
+
+  /* localStorage stays the source of truth for what this page displays, but a
+     sign-off the teacher never sees is not a sign-off. Fire-and-forget POST:
+     the endpoint always answers 204, and any failure here is swallowed so a
+     family on a bad connection still gets their confirmation. */
+  try {
+    var signoffBody = JSON.stringify({
+      lessonId: lessonId,
+      lessonTitle: lessonTitle,
+      parentName: nameVal,
+      note: noteVal,
+      date: signoffDate,
+      studentName: (window.NeftSaveResume && window.NeftSaveResume.studentName) || '',
+      section: (window.NeftSaveResume && window.NeftSaveResume.section) || ''
+    });
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('/api/progress/family-signoff', new Blob([signoffBody], { type: 'application/json' }));
+    } else {
+      fetch('/api/progress/family-signoff', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: signoffBody,
+        keepalive: true
+      }).catch(function() {});
+    }
+  } catch(e) {}
+
   updateSignoffUI(payload);
 }
 
@@ -5656,6 +5728,15 @@ function playCheckSound(isCorrect) {
   }
 }
 
+/* Feedback text is built in JS, so it cannot use the .lang-en/.lang-es span
+   pair the rest of the page toggles. Pick the language the family is actually
+   reading; fall back to English whenever no Spanish was authored. */
+function pickLangText(en, es) {
+  const esText = (es || "").trim();
+  if (esText && document.body.classList.contains("lang-mode-es")) return esText;
+  return en || "";
+}
+
 function checkProblem(idx, options) {
   const silent = options && options.silent;
   const section = document.getElementById("problem_" + idx);
@@ -5673,7 +5754,7 @@ function checkProblem(idx, options) {
       const container = section.querySelector(".mc-options");
       const selected = container.querySelector("input[type='radio']:checked");
       const correctIdx = container.dataset.correct;
-      const explanation = container.dataset.explanation;
+      const explanation = pickLangText(container.dataset.explanation, container.dataset.explanationEs);
       
       // Reset radio option styles
       const labels = container.querySelectorAll(".mc-option-label");
@@ -5901,7 +5982,7 @@ function checkProblem(idx, options) {
   if (!feedbackMessage) {
     if (type === "multiple-choice") {
       const container = section.querySelector(".mc-options");
-      const explanation = container?.dataset.explanation || "";
+      const explanation = pickLangText(container?.dataset.explanation, container?.dataset.explanationEs);
       if (isProblemCorrect) {
         feedbackMessage = explanation
           ? "Correct! " + explanation

@@ -1,0 +1,397 @@
+/* ==========================================================================
+   Neft Teacher — Projects META layer (shared)
+
+   Styles for the standards strip and the Level-0 support cards added by
+   /shared/projects/projects-meta.js. Everything is scoped under
+   `body.pro-projects` so no rule can leak onto lessons, games, or the hub.
+
+   The stylesheet is spliced in at the LAST </head>, after each page's own
+   inline <style>, so the Level-0 gating below wins over the page's generic
+   `.lvl0-only { display: none }` without needing !important.
+
+   Standards chips are print-visible on purpose: they belong on the packet a
+   teacher staples to student work.
+   Injected by tools/inject-projects-meta.mjs.
+   ========================================================================== */
+
+/* ------------------------------------------------------- standards strip */
+
+body.pro-projects .ntm-standards {
+  max-width: 1080px;
+  margin: 18px auto 0;
+  padding: 16px 20px;
+  background: #fff;
+  border: 1px solid #dbe4ef;
+  border-left: 6px solid #2563eb;
+  border-radius: 14px;
+  box-shadow: 0 1px 3px rgba(15, 30, 60, 0.06);
+}
+
+body.pro-projects .ntm-std-head {
+  margin: 0 0 10px;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #24344d;
+}
+
+body.pro-projects .ntm-std-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+body.pro-projects .ntm-chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 7px;
+  padding: 5px 12px;
+  border: 1px solid #cfdcee;
+  border-radius: 999px;
+  background: #f2f7ff;
+  font-size: 14px;
+  line-height: 1.35;
+  color: #1c2f4a;
+}
+
+body.pro-projects .ntm-chip-code {
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: #14448f;
+}
+
+body.pro-projects .ntm-chip-label {
+  color: #46586f;
+}
+
+body.pro-projects .ntm-chip-unit {
+  background: #fff7e3;
+  border-color: #f0dcae;
+  font-weight: 700;
+}
+
+body.pro-projects .ntm-chip-reveal {
+  background: #f4f1fb;
+  border-color: #d9d0ef;
+  color: #4b3b7a;
+}
+
+body.pro-projects .ntm-proves {
+  margin: 12px 0 0;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #24344d;
+}
+
+body.pro-projects .ntm-proves-tag {
+  display: block;
+  margin-bottom: 3px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #5a6b84;
+}
+
+/* ------------------------------------------------------ Level-0 supports */
+
+/* L0 < L1 < L2. These cards exist for the IEP tier only; Level 1 and Level 2
+   students never see them, so their pages are byte-for-byte what they were. */
+body.pro-projects .ntm-l0 {
+  display: none;
+}
+
+body.pro-projects.level-0 .ntm-l0 {
+  display: block;
+}
+
+/* Level 0 is a separate mini-project. Hide the regular multi-step trail and
+   the normal contents of the first panel so students face one task, not the
+   full project with extra support cards layered on top. */
+body.pro-projects.level-0 .step-trail,
+body.pro-projects.level-0 .prog-wrap,
+body.pro-projects.level-0 .ntm-standards,
+body.pro-projects.level-0 .pro-ribbon,
+body.pro-projects.level-0 .pro-totop,
+body.pro-projects.level-0 #nsr-launcher {
+  display: none !important;
+}
+
+body.pro-projects.level-0 .wizard {
+  font-size: 0;
+}
+
+body.pro-projects.level-0 .ntm-l0-panel.active > :not(.ntm-l0-shell) {
+  display: none !important;
+}
+
+body.pro-projects .ntm-l0-shell {
+  max-width: 760px;
+  margin: 0 auto 22px;
+  padding: 18px;
+  font-size: 16px;
+}
+
+body.pro-projects .ntm-l0-shell > .ntm-l0 {
+  display: block;
+}
+
+body.pro-projects .ntm-l0-shell > .ntm-l0:last-child {
+  margin-bottom: 0;
+}
+
+body.pro-projects .ntm-l0-done {
+  background: #eefbf2;
+  border-left-color: #168447;
+}
+
+/* Level 1 keeps the core wizard and the unit's main interactive, but removes
+   the many secondary studios that made each step feel like several projects
+   at once. Level 2 remains the full experience. */
+body.pro-projects:is(.level-0, .level-1) :is(
+    .viz-card,
+    .mw-card,
+    .sa-card,
+    .ea-card,
+    .p3d-card,
+    .cms-goals,
+    .cms-studio,
+    .pps-ledger,
+    .pps-quality,
+    .pps-studio,
+    .ntdt,
+    .ntf-reflect,
+    .ntf-readiness,
+    .ntf-fab,
+    .ntf-teacher,
+    .sig-fab,
+    .ntc-launch,
+    .ntc-panel,
+    #mwb-launcher
+  ) {
+  display: none !important;
+}
+
+body.pro-projects .ntm-l0 {
+  background: #fff6ec;
+  border-left: 4px solid #e07b1d;
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 18px;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #33261a;
+}
+
+body.pro-projects .ntm-l0-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+body.pro-projects .ntm-l0-badge {
+  display: inline-block;
+  padding: 3px 11px;
+  border-radius: 999px;
+  background: #e07b1d;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+body.pro-projects .ntm-l0-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #7a3f05;
+}
+
+body.pro-projects .ntm-l0-sub {
+  margin: 0 0 8px;
+  font-weight: 600;
+}
+
+body.pro-projects .ntm-l0-response-label {
+  display: block;
+  font-weight: 800;
+  color: #5d330d;
+}
+
+body.pro-projects .ntm-l0-response {
+  display: block;
+  width: min(100%, 320px);
+  min-height: 48px;
+  margin-top: 7px;
+  padding: 9px 12px;
+  border: 2px solid #b85f0a;
+  border-radius: 9px;
+  background: #fff;
+  color: #24170c;
+  font: inherit;
+}
+
+body.pro-projects .ntm-l0-response:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 2px;
+}
+
+body.pro-projects .ntm-l0-steps {
+  margin: 0 0 8px;
+  padding-left: 22px;
+}
+
+body.pro-projects .ntm-l0-steps li {
+  margin: 5px 0;
+}
+
+body.pro-projects .ntm-l0-answer {
+  margin: 8px 0 0;
+  padding: 8px 12px;
+  background: #fff;
+  border: 1px dashed #e0b98d;
+  border-radius: 9px;
+}
+
+/* Wide frames must scroll inside their own box, never the page body. */
+body.pro-projects .ntm-l0-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+body.pro-projects table.ntm-l0-frame {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  font-size: 15px;
+}
+
+body.pro-projects table.ntm-l0-frame th,
+body.pro-projects table.ntm-l0-frame td {
+  border: 1px solid #e4cfb4;
+  padding: 8px 10px;
+  text-align: left;
+}
+
+body.pro-projects table.ntm-l0-frame th {
+  background: #fdefdc;
+  font-weight: 800;
+  color: #7a3f05;
+}
+
+body.pro-projects table.ntm-l0-frame td.ntm-l0-blank {
+  background: #fffdf8;
+  color: #b4855a;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+body.pro-projects .ntm-l0-vocab {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+body.pro-projects .ntm-l0-word {
+  background: #fff;
+  border: 1px solid #eddcc6;
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+body.pro-projects .ntm-l0-term {
+  font-size: 14px;
+  font-weight: 800;
+  color: #7a3f05;
+  margin-bottom: 3px;
+}
+
+body.pro-projects .ntm-l0-def {
+  font-size: 15px;
+  line-height: 1.5;
+  color: #4c3d2c;
+}
+
+body.pro-projects .ntm-l0-starters {
+  margin: 0;
+  padding-left: 22px;
+}
+
+body.pro-projects .ntm-l0-starters li {
+  margin: 4px 0;
+  font-style: italic;
+  color: #5c4832;
+}
+
+/* ------------------------------------------------------------ responsive */
+
+@media (max-width: 640px) {
+  body.pro-projects .ntm-standards {
+    margin: 14px 12px 0;
+    padding: 14px;
+  }
+
+  body.pro-projects .ntm-chip {
+    font-size: 13px;
+  }
+}
+
+/* ------------------------------------------------- reduced-motion safety */
+
+/* This layer ships no animation today; the guard is here so any future
+   transition on these classes cannot override a student's OS setting. */
+@media (prefers-reduced-motion: reduce) {
+  body.pro-projects .ntm-standards,
+  body.pro-projects .ntm-chip,
+  body.pro-projects .ntm-l0,
+  body.pro-projects .ntm-l0-badge {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* -------------------------------------------------------------- printing */
+
+@media print {
+  /* The hero is .no-print, so without this the printed packet would carry no
+     standards at all — which is the gap this layer exists to close. */
+  body.pro-projects .ntm-standards {
+    display: block !important;
+    margin: 0 0 10pt;
+    padding: 8pt 10pt;
+    border: 1pt solid #666;
+    border-left: 3pt solid #000;
+    border-radius: 0;
+    box-shadow: none;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  body.pro-projects .ntm-chip {
+    border: 1pt solid #777;
+    background: none;
+    color: #000;
+  }
+
+  body.pro-projects .ntm-chip-code,
+  body.pro-projects .ntm-chip-label,
+  body.pro-projects .ntm-proves,
+  body.pro-projects .ntm-proves-tag,
+  body.pro-projects .ntm-std-head {
+    color: #000;
+  }
+
+  /* Level-0 cards print only for the student who is actually at Level 0. */
+  body.pro-projects.level-0 .ntm-l0 {
+    display: block !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  body.pro-projects .ntm-l0-scroll {
+    overflow-x: visible;
+  }
+}

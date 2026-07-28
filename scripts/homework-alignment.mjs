@@ -436,7 +436,17 @@ export function scoreHomeworkAlignment(config, html) {
     issues.push("Few lesson keywords in intro section");
   }
 
-  const problemStems = [...html.matchAll(/class="problem-stem"[^>]*>([^<]+)/g)].map((m) => m[1]);
+  /* Stems are bilingual: `<p class="problem-stem"><span class="lang-en">EN</span>
+     <span class="lang-es">ES</span></p>`. Capture the whole element and strip
+     tags, then keep only the English half — the alignment keywords are English,
+     so scoring the Spanish text too would report false misalignment. A stem with
+     no Spanish authored has no spans at all and still reads correctly here. */
+  const problemStems = [...html.matchAll(/class="problem-stem"[^>]*>([\s\S]*?)<\/p>/g)]
+    .map((m) => {
+      const en = m[1].match(/<span class="lang-en">([\s\S]*?)<\/span>/);
+      return (en ? en[1] : m[1]).replace(/<[^>]*>/g, "").trim();
+    })
+    .filter(Boolean);
   if (!problemStems.length) {
     score -= 30;
     issues.push("No quick-check problem stems found");

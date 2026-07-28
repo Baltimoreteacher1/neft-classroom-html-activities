@@ -1604,6 +1604,14 @@ body.obj-popup-open { overflow: hidden; }
 .section-vocab { border-left: 4px solid var(--coral); }
 .section-stuck { border-left: 4px solid #9b59b6; }
 .section-quick-intro { border-left: 4px solid var(--success); }
+.quick-check-time {
+  background: var(--amber-light);
+  border: 1px solid var(--amber);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 0 0 12px;
+  font-size: 15px;
+}
 .section-celebrate {
   border-left: 4px solid var(--amber);
   background: linear-gradient(180deg, var(--amber-light), var(--white));
@@ -1851,6 +1859,16 @@ body.obj-popup-open { overflow: hidden; }
   padding: 2px;
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x proximity;
+}
+/* On a phone the 10 tabs are ~738px wide in a ~381px viewport, so half of them
+   (Help, More, Done) sit off-screen with nothing to suggest they exist. Fade the
+   trailing edge so the strip reads as scrollable. Only below 700px, where the
+   overflow is guaranteed — a permanent fade on desktop would just look broken. */
+@media (max-width: 700px) {
+  .homework-tab-bar {
+    -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+    mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+  }
 }
 .homework-tab-btn {
   flex: 0 0 auto;
@@ -2372,6 +2390,12 @@ body.lang-mode-es .bilingual-grid {
 @media print {
   .homework-tab-chrome, .homework-tab-bar, .bottom-status-bar, .help-modal-overlay, .print-all-btn, .parent-signoff-container { display: none !important; }
   .tab-panel-inner[hidden] { display: block !important; page-break-inside: avoid; }
+  /* Printing un-hides every panel, but these three are screen-only: an embedded
+     arcade iframe, a live game, and a link-out. On paper they were blank or
+     meaningless pages in the middle of the packet. */
+  [data-tab-panel="arcade"],
+  [data-tab-panel="play"],
+  [data-tab-panel="workbench"] { display: none !important; }
   body { padding-bottom: 0; }
   
   .print-only-certificate.is-signed {
@@ -2448,7 +2472,7 @@ body.lang-mode-es .bilingual-grid {
 
 
 .family-visual-lab{--lab-ink:#173a5e;--lab-teal:#0b8f87;--lab-coral:#ff775f;--lab-sun:#f6c94c;margin:26px 0;padding:clamp(18px,3vw,30px);border:3px solid var(--lab-ink);border-radius:28px;background:#fffdf5;box-shadow:8px 8px 0 var(--lab-ink);color:var(--lab-ink)}
-.visual-lab-heading{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(260px,1.15fr);gap:20px;align-items:end;margin-bottom:20px}.visual-lab-heading h2{margin:6px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.05}.visual-lab-heading p{margin:0;padding:14px 16px;border-left:5px solid var(--lab-sun);background:#fff8d9;font-size:17px;font-weight:700;line-height:1.45}.visual-lab-kicker{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--lab-ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em}
+.visual-lab-heading{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(260px,1.15fr);gap:20px;align-items:end;margin-bottom:20px}.visual-lab-heading h2{margin:6px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.05}.visual-lab-heading p{margin:0;padding:14px 16px;border-left:5px solid var(--lab-sun);background:#fff8d9;font-size:17px;font-weight:700;line-height:1.45}.visual-lab-kicker{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--lab-ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em}.visual-lab-kicker .lang-en,.visual-lab-kicker .lang-es{color:inherit}
 .visual-lab-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(230px,.8fr);gap:18px;align-items:stretch}.visual-lab-canvas-wrap{min-width:0;padding:12px;border-radius:22px;background-color:#eef8f4;background-image:linear-gradient(#cee3dc 1px,transparent 1px),linear-gradient(90deg,#cee3dc 1px,transparent 1px);background-size:24px 24px;border:2px solid var(--lab-ink)}.visual-lab-stage{display:grid;place-items:center;min-height:280px}.visual-lab-stage svg{display:block;width:100%;max-height:320px;overflow:visible}.visual-lab-status{min-height:26px;margin:5px 8px 0;padding:7px 10px;border-radius:10px;background:#fff;font-weight:800;text-align:center}
 .visual-lab-controls{display:flex;flex-direction:column;gap:14px;padding:18px;border-radius:22px;background:var(--lab-ink);color:#fff}.visual-lab-control{display:grid;gap:7px;font-weight:800}.visual-lab-control-label{display:flex;justify-content:space-between;gap:10px;align-items:center}.visual-lab-control output{min-width:38px;padding:3px 8px;border-radius:8px;background:var(--lab-sun);color:#102f4e;text-align:center;font-size:18px}.visual-lab-control input[type=range]{width:100%;min-height:28px;accent-color:var(--lab-coral);cursor:pointer}.visual-lab-control input[type=range]:focus-visible{outline:4px solid #fff;outline-offset:4px}.visual-lab-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:auto}.visual-lab-button{min-height:48px;border:2px solid #fff;border-radius:13px;background:var(--lab-coral);color:#182f48;font:inherit;font-weight:800;cursor:pointer}.visual-lab-button-quiet{background:#fff}.visual-lab-button:hover{transform:translateY(-2px)}.visual-lab-button:focus-visible{outline:4px solid var(--lab-sun);outline-offset:3px}
 .visual-representation-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:18px}.visual-representation-card{position:relative;min-height:150px;padding:18px 16px 15px;border:2px solid var(--lab-ink);border-radius:18px;background:#fff}.visual-representation-card h3{margin:0 0 10px;padding-left:30px;font-size:17px}.visual-representation-card p{margin:7px 0;font-size:16px;line-height:1.4}.representation-number{position:absolute;top:12px;left:12px;display:grid;width:27px;height:27px;place-items:center;border-radius:50%;background:var(--lab-ink);color:#fff;font-weight:800}.visual-representation-model{background:#dff5ee}.visual-representation-math{background:#fff2c2}.visual-representation-words{background:#ffe4dd}.visual-representation-math [data-lab-equation]{font-size:clamp(22px,3vw,32px);font-weight:800;text-align:center}.mini-model{display:flex;flex-wrap:wrap;gap:7px;align-content:center;min-height:76px;padding:8px}.mini-dot{width:18px;height:18px;border:2px solid var(--lab-ink);border-radius:50%;background:var(--lab-teal)}.visual-representation-card details{margin-top:10px}.visual-representation-card summary{cursor:pointer;font-weight:800;text-decoration:underline}.visual-source-idea{font-size:13px!important;color:#344f69}
@@ -2731,12 +2755,12 @@ header.packet h1::after{
         <div class="bilingual-col lang-en">
           <span class="lang-label">English</span>
           <p class="learning-big">Tonight we use ratio reasoning to solve problems — scaling a recipe up with a scale factor and checking it by cross-multiplying.</p>
-          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Proportion</li><li>Cross-multiply</li><li>Scale</li><li>Equivalent</li><li>Unit rate</li></ul></div>
+          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Ratio Reasoning</li><li>Proportion</li><li>Cross-multiply</li><li>Scale</li><li>Equivalent</li></ul></div>
         </div>
         <div class="bilingual-col lang-es" lang="es">
           <span class="lang-label">Español</span>
           <p class="learning-big">Esta noche usamos el razonamiento con razones para resolver problemas — escalar una receta con un factor de escala y comprobarla con la multiplicación cruzada.</p>
-          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Proporción</li><li>Multiplicación cruzada</li><li>Escalar</li><li>Equivalente</li><li>Tasa unitaria</li></ul></div>
+          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Razonamiento con razones</li><li>Proporción</li><li>Multiplicación cruzada</li><li>Escalar</li><li>Equivalente</li></ul></div>
         </div>
       </div>
     
@@ -2865,6 +2889,24 @@ header.packet h1::after{
       </p>
       <div class="vocab-container">
         
+            <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+              <div class="vocab-card-inner">
+                <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/cat-number.svg" alt="Illustration of Ratio Reasoning: Use equivalent ratios, tables, graphs, or unit rates to solve a problem." loading="lazy" width="72" height="72" />
+                  </div>
+                  <h3>Ratio Reasoning</h3>
+                  <p class="vocab-es" lang="es">Razonamiento con razones</p>
+                  <div class="vocab-visual-hint">💡 If 3 notebooks cost $6, then 5 notebooks cost $10.</div>
+                  <div class="flip-prompt"><span class="lang-en">Tap</span><span class="lang-es" lang="es">Toca ➔</span></div>
+                </div>
+                <div class="vocab-card-back">
+                  <p class="vocab-def">Use equivalent ratios, tables, graphs, or unit rates to solve a problem.</p>
+                  <p class="vocab-def-es" lang="es">Usar razones equivalentes, tablas, gráficas o tasas unitarias para resolver un problema.</p>
+                  <p class="vocab-back-visual">📌 If 3 notebooks cost $6, then 5 notebooks cost $10.</p>
+                </div>
+              </div>
+            </div>
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -3094,6 +3136,10 @@ header.packet h1::after{
       
     
       <h2 class="section-title">✅ <span class="lang-en">Quick check</span><span class="lang-es" lang="es">Repaso rápido</span></h2>
+      <p class="quick-check-time bilingual-block">
+        <span class="lang-en">⏱️ Plan on about <strong>15–20 minutes</strong> for the 6 problems below. The extra practice at the bottom is optional.</span>
+        <span class="lang-es" lang="es">⏱️ Calculen unos <strong>15–20 minutos</strong> para los 6 problemas de abajo. La práctica extra al final es opcional.</span>
+      </p>
       <p class="bilingual-block">
         <span class="lang-en">A few problems to practice together. Each one has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong>, and a <strong>space to show your work</strong>. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
         <span class="lang-es" lang="es">Unos problemas para practicar juntos. Cada uno tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para mostrar el trabajo</strong>. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
@@ -3118,12 +3164,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_0" data-problem-type="matching-game">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 1</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
+        <div class="problem-type-badge"><span class="lang-en">MATCHING GAME</span><span class="lang-es" lang="es">JUEGO DE PAREJAS</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each problem matches the strategy that does the least work. Finding the cost of one onion is a unit rate ($3 ÷ 6), scaling 5 : 3 up to 120 guests needs one scale factor applied to both parts, testing 4 : 6 against 6 : 9 is fastest with cross products (4 × 9 = 36 and 6 × 6 = 36), and showing 5, 10, and 15 servings fits a ratio table that grows one column at a time.","es":"Cada problema corresponde a la estrategia que requiere menos trabajo. Hallar el costo de una cebolla es una tasa unitaria ($3 ÷ 6), escalar 5 : 3 para 120 invitados necesita un factor de escala aplicado a las dos partes, comparar 4 : 6 con 6 : 9 es más rápido con productos cruzados (4 × 9 = 36 y 6 × 6 = 36), y mostrar 5, 10 y 15 porciones encaja en una tabla de razones que crece una columna a la vez.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Match each kitchen problem to the smartest ratio-reasoning strategy.</p>
+        <p class="problem-stem"><span class="lang-en">Match each kitchen problem to the smartest ratio-reasoning strategy.</span><span class="lang-es" lang="es">Une cada problema de la cocina con la estrategia de razonamiento con razones más inteligente.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Say each term out loud, then talk through which match makes sense before choosing.</span><span class="lang-es" lang="es">👪 Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.</span></p>
         <div class="matching-pairs">
           
@@ -3194,19 +3240,19 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_1" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 2</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Two ratios are equivalent when one simplifies (or scales) exactly into the other.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Two ratios are equivalent when one simplifies (or scales) exactly into the other.","es":"Divide 6:9 entre 3 para obtener 2:3. Como ambas razones se simplifican a 2:3, son equivalentes.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Are the ratios 6:9 and 2:3 equivalent?</p>
+        <p class="problem-stem"><span class="lang-en">Are the ratios 6:9 and 2:3 equivalent?</span><span class="lang-es" lang="es">¿Son equivalentes las razones 6:9 y 2:3?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Divide 6:9 by 3 to get 2:3. Since both ratios simplify to 2:3, they are equivalent.">
+        <div class="mc-options" data-correct="0" data-explanation="Divide 6:9 by 3 to get 2:3. Since both ratios simplify to 2:3, they are equivalent." data-explanation-es="Divide 6:9 entre 3 para obtener 2:3. Como ambas razones se simplifican a 2:3, son equivalentes.">
           
             <label class="mc-option-label" id="label_q_1_0">
               <input type="radio" name="q_1" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Yes, both simplify to 2:3</span>
+              <span class="choice-text"><span class="lang-en">Yes, both simplify to 2:3</span><span class="lang-es" lang="es">Sí, las dos se simplifican a 2:3</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_1_1">
@@ -3218,13 +3264,13 @@ header.packet h1::after{
             <label class="mc-option-label" id="label_q_1_2">
               <input type="radio" name="q_1" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Yes, because 6 + 9 = 15</span>
+              <span class="choice-text"><span class="lang-en">Yes, because 6 + 9 = 15</span><span class="lang-es" lang="es">Sí, porque 6 + 9 = 15</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_1_3">
               <input type="radio" name="q_1" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">No, because 9 - 6 ≠ 3 - 2</span>
+              <span class="choice-text"><span class="lang-en">No, because 9 - 6 ≠ 3 - 2</span><span class="lang-es" lang="es">No, porque 9 - 6 ≠ 3 - 2</span></span>
             </label>
           
         </div>
@@ -3264,12 +3310,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_2" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 3</div>
-        <div class="problem-type-badge">DRAG SORT</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Multiplying each starting amount by its own factor shows where it belongs: 6 × 2 = 12 and 4 × 3 = 12 both land in the 12-cup group, while 5 × 3 = 15 and 3 × 5 = 15 both land in the 15-cup group. Different starting amounts can finish at the same total when the scale factors make up the difference.","es":"Multiplicar cada cantidad inicial por su propio factor muestra dónde pertenece: 6 × 2 = 12 y 4 × 3 = 12 caen en el grupo de 12 tazas, mientras que 5 × 3 = 15 y 3 × 5 = 15 caen en el grupo de 15 tazas. Cantidades iniciales distintas pueden terminar en el mismo total cuando los factores de escala compensan la diferencia.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Chef Reyes scales each recipe by the same factor. Sort each situation under the correct scaled supply amount.</p>
+        <p class="problem-stem"><span class="lang-en">Chef Reyes scales each recipe by the same factor. Sort each situation under the correct scaled supply amount.</span><span class="lang-es" lang="es">El chef Reyes ajusta cada receta por el mismo factor. Clasifica cada situación bajo la cantidad de suministros ajustada correcta.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
         
         <div class="drag-sort-workspace" id="dragsort_2">
@@ -3392,12 +3438,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_3" data-problem-type="open-response">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 1</div>
-        <div class="problem-type-badge">OPEN RESPONSE</div>
+        <div class="problem-type-badge"><span class="lang-en">OPEN RESPONSE</span><span class="lang-es" lang="es">RESPUESTA ABIERTA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"You need the SAME answer two ways: once using a scale factor, once using a unit rate.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"You need the SAME answer two ways: once using a scale factor, once using a unit rate.","es":"Ambos métodos llegan a 10 tazas. Factor de escala: 15 ÷ 6 = 2.5, y 4 × 2.5 = 10. Tasa por unidad: 4 ÷ 6 = 2/3 de taza por persona, y 2/3 × 15 = 10. Los dos métodos coinciden porque escalar una razón y usar su tasa por unidad describen exactamente la misma relación.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem"></p>
+        <p class="problem-stem"><span class="lang-en"></span><span class="lang-es" lang="es">Una receta alcanza para 6 personas y usa 4 tazas de arroz. Necesitas servir a 15 personas. Muestra dos métodos distintos para hallar cuánto arroz necesitas: (1) usando un factor de escala y (2) usando una tasa por unidad.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 A complete sentence with math vocabulary is the goal — not a perfect paragraph.</span><span class="lang-es" lang="es">👪 Una oración completa con vocabulario matemático es la meta — no un párrafo perfecto.</span></p>
         
         
@@ -3456,14 +3502,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_4" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 2</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Look at the bottoms of the fractions first: the 7 became 28.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Look at the bottoms of the fractions first: the 7 became 28.","es":"Factor de escala: 28 ÷ 7 = 4. Multiplica: 3 × 4 = 12. Entonces x = 12.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A chef uses the proportion 3/7 = x/28 to scale a recipe. What is x?</p>
+        <p class="problem-stem"><span class="lang-en">A chef uses the proportion 3/7 = x/28 to scale a recipe. What is x?</span><span class="lang-es" lang="es">Un chef usa la proporción 3/7 = x/28 para ajustar una receta. ¿Cuánto vale x?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Scale factor: 28 ÷ 7 = 4. Multiply: 3 × 4 = 12. So x = 12.">
+        <div class="mc-options" data-correct="0" data-explanation="Scale factor: 28 ÷ 7 = 4. Multiply: 3 × 4 = 12. So x = 12." data-explanation-es="Factor de escala: 28 ÷ 7 = 4. Multiplica: 3 × 4 = 12. Entonces x = 12.">
           
             <label class="mc-option-label" id="label_q_4_0">
               <input type="radio" name="q_4" value="0" onchange="saveState(); updateProgress();">
@@ -3526,37 +3572,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_5" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 3</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Scale factor: 9 cups divided by 3 cups = 3. Multiply the eggs by the same factor: 2 x 3 = 6 eggs.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Equivalent ratios keep the same relationship between eggs and flour, no matter how much dough you make.","es":"Las razones equivalentes mantienen la misma relación entre huevos y harina, sin importar cuánta masa hagas.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Chef Reyes&#039;s pasta dough uses 2 eggs for every 3 cups of flour. For a banquet, the kitchen mixes 9 cups of flour. How many eggs are needed to keep the same ratio?</p>
+        <p class="problem-stem"><span class="lang-en">Chef Reyes&#039;s pasta dough uses 2 eggs for every 3 cups of flour. For a banquet, the kitchen mixes 9 cups of flour. How many eggs are needed to keep the same ratio?</span><span class="lang-es" lang="es">La masa de pasta del chef Reyes usa 2 huevos por cada 3 tazas de harina. Para un banquete, la cocina mezcla 9 tazas de harina. ¿Cuántos huevos se necesitan para mantener la misma razón?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Scale factor: 9 cups divided by 3 cups = 3. Multiply the eggs by the same factor: 2 x 3 = 6 eggs.">
+        <div class="mc-options" data-correct="0" data-explanation="Scale factor: 9 cups divided by 3 cups = 3. Multiply the eggs by the same factor: 2 x 3 = 6 eggs." data-explanation-es="Factor de escala: 9 tazas dividido entre 3 tazas = 3. Multiplica los huevos por el mismo factor: 2 x 3 = 6 huevos.">
           
             <label class="mc-option-label" id="label_q_5_0">
               <input type="radio" name="q_5" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">6 eggs</span>
+              <span class="choice-text"><span class="lang-en">6 eggs</span><span class="lang-es" lang="es">6 huevos</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_5_1">
               <input type="radio" name="q_5" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">5 eggs</span>
+              <span class="choice-text"><span class="lang-en">5 eggs</span><span class="lang-es" lang="es">5 huevos</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_5_2">
               <input type="radio" name="q_5" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">8 eggs</span>
+              <span class="choice-text"><span class="lang-en">8 eggs</span><span class="lang-es" lang="es">8 huevos</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_5_3">
               <input type="radio" name="q_5" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">4 eggs</span>
+              <span class="choice-text"><span class="lang-en">4 eggs</span><span class="lang-es" lang="es">4 huevos</span></span>
             </label>
           
         </div>
@@ -3607,37 +3653,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_6" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 1</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Scale factor: 20 minutes divided by 5 minutes = 4. Multiply the dishes by 4: 3 x 4 = 12 dishes.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Working &#39;at the same rate&#39; means the ratio of dishes to minutes does not change.","es":"Trabajar &#39;al mismo ritmo&#39; significa que la razón entre platos y minutos no cambia.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">During a cooking-team relay, a chef plates 3 finished dishes for every 5 minutes she works. At the same rate, how many dishes will she plate in 20 minutes?</p>
+        <p class="problem-stem"><span class="lang-en">During a cooking-team relay, a chef plates 3 finished dishes for every 5 minutes she works. At the same rate, how many dishes will she plate in 20 minutes?</span><span class="lang-es" lang="es">Durante un relevo de equipos de cocina, una chef emplata 3 platos terminados por cada 5 minutos que trabaja. Al mismo ritmo, ¿cuántos platos emplatará en 20 minutos?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Scale factor: 20 minutes divided by 5 minutes = 4. Multiply the dishes by 4: 3 x 4 = 12 dishes.">
+        <div class="mc-options" data-correct="0" data-explanation="Scale factor: 20 minutes divided by 5 minutes = 4. Multiply the dishes by 4: 3 x 4 = 12 dishes." data-explanation-es="Factor de escala: 20 minutos dividido entre 5 minutos = 4. Multiplica los platos por 4: 3 x 4 = 12 platos.">
           
             <label class="mc-option-label" id="label_q_6_0">
               <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">12 dishes</span>
+              <span class="choice-text"><span class="lang-en">12 dishes</span><span class="lang-es" lang="es">12 platillos</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_6_1">
               <input type="radio" name="q_6" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">10 dishes</span>
+              <span class="choice-text"><span class="lang-en">10 dishes</span><span class="lang-es" lang="es">10 platillos</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_6_2">
               <input type="radio" name="q_6" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">15 dishes</span>
+              <span class="choice-text"><span class="lang-en">15 dishes</span><span class="lang-es" lang="es">15 platillos</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_6_3">
               <input type="radio" name="q_6" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">8 dishes</span>
+              <span class="choice-text"><span class="lang-en">8 dishes</span><span class="lang-es" lang="es">8 platillos</span></span>
             </label>
           
         </div>
@@ -3677,14 +3723,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_7" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 2</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Look at the denominators first: the 5 grew into 20.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Look at the denominators first: the 5 grew into 20.","es":"Factor de escala: 20 ÷ 5 = 4. Multiplica: 2 × 4 = 8. Entonces x = 8.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Solve the proportion: 2/5 = x/20. What is x?</p>
+        <p class="problem-stem"><span class="lang-en">Solve the proportion: 2/5 = x/20. What is x?</span><span class="lang-es" lang="es">Resuelve la proporción: 2/5 = x/20. ¿Cuánto vale x?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Scale factor: 20 ÷ 5 = 4. Multiply: 2 × 4 = 8. So x = 8.">
+        <div class="mc-options" data-correct="0" data-explanation="Scale factor: 20 ÷ 5 = 4. Multiply: 2 × 4 = 8. So x = 8." data-explanation-es="Factor de escala: 20 ÷ 5 = 4. Multiplica: 2 × 4 = 8. Entonces x = 8.">
           
             <label class="mc-option-label" id="label_q_7_0">
               <input type="radio" name="q_7" value="0" onchange="saveState(); updateProgress();">
@@ -3747,12 +3793,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_8" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 3</div>
-        <div class="problem-type-badge">FILL TABLE</div>
+        <div class="problem-type-badge"><span class="lang-en">FILL TABLE</span><span class="lang-es" lang="es">COMPLETAR LA TABLA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Row 1 is the base: 8 servings need 3 cups of flour. The other rows are multiples of 8 servings.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Row 1 is the base: 8 servings need 3 cups of flour. The other rows are multiples of 8 servings.","es":"Cada fila tiene que mantener las mismas 3 tazas de harina por cada 8 porciones. 16 porciones son 16 ÷ 8 = 2 veces la receta base, así que la harina se duplica a 3 × 2 = 6 tazas, y 24 porciones son 3 veces la base, así que la harina llega a 3 × 3 = 9 tazas.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A recipe uses 3 cups of flour for every 8 servings. Complete the table.</p>
+        <p class="problem-stem"><span class="lang-en">A recipe uses 3 cups of flour for every 8 servings. Complete the table.</span><span class="lang-es" lang="es">Una receta usa 3 tazas de harina por cada 8 porciones. Completa la tabla.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
         <div class="table-responsive">
           <table class="fill-table">
@@ -3838,12 +3884,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_9" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 4</div>
-        <div class="problem-type-badge">FILL TABLE</div>
+        <div class="problem-type-badge"><span class="lang-en">FILL TABLE</span><span class="lang-es" lang="es">COMPLETAR LA TABLA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The first row is the base recipe: 8 servings uses 5 cups tomatoes and 3 cups mozzarella.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The first row is the base recipe: 8 servings uses 5 cups tomatoes and 3 cups mozzarella.","es":"El factor de escala de cada fila es porciones ÷ 8, y los dos ingredientes se multiplican por él: ×2 da 10 tazas de tomate y 6 de mozzarella, ×5 da 25 y 15, y ×15 da 75 y 45. Cada fila completada se simplifica de nuevo a la razón original 5 : 3.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Chef Reyes&#039;s appetizer uses 5 cups of tomatoes for every 3 cups of mozzarella. Scale the recipe for different group sizes.</p>
+        <p class="problem-stem"><span class="lang-en">Chef Reyes&#039;s appetizer uses 5 cups of tomatoes for every 3 cups of mozzarella. Scale the recipe for different group sizes.</span><span class="lang-es" lang="es">La entrada del chef Reyes usa 5 tazas de tomate por cada 3 tazas de mozzarella. Ajusta la receta para grupos de distintos tamaños.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
         <div class="table-responsive">
           <table class="fill-table">
@@ -3981,12 +4027,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_10" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 5</div>
-        <div class="problem-type-badge">DRAG SORT</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"In a correct setup, matching things stay in matching spots: cups with cups, servings with servings.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"In a correct setup, matching things stay in matching spots: cups with cups, servings with servings.","es":"Una proporción está bien planteada cuando el mismo tipo de cantidad ocupa la misma posición en los dos lados. 4/6 = x/18 pone tazas sobre porciones en ambos lados y 6/4 = 18/x pone porciones sobre tazas en ambos lados, pero 4/18 = x/6 y 6/18 = x/4 emparejan 4 tazas con 18 porciones, así que las etiquetas ya no coinciden a través del signo igual.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">For each proportion, sort whether it is set up correctly or incorrectly to solve &#039;4 cups for 6 servings = ? cups for 18 servings&#039;.</p>
+        <p class="problem-stem"><span class="lang-en">For each proportion, sort whether it is set up correctly or incorrectly to solve &#039;4 cups for 6 servings = ? cups for 18 servings&#039;.</span><span class="lang-es" lang="es">Para cada proporción, clasifica si está planteada correcta o incorrectamente para resolver &#039;4 tazas para 6 porciones = ? tazas para 18 porciones&#039;.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
         <div class="family-hint-box"><p>💡 In a correct setup, matching things stay in matching spots: cups with cups, servings with servings.</p><p>💡 Check each pair: if cups sit on top on the left side, cups must sit on top on the right side too — same for servings-first.</p><p>💡 Test &#039;4/6 = x/18&#039;: the left has cups over servings (4 over 6). Does the right also put cups (x) over servings (18)?</p></div>
         <div class="drag-sort-workspace" id="dragsort_10">
@@ -4093,14 +4139,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_11" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 6</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The servings jumped from 10 to 30 — the broth must grow by the same factor.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The servings jumped from 10 to 30 — the broth must grow by the same factor.","es":"Factor de escala: 30 ÷ 10 = 3. Multiplica el caldo por 3: 4 × 3 = 12 tazas.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A recipe uses 4 cups of broth for every 10 servings. How many cups of broth are needed for 30 servings?</p>
+        <p class="problem-stem"><span class="lang-en">A recipe uses 4 cups of broth for every 10 servings. How many cups of broth are needed for 30 servings?</span><span class="lang-es" lang="es">Una receta usa 4 tazas de caldo por cada 10 porciones. ¿Cuántas tazas de caldo se necesitan para 30 porciones?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Scale factor: 30 ÷ 10 = 3. Multiply broth by 3: 4 × 3 = 12 cups.">
+        <div class="mc-options" data-correct="0" data-explanation="Scale factor: 30 ÷ 10 = 3. Multiply broth by 3: 4 × 3 = 12 cups." data-explanation-es="Factor de escala: 30 ÷ 10 = 3. Multiplica el caldo por 3: 4 × 3 = 12 tazas.">
           
             <label class="mc-option-label" id="label_q_11_0">
               <input type="radio" name="q_11" value="0" onchange="saveState(); updateProgress();">
@@ -4163,14 +4209,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_12" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 7</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"7 pounds isn&#39;t a neat multiple of 3 pounds, so find the price of ONE pound first.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"7 pounds isn&#39;t a neat multiple of 3 pounds, so find the price of ONE pound first.","es":"Tasa por unidad: $6 ÷ 3 = $2 por libra. Para 7 libras: $2 × 7 = $14.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">If 3 pounds of apples cost $6, how much do 7 pounds cost?</p>
+        <p class="problem-stem"><span class="lang-en">If 3 pounds of apples cost $6, how much do 7 pounds cost?</span><span class="lang-es" lang="es">Si 3 libras de manzanas cuestan $6, ¿cuánto cuestan 7 libras?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Unit rate: $6 ÷ 3 = $2 per pound. For 7 pounds: $2 × 7 = $14.">
+        <div class="mc-options" data-correct="0" data-explanation="Unit rate: $6 ÷ 3 = $2 per pound. For 7 pounds: $2 × 7 = $14." data-explanation-es="Tasa por unidad: $6 ÷ 3 = $2 por libra. Para 7 libras: $2 × 7 = $14.">
           
             <label class="mc-option-label" id="label_q_12_0">
               <input type="radio" name="q_12" value="0" onchange="saveState(); updateProgress();">
@@ -4233,37 +4279,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_13" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 8</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Scale factor: 18 servings divided by 6 servings = 3. Multiply the tomatoes by 3: 4 x 3 = 12 cups.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The ratio of tomatoes to servings has to stay the same as the batch grows.","es":"La razón entre tomates y porciones debe seguir igual aunque la tanda crezca.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A marinara recipe uses 4 cups of tomatoes for every 6 servings. The chef needs 18 servings. How many cups of tomatoes should she use?</p>
+        <p class="problem-stem"><span class="lang-en">A marinara recipe uses 4 cups of tomatoes for every 6 servings. The chef needs 18 servings. How many cups of tomatoes should she use?</span><span class="lang-es" lang="es">Una receta de salsa marinara usa 4 tazas de tomates por cada 6 porciones. La chef necesita 18 porciones. ¿Cuántas tazas de tomates debe usar?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Scale factor: 18 servings divided by 6 servings = 3. Multiply the tomatoes by 3: 4 x 3 = 12 cups.">
+        <div class="mc-options" data-correct="0" data-explanation="Scale factor: 18 servings divided by 6 servings = 3. Multiply the tomatoes by 3: 4 x 3 = 12 cups." data-explanation-es="Factor de escala: 18 porciones dividido entre 6 porciones = 3. Multiplica los tomates por 3: 4 x 3 = 12 tazas.">
           
             <label class="mc-option-label" id="label_q_13_0">
               <input type="radio" name="q_13" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">12 cups</span>
+              <span class="choice-text"><span class="lang-en">12 cups</span><span class="lang-es" lang="es">12 tazas</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_13_1">
               <input type="radio" name="q_13" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">10 cups</span>
+              <span class="choice-text"><span class="lang-en">10 cups</span><span class="lang-es" lang="es">10 tazas</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_13_2">
               <input type="radio" name="q_13" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">16 cups</span>
+              <span class="choice-text"><span class="lang-en">16 cups</span><span class="lang-es" lang="es">16 tazas</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_13_3">
               <input type="radio" name="q_13" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">9 cups</span>
+              <span class="choice-text"><span class="lang-en">9 cups</span><span class="lang-es" lang="es">9 tazas</span></span>
             </label>
           
         </div>
@@ -4571,8 +4617,8 @@ header.packet h1::after{
 <script>
 window.LESSON_ID = "3-6";
 window.LESSON_TITLE = "Use Ratio Reasoning";
-window.__HW_VOCAB__ = [{"term":"Proportion","termEs":"Proporción","def":"A math sentence saying two ratios are equal.","defEs":"Una oración matemática que dice que dos razones son iguales.","example":"2/3 = 8/12","img":"/assets/vocab-images/proportion.svg","imgAlt":"Illustration of Proportion: A math sentence saying two ratios are equal."},{"term":"Cross-multiply","termEs":"Multiplicación cruzada","def":"Multiplying across two ratios to check if they are equal.","defEs":"Multiplicar en cruz dos razones para ver si son iguales.","example":"2/3 = 8/12 → 2×12 = 24 and 3×8 = 24 ✓","img":"/assets/vocab-images/proportion.svg","imgAlt":"Illustration of Cross-multiply: Multiplying across two ratios to check if they are equal."},{"term":"Scale","termEs":"Escalar","def":"To multiply or divide both parts of a ratio by the same number.","defEs":"Multiplicar o dividir ambas partes de una razón por el mismo número.","example":"5:8 × 3 → 15:24","img":"/assets/vocab-images/scale-factor.svg","imgAlt":"Illustration of Scale: To multiply or divide both parts of a ratio by the same number."},{"term":"Equivalent","termEs":"Equivalente","def":"Having the same value.","defEs":"Tener el mismo valor.","example":"1/2 and 3/6 and 5/10 all equal the same amount — half","img":"/assets/vocab-images/fraction.svg","imgAlt":"Illustration of Equivalent: Having the same value."},{"term":"Unit rate","termEs":"Tasa unitaria","def":"A rate for just 1 of something. You find it by dividing.","defEs":"Una tasa para solo 1 de algo. La encuentras al dividir.","example":"60 miles in 3 hours → 20 miles per 1 hour","img":"/assets/vocab-images/unit-rate.svg","imgAlt":"Illustration of Unit rate: A rate for just 1 of something. You find it by dividing."}];
-window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Cross-multiply|Proportion|Equivalent|Unit rate|Scale)(?:es|s)?\\b","lookup":{"proportion":0,"cross-multiply":1,"scale":2,"equivalent":3,"unit rate":4}};
+window.__HW_VOCAB__ = [{"term":"Ratio Reasoning","termEs":"Razonamiento con razones","def":"Use equivalent ratios, tables, graphs, or unit rates to solve a problem.","defEs":"Usar razones equivalentes, tablas, gráficas o tasas unitarias para resolver un problema.","example":"If 3 notebooks cost $6, then 5 notebooks cost $10.","img":"","imgAlt":""},{"term":"Proportion","termEs":"Proporción","def":"A math sentence saying two ratios are equal.","defEs":"Una oración matemática que dice que dos razones son iguales.","example":"2/3 = 8/12","img":"/assets/vocab-images/proportion.svg","imgAlt":"Illustration of Proportion: A math sentence saying two ratios are equal."},{"term":"Cross-multiply","termEs":"Multiplicación cruzada","def":"Multiplying across two ratios to check if they are equal.","defEs":"Multiplicar en cruz dos razones para ver si son iguales.","example":"2/3 = 8/12 → 2×12 = 24 and 3×8 = 24 ✓","img":"/assets/vocab-images/proportion.svg","imgAlt":"Illustration of Cross-multiply: Multiplying across two ratios to check if they are equal."},{"term":"Scale","termEs":"Escalar","def":"To multiply or divide both parts of a ratio by the same number.","defEs":"Multiplicar o dividir ambas partes de una razón por el mismo número.","example":"5:8 × 3 → 15:24","img":"/assets/vocab-images/scale-factor.svg","imgAlt":"Illustration of Scale: To multiply or divide both parts of a ratio by the same number."},{"term":"Equivalent","termEs":"Equivalente","def":"Having the same value.","defEs":"Tener el mismo valor.","example":"1/2 and 3/6 and 5/10 all equal the same amount — half","img":"/assets/vocab-images/fraction.svg","imgAlt":"Illustration of Equivalent: Having the same value."},{"term":"Unit rate","termEs":"Tasa unitaria","def":"A rate for just 1 of something. You find it by dividing.","defEs":"Una tasa para solo 1 de algo. La encuentras al dividir.","example":"60 miles in 3 hours → 20 miles per 1 hour","img":"/assets/vocab-images/unit-rate.svg","imgAlt":"Illustration of Unit rate: A rate for just 1 of something. You find it by dividing."}];
+window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Ratio Reasoning|Cross-multiply|Proportion|Equivalent|Unit rate|Scale)(?:es|s)?\\b","lookup":{"ratio reasoning":0,"proportion":1,"cross-multiply":2,"scale":3,"equivalent":4,"unit rate":5}};
 
 function syncHomeworkChromeHeights() {
   const status = document.querySelector('.bottom-status-bar');
@@ -4706,7 +4752,33 @@ function saveParentSignoff() {
   try {
     localStorage.setItem('hw_parent_signoff_' + lessonId, JSON.stringify(payload));
   } catch(e) {}
-  
+
+  /* localStorage stays the source of truth for what this page displays, but a
+     sign-off the teacher never sees is not a sign-off. Fire-and-forget POST:
+     the endpoint always answers 204, and any failure here is swallowed so a
+     family on a bad connection still gets their confirmation. */
+  try {
+    var signoffBody = JSON.stringify({
+      lessonId: lessonId,
+      lessonTitle: lessonTitle,
+      parentName: nameVal,
+      note: noteVal,
+      date: signoffDate,
+      studentName: (window.NeftSaveResume && window.NeftSaveResume.studentName) || '',
+      section: (window.NeftSaveResume && window.NeftSaveResume.section) || ''
+    });
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('/api/progress/family-signoff', new Blob([signoffBody], { type: 'application/json' }));
+    } else {
+      fetch('/api/progress/family-signoff', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: signoffBody,
+        keepalive: true
+      }).catch(function() {});
+    }
+  } catch(e) {}
+
   updateSignoffUI(payload);
 }
 
@@ -5643,6 +5715,15 @@ function playCheckSound(isCorrect) {
   }
 }
 
+/* Feedback text is built in JS, so it cannot use the .lang-en/.lang-es span
+   pair the rest of the page toggles. Pick the language the family is actually
+   reading; fall back to English whenever no Spanish was authored. */
+function pickLangText(en, es) {
+  const esText = (es || "").trim();
+  if (esText && document.body.classList.contains("lang-mode-es")) return esText;
+  return en || "";
+}
+
 function checkProblem(idx, options) {
   const silent = options && options.silent;
   const section = document.getElementById("problem_" + idx);
@@ -5660,7 +5741,7 @@ function checkProblem(idx, options) {
       const container = section.querySelector(".mc-options");
       const selected = container.querySelector("input[type='radio']:checked");
       const correctIdx = container.dataset.correct;
-      const explanation = container.dataset.explanation;
+      const explanation = pickLangText(container.dataset.explanation, container.dataset.explanationEs);
       
       // Reset radio option styles
       const labels = container.querySelectorAll(".mc-option-label");
@@ -5888,7 +5969,7 @@ function checkProblem(idx, options) {
   if (!feedbackMessage) {
     if (type === "multiple-choice") {
       const container = section.querySelector(".mc-options");
-      const explanation = container?.dataset.explanation || "";
+      const explanation = pickLangText(container?.dataset.explanation, container?.dataset.explanationEs);
       if (isProblemCorrect) {
         feedbackMessage = explanation
           ? "Correct! " + explanation

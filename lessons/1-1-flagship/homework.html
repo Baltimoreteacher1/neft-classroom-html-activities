@@ -1604,6 +1604,14 @@ body.obj-popup-open { overflow: hidden; }
 .section-vocab { border-left: 4px solid var(--coral); }
 .section-stuck { border-left: 4px solid #9b59b6; }
 .section-quick-intro { border-left: 4px solid var(--success); }
+.quick-check-time {
+  background: var(--amber-light);
+  border: 1px solid var(--amber);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 0 0 12px;
+  font-size: 15px;
+}
 .section-celebrate {
   border-left: 4px solid var(--amber);
   background: linear-gradient(180deg, var(--amber-light), var(--white));
@@ -1851,6 +1859,16 @@ body.obj-popup-open { overflow: hidden; }
   padding: 2px;
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x proximity;
+}
+/* On a phone the 10 tabs are ~738px wide in a ~381px viewport, so half of them
+   (Help, More, Done) sit off-screen with nothing to suggest they exist. Fade the
+   trailing edge so the strip reads as scrollable. Only below 700px, where the
+   overflow is guaranteed — a permanent fade on desktop would just look broken. */
+@media (max-width: 700px) {
+  .homework-tab-bar {
+    -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+    mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+  }
 }
 .homework-tab-btn {
   flex: 0 0 auto;
@@ -2372,6 +2390,12 @@ body.lang-mode-es .bilingual-grid {
 @media print {
   .homework-tab-chrome, .homework-tab-bar, .bottom-status-bar, .help-modal-overlay, .print-all-btn, .parent-signoff-container { display: none !important; }
   .tab-panel-inner[hidden] { display: block !important; page-break-inside: avoid; }
+  /* Printing un-hides every panel, but these three are screen-only: an embedded
+     arcade iframe, a live game, and a link-out. On paper they were blank or
+     meaningless pages in the middle of the packet. */
+  [data-tab-panel="arcade"],
+  [data-tab-panel="play"],
+  [data-tab-panel="workbench"] { display: none !important; }
   body { padding-bottom: 0; }
   
   .print-only-certificate.is-signed {
@@ -2448,7 +2472,7 @@ body.lang-mode-es .bilingual-grid {
 
 
 .family-visual-lab{--lab-ink:#173a5e;--lab-teal:#0b8f87;--lab-coral:#ff775f;--lab-sun:#f6c94c;margin:26px 0;padding:clamp(18px,3vw,30px);border:3px solid var(--lab-ink);border-radius:28px;background:#fffdf5;box-shadow:8px 8px 0 var(--lab-ink);color:var(--lab-ink)}
-.visual-lab-heading{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(260px,1.15fr);gap:20px;align-items:end;margin-bottom:20px}.visual-lab-heading h2{margin:6px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.05}.visual-lab-heading p{margin:0;padding:14px 16px;border-left:5px solid var(--lab-sun);background:#fff8d9;font-size:17px;font-weight:700;line-height:1.45}.visual-lab-kicker{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--lab-ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em}
+.visual-lab-heading{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(260px,1.15fr);gap:20px;align-items:end;margin-bottom:20px}.visual-lab-heading h2{margin:6px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.05}.visual-lab-heading p{margin:0;padding:14px 16px;border-left:5px solid var(--lab-sun);background:#fff8d9;font-size:17px;font-weight:700;line-height:1.45}.visual-lab-kicker{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--lab-ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em}.visual-lab-kicker .lang-en,.visual-lab-kicker .lang-es{color:inherit}
 .visual-lab-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(230px,.8fr);gap:18px;align-items:stretch}.visual-lab-canvas-wrap{min-width:0;padding:12px;border-radius:22px;background-color:#eef8f4;background-image:linear-gradient(#cee3dc 1px,transparent 1px),linear-gradient(90deg,#cee3dc 1px,transparent 1px);background-size:24px 24px;border:2px solid var(--lab-ink)}.visual-lab-stage{display:grid;place-items:center;min-height:280px}.visual-lab-stage svg{display:block;width:100%;max-height:320px;overflow:visible}.visual-lab-status{min-height:26px;margin:5px 8px 0;padding:7px 10px;border-radius:10px;background:#fff;font-weight:800;text-align:center}
 .visual-lab-controls{display:flex;flex-direction:column;gap:14px;padding:18px;border-radius:22px;background:var(--lab-ink);color:#fff}.visual-lab-control{display:grid;gap:7px;font-weight:800}.visual-lab-control-label{display:flex;justify-content:space-between;gap:10px;align-items:center}.visual-lab-control output{min-width:38px;padding:3px 8px;border-radius:8px;background:var(--lab-sun);color:#102f4e;text-align:center;font-size:18px}.visual-lab-control input[type=range]{width:100%;min-height:28px;accent-color:var(--lab-coral);cursor:pointer}.visual-lab-control input[type=range]:focus-visible{outline:4px solid #fff;outline-offset:4px}.visual-lab-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:auto}.visual-lab-button{min-height:48px;border:2px solid #fff;border-radius:13px;background:var(--lab-coral);color:#182f48;font:inherit;font-weight:800;cursor:pointer}.visual-lab-button-quiet{background:#fff}.visual-lab-button:hover{transform:translateY(-2px)}.visual-lab-button:focus-visible{outline:4px solid var(--lab-sun);outline-offset:3px}
 .visual-representation-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:18px}.visual-representation-card{position:relative;min-height:150px;padding:18px 16px 15px;border:2px solid var(--lab-ink);border-radius:18px;background:#fff}.visual-representation-card h3{margin:0 0 10px;padding-left:30px;font-size:17px}.visual-representation-card p{margin:7px 0;font-size:16px;line-height:1.4}.representation-number{position:absolute;top:12px;left:12px;display:grid;width:27px;height:27px;place-items:center;border-radius:50%;background:var(--lab-ink);color:#fff;font-weight:800}.visual-representation-model{background:#dff5ee}.visual-representation-math{background:#fff2c2}.visual-representation-words{background:#ffe4dd}.visual-representation-math [data-lab-equation]{font-size:clamp(22px,3vw,32px);font-weight:800;text-align:center}.mini-model{display:flex;flex-wrap:wrap;gap:7px;align-content:center;min-height:76px;padding:8px}.mini-dot{width:18px;height:18px;border:2px solid var(--lab-ink);border-radius:50%;background:var(--lab-teal)}.visual-representation-card details{margin-top:10px}.visual-representation-card summary{cursor:pointer;font-weight:800;text-decoration:underline}.visual-source-idea{font-size:13px!important;color:#344f69}
@@ -2731,12 +2755,12 @@ header.packet h1::after{
         <div class="bilingual-col lang-en">
           <span class="lang-label">English</span>
           <p class="learning-big">Break each shipment quantity down into its prime factors so the robots can sort the cargo into equal pods.</p>
-          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Prime number</li><li>Composite number</li><li>Prime factorization</li><li>Factor tree</li><li>Exponent</li></ul></div>
+          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Prime Factorization</li><li>Prime number</li><li>Composite number</li><li>Factor tree</li><li>Exponent</li></ul></div>
         </div>
         <div class="bilingual-col lang-es" lang="es">
           <span class="lang-label">Español</span>
           <p class="learning-big">Descomponer cada cantidad del envío en sus factores primos para que los robots puedan ordenar la carga en cápsulas iguales.</p>
-          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Número primo</li><li>Número compuesto</li><li>Factorización prima</li><li>Árbol de factores</li><li>Exponente</li></ul></div>
+          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Factorización prima</li><li>Número primo</li><li>Número compuesto</li><li>Árbol de factores</li><li>Exponente</li></ul></div>
         </div>
       </div>
     
@@ -2851,6 +2875,24 @@ header.packet h1::after{
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
                   <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/prime-factorization.svg" alt="Illustration of Prime Factorization: Writing a whole number as a product of only prime numbers." loading="lazy" width="72" height="72" />
+                  </div>
+                  <h3>Prime Factorization</h3>
+                  <p class="vocab-es" lang="es">Factorización prima</p>
+                  <div class="vocab-visual-hint">💡 36 = 2 × 2 × 3 × 3 = 2² × 3²</div>
+                  <div class="flip-prompt"><span class="lang-en">Tap</span><span class="lang-es" lang="es">Toca ➔</span></div>
+                </div>
+                <div class="vocab-card-back">
+                  <p class="vocab-def">Writing a whole number as a product of only prime numbers.</p>
+                  <p class="vocab-def-es" lang="es">Escribir un número entero como un producto de solo números primos.</p>
+                  <p class="vocab-back-visual">📌 36 = 2 × 2 × 3 × 3 = 2² × 3²</p>
+                </div>
+              </div>
+            </div>
+            <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+              <div class="vocab-card-inner">
+                <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
                     <img class="vocab-thumb" src="/assets/vocab-images/prime-number.svg" alt="Illustration of Prime number: A number bigger than 1 that you can only divide by 1 and itself." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Prime number</h3>
@@ -2880,24 +2922,6 @@ header.packet h1::after{
                   <p class="vocab-def">A number bigger than 1 that you can divide by more than just 1 and itself.</p>
                   <p class="vocab-def-es" lang="es">Un número mayor que 1 que se puede dividir entre más números, no solo 1 y sí mismo.</p>
                   <p class="vocab-back-visual">📌 12 = 1 × 12, 2 × 6, 3 × 4 — six factors, so 12 is composite</p>
-                </div>
-              </div>
-            </div>
-            <div class="vocab-card" onclick="this.classList.toggle('flipped')">
-              <div class="vocab-card-inner">
-                <div class="vocab-card-front">
-                  <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/prime-factorization.svg" alt="Illustration of Prime factorization: Writing a number as prime numbers multiplied together." loading="lazy" width="72" height="72" />
-                  </div>
-                  <h3>Prime factorization</h3>
-                  <p class="vocab-es" lang="es">Factorización prima</p>
-                  <div class="vocab-visual-hint">💡 36 = 2 × 2 × 3 × 3 = 2² × 3²</div>
-                  <div class="flip-prompt"><span class="lang-en">Tap</span><span class="lang-es" lang="es">Toca ➔</span></div>
-                </div>
-                <div class="vocab-card-back">
-                  <p class="vocab-def">Writing a number as prime numbers multiplied together.</p>
-                  <p class="vocab-def-es" lang="es">Escribir un número como números primos multiplicados.</p>
-                  <p class="vocab-back-visual">📌 36 = 2 × 2 × 3 × 3 = 2² × 3²</p>
                 </div>
               </div>
             </div>
@@ -3059,6 +3083,10 @@ header.packet h1::after{
       
     
       <h2 class="section-title">✅ <span class="lang-en">Quick check</span><span class="lang-es" lang="es">Repaso rápido</span></h2>
+      <p class="quick-check-time bilingual-block">
+        <span class="lang-en">⏱️ Plan on about <strong>15–20 minutes</strong> for the 6 problems below. The extra practice at the bottom is optional.</span>
+        <span class="lang-es" lang="es">⏱️ Calculen unos <strong>15–20 minutos</strong> para los 6 problemas de abajo. La práctica extra al final es opcional.</span>
+      </p>
       <p class="bilingual-block">
         <span class="lang-en">A few problems to practice together. Each one has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong>, and a <strong>space to show your work</strong>. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
         <span class="lang-es" lang="es">Unos problemas para practicar juntos. Cada uno tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para mostrar el trabajo</strong>. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
@@ -3083,37 +3111,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_0" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 1</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"A prime number has exactly two factors: 1 and itself. A composite number has more than two factors.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Lock 1 — Access clue: A whole number greater than 1 with exactly two factors (1 and itself) is called what?</p>
+        <p class="problem-stem"><span class="lang-en">Lock 1 — Access clue: A whole number greater than 1 with exactly two factors (1 and itself) is called what?</span><span class="lang-es" lang="es">Cerradura 1 — Pista de acceso: ¿Cómo se llama un número entero mayor que 1 que tiene exactamente dos factores (el 1 y él mismo)?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="A prime number has exactly two factors: 1 and itself. A composite number has more than two factors.">
           
             <label class="mc-option-label" id="label_q_0_0">
               <input type="radio" name="q_0" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">A prime number</span>
+              <span class="choice-text"><span class="lang-en">A prime number</span><span class="lang-es" lang="es">Un número primo</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_0_1">
               <input type="radio" name="q_0" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">A composite number</span>
+              <span class="choice-text"><span class="lang-en">A composite number</span><span class="lang-es" lang="es">Un número compuesto</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_0_2">
               <input type="radio" name="q_0" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">A factor tree</span>
+              <span class="choice-text"><span class="lang-en">A factor tree</span><span class="lang-es" lang="es">Un árbol de factores</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_0_3">
               <input type="radio" name="q_0" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">An exponent</span>
+              <span class="choice-text"><span class="lang-en">An exponent</span><span class="lang-es" lang="es">Un exponente</span></span>
             </label>
           
         </div>
@@ -3153,12 +3181,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_1" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 2</div>
-        <div class="problem-type-badge">DRAG SORT</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"&#39;Complete&#39; means every single factor shown is prime. Even one composite factor makes the whole expression NOT complete.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Sort each expression: is it a COMPLETE prime factorization, or does it still have composite factors?</p>
+        <p class="problem-stem"><span class="lang-en">Sort each expression: is it a COMPLETE prime factorization, or does it still have composite factors?</span><span class="lang-es" lang="es">Clasifica cada expresión: ¿es una factorización prima COMPLETA o todavía tiene factores compuestos?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
         <div class="family-hint-box"><p>💡 &#039;Complete&#039; means every single factor shown is prime. Even one composite factor makes the whole expression NOT complete.</p><p>💡 Scan each expression for numbers like 4, 6, or 8 — those are composite, so any expression containing them isn&#039;t complete.</p><p>💡 Take &#039;4 × 3 (for 12)&#039;: 4 = 2 × 2, so 4 is composite. That card goes in NOT Complete. Check each other card&#039;s factors the same way.</p></div>
         <div class="drag-sort-workspace" id="dragsort_1">
@@ -3295,12 +3323,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_2" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 3</div>
-        <div class="problem-type-badge">DRAG SORT</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each card already shows its factorization — your job is just to COUNT the primes, and repeats like 2 × 2 count as two.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Sort each number: can it be expressed as a product of exactly TWO prime factors, or does it need THREE or more?</p>
+        <p class="problem-stem"><span class="lang-en">Sort each number: can it be expressed as a product of exactly TWO prime factors, or does it need THREE or more?</span><span class="lang-es" lang="es">Clasifica cada número: ¿se puede expresar como un producto de exactamente DOS factores primos, o necesita TRES o más?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
         <div class="family-hint-box"><p>💡 Each card already shows its factorization — your job is just to COUNT the primes, and repeats like 2 × 2 count as two.</p><p>💡 Count every prime factor in the product, including duplicates. Exactly two primes is one group; three or more is the other.</p><p>💡 Take &#039;12 (= 2 × 2 × 3)&#039;: count the primes — 2, 2, 3 makes three factors, so 12 goes with Three or More. Count each card the same way.</p></div>
         <div class="drag-sort-workspace" id="dragsort_2">
@@ -3483,12 +3511,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_3" data-problem-type="open-response">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 1</div>
-        <div class="problem-type-badge">OPEN RESPONSE</div>
+        <div class="problem-type-badge"><span class="lang-en">OPEN RESPONSE</span><span class="lang-es" lang="es">RESPUESTA ABIERTA</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Re-read the task: pick ONE two-digit composite number (like 24, 36, or 40) and build TWO trees with different first splits.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Choose any two-digit composite number. Show TWO different factor trees that both lead to the same prime factorization. Explain why every composite number has only one prime factorization.</p>
+        <p class="problem-stem"><span class="lang-en">Choose any two-digit composite number. Show TWO different factor trees that both lead to the same prime factorization. Explain why every composite number has only one prime factorization.</span><span class="lang-es" lang="es">Escoge cualquier número compuesto de dos dígitos. Muestra DOS árboles de factores diferentes que lleguen a la misma factorización prima. Explica por qué cada número compuesto tiene una sola factorización prima.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 A complete sentence with math vocabulary is the goal — not a perfect paragraph.</span><span class="lang-es" lang="es">👪 Una oración completa con vocabulario matemático es la meta — no un párrafo perfecto.</span></p>
         
         
@@ -3553,37 +3581,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_4" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 2</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Notice the question isn&#39;t asking which START is right — it asks what happens when both finished trees are compared.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Two students found different factor trees for 60. Student A started with 2 × 30. Student B started with 6 × 10. Which statement is true?</p>
+        <p class="problem-stem"><span class="lang-en">Two students found different factor trees for 60. Student A started with 2 × 30. Student B started with 6 × 10. Which statement is true?</span><span class="lang-es" lang="es">Dos estudiantes hicieron árboles de factores diferentes para 60. El estudiante A empezó con 2 × 30. El estudiante B empezó con 6 × 10. ¿Cuál afirmación es verdadera?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="The Fundamental Theorem of Arithmetic says every composite number has exactly one prime factorization. No matter how you start the factor tree, you always end with 2 × 2 × 3 × 5.">
           
             <label class="mc-option-label" id="label_q_4_0">
               <input type="radio" name="q_4" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Both get the same prime factorization: 2 × 2 × 3 × 5</span>
+              <span class="choice-text"><span class="lang-en">Both get the same prime factorization: 2 × 2 × 3 × 5</span><span class="lang-es" lang="es">Los dos obtienen la misma factorización prima: 2 × 2 × 3 × 5</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_4_1">
               <input type="radio" name="q_4" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Only Student A gets the correct prime factorization</span>
+              <span class="choice-text"><span class="lang-en">Only Student A gets the correct prime factorization</span><span class="lang-es" lang="es">Solo el Estudiante A obtiene la factorización prima correcta</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_4_2">
               <input type="radio" name="q_4" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Only Student B gets the correct prime factorization</span>
+              <span class="choice-text"><span class="lang-en">Only Student B gets the correct prime factorization</span><span class="lang-es" lang="es">Solo el Estudiante B obtiene la factorización prima correcta</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_4_3">
               <input type="radio" name="q_4" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">They will get different prime factorizations</span>
+              <span class="choice-text"><span class="lang-en">They will get different prime factorizations</span><span class="lang-es" lang="es">Obtendrán factorizaciones primas diferentes</span></span>
             </label>
           
         </div>
@@ -3623,12 +3651,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_5" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 3</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"72 = 8 × 9 = (2 × 2 × 2) × (3 × 3) = 2 × 2 × 2 × 3 × 3. Every factor is prime.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Lock 2 — Build the factor tree for 72. What is its prime factorization?</p>
+        <p class="problem-stem"><span class="lang-en">Lock 2 — Build the factor tree for 72. What is its prime factorization?</span><span class="lang-es" lang="es">Cerradura 2 — Arma el árbol de factores del 72. ¿Cuál es su factorización prima?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="72 = 8 × 9 = (2 × 2 × 2) × (3 × 3) = 2 × 2 × 2 × 3 × 3. Every factor is prime.">
           
@@ -3704,12 +3732,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_6" data-problem-type="matching-game">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 1</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
+        <div class="problem-type-badge"><span class="lang-en">MATCHING GAME</span><span class="lang-es" lang="es">JUEGO DE PAREJAS</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Look at each number&#39;s last digit: ending in 0 or 5 means a factor of 5; an even number needs at least one 2.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Match each number to its prime factorization.</p>
+        <p class="problem-stem"><span class="lang-en">Match each number to its prime factorization.</span><span class="lang-es" lang="es">Une cada número con su factorización prima.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Say each term out loud, then talk through which match makes sense before choosing.</span><span class="lang-es" lang="es">👪 Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.</span></p>
         <div class="matching-pairs">
           
@@ -3802,12 +3830,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_7" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 2</div>
-        <div class="problem-type-badge">FILL TABLE</div>
+        <div class="problem-type-badge"><span class="lang-en">FILL TABLE</span><span class="lang-es" lang="es">COMPLETAR LA TABLA</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The First Split column starts each tree for you — your job is to keep splitting until every branch ends in a prime.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Build the factor tree. Write each number as a product of primes.</p>
+        <p class="problem-stem"><span class="lang-en">Build the factor tree. Write each number as a product of primes.</span><span class="lang-es" lang="es">Arma el árbol de factores. Escribe cada número como un producto de primos.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
         <div class="table-responsive">
           <table class="fill-table">
@@ -3921,12 +3949,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_8" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 3</div>
-        <div class="problem-type-badge">DRAG SORT</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Lock 4 — Scan each access code. Is it a COMPLETE prime factorization, or does it still contain a composite factor?</p>
+        <p class="problem-stem"><span class="lang-en">Lock 4 — Scan each access code. Is it a COMPLETE prime factorization, or does it still contain a composite factor?</span><span class="lang-es" lang="es">Cerradura 4 — Escanea cada código de acceso. ¿Es una factorización prima COMPLETA o todavía contiene un factor compuesto?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
         
         <div class="drag-sort-workspace" id="dragsort_8">
@@ -4063,12 +4091,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_9" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 4</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"84 = 4 × 21 = (2 × 2) × (3 × 7) = 2 × 2 × 3 × 7 = 2² × 3 × 7. The vault opens!","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Final Vault — The vault code is the prime factorization of 84 with all prime factors listed. Which code opens it?</p>
+        <p class="problem-stem"><span class="lang-en">Final Vault — The vault code is the prime factorization of 84 with all prime factors listed. Which code opens it?</span><span class="lang-es" lang="es">Bóveda final — El código de la bóveda es la factorización prima de 84 con todos sus factores primos. ¿Cuál código la abre?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="84 = 4 × 21 = (2 × 2) × (3 × 7) = 2 × 2 × 3 × 7 = 2² × 3 × 7. The vault opens!">
           
@@ -4133,12 +4161,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_10" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 5</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"A prime factorization uses ONLY prime numbers. Look at each choice: are ALL of its factors prime?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">What is the prime factorization of 30?</p>
+        <p class="problem-stem"><span class="lang-en">What is the prime factorization of 30?</span><span class="lang-es" lang="es">¿Cuál es la factorización prima de 30?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="30 = 2 × 15 = 2 × 3 × 5. All three factors (2, 3, 5) are prime, so 2 × 3 × 5 is the prime factorization.">
           
@@ -4203,12 +4231,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_11" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 6</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Check every factor in each choice — numbers like 9 and 6 are composite, so they can&#39;t appear in a prime factorization.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">What is the prime factorization of 18?</p>
+        <p class="problem-stem"><span class="lang-en">What is the prime factorization of 18?</span><span class="lang-es" lang="es">¿Cuál es la factorización prima de 18?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="18 = 2 × 9 = 2 × 3 × 3. Both 2 and 3 are prime, so 2 × 3 × 3 is the prime factorization.">
           
@@ -4273,12 +4301,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_12" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 7</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Re-read what &#39;prime&#39; means: exactly two factors, 1 and itself. Any extra factor makes a number composite.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Which of the following is a prime number?</p>
+        <p class="problem-stem"><span class="lang-en">Which of the following is a prime number?</span><span class="lang-es" lang="es">¿Cuál de los siguientes es un número primo?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="17 has exactly two factors: 1 and 17. 15 = 3 × 5, 21 = 3 × 7, and 9 = 3 × 3, so they are all composite.">
           
@@ -4343,12 +4371,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_13" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 8</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Composite means MORE than two factors. Ask for each number: can I split it into two smaller whole numbers?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Which of these numbers is composite?</p>
+        <p class="problem-stem"><span class="lang-en">Which of these numbers is composite?</span><span class="lang-es" lang="es">¿Cuál de estos números es compuesto?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="27 = 3 × 9 = 3 × 3 × 3, so it has more than two factors. 23, 29, and 31 are all prime.">
           
@@ -4674,8 +4702,8 @@ header.packet h1::after{
 <script>
 window.LESSON_ID = "1-1-flagship";
 window.LESSON_TITLE = "Prime Factorization";
-window.__HW_VOCAB__ = [{"term":"Prime number","termEs":"Número primo","def":"A number bigger than 1 that you can only divide by 1 and itself.","defEs":"Un número mayor que 1 que solo se puede dividir entre 1 y sí mismo.","example":"7 has only two factors: 1 × 7. So 7 is prime.","img":"/assets/vocab-images/prime-number.svg","imgAlt":"Illustration of Prime number: A number bigger than 1 that you can only divide by 1 and itself."},{"term":"Composite number","termEs":"Número compuesto","def":"A number bigger than 1 that you can divide by more than just 1 and itself.","defEs":"Un número mayor que 1 que se puede dividir entre más números, no solo 1 y sí mismo.","example":"12 = 1 × 12, 2 × 6, 3 × 4 — six factors, so 12 is composite","img":"/assets/vocab-images/composite-number.svg","imgAlt":"Illustration of Composite number: A number bigger than 1 that you can divide by more than just 1 and itself."},{"term":"Prime factorization","termEs":"Factorización prima","def":"Writing a number as prime numbers multiplied together.","defEs":"Escribir un número como números primos multiplicados.","example":"36 = 2 × 2 × 3 × 3 = 2² × 3²","img":"/assets/vocab-images/prime-factorization.svg","imgAlt":"Illustration of Prime factorization: Writing a number as prime numbers multiplied together."},{"term":"Factor tree","termEs":"Árbol de factores","def":"A picture that splits a number into its prime numbers, step by step.","defEs":"Un dibujo que separa un número en sus números primos, paso a paso.","example":"24 → 4 × 6 → (2 × 2) × (2 × 3) → 2 × 2 × 2 × 3","img":"/assets/vocab-images/prime-factorization.svg","imgAlt":"Illustration of Factor tree: A picture that splits a number into its prime numbers, step by step."},{"term":"Exponent","termEs":"Exponente","def":"A small number that tells how many times to multiply a number by itself.","defEs":"Un número pequeño que dice cuántas veces multiplicar un número por sí mismo.","example":"2³ means 2 × 2 × 2 = 8","img":"/assets/vocab-images/exponent.svg","imgAlt":"Illustration of Exponent: A small number that tells how many times to multiply a number by itself."}];
-window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Prime factorization|Composite number|Prime number|Factor tree|Composite|Exponent|Prime)(?:es|s)?\\b","lookup":{"prime number":0,"composite number":1,"prime factorization":2,"factor tree":3,"exponent":4,"prime":0,"composite":1}};
+window.__HW_VOCAB__ = [{"term":"Prime Factorization","termEs":"Factorización prima","def":"Writing a whole number as a product of only prime numbers.","defEs":"Escribir un número entero como un producto de solo números primos.","example":"36 = 2 × 2 × 3 × 3 = 2² × 3²","img":"/assets/vocab-images/prime-factorization.svg","imgAlt":"Illustration of Prime Factorization: Writing a whole number as a product of only prime numbers."},{"term":"Prime number","termEs":"Número primo","def":"A number bigger than 1 that you can only divide by 1 and itself.","defEs":"Un número mayor que 1 que solo se puede dividir entre 1 y sí mismo.","example":"7 has only two factors: 1 × 7. So 7 is prime.","img":"/assets/vocab-images/prime-number.svg","imgAlt":"Illustration of Prime number: A number bigger than 1 that you can only divide by 1 and itself."},{"term":"Composite number","termEs":"Número compuesto","def":"A number bigger than 1 that you can divide by more than just 1 and itself.","defEs":"Un número mayor que 1 que se puede dividir entre más números, no solo 1 y sí mismo.","example":"12 = 1 × 12, 2 × 6, 3 × 4 — six factors, so 12 is composite","img":"/assets/vocab-images/composite-number.svg","imgAlt":"Illustration of Composite number: A number bigger than 1 that you can divide by more than just 1 and itself."},{"term":"Factor tree","termEs":"Árbol de factores","def":"A picture that splits a number into its prime numbers, step by step.","defEs":"Un dibujo que separa un número en sus números primos, paso a paso.","example":"24 → 4 × 6 → (2 × 2) × (2 × 3) → 2 × 2 × 2 × 3","img":"/assets/vocab-images/prime-factorization.svg","imgAlt":"Illustration of Factor tree: A picture that splits a number into its prime numbers, step by step."},{"term":"Exponent","termEs":"Exponente","def":"A small number that tells how many times to multiply a number by itself.","defEs":"Un número pequeño que dice cuántas veces multiplicar un número por sí mismo.","example":"2³ means 2 × 2 × 2 = 8","img":"/assets/vocab-images/exponent.svg","imgAlt":"Illustration of Exponent: A small number that tells how many times to multiply a number by itself."}];
+window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Prime Factorization|Composite number|Prime number|Factor tree|Composite|Exponent|Prime)(?:es|s)?\\b","lookup":{"prime factorization":0,"prime number":1,"composite number":2,"factor tree":3,"exponent":4,"prime":1,"composite":2}};
 
 function syncHomeworkChromeHeights() {
   const status = document.querySelector('.bottom-status-bar');
@@ -4809,7 +4837,33 @@ function saveParentSignoff() {
   try {
     localStorage.setItem('hw_parent_signoff_' + lessonId, JSON.stringify(payload));
   } catch(e) {}
-  
+
+  /* localStorage stays the source of truth for what this page displays, but a
+     sign-off the teacher never sees is not a sign-off. Fire-and-forget POST:
+     the endpoint always answers 204, and any failure here is swallowed so a
+     family on a bad connection still gets their confirmation. */
+  try {
+    var signoffBody = JSON.stringify({
+      lessonId: lessonId,
+      lessonTitle: lessonTitle,
+      parentName: nameVal,
+      note: noteVal,
+      date: signoffDate,
+      studentName: (window.NeftSaveResume && window.NeftSaveResume.studentName) || '',
+      section: (window.NeftSaveResume && window.NeftSaveResume.section) || ''
+    });
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('/api/progress/family-signoff', new Blob([signoffBody], { type: 'application/json' }));
+    } else {
+      fetch('/api/progress/family-signoff', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: signoffBody,
+        keepalive: true
+      }).catch(function() {});
+    }
+  } catch(e) {}
+
   updateSignoffUI(payload);
 }
 
@@ -5746,6 +5800,15 @@ function playCheckSound(isCorrect) {
   }
 }
 
+/* Feedback text is built in JS, so it cannot use the .lang-en/.lang-es span
+   pair the rest of the page toggles. Pick the language the family is actually
+   reading; fall back to English whenever no Spanish was authored. */
+function pickLangText(en, es) {
+  const esText = (es || "").trim();
+  if (esText && document.body.classList.contains("lang-mode-es")) return esText;
+  return en || "";
+}
+
 function checkProblem(idx, options) {
   const silent = options && options.silent;
   const section = document.getElementById("problem_" + idx);
@@ -5763,7 +5826,7 @@ function checkProblem(idx, options) {
       const container = section.querySelector(".mc-options");
       const selected = container.querySelector("input[type='radio']:checked");
       const correctIdx = container.dataset.correct;
-      const explanation = container.dataset.explanation;
+      const explanation = pickLangText(container.dataset.explanation, container.dataset.explanationEs);
       
       // Reset radio option styles
       const labels = container.querySelectorAll(".mc-option-label");
@@ -5991,7 +6054,7 @@ function checkProblem(idx, options) {
   if (!feedbackMessage) {
     if (type === "multiple-choice") {
       const container = section.querySelector(".mc-options");
-      const explanation = container?.dataset.explanation || "";
+      const explanation = pickLangText(container?.dataset.explanation, container?.dataset.explanationEs);
       if (isProblemCorrect) {
         feedbackMessage = explanation
           ? "Correct! " + explanation

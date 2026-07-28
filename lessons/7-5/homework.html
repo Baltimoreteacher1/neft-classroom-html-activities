@@ -1604,6 +1604,14 @@ body.obj-popup-open { overflow: hidden; }
 .section-vocab { border-left: 4px solid var(--coral); }
 .section-stuck { border-left: 4px solid #9b59b6; }
 .section-quick-intro { border-left: 4px solid var(--success); }
+.quick-check-time {
+  background: var(--amber-light);
+  border: 1px solid var(--amber);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 0 0 12px;
+  font-size: 15px;
+}
 .section-celebrate {
   border-left: 4px solid var(--amber);
   background: linear-gradient(180deg, var(--amber-light), var(--white));
@@ -1851,6 +1859,16 @@ body.obj-popup-open { overflow: hidden; }
   padding: 2px;
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x proximity;
+}
+/* On a phone the 10 tabs are ~738px wide in a ~381px viewport, so half of them
+   (Help, More, Done) sit off-screen with nothing to suggest they exist. Fade the
+   trailing edge so the strip reads as scrollable. Only below 700px, where the
+   overflow is guaranteed — a permanent fade on desktop would just look broken. */
+@media (max-width: 700px) {
+  .homework-tab-bar {
+    -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+    mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+  }
 }
 .homework-tab-btn {
   flex: 0 0 auto;
@@ -2372,6 +2390,12 @@ body.lang-mode-es .bilingual-grid {
 @media print {
   .homework-tab-chrome, .homework-tab-bar, .bottom-status-bar, .help-modal-overlay, .print-all-btn, .parent-signoff-container { display: none !important; }
   .tab-panel-inner[hidden] { display: block !important; page-break-inside: avoid; }
+  /* Printing un-hides every panel, but these three are screen-only: an embedded
+     arcade iframe, a live game, and a link-out. On paper they were blank or
+     meaningless pages in the middle of the packet. */
+  [data-tab-panel="arcade"],
+  [data-tab-panel="play"],
+  [data-tab-panel="workbench"] { display: none !important; }
   body { padding-bottom: 0; }
   
   .print-only-certificate.is-signed {
@@ -2448,7 +2472,7 @@ body.lang-mode-es .bilingual-grid {
 
 
 .family-visual-lab{--lab-ink:#173a5e;--lab-teal:#0b8f87;--lab-coral:#ff775f;--lab-sun:#f6c94c;margin:26px 0;padding:clamp(18px,3vw,30px);border:3px solid var(--lab-ink);border-radius:28px;background:#fffdf5;box-shadow:8px 8px 0 var(--lab-ink);color:var(--lab-ink)}
-.visual-lab-heading{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(260px,1.15fr);gap:20px;align-items:end;margin-bottom:20px}.visual-lab-heading h2{margin:6px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.05}.visual-lab-heading p{margin:0;padding:14px 16px;border-left:5px solid var(--lab-sun);background:#fff8d9;font-size:17px;font-weight:700;line-height:1.45}.visual-lab-kicker{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--lab-ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em}
+.visual-lab-heading{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(260px,1.15fr);gap:20px;align-items:end;margin-bottom:20px}.visual-lab-heading h2{margin:6px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.05}.visual-lab-heading p{margin:0;padding:14px 16px;border-left:5px solid var(--lab-sun);background:#fff8d9;font-size:17px;font-weight:700;line-height:1.45}.visual-lab-kicker{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--lab-ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em}.visual-lab-kicker .lang-en,.visual-lab-kicker .lang-es{color:inherit}
 .visual-lab-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(230px,.8fr);gap:18px;align-items:stretch}.visual-lab-canvas-wrap{min-width:0;padding:12px;border-radius:22px;background-color:#eef8f4;background-image:linear-gradient(#cee3dc 1px,transparent 1px),linear-gradient(90deg,#cee3dc 1px,transparent 1px);background-size:24px 24px;border:2px solid var(--lab-ink)}.visual-lab-stage{display:grid;place-items:center;min-height:280px}.visual-lab-stage svg{display:block;width:100%;max-height:320px;overflow:visible}.visual-lab-status{min-height:26px;margin:5px 8px 0;padding:7px 10px;border-radius:10px;background:#fff;font-weight:800;text-align:center}
 .visual-lab-controls{display:flex;flex-direction:column;gap:14px;padding:18px;border-radius:22px;background:var(--lab-ink);color:#fff}.visual-lab-control{display:grid;gap:7px;font-weight:800}.visual-lab-control-label{display:flex;justify-content:space-between;gap:10px;align-items:center}.visual-lab-control output{min-width:38px;padding:3px 8px;border-radius:8px;background:var(--lab-sun);color:#102f4e;text-align:center;font-size:18px}.visual-lab-control input[type=range]{width:100%;min-height:28px;accent-color:var(--lab-coral);cursor:pointer}.visual-lab-control input[type=range]:focus-visible{outline:4px solid #fff;outline-offset:4px}.visual-lab-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:auto}.visual-lab-button{min-height:48px;border:2px solid #fff;border-radius:13px;background:var(--lab-coral);color:#182f48;font:inherit;font-weight:800;cursor:pointer}.visual-lab-button-quiet{background:#fff}.visual-lab-button:hover{transform:translateY(-2px)}.visual-lab-button:focus-visible{outline:4px solid var(--lab-sun);outline-offset:3px}
 .visual-representation-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:18px}.visual-representation-card{position:relative;min-height:150px;padding:18px 16px 15px;border:2px solid var(--lab-ink);border-radius:18px;background:#fff}.visual-representation-card h3{margin:0 0 10px;padding-left:30px;font-size:17px}.visual-representation-card p{margin:7px 0;font-size:16px;line-height:1.4}.representation-number{position:absolute;top:12px;left:12px;display:grid;width:27px;height:27px;place-items:center;border-radius:50%;background:var(--lab-ink);color:#fff;font-weight:800}.visual-representation-model{background:#dff5ee}.visual-representation-math{background:#fff2c2}.visual-representation-words{background:#ffe4dd}.visual-representation-math [data-lab-equation]{font-size:clamp(22px,3vw,32px);font-weight:800;text-align:center}.mini-model{display:flex;flex-wrap:wrap;gap:7px;align-content:center;min-height:76px;padding:8px}.mini-dot{width:18px;height:18px;border:2px solid var(--lab-ink);border-radius:50%;background:var(--lab-teal)}.visual-representation-card details{margin-top:10px}.visual-representation-card summary{cursor:pointer;font-weight:800;text-decoration:underline}.visual-source-idea{font-size:13px!important;color:#344f69}
@@ -2731,12 +2755,12 @@ header.packet h1::after{
         <div class="bilingual-col lang-en">
           <span class="lang-label">English</span>
           <p class="learning-big">Tonight we graph an inequality on a number line. We draw a circle at the boundary number and shade the side that works.</p>
-          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Number line</li><li>Open circle</li><li>Closed circle</li><li>Solution set</li><li>Inequality</li></ul></div>
+          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Graph Inequalities</li><li>Number line</li><li>Open circle</li><li>Closed circle</li><li>Solution set</li></ul></div>
         </div>
         <div class="bilingual-col lang-es" lang="es">
           <span class="lang-label">Español</span>
           <p class="learning-big">Esta noche graficamos una desigualdad en una recta numérica. Dibujamos un círculo en el número límite y sombreamos el lado que cumple.</p>
-          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Recta numérica</li><li>Círculo abierto</li><li>Círculo cerrado</li><li>Conjunto solución</li><li>Desigualdad</li></ul></div>
+          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Representar desigualdades en una recta numérica</li><li>Recta numérica</li><li>Círculo abierto</li><li>Círculo cerrado</li><li>Conjunto solución</li></ul></div>
         </div>
       </div>
     
@@ -2869,6 +2893,24 @@ header.packet h1::after{
       </p>
       <div class="vocab-container">
         
+            <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+              <div class="vocab-card-inner">
+                <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/cat-data.svg" alt="Illustration of Graph Inequalities: Show every solution to an inequality on a number line with a boundary point and an arrow." loading="lazy" width="72" height="72" />
+                  </div>
+                  <h3>Graph Inequalities</h3>
+                  <p class="vocab-es" lang="es">Representar desigualdades en una recta numérica</p>
+                  <div class="vocab-visual-hint">💡 x &gt; 3 uses an open circle at 3 and an arrow to the right.</div>
+                  <div class="flip-prompt"><span class="lang-en">Tap</span><span class="lang-es" lang="es">Toca ➔</span></div>
+                </div>
+                <div class="vocab-card-back">
+                  <p class="vocab-def">Show every solution to an inequality on a number line with a boundary point and an arrow.</p>
+                  <p class="vocab-def-es" lang="es">Mostrar cada solución de una desigualdad en una recta numérica con un punto límite y una flecha.</p>
+                  <p class="vocab-back-visual">📌 x &gt; 3 uses an open circle at 3 and an arrow to the right.</p>
+                </div>
+              </div>
+            </div>
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -3113,6 +3155,10 @@ header.packet h1::after{
       
     
       <h2 class="section-title">✅ <span class="lang-en">Quick check</span><span class="lang-es" lang="es">Repaso rápido</span></h2>
+      <p class="quick-check-time bilingual-block">
+        <span class="lang-en">⏱️ Plan on about <strong>15–20 minutes</strong> for the 6 problems below. The extra practice at the bottom is optional.</span>
+        <span class="lang-es" lang="es">⏱️ Calculen unos <strong>15–20 minutos</strong> para los 6 problemas de abajo. La práctica extra al final es opcional.</span>
+      </p>
       <p class="bilingual-block">
         <span class="lang-en">A few problems to practice together. Each one has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong>, and a <strong>space to show your work</strong>. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
         <span class="lang-es" lang="es">Unos problemas para practicar juntos. Cada uno tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para mostrar el trabajo</strong>. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
@@ -3137,12 +3183,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_0" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 1</div>
-        <div class="problem-type-badge">DRAG SORT</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"< and > use OPEN circles because the boundary is not included.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"< and > use OPEN circles because the boundary is not included.","es":"El símbolo por sí solo decide el círculo. x > 4, x < 12 y n > 0 usan símbolos estrictos, así que el número frontera no es solución y el círculo queda abierto. x ≥ 7, x ≤ 3 y n ≥ 15 incluyen «o igual a» —esa rayita debajo del símbolo—, así que la frontera cuenta y el círculo se rellena.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Sort by circle type: open or closed.</p>
+        <p class="problem-stem"><span class="lang-en">Sort by circle type: open or closed.</span><span class="lang-es" lang="es">Clasifica según el tipo de círculo: abierto o cerrado.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
         <div class="family-hint-box"><p>💡 &lt; and &gt; use OPEN circles because the boundary is not included.</p><p>💡 ≤ and ≥ use CLOSED circles because the boundary IS included.</p></div>
         <div class="drag-sort-workspace" id="dragsort_0">
@@ -3279,14 +3325,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_1" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 2</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the graph&#39;s two clues: the circle at 8 is CLOSED, and the shading runs LEFT toward smaller numbers.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the graph&#39;s two clues: the circle at 8 is CLOSED, and the shading runs LEFT toward smaller numbers.","es":"El círculo cerrado significa que el valor está incluido (≤ o ≥). El sombreado hacia la izquierda significa menor o igual que: x ≤ 8.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A number line shows a closed circle at 8 and is shaded to the left. Which inequality does this represent?</p>
+        <p class="problem-stem"><span class="lang-en">A number line shows a closed circle at 8 and is shaded to the left. Which inequality does this represent?</span><span class="lang-es" lang="es">Una recta numérica muestra un círculo cerrado en 8 y está sombreada hacia la izquierda. ¿Qué desigualdad representa esto?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Closed circle means the value is included (≤ or ≥). Shaded left means less than or equal to: x ≤ 8.">
+        <div class="mc-options" data-correct="0" data-explanation="Closed circle means the value is included (≤ or ≥). Shaded left means less than or equal to: x ≤ 8." data-explanation-es="El círculo cerrado significa que el valor está incluido (≤ o ≥). El sombreado hacia la izquierda significa menor o igual que: x ≤ 8.">
           
             <label class="mc-option-label" id="label_q_1_0">
               <input type="radio" name="q_1" value="0" onchange="saveState(); updateProgress();">
@@ -3351,37 +3397,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_2" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 3</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"&#39;Greater than&#39; (>) is a strict symbol, so 15 is NOT included — open circle. Larger values work, so shade right.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The circle shows whether the boundary number itself counts as a solution, and the shading shows every other number that works.","es":"El círculo muestra si el número límite cuenta como solución, y el sombreado muestra todos los demás números que funcionan.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Clue: the witness ran more than 15 feet, so d &gt; 15. On the number line, what do you draw?</p>
+        <p class="problem-stem"><span class="lang-en">Clue: the witness ran more than 15 feet, so d &gt; 15. On the number line, what do you draw?</span><span class="lang-es" lang="es">Pista: el testigo corrió más de 15 pies, así que d &gt; 15. En la recta numérica, ¿qué dibujas?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="&#039;Greater than&#039; (&gt;) is a strict symbol, so 15 is NOT included — open circle. Larger values work, so shade right.">
+        <div class="mc-options" data-correct="0" data-explanation="&#039;Greater than&#039; (&gt;) is a strict symbol, so 15 is NOT included — open circle. Larger values work, so shade right." data-explanation-es="&quot;Mayor que&quot; (&gt;) es un símbolo estricto, así que 15 NO está incluido: círculo abierto. Los valores mayores sí funcionan, así que se sombrea hacia la derecha.">
           
             <label class="mc-option-label" id="label_q_2_0">
               <input type="radio" name="q_2" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Open circle at 15, shade right</span>
+              <span class="choice-text"><span class="lang-en">Open circle at 15, shade right</span><span class="lang-es" lang="es">Círculo abierto en 15, sombrea a la derecha</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_2_1">
               <input type="radio" name="q_2" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Closed circle at 15, shade right</span>
+              <span class="choice-text"><span class="lang-en">Closed circle at 15, shade right</span><span class="lang-es" lang="es">Círculo cerrado en 15, sombrea a la derecha</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_2_2">
               <input type="radio" name="q_2" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Open circle at 15, shade left</span>
+              <span class="choice-text"><span class="lang-en">Open circle at 15, shade left</span><span class="lang-es" lang="es">Círculo abierto en 15, sombrea a la izquierda</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_2_3">
               <input type="radio" name="q_2" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Closed circle at 15, shade left</span>
+              <span class="choice-text"><span class="lang-en">Closed circle at 15, shade left</span><span class="lang-es" lang="es">Círculo cerrado en 15, sombrea a la izquierda</span></span>
             </label>
           
         </div>
@@ -3439,12 +3485,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_3" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 1</div>
-        <div class="problem-type-badge">DRAG SORT</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"c > 20 and t < 11 use strict symbols, so 20 and 11 are not solutions and both get open circles. w ≥ 14 and m ≤ 2 include their boundaries — 14 ≥ 14 and 2 ≤ 2 are both true — so both get closed circles. The direction of the shading does not affect this sort at all.","es":"c > 20 y t < 11 usan símbolos estrictos, así que 20 y 11 no son soluciones y ambos llevan círculos abiertos. w ≥ 14 y m ≤ 2 incluyen sus fronteras —14 ≥ 14 y 2 ≤ 2 son verdaderos—, así que ambos llevan círculos cerrados. La dirección del sombreado no afecta para nada esta clasificación.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Detective Okafor is filing clues. Sort each inequality by the circle its graph uses.</p>
+        <p class="problem-stem"><span class="lang-en">Detective Okafor is filing clues. Sort each inequality by the circle its graph uses.</span><span class="lang-es" lang="es">La detective Okafor está archivando pistas. Clasifica cada desigualdad según el círculo que usa su gráfica.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
         
         <div class="drag-sort-workspace" id="dragsort_3">
@@ -3551,12 +3597,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_4" data-problem-type="matching-game">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 2</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
+        <div class="problem-type-badge"><span class="lang-en">MATCHING GAME</span><span class="lang-es" lang="es">JUEGO DE PAREJAS</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the circle from the symbol and the shading from the direction it points: n > 13 → open circle at 13, shaded right; n ≤ 16 → closed circle at 16, shaded left; n ≥ 20 → closed circle at 20, shaded right; n < 17 → open circle at 17, shaded left. Checking the boundary number first eliminates half the cards fast.","es":"Saca el círculo del símbolo y el sombreado de hacia dónde apunta: n > 13 → círculo abierto en 13, sombreado a la derecha; n ≤ 16 → círculo cerrado en 16, sombreado a la izquierda; n ≥ 20 → círculo cerrado en 20, sombreado a la derecha; n < 17 → círculo abierto en 17, sombreado a la izquierda. Revisar primero el número frontera descarta rápido la mitad de las tarjetas.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Match each clue inequality to the correct graph in the case file.</p>
+        <p class="problem-stem"><span class="lang-en">Match each clue inequality to the correct graph in the case file.</span><span class="lang-es" lang="es">Une cada desigualdad de las pistas con la gráfica correcta del expediente.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Say each term out loud, then talk through which match makes sense before choosing.</span><span class="lang-es" lang="es">👪 Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.</span></p>
         <div class="matching-pairs">
           
@@ -3627,12 +3673,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_5" data-problem-type="open-response">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 3</div>
-        <div class="problem-type-badge">OPEN RESPONSE</div>
+        <div class="problem-type-badge"><span class="lang-en">OPEN RESPONSE</span><span class="lang-es" lang="es">RESPUESTA ABIERTA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The child is EXACTLY 48 inches — right on the boundary. The two rides treat that boundary number differently.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The child is EXACTLY 48 inches — right on the boundary. The two rides treat that boundary number differently.","es":"El niño está exactamente en la frontera, así que prueba 48 en cada regla. En el Juego A, 48 > 48 es falso, así que la gráfica tiene un círculo abierto en 48 y el niño no puede subir. En el Juego B, 48 ≥ 48 es verdadero, así que la gráfica tiene un círculo cerrado en 48 y el niño sí puede subir al B.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A theme park has two rides. Ride A requires height h &gt; 48 inches. Ride B requires height h ≥ 48 inches. A child is exactly 48 inches tall. Which ride can they go on? Explain using number line graphs for both inequalities.</p>
+        <p class="problem-stem"><span class="lang-en">A theme park has two rides. Ride A requires height h &gt; 48 inches. Ride B requires height h ≥ 48 inches. A child is exactly 48 inches tall. Which ride can they go on? Explain using number line graphs for both inequalities.</span><span class="lang-es" lang="es">Un parque de diversiones tiene dos juegos. El juego A requiere una estatura h &gt; 48 pulgadas. El juego B requiere una estatura h ≥ 48 pulgadas. Un niño mide exactamente 48 pulgadas. ¿A cuál juego puede subirse? Explica usando gráficas en la recta numérica para las dos desigualdades.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 A complete sentence with math vocabulary is the goal — not a perfect paragraph.</span><span class="lang-es" lang="es">👪 Una oración completa con vocabulario matemático es la meta — no un párrafo perfecto.</span></p>
         
         
@@ -3710,37 +3756,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_6" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 1</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"&#39;Less than or equal to&#39; (≤) includes 4 — closed circle. Smaller values work, so shade left.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"\"At most\" sets a ceiling — it names the largest value that is still allowed.","es":"\"Como máximo\" pone un tope: nombra el valor más grande que todavía se permite.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Clue: the getaway car held at most 4 suspects, so s ≤ 4. How is this graphed?</p>
+        <p class="problem-stem"><span class="lang-en">Clue: the getaway car held at most 4 suspects, so s ≤ 4. How is this graphed?</span><span class="lang-es" lang="es">Pista: el carro de escape llevaba como máximo 4 sospechosos, así que s ≤ 4. ¿Cómo se grafica esto?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="&#039;Less than or equal to&#039; (≤) includes 4 — closed circle. Smaller values work, so shade left.">
+        <div class="mc-options" data-correct="0" data-explanation="&#039;Less than or equal to&#039; (≤) includes 4 — closed circle. Smaller values work, so shade left." data-explanation-es="&quot;Menor o igual que&quot; (≤) incluye el 4: círculo cerrado. Los valores menores también funcionan, así que se sombrea hacia la izquierda.">
           
             <label class="mc-option-label" id="label_q_6_0">
               <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Closed circle at 4, shade left</span>
+              <span class="choice-text"><span class="lang-en">Closed circle at 4, shade left</span><span class="lang-es" lang="es">Círculo cerrado en 4, sombrea a la izquierda</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_6_1">
               <input type="radio" name="q_6" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Open circle at 4, shade left</span>
+              <span class="choice-text"><span class="lang-en">Open circle at 4, shade left</span><span class="lang-es" lang="es">Círculo abierto en 4, sombrea a la izquierda</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_6_2">
               <input type="radio" name="q_6" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Closed circle at 4, shade right</span>
+              <span class="choice-text"><span class="lang-en">Closed circle at 4, shade right</span><span class="lang-es" lang="es">Círculo cerrado en 4, sombrea a la derecha</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_6_3">
               <input type="radio" name="q_6" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Open circle at 4, shade right</span>
+              <span class="choice-text"><span class="lang-en">Open circle at 4, shade right</span><span class="lang-es" lang="es">Círculo abierto en 4, sombrea a la derecha</span></span>
             </label>
           
         </div>
@@ -3782,37 +3828,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_7" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 2</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Every inequality graph asks two questions: is 5 itself a solution (circle type), and which side holds the solutions (shading)?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Every inequality graph asks two questions: is 5 itself a solution (circle type), and which side holds the solutions (shading)?","es":"x < 5 significa que 5 NO está incluido (círculo abierto) y se sombrean los valores menores que 5 (hacia la izquierda).","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Which graph represents x &lt; 5?</p>
+        <p class="problem-stem"><span class="lang-en">Which graph represents x &lt; 5?</span><span class="lang-es" lang="es">¿Qué gráfica representa x &lt; 5?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="x &lt; 5 means 5 is NOT included (open circle) and values less than 5 are shaded (left).">
+        <div class="mc-options" data-correct="0" data-explanation="x &lt; 5 means 5 is NOT included (open circle) and values less than 5 are shaded (left)." data-explanation-es="x &lt; 5 significa que 5 NO está incluido (círculo abierto) y se sombrean los valores menores que 5 (hacia la izquierda).">
           
             <label class="mc-option-label" id="label_q_7_0">
               <input type="radio" name="q_7" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Open circle at 5, shaded left</span>
+              <span class="choice-text"><span class="lang-en">Open circle at 5, shaded left</span><span class="lang-es" lang="es">Círculo abierto en 5, sombreado a la izquierda</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_7_1">
               <input type="radio" name="q_7" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Closed circle at 5, shaded left</span>
+              <span class="choice-text"><span class="lang-en">Closed circle at 5, shaded left</span><span class="lang-es" lang="es">Círculo cerrado en 5, sombreado a la izquierda</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_7_2">
               <input type="radio" name="q_7" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Open circle at 5, shaded right</span>
+              <span class="choice-text"><span class="lang-en">Open circle at 5, shaded right</span><span class="lang-es" lang="es">Círculo abierto en 5, sombreado a la derecha</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_7_3">
               <input type="radio" name="q_7" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Closed circle at 5, shaded right</span>
+              <span class="choice-text"><span class="lang-en">Closed circle at 5, shaded right</span><span class="lang-es" lang="es">Círculo cerrado en 5, sombreado a la derecha</span></span>
             </label>
           
         </div>
@@ -3854,37 +3900,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_8" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 3</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Check the symbol: ≥ has the &#39;or equal&#39; bar. What does that bar mean for the circle at 3?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Check the symbol: ≥ has the &#39;or equal&#39; bar. What does that bar mean for the circle at 3?","es":"x ≥ 3 significa que 3 SÍ está incluido (círculo cerrado) y se sombrean los valores mayores o iguales que 3 (hacia la derecha).","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Which graph represents x ≥ 3?</p>
+        <p class="problem-stem"><span class="lang-en">Which graph represents x ≥ 3?</span><span class="lang-es" lang="es">¿Qué gráfica representa x ≥ 3?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="x ≥ 3 means 3 IS included (closed circle) and values greater than or equal to 3 are shaded (right).">
+        <div class="mc-options" data-correct="0" data-explanation="x ≥ 3 means 3 IS included (closed circle) and values greater than or equal to 3 are shaded (right)." data-explanation-es="x ≥ 3 significa que 3 SÍ está incluido (círculo cerrado) y se sombrean los valores mayores o iguales que 3 (hacia la derecha).">
           
             <label class="mc-option-label" id="label_q_8_0">
               <input type="radio" name="q_8" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Closed circle at 3, shaded right</span>
+              <span class="choice-text"><span class="lang-en">Closed circle at 3, shaded right</span><span class="lang-es" lang="es">Círculo cerrado en 3, sombreado a la derecha</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_8_1">
               <input type="radio" name="q_8" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Open circle at 3, shaded right</span>
+              <span class="choice-text"><span class="lang-en">Open circle at 3, shaded right</span><span class="lang-es" lang="es">Círculo abierto en 3, sombreado a la derecha</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_8_2">
               <input type="radio" name="q_8" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Closed circle at 3, shaded left</span>
+              <span class="choice-text"><span class="lang-en">Closed circle at 3, shaded left</span><span class="lang-es" lang="es">Círculo cerrado en 3, sombreado a la izquierda</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_8_3">
               <input type="radio" name="q_8" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Open circle at 3, shaded left</span>
+              <span class="choice-text"><span class="lang-en">Open circle at 3, shaded left</span><span class="lang-es" lang="es">Círculo abierto en 3, sombreado a la izquierda</span></span>
             </label>
           
         </div>
@@ -3926,37 +3972,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_9" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 4</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Two decisions: does x = 8 make x > 8 true, and are the solutions bigger or smaller than 8?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Two decisions: does x = 8 make x > 8 true, and are the solutions bigger or smaller than 8?","es":"x > 8 significa que 8 NO está incluido (círculo abierto) y se sombrean los valores mayores que 8 (hacia la derecha).","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Which graph represents x &gt; 8?</p>
+        <p class="problem-stem"><span class="lang-en">Which graph represents x &gt; 8?</span><span class="lang-es" lang="es">¿Qué gráfica representa x &gt; 8?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="x &gt; 8 means 8 is NOT included (open circle) and values greater than 8 are shaded to the right.">
+        <div class="mc-options" data-correct="0" data-explanation="x &gt; 8 means 8 is NOT included (open circle) and values greater than 8 are shaded to the right." data-explanation-es="x &gt; 8 significa que 8 NO está incluido (círculo abierto) y se sombrean los valores mayores que 8 (hacia la derecha).">
           
             <label class="mc-option-label" id="label_q_9_0">
               <input type="radio" name="q_9" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Open circle at 8, shaded right</span>
+              <span class="choice-text"><span class="lang-en">Open circle at 8, shaded right</span><span class="lang-es" lang="es">Círculo abierto en 8, sombreado a la derecha</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_9_1">
               <input type="radio" name="q_9" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Closed circle at 8, shaded right</span>
+              <span class="choice-text"><span class="lang-en">Closed circle at 8, shaded right</span><span class="lang-es" lang="es">Círculo cerrado en 8, sombreado a la derecha</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_9_2">
               <input type="radio" name="q_9" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Open circle at 8, shaded left</span>
+              <span class="choice-text"><span class="lang-en">Open circle at 8, shaded left</span><span class="lang-es" lang="es">Círculo abierto en 8, sombreado a la izquierda</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_9_3">
               <input type="radio" name="q_9" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Closed circle at 8, shaded left</span>
+              <span class="choice-text"><span class="lang-en">Closed circle at 8, shaded left</span><span class="lang-es" lang="es">Círculo cerrado en 8, sombreado a la izquierda</span></span>
             </label>
           
         </div>
@@ -3998,37 +4044,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_10" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 5</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Ask two things: does 10 itself satisfy x ≤ 10, and do solutions live above or below 10?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Ask two things: does 10 itself satisfy x ≤ 10, and do solutions live above or below 10?","es":"x ≤ 10 significa que 10 SÍ está incluido (círculo cerrado) y se sombrean los valores menores o iguales que 10 (hacia la izquierda).","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Which graph represents x ≤ 10?</p>
+        <p class="problem-stem"><span class="lang-en">Which graph represents x ≤ 10?</span><span class="lang-es" lang="es">¿Qué gráfica representa x ≤ 10?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="x ≤ 10 means 10 IS included (closed circle) and values less than or equal to 10 are shaded (left).">
+        <div class="mc-options" data-correct="0" data-explanation="x ≤ 10 means 10 IS included (closed circle) and values less than or equal to 10 are shaded (left)." data-explanation-es="x ≤ 10 significa que 10 SÍ está incluido (círculo cerrado) y se sombrean los valores menores o iguales que 10 (hacia la izquierda).">
           
             <label class="mc-option-label" id="label_q_10_0">
               <input type="radio" name="q_10" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Closed circle at 10, shaded left</span>
+              <span class="choice-text"><span class="lang-en">Closed circle at 10, shaded left</span><span class="lang-es" lang="es">Círculo cerrado en 10, sombreado a la izquierda</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_10_1">
               <input type="radio" name="q_10" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Open circle at 10, shaded left</span>
+              <span class="choice-text"><span class="lang-en">Open circle at 10, shaded left</span><span class="lang-es" lang="es">Círculo abierto en 10, sombreado a la izquierda</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_10_2">
               <input type="radio" name="q_10" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Closed circle at 10, shaded right</span>
+              <span class="choice-text"><span class="lang-en">Closed circle at 10, shaded right</span><span class="lang-es" lang="es">Círculo cerrado en 10, sombreado a la derecha</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_10_3">
               <input type="radio" name="q_10" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Open circle at 10, shaded right</span>
+              <span class="choice-text"><span class="lang-en">Open circle at 10, shaded right</span><span class="lang-es" lang="es">Círculo abierto en 10, sombreado a la derecha</span></span>
             </label>
           
         </div>
@@ -4070,12 +4116,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_11" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 6</div>
-        <div class="problem-type-badge">FILL TABLE</div>
+        <div class="problem-type-badge"><span class="lang-en">FILL TABLE</span><span class="lang-es" lang="es">COMPLETAR LA TABLA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"All three rows use the same boundary, 6 — only the symbol changes. Watch how one small bar changes the whole graph.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"All three rows use the same boundary, 6 — only the symbol changes. Watch how one small bar changes the whole graph.","es":"Las tres filas comparten la frontera 6, así que solo el símbolo cambia la gráfica. Para x > 6, 6 > 6 es falso → círculo abierto, sombrea a la derecha; para x ≥ 6, 6 ≥ 6 es verdadero → círculo cerrado, sombrea a la derecha; para x ≤ 6, 6 ≤ 6 es verdadero → círculo cerrado, sombrea a la izquierda. Probar el número frontera en la desigualdad te dice siempre el tipo de círculo.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Complete the table comparing how different symbols affect the graph.</p>
+        <p class="problem-stem"><span class="lang-en">Complete the table comparing how different symbols affect the graph.</span><span class="lang-es" lang="es">Completa la tabla comparando cómo los distintos símbolos afectan la gráfica.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
         <div class="table-responsive">
           <table class="fill-table">
@@ -4400,8 +4446,8 @@ header.packet h1::after{
 <script>
 window.LESSON_ID = "7-5";
 window.LESSON_TITLE = "Graph Inequalities";
-window.__HW_VOCAB__ = [{"term":"Number line","termEs":"Recta numérica","def":"A straight line where numbers are placed in order; numbers get smaller to the left and larger to the right.","defEs":"Una recta donde los números se colocan en orden; los números son menores a la izquierda y mayores a la derecha.","example":"A horizontal line with marks at 0, 1, 2, 3, ... showing where values fall","img":"/assets/vocab-images/number-line.svg","imgAlt":"Illustration of Number line: A straight line where numbers are placed in order; numbers get smaller to the left and larger to the right."},{"term":"Open circle","termEs":"Círculo abierto","def":"An empty circle showing a number is NOT included.","defEs":"Un círculo vacío que muestra que un número NO está incluido.","example":"x > 5: open circle at 5 means 5 itself is NOT a solution, but 5.1, 6, 7, ... are","img":"/assets/vocab-images/open-circle.svg","imgAlt":"Illustration of Open circle: An empty circle showing a number is NOT included."},{"term":"Closed circle","termEs":"Círculo cerrado","def":"A filled-in circle showing a number IS included.","defEs":"Un círculo relleno que muestra que un número SÍ está incluido.","example":"x ≥ 5: closed circle at 5 means 5 IS a solution, and so are 6, 7, 8, ...","img":"/assets/vocab-images/closed-circle.svg","imgAlt":"Illustration of Closed circle: A filled-in circle showing a number IS included."},{"term":"Solution set","termEs":"Conjunto solución","def":"All the numbers that make the inequality true.","defEs":"Todos los números que hacen verdadera la desigualdad.","example":"For x > 3, the solution set includes 3.1, 4, 5, 10, 100 — any number greater than 3","img":"/assets/vocab-images/solution-set.svg","imgAlt":"Illustration of Solution set: All the numbers that make the inequality true."},{"term":"Inequality","termEs":"Desigualdad","def":"A math sentence that compares two sides with \u003c, >, ≤, or ≥.","defEs":"Una oración matemática que compara dos lados con \u003c, >, ≤ o ≥.","example":"x ≥ 3 is an inequality; it is graphed as a closed circle on 3 with an arrow to the right.","img":"/assets/vocab-images/inequality.svg","imgAlt":"Illustration of Inequality: A math sentence that compares two sides with \u003c, >, ≤, or ≥."},{"term":"Boundary point","termEs":"Punto límite","def":"The number on the number line where the solution set starts.","defEs":"El número en la recta numérica donde comienza el conjunto solución.","example":"For x > 5, the boundary point is 5, shown with an open circle.","img":"/assets/vocab-images/boundary-point.svg","imgAlt":"Illustration of Boundary point: The number on the number line where the solution set starts."}];
-window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Boundary point|Closed circle|Solution set|Number line|Open circle|Inequality)(?:es|s)?\\b","lookup":{"number line":0,"open circle":1,"closed circle":2,"solution set":3,"inequality":4,"boundary point":5}};
+window.__HW_VOCAB__ = [{"term":"Graph Inequalities","termEs":"Representar desigualdades en una recta numérica","def":"Show every solution to an inequality on a number line with a boundary point and an arrow.","defEs":"Mostrar cada solución de una desigualdad en una recta numérica con un punto límite y una flecha.","example":"x > 3 uses an open circle at 3 and an arrow to the right.","img":"","imgAlt":""},{"term":"Number line","termEs":"Recta numérica","def":"A straight line where numbers are placed in order; numbers get smaller to the left and larger to the right.","defEs":"Una recta donde los números se colocan en orden; los números son menores a la izquierda y mayores a la derecha.","example":"A horizontal line with marks at 0, 1, 2, 3, ... showing where values fall","img":"/assets/vocab-images/number-line.svg","imgAlt":"Illustration of Number line: A straight line where numbers are placed in order; numbers get smaller to the left and larger to the right."},{"term":"Open circle","termEs":"Círculo abierto","def":"An empty circle showing a number is NOT included.","defEs":"Un círculo vacío que muestra que un número NO está incluido.","example":"x > 5: open circle at 5 means 5 itself is NOT a solution, but 5.1, 6, 7, ... are","img":"/assets/vocab-images/open-circle.svg","imgAlt":"Illustration of Open circle: An empty circle showing a number is NOT included."},{"term":"Closed circle","termEs":"Círculo cerrado","def":"A filled-in circle showing a number IS included.","defEs":"Un círculo relleno que muestra que un número SÍ está incluido.","example":"x ≥ 5: closed circle at 5 means 5 IS a solution, and so are 6, 7, 8, ...","img":"/assets/vocab-images/closed-circle.svg","imgAlt":"Illustration of Closed circle: A filled-in circle showing a number IS included."},{"term":"Solution set","termEs":"Conjunto solución","def":"All the numbers that make the inequality true.","defEs":"Todos los números que hacen verdadera la desigualdad.","example":"For x > 3, the solution set includes 3.1, 4, 5, 10, 100 — any number greater than 3","img":"/assets/vocab-images/solution-set.svg","imgAlt":"Illustration of Solution set: All the numbers that make the inequality true."},{"term":"Inequality","termEs":"Desigualdad","def":"A math sentence that compares two sides with \u003c, >, ≤, or ≥.","defEs":"Una oración matemática que compara dos lados con \u003c, >, ≤ o ≥.","example":"x ≥ 3 is an inequality; it is graphed as a closed circle on 3 with an arrow to the right.","img":"/assets/vocab-images/inequality.svg","imgAlt":"Illustration of Inequality: A math sentence that compares two sides with \u003c, >, ≤, or ≥."},{"term":"Boundary point","termEs":"Punto límite","def":"The number on the number line where the solution set starts.","defEs":"El número en la recta numérica donde comienza el conjunto solución.","example":"For x > 5, the boundary point is 5, shown with an open circle.","img":"/assets/vocab-images/boundary-point.svg","imgAlt":"Illustration of Boundary point: The number on the number line where the solution set starts."}];
+window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Graph Inequalities|Boundary point|Closed circle|Solution set|Number line|Open circle|Inequality)(?:es|s)?\\b","lookup":{"graph inequalitie":0,"number line":1,"open circle":2,"closed circle":3,"solution set":4,"inequality":5,"boundary point":6}};
 
 function syncHomeworkChromeHeights() {
   const status = document.querySelector('.bottom-status-bar');
@@ -4535,7 +4581,33 @@ function saveParentSignoff() {
   try {
     localStorage.setItem('hw_parent_signoff_' + lessonId, JSON.stringify(payload));
   } catch(e) {}
-  
+
+  /* localStorage stays the source of truth for what this page displays, but a
+     sign-off the teacher never sees is not a sign-off. Fire-and-forget POST:
+     the endpoint always answers 204, and any failure here is swallowed so a
+     family on a bad connection still gets their confirmation. */
+  try {
+    var signoffBody = JSON.stringify({
+      lessonId: lessonId,
+      lessonTitle: lessonTitle,
+      parentName: nameVal,
+      note: noteVal,
+      date: signoffDate,
+      studentName: (window.NeftSaveResume && window.NeftSaveResume.studentName) || '',
+      section: (window.NeftSaveResume && window.NeftSaveResume.section) || ''
+    });
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('/api/progress/family-signoff', new Blob([signoffBody], { type: 'application/json' }));
+    } else {
+      fetch('/api/progress/family-signoff', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: signoffBody,
+        keepalive: true
+      }).catch(function() {});
+    }
+  } catch(e) {}
+
   updateSignoffUI(payload);
 }
 
@@ -5472,6 +5544,15 @@ function playCheckSound(isCorrect) {
   }
 }
 
+/* Feedback text is built in JS, so it cannot use the .lang-en/.lang-es span
+   pair the rest of the page toggles. Pick the language the family is actually
+   reading; fall back to English whenever no Spanish was authored. */
+function pickLangText(en, es) {
+  const esText = (es || "").trim();
+  if (esText && document.body.classList.contains("lang-mode-es")) return esText;
+  return en || "";
+}
+
 function checkProblem(idx, options) {
   const silent = options && options.silent;
   const section = document.getElementById("problem_" + idx);
@@ -5489,7 +5570,7 @@ function checkProblem(idx, options) {
       const container = section.querySelector(".mc-options");
       const selected = container.querySelector("input[type='radio']:checked");
       const correctIdx = container.dataset.correct;
-      const explanation = container.dataset.explanation;
+      const explanation = pickLangText(container.dataset.explanation, container.dataset.explanationEs);
       
       // Reset radio option styles
       const labels = container.querySelectorAll(".mc-option-label");
@@ -5717,7 +5798,7 @@ function checkProblem(idx, options) {
   if (!feedbackMessage) {
     if (type === "multiple-choice") {
       const container = section.querySelector(".mc-options");
-      const explanation = container?.dataset.explanation || "";
+      const explanation = pickLangText(container?.dataset.explanation, container?.dataset.explanationEs);
       if (isProblemCorrect) {
         feedbackMessage = explanation
           ? "Correct! " + explanation

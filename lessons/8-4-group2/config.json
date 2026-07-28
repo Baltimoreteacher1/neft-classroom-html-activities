@@ -187,6 +187,13 @@
   "vocabMode": "matching",
   "vocabulary": [
     {
+      "term": "Appropriate Measures of Center",
+      "termEs": "Medidas de centro apropiadas",
+      "definition": "A mean, median, or mode chosen because it describes a data set fairly.",
+      "definitionEs": "Una media, mediana o moda elegida porque describe un conjunto de datos de manera justa.",
+      "visual": "Use the median when an outlier would pull the mean too far."
+    },
+    {
       "term": "Mean",
       "termEs": "Media",
       "definition": "The average. Add all the numbers, then divide by how many there are.",
@@ -229,6 +236,22 @@
           "why": "That is symmetric, not skewed."
         }
       ]
+    },
+    {
+      "term": "Data distribution",
+      "termEs": "Distribución de datos",
+      "definition": "How the data looks: where it sits and how spread out it is.",
+      "definitionEs": "Cómo se ven los datos: dónde están y qué tan separados están.",
+      "visual": "Symmetric = even on both sides. Skewed = bunched on one side with a tail",
+      "cloze": "The way data values are spread out is the ___."
+    },
+    {
+      "term": "Variability",
+      "termEs": "Variabilidad",
+      "definition": "How spread out the numbers are.",
+      "definitionEs": "Qué tan separados están los números.",
+      "visual": "88, 90, 89, 91 (low variability) vs. 50, 70, 95, 100 (high variability)",
+      "cloze": "How much the data values differ is the ___."
     }
   ],
   "launch": {
@@ -367,7 +390,9 @@
           "Five seasons sit between .280 and .300; the .110 season is far below them — a low outlier.",
           "A low outlier drags one measure DOWN below the player's usual level. Think about which measure uses only the middle of the ordered list.",
           "First step: order the six averages and find the two middle ones. Notice that .110 sits at the far end and never touches that middle."
-        ]
+        ],
+        "stemEs": "Los promedios de bateo de un jugador en 6 temporadas son: .280, .295, .290, .285, .300, .110. El .110 fue una temporada acortada por lesión. ¿Cuál medida representa mejor el promedio de bateo típico del jugador?",
+        "explanationEs": "El .110 es un valor atípico que baja la media hasta .260. La mediana (.2875) representa mejor el rendimiento típico porque no se ve afectada por el valor extremo."
       },
       {
         "type": "error-analysis",
@@ -395,7 +420,10 @@
         "hints": [
           "Compare the mean (≈ 20.8) to the actual games. Is it close to a typical value, or higher than almost all of them?",
           "When one value (60) is far from the rest, it pulls the mean. The median (13.5) stays near the cluster, so it is the better choice."
-        ]
+        ],
+        "titleEs": "Detecta el error: elegir la media a pesar de un valor atípico",
+        "explanation": "Using every value is exactly the problem here: the 60-catch playoff game pulls the mean up to about 20.8, which is higher than five of the six games. The median 13.5 sits inside the cluster of 11 to 15 and is not moved by that extreme value, so it is the better report of a typical game.",
+        "explanationEs": "Usar todos los valores es justo el problema aquí: el partido de playoffs con 60 recepciones sube la media hasta cerca de 20.8, más alto que cinco de los seis partidos. La mediana 13.5 queda dentro del grupo de 11 a 15 y ese valor extremo no la mueve, así que representa mejor un partido típico."
       },
       {
         "type": "error-analysis",
@@ -423,7 +451,10 @@
         "hints": [
           "Look at the value 5. Does it fit with the rest of the data?",
           "The mean (28.2) is lower than 5 of the 6 values. Does that seem like a 'typical' game?"
-        ]
+        ],
+        "titleEs": "Encuentra el error de razonamiento",
+        "explanation": "The value 5 is an outlier from an injury game, and it drags the mean down to 28.2 — lower than every healthy game in the set. The median 32.5 sits among the 30-to-35 minute games, so it describes typical minutes far better. Using all the data is not an advantage when one value is that extreme.",
+        "explanationEs": "El valor 5 es un valor atípico de un partido con lesión, y jala la media hasta 28.2, más bajo que cualquier partido sano del conjunto. La mediana 32.5 queda entre los partidos de 30 a 35 minutos, así que describe mucho mejor los minutos típicos. Usar todos los datos no es una ventaja cuando un valor es así de extremo."
       },
       {
         "type": "open-response",
@@ -445,7 +476,9 @@
           "Five homes cost about $180K–$210K; one costs $1,725K. Check the reporter's $450,000 'average' against those five real prices.",
           "Plan: (1) mean = sum of all six prices ÷ 6, (2) median = average of the 3rd and 4th ordered prices, (3) compare each to what most homes cost.",
           "Step 1: add 180 + 200 + 190 + 210 + 195 + 1725 (in thousands) and divide by 6. Then order the six prices and average the middle two."
-        ]
+        ],
+        "explanation": "The six prices add to $2,700K, so the mean is 2,700 ÷ 6 = $450K, matching the reporter — but the median is the average of the middle two prices, $195K and $200K, which is $197.5K. Five of the six homes cost between $180K and $210K, so the $1,725K home is an outlier pulling the mean far above what most homes cost. The claim is misleading, and the median better represents a typical price.",
+        "explanationEs": "Los seis precios suman $2,700K, así que la media es 2,700 ÷ 6 = $450K, igual que dice el reportero; pero la mediana es el promedio de los dos precios del medio, $195K y $200K, o sea $197.5K. Cinco de las seis casas cuestan entre $180K y $210K, así que la casa de $1,725K es un valor atípico que jala la media muy por encima de lo que cuestan casi todas. La afirmación es engañosa, y la mediana representa mejor un precio típico."
       }
     ],
     "extending": [
@@ -465,6 +498,18 @@
           "The mean is pulled higher by 58—does that show a typical game?",
           "Range is 44—does that describe typical, or spread?",
           "16 appears twice—is mode about a typical game when there's an outlier?"
+        ],
+        "stemEs": "Un observador registra los puntos por partido: 14, 16, 15, 17, 16, 58. Para informar un partido TÍPICO, ¿cuál medida de centro es la mejor?",
+        "explanationEs": "El partido de 58 puntos es un valor atípico. Jala la media por encima de 5 de los 6 partidos, así que la mediana (16) muestra mejor un partido típico.",
+        "hints": [
+          "A typical value should sit near most of the data instead of being pulled by one unusual game.",
+          "Scan for an outlier first, then choose the measure that an outlier does not drag around.",
+          "Put the scores in order: 14, 15, 16, 16, 17, 58. Compare where the middle of that list sits to where the average of all six would land."
+        ],
+        "hintsEs": [
+          "Un valor típico debe quedar cerca de la mayoría de los datos y no ser jalado por un solo partido poco común.",
+          "Busca primero un valor atípico y después elige la medida que un valor atípico no arrastra.",
+          "Ordena las puntuaciones: 14, 15, 16, 16, 17, 58. Compara dónde queda el centro de esa lista con dónde caería el promedio de los seis."
         ]
       },
       {
@@ -483,6 +528,18 @@
           "Average size doesn't make sense—which size appears most?",
           "Median finds the middle order—which size shows up most?",
           "Range is the spread—which size do you order most?"
+        ],
+        "stemEs": "El encargado del equipo necesita pedir la talla de camiseta MÁS COMÚN de esta lista: M, L, M, S, M, L, M. ¿Cuál medida responde la pregunta?",
+        "explanationEs": "La moda es el valor que aparece con más frecuencia. Aquí la talla M aparece 4 veces, así que la moda (M) le dice al encargado qué pedir en mayor cantidad.",
+        "hints": [
+          "Sizes like S, M, and L are categories, not numbers you can add or average.",
+          "Ask which measure of center reports the value that appears most often.",
+          "Count how many times each size shows up in M, L, M, S, M, L, M and see which count comes out largest."
+        ],
+        "hintsEs": [
+          "Las tallas como S, M y L son categorías, no números que se puedan sumar o promediar.",
+          "Pregúntate cuál medida de centro informa el valor que aparece con más frecuencia.",
+          "Cuenta cuántas veces aparece cada talla en M, L, M, S, M, L, M y observa cuál conteo resulta mayor."
         ]
       },
       {
@@ -501,6 +558,18 @@
           "Median finds middle—does it measure spread?",
           "Mode is most common—does it measure spread?",
           "MAD measures spread—but range is most affected by one extreme value."
+        ],
+        "stemEs": "Un entrenador quiere saber qué tan DISPERSOS están los tiros libres encestados del equipo: 6, 7, 6, 8, 18. ¿Cuál medida de dispersión se ve más afectada por el único 18?",
+        "explanationEs": "Rango = máximo − mínimo = 18 − 6 = 12. Como usa solamente los dos valores más extremos, un solo valor atípico (18) cambia mucho el rango.",
+        "hints": [
+          "Measures of spread describe how far apart the values are, not where the center sits.",
+          "Look for the measure that is calculated from only the largest and the smallest values.",
+          "Compare the data with the 18 and without it, and notice which calculation changes the moment that value is removed."
+        ],
+        "hintsEs": [
+          "Las medidas de dispersión describen qué tan separados están los valores, no dónde está el centro.",
+          "Busca la medida que se calcula usando solamente el valor mayor y el menor.",
+          "Compara los datos con el 18 y sin él, y fíjate cuál cálculo cambia en el momento en que se quita ese valor."
         ]
       },
       {
@@ -529,7 +598,10 @@
         "hints": [
           "Look at the value 2. Does it fit with the rest of the player's scores, or is it an outlier?",
           "The mean (17.8) is lower than 5 of the 6 games. A good 'typical' value should sit among most of the data, like the median (20.5) does."
-        ]
+        ],
+        "titleEs": "Extensión de Nivel 2: la medida equivocada del analista",
+        "explanation": "The 2-point game was cut short by an ejection, so it is an outlier, and it drags the mean down to about 17.8 — lower than five of the six games. The median 20.5 sits among the 19-to-23 point games, so it describes the player's typical scoring much better.",
+        "explanationEs": "El partido de 2 puntos se acortó por una expulsión, así que es un valor atípico, y jala la media hasta cerca de 17.8, más bajo que cinco de los seis partidos. La mediana 20.5 queda entre los partidos de 19 a 23 puntos, así que describe mucho mejor la anotación típica del jugador."
       },
       {
         "type": "multiple-choice",
@@ -544,15 +616,17 @@
         "explanation": "The data is symmetric with no outliers, so the mean (8.7) best represents the typical score.",
         "choiceFeedback": [
           "",
-          "",
-          "",
-          ""
+          "The median ignores how far apart the values are. Check whether this data has any outlier that would make leaving values out worthwhile.",
+          "Five values is plenty for a measure of center. A small set is only a problem when it contains extreme values.",
+          "Both measures actually work reasonably well here, since the scores are clustered close together. Decide which one uses the data most fully when there are no outliers."
         ],
         "hints": [
           "Look at the scores: 8.5 up to 8.9 — all five are bunched tightly together with no unusual value.",
           "Rule of thumb: with no outliers and balanced data, one measure uses every value fairly. With outliers, the middle value is safer. Which case is this?",
           "First step: check for an outlier — is any score far from the others? All five sit within 0.4 points, so apply the no-outlier rule."
-        ]
+        ],
+        "stemEs": "Las puntuaciones de una gimnasta son: 8.5, 8.8, 8.7, 8.6, 8.9. No hay valores atípicos. ¿Cuál medida representa mejor una puntuación típica?",
+        "explanationEs": "Los datos son simétricos y no tienen valores atípicos, así que la media (8.7) representa mejor la puntuación típica."
       },
       {
         "type": "multiple-choice",
@@ -575,7 +649,9 @@
           "Four times are near 7 minutes; one is 12:00 from a cramp. That 12:00 is an outlier, not a typical mile.",
           "Ask: which measure gets dragged toward an extreme value, and which one just takes the middle of the ordered list?",
           "First step: order the times and notice where 12:00 sits — far beyond the rest. Then choose the measure that isn't pulled by that extreme time."
-        ]
+        ],
+        "stemEs": "Los tiempos de una corredora en la milla son: 7:10, 7:15, 7:12, 7:20, 12:00. El 12:00 se debió a un calambre. ¿Cuál medida representa mejor una milla típica?",
+        "explanationEs": "El 12:00 es un valor atípico que sube la media. La mediana (7:15) representa mejor el tiempo típico de la corredora."
       },
       {
         "type": "multiple-choice",
@@ -598,7 +674,9 @@
           "Five of the six values are between 5 and 8 — then there's 50. Notice where the mean (13.8) lands compared to those five.",
           "Test for 'typical': count how many actual data values sit near 13.8, then how many sit near 7. A good measure stays close to most of the data.",
           "First step: compare 13.8 to the list — it's bigger than 5, 6, 7, 7, AND 8. Ask what pulled it up there, and whether the median has that problem."
-        ]
+        ],
+        "stemEs": "Conjunto de datos: 5, 6, 7, 7, 8, 50. La media es aproximadamente 13.8 y la mediana es 7. ¿Cuál representa mejor el valor típico?",
+        "explanationEs": "La media (13.8) es mayor que 5 de los 6 valores porque el valor atípico 50 la jala hacia arriba. La mediana (7) representa mejor un valor típico."
       },
       {
         "type": "error-analysis",
@@ -622,7 +700,10 @@
         "hints": [
           "The median is the MIDDLE value only after the numbers are sorted from least to greatest.",
           "Sort the data first: 8, 9, 10, 11, 12. Now which value sits in the middle?"
-        ]
+        ],
+        "titleEs": "Detecta el error: olvidar ordenar los datos",
+        "explanation": "The median is the middle value only after the data is sorted. Ordering 9, 12, 8, 11, 10 gives 8, 9, 10, 11, 12, so the median is 10 — the 8 that was reported is actually the smallest value in the set. With no outliers here, the mean is also 10, so either measure describes a typical lap count.",
+        "explanationEs": "La mediana es el valor del medio solo después de ordenar los datos. Ordenar 9, 12, 8, 11, 10 da 8, 9, 10, 11, 12, así que la mediana es 10; el 8 que se reportó en realidad es el valor más pequeño del conjunto. Como aquí no hay valores atípicos, la media también es 10, así que cualquiera de las dos medidas describe una cantidad típica de vueltas."
       }
     ],
     "optional": [],

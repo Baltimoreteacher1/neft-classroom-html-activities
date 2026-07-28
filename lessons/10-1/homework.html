@@ -1604,6 +1604,14 @@ body.obj-popup-open { overflow: hidden; }
 .section-vocab { border-left: 4px solid var(--coral); }
 .section-stuck { border-left: 4px solid #9b59b6; }
 .section-quick-intro { border-left: 4px solid var(--success); }
+.quick-check-time {
+  background: var(--amber-light);
+  border: 1px solid var(--amber);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 0 0 12px;
+  font-size: 15px;
+}
 .section-celebrate {
   border-left: 4px solid var(--amber);
   background: linear-gradient(180deg, var(--amber-light), var(--white));
@@ -1851,6 +1859,16 @@ body.obj-popup-open { overflow: hidden; }
   padding: 2px;
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x proximity;
+}
+/* On a phone the 10 tabs are ~738px wide in a ~381px viewport, so half of them
+   (Help, More, Done) sit off-screen with nothing to suggest they exist. Fade the
+   trailing edge so the strip reads as scrollable. Only below 700px, where the
+   overflow is guaranteed — a permanent fade on desktop would just look broken. */
+@media (max-width: 700px) {
+  .homework-tab-bar {
+    -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+    mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+  }
 }
 .homework-tab-btn {
   flex: 0 0 auto;
@@ -2372,6 +2390,12 @@ body.lang-mode-es .bilingual-grid {
 @media print {
   .homework-tab-chrome, .homework-tab-bar, .bottom-status-bar, .help-modal-overlay, .print-all-btn, .parent-signoff-container { display: none !important; }
   .tab-panel-inner[hidden] { display: block !important; page-break-inside: avoid; }
+  /* Printing un-hides every panel, but these three are screen-only: an embedded
+     arcade iframe, a live game, and a link-out. On paper they were blank or
+     meaningless pages in the middle of the packet. */
+  [data-tab-panel="arcade"],
+  [data-tab-panel="play"],
+  [data-tab-panel="workbench"] { display: none !important; }
   body { padding-bottom: 0; }
   
   .print-only-certificate.is-signed {
@@ -2448,7 +2472,7 @@ body.lang-mode-es .bilingual-grid {
 
 
 .family-visual-lab{--lab-ink:#173a5e;--lab-teal:#0b8f87;--lab-coral:#ff775f;--lab-sun:#f6c94c;margin:26px 0;padding:clamp(18px,3vw,30px);border:3px solid var(--lab-ink);border-radius:28px;background:#fffdf5;box-shadow:8px 8px 0 var(--lab-ink);color:var(--lab-ink)}
-.visual-lab-heading{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(260px,1.15fr);gap:20px;align-items:end;margin-bottom:20px}.visual-lab-heading h2{margin:6px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.05}.visual-lab-heading p{margin:0;padding:14px 16px;border-left:5px solid var(--lab-sun);background:#fff8d9;font-size:17px;font-weight:700;line-height:1.45}.visual-lab-kicker{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--lab-ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em}
+.visual-lab-heading{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(260px,1.15fr);gap:20px;align-items:end;margin-bottom:20px}.visual-lab-heading h2{margin:6px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.05}.visual-lab-heading p{margin:0;padding:14px 16px;border-left:5px solid var(--lab-sun);background:#fff8d9;font-size:17px;font-weight:700;line-height:1.45}.visual-lab-kicker{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--lab-ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em}.visual-lab-kicker .lang-en,.visual-lab-kicker .lang-es{color:inherit}
 .visual-lab-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(230px,.8fr);gap:18px;align-items:stretch}.visual-lab-canvas-wrap{min-width:0;padding:12px;border-radius:22px;background-color:#eef8f4;background-image:linear-gradient(#cee3dc 1px,transparent 1px),linear-gradient(90deg,#cee3dc 1px,transparent 1px);background-size:24px 24px;border:2px solid var(--lab-ink)}.visual-lab-stage{display:grid;place-items:center;min-height:280px}.visual-lab-stage svg{display:block;width:100%;max-height:320px;overflow:visible}.visual-lab-status{min-height:26px;margin:5px 8px 0;padding:7px 10px;border-radius:10px;background:#fff;font-weight:800;text-align:center}
 .visual-lab-controls{display:flex;flex-direction:column;gap:14px;padding:18px;border-radius:22px;background:var(--lab-ink);color:#fff}.visual-lab-control{display:grid;gap:7px;font-weight:800}.visual-lab-control-label{display:flex;justify-content:space-between;gap:10px;align-items:center}.visual-lab-control output{min-width:38px;padding:3px 8px;border-radius:8px;background:var(--lab-sun);color:#102f4e;text-align:center;font-size:18px}.visual-lab-control input[type=range]{width:100%;min-height:28px;accent-color:var(--lab-coral);cursor:pointer}.visual-lab-control input[type=range]:focus-visible{outline:4px solid #fff;outline-offset:4px}.visual-lab-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:auto}.visual-lab-button{min-height:48px;border:2px solid #fff;border-radius:13px;background:var(--lab-coral);color:#182f48;font:inherit;font-weight:800;cursor:pointer}.visual-lab-button-quiet{background:#fff}.visual-lab-button:hover{transform:translateY(-2px)}.visual-lab-button:focus-visible{outline:4px solid var(--lab-sun);outline-offset:3px}
 .visual-representation-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:18px}.visual-representation-card{position:relative;min-height:150px;padding:18px 16px 15px;border:2px solid var(--lab-ink);border-radius:18px;background:#fff}.visual-representation-card h3{margin:0 0 10px;padding-left:30px;font-size:17px}.visual-representation-card p{margin:7px 0;font-size:16px;line-height:1.4}.representation-number{position:absolute;top:12px;left:12px;display:grid;width:27px;height:27px;place-items:center;border-radius:50%;background:var(--lab-ink);color:#fff;font-weight:800}.visual-representation-model{background:#dff5ee}.visual-representation-math{background:#fff2c2}.visual-representation-words{background:#ffe4dd}.visual-representation-math [data-lab-equation]{font-size:clamp(22px,3vw,32px);font-weight:800;text-align:center}.mini-model{display:flex;flex-wrap:wrap;gap:7px;align-content:center;min-height:76px;padding:8px}.mini-dot{width:18px;height:18px;border:2px solid var(--lab-ink);border-radius:50%;background:var(--lab-teal)}.visual-representation-card details{margin-top:10px}.visual-representation-card summary{cursor:pointer;font-weight:800;text-decoration:underline}.visual-source-idea{font-size:13px!important;color:#344f69}
@@ -2731,12 +2755,12 @@ header.packet h1::after{
         <div class="bilingual-col lang-en">
           <span class="lang-label">English</span>
           <p class="learning-big">Tonight we find the volume of a box. Volume is how much space fits inside. We multiply the three edges: length, width, and height.</p>
-          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Volume</li><li>Rectangular prism</li><li>Cubic units</li><li>Length, width, height</li><li>Net</li></ul></div>
+          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Volume with Whole-Number Edges</li><li>Volume</li><li>Rectangular prism</li><li>Cubic units</li><li>Length, width, height</li></ul></div>
         </div>
         <div class="bilingual-col lang-es" lang="es">
           <span class="lang-label">Español</span>
           <p class="learning-big">Esta noche encontramos el volumen de una caja. El volumen es cuánto espacio cabe adentro. Multiplicamos las tres aristas: largo, ancho y altura.</p>
-          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Volumen</li><li>Prisma rectangular</li><li>Unidades cúbicas</li><li>Largo, ancho, altura</li><li>Plantilla (desarrollo plano)</li></ul></div>
+          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Volumen con aristas de números enteros</li><li>Volumen</li><li>Prisma rectangular</li><li>Unidades cúbicas</li><li>Largo, ancho, altura</li></ul></div>
         </div>
       </div>
     
@@ -2868,6 +2892,24 @@ header.packet h1::after{
       </p>
       <div class="vocab-container">
         
+            <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+              <div class="vocab-card-inner">
+                <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/volume.svg" alt="Illustration of Volume with Whole-Number Edges: The number of unit cubes inside a rectangular prism. Formula: V = l × w × h." loading="lazy" width="72" height="72" />
+                  </div>
+                  <h3>Volume with Whole-Number Edges</h3>
+                  <p class="vocab-es" lang="es">Volumen con aristas de números enteros</p>
+                  <div class="vocab-visual-hint">💡 V = l × w × h; 3 × 4 × 5 = 60 cubic units.</div>
+                  <div class="flip-prompt"><span class="lang-en">Tap</span><span class="lang-es" lang="es">Toca ➔</span></div>
+                </div>
+                <div class="vocab-card-back">
+                  <p class="vocab-def">The number of unit cubes inside a rectangular prism. Formula: V = l × w × h.</p>
+                  <p class="vocab-def-es" lang="es">La cantidad de cubos unitarios dentro de un prisma rectangular. Fórmula: V = l × w × h.</p>
+                  <p class="vocab-back-visual">📌 V = l × w × h; 3 × 4 × 5 = 60 cubic units.</p>
+                </div>
+              </div>
+            </div>
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -3112,6 +3154,10 @@ header.packet h1::after{
       
     
       <h2 class="section-title">✅ <span class="lang-en">Quick check</span><span class="lang-es" lang="es">Repaso rápido</span></h2>
+      <p class="quick-check-time bilingual-block">
+        <span class="lang-en">⏱️ Plan on about <strong>15–20 minutes</strong> for the 6 problems below. The extra practice at the bottom is optional.</span>
+        <span class="lang-es" lang="es">⏱️ Calculen unos <strong>15–20 minutos</strong> para los 6 problemas de abajo. La práctica extra al final es opcional.</span>
+      </p>
       <p class="bilingual-block">
         <span class="lang-en">A few problems to practice together. Each one has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong>, and a <strong>space to show your work</strong>. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
         <span class="lang-es" lang="es">Unos problemas para practicar juntos. Cada uno tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para mostrar el trabajo</strong>. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
@@ -3136,12 +3182,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_0" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 1</div>
-        <div class="problem-type-badge">DRAG SORT</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Statements about layers of cubes — counting 4 layers of 6, adding up the cubes in every layer, and stacking layers until the box is full — describe filling the prism cube by cube. The other three (using V = length × width × height, multiplying the three edge lengths, and computing 6 × 5 × 2 = 60) use the formula, which is a shortcut for that same layer count.","es":"Los enunciados sobre capas de cubos —contar 4 capas de 6, sumar los cubos de cada capa y apilar capas hasta llenar la caja— describen llenar el prisma cubo por cubo. Los otros tres (usar V = largo × ancho × altura, multiplicar las tres aristas y calcular 6 × 5 × 2 = 60) usan la fórmula, que es un atajo para ese mismo conteo de capas.","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A capsule is filled with unit cubes. Sort each statement by whether it describes COUNTING cubes by layers or finding volume with the FORMULA.</p>
+        <p class="problem-stem"><span class="lang-en">A capsule is filled with unit cubes. Sort each statement by whether it describes COUNTING cubes by layers or finding volume with the FORMULA.</span><span class="lang-es" lang="es">Una cápsula se llena con cubos unitarios. Clasifica cada afirmación según si describe CONTAR cubos por capas o encontrar el volumen con la FÓRMULA.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
         
         <div class="drag-sort-workspace" id="dragsort_0">
@@ -3278,37 +3324,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_1" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 2</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"V = length × width × height = 5 × 3 × 2 = 30 cubic units.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Volume counts how many unit cubes fit inside a solid, so the answer will be in cubic units.","es":"El volumen cuenta cuántos cubos unitarios caben dentro de un cuerpo, así que la respuesta irá en unidades cúbicas.","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A time capsule box is 5 units long, 3 units wide, and 2 units tall. How many unit cubes fill it?</p>
+        <p class="problem-stem"><span class="lang-en">A time capsule box is 5 units long, 3 units wide, and 2 units tall. How many unit cubes fill it?</span><span class="lang-es" lang="es">Una caja de cápsula del tiempo mide 5 unidades de largo, 3 unidades de ancho y 2 unidades de alto. ¿Cuántos cubos unitarios la llenan?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="V = length × width × height = 5 × 3 × 2 = 30 cubic units.">
+        <div class="mc-options" data-correct="0" data-explanation="V = length × width × height = 5 × 3 × 2 = 30 cubic units." data-explanation-es="V = largo × ancho × altura = 5 × 3 × 2 = 30 unidades cúbicas.">
           
             <label class="mc-option-label" id="label_q_1_0">
               <input type="radio" name="q_1" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">30 cubic units</span>
+              <span class="choice-text"><span class="lang-en">30 cubic units</span><span class="lang-es" lang="es">30 unidades cúbicas</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_1_1">
               <input type="radio" name="q_1" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">10 cubic units</span>
+              <span class="choice-text"><span class="lang-en">10 cubic units</span><span class="lang-es" lang="es">10 unidades cúbicas</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_1_2">
               <input type="radio" name="q_1" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">15 cubic units</span>
+              <span class="choice-text"><span class="lang-en">15 cubic units</span><span class="lang-es" lang="es">15 unidades cúbicas</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_1_3">
               <input type="radio" name="q_1" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">25 cubic units</span>
+              <span class="choice-text"><span class="lang-en">25 cubic units</span><span class="lang-es" lang="es">25 unidades cúbicas</span></span>
             </label>
           
         </div>
@@ -3348,12 +3394,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_2" data-problem-type="drag-sort" data-problem-subtype="drag-order">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 3</div>
-        <div class="problem-type-badge">DRAG ORDER</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG ORDER</span><span class="lang-es" lang="es">ORDENAR ARRASTRANDO</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read each step card. One identifies numbers, one writes a formula, two multiply, and one states the answer.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read each step card. One identifies numbers, one writes a formula, two multiply, and one states the answer.","es":"Los pasos van así: identificar l = 8, w = 5, h = 3; escribir V = l × w × h; multiplicar 8 × 5 = 40; multiplicar 40 × 3 = 120; y decir V = 120 in³. No puedes usar la fórmula antes de saber cuál número es el largo, el ancho y la altura, y la respuesta solo llega después de hacer las dos multiplicaciones.","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Put these steps in order for finding the volume of a box that is 8 in long, 5 in wide, and 3 in tall.</p>
+        <p class="problem-stem"><span class="lang-en">Put these steps in order for finding the volume of a box that is 8 in long, 5 in wide, and 3 in tall.</span><span class="lang-es" lang="es">Ordena estos pasos para encontrar el volumen de una caja de 8 in de largo, 5 in de ancho y 3 in de alto.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Use the ▲ ▼ buttons to reorder steps, or drag the row handles on a computer.</span><span class="lang-es" lang="es">👪 Usen ▲ ▼ para reordenar, o arrastren las filas en la computadora.</span></p>
         <div class="drag-order-workspace" id="dragorder_2" data-correct-order='[&quot;Identify: l = 8, w = 5, h = 3&quot;,&quot;Write the formula: V = l × w × h&quot;,&quot;Multiply: 8 × 5 = 40&quot;,&quot;Multiply: 40 × 3 = 120&quot;,&quot;Answer: V = 120 in³&quot;]' data-initial-order='[&quot;Multiply: 40 × 3 = 120&quot;,&quot;Answer: V = 120 in³&quot;,&quot;Identify: l = 8, w = 5, h = 3&quot;,&quot;Write the formula: V = l × w × h&quot;,&quot;Multiply: 8 × 5 = 40&quot;]'>
           <div class="drag-order-list" id="orderlist_2">
@@ -3443,43 +3489,63 @@ header.packet h1::after{
           </div>
         </div>
         <section class="problems-container" aria-label="Practice problems">
-    <section class="problem-section card" id="problem_3" data-problem-type="open-response">
+    <section class="problem-section card" id="problem_3" data-problem-type="matching-game">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 1</div>
-        <div class="problem-type-badge">OPEN RESPONSE</div>
+        <div class="problem-type-badge"><span class="lang-en">MATCHING GAME</span><span class="lang-es" lang="es">JUEGO DE PAREJAS</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"You need three DIFFERENT whole-number triples that multiply to exactly 60, like l × w × h = 60.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Multiply the three dimensions on each card to find its partner: 7 × 2 × 3 = 42, 6 × 5 × 2 = 60, 9 × 4 × 2 = 72, and 5 × 3 × 2 = 30 cubic units. Each product is different, so every set of dimensions has exactly one matching volume.","es":"Multiplica las tres dimensiones de cada tarjeta para encontrar su pareja: 7 × 2 × 3 = 42, 6 × 5 × 2 = 60, 9 × 4 × 2 = 72 y 5 × 3 × 2 = 30 unidades cúbicas. Cada producto es distinto, así que cada conjunto de dimensiones tiene exactamente un volumen que le corresponde.","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A box needs to hold exactly 60 cubic inches. Give three different sets of whole-number dimensions that work. Which set would make the box closest to a cube shape? Why might that matter?</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 A complete sentence with math vocabulary is the goal — not a perfect paragraph.</span><span class="lang-es" lang="es">👪 Una oración completa con vocabulario matemático es la meta — no un párrafo perfecto.</span></p>
-        
-        
-          <div class="sentence-frame-card">
-            <span class="sentence-frame-tag">💡 Sentence Starter:</span>
-            <span class="sentence-frame-text" onclick="insertSentenceStarter(3, 'Option 1: ___ × ___ × ___. Option 2: ___ × ___ × ___. Option 3: ___ × ___ × ___. The ___ option is closest to a cube because ___. This matters because ___.')">"Option 1: ___ × ___ × ___. Option 2: ___ × ___ × ___. Option 3: ___ × ___ × ___. The ___ option is closest to a cube because ___. This matters because ___."</span>
-            <span class="click-to-insert-hint">(Click to insert starter)</span>
-          </div>
-        
-        
-        <div class="open-response-wrapper">
-          <textarea id="open_response_3" 
-                    class="custom-textarea open-response-textarea" 
-                    data-min-length="30" 
-                    data-keywords="[&quot;volume&quot;,&quot;dimensions&quot;,&quot;cube&quot;,&quot;equal&quot;,&quot;factor&quot;,&quot;60&quot;,&quot;length&quot;,&quot;width&quot;,&quot;height&quot;]"
-                    placeholder="Write your mathematical explanation here..." 
-                    oninput="saveState(); updateProgress();"></textarea>
-          <span class="feedback-badge"></span>
-        </div>
-        
-        
-          <div class="word-bank-container">
-            <div class="word-bank-label">Key Vocabulary to include (click to insert):</div>
-            <div class="word-bank-chips">
-              <span class="word-chip" onclick="insertWord(3, 'volume')">volume</span><span class="word-chip" onclick="insertWord(3, 'dimensions')">dimensions</span><span class="word-chip" onclick="insertWord(3, 'cube')">cube</span><span class="word-chip" onclick="insertWord(3, 'equal')">equal</span><span class="word-chip" onclick="insertWord(3, 'factor')">factor</span><span class="word-chip" onclick="insertWord(3, '60')">60</span><span class="word-chip" onclick="insertWord(3, 'length')">length</span><span class="word-chip" onclick="insertWord(3, 'width')">width</span><span class="word-chip" onclick="insertWord(3, 'height')">height</span>
+        <p class="problem-stem"><span class="lang-en">Match each capsule&#039;s dimensions to its volume. Use V = length × width × height.</span><span class="lang-es" lang="es">Une las dimensiones de cada cápsula con su volumen. Usa V = largo × ancho × alto.</span></p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Say each term out loud, then talk through which match makes sense before choosing.</span><span class="lang-es" lang="es">👪 Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.</span></p>
+        <div class="matching-pairs">
+          
+            <div class="matching-row" data-term="7 × 2 × 3" data-correct="42 cubic units">
+              <div class="matching-term">7 × 2 × 3</div>
+              <div class="matching-select-container">
+                <select name="q_3_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="30 cubic units">30 cubic units</option><option value="42 cubic units">42 cubic units</option><option value="60 cubic units">60 cubic units</option><option value="72 cubic units">72 cubic units</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
             </div>
-          </div>
-        
+          
+            <div class="matching-row" data-term="6 × 5 × 2" data-correct="60 cubic units">
+              <div class="matching-term">6 × 5 × 2</div>
+              <div class="matching-select-container">
+                <select name="q_3_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="30 cubic units">30 cubic units</option><option value="42 cubic units">42 cubic units</option><option value="60 cubic units">60 cubic units</option><option value="72 cubic units">72 cubic units</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="9 × 4 × 2" data-correct="72 cubic units">
+              <div class="matching-term">9 × 4 × 2</div>
+              <div class="matching-select-container">
+                <select name="q_3_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="30 cubic units">30 cubic units</option><option value="42 cubic units">42 cubic units</option><option value="60 cubic units">60 cubic units</option><option value="72 cubic units">72 cubic units</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="5 × 3 × 2" data-correct="30 cubic units">
+              <div class="matching-term">5 × 3 × 2</div>
+              <div class="matching-select-container">
+                <select name="q_3_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="30 cubic units">30 cubic units</option><option value="42 cubic units">42 cubic units</option><option value="60 cubic units">60 cubic units</option><option value="72 cubic units">72 cubic units</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+        </div>
       </div>
     
       
@@ -3492,20 +3558,6 @@ header.packet h1::after{
           <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
         </ol>
       </details>
-      <div class="hw-workspace">
-        <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Label the prism with its length, width, and height.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Rotula el prisma con su largo, ancho y alto.</span></div>
-          <div class="hw-visual-frame hw-drawable" data-draw-frame>
-            <svg viewBox="0 0 220 140" class="hw-visual-svg" role="img" aria-label="Rectangular prism to label"><rect x="40" y="45" width="110" height="70" fill="#ffffff" stroke="#12355b" stroke-width="2"/><polygon points="40,45 75,20 185,20 150,45" fill="#eef5f4" stroke="#12355b" stroke-width="2"/><polyline points="150,45 185,20 185,90 150,115" fill="none" stroke="#12355b" stroke-width="2"/><line x1="150" y1="115" x2="185" y2="90" stroke="#12355b" stroke-width="2"/></svg>
-            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
-            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
-          </div>
-        </div>
-        <div class="hw-work">
-          <label class="hw-work-label" for="work_3"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
-          <textarea id="work_3" name="work_3" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
-        </div>
-      </div>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
@@ -3513,112 +3565,43 @@ header.packet h1::after{
     </section>
   
 
-    <section class="problem-section card" id="problem_4" data-problem-type="fill-table">
+    <section class="problem-section card" id="problem_4" data-problem-type="open-response">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 2</div>
-        <div class="problem-type-badge">FILL TABLE</div>
+        <div class="problem-type-badge"><span class="lang-en">OPEN RESPONSE</span><span class="lang-es" lang="es">RESPUESTA ABIERTA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The original box is 3 × 4 × 5, which holds 60 cubic units. Each row changes only ONE dimension.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"You need three DIFFERENT whole-number triples that multiply to exactly 60, like l × w × h = 60.","es":"Sirve cualquier trío de números enteros cuyo producto sea 60, como 1 × 6 × 10, 2 × 5 × 6 y 3 × 4 × 5. De esos, 3 × 4 × 5 es el más parecido a un cubo porque sus aristas son las más cercanas entre sí, y una caja parecida a un cubo usa menos material en su superficie aunque guarde las mismas 60 pulgadas cúbicas.","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">If you double ONE dimension of a 3 × 4 × 5 box, how does the volume change?</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
-        <div class="table-responsive">
-          <table class="fill-table">
-            <thead>
-              <tr>
-                <th>Change</th><th>New Dimensions</th><th>New Volume</th><th>How did it change?</th>
-              </tr>
-            </thead>
-            <tbody>
-              
-                <tr>
-                  <td>Double the length</td><td>6 × 4 × 5</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_4_table_0_2"
-                                   data-correct="120" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_4_table_0_3"
-                                   data-correct="Volume doubled" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>Double the width</td><td>3 × 8 × 5</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_4_table_1_2"
-                                   data-correct="120" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_4_table_1_3"
-                                   data-correct="Volume doubled" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>Double the height</td><td>3 × 4 × 10</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_4_table_2_2"
-                                   data-correct="120" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_4_table_2_3"
-                                   data-correct="Volume doubled" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-            </tbody>
-          </table>
+        <p class="problem-stem"><span class="lang-en">A box needs to hold exactly 60 cubic inches. Give three different sets of whole-number dimensions that work. Which set would make the box closest to a cube shape? Why might that matter?</span><span class="lang-es" lang="es">Una caja debe contener exactamente 60 pulgadas cúbicas. Da tres conjuntos distintos de dimensiones con números enteros que funcionen. ¿Cuál conjunto haría la caja más parecida a un cubo? ¿Por qué podría importar eso?</span></p>
+        <p class="family-problem-tip"><span class="lang-en">👪 A complete sentence with math vocabulary is the goal — not a perfect paragraph.</span><span class="lang-es" lang="es">👪 Una oración completa con vocabulario matemático es la meta — no un párrafo perfecto.</span></p>
+        
+        
+          <div class="sentence-frame-card">
+            <span class="sentence-frame-tag">💡 Sentence Starter:</span>
+            <span class="sentence-frame-text" onclick="insertSentenceStarter(4, 'Option 1: ___ × ___ × ___. Option 2: ___ × ___ × ___. Option 3: ___ × ___ × ___. The ___ option is closest to a cube because ___. This matters because ___.')">"Option 1: ___ × ___ × ___. Option 2: ___ × ___ × ___. Option 3: ___ × ___ × ___. The ___ option is closest to a cube because ___. This matters because ___."</span>
+            <span class="click-to-insert-hint">(Click to insert starter)</span>
+          </div>
+        
+        
+        <div class="open-response-wrapper">
+          <textarea id="open_response_4" 
+                    class="custom-textarea open-response-textarea" 
+                    data-min-length="30" 
+                    data-keywords="[&quot;volume&quot;,&quot;dimensions&quot;,&quot;cube&quot;,&quot;equal&quot;,&quot;factor&quot;,&quot;60&quot;,&quot;length&quot;,&quot;width&quot;,&quot;height&quot;]"
+                    placeholder="Write your mathematical explanation here..." 
+                    oninput="saveState(); updateProgress();"></textarea>
+          <span class="feedback-badge"></span>
         </div>
+        
+        
+          <div class="word-bank-container">
+            <div class="word-bank-label">Key Vocabulary to include (click to insert):</div>
+            <div class="word-bank-chips">
+              <span class="word-chip" onclick="insertWord(4, 'volume')">volume</span><span class="word-chip" onclick="insertWord(4, 'dimensions')">dimensions</span><span class="word-chip" onclick="insertWord(4, 'cube')">cube</span><span class="word-chip" onclick="insertWord(4, 'equal')">equal</span><span class="word-chip" onclick="insertWord(4, 'factor')">factor</span><span class="word-chip" onclick="insertWord(4, '60')">60</span><span class="word-chip" onclick="insertWord(4, 'length')">length</span><span class="word-chip" onclick="insertWord(4, 'width')">width</span><span class="word-chip" onclick="insertWord(4, 'height')">height</span>
+            </div>
+          </div>
+        
       </div>
     
       
@@ -3652,42 +3635,111 @@ header.packet h1::after{
     </section>
   
 
-    <section class="problem-section card" id="problem_5" data-problem-type="multiple-choice">
+    <section class="problem-section card" id="problem_5" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 3</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">FILL TABLE</span><span class="lang-es" lang="es">COMPLETAR LA TABLA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The prism&#39;s edges are 8 cm, 5 cm, and 4 cm. Volume means multiplying those edges, not adding them.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The original box is 3 × 4 × 5, which holds 60 cubic units. Each row changes only ONE dimension.","es":"La caja original de 3 × 4 × 5 tiene 60 unidades cúbicas. Al duplicar el largo queda 6 × 4 × 5 = 120, al duplicar el ancho queda 3 × 8 × 5 = 120 y al duplicar la altura queda 3 × 4 × 10 = 120: en todas las filas el volumen se duplica, porque duplicar un factor duplica todo el producto sin importar cuál factor elijas.","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A rectangular prism has length 8 cm, width 5 cm, and height 4 cm. What is its volume?</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="1" data-explanation="V = l × w × h = 8 × 5 × 4 = 160 cm³.">
-          
-            <label class="mc-option-label" id="label_q_5_0">
-              <input type="radio" name="q_5" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">17 cm³</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_5_1">
-              <input type="radio" name="q_5" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">160 cm³</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_5_2">
-              <input type="radio" name="q_5" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">80 cm³</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_5_3">
-              <input type="radio" name="q_5" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">120 cm³</span>
-            </label>
-          
+        <p class="problem-stem"><span class="lang-en">If you double ONE dimension of a 3 × 4 × 5 box, how does the volume change?</span><span class="lang-es" lang="es">Si duplicas UNA dimensión de una caja de 3 × 4 × 5, ¿cómo cambia el volumen?</span></p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
+        <div class="table-responsive">
+          <table class="fill-table">
+            <thead>
+              <tr>
+                <th>Change</th><th>New Dimensions</th><th>New Volume</th><th>How did it change?</th>
+              </tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>Double the length</td><td>6 × 4 × 5</td>
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_5_table_0_2"
+                                   data-correct="120" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_5_table_0_3"
+                                   data-correct="Volume doubled" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                </tr>
+              
+                <tr>
+                  <td>Double the width</td><td>3 × 8 × 5</td>
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_5_table_1_2"
+                                   data-correct="120" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_5_table_1_3"
+                                   data-correct="Volume doubled" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                </tr>
+              
+                <tr>
+                  <td>Double the height</td><td>3 × 4 × 10</td>
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_5_table_2_2"
+                                   data-correct="120" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_5_table_2_3"
+                                   data-correct="Volume doubled" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                </tr>
+              
+            </tbody>
+          </table>
         </div>
       </div>
     
@@ -3733,61 +3785,41 @@ header.packet h1::after{
           <span class="lang-es" lang="es">Opcional. Solo si tu estudiante quiere más — son problemas adicionales.</span>
         </p>
         <section class="problems-container more-practice-container" aria-label="More practice">
-    <section class="problem-section card" id="problem_6" data-problem-type="matching-game">
+    <section class="problem-section card" id="problem_6" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 1</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The prism&#39;s edges are 8 cm, 5 cm, and 4 cm. Volume means multiplying those edges, not adding them.","es":"V = l × w × h = 8 × 5 × 4 = 160 cm³.","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Match each capsule&#039;s dimensions to its volume. Use V = length × width × height.</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Say each term out loud, then talk through which match makes sense before choosing.</span><span class="lang-es" lang="es">👪 Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.</span></p>
-        <div class="matching-pairs">
+        <p class="problem-stem"><span class="lang-en">A rectangular prism has length 8 cm, width 5 cm, and height 4 cm. What is its volume?</span><span class="lang-es" lang="es">Un prisma rectangular tiene largo 8 cm, ancho 5 cm y altura 4 cm. ¿Cuál es su volumen?</span></p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
+        <div class="mc-options" data-correct="1" data-explanation="V = l × w × h = 8 × 5 × 4 = 160 cm³." data-explanation-es="V = l × w × h = 8 × 5 × 4 = 160 cm³.">
           
-            <div class="matching-row" data-term="7 × 2 × 3" data-correct="42 cubic units">
-              <div class="matching-term">7 × 2 × 3</div>
-              <div class="matching-select-container">
-                <select name="q_6_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="30 cubic units">30 cubic units</option><option value="42 cubic units">42 cubic units</option><option value="60 cubic units">60 cubic units</option><option value="72 cubic units">72 cubic units</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
+            <label class="mc-option-label" id="label_q_6_0">
+              <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">17 cm³</span>
+            </label>
           
-            <div class="matching-row" data-term="6 × 5 × 2" data-correct="60 cubic units">
-              <div class="matching-term">6 × 5 × 2</div>
-              <div class="matching-select-container">
-                <select name="q_6_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="30 cubic units">30 cubic units</option><option value="42 cubic units">42 cubic units</option><option value="60 cubic units">60 cubic units</option><option value="72 cubic units">72 cubic units</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
+            <label class="mc-option-label" id="label_q_6_1">
+              <input type="radio" name="q_6" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">160 cm³</span>
+            </label>
           
-            <div class="matching-row" data-term="9 × 4 × 2" data-correct="72 cubic units">
-              <div class="matching-term">9 × 4 × 2</div>
-              <div class="matching-select-container">
-                <select name="q_6_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="30 cubic units">30 cubic units</option><option value="42 cubic units">42 cubic units</option><option value="60 cubic units">60 cubic units</option><option value="72 cubic units">72 cubic units</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
+            <label class="mc-option-label" id="label_q_6_2">
+              <input type="radio" name="q_6" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">80 cm³</span>
+            </label>
           
-            <div class="matching-row" data-term="5 × 3 × 2" data-correct="30 cubic units">
-              <div class="matching-term">5 × 3 × 2</div>
-              <div class="matching-select-container">
-                <select name="q_6_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="30 cubic units">30 cubic units</option><option value="42 cubic units">42 cubic units</option><option value="60 cubic units">60 cubic units</option><option value="72 cubic units">72 cubic units</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
+            <label class="mc-option-label" id="label_q_6_3">
+              <input type="radio" name="q_6" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">120 cm³</span>
+            </label>
           
         </div>
       </div>
@@ -3802,6 +3834,20 @@ header.packet h1::after{
           <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
         </ol>
       </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Label the prism with its length, width, and height.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Rotula el prisma con su largo, ancho y alto.</span></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 220 140" class="hw-visual-svg" role="img" aria-label="Rectangular prism to label"><rect x="40" y="45" width="110" height="70" fill="#ffffff" stroke="#12355b" stroke-width="2"/><polygon points="40,45 75,20 185,20 150,45" fill="#eef5f4" stroke="#12355b" stroke-width="2"/><polyline points="150,45 185,20 185,90 150,115" fill="none" stroke="#12355b" stroke-width="2"/><line x1="150" y1="115" x2="185" y2="90" stroke="#12355b" stroke-width="2"/></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_6"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_6" name="work_6" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
@@ -3812,37 +3858,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_7" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 2</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"You already know the volume (120 cm³) and two edges (10 cm and 4 cm). The height is the missing piece.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Volume is the total number of unit cubes inside, no matter how they are grouped.","es":"El volumen es la cantidad total de cubos unitarios que hay dentro, sin importar cómo estén agrupados.","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A time capsule box has a volume of 120 cm³. Its length is 10 cm and width is 4 cm. What is its height?</p>
+        <p class="problem-stem"><span class="lang-en">You stack unit cubes in a capsule: each layer has 6 cubes, and there are 4 layers. What is the volume?</span><span class="lang-es" lang="es">Apilas cubos unitarios en una cápsula: cada capa tiene 6 cubos y hay 4 capas. ¿Cuál es el volumen?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="V = l × w × h → 120 = 10 × 4 × h → 120 = 40h → h = 3 cm.">
+        <div class="mc-options" data-correct="0" data-explanation="Each layer has 6 cubes and there are 4 layers, so 6 × 4 = 24 cubic units. This is the same as length × width × height with one factor being the number of layers." data-explanation-es="Cada capa tiene 6 cubos y hay 4 capas, así que 6 × 4 = 24 unidades cúbicas. Esto es lo mismo que largo × ancho × altura, donde uno de los factores es la cantidad de capas.">
           
             <label class="mc-option-label" id="label_q_7_0">
               <input type="radio" name="q_7" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">3 cm</span>
+              <span class="choice-text"><span class="lang-en">24 cubic units</span><span class="lang-es" lang="es">24 unidades cúbicas</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_7_1">
               <input type="radio" name="q_7" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">6 cm</span>
+              <span class="choice-text"><span class="lang-en">10 cubic units</span><span class="lang-es" lang="es">10 unidades cúbicas</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_7_2">
               <input type="radio" name="q_7" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">4 cm</span>
+              <span class="choice-text"><span class="lang-en">12 cubic units</span><span class="lang-es" lang="es">12 unidades cúbicas</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_7_3">
               <input type="radio" name="q_7" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">12 cm</span>
+              <span class="choice-text"><span class="lang-en">18 cubic units</span><span class="lang-es" lang="es">18 unidades cúbicas</span></span>
             </label>
           
         </div>
@@ -3882,37 +3928,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_8" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 3</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each 1-foot cube takes up exactly 1 ft³, so the number of cubes equals the crate&#39;s volume in cubic feet.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each 1-foot cube takes up exactly 1 ft³, so the number of cubes equals the crate&#39;s volume in cubic feet.","es":"La cantidad de cubos unitarios es igual al volumen: 12 × 3 × 2 = 72 cubos.","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A shipping crate is 12 ft long, 3 ft wide, and 2 ft tall. How many 1-foot cubes exactly fill it?</p>
+        <p class="problem-stem"><span class="lang-en">A shipping crate is 12 ft long, 3 ft wide, and 2 ft tall. How many 1-foot cubes exactly fill it?</span><span class="lang-es" lang="es">Una caja de envío mide 12 ft de largo, 3 ft de ancho y 2 ft de alto. ¿Cuántos cubos de 1 pie la llenan exactamente?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="2" data-explanation="The number of unit cubes equals the volume: 12 × 3 × 2 = 72 cubes.">
+        <div class="mc-options" data-correct="2" data-explanation="The number of unit cubes equals the volume: 12 × 3 × 2 = 72 cubes." data-explanation-es="La cantidad de cubos unitarios es igual al volumen: 12 × 3 × 2 = 72 cubos.">
           
             <label class="mc-option-label" id="label_q_8_0">
               <input type="radio" name="q_8" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">36 cubes</span>
+              <span class="choice-text"><span class="lang-en">36 cubes</span><span class="lang-es" lang="es">36 cubos</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_8_1">
               <input type="radio" name="q_8" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">144 cubes</span>
+              <span class="choice-text"><span class="lang-en">144 cubes</span><span class="lang-es" lang="es">144 cubos</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_8_2">
               <input type="radio" name="q_8" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">72 cubes</span>
+              <span class="choice-text"><span class="lang-en">72 cubes</span><span class="lang-es" lang="es">72 cubos</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_8_3">
               <input type="radio" name="q_8" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">17 cubes</span>
+              <span class="choice-text"><span class="lang-en">17 cubes</span><span class="lang-es" lang="es">17 cubos</span></span>
             </label>
           
         </div>
@@ -3952,37 +3998,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_9" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 4</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Re-read each unit and think dimensions: volume fills 3D space — length, width, AND height.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"You already know the volume (120 cm³) and two edges (10 cm and 4 cm). The height is the missing piece.","es":"V = l × w × h → 120 = 10 × 4 × h → 120 = 40h → h = 3 cm.","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Which unit is used for volume?</p>
+        <p class="problem-stem"><span class="lang-en">A time capsule box has a volume of 120 cm³. Its length is 10 cm and width is 4 cm. What is its height?</span><span class="lang-es" lang="es">Una caja de cápsula del tiempo tiene un volumen de 120 cm³. Su largo es 10 cm y su ancho es 4 cm. ¿Cuál es su altura?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Volume measures 3D space, so it uses cubic units like in³. Square units (in²) are for area, and inches are for length.">
+        <div class="mc-options" data-correct="0" data-explanation="V = l × w × h → 120 = 10 × 4 × h → 120 = 40h → h = 3 cm." data-explanation-es="V = l × w × h → 120 = 10 × 4 × h → 120 = 40h → h = 3 cm.">
           
             <label class="mc-option-label" id="label_q_9_0">
               <input type="radio" name="q_9" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Cubic inches (in³)</span>
+              <span class="choice-text">3 cm</span>
             </label>
           
             <label class="mc-option-label" id="label_q_9_1">
               <input type="radio" name="q_9" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Square inches (in²)</span>
+              <span class="choice-text">6 cm</span>
             </label>
           
             <label class="mc-option-label" id="label_q_9_2">
               <input type="radio" name="q_9" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Inches (in)</span>
+              <span class="choice-text">4 cm</span>
             </label>
           
             <label class="mc-option-label" id="label_q_9_3">
               <input type="radio" name="q_9" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Degrees (°)</span>
+              <span class="choice-text">12 cm</span>
             </label>
           
         </div>
@@ -4022,37 +4068,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_10" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 5</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"This is a two-part question: which bin holds more AND by how many cubic inches. You need both volumes first.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Re-read each unit and think dimensions: volume fills 3D space — length, width, AND height.","es":"El volumen mide el espacio en tres dimensiones, así que usa unidades cúbicas como in³. Las unidades cuadradas (in²) son para el área y las pulgadas son para la longitud.","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Two storage bins: Bin A is 8 × 6 × 5 inches. Bin B is 9 × 4 × 7 inches. Which holds more and by how much?</p>
+        <p class="problem-stem"><span class="lang-en">Which unit is used for volume?</span><span class="lang-es" lang="es">¿Qué unidad se usa para el volumen?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Bin A: 8 × 6 × 5 = 240 in³. Bin B: 9 × 4 × 7 = 252 in³. Bin B holds 12 in³ more.">
+        <div class="mc-options" data-correct="0" data-explanation="Volume measures 3D space, so it uses cubic units like in³. Square units (in²) are for area, and inches are for length." data-explanation-es="El volumen mide el espacio en tres dimensiones, así que usa unidades cúbicas como in³. Las unidades cuadradas (in²) son para el área y las pulgadas son para la longitud.">
           
             <label class="mc-option-label" id="label_q_10_0">
               <input type="radio" name="q_10" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Bin B by 12 in³</span>
+              <span class="choice-text"><span class="lang-en">Cubic inches (in³)</span><span class="lang-es" lang="es">Pulgadas cúbicas (in³)</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_10_1">
               <input type="radio" name="q_10" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Bin A by 12 in³</span>
+              <span class="choice-text"><span class="lang-en">Square inches (in²)</span><span class="lang-es" lang="es">Pulgadas cuadradas (in²)</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_10_2">
               <input type="radio" name="q_10" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Bin B by 24 in³</span>
+              <span class="choice-text"><span class="lang-en">Inches (in)</span><span class="lang-es" lang="es">Pulgadas (in)</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_10_3">
               <input type="radio" name="q_10" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">They hold the same</span>
+              <span class="choice-text"><span class="lang-en">Degrees (°)</span><span class="lang-es" lang="es">Grados (°)</span></span>
             </label>
           
         </div>
@@ -4092,37 +4138,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_11" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 6</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each layer has 6 cubes and there are 4 layers, so 6 × 4 = 24 cubic units. This is the same as length × width × height with one factor being the number of layers.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"This is a two-part question: which bin holds more AND by how many cubic inches. You need both volumes first.","es":"Caja A: 8 × 6 × 5 = 240 in³. Caja B: 9 × 4 × 7 = 252 in³. La Caja B guarda 12 in³ más.","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">You stack unit cubes in a capsule: each layer has 6 cubes, and there are 4 layers. What is the volume?</p>
+        <p class="problem-stem"><span class="lang-en">Two storage bins: Bin A is 8 × 6 × 5 inches. Bin B is 9 × 4 × 7 inches. Which holds more and by how much?</span><span class="lang-es" lang="es">Dos cajas de almacenamiento: la Caja A mide 8 × 6 × 5 pulgadas. La Caja B mide 9 × 4 × 7 pulgadas. ¿Cuál guarda más y por cuánto?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Each layer has 6 cubes and there are 4 layers, so 6 × 4 = 24 cubic units. This is the same as length × width × height with one factor being the number of layers.">
+        <div class="mc-options" data-correct="0" data-explanation="Bin A: 8 × 6 × 5 = 240 in³. Bin B: 9 × 4 × 7 = 252 in³. Bin B holds 12 in³ more." data-explanation-es="Caja A: 8 × 6 × 5 = 240 in³. Caja B: 9 × 4 × 7 = 252 in³. La Caja B guarda 12 in³ más.">
           
             <label class="mc-option-label" id="label_q_11_0">
               <input type="radio" name="q_11" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">24 cubic units</span>
+              <span class="choice-text"><span class="lang-en">Bin B by 12 in³</span><span class="lang-es" lang="es">El contenedor B por 12 in³</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_11_1">
               <input type="radio" name="q_11" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">10 cubic units</span>
+              <span class="choice-text"><span class="lang-en">Bin A by 12 in³</span><span class="lang-es" lang="es">El contenedor A por 12 in³</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_11_2">
               <input type="radio" name="q_11" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">12 cubic units</span>
+              <span class="choice-text"><span class="lang-en">Bin B by 24 in³</span><span class="lang-es" lang="es">El contenedor B por 24 in³</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_11_3">
               <input type="radio" name="q_11" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">18 cubic units</span>
+              <span class="choice-text"><span class="lang-en">They hold the same</span><span class="lang-es" lang="es">Los dos guardan lo mismo</span></span>
             </label>
           
         </div>
@@ -4162,14 +4208,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_12" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 7</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Notice the three edge lengths: l = 7 in, w = 3 in, h = 4 in. Volume asks how much space fills the whole box.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Notice the three edge lengths: l = 7 in, w = 3 in, h = 4 in. Volume asks how much space fills the whole box.","es":"V = l × w × h = 7 × 3 × 4 = 84 pulgadas cúbicas.","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">What is the volume of a rectangular prism with l = 7 in, w = 3 in, h = 4 in?</p>
+        <p class="problem-stem"><span class="lang-en">What is the volume of a rectangular prism with l = 7 in, w = 3 in, h = 4 in?</span><span class="lang-es" lang="es">¿Cuál es el volumen de un prisma rectangular con l = 7 in, w = 3 in, h = 4 in?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="V = l × w × h = 7 × 3 × 4 = 84 cubic inches.">
+        <div class="mc-options" data-correct="0" data-explanation="V = l × w × h = 7 × 3 × 4 = 84 cubic inches." data-explanation-es="V = l × w × h = 7 × 3 × 4 = 84 pulgadas cúbicas.">
           
             <label class="mc-option-label" id="label_q_12_0">
               <input type="radio" name="q_12" value="0" onchange="saveState(); updateProgress();">
@@ -4232,12 +4278,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_13" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 8</div>
-        <div class="problem-type-badge">FILL TABLE</div>
+        <div class="problem-type-badge"><span class="lang-en">FILL TABLE</span><span class="lang-es" lang="es">COMPLETAR LA TABLA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each row gives a length, width, and height. The empty Volume cell wants one number with cubic units.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each row gives a length, width, and height. The empty Volume cell wants one number with cubic units.","es":"Cada fila te da las tres aristas, así que multiplícalas: 5 × 3 × 4 = 60 in³, 6 × 6 × 2 = 72 cm³ y 9 × 2 × 5 = 90 ft³. El volumen cuenta los cubos unitarios que llenan la caja, por eso la respuesta lleva unidades cúbicas (in³, cm³, ft³) que coinciden con las unidades de las aristas.","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Find the volume of each rectangular prism.</p>
+        <p class="problem-stem"><span class="lang-en">Find the volume of each rectangular prism.</span><span class="lang-es" lang="es">Encuentra el volumen de cada prisma rectangular.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
         <div class="table-responsive">
           <table class="fill-table">
@@ -4596,8 +4642,8 @@ header.packet h1::after{
 <script>
 window.LESSON_ID = "10-1";
 window.LESSON_TITLE = "Volume with Whole Number Edges";
-window.__HW_VOCAB__ = [{"term":"Volume","termEs":"Volumen","def":"How much space is inside a solid shape.","defEs":"Cuánto espacio hay dentro de una figura sólida.","example":"A box 3 × 2 × 4 holds 24 unit cubes, so V = 24 cubic units","img":"/assets/vocab-images/volume.svg","imgAlt":"Illustration of Volume: How much space is inside a solid shape."},{"term":"Rectangular prism","termEs":"Prisma rectangular","def":"A solid box shape with six flat rectangle sides.","defEs":"Una figura sólida en forma de caja con seis lados rectangulares.","example":"A cereal box or shoe box — it has length, width, and height","img":"/assets/vocab-images/rectangular-prism.svg","imgAlt":"Illustration of Rectangular prism: A solid box shape with six flat rectangle sides."},{"term":"Cubic units","termEs":"Unidades cúbicas","def":"The units used to measure space inside, like cubic inches.","defEs":"Las unidades para medir el espacio interior, como pulgadas cúbicas.","example":"A tiny cube that is 1 in × 1 in × 1 in = 1 in³ (one cubic inch)","img":"/assets/vocab-images/cubic-units.svg","imgAlt":"Illustration of Cubic units: The units used to measure space inside, like cubic inches."},{"term":"Length, width, height","termEs":"Largo, ancho, altura","def":"How long, how wide, and how tall a box is.","defEs":"Qué tan largo, ancho y alto es una caja.","example":"V = l × w × h: for a box 5 × 3 × 2, volume = 30 cubic units","img":"/assets/vocab-images/dimensions.svg","imgAlt":"Illustration of Length, width, height: How long, how wide, and how tall a box is."},{"term":"Net","termEs":"Plantilla (desarrollo plano)","def":"A flat shape that folds up into a solid.","defEs":"Una figura plana que se dobla y forma un sólido.","example":"A cross-shaped pattern of 6 rectangles folds into a rectangular box","img":"/assets/vocab-images/net.svg","imgAlt":"Illustration of Net: A flat shape that folds up into a solid."},{"term":"Edge","termEs":"Arista","def":"The line where two flat sides of a solid meet.","defEs":"La línea donde se unen dos lados planos de un sólido.","example":"A cube has 12 edges — 4 along the top, 4 along the bottom, 4 vertical","img":"/assets/vocab-images/edge.svg","imgAlt":"Illustration of Edge: The line where two flat sides of a solid meet."}];
-window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Length, width, height|Rectangular prism|Cubic units|Volume|Edge|Net)(?:es|s)?\\b","lookup":{"volume":0,"rectangular prism":1,"cubic unit":2,"length, width, height":3,"net":4,"edge":5}};
+window.__HW_VOCAB__ = [{"term":"Volume with Whole-Number Edges","termEs":"Volumen con aristas de números enteros","def":"The number of unit cubes inside a rectangular prism. Formula: V = l × w × h.","defEs":"La cantidad de cubos unitarios dentro de un prisma rectangular. Fórmula: V = l × w × h.","example":"V = l × w × h; 3 × 4 × 5 = 60 cubic units.","img":"/assets/vocab-images/volume.svg","imgAlt":"Illustration of Volume with Whole-Number Edges: The number of unit cubes inside a rectangular prism. Formula: V = l × w × h."},{"term":"Volume","termEs":"Volumen","def":"How much space is inside a solid shape.","defEs":"Cuánto espacio hay dentro de una figura sólida.","example":"A box 3 × 2 × 4 holds 24 unit cubes, so V = 24 cubic units","img":"/assets/vocab-images/volume.svg","imgAlt":"Illustration of Volume: How much space is inside a solid shape."},{"term":"Rectangular prism","termEs":"Prisma rectangular","def":"A solid box shape with six flat rectangle sides.","defEs":"Una figura sólida en forma de caja con seis lados rectangulares.","example":"A cereal box or shoe box — it has length, width, and height","img":"/assets/vocab-images/rectangular-prism.svg","imgAlt":"Illustration of Rectangular prism: A solid box shape with six flat rectangle sides."},{"term":"Cubic units","termEs":"Unidades cúbicas","def":"The units used to measure space inside, like cubic inches.","defEs":"Las unidades para medir el espacio interior, como pulgadas cúbicas.","example":"A tiny cube that is 1 in × 1 in × 1 in = 1 in³ (one cubic inch)","img":"/assets/vocab-images/cubic-units.svg","imgAlt":"Illustration of Cubic units: The units used to measure space inside, like cubic inches."},{"term":"Length, width, height","termEs":"Largo, ancho, altura","def":"How long, how wide, and how tall a box is.","defEs":"Qué tan largo, ancho y alto es una caja.","example":"V = l × w × h: for a box 5 × 3 × 2, volume = 30 cubic units","img":"/assets/vocab-images/dimensions.svg","imgAlt":"Illustration of Length, width, height: How long, how wide, and how tall a box is."},{"term":"Net","termEs":"Plantilla (desarrollo plano)","def":"A flat shape that folds up into a solid.","defEs":"Una figura plana que se dobla y forma un sólido.","example":"A cross-shaped pattern of 6 rectangles folds into a rectangular box","img":"/assets/vocab-images/net.svg","imgAlt":"Illustration of Net: A flat shape that folds up into a solid."},{"term":"Edge","termEs":"Arista","def":"The line where two flat sides of a solid meet.","defEs":"La línea donde se unen dos lados planos de un sólido.","example":"A cube has 12 edges — 4 along the top, 4 along the bottom, 4 vertical","img":"/assets/vocab-images/edge.svg","imgAlt":"Illustration of Edge: The line where two flat sides of a solid meet."}];
+window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Volume with Whole-Number Edges|Length, width, height|Rectangular prism|Cubic units|Volume|Edge|Net)(?:es|s)?\\b","lookup":{"volume with whole-number edge":0,"volume":1,"rectangular prism":2,"cubic unit":3,"length, width, height":4,"net":5,"edge":6}};
 
 function syncHomeworkChromeHeights() {
   const status = document.querySelector('.bottom-status-bar');
@@ -4731,7 +4777,33 @@ function saveParentSignoff() {
   try {
     localStorage.setItem('hw_parent_signoff_' + lessonId, JSON.stringify(payload));
   } catch(e) {}
-  
+
+  /* localStorage stays the source of truth for what this page displays, but a
+     sign-off the teacher never sees is not a sign-off. Fire-and-forget POST:
+     the endpoint always answers 204, and any failure here is swallowed so a
+     family on a bad connection still gets their confirmation. */
+  try {
+    var signoffBody = JSON.stringify({
+      lessonId: lessonId,
+      lessonTitle: lessonTitle,
+      parentName: nameVal,
+      note: noteVal,
+      date: signoffDate,
+      studentName: (window.NeftSaveResume && window.NeftSaveResume.studentName) || '',
+      section: (window.NeftSaveResume && window.NeftSaveResume.section) || ''
+    });
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('/api/progress/family-signoff', new Blob([signoffBody], { type: 'application/json' }));
+    } else {
+      fetch('/api/progress/family-signoff', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: signoffBody,
+        keepalive: true
+      }).catch(function() {});
+    }
+  } catch(e) {}
+
   updateSignoffUI(payload);
 }
 
@@ -5668,6 +5740,15 @@ function playCheckSound(isCorrect) {
   }
 }
 
+/* Feedback text is built in JS, so it cannot use the .lang-en/.lang-es span
+   pair the rest of the page toggles. Pick the language the family is actually
+   reading; fall back to English whenever no Spanish was authored. */
+function pickLangText(en, es) {
+  const esText = (es || "").trim();
+  if (esText && document.body.classList.contains("lang-mode-es")) return esText;
+  return en || "";
+}
+
 function checkProblem(idx, options) {
   const silent = options && options.silent;
   const section = document.getElementById("problem_" + idx);
@@ -5685,7 +5766,7 @@ function checkProblem(idx, options) {
       const container = section.querySelector(".mc-options");
       const selected = container.querySelector("input[type='radio']:checked");
       const correctIdx = container.dataset.correct;
-      const explanation = container.dataset.explanation;
+      const explanation = pickLangText(container.dataset.explanation, container.dataset.explanationEs);
       
       // Reset radio option styles
       const labels = container.querySelectorAll(".mc-option-label");
@@ -5913,7 +5994,7 @@ function checkProblem(idx, options) {
   if (!feedbackMessage) {
     if (type === "multiple-choice") {
       const container = section.querySelector(".mc-options");
-      const explanation = container?.dataset.explanation || "";
+      const explanation = pickLangText(container?.dataset.explanation, container?.dataset.explanationEs);
       if (isProblemCorrect) {
         feedbackMessage = explanation
           ? "Correct! " + explanation

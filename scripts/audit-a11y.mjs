@@ -46,8 +46,42 @@ const MUTED_RULES = new Set(["landmark-one-main", "region", "page-has-heading-on
 
 const IMPACT_ORDER = { critical: 0, serious: 1, moderate: 2, minor: 3 };
 
+/**
+ * Of the given axe nodes, return those whose painted background comes from a
+ * gradient (on the element, an ancestor, or an ancestor's ::before/::after).
+ * axe's reported contrast ratio is not meaningful for these.
+ */
+async function filterGradientBacked(tab, nodes) {
+  const out = [];
+  for (const n of nodes) {
+    const sel = n.target?.[0];
+    if (typeof sel !== "string") continue;
+    let gradient = false;
+    try {
+      gradient = await tab.evaluate((s) => {
+        const el = document.querySelector(s);
+        if (!el) return false;
+        const hasGradient = (cs) => /gradient\(/i.test(cs.backgroundImage || "");
+        for (let node = el, depth = 0; node && depth < 4; node = node.parentElement, depth++) {
+          if (hasGradient(getComputedStyle(node))) return true;
+          for (const pseudo of ["::before", "::after"]) {
+            const ps = getComputedStyle(node, pseudo);
+            if (ps.content !== "none" && hasGradient(ps)) return true;
+          }
+        }
+        return false;
+      }, sel);
+    } catch {
+      gradient = false; // unresolvable selector → treat as a real finding
+    }
+    if (gradient) out.push(n);
+  }
+  return out;
+}
+
 const browser = await chromium.launch();
 const findings = [];
+const manualReview = [];
 const keyboard = [];
 const errors = [];
 
@@ -68,14 +102,29 @@ for (const page of PAGES) {
     const results = await new AxeBuilder({ page: tab }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
     for (const v of results.violations) {
       if (MUTED_RULES.has(v.id)) continue;
+      // axe cannot compute contrast against a gradient: it walks up to the
+      // nearest SOLID ancestor colour and reports that instead. On the ACCESS
+      // lab that turns white-on-dark-teal-banner headings into a 1.11 "failure".
+      // Split those out for human review rather than reporting a number that is
+      // known to be wrong — a permanently-red check is one nobody reads.
+      const reviewNodes = v.id === "color-contrast" ? await filterGradientBacked(tab, v.nodes) : [];
+      const realNodes = v.nodes.filter((n) => !reviewNodes.includes(n));
+      if (reviewNodes.length) {
+        manualReview.push({
+          page: page.name, path: page.path, id: v.id, nodes: reviewNodes.length,
+          sample: (reviewNodes[0]?.html || "").slice(0, 120),
+          why: "sits over a gradient — axe reported the nearest solid ancestor colour",
+        });
+      }
+      if (!realNodes.length) continue;
       findings.push({
         page: page.name,
         path: page.path,
         id: v.id,
         impact: v.impact || "minor",
         help: v.help,
-        nodes: v.nodes.length,
-        sample: (v.nodes[0]?.html || "").slice(0, 120),
+        nodes: realNodes.length,
+        sample: (realNodes[0]?.html || "").slice(0, 120),
       });
     }
 
@@ -156,6 +205,20 @@ if (byRule.size) {
   }
 } else {
   lines.push("_No violations found._");
+}
+lines.push("");
+
+lines.push(`## Needs a human eye (${manualReview.length})`);
+lines.push("");
+lines.push("axe flagged these but its verdict is not trustworthy here. Check them");
+lines.push("visually once; they are not counted as violations above.");
+lines.push("");
+if (manualReview.length) {
+  lines.push("| Page | Rule | Elements | Why axe is unreliable |");
+  lines.push("| --- | --- | ---: | --- |");
+  for (const m of manualReview) lines.push(`| ${m.page} | \`${m.id}\` | ${m.nodes} | ${m.why} |`);
+} else {
+  lines.push("_None._");
 }
 lines.push("");
 

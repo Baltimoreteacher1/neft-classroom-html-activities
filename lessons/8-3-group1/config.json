@@ -189,9 +189,9 @@
     {
       "term": "Mean Absolute Deviation",
       "termEs": "Desviación media absoluta",
-      "definition": "The average distance of each number from the mean.",
-      "definitionEs": "La distancia promedio de cada número a la media.",
-      "visual": "Data: 8, 10, 12. Mean = 10. Distances from mean: 2, 0, 2. MAD = (2+0+2) ÷ 3 = 1.33",
+      "definition": "The average distance of data values from the mean; it describes spread.",
+      "definitionEs": "La distancia promedio de los valores de datos respecto a la media; describe la dispersión.",
+      "visual": "MAD = sum of absolute distances from the mean ÷ number of values.",
       "cloze": "The average distance of each value from the mean is the ___."
     },
     {
@@ -229,6 +229,22 @@
       "definitionEs": "Qué tan separados están los números.",
       "visual": "Low spread: 8, 9, 10, 11 (close together). High spread: 2, 9, 10, 25 (far apart)",
       "cloze": "How far apart the data values are from each other is the ___."
+    },
+    {
+      "term": "Data distribution",
+      "termEs": "Distribución de datos",
+      "definition": "How the data looks: where it sits and how spread out it is.",
+      "definitionEs": "Cómo se ven los datos: dónde están y qué tan separados están.",
+      "visual": "A set clustered tightly around the mean has low MAD; a set spread far from the mean has high MAD",
+      "cloze": "The way data values are spread out is the ___."
+    },
+    {
+      "term": "Variability",
+      "termEs": "Variabilidad",
+      "definition": "How spread out the numbers are.",
+      "definitionEs": "Qué tan separados están los números.",
+      "visual": "Low variability (MAD = 1): very consistent. High variability (MAD = 8): very spread out",
+      "cloze": "How much the data values differ is the ___."
     }
   ],
   "launch": {
@@ -454,7 +470,9 @@
           "Absolute deviation asks: how FAR is the value 11 from the mean of 15? A distance is always a positive number.",
           "Subtract: value − mean gives the deviation. Then take the absolute value (drop any negative sign) to get the absolute deviation.",
           "Step 1: set up 11 − 15 (the result will be negative). Step 2 is turning that result into a positive distance."
-        ]
+        ],
+        "stemEs": "La media de un conjunto de datos es 15. Uno de los valores es 11. ¿Cuál es la desviación absoluta de ese valor respecto a la media?",
+        "explanationEs": "Desviación = 11 − 15 = −4. Desviación absoluta = |−4| = 4."
       },
       {
         "type": "multiple-choice",
@@ -477,7 +495,9 @@
           "You're given the five absolute deviations already — no subtracting needed. MAD is their average.",
           "MAD = (sum of the absolute deviations) ÷ (how many there are). Count them: there are 5 deviations listed.",
           "Step 1: add 3 + 1 + 5 + 2 + 4. Step 2: divide that total by 5. Don't stop after adding — the sum alone is not the MAD."
-        ]
+        ],
+        "stemEs": "Un conjunto de datos tiene desviaciones absolutas de 3, 1, 5, 2 y 4. ¿Cuál es la desviación absoluta media (MAD)?",
+        "explanationEs": "Suma de las desviaciones absolutas = 3 + 1 + 5 + 2 + 4 = 15. MAD = 15 ÷ 5 = 3."
       },
       {
         "type": "multiple-choice",
@@ -506,7 +526,9 @@
           "Same skill as before: absolute deviation is the distance between the value 26 and the mean 20.",
           "Compute value − mean, then take the absolute value. If the difference is already positive, the absolute value keeps it the same.",
           "Step 1: set up 26 − 20. Step 2: check the sign — a positive difference is already a distance, so you're nearly done."
-        ]
+        ],
+        "stemEs": "La media de un conjunto de datos es 20. Uno de los valores es 26. ¿Cuál es la desviación absoluta?",
+        "explanationEs": "Desviación = 26 − 20 = 6. Desviación absoluta = |6| = 6."
       },
       {
         "type": "multiple-choice",
@@ -529,7 +551,9 @@
           "Consistent means scores stay close to the team's average game after game. MAD measures exactly that closeness.",
           "MAD is the average DISTANCE of scores from the mean. Decide whether a small distance or a large distance means 'more consistent.'",
           "Compare what each number says: scores about 2.1 points from the mean vs about 6.8 points away on a typical night. Which team wanders less?"
-        ]
+        ],
+        "stemEs": "El equipo A tiene una MAD de 2.1 puntos. El equipo B tiene una MAD de 6.8 puntos. ¿Qué equipo es más consistente?",
+        "explanationEs": "Una MAD menor significa menos dispersión: los puntajes del equipo A se mantienen más cerca de su promedio, lo que los hace más consistentes."
       },
       {
         "type": "error-analysis",
@@ -553,7 +577,10 @@
         "hints": [
           "The deviations −2 and 2 cancel to 0 — that's the warning sign. MAD is never 0 unless every value equals the mean.",
           "The 'A' in MAD stands for ABSOLUTE. Take the absolute value of each deviation first: |−2| = 2."
-        ]
+        ],
+        "titleEs": "Encuentra el error común",
+        "explanation": "The deviations −2, 2, and 0 were found correctly, but the \"Find the MAD\" step adds them with their signs, so the −2 and the +2 cancel and force a total of 0. The A in MAD means absolute, so take each distance first: 2, 2, and 0. MAD = (2 + 2 + 0) ÷ 3 = 4 ÷ 3 ≈ 1.33 points. A MAD of 0 would mean every score equals 8, which is not true here.",
+        "explanationEs": "Las desviaciones −2, 2 y 0 se hallaron bien, pero el paso \"Find the MAD\" las suma con su signo, así que el −2 y el +2 se cancelan y obligan a un total de 0. La A de MAD significa absoluta, así que toma primero cada distancia: 2, 2 y 0. MAD = (2 + 2 + 0) ÷ 3 = 4 ÷ 3 ≈ 1.33 puntos. Un MAD de 0 significaría que todos los puntajes son 8, y aquí no es así."
       },
       {
         "type": "multiple-choice",
@@ -576,7 +603,9 @@
           "'Reliable' is the key word — the coach wants times that barely change from race to race, not just a good average.",
           "Both runners average 60 seconds, so the average can't decide this. MAD tells you how much each runner's times swing around 60.",
           "First step: read each MAD as a sentence — a MAD of 1.2 means times usually stay within about 1.2 seconds of 60. Do the same for 5.8, then decide."
-        ]
+        ],
+        "stemEs": "Dos corredores tienen el mismo tiempo promedio de 60 segundos. La MAD del corredor A es de 1.2 segundos y la del corredor B es de 5.8 segundos. ¿Qué corredor es más probable que el entrenador elija para una carrera de relevos que necesita un tiempo confiable?",
+        "explanationEs": "La MAD de 1.2 del corredor A significa que sus tiempos suelen estar dentro de 1.2 segundos de 60. Los tiempos del corredor B varían mucho más. Para tener confiabilidad, se elige al corredor A."
       }
     ],
     "onLevel": [
@@ -592,10 +621,22 @@
         "correctIndex": 1,
         "explanation": "Add the distances: 3 + 1 + 1 + 3 = 8. Divide by the 4 games: 8 ÷ 4 = 2. The MAD is 2 points.",
         "choiceFeedback": [
-          "",
+          "Check the total before you divide — all four distances go into the sum, including both of the larger ones. Then divide that full total by the number of games.",
           "",
           "Mean is 5, not the distances—use the distances for MAD.",
           "Did you divide by the number of values (4)?"
+        ],
+        "stemEs": "Un base anotó 2, 4, 6 y 8 puntos en cuatro partidos de práctica, así que la media es 5 puntos. Las distancias a la media son 3, 1, 1 y 3. ¿Cuál es la desviación absoluta media (MAD)?",
+        "explanationEs": "Suma las distancias: 3 + 1 + 1 + 3 = 8. Divide entre los 4 partidos: 8 ÷ 4 = 2. La MAD es 2 puntos.",
+        "hints": [
+          "MAD is the average of the distances from the mean, so it is built from those four distances rather than from the scores themselves.",
+          "Add all of the distances together, then divide by how many games there were.",
+          "Add 3 + 1 + 1 + 3 to get the total distance, then divide that total by the 4 scrimmages."
+        ],
+        "hintsEs": [
+          "La MAD es el promedio de las distancias a la media, así que se construye con esas cuatro distancias y no con los puntajes mismos.",
+          "Suma todas las distancias y luego divide entre la cantidad de partidos.",
+          "Suma 3 + 1 + 1 + 3 para obtener la distancia total y luego divide ese total entre los 4 partidos de práctica."
         ]
       },
       {
@@ -614,6 +655,18 @@
           "Bigger MAD means scores spread wider, not closer to average.",
           "Scores would vary more with a bigger MAD, not less.",
           "MAD directly tells you how spread out the data is."
+        ],
+        "stemEs": "Dos tiradores promedian 11 puntos por partido. La MAD del tirador A es de 2 puntos y la del tirador B es de 6 puntos. ¿Qué tirador es MÁS consistente?",
+        "explanationEs": "Una MAD menor significa que los puntajes se mantienen cerca de la media. La MAD de 2 del tirador A es menor que la de 6 del tirador B, así que el tirador A es más consistente.",
+        "hints": [
+          "MAD measures spread — how far the scores usually land from the average.",
+          "Both shooters have the same mean, so the mean cannot settle this. Compare the MAD values instead.",
+          "A MAD of 2 means scores usually sit about 2 points away from 11, while a MAD of 6 means they wander about 6 points away. Decide which of those describes scores that stay close to the average."
+        ],
+        "hintsEs": [
+          "La MAD mide la dispersión: qué tan lejos suelen quedar los puntajes del promedio.",
+          "Ambos tiradores tienen la misma media, así que la media no puede decidir esto. Compara los valores de la MAD.",
+          "Una MAD de 2 significa que los puntajes suelen quedar a unos 2 puntos de 11, mientras que una MAD de 6 significa que se alejan unos 6 puntos. Decide cuál de esas describe puntajes que se mantienen cerca del promedio."
         ]
       },
       {
@@ -642,7 +695,10 @@
         "hints": [
           "Deviations above and below the mean always add up to 0 — that's why a MAD of 0 should look suspicious here.",
           "The 'A' in MAD stands for ABSOLUTE. Take the absolute value of each deviation before you add them."
-        ]
+        ],
+        "titleEs": "Extensión de Nivel 2 — Las desviaciones que desaparecieron",
+        "explanation": "The mean of 11 and the deviations −8, −4, 0, 4, 8 are correct, but the \"Find the MAD\" step adds them with their signs, so every negative cancels a matching positive and the total is forced to 0. Signed deviations always sum to zero, which is exactly why MAD uses distances: 8, 4, 0, 4, 8 total 24, so MAD = 24 ÷ 5 = 4.8 rebounds.",
+        "explanationEs": "La media de 11 y las desviaciones −8, −4, 0, 4, 8 son correctas, pero el paso \"Find the MAD\" las suma con su signo, así que cada negativo cancela a un positivo y el total queda forzado a 0. Las desviaciones con signo siempre suman cero, y por eso el MAD usa distancias: 8, 4, 0, 4, 8 suman 24, así que MAD = 24 ÷ 5 = 4.8 rebotes."
       },
       {
         "type": "error-analysis",
@@ -670,7 +726,10 @@
         "hints": [
           "MAD stands for Mean ABSOLUTE Deviation. What does 'absolute' mean you need to do?",
           "Take the absolute value of each deviation before adding them: |−10| = 10, |−5| = 5, etc."
-        ]
+        ],
+        "titleEs": "Encuentra el error del MAD",
+        "explanation": "The mean of 15 and the deviations −10, −5, 0, 5, 10 are all correct. The \"Find MAD\" step is where it breaks: adding signed deviations always gives 0, because the values below the mean exactly balance the ones above. Use absolute values instead — 10, 5, 0, 5, 10 — which sum to 30, so MAD = 30 ÷ 5 = 6.",
+        "explanationEs": "La media de 15 y las desviaciones −10, −5, 0, 5, 10 están correctas. El paso \"Find MAD\" es donde falla: sumar desviaciones con signo siempre da 0, porque los valores por debajo de la media equilibran exactamente a los que están por encima. Usa valores absolutos: 10, 5, 0, 5, 10, que suman 30, así que MAD = 30 ÷ 5 = 6."
       },
       {
         "type": "open-response",
@@ -691,7 +750,9 @@
           "Both teams average exactly 75 points, so the mean can't separate them — the spread (MAD) will.",
           "For each team: find how far each of the 5 scores is from 75 (drop negative signs), add those five distances, then divide by 5. That's the MAD.",
           "Team A first: the distances from 75 are |73−75|, |76−75|, |74−75|, |77−75|, |75−75|. Add them, divide by 5, then repeat for Team B."
-        ]
+        ],
+        "explanation": "Both teams average 75, so the mean cannot tell them apart — the MAD can. Team A's distances from 75 are 2, 1, 1, 2, 0, which total 6, so its MAD is 6 ÷ 5 = 1.2. Team B's distances are 15, 15, 10, 10, 0, which total 50, so its MAD is 50 ÷ 5 = 10. A coach who needs predictable scoring would choose Team A, because a MAD of 1.2 means its scores stay within about a point or two of 75 every game.",
+        "explanationEs": "Los dos equipos promedian 75, así que la media no los distingue: el MAD sí. Las distancias del equipo A respecto a 75 son 2, 1, 1, 2, 0, que suman 6, así que su MAD es 6 ÷ 5 = 1.2. Las distancias del equipo B son 15, 15, 10, 10, 0, que suman 50, así que su MAD es 50 ÷ 5 = 10. Un entrenador que necesita anotación predecible elegiría al equipo A, porque un MAD de 1.2 significa que sus puntajes se mantienen a uno o dos puntos de 75 en cada partido."
       },
       {
         "type": "number-line",
@@ -717,7 +778,9 @@
         "hints": [
           "7 is 3 units below the mean. 10 is exactly at the mean. 13 is 3 units above the mean.",
           "Absolute deviations: 3, 0, 3. MAD = (3+0+3) ÷ 3 = 2."
-        ]
+        ],
+        "explanation": "With the mean at 10, the distance of each value is what you count on the line: 7 sits 3 ticks below, 10 sits right on the mean for a distance of 0, and 13 sits 3 ticks above. Distance never carries a sign, so the absolute deviations are 3, 0, and 3, and their average is (3 + 0 + 3) ÷ 3 = 2.",
+        "explanationEs": "Con la media en 10, la distancia de cada valor es lo que cuentas en la recta: 7 queda 3 marcas por debajo, 10 cae justo en la media con una distancia de 0, y 13 queda 3 marcas por encima. La distancia nunca lleva signo, así que las desviaciones absolutas son 3, 0 y 3, y su promedio es (3 + 0 + 3) ÷ 3 = 2."
       }
     ],
     "extending": [],

@@ -1604,6 +1604,14 @@ body.obj-popup-open { overflow: hidden; }
 .section-vocab { border-left: 4px solid var(--coral); }
 .section-stuck { border-left: 4px solid #9b59b6; }
 .section-quick-intro { border-left: 4px solid var(--success); }
+.quick-check-time {
+  background: var(--amber-light);
+  border: 1px solid var(--amber);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 0 0 12px;
+  font-size: 15px;
+}
 .section-celebrate {
   border-left: 4px solid var(--amber);
   background: linear-gradient(180deg, var(--amber-light), var(--white));
@@ -1851,6 +1859,16 @@ body.obj-popup-open { overflow: hidden; }
   padding: 2px;
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x proximity;
+}
+/* On a phone the 10 tabs are ~738px wide in a ~381px viewport, so half of them
+   (Help, More, Done) sit off-screen with nothing to suggest they exist. Fade the
+   trailing edge so the strip reads as scrollable. Only below 700px, where the
+   overflow is guaranteed — a permanent fade on desktop would just look broken. */
+@media (max-width: 700px) {
+  .homework-tab-bar {
+    -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+    mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+  }
 }
 .homework-tab-btn {
   flex: 0 0 auto;
@@ -2372,6 +2390,12 @@ body.lang-mode-es .bilingual-grid {
 @media print {
   .homework-tab-chrome, .homework-tab-bar, .bottom-status-bar, .help-modal-overlay, .print-all-btn, .parent-signoff-container { display: none !important; }
   .tab-panel-inner[hidden] { display: block !important; page-break-inside: avoid; }
+  /* Printing un-hides every panel, but these three are screen-only: an embedded
+     arcade iframe, a live game, and a link-out. On paper they were blank or
+     meaningless pages in the middle of the packet. */
+  [data-tab-panel="arcade"],
+  [data-tab-panel="play"],
+  [data-tab-panel="workbench"] { display: none !important; }
   body { padding-bottom: 0; }
   
   .print-only-certificate.is-signed {
@@ -2448,7 +2472,7 @@ body.lang-mode-es .bilingual-grid {
 
 
 .family-visual-lab{--lab-ink:#173a5e;--lab-teal:#0b8f87;--lab-coral:#ff775f;--lab-sun:#f6c94c;margin:26px 0;padding:clamp(18px,3vw,30px);border:3px solid var(--lab-ink);border-radius:28px;background:#fffdf5;box-shadow:8px 8px 0 var(--lab-ink);color:var(--lab-ink)}
-.visual-lab-heading{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(260px,1.15fr);gap:20px;align-items:end;margin-bottom:20px}.visual-lab-heading h2{margin:6px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.05}.visual-lab-heading p{margin:0;padding:14px 16px;border-left:5px solid var(--lab-sun);background:#fff8d9;font-size:17px;font-weight:700;line-height:1.45}.visual-lab-kicker{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--lab-ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em}
+.visual-lab-heading{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(260px,1.15fr);gap:20px;align-items:end;margin-bottom:20px}.visual-lab-heading h2{margin:6px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.05}.visual-lab-heading p{margin:0;padding:14px 16px;border-left:5px solid var(--lab-sun);background:#fff8d9;font-size:17px;font-weight:700;line-height:1.45}.visual-lab-kicker{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--lab-ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em}.visual-lab-kicker .lang-en,.visual-lab-kicker .lang-es{color:inherit}
 .visual-lab-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(230px,.8fr);gap:18px;align-items:stretch}.visual-lab-canvas-wrap{min-width:0;padding:12px;border-radius:22px;background-color:#eef8f4;background-image:linear-gradient(#cee3dc 1px,transparent 1px),linear-gradient(90deg,#cee3dc 1px,transparent 1px);background-size:24px 24px;border:2px solid var(--lab-ink)}.visual-lab-stage{display:grid;place-items:center;min-height:280px}.visual-lab-stage svg{display:block;width:100%;max-height:320px;overflow:visible}.visual-lab-status{min-height:26px;margin:5px 8px 0;padding:7px 10px;border-radius:10px;background:#fff;font-weight:800;text-align:center}
 .visual-lab-controls{display:flex;flex-direction:column;gap:14px;padding:18px;border-radius:22px;background:var(--lab-ink);color:#fff}.visual-lab-control{display:grid;gap:7px;font-weight:800}.visual-lab-control-label{display:flex;justify-content:space-between;gap:10px;align-items:center}.visual-lab-control output{min-width:38px;padding:3px 8px;border-radius:8px;background:var(--lab-sun);color:#102f4e;text-align:center;font-size:18px}.visual-lab-control input[type=range]{width:100%;min-height:28px;accent-color:var(--lab-coral);cursor:pointer}.visual-lab-control input[type=range]:focus-visible{outline:4px solid #fff;outline-offset:4px}.visual-lab-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:auto}.visual-lab-button{min-height:48px;border:2px solid #fff;border-radius:13px;background:var(--lab-coral);color:#182f48;font:inherit;font-weight:800;cursor:pointer}.visual-lab-button-quiet{background:#fff}.visual-lab-button:hover{transform:translateY(-2px)}.visual-lab-button:focus-visible{outline:4px solid var(--lab-sun);outline-offset:3px}
 .visual-representation-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:18px}.visual-representation-card{position:relative;min-height:150px;padding:18px 16px 15px;border:2px solid var(--lab-ink);border-radius:18px;background:#fff}.visual-representation-card h3{margin:0 0 10px;padding-left:30px;font-size:17px}.visual-representation-card p{margin:7px 0;font-size:16px;line-height:1.4}.representation-number{position:absolute;top:12px;left:12px;display:grid;width:27px;height:27px;place-items:center;border-radius:50%;background:var(--lab-ink);color:#fff;font-weight:800}.visual-representation-model{background:#dff5ee}.visual-representation-math{background:#fff2c2}.visual-representation-words{background:#ffe4dd}.visual-representation-math [data-lab-equation]{font-size:clamp(22px,3vw,32px);font-weight:800;text-align:center}.mini-model{display:flex;flex-wrap:wrap;gap:7px;align-content:center;min-height:76px;padding:8px}.mini-dot{width:18px;height:18px;border:2px solid var(--lab-ink);border-radius:50%;background:var(--lab-teal)}.visual-representation-card details{margin-top:10px}.visual-representation-card summary{cursor:pointer;font-weight:800;text-decoration:underline}.visual-source-idea{font-size:13px!important;color:#344f69}
@@ -2731,12 +2755,12 @@ header.packet h1::after{
         <div class="bilingual-col lang-en">
           <span class="lang-label">English</span>
           <p class="learning-big">Tonight we find the surface area of a box — how much paper it takes to cover the outside. We unfold the box into a flat net and add up all six faces.</p>
-          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Surface area</li><li>Net</li><li>Face</li><li>Two-dimensional</li><li>Edge</li></ul></div>
+          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Surface Area Using Nets</li><li>Surface area</li><li>Net</li><li>Face</li><li>Two-dimensional</li></ul></div>
         </div>
         <div class="bilingual-col lang-es" lang="es">
           <span class="lang-label">Español</span>
           <p class="learning-big">Esta noche encontramos el área de superficie de una caja — cuánto papel se necesita para cubrir el exterior. Desdoblamos la caja en una plantilla plana y sumamos las seis caras.</p>
-          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Área de superficie</li><li>Plantilla (desarrollo plano)</li><li>Cara</li><li>Bidimensional</li><li>Arista</li></ul></div>
+          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Área de superficie usando redes</li><li>Área de superficie</li><li>Plantilla (desarrollo plano)</li><li>Cara</li><li>Bidimensional</li></ul></div>
         </div>
       </div>
     
@@ -2868,6 +2892,24 @@ header.packet h1::after{
       </p>
       <div class="vocab-container">
         
+            <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+              <div class="vocab-card-inner">
+                <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/net.svg" alt="Illustration of Surface Area Using Nets: The total area of every face of a three-dimensional figure, found by adding the faces shown in its net." loading="lazy" width="72" height="72" />
+                  </div>
+                  <h3>Surface Area Using Nets</h3>
+                  <p class="vocab-es" lang="es">Área de superficie usando redes</p>
+                  <div class="vocab-visual-hint">💡 Surface area = area of face 1 + face 2 + every remaining face.</div>
+                  <div class="flip-prompt"><span class="lang-en">Tap</span><span class="lang-es" lang="es">Toca ➔</span></div>
+                </div>
+                <div class="vocab-card-back">
+                  <p class="vocab-def">The total area of every face of a three-dimensional figure, found by adding the faces shown in its net.</p>
+                  <p class="vocab-def-es" lang="es">El área total de todas las caras de una figura tridimensional, que se halla sumando las caras mostradas en su red.</p>
+                  <p class="vocab-back-visual">📌 Surface area = area of face 1 + face 2 + every remaining face.</p>
+                </div>
+              </div>
+            </div>
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -3094,6 +3136,10 @@ header.packet h1::after{
       
     
       <h2 class="section-title">✅ <span class="lang-en">Quick check</span><span class="lang-es" lang="es">Repaso rápido</span></h2>
+      <p class="quick-check-time bilingual-block">
+        <span class="lang-en">⏱️ Plan on about <strong>15–20 minutes</strong> for the 6 problems below. The extra practice at the bottom is optional.</span>
+        <span class="lang-es" lang="es">⏱️ Calculen unos <strong>15–20 minutos</strong> para los 6 problemas de abajo. La práctica extra al final es opcional.</span>
+      </p>
       <p class="bilingual-block">
         <span class="lang-en">A few problems to practice together. Each one has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong>, and a <strong>space to show your work</strong>. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
         <span class="lang-es" lang="es">Unos problemas para practicar juntos. Cada uno tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para mostrar el trabajo</strong>. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
@@ -3118,12 +3164,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_0" data-problem-type="matching-game">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 1</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
+        <div class="problem-type-badge"><span class="lang-en">MATCHING GAME</span><span class="lang-es" lang="es">JUEGO DE PAREJAS</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"A net shows exactly the flat faces a solid folds up from. A cube needs 6 equal squares; a rectangular prism needs 6 rectangles in 3 matching pairs; a triangular prism needs its 2 triangular ends plus 3 rectangles; a square pyramid needs 1 square base plus 4 triangles. Because every net is made of flat faces, surface area is always reported in square units such as in² or cm².","es":"Un patrón muestra exactamente las caras planas con las que se arma un cuerpo geométrico. Un cubo necesita 6 cuadrados iguales; un prisma rectangular necesita 6 rectángulos en 3 pares iguales; un prisma triangular necesita sus 2 bases triangulares más 3 rectángulos; una pirámide cuadrada necesita 1 base cuadrada más 4 triángulos. Como todo patrón está hecho de caras planas, el área de superficie siempre se expresa en unidades cuadradas como in² o cm².","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Match each solid to the net it folds up from.</p>
+        <p class="problem-stem"><span class="lang-en">Match each solid to the net it folds up from.</span><span class="lang-es" lang="es">Une cada sólido con la plantilla con la que se arma.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Say each term out loud, then talk through which match makes sense before choosing.</span><span class="lang-es" lang="es">👪 Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.</span></p>
         <div class="matching-pairs">
           
@@ -3216,12 +3262,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_1" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 2</div>
-        <div class="problem-type-badge">DRAG SORT</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"A valid net has exactly the 6 faces of a closed box — no more and no fewer — arranged so they fold up without overlapping. The cross layout, the T layout, and the two-squares-plus-four-rectangles layout each have 6 faces in 3 matching pairs. Four rectangles in a row leaves the top and bottom open, a single rectangle is only one face, and seven rectangles has an extra face that would overlap.","es":"Un patrón válido tiene exactamente las 6 caras de una caja cerrada, ni más ni menos, acomodadas de modo que se doblen sin encimarse. El patrón en cruz, el patrón en T y el de dos cuadrados con cuatro rectángulos tienen cada uno 6 caras en 3 pares iguales. Cuatro rectángulos en fila dejan abiertos el techo y el fondo, un solo rectángulo es apenas una cara, y siete rectángulos tienen una cara de más que se encimaría.","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Sort each flat shape: is it a valid net that folds into a closed time capsule box, or not a complete net?</p>
+        <p class="problem-stem"><span class="lang-en">Sort each flat shape: is it a valid net that folds into a closed time capsule box, or not a complete net?</span><span class="lang-es" lang="es">Clasifica cada figura plana: ¿es una plantilla válida que se dobla para formar una caja cerrada de cápsula del tiempo, o no es una plantilla completa?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
         
         <div class="drag-sort-workspace" id="dragsort_1">
@@ -3358,14 +3404,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_2" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 3</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"From the net: SA = 2(2×3) + 2(2×4) + 2(3×4) = 12 + 16 + 24 = 52 in².","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Surface area from a net is the sum of the areas of all six faces, measured in square units.","es":"El área de la superficie a partir de un desarrollo plano es la suma de las áreas de las seis caras, medida en unidades cuadradas.","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A time capsule box measures 2 in × 3 in × 4 in. Using its net, you add up all six faces. What is the total surface area?</p>
+        <p class="problem-stem"><span class="lang-en">A time capsule box measures 2 in × 3 in × 4 in. Using its net, you add up all six faces. What is the total surface area?</span><span class="lang-es" lang="es">Una caja de cápsula del tiempo mide 2 in × 3 in × 4 in. Usando su desarrollo plano, sumas las seis caras. ¿Cuál es el área total de la superficie?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="From the net: SA = 2(2×3) + 2(2×4) + 2(3×4) = 12 + 16 + 24 = 52 in².">
+        <div class="mc-options" data-correct="0" data-explanation="From the net: SA = 2(2×3) + 2(2×4) + 2(3×4) = 12 + 16 + 24 = 52 in²." data-explanation-es="Del desarrollo plano: área de la superficie = 2(2×3) + 2(2×4) + 2(3×4) = 12 + 16 + 24 = 52 in².">
           
             <label class="mc-option-label" id="label_q_2_0">
               <input type="radio" name="q_2" value="0" onchange="saveState(); updateProgress();">
@@ -3444,14 +3490,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_3" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 1</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"A rectangular prism has 6 faces — top, bottom, front, back, left, and right — so its net shows 6 faces.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Unfolding a box does not add or remove faces — every flat side of the box shows up on the net.","es":"Desdoblar una caja no agrega ni quita caras: todos los lados planos de la caja aparecen en el desarrollo.","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Your team unfolds a rectangular time capsule box into a flat net. How many faces (flat sides) will the net show in all?</p>
+        <p class="problem-stem"><span class="lang-en">Your team unfolds a rectangular time capsule box into a flat net. How many faces (flat sides) will the net show in all?</span><span class="lang-es" lang="es">Tu equipo desdobla una caja rectangular de cápsula del tiempo para formar un desarrollo plano. ¿Cuántas caras (lados planos) mostrará el desarrollo en total?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="A rectangular prism has 6 faces — top, bottom, front, back, left, and right — so its net shows 6 faces.">
+        <div class="mc-options" data-correct="0" data-explanation="A rectangular prism has 6 faces — top, bottom, front, back, left, and right — so its net shows 6 faces." data-explanation-es="Un prisma rectangular tiene 6 caras —arriba, abajo, adelante, atrás, izquierda y derecha—, así que su desarrollo plano muestra 6 caras.">
           
             <label class="mc-option-label" id="label_q_3_0">
               <input type="radio" name="q_3" value="0" onchange="saveState(); updateProgress();">
@@ -3514,12 +3560,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_4" data-problem-type="open-response">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 2</div>
-        <div class="problem-type-badge">OPEN RESPONSE</div>
+        <div class="problem-type-badge"><span class="lang-en">OPEN RESPONSE</span><span class="lang-es" lang="es">RESPUESTA ABIERTA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Both boxes hold 60 in³, but wrapping paper depends on SURFACE AREA — the outside covering, not the inside space.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Both boxes hold 60 in³, but wrapping paper depends on SURFACE AREA — the outside covering, not the inside space.","es":"Las dos cajas contienen 60 in³, pero el papel de regalo se mide con el área de superficie. Box A: 2(20) + 2(15) + 2(12) = 94 in². Box B: 2(60) + 2(10) + 2(6) = 152 in². Box A usa menos papel porque sus dimensiones se parecen más a un cubo; aplanar el mismo volumen hasta 10 × 6 × 1 crea dos caras enormes de 60 in² y mucho más que cubrir.","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Two boxes have the same volume of 60 in³. Box A is 5 × 4 × 3. Box B is 10 × 6 × 1. Which box uses less wrapping paper (has less surface area)? Show your calculations and explain why a more cube-like shape might use less material.</p>
+        <p class="problem-stem"><span class="lang-en">Two boxes have the same volume of 60 in³. Box A is 5 × 4 × 3. Box B is 10 × 6 × 1. Which box uses less wrapping paper (has less surface area)? Show your calculations and explain why a more cube-like shape might use less material.</span><span class="lang-es" lang="es">Dos cajas tienen el mismo volumen de 60 in³. La caja A mide 5 × 4 × 3. La caja B mide 10 × 6 × 1. ¿Cuál caja usa menos papel de envolver (tiene menos área superficial)? Muestra tus cálculos y explica por qué una forma más parecida a un cubo puede usar menos material.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 A complete sentence with math vocabulary is the goal — not a perfect paragraph.</span><span class="lang-es" lang="es">👪 Una oración completa con vocabulario matemático es la meta — no un párrafo perfecto.</span></p>
         
         
@@ -3584,14 +3630,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_5" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 3</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"A cube net has 6 equal square faces. With each face 4 cm², the surface area is 6 × 4 = 24 cm².","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"A net shows every face of the solid laid out flat, so the surface area is simply the total of all the face areas.","es":"Un desarrollo plano muestra todas las caras del sólido extendidas, así que el área de la superficie es simplemente la suma de las áreas de las caras.","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">You unfold a time capsule that is a cube. Its net shows 6 equal squares, and each square has an area of 4 cm². What is the cube&#039;s total surface area?</p>
+        <p class="problem-stem"><span class="lang-en">You unfold a time capsule that is a cube. Its net shows 6 equal squares, and each square has an area of 4 cm². What is the cube&#039;s total surface area?</span><span class="lang-es" lang="es">Desdoblas una cápsula del tiempo que tiene forma de cubo. Su desarrollo plano muestra 6 cuadrados iguales, y cada cuadrado tiene un área de 4 cm². ¿Cuál es el área total de la superficie del cubo?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="A cube net has 6 equal square faces. With each face 4 cm², the surface area is 6 × 4 = 24 cm².">
+        <div class="mc-options" data-correct="0" data-explanation="A cube net has 6 equal square faces. With each face 4 cm², the surface area is 6 × 4 = 24 cm²." data-explanation-es="El desarrollo plano de un cubo tiene 6 caras cuadradas iguales. Con cada cara de 4 cm², el área de la superficie es 6 × 4 = 24 cm².">
           
             <label class="mc-option-label" id="label_q_5_0">
               <input type="radio" name="q_5" value="0" onchange="saveState(); updateProgress();">
@@ -3662,84 +3708,68 @@ header.packet h1::after{
           <span class="lang-es" lang="es">Opcional. Solo si tu estudiante quiere más — son problemas adicionales.</span>
         </p>
         <section class="problems-container more-practice-container" aria-label="More practice">
-    <section class="problem-section card" id="problem_6" data-problem-type="matching-game">
+    <section class="problem-section card" id="problem_6" data-problem-type="drag-sort" data-problem-subtype="drag-order">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 1</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG ORDER</span><span class="lang-es" lang="es">ORDENAR ARRASTRANDO</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each face pair uses two of the three dimensions: top/bottom skips height, front/back skips width, left/right skips length.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the cards: one identifies face pairs, one finds areas, one doubles, one adds, one states the answer.","es":"No puedes medir una cara hasta saber cuáles caras existen, así que los pasos van en este orden: identificar los tres pares de caras 5×3, 5×2, 3×2; hallar el área de cada uno (15, 10, 6); duplicar cada uno porque toda cara tiene su gemela (30, 20, 12); sumarlos (30 + 20 + 12); y escribir SA = 62 in².","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Match each concept about rectangular prisms.</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Say each term out loud, then talk through which match makes sense before choosing.</span><span class="lang-es" lang="es">👪 Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.</span></p>
-        <div class="matching-pairs">
-          
-            <div class="matching-row" data-term="Top &amp; Bottom faces" data-correct="l × w (two of them)">
-              <div class="matching-term">Top &amp; Bottom faces</div>
-              <div class="matching-select-container">
-                <select name="q_6_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="6 faces total">6 faces total</option><option value="SA = 2lw + 2lh + 2wh">SA = 2lw + 2lh + 2wh</option><option value="V = l × w × h">V = l × w × h</option><option value="l × h (two of them)">l × h (two of them)</option><option value="l × w (two of them)">l × w (two of them)</option><option value="w × h (two of them)">w × h (two of them)</option>
-                </select>
-                <span class="feedback-badge"></span>
+        <p class="problem-stem"><span class="lang-en">Put these steps in order for finding the surface area of a 5 × 3 × 2 box.</span><span class="lang-es" lang="es">Ordena estos pasos para encontrar el área superficial de una caja de 5 × 3 × 2.</span></p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Use the ▲ ▼ buttons to reorder steps, or drag the row handles on a computer.</span><span class="lang-es" lang="es">👪 Usen ▲ ▼ para reordenar, o arrastren las filas en la computadora.</span></p>
+        <div class="drag-order-workspace" id="dragorder_6" data-correct-order='[&quot;Identify the three face pairs: 5×3, 5×2, 3×2&quot;,&quot;Find area of each: 15, 10, 6&quot;,&quot;Multiply each by 2: 30, 20, 12&quot;,&quot;Add all pairs: 30 + 20 + 12&quot;,&quot;SA = 62 in²&quot;]' data-initial-order='[&quot;Add all pairs: 30 + 20 + 12&quot;,&quot;Identify the three face pairs: 5×3, 5×2, 3×2&quot;,&quot;Multiply each by 2: 30, 20, 12&quot;,&quot;Find area of each: 15, 10, 6&quot;,&quot;SA = 62 in²&quot;]'>
+          <div class="drag-order-list" id="orderlist_6">
+
+              <div class="drag-order-row" draggable="true" id="order_6_0" data-step-text="Add all pairs: 30 + 20 + 12" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+                <span class="drag-order-handle" aria-hidden="true">☰</span>
+                <span class="drag-order-num">1</span>
+                <span class="drag-order-text">Add all pairs: 30 + 20 + 12</span>
+                <div class="drag-order-controls">
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(6, this, -1)" aria-label="Move up">▲</button>
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(6, this, 1)" aria-label="Move down">▼</button>
+                </div>
               </div>
-            </div>
-          
-            <div class="matching-row" data-term="Front &amp; Back faces" data-correct="l × h (two of them)">
-              <div class="matching-term">Front &amp; Back faces</div>
-              <div class="matching-select-container">
-                <select name="q_6_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="6 faces total">6 faces total</option><option value="SA = 2lw + 2lh + 2wh">SA = 2lw + 2lh + 2wh</option><option value="V = l × w × h">V = l × w × h</option><option value="l × h (two of them)">l × h (two of them)</option><option value="l × w (two of them)">l × w (two of them)</option><option value="w × h (two of them)">w × h (two of them)</option>
-                </select>
-                <span class="feedback-badge"></span>
+              <div class="drag-order-row" draggable="true" id="order_6_1" data-step-text="Identify the three face pairs: 5×3, 5×2, 3×2" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+                <span class="drag-order-handle" aria-hidden="true">☰</span>
+                <span class="drag-order-num">2</span>
+                <span class="drag-order-text">Identify the three face pairs: 5×3, 5×2, 3×2</span>
+                <div class="drag-order-controls">
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(6, this, -1)" aria-label="Move up">▲</button>
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(6, this, 1)" aria-label="Move down">▼</button>
+                </div>
               </div>
-            </div>
-          
-            <div class="matching-row" data-term="Left &amp; Right faces" data-correct="w × h (two of them)">
-              <div class="matching-term">Left &amp; Right faces</div>
-              <div class="matching-select-container">
-                <select name="q_6_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="6 faces total">6 faces total</option><option value="SA = 2lw + 2lh + 2wh">SA = 2lw + 2lh + 2wh</option><option value="V = l × w × h">V = l × w × h</option><option value="l × h (two of them)">l × h (two of them)</option><option value="l × w (two of them)">l × w (two of them)</option><option value="w × h (two of them)">w × h (two of them)</option>
-                </select>
-                <span class="feedback-badge"></span>
+              <div class="drag-order-row" draggable="true" id="order_6_2" data-step-text="Multiply each by 2: 30, 20, 12" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+                <span class="drag-order-handle" aria-hidden="true">☰</span>
+                <span class="drag-order-num">3</span>
+                <span class="drag-order-text">Multiply each by 2: 30, 20, 12</span>
+                <div class="drag-order-controls">
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(6, this, -1)" aria-label="Move up">▲</button>
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(6, this, 1)" aria-label="Move down">▼</button>
+                </div>
               </div>
-            </div>
-          
-            <div class="matching-row" data-term="Surface area formula" data-correct="SA = 2lw + 2lh + 2wh">
-              <div class="matching-term">Surface area formula</div>
-              <div class="matching-select-container">
-                <select name="q_6_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="6 faces total">6 faces total</option><option value="SA = 2lw + 2lh + 2wh">SA = 2lw + 2lh + 2wh</option><option value="V = l × w × h">V = l × w × h</option><option value="l × h (two of them)">l × h (two of them)</option><option value="l × w (two of them)">l × w (two of them)</option><option value="w × h (two of them)">w × h (two of them)</option>
-                </select>
-                <span class="feedback-badge"></span>
+              <div class="drag-order-row" draggable="true" id="order_6_3" data-step-text="Find area of each: 15, 10, 6" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+                <span class="drag-order-handle" aria-hidden="true">☰</span>
+                <span class="drag-order-num">4</span>
+                <span class="drag-order-text">Find area of each: 15, 10, 6</span>
+                <div class="drag-order-controls">
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(6, this, -1)" aria-label="Move up">▲</button>
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(6, this, 1)" aria-label="Move down">▼</button>
+                </div>
               </div>
-            </div>
-          
-            <div class="matching-row" data-term="Volume formula" data-correct="V = l × w × h">
-              <div class="matching-term">Volume formula</div>
-              <div class="matching-select-container">
-                <select name="q_6_pair_4" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="6 faces total">6 faces total</option><option value="SA = 2lw + 2lh + 2wh">SA = 2lw + 2lh + 2wh</option><option value="V = l × w × h">V = l × w × h</option><option value="l × h (two of them)">l × h (two of them)</option><option value="l × w (two of them)">l × w (two of them)</option><option value="w × h (two of them)">w × h (two of them)</option>
-                </select>
-                <span class="feedback-badge"></span>
+              <div class="drag-order-row" draggable="true" id="order_6_4" data-step-text="SA = 62 in²" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+                <span class="drag-order-handle" aria-hidden="true">☰</span>
+                <span class="drag-order-num">5</span>
+                <span class="drag-order-text">SA = 62 in²</span>
+                <div class="drag-order-controls">
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(6, this, -1)" aria-label="Move up">▲</button>
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(6, this, 1)" aria-label="Move down">▼</button>
+                </div>
               </div>
-            </div>
-          
-            <div class="matching-row" data-term="Number of faces" data-correct="6 faces total">
-              <div class="matching-term">Number of faces</div>
-              <div class="matching-select-container">
-                <select name="q_6_pair_5" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="6 faces total">6 faces total</option><option value="SA = 2lw + 2lh + 2wh">SA = 2lw + 2lh + 2wh</option><option value="V = l × w × h">V = l × w × h</option><option value="l × h (two of them)">l × h (two of them)</option><option value="l × w (two of them)">l × w (two of them)</option><option value="w × h (two of them)">w × h (two of them)</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
+          </div>
+        </div>
+        <div class="drag-controls">
+          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragOrder(6); saveState(); updateProgress();">Reset Order</button>
         </div>
       </div>
     
@@ -3760,68 +3790,84 @@ header.packet h1::after{
     </section>
   
 
-    <section class="problem-section card" id="problem_7" data-problem-type="drag-sort" data-problem-subtype="drag-order">
+    <section class="problem-section card" id="problem_7" data-problem-type="matching-game">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 2</div>
-        <div class="problem-type-badge">DRAG ORDER</div>
+        <div class="problem-type-badge"><span class="lang-en">MATCHING GAME</span><span class="lang-es" lang="es">JUEGO DE PAREJAS</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the cards: one identifies face pairs, one finds areas, one doubles, one adds, one states the answer.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each face pair uses two of the three dimensions: top/bottom skips height, front/back skips width, left/right skips length.","es":"Un prisma rectangular tiene 6 caras en 3 pares iguales, y cada par usa dos de las tres dimensiones: arriba y abajo son l × w, el frente y el fondo son l × h, y la izquierda y la derecha son w × h. Sumar las seis caras da SA = 2lw + 2lh + 2wh, mientras que el volumen multiplica las tres dimensiones a la vez: V = l × w × h.","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Put these steps in order for finding the surface area of a 5 × 3 × 2 box.</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Use the ▲ ▼ buttons to reorder steps, or drag the row handles on a computer.</span><span class="lang-es" lang="es">👪 Usen ▲ ▼ para reordenar, o arrastren las filas en la computadora.</span></p>
-        <div class="drag-order-workspace" id="dragorder_7" data-correct-order='[&quot;Identify the three face pairs: 5×3, 5×2, 3×2&quot;,&quot;Find area of each: 15, 10, 6&quot;,&quot;Multiply each by 2: 30, 20, 12&quot;,&quot;Add all pairs: 30 + 20 + 12&quot;,&quot;SA = 62 in²&quot;]' data-initial-order='[&quot;Add all pairs: 30 + 20 + 12&quot;,&quot;SA = 62 in²&quot;,&quot;Identify the three face pairs: 5×3, 5×2, 3×2&quot;,&quot;Multiply each by 2: 30, 20, 12&quot;,&quot;Find area of each: 15, 10, 6&quot;]'>
-          <div class="drag-order-list" id="orderlist_7">
-
-              <div class="drag-order-row" draggable="true" id="order_7_0" data-step-text="Add all pairs: 30 + 20 + 12" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
-                <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">1</span>
-                <span class="drag-order-text">Add all pairs: 30 + 20 + 12</span>
-                <div class="drag-order-controls">
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(7, this, -1)" aria-label="Move up">▲</button>
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(7, this, 1)" aria-label="Move down">▼</button>
-                </div>
+        <p class="problem-stem"><span class="lang-en">Match each concept about rectangular prisms.</span><span class="lang-es" lang="es">Une cada concepto sobre los prismas rectangulares.</span></p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Say each term out loud, then talk through which match makes sense before choosing.</span><span class="lang-es" lang="es">👪 Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.</span></p>
+        <div class="matching-pairs">
+          
+            <div class="matching-row" data-term="Top &amp; Bottom faces" data-correct="l × w (two of them)">
+              <div class="matching-term">Top &amp; Bottom faces</div>
+              <div class="matching-select-container">
+                <select name="q_7_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="6 faces total">6 faces total</option><option value="SA = 2lw + 2lh + 2wh">SA = 2lw + 2lh + 2wh</option><option value="V = l × w × h">V = l × w × h</option><option value="l × h (two of them)">l × h (two of them)</option><option value="l × w (two of them)">l × w (two of them)</option><option value="w × h (two of them)">w × h (two of them)</option>
+                </select>
+                <span class="feedback-badge"></span>
               </div>
-              <div class="drag-order-row" draggable="true" id="order_7_1" data-step-text="SA = 62 in²" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
-                <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">2</span>
-                <span class="drag-order-text">SA = 62 in²</span>
-                <div class="drag-order-controls">
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(7, this, -1)" aria-label="Move up">▲</button>
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(7, this, 1)" aria-label="Move down">▼</button>
-                </div>
+            </div>
+          
+            <div class="matching-row" data-term="Front &amp; Back faces" data-correct="l × h (two of them)">
+              <div class="matching-term">Front &amp; Back faces</div>
+              <div class="matching-select-container">
+                <select name="q_7_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="6 faces total">6 faces total</option><option value="SA = 2lw + 2lh + 2wh">SA = 2lw + 2lh + 2wh</option><option value="V = l × w × h">V = l × w × h</option><option value="l × h (two of them)">l × h (two of them)</option><option value="l × w (two of them)">l × w (two of them)</option><option value="w × h (two of them)">w × h (two of them)</option>
+                </select>
+                <span class="feedback-badge"></span>
               </div>
-              <div class="drag-order-row" draggable="true" id="order_7_2" data-step-text="Identify the three face pairs: 5×3, 5×2, 3×2" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
-                <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">3</span>
-                <span class="drag-order-text">Identify the three face pairs: 5×3, 5×2, 3×2</span>
-                <div class="drag-order-controls">
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(7, this, -1)" aria-label="Move up">▲</button>
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(7, this, 1)" aria-label="Move down">▼</button>
-                </div>
+            </div>
+          
+            <div class="matching-row" data-term="Left &amp; Right faces" data-correct="w × h (two of them)">
+              <div class="matching-term">Left &amp; Right faces</div>
+              <div class="matching-select-container">
+                <select name="q_7_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="6 faces total">6 faces total</option><option value="SA = 2lw + 2lh + 2wh">SA = 2lw + 2lh + 2wh</option><option value="V = l × w × h">V = l × w × h</option><option value="l × h (two of them)">l × h (two of them)</option><option value="l × w (two of them)">l × w (two of them)</option><option value="w × h (two of them)">w × h (two of them)</option>
+                </select>
+                <span class="feedback-badge"></span>
               </div>
-              <div class="drag-order-row" draggable="true" id="order_7_3" data-step-text="Multiply each by 2: 30, 20, 12" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
-                <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">4</span>
-                <span class="drag-order-text">Multiply each by 2: 30, 20, 12</span>
-                <div class="drag-order-controls">
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(7, this, -1)" aria-label="Move up">▲</button>
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(7, this, 1)" aria-label="Move down">▼</button>
-                </div>
+            </div>
+          
+            <div class="matching-row" data-term="Surface area formula" data-correct="SA = 2lw + 2lh + 2wh">
+              <div class="matching-term">Surface area formula</div>
+              <div class="matching-select-container">
+                <select name="q_7_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="6 faces total">6 faces total</option><option value="SA = 2lw + 2lh + 2wh">SA = 2lw + 2lh + 2wh</option><option value="V = l × w × h">V = l × w × h</option><option value="l × h (two of them)">l × h (two of them)</option><option value="l × w (two of them)">l × w (two of them)</option><option value="w × h (two of them)">w × h (two of them)</option>
+                </select>
+                <span class="feedback-badge"></span>
               </div>
-              <div class="drag-order-row" draggable="true" id="order_7_4" data-step-text="Find area of each: 15, 10, 6" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
-                <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">5</span>
-                <span class="drag-order-text">Find area of each: 15, 10, 6</span>
-                <div class="drag-order-controls">
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(7, this, -1)" aria-label="Move up">▲</button>
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(7, this, 1)" aria-label="Move down">▼</button>
-                </div>
+            </div>
+          
+            <div class="matching-row" data-term="Volume formula" data-correct="V = l × w × h">
+              <div class="matching-term">Volume formula</div>
+              <div class="matching-select-container">
+                <select name="q_7_pair_4" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="6 faces total">6 faces total</option><option value="SA = 2lw + 2lh + 2wh">SA = 2lw + 2lh + 2wh</option><option value="V = l × w × h">V = l × w × h</option><option value="l × h (two of them)">l × h (two of them)</option><option value="l × w (two of them)">l × w (two of them)</option><option value="w × h (two of them)">w × h (two of them)</option>
+                </select>
+                <span class="feedback-badge"></span>
               </div>
-          </div>
-        </div>
-        <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragOrder(7); saveState(); updateProgress();">Reset Order</button>
+            </div>
+          
+            <div class="matching-row" data-term="Number of faces" data-correct="6 faces total">
+              <div class="matching-term">Number of faces</div>
+              <div class="matching-select-container">
+                <select name="q_7_pair_5" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="6 faces total">6 faces total</option><option value="SA = 2lw + 2lh + 2wh">SA = 2lw + 2lh + 2wh</option><option value="V = l × w × h">V = l × w × h</option><option value="l × h (two of them)">l × h (two of them)</option><option value="l × w (two of them)">l × w (two of them)</option><option value="w × h (two of them)">w × h (two of them)</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
         </div>
       </div>
     
@@ -3845,14 +3891,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_8" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 3</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Surface area covers all 6 faces of the 6 × 4 × 2 box — it&#39;s not the same as the space inside.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Surface area covers all 6 faces of the 6 × 4 × 2 box — it&#39;s not the same as the space inside.","es":"Área de la superficie = 2(6×4) + 2(6×2) + 2(4×2) = 48 + 24 + 16 = 88 in².","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A rectangular prism has l = 6 in, w = 4 in, h = 2 in. What is its surface area?</p>
+        <p class="problem-stem"><span class="lang-en">A rectangular prism has l = 6 in, w = 4 in, h = 2 in. What is its surface area?</span><span class="lang-es" lang="es">Un prisma rectangular tiene l = 6 in, w = 4 in, h = 2 in. ¿Cuál es el área de su superficie?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="SA = 2(6×4) + 2(6×2) + 2(4×2) = 48 + 24 + 16 = 88 in².">
+        <div class="mc-options" data-correct="0" data-explanation="SA = 2(6×4) + 2(6×2) + 2(4×2) = 48 + 24 + 16 = 88 in²." data-explanation-es="Área de la superficie = 2(6×4) + 2(6×2) + 2(4×2) = 48 + 24 + 16 = 88 in².">
           
             <label class="mc-option-label" id="label_q_8_0">
               <input type="radio" name="q_8" value="0" onchange="saveState(); updateProgress();">
@@ -3915,12 +3961,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_9" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 4</div>
-        <div class="problem-type-badge">FILL TABLE</div>
+        <div class="problem-type-badge"><span class="lang-en">FILL TABLE</span><span class="lang-es" lang="es">COMPLETAR LA TABLA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each row needs SURFACE AREA, not volume — the total area of all six faces, in square units.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each row needs SURFACE AREA, not volume — the total area of all six faces, in square units.","es":"El área de superficie suma las seis caras, así que usa SA = 2lw + 2lh + 2wh en cada fila. Box A: 2(60) + 2(40) + 2(24) = 248 in². Box B: 2(49) + 2(21) + 2(21) = 182 cm². Box C: 2(60) + 2(24) + 2(10) = 188 ft². Las respuestas llevan unidades cuadradas porque estás cubriendo el exterior, no llenando el interior.","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Find the surface area of each time capsule box using its net.</p>
+        <p class="problem-stem"><span class="lang-en">Find the surface area of each time capsule box using its net.</span><span class="lang-es" lang="es">Encuentra el área superficial de cada caja de cápsula del tiempo usando su plantilla.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
         <div class="table-responsive">
           <table class="fill-table">
@@ -4018,14 +4064,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_10" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 5</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"A cube&#39;s 6 faces are identical squares, each one 5 cm by 5 cm.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"A cube&#39;s 6 faces are identical squares, each one 5 cm by 5 cm.","es":"Un cubo tiene 6 caras idénticas. Cada cara: 5 × 5 = 25 cm². Área total de la superficie = 6 × 25 = 150 cm².","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A cube has edges of 5 cm. What is its surface area?</p>
+        <p class="problem-stem"><span class="lang-en">A cube has edges of 5 cm. What is its surface area?</span><span class="lang-es" lang="es">Un cubo tiene aristas de 5 cm. ¿Cuál es el área de su superficie?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="A cube has 6 identical faces. Each face: 5 × 5 = 25 cm². Total SA = 6 × 25 = 150 cm².">
+        <div class="mc-options" data-correct="0" data-explanation="A cube has 6 identical faces. Each face: 5 × 5 = 25 cm². Total SA = 6 × 25 = 150 cm²." data-explanation-es="Un cubo tiene 6 caras idénticas. Cada cara: 5 × 5 = 25 cm². Área total de la superficie = 6 × 25 = 150 cm².">
           
             <label class="mc-option-label" id="label_q_10_0">
               <input type="radio" name="q_10" value="0" onchange="saveState(); updateProgress();">
@@ -4088,37 +4134,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_11" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 6</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Surface area measures the flat covering on the outside of a solid — like wrapping paper.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Surface area measures the flat covering on the outside of a solid — like wrapping paper.","es":"El área de la superficie mide superficies planas, así que usa unidades cuadradas. El volumen usa unidades cúbicas.","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Surface area is measured in which type of unit?</p>
+        <p class="problem-stem"><span class="lang-en">Surface area is measured in which type of unit?</span><span class="lang-es" lang="es">¿Con qué tipo de unidad se mide el área de la superficie?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Surface area measures flat surfaces, so it uses square units. Volume uses cubic units.">
+        <div class="mc-options" data-correct="0" data-explanation="Surface area measures flat surfaces, so it uses square units. Volume uses cubic units." data-explanation-es="El área de la superficie mide superficies planas, así que usa unidades cuadradas. El volumen usa unidades cúbicas.">
           
             <label class="mc-option-label" id="label_q_11_0">
               <input type="radio" name="q_11" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Square units (in², cm², ft²)</span>
+              <span class="choice-text"><span class="lang-en">Square units (in², cm², ft²)</span><span class="lang-es" lang="es">Unidades cuadradas (in², cm², ft²)</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_11_1">
               <input type="radio" name="q_11" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Cubic units (in³, cm³, ft³)</span>
+              <span class="choice-text"><span class="lang-en">Cubic units (in³, cm³, ft³)</span><span class="lang-es" lang="es">Unidades cúbicas (in³, cm³, ft³)</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_11_2">
               <input type="radio" name="q_11" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Linear units (in, cm, ft)</span>
+              <span class="choice-text"><span class="lang-en">Linear units (in, cm, ft)</span><span class="lang-es" lang="es">Unidades lineales (in, cm, ft)</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_11_3">
               <input type="radio" name="q_11" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">No units needed</span>
+              <span class="choice-text"><span class="lang-en">No units needed</span><span class="lang-es" lang="es">No se necesitan unidades</span></span>
             </label>
           
         </div>
@@ -4158,12 +4204,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_12" data-problem-type="drag-sort" data-problem-subtype="drag-order">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 7</div>
-        <div class="problem-type-badge">DRAG ORDER</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG ORDER</span><span class="lang-es" lang="es">ORDENAR ARRASTRANDO</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each card already shows its SA value, like &#39;2 × 2 × 2: SA = 24&#39;. Those SA numbers are what you sort.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each card already shows its SA value, like &#39;2 × 2 × 2: SA = 24&#39;. Those SA numbers are what you sort.","es":"Ordenar por los valores de SA impresos en las tarjetas da 24, 42, 54, 88, 94; es decir, 2 × 2 × 2, luego 10 × 1 × 1, luego 3 × 3 × 3, luego 6 × 4 × 2 y por último 5 × 4 × 3. Fíjate en que el prisma largo y delgado 10 × 1 × 1 tiene más área de superficie que el cubo pequeño: estirar una figura deja más superficie expuesta.","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Sort these rectangular prisms from LEAST surface area to GREATEST surface area.</p>
+        <p class="problem-stem"><span class="lang-en">Sort these rectangular prisms from LEAST surface area to GREATEST surface area.</span><span class="lang-es" lang="es">Ordena estos prismas rectangulares del MENOR área superficial al MAYOR área superficial.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Use the ▲ ▼ buttons to reorder steps, or drag the row handles on a computer.</span><span class="lang-es" lang="es">👪 Usen ▲ ▼ para reordenar, o arrastren las filas en la computadora.</span></p>
         <div class="drag-order-workspace" id="dragorder_12" data-correct-order='[&quot;2 × 2 × 2: SA = 24&quot;,&quot;10 × 1 × 1: SA = 42&quot;,&quot;3 × 3 × 3: SA = 54&quot;,&quot;6 × 4 × 2: SA = 88&quot;,&quot;5 × 4 × 3: SA = 94&quot;]' data-initial-order='[&quot;6 × 4 × 2: SA = 88&quot;,&quot;10 × 1 × 1: SA = 42&quot;,&quot;2 × 2 × 2: SA = 24&quot;,&quot;3 × 3 × 3: SA = 54&quot;,&quot;5 × 4 × 3: SA = 94&quot;]'>
           <div class="drag-order-list" id="orderlist_12">
@@ -4240,12 +4286,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_13" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 8</div>
-        <div class="problem-type-badge">FILL TABLE</div>
+        <div class="problem-type-badge"><span class="lang-en">FILL TABLE</span><span class="lang-es" lang="es">COMPLETAR LA TABLA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each row is a cube. Volume is edge × edge × edge; surface area is 6 × (edge × edge). Compare the two numbers.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each row is a cube. Volume is edge × edge × edge; surface area is 6 × (edge × edge). Compare the two numbers.","es":"En un cubo, el volumen es arista × arista × arista y el área de superficie es 6 × (arista × arista). El cubo de 2 × 2 × 2 da V = 8 y SA = 24, así que SA es mayor; el cubo de 5 × 5 × 5 da V = 125 y SA = 150, así que SA sigue siendo mayor; pero el cubo de 10 × 10 × 10 da V = 1000 y SA = 600, así que el volumen se adelanta. El volumen crece más rápido que el área de superficie cuando el cubo se hace más grande.","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Compare volume and surface area. Which measurement is bigger for each prism?</p>
+        <p class="problem-stem"><span class="lang-en">Compare volume and surface area. Which measurement is bigger for each prism?</span><span class="lang-es" lang="es">Compara el volumen y el área superficial. ¿Cuál medida es mayor en cada prisma?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
         <div class="table-responsive">
           <table class="fill-table">
@@ -4676,8 +4722,8 @@ header.packet h1::after{
 <script>
 window.LESSON_ID = "10-3";
 window.LESSON_TITLE = "Surface Area Using Nets";
-window.__HW_VOCAB__ = [{"term":"Surface area","termEs":"Área de superficie","def":"The total area of all the flat sides of a solid.","defEs":"El área total de todos los lados planos de un sólido.","example":"A box 6 × 4 × 2: SA = 2(24) + 2(12) + 2(8) = 88 in² — like wrapping paper needed","img":"/assets/vocab-images/surface-area.svg","imgAlt":"Illustration of Surface area: The total area of all the flat sides of a solid."},{"term":"Net","termEs":"Plantilla (desarrollo plano)","def":"A flat shape that folds up into a solid.","defEs":"Una figura plana que se dobla y forma un sólido.","example":"Cut along the edges of a cereal box and unfold it flat — you see all 6 faces","img":"/assets/vocab-images/net.svg","imgAlt":"Illustration of Net: A flat shape that folds up into a solid."},{"term":"Face","termEs":"Cara","def":"One flat side of a solid shape.","defEs":"Un lado plano de una figura sólida.","example":"A rectangular prism has 6 faces: top, bottom, front, back, left, right","img":"/assets/vocab-images/rectangular-prism.svg","imgAlt":"Illustration of Face: One flat side of a solid shape."},{"term":"Two-dimensional","termEs":"Bidimensional","def":"A flat shape with length and width, but no thickness.","defEs":"Una figura plana con largo y ancho, pero sin grosor.","example":"A rectangle drawn on paper is 2D — it has length and width but no depth","img":"/assets/vocab-images/square-unit.svg","imgAlt":"Illustration of Two-dimensional: A flat shape with length and width, but no thickness."},{"term":"Edge","termEs":"Arista","def":"The line where two flat sides of a solid meet.","defEs":"La línea donde se unen dos lados planos de un sólido.","example":"A cube has 12 edges — the lines where two flat faces connect","img":"/assets/vocab-images/edge.svg","imgAlt":"Illustration of Edge: The line where two flat sides of a solid meet."}];
-window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Two-dimensional|Surface area|Face|Edge|Net)(?:es|s)?\\b","lookup":{"surface area":0,"net":1,"face":2,"two-dimensional":3,"edge":4}};
+window.__HW_VOCAB__ = [{"term":"Surface Area Using Nets","termEs":"Área de superficie usando redes","def":"The total area of every face of a three-dimensional figure, found by adding the faces shown in its net.","defEs":"El área total de todas las caras de una figura tridimensional, que se halla sumando las caras mostradas en su red.","example":"Surface area = area of face 1 + face 2 + every remaining face.","img":"/assets/vocab-images/net.svg","imgAlt":"Illustration of Surface Area Using Nets: The total area of every face of a three-dimensional figure, found by adding the faces shown in its net."},{"term":"Surface area","termEs":"Área de superficie","def":"The total area of all the flat sides of a solid.","defEs":"El área total de todos los lados planos de un sólido.","example":"A box 6 × 4 × 2: SA = 2(24) + 2(12) + 2(8) = 88 in² — like wrapping paper needed","img":"/assets/vocab-images/surface-area.svg","imgAlt":"Illustration of Surface area: The total area of all the flat sides of a solid."},{"term":"Net","termEs":"Plantilla (desarrollo plano)","def":"A flat shape that folds up into a solid.","defEs":"Una figura plana que se dobla y forma un sólido.","example":"Cut along the edges of a cereal box and unfold it flat — you see all 6 faces","img":"/assets/vocab-images/net.svg","imgAlt":"Illustration of Net: A flat shape that folds up into a solid."},{"term":"Face","termEs":"Cara","def":"One flat side of a solid shape.","defEs":"Un lado plano de una figura sólida.","example":"A rectangular prism has 6 faces: top, bottom, front, back, left, right","img":"/assets/vocab-images/rectangular-prism.svg","imgAlt":"Illustration of Face: One flat side of a solid shape."},{"term":"Two-dimensional","termEs":"Bidimensional","def":"A flat shape with length and width, but no thickness.","defEs":"Una figura plana con largo y ancho, pero sin grosor.","example":"A rectangle drawn on paper is 2D — it has length and width but no depth","img":"/assets/vocab-images/square-unit.svg","imgAlt":"Illustration of Two-dimensional: A flat shape with length and width, but no thickness."},{"term":"Edge","termEs":"Arista","def":"The line where two flat sides of a solid meet.","defEs":"La línea donde se unen dos lados planos de un sólido.","example":"A cube has 12 edges — the lines where two flat faces connect","img":"/assets/vocab-images/edge.svg","imgAlt":"Illustration of Edge: The line where two flat sides of a solid meet."}];
+window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Surface Area Using Nets|Two-dimensional|Surface area|Face|Edge|Net)(?:es|s)?\\b","lookup":{"surface area using net":0,"surface area":1,"net":2,"face":3,"two-dimensional":4,"edge":5}};
 
 function syncHomeworkChromeHeights() {
   const status = document.querySelector('.bottom-status-bar');
@@ -4811,7 +4857,33 @@ function saveParentSignoff() {
   try {
     localStorage.setItem('hw_parent_signoff_' + lessonId, JSON.stringify(payload));
   } catch(e) {}
-  
+
+  /* localStorage stays the source of truth for what this page displays, but a
+     sign-off the teacher never sees is not a sign-off. Fire-and-forget POST:
+     the endpoint always answers 204, and any failure here is swallowed so a
+     family on a bad connection still gets their confirmation. */
+  try {
+    var signoffBody = JSON.stringify({
+      lessonId: lessonId,
+      lessonTitle: lessonTitle,
+      parentName: nameVal,
+      note: noteVal,
+      date: signoffDate,
+      studentName: (window.NeftSaveResume && window.NeftSaveResume.studentName) || '',
+      section: (window.NeftSaveResume && window.NeftSaveResume.section) || ''
+    });
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('/api/progress/family-signoff', new Blob([signoffBody], { type: 'application/json' }));
+    } else {
+      fetch('/api/progress/family-signoff', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: signoffBody,
+        keepalive: true
+      }).catch(function() {});
+    }
+  } catch(e) {}
+
   updateSignoffUI(payload);
 }
 
@@ -5748,6 +5820,15 @@ function playCheckSound(isCorrect) {
   }
 }
 
+/* Feedback text is built in JS, so it cannot use the .lang-en/.lang-es span
+   pair the rest of the page toggles. Pick the language the family is actually
+   reading; fall back to English whenever no Spanish was authored. */
+function pickLangText(en, es) {
+  const esText = (es || "").trim();
+  if (esText && document.body.classList.contains("lang-mode-es")) return esText;
+  return en || "";
+}
+
 function checkProblem(idx, options) {
   const silent = options && options.silent;
   const section = document.getElementById("problem_" + idx);
@@ -5765,7 +5846,7 @@ function checkProblem(idx, options) {
       const container = section.querySelector(".mc-options");
       const selected = container.querySelector("input[type='radio']:checked");
       const correctIdx = container.dataset.correct;
-      const explanation = container.dataset.explanation;
+      const explanation = pickLangText(container.dataset.explanation, container.dataset.explanationEs);
       
       // Reset radio option styles
       const labels = container.querySelectorAll(".mc-option-label");
@@ -5993,7 +6074,7 @@ function checkProblem(idx, options) {
   if (!feedbackMessage) {
     if (type === "multiple-choice") {
       const container = section.querySelector(".mc-options");
-      const explanation = container?.dataset.explanation || "";
+      const explanation = pickLangText(container?.dataset.explanation, container?.dataset.explanationEs);
       if (isProblemCorrect) {
         feedbackMessage = explanation
           ? "Correct! " + explanation

@@ -1604,6 +1604,14 @@ body.obj-popup-open { overflow: hidden; }
 .section-vocab { border-left: 4px solid var(--coral); }
 .section-stuck { border-left: 4px solid #9b59b6; }
 .section-quick-intro { border-left: 4px solid var(--success); }
+.quick-check-time {
+  background: var(--amber-light);
+  border: 1px solid var(--amber);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 0 0 12px;
+  font-size: 15px;
+}
 .section-celebrate {
   border-left: 4px solid var(--amber);
   background: linear-gradient(180deg, var(--amber-light), var(--white));
@@ -1851,6 +1859,16 @@ body.obj-popup-open { overflow: hidden; }
   padding: 2px;
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x proximity;
+}
+/* On a phone the 10 tabs are ~738px wide in a ~381px viewport, so half of them
+   (Help, More, Done) sit off-screen with nothing to suggest they exist. Fade the
+   trailing edge so the strip reads as scrollable. Only below 700px, where the
+   overflow is guaranteed — a permanent fade on desktop would just look broken. */
+@media (max-width: 700px) {
+  .homework-tab-bar {
+    -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+    mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+  }
 }
 .homework-tab-btn {
   flex: 0 0 auto;
@@ -2372,6 +2390,12 @@ body.lang-mode-es .bilingual-grid {
 @media print {
   .homework-tab-chrome, .homework-tab-bar, .bottom-status-bar, .help-modal-overlay, .print-all-btn, .parent-signoff-container { display: none !important; }
   .tab-panel-inner[hidden] { display: block !important; page-break-inside: avoid; }
+  /* Printing un-hides every panel, but these three are screen-only: an embedded
+     arcade iframe, a live game, and a link-out. On paper they were blank or
+     meaningless pages in the middle of the packet. */
+  [data-tab-panel="arcade"],
+  [data-tab-panel="play"],
+  [data-tab-panel="workbench"] { display: none !important; }
   body { padding-bottom: 0; }
   
   .print-only-certificate.is-signed {
@@ -2448,7 +2472,7 @@ body.lang-mode-es .bilingual-grid {
 
 
 .family-visual-lab{--lab-ink:#173a5e;--lab-teal:#0b8f87;--lab-coral:#ff775f;--lab-sun:#f6c94c;margin:26px 0;padding:clamp(18px,3vw,30px);border:3px solid var(--lab-ink);border-radius:28px;background:#fffdf5;box-shadow:8px 8px 0 var(--lab-ink);color:var(--lab-ink)}
-.visual-lab-heading{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(260px,1.15fr);gap:20px;align-items:end;margin-bottom:20px}.visual-lab-heading h2{margin:6px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.05}.visual-lab-heading p{margin:0;padding:14px 16px;border-left:5px solid var(--lab-sun);background:#fff8d9;font-size:17px;font-weight:700;line-height:1.45}.visual-lab-kicker{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--lab-ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em}
+.visual-lab-heading{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(260px,1.15fr);gap:20px;align-items:end;margin-bottom:20px}.visual-lab-heading h2{margin:6px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.05}.visual-lab-heading p{margin:0;padding:14px 16px;border-left:5px solid var(--lab-sun);background:#fff8d9;font-size:17px;font-weight:700;line-height:1.45}.visual-lab-kicker{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--lab-ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em}.visual-lab-kicker .lang-en,.visual-lab-kicker .lang-es{color:inherit}
 .visual-lab-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(230px,.8fr);gap:18px;align-items:stretch}.visual-lab-canvas-wrap{min-width:0;padding:12px;border-radius:22px;background-color:#eef8f4;background-image:linear-gradient(#cee3dc 1px,transparent 1px),linear-gradient(90deg,#cee3dc 1px,transparent 1px);background-size:24px 24px;border:2px solid var(--lab-ink)}.visual-lab-stage{display:grid;place-items:center;min-height:280px}.visual-lab-stage svg{display:block;width:100%;max-height:320px;overflow:visible}.visual-lab-status{min-height:26px;margin:5px 8px 0;padding:7px 10px;border-radius:10px;background:#fff;font-weight:800;text-align:center}
 .visual-lab-controls{display:flex;flex-direction:column;gap:14px;padding:18px;border-radius:22px;background:var(--lab-ink);color:#fff}.visual-lab-control{display:grid;gap:7px;font-weight:800}.visual-lab-control-label{display:flex;justify-content:space-between;gap:10px;align-items:center}.visual-lab-control output{min-width:38px;padding:3px 8px;border-radius:8px;background:var(--lab-sun);color:#102f4e;text-align:center;font-size:18px}.visual-lab-control input[type=range]{width:100%;min-height:28px;accent-color:var(--lab-coral);cursor:pointer}.visual-lab-control input[type=range]:focus-visible{outline:4px solid #fff;outline-offset:4px}.visual-lab-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:auto}.visual-lab-button{min-height:48px;border:2px solid #fff;border-radius:13px;background:var(--lab-coral);color:#182f48;font:inherit;font-weight:800;cursor:pointer}.visual-lab-button-quiet{background:#fff}.visual-lab-button:hover{transform:translateY(-2px)}.visual-lab-button:focus-visible{outline:4px solid var(--lab-sun);outline-offset:3px}
 .visual-representation-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:18px}.visual-representation-card{position:relative;min-height:150px;padding:18px 16px 15px;border:2px solid var(--lab-ink);border-radius:18px;background:#fff}.visual-representation-card h3{margin:0 0 10px;padding-left:30px;font-size:17px}.visual-representation-card p{margin:7px 0;font-size:16px;line-height:1.4}.representation-number{position:absolute;top:12px;left:12px;display:grid;width:27px;height:27px;place-items:center;border-radius:50%;background:var(--lab-ink);color:#fff;font-weight:800}.visual-representation-model{background:#dff5ee}.visual-representation-math{background:#fff2c2}.visual-representation-words{background:#ffe4dd}.visual-representation-math [data-lab-equation]{font-size:clamp(22px,3vw,32px);font-weight:800;text-align:center}.mini-model{display:flex;flex-wrap:wrap;gap:7px;align-content:center;min-height:76px;padding:8px}.mini-dot{width:18px;height:18px;border:2px solid var(--lab-ink);border-radius:50%;background:var(--lab-teal)}.visual-representation-card details{margin-top:10px}.visual-representation-card summary{cursor:pointer;font-weight:800;text-decoration:underline}.visual-source-idea{font-size:13px!important;color:#344f69}
@@ -2731,12 +2755,12 @@ header.packet h1::after{
         <div class="bilingual-col lang-en">
           <span class="lang-label">English</span>
           <p class="learning-big">Tonight we learn when two expressions are equivalent. Equivalent means they always give the same answer, even when they look different.</p>
-          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Equivalent</li><li>Simplify</li><li>Like Terms</li><li>Combine</li><li>Coefficient</li></ul></div>
+          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Equivalent Expressions</li><li>Equivalent</li><li>Simplify</li><li>Like Terms</li><li>Combine</li></ul></div>
         </div>
         <div class="bilingual-col lang-es" lang="es">
           <span class="lang-label">Español</span>
           <p class="learning-big">Esta noche aprendemos cuándo dos expresiones son equivalentes. Equivalente significa que siempre dan la misma respuesta, aunque se vean diferentes.</p>
-          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Equivalente</li><li>Simplificar</li><li>Términos semejantes</li><li>Combinar</li><li>Coeficiente</li></ul></div>
+          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Expresiones equivalentes</li><li>Equivalente</li><li>Simplificar</li><li>Términos semejantes</li><li>Combinar</li></ul></div>
         </div>
       </div>
     
@@ -2866,6 +2890,24 @@ header.packet h1::after{
       </p>
       <div class="vocab-container">
         
+            <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+              <div class="vocab-card-inner">
+                <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/cat-number.svg" alt="Illustration of Equivalent Expressions: Expressions that look different but have the same value for every allowed variable value." loading="lazy" width="72" height="72" />
+                  </div>
+                  <h3>Equivalent Expressions</h3>
+                  <p class="vocab-es" lang="es">Expresiones equivalentes</p>
+                  <div class="vocab-visual-hint">💡 2(x + 3) and 2x + 6 are equivalent.</div>
+                  <div class="flip-prompt"><span class="lang-en">Tap</span><span class="lang-es" lang="es">Toca ➔</span></div>
+                </div>
+                <div class="vocab-card-back">
+                  <p class="vocab-def">Expressions that look different but have the same value for every allowed variable value.</p>
+                  <p class="vocab-def-es" lang="es">Expresiones que se ven diferentes pero tienen el mismo valor para cada valor permitido de la variable.</p>
+                  <p class="vocab-back-visual">📌 2(x + 3) and 2x + 6 are equivalent.</p>
+                </div>
+              </div>
+            </div>
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -3092,6 +3134,10 @@ header.packet h1::after{
       
     
       <h2 class="section-title">✅ <span class="lang-en">Quick check</span><span class="lang-es" lang="es">Repaso rápido</span></h2>
+      <p class="quick-check-time bilingual-block">
+        <span class="lang-en">⏱️ Plan on about <strong>15–20 minutes</strong> for the 6 problems below. The extra practice at the bottom is optional.</span>
+        <span class="lang-es" lang="es">⏱️ Calculen unos <strong>15–20 minutos</strong> para los 6 problemas de abajo. La práctica extra al final es opcional.</span>
+      </p>
       <p class="bilingual-block">
         <span class="lang-en">A few problems to practice together. Each one has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong>, and a <strong>space to show your work</strong>. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
         <span class="lang-es" lang="es">Unos problemas para practicar juntos. Cada uno tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para mostrar el trabajo</strong>. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
@@ -3116,12 +3162,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_0" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 1</div>
-        <div class="problem-type-badge">FILL TABLE</div>
+        <div class="problem-type-badge"><span class="lang-en">FILL TABLE</span><span class="lang-es" lang="es">COMPLETAR LA TABLA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each row has two jobs: simplify the expression, then plug in x = 3 to check your simplified form.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each row has two jobs: simplify the expression, then plug in x = 3 to check your simplified form.","es":"Primero simplifica y luego sustituye para comprobar. 2x + 5x + 1 = 7x + 1, y en x = 3 eso es 21 + 1 = 22. 4(x + 2) = 4x + 8, y en x = 3 eso es 12 + 8 = 20. 3x + 4 + x − 1 = 4x + 3, y en x = 3 eso es 12 + 3 = 15. Cada forma simplificada da el mismo valor que la original, que es justo lo que significa ser equivalentes.","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Simplify each expression. Then evaluate both the original and simplified form when x = 3 to verify they are equivalent.</p>
+        <p class="problem-stem"><span class="lang-en">Simplify each expression. Then evaluate both the original and simplified form when x = 3 to verify they are equivalent.</span><span class="lang-es" lang="es">Simplifica cada expresión. Después evalúa la forma original y la simplificada cuando x = 3 para comprobar que son equivalentes.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
         <div class="table-responsive">
           <table class="fill-table">
@@ -3257,12 +3303,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_1" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 2</div>
-        <div class="problem-type-badge">DRAG SORT</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Equivalent means always equal. Simplify the first expression in each pair and compare with the second.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Equivalent means always equal. Simplify the first expression in each pair and compare with the second.","es":"Simplifica la primera expresión de cada tarjeta y revisa si coincide con la segunda. 3x + 2x = 5x, 2(n + 4) = 2n + 8 y x + x = 2x, así que esos tres pares son equivalentes. 4a + 3 y 3y + 2 no se pueden combinar, porque un número solo no es un término semejante de un término con variable: por eso 4a + 3 no es 7a y 3y + 2 no es 5y.","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Sort each pair of expressions by whether they are equivalent or not.</p>
+        <p class="problem-stem"><span class="lang-en">Sort each pair of expressions by whether they are equivalent or not.</span><span class="lang-es" lang="es">Clasifica cada pareja de expresiones según si son equivalentes o no.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
         <div class="family-hint-box"><p>💡 Equivalent means always equal. Simplify the first expression in each pair and compare with the second.</p><p>💡 Combine like terms or distribute — and remember, a plain number like 3 can&#039;t join a variable term like 4a.</p><p>💡 First card: does 3x + 2x really simplify to 5x? Add the coefficients to check, then place the card.</p></div>
         <div class="drag-sort-workspace" id="dragsort_1">
@@ -3384,14 +3430,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_2" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 3</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"3x + x is 3 groups of x plus 1 more group of x = 4x. Add the coefficients: 3 + 1 = 4. Check x = 3: 3(3) + 3 = 12 and 4(3) = 12.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Like terms share the same variable, so they can be combined into a single term.","es":"Los términos semejantes comparten la misma variable, así que se pueden combinar en un solo término.","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A track stacks 3x and then one more x. Which expression is equivalent to 3x + x?</p>
+        <p class="problem-stem"><span class="lang-en">A track stacks 3x and then one more x. Which expression is equivalent to 3x + x?</span><span class="lang-es" lang="es">Una pista apila 3x y después una x más. ¿Qué expresión es equivalente a 3x + x?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="3x + x is 3 groups of x plus 1 more group of x = 4x. Add the coefficients: 3 + 1 = 4. Check x = 3: 3(3) + 3 = 12 and 4(3) = 12.">
+        <div class="mc-options" data-correct="0" data-explanation="3x + x is 3 groups of x plus 1 more group of x = 4x. Add the coefficients: 3 + 1 = 4. Check x = 3: 3(3) + 3 = 12 and 4(3) = 12." data-explanation-es="3x + x son 3 grupos de x más 1 grupo más de x = 4x. Suma los coeficientes: 3 + 1 = 4. Comprueba con x = 3: 3(3) + 3 = 12 y 4(3) = 12.">
           
             <label class="mc-option-label" id="label_q_2_0">
               <input type="radio" name="q_2" value="0" onchange="saveState(); updateProgress();">
@@ -3472,12 +3518,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_3" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 1</div>
-        <div class="problem-type-badge">FILL TABLE</div>
+        <div class="problem-type-badge"><span class="lang-en">FILL TABLE</span><span class="lang-es" lang="es">COMPLETAR LA TABLA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each row wants a DIFFERENT-looking but equal expression. Your tools: factor, combine like terms, or distribute.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each row wants a DIFFERENT-looking but equal expression. Your tools: factor, combine like terms, or distribute.","es":"Cada fila pide una forma distinta pero igual en valor. 4x + 8 tiene términos que comparten el factor 4, así que factorízalo: 4(x + 2). 3a + 2a + 5 tiene términos semejantes que se combinan: 5a + 5. Y 6(n − 2) tiene un paréntesis para distribuir: 6n − 12. Los tres movimientos cambian cómo se ve la expresión sin cambiar su valor.","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">For each expression, find an equivalent expression using a DIFFERENT method (distributive property, combining like terms, or factoring).</p>
+        <p class="problem-stem"><span class="lang-en">For each expression, find an equivalent expression using a DIFFERENT method (distributive property, combining like terms, or factoring).</span><span class="lang-es" lang="es">Para cada expresión, encuentra una expresión equivalente usando un método DIFERENTE (propiedad distributiva, combinar términos semejantes o factorizar).</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
         <div class="table-responsive">
           <table class="fill-table">
@@ -3613,12 +3659,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_4" data-problem-type="open-response">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 2</div>
-        <div class="problem-type-badge">OPEN RESPONSE</div>
+        <div class="problem-type-badge"><span class="lang-en">OPEN RESPONSE</span><span class="lang-es" lang="es">RESPUESTA ABIERTA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Both expressions equal 5 at x = 1 — but equivalence means equal for EVERY value of x.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Both expressions equal 5 at x = 1 — but equivalence means equal for EVERY value of x.","es":"El estudiante no tiene razón. Las dos expresiones sí valen 5 cuando x = 1, pero ser equivalentes significa ser iguales para TODOS los valores de x, y una coincidencia de suerte no prueba nada. Al probar x = 2 se obtiene 2(2) + 3 = 7 mientras que 5(2) = 10; ese solo contraejemplo lo resuelve.","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A student says 2x + 3 and 5x are equivalent because both equal 5 when x = 1. Is the student correct? Explain why testing one value is not enough to prove equivalence, and find a value of x where they give different results.</p>
+        <p class="problem-stem"><span class="lang-en">A student says 2x + 3 and 5x are equivalent because both equal 5 when x = 1. Is the student correct? Explain why testing one value is not enough to prove equivalence, and find a value of x where they give different results.</span><span class="lang-es" lang="es">Un estudiante dice que 2x + 3 y 5x son equivalentes porque las dos dan 5 cuando x = 1. ¿Tiene razón? Explica por qué probar un solo valor no basta para demostrar equivalencia y encuentra un valor de x donde den resultados diferentes.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 A complete sentence with math vocabulary is the goal — not a perfect paragraph.</span><span class="lang-es" lang="es">👪 Una oración completa con vocabulario matemático es la meta — no un párrafo perfecto.</span></p>
         
         
@@ -3685,12 +3731,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_5" data-problem-type="matching-game">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 3</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
+        <div class="problem-type-badge"><span class="lang-en">MATCHING GAME</span><span class="lang-es" lang="es">JUEGO DE PAREJAS</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each left card simplifies to exactly one right card. Simplify first, then hunt for the result.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each left card simplifies to exactly one right card. Simplify first, then hunt for the result.","es":"Cada expresión de la izquierda se simplifica exactamente a una tarjeta de la derecha. Combinar términos semejantes da 6x + 2x = 8x, 4a + 7 + a = 5a + 7 y 10m − 4m + 1 = 6m + 1. Distribuir da 3(n + 5) = 3n + 15, 2(3y − 4) = 6y − 8 y 5(x + 2) = 5x + 10, porque el factor de afuera multiplica a los dos términos de adentro.","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Match each expression to its simplified equivalent.</p>
+        <p class="problem-stem"><span class="lang-en">Match each expression to its simplified equivalent.</span><span class="lang-es" lang="es">Une cada expresión con su equivalente simplificado.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Say each term out loud, then talk through which match makes sense before choosing.</span><span class="lang-es" lang="es">👪 Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.</span></p>
         <div class="matching-pairs">
           
@@ -3794,14 +3840,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_6" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 1</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"4x and 3x share the exact same variable, x — that makes them like terms.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"4x and 3x share the exact same variable, x — that makes them like terms.","es":"4x + 3x = 7x. Combina los coeficientes: 4 + 3 = 7.","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Which expression is equivalent to 4x + 3x?</p>
+        <p class="problem-stem"><span class="lang-en">Which expression is equivalent to 4x + 3x?</span><span class="lang-es" lang="es">¿Qué expresión es equivalente a 4x + 3x?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="4x + 3x = 7x. Combine the coefficients: 4 + 3 = 7.">
+        <div class="mc-options" data-correct="0" data-explanation="4x + 3x = 7x. Combine the coefficients: 4 + 3 = 7." data-explanation-es="4x + 3x = 7x. Combina los coeficientes: 4 + 3 = 7.">
           
             <label class="mc-option-label" id="label_q_6_0">
               <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
@@ -3866,14 +3912,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_7" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 2</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The 2 outside the parentheses must multiply both the m and the 5.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The 2 outside the parentheses must multiply both the m and the 5.","es":"2(m + 5) = 2m + 10 usando la propiedad distributiva.","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Which expression is equivalent to 2(m + 5)?</p>
+        <p class="problem-stem"><span class="lang-en">Which expression is equivalent to 2(m + 5)?</span><span class="lang-es" lang="es">¿Qué expresión es equivalente a 2(m + 5)?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="2(m + 5) = 2m + 10 using the distributive property.">
+        <div class="mc-options" data-correct="0" data-explanation="2(m + 5) = 2m + 10 using the distributive property." data-explanation-es="2(m + 5) = 2m + 10 usando la propiedad distributiva.">
           
             <label class="mc-option-label" id="label_q_7_0">
               <input type="radio" name="q_7" value="0" onchange="saveState(); updateProgress();">
@@ -3938,14 +3984,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_8" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 3</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Distribute the 2 to each term inside: 2 · x + 2 · 3 = 2x + 6. Check x = 5: 2(5 + 3) = 16 and 2(5) + 6 = 16.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Two expressions are equivalent when they give the same value for every number you substitute.","es":"Dos expresiones son equivalentes cuando dan el mismo valor para cualquier número que sustituyas.","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Producer A wrote 2(x + 3) for a beat&#039;s cost. Which expression is equivalent?</p>
+        <p class="problem-stem"><span class="lang-en">Producer A wrote 2(x + 3) for a beat&#039;s cost. Which expression is equivalent?</span><span class="lang-es" lang="es">El productor A escribió 2(x + 3) para el costo de un beat. ¿Qué expresión es equivalente?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Distribute the 2 to each term inside: 2 · x + 2 · 3 = 2x + 6. Check x = 5: 2(5 + 3) = 16 and 2(5) + 6 = 16.">
+        <div class="mc-options" data-correct="0" data-explanation="Distribute the 2 to each term inside: 2 · x + 2 · 3 = 2x + 6. Check x = 5: 2(5 + 3) = 16 and 2(5) + 6 = 16." data-explanation-es="Distribuye el 2 a cada término de adentro: 2 · x + 2 · 3 = 2x + 6. Comprueba con x = 5: 2(5 + 3) = 16 y 2(5) + 6 = 16.">
           
             <label class="mc-option-label" id="label_q_8_0">
               <input type="radio" name="q_8" value="0" onchange="saveState(); updateProgress();">
@@ -4010,14 +4056,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_9" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 4</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Order of addition does not change the value (commutative property): 5 + 2x = 2x + 5. Check x = 10: 5 + 2(10) = 25 and 2(10) + 5 = 25.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Two expressions are equivalent when they always have the same value, even if the terms are written in a different order.","es":"Dos expresiones son equivalentes cuando siempre tienen el mismo valor, aunque los términos estén escritos en otro orden.","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Producer B flipped a formula to 5 + 2x. Which expression is equivalent?</p>
+        <p class="problem-stem"><span class="lang-en">Producer B flipped a formula to 5 + 2x. Which expression is equivalent?</span><span class="lang-es" lang="es">El productor B cambió una fórmula a 5 + 2x. ¿Qué expresión es equivalente?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Order of addition does not change the value (commutative property): 5 + 2x = 2x + 5. Check x = 10: 5 + 2(10) = 25 and 2(10) + 5 = 25.">
+        <div class="mc-options" data-correct="0" data-explanation="Order of addition does not change the value (commutative property): 5 + 2x = 2x + 5. Check x = 10: 5 + 2(10) = 25 and 2(10) + 5 = 25." data-explanation-es="El orden de la suma no cambia el valor (propiedad conmutativa): 5 + 2x = 2x + 5. Comprueba con x = 10: 5 + 2(10) = 25 y 2(10) + 5 = 25.">
           
             <label class="mc-option-label" id="label_q_9_0">
               <input type="radio" name="q_9" value="0" onchange="saveState(); updateProgress();">
@@ -4082,14 +4128,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_10" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 5</div>
-        <div class="problem-type-badge">DRAG SORT</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Equivalent means it simplifies to exactly 4x + 6 — the x part AND the number part both have to match.","es":"Ser equivalente significa que se simplifica exactamente a 4x + 6: tanto la parte con x COMO el número deben coincidir.","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">The target beat formula is 4x + 6. Spin each expression onto the deck where it belongs: equivalent to 4x + 6, or NOT equivalent.</p>
+        <p class="problem-stem"><span class="lang-en">The target beat formula is 4x + 6. Spin each expression onto the deck where it belongs: equivalent to 4x + 6, or NOT equivalent.</span><span class="lang-es" lang="es">La fórmula del ritmo objetivo es 4x + 6. Coloca cada expresión en la tornamesa que le corresponde: equivalente a 4x + 6, o NO equivalente.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
-        
+        <div class="family-hint-box"><p>💡 <span class="lang-en">Equivalent means it simplifies to exactly 4x + 6 — the x part AND the number part both have to match.</span><span class="lang-es" lang="es">Ser equivalente significa que se simplifica exactamente a 4x + 6: tanto la parte con x COMO el número deben coincidir.</span></p><p>💡 <span class="lang-en">Simplify each card first: distribute anything in parentheses, combine like terms, then compare both pieces to 4x + 6.</span><span class="lang-es" lang="es">Primero simplifica cada tarjeta: distribuye lo que esté en paréntesis, combina términos semejantes y luego compara las dos partes con 4x + 6.</span></p><p>💡 <span class="lang-en">Start with 2(2x + 3): multiply the 2 by BOTH terms inside, then check whether your result matches 4x + 6.</span><span class="lang-es" lang="es">Empieza con 2(2x + 3): multiplica el 2 por LOS DOS términos de adentro y luego revisa si tu resultado coincide con 4x + 6.</span></p></div>
         <div class="drag-sort-workspace" id="dragsort_10">
           <div class="drag-columns">
 
@@ -4224,37 +4270,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_11" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 6</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"5n and 2n both have the variable n — they&#39;re like terms, so they can combine.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Watch what happened to the 3: it multiplied the x AND the 7 across the parentheses.","es":"Multiplicar el 3 por cada término dentro del paréntesis es la propiedad distributiva.","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Simplify: 5n + 2n</p>
+        <p class="problem-stem"><span class="lang-en">Which property is shown: 3(x + 7) = 3x + 21?</span><span class="lang-es" lang="es">¿Qué propiedad se muestra: 3(x + 7) = 3x + 21?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="5n + 2n = 7n. Add the coefficients: 5 + 2 = 7. The variable stays as n.">
+        <div class="mc-options" data-correct="0" data-explanation="Multiplying 3 by each term inside the parentheses is the distributive property." data-explanation-es="Multiplicar el 3 por cada término dentro del paréntesis es la propiedad distributiva.">
           
             <label class="mc-option-label" id="label_q_11_0">
               <input type="radio" name="q_11" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">7n</span>
+              <span class="choice-text"><span class="lang-en">Distributive</span><span class="lang-es" lang="es">Distributiva</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_11_1">
               <input type="radio" name="q_11" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">10n</span>
+              <span class="choice-text"><span class="lang-en">Commutative</span><span class="lang-es" lang="es">Conmutativa</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_11_2">
               <input type="radio" name="q_11" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">7n²</span>
+              <span class="choice-text"><span class="lang-en">Associative</span><span class="lang-es" lang="es">Asociativa</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_11_3">
               <input type="radio" name="q_11" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">52n</span>
+              <span class="choice-text"><span class="lang-en">Identity</span><span class="lang-es" lang="es">De identidad</span></span>
             </label>
           
         </div>
@@ -4293,124 +4339,42 @@ header.packet h1::after{
     </section>
   
 
-    <section class="problem-section card" id="problem_12" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
+    <section class="problem-section card" id="problem_12" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 7</div>
-        <div class="problem-type-badge">DRAG SORT</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each card claims an expression simplifies to the given form. Verify the claim before placing it.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"5n and 2n both have the variable n — they&#39;re like terms, so they can combine.","es":"5n + 2n = 7n. Suma los coeficientes: 5 + 2 = 7. La variable sigue siendo n.","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Match each expression with its simplified form.</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
-        <div class="family-hint-box"><p>💡 Each card claims an expression simplifies to the given form. Verify the claim before placing it.</p><p>💡 Redo the work yourself: combine like terms or distribute, and check both the variable part and the constant.</p><p>💡 First card: 8y + 2y — add the coefficients 8 + 2 and see whether the result matches the card&#039;s 10y.</p></div>
-        <div class="drag-sort-workspace" id="dragsort_12">
-          <div class="drag-columns">
-
-              <div class="drag-column" data-category-id="match" ondragover="allowDrop(event)" ondrop="handleDrop(event, 12, 'match')">
-                <div class="drag-column-header">Correctly Matched</div>
-                <div class="drag-column-slots" id="slots_12_match" ondragover="allowDrop(event)" ondrop="handleDrop(event, 12, 'match')"></div>
-              </div>
-          </div>
-          <div class="drag-source-section">
-            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
-            <div class="drag-source-pile" id="pile_12" ondragover="allowDrop(event)" ondrop="handleDrop(event, 12, '')">
-              
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_12_0"
-                     data-item-index="0"
-                     data-correct-category="match"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">8y + 2y → 10y</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_12_0', 12); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="match">Correctly Matched</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_12_1"
-                     data-item-index="1"
-                     data-correct-category="match"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">3(a + 6) → 3a + 18</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_12_1', 12); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="match">Correctly Matched</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_12_2"
-                     data-item-index="2"
-                     data-correct-category="match"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">5n + 4 + 2n → 7n + 4</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_12_2', 12); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="match">Correctly Matched</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_12_3"
-                     data-item-index="3"
-                     data-correct-category="match"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">9p − 3p → 6p</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_12_3', 12); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="match">Correctly Matched</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_12_4"
-                     data-item-index="4"
-                     data-correct-category="match"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">4(2x − 1) → 8x − 4</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_12_4', 12); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="match">Correctly Matched</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_12_5"
-                     data-item-index="5"
-                     data-correct-category="match"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">6t + t → 7t</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_12_5', 12); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="match">Correctly Matched</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-            </div>
-          </div>
-        </div>
-        <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(12); saveState(); updateProgress();">Reset Sorting</button>
+        <p class="problem-stem"><span class="lang-en">Simplify: 5n + 2n</span><span class="lang-es" lang="es">Simplifica: 5n + 2n</span></p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
+        <div class="mc-options" data-correct="0" data-explanation="5n + 2n = 7n. Add the coefficients: 5 + 2 = 7. The variable stays as n." data-explanation-es="5n + 2n = 7n. Suma los coeficientes: 5 + 2 = 7. La variable sigue siendo n.">
+          
+            <label class="mc-option-label" id="label_q_12_0">
+              <input type="radio" name="q_12" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">7n</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_12_1">
+              <input type="radio" name="q_12" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">10n</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_12_2">
+              <input type="radio" name="q_12" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">7n²</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_12_3">
+              <input type="radio" name="q_12" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">52n</span>
+            </label>
+          
         </div>
       </div>
     
@@ -4424,6 +4388,22 @@ header.packet h1::after{
           <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
         </ol>
       </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Box each term so you can see what to combine.</span><span class="lang-es" lang="es">👆 Toca para graficar: Encierra cada término para ver qué combinar.</span></div>
+          <div class="hw-visual-frame hw-interactive" data-interactive="grid" data-pidx="12">
+            <svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="30" y1="10" x2="30" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="50" y1="10" x2="50" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="70" y1="10" x2="70" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="90" y1="10" x2="90" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="110" y1="10" x2="110" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="130" y1="10" x2="130" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="150" y1="10" x2="150" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="170" y1="10" x2="170" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="190" y1="10" x2="190" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="210" y1="10" x2="210" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="230" y1="10" x2="230" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="250" y1="10" x2="250" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="270" y1="10" x2="270" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="290" y1="10" x2="290" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="30" x2="310" y2="30" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="50" x2="310" y2="50" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="70" x2="310" y2="70" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="90" x2="310" y2="90" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="110" x2="310" y2="110" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="130" x2="310" y2="130" stroke="#d6e2ee" stroke-width="1"/></svg>
+            <div class="hw-graph-controls" data-graph-controls></div>
+            <button type="button" class="hw-graph-reset" data-graph-reset><span class="lang-en">↺ Reset</span><span class="lang-es" lang="es">↺ Reiniciar</span></button>
+            <div class="hw-graph-readout" data-graph-readout role="status" aria-live="polite"></div>
+            <input type="hidden" class="custom-input" name="graph_12" data-graph-state value="" />
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_12"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_12" name="work_12" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
@@ -4431,73 +4411,124 @@ header.packet h1::after{
     </section>
   
 
-    <section class="problem-section card" id="problem_13" data-problem-type="matching-game">
+    <section class="problem-section card" id="problem_13" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 8</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each card claims an expression simplifies to the given form. Verify the claim before placing it.","es":"Todas las tarjetas de este grupo son correctas. 8y + 2y = 10y y 6t + t = 7t salen de sumar coeficientes, 9p − 3p = 6p de restarlos, y 5n + 4 + 2n = 7n + 4 combina solo los términos con n mientras el 4 se queda igual. Las otras dos salen de distribuir a LOS DOS términos del paréntesis: 3(a + 6) = 3a + 18 y 4(2x − 1) = 8x − 4.","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Match each studio beat formula to its equivalent remix.</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Say each term out loud, then talk through which match makes sense before choosing.</span><span class="lang-es" lang="es">👪 Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.</span></p>
-        <div class="matching-pairs">
-          
-            <div class="matching-row" data-term="3(x + 4)" data-correct="3x + 12">
-              <div class="matching-term">3(x + 4)</div>
-              <div class="matching-select-container">
-                <select name="q_13_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="3x + 12">3x + 12</option><option value="5n + 6">5n + 6</option><option value="6m">6m</option><option value="8a − 2">8a − 2</option><option value="8y">8y</option>
-                </select>
-                <span class="feedback-badge"></span>
+        <p class="problem-stem"><span class="lang-en">Match each expression with its simplified form.</span><span class="lang-es" lang="es">Une cada expresión con su forma simplificada.</span></p>
+        <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
+        <div class="family-hint-box"><p>💡 Each card claims an expression simplifies to the given form. Verify the claim before placing it.</p><p>💡 Redo the work yourself: combine like terms or distribute, and check both the variable part and the constant.</p><p>💡 First card: 8y + 2y — add the coefficients 8 + 2 and see whether the result matches the card&#039;s 10y.</p></div>
+        <div class="drag-sort-workspace" id="dragsort_13">
+          <div class="drag-columns">
+
+              <div class="drag-column" data-category-id="match" ondragover="allowDrop(event)" ondrop="handleDrop(event, 13, 'match')">
+                <div class="drag-column-header">Correctly Matched</div>
+                <div class="drag-column-slots" id="slots_13_match" ondragover="allowDrop(event)" ondrop="handleDrop(event, 13, 'match')"></div>
               </div>
+          </div>
+          <div class="drag-source-section">
+            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
+            <div class="drag-source-pile" id="pile_13" ondragover="allowDrop(event)" ondrop="handleDrop(event, 13, '')">
+              
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_13_0"
+                     data-item-index="0"
+                     data-correct-category="match"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">8y + 2y → 10y</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_13_0', 13); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="match">Correctly Matched</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_13_1"
+                     data-item-index="1"
+                     data-correct-category="match"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">3(a + 6) → 3a + 18</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_13_1', 13); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="match">Correctly Matched</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_13_2"
+                     data-item-index="2"
+                     data-correct-category="match"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">5n + 4 + 2n → 7n + 4</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_13_2', 13); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="match">Correctly Matched</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_13_3"
+                     data-item-index="3"
+                     data-correct-category="match"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">9p − 3p → 6p</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_13_3', 13); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="match">Correctly Matched</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_13_4"
+                     data-item-index="4"
+                     data-correct-category="match"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">4(2x − 1) → 8x − 4</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_13_4', 13); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="match">Correctly Matched</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_13_5"
+                     data-item-index="5"
+                     data-correct-category="match"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">6t + t → 7t</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_13_5', 13); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="match">Correctly Matched</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
             </div>
-          
-            <div class="matching-row" data-term="7y + y" data-correct="8y">
-              <div class="matching-term">7y + y</div>
-              <div class="matching-select-container">
-                <select name="q_13_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="3x + 12">3x + 12</option><option value="5n + 6">5n + 6</option><option value="6m">6m</option><option value="8a − 2">8a − 2</option><option value="8y">8y</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="6 + 5n" data-correct="5n + 6">
-              <div class="matching-term">6 + 5n</div>
-              <div class="matching-select-container">
-                <select name="q_13_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="3x + 12">3x + 12</option><option value="5n + 6">5n + 6</option><option value="6m">6m</option><option value="8a − 2">8a − 2</option><option value="8y">8y</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="2(4a − 1)" data-correct="8a − 2">
-              <div class="matching-term">2(4a − 1)</div>
-              <div class="matching-select-container">
-                <select name="q_13_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="3x + 12">3x + 12</option><option value="5n + 6">5n + 6</option><option value="6m">6m</option><option value="8a − 2">8a − 2</option><option value="8y">8y</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="9m − 3m" data-correct="6m">
-              <div class="matching-term">9m − 3m</div>
-              <div class="matching-select-container">
-                <select name="q_13_pair_4" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="3x + 12">3x + 12</option><option value="5n + 6">5n + 6</option><option value="6m">6m</option><option value="8a − 2">8a − 2</option><option value="8y">8y</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
+          </div>
+        </div>
+        <div class="drag-controls">
+          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(13); saveState(); updateProgress();">Reset Sorting</button>
         </div>
       </div>
     
@@ -4782,8 +4813,8 @@ header.packet h1::after{
 <script>
 window.LESSON_ID = "6-6";
 window.LESSON_TITLE = "Equivalent Expressions";
-window.__HW_VOCAB__ = [{"term":"Equivalent","termEs":"Equivalente","def":"Expressions that always have the same value.","defEs":"Expresiones que siempre tienen el mismo valor.","example":"2x + 4 and 2(x + 2): when x = 3, both = 10; when x = 7, both = 18 — always the same","img":"/assets/vocab-images/fraction.svg","imgAlt":"Illustration of Equivalent: Expressions that always have the same value."},{"term":"Simplify","termEs":"Simplificar","def":"To write an expression in a shorter, simpler way.","defEs":"Escribir una expresión de forma más corta y simple.","example":"3x + 2x + 5 simplifies to 5x + 5 — fewer terms, same value","img":"/assets/vocab-images/fraction.svg","imgAlt":"Illustration of Simplify: To write an expression in a shorter, simpler way."},{"term":"Like Terms","termEs":"Términos semejantes","def":"Terms with the same letter raised to the same power, like 2x and 5x.","defEs":"Términos con la misma letra elevada a la misma potencia, como 2x y 5x.","example":"3x and 7x are like terms (both x); 3x and 3y are NOT (x vs y); 3x and 3x² are NOT (x vs x²)","img":"/assets/vocab-images/like-terms.svg","imgAlt":"Illustration of Like Terms: Terms with the same letter raised to the same power, like 2x and 5x."},{"term":"Combine","termEs":"Combinar","def":"To add or subtract terms with the same letter into one.","defEs":"Sumar o restar términos con la misma letra en uno solo.","example":"4n + 3n = 7n — add the coefficients (4 + 3 = 7) and keep the variable (n)","img":"/assets/vocab-images/add.svg","imgAlt":"Illustration of Combine: To add or subtract terms with the same letter into one."},{"term":"Coefficient","termEs":"Coeficiente","def":"The number in front of a letter, like the 3 in 3x.","defEs":"El número frente a una letra, como el 3 en 3x.","example":"In 5x + 3, the coefficient of x is 5 — when x = 2, the 5x part equals 10","img":"/assets/vocab-images/coefficient.svg","imgAlt":"Illustration of Coefficient: The number in front of a letter, like the 3 in 3x."}];
-window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Coefficient|Equivalent|Like Terms|Simplify|Combine)(?:es|s)?\\b","lookup":{"equivalent":0,"simplify":1,"like term":2,"combine":3,"coefficient":4}};
+window.__HW_VOCAB__ = [{"term":"Equivalent Expressions","termEs":"Expresiones equivalentes","def":"Expressions that look different but have the same value for every allowed variable value.","defEs":"Expresiones que se ven diferentes pero tienen el mismo valor para cada valor permitido de la variable.","example":"2(x + 3) and 2x + 6 are equivalent.","img":"","imgAlt":""},{"term":"Equivalent","termEs":"Equivalente","def":"Expressions that always have the same value.","defEs":"Expresiones que siempre tienen el mismo valor.","example":"2x + 4 and 2(x + 2): when x = 3, both = 10; when x = 7, both = 18 — always the same","img":"/assets/vocab-images/fraction.svg","imgAlt":"Illustration of Equivalent: Expressions that always have the same value."},{"term":"Simplify","termEs":"Simplificar","def":"To write an expression in a shorter, simpler way.","defEs":"Escribir una expresión de forma más corta y simple.","example":"3x + 2x + 5 simplifies to 5x + 5 — fewer terms, same value","img":"/assets/vocab-images/fraction.svg","imgAlt":"Illustration of Simplify: To write an expression in a shorter, simpler way."},{"term":"Like Terms","termEs":"Términos semejantes","def":"Terms with the same letter raised to the same power, like 2x and 5x.","defEs":"Términos con la misma letra elevada a la misma potencia, como 2x y 5x.","example":"3x and 7x are like terms (both x); 3x and 3y are NOT (x vs y); 3x and 3x² are NOT (x vs x²)","img":"/assets/vocab-images/like-terms.svg","imgAlt":"Illustration of Like Terms: Terms with the same letter raised to the same power, like 2x and 5x."},{"term":"Combine","termEs":"Combinar","def":"To add or subtract terms with the same letter into one.","defEs":"Sumar o restar términos con la misma letra en uno solo.","example":"4n + 3n = 7n — add the coefficients (4 + 3 = 7) and keep the variable (n)","img":"/assets/vocab-images/add.svg","imgAlt":"Illustration of Combine: To add or subtract terms with the same letter into one."},{"term":"Coefficient","termEs":"Coeficiente","def":"The number in front of a letter, like the 3 in 3x.","defEs":"El número frente a una letra, como el 3 en 3x.","example":"In 5x + 3, the coefficient of x is 5 — when x = 2, the 5x part equals 10","img":"/assets/vocab-images/coefficient.svg","imgAlt":"Illustration of Coefficient: The number in front of a letter, like the 3 in 3x."}];
+window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Equivalent Expressions|Coefficient|Equivalent|Like Terms|Simplify|Combine)(?:es|s)?\\b","lookup":{"equivalent expression":0,"equivalent":1,"simplify":2,"like term":3,"combine":4,"coefficient":5}};
 
 function syncHomeworkChromeHeights() {
   const status = document.querySelector('.bottom-status-bar');
@@ -4917,7 +4948,33 @@ function saveParentSignoff() {
   try {
     localStorage.setItem('hw_parent_signoff_' + lessonId, JSON.stringify(payload));
   } catch(e) {}
-  
+
+  /* localStorage stays the source of truth for what this page displays, but a
+     sign-off the teacher never sees is not a sign-off. Fire-and-forget POST:
+     the endpoint always answers 204, and any failure here is swallowed so a
+     family on a bad connection still gets their confirmation. */
+  try {
+    var signoffBody = JSON.stringify({
+      lessonId: lessonId,
+      lessonTitle: lessonTitle,
+      parentName: nameVal,
+      note: noteVal,
+      date: signoffDate,
+      studentName: (window.NeftSaveResume && window.NeftSaveResume.studentName) || '',
+      section: (window.NeftSaveResume && window.NeftSaveResume.section) || ''
+    });
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('/api/progress/family-signoff', new Blob([signoffBody], { type: 'application/json' }));
+    } else {
+      fetch('/api/progress/family-signoff', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: signoffBody,
+        keepalive: true
+      }).catch(function() {});
+    }
+  } catch(e) {}
+
   updateSignoffUI(payload);
 }
 
@@ -5854,6 +5911,15 @@ function playCheckSound(isCorrect) {
   }
 }
 
+/* Feedback text is built in JS, so it cannot use the .lang-en/.lang-es span
+   pair the rest of the page toggles. Pick the language the family is actually
+   reading; fall back to English whenever no Spanish was authored. */
+function pickLangText(en, es) {
+  const esText = (es || "").trim();
+  if (esText && document.body.classList.contains("lang-mode-es")) return esText;
+  return en || "";
+}
+
 function checkProblem(idx, options) {
   const silent = options && options.silent;
   const section = document.getElementById("problem_" + idx);
@@ -5871,7 +5937,7 @@ function checkProblem(idx, options) {
       const container = section.querySelector(".mc-options");
       const selected = container.querySelector("input[type='radio']:checked");
       const correctIdx = container.dataset.correct;
-      const explanation = container.dataset.explanation;
+      const explanation = pickLangText(container.dataset.explanation, container.dataset.explanationEs);
       
       // Reset radio option styles
       const labels = container.querySelectorAll(".mc-option-label");
@@ -6099,7 +6165,7 @@ function checkProblem(idx, options) {
   if (!feedbackMessage) {
     if (type === "multiple-choice") {
       const container = section.querySelector(".mc-options");
-      const explanation = container?.dataset.explanation || "";
+      const explanation = pickLangText(container?.dataset.explanation, container?.dataset.explanationEs);
       if (isProblemCorrect) {
         feedbackMessage = explanation
           ? "Correct! " + explanation

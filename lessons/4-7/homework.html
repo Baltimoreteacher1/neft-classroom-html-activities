@@ -1604,6 +1604,14 @@ body.obj-popup-open { overflow: hidden; }
 .section-vocab { border-left: 4px solid var(--coral); }
 .section-stuck { border-left: 4px solid #9b59b6; }
 .section-quick-intro { border-left: 4px solid var(--success); }
+.quick-check-time {
+  background: var(--amber-light);
+  border: 1px solid var(--amber);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 0 0 12px;
+  font-size: 15px;
+}
 .section-celebrate {
   border-left: 4px solid var(--amber);
   background: linear-gradient(180deg, var(--amber-light), var(--white));
@@ -1851,6 +1859,16 @@ body.obj-popup-open { overflow: hidden; }
   padding: 2px;
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x proximity;
+}
+/* On a phone the 10 tabs are ~738px wide in a ~381px viewport, so half of them
+   (Help, More, Done) sit off-screen with nothing to suggest they exist. Fade the
+   trailing edge so the strip reads as scrollable. Only below 700px, where the
+   overflow is guaranteed — a permanent fade on desktop would just look broken. */
+@media (max-width: 700px) {
+  .homework-tab-bar {
+    -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+    mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+  }
 }
 .homework-tab-btn {
   flex: 0 0 auto;
@@ -2372,6 +2390,12 @@ body.lang-mode-es .bilingual-grid {
 @media print {
   .homework-tab-chrome, .homework-tab-bar, .bottom-status-bar, .help-modal-overlay, .print-all-btn, .parent-signoff-container { display: none !important; }
   .tab-panel-inner[hidden] { display: block !important; page-break-inside: avoid; }
+  /* Printing un-hides every panel, but these three are screen-only: an embedded
+     arcade iframe, a live game, and a link-out. On paper they were blank or
+     meaningless pages in the middle of the packet. */
+  [data-tab-panel="arcade"],
+  [data-tab-panel="play"],
+  [data-tab-panel="workbench"] { display: none !important; }
   body { padding-bottom: 0; }
   
   .print-only-certificate.is-signed {
@@ -2448,7 +2472,7 @@ body.lang-mode-es .bilingual-grid {
 
 
 .family-visual-lab{--lab-ink:#173a5e;--lab-teal:#0b8f87;--lab-coral:#ff775f;--lab-sun:#f6c94c;margin:26px 0;padding:clamp(18px,3vw,30px);border:3px solid var(--lab-ink);border-radius:28px;background:#fffdf5;box-shadow:8px 8px 0 var(--lab-ink);color:var(--lab-ink)}
-.visual-lab-heading{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(260px,1.15fr);gap:20px;align-items:end;margin-bottom:20px}.visual-lab-heading h2{margin:6px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.05}.visual-lab-heading p{margin:0;padding:14px 16px;border-left:5px solid var(--lab-sun);background:#fff8d9;font-size:17px;font-weight:700;line-height:1.45}.visual-lab-kicker{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--lab-ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em}
+.visual-lab-heading{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(260px,1.15fr);gap:20px;align-items:end;margin-bottom:20px}.visual-lab-heading h2{margin:6px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.05}.visual-lab-heading p{margin:0;padding:14px 16px;border-left:5px solid var(--lab-sun);background:#fff8d9;font-size:17px;font-weight:700;line-height:1.45}.visual-lab-kicker{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--lab-ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em}.visual-lab-kicker .lang-en,.visual-lab-kicker .lang-es{color:inherit}
 .visual-lab-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(230px,.8fr);gap:18px;align-items:stretch}.visual-lab-canvas-wrap{min-width:0;padding:12px;border-radius:22px;background-color:#eef8f4;background-image:linear-gradient(#cee3dc 1px,transparent 1px),linear-gradient(90deg,#cee3dc 1px,transparent 1px);background-size:24px 24px;border:2px solid var(--lab-ink)}.visual-lab-stage{display:grid;place-items:center;min-height:280px}.visual-lab-stage svg{display:block;width:100%;max-height:320px;overflow:visible}.visual-lab-status{min-height:26px;margin:5px 8px 0;padding:7px 10px;border-radius:10px;background:#fff;font-weight:800;text-align:center}
 .visual-lab-controls{display:flex;flex-direction:column;gap:14px;padding:18px;border-radius:22px;background:var(--lab-ink);color:#fff}.visual-lab-control{display:grid;gap:7px;font-weight:800}.visual-lab-control-label{display:flex;justify-content:space-between;gap:10px;align-items:center}.visual-lab-control output{min-width:38px;padding:3px 8px;border-radius:8px;background:var(--lab-sun);color:#102f4e;text-align:center;font-size:18px}.visual-lab-control input[type=range]{width:100%;min-height:28px;accent-color:var(--lab-coral);cursor:pointer}.visual-lab-control input[type=range]:focus-visible{outline:4px solid #fff;outline-offset:4px}.visual-lab-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:auto}.visual-lab-button{min-height:48px;border:2px solid #fff;border-radius:13px;background:var(--lab-coral);color:#182f48;font:inherit;font-weight:800;cursor:pointer}.visual-lab-button-quiet{background:#fff}.visual-lab-button:hover{transform:translateY(-2px)}.visual-lab-button:focus-visible{outline:4px solid var(--lab-sun);outline-offset:3px}
 .visual-representation-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:18px}.visual-representation-card{position:relative;min-height:150px;padding:18px 16px 15px;border:2px solid var(--lab-ink);border-radius:18px;background:#fff}.visual-representation-card h3{margin:0 0 10px;padding-left:30px;font-size:17px}.visual-representation-card p{margin:7px 0;font-size:16px;line-height:1.4}.representation-number{position:absolute;top:12px;left:12px;display:grid;width:27px;height:27px;place-items:center;border-radius:50%;background:var(--lab-ink);color:#fff;font-weight:800}.visual-representation-model{background:#dff5ee}.visual-representation-math{background:#fff2c2}.visual-representation-words{background:#ffe4dd}.visual-representation-math [data-lab-equation]{font-size:clamp(22px,3vw,32px);font-weight:800;text-align:center}.mini-model{display:flex;flex-wrap:wrap;gap:7px;align-content:center;min-height:76px;padding:8px}.mini-dot{width:18px;height:18px;border:2px solid var(--lab-ink);border-radius:50%;background:var(--lab-teal)}.visual-representation-card details{margin-top:10px}.visual-representation-card summary{cursor:pointer;font-weight:800;text-decoration:underline}.visual-source-idea{font-size:13px!important;color:#344f69}
@@ -2731,12 +2755,12 @@ header.packet h1::after{
         <div class="bilingual-col lang-en">
           <span class="lang-label">English</span>
           <p class="learning-big">Tonight we solve real problems with unit rates. We find the cost for just 1 item to compare deals and pick the better buy.</p>
-          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Unit Rate</li><li>Better Buy</li><li>Comparison</li><li>Per Unit</li><li>Rate</li></ul></div>
+          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Unit Rate Problem Solving</li><li>Unit Rate</li><li>Better Buy</li><li>Comparison</li><li>Per Unit</li></ul></div>
         </div>
         <div class="bilingual-col lang-es" lang="es">
           <span class="lang-label">Español</span>
           <p class="learning-big">Esta noche resolvemos problemas reales con tasas unitarias. Hallamos el costo de solo 1 artículo para comparar ofertas y elegir la mejor compra.</p>
-          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Tasa unitaria</li><li>Mejor compra</li><li>Comparación</li><li>Por unidad</li><li>Tasa</li></ul></div>
+          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Resolución de problemas con tasas unitarias</li><li>Tasa unitaria</li><li>Mejor compra</li><li>Comparación</li><li>Por unidad</li></ul></div>
         </div>
       </div>
     
@@ -2865,6 +2889,24 @@ header.packet h1::after{
       </p>
       <div class="vocab-container">
         
+            <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+              <div class="vocab-card-inner">
+                <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/cat-measurement.svg" alt="Illustration of Unit Rate Problem Solving: Find an amount per 1 unit and use it to compare choices or solve a problem." loading="lazy" width="72" height="72" />
+                  </div>
+                  <h3>Unit Rate Problem Solving</h3>
+                  <p class="vocab-es" lang="es">Resolución de problemas con tasas unitarias</p>
+                  <div class="vocab-visual-hint">💡 $12 for 4 items = $3 per item.</div>
+                  <div class="flip-prompt"><span class="lang-en">Tap</span><span class="lang-es" lang="es">Toca ➔</span></div>
+                </div>
+                <div class="vocab-card-back">
+                  <p class="vocab-def">Find an amount per 1 unit and use it to compare choices or solve a problem.</p>
+                  <p class="vocab-def-es" lang="es">Hallar una cantidad por 1 unidad y usarla para comparar opciones o resolver un problema.</p>
+                  <p class="vocab-back-visual">📌 $12 for 4 items = $3 per item.</p>
+                </div>
+              </div>
+            </div>
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -3109,6 +3151,10 @@ header.packet h1::after{
       
     
       <h2 class="section-title">✅ <span class="lang-en">Quick check</span><span class="lang-es" lang="es">Repaso rápido</span></h2>
+      <p class="quick-check-time bilingual-block">
+        <span class="lang-en">⏱️ Plan on about <strong>15–20 minutes</strong> for the 6 problems below. The extra practice at the bottom is optional.</span>
+        <span class="lang-es" lang="es">⏱️ Calculen unos <strong>15–20 minutos</strong> para los 6 problemas de abajo. La práctica extra al final es opcional.</span>
+      </p>
       <p class="bilingual-block">
         <span class="lang-en">A few problems to practice together. Each one has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong>, and a <strong>space to show your work</strong>. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
         <span class="lang-es" lang="es">Unos problemas para practicar juntos. Cada uno tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para mostrar el trabajo</strong>. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
@@ -3133,37 +3179,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_0" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 1</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"12 oz: $3.00 ÷ 12 = $0.25 per oz. 20 oz: $4.00 ÷ 20 = $0.20 per oz. $0.20 < $0.25, so 20 oz for $4.00 is the better buy.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Different package sizes can only be compared once both are priced per ounce.","es":"Los envases de distinto tamaño solo se pueden comparar cuando ambos tienen precio por onza.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">The snack bar compares two popcorn deals: 12 oz for $3.00 or 20 oz for $4.00. Which is the better buy?</p>
+        <p class="problem-stem"><span class="lang-en">The snack bar compares two popcorn deals: 12 oz for $3.00 or 20 oz for $4.00. Which is the better buy?</span><span class="lang-es" lang="es">El puesto de bocadillos compara dos ofertas de palomitas: 12 oz por $3.00 o 20 oz por $4.00. ¿Cuál es la mejor compra?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="12 oz: $3.00 ÷ 12 = $0.25 per oz. 20 oz: $4.00 ÷ 20 = $0.20 per oz. $0.20 &lt; $0.25, so 20 oz for $4.00 is the better buy.">
+        <div class="mc-options" data-correct="0" data-explanation="12 oz: $3.00 ÷ 12 = $0.25 per oz. 20 oz: $4.00 ÷ 20 = $0.20 per oz. $0.20 &lt; $0.25, so 20 oz for $4.00 is the better buy." data-explanation-es="12 oz: $3.00 ÷ 12 = $0.25 por oz. 20 oz: $4.00 ÷ 20 = $0.20 por oz. $0.20 &lt; $0.25, así que 20 oz por $4.00 es la mejor compra.">
           
             <label class="mc-option-label" id="label_q_0_0">
               <input type="radio" name="q_0" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">20 oz for $4.00 — $0.20 per oz</span>
+              <span class="choice-text"><span class="lang-en">20 oz for $4.00 — $0.20 per oz</span><span class="lang-es" lang="es">20 oz por $4.00 — $0.20 por onza</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_0_1">
               <input type="radio" name="q_0" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">12 oz for $3.00 — $0.25 per oz</span>
+              <span class="choice-text"><span class="lang-en">12 oz for $3.00 — $0.25 per oz</span><span class="lang-es" lang="es">12 oz por $3.00 — $0.25 por onza</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_0_2">
               <input type="radio" name="q_0" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">They cost the same per ounce</span>
+              <span class="choice-text"><span class="lang-en">They cost the same per ounce</span><span class="lang-es" lang="es">Cuestan lo mismo por onza</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_0_3">
               <input type="radio" name="q_0" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Not enough information</span>
+              <span class="choice-text"><span class="lang-en">Not enough information</span><span class="lang-es" lang="es">No hay suficiente información</span></span>
             </label>
           
         </div>
@@ -3203,37 +3249,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_1" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 2</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"8 for $2.00: $2.00 ÷ 8 = $0.25 each. 15 for $3.00: $3.00 ÷ 15 = $0.20 each. $0.20 < $0.25, so 15 for $3.00 is cheaper per ticket.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The cheaper deal is the one with the lower price for a single ticket.","es":"La oferta más barata es la que tiene el precio más bajo por un solo boleto.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">The ticket counter sells redemption tickets two ways: 8 tickets for $2.00 or 15 tickets for $3.00. Which costs less per ticket?</p>
+        <p class="problem-stem"><span class="lang-en">The ticket counter sells redemption tickets two ways: 8 tickets for $2.00 or 15 tickets for $3.00. Which costs less per ticket?</span><span class="lang-es" lang="es">El mostrador de boletos vende boletos de premio de dos maneras: 8 boletos por $2.00 o 15 boletos por $3.00. ¿Cuál cuesta menos por boleto?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="8 for $2.00: $2.00 ÷ 8 = $0.25 each. 15 for $3.00: $3.00 ÷ 15 = $0.20 each. $0.20 &lt; $0.25, so 15 for $3.00 is cheaper per ticket.">
+        <div class="mc-options" data-correct="0" data-explanation="8 for $2.00: $2.00 ÷ 8 = $0.25 each. 15 for $3.00: $3.00 ÷ 15 = $0.20 each. $0.20 &lt; $0.25, so 15 for $3.00 is cheaper per ticket." data-explanation-es="8 por $2.00: $2.00 ÷ 8 = $0.25 cada uno. 15 por $3.00: $3.00 ÷ 15 = $0.20 cada uno. $0.20 &lt; $0.25, así que 15 por $3.00 es más barato por boleto.">
           
             <label class="mc-option-label" id="label_q_1_0">
               <input type="radio" name="q_1" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">15 tickets for $3.00 — $0.20 each</span>
+              <span class="choice-text"><span class="lang-en">15 tickets for $3.00 — $0.20 each</span><span class="lang-es" lang="es">15 boletos por $3.00 — $0.20 cada uno</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_1_1">
               <input type="radio" name="q_1" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">8 tickets for $2.00 — $0.25 each</span>
+              <span class="choice-text"><span class="lang-en">8 tickets for $2.00 — $0.25 each</span><span class="lang-es" lang="es">8 boletos por $2.00 — $0.25 cada uno</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_1_2">
               <input type="radio" name="q_1" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">They cost the same per ticket</span>
+              <span class="choice-text"><span class="lang-en">They cost the same per ticket</span><span class="lang-es" lang="es">Cuestan lo mismo por boleto</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_1_3">
               <input type="radio" name="q_1" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Cannot determine</span>
+              <span class="choice-text"><span class="lang-en">Cannot determine</span><span class="lang-es" lang="es">No se puede determinar</span></span>
             </label>
           
         </div>
@@ -3273,14 +3319,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_2" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 3</div>
-        <div class="problem-type-badge">DRAG SORT</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each card shows a total price for a bundle, but a better buy is decided by what a single item costs.","es":"Cada tarjeta muestra un precio total por un paquete, pero la mejor compra se decide por lo que cuesta un solo artículo.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">For each prize item, find the unit rate of both deals and sort each card into Better Buy or Worse Buy.</p>
+        <p class="problem-stem"><span class="lang-en">For each prize item, find the unit rate of both deals and sort each card into Better Buy or Worse Buy.</span><span class="lang-es" lang="es">Para cada premio, encuentra la tasa unitaria de las dos ofertas y clasifica cada tarjeta en Mejor compra o Peor compra.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
-        
+        <div class="family-hint-box"><p>💡 <span class="lang-en">Each card shows a total price for a bundle, but a better buy is decided by what a single item costs.</span><span class="lang-es" lang="es">Cada tarjeta muestra un precio total por un paquete, pero la mejor compra se decide por lo que cuesta un solo artículo.</span></p><p>💡 <span class="lang-en">Compare only the two cards for the same prize, and send the one with the smaller price per item to Better Buy.</span><span class="lang-es" lang="es">Compara solo las dos tarjetas del mismo premio y manda a Mejor compra la que tenga el menor precio por artículo.</span></p><p>💡 <span class="lang-en">Start with the snack packs: $5.00 ÷ 4 = $1.25 each, so work out $9.00 ÷ 6 before you place either card.</span><span class="lang-es" lang="es">Empieza con los paquetes de botanas: $5.00 ÷ 4 = $1.25 cada uno, así que calcula $9.00 ÷ 6 antes de colocar cualquiera de las dos tarjetas.</span></p></div>
         <div class="drag-sort-workspace" id="dragsort_2">
           <div class="drag-columns">
 
@@ -3431,12 +3477,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_3" data-problem-type="open-response">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 1</div>
-        <div class="problem-type-badge">OPEN RESPONSE</div>
+        <div class="problem-type-badge"><span class="lang-en">OPEN RESPONSE</span><span class="lang-es" lang="es">RESPUESTA ABIERTA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Three jobs here: find each company&#39;s cost per token, pick the cheaper one, then price out 1,000 tokens.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Three jobs here: find each company&#39;s cost per token, pick the cheaper one, then price out 1,000 tokens.","es":"La Compañía X cobra $36 ÷ 300 = $0.12 por ficha y la Compañía Y cobra $55 ÷ 500 = $0.11 por ficha, así que Y es más barata por cada ficha aunque su paquete cueste más. A $0.11 por ficha, 1,000 fichas cuestan 1,000 × $0.11 = $110.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Two arcade supply companies offer token deals. Company X: 300 tokens for $36. Company Y: 500 tokens for $55. The arcade needs 1,000 tokens. Find the unit rate for each company, determine which is cheaper per token, and calculate the total cost of buying 1,000 tokens from the better deal.</p>
+        <p class="problem-stem"><span class="lang-en">Two arcade supply companies offer token deals. Company X: 300 tokens for $36. Company Y: 500 tokens for $55. The arcade needs 1,000 tokens. Find the unit rate for each company, determine which is cheaper per token, and calculate the total cost of buying 1,000 tokens from the better deal.</span><span class="lang-es" lang="es">Dos compañías de suministros para arcades ofrecen paquetes de fichas. Compañía X: 300 fichas por $36. Compañía Y: 500 fichas por $55. El arcade necesita 1,000 fichas. Encuentra la tasa unitaria de cada compañía, determina cuál es más barata por ficha y calcula el costo total de comprar 1,000 fichas en la mejor oferta.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 A complete sentence with math vocabulary is the goal — not a perfect paragraph.</span><span class="lang-es" lang="es">👪 Una oración completa con vocabulario matemático es la meta — no un párrafo perfecto.</span></p>
         
         
@@ -3501,12 +3547,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_4" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 2</div>
-        <div class="problem-type-badge">FILL TABLE</div>
+        <div class="problem-type-badge"><span class="lang-en">FILL TABLE</span><span class="lang-es" lang="es">COMPLETAR LA TABLA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The table wants miles per MINUTE, so miles get divided by minutes for each drone.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The table wants miles per MINUTE, so miles get divided by minutes for each drone.","es":"Las millas por minuto salen de dividir la distancia entre el tiempo: 9 ÷ 12 = 0.75 para el Dron A y 7 ÷ 10 = 0.70 para el Dron B. El Dron A recorre más terreno en cada minuto, así que es el más rápido aunque el Dron B termine su viaje más corto en menos tiempo total.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Two delivery drones fly at different rates. Drone A travels 9 miles in 12 minutes. Drone B travels 7 miles in 10 minutes. Complete the table and determine which drone delivers faster.</p>
+        <p class="problem-stem"><span class="lang-en">Two delivery drones fly at different rates. Drone A travels 9 miles in 12 minutes. Drone B travels 7 miles in 10 minutes. Complete the table and determine which drone delivers faster.</span><span class="lang-es" lang="es">Dos drones de entrega vuelan a tasas diferentes. El dron A recorre 9 millas en 12 minutos. El dron B recorre 7 millas en 10 minutos. Completa la tabla y determina cuál dron entrega más rápido.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
         <div class="table-responsive">
           <table class="fill-table">
@@ -3612,12 +3658,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_5" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 3</div>
-        <div class="problem-type-badge">FILL TABLE</div>
+        <div class="problem-type-badge"><span class="lang-en">FILL TABLE</span><span class="lang-es" lang="es">COMPLETAR LA TABLA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Every row is the same move: price ÷ quantity = cost of ONE battery or one piece of candy.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Every row is the same move: price ÷ quantity = cost of ONE battery or one piece of candy.","es":"Dividir cada precio entre su cantidad da el costo de un artículo: $6.00 ÷ 8 = $0.75 y $8.40 ÷ 12 = $0.70 para las baterías, y $6.75 ÷ 15 = $0.45 y $8.00 ÷ 20 = $0.40 para los dulces. La Tienda B gana las dos comparaciones aunque sus dos ofertas tienen el precio total más alto.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Find the unit rate for each deal and identify the better buy.</p>
+        <p class="problem-stem"><span class="lang-en">Find the unit rate for each deal and identify the better buy.</span><span class="lang-es" lang="es">Encuentra la tasa unitaria de cada oferta e identifica cuál conviene más.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
         <div class="table-responsive">
           <table class="fill-table">
@@ -3742,37 +3788,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_6" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 1</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"You can&#39;t compare $4.50 and $8.00 straight across — the packs hold different numbers of balls.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"You can&#39;t compare $4.50 and $8.00 straight across — the packs hold different numbers of balls.","es":"$4.50 ÷ 6 = $0.75 cada una. $8.00 ÷ 10 = $0.80 cada una. $0.75 < $0.80, así que 6 por $4.50 es la mejor compra.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Which is the better buy: 6 bouncy balls for $4.50 or 10 bouncy balls for $8.00?</p>
+        <p class="problem-stem"><span class="lang-en">Which is the better buy: 6 bouncy balls for $4.50 or 10 bouncy balls for $8.00?</span><span class="lang-es" lang="es">¿Cuál es la mejor compra: 6 pelotas saltarinas por $4.50 o 10 pelotas saltarinas por $8.00?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="$4.50 ÷ 6 = $0.75 each. $8.00 ÷ 10 = $0.80 each. $0.75 &lt; $0.80, so 6 for $4.50 is the better buy.">
+        <div class="mc-options" data-correct="0" data-explanation="$4.50 ÷ 6 = $0.75 each. $8.00 ÷ 10 = $0.80 each. $0.75 &lt; $0.80, so 6 for $4.50 is the better buy." data-explanation-es="$4.50 ÷ 6 = $0.75 cada una. $8.00 ÷ 10 = $0.80 cada una. $0.75 &lt; $0.80, así que 6 por $4.50 es la mejor compra.">
           
             <label class="mc-option-label" id="label_q_6_0">
               <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">6 for $4.50 — $0.75 each</span>
+              <span class="choice-text"><span class="lang-en">6 for $4.50 — $0.75 each</span><span class="lang-es" lang="es">6 por $4.50 — $0.75 cada una</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_6_1">
               <input type="radio" name="q_6" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">10 for $8.00 — $0.80 each</span>
+              <span class="choice-text"><span class="lang-en">10 for $8.00 — $0.80 each</span><span class="lang-es" lang="es">10 por $8.00 — $0.80 cada una</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_6_2">
               <input type="radio" name="q_6" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">They cost the same per ball</span>
+              <span class="choice-text"><span class="lang-en">They cost the same per ball</span><span class="lang-es" lang="es">Cuestan lo mismo por pelota</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_6_3">
               <input type="radio" name="q_6" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Not enough information</span>
+              <span class="choice-text"><span class="lang-en">Not enough information</span><span class="lang-es" lang="es">No hay suficiente información</span></span>
             </label>
           
         </div>
@@ -3812,37 +3858,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_7" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 2</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"150 ÷ 3 = 50 miles per hour.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"&#39;Miles per hour&#39; tells you the distance covered in exactly 1 hour.","es":"&#39;Millas por hora&#39; indica la distancia recorrida en exactamente 1 hora.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">The delivery van brings arcade supplies 150 miles in 3 hours. What is the unit rate in miles per hour?</p>
+        <p class="problem-stem"><span class="lang-en">The delivery van brings arcade supplies 150 miles in 3 hours. What is the unit rate in miles per hour?</span><span class="lang-es" lang="es">La camioneta de reparto lleva suministros para el salón de juegos 150 millas en 3 horas. ¿Cuál es la tasa por unidad en millas por hora?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="150 ÷ 3 = 50 miles per hour.">
+        <div class="mc-options" data-correct="0" data-explanation="150 ÷ 3 = 50 miles per hour." data-explanation-es="150 ÷ 3 = 50 millas por hora.">
           
             <label class="mc-option-label" id="label_q_7_0">
               <input type="radio" name="q_7" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">50 miles per hour</span>
+              <span class="choice-text"><span class="lang-en">50 miles per hour</span><span class="lang-es" lang="es">50 millas por hora</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_7_1">
               <input type="radio" name="q_7" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">45 miles per hour</span>
+              <span class="choice-text"><span class="lang-en">45 miles per hour</span><span class="lang-es" lang="es">45 millas por hora</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_7_2">
               <input type="radio" name="q_7" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">153 miles per hour</span>
+              <span class="choice-text"><span class="lang-en">153 miles per hour</span><span class="lang-es" lang="es">153 millas por hora</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_7_3">
               <input type="radio" name="q_7" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">30 miles per hour</span>
+              <span class="choice-text"><span class="lang-en">30 miles per hour</span><span class="lang-es" lang="es">30 millas por hora</span></span>
             </label>
           
         </div>
@@ -3882,37 +3928,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_8" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 3</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each store sells a different number of notebooks, so compare the price of ONE notebook at each store.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each store sells a different number of notebooks, so compare the price of ONE notebook at each store.","es":"Tienda A: $8 ÷ 5 = $1.60. Tienda B: $5.25 ÷ 3 = $1.75. $1.60 < $1.75, así que la tienda A es más barata por cuaderno.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Store A sells 5 notebooks for $8. Store B sells 3 notebooks for $5.25. Which has the lower price per notebook?</p>
+        <p class="problem-stem"><span class="lang-en">Store A sells 5 notebooks for $8. Store B sells 3 notebooks for $5.25. Which has the lower price per notebook?</span><span class="lang-es" lang="es">La tienda A vende 5 cuadernos por $8. La tienda B vende 3 cuadernos por $5.25. ¿Cuál tiene el precio más bajo por cuaderno?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Store A: $8 ÷ 5 = $1.60. Store B: $5.25 ÷ 3 = $1.75. $1.60 &lt; $1.75, so Store A is cheaper per notebook.">
+        <div class="mc-options" data-correct="0" data-explanation="Store A: $8 ÷ 5 = $1.60. Store B: $5.25 ÷ 3 = $1.75. $1.60 &lt; $1.75, so Store A is cheaper per notebook." data-explanation-es="Tienda A: $8 ÷ 5 = $1.60. Tienda B: $5.25 ÷ 3 = $1.75. $1.60 &lt; $1.75, así que la tienda A es más barata por cuaderno.">
           
             <label class="mc-option-label" id="label_q_8_0">
               <input type="radio" name="q_8" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Store A ($1.60 each)</span>
+              <span class="choice-text"><span class="lang-en">Store A ($1.60 each)</span><span class="lang-es" lang="es">Tienda A ($1.60 cada uno)</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_8_1">
               <input type="radio" name="q_8" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Store B ($1.75 each)</span>
+              <span class="choice-text"><span class="lang-en">Store B ($1.75 each)</span><span class="lang-es" lang="es">Tienda B ($1.75 cada uno)</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_8_2">
               <input type="radio" name="q_8" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Same price</span>
+              <span class="choice-text"><span class="lang-en">Same price</span><span class="lang-es" lang="es">El mismo precio</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_8_3">
               <input type="radio" name="q_8" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Cannot determine</span>
+              <span class="choice-text"><span class="lang-en">Cannot determine</span><span class="lang-es" lang="es">No se puede determinar</span></span>
             </label>
           
         </div>
@@ -3952,12 +3998,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_9" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 4</div>
-        <div class="problem-type-badge">FILL TABLE</div>
+        <div class="problem-type-badge"><span class="lang-en">FILL TABLE</span><span class="lang-es" lang="es">COMPLETAR LA TABLA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Pack A&#39;s finished row shows the move: 12 for $3.60 became $3.60 ÷ 12 = $0.30 each.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Pack A&#39;s finished row shows the move: 12 for $3.60 became $3.60 ÷ 12 = $0.30 each.","es":"Una tasa unitaria convierte cada oferta en el precio de un borrador, así que paquetes de distinto tamaño se pueden comparar de forma justa: $2.80 ÷ 8 = $0.35 cada uno y $5.00 ÷ 20 = $0.25 cada uno. El paquete C cuesta más en total pero menos por borrador, así que es la oferta más barata.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Find the unit rate for each deal to determine which is cheaper.</p>
+        <p class="problem-stem"><span class="lang-en">Find the unit rate for each deal to determine which is cheaper.</span><span class="lang-es" lang="es">Encuentra la tasa unitaria de cada oferta para determinar cuál es más barata.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
         <div class="table-responsive">
           <table class="fill-table">
@@ -4043,12 +4089,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_10" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 5</div>
-        <div class="problem-type-badge">DRAG SORT</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each card already shows the walker&#39;s speed in mph — that&#39;s the unit rate you sort by.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each card already shows the walker&#39;s speed in mph — that&#39;s the unit rate you sort by.","es":"La velocidad es una tasa unitaria —las millas recorridas en una hora—, así que ordena a los caminantes sin importar cuánto tiempo caminó cada uno. Los 6 ÷ 2 = 3 mph de Aiden son los más rápidos, los 10 ÷ 4 = 2.5 mph de Bella quedan en medio y los 4 ÷ 2 = 2 mph de Carlos son los más lentos, así que la mayor distancia total de Bella no la hace la más rápida.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Three friends each walked different distances in different times. Sort them from fastest to slowest.</p>
+        <p class="problem-stem"><span class="lang-en">Three friends each walked different distances in different times. Sort them from fastest to slowest.</span><span class="lang-es" lang="es">Tres amigos caminaron distancias diferentes en tiempos diferentes. Ordénalos del más rápido al más lento.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
         <div class="family-hint-box"><p>💡 Each card already shows the walker&#039;s speed in mph — that&#039;s the unit rate you sort by.</p><p>💡 Fastest = the most miles in one hour, so order the three mph values from biggest to smallest.</p><p>💡 Compare 3 mph, 2.5 mph, and 2 mph. The biggest number takes the Fastest spot; place the rest in order.</p></div>
         <div class="drag-sort-workspace" id="dragsort_10">
@@ -4144,37 +4190,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_11" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 6</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Two steps: find widgets per ONE hour first, then scale up to the 12-hour shift.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Two steps: find widgets per ONE hour first, then scale up to the 12-hour shift.","es":"Tasa por unidad: 360 ÷ 8 = 45 piezas por hora. En 12 horas: 45 × 12 = 540 piezas.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A factory produces 360 widgets in 8 hours. At the same rate, how many widgets are produced in a 12-hour shift?</p>
+        <p class="problem-stem"><span class="lang-en">A factory produces 360 widgets in 8 hours. At the same rate, how many widgets are produced in a 12-hour shift?</span><span class="lang-es" lang="es">Una fábrica produce 360 piezas en 8 horas. Al mismo ritmo, ¿cuántas piezas se producen en un turno de 12 horas?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Unit rate: 360 ÷ 8 = 45 widgets per hour. In 12 hours: 45 × 12 = 540 widgets.">
+        <div class="mc-options" data-correct="0" data-explanation="Unit rate: 360 ÷ 8 = 45 widgets per hour. In 12 hours: 45 × 12 = 540 widgets." data-explanation-es="Tasa por unidad: 360 ÷ 8 = 45 piezas por hora. En 12 horas: 45 × 12 = 540 piezas.">
           
             <label class="mc-option-label" id="label_q_11_0">
               <input type="radio" name="q_11" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">540 widgets</span>
+              <span class="choice-text"><span class="lang-en">540 widgets</span><span class="lang-es" lang="es">540 piezas</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_11_1">
               <input type="radio" name="q_11" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">480 widgets</span>
+              <span class="choice-text"><span class="lang-en">480 widgets</span><span class="lang-es" lang="es">480 piezas</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_11_2">
               <input type="radio" name="q_11" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">360 widgets</span>
+              <span class="choice-text"><span class="lang-en">360 widgets</span><span class="lang-es" lang="es">360 piezas</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_11_3">
               <input type="radio" name="q_11" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">720 widgets</span>
+              <span class="choice-text"><span class="lang-en">720 widgets</span><span class="lang-es" lang="es">720 piezas</span></span>
             </label>
           
         </div>
@@ -4214,12 +4260,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_12" data-problem-type="matching-game">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 7</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
+        <div class="problem-type-badge"><span class="lang-en">MATCHING GAME</span><span class="lang-es" lang="es">JUEGO DE PAREJAS</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"A unit price tells you what one single item costs, which puts every deal on the same footing.","es":"Un precio unitario te dice cuánto cuesta un solo artículo, lo que pone todas las ofertas en igualdad de condiciones.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Match each prize deal to its unit price (price ÷ quantity).</p>
+        <p class="problem-stem"><span class="lang-en">Match each prize deal to its unit price (price ÷ quantity).</span><span class="lang-es" lang="es">Une cada oferta de premios con su precio unitario (precio ÷ cantidad).</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Say each term out loud, then talk through which match makes sense before choosing.</span><span class="lang-es" lang="es">👪 Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.</span></p>
         <div class="matching-pairs">
           
@@ -4290,37 +4336,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_13" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 8</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The unit rate here is ounces per ONE minute — 15 ounces spread across 5 minutes.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The unit rate here is ounces per ONE minute — 15 ounces spread across 5 minutes.","es":"15 ÷ 5 = 3 onzas por minuto.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A faucet drips 15 ounces of water in 5 minutes. What is the unit rate?</p>
+        <p class="problem-stem"><span class="lang-en">A faucet drips 15 ounces of water in 5 minutes. What is the unit rate?</span><span class="lang-es" lang="es">Una llave gotea 15 onzas de agua en 5 minutos. ¿Cuál es la tasa por unidad?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="15 ÷ 5 = 3 ounces per minute.">
+        <div class="mc-options" data-correct="0" data-explanation="15 ÷ 5 = 3 ounces per minute." data-explanation-es="15 ÷ 5 = 3 onzas por minuto.">
           
             <label class="mc-option-label" id="label_q_13_0">
               <input type="radio" name="q_13" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">3 ounces per minute</span>
+              <span class="choice-text"><span class="lang-en">3 ounces per minute</span><span class="lang-es" lang="es">3 onzas por minuto</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_13_1">
               <input type="radio" name="q_13" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">5 ounces per minute</span>
+              <span class="choice-text"><span class="lang-en">5 ounces per minute</span><span class="lang-es" lang="es">5 onzas por minuto</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_13_2">
               <input type="radio" name="q_13" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">15 ounces per minute</span>
+              <span class="choice-text"><span class="lang-en">15 ounces per minute</span><span class="lang-es" lang="es">15 onzas por minuto</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_13_3">
               <input type="radio" name="q_13" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">0.33 ounces per minute</span>
+              <span class="choice-text"><span class="lang-en">0.33 ounces per minute</span><span class="lang-es" lang="es">0.33 onzas por minuto</span></span>
             </label>
           
         </div>
@@ -4628,8 +4674,8 @@ header.packet h1::after{
 <script>
 window.LESSON_ID = "4-7";
 window.LESSON_TITLE = "Solve Problems with Unit Rates";
-window.__HW_VOCAB__ = [{"term":"Unit Rate","termEs":"Tasa unitaria","def":"A rate for just 1 of something, like cost for 1 item.","defEs":"Una tasa para solo 1 de algo, como el precio de 1 artículo.","example":"$2.50 per pound means $2.50 for every 1 pound","img":"/assets/vocab-images/unit-rate.svg","imgAlt":"Illustration of Unit Rate: A rate for just 1 of something, like cost for 1 item."},{"term":"Better Buy","termEs":"Mejor compra","def":"The choice that costs less for each item.","defEs":"La opción que cuesta menos por cada artículo.","example":"$0.10 each vs $0.15 each — the $0.10 option is the better buy","img":"/assets/vocab-images/unit-rate.svg","imgAlt":"Illustration of Better Buy: The choice that costs less for each item."},{"term":"Comparison","termEs":"Comparación","def":"Looking at two or more amounts to see how they are related.","defEs":"Mirar dos o más cantidades para ver cómo se relacionan.","example":"$3 per game \u003c $4 per game","img":"/assets/vocab-images/ratio.svg","imgAlt":"Illustration of Comparison: Looking at two or more amounts to see how they are related."},{"term":"Per Unit","termEs":"Por unidad","def":"For each single item.","defEs":"Por cada artículo.","example":"$0.50 per token means each token costs $0.50","img":"/assets/vocab-images/unit-rate.svg","imgAlt":"Illustration of Per Unit: For each single item."},{"term":"Rate","termEs":"Tasa","def":"A ratio comparing two amounts with different units, like miles per hour.","defEs":"Una razón que compara dos cantidades con unidades distintas, como millas por hora.","example":"120 miles in 3 hours is a rate (miles and hours are different units)","img":"/assets/vocab-images/rate.svg","imgAlt":"Illustration of Rate: A ratio comparing two amounts with different units, like miles per hour."},{"term":"Proportion","termEs":"Proporción","def":"A math sentence saying two ratios are equal. It helps find a missing number.","defEs":"Una oración matemática que dice que dos razones son iguales. Ayuda a hallar un número que falta.","example":"5/3 = x/12 → x = 20","img":"/assets/vocab-images/proportion.svg","imgAlt":"Illustration of Proportion: A math sentence saying two ratios are equal. It helps find a missing number."}];
-window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Better Buy|Comparison|Proportion|Unit Rate|Per Unit|Rate)(?:es|s)?\\b","lookup":{"unit rate":0,"better buy":1,"comparison":2,"per unit":3,"rate":4,"proportion":5}};
+window.__HW_VOCAB__ = [{"term":"Unit Rate Problem Solving","termEs":"Resolución de problemas con tasas unitarias","def":"Find an amount per 1 unit and use it to compare choices or solve a problem.","defEs":"Hallar una cantidad por 1 unidad y usarla para comparar opciones o resolver un problema.","example":"$12 for 4 items = $3 per item.","img":"","imgAlt":""},{"term":"Unit Rate","termEs":"Tasa unitaria","def":"A rate for just 1 of something, like cost for 1 item.","defEs":"Una tasa para solo 1 de algo, como el precio de 1 artículo.","example":"$2.50 per pound means $2.50 for every 1 pound","img":"/assets/vocab-images/unit-rate.svg","imgAlt":"Illustration of Unit Rate: A rate for just 1 of something, like cost for 1 item."},{"term":"Better Buy","termEs":"Mejor compra","def":"The choice that costs less for each item.","defEs":"La opción que cuesta menos por cada artículo.","example":"$0.10 each vs $0.15 each — the $0.10 option is the better buy","img":"/assets/vocab-images/unit-rate.svg","imgAlt":"Illustration of Better Buy: The choice that costs less for each item."},{"term":"Comparison","termEs":"Comparación","def":"Looking at two or more amounts to see how they are related.","defEs":"Mirar dos o más cantidades para ver cómo se relacionan.","example":"$3 per game \u003c $4 per game","img":"/assets/vocab-images/ratio.svg","imgAlt":"Illustration of Comparison: Looking at two or more amounts to see how they are related."},{"term":"Per Unit","termEs":"Por unidad","def":"For each single item.","defEs":"Por cada artículo.","example":"$0.50 per token means each token costs $0.50","img":"/assets/vocab-images/unit-rate.svg","imgAlt":"Illustration of Per Unit: For each single item."},{"term":"Rate","termEs":"Tasa","def":"A ratio comparing two amounts with different units, like miles per hour.","defEs":"Una razón que compara dos cantidades con unidades distintas, como millas por hora.","example":"120 miles in 3 hours is a rate (miles and hours are different units)","img":"/assets/vocab-images/rate.svg","imgAlt":"Illustration of Rate: A ratio comparing two amounts with different units, like miles per hour."},{"term":"Proportion","termEs":"Proporción","def":"A math sentence saying two ratios are equal. It helps find a missing number.","defEs":"Una oración matemática que dice que dos razones son iguales. Ayuda a hallar un número que falta.","example":"5/3 = x/12 → x = 20","img":"/assets/vocab-images/proportion.svg","imgAlt":"Illustration of Proportion: A math sentence saying two ratios are equal. It helps find a missing number."}];
+window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Unit Rate Problem Solving|Better Buy|Comparison|Proportion|Unit Rate|Per Unit|Rate)(?:es|s)?\\b","lookup":{"unit rate problem solving":0,"unit rate":1,"better buy":2,"comparison":3,"per unit":4,"rate":5,"proportion":6}};
 
 function syncHomeworkChromeHeights() {
   const status = document.querySelector('.bottom-status-bar');
@@ -4763,7 +4809,33 @@ function saveParentSignoff() {
   try {
     localStorage.setItem('hw_parent_signoff_' + lessonId, JSON.stringify(payload));
   } catch(e) {}
-  
+
+  /* localStorage stays the source of truth for what this page displays, but a
+     sign-off the teacher never sees is not a sign-off. Fire-and-forget POST:
+     the endpoint always answers 204, and any failure here is swallowed so a
+     family on a bad connection still gets their confirmation. */
+  try {
+    var signoffBody = JSON.stringify({
+      lessonId: lessonId,
+      lessonTitle: lessonTitle,
+      parentName: nameVal,
+      note: noteVal,
+      date: signoffDate,
+      studentName: (window.NeftSaveResume && window.NeftSaveResume.studentName) || '',
+      section: (window.NeftSaveResume && window.NeftSaveResume.section) || ''
+    });
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('/api/progress/family-signoff', new Blob([signoffBody], { type: 'application/json' }));
+    } else {
+      fetch('/api/progress/family-signoff', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: signoffBody,
+        keepalive: true
+      }).catch(function() {});
+    }
+  } catch(e) {}
+
   updateSignoffUI(payload);
 }
 
@@ -5700,6 +5772,15 @@ function playCheckSound(isCorrect) {
   }
 }
 
+/* Feedback text is built in JS, so it cannot use the .lang-en/.lang-es span
+   pair the rest of the page toggles. Pick the language the family is actually
+   reading; fall back to English whenever no Spanish was authored. */
+function pickLangText(en, es) {
+  const esText = (es || "").trim();
+  if (esText && document.body.classList.contains("lang-mode-es")) return esText;
+  return en || "";
+}
+
 function checkProblem(idx, options) {
   const silent = options && options.silent;
   const section = document.getElementById("problem_" + idx);
@@ -5717,7 +5798,7 @@ function checkProblem(idx, options) {
       const container = section.querySelector(".mc-options");
       const selected = container.querySelector("input[type='radio']:checked");
       const correctIdx = container.dataset.correct;
-      const explanation = container.dataset.explanation;
+      const explanation = pickLangText(container.dataset.explanation, container.dataset.explanationEs);
       
       // Reset radio option styles
       const labels = container.querySelectorAll(".mc-option-label");
@@ -5945,7 +6026,7 @@ function checkProblem(idx, options) {
   if (!feedbackMessage) {
     if (type === "multiple-choice") {
       const container = section.querySelector(".mc-options");
-      const explanation = container?.dataset.explanation || "";
+      const explanation = pickLangText(container?.dataset.explanation, container?.dataset.explanationEs);
       if (isProblemCorrect) {
         feedbackMessage = explanation
           ? "Correct! " + explanation

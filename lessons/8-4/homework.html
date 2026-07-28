@@ -1604,6 +1604,14 @@ body.obj-popup-open { overflow: hidden; }
 .section-vocab { border-left: 4px solid var(--coral); }
 .section-stuck { border-left: 4px solid #9b59b6; }
 .section-quick-intro { border-left: 4px solid var(--success); }
+.quick-check-time {
+  background: var(--amber-light);
+  border: 1px solid var(--amber);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 0 0 12px;
+  font-size: 15px;
+}
 .section-celebrate {
   border-left: 4px solid var(--amber);
   background: linear-gradient(180deg, var(--amber-light), var(--white));
@@ -1851,6 +1859,16 @@ body.obj-popup-open { overflow: hidden; }
   padding: 2px;
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x proximity;
+}
+/* On a phone the 10 tabs are ~738px wide in a ~381px viewport, so half of them
+   (Help, More, Done) sit off-screen with nothing to suggest they exist. Fade the
+   trailing edge so the strip reads as scrollable. Only below 700px, where the
+   overflow is guaranteed — a permanent fade on desktop would just look broken. */
+@media (max-width: 700px) {
+  .homework-tab-bar {
+    -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+    mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+  }
 }
 .homework-tab-btn {
   flex: 0 0 auto;
@@ -2372,6 +2390,12 @@ body.lang-mode-es .bilingual-grid {
 @media print {
   .homework-tab-chrome, .homework-tab-bar, .bottom-status-bar, .help-modal-overlay, .print-all-btn, .parent-signoff-container { display: none !important; }
   .tab-panel-inner[hidden] { display: block !important; page-break-inside: avoid; }
+  /* Printing un-hides every panel, but these three are screen-only: an embedded
+     arcade iframe, a live game, and a link-out. On paper they were blank or
+     meaningless pages in the middle of the packet. */
+  [data-tab-panel="arcade"],
+  [data-tab-panel="play"],
+  [data-tab-panel="workbench"] { display: none !important; }
   body { padding-bottom: 0; }
   
   .print-only-certificate.is-signed {
@@ -2448,7 +2472,7 @@ body.lang-mode-es .bilingual-grid {
 
 
 .family-visual-lab{--lab-ink:#173a5e;--lab-teal:#0b8f87;--lab-coral:#ff775f;--lab-sun:#f6c94c;margin:26px 0;padding:clamp(18px,3vw,30px);border:3px solid var(--lab-ink);border-radius:28px;background:#fffdf5;box-shadow:8px 8px 0 var(--lab-ink);color:var(--lab-ink)}
-.visual-lab-heading{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(260px,1.15fr);gap:20px;align-items:end;margin-bottom:20px}.visual-lab-heading h2{margin:6px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.05}.visual-lab-heading p{margin:0;padding:14px 16px;border-left:5px solid var(--lab-sun);background:#fff8d9;font-size:17px;font-weight:700;line-height:1.45}.visual-lab-kicker{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--lab-ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em}
+.visual-lab-heading{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(260px,1.15fr);gap:20px;align-items:end;margin-bottom:20px}.visual-lab-heading h2{margin:6px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.05}.visual-lab-heading p{margin:0;padding:14px 16px;border-left:5px solid var(--lab-sun);background:#fff8d9;font-size:17px;font-weight:700;line-height:1.45}.visual-lab-kicker{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--lab-ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em}.visual-lab-kicker .lang-en,.visual-lab-kicker .lang-es{color:inherit}
 .visual-lab-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(230px,.8fr);gap:18px;align-items:stretch}.visual-lab-canvas-wrap{min-width:0;padding:12px;border-radius:22px;background-color:#eef8f4;background-image:linear-gradient(#cee3dc 1px,transparent 1px),linear-gradient(90deg,#cee3dc 1px,transparent 1px);background-size:24px 24px;border:2px solid var(--lab-ink)}.visual-lab-stage{display:grid;place-items:center;min-height:280px}.visual-lab-stage svg{display:block;width:100%;max-height:320px;overflow:visible}.visual-lab-status{min-height:26px;margin:5px 8px 0;padding:7px 10px;border-radius:10px;background:#fff;font-weight:800;text-align:center}
 .visual-lab-controls{display:flex;flex-direction:column;gap:14px;padding:18px;border-radius:22px;background:var(--lab-ink);color:#fff}.visual-lab-control{display:grid;gap:7px;font-weight:800}.visual-lab-control-label{display:flex;justify-content:space-between;gap:10px;align-items:center}.visual-lab-control output{min-width:38px;padding:3px 8px;border-radius:8px;background:var(--lab-sun);color:#102f4e;text-align:center;font-size:18px}.visual-lab-control input[type=range]{width:100%;min-height:28px;accent-color:var(--lab-coral);cursor:pointer}.visual-lab-control input[type=range]:focus-visible{outline:4px solid #fff;outline-offset:4px}.visual-lab-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:auto}.visual-lab-button{min-height:48px;border:2px solid #fff;border-radius:13px;background:var(--lab-coral);color:#182f48;font:inherit;font-weight:800;cursor:pointer}.visual-lab-button-quiet{background:#fff}.visual-lab-button:hover{transform:translateY(-2px)}.visual-lab-button:focus-visible{outline:4px solid var(--lab-sun);outline-offset:3px}
 .visual-representation-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:18px}.visual-representation-card{position:relative;min-height:150px;padding:18px 16px 15px;border:2px solid var(--lab-ink);border-radius:18px;background:#fff}.visual-representation-card h3{margin:0 0 10px;padding-left:30px;font-size:17px}.visual-representation-card p{margin:7px 0;font-size:16px;line-height:1.4}.representation-number{position:absolute;top:12px;left:12px;display:grid;width:27px;height:27px;place-items:center;border-radius:50%;background:var(--lab-ink);color:#fff;font-weight:800}.visual-representation-model{background:#dff5ee}.visual-representation-math{background:#fff2c2}.visual-representation-words{background:#ffe4dd}.visual-representation-math [data-lab-equation]{font-size:clamp(22px,3vw,32px);font-weight:800;text-align:center}.mini-model{display:flex;flex-wrap:wrap;gap:7px;align-content:center;min-height:76px;padding:8px}.mini-dot{width:18px;height:18px;border:2px solid var(--lab-ink);border-radius:50%;background:var(--lab-teal)}.visual-representation-card details{margin-top:10px}.visual-representation-card summary{cursor:pointer;font-weight:800;text-decoration:underline}.visual-source-idea{font-size:13px!important;color:#344f69}
@@ -2731,12 +2755,12 @@ header.packet h1::after{
         <div class="bilingual-col lang-en">
           <span class="lang-label">English</span>
           <p class="learning-big">Tonight we decide which measure of center, the mean or the median, best describes a &quot;typical&quot; value for a data set.</p>
-          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Mean</li><li>Median</li><li>Outlier</li><li>Skewed</li><li>Data distribution</li></ul></div>
+          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Appropriate Measures of Center</li><li>Mean</li><li>Median</li><li>Outlier</li><li>Skewed</li></ul></div>
         </div>
         <div class="bilingual-col lang-es" lang="es">
           <span class="lang-label">Español</span>
           <p class="learning-big">Esta noche decidimos qué medida de centro, la media o la mediana, describe mejor un valor &quot;típico&quot; de un conjunto de datos.</p>
-          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Media</li><li>Mediana</li><li>Valor atípico</li><li>Sesgado</li><li>Distribución de datos</li></ul></div>
+          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Medidas de centro apropiadas</li><li>Media</li><li>Mediana</li><li>Valor atípico</li><li>Sesgado</li></ul></div>
         </div>
       </div>
     
@@ -2869,6 +2893,24 @@ header.packet h1::after{
       </p>
       <div class="vocab-container">
         
+            <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+              <div class="vocab-card-inner">
+                <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/cat-measurement.svg" alt="Illustration of Appropriate Measures of Center: A mean, median, or mode chosen because it describes a data set fairly." loading="lazy" width="72" height="72" />
+                  </div>
+                  <h3>Appropriate Measures of Center</h3>
+                  <p class="vocab-es" lang="es">Medidas de centro apropiadas</p>
+                  <div class="vocab-visual-hint">💡 Use the median when an outlier would pull the mean too far.</div>
+                  <div class="flip-prompt"><span class="lang-en">Tap</span><span class="lang-es" lang="es">Toca ➔</span></div>
+                </div>
+                <div class="vocab-card-back">
+                  <p class="vocab-def">A mean, median, or mode chosen because it describes a data set fairly.</p>
+                  <p class="vocab-def-es" lang="es">Una media, mediana o moda elegida porque describe un conjunto de datos de manera justa.</p>
+                  <p class="vocab-back-visual">📌 Use the median when an outlier would pull the mean too far.</p>
+                </div>
+              </div>
+            </div>
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -3113,6 +3155,10 @@ header.packet h1::after{
       
     
       <h2 class="section-title">✅ <span class="lang-en">Quick check</span><span class="lang-es" lang="es">Repaso rápido</span></h2>
+      <p class="quick-check-time bilingual-block">
+        <span class="lang-en">⏱️ Plan on about <strong>15–20 minutes</strong> for the 6 problems below. The extra practice at the bottom is optional.</span>
+        <span class="lang-es" lang="es">⏱️ Calculen unos <strong>15–20 minutos</strong> para los 6 problemas de abajo. La práctica extra al final es opcional.</span>
+      </p>
       <p class="bilingual-block">
         <span class="lang-en">A few problems to practice together. Each one has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong>, and a <strong>space to show your work</strong>. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
         <span class="lang-es" lang="es">Unos problemas para practicar juntos. Cada uno tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para mostrar el trabajo</strong>. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
@@ -3137,12 +3183,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_0" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 1</div>
-        <div class="problem-type-badge">DRAG SORT</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The mean is sensitive to extreme values — outliers pull it up or down.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The mean is sensitive to extreme values — outliers pull it up or down.","es":"La media usa todos los valores, así que un solo número extremo la jala hacia él, mientras que la mediana es simplemente el centro de la lista ordenada y casi no se mueve. Por eso \"sin valores atípicos\", \"datos simétricos\" y \"todos los valores cercanos entre sí\" apuntan a la media, y \"tiene valores atípicos\", \"datos sesgados hacia un lado\" y \"un valor extremo jala el promedio\" apuntan a la mediana.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Sort each feature by which measure of center it supports.</p>
+        <p class="problem-stem"><span class="lang-en">Sort each feature by which measure of center it supports.</span><span class="lang-es" lang="es">Clasifica cada característica según la medida de tendencia central que apoya.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
         <div class="family-hint-box"><p>💡 The mean is sensitive to extreme values — outliers pull it up or down.</p><p>💡 The median stays in the middle regardless of how extreme the highest or lowest values are.</p></div>
         <div class="drag-sort-workspace" id="dragsort_0">
@@ -3279,37 +3325,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_1" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 2</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Four times are near 7 minutes; one is 12:00 from a cramp. That 12:00 is an outlier, not a typical mile.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Four times are near 7 minutes; one is 12:00 from a cramp. That 12:00 is an outlier, not a typical mile.","es":"El 12:00 es un valor atípico que sube la media. La mediana (7:15) representa mejor el tiempo típico de la corredora.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A runner&#039;s mile times are: 7:10, 7:15, 7:12, 7:20, 12:00. The 12:00 was due to a cramp. Which measure best represents a typical mile?</p>
+        <p class="problem-stem"><span class="lang-en">A runner&#039;s mile times are: 7:10, 7:15, 7:12, 7:20, 12:00. The 12:00 was due to a cramp. Which measure best represents a typical mile?</span><span class="lang-es" lang="es">Los tiempos de una corredora en la milla son: 7:10, 7:15, 7:12, 7:20, 12:00. El 12:00 se debió a un calambre. ¿Cuál medida representa mejor una milla típica?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="The 12:00 is an outlier that pulls the mean up. The median (7:15) better represents the runner&#039;s typical time.">
+        <div class="mc-options" data-correct="0" data-explanation="The 12:00 is an outlier that pulls the mean up. The median (7:15) better represents the runner&#039;s typical time." data-explanation-es="El 12:00 es un valor atípico que sube la media. La mediana (7:15) representa mejor el tiempo típico de la corredora.">
           
             <label class="mc-option-label" id="label_q_1_0">
               <input type="radio" name="q_1" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Median — the outlier 12:00 pulls the mean too high</span>
+              <span class="choice-text"><span class="lang-en">Median — the outlier 12:00 pulls the mean too high</span><span class="lang-es" lang="es">La mediana — el valor atípico de 12:00 sube demasiado la media</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_1_1">
               <input type="radio" name="q_1" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Mean — it uses all the data</span>
+              <span class="choice-text"><span class="lang-en">Mean — it uses all the data</span><span class="lang-es" lang="es">La media — usa todos los datos</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_1_2">
               <input type="radio" name="q_1" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Mode — it shows the most common time</span>
+              <span class="choice-text"><span class="lang-en">Mode — it shows the most common time</span><span class="lang-es" lang="es">La moda — muestra el tiempo más común</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_1_3">
               <input type="radio" name="q_1" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Neither measure works</span>
+              <span class="choice-text"><span class="lang-en">Neither measure works</span><span class="lang-es" lang="es">Ninguna medida sirve</span></span>
             </label>
           
         </div>
@@ -3351,12 +3397,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_2" data-problem-type="matching-game">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 3</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
+        <div class="problem-type-badge"><span class="lang-en">MATCHING GAME</span><span class="lang-es" lang="es">JUEGO DE PAREJAS</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Three of these answers describe the center of a data set and one describes how spread out it is — decide which job each question is asking about.","es":"Tres de estas respuestas describen el centro de un conjunto de datos y una describe qué tan dispersos están; decide qué tarea pide cada pregunta.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Match each scouting question to the measure that answers it.</p>
+        <p class="problem-stem"><span class="lang-en">Match each scouting question to the measure that answers it.</span><span class="lang-es" lang="es">Une cada pregunta de exploración con la medida que la responde.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Say each term out loud, then talk through which match makes sense before choosing.</span><span class="lang-es" lang="es">👪 Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.</span></p>
         <div class="matching-pairs">
           
@@ -3443,37 +3489,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_3" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 1</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The 58-point game is an outlier. It pulls the mean above 5 of the 6 games, so the median (16) better shows a typical game.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"A typical value should sit near most of the data instead of being pulled by one unusual game.","es":"Un valor típico debe quedar cerca de la mayoría de los datos y no ser jalado por un solo partido poco común.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A scout records points per game: 14, 16, 15, 17, 16, 58. To report a TYPICAL game, which measure of center is best?</p>
+        <p class="problem-stem"><span class="lang-en">A scout records points per game: 14, 16, 15, 17, 16, 58. To report a TYPICAL game, which measure of center is best?</span><span class="lang-es" lang="es">Un observador registra los puntos por partido: 14, 16, 15, 17, 16, 58. Para informar un partido TÍPICO, ¿cuál medida de centro es la mejor?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="The 58-point game is an outlier. It pulls the mean above 5 of the 6 games, so the median (16) better shows a typical game.">
+        <div class="mc-options" data-correct="0" data-explanation="The 58-point game is an outlier. It pulls the mean above 5 of the 6 games, so the median (16) better shows a typical game." data-explanation-es="El partido de 58 puntos es un valor atípico. Jala la media por encima de 5 de los 6 partidos, así que la mediana (16) muestra mejor un partido típico.">
           
             <label class="mc-option-label" id="label_q_3_0">
               <input type="radio" name="q_3" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Median, because 58 is an outlier that pulls the mean up</span>
+              <span class="choice-text"><span class="lang-en">Median, because 58 is an outlier that pulls the mean up</span><span class="lang-es" lang="es">La mediana, porque 58 es un valor atípico que sube la media</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_3_1">
               <input type="radio" name="q_3" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Mean, because it uses every game</span>
+              <span class="choice-text"><span class="lang-en">Mean, because it uses every game</span><span class="lang-es" lang="es">La media, porque usa todos los partidos</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_3_2">
               <input type="radio" name="q_3" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Range, because it shows the highest game</span>
+              <span class="choice-text"><span class="lang-en">Range, because it shows the highest game</span><span class="lang-es" lang="es">El rango, porque muestra el partido más alto</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_3_3">
               <input type="radio" name="q_3" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Mode, because 16 appears twice</span>
+              <span class="choice-text"><span class="lang-en">Mode, because 16 appears twice</span><span class="lang-es" lang="es">La moda, porque 16 aparece dos veces</span></span>
             </label>
           
         </div>
@@ -3515,37 +3561,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_4" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 2</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Range = max − min = 18 − 6 = 12. Because it uses only the two most extreme values, one outlier (18) changes the range a lot.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Measures of spread describe how far apart the values are, not where the center sits.","es":"Las medidas de dispersión describen qué tan separados están los valores, no dónde está el centro.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A coach wants to know how SPREAD OUT the team&#039;s free-throw makes are: 6, 7, 6, 8, 18. Which measure of spread is most affected by the lone 18?</p>
+        <p class="problem-stem"><span class="lang-en">A coach wants to know how SPREAD OUT the team&#039;s free-throw makes are: 6, 7, 6, 8, 18. Which measure of spread is most affected by the lone 18?</span><span class="lang-es" lang="es">Un entrenador quiere saber qué tan DISPERSOS están los tiros libres encestados del equipo: 6, 7, 6, 8, 18. ¿Cuál medida de dispersión se ve más afectada por el único 18?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Range = max − min = 18 − 6 = 12. Because it uses only the two most extreme values, one outlier (18) changes the range a lot.">
+        <div class="mc-options" data-correct="0" data-explanation="Range = max − min = 18 − 6 = 12. Because it uses only the two most extreme values, one outlier (18) changes the range a lot." data-explanation-es="Rango = máximo − mínimo = 18 − 6 = 12. Como usa solamente los dos valores más extremos, un solo valor atípico (18) cambia mucho el rango.">
           
             <label class="mc-option-label" id="label_q_4_0">
               <input type="radio" name="q_4" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Range, because it is the highest minus the lowest value</span>
+              <span class="choice-text"><span class="lang-en">Range, because it is the highest minus the lowest value</span><span class="lang-es" lang="es">El rango, porque es el valor más alto menos el más bajo</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_4_1">
               <input type="radio" name="q_4" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Median, because it is in the middle</span>
+              <span class="choice-text"><span class="lang-en">Median, because it is in the middle</span><span class="lang-es" lang="es">La mediana, porque está en el medio</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_4_2">
               <input type="radio" name="q_4" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Mode, because it is the most common</span>
+              <span class="choice-text"><span class="lang-en">Mode, because it is the most common</span><span class="lang-es" lang="es">La moda, porque es la más común</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_4_3">
               <input type="radio" name="q_4" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Mean absolute deviation only, never the range</span>
+              <span class="choice-text"><span class="lang-en">Mean absolute deviation only, never the range</span><span class="lang-es" lang="es">Solo la desviación media absoluta, nunca el rango</span></span>
             </label>
           
         </div>
@@ -3587,37 +3633,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_5" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 3</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Five seasons sit between .280 and .300; the .110 season is far below them — a low outlier.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Five seasons sit between .280 and .300; the .110 season is far below them — a low outlier.","es":"El .110 es un valor atípico que baja la media hasta .260. La mediana (.2875) representa mejor el rendimiento típico porque no se ve afectada por el valor extremo.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A baseball player&#039;s batting averages over 6 seasons are: .280, .295, .290, .285, .300, .110. The .110 was an injury-shortened season. Which measure better represents the player&#039;s typical batting average?</p>
+        <p class="problem-stem"><span class="lang-en">A baseball player&#039;s batting averages over 6 seasons are: .280, .295, .290, .285, .300, .110. The .110 was an injury-shortened season. Which measure better represents the player&#039;s typical batting average?</span><span class="lang-es" lang="es">Los promedios de bateo de un jugador en 6 temporadas son: .280, .295, .290, .285, .300, .110. El .110 fue una temporada acortada por lesión. ¿Cuál medida representa mejor el promedio de bateo típico del jugador?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="The .110 is an outlier that pulls the mean down to .260. The median (.2875) better represents typical performance because it isn&#039;t affected by the extreme value.">
+        <div class="mc-options" data-correct="0" data-explanation="The .110 is an outlier that pulls the mean down to .260. The median (.2875) better represents typical performance because it isn&#039;t affected by the extreme value." data-explanation-es="El .110 es un valor atípico que baja la media hasta .260. La mediana (.2875) representa mejor el rendimiento típico porque no se ve afectada por el valor extremo.">
           
             <label class="mc-option-label" id="label_q_5_0">
               <input type="radio" name="q_5" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Median, because the .110 outlier pulls the mean down</span>
+              <span class="choice-text"><span class="lang-en">Median, because the .110 outlier pulls the mean down</span><span class="lang-es" lang="es">La mediana, porque el valor atípico .110 baja la media</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_5_1">
               <input type="radio" name="q_5" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Mean, because it uses all the data</span>
+              <span class="choice-text"><span class="lang-en">Mean, because it uses all the data</span><span class="lang-es" lang="es">La media, porque usa todos los datos</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_5_2">
               <input type="radio" name="q_5" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Mean, because .110 is a real season</span>
+              <span class="choice-text"><span class="lang-en">Mean, because .110 is a real season</span><span class="lang-es" lang="es">La media, porque .110 es una temporada real</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_5_3">
               <input type="radio" name="q_5" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Neither measure works</span>
+              <span class="choice-text"><span class="lang-en">Neither measure works</span><span class="lang-es" lang="es">Ninguna medida sirve</span></span>
             </label>
           
         </div>
@@ -3670,37 +3716,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_6" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 1</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Look at the scores: 8.5 up to 8.9 — all five are bunched tightly together with no unusual value.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Look at the scores: 8.5 up to 8.9 — all five are bunched tightly together with no unusual value.","es":"Los datos son simétricos y no tienen valores atípicos, así que la media (8.7) representa mejor la puntuación típica.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A gymnast&#039;s scores are: 8.5, 8.8, 8.7, 8.6, 8.9. There are no outliers. Which measure best represents a typical score?</p>
+        <p class="problem-stem"><span class="lang-en">A gymnast&#039;s scores are: 8.5, 8.8, 8.7, 8.6, 8.9. There are no outliers. Which measure best represents a typical score?</span><span class="lang-es" lang="es">Las puntuaciones de una gimnasta son: 8.5, 8.8, 8.7, 8.6, 8.9. No hay valores atípicos. ¿Cuál medida representa mejor una puntuación típica?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="The data is symmetric with no outliers, so the mean (8.7) best represents the typical score.">
+        <div class="mc-options" data-correct="0" data-explanation="The data is symmetric with no outliers, so the mean (8.7) best represents the typical score." data-explanation-es="Los datos son simétricos y no tienen valores atípicos, así que la media (8.7) representa mejor la puntuación típica.">
           
             <label class="mc-option-label" id="label_q_6_0">
               <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Mean</span>
+              <span class="choice-text"><span class="lang-en">Mean</span><span class="lang-es" lang="es">La media</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_6_1">
               <input type="radio" name="q_6" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Median</span>
+              <span class="choice-text"><span class="lang-en">Median</span><span class="lang-es" lang="es">La mediana</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_6_2">
               <input type="radio" name="q_6" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Neither — the data is too small</span>
+              <span class="choice-text"><span class="lang-en">Neither — the data is too small</span><span class="lang-es" lang="es">Ninguna — hay muy pocos datos</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_6_3">
               <input type="radio" name="q_6" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Both are equally bad</span>
+              <span class="choice-text"><span class="lang-en">Both are equally bad</span><span class="lang-es" lang="es">Las dos son igual de malas</span></span>
             </label>
           
         </div>
@@ -3742,37 +3788,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_7" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 2</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The mode is the value that shows up most often. Here size M appears 4 times, so the mode (M) tells the manager what to order most.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Sizes like S, M, and L are categories, not numbers you can add or average.","es":"Las tallas como S, M y L son categorías, no números que se puedan sumar o promediar.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">The equipment manager needs to order the MOST COMMON jersey size from this list: M, L, M, S, M, L, M. Which measure answers the question?</p>
+        <p class="problem-stem"><span class="lang-en">The equipment manager needs to order the MOST COMMON jersey size from this list: M, L, M, S, M, L, M. Which measure answers the question?</span><span class="lang-es" lang="es">El encargado del equipo necesita pedir la talla de camiseta MÁS COMÚN de esta lista: M, L, M, S, M, L, M. ¿Cuál medida responde la pregunta?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="The mode is the value that shows up most often. Here size M appears 4 times, so the mode (M) tells the manager what to order most.">
+        <div class="mc-options" data-correct="0" data-explanation="The mode is the value that shows up most often. Here size M appears 4 times, so the mode (M) tells the manager what to order most." data-explanation-es="La moda es el valor que aparece con más frecuencia. Aquí la talla M aparece 4 veces, así que la moda (M) le dice al encargado qué pedir en mayor cantidad.">
           
             <label class="mc-option-label" id="label_q_7_0">
               <input type="radio" name="q_7" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Mode, because it names the value that appears most</span>
+              <span class="choice-text"><span class="lang-en">Mode, because it names the value that appears most</span><span class="lang-es" lang="es">La moda, porque nombra el valor que aparece más veces</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_7_1">
               <input type="radio" name="q_7" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Mean, because it averages the sizes</span>
+              <span class="choice-text"><span class="lang-en">Mean, because it averages the sizes</span><span class="lang-es" lang="es">La media, porque promedia las tallas</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_7_2">
               <input type="radio" name="q_7" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Median, because it finds the middle size</span>
+              <span class="choice-text"><span class="lang-en">Median, because it finds the middle size</span><span class="lang-es" lang="es">La mediana, porque encuentra la talla del medio</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_7_3">
               <input type="radio" name="q_7" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Range, because it shows the size gap</span>
+              <span class="choice-text"><span class="lang-en">Range, because it shows the size gap</span><span class="lang-es" lang="es">El rango, porque muestra la diferencia de tallas</span></span>
             </label>
           
         </div>
@@ -3814,24 +3860,24 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_8" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 3</div>
-        <div class="problem-type-badge">DRAG SORT</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Income and home prices often have extreme outliers (billionaires, mansions), so median is used.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Two different questions live in this sort: one asks where the data sits, and one asks how far the values reach from each other.","es":"En esta clasificación hay dos preguntas distintas: una pregunta dónde están los datos y otra qué tan lejos llegan los valores unos de otros.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Sort by which measure is typically used in real life.</p>
+        <p class="problem-stem"><span class="lang-en">Sort each measure into whether it describes the CENTER of the data or the SPREAD of the data.</span><span class="lang-es" lang="es">Clasifica cada medida según si describe el CENTRO de los datos o la DISPERSIÓN de los datos.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
-        <div class="family-hint-box"><p>💡 Income and home prices often have extreme outliers (billionaires, mansions), so median is used.</p><p>💡 Temperature and test scores are often symmetric, so mean works well.</p></div>
+        <div class="family-hint-box"><p>💡 <span class="lang-en">Two different questions live in this sort: one asks where the data sits, and one asks how far the values reach from each other.</span><span class="lang-es" lang="es">En esta clasificación hay dos preguntas distintas: una pregunta dónde están los datos y otra qué tan lejos llegan los valores unos de otros.</span></p><p>💡 <span class="lang-en">A measure of center gives one typical value; a measure of spread describes distance or variation. Ask which question each word answers.</span><span class="lang-es" lang="es">Una medida de centro da un solo valor típico; una medida de dispersión describe distancia o variación. Pregúntate qué responde cada palabra.</span></p><p>💡 <span class="lang-en">Start with Mean: it is the balancing point of the data, a single typical value, so it belongs in the center column. Now decide where Range goes.</span><span class="lang-es" lang="es">Empieza con Media: es el punto de equilibrio de los datos, un solo valor típico, así que va en la columna de centro. Ahora decide dónde va Rango.</span></p></div>
         <div class="drag-sort-workspace" id="dragsort_8">
           <div class="drag-columns">
 
-              <div class="drag-column" data-category-id="mean-is-typically-reported" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, 'mean-is-typically-reported')">
-                <div class="drag-column-header">Mean is typically reported</div>
-                <div class="drag-column-slots" id="slots_8_mean-is-typically-reported" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, 'mean-is-typically-reported')"></div>
+              <div class="drag-column" data-category-id="center" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, 'center')">
+                <div class="drag-column-header">Measure of Center</div>
+                <div class="drag-column-slots" id="slots_8_center" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, 'center')"></div>
               </div>
-              <div class="drag-column" data-category-id="median-is-typically-reported" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, 'median-is-typically-reported')">
-                <div class="drag-column-header">Median is typically reported</div>
-                <div class="drag-column-slots" id="slots_8_median-is-typically-reported" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, 'median-is-typically-reported')"></div>
+              <div class="drag-column" data-category-id="spread" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, 'spread')">
+                <div class="drag-column-header">Measure of Spread</div>
+                <div class="drag-column-slots" id="slots_8_spread" ondragover="allowDrop(event)" ondrop="handleDrop(event, 8, 'spread')"></div>
               </div>
           </div>
           <div class="drag-source-section">
@@ -3842,14 +3888,14 @@ header.packet h1::after{
                      draggable="true"
                      id="card_8_0"
                      data-item-index="0"
-                     data-correct-category="mean-is-typically-reported"
+                     data-correct-category="center"
                      ondragstart="handleDragStart(event)"
                      ondragend="handleDragEnd(event)">
                   <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Average temperature for the month</span>
+                  <span class="card-text">Mean</span>
                   <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_8_0', 8); saveState(); updateProgress();">
                     <option value="">-- Move to --</option>
-                    <option value="mean-is-typically-reported">Mean is typically reported</option><option value="median-is-typically-reported">Median is typically reported</option>
+                    <option value="center">Measure of Center</option><option value="spread">Measure of Spread</option>
                     <option value="">Unsorted Pile</option>
                   </select>
                 </div>
@@ -3857,14 +3903,14 @@ header.packet h1::after{
                      draggable="true"
                      id="card_8_1"
                      data-item-index="1"
-                     data-correct-category="mean-is-typically-reported"
+                     data-correct-category="center"
                      ondragstart="handleDragStart(event)"
                      ondragend="handleDragEnd(event)">
                   <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Average test score for a class (no outliers)</span>
+                  <span class="card-text">Median</span>
                   <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_8_1', 8); saveState(); updateProgress();">
                     <option value="">-- Move to --</option>
-                    <option value="mean-is-typically-reported">Mean is typically reported</option><option value="median-is-typically-reported">Median is typically reported</option>
+                    <option value="center">Measure of Center</option><option value="spread">Measure of Spread</option>
                     <option value="">Unsorted Pile</option>
                   </select>
                 </div>
@@ -3872,14 +3918,14 @@ header.packet h1::after{
                      draggable="true"
                      id="card_8_2"
                      data-item-index="2"
-                     data-correct-category="median-is-typically-reported"
+                     data-correct-category="center"
                      ondragstart="handleDragStart(event)"
                      ondragend="handleDragEnd(event)">
                   <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Median household income in a city</span>
+                  <span class="card-text">Mode</span>
                   <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_8_2', 8); saveState(); updateProgress();">
                     <option value="">-- Move to --</option>
-                    <option value="mean-is-typically-reported">Mean is typically reported</option><option value="median-is-typically-reported">Median is typically reported</option>
+                    <option value="center">Measure of Center</option><option value="spread">Measure of Spread</option>
                     <option value="">Unsorted Pile</option>
                   </select>
                 </div>
@@ -3887,14 +3933,29 @@ header.packet h1::after{
                      draggable="true"
                      id="card_8_3"
                      data-item-index="3"
-                     data-correct-category="median-is-typically-reported"
+                     data-correct-category="spread"
                      ondragstart="handleDragStart(event)"
                      ondragend="handleDragEnd(event)">
                   <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Median home price in a neighborhood</span>
+                  <span class="card-text">Range</span>
                   <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_8_3', 8); saveState(); updateProgress();">
                     <option value="">-- Move to --</option>
-                    <option value="mean-is-typically-reported">Mean is typically reported</option><option value="median-is-typically-reported">Median is typically reported</option>
+                    <option value="center">Measure of Center</option><option value="spread">Measure of Spread</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_8_4"
+                     data-item-index="4"
+                     data-correct-category="spread"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Mean absolute deviation (MAD)</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_8_4', 8); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="center">Measure of Center</option><option value="spread">Measure of Spread</option>
                     <option value="">Unsorted Pile</option>
                   </select>
                 </div>
@@ -3923,40 +3984,152 @@ header.packet h1::after{
     </section>
   
 
-    <section class="problem-section card" id="problem_9" data-problem-type="multiple-choice">
+    <section class="problem-section card" id="problem_9" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 4</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Five of the six values are between 5 and 8 — then there&#39;s 50. Notice where the mean (13.8) lands compared to those five.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Income and home prices often have extreme outliers (billionaires, mansions), so median is used.","es":"Los reportes usan la mediana cuando unos pocos valores extremos distorsionarían el promedio. El ingreso familiar y los precios de las casas tienen colas largas (unos pocos ingresos muy altos o casas carísimas), así que se reporta la mediana. La temperatura mensual y un conjunto de calificaciones sin valores atípicos son bastante simétricos, así que la media los representa bien.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Data set: 5, 6, 7, 7, 8, 50. The mean is about 13.8 and the median is 7. Which better represents the typical value?</p>
+        <p class="problem-stem"><span class="lang-en">Sort by which measure is typically used in real life.</span><span class="lang-es" lang="es">Clasifica según qué medida se usa normalmente en la vida real.</span></p>
+        <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
+        <div class="family-hint-box"><p>💡 Income and home prices often have extreme outliers (billionaires, mansions), so median is used.</p><p>💡 Temperature and test scores are often symmetric, so mean works well.</p></div>
+        <div class="drag-sort-workspace" id="dragsort_9">
+          <div class="drag-columns">
+
+              <div class="drag-column" data-category-id="mean-is-typically-reported" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, 'mean-is-typically-reported')">
+                <div class="drag-column-header">Mean is typically reported</div>
+                <div class="drag-column-slots" id="slots_9_mean-is-typically-reported" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, 'mean-is-typically-reported')"></div>
+              </div>
+              <div class="drag-column" data-category-id="median-is-typically-reported" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, 'median-is-typically-reported')">
+                <div class="drag-column-header">Median is typically reported</div>
+                <div class="drag-column-slots" id="slots_9_median-is-typically-reported" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, 'median-is-typically-reported')"></div>
+              </div>
+          </div>
+          <div class="drag-source-section">
+            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
+            <div class="drag-source-pile" id="pile_9" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, '')">
+              
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_9_0"
+                     data-item-index="0"
+                     data-correct-category="mean-is-typically-reported"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Average temperature for the month</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_0', 9); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="mean-is-typically-reported">Mean is typically reported</option><option value="median-is-typically-reported">Median is typically reported</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_9_1"
+                     data-item-index="1"
+                     data-correct-category="mean-is-typically-reported"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Average test score for a class (no outliers)</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_1', 9); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="mean-is-typically-reported">Mean is typically reported</option><option value="median-is-typically-reported">Median is typically reported</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_9_2"
+                     data-item-index="2"
+                     data-correct-category="median-is-typically-reported"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Median household income in a city</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_2', 9); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="mean-is-typically-reported">Mean is typically reported</option><option value="median-is-typically-reported">Median is typically reported</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_9_3"
+                     data-item-index="3"
+                     data-correct-category="median-is-typically-reported"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Median home price in a neighborhood</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_3', 9); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="mean-is-typically-reported">Mean is typically reported</option><option value="median-is-typically-reported">Median is typically reported</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+            </div>
+          </div>
+        </div>
+        <div class="drag-controls">
+          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(9); saveState(); updateProgress();">Reset Sorting</button>
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each data value above the number line.</span><span class="lang-es" lang="es">Marca cada valor de datos sobre la recta numérica.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Organize the data first, then find the center or spread you need.</span><span class="lang-es" lang="es">Organiza los datos primero, luego halla el centro o la dispersión.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
+        <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_10" data-problem-type="multiple-choice">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 5</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Five of the six values are between 5 and 8 — then there&#39;s 50. Notice where the mean (13.8) lands compared to those five.","es":"La media (13.8) es mayor que 5 de los 6 valores porque el valor atípico 50 la jala hacia arriba. La mediana (7) representa mejor un valor típico.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem"><span class="lang-en">Data set: 5, 6, 7, 7, 8, 50. The mean is about 13.8 and the median is 7. Which better represents the typical value?</span><span class="lang-es" lang="es">Conjunto de datos: 5, 6, 7, 7, 8, 50. La media es aproximadamente 13.8 y la mediana es 7. ¿Cuál representa mejor el valor típico?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="The mean (13.8) is higher than 5 of the 6 values because the outlier 50 pulls it up. The median (7) better represents a typical value.">
+        <div class="mc-options" data-correct="0" data-explanation="The mean (13.8) is higher than 5 of the 6 values because the outlier 50 pulls it up. The median (7) better represents a typical value." data-explanation-es="La media (13.8) es mayor que 5 de los 6 valores porque el valor atípico 50 la jala hacia arriba. La mediana (7) representa mejor un valor típico.">
           
-            <label class="mc-option-label" id="label_q_9_0">
-              <input type="radio" name="q_9" value="0" onchange="saveState(); updateProgress();">
+            <label class="mc-option-label" id="label_q_10_0">
+              <input type="radio" name="q_10" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Median (7) — the outlier 50 inflates the mean</span>
+              <span class="choice-text"><span class="lang-en">Median (7) — the outlier 50 inflates the mean</span><span class="lang-es" lang="es">La mediana (7) — el valor atípico 50 infla la media</span></span>
             </label>
           
-            <label class="mc-option-label" id="label_q_9_1">
-              <input type="radio" name="q_9" value="1" onchange="saveState(); updateProgress();">
+            <label class="mc-option-label" id="label_q_10_1">
+              <input type="radio" name="q_10" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Mean (13.8) — it includes all values</span>
+              <span class="choice-text"><span class="lang-en">Mean (13.8) — it includes all values</span><span class="lang-es" lang="es">La media (13.8) — incluye todos los valores</span></span>
             </label>
           
-            <label class="mc-option-label" id="label_q_9_2">
-              <input type="radio" name="q_9" value="2" onchange="saveState(); updateProgress();">
+            <label class="mc-option-label" id="label_q_10_2">
+              <input type="radio" name="q_10" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Both are equally good</span>
+              <span class="choice-text"><span class="lang-en">Both are equally good</span><span class="lang-es" lang="es">Las dos son igual de buenas</span></span>
             </label>
           
-            <label class="mc-option-label" id="label_q_9_3">
-              <input type="radio" name="q_9" value="3" onchange="saveState(); updateProgress();">
+            <label class="mc-option-label" id="label_q_10_3">
+              <input type="radio" name="q_10" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Neither works for this data</span>
+              <span class="choice-text"><span class="lang-en">Neither works for this data</span><span class="lang-es" lang="es">Ninguna sirve para estos datos</span></span>
             </label>
           
         </div>
@@ -3975,146 +4148,19 @@ header.packet h1::after{
       <div class="hw-workspace">
         <div class="hw-visual">
           <div class="hw-visual-caption"><span class="lang-en">👆 Tap to graph: Plot each data value above the number line.</span><span class="lang-es" lang="es">👆 Toca para graficar: Marca cada valor de datos sobre la recta numérica.</span></div>
-          <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="9">
+          <div class="hw-visual-frame hw-interactive" data-interactive="number-line" data-pidx="10">
             <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
             <div class="hw-graph-controls" data-graph-controls></div>
             <button type="button" class="hw-graph-reset" data-graph-reset><span class="lang-en">↺ Reset</span><span class="lang-es" lang="es">↺ Reiniciar</span></button>
             <div class="hw-graph-readout" data-graph-readout role="status" aria-live="polite"></div>
-            <input type="hidden" class="custom-input" name="graph_9" data-graph-state value="" />
+            <input type="hidden" class="custom-input" name="graph_10" data-graph-state value="" />
           </div>
         </div>
         <div class="hw-work">
-          <label class="hw-work-label" for="work_9"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
-          <textarea id="work_9" name="work_9" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+          <label class="hw-work-label" for="work_10"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_10" name="work_10" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
         </div>
       </div>
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
-        <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_10" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Bonus / Más 5</div>
-        <div class="problem-type-badge">DRAG SORT</div>
-      </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Sort each measure into whether it describes the CENTER of the data or the SPREAD of the data.</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
-        
-        <div class="drag-sort-workspace" id="dragsort_10">
-          <div class="drag-columns">
-
-              <div class="drag-column" data-category-id="center" ondragover="allowDrop(event)" ondrop="handleDrop(event, 10, 'center')">
-                <div class="drag-column-header">Measure of Center</div>
-                <div class="drag-column-slots" id="slots_10_center" ondragover="allowDrop(event)" ondrop="handleDrop(event, 10, 'center')"></div>
-              </div>
-              <div class="drag-column" data-category-id="spread" ondragover="allowDrop(event)" ondrop="handleDrop(event, 10, 'spread')">
-                <div class="drag-column-header">Measure of Spread</div>
-                <div class="drag-column-slots" id="slots_10_spread" ondragover="allowDrop(event)" ondrop="handleDrop(event, 10, 'spread')"></div>
-              </div>
-          </div>
-          <div class="drag-source-section">
-            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
-            <div class="drag-source-pile" id="pile_10" ondragover="allowDrop(event)" ondrop="handleDrop(event, 10, '')">
-              
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_10_0"
-                     data-item-index="0"
-                     data-correct-category="center"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Mean</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_10_0', 10); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="center">Measure of Center</option><option value="spread">Measure of Spread</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_10_1"
-                     data-item-index="1"
-                     data-correct-category="center"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Median</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_10_1', 10); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="center">Measure of Center</option><option value="spread">Measure of Spread</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_10_2"
-                     data-item-index="2"
-                     data-correct-category="center"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Mode</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_10_2', 10); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="center">Measure of Center</option><option value="spread">Measure of Spread</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_10_3"
-                     data-item-index="3"
-                     data-correct-category="spread"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Range</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_10_3', 10); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="center">Measure of Center</option><option value="spread">Measure of Spread</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_10_4"
-                     data-item-index="4"
-                     data-correct-category="spread"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Mean absolute deviation (MAD)</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_10_4', 10); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="center">Measure of Center</option><option value="spread">Measure of Spread</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-            </div>
-          </div>
-        </div>
-        <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(10); saveState(); updateProgress();">Reset Sorting</button>
-        </div>
-      </div>
-    
-      
-      <details class="hw-step-guide" open>
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each data value above the number line.</span><span class="lang-es" lang="es">Marca cada valor de datos sobre la recta numérica.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Organize the data first, then find the center or spread you need.</span><span class="lang-es" lang="es">Organiza los datos primero, luego halla el centro o la dispersión.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
-      </details>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
         <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
@@ -4125,12 +4171,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_11" data-problem-type="open-response">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 6</div>
-        <div class="problem-type-badge">OPEN RESPONSE</div>
+        <div class="problem-type-badge"><span class="lang-en">OPEN RESPONSE</span><span class="lang-es" lang="es">RESPUESTA ABIERTA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Five homes cost about $180K–$210K; one costs $1,725K. Check the reporter&#39;s $450,000 &#39;average&#39; against those five real prices.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Five homes cost about $180K–$210K; one costs $1,725K. Check the reporter&#39;s $450,000 &#39;average&#39; against those five real prices.","es":"Los seis precios suman $2,700K, así que la media es 2,700 ÷ 6 = $450K, igual que dice el reportero; pero la mediana es el promedio de los dos precios del medio, $195K y $200K, o sea $197.5K. Cinco de las seis casas cuestan entre $180K y $210K, así que la casa de $1,725K es un valor atípico que jala la media muy por encima de lo que cuestan casi todas. La afirmación es engañosa, y la mediana representa mejor un precio típico.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A local newspaper reports that the average home price in a neighborhood is $450,000. The actual prices are: $180K, $200K, $190K, $210K, $195K, $1,725K. Is the reporter&#039;s claim misleading? Calculate the mean and median and explain which better represents a &#039;typical&#039; home price.</p>
+        <p class="problem-stem"><span class="lang-en">A local newspaper reports that the average home price in a neighborhood is $450,000. The actual prices are: $180K, $200K, $190K, $210K, $195K, $1,725K. Is the reporter&#039;s claim misleading? Calculate the mean and median and explain which better represents a &#039;typical&#039; home price.</span><span class="lang-es" lang="es">Un periódico local informa que el precio promedio de una casa en un vecindario es de $450,000. Los precios reales son: $180K, $200K, $190K, $210K, $195K, $1,725K. ¿Es engañosa la afirmación del reportero? Calcula la media y la mediana y explica cuál representa mejor el precio de una casa &#039;típica&#039;.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 A complete sentence with math vocabulary is the goal — not a perfect paragraph.</span><span class="lang-es" lang="es">👪 Una oración completa con vocabulario matemático es la meta — no un párrafo perfecto.</span></p>
         
         
@@ -4197,12 +4243,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_12" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 7</div>
-        <div class="problem-type-badge">FILL TABLE</div>
+        <div class="problem-type-badge"><span class="lang-en">FILL TABLE</span><span class="lang-es" lang="es">COMPLETAR LA TABLA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Row 2 swaps the last value for 72 — everything else matches Row 1. The table is built to show what one outlier does.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Row 2 swaps the last value for 72 — everything else matches Row 1. The table is built to show what one outlier does.","es":"Las dos filas solo se diferencian en el último valor, y eso es lo que hace visible el efecto de un valor atípico. La fila 1 (15, 18, 16, 17, 15) tiene media 81 ÷ 5 = 16.2 y mediana 16, así que sin valor atípico la media funciona bien. La fila 2 cambia ese valor por 72: la media salta a 138 ÷ 5 = 27.6 mientras la mediana se queda en 17, así que ahí la mediana es la mejor medida.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Complete the table.</p>
+        <p class="problem-stem"><span class="lang-en">Complete the table.</span><span class="lang-es" lang="es">Completa la tabla.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
         <div class="table-responsive">
           <table class="fill-table">
@@ -4654,8 +4700,8 @@ header.packet h1::after{
 <script>
 window.LESSON_ID = "8-4";
 window.LESSON_TITLE = "Appropriate Measures";
-window.__HW_VOCAB__ = [{"term":"Mean","termEs":"Media","def":"The average. Add all the numbers, then divide by how many there are.","defEs":"El promedio. Suma todos los números y divide entre cuántos hay.","example":"Mean of 10, 20, 30 = (10+20+30) ÷ 3 = 20","img":"/assets/vocab-images/mean.svg","imgAlt":"Illustration of Mean: The average. Add all the numbers, then divide by how many there are."},{"term":"Median","termEs":"Mediana","def":"The middle number when you put them in order.","defEs":"El número del medio cuando los pones en orden.","example":"Data: 5, 8, 12, 15, 20 → median is 12 (the 3rd of 5 values)","img":"/assets/vocab-images/median.svg","imgAlt":"Illustration of Median: The middle number when you put them in order."},{"term":"Outlier","termEs":"Valor atípico","def":"A number that is much bigger or smaller than the rest.","defEs":"Un número mucho mayor o menor que los demás.","example":"Data: 12, 14, 13, 15, 45 → 45 is far from the cluster, so it is an outlier","img":"/assets/vocab-images/outlier.svg","imgAlt":"Illustration of Outlier: A number that is much bigger or smaller than the rest."},{"term":"Skewed","termEs":"Sesgado","def":"When most data sits on one side with a tail on the other.","defEs":"Cuando la mayoría de los datos está de un lado con una cola del otro.","example":"Scores: 5, 6, 7, 8, 8, 35 → most scores are low, but 35 creates a tail to the right (skewed right)","img":"/assets/vocab-images/histogram.svg","imgAlt":"Illustration of Skewed: When most data sits on one side with a tail on the other."},{"term":"Data distribution","termEs":"Distribución de datos","def":"How the data looks: where it sits and how spread out it is.","defEs":"Cómo se ven los datos: dónde están y qué tan separados están.","example":"Symmetric = even on both sides. Skewed = bunched on one side with a tail","img":"/assets/vocab-images/distribution.svg","imgAlt":"Illustration of Data distribution: How the data looks: where it sits and how spread out it is."},{"term":"Variability","termEs":"Variabilidad","def":"How spread out the numbers are.","defEs":"Qué tan separados están los números.","example":"88, 90, 89, 91 (low variability) vs. 50, 70, 95, 100 (high variability)","img":"/assets/vocab-images/spread.svg","imgAlt":"Illustration of Variability: How spread out the numbers are."}];
-window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Data distribution|Variability|Outlier|Median|Skewed|Mean)(?:es|s)?\\b","lookup":{"mean":0,"median":1,"outlier":2,"skewed":3,"data distribution":4,"variability":5}};
+window.__HW_VOCAB__ = [{"term":"Appropriate Measures of Center","termEs":"Medidas de centro apropiadas","def":"A mean, median, or mode chosen because it describes a data set fairly.","defEs":"Una media, mediana o moda elegida porque describe un conjunto de datos de manera justa.","example":"Use the median when an outlier would pull the mean too far.","img":"","imgAlt":""},{"term":"Mean","termEs":"Media","def":"The average. Add all the numbers, then divide by how many there are.","defEs":"El promedio. Suma todos los números y divide entre cuántos hay.","example":"Mean of 10, 20, 30 = (10+20+30) ÷ 3 = 20","img":"/assets/vocab-images/mean.svg","imgAlt":"Illustration of Mean: The average. Add all the numbers, then divide by how many there are."},{"term":"Median","termEs":"Mediana","def":"The middle number when you put them in order.","defEs":"El número del medio cuando los pones en orden.","example":"Data: 5, 8, 12, 15, 20 → median is 12 (the 3rd of 5 values)","img":"/assets/vocab-images/median.svg","imgAlt":"Illustration of Median: The middle number when you put them in order."},{"term":"Outlier","termEs":"Valor atípico","def":"A number that is much bigger or smaller than the rest.","defEs":"Un número mucho mayor o menor que los demás.","example":"Data: 12, 14, 13, 15, 45 → 45 is far from the cluster, so it is an outlier","img":"/assets/vocab-images/outlier.svg","imgAlt":"Illustration of Outlier: A number that is much bigger or smaller than the rest."},{"term":"Skewed","termEs":"Sesgado","def":"When most data sits on one side with a tail on the other.","defEs":"Cuando la mayoría de los datos está de un lado con una cola del otro.","example":"Scores: 5, 6, 7, 8, 8, 35 → most scores are low, but 35 creates a tail to the right (skewed right)","img":"/assets/vocab-images/histogram.svg","imgAlt":"Illustration of Skewed: When most data sits on one side with a tail on the other."},{"term":"Data distribution","termEs":"Distribución de datos","def":"How the data looks: where it sits and how spread out it is.","defEs":"Cómo se ven los datos: dónde están y qué tan separados están.","example":"Symmetric = even on both sides. Skewed = bunched on one side with a tail","img":"/assets/vocab-images/distribution.svg","imgAlt":"Illustration of Data distribution: How the data looks: where it sits and how spread out it is."},{"term":"Variability","termEs":"Variabilidad","def":"How spread out the numbers are.","defEs":"Qué tan separados están los números.","example":"88, 90, 89, 91 (low variability) vs. 50, 70, 95, 100 (high variability)","img":"/assets/vocab-images/spread.svg","imgAlt":"Illustration of Variability: How spread out the numbers are."}];
+window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Appropriate Measures of Center|Data distribution|Variability|Outlier|Median|Skewed|Mean)(?:es|s)?\\b","lookup":{"appropriate measures of center":0,"mean":1,"median":2,"outlier":3,"skewed":4,"data distribution":5,"variability":6}};
 
 function syncHomeworkChromeHeights() {
   const status = document.querySelector('.bottom-status-bar');
@@ -4789,7 +4835,33 @@ function saveParentSignoff() {
   try {
     localStorage.setItem('hw_parent_signoff_' + lessonId, JSON.stringify(payload));
   } catch(e) {}
-  
+
+  /* localStorage stays the source of truth for what this page displays, but a
+     sign-off the teacher never sees is not a sign-off. Fire-and-forget POST:
+     the endpoint always answers 204, and any failure here is swallowed so a
+     family on a bad connection still gets their confirmation. */
+  try {
+    var signoffBody = JSON.stringify({
+      lessonId: lessonId,
+      lessonTitle: lessonTitle,
+      parentName: nameVal,
+      note: noteVal,
+      date: signoffDate,
+      studentName: (window.NeftSaveResume && window.NeftSaveResume.studentName) || '',
+      section: (window.NeftSaveResume && window.NeftSaveResume.section) || ''
+    });
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('/api/progress/family-signoff', new Blob([signoffBody], { type: 'application/json' }));
+    } else {
+      fetch('/api/progress/family-signoff', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: signoffBody,
+        keepalive: true
+      }).catch(function() {});
+    }
+  } catch(e) {}
+
   updateSignoffUI(payload);
 }
 
@@ -5726,6 +5798,15 @@ function playCheckSound(isCorrect) {
   }
 }
 
+/* Feedback text is built in JS, so it cannot use the .lang-en/.lang-es span
+   pair the rest of the page toggles. Pick the language the family is actually
+   reading; fall back to English whenever no Spanish was authored. */
+function pickLangText(en, es) {
+  const esText = (es || "").trim();
+  if (esText && document.body.classList.contains("lang-mode-es")) return esText;
+  return en || "";
+}
+
 function checkProblem(idx, options) {
   const silent = options && options.silent;
   const section = document.getElementById("problem_" + idx);
@@ -5743,7 +5824,7 @@ function checkProblem(idx, options) {
       const container = section.querySelector(".mc-options");
       const selected = container.querySelector("input[type='radio']:checked");
       const correctIdx = container.dataset.correct;
-      const explanation = container.dataset.explanation;
+      const explanation = pickLangText(container.dataset.explanation, container.dataset.explanationEs);
       
       // Reset radio option styles
       const labels = container.querySelectorAll(".mc-option-label");
@@ -5971,7 +6052,7 @@ function checkProblem(idx, options) {
   if (!feedbackMessage) {
     if (type === "multiple-choice") {
       const container = section.querySelector(".mc-options");
-      const explanation = container?.dataset.explanation || "";
+      const explanation = pickLangText(container?.dataset.explanation, container?.dataset.explanationEs);
       if (isProblemCorrect) {
         feedbackMessage = explanation
           ? "Correct! " + explanation

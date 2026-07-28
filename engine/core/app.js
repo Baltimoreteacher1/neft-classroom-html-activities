@@ -313,7 +313,7 @@ function lessonTimeEstimate(config) {
   return "~45 min";
 }
 
-function objectivesBlockHtml(config) {
+function _objectivesBlockHtml(config) {
   // Same treatment as the Launch header and Objectives page: key vocabulary
   // words are underlined + tap-to-open the glossary popup, and the goal text is
   // bold. wireObjectiveTermPopups(screen, …) is called after the cover mounts.
@@ -2007,20 +2007,26 @@ function escHtml(str) {
 }
 
 function initDeployWatcher() {
-  if (typeof navigator === 'undefined' || !('serviceWorker' in navigator)) return;
+  if (typeof navigator === "undefined" || !("serviceWorker" in navigator)) return;
   // Periodic update check every 2 minutes
-  setInterval(() => {
-    navigator.serviceWorker.getRegistration().then(reg => { if (reg) reg.update(); });
-  }, 2 * 60 * 1000);
+  setInterval(
+    () => {
+      navigator.serviceWorker.getRegistration().then((reg) => {
+        if (reg) reg.update();
+      });
+    },
+    2 * 60 * 1000,
+  );
   // Auto-reload when new SW takes control
   let reloading = false;
-  navigator.serviceWorker.addEventListener('controllerchange', () => {
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
     if (reloading) return;
     reloading = true;
-    const toast = document.createElement('div');
-    toast.setAttribute('role', 'status');
-    toast.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:linear-gradient(135deg,#155fa0,#0f6d78);color:#fff;text-align:center;padding:12px 20px;font-weight:600;font-size:14px;box-shadow:0 2px 12px rgba(0,0,0,.2);';
-    toast.textContent = '🚀 New version deployed — refreshing now…';
+    const toast = document.createElement("div");
+    toast.setAttribute("role", "status");
+    toast.style.cssText =
+      "position:fixed;top:0;left:0;right:0;z-index:99999;background:linear-gradient(135deg,#155fa0,#0f6d78);color:#fff;text-align:center;padding:12px 20px;font-weight:600;font-size:14px;box-shadow:0 2px 12px rgba(0,0,0,.2);";
+    toast.textContent = "🚀 New version deployed — refreshing now…";
     document.body.appendChild(toast);
     setTimeout(() => window.location.reload(), 1500);
   });

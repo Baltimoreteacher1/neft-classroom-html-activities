@@ -1604,6 +1604,14 @@ body.obj-popup-open { overflow: hidden; }
 .section-vocab { border-left: 4px solid var(--coral); }
 .section-stuck { border-left: 4px solid #9b59b6; }
 .section-quick-intro { border-left: 4px solid var(--success); }
+.quick-check-time {
+  background: var(--amber-light);
+  border: 1px solid var(--amber);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 0 0 12px;
+  font-size: 15px;
+}
 .section-celebrate {
   border-left: 4px solid var(--amber);
   background: linear-gradient(180deg, var(--amber-light), var(--white));
@@ -1851,6 +1859,16 @@ body.obj-popup-open { overflow: hidden; }
   padding: 2px;
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x proximity;
+}
+/* On a phone the 10 tabs are ~738px wide in a ~381px viewport, so half of them
+   (Help, More, Done) sit off-screen with nothing to suggest they exist. Fade the
+   trailing edge so the strip reads as scrollable. Only below 700px, where the
+   overflow is guaranteed — a permanent fade on desktop would just look broken. */
+@media (max-width: 700px) {
+  .homework-tab-bar {
+    -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+    mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+  }
 }
 .homework-tab-btn {
   flex: 0 0 auto;
@@ -2372,6 +2390,12 @@ body.lang-mode-es .bilingual-grid {
 @media print {
   .homework-tab-chrome, .homework-tab-bar, .bottom-status-bar, .help-modal-overlay, .print-all-btn, .parent-signoff-container { display: none !important; }
   .tab-panel-inner[hidden] { display: block !important; page-break-inside: avoid; }
+  /* Printing un-hides every panel, but these three are screen-only: an embedded
+     arcade iframe, a live game, and a link-out. On paper they were blank or
+     meaningless pages in the middle of the packet. */
+  [data-tab-panel="arcade"],
+  [data-tab-panel="play"],
+  [data-tab-panel="workbench"] { display: none !important; }
   body { padding-bottom: 0; }
   
   .print-only-certificate.is-signed {
@@ -2448,7 +2472,7 @@ body.lang-mode-es .bilingual-grid {
 
 
 .family-visual-lab{--lab-ink:#173a5e;--lab-teal:#0b8f87;--lab-coral:#ff775f;--lab-sun:#f6c94c;margin:26px 0;padding:clamp(18px,3vw,30px);border:3px solid var(--lab-ink);border-radius:28px;background:#fffdf5;box-shadow:8px 8px 0 var(--lab-ink);color:var(--lab-ink)}
-.visual-lab-heading{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(260px,1.15fr);gap:20px;align-items:end;margin-bottom:20px}.visual-lab-heading h2{margin:6px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.05}.visual-lab-heading p{margin:0;padding:14px 16px;border-left:5px solid var(--lab-sun);background:#fff8d9;font-size:17px;font-weight:700;line-height:1.45}.visual-lab-kicker{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--lab-ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em}
+.visual-lab-heading{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(260px,1.15fr);gap:20px;align-items:end;margin-bottom:20px}.visual-lab-heading h2{margin:6px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.05}.visual-lab-heading p{margin:0;padding:14px 16px;border-left:5px solid var(--lab-sun);background:#fff8d9;font-size:17px;font-weight:700;line-height:1.45}.visual-lab-kicker{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--lab-ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em}.visual-lab-kicker .lang-en,.visual-lab-kicker .lang-es{color:inherit}
 .visual-lab-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(230px,.8fr);gap:18px;align-items:stretch}.visual-lab-canvas-wrap{min-width:0;padding:12px;border-radius:22px;background-color:#eef8f4;background-image:linear-gradient(#cee3dc 1px,transparent 1px),linear-gradient(90deg,#cee3dc 1px,transparent 1px);background-size:24px 24px;border:2px solid var(--lab-ink)}.visual-lab-stage{display:grid;place-items:center;min-height:280px}.visual-lab-stage svg{display:block;width:100%;max-height:320px;overflow:visible}.visual-lab-status{min-height:26px;margin:5px 8px 0;padding:7px 10px;border-radius:10px;background:#fff;font-weight:800;text-align:center}
 .visual-lab-controls{display:flex;flex-direction:column;gap:14px;padding:18px;border-radius:22px;background:var(--lab-ink);color:#fff}.visual-lab-control{display:grid;gap:7px;font-weight:800}.visual-lab-control-label{display:flex;justify-content:space-between;gap:10px;align-items:center}.visual-lab-control output{min-width:38px;padding:3px 8px;border-radius:8px;background:var(--lab-sun);color:#102f4e;text-align:center;font-size:18px}.visual-lab-control input[type=range]{width:100%;min-height:28px;accent-color:var(--lab-coral);cursor:pointer}.visual-lab-control input[type=range]:focus-visible{outline:4px solid #fff;outline-offset:4px}.visual-lab-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:auto}.visual-lab-button{min-height:48px;border:2px solid #fff;border-radius:13px;background:var(--lab-coral);color:#182f48;font:inherit;font-weight:800;cursor:pointer}.visual-lab-button-quiet{background:#fff}.visual-lab-button:hover{transform:translateY(-2px)}.visual-lab-button:focus-visible{outline:4px solid var(--lab-sun);outline-offset:3px}
 .visual-representation-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:18px}.visual-representation-card{position:relative;min-height:150px;padding:18px 16px 15px;border:2px solid var(--lab-ink);border-radius:18px;background:#fff}.visual-representation-card h3{margin:0 0 10px;padding-left:30px;font-size:17px}.visual-representation-card p{margin:7px 0;font-size:16px;line-height:1.4}.representation-number{position:absolute;top:12px;left:12px;display:grid;width:27px;height:27px;place-items:center;border-radius:50%;background:var(--lab-ink);color:#fff;font-weight:800}.visual-representation-model{background:#dff5ee}.visual-representation-math{background:#fff2c2}.visual-representation-words{background:#ffe4dd}.visual-representation-math [data-lab-equation]{font-size:clamp(22px,3vw,32px);font-weight:800;text-align:center}.mini-model{display:flex;flex-wrap:wrap;gap:7px;align-content:center;min-height:76px;padding:8px}.mini-dot{width:18px;height:18px;border:2px solid var(--lab-ink);border-radius:50%;background:var(--lab-teal)}.visual-representation-card details{margin-top:10px}.visual-representation-card summary{cursor:pointer;font-weight:800;text-decoration:underline}.visual-source-idea{font-size:13px!important;color:#344f69}
@@ -2731,12 +2755,12 @@ header.packet h1::after{
         <div class="bilingual-col lang-en">
           <span class="lang-label">English</span>
           <p class="learning-big">Tonight we make and check equivalent ratios — ratios that mean the same thing — using multiplication and division.</p>
-          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Ratio</li><li>Equivalent ratios</li><li>Rate</li><li>Proportion</li><li>Simplify</li></ul></div>
+          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Equivalent Ratios</li><li>Ratio</li><li>Rate</li><li>Proportion</li><li>Simplify</li></ul></div>
         </div>
         <div class="bilingual-col lang-es" lang="es">
           <span class="lang-label">Español</span>
           <p class="learning-big">Esta noche hacemos y comprobamos razones equivalentes — razones que significan lo mismo — usando multiplicación y división.</p>
-          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Razón</li><li>Razones equivalentes</li><li>Tasa</li><li>Proporción</li><li>Simplificar</li></ul></div>
+          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Razones equivalentes</li><li>Razón</li><li>Tasa</li><li>Proporción</li><li>Simplificar</li></ul></div>
         </div>
       </div>
     
@@ -2869,6 +2893,24 @@ header.packet h1::after{
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
                   <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/equivalent-ratio.svg" alt="Illustration of Equivalent Ratios: Ratios that compare quantities in the same relationship." loading="lazy" width="72" height="72" />
+                  </div>
+                  <h3>Equivalent Ratios</h3>
+                  <p class="vocab-es" lang="es">Razones equivalentes</p>
+                  <div class="vocab-visual-hint">💡 2:3 = 4:6 because both parts were multiplied by 2.</div>
+                  <div class="flip-prompt"><span class="lang-en">Tap</span><span class="lang-es" lang="es">Toca ➔</span></div>
+                </div>
+                <div class="vocab-card-back">
+                  <p class="vocab-def">Ratios that compare quantities in the same relationship.</p>
+                  <p class="vocab-def-es" lang="es">Razones que comparan cantidades en la misma relación.</p>
+                  <p class="vocab-back-visual">📌 2:3 = 4:6 because both parts were multiplied by 2.</p>
+                </div>
+              </div>
+            </div>
+            <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+              <div class="vocab-card-inner">
+                <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
                     <img class="vocab-thumb" src="/assets/vocab-images/ratio.svg" alt="Illustration of Ratio: A way to compare two amounts, like 3 to 2." loading="lazy" width="72" height="72" />
                   </div>
                   <h3>Ratio</h3>
@@ -2880,24 +2922,6 @@ header.packet h1::after{
                   <p class="vocab-def">A way to compare two amounts, like 3 to 2.</p>
                   <p class="vocab-def-es" lang="es">Una manera de comparar dos cantidades, como 3 a 2.</p>
                   <p class="vocab-back-visual">📌 3 red apples : 5 green apples</p>
-                </div>
-              </div>
-            </div>
-            <div class="vocab-card" onclick="this.classList.toggle('flipped')">
-              <div class="vocab-card-inner">
-                <div class="vocab-card-front">
-                  <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/equivalent-ratio.svg" alt="Illustration of Equivalent ratios: Two ratios that mean the same thing." loading="lazy" width="72" height="72" />
-                  </div>
-                  <h3>Equivalent ratios</h3>
-                  <p class="vocab-es" lang="es">Razones equivalentes</p>
-                  <div class="vocab-visual-hint">💡 2:3 and 4:6 both mean 2 out of every 3, so 2/3 = 4/6</div>
-                  <div class="flip-prompt"><span class="lang-en">Tap</span><span class="lang-es" lang="es">Toca ➔</span></div>
-                </div>
-                <div class="vocab-card-back">
-                  <p class="vocab-def">Two ratios that mean the same thing.</p>
-                  <p class="vocab-def-es" lang="es">Dos razones que significan lo mismo.</p>
-                  <p class="vocab-back-visual">📌 2:3 and 4:6 both mean 2 out of every 3, so 2/3 = 4/6</p>
                 </div>
               </div>
             </div>
@@ -3094,6 +3118,10 @@ header.packet h1::after{
       
     
       <h2 class="section-title">✅ <span class="lang-en">Quick check</span><span class="lang-es" lang="es">Repaso rápido</span></h2>
+      <p class="quick-check-time bilingual-block">
+        <span class="lang-en">⏱️ Plan on about <strong>15–20 minutes</strong> for the 6 problems below. The extra practice at the bottom is optional.</span>
+        <span class="lang-es" lang="es">⏱️ Calculen unos <strong>15–20 minutos</strong> para los 6 problemas de abajo. La práctica extra al final es opcional.</span>
+      </p>
       <p class="bilingual-block">
         <span class="lang-en">A few problems to practice together. Each one has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong>, and a <strong>space to show your work</strong>. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
         <span class="lang-es" lang="es">Unos problemas para practicar juntos. Cada uno tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para mostrar el trabajo</strong>. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
@@ -3118,12 +3146,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_0" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 1</div>
-        <div class="problem-type-badge">FILL TABLE</div>
+        <div class="problem-type-badge"><span class="lang-en">FILL TABLE</span><span class="lang-es" lang="es">COMPLETAR LA TABLA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"In each pair, the two matching parts that are BOTH filled in show you the scaling.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"In each pair, the two matching parts that are BOTH filled in show you the scaling.","es":"En cada fila, encuentra el factor de escala con el par de partes que sí puedes ver y luego aplícalo a la otra parte. Fila 1: 3 pasó a 9, es decir × 3, y 7 × 3 = 21. Fila 2: 8 pasó a 24, es decir × 3, y 5 × 3 = 15. Fila 3: 6 pasó a 3, es decir ÷ 2, y 4 ÷ 2 = 2. La escala puede subir o bajar mientras ambas partes cambien por el mismo factor.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Find the missing value that makes each pair of ratios equivalent.</p>
+        <p class="problem-stem"><span class="lang-en">Find the missing value that makes each pair of ratios equivalent.</span><span class="lang-es" lang="es">Encuentra el valor que falta para que cada pareja de razones sea equivalente.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
         <div class="table-responsive">
           <table class="fill-table">
@@ -3221,12 +3249,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_1" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 2</div>
-        <div class="problem-type-badge">DRAG SORT</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"4:10, 6:15, and 8:20 are the 2:5 recipe scaled by 2, 3, and 4, so all three taste the same. The others do not: 4:9 doubles the flour but the milk would need to be 10, 2:7 keeps the flour the same while changing only the milk, and 5:2 flips the order so it describes 5 cups of flour to 2 of milk — a completely different mix.","es":"4:10, 6:15 y 8:20 son la receta 2:5 escalada por 2, 3 y 4, así que las tres saben igual. Las otras no: 4:9 duplica la harina, pero la leche tendría que ser 10; 2:7 deja la harina igual y cambia solo la leche; y 5:2 invierte el orden, así que describe 5 tazas de harina por 2 de leche, una mezcla completamente distinta.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">The recipe ratio is 2 cups flour to 5 cups milk (2:5). Sort each batch: does it taste the same (equivalent) or not?</p>
+        <p class="problem-stem"><span class="lang-en">The recipe ratio is 2 cups flour to 5 cups milk (2:5). Sort each batch: does it taste the same (equivalent) or not?</span><span class="lang-es" lang="es">La razón de la receta es 2 tazas de harina por 5 tazas de leche (2:5). Clasifica cada tanda: ¿sabe igual (equivalente) o no?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
         
         <div class="drag-sort-workspace" id="dragsort_1">
@@ -3363,12 +3391,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_2" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 3</div>
-        <div class="problem-type-badge">DRAG SORT</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Two ratios are equivalent if one is the other with BOTH parts scaled by the same multiplier.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Two ratios are equivalent if one is the other with BOTH parts scaled by the same multiplier.","es":"2:4 y 3:6 se simplifican a 1:2, y 5:10 también se simplifica a 1:2, así que esas dos parejas son equivalentes. En 3:7 y 6:12 la primera parte se duplicó, pero la segunda pasó de 7 a 12, que no es el doble, así que no son equivalentes: 6:12 se simplifica a 1:2 mientras que 3:7 no se puede reducir. Lo mismo pasa con 4:9 y 8:16: 4 se duplicó a 8, pero el doble de 9 sería 18, no 16.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Sort each pair of ratios: are they equivalent or not equivalent?</p>
+        <p class="problem-stem"><span class="lang-en">Sort each pair of ratios: are they equivalent or not equivalent?</span><span class="lang-es" lang="es">Clasifica cada pareja de razones: ¿son equivalentes o no son equivalentes?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
         <div class="family-hint-box"><p>💡 Two ratios are equivalent if one is the other with BOTH parts scaled by the same multiplier.</p><p>💡 For each card, simplify both ratios to simplest form. Matching simplest forms mean the pair is equivalent.</p><p>💡 Test &#039;2:4 and 3:6&#039;: simplify each — 2:4 becomes 1:2, and 3:6 becomes…? If the two match, you know the pile.</p></div>
         <div class="drag-sort-workspace" id="dragsort_2">
@@ -3491,12 +3519,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_3" data-problem-type="open-response">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 1</div>
-        <div class="problem-type-badge">OPEN RESPONSE</div>
+        <div class="problem-type-badge"><span class="lang-en">OPEN RESPONSE</span><span class="lang-es" lang="es">RESPUESTA ABIERTA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The question wants a decision (equivalent or not?) plus TWO different proofs.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The question wants a decision (equivalent or not?) plus TWO different proofs.","es":"Las razones son equivalentes. Escalar lo demuestra: multiplicar ambas partes de 3:2 por 3 da 9:6. Simplificar también lo demuestra, porque 9:6 se reduce a 3:2, y multiplicar en cruz da 3 × 6 = 18 y 2 × 9 = 18, el mismo producto.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem"></p>
+        <p class="problem-stem"><span class="lang-en"></span><span class="lang-es" lang="es">Una tienda vende 3 bolígrafos por $2. Otra tienda vende 9 bolígrafos por $6. ¿Son razones equivalentes? Si lo son, demuéstralo usando al menos dos métodos diferentes (simplificar, escalar o multiplicar en cruz).</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 A complete sentence with math vocabulary is the goal — not a perfect paragraph.</span><span class="lang-es" lang="es">👪 Una oración completa con vocabulario matemático es la meta — no un párrafo perfecto.</span></p>
         
         
@@ -3555,12 +3583,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_4" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 2</div>
-        <div class="problem-type-badge">FILL TABLE</div>
+        <div class="problem-type-badge"><span class="lang-en">FILL TABLE</span><span class="lang-es" lang="es">COMPLETAR LA TABLA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Your target is 2:5. Each row asks: does this ratio shrink down to exactly 2:5?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Your target is 2:5. Each row asks: does this ratio shrink down to exactly 2:5?","es":"Divide cada razón entre el máximo factor común de sus dos partes y compárala con 2:5. 6:15 se divide entre 3 y da 2:5, así que sí. 10:25 se divide entre 5 y da 2:5, así que sí. 8:25 no tiene ningún factor común además de 1, así que su forma simplificada sigue siendo 8:25 y la respuesta es no: el 8 se parece a un 2 escalado, pero con 25 la primera parte tendría que ser 10.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A student claims these ratios are all equivalent. Check each one and mark whether it simplifies to 2:5 or not.</p>
+        <p class="problem-stem"><span class="lang-en">A student claims these ratios are all equivalent. Check each one and mark whether it simplifies to 2:5 or not.</span><span class="lang-es" lang="es">Un estudiante afirma que todas estas razones son equivalentes. Revisa cada una y marca si se simplifica a 2:5 o no.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
         <div class="table-responsive">
           <table class="fill-table">
@@ -3698,12 +3726,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_5" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 3</div>
-        <div class="problem-type-badge">DRAG SORT</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Every equivalent card is 3:4 with BOTH parts multiplied by one same number.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Every equivalent card is 3:4 with BOTH parts multiplied by one same number.","es":"6:8, 9:12 y 15:20 son 3:4 escalado por 2, 3 y 5: ambas partes multiplicadas por el mismo número cada vez. Las otras tres no pasan esa prueba: 3:5 conserva el 3 pero cambia solo la segunda parte, 4:3 invierte el orden y compara las cantidades al revés, y 6:12 duplica el 3 pero cuadruplica el 4, así que se simplifica a 1:2 en lugar de 3:4.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Sort these ratios — which are equivalent to 3:4 and which are not?</p>
+        <p class="problem-stem"><span class="lang-en">Sort these ratios — which are equivalent to 3:4 and which are not?</span><span class="lang-es" lang="es">Clasifica estas razones: ¿cuáles son equivalentes a 3:4 y cuáles no?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
         <div class="family-hint-box"><p>💡 Every equivalent card is 3:4 with BOTH parts multiplied by one same number.</p><p>💡 Divide each card&#039;s first number by 3 and its second by 4 — equivalent cards give the same multiplier both times.</p><p>💡 Check 6:8 first: compute 6 ÷ 3 and 8 ÷ 4. Do they give the same multiplier? That tells you its pile.</p></div>
         <div class="drag-sort-workspace" id="dragsort_5">
@@ -3851,12 +3879,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_6" data-problem-type="matching-game">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 1</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
+        <div class="problem-type-badge"><span class="lang-en">MATCHING GAME</span><span class="lang-es" lang="es">JUEGO DE PAREJAS</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each batch on the right is the recipe ratio with both parts multiplied by the same number: 2:3 scaled by 4 gives 8:12, 3:5 scaled by 3 gives 9:15, 4:7 scaled by 3 gives 12:21, and 5:6 scaled by 2 gives 10:12. If you simplify any card on the right by its greatest common factor, you land exactly on its recipe partner.","es":"Cada preparación de la derecha es la razón de la receta con ambas partes multiplicadas por el mismo número: 2:3 escalado por 4 da 8:12, 3:5 escalado por 3 da 9:15, 4:7 escalado por 3 da 12:21 y 5:6 escalado por 2 da 10:12. Si simplificas cualquier tarjeta de la derecha usando su máximo factor común, caes exactamente en su receta correspondiente.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Match each recipe ratio to a batch that tastes exactly the same.</p>
+        <p class="problem-stem"><span class="lang-en">Match each recipe ratio to a batch that tastes exactly the same.</span><span class="lang-es" lang="es">Une la razón de cada receta con una tanda que sepa exactamente igual.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Say each term out loud, then talk through which match makes sense before choosing.</span><span class="lang-es" lang="es">👪 Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.</span></p>
         <div class="matching-pairs">
           
@@ -3927,14 +3955,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_7" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 2</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Equivalent ratios come from multiplying BOTH parts of 2:5 by the same number.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Equivalent ratios come from multiplying BOTH parts of 2:5 by the same number.","es":"Multiplica ambas partes por 2: 2×2 = 4 y 5×2 = 10, así que 4:10 es equivalente a 2:5.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Which ratio is equivalent to 2:5?</p>
+        <p class="problem-stem"><span class="lang-en">Which ratio is equivalent to 2:5?</span><span class="lang-es" lang="es">¿Qué razón es equivalente a 2:5?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Multiply both parts by 2: 2×2 = 4 and 5×2 = 10, so 4:10 is equivalent to 2:5.">
+        <div class="mc-options" data-correct="0" data-explanation="Multiply both parts by 2: 2×2 = 4 and 5×2 = 10, so 4:10 is equivalent to 2:5." data-explanation-es="Multiplica ambas partes por 2: 2×2 = 4 y 5×2 = 10, así que 4:10 es equivalente a 2:5.">
           
             <label class="mc-option-label" id="label_q_7_0">
               <input type="radio" name="q_7" value="0" onchange="saveState(); updateProgress();">
@@ -3997,14 +4025,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_8" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 3</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"You can scale a ratio DOWN too — divide both parts by the same number.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"You can scale a ratio DOWN too — divide both parts by the same number.","es":"Divide ambas partes entre 2: 4÷2 = 2 y 6÷2 = 3. La razón 2:3 es equivalente a 4:6.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A recipe uses 4 eggs for every 6 cups of flour. Which ratio is equivalent?</p>
+        <p class="problem-stem"><span class="lang-en">A recipe uses 4 eggs for every 6 cups of flour. Which ratio is equivalent?</span><span class="lang-es" lang="es">Una receta usa 4 huevos por cada 6 tazas de harina. ¿Qué razón es equivalente?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Divide both by 2: 4÷2 = 2 and 6÷2 = 3. The ratio 2:3 is equivalent to 4:6.">
+        <div class="mc-options" data-correct="0" data-explanation="Divide both by 2: 4÷2 = 2 and 6÷2 = 3. The ratio 2:3 is equivalent to 4:6." data-explanation-es="Divide ambas partes entre 2: 4÷2 = 2 y 6÷2 = 3. La razón 2:3 es equivalente a 4:6.">
           
             <label class="mc-option-label" id="label_q_8_0">
               <input type="radio" name="q_8" value="0" onchange="saveState(); updateProgress();">
@@ -4067,14 +4095,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_9" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 4</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"First simplify 6:9 to its simplest form — that becomes your measuring stick.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"First simplify 6:9 to its simplest form — that becomes your measuring stick.","es":"6:9 se simplifica a 2:3. Revisa cada una: 2:3 ✓, 12:18 = 2:3 ✓, 18:27 = 2:3 ✓. Pero 3:5 no se simplifica a 2:3.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Which ratio is NOT equivalent to 6:9?</p>
+        <p class="problem-stem"><span class="lang-en">Which ratio is NOT equivalent to 6:9?</span><span class="lang-es" lang="es">¿Qué razón NO es equivalente a 6:9?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="6:9 simplifies to 2:3. Check each: 2:3 ✓, 12:18 = 2:3 ✓, 18:27 = 2:3 ✓. But 3:5 does not simplify to 2:3.">
+        <div class="mc-options" data-correct="0" data-explanation="6:9 simplifies to 2:3. Check each: 2:3 ✓, 12:18 = 2:3 ✓, 18:27 = 2:3 ✓. But 3:5 does not simplify to 2:3." data-explanation-es="6:9 se simplifica a 2:3. Revisa cada una: 2:3 ✓, 12:18 = 2:3 ✓, 18:27 = 2:3 ✓. Pero 3:5 no se simplifica a 2:3.">
           
             <label class="mc-option-label" id="label_q_9_0">
               <input type="radio" name="q_9" value="0" onchange="saveState(); updateProgress();">
@@ -4137,14 +4165,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_10" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 5</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Multiply both parts of 3:4 by 3: 3 x 3 = 9 and 4 x 3 = 12, so 9:12 is equivalent to 3:4.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Equivalent ratios describe the same relationship, so the dressing tastes the same even when the batch gets bigger.","es":"Las razones equivalentes describen la misma relación, así que el aderezo sabe igual aunque la preparación sea más grande.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Chef Montoya&#039;s dressing uses 3 spoons of oil to 4 spoons of vinegar (3:4). Which recipe card shows an EQUIVALENT ratio?</p>
+        <p class="problem-stem"><span class="lang-en">Chef Montoya&#039;s dressing uses 3 spoons of oil to 4 spoons of vinegar (3:4). Which recipe card shows an EQUIVALENT ratio?</span><span class="lang-es" lang="es">El aderezo del chef Montoya usa 3 cucharadas de aceite por 4 cucharadas de vinagre (3:4). ¿Qué tarjeta de receta muestra una razón EQUIVALENTE?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Multiply both parts of 3:4 by 3: 3 x 3 = 9 and 4 x 3 = 12, so 9:12 is equivalent to 3:4.">
+        <div class="mc-options" data-correct="0" data-explanation="Multiply both parts of 3:4 by 3: 3 x 3 = 9 and 4 x 3 = 12, so 9:12 is equivalent to 3:4." data-explanation-es="Multiplica ambas partes de 3:4 por 3: 3 × 3 = 9 y 4 × 3 = 12, así que 9:12 es equivalente a 3:4.">
           
             <label class="mc-option-label" id="label_q_10_0">
               <input type="radio" name="q_10" value="0" onchange="saveState(); updateProgress();">
@@ -4207,14 +4235,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_11" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 6</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Multiply both parts of 5:2 by 3: 5 x 3 = 15 and 2 x 3 = 6, so 15:6 is equivalent to 5:2.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The taste stays the same only when the lemon juice and the sugar grow by the same factor.","es":"El sabor se mantiene igual solo cuando el jugo de limón y el azúcar crecen por el mismo factor.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">The lemonade station mixes 5 cups of lemon juice to 2 cups of sugar (5:2). Which batch keeps the SAME taste?</p>
+        <p class="problem-stem"><span class="lang-en">The lemonade station mixes 5 cups of lemon juice to 2 cups of sugar (5:2). Which batch keeps the SAME taste?</span><span class="lang-es" lang="es">El puesto de limonada mezcla 5 tazas de jugo de limón con 2 tazas de azúcar (5:2). ¿Qué preparación mantiene el MISMO sabor?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Multiply both parts of 5:2 by 3: 5 x 3 = 15 and 2 x 3 = 6, so 15:6 is equivalent to 5:2.">
+        <div class="mc-options" data-correct="0" data-explanation="Multiply both parts of 5:2 by 3: 5 x 3 = 15 and 2 x 3 = 6, so 15:6 is equivalent to 5:2." data-explanation-es="Multiplica ambas partes de 5:2 por 3: 5 × 3 = 15 y 2 × 3 = 6, así que 15:6 es equivalente a 5:2.">
           
             <label class="mc-option-label" id="label_q_11_0">
               <input type="radio" name="q_11" value="0" onchange="saveState(); updateProgress();">
@@ -4277,14 +4305,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_12" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 7</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Simplest form means both numbers have been divided by their greatest common factor.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Simplest form means both numbers have been divided by their greatest common factor.","es":"El máximo común divisor de 15 y 25 es 5. Divide ambos entre 5: 15÷5 = 3 y 25÷5 = 5. La forma más simple es 3:5.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">What is the simplest form of the ratio 15:25?</p>
+        <p class="problem-stem"><span class="lang-en">What is the simplest form of the ratio 15:25?</span><span class="lang-es" lang="es">¿Cuál es la forma más simple de la razón 15:25?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="The GCF of 15 and 25 is 5. Divide both by 5: 15÷5 = 3 and 25÷5 = 5. The simplest form is 3:5.">
+        <div class="mc-options" data-correct="0" data-explanation="The GCF of 15 and 25 is 5. Divide both by 5: 15÷5 = 3 and 25÷5 = 5. The simplest form is 3:5." data-explanation-es="El máximo común divisor de 15 y 25 es 5. Divide ambos entre 5: 15÷5 = 3 y 25÷5 = 5. La forma más simple es 3:5.">
           
             <label class="mc-option-label" id="label_q_12_0">
               <input type="radio" name="q_12" value="0" onchange="saveState(); updateProgress();">
@@ -4347,14 +4375,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_13" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 8</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"8 hours is not a whole-number multiple of 3 hours, so find what Marcus earns in ONE hour first.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"8 hours is not a whole-number multiple of 3 hours, so find what Marcus earns in ONE hour first.","es":"Tasa por unidad: $45 ÷ 3 = $15 por hora. En 8 horas: $15 × 8 = $120.","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Marcus earns $45 for every 3 hours of work. How much does he earn in 8 hours?</p>
+        <p class="problem-stem"><span class="lang-en">Marcus earns $45 for every 3 hours of work. How much does he earn in 8 hours?</span><span class="lang-es" lang="es">Marcus gana $45 por cada 3 horas de trabajo. ¿Cuánto gana en 8 horas?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Unit rate: $45 ÷ 3 = $15/hour. In 8 hours: $15 × 8 = $120.">
+        <div class="mc-options" data-correct="0" data-explanation="Unit rate: $45 ÷ 3 = $15/hour. In 8 hours: $15 × 8 = $120." data-explanation-es="Tasa por unidad: $45 ÷ 3 = $15 por hora. En 8 horas: $15 × 8 = $120.">
           
             <label class="mc-option-label" id="label_q_13_0">
               <input type="radio" name="q_13" value="0" onchange="saveState(); updateProgress();">
@@ -4685,8 +4713,8 @@ header.packet h1::after{
 <script>
 window.LESSON_ID = "3-4";
 window.LESSON_TITLE = "Equivalent Ratios";
-window.__HW_VOCAB__ = [{"term":"Ratio","termEs":"Razón","def":"A way to compare two amounts, like 3 to 2.","defEs":"Una manera de comparar dos cantidades, como 3 a 2.","example":"3 red apples : 5 green apples","img":"/assets/vocab-images/ratio.svg","imgAlt":"Illustration of Ratio: A way to compare two amounts, like 3 to 2."},{"term":"Equivalent ratios","termEs":"Razones equivalentes","def":"Two ratios that mean the same thing.","defEs":"Dos razones que significan lo mismo.","example":"2:3 and 4:6 both mean 2 out of every 3, so 2/3 = 4/6","img":"/assets/vocab-images/equivalent-ratio.svg","imgAlt":"Illustration of Equivalent ratios: Two ratios that mean the same thing."},{"term":"Rate","termEs":"Tasa","def":"A ratio comparing two amounts with different units, like miles per hour.","defEs":"Una razón que compara dos cantidades con unidades distintas, como millas por hora.","example":"60 miles per 1 hour","img":"/assets/vocab-images/rate.svg","imgAlt":"Illustration of Rate: A ratio comparing two amounts with different units, like miles per hour."},{"term":"Proportion","termEs":"Proporción","def":"A math sentence saying two ratios are equal.","defEs":"Una oración matemática que dice que dos razones son iguales.","example":"2/3 = 4/6","img":"/assets/vocab-images/proportion.svg","imgAlt":"Illustration of Proportion: A math sentence saying two ratios are equal."},{"term":"Simplify","termEs":"Simplificar","def":"To make a ratio smaller while keeping the same comparison.","defEs":"Hacer una razón más pequeña sin cambiar la comparación.","example":"12:18 → divide both by 6 → 2:3","img":"/assets/vocab-images/fraction.svg","imgAlt":"Illustration of Simplify: To make a ratio smaller while keeping the same comparison."}];
-window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Equivalent ratios|Proportion|Simplify|Ratio|Rate)(?:es|s)?\\b","lookup":{"ratio":0,"equivalent ratio":1,"rate":2,"proportion":3,"simplify":4}};
+window.__HW_VOCAB__ = [{"term":"Equivalent Ratios","termEs":"Razones equivalentes","def":"Ratios that compare quantities in the same relationship.","defEs":"Razones que comparan cantidades en la misma relación.","example":"2:3 = 4:6 because both parts were multiplied by 2.","img":"/assets/vocab-images/equivalent-ratio.svg","imgAlt":"Illustration of Equivalent Ratios: Ratios that compare quantities in the same relationship."},{"term":"Ratio","termEs":"Razón","def":"A way to compare two amounts, like 3 to 2.","defEs":"Una manera de comparar dos cantidades, como 3 a 2.","example":"3 red apples : 5 green apples","img":"/assets/vocab-images/ratio.svg","imgAlt":"Illustration of Ratio: A way to compare two amounts, like 3 to 2."},{"term":"Rate","termEs":"Tasa","def":"A ratio comparing two amounts with different units, like miles per hour.","defEs":"Una razón que compara dos cantidades con unidades distintas, como millas por hora.","example":"60 miles per 1 hour","img":"/assets/vocab-images/rate.svg","imgAlt":"Illustration of Rate: A ratio comparing two amounts with different units, like miles per hour."},{"term":"Proportion","termEs":"Proporción","def":"A math sentence saying two ratios are equal.","defEs":"Una oración matemática que dice que dos razones son iguales.","example":"2/3 = 4/6","img":"/assets/vocab-images/proportion.svg","imgAlt":"Illustration of Proportion: A math sentence saying two ratios are equal."},{"term":"Simplify","termEs":"Simplificar","def":"To make a ratio smaller while keeping the same comparison.","defEs":"Hacer una razón más pequeña sin cambiar la comparación.","example":"12:18 → divide both by 6 → 2:3","img":"/assets/vocab-images/fraction.svg","imgAlt":"Illustration of Simplify: To make a ratio smaller while keeping the same comparison."}];
+window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Equivalent Ratios|Proportion|Simplify|Ratio|Rate)(?:es|s)?\\b","lookup":{"equivalent ratio":0,"ratio":1,"rate":2,"proportion":3,"simplify":4}};
 
 function syncHomeworkChromeHeights() {
   const status = document.querySelector('.bottom-status-bar');
@@ -4820,7 +4848,33 @@ function saveParentSignoff() {
   try {
     localStorage.setItem('hw_parent_signoff_' + lessonId, JSON.stringify(payload));
   } catch(e) {}
-  
+
+  /* localStorage stays the source of truth for what this page displays, but a
+     sign-off the teacher never sees is not a sign-off. Fire-and-forget POST:
+     the endpoint always answers 204, and any failure here is swallowed so a
+     family on a bad connection still gets their confirmation. */
+  try {
+    var signoffBody = JSON.stringify({
+      lessonId: lessonId,
+      lessonTitle: lessonTitle,
+      parentName: nameVal,
+      note: noteVal,
+      date: signoffDate,
+      studentName: (window.NeftSaveResume && window.NeftSaveResume.studentName) || '',
+      section: (window.NeftSaveResume && window.NeftSaveResume.section) || ''
+    });
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('/api/progress/family-signoff', new Blob([signoffBody], { type: 'application/json' }));
+    } else {
+      fetch('/api/progress/family-signoff', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: signoffBody,
+        keepalive: true
+      }).catch(function() {});
+    }
+  } catch(e) {}
+
   updateSignoffUI(payload);
 }
 
@@ -5757,6 +5811,15 @@ function playCheckSound(isCorrect) {
   }
 }
 
+/* Feedback text is built in JS, so it cannot use the .lang-en/.lang-es span
+   pair the rest of the page toggles. Pick the language the family is actually
+   reading; fall back to English whenever no Spanish was authored. */
+function pickLangText(en, es) {
+  const esText = (es || "").trim();
+  if (esText && document.body.classList.contains("lang-mode-es")) return esText;
+  return en || "";
+}
+
 function checkProblem(idx, options) {
   const silent = options && options.silent;
   const section = document.getElementById("problem_" + idx);
@@ -5774,7 +5837,7 @@ function checkProblem(idx, options) {
       const container = section.querySelector(".mc-options");
       const selected = container.querySelector("input[type='radio']:checked");
       const correctIdx = container.dataset.correct;
-      const explanation = container.dataset.explanation;
+      const explanation = pickLangText(container.dataset.explanation, container.dataset.explanationEs);
       
       // Reset radio option styles
       const labels = container.querySelectorAll(".mc-option-label");
@@ -6002,7 +6065,7 @@ function checkProblem(idx, options) {
   if (!feedbackMessage) {
     if (type === "multiple-choice") {
       const container = section.querySelector(".mc-options");
-      const explanation = container?.dataset.explanation || "";
+      const explanation = pickLangText(container?.dataset.explanation, container?.dataset.explanationEs);
       if (isProblemCorrect) {
         feedbackMessage = explanation
           ? "Correct! " + explanation

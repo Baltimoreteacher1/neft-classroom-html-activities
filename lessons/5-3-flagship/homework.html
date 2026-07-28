@@ -1604,6 +1604,14 @@ body.obj-popup-open { overflow: hidden; }
 .section-vocab { border-left: 4px solid var(--coral); }
 .section-stuck { border-left: 4px solid #9b59b6; }
 .section-quick-intro { border-left: 4px solid var(--success); }
+.quick-check-time {
+  background: var(--amber-light);
+  border: 1px solid var(--amber);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 0 0 12px;
+  font-size: 15px;
+}
 .section-celebrate {
   border-left: 4px solid var(--amber);
   background: linear-gradient(180deg, var(--amber-light), var(--white));
@@ -1851,6 +1859,16 @@ body.obj-popup-open { overflow: hidden; }
   padding: 2px;
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x proximity;
+}
+/* On a phone the 10 tabs are ~738px wide in a ~381px viewport, so half of them
+   (Help, More, Done) sit off-screen with nothing to suggest they exist. Fade the
+   trailing edge so the strip reads as scrollable. Only below 700px, where the
+   overflow is guaranteed — a permanent fade on desktop would just look broken. */
+@media (max-width: 700px) {
+  .homework-tab-bar {
+    -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+    mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+  }
 }
 .homework-tab-btn {
   flex: 0 0 auto;
@@ -2372,6 +2390,12 @@ body.lang-mode-es .bilingual-grid {
 @media print {
   .homework-tab-chrome, .homework-tab-bar, .bottom-status-bar, .help-modal-overlay, .print-all-btn, .parent-signoff-container { display: none !important; }
   .tab-panel-inner[hidden] { display: block !important; page-break-inside: avoid; }
+  /* Printing un-hides every panel, but these three are screen-only: an embedded
+     arcade iframe, a live game, and a link-out. On paper they were blank or
+     meaningless pages in the middle of the packet. */
+  [data-tab-panel="arcade"],
+  [data-tab-panel="play"],
+  [data-tab-panel="workbench"] { display: none !important; }
   body { padding-bottom: 0; }
   
   .print-only-certificate.is-signed {
@@ -2448,7 +2472,7 @@ body.lang-mode-es .bilingual-grid {
 
 
 .family-visual-lab{--lab-ink:#173a5e;--lab-teal:#0b8f87;--lab-coral:#ff775f;--lab-sun:#f6c94c;margin:26px 0;padding:clamp(18px,3vw,30px);border:3px solid var(--lab-ink);border-radius:28px;background:#fffdf5;box-shadow:8px 8px 0 var(--lab-ink);color:var(--lab-ink)}
-.visual-lab-heading{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(260px,1.15fr);gap:20px;align-items:end;margin-bottom:20px}.visual-lab-heading h2{margin:6px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.05}.visual-lab-heading p{margin:0;padding:14px 16px;border-left:5px solid var(--lab-sun);background:#fff8d9;font-size:17px;font-weight:700;line-height:1.45}.visual-lab-kicker{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--lab-ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em}
+.visual-lab-heading{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(260px,1.15fr);gap:20px;align-items:end;margin-bottom:20px}.visual-lab-heading h2{margin:6px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.05}.visual-lab-heading p{margin:0;padding:14px 16px;border-left:5px solid var(--lab-sun);background:#fff8d9;font-size:17px;font-weight:700;line-height:1.45}.visual-lab-kicker{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--lab-ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em}.visual-lab-kicker .lang-en,.visual-lab-kicker .lang-es{color:inherit}
 .visual-lab-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(230px,.8fr);gap:18px;align-items:stretch}.visual-lab-canvas-wrap{min-width:0;padding:12px;border-radius:22px;background-color:#eef8f4;background-image:linear-gradient(#cee3dc 1px,transparent 1px),linear-gradient(90deg,#cee3dc 1px,transparent 1px);background-size:24px 24px;border:2px solid var(--lab-ink)}.visual-lab-stage{display:grid;place-items:center;min-height:280px}.visual-lab-stage svg{display:block;width:100%;max-height:320px;overflow:visible}.visual-lab-status{min-height:26px;margin:5px 8px 0;padding:7px 10px;border-radius:10px;background:#fff;font-weight:800;text-align:center}
 .visual-lab-controls{display:flex;flex-direction:column;gap:14px;padding:18px;border-radius:22px;background:var(--lab-ink);color:#fff}.visual-lab-control{display:grid;gap:7px;font-weight:800}.visual-lab-control-label{display:flex;justify-content:space-between;gap:10px;align-items:center}.visual-lab-control output{min-width:38px;padding:3px 8px;border-radius:8px;background:var(--lab-sun);color:#102f4e;text-align:center;font-size:18px}.visual-lab-control input[type=range]{width:100%;min-height:28px;accent-color:var(--lab-coral);cursor:pointer}.visual-lab-control input[type=range]:focus-visible{outline:4px solid #fff;outline-offset:4px}.visual-lab-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:auto}.visual-lab-button{min-height:48px;border:2px solid #fff;border-radius:13px;background:var(--lab-coral);color:#182f48;font:inherit;font-weight:800;cursor:pointer}.visual-lab-button-quiet{background:#fff}.visual-lab-button:hover{transform:translateY(-2px)}.visual-lab-button:focus-visible{outline:4px solid var(--lab-sun);outline-offset:3px}
 .visual-representation-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:18px}.visual-representation-card{position:relative;min-height:150px;padding:18px 16px 15px;border:2px solid var(--lab-ink);border-radius:18px;background:#fff}.visual-representation-card h3{margin:0 0 10px;padding-left:30px;font-size:17px}.visual-representation-card p{margin:7px 0;font-size:16px;line-height:1.4}.representation-number{position:absolute;top:12px;left:12px;display:grid;width:27px;height:27px;place-items:center;border-radius:50%;background:var(--lab-ink);color:#fff;font-weight:800}.visual-representation-model{background:#dff5ee}.visual-representation-math{background:#fff2c2}.visual-representation-words{background:#ffe4dd}.visual-representation-math [data-lab-equation]{font-size:clamp(22px,3vw,32px);font-weight:800;text-align:center}.mini-model{display:flex;flex-wrap:wrap;gap:7px;align-content:center;min-height:76px;padding:8px}.mini-dot{width:18px;height:18px;border:2px solid var(--lab-ink);border-radius:50%;background:var(--lab-teal)}.visual-representation-card details{margin-top:10px}.visual-representation-card summary{cursor:pointer;font-weight:800;text-decoration:underline}.visual-source-idea{font-size:13px!important;color:#344f69}
@@ -2731,12 +2755,12 @@ header.packet h1::after{
         <div class="bilingual-col lang-en">
           <span class="lang-label">English</span>
           <p class="learning-big">Calculate the area of triangular panels accurately so the skylight fits perfectly.</p>
-          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Base</li><li>Height</li><li>Area</li><li>Perpendicular</li><li>Composite figure</li></ul></div>
+          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Area of Triangles</li><li>Base</li><li>Height</li><li>Area</li><li>Perpendicular</li></ul></div>
         </div>
         <div class="bilingual-col lang-es" lang="es">
           <span class="lang-label">Español</span>
           <p class="learning-big">Calcular con precisión el área de los paneles triangulares para que el tragaluz encaje perfectamente.</p>
-          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Base</li><li>Altura</li><li>Área</li><li>Perpendicular</li><li>Figura compuesta</li></ul></div>
+          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Área de triángulos</li><li>Base</li><li>Altura</li><li>Área</li><li>Perpendicular</li></ul></div>
         </div>
       </div>
     
@@ -2850,6 +2874,24 @@ header.packet h1::after{
       </p>
       <div class="vocab-container">
         
+            <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+              <div class="vocab-card-inner">
+                <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/triangle.svg" alt="Illustration of Area of Triangles: The space inside a triangle. Formula: A = 1/2bh, using the perpendicular height." loading="lazy" width="72" height="72" />
+                  </div>
+                  <h3>Area of Triangles</h3>
+                  <p class="vocab-es" lang="es">Área de triángulos</p>
+                  <div class="vocab-visual-hint">💡 A = 1/2bh; if b = 8 and h = 5, A = 20 square units.</div>
+                  <div class="flip-prompt"><span class="lang-en">Tap</span><span class="lang-es" lang="es">Toca ➔</span></div>
+                </div>
+                <div class="vocab-card-back">
+                  <p class="vocab-def">The space inside a triangle. Formula: A = 1/2bh, using the perpendicular height.</p>
+                  <p class="vocab-def-es" lang="es">El espacio dentro de un triángulo. Fórmula: A = 1/2bh, usando la altura perpendicular.</p>
+                  <p class="vocab-back-visual">📌 A = 1/2bh; if b = 8 and h = 5, A = 20 square units.</p>
+                </div>
+              </div>
+            </div>
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -3080,6 +3122,10 @@ header.packet h1::after{
       
     
       <h2 class="section-title">✅ <span class="lang-en">Quick check</span><span class="lang-es" lang="es">Repaso rápido</span></h2>
+      <p class="quick-check-time bilingual-block">
+        <span class="lang-en">⏱️ Plan on about <strong>15–20 minutes</strong> for the 6 problems below. The extra practice at the bottom is optional.</span>
+        <span class="lang-es" lang="es">⏱️ Calculen unos <strong>15–20 minutos</strong> para los 6 problemas de abajo. La práctica extra al final es opcional.</span>
+      </p>
       <p class="bilingual-block">
         <span class="lang-en">A few problems to practice together. Each one has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong>, and a <strong>space to show your work</strong>. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
         <span class="lang-es" lang="es">Unos problemas para practicar juntos. Cada uno tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para mostrar el trabajo</strong>. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
@@ -3104,12 +3150,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_0" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 1</div>
-        <div class="problem-type-badge">DRAG SORT</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">On your blueprint, sort each segment of the triangular sign into the correct column: the perpendicular height you use in the formula, or a side you do NOT use as the height.</p>
+        <p class="problem-stem"><span class="lang-en">On your blueprint, sort each segment of the triangular sign into the correct column: the perpendicular height you use in the formula, or a side you do NOT use as the height.</span><span class="lang-es" lang="es">En tu plano, clasifica cada segmento del letrero triangular en la columna correcta: la altura perpendicular que usas en la fórmula, o un lado que NO se usa como altura.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
         
         <div class="drag-sort-workspace" id="dragsort_0">
@@ -3231,12 +3277,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_1" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 2</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"First area = ½ × 12 × 6 = 36 sq ft. Then 36 = ½ × 9 × h → 36 = 4.5h → h = 8 ft.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Two triangles have the same area. One has a base of 12 ft and a height of 6 ft. The other has a base of 9 ft. What is the height of the second triangle?</p>
+        <p class="problem-stem"><span class="lang-en">Two triangles have the same area. One has a base of 12 ft and a height of 6 ft. The other has a base of 9 ft. What is the height of the second triangle?</span><span class="lang-es" lang="es">Dos triángulos tienen la misma área. Uno tiene una base de 12 pies y una altura de 6 pies. El otro tiene una base de 9 pies. ¿Cuál es la altura del segundo triángulo?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="First area = ½ × 12 × 6 = 36 sq ft. Then 36 = ½ × 9 × h → 36 = 4.5h → h = 8 ft.">
           
@@ -3303,12 +3349,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_2" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 3</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Picture cutting a rectangle along its diagonal — each piece is a triangle.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Which formula gives the area of a triangle with base b and height h?</p>
+        <p class="problem-stem"><span class="lang-en">Which formula gives the area of a triangle with base b and height h?</span><span class="lang-es" lang="es">¿Cuál fórmula da el área de un triángulo con base b y altura h?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="A triangle covers exactly half of a rectangle with the same base and height, so A = ½ × b × h.">
           
@@ -3391,12 +3437,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_3" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 1</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The logo has two parts: a rectangle (8 cm by 6 cm) and a triangle on top (base 8 cm, height 5 cm).","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A composite logo is made of a rectangle (8 cm by 6 cm) with a triangle on top. The triangle has a base of 8 cm and a height of 5 cm. What is the total area of the logo?</p>
+        <p class="problem-stem"><span class="lang-en">A composite logo is made of a rectangle (8 cm by 6 cm) with a triangle on top. The triangle has a base of 8 cm and a height of 5 cm. What is the total area of the logo?</span><span class="lang-es" lang="es">Un logotipo compuesto está formado por un rectángulo (8 cm por 6 cm) con un triángulo encima. El triángulo tiene una base de 8 cm y una altura de 5 cm. ¿Cuál es el área total del logotipo?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="Rectangle: 8 × 6 = 48 sq cm. Triangle: ½ × 8 × 5 = 20 sq cm. Total: 48 + 20 = 68 sq cm.">
           
@@ -3463,12 +3509,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_4" data-problem-type="open-response">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 2</div>
-        <div class="problem-type-badge">OPEN RESPONSE</div>
+        <div class="problem-type-badge"><span class="lang-en">OPEN RESPONSE</span><span class="lang-es" lang="es">RESPUESTA ABIERTA</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Start with the rectangle: its area comes from 12 × 8. The diagonal splits it into two identical triangles.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A rectangle is 12 ft by 8 ft. A diagonal line cuts it into two triangles. What is the area of each triangle? Explain how the triangle area formula relates to the rectangle area formula.</p>
+        <p class="problem-stem"><span class="lang-en">A rectangle is 12 ft by 8 ft. A diagonal line cuts it into two triangles. What is the area of each triangle? Explain how the triangle area formula relates to the rectangle area formula.</span><span class="lang-es" lang="es">Un rectángulo mide 12 pies por 8 pies. Una línea diagonal lo corta en dos triángulos. ¿Cuál es el área de cada triángulo? Explica cómo se relaciona la fórmula del área del triángulo con la del rectángulo.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 A complete sentence with math vocabulary is the goal — not a perfect paragraph.</span><span class="lang-es" lang="es">👪 Una oración completa con vocabulario matemático es la meta — no un párrafo perfecto.</span></p>
         
         
@@ -3535,12 +3581,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_5" data-problem-type="open-response">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 3</div>
-        <div class="problem-type-badge">OPEN RESPONSE</div>
+        <div class="problem-type-badge"><span class="lang-en">OPEN RESPONSE</span><span class="lang-es" lang="es">RESPUESTA ABIERTA</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Two things to find: the first gable&#39;s area from base 18 and height 9, then the second gable&#39;s height.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">An architect designs a triangular roof gable with a base of 18 ft and a height of 9 ft. A second gable has the same area but a base of 27 ft. Find the area of the first gable, then determine the height of the second gable. Show all your work.</p>
+        <p class="problem-stem"><span class="lang-en">An architect designs a triangular roof gable with a base of 18 ft and a height of 9 ft. A second gable has the same area but a base of 27 ft. Find the area of the first gable, then determine the height of the second gable. Show all your work.</span><span class="lang-es" lang="es">Un arquitecto diseña un frontón triangular de techo con una base de 18 pies y una altura de 9 pies. Un segundo frontón tiene la misma área pero una base de 27 pies. Encuentra el área del primer frontón y después determina la altura del segundo. Muestra todo tu trabajo.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 A complete sentence with math vocabulary is the goal — not a perfect paragraph.</span><span class="lang-es" lang="es">👪 Una oración completa con vocabulario matemático es la meta — no un párrafo perfecto.</span></p>
         
         
@@ -3618,12 +3664,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_6" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 1</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Use the perpendicular height (7 in), not a slanted side. A = ½ × 12 × 7 = ½ × 84 = 42 square inches.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A triangle flag has base 12 in and height 7 in (the slanted sides are 10 in). Find its area.</p>
+        <p class="problem-stem"><span class="lang-en">A triangle flag has base 12 in and height 7 in (the slanted sides are 10 in). Find its area.</span><span class="lang-es" lang="es">Una bandera triangular tiene una base de 12 pulgadas y una altura de 7 pulgadas (los lados inclinados miden 10 pulgadas). Encuentra su área.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="Use the perpendicular height (7 in), not a slanted side. A = ½ × 12 × 7 = ½ × 84 = 42 square inches.">
           
@@ -3690,12 +3736,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_7" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 2</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"A triangle with base 10 cm and height 6 cm — remember a triangle is half of a matching rectangle.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">What is the area of a triangle with base 10 cm and height 6 cm?</p>
+        <p class="problem-stem"><span class="lang-en">What is the area of a triangle with base 10 cm and height 6 cm?</span><span class="lang-es" lang="es">¿Cuál es el área de un triángulo con base de 10 cm y altura de 6 cm?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="A = ½ × b × h = ½ × 10 × 6 = 30 square centimeters.">
           
@@ -3762,12 +3808,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_8" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 3</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The area (24 sq ft) and base (8 ft) are known — the height is the mystery number.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A triangle has an area of 24 sq ft and a base of 8 ft. What is the height?</p>
+        <p class="problem-stem"><span class="lang-en">A triangle has an area of 24 sq ft and a base of 8 ft. What is the height?</span><span class="lang-es" lang="es">Un triángulo tiene un área de 24 pies cuadrados y una base de 8 pies. ¿Cuál es la altura?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="24 = ½ × 8 × h → 24 = 4h → h = 6 ft.">
           
@@ -3834,12 +3880,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_9" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 4</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Base 14 ft, height 6 ft — and the shape is a triangle, not a rectangle.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">What is the area of a triangle with base 14 ft and height 6 ft?</p>
+        <p class="problem-stem"><span class="lang-en">What is the area of a triangle with base 14 ft and height 6 ft?</span><span class="lang-es" lang="es">¿Cuál es el área de un triángulo con base de 14 pies y altura de 6 pies?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="A = ½ × 14 × 6 = ½ × 84 = 42 sq ft.">
           
@@ -3906,12 +3952,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_10" data-problem-type="matching-game">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 5</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
+        <div class="problem-type-badge"><span class="lang-en">MATCHING GAME</span><span class="lang-es" lang="es">JUEGO DE PAREJAS</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Three cards are triangles and one is a rectangle — they don&#39;t share the same formula.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Match each shape to its area.</p>
+        <p class="problem-stem"><span class="lang-en">Match each shape to its area.</span><span class="lang-es" lang="es">Une cada figura con su área.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Say each term out loud, then talk through which match makes sense before choosing.</span><span class="lang-es" lang="es">👪 Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.</span></p>
         <div class="matching-pairs">
           
@@ -3982,12 +4028,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_11" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 6</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"A = ½ × 16 × 5 = ½ × 80 = 40 square meters.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">What is the area of a triangle with base 16 m and height 5 m?</p>
+        <p class="problem-stem"><span class="lang-en">What is the area of a triangle with base 16 m and height 5 m?</span><span class="lang-es" lang="es">¿Cuál es el área de un triángulo con base de 16 m y altura de 5 m?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="A = ½ × 16 × 5 = ½ × 80 = 40 square meters.">
           
@@ -4054,12 +4100,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_12" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 7</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"36 = ½ × b × 9 → 36 = 4.5b → b = 8 cm.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A triangle has an area of 36 sq cm and a height of 9 cm. What is its base?</p>
+        <p class="problem-stem"><span class="lang-en">A triangle has an area of 36 sq cm and a height of 9 cm. What is its base?</span><span class="lang-es" lang="es">Un triángulo tiene un área de 36 cm cuadrados y una altura de 9 cm. ¿Cuál es su base?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="36 = ½ × b × 9 → 36 = 4.5b → b = 8 cm.">
           
@@ -4126,12 +4172,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_13" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 8</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The pane&#39;s base is 9 in and its height is 4 in — triangle rules apply here.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A triangular window pane has a base of 9 in and a height of 4 in. What is its area?</p>
+        <p class="problem-stem"><span class="lang-en">A triangular window pane has a base of 9 in and a height of 4 in. What is its area?</span><span class="lang-es" lang="es">Un vidrio triangular de ventana tiene una base de 9 pulgadas y una altura de 4 pulgadas. ¿Cuál es su área?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="A = ½ × 9 × 4 = ½ × 36 = 18 square inches.">
           
@@ -4459,8 +4505,8 @@ header.packet h1::after{
 <script>
 window.LESSON_ID = "5-3-flagship";
 window.LESSON_TITLE = "Area of Triangles";
-window.__HW_VOCAB__ = [{"term":"Base","termEs":"Base","def":"A side of the triangle you use to find the area.","defEs":"Un lado del triángulo que usas para hallar el área.","example":"If the bottom of a triangle is 10 cm, then b = 10 cm in the formula A = ½ × b × h","img":"/assets/vocab-images/base.svg","imgAlt":"Illustration of Base: A side of the triangle you use to find the area."},{"term":"Height","termEs":"Altura","def":"The straight-up distance from the base to the top corner.","defEs":"La distancia recta desde la base hasta la esquina de arriba.","example":"A dashed vertical line from the top point straight down to the base at a 90° angle","img":"/assets/vocab-images/height.svg","imgAlt":"Illustration of Height: The straight-up distance from the base to the top corner."},{"term":"Area","termEs":"Área","def":"How much space is inside a flat shape.","defEs":"Cuánto espacio hay dentro de una figura plana.","example":"A triangle with b = 8 and h = 6 has area = ½ × 8 × 6 = 24 sq units","img":"/assets/vocab-images/area.svg","imgAlt":"Illustration of Area: How much space is inside a flat shape."},{"term":"Perpendicular","termEs":"Perpendicular","def":"Two lines that meet to make a square corner (90 degrees).","defEs":"Dos líneas que se unen formando una esquina recta (90 grados).","example":"The corner of a book or a door frame meets at exactly 90°","img":"/assets/vocab-images/triangle.svg","imgAlt":"Illustration of Perpendicular: Two lines that meet to make a square corner (90 degrees)."},{"term":"Composite figure","termEs":"Figura compuesta","def":"A shape made by putting two or more simple shapes together.","defEs":"Una figura formada al juntar dos o más figuras simples.","example":"A house shape = a rectangle (walls) + a triangle (roof)","img":"/assets/vocab-images/composite-figure.svg","imgAlt":"Illustration of Composite figure: A shape made by putting two or more simple shapes together."},{"term":"Formula","termEs":"Fórmula","def":"A math rule written with symbols.","defEs":"Una regla matemática escrita con símbolos.","example":"A = ½ × b × h means Area equals one-half times base times height","img":"/assets/vocab-images/expression.svg","imgAlt":"Illustration of Formula: A math rule written with symbols."}];
-window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Composite figure|Perpendicular|Formula|Height|Base|Area)(?:es|s)?\\b","lookup":{"base":0,"height":1,"area":2,"perpendicular":3,"composite figure":4,"formula":5}};
+window.__HW_VOCAB__ = [{"term":"Area of Triangles","termEs":"Área de triángulos","def":"The space inside a triangle. Formula: A = 1/2bh, using the perpendicular height.","defEs":"El espacio dentro de un triángulo. Fórmula: A = 1/2bh, usando la altura perpendicular.","example":"A = 1/2bh; if b = 8 and h = 5, A = 20 square units.","img":"/assets/vocab-images/triangle.svg","imgAlt":"Illustration of Area of Triangles: The space inside a triangle. Formula: A = 1/2bh, using the perpendicular height."},{"term":"Base","termEs":"Base","def":"A side of the triangle you use to find the area.","defEs":"Un lado del triángulo que usas para hallar el área.","example":"If the bottom of a triangle is 10 cm, then b = 10 cm in the formula A = ½ × b × h","img":"/assets/vocab-images/base.svg","imgAlt":"Illustration of Base: A side of the triangle you use to find the area."},{"term":"Height","termEs":"Altura","def":"The straight-up distance from the base to the top corner.","defEs":"La distancia recta desde la base hasta la esquina de arriba.","example":"A dashed vertical line from the top point straight down to the base at a 90° angle","img":"/assets/vocab-images/height.svg","imgAlt":"Illustration of Height: The straight-up distance from the base to the top corner."},{"term":"Area","termEs":"Área","def":"How much space is inside a flat shape.","defEs":"Cuánto espacio hay dentro de una figura plana.","example":"A triangle with b = 8 and h = 6 has area = ½ × 8 × 6 = 24 sq units","img":"/assets/vocab-images/area.svg","imgAlt":"Illustration of Area: How much space is inside a flat shape."},{"term":"Perpendicular","termEs":"Perpendicular","def":"Two lines that meet to make a square corner (90 degrees).","defEs":"Dos líneas que se unen formando una esquina recta (90 grados).","example":"The corner of a book or a door frame meets at exactly 90°","img":"/assets/vocab-images/triangle.svg","imgAlt":"Illustration of Perpendicular: Two lines that meet to make a square corner (90 degrees)."},{"term":"Composite figure","termEs":"Figura compuesta","def":"A shape made by putting two or more simple shapes together.","defEs":"Una figura formada al juntar dos o más figuras simples.","example":"A house shape = a rectangle (walls) + a triangle (roof)","img":"/assets/vocab-images/composite-figure.svg","imgAlt":"Illustration of Composite figure: A shape made by putting two or more simple shapes together."},{"term":"Formula","termEs":"Fórmula","def":"A math rule written with symbols.","defEs":"Una regla matemática escrita con símbolos.","example":"A = ½ × b × h means Area equals one-half times base times height","img":"/assets/vocab-images/expression.svg","imgAlt":"Illustration of Formula: A math rule written with symbols."}];
+window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Area of Triangles|Composite figure|Perpendicular|Formula|Height|Base|Area)(?:es|s)?\\b","lookup":{"area of triangle":0,"base":1,"height":2,"area":3,"perpendicular":4,"composite figure":5,"formula":6}};
 
 function syncHomeworkChromeHeights() {
   const status = document.querySelector('.bottom-status-bar');
@@ -4594,7 +4640,33 @@ function saveParentSignoff() {
   try {
     localStorage.setItem('hw_parent_signoff_' + lessonId, JSON.stringify(payload));
   } catch(e) {}
-  
+
+  /* localStorage stays the source of truth for what this page displays, but a
+     sign-off the teacher never sees is not a sign-off. Fire-and-forget POST:
+     the endpoint always answers 204, and any failure here is swallowed so a
+     family on a bad connection still gets their confirmation. */
+  try {
+    var signoffBody = JSON.stringify({
+      lessonId: lessonId,
+      lessonTitle: lessonTitle,
+      parentName: nameVal,
+      note: noteVal,
+      date: signoffDate,
+      studentName: (window.NeftSaveResume && window.NeftSaveResume.studentName) || '',
+      section: (window.NeftSaveResume && window.NeftSaveResume.section) || ''
+    });
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('/api/progress/family-signoff', new Blob([signoffBody], { type: 'application/json' }));
+    } else {
+      fetch('/api/progress/family-signoff', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: signoffBody,
+        keepalive: true
+      }).catch(function() {});
+    }
+  } catch(e) {}
+
   updateSignoffUI(payload);
 }
 
@@ -5531,6 +5603,15 @@ function playCheckSound(isCorrect) {
   }
 }
 
+/* Feedback text is built in JS, so it cannot use the .lang-en/.lang-es span
+   pair the rest of the page toggles. Pick the language the family is actually
+   reading; fall back to English whenever no Spanish was authored. */
+function pickLangText(en, es) {
+  const esText = (es || "").trim();
+  if (esText && document.body.classList.contains("lang-mode-es")) return esText;
+  return en || "";
+}
+
 function checkProblem(idx, options) {
   const silent = options && options.silent;
   const section = document.getElementById("problem_" + idx);
@@ -5548,7 +5629,7 @@ function checkProblem(idx, options) {
       const container = section.querySelector(".mc-options");
       const selected = container.querySelector("input[type='radio']:checked");
       const correctIdx = container.dataset.correct;
-      const explanation = container.dataset.explanation;
+      const explanation = pickLangText(container.dataset.explanation, container.dataset.explanationEs);
       
       // Reset radio option styles
       const labels = container.querySelectorAll(".mc-option-label");
@@ -5776,7 +5857,7 @@ function checkProblem(idx, options) {
   if (!feedbackMessage) {
     if (type === "multiple-choice") {
       const container = section.querySelector(".mc-options");
-      const explanation = container?.dataset.explanation || "";
+      const explanation = pickLangText(container?.dataset.explanation, container?.dataset.explanationEs);
       if (isProblemCorrect) {
         feedbackMessage = explanation
           ? "Correct! " + explanation

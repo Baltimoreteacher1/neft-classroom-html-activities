@@ -150,7 +150,7 @@
       document.body.appendChild(a);
       a.click();
       a.remove();
-    } catch (e) {
+    } catch (_e) {
       /* non-fatal */
     }
   }
@@ -160,7 +160,7 @@
       var prev = JSON.parse(localStorage.getItem(LOG_KEY) || "[]");
       if (!Array.isArray(prev)) prev = [];
       localStorage.setItem(LOG_KEY, JSON.stringify(prev.concat(rows)));
-    } catch (e) {
+    } catch (_e) {
       /* quota / disabled — non-fatal */
     }
   }
@@ -175,11 +175,7 @@
       var rows = buildRows(opts);
       if (opts.log !== false) appendLog(rows);
       if (opts.download !== false) {
-        var safe = (
-          (opts.assessment || "results") +
-          "-" +
-          (opts.student || "student")
-        )
+        var safe = ((opts.assessment || "results") + "-" + (opts.student || "student"))
           .replace(/[^a-z0-9]+/gi, "-")
           .replace(/^-+|-+$/g, "");
         download(safe + ".csv", rowsToCSV(rows, true));
@@ -192,7 +188,7 @@
       try {
         var v = JSON.parse(localStorage.getItem(LOG_KEY) || "[]");
         return Array.isArray(v) ? v : [];
-      } catch (e) {
+      } catch (_e) {
         return [];
       }
     },
@@ -208,7 +204,7 @@
     clearLog: function () {
       try {
         localStorage.removeItem(LOG_KEY);
-      } catch (e) {}
+      } catch (_e) {}
     },
 
     // Exposed for testing.
@@ -216,13 +212,6 @@
     _rowsToCSV: rowsToCSV,
   };
 
-  if (typeof module !== "undefined" && module.exports)
-    module.exports = NTResults;
+  if (typeof module !== "undefined" && module.exports) module.exports = NTResults;
   if (global) global.NTResults = NTResults;
-})(
-  typeof window !== "undefined"
-    ? window
-    : typeof globalThis !== "undefined"
-      ? globalThis
-      : this,
-);
+})(typeof window !== "undefined" ? window : typeof globalThis !== "undefined" ? globalThis : this);

@@ -119,13 +119,15 @@
       ghost.style.zIndex = "9999";
       ghost.style.transition = "all 0.8s ease-out";
       document.body.appendChild(ghost);
-      
+
       requestAnimationFrame(function () {
         ghost.style.transform = "scale(1.2) translateY(-25px)";
         ghost.style.opacity = "0";
       });
 
-      setTimeout(function () { ghost.remove(); }, 850);
+      setTimeout(function () {
+        ghost.remove();
+      }, 850);
     } catch (_e) {}
   }
 
@@ -197,14 +199,22 @@
         var val = data ? data[i] : 0;
         var barH = (val / 255) * h * 0.85 + 2; // scale and add baseline height
         var x = i * barW + 1;
+        var y = h - barH;
+
+        ctx2d.fillRect(x, y, barW - 2, barH);
+      }
+    }
+    draw();
+  }
+
   var loFiPlaying = false;
   var loFiAudioCtx = null;
   var loFiTimer = null;
   var LOFI_CHORDS = [
-    [261.63, 329.63, 392.00, 493.88],
-    [220.00, 261.63, 329.63, 392.00],
-    [293.66, 349.23, 440.00, 523.25],
-    [196.00, 246.94, 293.66, 349.23]
+    [261.63, 329.63, 392.0, 493.88],
+    [220.0, 261.63, 329.63, 392.0],
+    [293.66, 349.23, 440.0, 523.25],
+    [196.0, 246.94, 293.66, 349.23],
   ];
 
   function toggleLoFiFocusMusic() {
@@ -212,14 +222,15 @@
       if (loFiPlaying) {
         loFiPlaying = false;
         if (loFiTimer) clearInterval(loFiTimer);
-        if (window.NeftCalm && window.NeftCalm.encourage) window.NeftCalm.encourage("🎵 Lo-Fi Focus Music Paused");
+        if (window.NeftCalm && window.NeftCalm.encourage)
+          window.NeftCalm.encourage("🎵 Lo-Fi Focus Music Paused");
         return false;
       }
       loFiPlaying = true;
       var AudioContext = window.AudioContext || window.webkitAudioContext;
       if (!loFiAudioCtx) loFiAudioCtx = new AudioContext();
       if (loFiAudioCtx.state === "suspended") loFiAudioCtx.resume();
-      
+
       var chordIdx = 0;
       function playChord() {
         if (!loFiPlaying) return;
@@ -240,7 +251,8 @@
       }
       playChord();
       loFiTimer = setInterval(playChord, 4000);
-      if (window.NeftCalm && window.NeftCalm.encourage) window.NeftCalm.encourage("🎵 Lo-Fi Focus Music Active (Calm Beats)");
+      if (window.NeftCalm && window.NeftCalm.encourage)
+        window.NeftCalm.encourage("🎵 Lo-Fi Focus Music Active (Calm Beats)");
       return true;
     } catch (_e) {
       return false;
@@ -1292,7 +1304,9 @@
     var isShow = el.classList.toggle("show");
     if (isShow) {
       var xp = 450;
-      try { xp = (parseInt(localStorage.getItem("nt-passport-xp")) || 0) + 450; } catch (_e) {}
+      try {
+        xp = (parseInt(localStorage.getItem("nt-passport-xp")) || 0) + 450;
+      } catch (_e) {}
       el.innerHTML = `
         <div class="passport-card">
           <div class="passport-header">
@@ -1372,12 +1386,12 @@
   };
 
   var scratchColor = "#38bdf8";
-  window.setScratchColor = function(c, btn) {
+  window.setScratchColor = function (c, btn) {
     scratchColor = c;
-    document.querySelectorAll(".scratch-swatch").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".scratch-swatch").forEach((b) => b.classList.remove("active"));
     if (btn) btn.classList.add("active");
   };
-  window.clearScratchCanvas = function() {
+  window.clearScratchCanvas = function () {
     var cv = document.getElementById("scratch-canvas-el");
     if (cv) {
       var ctx = cv.getContext("2d");
@@ -1411,7 +1425,9 @@
       ctx.lineTo(p.x, p.y);
       ctx.stroke();
     }
-    function stop() { drawing = false; }
+    function stop() {
+      drawing = false;
+    }
 
     cv.addEventListener("pointerdown", start);
     cv.addEventListener("pointermove", move);
@@ -1703,7 +1719,10 @@
               updateComboHUD(comboStreak);
               consecutiveMisses = 0;
               if (window.WonderPass && window.WonderPass.addStars) {
-                window.WonderPass.addStars(1, location.pathname.split("/").filter(Boolean).pop() || "game");
+                window.WonderPass.addStars(
+                  1,
+                  location.pathname.split("/").filter(Boolean).pop() || "game",
+                );
               }
             } else if (isIncorrect) {
               AudioSynth.playError();
@@ -1717,9 +1736,10 @@
               consecutiveMisses++;
               var tip = extractTeachText(t);
               if (consecutiveMisses >= 2) {
-                var adaptTip = lang === "es" 
-                  ? "💡 Consejo Adaptativo: ¡Descompón en pasos más pequeños o activa el soporte visual!" 
-                  : "💡 Adaptive Hint: Try breaking into smaller steps or use visual models!";
+                var adaptTip =
+                  coachLang() === "es"
+                    ? "💡 Consejo Adaptativo: ¡Descompón en pasos más pequeños o activa el soporte visual!"
+                    : "💡 Adaptive Hint: Try breaking into smaller steps or use visual models!";
                 showCoachToast("tip", adaptTip);
               } else {
                 showCoachToast("tip", tip ? coachT("wrongHint") + tip : coachT("wrong"));
@@ -1752,6 +1772,8 @@
           layer.style.transform = "";
         });
       });
+    } catch (_e) {}
+
     window.GameFX = window.GameFX || {};
     window.GameFX.toggleLoFi = toggleLoFiFocusMusic;
 
@@ -1771,4 +1793,3 @@
     });
   });
 })();
-

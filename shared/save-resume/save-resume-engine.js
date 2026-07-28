@@ -600,65 +600,6 @@
     );
   }
 
-  // Graph / table / histogram & explicit value markers when detectable.
-  function captureData() {
-    var data = {};
-    // Author-marked values: <el data-nsr-value="..."> or data-value containers.
-    data.marked = safe(
-      function () {
-        var out = {};
-        [].forEach.call(document.querySelectorAll("[data-nsr-value]"), function (n) {
-          out[elementKey(n)] = n.getAttribute("data-nsr-value");
-        });
-        return out;
-      },
-      "capture-marked",
-      {},
-    );
-    // Progress / score markers when present.
-    data.scores = safe(
-      function () {
-        var out = {};
-        [].forEach.call(
-          document.querySelectorAll(
-            "[data-score], [data-progress], [data-nsr-score], [data-nsr-progress]",
-          ),
-          function (n) {
-            out[elementKey(n)] = {
-              score: n.getAttribute("data-score") || n.getAttribute("data-nsr-score"),
-              progress: n.getAttribute("data-progress") || n.getAttribute("data-nsr-progress"),
-              text: (n.textContent || "").trim().slice(0, 120),
-            };
-          },
-        );
-        return out;
-      },
-      "capture-scores",
-      {},
-    );
-    // Hints used markers when present.
-    data.hints = safe(
-      function () {
-        var used = [];
-        [].forEach.call(
-          document.querySelectorAll("[data-nsr-hint], .hint.used, .hint-used"),
-          function (n) {
-            if (
-              n.getAttribute("data-nsr-hint") === "used" ||
-              n.classList.contains("used") ||
-              n.classList.contains("hint-used")
-            )
-              used.push(elementKey(n));
-          },
-        );
-        return used;
-      },
-      "capture-hints",
-      [],
-    );
-    return data;
-  }
-
   /* ---------------------------------------------------------------------------
    * State restore
    * ------------------------------------------------------------------------ */
@@ -779,8 +720,22 @@
       if (typeof fn === "function") this._restorers.push(fn);
     },
     getLmsGradePayload: function () {
-      var summary = safe(function() { return Engine.getTeacherSummary(); }, "getTeacherSummary", {}) || {};
-      var wonder = safe(function() { return window.WonderPass ? window.WonderPass.getProfile() : {}; }, "wonderpass", {}) || {};
+      var summary =
+        safe(
+          function () {
+            return Engine.getTeacherSummary();
+          },
+          "getTeacherSummary",
+          {},
+        ) || {};
+      var wonder =
+        safe(
+          function () {
+            return window.WonderPass ? window.WonderPass.getProfile() : {};
+          },
+          "wonderpass",
+          {},
+        ) || {};
       return {
         timestamp: now(),
         activityId: this.cfg ? this.cfg.activityId : "game",
@@ -788,7 +743,7 @@
         stars: wonder.stars || 0,
         title: wonder.title || "Math Adventurer",
         summary: summary,
-        scormScaledScore: Math.min(1.0, (wonder.stars || 0) / 50.0)
+        scormScaledScore: Math.min(1.0, (wonder.stars || 0) / 50.0),
       };
     },
     initPeerRelay: function () {
@@ -804,59 +759,94 @@
         window.EWLPeerRelay = {
           shareStars: function (count) {
             channel.postMessage({ type: "TEAM_STARS", stars: count, sender: location.href });
-          }
+          },
         };
       } catch (_e) {}
     },
     generateCertificateSVG: function () {
-      var wonder = safe(function() { return window.WonderPass ? window.WonderPass.getProfile() : {}; }, "wonderpass", {}) || {};
+      var wonder =
+        safe(
+          function () {
+            return window.WonderPass ? window.WonderPass.getProfile() : {};
+          },
+          "wonderpass",
+          {},
+        ) || {};
       var name = (this.record ? this.record.name : "Math Scholar") || "Math Scholar";
       var stars = wonder.stars || 12;
       var title = wonder.title || "Math Mastermind";
       var dateStr = new Date().toLocaleDateString();
 
-      return '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600" style="background:white; font-family:\'Nunito\', sans-serif;">' +
+      return (
+        '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600" style="background:white; font-family:\'Nunito\', sans-serif;">' +
         '<rect x="20" y="20" width="760" height="560" rx="16" fill="#f8fafc" stroke="#15487f" stroke-width="8"/>' +
         '<rect x="35" y="35" width="730" height="530" rx="12" fill="none" stroke="#256b5b" stroke-width="2" stroke-dasharray="8 4"/>' +
         '<text x="400" y="110" font-size="32" font-weight="900" fill="#15487f" text-anchor="middle">OFFICIAL PROOF OF MASTERY</text>' +
         '<text x="400" y="145" font-size="16" font-weight="700" fill="#56627a" text-anchor="middle">EduWonderLab Curriculum Games Achievement</text>' +
         '<text x="400" y="230" font-size="20" fill="#14223a" text-anchor="middle">This certifies that</text>' +
-        '<text x="400" y="280" font-size="36" font-weight="900" fill="#205fa6" text-anchor="middle">' + name + '</text>' +
-        '<text x="400" y="330" font-size="22" font-weight="800" fill="#256b5b" text-anchor="middle">has earned ' + stars + ' Stars &amp; achieved rank of ' + title + '</text>' +
-        '<text x="400" y="420" font-size="16" fill="#56627a" text-anchor="middle">Verified Grade 6 Math Core Standards Proficiency • ' + dateStr + '</text>' +
+        '<text x="400" y="280" font-size="36" font-weight="900" fill="#205fa6" text-anchor="middle">' +
+        name +
+        "</text>" +
+        '<text x="400" y="330" font-size="22" font-weight="800" fill="#256b5b" text-anchor="middle">has earned ' +
+        stars +
+        " Stars &amp; achieved rank of " +
+        title +
+        "</text>" +
+        '<text x="400" y="420" font-size="16" fill="#56627a" text-anchor="middle">Verified Grade 6 Math Core Standards Proficiency • ' +
+        dateStr +
+        "</text>" +
         '<circle cx="400" y="490" r="40" fill="#256b5b"/>' +
         '<text x="400" y="498" font-size="24" fill="#ffffff" text-anchor="middle">🏆</text>' +
-        '</svg>';
+        "</svg>"
+      );
     },
     openCertificateModal: function () {
       try {
         var svgStr = this.generateCertificateSVG();
         var win = window.open("", "_blank");
         if (win) {
-          win.document.write('<!DOCTYPE html><html><head><title>Proof of Mastery Certificate</title></head><body style="margin:0; display:flex; justify-content:center; align-items:center; min-height:100vh; background:#0f172a;">' + svgStr + '</body></html>');
+          win.document.write(
+            '<!DOCTYPE html><html><head><title>Proof of Mastery Certificate</title></head><body style="margin:0; display:flex; justify-content:center; align-items:center; min-height:100vh; background:#0f172a;">' +
+              svgStr +
+              "</body></html>",
+          );
           win.document.close();
         }
       } catch (_e) {}
     },
     openFamilyCardModal: function () {
       try {
-        var wonder = safe(function() { return window.WonderPass ? window.WonderPass.getProfile() : {}; }, "wonderpass", {}) || {};
+        var wonder =
+          safe(
+            function () {
+              return window.WonderPass ? window.WonderPass.getProfile() : {};
+            },
+            "wonderpass",
+            {},
+          ) || {};
         var name = (this.record ? this.record.name : "Your Child") || "Your Child";
         var dateStr = new Date().toLocaleDateString();
 
-        var cardHtml = '<!DOCTYPE html><html><head><title>1-Minute Family Math Card</title></head><body style="margin:0; padding:20px; font-family:sans-serif; background:#0f172a; color:#fff; display:flex; justify-content:center; align-items:center; min-height:100vh;">' +
+        var cardHtml =
+          '<!DOCTYPE html><html><head><title>1-Minute Family Math Card</title></head><body style="margin:0; padding:20px; font-family:sans-serif; background:#0f172a; color:#fff; display:flex; justify-content:center; align-items:center; min-height:100vh;">' +
           '<div style="max-width:500px; background:#1e293b; border:2px solid #38bdf8; border-radius:16px; padding:24px; box-shadow:0 20px 40px rgba(0,0,0,0.5);">' +
           '<div style="text-align:center; font-size:12px; font-weight:800; color:#38bdf8; letter-spacing:0.1em; text-transform:uppercase;">📱 1-Minute Family Math Conversation Card</div>' +
-          '<h2 style="text-align:center; color:#f8fafc; margin:10px 0;">Ask ' + name + ' About Today\'s Math!</h2>' +
+          '<h2 style="text-align:center; color:#f8fafc; margin:10px 0;">Ask ' +
+          name +
+          " About Today's Math!</h2>" +
           '<div style="background:#0f172a; border-radius:12px; padding:16px; margin:16px 0; border:1px stroke rgba(255,255,255,0.1);">' +
           '<p style="font-size:15px; color:#cbd5e1; margin:0 0 10px;"><strong>💬 Question for Dinner or the Drive Home:</strong></p>' +
           '<p style="font-size:16px; color:#38bdf8; font-style:italic; margin:0;">"If we buy 3 items on sale for 25% off, how can we quickly estimate the final cost in our head?"</p>' +
-          '</div>' +
+          "</div>" +
           '<div style="display:flex; justify-content:space-between; align-items:center; font-size:13px; color:#94a3b8;">' +
-          '<span>⭐ Stars Earned: ' + (wonder.stars || 0) + '</span>' +
-          '<span>📅 ' + dateStr + '</span>' +
-          '</div>' +
-          '</div></body></html>';
+          "<span>⭐ Stars Earned: " +
+          (wonder.stars || 0) +
+          "</span>" +
+          "<span>📅 " +
+          dateStr +
+          "</span>" +
+          "</div>" +
+          "</div></body></html>";
 
         var win = window.open("", "_blank");
         if (win) {
@@ -1054,12 +1044,18 @@
       updatePanelFields(this);
     },
 
+    // NOTE: there is deliberately no `data:` key here. A former captureData()
+    // swept the whole document for [data-nsr-value] / [data-score] / hint
+    // markers on every autosave, but _restoreState never read the result, so it
+    // cost three full-document queries per save and shipped dead bytes in every
+    // record. Activity-specific state belongs in `custom` via registerProvider/
+    // registerRestorer, which round-trips properly. Don't re-add a capture
+    // without a matching restore.
     _captureState: function () {
       var state = {
         fields: captureFields(),
         navigation: captureNavigation(),
         dragDrop: captureDragDrop(),
-        data: captureData(),
         custom: {},
       };
       var _self = this;

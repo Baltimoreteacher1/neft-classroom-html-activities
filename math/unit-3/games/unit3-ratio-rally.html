@@ -293,7 +293,7 @@
       function generateQuestions(difficulty) {
         const qs = [];
         for (let i = 0; i < 18; i++) {
-          const type = randInt(0, 4);
+          const type = randInt(0, 5);
           let q, answer, choices, prompt;
 
           if (type === 0) {
@@ -349,11 +349,9 @@
               `$${Math.max(1, rate - 1)}`,
               `$${items}`,
             ];
-          } else {
+          } else if (type === 4) {
             const a = randInt(2, 8);
             let b = randInt(2, 8);
-            // a !== b keeps the "a*mult" distractor distinct from the answer
-            // (b*mult); when a === b they coincide and the item loses a choice.
             while (b === a) b = randInt(2, 8);
             const mult = randInt(2, 5);
             prompt = `${a}/${b} = ${a * mult}/?`;
@@ -363,6 +361,18 @@
               String(b * mult + 2),
               String(a * mult),
               String(b * mult - 1),
+            ];
+          } else {
+            const pct = choice([10, 20, 25, 50, 75]);
+            const total = choice([40, 60, 80, 100, 120, 200]);
+            const part = (pct / 100) * total;
+            prompt = `What is ${pct}% of ${total}?`;
+            answer = String(part);
+            choices = [
+              answer,
+              String(part + 5),
+              String(Math.max(1, part - 5)),
+              String((total * pct) / 10),
             ];
           }
 

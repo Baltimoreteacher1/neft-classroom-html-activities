@@ -186,6 +186,13 @@
   ],
   "vocabulary": [
     {
+      "term": "Divide Multi-Digit Numbers",
+      "termEs": "Dividir números de varias cifras",
+      "definition": "Separate a multi-digit number into equal groups to find a quotient.",
+      "definitionEs": "Separar un número de varias cifras en grupos iguales para hallar un cociente.",
+      "visual": "1,344 ÷ 12 = 112"
+    },
+    {
       "term": "Dividend",
       "termEs": "Dividendo",
       "definition": "The number you are splitting up in a division problem.",
@@ -228,6 +235,14 @@
           "why": "20 divides evenly by 5, so there is no remainder."
         }
       ]
+    },
+    {
+      "term": "Partial quotients",
+      "termEs": "Cocientes parciales",
+      "definition": "A way to divide by breaking the problem into smaller, easier steps.",
+      "definitionEs": "Una manera de dividir separando el problema en pasos más fáciles.",
+      "visual": "1,344 ÷ 12: first 12 × 100 = 1,200, then 12 × 12 = 144. Quotient = 100 + 12 = 112",
+      "cloze": "Breaking division into easier chunks and adding the pieces uses ___."
     }
   ],
   "launch": {
@@ -378,14 +393,16 @@
         "choiceFeedback": [
           "",
           "Re-read the problem carefully and try again.",
-          "",
-          ""
+          "14 × 166 = 2,324, which is more items than the warehouse actually has. Check the tens digit of your quotient.",
+          "14 × 155 = 2,170, which leaves 14 items with no box. Multiply back to test whether your quotient uses up every item."
         ],
         "hints": [
           "The question asks how many groups of 14 fit into 2,184 — that phrase 'how many boxes' signals division.",
           "Estimate to anchor yourself: 14 × 150 = 2,100 is close to 2,184. Then use partial quotients to finish.",
           "Take out 14 × 150 = 2,100 and subtract: 2,184 − 2,100 = 84. How many 14s make 84? Add that count to 150."
-        ]
+        ],
+        "stemEs": "Un almacén tiene 2,184 artículos para empacar en cajas de 14. ¿Cuántas cajas se necesitan?",
+        "explanationEs": "2,184 ÷ 14 = 156. Comprueba: 14 × 156 = 14 × 150 + 14 × 6 = 2,100 + 84 = 2,184."
       },
       {
         "type": "error-analysis",
@@ -417,7 +434,10 @@
         "hints": [
           "Look at Step 3: only 98 remained after Step 2. Can you really subtract 112 from 98? A negative remainder means the chunk you picked is too big.",
           "Try the largest chunk that still fits: 14 × 7 = 98 leaves 98 − 98 = 0. So the quotient is 147 with no remainder, and 14 × 147 = 2,058."
-        ]
+        ],
+        "titleEs": "Encuentra el error en 2,058 ÷ 14",
+        "explanation": "Step 3 is where it breaks: only 98 remained, but the student subtracted 14 × 8 = 112, which is more than what was left, so the leftover came out as −14. The largest chunk that still fits is 14 × 7 = 98, which leaves 0, so the quotient is 100 + 40 + 7 = 147 and 14 × 147 = 2,058 checks out.",
+        "explanationEs": "El Paso 3 es donde falla: solo quedaban 98, pero el estudiante restó 14 × 8 = 112, que es más de lo que había, así que el sobrante salió −14. El trozo más grande que sí cabe es 14 × 7 = 98, que deja 0, así que el cociente es 100 + 40 + 7 = 147 y 14 × 147 = 2,058 lo comprueba."
       },
       {
         "type": "error-analysis",
@@ -453,7 +473,10 @@
         "hints": [
           "After Step 4, Sonia has 16 remaining. Is she really done dividing?",
           "16 ÷ 16 = 1. She stopped too early — she needs to add that last partial quotient."
-        ]
+        ],
+        "titleEs": "Encuentra el error de Sonia",
+        "explanation": "Sonia's chunks are fine, but her final answer stops too soon: after Step 4 she still has 16 left, and 16 ÷ 16 = 1, so one more partial quotient belongs in the sum. Adding it gives 90 + 5 + 1 = 96, and 16 × 96 = 1,536 rebuilds the dividend.",
+        "explanationEs": "Los trozos de Sonia están bien, pero su respuesta final se detiene demasiado pronto: después del Paso 4 todavía le quedan 16, y 16 ÷ 16 = 1, así que falta un cociente parcial en la suma. Al agregarlo se obtiene 90 + 5 + 1 = 96, y 16 × 96 = 1,536 reconstruye el dividendo."
       },
       {
         "type": "open-response",
@@ -473,7 +496,9 @@
           "Re-read the sentence frame: it wants partial quotients — big friendly chunks of 14 subtracted one step at a time.",
           "Start with a large chunk like 14 × 200, subtract it, then keep taking smaller chunks until nothing is left.",
           "First chunk: 14 × 200 = 2,800. Subtract: 3,360 − 2,800 = 560. Now find how many 14s fit in 560 and add all your chunk sizes."
-        ]
+        ],
+        "explanation": "Splitting 3,360 into chunks of 14 gives 14 × 200 = 2,800 with 560 left, and 14 × 40 = 560 finishes it, so the partial quotients add to 200 + 40 = 240 ration packs per pod. Multiplying back, 14 × 240 = 3,360, proves every pack was loaded and none were left over.",
+        "explanationEs": "Al separar 3,360 en trozos de 14 obtienes 14 × 200 = 2,800 y quedan 560, y 14 × 40 = 560 lo termina, así que los cocientes parciales suman 200 + 40 = 240 paquetes de raciones por cápsula. Al multiplicar de regreso, 14 × 240 = 3,360, se comprueba que todos los paquetes se cargaron y no sobró ninguno."
       }
     ],
     "extending": [
@@ -491,8 +516,20 @@
         "choiceFeedback": [
           "",
           "Re-read the problem carefully and try again.",
-          "",
-          ""
+          "The digits look familiar, but the place value is off: 12 × 480 = 5,760. Check where each digit of your quotient lands.",
+          "12 × 380 = 4,560, which misses 4,896. Recheck the very first step: how many 12s fit into 48?"
+        ],
+        "stemEs": "¿Cuánto es 4,896 ÷ 12?",
+        "explanationEs": "12 × 408 = 4,896.",
+        "hints": [
+          "Division asks how many groups of 12 fit inside 4,896, so the answer should be in the hundreds, not the tens.",
+          "Work through the long division one place value at a time, and remember to write a 0 in the quotient whenever the divisor does not fit.",
+          "Start with 48 ÷ 12 = 4, so the hundreds digit is 4. Now bring down the 9 — how many 12s fit into 9? Decide that digit and keep going."
+        ],
+        "hintsEs": [
+          "La división pregunta cuántos grupos de 12 caben dentro de 4,896, así que la respuesta debe estar en las centenas, no en las decenas.",
+          "Haz la división larga un valor posicional a la vez, y recuerda escribir un 0 en el cociente cuando el divisor no quepa.",
+          "Empieza con 48 ÷ 12 = 4, así que el dígito de las centenas es 4. Ahora baja el 9: ¿cuántos 12 caben en 9? Decide ese dígito y continúa."
         ]
       },
       {
@@ -515,8 +552,20 @@
         "choiceFeedback": [
           "",
           "Re-read the problem carefully and try again.",
-          "",
-          ""
+          "That is ten times too large: 25 × 2,890 = 72,250. Count the place values in your quotient.",
+          "25 × 389 = 9,725, which overshoots 7,225. Recheck the tens digit after you take out the first 200 groups of 25."
+        ],
+        "stemEs": "¿Cuánto es 7,225 ÷ 25?",
+        "explanationEs": "25 × 289 = 7,225.",
+        "hints": [
+          "Think in 25s: this asks how many groups of 25 make up 7,225, and that count will be in the hundreds.",
+          "Pull out friendly chunks instead of guessing — 25 × 100 = 2,500 is an easy piece to subtract.",
+          "Two hundred 25s make 5,000, and 7,225 − 5,000 = 2,225 is still left. Keep pulling 25s out of 2,225 to finish the count."
+        ],
+        "hintsEs": [
+          "Piensa en grupos de 25: esto pregunta cuántos grupos de 25 forman 7,225, y esa cantidad estará en las centenas.",
+          "Saca bloques fáciles en vez de adivinar: 25 × 100 = 2,500 es una parte sencilla de restar.",
+          "Doscientos grupos de 25 dan 5,000, y todavía quedan 7,225 − 5,000 = 2,225. Sigue sacando grupos de 25 de 2,225 para terminar el conteo."
         ]
       },
       {
@@ -533,8 +582,20 @@
         "choiceFeedback": [
           "",
           "Re-read the problem carefully and try again.",
-          "",
-          ""
+          "24 × 160 = 3,840, more pencils than the school ordered. Trim the tens digit and multiply back to test it.",
+          "24 × 144 = 3,456, which leaves 192 pencils with no box. Those still need boxes, so the quotient is not finished."
+        ],
+        "stemEs": "Una escuela pide 3,648 lápices empacados de 24 por caja. ¿Cuántas cajas hay?",
+        "explanationEs": "3,648 ÷ 24 = 152 cajas.",
+        "hints": [
+          "Every box holds the same number of pencils, so this is asking how many equal groups of 24 fit into 3,648.",
+          "Divide 3,648 by 24 by taking out easy chunks first, like 24 × 100.",
+          "24 × 100 = 2,400, and 3,648 − 2,400 = 1,248 pencils are still unboxed. How many more 24s fit into 1,248?"
+        ],
+        "hintsEs": [
+          "Cada caja tiene la misma cantidad de lápices, así que esto pregunta cuántos grupos iguales de 24 caben en 3,648.",
+          "Divide 3,648 entre 24 sacando primero bloques fáciles, como 24 × 100.",
+          "24 × 100 = 2,400, y quedan 3,648 − 2,400 = 1,248 lápices sin empacar. ¿Cuántos grupos de 24 más caben en 1,248?"
         ]
       },
       {
@@ -551,8 +612,20 @@
         "choiceFeedback": [
           "",
           "Re-read the problem carefully and try again.",
-          "",
-          ""
+          "31 × 174 = 5,394, which is past 5,084. Your estimate for the tens digit is one too high — multiply back to test it.",
+          "Your quotient is doing the right work, but check the leftover. Multiply the quotient by 31 and subtract from 5,084 to see whether anything actually remains."
+        ],
+        "stemEs": "¿Cuánto es 5,084 ÷ 31?",
+        "explanationEs": "31 × 164 = 5,084 exactamente, así que no hay residuo.",
+        "hints": [
+          "You are finding how many groups of 31 fit inside 5,084 — and whether anything is left over at the end.",
+          "Estimate first: 31 is close to 30, and 5,084 ÷ 30 is a little under 170. Then divide exactly.",
+          "31 × 100 = 3,100, so 5,084 − 3,100 = 1,984 is still left. Keep taking 31s out of 1,984 and watch whether anything remains."
+        ],
+        "hintsEs": [
+          "Estás buscando cuántos grupos de 31 caben dentro de 5,084, y si sobra algo al final.",
+          "Estima primero: 31 está cerca de 30, y 5,084 ÷ 30 es un poco menos de 170. Luego divide con exactitud.",
+          "31 × 100 = 3,100, así que todavía quedan 5,084 − 3,100 = 1,984. Sigue sacando grupos de 31 de 1,984 y observa si sobra algo."
         ]
       },
       {
@@ -569,8 +642,20 @@
         "choiceFeedback": [
           "",
           "Check your division steps—try a smaller or larger chunk first.",
-          "",
-          ""
+          "The digits are close, but 7 × 740 = 5,180. Check where the 0 belongs in the quotient — its position changes the value a lot.",
+          "A remainder can never be as large as the divisor. If your leftover is 7 or more, another whole group of 7 still fits, so keep dividing."
+        ],
+        "stemEs": "Camino 1: La primera puerta del arcade muestra 4,928 ÷ 7. ¿Cuál cociente ilumina el camino correcto?",
+        "explanationEs": "7 × 704 = 4,928 exactamente, así que el cociente es 704 sin residuo.",
+        "hints": [
+          "Behind the arcade story this is plain division: how many groups of 7 are inside 4,928?",
+          "Divide place by place, and write a 0 in the quotient at any spot where 7 does not fit.",
+          "49 ÷ 7 = 7, so the hundreds digit is 7. Next you look at 2 — does 7 fit into 2? Record that digit and keep going."
+        ],
+        "hintsEs": [
+          "Detrás de la historia del arcade esto es una división normal: ¿cuántos grupos de 7 hay dentro de 4,928?",
+          "Divide valor posicional por valor posicional, y escribe un 0 en el cociente en cualquier lugar donde el 7 no quepa.",
+          "49 ÷ 7 = 7, así que el dígito de las centenas es 7. Después miras el 2: ¿cabe el 7 en 2? Anota ese dígito y continúa."
         ]
       },
       {
@@ -587,8 +672,20 @@
         "choiceFeedback": [
           "",
           "Re-read the problem carefully and try again.",
-          "",
-          ""
+          "Check by multiplying: 9 × 672 = 6,048, which is already more than 6,045, so this quotient is too big before any remainder is added.",
+          "Your remainder makes sense, but a digit went missing from the quotient. Count place values — 6,045 reaches the thousands, so the quotient reaches the hundreds."
+        ],
+        "stemEs": "Camino 2: Un pasillo lateral muestra 6,045 ÷ 9. ¿Cuál puerta es la correcta?",
+        "explanationEs": "9 × 671 = 6,039, y 6,045 − 6,039 = 6, así que 6,045 ÷ 9 = 671 R 6.",
+        "hints": [
+          "The divisor does not have to fit evenly here, so your answer may include a remainder.",
+          "Divide one place value at a time and keep careful track of what is left after the very last step.",
+          "60 ÷ 9 = 6 with 6 left over, so 6 goes in the hundreds place. Bring down the 4 to make 64 and keep going, watching the final leftover."
+        ],
+        "hintsEs": [
+          "Aquí el divisor no tiene que caber exactamente, así que tu respuesta puede incluir un residuo.",
+          "Divide un valor posicional a la vez y lleva bien la cuenta de lo que queda después del último paso.",
+          "60 ÷ 9 = 6 y sobran 6, así que el 6 va en las centenas. Baja el 4 para formar 64 y continúa, atento a lo que sobra al final."
         ]
       },
       {
@@ -621,7 +718,10 @@
         "hints": [
           "After subtracting 210 you have 14 left. Can the divisor 7 still divide into 14? How many times?",
           "7 × 2 = 14, so add one more partial quotient. The repaired check should give 7 × quotient = 3,724, the original dividend."
-        ]
+        ],
+        "titleEs": "Extensión de Nivel 2 — Repara la máquina de arcade",
+        "explanation": "The machine quit one chunk early: after Step 2 there were 14 left, and 7 × 2 = 14, so a partial quotient of 2 still belonged in the total. The true quotient is 500 + 30 + 2 = 532 with remainder 0, and the check 7 × 532 = 3,724 matches the dividend instead of the 3,710 the broken machine reported.",
+        "explanationEs": "La máquina se detuvo un trozo antes de tiempo: después del Paso 2 quedaban 14, y 7 × 2 = 14, así que faltaba un cociente parcial de 2 en el total. El cociente verdadero es 500 + 30 + 2 = 532 con residuo 0, y la comprobación 7 × 532 = 3,724 coincide con el dividendo en vez del 3,710 que reportó la máquina dañada."
       },
       {
         "type": "multiple-choice",
@@ -637,14 +737,16 @@
         "choiceFeedback": [
           "",
           "Re-read the problem carefully and try again.",
-          "",
-          ""
+          "12 × 68 = 816, which lands short of 936. Check the tens digit of your quotient before you bring down the next number.",
+          "That is close: 12 × 76 = 912, which is 24 away from 936. Multiply your quotient back by 12 each time to see whether it lands exactly on the dividend."
         ],
         "hints": [
           "Estimate first: 12 × 70 = 840 and 12 × 80 = 960, so the quotient must land between 70 and 80.",
           "Use partial quotients: subtract an easy chunk like 12 × 70 from 936, then see how many 12s fit in what's left.",
           "Compute 936 − 840 = 96. Now ask: how many 12s make 96? Add that count to the 70 you already took out."
-        ]
+        ],
+        "stemEs": "¿Cuánto es 936 ÷ 12?",
+        "explanationEs": "12 × 78 = 936. Puedes comprobarlo: 12 × 70 = 840, 12 × 8 = 96, 840 + 96 = 936."
       }
     ],
     "optional": [],

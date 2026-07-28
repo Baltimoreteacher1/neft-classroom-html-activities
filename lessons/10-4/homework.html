@@ -1604,6 +1604,14 @@ body.obj-popup-open { overflow: hidden; }
 .section-vocab { border-left: 4px solid var(--coral); }
 .section-stuck { border-left: 4px solid #9b59b6; }
 .section-quick-intro { border-left: 4px solid var(--success); }
+.quick-check-time {
+  background: var(--amber-light);
+  border: 1px solid var(--amber);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 0 0 12px;
+  font-size: 15px;
+}
 .section-celebrate {
   border-left: 4px solid var(--amber);
   background: linear-gradient(180deg, var(--amber-light), var(--white));
@@ -1851,6 +1859,16 @@ body.obj-popup-open { overflow: hidden; }
   padding: 2px;
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x proximity;
+}
+/* On a phone the 10 tabs are ~738px wide in a ~381px viewport, so half of them
+   (Help, More, Done) sit off-screen with nothing to suggest they exist. Fade the
+   trailing edge so the strip reads as scrollable. Only below 700px, where the
+   overflow is guaranteed — a permanent fade on desktop would just look broken. */
+@media (max-width: 700px) {
+  .homework-tab-bar {
+    -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+    mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+  }
 }
 .homework-tab-btn {
   flex: 0 0 auto;
@@ -2372,6 +2390,12 @@ body.lang-mode-es .bilingual-grid {
 @media print {
   .homework-tab-chrome, .homework-tab-bar, .bottom-status-bar, .help-modal-overlay, .print-all-btn, .parent-signoff-container { display: none !important; }
   .tab-panel-inner[hidden] { display: block !important; page-break-inside: avoid; }
+  /* Printing un-hides every panel, but these three are screen-only: an embedded
+     arcade iframe, a live game, and a link-out. On paper they were blank or
+     meaningless pages in the middle of the packet. */
+  [data-tab-panel="arcade"],
+  [data-tab-panel="play"],
+  [data-tab-panel="workbench"] { display: none !important; }
   body { padding-bottom: 0; }
   
   .print-only-certificate.is-signed {
@@ -2448,7 +2472,7 @@ body.lang-mode-es .bilingual-grid {
 
 
 .family-visual-lab{--lab-ink:#173a5e;--lab-teal:#0b8f87;--lab-coral:#ff775f;--lab-sun:#f6c94c;margin:26px 0;padding:clamp(18px,3vw,30px);border:3px solid var(--lab-ink);border-radius:28px;background:#fffdf5;box-shadow:8px 8px 0 var(--lab-ink);color:var(--lab-ink)}
-.visual-lab-heading{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(260px,1.15fr);gap:20px;align-items:end;margin-bottom:20px}.visual-lab-heading h2{margin:6px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.05}.visual-lab-heading p{margin:0;padding:14px 16px;border-left:5px solid var(--lab-sun);background:#fff8d9;font-size:17px;font-weight:700;line-height:1.45}.visual-lab-kicker{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--lab-ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em}
+.visual-lab-heading{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(260px,1.15fr);gap:20px;align-items:end;margin-bottom:20px}.visual-lab-heading h2{margin:6px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.05}.visual-lab-heading p{margin:0;padding:14px 16px;border-left:5px solid var(--lab-sun);background:#fff8d9;font-size:17px;font-weight:700;line-height:1.45}.visual-lab-kicker{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--lab-ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em}.visual-lab-kicker .lang-en,.visual-lab-kicker .lang-es{color:inherit}
 .visual-lab-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(230px,.8fr);gap:18px;align-items:stretch}.visual-lab-canvas-wrap{min-width:0;padding:12px;border-radius:22px;background-color:#eef8f4;background-image:linear-gradient(#cee3dc 1px,transparent 1px),linear-gradient(90deg,#cee3dc 1px,transparent 1px);background-size:24px 24px;border:2px solid var(--lab-ink)}.visual-lab-stage{display:grid;place-items:center;min-height:280px}.visual-lab-stage svg{display:block;width:100%;max-height:320px;overflow:visible}.visual-lab-status{min-height:26px;margin:5px 8px 0;padding:7px 10px;border-radius:10px;background:#fff;font-weight:800;text-align:center}
 .visual-lab-controls{display:flex;flex-direction:column;gap:14px;padding:18px;border-radius:22px;background:var(--lab-ink);color:#fff}.visual-lab-control{display:grid;gap:7px;font-weight:800}.visual-lab-control-label{display:flex;justify-content:space-between;gap:10px;align-items:center}.visual-lab-control output{min-width:38px;padding:3px 8px;border-radius:8px;background:var(--lab-sun);color:#102f4e;text-align:center;font-size:18px}.visual-lab-control input[type=range]{width:100%;min-height:28px;accent-color:var(--lab-coral);cursor:pointer}.visual-lab-control input[type=range]:focus-visible{outline:4px solid #fff;outline-offset:4px}.visual-lab-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:auto}.visual-lab-button{min-height:48px;border:2px solid #fff;border-radius:13px;background:var(--lab-coral);color:#182f48;font:inherit;font-weight:800;cursor:pointer}.visual-lab-button-quiet{background:#fff}.visual-lab-button:hover{transform:translateY(-2px)}.visual-lab-button:focus-visible{outline:4px solid var(--lab-sun);outline-offset:3px}
 .visual-representation-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:18px}.visual-representation-card{position:relative;min-height:150px;padding:18px 16px 15px;border:2px solid var(--lab-ink);border-radius:18px;background:#fff}.visual-representation-card h3{margin:0 0 10px;padding-left:30px;font-size:17px}.visual-representation-card p{margin:7px 0;font-size:16px;line-height:1.4}.representation-number{position:absolute;top:12px;left:12px;display:grid;width:27px;height:27px;place-items:center;border-radius:50%;background:var(--lab-ink);color:#fff;font-weight:800}.visual-representation-model{background:#dff5ee}.visual-representation-math{background:#fff2c2}.visual-representation-words{background:#ffe4dd}.visual-representation-math [data-lab-equation]{font-size:clamp(22px,3vw,32px);font-weight:800;text-align:center}.mini-model{display:flex;flex-wrap:wrap;gap:7px;align-content:center;min-height:76px;padding:8px}.mini-dot{width:18px;height:18px;border:2px solid var(--lab-ink);border-radius:50%;background:var(--lab-teal)}.visual-representation-card details{margin-top:10px}.visual-representation-card summary{cursor:pointer;font-weight:800;text-decoration:underline}.visual-source-idea{font-size:13px!important;color:#344f69}
@@ -2731,12 +2755,12 @@ header.packet h1::after{
         <div class="bilingual-col lang-en">
           <span class="lang-label">English</span>
           <p class="learning-big">Tonight we find the surface area of prisms, including the wedge-shaped triangular prism. For any prism, we find the area of every face and add them all up.</p>
-          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Surface area</li><li>Rectangular prism</li><li>Triangular prism</li><li>Face</li><li>Net</li></ul></div>
+          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Surface Area of Prisms</li><li>Surface area</li><li>Rectangular prism</li><li>Triangular prism</li><li>Face</li></ul></div>
         </div>
         <div class="bilingual-col lang-es" lang="es">
           <span class="lang-label">Español</span>
           <p class="learning-big">Esta noche encontramos el área de superficie de prismas, incluido el prisma triangular con forma de cuña. Para cualquier prisma, hallamos el área de cada cara y las sumamos todas.</p>
-          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Área de superficie</li><li>Prisma rectangular</li><li>Prisma triangular</li><li>Cara</li><li>Plantilla (desarrollo plano)</li></ul></div>
+          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Área de superficie de prismas</li><li>Área de superficie</li><li>Prisma rectangular</li><li>Prisma triangular</li><li>Cara</li></ul></div>
         </div>
       </div>
     
@@ -2868,6 +2892,24 @@ header.packet h1::after{
       </p>
       <div class="vocab-container">
         
+            <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+              <div class="vocab-card-inner">
+                <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/surface-area.svg" alt="Illustration of Surface Area of Prisms: The total area of all bases and lateral faces of a prism. Formula: SA = 2B + lateral area." loading="lazy" width="72" height="72" />
+                  </div>
+                  <h3>Surface Area of Prisms</h3>
+                  <p class="vocab-es" lang="es">Área de superficie de prismas</p>
+                  <div class="vocab-visual-hint">💡 SA = 2B + lateral area</div>
+                  <div class="flip-prompt"><span class="lang-en">Tap</span><span class="lang-es" lang="es">Toca ➔</span></div>
+                </div>
+                <div class="vocab-card-back">
+                  <p class="vocab-def">The total area of all bases and lateral faces of a prism. Formula: SA = 2B + lateral area.</p>
+                  <p class="vocab-def-es" lang="es">El área total de las bases y caras laterales de un prisma. Fórmula: SA = 2B + área lateral.</p>
+                  <p class="vocab-back-visual">📌 SA = 2B + lateral area</p>
+                </div>
+              </div>
+            </div>
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -3112,6 +3154,10 @@ header.packet h1::after{
       
     
       <h2 class="section-title">✅ <span class="lang-en">Quick check</span><span class="lang-es" lang="es">Repaso rápido</span></h2>
+      <p class="quick-check-time bilingual-block">
+        <span class="lang-en">⏱️ Plan on about <strong>15–20 minutes</strong> for the 6 problems below. The extra practice at the bottom is optional.</span>
+        <span class="lang-es" lang="es">⏱️ Calculen unos <strong>15–20 minutos</strong> para los 6 problemas de abajo. La práctica extra al final es opcional.</span>
+      </p>
       <p class="bilingual-block">
         <span class="lang-en">A few problems to practice together. Each one has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong>, and a <strong>space to show your work</strong>. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
         <span class="lang-es" lang="es">Unos problemas para practicar juntos. Cada uno tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para mostrar el trabajo</strong>. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
@@ -3136,12 +3182,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_0" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 1</div>
-        <div class="problem-type-badge">DRAG SORT</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The cards describe finding a triangular prism&#39;s SA: triangles first, then rectangles, then a final total.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The cards describe finding a triangular prism&#39;s SA: triangles first, then rectangles, then a final total.","es":"Un prisma triangular tiene 5 caras, así que los pasos van primero con los triángulos, luego con los rectángulos y al final con el total: halla una base triangular, duplícala para las dos bases, halla el área de cada cara rectangular lateral, suma esos tres rectángulos y al final suma los triángulos y los rectángulos. Duplicar el triángulo antes de seguir evita que olvides una de las dos bases iguales.","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Put the steps in order for finding the surface area of a triangular prism.</p>
+        <p class="problem-stem"><span class="lang-en">Put the steps in order for finding the surface area of a triangular prism.</span><span class="lang-es" lang="es">Ordena los pasos para encontrar el área superficial de un prisma triangular.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
         <div class="family-hint-box"><p>💡 The cards describe finding a triangular prism&#039;s SA: triangles first, then rectangles, then a final total.</p><p>💡 Order it like building a net: one triangle&#039;s area, double it, each rectangle&#039;s area, add rectangles, combine all.</p><p>💡 Place &#039;Find the area of one triangular base&#039; first — you need one triangle before you can double it.</p></div>
         <div class="drag-sort-workspace" id="dragsort_0">
@@ -3259,12 +3305,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_1" data-problem-type="matching-game">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 2</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
+        <div class="problem-type-badge"><span class="lang-en">MATCHING GAME</span><span class="lang-es" lang="es">JUEGO DE PAREJAS</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read each card: some describe face counts, some describe units, and one describes a flat fold-out pattern.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read each card: some describe face counts, some describe units, and one describes a flat fold-out pattern.","es":"Las parejas salen de contar caras y leer las unidades: un prisma rectangular y un cubo tienen 6 caras (las del cubo son 6 cuadrados idénticos), un prisma triangular tiene 5 (2 triángulos + 3 rectángulos), una red es el patrón plano en 2D que se dobla para formar el sólido, y el área de superficie se mide en unidades cuadradas (in²) mientras que el volumen usa unidades cúbicas (in³).","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Match each solid to its description.</p>
+        <p class="problem-stem"><span class="lang-en">Match each solid to its description.</span><span class="lang-es" lang="es">Une cada sólido con su descripción.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Say each term out loud, then talk through which match makes sense before choosing.</span><span class="lang-es" lang="es">👪 Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.</span></p>
         <div class="matching-pairs">
           
@@ -3357,14 +3403,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_2" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 3</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"All five face areas are given: two triangles of 12 cm² each, and rectangles of 30, 40, and 40 cm².","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"All five face areas are given: two triangles of 12 cm² each, and rectangles of 30, 40, and 40 cm².","es":"Área de superficie = 2(12) + 30 + 40 + 40 = 24 + 110 = 134 cm².","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A triangular prism has two triangular bases each with area 12 cm² and three rectangular faces with areas 30 cm², 40 cm², and 40 cm². What is the total surface area?</p>
+        <p class="problem-stem"><span class="lang-en">A triangular prism has two triangular bases each with area 12 cm² and three rectangular faces with areas 30 cm², 40 cm², and 40 cm². What is the total surface area?</span><span class="lang-es" lang="es">Un prisma triangular tiene dos bases triangulares, cada una con un área de 12 cm², y tres caras rectangulares con áreas de 30 cm², 40 cm² y 40 cm². ¿Cuál es el área de superficie total?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="SA = 2(12) + 30 + 40 + 40 = 24 + 110 = 134 cm².">
+        <div class="mc-options" data-correct="0" data-explanation="SA = 2(12) + 30 + 40 + 40 = 24 + 110 = 134 cm²." data-explanation-es="Área de superficie = 2(12) + 30 + 40 + 40 = 24 + 110 = 134 cm².">
           
             <label class="mc-option-label" id="label_q_2_0">
               <input type="radio" name="q_2" value="0" onchange="saveState(); updateProgress();">
@@ -3443,14 +3489,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_3" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 1</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Gather the parts: two triangle bases (base 6 in, height 4 in) and three rectangles, each 10 in long.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Gather the parts: two triangle bases (base 6 in, height 4 in) and three rectangles, each 10 in long.","es":"Bases triangulares: 2 × (½ × 6 × 4) = 24 in². Tres caras rectangulares: 6(10) + 5(10) + 5(10) = 60 + 50 + 50 = 160 in². Área de superficie = 24 + 160 = 184 in².","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A triangular prism has triangular bases with base 6 in and height 4 in. The prism is 10 in long and the two slant sides of the triangle are each 5 in. What is the surface area?</p>
+        <p class="problem-stem"><span class="lang-en">A triangular prism has triangular bases with base 6 in and height 4 in. The prism is 10 in long and the two slant sides of the triangle are each 5 in. What is the surface area?</span><span class="lang-es" lang="es">Un prisma triangular tiene bases triangulares con base 6 in y altura 4 in. El prisma mide 10 in de largo y los dos lados inclinados del triángulo miden 5 in cada uno. ¿Cuál es el área de superficie?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Triangular bases: 2 × (½ × 6 × 4) = 24 in². Three rectangular faces: 6(10) + 5(10) + 5(10) = 60 + 50 + 50 = 160 in². SA = 24 + 160 = 184 in².">
+        <div class="mc-options" data-correct="0" data-explanation="Triangular bases: 2 × (½ × 6 × 4) = 24 in². Three rectangular faces: 6(10) + 5(10) + 5(10) = 60 + 50 + 50 = 160 in². SA = 24 + 160 = 184 in²." data-explanation-es="Bases triangulares: 2 × (½ × 6 × 4) = 24 in². Tres caras rectangulares: 6(10) + 5(10) + 5(10) = 60 + 50 + 50 = 160 in². Área de superficie = 24 + 160 = 184 in².">
           
             <label class="mc-option-label" id="label_q_3_0">
               <input type="radio" name="q_3" value="0" onchange="saveState(); updateProgress();">
@@ -3513,14 +3559,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_4" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 2</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Two triangle ends: 2 × (½ × 8 × 6) = 48 in². Three rectangles: (8 + 6 + 10) × 10 = 24 × 10 = 240 in². SA = 48 + 240 = 288 in².","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"A triangular prism has 5 faces: 2 triangles on the ends and 3 rectangles wrapping around the sides.","es":"Un prisma triangular tiene 5 caras: 2 triángulos en los extremos y 3 rectángulos que lo rodean.","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A triangular prism is 10 in long. Its triangle ends have base 8 in, height 6 in, and sides 8, 6, and 10 in. Find its surface area.</p>
+        <p class="problem-stem"><span class="lang-en">A triangular prism is 10 in long. Its triangle ends have base 8 in, height 6 in, and sides 8, 6, and 10 in. Find its surface area.</span><span class="lang-es" lang="es">Un prisma triangular mide 10 in de largo. Sus extremos triangulares tienen base 8 in, altura 6 in y lados de 8, 6 y 10 in. Halla su área de superficie.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Two triangle ends: 2 × (½ × 8 × 6) = 48 in². Three rectangles: (8 + 6 + 10) × 10 = 24 × 10 = 240 in². SA = 48 + 240 = 288 in².">
+        <div class="mc-options" data-correct="0" data-explanation="Two triangle ends: 2 × (½ × 8 × 6) = 48 in². Three rectangles: (8 + 6 + 10) × 10 = 24 × 10 = 240 in². SA = 48 + 240 = 288 in²." data-explanation-es="Dos extremos triangulares: 2 × (½ × 8 × 6) = 48 in². Tres rectángulos: (8 + 6 + 10) × 10 = 24 × 10 = 240 in². Área de superficie = 48 + 240 = 288 in².">
           
             <label class="mc-option-label" id="label_q_4_0">
               <input type="radio" name="q_4" value="0" onchange="saveState(); updateProgress();">
@@ -3583,12 +3629,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_5" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 3</div>
-        <div class="problem-type-badge">FILL TABLE</div>
+        <div class="problem-type-badge"><span class="lang-en">FILL TABLE</span><span class="lang-es" lang="es">COMPLETAR LA TABLA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Two shapes, four blanks: each needs a surface area and a volume. The tri prism&#39;s triangle has base 6 and height 4.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Two shapes, four blanks: each needs a surface area and a volume. The tri prism&#39;s triangle has base 6 and height 4.","es":"Para el prisma rectangular de 6×4×3, SA = 2(24) + 2(18) + 2(12) = 108 y V = 6 × 4 × 3 = 72. Para el prisma triangular, el área del triángulo es ½ × 6 × 4 = 12, así que SA = 2(12) + (6×3) + (5×3) + (5×3) = 24 + 48 = 72 y V = 12 × 3 = 36. Las dos medidas del prisma triangular son la mitad de las del prisma rectangular porque su base es la mitad de la base del rectángulo.","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A rectangular prism and a triangular prism have similar dimensions. Compare their surface areas and volumes.</p>
+        <p class="problem-stem"><span class="lang-en">A rectangular prism and a triangular prism have similar dimensions. Compare their surface areas and volumes.</span><span class="lang-es" lang="es">Un prisma rectangular y un prisma triangular tienen dimensiones parecidas. Compara sus áreas superficiales y sus volúmenes.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
         <div class="table-responsive">
           <table class="fill-table">
@@ -3705,12 +3751,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_6" data-problem-type="open-response">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 1</div>
-        <div class="problem-type-badge">OPEN RESPONSE</div>
+        <div class="problem-type-badge"><span class="lang-en">OPEN RESPONSE</span><span class="lang-es" lang="es">RESPUESTA ABIERTA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Both containers get wrapped, so compare SURFACE AREAS. Collect each shape&#39;s faces before calculating.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Both containers get wrapped, so compare SURFACE AREAS. Collect each shape&#39;s faces before calculating.","es":"La película cubre el exterior, así que compara las áreas de superficie. El prisma rectangular da 2(8×6) + 2(8×4) + 2(6×4) = 96 + 64 + 48 = 208 in², mientras que el prisma triangular da dos triángulos 2(½ × 8 × 6) = 48 más tres rectángulos: 8×8 = 64 y dos de 6.3×8 = 50.4, para un total de 212.8 in². El recipiente rectangular usa menos película, por unas 4.8 in².","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A company ships products in two container options: a rectangular prism (8 × 6 × 4 in) or a triangular prism (triangle base 8 in, triangle height 6 in, prism length 8 in, slant sides 6.3 in each). Both must be wrapped in protective film. Which shape uses LESS film? Show your work.</p>
+        <p class="problem-stem"><span class="lang-en">A company ships products in two container options: a rectangular prism (8 × 6 × 4 in) or a triangular prism (triangle base 8 in, triangle height 6 in, prism length 8 in, slant sides 6.3 in each). Both must be wrapped in protective film. Which shape uses LESS film? Show your work.</span><span class="lang-es" lang="es">Una compañía envía productos en dos opciones de recipiente: un prisma rectangular (8 × 6 × 4 in) o un prisma triangular (base del triángulo 8 in, altura del triángulo 6 in, largo del prisma 8 in, lados inclinados de 6.3 in cada uno). Los dos deben envolverse con película protectora. ¿Cuál forma usa MENOS película? Muestra tu trabajo.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 A complete sentence with math vocabulary is the goal — not a perfect paragraph.</span><span class="lang-es" lang="es">👪 Una oración completa con vocabulario matemático es la meta — no un párrafo perfecto.</span></p>
         
         
@@ -3775,14 +3821,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_7" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 2</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"You need surface area — the total of all 6 face areas of the 5 × 4 × 3 prism — not the space inside.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"You need surface area — the total of all 6 face areas of the 5 × 4 × 3 prism — not the space inside.","es":"Área de superficie = 2(5×4) + 2(5×3) + 2(4×3) = 40 + 30 + 24 = 94 cm².","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">What is the surface area of a rectangular prism with l = 5 cm, w = 4 cm, h = 3 cm?</p>
+        <p class="problem-stem"><span class="lang-en">What is the surface area of a rectangular prism with l = 5 cm, w = 4 cm, h = 3 cm?</span><span class="lang-es" lang="es">¿Cuál es el área de superficie de un prisma rectangular con l = 5 cm, w = 4 cm, h = 3 cm?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="SA = 2(5×4) + 2(5×3) + 2(4×3) = 40 + 30 + 24 = 94 cm².">
+        <div class="mc-options" data-correct="0" data-explanation="SA = 2(5×4) + 2(5×3) + 2(4×3) = 40 + 30 + 24 = 94 cm²." data-explanation-es="Área de superficie = 2(5×4) + 2(5×3) + 2(4×3) = 40 + 30 + 24 = 94 cm².">
           
             <label class="mc-option-label" id="label_q_7_0">
               <input type="radio" name="q_7" value="0" onchange="saveState(); updateProgress();">
@@ -3845,12 +3891,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_8" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 3</div>
-        <div class="problem-type-badge">FILL TABLE</div>
+        <div class="problem-type-badge"><span class="lang-en">FILL TABLE</span><span class="lang-es" lang="es">COMPLETAR LA TABLA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each capsule needs SURFACE AREA: the sum of all six face areas, written in square units.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each capsule needs SURFACE AREA: the sum of all six face areas, written in square units.","es":"Cada cápsula se envuelve por sus seis caras, así que usa SA = 2lw + 2lh + 2wh. La cápsula E da 2(96) + 2(60) + 2(40) = 392 in², la cápsula F da 2(54) + 2(54) + 2(36) = 288 cm² y la cápsula G da 2(60) + 2(45) + 2(12) = 234 ft², y cada respuesta conserva las unidades cuadradas de su fila.","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Calculate the surface area of each rectangular prism time capsule.</p>
+        <p class="problem-stem"><span class="lang-en">Calculate the surface area of each rectangular prism time capsule.</span><span class="lang-es" lang="es">Calcula el área superficial de cada cápsula del tiempo con forma de prisma rectangular.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
         <div class="table-responsive">
           <table class="fill-table">
@@ -3948,12 +3994,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_9" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 4</div>
-        <div class="problem-type-badge">DRAG SORT</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Every card shows its SA after the equals sign, like &#39;Cube 3×3×3: SA = 54&#39;. Sort by those numbers.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Every card shows its SA after the equals sign, like &#39;Cube 3×3×3: SA = 54&#39;. Sort by those numbers.","es":"Cada tarjeta ya indica su área de superficie, así que ordenar las tarjetas es ordenar esos números: 54, luego 94, luego 158 y luego 248. El cubo de 3×3×3 tiene la menor área de superficie y el prisma de 10×6×4 la mayor, porque unas dimensiones más grandes crean caras más grandes que cubrir.","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Sort these prisms from LEAST surface area to GREATEST.</p>
+        <p class="problem-stem"><span class="lang-en">Sort these prisms from LEAST surface area to GREATEST.</span><span class="lang-es" lang="es">Ordena estos prismas del MENOR área superficial al MAYOR.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
         <div class="family-hint-box"><p>💡 Every card shows its SA after the equals sign, like &#039;Cube 3×3×3: SA = 54&#039;. Sort by those numbers.</p><p>💡 Compare only the SA values from least to greatest — the dimensions are just labels here.</p><p>💡 Pick the card with the smallest SA value first, then keep choosing the next smallest.</p></div>
         <div class="drag-sort-workspace" id="dragsort_9">
@@ -4056,12 +4102,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_10" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 5</div>
-        <div class="problem-type-badge">DRAG SORT</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Paper wraps the outside, so compare each surface area to 96 in². The 3×4×5 capsule needs 94 in² and the 4×4×4 cube needs exactly 96 in², so both fit in the first bin, while the 6×5×4 capsule at 148 in² and the triangular capsule at 288 in² are over 96 in².","es":"El papel envuelve el exterior, así que compara cada área de superficie con 96 in². La cápsula de 3×4×5 necesita 94 in² y el cubo de 4×4×4 necesita exactamente 96 in², así que las dos van en el primer grupo, mientras que la cápsula de 6×5×4 con 148 in² y la cápsula triangular con 288 in² pasan de 96 in².","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Find each prism&#039;s surface area. Then sort it by whether it needs 96 in² of paper or less, or more than 96 in².</p>
+        <p class="problem-stem"><span class="lang-en">Find each prism&#039;s surface area. Then sort it by whether it needs 96 in² of paper or less, or more than 96 in².</span><span class="lang-es" lang="es">Encuentra el área superficial de cada prisma. Después clasifícalo según si necesita 96 in² de papel o menos, o más de 96 in².</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
         
         <div class="drag-sort-workspace" id="dragsort_10">
@@ -4168,14 +4214,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_11" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 6</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Picture a tent or a triangular chocolate box: two triangle ends plus rectangles wrapping around the sides.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Picture a tent or a triangular chocolate box: two triangle ends plus rectangles wrapping around the sides.","es":"Un prisma triangular tiene 5 caras: 2 bases triangulares y 3 caras laterales rectangulares.","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">How many faces does a triangular prism have?</p>
+        <p class="problem-stem"><span class="lang-en">How many faces does a triangular prism have?</span><span class="lang-es" lang="es">¿Cuántas caras tiene un prisma triangular?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="A triangular prism has 5 faces: 2 triangular bases and 3 rectangular lateral faces.">
+        <div class="mc-options" data-correct="0" data-explanation="A triangular prism has 5 faces: 2 triangular bases and 3 rectangular lateral faces." data-explanation-es="Un prisma triangular tiene 5 caras: 2 bases triangulares y 3 caras laterales rectangulares.">
           
             <label class="mc-option-label" id="label_q_11_0">
               <input type="radio" name="q_11" value="0" onchange="saveState(); updateProgress();">
@@ -4238,14 +4284,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_12" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 7</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"SA = 2(lw + lh + wh) = 2(3×4 + 3×5 + 4×5) = 2(12 + 15 + 20) = 2(47) = 94 in².","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Wrapping paper covers the outside of the box, so this asks for surface area, not volume — the answer will be in square inches.","es":"El papel cubre el exterior de la caja, así que se pide el área de superficie, no el volumen: la respuesta va en pulgadas cuadradas.","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A rectangular time capsule box measures 3 in by 4 in by 5 in. How much wrapping paper covers its surface (no overlap)?</p>
+        <p class="problem-stem"><span class="lang-en">A rectangular time capsule box measures 3 in by 4 in by 5 in. How much wrapping paper covers its surface (no overlap)?</span><span class="lang-es" lang="es">Una caja rectangular para una cápsula del tiempo mide 3 in por 4 in por 5 in. ¿Cuánto papel de envolver cubre su superficie (sin traslape)?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="SA = 2(lw + lh + wh) = 2(3×4 + 3×5 + 4×5) = 2(12 + 15 + 20) = 2(47) = 94 in².">
+        <div class="mc-options" data-correct="0" data-explanation="SA = 2(lw + lh + wh) = 2(3×4 + 3×5 + 4×5) = 2(12 + 15 + 20) = 2(47) = 94 in²." data-explanation-es="Área de superficie = 2(lw + lh + wh) = 2(3×4 + 3×5 + 4×5) = 2(12 + 15 + 20) = 2(47) = 94 in².">
           
             <label class="mc-option-label" id="label_q_12_0">
               <input type="radio" name="q_12" value="0" onchange="saveState(); updateProgress();">
@@ -4308,14 +4354,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_13" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 8</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"SA = 2(6×5) + 2(6×4) + 2(5×4) = 60 + 48 + 40 = 148 cm².","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Covering all the faces means finding surface area — the total area of the outside, measured in square centimeters.","es":"Cubrir todas las caras significa hallar el área de superficie: el área total del exterior, medida en centímetros cuadrados.","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A rectangular capsule crate is 6 cm long, 5 cm wide, and 4 cm tall. How much cardboard is needed to cover all its faces?</p>
+        <p class="problem-stem"><span class="lang-en">A rectangular capsule crate is 6 cm long, 5 cm wide, and 4 cm tall. How much cardboard is needed to cover all its faces?</span><span class="lang-es" lang="es">Una caja rectangular para cápsulas mide 6 cm de largo, 5 cm de ancho y 4 cm de alto. ¿Cuánto cartón se necesita para cubrir todas sus caras?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="SA = 2(6×5) + 2(6×4) + 2(5×4) = 60 + 48 + 40 = 148 cm².">
+        <div class="mc-options" data-correct="0" data-explanation="SA = 2(6×5) + 2(6×4) + 2(5×4) = 60 + 48 + 40 = 148 cm²." data-explanation-es="Área de superficie = 2(6×5) + 2(6×4) + 2(5×4) = 60 + 48 + 40 = 148 cm².">
           
             <label class="mc-option-label" id="label_q_13_0">
               <input type="radio" name="q_13" value="0" onchange="saveState(); updateProgress();">
@@ -4639,8 +4685,8 @@ header.packet h1::after{
 <script>
 window.LESSON_ID = "10-4";
 window.LESSON_TITLE = "Surface Area of Prisms";
-window.__HW_VOCAB__ = [{"term":"Surface area","termEs":"Área de superficie","def":"The total area of all the flat sides of a solid.","defEs":"El área total de todos los lados planos de un sólido.","example":"Paint every outside surface of a box — the total painted area is the surface area","img":"/assets/vocab-images/surface-area.svg","imgAlt":"Illustration of Surface area: The total area of all the flat sides of a solid."},{"term":"Rectangular prism","termEs":"Prisma rectangular","def":"A solid box shape with six flat rectangle sides.","defEs":"Una figura sólida en forma de caja con seis lados rectangulares.","example":"A box with 6 flat rectangle sides: top, bottom, front, back, left, right","img":"/assets/vocab-images/rectangular-prism.svg","imgAlt":"Illustration of Rectangular prism: A solid box shape with six flat rectangle sides."},{"term":"Triangular prism","termEs":"Prisma triangular","def":"A solid with two triangle ends and three flat rectangle sides.","defEs":"Un sólido con dos extremos triangulares y tres lados rectangulares.","example":"Shaped like a tent or a wedge of cheese — 2 triangle ends + 3 rectangle sides","img":"/assets/vocab-images/rectangular-prism.svg","imgAlt":"Illustration of Triangular prism: A solid with two triangle ends and three flat rectangle sides."},{"term":"Face","termEs":"Cara","def":"One flat side of a solid shape.","defEs":"Un lado plano de una figura sólida.","example":"A triangular prism has 5 faces: 2 triangles + 3 rectangles","img":"/assets/vocab-images/rectangular-prism.svg","imgAlt":"Illustration of Face: One flat side of a solid shape."},{"term":"Net","termEs":"Plantilla (desarrollo plano)","def":"A flat shape that folds up into a solid.","defEs":"Una figura plana que se dobla y forma un sólido.","example":"Unfold a triangular prism flat: you see 2 triangles and 3 rectangles side by side","img":"/assets/vocab-images/net.svg","imgAlt":"Illustration of Net: A flat shape that folds up into a solid."},{"term":"Lateral face","termEs":"Cara lateral","def":"The side faces of a solid, not the top or bottom.","defEs":"Los lados de un sólido, no la parte de arriba ni la de abajo.","example":"On a triangular prism, the 3 rectangles that wrap around the sides are lateral faces","img":"/assets/vocab-images/surface-area.svg","imgAlt":"Illustration of Lateral face: The side faces of a solid, not the top or bottom."}];
-window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Rectangular prism|Triangular prism|Surface area|Lateral face|Face|Net)(?:es|s)?\\b","lookup":{"surface area":0,"rectangular prism":1,"triangular prism":2,"face":3,"net":4,"lateral face":5}};
+window.__HW_VOCAB__ = [{"term":"Surface Area of Prisms","termEs":"Área de superficie de prismas","def":"The total area of all bases and lateral faces of a prism. Formula: SA = 2B + lateral area.","defEs":"El área total de las bases y caras laterales de un prisma. Fórmula: SA = 2B + área lateral.","example":"SA = 2B + lateral area","img":"/assets/vocab-images/surface-area.svg","imgAlt":"Illustration of Surface Area of Prisms: The total area of all bases and lateral faces of a prism. Formula: SA = 2B + lateral area."},{"term":"Surface area","termEs":"Área de superficie","def":"The total area of all the flat sides of a solid.","defEs":"El área total de todos los lados planos de un sólido.","example":"Paint every outside surface of a box — the total painted area is the surface area","img":"/assets/vocab-images/surface-area.svg","imgAlt":"Illustration of Surface area: The total area of all the flat sides of a solid."},{"term":"Rectangular prism","termEs":"Prisma rectangular","def":"A solid box shape with six flat rectangle sides.","defEs":"Una figura sólida en forma de caja con seis lados rectangulares.","example":"A box with 6 flat rectangle sides: top, bottom, front, back, left, right","img":"/assets/vocab-images/rectangular-prism.svg","imgAlt":"Illustration of Rectangular prism: A solid box shape with six flat rectangle sides."},{"term":"Triangular prism","termEs":"Prisma triangular","def":"A solid with two triangle ends and three flat rectangle sides.","defEs":"Un sólido con dos extremos triangulares y tres lados rectangulares.","example":"Shaped like a tent or a wedge of cheese — 2 triangle ends + 3 rectangle sides","img":"/assets/vocab-images/rectangular-prism.svg","imgAlt":"Illustration of Triangular prism: A solid with two triangle ends and three flat rectangle sides."},{"term":"Face","termEs":"Cara","def":"One flat side of a solid shape.","defEs":"Un lado plano de una figura sólida.","example":"A triangular prism has 5 faces: 2 triangles + 3 rectangles","img":"/assets/vocab-images/rectangular-prism.svg","imgAlt":"Illustration of Face: One flat side of a solid shape."},{"term":"Net","termEs":"Plantilla (desarrollo plano)","def":"A flat shape that folds up into a solid.","defEs":"Una figura plana que se dobla y forma un sólido.","example":"Unfold a triangular prism flat: you see 2 triangles and 3 rectangles side by side","img":"/assets/vocab-images/net.svg","imgAlt":"Illustration of Net: A flat shape that folds up into a solid."},{"term":"Lateral face","termEs":"Cara lateral","def":"The side faces of a solid, not the top or bottom.","defEs":"Los lados de un sólido, no la parte de arriba ni la de abajo.","example":"On a triangular prism, the 3 rectangles that wrap around the sides are lateral faces","img":"/assets/vocab-images/surface-area.svg","imgAlt":"Illustration of Lateral face: The side faces of a solid, not the top or bottom."}];
+window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Surface Area of Prisms|Rectangular prism|Triangular prism|Surface area|Lateral face|Face|Net)(?:es|s)?\\b","lookup":{"surface area of prism":0,"surface area":1,"rectangular prism":2,"triangular prism":3,"face":4,"net":5,"lateral face":6}};
 
 function syncHomeworkChromeHeights() {
   const status = document.querySelector('.bottom-status-bar');
@@ -4774,7 +4820,33 @@ function saveParentSignoff() {
   try {
     localStorage.setItem('hw_parent_signoff_' + lessonId, JSON.stringify(payload));
   } catch(e) {}
-  
+
+  /* localStorage stays the source of truth for what this page displays, but a
+     sign-off the teacher never sees is not a sign-off. Fire-and-forget POST:
+     the endpoint always answers 204, and any failure here is swallowed so a
+     family on a bad connection still gets their confirmation. */
+  try {
+    var signoffBody = JSON.stringify({
+      lessonId: lessonId,
+      lessonTitle: lessonTitle,
+      parentName: nameVal,
+      note: noteVal,
+      date: signoffDate,
+      studentName: (window.NeftSaveResume && window.NeftSaveResume.studentName) || '',
+      section: (window.NeftSaveResume && window.NeftSaveResume.section) || ''
+    });
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('/api/progress/family-signoff', new Blob([signoffBody], { type: 'application/json' }));
+    } else {
+      fetch('/api/progress/family-signoff', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: signoffBody,
+        keepalive: true
+      }).catch(function() {});
+    }
+  } catch(e) {}
+
   updateSignoffUI(payload);
 }
 
@@ -5711,6 +5783,15 @@ function playCheckSound(isCorrect) {
   }
 }
 
+/* Feedback text is built in JS, so it cannot use the .lang-en/.lang-es span
+   pair the rest of the page toggles. Pick the language the family is actually
+   reading; fall back to English whenever no Spanish was authored. */
+function pickLangText(en, es) {
+  const esText = (es || "").trim();
+  if (esText && document.body.classList.contains("lang-mode-es")) return esText;
+  return en || "";
+}
+
 function checkProblem(idx, options) {
   const silent = options && options.silent;
   const section = document.getElementById("problem_" + idx);
@@ -5728,7 +5809,7 @@ function checkProblem(idx, options) {
       const container = section.querySelector(".mc-options");
       const selected = container.querySelector("input[type='radio']:checked");
       const correctIdx = container.dataset.correct;
-      const explanation = container.dataset.explanation;
+      const explanation = pickLangText(container.dataset.explanation, container.dataset.explanationEs);
       
       // Reset radio option styles
       const labels = container.querySelectorAll(".mc-option-label");
@@ -5956,7 +6037,7 @@ function checkProblem(idx, options) {
   if (!feedbackMessage) {
     if (type === "multiple-choice") {
       const container = section.querySelector(".mc-options");
-      const explanation = container?.dataset.explanation || "";
+      const explanation = pickLangText(container?.dataset.explanation, container?.dataset.explanationEs);
       if (isProblemCorrect) {
         feedbackMessage = explanation
           ? "Correct! " + explanation

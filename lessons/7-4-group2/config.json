@@ -156,6 +156,13 @@
   ],
   "vocabulary": [
     {
+      "term": "Write Inequalities",
+      "termEs": "Escribir desigualdades",
+      "definition": "Represent a range of possible values with <, >, ≤, or ≥.",
+      "definitionEs": "Representar un rango de valores posibles con <, >, ≤ o ≥.",
+      "visual": "You must be at least 12 years old: a ≥ 12."
+    },
+    {
       "term": "Inequality",
       "termEs": "Desigualdad",
       "definition": "A math sentence that compares two sides with <, >, ≤, or ≥.",
@@ -198,6 +205,22 @@
       "definitionEs": "'Al menos' significa ≥. 'Como máximo' significa ≤.",
       "visual": "'At least 10 players' → p ≥ 10 (could be 10, 11, 12, ...); 'At most 5 tries' → t ≤ 5 (could be 5, 4, 3, ...)",
       "cloze": "'At least' means greater than or equal to, and 'at most' means ___ than or equal to."
+    },
+    {
+      "term": "Variable",
+      "termEs": "Variable",
+      "definition": "A letter that stands for a number that is unknown or can change.",
+      "definitionEs": "Una letra que representa un número desconocido o que puede cambiar.",
+      "visual": "In x > 5, the letter x stands for any number greater than 5.",
+      "cloze": "A letter that stands for an unknown number is a ___."
+    },
+    {
+      "term": "No more than",
+      "termEs": "No más de",
+      "definition": "A phrase meaning less than or equal to (≤).",
+      "definitionEs": "Una frase que significa menor o igual que (≤).",
+      "visual": "\"No more than 8 people\" means people ≤ 8.",
+      "cloze": "The phrase that means less than or equal to is \"no more than,\" written with the ___ symbol."
     }
   ],
   "launch": {
@@ -351,14 +374,16 @@
         "choiceFeedback": [
           "",
           "Check your operation. Re-read what the problem asks.",
-          "",
-          ""
+          "This describes short stays, which are not charged. Check which side of 2 the symbol opens toward.",
+          "This would charge a stay of exactly 2 hours, and it also covers shorter stays. 'More than 2' leaves 2 out and looks above it."
         ],
         "hints": [
           "The charge starts once the stay goes PAST 2 hours. Is a stay of exactly 2 hours charged?",
           "If exactly 2 hours is NOT charged, the boundary is excluded — that rules out any symbol with the 'or equal' bar.",
           "Test t = 2 and t = 3: only stays longer than 2 are charged. Pick the symbol that makes t = 3 true but t = 2 false."
-        ]
+        ],
+        "stemEs": "Un estacionamiento cobra si tu estancia dura más de 2 horas. ¿Qué desigualdad representa los tiempos t que se cobran?",
+        "explanationEs": "'Más de 2 horas' significa estrictamente mayor que: t > 2. Exactamente 2 horas no se cobra."
       },
       {
         "type": "error-analysis",
@@ -382,7 +407,10 @@
         "hints": [
           "Does 'no fewer than 9' rule out having 9 witnesses, or does it rule out having fewer than 9?",
           "'No fewer than' means 'at least,' so use ≥. The correct inequality is w ≥ 9."
-        ]
+        ],
+        "titleEs": "Resuelve el error de la desigualdad",
+        "explanation": "The inequality step pointed the symbol the wrong way. \"No fewer than 9\" means the count can never drop below 9, so 9 and every larger number works: w ≥ 9. The w < 9 that was written allows only counts under 9, which is the opposite of the clue.",
+        "explanationEs": "El paso de la desigualdad apuntó el símbolo en la dirección equivocada. \"No menos de 9\" significa que el conteo nunca puede bajar de 9, así que sirven 9 y todos los números mayores: w ≥ 9. El w < 9 que se escribió solo permite conteos menores que 9, justo lo contrario de la pista."
       },
       {
         "type": "error-analysis",
@@ -406,7 +434,10 @@
         "hints": [
           "'No more than 25' means the number cannot exceed 25. Is that greater than or less than or equal to?",
           "'No more than' = at most = ≤. The correct inequality is s ≤ 25."
-        ]
+        ],
+        "titleEs": "Encuentra el error de la desigualdad",
+        "explanation": "The key-phrase step read \"no more than\" as greater than, but that phrase puts a cap on the group — the number of students can never go above 25. It means \"at most,\" so the model is s ≤ 25, which allows 25 and every smaller count.",
+        "explanationEs": "El paso de la frase clave interpretó \"no más de\" como mayor que, pero esa frase pone un tope al grupo: el número de estudiantes nunca puede pasar de 25. Significa \"a lo más\", así que el modelo es s ≤ 25, que permite 25 y todos los conteos menores."
       },
       {
         "type": "open-response",
@@ -426,7 +457,9 @@
           "The whole difference between > and ≥ is the boundary number itself: one includes it, one leaves it out.",
           "Pick real rules: 'score more than 10 points to win' (strict) versus 'you must be at least 13 to watch' (boundary counts). Explain each choice.",
           "Write situation 1 with 'more than' and test its boundary number — it should fail. Write situation 2 with 'at least' and test — the boundary should pass."
-        ]
+        ],
+        "explanation": "The only difference between > and ≥ is whether the boundary number itself is allowed. A rule like \"score more than 10 points to win\" leaves 10 out, so it needs >, while \"you must be at least 13 to watch\" lets exactly 13 count, so it needs ≥. Testing the boundary number in your own situation is the quickest way to check which symbol fits.",
+        "explanationEs": "La única diferencia entre > y ≥ es si el número del límite está permitido. Una regla como \"anota más de 10 puntos para ganar\" deja fuera el 10, así que necesita >, mientras que \"debes tener al menos 13 años para verla\" permite exactamente 13, así que necesita ≥. Probar el número del límite en tu propia situación es la manera más rápida de saber cuál símbolo va."
       }
     ],
     "extending": [
@@ -444,8 +477,20 @@
         "choiceFeedback": [
           "",
           "Check your operation. Re-read what the problem asks.",
-          "",
-          ""
+          "This allows fewer than 12 gems. 'At least 12' makes 12 the smallest possible number, not the largest.",
+          "This rules out 12 itself along with everything above it. 'At least' points the other way and includes the boundary."
+        ],
+        "stemEs": "Una pista dice que el sospechoso llevaba al menos 12 gemas robadas. ¿Qué desigualdad muestra el número g de gemas?",
+        "explanationEs": "'Al menos 12' incluye el 12 y cualquier número mayor, así que g ≥ 12.",
+        "hints": [
+          "An inequality has two things to decide: which direction it points, and whether the boundary number is included.",
+          "'At least 12' means 12 itself is allowed, so the symbol needs an 'or equal to' part.",
+          "Start with the boundary: 12 counts. Now decide whether the gem count goes above 12 or below it, and pick the matching symbol."
+        ],
+        "hintsEs": [
+          "Una desigualdad tiene dos cosas que decidir: hacia dónde apunta y si el número del límite se incluye.",
+          "'Al menos 12' significa que el 12 sí se permite, así que el símbolo necesita la parte 'o igual a'.",
+          "Empieza con el límite: el 12 cuenta. Ahora decide si el número de gemas sube por encima de 12 o baja, y elige el símbolo que corresponde."
         ]
       },
       {
@@ -462,8 +507,20 @@
         "choiceFeedback": [
           "",
           "Check your operation. Re-read what the problem asks.",
-          "",
-          ""
+          "The symbol points the wrong way. 'Fewer than 5' describes counts below 5.",
+          "This includes 5 and everything above it. 'Fewer than 5' excludes 5 entirely."
+        ],
+        "stemEs": "Un testigo informa que menos de 5 personas entraron al edificio. ¿Qué desigualdad muestra el número n de personas?",
+        "explanationEs": "'Menos de 5' no incluye el 5, así que n < 5.",
+        "hints": [
+          "Decide two things: which way the inequality points, and whether 5 itself counts.",
+          "'Fewer than' excludes the boundary number, so no 'or equal to' part is needed.",
+          "5 is not allowed and the count has to stay below it. Write the symbol that says exactly that."
+        ],
+        "hintsEs": [
+          "Decide dos cosas: hacia dónde apunta la desigualdad y si el 5 mismo cuenta.",
+          "'Menos de' excluye el número del límite, así que no hace falta la parte 'o igual a'.",
+          "El 5 no se permite y la cantidad debe quedarse por debajo. Escribe el símbolo que dice exactamente eso."
         ]
       },
       {
@@ -488,7 +545,10 @@
         "hints": [
           "Does 'at least 12' allow the value 12 itself, or only numbers bigger than 12?",
           "'At least' includes the boundary, so use ≥. The correct inequality is y ≥ 12."
-        ]
+        ],
+        "titleEs": "Extensión de Nivel 2: atrapa la confusión de símbolos",
+        "explanation": "The inequality step used >, which shuts out a detective with exactly 12 years on the force. Because \"at least 12\" allows 12 itself along with anything larger, the symbol needs the bar underneath: y ≥ 12.",
+        "explanationEs": "El paso de la desigualdad usó >, lo que deja fuera a un detective con exactamente 12 años de servicio. Como \"al menos 12\" permite el 12 mismo junto con cualquier número mayor, el símbolo necesita la barra debajo: y ≥ 12."
       },
       {
         "type": "multiple-choice",
@@ -504,14 +564,16 @@
         "choiceFeedback": [
           "",
           "Check your operation. Re-read what the problem asks.",
-          "",
-          ""
+          "The ≤ symbol lets the temperature be exactly 40. 'Less than 40' leaves 40 out.",
+          "An equals sign pins the temperature to a single value, but this situation describes a whole range of temperatures."
         ],
         "hints": [
           "Find the comparison phrase: 'less than 40 degrees'. Does 40 itself count, or only temperatures below it?",
           "'Less than' with no 'or equal to' means a strict symbol — no bar underneath — pointing toward the smaller side.",
           "Test a value: is 35 degrees 'less than 40'? Yes — so pick the strict symbol that puts t on the smaller side of 40."
-        ]
+        ],
+        "stemEs": "¿Qué desigualdad representa: 'La temperatura es menor que 40 grados'?",
+        "explanationEs": "'Menor que' significa <, así que la desigualdad es t < 40."
       },
       {
         "type": "multiple-choice",
@@ -527,14 +589,16 @@
         "choiceFeedback": [
           "",
           "Check your operation. Re-read what the problem asks.",
-          "",
-          ""
+          "This describes riders who are too short to ride. Check which direction the symbol opens.",
+          "This would let anyone shorter than 48 inches ride. 'At least 48' makes 48 the smallest allowed height, not the largest."
         ],
         "hints": [
           "'At least 48' — ask yourself: can a rider who is EXACTLY 48 inches tall ride? That decides whether 48 is included.",
           "When the boundary value is allowed, you need a symbol with the 'or equal to' bar under it.",
           "Allowed heights are 48, 49, 50, and up. Pick the symbol that includes 48 itself AND points toward bigger numbers."
-        ]
+        ],
+        "stemEs": "¿Qué desigualdad representa: 'Debes medir al menos 48 pulgadas de estatura para subir'?",
+        "explanationEs": "'Al menos' significa mayor que o igual a, así que h ≥ 48."
       },
       {
         "type": "multiple-choice",
@@ -550,14 +614,16 @@
         "choiceFeedback": [
           "",
           "Check your operation. Re-read what the problem asks.",
-          "",
-          ""
+          "This says the store always holds 75 or more people, which is the opposite of a limit. 'No more than' caps the number.",
+          "This describes crowds larger than the limit. 'No more than 75' means the store never goes above 75."
         ],
         "hints": [
           "'No more than 75' — could the store hold exactly 75 people? Could it hold 76?",
           "'No more than' allows the boundary but nothing above it — that calls for a symbol with the 'or equal' bar.",
           "Test values: 75 people is fine, 76 is not. Pick the symbol that keeps p at 75 or below."
-        ]
+        ],
+        "stemEs": "¿Qué desigualdad representa: 'Una tienda puede albergar no más de 75 personas'?",
+        "explanationEs": "'No más de' significa menor que o igual a, así que p ≤ 75."
       },
       {
         "type": "multiple-choice",
@@ -573,14 +639,16 @@
         "choiceFeedback": [
           "",
           "Check your operation. Re-read what the problem asks.",
-          "",
-          ""
+          "The symbol points the wrong way. 'More than' describes speeds above 25, not below it.",
+          "An equals sign names one exact speed, but 'more than 25' covers every speed above 25."
         ],
         "hints": [
           "'More than 25' — is exactly 25 included, or only speeds above 25?",
           "'More than' (not 'at least') is strict — no 'or equal' bar under the symbol.",
           "Test: 26 works, but 25 itself does not. Pick the strict symbol that puts s above 25."
-        ]
+        ],
+        "stemEs": "¿Qué desigualdad representa: 'El límite de velocidad es más de 25 mph'?",
+        "explanationEs": "'Más de' significa estrictamente mayor que, así que s > 25."
       },
       {
         "type": "error-analysis",
@@ -604,7 +672,10 @@
         "hints": [
           "Does 'at least 16' allow the suspect's age to be exactly 16, or must it be older?",
           "'At least' includes the number, so use ≥. The correct inequality is a ≥ 16."
-        ]
+        ],
+        "titleEs": "Descubre el error del detective",
+        "explanation": "The inequality step used >, which shuts out a suspect who is exactly 16. \"At least 16\" means 16 counts as well as every older age, so the clue is a ≥ 16 — the bar under the symbol is what lets the boundary age in.",
+        "explanationEs": "El paso de la desigualdad usó >, lo que deja fuera a un sospechoso de exactamente 16 años. \"Al menos 16\" significa que 16 cuenta, igual que cualquier edad mayor, así que la pista es a ≥ 16: la barra debajo del símbolo es la que permite incluir la edad del límite."
       }
     ],
     "optional": [],

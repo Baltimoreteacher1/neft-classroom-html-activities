@@ -1604,6 +1604,14 @@ body.obj-popup-open { overflow: hidden; }
 .section-vocab { border-left: 4px solid var(--coral); }
 .section-stuck { border-left: 4px solid #9b59b6; }
 .section-quick-intro { border-left: 4px solid var(--success); }
+.quick-check-time {
+  background: var(--amber-light);
+  border: 1px solid var(--amber);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 0 0 12px;
+  font-size: 15px;
+}
 .section-celebrate {
   border-left: 4px solid var(--amber);
   background: linear-gradient(180deg, var(--amber-light), var(--white));
@@ -1851,6 +1859,16 @@ body.obj-popup-open { overflow: hidden; }
   padding: 2px;
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x proximity;
+}
+/* On a phone the 10 tabs are ~738px wide in a ~381px viewport, so half of them
+   (Help, More, Done) sit off-screen with nothing to suggest they exist. Fade the
+   trailing edge so the strip reads as scrollable. Only below 700px, where the
+   overflow is guaranteed — a permanent fade on desktop would just look broken. */
+@media (max-width: 700px) {
+  .homework-tab-bar {
+    -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+    mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+  }
 }
 .homework-tab-btn {
   flex: 0 0 auto;
@@ -2372,6 +2390,12 @@ body.lang-mode-es .bilingual-grid {
 @media print {
   .homework-tab-chrome, .homework-tab-bar, .bottom-status-bar, .help-modal-overlay, .print-all-btn, .parent-signoff-container { display: none !important; }
   .tab-panel-inner[hidden] { display: block !important; page-break-inside: avoid; }
+  /* Printing un-hides every panel, but these three are screen-only: an embedded
+     arcade iframe, a live game, and a link-out. On paper they were blank or
+     meaningless pages in the middle of the packet. */
+  [data-tab-panel="arcade"],
+  [data-tab-panel="play"],
+  [data-tab-panel="workbench"] { display: none !important; }
   body { padding-bottom: 0; }
   
   .print-only-certificate.is-signed {
@@ -2448,7 +2472,7 @@ body.lang-mode-es .bilingual-grid {
 
 
 .family-visual-lab{--lab-ink:#173a5e;--lab-teal:#0b8f87;--lab-coral:#ff775f;--lab-sun:#f6c94c;margin:26px 0;padding:clamp(18px,3vw,30px);border:3px solid var(--lab-ink);border-radius:28px;background:#fffdf5;box-shadow:8px 8px 0 var(--lab-ink);color:var(--lab-ink)}
-.visual-lab-heading{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(260px,1.15fr);gap:20px;align-items:end;margin-bottom:20px}.visual-lab-heading h2{margin:6px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.05}.visual-lab-heading p{margin:0;padding:14px 16px;border-left:5px solid var(--lab-sun);background:#fff8d9;font-size:17px;font-weight:700;line-height:1.45}.visual-lab-kicker{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--lab-ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em}
+.visual-lab-heading{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(260px,1.15fr);gap:20px;align-items:end;margin-bottom:20px}.visual-lab-heading h2{margin:6px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.05}.visual-lab-heading p{margin:0;padding:14px 16px;border-left:5px solid var(--lab-sun);background:#fff8d9;font-size:17px;font-weight:700;line-height:1.45}.visual-lab-kicker{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--lab-ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em}.visual-lab-kicker .lang-en,.visual-lab-kicker .lang-es{color:inherit}
 .visual-lab-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(230px,.8fr);gap:18px;align-items:stretch}.visual-lab-canvas-wrap{min-width:0;padding:12px;border-radius:22px;background-color:#eef8f4;background-image:linear-gradient(#cee3dc 1px,transparent 1px),linear-gradient(90deg,#cee3dc 1px,transparent 1px);background-size:24px 24px;border:2px solid var(--lab-ink)}.visual-lab-stage{display:grid;place-items:center;min-height:280px}.visual-lab-stage svg{display:block;width:100%;max-height:320px;overflow:visible}.visual-lab-status{min-height:26px;margin:5px 8px 0;padding:7px 10px;border-radius:10px;background:#fff;font-weight:800;text-align:center}
 .visual-lab-controls{display:flex;flex-direction:column;gap:14px;padding:18px;border-radius:22px;background:var(--lab-ink);color:#fff}.visual-lab-control{display:grid;gap:7px;font-weight:800}.visual-lab-control-label{display:flex;justify-content:space-between;gap:10px;align-items:center}.visual-lab-control output{min-width:38px;padding:3px 8px;border-radius:8px;background:var(--lab-sun);color:#102f4e;text-align:center;font-size:18px}.visual-lab-control input[type=range]{width:100%;min-height:28px;accent-color:var(--lab-coral);cursor:pointer}.visual-lab-control input[type=range]:focus-visible{outline:4px solid #fff;outline-offset:4px}.visual-lab-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:auto}.visual-lab-button{min-height:48px;border:2px solid #fff;border-radius:13px;background:var(--lab-coral);color:#182f48;font:inherit;font-weight:800;cursor:pointer}.visual-lab-button-quiet{background:#fff}.visual-lab-button:hover{transform:translateY(-2px)}.visual-lab-button:focus-visible{outline:4px solid var(--lab-sun);outline-offset:3px}
 .visual-representation-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:18px}.visual-representation-card{position:relative;min-height:150px;padding:18px 16px 15px;border:2px solid var(--lab-ink);border-radius:18px;background:#fff}.visual-representation-card h3{margin:0 0 10px;padding-left:30px;font-size:17px}.visual-representation-card p{margin:7px 0;font-size:16px;line-height:1.4}.representation-number{position:absolute;top:12px;left:12px;display:grid;width:27px;height:27px;place-items:center;border-radius:50%;background:var(--lab-ink);color:#fff;font-weight:800}.visual-representation-model{background:#dff5ee}.visual-representation-math{background:#fff2c2}.visual-representation-words{background:#ffe4dd}.visual-representation-math [data-lab-equation]{font-size:clamp(22px,3vw,32px);font-weight:800;text-align:center}.mini-model{display:flex;flex-wrap:wrap;gap:7px;align-content:center;min-height:76px;padding:8px}.mini-dot{width:18px;height:18px;border:2px solid var(--lab-ink);border-radius:50%;background:var(--lab-teal)}.visual-representation-card details{margin-top:10px}.visual-representation-card summary{cursor:pointer;font-weight:800;text-decoration:underline}.visual-source-idea{font-size:13px!important;color:#344f69}
@@ -2731,12 +2755,12 @@ header.packet h1::after{
         <div class="bilingual-col lang-en">
           <span class="lang-label">English</span>
           <p class="learning-big">Tell statistical questions from non-statistical ones so the team collects data worth analyzing.</p>
-          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Statistical Question</li><li>Data</li><li>Variability</li><li>Survey</li><li>Data distribution</li></ul></div>
+          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Statistical Questions and Data</li><li>Statistical Question</li><li>Data</li><li>Variability</li><li>Survey</li></ul></div>
         </div>
         <div class="bilingual-col lang-es" lang="es">
           <span class="lang-label">Español</span>
           <p class="learning-big">Distinguir las preguntas estadísticas de las no estadísticas para que el equipo recoja datos que valga la pena analizar.</p>
-          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Pregunta estadística</li><li>Datos</li><li>Variabilidad</li><li>Encuesta</li><li>Distribución de datos</li></ul></div>
+          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Preguntas estadísticas y datos</li><li>Pregunta estadística</li><li>Datos</li><li>Variabilidad</li><li>Encuesta</li></ul></div>
         </div>
       </div>
     
@@ -2851,6 +2875,24 @@ header.packet h1::after{
       </p>
       <div class="vocab-container">
         
+            <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+              <div class="vocab-card-inner">
+                <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/cat-data.svg" alt="Illustration of Statistical Questions and Data: A statistical question expects varied answers that can be collected as data." loading="lazy" width="72" height="72" />
+                  </div>
+                  <h3>Statistical Questions and Data</h3>
+                  <p class="vocab-es" lang="es">Preguntas estadísticas y datos</p>
+                  <div class="vocab-visual-hint">💡 How many minutes do students in our class read each night?</div>
+                  <div class="flip-prompt"><span class="lang-en">Tap</span><span class="lang-es" lang="es">Toca ➔</span></div>
+                </div>
+                <div class="vocab-card-back">
+                  <p class="vocab-def">A statistical question expects varied answers that can be collected as data.</p>
+                  <p class="vocab-def-es" lang="es">Una pregunta estadística espera respuestas variadas que se pueden recopilar como datos.</p>
+                  <p class="vocab-back-visual">📌 How many minutes do students in our class read each night?</p>
+                </div>
+              </div>
+            </div>
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -3063,6 +3105,10 @@ header.packet h1::after{
       
     
       <h2 class="section-title">✅ <span class="lang-en">Quick check</span><span class="lang-es" lang="es">Repaso rápido</span></h2>
+      <p class="quick-check-time bilingual-block">
+        <span class="lang-en">⏱️ Plan on about <strong>15–20 minutes</strong> for the 6 problems below. The extra practice at the bottom is optional.</span>
+        <span class="lang-es" lang="es">⏱️ Calculen unos <strong>15–20 minutos</strong> para los 6 problemas de abajo. La práctica extra al final es opcional.</span>
+      </p>
       <p class="bilingual-block">
         <span class="lang-en">A few problems to practice together. Each one has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong>, and a <strong>space to show your work</strong>. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
         <span class="lang-es" lang="es">Unos problemas para practicar juntos. Cada uno tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para mostrar el trabajo</strong>. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
@@ -3087,37 +3133,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_0" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 1</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Notice the words &#39;each athlete&#39; — the coach plans to collect one number from every runner on the team.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A coach asks: &quot;How many hours does each athlete on the track team sleep the night before a meet?&quot; Why is this a statistical question?</p>
+        <p class="problem-stem"><span class="lang-en">A coach asks: &quot;How many hours does each athlete on the track team sleep the night before a meet?&quot; Why is this a statistical question?</span><span class="lang-es" lang="es">Un entrenador pregunta: &quot;¿Cuántas horas duerme cada atleta del equipo de atletismo la noche antes de una competencia?&quot; ¿Por qué es una pregunta estadística?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="A statistical question anticipates variability. Different athletes sleep different amounts, so the data collected will vary.">
           
             <label class="mc-option-label" id="label_q_0_0">
               <input type="radio" name="q_0" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Because the answers will vary from athlete to athlete</span>
+              <span class="choice-text"><span class="lang-en">Because the answers will vary from athlete to athlete</span><span class="lang-es" lang="es">Porque las respuestas variarán de un atleta a otro</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_0_1">
               <input type="radio" name="q_0" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Because it is about sports</span>
+              <span class="choice-text"><span class="lang-en">Because it is about sports</span><span class="lang-es" lang="es">Porque es sobre deportes</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_0_2">
               <input type="radio" name="q_0" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Because it has a numerical answer</span>
+              <span class="choice-text"><span class="lang-en">Because it has a numerical answer</span><span class="lang-es" lang="es">Porque tiene una respuesta numérica</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_0_3">
               <input type="radio" name="q_0" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Because the coach asked it</span>
+              <span class="choice-text"><span class="lang-en">Because the coach asked it</span><span class="lang-es" lang="es">Porque la hizo el entrenador</span></span>
             </label>
           
         </div>
@@ -3159,12 +3205,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_1" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 2</div>
-        <div class="problem-type-badge">DRAG SORT</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Sort each scouting question into Statistical or Not Statistical. A statistical question anticipates that the answers will vary.</p>
+        <p class="problem-stem"><span class="lang-en">Sort each scouting question into Statistical or Not Statistical. A statistical question anticipates that the answers will vary.</span><span class="lang-es" lang="es">Clasifica cada pregunta de exploración en Estadística o No estadística. Una pregunta estadística anticipa que las respuestas van a variar.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
         
         <div class="drag-sort-workspace" id="dragsort_1">
@@ -3331,12 +3377,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_2" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 3</div>
-        <div class="problem-type-badge">FILL TABLE</div>
+        <div class="problem-type-badge"><span class="lang-en">FILL TABLE</span><span class="lang-es" lang="es">COMPLETAR LA TABLA</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"For each row, check whether the question asks about many people (&#39;each student&#39;, &#39;each player&#39;) or one fixed fact about the game.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Decide if each question is statistical and explain why.</p>
+        <p class="problem-stem"><span class="lang-en">Decide if each question is statistical and explain why.</span><span class="lang-es" lang="es">Decide si cada pregunta es estadística y explica por qué.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
         <div class="table-responsive">
           <table class="fill-table">
@@ -3416,12 +3462,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_3" data-problem-type="open-response">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 1</div>
-        <div class="problem-type-badge">OPEN RESPONSE</div>
+        <div class="problem-type-badge"><span class="lang-en">OPEN RESPONSE</span><span class="lang-es" lang="es">RESPUESTA ABIERTA</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"You need TWO questions about the cafeteria: one where classmates would answer differently, and one with a single fixed answer.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Write one statistical question and one non-statistical question about your school&#039;s cafeteria. Explain why each question is or is not statistical, and describe what the data would look like for the statistical question.</p>
+        <p class="problem-stem"><span class="lang-en">Write one statistical question and one non-statistical question about your school&#039;s cafeteria. Explain why each question is or is not statistical, and describe what the data would look like for the statistical question.</span><span class="lang-es" lang="es">Escribe una pregunta estadística y una pregunta no estadística sobre la cafetería de tu escuela. Explica por qué cada pregunta es o no es estadística y describe cómo se verían los datos de la pregunta estadística.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 A complete sentence with math vocabulary is the goal — not a perfect paragraph.</span><span class="lang-es" lang="es">👪 Una oración completa con vocabulario matemático es la meta — no un párrafo perfecto.</span></p>
         
         
@@ -3488,12 +3534,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_4" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 2</div>
-        <div class="problem-type-badge">FILL TABLE</div>
+        <div class="problem-type-badge"><span class="lang-en">FILL TABLE</span><span class="lang-es" lang="es">COMPLETAR LA TABLA</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each row starts with a one-answer question. Your rewrite should ask about MANY players or teams so the answers can differ.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Rewrite each non-statistical question to make it statistical and explain the variability.</p>
+        <p class="problem-stem"><span class="lang-en">Rewrite each non-statistical question to make it statistical and explain the variability.</span><span class="lang-es" lang="es">Reescribe cada pregunta no estadística para volverla estadística y explica la variabilidad.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
         <div class="table-responsive">
           <table class="fill-table">
@@ -3553,37 +3599,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_5" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 3</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"\"How many rebounds does each player grab per game?\" is statistical because different players grab different numbers of rebounds — the data anticipates variability. The other three each have one fixed answer.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">The front office wants ONE more question that will give varied data to analyze. Which question is statistical?</p>
+        <p class="problem-stem"><span class="lang-en">The front office wants ONE more question that will give varied data to analyze. Which question is statistical?</span><span class="lang-es" lang="es">La oficina quiere UNA pregunta más que dé datos variados para analizar. ¿Cuál pregunta es estadística?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="&quot;How many rebounds does each player grab per game?&quot; is statistical because different players grab different numbers of rebounds — the data anticipates variability. The other three each have one fixed answer.">
           
             <label class="mc-option-label" id="label_q_5_0">
               <input type="radio" name="q_5" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">How many rebounds does each player grab per game?</span>
+              <span class="choice-text"><span class="lang-en">How many rebounds does each player grab per game?</span><span class="lang-es" lang="es">¿Cuántos rebotes atrapa cada jugador por partido?</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_5_1">
               <input type="radio" name="q_5" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">How many players start the game on the court?</span>
+              <span class="choice-text"><span class="lang-en">How many players start the game on the court?</span><span class="lang-es" lang="es">¿Cuántos jugadores empiezan el partido en la cancha?</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_5_2">
               <input type="radio" name="q_5" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">What is the name of the team&#039;s arena?</span>
+              <span class="choice-text"><span class="lang-en">What is the name of the team&#039;s arena?</span><span class="lang-es" lang="es">¿Cómo se llama el estadio del equipo?</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_5_3">
               <input type="radio" name="q_5" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">How long is one quarter of the game in minutes?</span>
+              <span class="choice-text"><span class="lang-en">How long is one quarter of the game in minutes?</span><span class="lang-es" lang="es">¿Cuántos minutos dura un cuarto del partido?</span></span>
             </label>
           
         </div>
@@ -3636,37 +3682,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_6" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 1</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The question asks WHY it&#39;s statistical — focus on what happens when many students answer, not on the topic of sleep.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Why is &#039;How many hours of sleep did each student get last night?&#039; a statistical question?</p>
+        <p class="problem-stem"><span class="lang-en">Why is &#039;How many hours of sleep did each student get last night?&#039; a statistical question?</span><span class="lang-es" lang="es">¿Por qué &#039;¿Cuántas horas durmió anoche cada estudiante?&#039; es una pregunta estadística?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="A statistical question anticipates variability — different students slept different amounts, so the data will vary.">
           
             <label class="mc-option-label" id="label_q_6_0">
               <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Because different students got different amounts of sleep</span>
+              <span class="choice-text"><span class="lang-en">Because different students got different amounts of sleep</span><span class="lang-es" lang="es">Porque distintos estudiantes durmieron cantidades distintas</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_6_1">
               <input type="radio" name="q_6" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Because it asks about sleep</span>
+              <span class="choice-text"><span class="lang-en">Because it asks about sleep</span><span class="lang-es" lang="es">Porque pregunta sobre el sueño</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_6_2">
               <input type="radio" name="q_6" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Because hours are numbers</span>
+              <span class="choice-text"><span class="lang-en">Because hours are numbers</span><span class="lang-es" lang="es">Porque las horas son números</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_6_3">
               <input type="radio" name="q_6" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Because the answer is always 8 hours</span>
+              <span class="choice-text"><span class="lang-en">Because the answer is always 8 hours</span><span class="lang-es" lang="es">Porque la respuesta siempre es 8 horas</span></span>
             </label>
           
         </div>
@@ -3708,12 +3754,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_7" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 2</div>
-        <div class="problem-type-badge">DRAG SORT</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Statistical questions expect different answers from different people or observations.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Sort each question by type.</p>
+        <p class="problem-stem"><span class="lang-en">Sort each question by type.</span><span class="lang-es" lang="es">Clasifica cada pregunta por tipo.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
         <div class="family-hint-box"><p>💡 Statistical questions expect different answers from different people or observations.</p><p>💡 Non-statistical questions have one fixed answer that doesn&#039;t change.</p></div>
         <div class="drag-sort-workspace" id="dragsort_7">
@@ -3820,12 +3866,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_8" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 3</div>
-        <div class="problem-type-badge">DRAG SORT</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"To make a question statistical, add variability by asking about &#39;each&#39; person or observation.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Match each non-statistical question with its statistical rewrite.</p>
+        <p class="problem-stem"><span class="lang-en">Match each non-statistical question with its statistical rewrite.</span><span class="lang-es" lang="es">Une cada pregunta no estadística con su versión reescrita como estadística.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
         <div class="family-hint-box"><p>💡 To make a question statistical, add variability by asking about &#039;each&#039; person or observation.</p><p>💡 The rewritten version should produce different answers for different people.</p></div>
         <div class="drag-sort-workspace" id="dragsort_8">
@@ -3902,37 +3948,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_9" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 4</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Re-read each question and ask: would different people or games give different answers, or is there just one fixed answer?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Which of the following is a statistical question?</p>
+        <p class="problem-stem"><span class="lang-en">Which of the following is a statistical question?</span><span class="lang-es" lang="es">¿Cuál de las siguientes es una pregunta estadística?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="&quot;How many points did each player score?&quot; is statistical because different players will have different scores — there is variability in the data.">
           
             <label class="mc-option-label" id="label_q_9_0">
               <input type="radio" name="q_9" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">How many points did each player score this season?</span>
+              <span class="choice-text"><span class="lang-en">How many points did each player score this season?</span><span class="lang-es" lang="es">¿Cuántos puntos anotó cada jugador esta temporada?</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_9_1">
               <input type="radio" name="q_9" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">How many points are scored for a free throw?</span>
+              <span class="choice-text"><span class="lang-en">How many points are scored for a free throw?</span><span class="lang-es" lang="es">¿Cuántos puntos vale un tiro libre?</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_9_2">
               <input type="radio" name="q_9" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">What sport does this team play?</span>
+              <span class="choice-text"><span class="lang-en">What sport does this team play?</span><span class="lang-es" lang="es">¿Qué deporte juega este equipo?</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_9_3">
               <input type="radio" name="q_9" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">How many halves are in a soccer game?</span>
+              <span class="choice-text"><span class="lang-en">How many halves are in a soccer game?</span><span class="lang-es" lang="es">¿Cuántas mitades tiene un partido de fútbol?</span></span>
             </label>
           
         </div>
@@ -3974,37 +4020,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_10" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 5</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Careful — this asks for the question that is NOT statistical: the one with a single fixed answer instead of varying data.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Which question is NOT a statistical question?</p>
+        <p class="problem-stem"><span class="lang-en">Which question is NOT a statistical question?</span><span class="lang-es" lang="es">¿Cuál pregunta NO es una pregunta estadística?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="&quot;How many innings are in a baseball game?&quot; has one fixed answer (9) — no variability. The other questions all produce different answers for different people.">
           
             <label class="mc-option-label" id="label_q_10_0">
               <input type="radio" name="q_10" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">How many innings are in a baseball game?</span>
+              <span class="choice-text"><span class="lang-en">How many innings are in a baseball game?</span><span class="lang-es" lang="es">¿Cuántas entradas tiene un partido de béisbol?</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_10_1">
               <input type="radio" name="q_10" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">How many home runs did each player hit this year?</span>
+              <span class="choice-text"><span class="lang-en">How many home runs did each player hit this year?</span><span class="lang-es" lang="es">¿Cuántos jonrones bateó cada jugador este año?</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_10_2">
               <input type="radio" name="q_10" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">How many miles does each runner train per week?</span>
+              <span class="choice-text"><span class="lang-en">How many miles does each runner train per week?</span><span class="lang-es" lang="es">¿Cuántas millas entrena cada corredor por semana?</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_10_3">
               <input type="radio" name="q_10" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">How tall is each player on the basketball team?</span>
+              <span class="choice-text"><span class="lang-en">How tall is each player on the basketball team?</span><span class="lang-es" lang="es">¿Cuánto mide cada jugador del equipo de baloncesto?</span></span>
             </label>
           
         </div>
@@ -4046,37 +4092,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_11" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 6</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"A statistical question anticipates variability. Different players spend different amounts of time warming up, so the collected data will vary from player to player.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Why does &quot;How many minutes does each player spend warming up?&quot; anticipate variability?</p>
+        <p class="problem-stem"><span class="lang-en">Why does &quot;How many minutes does each player spend warming up?&quot; anticipate variability?</span><span class="lang-es" lang="es">¿Por qué &quot;¿Cuántos minutos pasa calentando cada jugador?&quot; anticipa variabilidad?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="A statistical question anticipates variability. Different players spend different amounts of time warming up, so the collected data will vary from player to player.">
           
             <label class="mc-option-label" id="label_q_11_0">
               <input type="radio" name="q_11" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Because different players warm up for different amounts of time</span>
+              <span class="choice-text"><span class="lang-en">Because different players warm up for different amounts of time</span><span class="lang-es" lang="es">Porque distintos jugadores calientan durante cantidades de tiempo distintas</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_11_1">
               <input type="radio" name="q_11" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Because warming up happens before every game</span>
+              <span class="choice-text"><span class="lang-en">Because warming up happens before every game</span><span class="lang-es" lang="es">Porque el calentamiento pasa antes de cada partido</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_11_2">
               <input type="radio" name="q_11" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Because minutes are always a number</span>
+              <span class="choice-text"><span class="lang-en">Because minutes are always a number</span><span class="lang-es" lang="es">Porque los minutos siempre son un número</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_11_3">
               <input type="radio" name="q_11" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Because every player warms up for exactly 10 minutes</span>
+              <span class="choice-text"><span class="lang-en">Because every player warms up for exactly 10 minutes</span><span class="lang-es" lang="es">Porque cada jugador calienta exactamente 10 minutos</span></span>
             </label>
           
         </div>
@@ -4118,12 +4164,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_12" data-problem-type="matching-game">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 7</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
+        <div class="problem-type-badge"><span class="lang-en">MATCHING GAME</span><span class="lang-es" lang="es">JUEGO DE PAREJAS</span></div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Each weak question on the left has one fixed answer. Match it to the improved version that anticipates variability.</p>
+        <p class="problem-stem"><span class="lang-en">Each weak question on the left has one fixed answer. Match it to the improved version that anticipates variability.</span><span class="lang-es" lang="es">Cada pregunta débil de la izquierda tiene una sola respuesta fija. Únela con la versión mejorada que anticipa variabilidad.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Say each term out loud, then talk through which match makes sense before choosing.</span><span class="lang-es" lang="es">👪 Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.</span></p>
         <div class="matching-pairs">
           
@@ -4490,8 +4536,8 @@ header.packet h1::after{
 <script>
 window.LESSON_ID = "8-1-flagship";
 window.LESSON_TITLE = "Statistical Questions and Data";
-window.__HW_VOCAB__ = [{"term":"Statistical Question","termEs":"Pregunta estadística","def":"A question where the answers will be different for different people.","defEs":"Una pregunta cuyas respuestas serán distintas para distintas personas.","example":"\"How tall are the players on the team?\" → answers vary: 60 in, 63 in, 58 in, 65 in","img":"/assets/vocab-images/data.svg","imgAlt":"Illustration of Statistical Question: A question where the answers will be different for different people."},{"term":"Data","termEs":"Datos","def":"Facts and numbers you collect, like answers to a survey.","defEs":"Datos y números que recoges, como respuestas a una encuesta.","example":"Player heights: 60 in, 63 in, 58 in, 65 in — four different measurements","img":"/assets/vocab-images/data.svg","imgAlt":"Illustration of Data: Facts and numbers you collect, like answers to a survey."},{"term":"Variability","termEs":"Variabilidad","def":"How spread out the numbers are.","defEs":"Qué tan separados están los números.","example":"Scores 10, 12, 11 are close together (low variability); scores 2, 15, 30 are far apart (high variability)","img":"/assets/vocab-images/spread.svg","imgAlt":"Illustration of Variability: How spread out the numbers are."},{"term":"Survey","termEs":"Encuesta","def":"Collecting facts by asking people questions.","defEs":"Recoger datos haciendo preguntas a las personas.","example":"Asking 50 students 'What is your favorite sport?' and recording the answers","img":"/assets/vocab-images/data.svg","imgAlt":"Illustration of Survey: Collecting facts by asking people questions."},{"term":"Data distribution","termEs":"Distribución de datos","def":"How the data looks: where it sits and how spread out it is.","defEs":"Cómo se ven los datos: dónde están y qué tan separados están.","example":"If most scores cluster in the middle with fewer at the edges, the distribution is symmetric","img":"/assets/vocab-images/distribution.svg","imgAlt":"Illustration of Data distribution: How the data looks: where it sits and how spread out it is."}];
-window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Statistical Question|Data distribution|Variability|Survey|Data)(?:es|s)?\\b","lookup":{"statistical question":0,"data":1,"variability":2,"survey":3,"data distribution":4}};
+window.__HW_VOCAB__ = [{"term":"Statistical Questions and Data","termEs":"Preguntas estadísticas y datos","def":"A statistical question expects varied answers that can be collected as data.","defEs":"Una pregunta estadística espera respuestas variadas que se pueden recopilar como datos.","example":"How many minutes do students in our class read each night?","img":"","imgAlt":""},{"term":"Statistical Question","termEs":"Pregunta estadística","def":"A question where the answers will be different for different people.","defEs":"Una pregunta cuyas respuestas serán distintas para distintas personas.","example":"\"How tall are the players on the team?\" → answers vary: 60 in, 63 in, 58 in, 65 in","img":"/assets/vocab-images/data.svg","imgAlt":"Illustration of Statistical Question: A question where the answers will be different for different people."},{"term":"Data","termEs":"Datos","def":"Facts and numbers you collect, like answers to a survey.","defEs":"Datos y números que recoges, como respuestas a una encuesta.","example":"Player heights: 60 in, 63 in, 58 in, 65 in — four different measurements","img":"/assets/vocab-images/data.svg","imgAlt":"Illustration of Data: Facts and numbers you collect, like answers to a survey."},{"term":"Variability","termEs":"Variabilidad","def":"How spread out the numbers are.","defEs":"Qué tan separados están los números.","example":"Scores 10, 12, 11 are close together (low variability); scores 2, 15, 30 are far apart (high variability)","img":"/assets/vocab-images/spread.svg","imgAlt":"Illustration of Variability: How spread out the numbers are."},{"term":"Survey","termEs":"Encuesta","def":"Collecting facts by asking people questions.","defEs":"Recoger datos haciendo preguntas a las personas.","example":"Asking 50 students 'What is your favorite sport?' and recording the answers","img":"/assets/vocab-images/data.svg","imgAlt":"Illustration of Survey: Collecting facts by asking people questions."},{"term":"Data distribution","termEs":"Distribución de datos","def":"How the data looks: where it sits and how spread out it is.","defEs":"Cómo se ven los datos: dónde están y qué tan separados están.","example":"If most scores cluster in the middle with fewer at the edges, the distribution is symmetric","img":"/assets/vocab-images/distribution.svg","imgAlt":"Illustration of Data distribution: How the data looks: where it sits and how spread out it is."}];
+window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Statistical Questions and Data|Statistical Question|Data distribution|Variability|Survey|Data)(?:es|s)?\\b","lookup":{"statistical questions and data":0,"statistical question":1,"data":2,"variability":3,"survey":4,"data distribution":5}};
 
 function syncHomeworkChromeHeights() {
   const status = document.querySelector('.bottom-status-bar');
@@ -4625,7 +4671,33 @@ function saveParentSignoff() {
   try {
     localStorage.setItem('hw_parent_signoff_' + lessonId, JSON.stringify(payload));
   } catch(e) {}
-  
+
+  /* localStorage stays the source of truth for what this page displays, but a
+     sign-off the teacher never sees is not a sign-off. Fire-and-forget POST:
+     the endpoint always answers 204, and any failure here is swallowed so a
+     family on a bad connection still gets their confirmation. */
+  try {
+    var signoffBody = JSON.stringify({
+      lessonId: lessonId,
+      lessonTitle: lessonTitle,
+      parentName: nameVal,
+      note: noteVal,
+      date: signoffDate,
+      studentName: (window.NeftSaveResume && window.NeftSaveResume.studentName) || '',
+      section: (window.NeftSaveResume && window.NeftSaveResume.section) || ''
+    });
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('/api/progress/family-signoff', new Blob([signoffBody], { type: 'application/json' }));
+    } else {
+      fetch('/api/progress/family-signoff', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: signoffBody,
+        keepalive: true
+      }).catch(function() {});
+    }
+  } catch(e) {}
+
   updateSignoffUI(payload);
 }
 
@@ -5562,6 +5634,15 @@ function playCheckSound(isCorrect) {
   }
 }
 
+/* Feedback text is built in JS, so it cannot use the .lang-en/.lang-es span
+   pair the rest of the page toggles. Pick the language the family is actually
+   reading; fall back to English whenever no Spanish was authored. */
+function pickLangText(en, es) {
+  const esText = (es || "").trim();
+  if (esText && document.body.classList.contains("lang-mode-es")) return esText;
+  return en || "";
+}
+
 function checkProblem(idx, options) {
   const silent = options && options.silent;
   const section = document.getElementById("problem_" + idx);
@@ -5579,7 +5660,7 @@ function checkProblem(idx, options) {
       const container = section.querySelector(".mc-options");
       const selected = container.querySelector("input[type='radio']:checked");
       const correctIdx = container.dataset.correct;
-      const explanation = container.dataset.explanation;
+      const explanation = pickLangText(container.dataset.explanation, container.dataset.explanationEs);
       
       // Reset radio option styles
       const labels = container.querySelectorAll(".mc-option-label");
@@ -5807,7 +5888,7 @@ function checkProblem(idx, options) {
   if (!feedbackMessage) {
     if (type === "multiple-choice") {
       const container = section.querySelector(".mc-options");
-      const explanation = container?.dataset.explanation || "";
+      const explanation = pickLangText(container?.dataset.explanation, container?.dataset.explanationEs);
       if (isProblemCorrect) {
         feedbackMessage = explanation
           ? "Correct! " + explanation

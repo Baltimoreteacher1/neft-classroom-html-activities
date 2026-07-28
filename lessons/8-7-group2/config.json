@@ -191,6 +191,13 @@
   "vocabMode": "matching",
   "vocabulary": [
     {
+      "term": "Shape of Data Distributions",
+      "termEs": "Forma de las distribuciones de datos",
+      "definition": "The overall pattern of data, such as symmetric, skewed, clustered, or containing gaps.",
+      "definitionEs": "El patrón general de los datos, como simétrico, sesgado, agrupado o con espacios.",
+      "visual": "A long tail to the right means the distribution is skewed right."
+    },
+    {
       "term": "Symmetric",
       "termEs": "Simétrico",
       "definition": "Data that looks about the same on the left and right.",
@@ -233,6 +240,22 @@
       "definitionEs": "Un espacio grande y vacío donde no hay datos.",
       "visual": "Data: 5, 6, 7, 8, ___, ___, ___, 20 — the empty space from 9 to 19 is a gap",
       "cloze": "An interval where there are no data values is a ___."
+    },
+    {
+      "term": "Data distribution",
+      "termEs": "Distribución de datos",
+      "definition": "How the data looks: where it sits and how spread out it is.",
+      "definitionEs": "Cómo se ven los datos: dónde están y qué tan separados están.",
+      "visual": "Looking at a dot plot or histogram, you can see if data is symmetric, skewed, clustered, or has gaps",
+      "cloze": "The way data values are spread out across a range is the ___."
+    },
+    {
+      "term": "Variability",
+      "termEs": "Variabilidad",
+      "definition": "How spread out the numbers are.",
+      "definitionEs": "Qué tan separados están los números.",
+      "visual": "Symmetric data with low variability: tightly packed around the center. Skewed data: spread unevenly",
+      "cloze": "How much the values in a data set differ from one another is the ___."
     }
   ],
   "launch": {
@@ -384,7 +407,9 @@
           "Read the dot counts: 0 goals has 5 dots, 1 has 7, 2 has 4, 3 has 2, 4 has 1. Find where dots pile up and where they thin out.",
           "The peak is at 1 goal, and the counts shrink as goals increase. Skew is named for the direction of that shrinking tail.",
           "First step: sketch the dots as bars — 5, 7, 4, 2, 1 from left to right. Trace the falling heights toward 4 goals, then name that direction."
-        ]
+        ],
+        "stemEs": "Un diagrama de puntos de goles anotados por partido muestra: 0 (5 puntos), 1 (7 puntos), 2 (4 puntos), 3 (2 puntos), 4 (1 punto). ¿Cuál es la forma?",
+        "explanationEs": "Los datos alcanzan su punto más alto en 0–1 goles y disminuyen hacia el 4. La mayoría de los datos está a la izquierda y unos pocos valores se extienden hacia la derecha: esto es sesgada a la derecha."
       },
       {
         "type": "error-analysis",
@@ -408,7 +433,10 @@
         "hints": [
           "The shape call is right — check the measure-of-center choice instead.",
           "That one 40-million salary drags the mean up to ~6.75 while the median stays at 2. For skewed data, use the median."
-        ]
+        ],
+        "titleEs": "Detecta el error común",
+        "explanation": "The shape call was correct, but the measure of center was not. The single 40-million salary sits far out in the right tail and drags the mean up to about 6.75 million, higher than every other player actually earns. The median of 2 million truly describes a typical salary, so skewed data should be summarized with the median.",
+        "explanationEs": "La forma estaba bien identificada, pero la medida de centro no. El único salario de 40 millones queda muy lejos, en la cola derecha, y arrastra la media hasta unos 6.75 millones, más de lo que gana cualquier otro jugador. La mediana de 2 millones sí describe un salario típico, así que los datos sesgados se deben resumir con la mediana."
       },
       {
         "type": "error-analysis",
@@ -436,7 +464,10 @@
         "hints": [
           "The direction of the skew is the direction of the TAIL, not the peak. Where is the long tail?",
           "The peak is on the left (10–11 seconds) and the tail stretches right to 14.8. That means skewed RIGHT."
-        ]
+        ],
+        "titleEs": "Encuentra el error de forma",
+        "explanation": "The shape was named from the tall bar instead of the tail. The histogram clusters at 10–11 seconds, shows empty intervals at 12 and 13, and then has one lone value at 14.8, so the stretched-out tail points right — skewed right. And because the data is skewed, the median describes a typical sprint time better than the mean, which the 14.8 pulls upward.",
+        "explanationEs": "La forma se nombró por la barra alta en lugar de por la cola. El histograma se agrupa entre 10 y 11 segundos, muestra intervalos vacíos en 12 y 13, y luego tiene un solo valor en 14.8, así que la cola alargada apunta a la derecha: sesgada a la derecha. Y como los datos están sesgados, la mediana describe mejor un tiempo típico que la media, a la que el 14.8 jala hacia arriba."
       },
       {
         "type": "open-response",
@@ -458,7 +489,9 @@
           "Class A: symmetric around 80. Class B: most scores 60–70 with a few near 100 — that's a right tail. Note both shapes before comparing.",
           "Plan: medians come from where MOST scores sit (near 80 vs the 60s). For means, ask what Class B's few 100s do. Then decide where mean = typical.",
           "Start with the medians: Class A's middle score sits near its 80 cluster; Class B's sits in the 60–70 pile. Compare those, then tackle the means."
-        ]
+        ],
+        "explanation": "Class A's scores center on 80 while most of Class B's sit between 60 and 70, so Class A has the higher median and the higher mean. Class B's few scores near 100 pull its mean up above its 60s cluster, but not past Class A. The mean represents a typical score better in Class A, because a symmetric distribution has no tail tugging the mean away from the center — Class B is skewed right, so its median is the fairer summary.",
+        "explanationEs": "Las notas de la Clase A se centran en 80, mientras que la mayoría de las de la Clase B están entre 60 y 70, así que la Clase A tiene la mediana y la media más altas. Las pocas notas cercanas a 100 de la Clase B jalan su media por encima de su grupo de los 60, pero no más allá de la Clase A. La media representa mejor una nota típica en la Clase A, porque una distribución simétrica no tiene una cola que jale la media lejos del centro; la Clase B está sesgada a la derecha, así que su mediana es el mejor resumen."
       }
     ],
     "extending": [
@@ -478,6 +511,18 @@
           "Each dot represents one occurrence—count all the dots.",
           "One dot at 2, three dots at 5—add them.",
           "Total dots = total data points."
+        ],
+        "stemEs": "Un histograma tiene una cola larga de valores altos que se extiende hacia la derecha. ¿Cuál es su forma?",
+        "explanationEs": "Una cola de valores altos que se extiende hacia la derecha significa que la distribución está sesgada a la derecha. El sesgo se nombra por la dirección de la cola.",
+        "hints": [
+          "Skew is always named for the direction the long tail stretches, not for the side with the tall bars.",
+          "Find the tail first, then decide left or right from where it points.",
+          "The tail here stretches toward the higher values on the right side of the display — use that direction to name the shape."
+        ],
+        "hintsEs": [
+          "El sesgo siempre se nombra por la dirección hacia la que se extiende la cola larga, no por el lado con las barras altas.",
+          "Primero halla la cola y luego decide izquierda o derecha según hacia dónde apunta.",
+          "Aquí la cola se extiende hacia los valores más altos, en el lado derecho de la gráfica: usa esa dirección para nombrar la forma."
         ]
       },
       {
@@ -496,6 +541,18 @@
           "Dots stack vertically—count all dots in the plot.",
           "If a score has no dots, it wasn't observed.",
           "Total dots = total quiz attempts."
+        ],
+        "stemEs": "Un diagrama de puntos tiene un solo pico en el centro y lados parejos. ¿Qué forma tiene?",
+        "explanationEs": "Un solo pico en el centro con lados aproximadamente parejos significa que los datos se reflejan alrededor del centro, así que es simétrica con un solo grupo en el pico.",
+        "hints": [
+          "A cluster is a group of data values bunched together, and symmetric means the two sides mirror each other.",
+          "Check whether one side has a long tail that the other side lacks — that would rule symmetry out.",
+          "Compare the left side of the peak with the right side, then decide which shape word fits what you see."
+        ],
+        "hintsEs": [
+          "Un grupo es un conjunto de datos que se acumulan juntos, y simétrica significa que los dos lados se reflejan entre sí.",
+          "Revisa si un lado tiene una cola larga que el otro no tiene: eso descartaría la simetría.",
+          "Compara el lado izquierdo del pico con el derecho y luego decide qué palabra de forma corresponde a lo que ves."
         ]
       },
       {
@@ -514,6 +571,18 @@
           "No gaps and no tail here—but these are present.",
           "This doesn't have equal halves—it's not symmetric.",
           "The tail goes low (left)—that direction shows skew direction."
+        ],
+        "stemEs": "Un histograma: la mayoría de los jugadores está en 70-85%, hay una brecha en 50-65% y unos pocos están en 40-50%. Nombra la forma y sus características.",
+        "explanationEs": "Los datos se agrupan en el extremo alto (70-85%), hay una brecha vacía (50-65%) y los pocos valores bajos forman una cola a la izquierda, así que la gráfica está sesgada a la izquierda.",
+        "hints": [
+          "Three features can show up together: a cluster where data piles up, a gap where an interval is empty, and a tail where a few values trail off.",
+          "Locate the cluster and the gap first, then see which side the leftover values sit on — that side is the tail.",
+          "The bulk of the data sits at the high end and the few remaining values sit far below it. Decide which direction the tail runs, then name the skew after it."
+        ],
+        "hintsEs": [
+          "Pueden aparecer tres características juntas: un grupo donde se acumulan los datos, una brecha donde un intervalo está vacío y una cola donde unos pocos valores se alejan.",
+          "Ubica primero el grupo y la brecha; luego observa de qué lado quedan los demás valores: ese lado es la cola.",
+          "La mayoría de los datos está en el extremo alto y los pocos valores restantes quedan muy por debajo. Decide hacia dónde va la cola y nombra el sesgo según esa dirección."
         ]
       },
       {
@@ -542,7 +611,10 @@
         "hints": [
           "Ask: which way does the long tail of short bars point, not where is the tallest bar?",
           "The peak is on the left and the tail stretches right. Skew is named for the tail, so this is skewed right."
-        ]
+        ],
+        "titleEs": "Extensión de Nivel 2: Nombra el sesgo por su cola",
+        "explanation": "The claim was based on where the peak sits instead of where the tail points. The bar heights 12, 8, 4, 2, 1 pile up on the left and shrink toward the right, so the tail stretches right and the display is skewed right. Skew is always named for the tail direction, never the peak.",
+        "explanationEs": "La afirmación se basó en dónde está el pico y no en hacia dónde apunta la cola. Las alturas de las barras 12, 8, 4, 2, 1 se acumulan a la izquierda y se reducen hacia la derecha, así que la cola se estira a la derecha y la representación está sesgada a la derecha. El sesgo siempre se nombra por la dirección de la cola, nunca por el pico."
       },
       {
         "type": "multiple-choice",
@@ -565,7 +637,9 @@
           "Locate the crowd and the tail: most players are 22–28 (the left side), with a thin tail stretching out to age 40 (the right side).",
           "Skew is named after the TAIL — the direction the long thin end stretches — not after where the big cluster sits.",
           "First step: sketch it — tall bars at ages 22–28, shrinking bars out to 40. Point your finger along the tail and name that direction."
-        ]
+        ],
+        "stemEs": "Un histograma de las edades de jugadores de baloncesto muestra que la mayoría tiene entre 22 y 28 años, con una cola larga de jugadores mayores hasta los 40 años. ¿Cuál es la forma de esta distribución?",
+        "explanationEs": "La mayoría de los datos está a la izquierda (edades menores) y la cola se extiende hacia la derecha (edades mayores). Esto es sesgada a la derecha."
       },
       {
         "type": "multiple-choice",
@@ -588,7 +662,9 @@
           "Symmetric means the left and right sides mirror each other around the center — no long tail on either side.",
           "A tail is what PULLS the mean away from the median. Ask: with no tail at all, how far apart could the two measures drift?",
           "First step: test a symmetric set like 2, 4, 6, 8, 10 — find its mean and median and compare. Also watch for the word 'always' in the choices."
-        ]
+        ],
+        "stemEs": "Un conjunto de datos es simétrico. ¿Qué es probable que sea cierto sobre la media y la mediana?",
+        "explanationEs": "En una distribución simétrica, la media y la mediana son aproximadamente iguales porque los datos están equilibrados a ambos lados."
       },
       {
         "type": "multiple-choice",
@@ -611,7 +687,9 @@
           "All four choices start with 'Skew' — the difference is WHICH feature (tail, peak, median, or mode) names the direction.",
           "Picture a skewed-right dot plot: its peak sits on the LEFT, yet we call it skewed RIGHT. Ask which feature must be doing the naming.",
           "First step: since a right-skewed plot has its peak on the left, the peak can't set the name. Test tail, median, and mode against that same picture."
-        ]
+        ],
+        "stemEs": "¿Cuál palabra describe la dirección de la COLA, no del pico?",
+        "explanationEs": "La dirección del sesgo se nombra según la COLA. Si la cola se extiende hacia la derecha, está sesgada a la derecha, aunque el pico esté a la izquierda."
       },
       {
         "type": "matching-game",
@@ -635,7 +713,9 @@
           "Remember: a tail PULLS the mean toward itself, while the median barely moves. That one idea sorts all three cards.",
           "Work each case: a high-value tail (right) drags the mean UP past the median; a low-value tail (left) drags it DOWN below. No tail = they match.",
           "Start with Symmetric — no tail, so the mean and median sit together. Pair it with the '≈' card, then use tail direction for the other two."
-        ]
+        ],
+        "explanation": "A tail pulls the mean toward it while the median barely moves, and that single idea sorts all three cards. Symmetric data has no tail, so the mean and median land together and either one works. Skewed right has high values in the tail that pull the mean above the median, and skewed left has low values that pull it below — in both skewed cases the median describes a typical value better.",
+        "explanationEs": "Una cola jala la media hacia ella mientras la mediana casi no se mueve, y esa sola idea ordena las tres tarjetas. Los datos simétricos no tienen cola, así que la media y la mediana quedan juntas y cualquiera de las dos sirve. El sesgo a la derecha tiene valores altos en la cola que jalan la media por encima de la mediana, y el sesgo a la izquierda tiene valores bajos que la jalan por debajo; en los dos casos sesgados la mediana describe mejor un valor típico."
       }
     ],
     "optional": [],

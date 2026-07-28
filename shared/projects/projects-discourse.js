@@ -214,7 +214,7 @@
     try {
       var raw = localStorage.getItem(peerKey());
       return raw ? JSON.parse(raw) || {} : {};
-    } catch (e) {
+    } catch (_e) {
       return {};
     }
   }
@@ -222,7 +222,7 @@
   function savePeer(data) {
     try {
       localStorage.setItem(peerKey(), JSON.stringify(data));
-    } catch (e) {
+    } catch (_e) {
       /* storage full / disabled — the UI still works for this session */
     }
   }
@@ -345,7 +345,7 @@
         if (!lines.length) return out;
         var block = "\n\nPARTNER COMPARE\n" + lines.join("\n") + "\n";
         if (box.textContent.indexOf("PARTNER COMPARE") === -1) box.textContent += block;
-      } catch (e) {
+      } catch (_e) {
         /* never block the report */
       }
       return out;

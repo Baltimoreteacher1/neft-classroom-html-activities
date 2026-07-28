@@ -1604,6 +1604,14 @@ body.obj-popup-open { overflow: hidden; }
 .section-vocab { border-left: 4px solid var(--coral); }
 .section-stuck { border-left: 4px solid #9b59b6; }
 .section-quick-intro { border-left: 4px solid var(--success); }
+.quick-check-time {
+  background: var(--amber-light);
+  border: 1px solid var(--amber);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 0 0 12px;
+  font-size: 15px;
+}
 .section-celebrate {
   border-left: 4px solid var(--amber);
   background: linear-gradient(180deg, var(--amber-light), var(--white));
@@ -1851,6 +1859,16 @@ body.obj-popup-open { overflow: hidden; }
   padding: 2px;
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x proximity;
+}
+/* On a phone the 10 tabs are ~738px wide in a ~381px viewport, so half of them
+   (Help, More, Done) sit off-screen with nothing to suggest they exist. Fade the
+   trailing edge so the strip reads as scrollable. Only below 700px, where the
+   overflow is guaranteed — a permanent fade on desktop would just look broken. */
+@media (max-width: 700px) {
+  .homework-tab-bar {
+    -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+    mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+  }
 }
 .homework-tab-btn {
   flex: 0 0 auto;
@@ -2372,6 +2390,12 @@ body.lang-mode-es .bilingual-grid {
 @media print {
   .homework-tab-chrome, .homework-tab-bar, .bottom-status-bar, .help-modal-overlay, .print-all-btn, .parent-signoff-container { display: none !important; }
   .tab-panel-inner[hidden] { display: block !important; page-break-inside: avoid; }
+  /* Printing un-hides every panel, but these three are screen-only: an embedded
+     arcade iframe, a live game, and a link-out. On paper they were blank or
+     meaningless pages in the middle of the packet. */
+  [data-tab-panel="arcade"],
+  [data-tab-panel="play"],
+  [data-tab-panel="workbench"] { display: none !important; }
   body { padding-bottom: 0; }
   
   .print-only-certificate.is-signed {
@@ -2448,7 +2472,7 @@ body.lang-mode-es .bilingual-grid {
 
 
 .family-visual-lab{--lab-ink:#173a5e;--lab-teal:#0b8f87;--lab-coral:#ff775f;--lab-sun:#f6c94c;margin:26px 0;padding:clamp(18px,3vw,30px);border:3px solid var(--lab-ink);border-radius:28px;background:#fffdf5;box-shadow:8px 8px 0 var(--lab-ink);color:var(--lab-ink)}
-.visual-lab-heading{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(260px,1.15fr);gap:20px;align-items:end;margin-bottom:20px}.visual-lab-heading h2{margin:6px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.05}.visual-lab-heading p{margin:0;padding:14px 16px;border-left:5px solid var(--lab-sun);background:#fff8d9;font-size:17px;font-weight:700;line-height:1.45}.visual-lab-kicker{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--lab-ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em}
+.visual-lab-heading{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(260px,1.15fr);gap:20px;align-items:end;margin-bottom:20px}.visual-lab-heading h2{margin:6px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.05}.visual-lab-heading p{margin:0;padding:14px 16px;border-left:5px solid var(--lab-sun);background:#fff8d9;font-size:17px;font-weight:700;line-height:1.45}.visual-lab-kicker{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--lab-ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em}.visual-lab-kicker .lang-en,.visual-lab-kicker .lang-es{color:inherit}
 .visual-lab-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(230px,.8fr);gap:18px;align-items:stretch}.visual-lab-canvas-wrap{min-width:0;padding:12px;border-radius:22px;background-color:#eef8f4;background-image:linear-gradient(#cee3dc 1px,transparent 1px),linear-gradient(90deg,#cee3dc 1px,transparent 1px);background-size:24px 24px;border:2px solid var(--lab-ink)}.visual-lab-stage{display:grid;place-items:center;min-height:280px}.visual-lab-stage svg{display:block;width:100%;max-height:320px;overflow:visible}.visual-lab-status{min-height:26px;margin:5px 8px 0;padding:7px 10px;border-radius:10px;background:#fff;font-weight:800;text-align:center}
 .visual-lab-controls{display:flex;flex-direction:column;gap:14px;padding:18px;border-radius:22px;background:var(--lab-ink);color:#fff}.visual-lab-control{display:grid;gap:7px;font-weight:800}.visual-lab-control-label{display:flex;justify-content:space-between;gap:10px;align-items:center}.visual-lab-control output{min-width:38px;padding:3px 8px;border-radius:8px;background:var(--lab-sun);color:#102f4e;text-align:center;font-size:18px}.visual-lab-control input[type=range]{width:100%;min-height:28px;accent-color:var(--lab-coral);cursor:pointer}.visual-lab-control input[type=range]:focus-visible{outline:4px solid #fff;outline-offset:4px}.visual-lab-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:auto}.visual-lab-button{min-height:48px;border:2px solid #fff;border-radius:13px;background:var(--lab-coral);color:#182f48;font:inherit;font-weight:800;cursor:pointer}.visual-lab-button-quiet{background:#fff}.visual-lab-button:hover{transform:translateY(-2px)}.visual-lab-button:focus-visible{outline:4px solid var(--lab-sun);outline-offset:3px}
 .visual-representation-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:18px}.visual-representation-card{position:relative;min-height:150px;padding:18px 16px 15px;border:2px solid var(--lab-ink);border-radius:18px;background:#fff}.visual-representation-card h3{margin:0 0 10px;padding-left:30px;font-size:17px}.visual-representation-card p{margin:7px 0;font-size:16px;line-height:1.4}.representation-number{position:absolute;top:12px;left:12px;display:grid;width:27px;height:27px;place-items:center;border-radius:50%;background:var(--lab-ink);color:#fff;font-weight:800}.visual-representation-model{background:#dff5ee}.visual-representation-math{background:#fff2c2}.visual-representation-words{background:#ffe4dd}.visual-representation-math [data-lab-equation]{font-size:clamp(22px,3vw,32px);font-weight:800;text-align:center}.mini-model{display:flex;flex-wrap:wrap;gap:7px;align-content:center;min-height:76px;padding:8px}.mini-dot{width:18px;height:18px;border:2px solid var(--lab-ink);border-radius:50%;background:var(--lab-teal)}.visual-representation-card details{margin-top:10px}.visual-representation-card summary{cursor:pointer;font-weight:800;text-decoration:underline}.visual-source-idea{font-size:13px!important;color:#344f69}
@@ -2731,12 +2755,12 @@ header.packet h1::after{
         <div class="bilingual-col lang-en">
           <span class="lang-label">English</span>
           <p class="learning-big">Tonight we compare and order integers (positive and negative whole numbers) using a number line.</p>
-          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Number line</li><li>Compare</li><li>Order</li><li>Greater than</li><li>Less than</li></ul></div>
+          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Compare and Order Integers</li><li>Number line</li><li>Compare</li><li>Order</li><li>Greater than</li></ul></div>
         </div>
         <div class="bilingual-col lang-es" lang="es">
           <span class="lang-label">Español</span>
           <p class="learning-big">Esta noche comparamos y ordenamos números enteros (números positivos y negativos) usando la recta numérica.</p>
-          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Recta numérica</li><li>Comparar</li><li>Ordenar</li><li>Mayor que</li><li>Menor que</li></ul></div>
+          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Comparar y ordenar enteros</li><li>Recta numérica</li><li>Comparar</li><li>Ordenar</li><li>Mayor que</li></ul></div>
         </div>
       </div>
     
@@ -2866,6 +2890,24 @@ header.packet h1::after{
       </p>
       <div class="vocab-container">
         
+            <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+              <div class="vocab-card-inner">
+                <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/cat-number.svg" alt="Illustration of Compare and Order Integers: Use a number line to decide which integers are greater or less and place them in order." loading="lazy" width="72" height="72" />
+                  </div>
+                  <h3>Compare and Order Integers</h3>
+                  <p class="vocab-es" lang="es">Comparar y ordenar enteros</p>
+                  <div class="vocab-visual-hint">💡 −5 &lt; −2 &lt; 0 &lt; 3</div>
+                  <div class="flip-prompt"><span class="lang-en">Tap</span><span class="lang-es" lang="es">Toca ➔</span></div>
+                </div>
+                <div class="vocab-card-back">
+                  <p class="vocab-def">Use a number line to decide which integers are greater or less and place them in order.</p>
+                  <p class="vocab-def-es" lang="es">Usar una recta numérica para decidir cuáles enteros son mayores o menores y colocarlos en orden.</p>
+                  <p class="vocab-back-visual">📌 −5 &lt; −2 &lt; 0 &lt; 3</p>
+                </div>
+              </div>
+            </div>
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -3128,6 +3170,10 @@ header.packet h1::after{
       
     
       <h2 class="section-title">✅ <span class="lang-en">Quick check</span><span class="lang-es" lang="es">Repaso rápido</span></h2>
+      <p class="quick-check-time bilingual-block">
+        <span class="lang-en">⏱️ Plan on about <strong>15–20 minutes</strong> for the 6 problems below. The extra practice at the bottom is optional.</span>
+        <span class="lang-es" lang="es">⏱️ Calculen unos <strong>15–20 minutos</strong> para los 6 problemas de abajo. La práctica extra al final es opcional.</span>
+      </p>
       <p class="bilingual-block">
         <span class="lang-en">A few problems to practice together. Each one has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong>, and a <strong>space to show your work</strong>. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
         <span class="lang-es" lang="es">Unos problemas para practicar juntos. Cada uno tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para mostrar el trabajo</strong>. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
@@ -3152,12 +3198,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_0" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 1</div>
-        <div class="problem-type-badge">DRAG SORT</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The sign on each marker tells you which side of sea level it belongs on: -6, -1, and -12 are all less than 0, so the shipwreck, the anchor, and the trench chest go below sea level. The markers at 4, 7, and 3 are greater than 0, so the cliff nest, the crow&#39;s nest, and the palm flag go above.","es":"El signo de cada marca te dice de qué lado del nivel del mar va: -6, -1 y -12 son menores que 0, así que el naufragio, el ancla y el cofre de la fosa van bajo el nivel del mar. Las marcas en 4, 7 y 3 son mayores que 0, así que el nido del acantilado, la cofa y la bandera de la palmera van arriba.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Sort each treasure marker into the right zone on the map: below sea level or above sea level.</p>
+        <p class="problem-stem"><span class="lang-en">Sort each treasure marker into the right zone on the map: below sea level or above sea level.</span><span class="lang-es" lang="es">Clasifica cada marcador del tesoro en la zona correcta del mapa: bajo el nivel del mar o sobre el nivel del mar.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
         
         <div class="drag-sort-workspace" id="dragsort_0">
@@ -3294,12 +3340,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_1" data-problem-type="drag-sort" data-problem-subtype="drag-order">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 2</div>
-        <div class="problem-type-badge">DRAG ORDER</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG ORDER</span><span class="lang-es" lang="es">ORDENAR ARRASTRANDO</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Least to greatest reads left to right on a number line — all the negatives come before 0.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Least to greatest reads left to right on a number line — all the negatives come before 0.","es":"De menor a mayor coincide con izquierda a derecha en una recta numérica, así que todos los negativos van antes del 0 y todos los positivos van después. Entre los negativos, -6 está más abajo de cero y -1 está más cerca, lo que da el orden -6, -4, -1, 0, 3, 5.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Drag to order these integers from LEAST to GREATEST.</p>
+        <p class="problem-stem"><span class="lang-en">Drag to order these integers from LEAST to GREATEST.</span><span class="lang-es" lang="es">Arrastra para ordenar estos enteros del MENOR al MAYOR.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Use the ▲ ▼ buttons to reorder steps, or drag the row handles on a computer.</span><span class="lang-es" lang="es">👪 Usen ▲ ▼ para reordenar, o arrastren las filas en la computadora.</span></p>
         <div class="drag-order-workspace" id="dragorder_1" data-correct-order='[&quot;-6&quot;,&quot;-4&quot;,&quot;-1&quot;,&quot;0&quot;,&quot;3&quot;,&quot;5&quot;]' data-initial-order='[&quot;3&quot;,&quot;0&quot;,&quot;-6&quot;,&quot;-1&quot;,&quot;-4&quot;,&quot;5&quot;]'>
           <div class="drag-order-list" id="orderlist_1">
@@ -3385,12 +3431,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_2" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 3</div>
-        <div class="problem-type-badge">FILL TABLE</div>
+        <div class="problem-type-badge"><span class="lang-en">FILL TABLE</span><span class="lang-es" lang="es">COMPLETAR LA TABLA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"For each pair, picture both integers on a number line: the one farther LEFT is less.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"For each pair, picture both integers on a number line: the one farther LEFT is less.","es":"Cada fila compara posiciones en una recta numérica, así que -4 < 2 y 0 > -5 porque cualquier negativo está a la izquierda del cero y cualquier positivo a la derecha. Entre dos negativos gana el que está más cerca de cero, lo que da -7 < -3, mientras que 6 > -9 y -1 = -1 porque el mismo entero ocupa el mismo punto.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Compare each pair of integers using &lt; , &gt; , or =.</p>
+        <p class="problem-stem"><span class="lang-en">Compare each pair of integers using &lt; , &gt; , or =.</span><span class="lang-es" lang="es">Compara cada pareja de enteros usando &lt; , &gt; o =.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
         <div class="table-responsive">
           <table class="fill-table">
@@ -3538,12 +3584,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_3" data-problem-type="open-response">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 1</div>
-        <div class="problem-type-badge">OPEN RESPONSE</div>
+        <div class="problem-type-badge"><span class="lang-en">OPEN RESPONSE</span><span class="lang-es" lang="es">RESPUESTA ABIERTA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Two separate claims to judge — an answer can be right while the REASON is wrong. Check each on a number line.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Two separate claims to judge — an answer can be right while the REASON is wrong. Check each on a number line.","es":"El primer enunciado es verdadero: -100 es negativo y 1 es positivo, así que -100 queda a la izquierda de 1 en la recta numérica y es menor. La segunda respuesta, -100 < -1, también es verdadera, pero la razón que da es incorrecta: no es porque 100 > 1, sino porque -100 está 100 unidades por debajo de cero mientras que -1 está solo 1 unidad por debajo, lo que deja a -100 más a la izquierda.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A student says: &#039;Negative numbers are always less than positive numbers, so -100 is less than 1.&#039; Is this correct? Now the student says: &#039;-100 is less than -1 because 100 is greater than 1.&#039; Is THIS correct? Explain the difference.</p>
+        <p class="problem-stem"><span class="lang-en">A student says: &#039;Negative numbers are always less than positive numbers, so -100 is less than 1.&#039; Is this correct? Now the student says: &#039;-100 is less than -1 because 100 is greater than 1.&#039; Is THIS correct? Explain the difference.</span><span class="lang-es" lang="es">Un estudiante dice: &#039;Los números negativos siempre son menores que los positivos, así que -100 es menor que 1.&#039; ¿Es correcto? Ahora el estudiante dice: &#039;-100 es menor que -1 porque 100 es mayor que 1.&#039; ¿Es correcto ESTO? Explica la diferencia.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 A complete sentence with math vocabulary is the goal — not a perfect paragraph.</span><span class="lang-es" lang="es">👪 Una oración completa con vocabulario matemático es la meta — no un párrafo perfecto.</span></p>
         
         
@@ -3610,12 +3656,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_4" data-problem-type="drag-sort" data-problem-subtype="drag-order">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 2</div>
-        <div class="problem-type-badge">DRAG ORDER</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG ORDER</span><span class="lang-es" lang="es">ORDENAR ARRASTRANDO</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Worst = biggest loss = most negative. Best = biggest gain = most positive.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Worst = biggest loss = most negative. Best = biggest gain = most positive.","es":"Ordenar los cambios es lo mismo que ordenar los enteros de menor a mayor, ya que el cambio más negativo es el peor para la cuenta: -100, -25, -5, 0, +10, +50. El retiro de -100 es el peor porque está más abajo de cero, y el depósito de +50 es el mejor porque está más arriba.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">These integers represent bank account changes. Sort from the WORST change (biggest loss) to the BEST change (biggest gain).</p>
+        <p class="problem-stem"><span class="lang-en">These integers represent bank account changes. Sort from the WORST change (biggest loss) to the BEST change (biggest gain).</span><span class="lang-es" lang="es">Estos enteros representan cambios en una cuenta bancaria. Ordénalos del PEOR cambio (la mayor pérdida) al MEJOR cambio (la mayor ganancia).</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Use the ▲ ▼ buttons to reorder steps, or drag the row handles on a computer.</span><span class="lang-es" lang="es">👪 Usen ▲ ▼ para reordenar, o arrastren las filas en la computadora.</span></p>
         <div class="drag-order-workspace" id="dragorder_4" data-correct-order='[&quot;-100 withdrawal&quot;,&quot;-25 withdrawal&quot;,&quot;-5 fee&quot;,&quot;0 no change&quot;,&quot;+10 deposit&quot;,&quot;+50 deposit&quot;]' data-initial-order='[&quot;+10 deposit&quot;,&quot;-100 withdrawal&quot;,&quot;-25 withdrawal&quot;,&quot;-5 fee&quot;,&quot;0 no change&quot;,&quot;+50 deposit&quot;]'>
           <div class="drag-order-list" id="orderlist_4">
@@ -3701,12 +3747,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_5" data-problem-type="drag-sort" data-problem-subtype="drag-order">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 3</div>
-        <div class="problem-type-badge">DRAG ORDER</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG ORDER</span><span class="lang-es" lang="es">ORDENAR ARRASTRANDO</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"This sort starts with the GREATEST — so the biggest positive comes first, not last.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"This sort starts with the GREATEST — so the biggest positive comes first, not last.","es":"De mayor a menor se lee la recta numérica de derecha a izquierda, así que los positivos van primero con 8 y luego 5, después el 0 y luego los negativos. Entre los negativos, -2 es el más cercano a cero y -10 el más lejano por debajo, lo que da 8, 5, 0, -2, -6, -10.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Sort these integers from GREATEST to LEAST.</p>
+        <p class="problem-stem"><span class="lang-en">Sort these integers from GREATEST to LEAST.</span><span class="lang-es" lang="es">Ordena estos enteros del MAYOR al MENOR.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Use the ▲ ▼ buttons to reorder steps, or drag the row handles on a computer.</span><span class="lang-es" lang="es">👪 Usen ▲ ▼ para reordenar, o arrastren las filas en la computadora.</span></p>
         <div class="drag-order-workspace" id="dragorder_5" data-correct-order='[&quot;8&quot;,&quot;5&quot;,&quot;0&quot;,&quot;-2&quot;,&quot;-6&quot;,&quot;-10&quot;]' data-initial-order='[&quot;8&quot;,&quot;-10&quot;,&quot;-6&quot;,&quot;5&quot;,&quot;-2&quot;,&quot;0&quot;]'>
           <div class="drag-order-list" id="orderlist_5">
@@ -3803,14 +3849,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_6" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 1</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"&#39;Least&#39; means farthest LEFT on the number line — for negatives, that&#39;s the one farthest below zero.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"&#39;Least&#39; means farthest LEFT on the number line — for negatives, that&#39;s the one farthest below zero.","es":"-8 está más a la izquierda en la recta numérica, lo que lo hace el entero menor (más pequeño).","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Which integer is the LEAST: -3, 5, -8, 2, 0?</p>
+        <p class="problem-stem"><span class="lang-en">Which integer is the LEAST: -3, 5, -8, 2, 0?</span><span class="lang-es" lang="es">¿Cuál entero es el MENOR: -3, 5, -8, 2, 0?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="-8 is farthest to the left on the number line, making it the least (smallest) integer.">
+        <div class="mc-options" data-correct="0" data-explanation="-8 is farthest to the left on the number line, making it the least (smallest) integer." data-explanation-es="-8 está más a la izquierda en la recta numérica, lo que lo hace el entero menor (más pequeño).">
           
             <label class="mc-option-label" id="label_q_6_0">
               <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
@@ -3875,14 +3921,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_7" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 2</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Warmest = greatest temperature. On a thermometer, greater is higher — farther right on a number line.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Warmest = greatest temperature. On a thermometer, greater is higher — farther right on a number line.","es":"3°F es la mayor porque está más a la derecha en la recta numérica. El orden del más frío al más cálido es -12, -5, 3.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Three cities have temperatures of -12°F, -5°F, and 3°F. Which city is warmest?</p>
+        <p class="problem-stem"><span class="lang-en">Three cities have temperatures of -12°F, -5°F, and 3°F. Which city is warmest?</span><span class="lang-es" lang="es">Tres ciudades tienen temperaturas de -12°F, -5°F y 3°F. ¿Cuál ciudad es la más cálida?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="3°F is the greatest because it is farthest to the right on the number line. The order from coldest to warmest is -12, -5, 3.">
+        <div class="mc-options" data-correct="0" data-explanation="3°F is the greatest because it is farthest to the right on the number line. The order from coldest to warmest is -12, -5, 3." data-explanation-es="3°F es la mayor porque está más a la derecha en la recta numérica. El orden del más frío al más cálido es -12, -5, 3.">
           
             <label class="mc-option-label" id="label_q_7_0">
               <input type="radio" name="q_7" value="0" onchange="saveState(); updateProgress();">
@@ -3905,7 +3951,7 @@ header.packet h1::after{
             <label class="mc-option-label" id="label_q_7_3">
               <input type="radio" name="q_7" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">They are equal</span>
+              <span class="choice-text"><span class="lang-en">They are equal</span><span class="lang-es" lang="es">Son iguales</span></span>
             </label>
           
         </div>
@@ -3947,14 +3993,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_8" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 3</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The deepest spot is the cave at -7 (farthest left), then the tide pool -3, then the boat deck 0, then the flag at 2. Least to greatest: -7, -3, 0, 2.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Least to greatest is the same as left to right on the number line.","es":"De menor a mayor es lo mismo que de izquierda a derecha en la recta numérica.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Four spots: -3 m, 2 m, -7 m, 0 m. Order them from least to greatest.</p>
+        <p class="problem-stem"><span class="lang-en">Four spots: -3 m, 2 m, -7 m, 0 m. Order them from least to greatest.</span><span class="lang-es" lang="es">Cuatro lugares: -3 m, 2 m, -7 m, 0 m. Ordénalos de menor a mayor.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="The deepest spot is the cave at -7 (farthest left), then the tide pool -3, then the boat deck 0, then the flag at 2. Least to greatest: -7, -3, 0, 2.">
+        <div class="mc-options" data-correct="0" data-explanation="The deepest spot is the cave at -7 (farthest left), then the tide pool -3, then the boat deck 0, then the flag at 2. Least to greatest: -7, -3, 0, 2." data-explanation-es="El lugar más profundo es la cueva en -7 (el más a la izquierda), luego la poza de marea -3, luego la cubierta del barco 0, y luego la bandera en 2. De menor a mayor: -7, -3, 0, 2.">
           
             <label class="mc-option-label" id="label_q_8_0">
               <input type="radio" name="q_8" value="0" onchange="saveState(); updateProgress();">
@@ -4019,14 +4065,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_9" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 4</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Closer to zero means greater for negatives. -4 is only 4 below the surface, so -4 is the greatest of -9, -4, and -15.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Greater always means farther right on the number line, even when every value is negative.","es":"Mayor siempre significa más a la derecha en la recta numérica, incluso cuando todos los valores son negativos.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Three buried chests sit at -9 m, -4 m, and -15 m below sea level. Which chest is at the GREATEST elevation (closest to the surface)?</p>
+        <p class="problem-stem"><span class="lang-en">Three buried chests sit at -9 m, -4 m, and -15 m below sea level. Which chest is at the GREATEST elevation (closest to the surface)?</span><span class="lang-es" lang="es">Tres cofres enterrados están a -9 m, -4 m y -15 m bajo el nivel del mar. ¿Cuál cofre está a la MAYOR elevación (más cerca de la superficie)?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Closer to zero means greater for negatives. -4 is only 4 below the surface, so -4 is the greatest of -9, -4, and -15.">
+        <div class="mc-options" data-correct="0" data-explanation="Closer to zero means greater for negatives. -4 is only 4 below the surface, so -4 is the greatest of -9, -4, and -15." data-explanation-es="Estar más cerca de cero significa ser mayor entre los negativos. -4 está solo 4 debajo de la superficie, así que -4 es el mayor de -9, -4 y -15.">
           
             <label class="mc-option-label" id="label_q_9_0">
               <input type="radio" name="q_9" value="0" onchange="saveState(); updateProgress();">
@@ -4049,7 +4095,7 @@ header.packet h1::after{
             <label class="mc-option-label" id="label_q_9_3">
               <input type="radio" name="q_9" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">They are equal</span>
+              <span class="choice-text"><span class="lang-en">They are equal</span><span class="lang-es" lang="es">Son iguales</span></span>
             </label>
           
         </div>
@@ -4091,14 +4137,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_10" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 5</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Sketch a quick number line. For negatives, &#39;greater&#39; means closer to zero, not a bigger digit.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Sketch a quick number line. For negatives, &#39;greater&#39; means closer to zero, not a bigger digit.","es":"-5 está más a la izquierda en la recta numérica que -2, así que -5 < -2 es verdadero.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Which statement is TRUE?</p>
+        <p class="problem-stem"><span class="lang-en">Which statement is TRUE?</span><span class="lang-es" lang="es">¿Cuál enunciado es VERDADERO?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="1" data-explanation="-5 is farther to the left on the number line than -2, so -5 &lt; -2 is true.">
+        <div class="mc-options" data-correct="1" data-explanation="-5 is farther to the left on the number line than -2, so -5 &lt; -2 is true." data-explanation-es="-5 está más a la izquierda en la recta numérica que -2, así que -5 &lt; -2 es verdadero.">
           
             <label class="mc-option-label" id="label_q_10_0">
               <input type="radio" name="q_10" value="0" onchange="saveState(); updateProgress();">
@@ -4163,37 +4209,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_11" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 6</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The bars |...| mean absolute value: the distance from 0, which is never negative.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The inequality symbol always opens toward the greater number, and &#39;less than&#39; means farther left on the number line.","es":"El símbolo de desigualdad siempre se abre hacia el número mayor, y &#39;menor que&#39; significa más a la izquierda en la recta numérica.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">What is |−8|?</p>
+        <p class="problem-stem"><span class="lang-en">On the map, a sunken lantern is at -8 m and a coral shelf is at -3 m. Which symbol makes the comparison true:  -8 ___ -3 ?</span><span class="lang-es" lang="es">En el mapa, una linterna hundida está a -8 m y un arrecife de coral está a -3 m. ¿Cuál símbolo hace verdadera la comparación:  -8 ___ -3 ?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Absolute value is distance from 0, always positive. |−8| = 8.">
+        <div class="mc-options" data-correct="0" data-explanation="-8 is farther left (deeper) than -3, so -8 is less than -3. The symbol is &lt;." data-explanation-es="-8 está más a la izquierda (más profundo) que -3, así que -8 es menor que -3. El símbolo es &lt;.">
           
             <label class="mc-option-label" id="label_q_11_0">
               <input type="radio" name="q_11" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">8</span>
+              <span class="choice-text">&lt;</span>
             </label>
           
             <label class="mc-option-label" id="label_q_11_1">
               <input type="radio" name="q_11" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">−8</span>
+              <span class="choice-text">&gt;</span>
             </label>
           
             <label class="mc-option-label" id="label_q_11_2">
               <input type="radio" name="q_11" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">0</span>
+              <span class="choice-text">=</span>
             </label>
           
             <label class="mc-option-label" id="label_q_11_3">
               <input type="radio" name="q_11" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">−16</span>
+              <span class="choice-text">≥</span>
             </label>
           
         </div>
@@ -4235,37 +4281,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_12" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 7</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"-8 is farther left (deeper) than -3, so -8 is less than -3. The symbol is <.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The bars |...| mean absolute value: the distance from 0, which is never negative.","es":"El valor absoluto es la distancia desde 0 y siempre es positivo. |−8| = 8.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">On the map, a sunken lantern is at -8 m and a coral shelf is at -3 m. Which symbol makes the comparison true:  -8 ___ -3 ?</p>
+        <p class="problem-stem"><span class="lang-en">What is |−8|?</span><span class="lang-es" lang="es">¿Cuánto es |−8|?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="-8 is farther left (deeper) than -3, so -8 is less than -3. The symbol is &lt;.">
+        <div class="mc-options" data-correct="0" data-explanation="Absolute value is distance from 0, always positive. |−8| = 8." data-explanation-es="El valor absoluto es la distancia desde 0 y siempre es positivo. |−8| = 8.">
           
             <label class="mc-option-label" id="label_q_12_0">
               <input type="radio" name="q_12" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">&lt;</span>
+              <span class="choice-text">8</span>
             </label>
           
             <label class="mc-option-label" id="label_q_12_1">
               <input type="radio" name="q_12" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">&gt;</span>
+              <span class="choice-text">−8</span>
             </label>
           
             <label class="mc-option-label" id="label_q_12_2">
               <input type="radio" name="q_12" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">=</span>
+              <span class="choice-text">0</span>
             </label>
           
             <label class="mc-option-label" id="label_q_12_3">
               <input type="radio" name="q_12" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">≥</span>
+              <span class="choice-text">−16</span>
             </label>
           
         </div>
@@ -4307,12 +4353,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_13" data-problem-type="matching-game">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 8</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
+        <div class="problem-type-badge"><span class="lang-en">MATCHING GAME</span><span class="lang-es" lang="es">JUEGO DE PAREJAS</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each comparison is settled by position on the number line: -6 < -2 and -7 < 0 because those numbers sit farther left, while 5 > -9 because any positive beats any negative. In -4 ___ -11 the greater number is the one closer to zero, so -4 > -11.","es":"Cada comparación se decide por la posición en la recta numérica: -6 < -2 y -7 < 0 porque esos números quedan más a la izquierda, mientras que 5 > -9 porque cualquier positivo supera a cualquier negativo. En -4 ___ -11 el número mayor es el que está más cerca de cero, así que -4 > -11.","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Match each treasure-map comparison to the symbol that makes it true.</p>
+        <p class="problem-stem"><span class="lang-en">Match each treasure-map comparison to the symbol that makes it true.</span><span class="lang-es" lang="es">Une cada comparación del mapa del tesoro con el símbolo que la hace verdadera.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Say each term out loud, then talk through which match makes sense before choosing.</span><span class="lang-es" lang="es">👪 Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.</span></p>
         <div class="matching-pairs">
           
@@ -4644,8 +4690,8 @@ header.packet h1::after{
 <script>
 window.LESSON_ID = "9-3";
 window.LESSON_TITLE = "Compare and Order Integers";
-window.__HW_VOCAB__ = [{"term":"Number line","termEs":"Recta numérica","def":"A straight line where numbers are placed in order; numbers get smaller to the left and larger to the right.","defEs":"Una recta donde los números se colocan en orden; los números son menores a la izquierda y mayores a la derecha.","example":"←  -3  -2  -1   0   1   2   3  →","img":"/assets/vocab-images/number-line.svg","imgAlt":"Illustration of Number line: A straight line where numbers are placed in order; numbers get smaller to the left and larger to the right."},{"term":"Compare","termEs":"Comparar","def":"To see if a number is bigger, smaller, or equal to another.","defEs":"Ver si un número es mayor, menor o igual que otro.","example":"-3 \u003c 2 because -3 is farther left on the number line than 2","img":"/assets/vocab-images/inequality.svg","imgAlt":"Illustration of Compare: To see if a number is bigger, smaller, or equal to another."},{"term":"Order","termEs":"Ordenar","def":"To put numbers in order, smallest to biggest or biggest to smallest.","defEs":"Poner números en orden, de menor a mayor o de mayor a menor.","example":"Least to greatest: -5, -2, 0, 3, 7 (left to right on the number line)","img":"/assets/vocab-images/number-line.svg","imgAlt":"Illustration of Order: To put numbers in order, smallest to biggest or biggest to smallest."},{"term":"Greater than","termEs":"Mayor que","def":"The > sign, showing one number is bigger.","defEs":"El signo >, que muestra que un número es mayor.","example":"4 > -1 because 4 is to the right of -1 on the number line","img":"/assets/vocab-images/inequality.svg","imgAlt":"Illustration of Greater than: The > sign, showing one number is bigger."},{"term":"Less than","termEs":"Menor que","def":"The \u003c sign, showing one number is smaller.","defEs":"El signo \u003c, que muestra que un número es menor.","example":"-6 \u003c -2 because -6 is farther left — it is farther from zero","img":"/assets/vocab-images/inequality.svg","imgAlt":"Illustration of Less than: The \u003c sign, showing one number is smaller."},{"term":"Negative integer","termEs":"Entero negativo","def":"A whole number smaller than zero, like -5.","defEs":"Un número entero menor que cero, como -5.","example":"-4 is 4 units to the LEFT of zero on the number line","img":"/assets/vocab-images/negative.svg","imgAlt":"Illustration of Negative integer: A whole number smaller than zero, like -5."},{"term":"Integer","termEs":"Número entero","def":"Whole numbers and their opposites, like -2, -1, 0, 1, 2.","defEs":"Números enteros y sus opuestos, como -2, -1, 0, 1, 2.","example":"..., -3, -2, -1, 0, 1, 2, 3, ...","img":"/assets/vocab-images/integer.svg","imgAlt":"Illustration of Integer: Whole numbers and their opposites, like -2, -1, 0, 1, 2."}];
-window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Negative integer|Greater than|Number line|Less than|Compare|Integer|Order)(?:es|s)?\\b","lookup":{"number line":0,"compare":1,"order":2,"greater than":3,"less than":4,"negative integer":5,"integer":6}};
+window.__HW_VOCAB__ = [{"term":"Compare and Order Integers","termEs":"Comparar y ordenar enteros","def":"Use a number line to decide which integers are greater or less and place them in order.","defEs":"Usar una recta numérica para decidir cuáles enteros son mayores o menores y colocarlos en orden.","example":"−5 \u003c −2 \u003c 0 \u003c 3","img":"","imgAlt":""},{"term":"Number line","termEs":"Recta numérica","def":"A straight line where numbers are placed in order; numbers get smaller to the left and larger to the right.","defEs":"Una recta donde los números se colocan en orden; los números son menores a la izquierda y mayores a la derecha.","example":"←  -3  -2  -1   0   1   2   3  →","img":"/assets/vocab-images/number-line.svg","imgAlt":"Illustration of Number line: A straight line where numbers are placed in order; numbers get smaller to the left and larger to the right."},{"term":"Compare","termEs":"Comparar","def":"To see if a number is bigger, smaller, or equal to another.","defEs":"Ver si un número es mayor, menor o igual que otro.","example":"-3 \u003c 2 because -3 is farther left on the number line than 2","img":"/assets/vocab-images/inequality.svg","imgAlt":"Illustration of Compare: To see if a number is bigger, smaller, or equal to another."},{"term":"Order","termEs":"Ordenar","def":"To put numbers in order, smallest to biggest or biggest to smallest.","defEs":"Poner números en orden, de menor a mayor o de mayor a menor.","example":"Least to greatest: -5, -2, 0, 3, 7 (left to right on the number line)","img":"/assets/vocab-images/number-line.svg","imgAlt":"Illustration of Order: To put numbers in order, smallest to biggest or biggest to smallest."},{"term":"Greater than","termEs":"Mayor que","def":"The > sign, showing one number is bigger.","defEs":"El signo >, que muestra que un número es mayor.","example":"4 > -1 because 4 is to the right of -1 on the number line","img":"/assets/vocab-images/inequality.svg","imgAlt":"Illustration of Greater than: The > sign, showing one number is bigger."},{"term":"Less than","termEs":"Menor que","def":"The \u003c sign, showing one number is smaller.","defEs":"El signo \u003c, que muestra que un número es menor.","example":"-6 \u003c -2 because -6 is farther left — it is farther from zero","img":"/assets/vocab-images/inequality.svg","imgAlt":"Illustration of Less than: The \u003c sign, showing one number is smaller."},{"term":"Negative integer","termEs":"Entero negativo","def":"A whole number smaller than zero, like -5.","defEs":"Un número entero menor que cero, como -5.","example":"-4 is 4 units to the LEFT of zero on the number line","img":"/assets/vocab-images/negative.svg","imgAlt":"Illustration of Negative integer: A whole number smaller than zero, like -5."},{"term":"Integer","termEs":"Número entero","def":"Whole numbers and their opposites, like -2, -1, 0, 1, 2.","defEs":"Números enteros y sus opuestos, como -2, -1, 0, 1, 2.","example":"..., -3, -2, -1, 0, 1, 2, 3, ...","img":"/assets/vocab-images/integer.svg","imgAlt":"Illustration of Integer: Whole numbers and their opposites, like -2, -1, 0, 1, 2."}];
+window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Compare and Order Integers|Negative integer|Greater than|Number line|Less than|Compare|Integer|Order)(?:es|s)?\\b","lookup":{"compare and order integer":0,"number line":1,"compare":2,"order":3,"greater than":4,"less than":5,"negative integer":6,"integer":7}};
 
 function syncHomeworkChromeHeights() {
   const status = document.querySelector('.bottom-status-bar');
@@ -4779,7 +4825,33 @@ function saveParentSignoff() {
   try {
     localStorage.setItem('hw_parent_signoff_' + lessonId, JSON.stringify(payload));
   } catch(e) {}
-  
+
+  /* localStorage stays the source of truth for what this page displays, but a
+     sign-off the teacher never sees is not a sign-off. Fire-and-forget POST:
+     the endpoint always answers 204, and any failure here is swallowed so a
+     family on a bad connection still gets their confirmation. */
+  try {
+    var signoffBody = JSON.stringify({
+      lessonId: lessonId,
+      lessonTitle: lessonTitle,
+      parentName: nameVal,
+      note: noteVal,
+      date: signoffDate,
+      studentName: (window.NeftSaveResume && window.NeftSaveResume.studentName) || '',
+      section: (window.NeftSaveResume && window.NeftSaveResume.section) || ''
+    });
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('/api/progress/family-signoff', new Blob([signoffBody], { type: 'application/json' }));
+    } else {
+      fetch('/api/progress/family-signoff', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: signoffBody,
+        keepalive: true
+      }).catch(function() {});
+    }
+  } catch(e) {}
+
   updateSignoffUI(payload);
 }
 
@@ -5716,6 +5788,15 @@ function playCheckSound(isCorrect) {
   }
 }
 
+/* Feedback text is built in JS, so it cannot use the .lang-en/.lang-es span
+   pair the rest of the page toggles. Pick the language the family is actually
+   reading; fall back to English whenever no Spanish was authored. */
+function pickLangText(en, es) {
+  const esText = (es || "").trim();
+  if (esText && document.body.classList.contains("lang-mode-es")) return esText;
+  return en || "";
+}
+
 function checkProblem(idx, options) {
   const silent = options && options.silent;
   const section = document.getElementById("problem_" + idx);
@@ -5733,7 +5814,7 @@ function checkProblem(idx, options) {
       const container = section.querySelector(".mc-options");
       const selected = container.querySelector("input[type='radio']:checked");
       const correctIdx = container.dataset.correct;
-      const explanation = container.dataset.explanation;
+      const explanation = pickLangText(container.dataset.explanation, container.dataset.explanationEs);
       
       // Reset radio option styles
       const labels = container.querySelectorAll(".mc-option-label");
@@ -5961,7 +6042,7 @@ function checkProblem(idx, options) {
   if (!feedbackMessage) {
     if (type === "multiple-choice") {
       const container = section.querySelector(".mc-options");
-      const explanation = container?.dataset.explanation || "";
+      const explanation = pickLangText(container?.dataset.explanation, container?.dataset.explanationEs);
       if (isProblemCorrect) {
         feedbackMessage = explanation
           ? "Correct! " + explanation

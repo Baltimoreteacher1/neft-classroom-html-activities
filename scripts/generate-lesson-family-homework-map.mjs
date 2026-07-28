@@ -27,9 +27,20 @@ function familyHomeworkEntry(id, cfg) {
   }
   if (!href) return null;
 
-  const title = custom?.title || custom?.name || "Family Homework";
+  /* The parent-facing page promises "Optional and ungraded" and titles itself
+     "Help Your Student" — but this hub tile used to say "Family Homework",
+     which reads as required and graded. Families saw both. The tile now
+     matches the promise the family page makes. */
+  const title = custom?.title || custom?.name || "Family Practice (optional)";
+
+  /* A lesson and its -flagship variant cover the same standard, so the hub
+     listed two identical "Family Homework" tiles with nothing to tell them
+     apart. Name the richer themed variant so the choice is legible. */
+  const isFlagship = id.endsWith("-flagship");
+  const label = custom?.title || custom?.name ? title : isFlagship ? `${title} · Extended` : title;
+
   return {
-    text: `🏠 ${title}`,
+    text: `🏠 ${label}`,
     href,
     isFamilyHomework: true,
   };

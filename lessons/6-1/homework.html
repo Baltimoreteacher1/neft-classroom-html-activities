@@ -1604,6 +1604,14 @@ body.obj-popup-open { overflow: hidden; }
 .section-vocab { border-left: 4px solid var(--coral); }
 .section-stuck { border-left: 4px solid #9b59b6; }
 .section-quick-intro { border-left: 4px solid var(--success); }
+.quick-check-time {
+  background: var(--amber-light);
+  border: 1px solid var(--amber);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 0 0 12px;
+  font-size: 15px;
+}
 .section-celebrate {
   border-left: 4px solid var(--amber);
   background: linear-gradient(180deg, var(--amber-light), var(--white));
@@ -1851,6 +1859,16 @@ body.obj-popup-open { overflow: hidden; }
   padding: 2px;
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x proximity;
+}
+/* On a phone the 10 tabs are ~738px wide in a ~381px viewport, so half of them
+   (Help, More, Done) sit off-screen with nothing to suggest they exist. Fade the
+   trailing edge so the strip reads as scrollable. Only below 700px, where the
+   overflow is guaranteed — a permanent fade on desktop would just look broken. */
+@media (max-width: 700px) {
+  .homework-tab-bar {
+    -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+    mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+  }
 }
 .homework-tab-btn {
   flex: 0 0 auto;
@@ -2372,6 +2390,12 @@ body.lang-mode-es .bilingual-grid {
 @media print {
   .homework-tab-chrome, .homework-tab-bar, .bottom-status-bar, .help-modal-overlay, .print-all-btn, .parent-signoff-container { display: none !important; }
   .tab-panel-inner[hidden] { display: block !important; page-break-inside: avoid; }
+  /* Printing un-hides every panel, but these three are screen-only: an embedded
+     arcade iframe, a live game, and a link-out. On paper they were blank or
+     meaningless pages in the middle of the packet. */
+  [data-tab-panel="arcade"],
+  [data-tab-panel="play"],
+  [data-tab-panel="workbench"] { display: none !important; }
   body { padding-bottom: 0; }
   
   .print-only-certificate.is-signed {
@@ -2448,7 +2472,7 @@ body.lang-mode-es .bilingual-grid {
 
 
 .family-visual-lab{--lab-ink:#173a5e;--lab-teal:#0b8f87;--lab-coral:#ff775f;--lab-sun:#f6c94c;margin:26px 0;padding:clamp(18px,3vw,30px);border:3px solid var(--lab-ink);border-radius:28px;background:#fffdf5;box-shadow:8px 8px 0 var(--lab-ink);color:var(--lab-ink)}
-.visual-lab-heading{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(260px,1.15fr);gap:20px;align-items:end;margin-bottom:20px}.visual-lab-heading h2{margin:6px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.05}.visual-lab-heading p{margin:0;padding:14px 16px;border-left:5px solid var(--lab-sun);background:#fff8d9;font-size:17px;font-weight:700;line-height:1.45}.visual-lab-kicker{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--lab-ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em}
+.visual-lab-heading{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(260px,1.15fr);gap:20px;align-items:end;margin-bottom:20px}.visual-lab-heading h2{margin:6px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.05}.visual-lab-heading p{margin:0;padding:14px 16px;border-left:5px solid var(--lab-sun);background:#fff8d9;font-size:17px;font-weight:700;line-height:1.45}.visual-lab-kicker{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--lab-ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em}.visual-lab-kicker .lang-en,.visual-lab-kicker .lang-es{color:inherit}
 .visual-lab-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(230px,.8fr);gap:18px;align-items:stretch}.visual-lab-canvas-wrap{min-width:0;padding:12px;border-radius:22px;background-color:#eef8f4;background-image:linear-gradient(#cee3dc 1px,transparent 1px),linear-gradient(90deg,#cee3dc 1px,transparent 1px);background-size:24px 24px;border:2px solid var(--lab-ink)}.visual-lab-stage{display:grid;place-items:center;min-height:280px}.visual-lab-stage svg{display:block;width:100%;max-height:320px;overflow:visible}.visual-lab-status{min-height:26px;margin:5px 8px 0;padding:7px 10px;border-radius:10px;background:#fff;font-weight:800;text-align:center}
 .visual-lab-controls{display:flex;flex-direction:column;gap:14px;padding:18px;border-radius:22px;background:var(--lab-ink);color:#fff}.visual-lab-control{display:grid;gap:7px;font-weight:800}.visual-lab-control-label{display:flex;justify-content:space-between;gap:10px;align-items:center}.visual-lab-control output{min-width:38px;padding:3px 8px;border-radius:8px;background:var(--lab-sun);color:#102f4e;text-align:center;font-size:18px}.visual-lab-control input[type=range]{width:100%;min-height:28px;accent-color:var(--lab-coral);cursor:pointer}.visual-lab-control input[type=range]:focus-visible{outline:4px solid #fff;outline-offset:4px}.visual-lab-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:auto}.visual-lab-button{min-height:48px;border:2px solid #fff;border-radius:13px;background:var(--lab-coral);color:#182f48;font:inherit;font-weight:800;cursor:pointer}.visual-lab-button-quiet{background:#fff}.visual-lab-button:hover{transform:translateY(-2px)}.visual-lab-button:focus-visible{outline:4px solid var(--lab-sun);outline-offset:3px}
 .visual-representation-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:18px}.visual-representation-card{position:relative;min-height:150px;padding:18px 16px 15px;border:2px solid var(--lab-ink);border-radius:18px;background:#fff}.visual-representation-card h3{margin:0 0 10px;padding-left:30px;font-size:17px}.visual-representation-card p{margin:7px 0;font-size:16px;line-height:1.4}.representation-number{position:absolute;top:12px;left:12px;display:grid;width:27px;height:27px;place-items:center;border-radius:50%;background:var(--lab-ink);color:#fff;font-weight:800}.visual-representation-model{background:#dff5ee}.visual-representation-math{background:#fff2c2}.visual-representation-words{background:#ffe4dd}.visual-representation-math [data-lab-equation]{font-size:clamp(22px,3vw,32px);font-weight:800;text-align:center}.mini-model{display:flex;flex-wrap:wrap;gap:7px;align-content:center;min-height:76px;padding:8px}.mini-dot{width:18px;height:18px;border:2px solid var(--lab-ink);border-radius:50%;background:var(--lab-teal)}.visual-representation-card details{margin-top:10px}.visual-representation-card summary{cursor:pointer;font-weight:800;text-decoration:underline}.visual-source-idea{font-size:13px!important;color:#344f69}
@@ -2731,12 +2755,12 @@ header.packet h1::after{
         <div class="bilingual-col lang-en">
           <span class="lang-label">English</span>
           <p class="learning-big">Tonight we learn what an exponent means. A small raised number tells us how many times to multiply a number by itself.</p>
-          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Exponent</li><li>Base</li><li>Power</li><li>Evaluate</li></ul></div>
+          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Powers and Exponents</li><li>Exponent</li><li>Base</li><li>Power</li><li>Evaluate</li></ul></div>
         </div>
         <div class="bilingual-col lang-es" lang="es">
           <span class="lang-label">Español</span>
           <p class="learning-big">Esta noche aprendemos qué significa un exponente. Un número pequeño y elevado nos dice cuántas veces multiplicar un número por sí mismo.</p>
-          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Exponente</li><li>Base</li><li>Potencia</li><li>Evaluar</li></ul></div>
+          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Potencias y exponentes</li><li>Exponente</li><li>Base</li><li>Potencia</li><li>Evaluar</li></ul></div>
         </div>
       </div>
     
@@ -2868,6 +2892,24 @@ header.packet h1::after{
       </p>
       <div class="vocab-container">
         
+            <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+              <div class="vocab-card-inner">
+                <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/cat-number.svg" alt="Illustration of Powers and Exponents: A power uses a base and an exponent to show repeated multiplication." loading="lazy" width="72" height="72" />
+                  </div>
+                  <h3>Powers and Exponents</h3>
+                  <p class="vocab-es" lang="es">Potencias y exponentes</p>
+                  <div class="vocab-visual-hint">💡 2⁴ = 2 × 2 × 2 × 2 = 16</div>
+                  <div class="flip-prompt"><span class="lang-en">Tap</span><span class="lang-es" lang="es">Toca ➔</span></div>
+                </div>
+                <div class="vocab-card-back">
+                  <p class="vocab-def">A power uses a base and an exponent to show repeated multiplication.</p>
+                  <p class="vocab-def-es" lang="es">Una potencia usa una base y un exponente para mostrar multiplicación repetida.</p>
+                  <p class="vocab-back-visual">📌 2⁴ = 2 × 2 × 2 × 2 = 16</p>
+                </div>
+              </div>
+            </div>
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -3076,6 +3118,10 @@ header.packet h1::after{
       
     
       <h2 class="section-title">✅ <span class="lang-en">Quick check</span><span class="lang-es" lang="es">Repaso rápido</span></h2>
+      <p class="quick-check-time bilingual-block">
+        <span class="lang-en">⏱️ Plan on about <strong>15–20 minutes</strong> for the 6 problems below. The extra practice at the bottom is optional.</span>
+        <span class="lang-es" lang="es">⏱️ Calculen unos <strong>15–20 minutos</strong> para los 6 problemas de abajo. La práctica extra al final es opcional.</span>
+      </p>
       <p class="bilingual-block">
         <span class="lang-en">A few problems to practice together. Each one has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong>, and a <strong>space to show your work</strong>. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
         <span class="lang-es" lang="es">Unos problemas para practicar juntos. Cada uno tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para mostrar el trabajo</strong>. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
@@ -3100,12 +3146,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_0" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 1</div>
-        <div class="problem-type-badge">FILL TABLE</div>
+        <div class="problem-type-badge"><span class="lang-en">FILL TABLE</span><span class="lang-es" lang="es">COMPLETAR LA TABLA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each row shows the repeated multiplication for you. Your job is to multiply the factors carefully.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each row shows the repeated multiplication for you. Your job is to multiply the factors carefully.","es":"Multiplica los factores que aparecen llevando un total acumulado: 4³ = 4 × 4 × 4 = 64, 2⁶ también da 64 después de seis duplicaciones, 5³ = 125 y 10⁴ = 10,000. Fíjate en que 4³ y 2⁶ tienen el mismo valor aunque las bases y los exponentes sean distintos, y en que 10⁴ gana un cero por cada factor de 10.","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Evaluate each exponential expression. Show the repeated multiplication and the final value.</p>
+        <p class="problem-stem"><span class="lang-en">Evaluate each exponential expression. Show the repeated multiplication and the final value.</span><span class="lang-es" lang="es">Evalúa cada expresión exponencial. Muestra la multiplicación repetida y el valor final.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
         <div class="table-responsive">
           <table class="fill-table">
@@ -3219,12 +3265,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_1" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 2</div>
-        <div class="problem-type-badge">FILL TABLE</div>
+        <div class="problem-type-badge"><span class="lang-en">FILL TABLE</span><span class="lang-es" lang="es">COMPLETAR LA TABLA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The middle column already shows each power as repeated multiplication — use it!","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The middle column already shows each power as repeated multiplication — use it!","es":"La columna del medio ya desarma cada potencia, así que solo falta multiplicar. 3² significa dos factores de 3, y 3 × 3 = 9. 2⁴ significa cuatro factores de 2, y multiplicando paso a paso da 2 × 2 = 4, 4 × 2 = 8, 8 × 2 = 16. El exponente cuenta los factores; nunca es uno de los factores.","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Write each power as repeated multiplication, then find the value.</p>
+        <p class="problem-stem"><span class="lang-en">Write each power as repeated multiplication, then find the value.</span><span class="lang-es" lang="es">Escribe cada potencia como una multiplicación repetida y después encuentra su valor.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
         <div class="table-responsive">
           <table class="fill-table">
@@ -3306,14 +3352,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_2" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 3</div>
-        <div class="problem-type-badge">DRAG SORT</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"You are not evaluating anything here — each card just needs the exponential form that says the same thing.","es":"Aquí no estás calculando nada: cada tarjeta solo necesita la forma exponencial que dice lo mismo.","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Drag each repeated-multiplication beat next to its matching exponential form.</p>
+        <p class="problem-stem"><span class="lang-en">Drag each repeated-multiplication beat next to its matching exponential form.</span><span class="lang-es" lang="es">Arrastra cada ritmo de multiplicación repetida junto a su forma exponencial correspondiente.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
-        
+        <div class="family-hint-box"><p>💡 <span class="lang-en">You are not evaluating anything here — each card just needs the exponential form that says the same thing.</span><span class="lang-es" lang="es">Aquí no estás calculando nada: cada tarjeta solo necesita la forma exponencial que dice lo mismo.</span></p><p>💡 <span class="lang-en">In each card, the number being repeated becomes the base, and how many times it appears becomes the exponent.</span><span class="lang-es" lang="es">En cada tarjeta, el número que se repite es la base y la cantidad de veces que aparece es el exponente.</span></p><p>💡 <span class="lang-en">Take 4 × 4 × 4 × 4: the repeated number is 4, so count how many 4&#039;s you see and look for the label with that exponent.</span><span class="lang-es" lang="es">Toma 4 × 4 × 4 × 4: el número que se repite es 4, así que cuenta cuántos 4 ves y busca la etiqueta con ese exponente.</span></p></div>
         <div class="drag-sort-workspace" id="dragsort_2">
           <div class="drag-columns">
 
@@ -3442,12 +3488,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_3" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 1</div>
-        <div class="problem-type-badge">FILL TABLE</div>
+        <div class="problem-type-badge"><span class="lang-en">FILL TABLE</span><span class="lang-es" lang="es">COMPLETAR LA TABLA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Swapping base and exponent changes the meaning: 2⁵ is five 2&#39;s multiplied, but 5² is only two 5&#39;s.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Swapping base and exponent changes the meaning: 2⁵ is five 2&#39;s multiplied, but 5² is only two 5&#39;s.","es":"Intercambiar la base y el exponente casi siempre cambia el valor: 2⁵ = 32 supera a 5² = 25, y 3⁴ = 81 supera a 4³ = 64. La fila del medio es la excepción —2⁴ = 16 y 4² = 16 son iguales—, lo que muestra que un intercambio solo coincide en casos especiales, no como regla.","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Compare the values when the base and exponent are swapped. What do you notice?</p>
+        <p class="problem-stem"><span class="lang-en">Compare the values when the base and exponent are swapped. What do you notice?</span><span class="lang-es" lang="es">Compara los valores cuando se intercambian la base y el exponente. ¿Qué observas?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
         <div class="table-responsive">
           <table class="fill-table">
@@ -3617,12 +3663,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_4" data-problem-type="open-response">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 2</div>
-        <div class="problem-type-badge">OPEN RESPONSE</div>
+        <div class="problem-type-badge"><span class="lang-en">OPEN RESPONSE</span><span class="lang-es" lang="es">RESPUESTA ABIERTA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Doubling every hour means multiplying by 2 again and again — that&#39;s exactly what an exponent shows.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Doubling every hour means multiplying by 2 again and again — that&#39;s exactly what an exponent shows.","es":"Duplicarse cada hora significa multiplicar por 2 una vez por hora, así que después de 6 horas la cantidad es 2⁶ = 2 × 2 × 2 × 2 × 2 × 2 = 64 bacterias. Sumar 2 cada hora daría apenas 1 + 12 = 13. La multiplicación repetida se acumula —cada hora multiplica todo lo que ya existe—, mientras que la suma repetida siempre agrega la misma cantidad fija.","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A bacteria colony doubles every hour. Starting with 1 bacterium, write a power expression for the number after 6 hours. Explain why exponential growth is so much faster than adding the same number each hour.</p>
+        <p class="problem-stem"><span class="lang-en">A bacteria colony doubles every hour. Starting with 1 bacterium, write a power expression for the number after 6 hours. Explain why exponential growth is so much faster than adding the same number each hour.</span><span class="lang-es" lang="es">Una colonia de bacterias se duplica cada hora. Empezando con 1 bacteria, escribe una expresión con potencias para la cantidad después de 6 horas. Explica por qué el crecimiento exponencial es mucho más rápido que sumar la misma cantidad cada hora.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 A complete sentence with math vocabulary is the goal — not a perfect paragraph.</span><span class="lang-es" lang="es">👪 Una oración completa con vocabulario matemático es la meta — no un párrafo perfecto.</span></p>
         
         
@@ -3687,12 +3733,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_5" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 3</div>
-        <div class="problem-type-badge">DRAG SORT</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each card already shows the power&#39;s value after the equals sign — that value is what you compare to 50.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each card already shows the power&#39;s value after the equals sign — that value is what you compare to 50.","es":"Cada tarjeta ya muestra su valor, así que clasificar es comparar con 50. Por encima de 50 están 3⁴ = 81, 10² = 100 y 5³ = 125. En 50 o por debajo están 2⁵ = 32, 7² = 49 y 4² = 16. Cuidado con 7² = 49: parece cercano, pero 49 es menor que 50, así que va en el grupo de los pequeños.","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Sort each power by whether its value is greater than 50 or not.</p>
+        <p class="problem-stem"><span class="lang-en">Sort each power by whether its value is greater than 50 or not.</span><span class="lang-es" lang="es">Clasifica cada potencia según si su valor es mayor que 50 o no.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
         <div class="family-hint-box"><p>💡 Each card already shows the power&#039;s value after the equals sign — that value is what you compare to 50.</p><p>💡 Ignore the exponent form; ask &#039;is this value more than 50?&#039; Remember exactly 50 would count as ≤ 50.</p><p>💡 Try the first card: 2⁵ = 32. Is 32 greater than 50? Place it, then test each card the same way.</p></div>
         <div class="drag-sort-workspace" id="dragsort_5">
@@ -3840,14 +3886,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_6" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 1</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"In 5³ the base is 5 and the exponent is 3. Ask: which number repeats, and how many times?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"In 5³ the base is 5 and the exponent is 3. Ask: which number repeats, and how many times?","es":"5³ significa usar 5 como factor 3 veces: 5 × 5 × 5. El exponente indica cuántas veces se multiplica, no por cuánto se multiplica.","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Which expression shows 5³ as repeated multiplication?</p>
+        <p class="problem-stem"><span class="lang-en">Which expression shows 5³ as repeated multiplication?</span><span class="lang-es" lang="es">¿Qué expresión muestra 5³ como una multiplicación repetida?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="5³ means use 5 as a factor 3 times: 5 × 5 × 5. The exponent tells how many times to multiply, not what to multiply by.">
+        <div class="mc-options" data-correct="0" data-explanation="5³ means use 5 as a factor 3 times: 5 × 5 × 5. The exponent tells how many times to multiply, not what to multiply by." data-explanation-es="5³ significa usar 5 como factor 3 veces: 5 × 5 × 5. El exponente indica cuántas veces se multiplica, no por cuánto se multiplica.">
           
             <label class="mc-option-label" id="label_q_6_0">
               <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
@@ -3910,12 +3956,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_7" data-problem-type="matching-game">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 2</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
+        <div class="problem-type-badge"><span class="lang-en">MATCHING GAME</span><span class="lang-es" lang="es">JUEGO DE PAREJAS</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each power hides a value. The base is the number you repeat; the exponent counts the repeats.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each power hides a value. The base is the number you repeat; the exponent counts the repeats.","es":"Desarrolla cada potencia y multiplica: 2⁵ = 32, 3³ = 27, 4³ = 64, 10³ = 1,000, 5² = 25 y 2⁷ = 128. Las dos potencias de 2 son las que más se confunden, así que cuenta bien los factores: cinco 2 dan 32, mientras que siete 2 dan 128.","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Match each power to its value.</p>
+        <p class="problem-stem"><span class="lang-en">Match each power to its value.</span><span class="lang-es" lang="es">Une cada potencia con su valor.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Say each term out loud, then talk through which match makes sense before choosing.</span><span class="lang-es" lang="es">👪 Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.</span></p>
         <div class="matching-pairs">
           
@@ -4008,14 +4054,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_8" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 3</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The base 7 is used as a factor 3 times, so the power is 7³. 7³ = 7 × 7 × 7 = 343.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"A power has two parts: the base is the number being repeated, and the exponent tells how many times it appears.","es":"Una potencia tiene dos partes: la base es el número que se repite y el exponente indica cuántas veces aparece.","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A synth pattern repeats 7 × 7 × 7. How do you write that as a power?</p>
+        <p class="problem-stem"><span class="lang-en">A synth pattern repeats 7 × 7 × 7. How do you write that as a power?</span><span class="lang-es" lang="es">Un patrón de sintetizador repite 7 × 7 × 7. ¿Cómo se escribe eso como una potencia?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="The base 7 is used as a factor 3 times, so the power is 7³. 7³ = 7 × 7 × 7 = 343.">
+        <div class="mc-options" data-correct="0" data-explanation="The base 7 is used as a factor 3 times, so the power is 7³. 7³ = 7 × 7 × 7 = 343." data-explanation-es="La base 7 se usa como factor 3 veces, así que la potencia es 7³. 7³ = 7 × 7 × 7 = 343.">
           
             <label class="mc-option-label" id="label_q_8_0">
               <input type="radio" name="q_8" value="0" onchange="saveState(); updateProgress();">
@@ -4078,12 +4124,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_9" data-problem-type="matching-game">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 4</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
+        <div class="problem-type-badge"><span class="lang-en">MATCHING GAME</span><span class="lang-es" lang="es">JUEGO DE PAREJAS</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The exponent counts how many times the base is used as a factor, so a power with a small base can still produce a big number of beats.","es":"El exponente cuenta cuántas veces se usa la base como factor, así que una potencia con base pequeña todavía puede dar muchos tiempos.","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Match each power to the number of beats it plays (its value).</p>
+        <p class="problem-stem"><span class="lang-en">Match each power to the number of beats it plays (its value).</span><span class="lang-es" lang="es">Une cada potencia con la cantidad de tiempos que toca (su valor).</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Say each term out loud, then talk through which match makes sense before choosing.</span><span class="lang-es" lang="es">👪 Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.</span></p>
         <div class="matching-pairs">
           
@@ -4176,14 +4222,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_10" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 5</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Look at the small raised 3. That exponent counts how many 4&#39;s get multiplied — it is not a number to multiply 4 by.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Look at the small raised 3. That exponent counts how many 4&#39;s get multiplied — it is not a number to multiply 4 by.","es":"4³ = 4 × 4 × 4 = 64.","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">What is the value of 4³?</p>
+        <p class="problem-stem"><span class="lang-en">What is the value of 4³?</span><span class="lang-es" lang="es">¿Cuál es el valor de 4³?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="4³ = 4 × 4 × 4 = 64.">
+        <div class="mc-options" data-correct="0" data-explanation="4³ = 4 × 4 × 4 = 64." data-explanation-es="4³ = 4 × 4 × 4 = 64.">
           
             <label class="mc-option-label" id="label_q_10_0">
               <input type="radio" name="q_10" value="0" onchange="saveState(); updateProgress();">
@@ -4246,14 +4292,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_11" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 6</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The little 2 is the exponent. It counts how many 6&#39;s you multiply — it&#39;s not a number to add or multiply by.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The little 2 is the exponent. It counts how many 6&#39;s you multiply — it&#39;s not a number to add or multiply by.","es":"6² = 6 × 6 = 36.","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">What is the value of 6²?</p>
+        <p class="problem-stem"><span class="lang-en">What is the value of 6²?</span><span class="lang-es" lang="es">¿Cuál es el valor de 6²?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="6² = 6 × 6 = 36.">
+        <div class="mc-options" data-correct="0" data-explanation="6² = 6 × 6 = 36." data-explanation-es="6² = 6 × 6 = 36.">
           
             <label class="mc-option-label" id="label_q_11_0">
               <input type="radio" name="q_11" value="0" onchange="saveState(); updateProgress();">
@@ -4316,14 +4362,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_12" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 7</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"There are three jobs here: parentheses, an exponent, and multiplication. Order of operations decides which comes first.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"There are three jobs here: parentheses, an exponent, and multiplication. Order of operations decides which comes first.","es":"4 + 2 = 6. 6² = 36. 3 × 36 = 108.","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Evaluate: 3 × (4 + 2)²</p>
+        <p class="problem-stem"><span class="lang-en">Evaluate: 3 × (4 + 2)²</span><span class="lang-es" lang="es">Evalúa: 3 × (4 + 2)²</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="4 + 2 = 6. 6² = 36. 3 × 36 = 108.">
+        <div class="mc-options" data-correct="0" data-explanation="4 + 2 = 6. 6² = 36. 3 × 36 = 108." data-explanation-es="4 + 2 = 6. 6² = 36. 3 × 36 = 108.">
           
             <label class="mc-option-label" id="label_q_12_0">
               <input type="radio" name="q_12" value="0" onchange="saveState(); updateProgress();">
@@ -4386,14 +4432,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_13" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 8</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"3⁴ means use 3 as a factor 4 times: 3 × 3 × 3 × 3 = 81. It is NOT 3 × 4 = 12.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"In a power, the small raised number counts how many times the base is used as a factor — it is not something you multiply by.","es":"En una potencia, el número pequeño de arriba cuenta cuántas veces se usa la base como factor; no es algo por lo que se multiplica.","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">The drum loop plays 3⁴ beats. What is the value of 3⁴?</p>
+        <p class="problem-stem"><span class="lang-en">The drum loop plays 3⁴ beats. What is the value of 3⁴?</span><span class="lang-es" lang="es">El bucle de batería toca 3⁴ tiempos. ¿Cuál es el valor de 3⁴?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="3⁴ means use 3 as a factor 4 times: 3 × 3 × 3 × 3 = 81. It is NOT 3 × 4 = 12.">
+        <div class="mc-options" data-correct="0" data-explanation="3⁴ means use 3 as a factor 4 times: 3 × 3 × 3 × 3 = 81. It is NOT 3 × 4 = 12." data-explanation-es="3⁴ significa usar 3 como factor 4 veces: 3 × 3 × 3 × 3 = 81. NO es 3 × 4 = 12.">
           
             <label class="mc-option-label" id="label_q_13_0">
               <input type="radio" name="q_13" value="0" onchange="saveState(); updateProgress();">
@@ -4717,8 +4763,8 @@ header.packet h1::after{
 <script>
 window.LESSON_ID = "6-1";
 window.LESSON_TITLE = "Powers and Exponents";
-window.__HW_VOCAB__ = [{"term":"Exponent","termEs":"Exponente","def":"A small number that tells how many times to multiply a number by itself.","defEs":"Un número pequeño que dice cuántas veces multiplicar un número por sí mismo.","example":"In 2³, the small 3 means multiply 2 by itself 3 times: 2 × 2 × 2 = 8","img":"/assets/vocab-images/exponent.svg","imgAlt":"Illustration of Exponent: A small number that tells how many times to multiply a number by itself."},{"term":"Base","termEs":"Base","def":"The number that gets multiplied by itself.","defEs":"El número que se multiplica por sí mismo.","example":"In 5², the base is 5 — it is the number being multiplied: 5 × 5 = 25","img":"/assets/vocab-images/base.svg","imgAlt":"Illustration of Base: The number that gets multiplied by itself."},{"term":"Power","termEs":"Potencia","def":"A number written with a base and an exponent, like 2³.","defEs":"Un número escrito con una base y un exponente, como 2³.","example":"10³ = 10 × 10 × 10 = 1,000 — read as '10 to the third power' or '10 cubed'","img":"/assets/vocab-images/exponent.svg","imgAlt":"Illustration of Power: A number written with a base and an exponent, like 2³."},{"term":"Evaluate","termEs":"Evaluar","def":"To find the value by putting numbers in for the letters.","defEs":"Encontrar el valor poniendo números en lugar de las letras.","example":"Evaluate 3⁴: write 3 × 3 × 3 × 3, then multiply step by step: 9 × 9 = 81","img":"/assets/vocab-images/expression.svg","imgAlt":"Illustration of Evaluate: To find the value by putting numbers in for the letters."}];
-window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Exponent|Evaluate|Power|Base)(?:es|s)?\\b","lookup":{"exponent":0,"base":1,"power":2,"evaluate":3}};
+window.__HW_VOCAB__ = [{"term":"Powers and Exponents","termEs":"Potencias y exponentes","def":"A power uses a base and an exponent to show repeated multiplication.","defEs":"Una potencia usa una base y un exponente para mostrar multiplicación repetida.","example":"2⁴ = 2 × 2 × 2 × 2 = 16","img":"","imgAlt":""},{"term":"Exponent","termEs":"Exponente","def":"A small number that tells how many times to multiply a number by itself.","defEs":"Un número pequeño que dice cuántas veces multiplicar un número por sí mismo.","example":"In 2³, the small 3 means multiply 2 by itself 3 times: 2 × 2 × 2 = 8","img":"/assets/vocab-images/exponent.svg","imgAlt":"Illustration of Exponent: A small number that tells how many times to multiply a number by itself."},{"term":"Base","termEs":"Base","def":"The number that gets multiplied by itself.","defEs":"El número que se multiplica por sí mismo.","example":"In 5², the base is 5 — it is the number being multiplied: 5 × 5 = 25","img":"/assets/vocab-images/base.svg","imgAlt":"Illustration of Base: The number that gets multiplied by itself."},{"term":"Power","termEs":"Potencia","def":"A number written with a base and an exponent, like 2³.","defEs":"Un número escrito con una base y un exponente, como 2³.","example":"10³ = 10 × 10 × 10 = 1,000 — read as '10 to the third power' or '10 cubed'","img":"/assets/vocab-images/exponent.svg","imgAlt":"Illustration of Power: A number written with a base and an exponent, like 2³."},{"term":"Evaluate","termEs":"Evaluar","def":"To find the value by putting numbers in for the letters.","defEs":"Encontrar el valor poniendo números en lugar de las letras.","example":"Evaluate 3⁴: write 3 × 3 × 3 × 3, then multiply step by step: 9 × 9 = 81","img":"/assets/vocab-images/expression.svg","imgAlt":"Illustration of Evaluate: To find the value by putting numbers in for the letters."}];
+window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Powers and Exponents|Exponent|Evaluate|Power|Base)(?:es|s)?\\b","lookup":{"powers and exponent":0,"exponent":1,"base":2,"power":3,"evaluate":4}};
 
 function syncHomeworkChromeHeights() {
   const status = document.querySelector('.bottom-status-bar');
@@ -4852,7 +4898,33 @@ function saveParentSignoff() {
   try {
     localStorage.setItem('hw_parent_signoff_' + lessonId, JSON.stringify(payload));
   } catch(e) {}
-  
+
+  /* localStorage stays the source of truth for what this page displays, but a
+     sign-off the teacher never sees is not a sign-off. Fire-and-forget POST:
+     the endpoint always answers 204, and any failure here is swallowed so a
+     family on a bad connection still gets their confirmation. */
+  try {
+    var signoffBody = JSON.stringify({
+      lessonId: lessonId,
+      lessonTitle: lessonTitle,
+      parentName: nameVal,
+      note: noteVal,
+      date: signoffDate,
+      studentName: (window.NeftSaveResume && window.NeftSaveResume.studentName) || '',
+      section: (window.NeftSaveResume && window.NeftSaveResume.section) || ''
+    });
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('/api/progress/family-signoff', new Blob([signoffBody], { type: 'application/json' }));
+    } else {
+      fetch('/api/progress/family-signoff', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: signoffBody,
+        keepalive: true
+      }).catch(function() {});
+    }
+  } catch(e) {}
+
   updateSignoffUI(payload);
 }
 
@@ -5789,6 +5861,15 @@ function playCheckSound(isCorrect) {
   }
 }
 
+/* Feedback text is built in JS, so it cannot use the .lang-en/.lang-es span
+   pair the rest of the page toggles. Pick the language the family is actually
+   reading; fall back to English whenever no Spanish was authored. */
+function pickLangText(en, es) {
+  const esText = (es || "").trim();
+  if (esText && document.body.classList.contains("lang-mode-es")) return esText;
+  return en || "";
+}
+
 function checkProblem(idx, options) {
   const silent = options && options.silent;
   const section = document.getElementById("problem_" + idx);
@@ -5806,7 +5887,7 @@ function checkProblem(idx, options) {
       const container = section.querySelector(".mc-options");
       const selected = container.querySelector("input[type='radio']:checked");
       const correctIdx = container.dataset.correct;
-      const explanation = container.dataset.explanation;
+      const explanation = pickLangText(container.dataset.explanation, container.dataset.explanationEs);
       
       // Reset radio option styles
       const labels = container.querySelectorAll(".mc-option-label");
@@ -6034,7 +6115,7 @@ function checkProblem(idx, options) {
   if (!feedbackMessage) {
     if (type === "multiple-choice") {
       const container = section.querySelector(".mc-options");
-      const explanation = container?.dataset.explanation || "";
+      const explanation = pickLangText(container?.dataset.explanation, container?.dataset.explanationEs);
       if (isProblemCorrect) {
         feedbackMessage = explanation
           ? "Correct! " + explanation

@@ -1604,6 +1604,14 @@ body.obj-popup-open { overflow: hidden; }
 .section-vocab { border-left: 4px solid var(--coral); }
 .section-stuck { border-left: 4px solid #9b59b6; }
 .section-quick-intro { border-left: 4px solid var(--success); }
+.quick-check-time {
+  background: var(--amber-light);
+  border: 1px solid var(--amber);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 0 0 12px;
+  font-size: 15px;
+}
 .section-celebrate {
   border-left: 4px solid var(--amber);
   background: linear-gradient(180deg, var(--amber-light), var(--white));
@@ -1851,6 +1859,16 @@ body.obj-popup-open { overflow: hidden; }
   padding: 2px;
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x proximity;
+}
+/* On a phone the 10 tabs are ~738px wide in a ~381px viewport, so half of them
+   (Help, More, Done) sit off-screen with nothing to suggest they exist. Fade the
+   trailing edge so the strip reads as scrollable. Only below 700px, where the
+   overflow is guaranteed — a permanent fade on desktop would just look broken. */
+@media (max-width: 700px) {
+  .homework-tab-bar {
+    -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+    mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+  }
 }
 .homework-tab-btn {
   flex: 0 0 auto;
@@ -2372,6 +2390,12 @@ body.lang-mode-es .bilingual-grid {
 @media print {
   .homework-tab-chrome, .homework-tab-bar, .bottom-status-bar, .help-modal-overlay, .print-all-btn, .parent-signoff-container { display: none !important; }
   .tab-panel-inner[hidden] { display: block !important; page-break-inside: avoid; }
+  /* Printing un-hides every panel, but these three are screen-only: an embedded
+     arcade iframe, a live game, and a link-out. On paper they were blank or
+     meaningless pages in the middle of the packet. */
+  [data-tab-panel="arcade"],
+  [data-tab-panel="play"],
+  [data-tab-panel="workbench"] { display: none !important; }
   body { padding-bottom: 0; }
   
   .print-only-certificate.is-signed {
@@ -2448,7 +2472,7 @@ body.lang-mode-es .bilingual-grid {
 
 
 .family-visual-lab{--lab-ink:#173a5e;--lab-teal:#0b8f87;--lab-coral:#ff775f;--lab-sun:#f6c94c;margin:26px 0;padding:clamp(18px,3vw,30px);border:3px solid var(--lab-ink);border-radius:28px;background:#fffdf5;box-shadow:8px 8px 0 var(--lab-ink);color:var(--lab-ink)}
-.visual-lab-heading{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(260px,1.15fr);gap:20px;align-items:end;margin-bottom:20px}.visual-lab-heading h2{margin:6px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.05}.visual-lab-heading p{margin:0;padding:14px 16px;border-left:5px solid var(--lab-sun);background:#fff8d9;font-size:17px;font-weight:700;line-height:1.45}.visual-lab-kicker{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--lab-ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em}
+.visual-lab-heading{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(260px,1.15fr);gap:20px;align-items:end;margin-bottom:20px}.visual-lab-heading h2{margin:6px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.05}.visual-lab-heading p{margin:0;padding:14px 16px;border-left:5px solid var(--lab-sun);background:#fff8d9;font-size:17px;font-weight:700;line-height:1.45}.visual-lab-kicker{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--lab-ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em}.visual-lab-kicker .lang-en,.visual-lab-kicker .lang-es{color:inherit}
 .visual-lab-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(230px,.8fr);gap:18px;align-items:stretch}.visual-lab-canvas-wrap{min-width:0;padding:12px;border-radius:22px;background-color:#eef8f4;background-image:linear-gradient(#cee3dc 1px,transparent 1px),linear-gradient(90deg,#cee3dc 1px,transparent 1px);background-size:24px 24px;border:2px solid var(--lab-ink)}.visual-lab-stage{display:grid;place-items:center;min-height:280px}.visual-lab-stage svg{display:block;width:100%;max-height:320px;overflow:visible}.visual-lab-status{min-height:26px;margin:5px 8px 0;padding:7px 10px;border-radius:10px;background:#fff;font-weight:800;text-align:center}
 .visual-lab-controls{display:flex;flex-direction:column;gap:14px;padding:18px;border-radius:22px;background:var(--lab-ink);color:#fff}.visual-lab-control{display:grid;gap:7px;font-weight:800}.visual-lab-control-label{display:flex;justify-content:space-between;gap:10px;align-items:center}.visual-lab-control output{min-width:38px;padding:3px 8px;border-radius:8px;background:var(--lab-sun);color:#102f4e;text-align:center;font-size:18px}.visual-lab-control input[type=range]{width:100%;min-height:28px;accent-color:var(--lab-coral);cursor:pointer}.visual-lab-control input[type=range]:focus-visible{outline:4px solid #fff;outline-offset:4px}.visual-lab-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:auto}.visual-lab-button{min-height:48px;border:2px solid #fff;border-radius:13px;background:var(--lab-coral);color:#182f48;font:inherit;font-weight:800;cursor:pointer}.visual-lab-button-quiet{background:#fff}.visual-lab-button:hover{transform:translateY(-2px)}.visual-lab-button:focus-visible{outline:4px solid var(--lab-sun);outline-offset:3px}
 .visual-representation-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:18px}.visual-representation-card{position:relative;min-height:150px;padding:18px 16px 15px;border:2px solid var(--lab-ink);border-radius:18px;background:#fff}.visual-representation-card h3{margin:0 0 10px;padding-left:30px;font-size:17px}.visual-representation-card p{margin:7px 0;font-size:16px;line-height:1.4}.representation-number{position:absolute;top:12px;left:12px;display:grid;width:27px;height:27px;place-items:center;border-radius:50%;background:var(--lab-ink);color:#fff;font-weight:800}.visual-representation-model{background:#dff5ee}.visual-representation-math{background:#fff2c2}.visual-representation-words{background:#ffe4dd}.visual-representation-math [data-lab-equation]{font-size:clamp(22px,3vw,32px);font-weight:800;text-align:center}.mini-model{display:flex;flex-wrap:wrap;gap:7px;align-content:center;min-height:76px;padding:8px}.mini-dot{width:18px;height:18px;border:2px solid var(--lab-ink);border-radius:50%;background:var(--lab-teal)}.visual-representation-card details{margin-top:10px}.visual-representation-card summary{cursor:pointer;font-weight:800;text-decoration:underline}.visual-source-idea{font-size:13px!important;color:#344f69}
@@ -2731,12 +2755,12 @@ header.packet h1::after{
         <div class="bilingual-col lang-en">
           <span class="lang-label">English</span>
           <p class="learning-big">Tonight we solve an equation that adds or subtracts. To solve means to find the number that makes the equation true.</p>
-          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Equation</li><li>Inverse operation</li><li>Isolate</li><li>Solution</li><li>One-step equation</li></ul></div>
+          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Solve One-Step Addition and Subtraction Equations</li><li>Equation</li><li>Inverse operation</li><li>Isolate</li><li>Solution</li></ul></div>
         </div>
         <div class="bilingual-col lang-es" lang="es">
           <span class="lang-label">Español</span>
           <p class="learning-big">Esta noche resolvemos una ecuación que suma o resta. Resolver significa encontrar el número que hace verdadera la ecuación.</p>
-          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Ecuación</li><li>Operación inversa</li><li>Despejar</li><li>Solución</li><li>Ecuación de un paso</li></ul></div>
+          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Resolver ecuaciones de suma y resta de un paso</li><li>Ecuación</li><li>Operación inversa</li><li>Despejar</li><li>Solución</li></ul></div>
         </div>
       </div>
     
@@ -2870,6 +2894,24 @@ header.packet h1::after{
       </p>
       <div class="vocab-container">
         
+            <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+              <div class="vocab-card-inner">
+                <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/cat-operation.svg" alt="Illustration of Solve One-Step Addition and Subtraction Equations: Use one inverse addition or subtraction operation to isolate the variable." loading="lazy" width="72" height="72" />
+                  </div>
+                  <h3>Solve One-Step Addition and Subtraction Equations</h3>
+                  <p class="vocab-es" lang="es">Resolver ecuaciones de suma y resta de un paso</p>
+                  <div class="vocab-visual-hint">💡 x + 7 = 12 → x = 5</div>
+                  <div class="flip-prompt"><span class="lang-en">Tap</span><span class="lang-es" lang="es">Toca ➔</span></div>
+                </div>
+                <div class="vocab-card-back">
+                  <p class="vocab-def">Use one inverse addition or subtraction operation to isolate the variable.</p>
+                  <p class="vocab-def-es" lang="es">Usar una operación inversa de suma o resta para aislar la variable.</p>
+                  <p class="vocab-back-visual">📌 x + 7 = 12 → x = 5</p>
+                </div>
+              </div>
+            </div>
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -3114,6 +3156,10 @@ header.packet h1::after{
       
     
       <h2 class="section-title">✅ <span class="lang-en">Quick check</span><span class="lang-es" lang="es">Repaso rápido</span></h2>
+      <p class="quick-check-time bilingual-block">
+        <span class="lang-en">⏱️ Plan on about <strong>15–20 minutes</strong> for the 6 problems below. The extra practice at the bottom is optional.</span>
+        <span class="lang-es" lang="es">⏱️ Calculen unos <strong>15–20 minutos</strong> para los 6 problemas de abajo. La práctica extra al final es opcional.</span>
+      </p>
       <p class="bilingual-block">
         <span class="lang-en">A few problems to practice together. Each one has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong>, and a <strong>space to show your work</strong>. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
         <span class="lang-es" lang="es">Unos problemas para practicar juntos. Cada uno tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para mostrar el trabajo</strong>. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
@@ -3138,12 +3184,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_0" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 1</div>
-        <div class="problem-type-badge">DRAG SORT</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"If the equation has addition (+), use subtraction to undo it.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"If the equation has addition (+), use subtraction to undo it.","es":"El signo que acompaña al número junto a la variable decide el movimiento. x − 9 = 14, n − 20 = 35 y y − 6 = 8 le restan a la variable, así que sumas en ambos lados para deshacerlo. x + 12 = 30, n + 7 = 19 y y + 15 = 40 suman, así que restas en ambos lados. No hace falta resolverlas para clasificarlas: basta con leer la operación.","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Sort each equation by the inverse operation needed to solve it.</p>
+        <p class="problem-stem"><span class="lang-en">Sort each equation by the inverse operation needed to solve it.</span><span class="lang-es" lang="es">Clasifica cada ecuación según la operación inversa que se necesita para resolverla.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
         <div class="family-hint-box"><p>💡 If the equation has addition (+), use subtraction to undo it.</p><p>💡 If the equation has subtraction (−), use addition to undo it.</p></div>
         <div class="drag-sort-workspace" id="dragsort_0">
@@ -3280,12 +3326,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_1" data-problem-type="matching-game">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 2</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
+        <div class="problem-type-badge"><span class="lang-en">MATCHING GAME</span><span class="lang-es" lang="es">JUEGO DE PAREJAS</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Undo each operation to unlock its value: a + 6 = 13 needs subtraction, so a = 7; b − 5 = 8 needs addition, so b = 13; c + 11 = 20 needs subtraction, so c = 9; and d − 9 = 6 needs addition, so d = 15. Watch that the addition equations produce solutions smaller than the total while the subtraction equations produce larger ones.","es":"Deshaz cada operación para descubrir su valor: a + 6 = 13 necesita resta, así que a = 7; b − 5 = 8 necesita suma, así que b = 13; c + 11 = 20 necesita resta, así que c = 9; y d − 9 = 6 necesita suma, así que d = 15. Fíjate en que las ecuaciones con suma dan soluciones menores que el total, mientras que las de resta dan soluciones mayores.","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Unlock Card 4: Match each equation to its solution to crack the vault code.</p>
+        <p class="problem-stem"><span class="lang-en">Unlock Card 4: Match each equation to its solution to crack the vault code.</span><span class="lang-es" lang="es">Tarjeta 4: Une cada ecuación con su solución para descifrar el código de la bóveda.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Say each term out loud, then talk through which match makes sense before choosing.</span><span class="lang-es" lang="es">👪 Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.</span></p>
         <div class="matching-pairs">
           
@@ -3356,12 +3402,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_2" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 3</div>
-        <div class="problem-type-badge">FILL TABLE</div>
+        <div class="problem-type-badge"><span class="lang-en">FILL TABLE</span><span class="lang-es" lang="es">COMPLETAR LA TABLA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Every row asks the same three things: what is being done to the variable, how do you undo it, and does the check rebuild the original equation?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Every row asks the same three things: what is being done to the variable, how do you undo it, and does the check rebuild the original equation?","es":"Cada fila nombra lo que se le hace a la variable y luego lo deshace en ambos lados. x + 18 = 45 suma 18, así que resta 18: x = 27, y 27 + 18 = 45. p − 22 = 19 resta 22, así que suma 22: p = 41, y 41 − 22 = 19. w + 3.5 = 10 suma 3.5, así que resta 3.5: w = 6.5, y 6.5 + 3.5 = 10; los decimales siguen exactamente la misma regla.","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Complete the table: identify the inverse operation, solve, and check.</p>
+        <p class="problem-stem"><span class="lang-en">Complete the table: identify the inverse operation, solve, and check.</span><span class="lang-es" lang="es">Completa la tabla: identifica la operación inversa, resuelve y comprueba.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
         <div class="table-responsive">
           <table class="fill-table">
@@ -3439,12 +3485,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_3" data-problem-type="open-response">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 1</div>
-        <div class="problem-type-badge">OPEN RESPONSE</div>
+        <div class="problem-type-badge"><span class="lang-en">OPEN RESPONSE</span><span class="lang-es" lang="es">RESPUESTA ABIERTA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The two equations use OPPOSITE operations (+25 and −25), so the same inverse step cannot work for both.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The two equations use OPPOSITE operations (+25 and −25), so the same inverse step cannot work for both.","es":"Solo el primer detective tiene razón. Para x + 25 = 60 la inversa es la resta, así que x = 60 − 25 = 35, y 35 + 25 = 60 comprueba bien. Para y − 25 = 60 la inversa es la suma, así que y = 60 + 25 = 85, no 35: al sustituir 35 da 35 − 25 = 10, no 60. Operaciones opuestas necesitan inversas opuestas, aunque los números se vean idénticos.","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A detective solved x + 25 = 60 and got x = 35. Another detective solved y − 25 = 60 and got y = 35. Are both correct? Explain using inverse operations and check each answer.</p>
+        <p class="problem-stem"><span class="lang-en">A detective solved x + 25 = 60 and got x = 35. Another detective solved y − 25 = 60 and got y = 35. Are both correct? Explain using inverse operations and check each answer.</span><span class="lang-es" lang="es">Un detective resolvió x + 25 = 60 y obtuvo x = 35. Otra detective resolvió y − 25 = 60 y obtuvo y = 35. ¿Están los dos correctos? Explica usando operaciones inversas y comprueba cada respuesta.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 A complete sentence with math vocabulary is the goal — not a perfect paragraph.</span><span class="lang-es" lang="es">👪 Una oración completa con vocabulario matemático es la meta — no un párrafo perfecto.</span></p>
         
         
@@ -3509,14 +3555,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_4" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 2</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Subtract 7 from both sides: x = 15 − 7 = 8. Check: 8 + 7 = 15 ✓","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The equation shows something being added to x, and the equal sign means both sides have the same value.","es":"La ecuación muestra que algo se le suma a x, y el signo igual significa que ambos lados tienen el mismo valor.","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Unlock Card 1: Solve x + 7 = 15.</p>
+        <p class="problem-stem"><span class="lang-en">Unlock Card 1: Solve x + 7 = 15.</span><span class="lang-es" lang="es">Tarjeta de desbloqueo 1: Resuelve x + 7 = 15.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Subtract 7 from both sides: x = 15 − 7 = 8. Check: 8 + 7 = 15 ✓">
+        <div class="mc-options" data-correct="0" data-explanation="Subtract 7 from both sides: x = 15 − 7 = 8. Check: 8 + 7 = 15 ✓" data-explanation-es="Resta 7 en ambos lados: x = 15 − 7 = 8. Comprueba: 8 + 7 = 15 ✓">
           
             <label class="mc-option-label" id="label_q_4_0">
               <input type="radio" name="q_4" value="0" onchange="saveState(); updateProgress();">
@@ -3579,14 +3625,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_5" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 3</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Add 4 to both sides: n = 9 + 4 = 13. Check: 13 − 4 = 9 ✓","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"This equation takes an amount away from n, and you need to find what n was before that happened.","es":"Esta ecuación le quita una cantidad a n, y tienes que hallar cuánto valía n antes de eso.","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Unlock Card 2: Solve n − 4 = 9.</p>
+        <p class="problem-stem"><span class="lang-en">Unlock Card 2: Solve n − 4 = 9.</span><span class="lang-es" lang="es">Tarjeta de desbloqueo 2: Resuelve n − 4 = 9.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Add 4 to both sides: n = 9 + 4 = 13. Check: 13 − 4 = 9 ✓">
+        <div class="mc-options" data-correct="0" data-explanation="Add 4 to both sides: n = 9 + 4 = 13. Check: 13 − 4 = 9 ✓" data-explanation-es="Suma 4 en ambos lados: n = 9 + 4 = 13. Comprueba: 13 − 4 = 9 ✓">
           
             <label class="mc-option-label" id="label_q_5_0">
               <input type="radio" name="q_5" value="0" onchange="saveState(); updateProgress();">
@@ -3660,14 +3706,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_6" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 1</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"x has 9 added to it. To get x alone, you need to UNDO that addition.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"x has 9 added to it. To get x alone, you need to UNDO that addition.","es":"Resta 9 en ambos lados: x = 15 − 9 = 6. Comprueba: 6 + 9 = 15 ✓","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Solve: x + 9 = 15</p>
+        <p class="problem-stem"><span class="lang-en">Solve: x + 9 = 15</span><span class="lang-es" lang="es">Resuelve: x + 9 = 15</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Subtract 9 from both sides: x = 15 − 9 = 6. Check: 6 + 9 = 15 ✓">
+        <div class="mc-options" data-correct="0" data-explanation="Subtract 9 from both sides: x = 15 − 9 = 6. Check: 6 + 9 = 15 ✓" data-explanation-es="Resta 9 en ambos lados: x = 15 − 9 = 6. Comprueba: 6 + 9 = 15 ✓">
           
             <label class="mc-option-label" id="label_q_6_0">
               <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
@@ -3730,14 +3776,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_7" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 2</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Look at what&#39;s happening to y: 7 is being SUBTRACTED. Which operation undoes subtraction?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Look at what&#39;s happening to y: 7 is being SUBTRACTED. Which operation undoes subtraction?","es":"Suma 7 en ambos lados: y = 20 + 7 = 27. Comprueba: 27 − 7 = 20 ✓","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Solve: y − 7 = 20</p>
+        <p class="problem-stem"><span class="lang-en">Solve: y − 7 = 20</span><span class="lang-es" lang="es">Resuelve: y − 7 = 20</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Add 7 to both sides: y = 20 + 7 = 27. Check: 27 − 7 = 20 ✓">
+        <div class="mc-options" data-correct="0" data-explanation="Add 7 to both sides: y = 20 + 7 = 27. Check: 27 − 7 = 20 ✓" data-explanation-es="Suma 7 en ambos lados: y = 20 + 7 = 27. Comprueba: 27 − 7 = 20 ✓">
           
             <label class="mc-option-label" id="label_q_7_0">
               <input type="radio" name="q_7" value="0" onchange="saveState(); updateProgress();">
@@ -3800,14 +3846,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_8" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 3</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"n is being increased by 15. To find n alone, you must undo that addition.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"n is being increased by 15. To find n alone, you must undo that addition.","es":"Resta 15 en ambos lados: n = 42 − 15 = 27. Comprueba: 27 + 15 = 42 ✓","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Solve: n + 15 = 42</p>
+        <p class="problem-stem"><span class="lang-en">Solve: n + 15 = 42</span><span class="lang-es" lang="es">Resuelve: n + 15 = 42</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Subtract 15 from both sides: n = 42 − 15 = 27. Check: 27 + 15 = 42 ✓">
+        <div class="mc-options" data-correct="0" data-explanation="Subtract 15 from both sides: n = 42 − 15 = 27. Check: 27 + 15 = 42 ✓" data-explanation-es="Resta 15 en ambos lados: n = 42 − 15 = 27. Comprueba: 27 + 15 = 42 ✓">
           
             <label class="mc-option-label" id="label_q_8_0">
               <input type="radio" name="q_8" value="0" onchange="saveState(); updateProgress();">
@@ -3870,14 +3916,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_9" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 4</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"m has 11 taken away from it. Think about which operation puts that 11 back.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"m has 11 taken away from it. Think about which operation puts that 11 back.","es":"Suma 11 en ambos lados: m = 25 + 11 = 36. Comprueba: 36 − 11 = 25 ✓","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Solve: m − 11 = 25</p>
+        <p class="problem-stem"><span class="lang-en">Solve: m − 11 = 25</span><span class="lang-es" lang="es">Resuelve: m − 11 = 25</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Add 11 to both sides: m = 25 + 11 = 36. Check: 36 − 11 = 25 ✓">
+        <div class="mc-options" data-correct="0" data-explanation="Add 11 to both sides: m = 25 + 11 = 36. Check: 36 − 11 = 25 ✓" data-explanation-es="Suma 11 en ambos lados: m = 25 + 11 = 36. Comprueba: 36 − 11 = 25 ✓">
           
             <label class="mc-option-label" id="label_q_9_0">
               <input type="radio" name="q_9" value="0" onchange="saveState(); updateProgress();">
@@ -3940,14 +3986,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_10" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 5</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Subtract 16 from both sides: t = 50 − 16 = 34. Check: 34 + 16 = 50 ✓","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Tokens were added to a starting amount to reach 50, so the starting amount has to be smaller than 50.","es":"Se agregaron fichas a una cantidad inicial hasta llegar a 50, así que la cantidad inicial tiene que ser menor que 50.","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Unlock Card 3: A vault held some clue tokens. After the detective added 16 tokens, there were 50. The equation is t + 16 = 50. How many tokens were there before?</p>
+        <p class="problem-stem"><span class="lang-en">Unlock Card 3: A vault held some clue tokens. After the detective added 16 tokens, there were 50. The equation is t + 16 = 50. How many tokens were there before?</span><span class="lang-es" lang="es">Tarjeta de desbloqueo 3: Una bóveda tenía algunas fichas de pistas. Después de que el detective agregó 16 fichas, había 50. La ecuación es t + 16 = 50. ¿Cuántas fichas había antes?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Subtract 16 from both sides: t = 50 − 16 = 34. Check: 34 + 16 = 50 ✓">
+        <div class="mc-options" data-correct="0" data-explanation="Subtract 16 from both sides: t = 50 − 16 = 34. Check: 34 + 16 = 50 ✓" data-explanation-es="Resta 16 en ambos lados: t = 50 − 16 = 34. Comprueba: 34 + 16 = 50 ✓">
           
             <label class="mc-option-label" id="label_q_10_0">
               <input type="radio" name="q_10" value="0" onchange="saveState(); updateProgress();">
@@ -4010,14 +4056,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_11" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 6</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The $15 discount was taken OFF the original price d, and $38 is what&#39;s left after the discount.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The $15 discount was taken OFF the original price d, and $38 is what&#39;s left after the discount.","es":"d − 15 = 38 → d = 38 + 15 = 53.","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A shirt costs $d. After a $15 discount, it costs $38. What is d?</p>
+        <p class="problem-stem"><span class="lang-en">A shirt costs $d. After a $15 discount, it costs $38. What is d?</span><span class="lang-es" lang="es">Una camisa cuesta $d. Después de un descuento de $15, cuesta $38. ¿Cuánto vale d?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="d − 15 = 38 → d = 38 + 15 = 53.">
+        <div class="mc-options" data-correct="0" data-explanation="d − 15 = 38 → d = 38 + 15 = 53." data-explanation-es="d − 15 = 38 → d = 38 + 15 = 53.">
           
             <label class="mc-option-label" id="label_q_11_0">
               <input type="radio" name="q_11" value="0" onchange="saveState(); updateProgress();">
@@ -4341,8 +4387,8 @@ header.packet h1::after{
 <script>
 window.LESSON_ID = "7-2";
 window.LESSON_TITLE = "Solve One-Step Addition and Subtraction Equations";
-window.__HW_VOCAB__ = [{"term":"Equation","termEs":"Ecuación","def":"A math sentence with an equal sign showing both sides are the same.","defEs":"Una oración matemática con un signo igual que muestra que ambos lados son iguales.","example":"x + 5 = 12 — both sides equal 12 when x = 7","img":"/assets/vocab-images/equation.svg","imgAlt":"Illustration of Equation: A math sentence with an equal sign showing both sides are the same."},{"term":"Inverse operation","termEs":"Operación inversa","def":"Two math actions that undo each other, like × and ÷.","defEs":"Dos operaciones que se deshacen entre sí, como × y ÷.","example":"Addition undoes subtraction: if x − 3 = 10, add 3 to get x = 13","img":"/assets/vocab-images/equation.svg","imgAlt":"Illustration of Inverse operation: Two math actions that undo each other, like × and ÷."},{"term":"Isolate","termEs":"Despejar","def":"To get the letter by itself on one side.","defEs":"Dejar la letra sola en un lado.","example":"x + 5 = 12 → subtract 5 from both sides → x = 7 (x is isolated)","img":"/assets/vocab-images/equation.svg","imgAlt":"Illustration of Isolate: To get the letter by itself on one side."},{"term":"Solution","termEs":"Solución","def":"A number that makes the equation or inequality true.","defEs":"Un número que hace verdadera la ecuación o desigualdad.","example":"x = 7 is the solution to x + 5 = 12 because 7 + 5 = 12 ✓","img":"/assets/vocab-images/equation.svg","imgAlt":"Illustration of Solution: A number that makes the equation or inequality true."},{"term":"One-step equation","termEs":"Ecuación de un paso","def":"An equation you can solve in a single step using one inverse operation.","defEs":"Una ecuación que puedes resolver en un solo paso usando una operación inversa.","example":"x + 4 = 9 is solved in one step: subtract 4 from both sides, so x = 5.","img":"/assets/vocab-images/equation.svg","imgAlt":"Illustration of One-step equation: An equation you can solve in a single step using one inverse operation."},{"term":"Balance","termEs":"Equilibrio","def":"Keeping both sides of an equation equal by doing the same thing to each side.","defEs":"Mantener ambos lados de una ecuación iguales haciendo lo mismo a cada lado.","example":"If you subtract 4 from the left side, you must subtract 4 from the right to keep balance.","img":"/assets/vocab-images/equation.svg","imgAlt":"Illustration of Balance: Keeping both sides of an equation equal by doing the same thing to each side."}];
-window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Inverse operation|One-step equation|Equation|Solution|Isolate|Balance)(?:es|s)?\\b","lookup":{"equation":0,"inverse operation":1,"isolate":2,"solution":3,"one-step equation":4,"balance":5}};
+window.__HW_VOCAB__ = [{"term":"Solve One-Step Addition and Subtraction Equations","termEs":"Resolver ecuaciones de suma y resta de un paso","def":"Use one inverse addition or subtraction operation to isolate the variable.","defEs":"Usar una operación inversa de suma o resta para aislar la variable.","example":"x + 7 = 12 → x = 5","img":"","imgAlt":""},{"term":"Equation","termEs":"Ecuación","def":"A math sentence with an equal sign showing both sides are the same.","defEs":"Una oración matemática con un signo igual que muestra que ambos lados son iguales.","example":"x + 5 = 12 — both sides equal 12 when x = 7","img":"/assets/vocab-images/equation.svg","imgAlt":"Illustration of Equation: A math sentence with an equal sign showing both sides are the same."},{"term":"Inverse operation","termEs":"Operación inversa","def":"Two math actions that undo each other, like × and ÷.","defEs":"Dos operaciones que se deshacen entre sí, como × y ÷.","example":"Addition undoes subtraction: if x − 3 = 10, add 3 to get x = 13","img":"/assets/vocab-images/equation.svg","imgAlt":"Illustration of Inverse operation: Two math actions that undo each other, like × and ÷."},{"term":"Isolate","termEs":"Despejar","def":"To get the letter by itself on one side.","defEs":"Dejar la letra sola en un lado.","example":"x + 5 = 12 → subtract 5 from both sides → x = 7 (x is isolated)","img":"/assets/vocab-images/equation.svg","imgAlt":"Illustration of Isolate: To get the letter by itself on one side."},{"term":"Solution","termEs":"Solución","def":"A number that makes the equation or inequality true.","defEs":"Un número que hace verdadera la ecuación o desigualdad.","example":"x = 7 is the solution to x + 5 = 12 because 7 + 5 = 12 ✓","img":"/assets/vocab-images/equation.svg","imgAlt":"Illustration of Solution: A number that makes the equation or inequality true."},{"term":"One-step equation","termEs":"Ecuación de un paso","def":"An equation you can solve in a single step using one inverse operation.","defEs":"Una ecuación que puedes resolver en un solo paso usando una operación inversa.","example":"x + 4 = 9 is solved in one step: subtract 4 from both sides, so x = 5.","img":"/assets/vocab-images/equation.svg","imgAlt":"Illustration of One-step equation: An equation you can solve in a single step using one inverse operation."},{"term":"Balance","termEs":"Equilibrio","def":"Keeping both sides of an equation equal by doing the same thing to each side.","defEs":"Mantener ambos lados de una ecuación iguales haciendo lo mismo a cada lado.","example":"If you subtract 4 from the left side, you must subtract 4 from the right to keep balance.","img":"/assets/vocab-images/equation.svg","imgAlt":"Illustration of Balance: Keeping both sides of an equation equal by doing the same thing to each side."}];
+window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Solve One-Step Addition and Subtraction Equations|Inverse operation|One-step equation|Equation|Solution|Isolate|Balance)(?:es|s)?\\b","lookup":{"solve one-step addition and subtraction equation":0,"equation":1,"inverse operation":2,"isolate":3,"solution":4,"one-step equation":5,"balance":6}};
 
 function syncHomeworkChromeHeights() {
   const status = document.querySelector('.bottom-status-bar');
@@ -4476,7 +4522,33 @@ function saveParentSignoff() {
   try {
     localStorage.setItem('hw_parent_signoff_' + lessonId, JSON.stringify(payload));
   } catch(e) {}
-  
+
+  /* localStorage stays the source of truth for what this page displays, but a
+     sign-off the teacher never sees is not a sign-off. Fire-and-forget POST:
+     the endpoint always answers 204, and any failure here is swallowed so a
+     family on a bad connection still gets their confirmation. */
+  try {
+    var signoffBody = JSON.stringify({
+      lessonId: lessonId,
+      lessonTitle: lessonTitle,
+      parentName: nameVal,
+      note: noteVal,
+      date: signoffDate,
+      studentName: (window.NeftSaveResume && window.NeftSaveResume.studentName) || '',
+      section: (window.NeftSaveResume && window.NeftSaveResume.section) || ''
+    });
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('/api/progress/family-signoff', new Blob([signoffBody], { type: 'application/json' }));
+    } else {
+      fetch('/api/progress/family-signoff', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: signoffBody,
+        keepalive: true
+      }).catch(function() {});
+    }
+  } catch(e) {}
+
   updateSignoffUI(payload);
 }
 
@@ -5413,6 +5485,15 @@ function playCheckSound(isCorrect) {
   }
 }
 
+/* Feedback text is built in JS, so it cannot use the .lang-en/.lang-es span
+   pair the rest of the page toggles. Pick the language the family is actually
+   reading; fall back to English whenever no Spanish was authored. */
+function pickLangText(en, es) {
+  const esText = (es || "").trim();
+  if (esText && document.body.classList.contains("lang-mode-es")) return esText;
+  return en || "";
+}
+
 function checkProblem(idx, options) {
   const silent = options && options.silent;
   const section = document.getElementById("problem_" + idx);
@@ -5430,7 +5511,7 @@ function checkProblem(idx, options) {
       const container = section.querySelector(".mc-options");
       const selected = container.querySelector("input[type='radio']:checked");
       const correctIdx = container.dataset.correct;
-      const explanation = container.dataset.explanation;
+      const explanation = pickLangText(container.dataset.explanation, container.dataset.explanationEs);
       
       // Reset radio option styles
       const labels = container.querySelectorAll(".mc-option-label");
@@ -5658,7 +5739,7 @@ function checkProblem(idx, options) {
   if (!feedbackMessage) {
     if (type === "multiple-choice") {
       const container = section.querySelector(".mc-options");
-      const explanation = container?.dataset.explanation || "";
+      const explanation = pickLangText(container?.dataset.explanation, container?.dataset.explanationEs);
       if (isProblemCorrect) {
         feedbackMessage = explanation
           ? "Correct! " + explanation

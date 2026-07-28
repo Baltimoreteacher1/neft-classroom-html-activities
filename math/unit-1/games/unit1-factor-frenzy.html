@@ -727,29 +727,29 @@
           label: "Level 1",
           sub: "Support",
           name: "Apprentice Smith",
-          desc: "Smaller numbers · factor-pair help shown",
+          desc: "Medium numbers · Guided factor pairs + Exponent match",
         },
         2: {
           label: "Level 2",
           sub: "On level",
           name: "Journeyman Smith",
-          desc: "Bigger numbers · find the factors yourself",
+          desc: "Bigger numbers · Factor selection & Exponent dial calibration",
         },
         3: {
           label: "Level 3",
           sub: "Enrichment",
           name: "Master Smith",
-          desc: "Large numbers · watch for an already-prime",
+          desc: "Large 3-digit numbers · Multi-factor trees + Exponent & Bonus challenge",
         },
       };
 
       // Curated number pools (clean, friendly factor structures).
       const POOLS = {
-        1: [12, 18, 20, 24, 16, 28],
-        2: [36, 48, 60, 72, 54, 40],
-        3: [84, 90, 120, 100, 126],
+        1: [18, 20, 24, 30, 36, 40, 45, 50, 60],
+        2: [48, 60, 72, 84, 90, 108, 120, 144, 180],
+        3: [144, 210, 216, 252, 300, 360, 420, 504],
       };
-      const L3_PRIMES = [23, 29, 31, 37];
+      const L3_PRIMES = [41, 47, 53, 59, 61, 67];
 
       // ── Tiny WebAudio SFX ──
       const SFX = {
@@ -897,6 +897,8 @@
         puzzles: [],
         cur: null,
         selected: null,
+        selectedFactorA: null,
+        userExponents: {},
       };
 
       const $ = (id) => document.getElementById(id);
@@ -952,8 +954,6 @@
       // ── Game flow ──
       function buildRounds(level) {
         const picks = shuffle((POOLS[level] || POOLS[1]).slice()).slice(0, ROUNDS);
-        // Level 3 guarantees an "already prime" round so marking the root
-        // prime is sometimes the right first move.
         if (level === 3 && !picks.some(isPrime)) picks[ROUNDS - 1] = shuffle(L3_PRIMES.slice())[0];
         return shuffle(picks);
       }
@@ -980,6 +980,8 @@
         S.round = i;
         S.cur = S.puzzles[i];
         S.selected = null;
+        S.selectedFactorA = null;
+        S.userExponents = {};
         $("hud-round").textContent = i + 1;
         $("hud-score").textContent = S.score;
         $("t-n").textContent = S.cur.n;
@@ -987,8 +989,10 @@
         $("feedback").className = "feedback";
         $("hint").textContent =
           S.level === 1
-            ? "Tap the number. If it can be split, pick a factor pair. If it’s prime, mark it ✓."
-            : "Break each number down to primes. Decide: is it prime, or can it still be split?";
+            ? "Tap a number to split into factors or mark it prime. Check factor choices carefully!"
+            : S.level === 2
+            ? "Select a factor and calculate its partner to split composite branches."
+            : "Master Challenge: Select or calculate factors, then calibrate the vault exponents!";
         if ($("vault-icon")) $("vault-icon").textContent = "🔒";
         if ($("vault-title")) $("vault-title").textContent = "Factor Vault Locked";
         if ($("vault-subtitle")) $("vault-subtitle").textContent = "Complete all prime leaves on the side to unlock";
@@ -1038,6 +1042,7 @@
       // ── Action palette ──
       function selectNode(id) {
         S.selected = S.selected === id ? null : id;
+        S.selectedFactorA = null;
         renderTree();
         renderPalette();
         if (S.selected) {
@@ -1045,6 +1050,7 @@
           srSay(`You tapped ${node.value}. Is it prime, or can it be split?`);
         }
       }
+
       function renderPalette() {
         const host = $("palette");
         if (!S.selected) {
@@ -1058,23 +1064,77 @@
           host.classList.remove("on");
           return;
         }
-        const pairs = factorPairs(node.value);
-        let html = `<div class="pal-q">You tapped <b>${node.value}</b>. Is it prime, or can it be split?</div><div class="pal-actions">`;
+
+        const validPairs = factorPairs(node.value);
+        let html = `<div class="pal-q">You tapped <b>${node.value}</b>. Is it prime, or split into factors?</div><div class="pal-actions">`;
         html += `<button class="prime-btn" data-act="prime">It’s prime ✓</button>`;
-        if (pairs.length) {
-          html += `<span class="pal-or">or split into…</span>`;
-          pairs.forEach(
-            ([a, b]) =>
-              (html += `<button class="pair-chip" data-act="split" data-a="${a}" data-b="${b}">${a} × ${b}</button>`),
-          );
+
+        if (validPairs.length) {
+          if (S.level === 1) {
+            // Level 1: Valid pairs + 1 distractor pair
+            html += `<span class="pal-or">or split into…</span>`;
+            const displayPairs = validPairs.map(([a, b]) => ({ a, b, valid: true }));
+            // Add distractor pair
+            let distA = validPairs[0][0] + 1;
+            let distB = validPairs[0][1] - 1;
+            if (distA * distB === node.value) distB += 2;
+            displayPairs.push({ a: distA, b: distB, valid: false });
+            shuffle(displayPairs).forEach(({ a, b, valid }) => {
+              html += `<button class="pair-chip" data-act="split" data-a="${a}" data-b="${b}" data-valid="${valid}">${a} × ${b}</button>`;
+            });
+          } else {
+            // Level 2 & Level 3: Step-by-Step factor construction
+            if (!S.selectedFactorA) {
+              html += `<span class="pal-or">Pick first factor A:</span>`;
+              // Collect valid factors of node.value (greater than 1 and < node.value)
+              const validA = [];
+              validPairs.forEach(([a, b]) => {
+                if (!validA.includes(a)) validA.push(a);
+                if (!validA.includes(b)) validA.push(b);
+              });
+              const distractors = [3, 5, 7, 9, 11].filter((d) => node.value % d !== 0 && d < node.value);
+              const chipList = validA.concat(distractors.slice(0, 2));
+              shuffle(chipList).forEach((fa) => {
+                html += `<button class="pair-chip" data-act="select-a" data-fa="${fa}">${fa}</button>`;
+              });
+            } else {
+              const fa = S.selectedFactorA;
+              const targetB = node.value / fa;
+              const isCorrectA = node.value % fa === 0;
+              html += `<span class="pal-or">Factor A = <b>${fa}</b>. Select partner B where ${fa} × B = ${node.value}:</span>`;
+              
+              if (isCorrectA) {
+                const bOptions = [targetB];
+                [targetB + 1, targetB - 1, targetB + 2].forEach(db => {
+                  if (db > 1 && !bOptions.includes(db)) bOptions.push(db);
+                });
+                shuffle(bOptions).forEach(fb => {
+                  html += `<button class="pair-chip" data-act="split" data-a="${fa}" data-b="${fb}" data-valid="${fa * fb === node.value}">${fa} × ${fb}</button>`;
+                });
+              } else {
+                html += `<div style="color:#f0a06b; width:100%; text-align:center; font-size:0.9rem;">${fa} is not a factor of ${node.value}!</div>`;
+                html += `<button class="pair-chip" data-act="reset-a">← Choose a different factor</button>`;
+              }
+            }
+          }
         }
         html += `</div>`;
         host.innerHTML = html;
         host.classList.add("on");
+
         host.querySelectorAll("[data-act]").forEach((el) =>
           el.addEventListener("click", () => {
-            if (el.dataset.act === "prime") actPrime(node);
-            else actSplit(node, Number(el.dataset.a), Number(el.dataset.b));
+            const act = el.dataset.act;
+            if (act === "prime") actPrime(node);
+            else if (act === "select-a") {
+              S.selectedFactorA = Number(el.dataset.fa);
+              renderPalette();
+            } else if (act === "reset-a") {
+              S.selectedFactorA = null;
+              renderPalette();
+            } else if (act === "split") {
+              actSplit(node, Number(el.dataset.a), Number(el.dataset.b), el.dataset.valid === "true");
+            }
           }),
         );
       }
@@ -1084,6 +1144,7 @@
         if (isPrime(node.value)) {
           node.prime = true;
           S.selected = null;
+          S.selectedFactorA = null;
           S.correctActions++;
           S.score += 10;
           $("hud-score").textContent = S.score;
@@ -1103,11 +1164,12 @@
         }
       }
 
-      function actSplit(node, a, b) {
+      function actSplit(node, a, b, isValid = true) {
         S.totalActions++;
-        if (a > 1 && b > 1 && a * b === node.value) {
+        if (isValid && a > 1 && b > 1 && a * b === node.value) {
           node.children = [makeNode(a), makeNode(b)];
           S.selected = null;
+          S.selectedFactorA = null;
           S.correctActions++;
           S.score += 10;
           $("hud-score").textContent = S.score;
@@ -1120,7 +1182,7 @@
         } else {
           S.mistakes++;
           SFX.bad();
-          flash("Those don’t multiply to " + node.value + ".", "bad");
+          flash(a + " × " + b + " = " + (a * b) + ", which does NOT equal " + node.value + ".", "bad");
         }
       }
 
@@ -1131,32 +1193,98 @@
 
       function roundWon() {
         S.completed++;
-        S.score += 25; // forge bonus
+        S.score += 25; // tree complete bonus
         $("hud-score").textContent = S.score;
         $("ro-fact").textContent = S.cur.n + " = " + exponentForm(lockedPrimes());
-        flash(S.cur.n + " = " + exponentForm(lockedPrimes()) + " ⚒️", "good");
+        flash("Tree complete for " + S.cur.n + "! Calibrate the Exponent Vault to unlock! ⚙️", "good");
 
-        // Unlock Vault UI in the clear middle stage!
-        if ($("vault-icon")) $("vault-icon").textContent = "🔓";
-        if ($("vault-title")) $("vault-title").textContent = "Vault Unlocked & Ready!";
-        if ($("vault-subtitle")) $("vault-subtitle").textContent = "Tap below to open the vault and claim your reward!";
-        const btnOpen = $("btn-open-vault");
-        if (btnOpen) {
-          btnOpen.style.display = "inline-flex";
-          btnOpen.onclick = function() {
-            btnOpen.style.display = "none";
-            if ($("vault-icon")) $("vault-icon").textContent = "🔓✨";
-            if ($("vault-title")) $("vault-title").textContent = "Vault Opened!";
-            SFX.win();
-            if (window.GameFX && GameFX.burst) {
-              try { GameFX.burst(window.innerWidth / 2, window.innerHeight / 3); } catch(e){}
+        setupVaultCalibration();
+      }
+
+      function setupVaultCalibration() {
+        const lp = lockedPrimes();
+        const actualCounts = {};
+        lp.forEach(p => actualCounts[p] = (actualCounts[p] || 0) + 1);
+        const uniqueBases = Object.keys(actualCounts).map(Number).sort((a, b) => a - b);
+
+        uniqueBases.forEach(b => { S.userExponents[b] = 1; });
+
+        if ($("vault-icon")) $("vault-icon").textContent = "⚙️";
+        if ($("vault-title")) $("vault-title").textContent = "Exponent Calibration Required";
+        if ($("vault-subtitle")) $("vault-subtitle").textContent = "Set the correct exponent power for each prime factor base:";
+
+        const stage = $("vault-stage");
+        let html = `
+          <div class="vault-graphic-box">
+            <div class="vault-icon">⚙️</div>
+            <div class="vault-title">Calibrate Exponents for ${S.cur.n}</div>
+            <div class="vault-subtitle">Set exponents for: ${S.cur.n} = ${uniqueBases.map(b => `${b}<sup>?</sup>`).join(' × ')}</div>
+            <div class="ewl-exponent-dials" style="display:flex; justify-content:center; gap:16px; margin:16px 0;">
+        `;
+
+        uniqueBases.forEach(b => {
+          html += `
+            <div class="ewl-exp-box" style="background:#0c2532; padding:10px 16px; border-radius:12px; border:1px solid #285473; text-align:center;">
+              <div style="font-weight:800; font-size:1.2rem; color:#ffd98a;">Base ${b}</div>
+              <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-top:6px;">
+                <button type="button" class="btn" style="padding:4px 10px; font-size:1rem;" onclick="window.ffStepExp(${b}, -1)">-</button>
+                <span id="exp-val-${b}" style="font-weight:900; font-size:1.3rem; color:#5ad1ff; min-width:24px;">1</span>
+                <button type="button" class="btn" style="padding:4px 10px; font-size:1rem;" onclick="window.ffStepExp(${b}, 1)">+</button>
+              </div>
+            </div>
+          `;
+        });
+
+        html += `
+            </div>
+            <button class="btn big seal ewl-open-vault-btn" id="btn-calibrate-vault">🔓 CALIBRATE & UNLOCK VAULT</button>
+          </div>
+        `;
+
+        stage.innerHTML = html;
+
+        window.ffStepExp = function(base, delta) {
+          const cur = S.userExponents[base] || 1;
+          const next = Math.max(1, Math.min(6, cur + delta));
+          S.userExponents[base] = next;
+          const el = $("exp-val-" + base);
+          if (el) el.textContent = next;
+        };
+
+        const btn = $("btn-calibrate-vault");
+        if (btn) {
+          btn.onclick = function() {
+            let correct = true;
+            uniqueBases.forEach(b => {
+              if (S.userExponents[b] !== actualCounts[b]) correct = false;
+            });
+
+            if (correct) {
+              S.score += 50;
+              $("hud-score").textContent = S.score;
+              SFX.win();
+              flash("Vault Calibrated! " + S.cur.n + " = " + exponentForm(lockedPrimes()) + " 🔓✨", "good");
+              if (window.GameFX && GameFX.burst) {
+                try { GameFX.burst(window.innerWidth / 2, window.innerHeight / 3); } catch(e){}
+              }
+              stage.innerHTML = `
+                <div class="vault-graphic-box">
+                  <div class="vault-icon">🔓✨</div>
+                  <div class="vault-title">Vault Unlocked!</div>
+                  <div class="vault-subtitle">+50 Points Bonus! ${S.cur.n} = ${exponentForm(lockedPrimes())}</div>
+                </div>
+              `;
+              if (ffEndless) {
+                if (S.round + 1 >= S.puzzles.length)
+                  S.puzzles = S.puzzles.concat(buildRounds(S.level).map(makePuzzle));
+                setTimeout(() => loadRound(S.round + 1), 1200);
+              } else if (S.round + 1 >= ROUNDS) setTimeout(() => endGame(), 1200);
+              else setTimeout(() => loadRound(S.round + 1), 1200);
+            } else {
+              S.mistakes++;
+              SFX.bad();
+              flash("Exponent calibration incorrect. Count how many times each prime factor appears!", "bad");
             }
-            if (ffEndless) {
-              if (S.round + 1 >= S.puzzles.length)
-                S.puzzles = S.puzzles.concat(buildRounds(S.level).map(makePuzzle));
-              setTimeout(() => loadRound(S.round + 1), 1000);
-            } else if (S.round + 1 >= ROUNDS) setTimeout(() => endGame(), 1000);
-            else setTimeout(() => loadRound(S.round + 1), 1000);
           };
         }
       }

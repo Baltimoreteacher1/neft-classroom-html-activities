@@ -2684,7 +2684,7 @@ function renderObjectivesIntroPhase(el, state, ctx, config) {
   el.append(card);
 }
 
-function renderReteachHelper(container, warmup, correctCount, total, config) {
+function renderReteachHelper(container, warmup, _correctCount, _total, config) {
   if (container.querySelector(".warmup-reteach-card")) return;
 
   const reteachBox = document.createElement("div");
@@ -4172,7 +4172,7 @@ function showFinalSummary(el, state, config) {
   }
 }
 
-function renderObjectivesReviewPhase(el, state, ctx, config) {
+function renderObjectivesReviewPhase(el, state, _ctx, config) {
   const phaseIndex = state.get().currentPhase ?? 7;
   phaseHeader(
     el,

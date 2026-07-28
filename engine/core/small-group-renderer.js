@@ -71,12 +71,28 @@ import { isToolsMode, mountToolsMenuItem, renderToolsPage } from "./tools-mode.j
 // "ido" and "wedo" reveal one step at a time; "wedo" also converts a trailing
 // authored parenthetical ("(You might say 3 × 4.)") into a think-first reveal
 // chip; "youdo" becomes a tap-to-check launch list.
-function stageCard(stage, fallbackTitle, kind, onStageDone, withVisuals = false) {
+function stageCard(stage, fallbackTitle, kind, onStageDone, visualMode = null) {
   const lines = stage?.lines || [];
   if (!lines.length) return null;
   // One visualizer per stage so factor-tree steps accumulate into a single
   // growing tree (each step redraws the whole tree, newest branch highlighted).
-  const visualFor = withVisuals ? createBuildVisualizer() : null;
+  const visualFor = visualMode ? createBuildVisualizer() : null;
+  // Level 2 gets the same verified models, but only AFTER committing to its own
+  // thinking — a picture handed over up front is a giveaway, a picture used to
+  // check your own reasoning is not. Support tiers see it open.
+  const presentVisual = (visual) => {
+    if (!visual || visualMode !== "gated") return visual;
+    const shell = el("div", "sg-visual-gate");
+    const toggle = el("button", "sg-reveal", "🧩 Check my model");
+    toggle.type = "button";
+    visual.hidden = true;
+    toggle.onclick = () => {
+      visual.hidden = false;
+      toggle.remove();
+    };
+    shell.append(toggle, visual);
+    return shell;
+  };
   const card = el("div", "card sg-stage");
   card.appendChild(el("p", "block-lab", esc(stage.title || fallbackTitle)));
   const list = el("div", "sg-stage-steps");
@@ -107,7 +123,7 @@ function stageCard(stage, fallbackTitle, kind, onStageDone, withVisuals = false)
         item.querySelector(".tick").textContent = "✓";
         if (++checked >= lines.length) finish();
       };
-      const visual = visualFor ? visualFor(line) : null;
+      const visual = presentVisual(visualFor ? visualFor(line) : null);
       if (visual) {
         const wrap = el("div", "sg-checkstep-wrap");
         wrap.append(item, visual);
@@ -141,7 +157,7 @@ function stageCard(stage, fallbackTitle, kind, onStageDone, withVisuals = false)
     if (visualFor) {
       // For "think first, then reveal" wedo lines, the parenthetical answer
       // holds the math — model the full authored line so the picture matches.
-      const visual = visualFor(reveal ? `${reveal[1]} ${reveal[2]}` : line);
+      const visual = presentVisual(visualFor(reveal ? `${reveal[1]} ${reveal[2]}` : line));
       if (visual) body.appendChild(visual);
     }
     step.appendChild(body);
@@ -191,9 +207,12 @@ function conceptSection(config, onDone, voice, variant) {
     [concept.youDo, "🧠 Take the lead", "youdo"],
   ];
   // Support studios (group1) AND catch-up studios get a canonical visual model
-  // beside each worked step — catch-up students missed the original lesson and
-  // need the concrete model most. Level 2 keeps the leaner text-only build.
-  const withVisuals = variant === "group1" || variant === "catchup";
+  // beside each worked step, open by default — catch-up students missed the
+  // original lesson and need the concrete model most. Level 2 gets the same
+  // verified models but gated behind "Check my model", so the picture confirms
+  // their reasoning instead of replacing it.
+  const visualMode =
+    variant === "group1" || variant === "catchup" ? "open" : variant === "group2" ? "gated" : null;
   const cards = [];
   stages.forEach(([stage, fallback, kind]) => {
     const card = stageCard(
@@ -204,7 +223,7 @@ function conceptSection(config, onDone, voice, variant) {
         const position = cards.indexOf(card);
         cards[position + 1]?.classList.remove("locked");
       },
-      withVisuals,
+      visualMode,
     );
     if (!card) return;
     if (cards.length) card.classList.add("locked");
@@ -600,6 +619,14 @@ function renderStudio(config) {
         adaptivePath: state.adaptivePath,
         band: getBand().id,
         explained: Boolean(store.get("checkExplained")),
+        // Independent-evidence band: first-attempt score across the exit ticket
+        // and its transfer item, so the dashboard sees a mastery decision rather
+        // than a single multiple-choice tap.
+        checkBand: store.get("checkBand") || "",
+        checkBandScore: store.get("checkBandScore") ?? null,
+        // Every rendered item carries its standard, so evidence rolls up per
+        // standard and not only per lesson.
+        standards: [...new Set(allPractice.map((item) => item._standard).filter(Boolean))],
       });
     },
     store,
@@ -681,24 +708,17 @@ function renderStudio(config) {
       band: getBand().id,
     });
   };
-  const guided = createPracticeSection(
-    config,
-    guidedDoneWithCheckpoint,
-    tally,
-    events,
-    store,
-    {
-      items: guidedItems,
-      id: "sg-guided-practice",
-      title: "Let’s solve together",
-      eyebrow: "Guided practice",
-      directions: voice.guidedDir,
-      directionsEs: voice.guidedDirEs,
-      scaffold: "all",
-      showMistake: true,
-      mode: "guided",
-    },
-  );
+  const guided = createPracticeSection(config, guidedDoneWithCheckpoint, tally, events, store, {
+    items: guidedItems,
+    id: "sg-guided-practice",
+    title: "Let’s solve together",
+    eyebrow: "Guided practice",
+    directions: voice.guidedDir,
+    directionsEs: voice.guidedDirEs,
+    scaffold: "all",
+    showMistake: true,
+    mode: "guided",
+  });
   const practice = createPracticeSection(
     config,
     phaseDone("sg-tab-practice", "practiceDone"),

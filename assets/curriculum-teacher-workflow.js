@@ -202,7 +202,7 @@
     return label;
   }
 
-  function kv(labelText, value) {
+  function _kv(labelText, value) {
     var item = el("div", "ctw-readiness-item");
     item.appendChild(el("h4", null, labelText));
     item.appendChild(el("p", null, value || "Use the lesson's built-in support."));
@@ -238,7 +238,7 @@
     container.appendChild(image);
   }
 
-  function substitutePlan(lesson, support) {
+  function _substitutePlan(lesson, support) {
     return [
       `SUBSTITUTE PLAN — ${lesson.id}: ${lesson.title}`,
       `Class: ${state.section} · Time: ${lesson.timeEstimate}`,
@@ -519,7 +519,7 @@
     setTimeout(cleanup, 12000);
   }
 
-  function sequence(title, steps) {
+  function _sequence(title, steps) {
     var details = el("details", "ctw-sequence");
     details.appendChild(el("summary", null, title));
     var list = el("ol");

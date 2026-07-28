@@ -1604,6 +1604,14 @@ body.obj-popup-open { overflow: hidden; }
 .section-vocab { border-left: 4px solid var(--coral); }
 .section-stuck { border-left: 4px solid #9b59b6; }
 .section-quick-intro { border-left: 4px solid var(--success); }
+.quick-check-time {
+  background: var(--amber-light);
+  border: 1px solid var(--amber);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 0 0 12px;
+  font-size: 15px;
+}
 .section-celebrate {
   border-left: 4px solid var(--amber);
   background: linear-gradient(180deg, var(--amber-light), var(--white));
@@ -1851,6 +1859,16 @@ body.obj-popup-open { overflow: hidden; }
   padding: 2px;
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x proximity;
+}
+/* On a phone the 10 tabs are ~738px wide in a ~381px viewport, so half of them
+   (Help, More, Done) sit off-screen with nothing to suggest they exist. Fade the
+   trailing edge so the strip reads as scrollable. Only below 700px, where the
+   overflow is guaranteed — a permanent fade on desktop would just look broken. */
+@media (max-width: 700px) {
+  .homework-tab-bar {
+    -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+    mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+  }
 }
 .homework-tab-btn {
   flex: 0 0 auto;
@@ -2372,6 +2390,12 @@ body.lang-mode-es .bilingual-grid {
 @media print {
   .homework-tab-chrome, .homework-tab-bar, .bottom-status-bar, .help-modal-overlay, .print-all-btn, .parent-signoff-container { display: none !important; }
   .tab-panel-inner[hidden] { display: block !important; page-break-inside: avoid; }
+  /* Printing un-hides every panel, but these three are screen-only: an embedded
+     arcade iframe, a live game, and a link-out. On paper they were blank or
+     meaningless pages in the middle of the packet. */
+  [data-tab-panel="arcade"],
+  [data-tab-panel="play"],
+  [data-tab-panel="workbench"] { display: none !important; }
   body { padding-bottom: 0; }
   
   .print-only-certificate.is-signed {
@@ -2448,7 +2472,7 @@ body.lang-mode-es .bilingual-grid {
 
 
 .family-visual-lab{--lab-ink:#173a5e;--lab-teal:#0b8f87;--lab-coral:#ff775f;--lab-sun:#f6c94c;margin:26px 0;padding:clamp(18px,3vw,30px);border:3px solid var(--lab-ink);border-radius:28px;background:#fffdf5;box-shadow:8px 8px 0 var(--lab-ink);color:var(--lab-ink)}
-.visual-lab-heading{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(260px,1.15fr);gap:20px;align-items:end;margin-bottom:20px}.visual-lab-heading h2{margin:6px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.05}.visual-lab-heading p{margin:0;padding:14px 16px;border-left:5px solid var(--lab-sun);background:#fff8d9;font-size:17px;font-weight:700;line-height:1.45}.visual-lab-kicker{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--lab-ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em}
+.visual-lab-heading{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(260px,1.15fr);gap:20px;align-items:end;margin-bottom:20px}.visual-lab-heading h2{margin:6px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.05}.visual-lab-heading p{margin:0;padding:14px 16px;border-left:5px solid var(--lab-sun);background:#fff8d9;font-size:17px;font-weight:700;line-height:1.45}.visual-lab-kicker{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--lab-ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em}.visual-lab-kicker .lang-en,.visual-lab-kicker .lang-es{color:inherit}
 .visual-lab-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(230px,.8fr);gap:18px;align-items:stretch}.visual-lab-canvas-wrap{min-width:0;padding:12px;border-radius:22px;background-color:#eef8f4;background-image:linear-gradient(#cee3dc 1px,transparent 1px),linear-gradient(90deg,#cee3dc 1px,transparent 1px);background-size:24px 24px;border:2px solid var(--lab-ink)}.visual-lab-stage{display:grid;place-items:center;min-height:280px}.visual-lab-stage svg{display:block;width:100%;max-height:320px;overflow:visible}.visual-lab-status{min-height:26px;margin:5px 8px 0;padding:7px 10px;border-radius:10px;background:#fff;font-weight:800;text-align:center}
 .visual-lab-controls{display:flex;flex-direction:column;gap:14px;padding:18px;border-radius:22px;background:var(--lab-ink);color:#fff}.visual-lab-control{display:grid;gap:7px;font-weight:800}.visual-lab-control-label{display:flex;justify-content:space-between;gap:10px;align-items:center}.visual-lab-control output{min-width:38px;padding:3px 8px;border-radius:8px;background:var(--lab-sun);color:#102f4e;text-align:center;font-size:18px}.visual-lab-control input[type=range]{width:100%;min-height:28px;accent-color:var(--lab-coral);cursor:pointer}.visual-lab-control input[type=range]:focus-visible{outline:4px solid #fff;outline-offset:4px}.visual-lab-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:auto}.visual-lab-button{min-height:48px;border:2px solid #fff;border-radius:13px;background:var(--lab-coral);color:#182f48;font:inherit;font-weight:800;cursor:pointer}.visual-lab-button-quiet{background:#fff}.visual-lab-button:hover{transform:translateY(-2px)}.visual-lab-button:focus-visible{outline:4px solid var(--lab-sun);outline-offset:3px}
 .visual-representation-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:18px}.visual-representation-card{position:relative;min-height:150px;padding:18px 16px 15px;border:2px solid var(--lab-ink);border-radius:18px;background:#fff}.visual-representation-card h3{margin:0 0 10px;padding-left:30px;font-size:17px}.visual-representation-card p{margin:7px 0;font-size:16px;line-height:1.4}.representation-number{position:absolute;top:12px;left:12px;display:grid;width:27px;height:27px;place-items:center;border-radius:50%;background:var(--lab-ink);color:#fff;font-weight:800}.visual-representation-model{background:#dff5ee}.visual-representation-math{background:#fff2c2}.visual-representation-words{background:#ffe4dd}.visual-representation-math [data-lab-equation]{font-size:clamp(22px,3vw,32px);font-weight:800;text-align:center}.mini-model{display:flex;flex-wrap:wrap;gap:7px;align-content:center;min-height:76px;padding:8px}.mini-dot{width:18px;height:18px;border:2px solid var(--lab-ink);border-radius:50%;background:var(--lab-teal)}.visual-representation-card details{margin-top:10px}.visual-representation-card summary{cursor:pointer;font-weight:800;text-decoration:underline}.visual-source-idea{font-size:13px!important;color:#344f69}
@@ -2731,12 +2755,12 @@ header.packet h1::after{
         <div class="bilingual-col lang-en">
           <span class="lang-label">English</span>
           <p class="learning-big">Tonight we find the distance between two points on the grid when they share a row or a column. We use absolute value (distance from zero).</p>
-          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Distance</li><li>Absolute value</li><li>Horizontal distance</li><li>Vertical distance</li><li>Coordinate plane</li></ul></div>
+          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Distance on the Coordinate Plane</li><li>Distance</li><li>Absolute value</li><li>Horizontal distance</li><li>Vertical distance</li></ul></div>
         </div>
         <div class="bilingual-col lang-es" lang="es">
           <span class="lang-label">Español</span>
           <p class="learning-big">Esta noche encontramos la distancia entre dos puntos en la cuadrícula cuando comparten una fila o una columna. Usamos el valor absoluto (la distancia desde cero).</p>
-          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Distancia</li><li>Valor absoluto</li><li>Distancia horizontal</li><li>Distancia vertical</li><li>Plano cartesiano</li></ul></div>
+          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Distancia en el plano de coordenadas</li><li>Distancia</li><li>Valor absoluto</li><li>Distancia horizontal</li><li>Distancia vertical</li></ul></div>
         </div>
       </div>
     
@@ -2867,6 +2891,24 @@ header.packet h1::after{
       </p>
       <div class="vocab-container">
         
+            <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+              <div class="vocab-card-inner">
+                <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/cat-measurement.svg" alt="Illustration of Distance on the Coordinate Plane: The positive space between points, found from the absolute difference of coordinates on a horizontal or vertical line." loading="lazy" width="72" height="72" />
+                  </div>
+                  <h3>Distance on the Coordinate Plane</h3>
+                  <p class="vocab-es" lang="es">Distancia en el plano de coordenadas</p>
+                  <div class="vocab-visual-hint">💡 From (−2, 3) to (5, 3): |5 − (−2)| = 7 units.</div>
+                  <div class="flip-prompt"><span class="lang-en">Tap</span><span class="lang-es" lang="es">Toca ➔</span></div>
+                </div>
+                <div class="vocab-card-back">
+                  <p class="vocab-def">The positive space between points, found from the absolute difference of coordinates on a horizontal or vertical line.</p>
+                  <p class="vocab-def-es" lang="es">El espacio positivo entre puntos, que se halla con la diferencia absoluta de las coordenadas en una línea horizontal o vertical.</p>
+                  <p class="vocab-back-visual">📌 From (−2, 3) to (5, 3): |5 − (−2)| = 7 units.</p>
+                </div>
+              </div>
+            </div>
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -3111,6 +3153,10 @@ header.packet h1::after{
       
     
       <h2 class="section-title">✅ <span class="lang-en">Quick check</span><span class="lang-es" lang="es">Repaso rápido</span></h2>
+      <p class="quick-check-time bilingual-block">
+        <span class="lang-en">⏱️ Plan on about <strong>15–20 minutes</strong> for the 6 problems below. The extra practice at the bottom is optional.</span>
+        <span class="lang-es" lang="es">⏱️ Calculen unos <strong>15–20 minutos</strong> para los 6 problemas de abajo. La práctica extra al final es opcional.</span>
+      </p>
       <p class="bilingual-block">
         <span class="lang-en">A few problems to practice together. Each one has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong>, and a <strong>space to show your work</strong>. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
         <span class="lang-es" lang="es">Unos problemas para practicar juntos. Cada uno tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para mostrar el trabajo</strong>. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
@@ -3135,12 +3181,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_0" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 1</div>
-        <div class="problem-type-badge">DRAG SORT</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"School to Library (3 and 9) and Subway to Tower (1 and 8) keep their changing coordinates on the same side of zero, so a single subtraction gives the distance. Park to City Hall (-4 and 3) and Café to Gym (1 and -4) have one negative and one positive value, so those routes cross an axis and the two absolute values get added.","es":"De la Escuela a la Biblioteca (3 y 9) y del Metro a la Torre (1 y 8), las coordenadas que cambian quedan del mismo lado del cero, así que una sola resta da la distancia. Del Parque al Ayuntamiento (-4 y 3) y del Café al Gimnasio (1 y -4) hay un valor negativo y uno positivo, así que esas rutas cruzan un eje y los dos valores absolutos se suman.","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Sort each block-distance problem by whether you SUBTRACT (same side of zero) or ADD absolute values (opposite sides of zero).</p>
+        <p class="problem-stem"><span class="lang-en">Sort each block-distance problem by whether you SUBTRACT (same side of zero) or ADD absolute values (opposite sides of zero).</span><span class="lang-es" lang="es">Clasifica cada problema de distancia en cuadras según si RESTAS (del mismo lado del cero) o SUMAS valores absolutos (en lados opuestos del cero).</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
         
         <div class="drag-sort-workspace" id="dragsort_0">
@@ -3247,12 +3293,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_1" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 2</div>
-        <div class="problem-type-badge">FILL TABLE</div>
+        <div class="problem-type-badge"><span class="lang-en">FILL TABLE</span><span class="lang-es" lang="es">COMPLETAR LA TABLA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each row shares a coordinate, so every distance is a straight horizontal or vertical count.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each row shares a coordinate, so every distance is a straight horizontal or vertical count.","es":"Cada fila comparte una coordenada, así que cada segmento es recto y solo importa la coordenada que cambia. Los cuatro pares caen en lados opuestos del cero, así que suma los valores absolutos: |-5| + |3| = 8, |-4| + |6| = 10, |-2| + |4| = 6 y |-1| + |4| = 5.","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Find the distance between each pair of points.</p>
+        <p class="problem-stem"><span class="lang-en">Find the distance between each pair of points.</span><span class="lang-es" lang="es">Encuentra la distancia entre cada pareja de puntos.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
         <div class="table-responsive">
           <table class="fill-table">
@@ -3368,37 +3414,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_2" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 3</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Both points share x = -3, so this is a vertical distance between y = -7 and y = 5.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Both points share x = -3, so this is a vertical distance between y = -7 and y = 5.","es":"El mismo x = -3. Distancia = |5 - (-7)| = |5 + 7| = 12 unidades.","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Two points are at (-3, -7) and (-3, 5). What is the distance between them?</p>
+        <p class="problem-stem"><span class="lang-en">Two points are at (-3, -7) and (-3, 5). What is the distance between them?</span><span class="lang-es" lang="es">Dos puntos están en (-3, -7) y (-3, 5). ¿Cuál es la distancia entre ellos?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Same x = -3. Distance = |5 - (-7)| = |5 + 7| = 12 units.">
+        <div class="mc-options" data-correct="0" data-explanation="Same x = -3. Distance = |5 - (-7)| = |5 + 7| = 12 units." data-explanation-es="El mismo x = -3. Distancia = |5 - (-7)| = |5 + 7| = 12 unidades.">
           
             <label class="mc-option-label" id="label_q_2_0">
               <input type="radio" name="q_2" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">12 units</span>
+              <span class="choice-text"><span class="lang-en">12 units</span><span class="lang-es" lang="es">12 unidades</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_2_1">
               <input type="radio" name="q_2" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">2 units</span>
+              <span class="choice-text"><span class="lang-en">2 units</span><span class="lang-es" lang="es">2 unidades</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_2_2">
               <input type="radio" name="q_2" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">7 units</span>
+              <span class="choice-text"><span class="lang-en">7 units</span><span class="lang-es" lang="es">7 unidades</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_2_3">
               <input type="radio" name="q_2" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">8 units</span>
+              <span class="choice-text"><span class="lang-en">8 units</span><span class="lang-es" lang="es">8 unidades</span></span>
             </label>
           
         </div>
@@ -3456,37 +3502,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_3" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 1</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The x&#39;s match (both -2), so measure the vertical gap between y = 5 and y = -3.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The x&#39;s match (both -2), so measure the vertical gap between y = 5 and y = -3.","es":"Las coordenadas x coinciden, así que la distancia = |5 - (-3)| = 8 unidades.","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">How far apart are the points (-2, 5) and (-2, -3)?</p>
+        <p class="problem-stem"><span class="lang-en">How far apart are the points (-2, 5) and (-2, -3)?</span><span class="lang-es" lang="es">¿Qué tan separados están los puntos (-2, 5) y (-2, -3)?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="1" data-explanation="The x-coordinates match, so distance = |5 - (-3)| = 8 units.">
+        <div class="mc-options" data-correct="1" data-explanation="The x-coordinates match, so distance = |5 - (-3)| = 8 units." data-explanation-es="Las coordenadas x coinciden, así que la distancia = |5 - (-3)| = 8 unidades.">
           
             <label class="mc-option-label" id="label_q_3_0">
               <input type="radio" name="q_3" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">2 units</span>
+              <span class="choice-text"><span class="lang-en">2 units</span><span class="lang-es" lang="es">2 unidades</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_3_1">
               <input type="radio" name="q_3" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">8 units</span>
+              <span class="choice-text"><span class="lang-en">8 units</span><span class="lang-es" lang="es">8 unidades</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_3_2">
               <input type="radio" name="q_3" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">15 units</span>
+              <span class="choice-text"><span class="lang-en">15 units</span><span class="lang-es" lang="es">15 unidades</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_3_3">
               <input type="radio" name="q_3" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">-8 units</span>
+              <span class="choice-text"><span class="lang-en">-8 units</span><span class="lang-es" lang="es">-8 unidades</span></span>
             </label>
           
         </div>
@@ -3528,37 +3574,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_4" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 2</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Same x = 2, so the segment is vertical. Distance = |9 - 3| = 6 blocks.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Both buildings sit at x = 2, so the trip between them runs straight up and down — only the y-coordinates change.","es":"Los dos edificios están en x = 2, así que el recorrido entre ellos va directo hacia arriba y hacia abajo; solo cambian las coordenadas y.","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">The Bank is at (2, 3) and the Library is at (2, 9). How many blocks apart are they?</p>
+        <p class="problem-stem"><span class="lang-en">The Bank is at (2, 3) and the Library is at (2, 9). How many blocks apart are they?</span><span class="lang-es" lang="es">El Banco está en (2, 3) y la Biblioteca está en (2, 9). ¿A cuántas cuadras de distancia están?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Same x = 2, so the segment is vertical. Distance = |9 - 3| = 6 blocks.">
+        <div class="mc-options" data-correct="0" data-explanation="Same x = 2, so the segment is vertical. Distance = |9 - 3| = 6 blocks." data-explanation-es="El mismo x = 2, así que el segmento es vertical. Distancia = |9 - 3| = 6 cuadras.">
           
             <label class="mc-option-label" id="label_q_4_0">
               <input type="radio" name="q_4" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">6 blocks</span>
+              <span class="choice-text"><span class="lang-en">6 blocks</span><span class="lang-es" lang="es">6 cuadras</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_4_1">
               <input type="radio" name="q_4" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">12 blocks</span>
+              <span class="choice-text"><span class="lang-en">12 blocks</span><span class="lang-es" lang="es">12 cuadras</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_4_2">
               <input type="radio" name="q_4" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">3 blocks</span>
+              <span class="choice-text"><span class="lang-en">3 blocks</span><span class="lang-es" lang="es">3 cuadras</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_4_3">
               <input type="radio" name="q_4" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">11 blocks</span>
+              <span class="choice-text"><span class="lang-en">11 blocks</span><span class="lang-es" lang="es">11 cuadras</span></span>
             </label>
           
         </div>
@@ -3600,37 +3646,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_5" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 3</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Same y = 5, so the segment is horizontal. The points are on opposite sides of zero, so add the absolute values: |-4| + |3| = 4 + 3 = 7 blocks.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Both places sit at y = 5, so the walk between them runs straight across — only the x-coordinates change.","es":"Los dos lugares están en y = 5, así que la caminata entre ellos va directo de lado a lado; solo cambian las coordenadas x.","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">The Park is at (-4, 5) and City Hall is at (3, 5). How many blocks apart are they?</p>
+        <p class="problem-stem"><span class="lang-en">The Park is at (-4, 5) and City Hall is at (3, 5). How many blocks apart are they?</span><span class="lang-es" lang="es">El Parque está en (-4, 5) y el Ayuntamiento está en (3, 5). ¿A cuántas cuadras de distancia están?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="1" data-explanation="Same y = 5, so the segment is horizontal. The points are on opposite sides of zero, so add the absolute values: |-4| + |3| = 4 + 3 = 7 blocks.">
+        <div class="mc-options" data-correct="1" data-explanation="Same y = 5, so the segment is horizontal. The points are on opposite sides of zero, so add the absolute values: |-4| + |3| = 4 + 3 = 7 blocks." data-explanation-es="El mismo y = 5, así que el segmento es horizontal. Los puntos están en lados opuestos del cero, así que suma los valores absolutos: |-4| + |3| = 4 + 3 = 7 cuadras.">
           
             <label class="mc-option-label" id="label_q_5_0">
               <input type="radio" name="q_5" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">1 block</span>
+              <span class="choice-text"><span class="lang-en">1 block</span><span class="lang-es" lang="es">1 cuadra</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_5_1">
               <input type="radio" name="q_5" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">7 blocks</span>
+              <span class="choice-text"><span class="lang-en">7 blocks</span><span class="lang-es" lang="es">7 cuadras</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_5_2">
               <input type="radio" name="q_5" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">12 blocks</span>
+              <span class="choice-text"><span class="lang-en">12 blocks</span><span class="lang-es" lang="es">12 cuadras</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_5_3">
               <input type="radio" name="q_5" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">5 blocks</span>
+              <span class="choice-text"><span class="lang-en">5 blocks</span><span class="lang-es" lang="es">5 cuadras</span></span>
             </label>
           
         </div>
@@ -3683,37 +3729,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_6" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 1</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Same x = -2, so the segment is vertical. The points are on opposite sides of zero: |1| + |-4| = 1 + 4 = 5 blocks.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Both places sit at x = -2, so the trip between them runs straight up and down — only the y-coordinates change.","es":"Los dos lugares están en x = -2, así que el recorrido entre ellos va directo hacia arriba y hacia abajo; solo cambian las coordenadas y.","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">The Café is at (-2, 1) and the Gym is at (-2, -4). How many blocks apart are they?</p>
+        <p class="problem-stem"><span class="lang-en">The Café is at (-2, 1) and the Gym is at (-2, -4). How many blocks apart are they?</span><span class="lang-es" lang="es">El Café está en (-2, 1) y el Gimnasio está en (-2, -4). ¿A cuántas cuadras de distancia están?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="1" data-explanation="Same x = -2, so the segment is vertical. The points are on opposite sides of zero: |1| + |-4| = 1 + 4 = 5 blocks.">
+        <div class="mc-options" data-correct="1" data-explanation="Same x = -2, so the segment is vertical. The points are on opposite sides of zero: |1| + |-4| = 1 + 4 = 5 blocks." data-explanation-es="El mismo x = -2, así que el segmento es vertical. Los puntos están en lados opuestos del cero: |1| + |-4| = 1 + 4 = 5 cuadras.">
           
             <label class="mc-option-label" id="label_q_6_0">
               <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">3 blocks</span>
+              <span class="choice-text"><span class="lang-en">3 blocks</span><span class="lang-es" lang="es">3 cuadras</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_6_1">
               <input type="radio" name="q_6" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">5 blocks</span>
+              <span class="choice-text"><span class="lang-en">5 blocks</span><span class="lang-es" lang="es">5 cuadras</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_6_2">
               <input type="radio" name="q_6" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">6 blocks</span>
+              <span class="choice-text"><span class="lang-en">6 blocks</span><span class="lang-es" lang="es">6 cuadras</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_6_3">
               <input type="radio" name="q_6" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">2 blocks</span>
+              <span class="choice-text"><span class="lang-en">2 blocks</span><span class="lang-es" lang="es">2 cuadras</span></span>
             </label>
           
         </div>
@@ -3755,37 +3801,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_7" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 2</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Both points have y = 3, so they sit on the same horizontal line — only the x-values differ.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Both points have y = 3, so they sit on the same horizontal line — only the x-values differ.","es":"Los dos puntos tienen y = 3, así que esta es una distancia horizontal. |2 - (-4)| = |2 + 4| = 6 unidades.","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">What is the distance between (-4, 3) and (2, 3)?</p>
+        <p class="problem-stem"><span class="lang-en">What is the distance between (-4, 3) and (2, 3)?</span><span class="lang-es" lang="es">¿Cuál es la distancia entre (-4, 3) y (2, 3)?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="2" data-explanation="Both points have y = 3, so this is a horizontal distance. |2 - (-4)| = |2 + 4| = 6 units.">
+        <div class="mc-options" data-correct="2" data-explanation="Both points have y = 3, so this is a horizontal distance. |2 - (-4)| = |2 + 4| = 6 units." data-explanation-es="Los dos puntos tienen y = 3, así que esta es una distancia horizontal. |2 - (-4)| = |2 + 4| = 6 unidades.">
           
             <label class="mc-option-label" id="label_q_7_0">
               <input type="radio" name="q_7" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">2 units</span>
+              <span class="choice-text"><span class="lang-en">2 units</span><span class="lang-es" lang="es">2 unidades</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_7_1">
               <input type="radio" name="q_7" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">4 units</span>
+              <span class="choice-text"><span class="lang-en">4 units</span><span class="lang-es" lang="es">4 unidades</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_7_2">
               <input type="radio" name="q_7" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">6 units</span>
+              <span class="choice-text"><span class="lang-en">6 units</span><span class="lang-es" lang="es">6 unidades</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_7_3">
               <input type="radio" name="q_7" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">8 units</span>
+              <span class="choice-text"><span class="lang-en">8 units</span><span class="lang-es" lang="es">8 unidades</span></span>
             </label>
           
         </div>
@@ -3827,37 +3873,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_8" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 3</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Both points share x = 5 — the segment is VERTICAL, so compare the y-values -2 and 4.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Both points share x = 5 — the segment is VERTICAL, so compare the y-values -2 and 4.","es":"Los dos puntos tienen x = 5, así que esta es una distancia vertical. |4 - (-2)| = |4 + 2| = 6 unidades.","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">What is the distance between (5, -2) and (5, 4)?</p>
+        <p class="problem-stem"><span class="lang-en">What is the distance between (5, -2) and (5, 4)?</span><span class="lang-es" lang="es">¿Cuál es la distancia entre (5, -2) y (5, 4)?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="2" data-explanation="Both points have x = 5, so this is a vertical distance. |4 - (-2)| = |4 + 2| = 6 units.">
+        <div class="mc-options" data-correct="2" data-explanation="Both points have x = 5, so this is a vertical distance. |4 - (-2)| = |4 + 2| = 6 units." data-explanation-es="Los dos puntos tienen x = 5, así que esta es una distancia vertical. |4 - (-2)| = |4 + 2| = 6 unidades.">
           
             <label class="mc-option-label" id="label_q_8_0">
               <input type="radio" name="q_8" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">2 units</span>
+              <span class="choice-text"><span class="lang-en">2 units</span><span class="lang-es" lang="es">2 unidades</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_8_1">
               <input type="radio" name="q_8" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">4 units</span>
+              <span class="choice-text"><span class="lang-en">4 units</span><span class="lang-es" lang="es">4 unidades</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_8_2">
               <input type="radio" name="q_8" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">6 units</span>
+              <span class="choice-text"><span class="lang-en">6 units</span><span class="lang-es" lang="es">6 unidades</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_8_3">
               <input type="radio" name="q_8" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">10 units</span>
+              <span class="choice-text"><span class="lang-en">10 units</span><span class="lang-es" lang="es">10 unidades</span></span>
             </label>
           
         </div>
@@ -3896,42 +3942,107 @@ header.packet h1::after{
     </section>
   
 
-    <section class="problem-section card" id="problem_9" data-problem-type="multiple-choice">
+    <section class="problem-section card" id="problem_9" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 4</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">FILL TABLE</span><span class="lang-es" lang="es">COMPLETAR LA TABLA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The x&#39;s match (both 2), so the distance is just the gap between y = 3 and y = 8.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each rectangle&#39;s width comes from its two different x-values; the height comes from its two different y-values.","es":"El Rect 1 va de x = -3 a x = 4, así que su ancho es |-3| + |4| = 7, y de y = 1 a y = 5, así que su altura es |5 - 1| = 4; el perímetro es 2(7 + 4) = 22. El Rect 2 mide |-2| + |6| = 8 de ancho y |-4| + |2| = 6 de alto, así que su perímetro es 2(8 + 6) = 28.","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">What is the distance between (2, 3) and (2, 8)?</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="1" data-explanation="The x-coordinates match, so distance = |8 - 3| = 5 units.">
-          
-            <label class="mc-option-label" id="label_q_9_0">
-              <input type="radio" name="q_9" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">11 units</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_9_1">
-              <input type="radio" name="q_9" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">5 units</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_9_2">
-              <input type="radio" name="q_9" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">6 units</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_9_3">
-              <input type="radio" name="q_9" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">5.5 units</span>
-            </label>
-          
+        <p class="problem-stem"><span class="lang-en">Find the perimeter of each rectangle using its vertex coordinates.</span><span class="lang-es" lang="es">Encuentra el perímetro de cada rectángulo usando las coordenadas de sus vértices.</span></p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
+        <div class="table-responsive">
+          <table class="fill-table">
+            <thead>
+              <tr>
+                <th>Rectangle</th><th>Vertices</th><th>Width</th><th>Height</th><th>Perimeter</th>
+              </tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>Rect 1</td><td>(-3, 1), (4, 1), (4, 5), (-3, 5)</td>
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_9_table_0_2"
+                                   data-correct="7" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_9_table_0_3"
+                                   data-correct="4" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_9_table_0_4"
+                                   data-correct="22" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                </tr>
+              
+                <tr>
+                  <td>Rect 2</td><td>(-2, -4), (6, -4), (6, 2), (-2, 2)</td>
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_9_table_1_2"
+                                   data-correct="8" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_9_table_1_3"
+                                   data-correct="6" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_9_table_1_4"
+                                   data-correct="28" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                </tr>
+              
+            </tbody>
+          </table>
         </div>
       </div>
     
@@ -3971,37 +4082,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_10" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 5</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The y&#39;s match (both 1), so it&#39;s a horizontal gap between x = -4 and x = 3.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The x&#39;s match (both 2), so the distance is just the gap between y = 3 and y = 8.","es":"Las coordenadas x coinciden, así que la distancia = |8 - 3| = 5 unidades.","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">What is the distance between (-4, 1) and (3, 1)?</p>
+        <p class="problem-stem"><span class="lang-en">What is the distance between (2, 3) and (2, 8)?</span><span class="lang-es" lang="es">¿Cuál es la distancia entre (2, 3) y (2, 8)?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="2" data-explanation="The y-coordinates match, so distance = |3 - (-4)| = 7 units.">
+        <div class="mc-options" data-correct="1" data-explanation="The x-coordinates match, so distance = |8 - 3| = 5 units." data-explanation-es="Las coordenadas x coinciden, así que la distancia = |8 - 3| = 5 unidades.">
           
             <label class="mc-option-label" id="label_q_10_0">
               <input type="radio" name="q_10" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">1 unit</span>
+              <span class="choice-text"><span class="lang-en">11 units</span><span class="lang-es" lang="es">11 unidades</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_10_1">
               <input type="radio" name="q_10" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">12 units</span>
+              <span class="choice-text"><span class="lang-en">5 units</span><span class="lang-es" lang="es">5 unidades</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_10_2">
               <input type="radio" name="q_10" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">7 units</span>
+              <span class="choice-text"><span class="lang-en">6 units</span><span class="lang-es" lang="es">6 unidades</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_10_3">
               <input type="radio" name="q_10" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">-7 units</span>
+              <span class="choice-text"><span class="lang-en">5.5 units</span><span class="lang-es" lang="es">5.5 unidades</span></span>
             </label>
           
         </div>
@@ -4040,107 +4151,42 @@ header.packet h1::after{
     </section>
   
 
-    <section class="problem-section card" id="problem_11" data-problem-type="fill-table">
+    <section class="problem-section card" id="problem_11" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 6</div>
-        <div class="problem-type-badge">FILL TABLE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each rectangle&#39;s width comes from its two different x-values; the height comes from its two different y-values.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The y&#39;s match (both 1), so it&#39;s a horizontal gap between x = -4 and x = 3.","es":"Las coordenadas y coinciden, así que la distancia = |3 - (-4)| = 7 unidades.","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Find the perimeter of each rectangle using its vertex coordinates.</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
-        <div class="table-responsive">
-          <table class="fill-table">
-            <thead>
-              <tr>
-                <th>Rectangle</th><th>Vertices</th><th>Width</th><th>Height</th><th>Perimeter</th>
-              </tr>
-            </thead>
-            <tbody>
-              
-                <tr>
-                  <td>Rect 1</td><td>(-3, 1), (4, 1), (4, 5), (-3, 5)</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_11_table_0_2"
-                                   data-correct="7" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_11_table_0_3"
-                                   data-correct="4" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_11_table_0_4"
-                                   data-correct="22" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>Rect 2</td><td>(-2, -4), (6, -4), (6, 2), (-2, 2)</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_11_table_1_2"
-                                   data-correct="8" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_11_table_1_3"
-                                   data-correct="6" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_11_table_1_4"
-                                   data-correct="28" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-            </tbody>
-          </table>
+        <p class="problem-stem"><span class="lang-en">What is the distance between (-4, 1) and (3, 1)?</span><span class="lang-es" lang="es">¿Cuál es la distancia entre (-4, 1) y (3, 1)?</span></p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
+        <div class="mc-options" data-correct="2" data-explanation="The y-coordinates match, so distance = |3 - (-4)| = 7 units." data-explanation-es="Las coordenadas y coinciden, así que la distancia = |3 - (-4)| = 7 unidades.">
+          
+            <label class="mc-option-label" id="label_q_11_0">
+              <input type="radio" name="q_11" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text"><span class="lang-en">1 unit</span><span class="lang-es" lang="es">1 unidad</span></span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_11_1">
+              <input type="radio" name="q_11" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text"><span class="lang-en">12 units</span><span class="lang-es" lang="es">12 unidades</span></span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_11_2">
+              <input type="radio" name="q_11" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text"><span class="lang-en">7 units</span><span class="lang-es" lang="es">7 unidades</span></span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_11_3">
+              <input type="radio" name="q_11" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text"><span class="lang-en">-7 units</span><span class="lang-es" lang="es">-7 unidades</span></span>
+            </label>
+          
         </div>
       </div>
     
@@ -4180,12 +4226,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_12" data-problem-type="matching-game">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 7</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
+        <div class="problem-type-badge"><span class="lang-en">MATCHING GAME</span><span class="lang-es" lang="es">JUEGO DE PAREJAS</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each pair shares a coordinate, so you only compare the numbers that change. Subway to Tower stays right of zero (|8 - 1| = 7 blocks) and Bank to Library stays above zero (|9 - 3| = 6 blocks), while Market to Stadium and Café to Gym each cross an axis, so their absolute values add: |-1| + |7| = 8 and |1| + |-4| = 5.","es":"Cada par comparte una coordenada, así que solo comparas los números que cambian. Del Metro a la Torre todo queda a la derecha del cero (|8 - 1| = 7 cuadras) y del Banco a la Biblioteca todo queda arriba del cero (|9 - 3| = 6 cuadras), mientras que del Mercado al Estadio y del Café al Gimnasio se cruza un eje, así que los valores absolutos se suman: |-1| + |7| = 8 y |1| + |-4| = 5.","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Match each pair of city landmarks to the number of blocks between them.</p>
+        <p class="problem-stem"><span class="lang-en">Match each pair of city landmarks to the number of blocks between them.</span><span class="lang-es" lang="es">Une cada pareja de puntos de referencia de la ciudad con la cantidad de cuadras que hay entre ellos.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Say each term out loud, then talk through which match makes sense before choosing.</span><span class="lang-es" lang="es">👪 Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.</span></p>
         <div class="matching-pairs">
           
@@ -4256,37 +4302,37 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_13" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 8</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Perimeter is the distance all the way around — you need the width AND the height first.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Perimeter is the distance all the way around — you need the width AND the height first.","es":"Ancho = 5 - 1 = 4. Altura = 4 - 1 = 3. Perímetro = 2(4 + 3) = 14.","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A rectangle has vertices at (1, 1), (5, 1), (5, 4), (1, 4). What is its perimeter?</p>
+        <p class="problem-stem"><span class="lang-en">A rectangle has vertices at (1, 1), (5, 1), (5, 4), (1, 4). What is its perimeter?</span><span class="lang-es" lang="es">Un rectángulo tiene vértices en (1, 1), (5, 1), (5, 4), (1, 4). ¿Cuál es su perímetro?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Width = 5 - 1 = 4. Height = 4 - 1 = 3. Perimeter = 2(4 + 3) = 14.">
+        <div class="mc-options" data-correct="0" data-explanation="Width = 5 - 1 = 4. Height = 4 - 1 = 3. Perimeter = 2(4 + 3) = 14." data-explanation-es="Ancho = 5 - 1 = 4. Altura = 4 - 1 = 3. Perímetro = 2(4 + 3) = 14.">
           
             <label class="mc-option-label" id="label_q_13_0">
               <input type="radio" name="q_13" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">14 units</span>
+              <span class="choice-text"><span class="lang-en">14 units</span><span class="lang-es" lang="es">14 unidades</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_13_1">
               <input type="radio" name="q_13" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">12 units</span>
+              <span class="choice-text"><span class="lang-en">12 units</span><span class="lang-es" lang="es">12 unidades</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_13_2">
               <input type="radio" name="q_13" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">20 units</span>
+              <span class="choice-text"><span class="lang-en">20 units</span><span class="lang-es" lang="es">20 unidades</span></span>
             </label>
           
             <label class="mc-option-label" id="label_q_13_3">
               <input type="radio" name="q_13" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">8 units</span>
+              <span class="choice-text"><span class="lang-en">8 units</span><span class="lang-es" lang="es">8 unidades</span></span>
             </label>
           
         </div>
@@ -4589,8 +4635,8 @@ header.packet h1::after{
 <script>
 window.LESSON_ID = "9-6";
 window.LESSON_TITLE = "Distance on the Coordinate Plane";
-window.__HW_VOCAB__ = [{"term":"Distance","termEs":"Distancia","def":"How far apart two points are. It is never negative.","defEs":"Qué tan separados están dos puntos. Nunca es negativo.","example":"The distance from -3 to 4 on a number line is |-3| + |4| = 3 + 4 = 7 units","img":"/assets/vocab-images/distance.svg","imgAlt":"Illustration of Distance: How far apart two points are. It is never negative."},{"term":"Absolute value","termEs":"Valor absoluto","def":"How far a number is from zero. It is never negative.","defEs":"Qué tan lejos está un número de cero. Nunca es negativo.","example":"|-3| = 3 and |4| = 4; to find distance: |4 - (-3)| = 7","img":"/assets/vocab-images/absolute-value.svg","imgAlt":"Illustration of Absolute value: How far a number is from zero. It is never negative."},{"term":"Horizontal distance","termEs":"Distancia horizontal","def":"How far apart two points are going left or right.","defEs":"Qué tan separados están dos puntos yendo a la izquierda o a la derecha.","example":"From (-2, 3) to (5, 3): count from -2 to 5 = 7 units across","img":"/assets/vocab-images/distance.svg","imgAlt":"Illustration of Horizontal distance: How far apart two points are going left or right."},{"term":"Vertical distance","termEs":"Distancia vertical","def":"How far apart two points are going up or down.","defEs":"Qué tan separados están dos puntos yendo hacia arriba o hacia abajo.","example":"From (4, -1) to (4, 6): count from -1 to 6 = 7 units up","img":"/assets/vocab-images/distance.svg","imgAlt":"Illustration of Vertical distance: How far apart two points are going up or down."},{"term":"Coordinate plane","termEs":"Plano cartesiano","def":"A grid with a line going across and a line going up to plot points.","defEs":"Una cuadrícula con una línea horizontal y una vertical para marcar puntos.","example":"Two number lines crossing at (0, 0), creating four quadrants","img":"/assets/vocab-images/coordinate-plane.svg","imgAlt":"Illustration of Coordinate plane: A grid with a line going across and a line going up to plot points."},{"term":"Integer","termEs":"Número entero","def":"Whole numbers and their opposites, like -2, -1, 0, 1, 2.","defEs":"Números enteros y sus opuestos, como -2, -1, 0, 1, 2.","example":"..., -3, -2, -1, 0, 1, 2, 3, ...","img":"/assets/vocab-images/integer.svg","imgAlt":"Illustration of Integer: Whole numbers and their opposites, like -2, -1, 0, 1, 2."}];
-window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Horizontal distance|Vertical distance|Coordinate plane|Absolute value|Distance|Integer)(?:es|s)?\\b","lookup":{"distance":0,"absolute value":1,"horizontal distance":2,"vertical distance":3,"coordinate plane":4,"integer":5}};
+window.__HW_VOCAB__ = [{"term":"Distance on the Coordinate Plane","termEs":"Distancia en el plano de coordenadas","def":"The positive space between points, found from the absolute difference of coordinates on a horizontal or vertical line.","defEs":"El espacio positivo entre puntos, que se halla con la diferencia absoluta de las coordenadas en una línea horizontal o vertical.","example":"From (−2, 3) to (5, 3): |5 − (−2)| = 7 units.","img":"","imgAlt":""},{"term":"Distance","termEs":"Distancia","def":"How far apart two points are. It is never negative.","defEs":"Qué tan separados están dos puntos. Nunca es negativo.","example":"The distance from -3 to 4 on a number line is |-3| + |4| = 3 + 4 = 7 units","img":"/assets/vocab-images/distance.svg","imgAlt":"Illustration of Distance: How far apart two points are. It is never negative."},{"term":"Absolute value","termEs":"Valor absoluto","def":"How far a number is from zero. It is never negative.","defEs":"Qué tan lejos está un número de cero. Nunca es negativo.","example":"|-3| = 3 and |4| = 4; to find distance: |4 - (-3)| = 7","img":"/assets/vocab-images/absolute-value.svg","imgAlt":"Illustration of Absolute value: How far a number is from zero. It is never negative."},{"term":"Horizontal distance","termEs":"Distancia horizontal","def":"How far apart two points are going left or right.","defEs":"Qué tan separados están dos puntos yendo a la izquierda o a la derecha.","example":"From (-2, 3) to (5, 3): count from -2 to 5 = 7 units across","img":"/assets/vocab-images/distance.svg","imgAlt":"Illustration of Horizontal distance: How far apart two points are going left or right."},{"term":"Vertical distance","termEs":"Distancia vertical","def":"How far apart two points are going up or down.","defEs":"Qué tan separados están dos puntos yendo hacia arriba o hacia abajo.","example":"From (4, -1) to (4, 6): count from -1 to 6 = 7 units up","img":"/assets/vocab-images/distance.svg","imgAlt":"Illustration of Vertical distance: How far apart two points are going up or down."},{"term":"Coordinate plane","termEs":"Plano cartesiano","def":"A grid with a line going across and a line going up to plot points.","defEs":"Una cuadrícula con una línea horizontal y una vertical para marcar puntos.","example":"Two number lines crossing at (0, 0), creating four quadrants","img":"/assets/vocab-images/coordinate-plane.svg","imgAlt":"Illustration of Coordinate plane: A grid with a line going across and a line going up to plot points."},{"term":"Integer","termEs":"Número entero","def":"Whole numbers and their opposites, like -2, -1, 0, 1, 2.","defEs":"Números enteros y sus opuestos, como -2, -1, 0, 1, 2.","example":"..., -3, -2, -1, 0, 1, 2, 3, ...","img":"/assets/vocab-images/integer.svg","imgAlt":"Illustration of Integer: Whole numbers and their opposites, like -2, -1, 0, 1, 2."}];
+window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Distance on the Coordinate Plane|Horizontal distance|Vertical distance|Coordinate plane|Absolute value|Distance|Integer)(?:es|s)?\\b","lookup":{"distance on the coordinate plane":0,"distance":1,"absolute value":2,"horizontal distance":3,"vertical distance":4,"coordinate plane":5,"integer":6}};
 
 function syncHomeworkChromeHeights() {
   const status = document.querySelector('.bottom-status-bar');
@@ -4724,7 +4770,33 @@ function saveParentSignoff() {
   try {
     localStorage.setItem('hw_parent_signoff_' + lessonId, JSON.stringify(payload));
   } catch(e) {}
-  
+
+  /* localStorage stays the source of truth for what this page displays, but a
+     sign-off the teacher never sees is not a sign-off. Fire-and-forget POST:
+     the endpoint always answers 204, and any failure here is swallowed so a
+     family on a bad connection still gets their confirmation. */
+  try {
+    var signoffBody = JSON.stringify({
+      lessonId: lessonId,
+      lessonTitle: lessonTitle,
+      parentName: nameVal,
+      note: noteVal,
+      date: signoffDate,
+      studentName: (window.NeftSaveResume && window.NeftSaveResume.studentName) || '',
+      section: (window.NeftSaveResume && window.NeftSaveResume.section) || ''
+    });
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('/api/progress/family-signoff', new Blob([signoffBody], { type: 'application/json' }));
+    } else {
+      fetch('/api/progress/family-signoff', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: signoffBody,
+        keepalive: true
+      }).catch(function() {});
+    }
+  } catch(e) {}
+
   updateSignoffUI(payload);
 }
 
@@ -5661,6 +5733,15 @@ function playCheckSound(isCorrect) {
   }
 }
 
+/* Feedback text is built in JS, so it cannot use the .lang-en/.lang-es span
+   pair the rest of the page toggles. Pick the language the family is actually
+   reading; fall back to English whenever no Spanish was authored. */
+function pickLangText(en, es) {
+  const esText = (es || "").trim();
+  if (esText && document.body.classList.contains("lang-mode-es")) return esText;
+  return en || "";
+}
+
 function checkProblem(idx, options) {
   const silent = options && options.silent;
   const section = document.getElementById("problem_" + idx);
@@ -5678,7 +5759,7 @@ function checkProblem(idx, options) {
       const container = section.querySelector(".mc-options");
       const selected = container.querySelector("input[type='radio']:checked");
       const correctIdx = container.dataset.correct;
-      const explanation = container.dataset.explanation;
+      const explanation = pickLangText(container.dataset.explanation, container.dataset.explanationEs);
       
       // Reset radio option styles
       const labels = container.querySelectorAll(".mc-option-label");
@@ -5906,7 +5987,7 @@ function checkProblem(idx, options) {
   if (!feedbackMessage) {
     if (type === "multiple-choice") {
       const container = section.querySelector(".mc-options");
-      const explanation = container?.dataset.explanation || "";
+      const explanation = pickLangText(container?.dataset.explanation, container?.dataset.explanationEs);
       if (isProblemCorrect) {
         feedbackMessage = explanation
           ? "Correct! " + explanation

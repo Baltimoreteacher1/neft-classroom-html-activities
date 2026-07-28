@@ -1604,6 +1604,14 @@ body.obj-popup-open { overflow: hidden; }
 .section-vocab { border-left: 4px solid var(--coral); }
 .section-stuck { border-left: 4px solid #9b59b6; }
 .section-quick-intro { border-left: 4px solid var(--success); }
+.quick-check-time {
+  background: var(--amber-light);
+  border: 1px solid var(--amber);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 0 0 12px;
+  font-size: 15px;
+}
 .section-celebrate {
   border-left: 4px solid var(--amber);
   background: linear-gradient(180deg, var(--amber-light), var(--white));
@@ -1851,6 +1859,16 @@ body.obj-popup-open { overflow: hidden; }
   padding: 2px;
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x proximity;
+}
+/* On a phone the 10 tabs are ~738px wide in a ~381px viewport, so half of them
+   (Help, More, Done) sit off-screen with nothing to suggest they exist. Fade the
+   trailing edge so the strip reads as scrollable. Only below 700px, where the
+   overflow is guaranteed — a permanent fade on desktop would just look broken. */
+@media (max-width: 700px) {
+  .homework-tab-bar {
+    -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+    mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 28px), transparent 100%);
+  }
 }
 .homework-tab-btn {
   flex: 0 0 auto;
@@ -2372,6 +2390,12 @@ body.lang-mode-es .bilingual-grid {
 @media print {
   .homework-tab-chrome, .homework-tab-bar, .bottom-status-bar, .help-modal-overlay, .print-all-btn, .parent-signoff-container { display: none !important; }
   .tab-panel-inner[hidden] { display: block !important; page-break-inside: avoid; }
+  /* Printing un-hides every panel, but these three are screen-only: an embedded
+     arcade iframe, a live game, and a link-out. On paper they were blank or
+     meaningless pages in the middle of the packet. */
+  [data-tab-panel="arcade"],
+  [data-tab-panel="play"],
+  [data-tab-panel="workbench"] { display: none !important; }
   body { padding-bottom: 0; }
   
   .print-only-certificate.is-signed {
@@ -2448,7 +2472,7 @@ body.lang-mode-es .bilingual-grid {
 
 
 .family-visual-lab{--lab-ink:#173a5e;--lab-teal:#0b8f87;--lab-coral:#ff775f;--lab-sun:#f6c94c;margin:26px 0;padding:clamp(18px,3vw,30px);border:3px solid var(--lab-ink);border-radius:28px;background:#fffdf5;box-shadow:8px 8px 0 var(--lab-ink);color:var(--lab-ink)}
-.visual-lab-heading{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(260px,1.15fr);gap:20px;align-items:end;margin-bottom:20px}.visual-lab-heading h2{margin:6px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.05}.visual-lab-heading p{margin:0;padding:14px 16px;border-left:5px solid var(--lab-sun);background:#fff8d9;font-size:17px;font-weight:700;line-height:1.45}.visual-lab-kicker{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--lab-ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em}
+.visual-lab-heading{display:grid;grid-template-columns:minmax(240px,.85fr) minmax(260px,1.15fr);gap:20px;align-items:end;margin-bottom:20px}.visual-lab-heading h2{margin:6px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.05}.visual-lab-heading p{margin:0;padding:14px 16px;border-left:5px solid var(--lab-sun);background:#fff8d9;font-size:17px;font-weight:700;line-height:1.45}.visual-lab-kicker{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--lab-ink);color:#fff;font-size:12px;font-weight:800;letter-spacing:.12em}.visual-lab-kicker .lang-en,.visual-lab-kicker .lang-es{color:inherit}
 .visual-lab-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(230px,.8fr);gap:18px;align-items:stretch}.visual-lab-canvas-wrap{min-width:0;padding:12px;border-radius:22px;background-color:#eef8f4;background-image:linear-gradient(#cee3dc 1px,transparent 1px),linear-gradient(90deg,#cee3dc 1px,transparent 1px);background-size:24px 24px;border:2px solid var(--lab-ink)}.visual-lab-stage{display:grid;place-items:center;min-height:280px}.visual-lab-stage svg{display:block;width:100%;max-height:320px;overflow:visible}.visual-lab-status{min-height:26px;margin:5px 8px 0;padding:7px 10px;border-radius:10px;background:#fff;font-weight:800;text-align:center}
 .visual-lab-controls{display:flex;flex-direction:column;gap:14px;padding:18px;border-radius:22px;background:var(--lab-ink);color:#fff}.visual-lab-control{display:grid;gap:7px;font-weight:800}.visual-lab-control-label{display:flex;justify-content:space-between;gap:10px;align-items:center}.visual-lab-control output{min-width:38px;padding:3px 8px;border-radius:8px;background:var(--lab-sun);color:#102f4e;text-align:center;font-size:18px}.visual-lab-control input[type=range]{width:100%;min-height:28px;accent-color:var(--lab-coral);cursor:pointer}.visual-lab-control input[type=range]:focus-visible{outline:4px solid #fff;outline-offset:4px}.visual-lab-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:auto}.visual-lab-button{min-height:48px;border:2px solid #fff;border-radius:13px;background:var(--lab-coral);color:#182f48;font:inherit;font-weight:800;cursor:pointer}.visual-lab-button-quiet{background:#fff}.visual-lab-button:hover{transform:translateY(-2px)}.visual-lab-button:focus-visible{outline:4px solid var(--lab-sun);outline-offset:3px}
 .visual-representation-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:18px}.visual-representation-card{position:relative;min-height:150px;padding:18px 16px 15px;border:2px solid var(--lab-ink);border-radius:18px;background:#fff}.visual-representation-card h3{margin:0 0 10px;padding-left:30px;font-size:17px}.visual-representation-card p{margin:7px 0;font-size:16px;line-height:1.4}.representation-number{position:absolute;top:12px;left:12px;display:grid;width:27px;height:27px;place-items:center;border-radius:50%;background:var(--lab-ink);color:#fff;font-weight:800}.visual-representation-model{background:#dff5ee}.visual-representation-math{background:#fff2c2}.visual-representation-words{background:#ffe4dd}.visual-representation-math [data-lab-equation]{font-size:clamp(22px,3vw,32px);font-weight:800;text-align:center}.mini-model{display:flex;flex-wrap:wrap;gap:7px;align-content:center;min-height:76px;padding:8px}.mini-dot{width:18px;height:18px;border:2px solid var(--lab-ink);border-radius:50%;background:var(--lab-teal)}.visual-representation-card details{margin-top:10px}.visual-representation-card summary{cursor:pointer;font-weight:800;text-decoration:underline}.visual-source-idea{font-size:13px!important;color:#344f69}
@@ -2731,12 +2755,12 @@ header.packet h1::after{
         <div class="bilingual-col lang-en">
           <span class="lang-label">English</span>
           <p class="learning-big">Tonight we solve equations that multiply or divide. We use the opposite operation to get the letter by itself.</p>
-          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Inverse operation</li><li>Multiply</li><li>Divide</li><li>Isolate</li><li>Coefficient</li></ul></div>
+          <div class="learning-words"><span class="learning-words-label">Key words</span><ul class="learning-word-chips" aria-label="Key words"><li>Solve Multiplication and Division Equations</li><li>Inverse operation</li><li>Multiply</li><li>Divide</li><li>Isolate</li></ul></div>
         </div>
         <div class="bilingual-col lang-es" lang="es">
           <span class="lang-label">Español</span>
           <p class="learning-big">Esta noche resolvemos ecuaciones que multiplican o dividen. Usamos la operación opuesta para dejar la letra sola.</p>
-          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Operación inversa</li><li>Multiplicar</li><li>Dividir</li><li>Despejar</li><li>Coeficiente</li></ul></div>
+          <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Resolver ecuaciones de multiplicación y división</li><li>Operación inversa</li><li>Multiplicar</li><li>Dividir</li><li>Despejar</li></ul></div>
         </div>
       </div>
     
@@ -2870,6 +2894,24 @@ header.packet h1::after{
       </p>
       <div class="vocab-container">
         
+            <div class="vocab-card" onclick="this.classList.toggle('flipped')">
+              <div class="vocab-card-inner">
+                <div class="vocab-card-front">
+                  <div class="vocab-thumb-wrap">
+                    <img class="vocab-thumb" src="/assets/vocab-images/cat-number.svg" alt="Illustration of Solve Multiplication and Division Equations: Use inverse multiplication or division to isolate the variable." loading="lazy" width="72" height="72" />
+                  </div>
+                  <h3>Solve Multiplication and Division Equations</h3>
+                  <p class="vocab-es" lang="es">Resolver ecuaciones de multiplicación y división</p>
+                  <div class="vocab-visual-hint">💡 4x = 20 → x = 5</div>
+                  <div class="flip-prompt"><span class="lang-en">Tap</span><span class="lang-es" lang="es">Toca ➔</span></div>
+                </div>
+                <div class="vocab-card-back">
+                  <p class="vocab-def">Use inverse multiplication or division to isolate the variable.</p>
+                  <p class="vocab-def-es" lang="es">Usar la multiplicación o división inversa para aislar la variable.</p>
+                  <p class="vocab-back-visual">📌 4x = 20 → x = 5</p>
+                </div>
+              </div>
+            </div>
             <div class="vocab-card" onclick="this.classList.toggle('flipped')">
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
@@ -3114,6 +3156,10 @@ header.packet h1::after{
       
     
       <h2 class="section-title">✅ <span class="lang-en">Quick check</span><span class="lang-es" lang="es">Repaso rápido</span></h2>
+      <p class="quick-check-time bilingual-block">
+        <span class="lang-en">⏱️ Plan on about <strong>15–20 minutes</strong> for the 6 problems below. The extra practice at the bottom is optional.</span>
+        <span class="lang-es" lang="es">⏱️ Calculen unos <strong>15–20 minutos</strong> para los 6 problemas de abajo. La práctica extra al final es opcional.</span>
+      </p>
       <p class="bilingual-block">
         <span class="lang-en">A few problems to practice together. Each one has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong>, and a <strong>space to show your work</strong>. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
         <span class="lang-es" lang="es">Unos problemas para practicar juntos. Cada uno tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para mostrar el trabajo</strong>. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
@@ -3138,12 +3184,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_0" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 1</div>
-        <div class="problem-type-badge">DRAG SORT</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"If the variable is being multiplied (like 4x), divide to undo it.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"If the variable is being multiplied (like 4x), divide to undo it.","es":"Mira qué le están haciendo a la variable y deshazlo. En 4x = 32, 7n = 56 y 10p = 80 la variable está multiplicada, así que divides ambos lados. En x / 6 = 3, m / 2 = 15 y y / 9 = 4 la variable está dividida, así que multiplicas ambos lados.","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Sort each equation by the inverse operation needed.</p>
+        <p class="problem-stem"><span class="lang-en">Sort each equation by the inverse operation needed.</span><span class="lang-es" lang="es">Clasifica cada ecuación según la operación inversa que se necesita.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
         <div class="family-hint-box"><p>💡 If the variable is being multiplied (like 4x), divide to undo it.</p><p>💡 If the variable is being divided (like x / 6), multiply to undo it.</p></div>
         <div class="drag-sort-workspace" id="dragsort_0">
@@ -3280,12 +3326,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_1" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 2</div>
-        <div class="problem-type-badge">DRAG SORT</div>
+        <div class="problem-type-badge"><span class="lang-en">DRAG SORT</span><span class="lang-es" lang="es">CLASIFICAR ARRASTRANDO</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Sort by what the equation is doing to the variable. In 6x = 48 and 9k = 27 the variable is multiplied, so you divide both sides to unlock it. In x / 8 = 2 and n / 4 = 5 the variable is divided, so you multiply both sides.","es":"Clasifica según lo que la ecuación le hace a la variable. En 6x = 48 y 9k = 27 la variable está multiplicada, así que divides ambos lados para liberarla. En x / 8 = 2 y n / 4 = 5 la variable está dividida, así que multiplicas ambos lados.","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Detective, decide which key opens each vault: do you MULTIPLY or DIVIDE to unlock the variable?</p>
+        <p class="problem-stem"><span class="lang-en">Detective, decide which key opens each vault: do you MULTIPLY or DIVIDE to unlock the variable?</span><span class="lang-es" lang="es">Detective, decide cuál llave abre cada bóveda: ¿MULTIPLICAS o DIVIDES para despejar la variable?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
         
         <div class="drag-sort-workspace" id="dragsort_1">
@@ -3392,14 +3438,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_2" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 3</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"c is the number of clues in EACH file, and 9 files with c clues each make all 54 clues.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"c is the number of clues in EACH file, and 9 files with c clues each make all 54 clues.","es":"Divide ambos lados entre 9: c = 54 ÷ 9 = 6 pistas por expediente.","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A detective splits 54 clues equally among 9 case files. The equation 9c = 54 represents this. What is c?</p>
+        <p class="problem-stem"><span class="lang-en">A detective splits 54 clues equally among 9 case files. The equation 9c = 54 represents this. What is c?</span><span class="lang-es" lang="es">Un detective reparte 54 pistas en partes iguales entre 9 expedientes. La ecuación 9c = 54 representa esta situación. ¿Cuánto vale c?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Divide both sides by 9: c = 54 ÷ 9 = 6 clues per file.">
+        <div class="mc-options" data-correct="0" data-explanation="Divide both sides by 9: c = 54 ÷ 9 = 6 clues per file." data-explanation-es="Divide ambos lados entre 9: c = 54 ÷ 9 = 6 pistas por expediente.">
           
             <label class="mc-option-label" id="label_q_2_0">
               <input type="radio" name="q_2" value="0" onchange="saveState(); updateProgress();">
@@ -3475,15 +3521,85 @@ header.packet h1::after{
           </div>
         </div>
         <section class="problems-container" aria-label="Practice problems">
-    <section class="problem-section card" id="problem_3" data-problem-type="fill-table">
+    <section class="problem-section card" id="problem_3" data-problem-type="open-response">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 1</div>
-        <div class="problem-type-badge">FILL TABLE</div>
+        <div class="problem-type-badge"><span class="lang-en">OPEN RESPONSE</span><span class="lang-es" lang="es">RESPUESTA ABIERTA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Notice the pattern: each row pairs an equation with a RELATED one that uses the inverse operation on the same three numbers.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"You know the total (96 muffins) and the size of each group (8 per box). The unknown is how many boxes.","es":"Ocho panquecitos por caja por un número desconocido de cajas es igual a 96, así que la ecuación es 8x = 96. Dividir ambos lados entre 8 da x = 12 cajas, y es razonable porque 12 cajas × 8 panquecitos reconstruyen los 96. También sirve una situación de división con la misma respuesta, como 60 calcomanías repartidas en partes iguales entre 5 estudiantes.","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Solve each equation, then write and solve a related equation that uses the inverse operation.</p>
+        <p class="problem-stem"><span class="lang-en">A bakery packed muffins into boxes of 8. They made 96 muffins total. Write an equation, solve it, and explain why your answer is reasonable. Then write a different situation that uses division and has the same answer.</span><span class="lang-es" lang="es">Una panadería empacó panecillos en cajas de 8. Hicieron 96 panecillos en total. Escribe una ecuación, resuélvela y explica por qué tu respuesta es razonable. Después escribe una situación diferente que use división y tenga la misma respuesta.</span></p>
+        <p class="family-problem-tip"><span class="lang-en">👪 A complete sentence with math vocabulary is the goal — not a perfect paragraph.</span><span class="lang-es" lang="es">👪 Una oración completa con vocabulario matemático es la meta — no un párrafo perfecto.</span></p>
+        
+        
+          <div class="sentence-frame-card">
+            <span class="sentence-frame-tag">💡 Sentence Starter:</span>
+            <span class="sentence-frame-text" onclick="insertSentenceStarter(3, 'Equation: ___. Solving: ___. The answer ___ is reasonable because ___. A division situation with the same answer: ___.')">"Equation: ___. Solving: ___. The answer ___ is reasonable because ___. A division situation with the same answer: ___."</span>
+            <span class="click-to-insert-hint">(Click to insert starter)</span>
+          </div>
+        
+        
+        <div class="open-response-wrapper">
+          <textarea id="open_response_3" 
+                    class="custom-textarea open-response-textarea" 
+                    data-min-length="40" 
+                    data-keywords="[&quot;8x = 96&quot;,&quot;divide&quot;,&quot;12&quot;,&quot;reasonable&quot;,&quot;inverse&quot;,&quot;boxes&quot;]"
+                    placeholder="Write your mathematical explanation here..." 
+                    oninput="saveState(); updateProgress();"></textarea>
+          <span class="feedback-badge"></span>
+        </div>
+        
+        
+          <div class="word-bank-container">
+            <div class="word-bank-label">Key Vocabulary to include (click to insert):</div>
+            <div class="word-bank-chips">
+              <span class="word-chip" onclick="insertWord(3, '8x = 96')">8x = 96</span><span class="word-chip" onclick="insertWord(3, 'divide')">divide</span><span class="word-chip" onclick="insertWord(3, '12')">12</span><span class="word-chip" onclick="insertWord(3, 'reasonable')">reasonable</span><span class="word-chip" onclick="insertWord(3, 'inverse')">inverse</span><span class="word-chip" onclick="insertWord(3, 'boxes')">boxes</span>
+            </div>
+          </div>
+        
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Picture a balance: what you do to one side, do to the other.</span><span class="lang-es" lang="es">Imagina una balanza: lo que haces a un lado, hazlo al otro.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Keep both sides equal — do the same thing to undo the operation.</span><span class="lang-es" lang="es">Mantén ambos lados iguales — haz lo mismo para deshacer la operación.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Picture a balance: what you do to one side, do to the other.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Imagina una balanza: lo que haces a un lado, hazlo al otro.</span></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 220 130" class="hw-visual-svg" role="img" aria-label="Balance scale for an equation"><line x1="30" y1="40" x2="190" y2="40" stroke="#12355b" stroke-width="3"/><line x1="110" y1="40" x2="110" y2="110" stroke="#12355b" stroke-width="3"/><polygon points="90,118 130,118 110,110" fill="#12355b"/><path d="M30 40 L14 70 L46 70 Z" fill="none" stroke="#12355b" stroke-width="2"/><path d="M190 40 L174 70 L206 70 Z" fill="none" stroke="#12355b" stroke-width="2"/><text x="110" y="34" text-anchor="middle" font-size="16" fill="#12355b">=</text></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_3"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_3" name="work_3" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
+        <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_4" data-problem-type="fill-table">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Level up / Reto 2</div>
+        <div class="problem-type-badge"><span class="lang-en">FILL TABLE</span><span class="lang-es" lang="es">COMPLETAR LA TABLA</span></div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Notice the pattern: each row pairs an equation with a RELATED one that uses the inverse operation on the same three numbers.","es":"Las ecuaciones de multiplicación y de división formadas con los mismos tres números son una familia de operaciones. De 4x = 36 sale x = 36 ÷ 4 = 9, y la ecuación relacionada 36 / x = 4 usa el mismo trío, así que x = 9 otra vez. De x / 7 = 8 sale x = 8 × 7 = 56, y la forma relacionada 56 / 7 = x da x = 8.","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem"><span class="lang-en">Solve each equation, then write and solve a related equation that uses the inverse operation.</span><span class="lang-es" lang="es">Resuelve cada ecuación y después escribe y resuelve una ecuación relacionada que use la operación inversa.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
         <div class="table-responsive">
           <table class="fill-table">
@@ -3527,76 +3643,6 @@ header.packet h1::after{
           </div>
         </div>
         <div class="hw-work">
-          <label class="hw-work-label" for="work_3"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
-          <textarea id="work_3" name="work_3" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
-        </div>
-      </div>
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">✓ <span class="lang-en">Check This Problem</span><span class="lang-es" lang="es">Revisar</span></button>
-        <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_4" data-problem-type="open-response">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Level up / Reto 2</div>
-        <div class="problem-type-badge">OPEN RESPONSE</div>
-      </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"You know the total (96 muffins) and the size of each group (8 per box). The unknown is how many boxes.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">A bakery packed muffins into boxes of 8. They made 96 muffins total. Write an equation, solve it, and explain why your answer is reasonable. Then write a different situation that uses division and has the same answer.</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 A complete sentence with math vocabulary is the goal — not a perfect paragraph.</span><span class="lang-es" lang="es">👪 Una oración completa con vocabulario matemático es la meta — no un párrafo perfecto.</span></p>
-        
-        
-          <div class="sentence-frame-card">
-            <span class="sentence-frame-tag">💡 Sentence Starter:</span>
-            <span class="sentence-frame-text" onclick="insertSentenceStarter(4, 'Equation: ___. Solving: ___. The answer ___ is reasonable because ___. A division situation with the same answer: ___.')">"Equation: ___. Solving: ___. The answer ___ is reasonable because ___. A division situation with the same answer: ___."</span>
-            <span class="click-to-insert-hint">(Click to insert starter)</span>
-          </div>
-        
-        
-        <div class="open-response-wrapper">
-          <textarea id="open_response_4" 
-                    class="custom-textarea open-response-textarea" 
-                    data-min-length="40" 
-                    data-keywords="[&quot;8x = 96&quot;,&quot;divide&quot;,&quot;12&quot;,&quot;reasonable&quot;,&quot;inverse&quot;,&quot;boxes&quot;]"
-                    placeholder="Write your mathematical explanation here..." 
-                    oninput="saveState(); updateProgress();"></textarea>
-          <span class="feedback-badge"></span>
-        </div>
-        
-        
-          <div class="word-bank-container">
-            <div class="word-bank-label">Key Vocabulary to include (click to insert):</div>
-            <div class="word-bank-chips">
-              <span class="word-chip" onclick="insertWord(4, '8x = 96')">8x = 96</span><span class="word-chip" onclick="insertWord(4, 'divide')">divide</span><span class="word-chip" onclick="insertWord(4, '12')">12</span><span class="word-chip" onclick="insertWord(4, 'reasonable')">reasonable</span><span class="word-chip" onclick="insertWord(4, 'inverse')">inverse</span><span class="word-chip" onclick="insertWord(4, 'boxes')">boxes</span>
-            </div>
-          </div>
-        
-      </div>
-    
-      
-      <details class="hw-step-guide" open>
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Picture a balance: what you do to one side, do to the other.</span><span class="lang-es" lang="es">Imagina una balanza: lo que haces a un lado, hazlo al otro.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Keep both sides equal — do the same thing to undo the operation.</span><span class="lang-es" lang="es">Mantén ambos lados iguales — haz lo mismo para deshacer la operación.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
-      </details>
-      <div class="hw-workspace">
-        <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Picture a balance: what you do to one side, do to the other.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Imagina una balanza: lo que haces a un lado, hazlo al otro.</span></div>
-          <div class="hw-visual-frame hw-drawable" data-draw-frame>
-            <svg viewBox="0 0 220 130" class="hw-visual-svg" role="img" aria-label="Balance scale for an equation"><line x1="30" y1="40" x2="190" y2="40" stroke="#12355b" stroke-width="3"/><line x1="110" y1="40" x2="110" y2="110" stroke="#12355b" stroke-width="3"/><polygon points="90,118 130,118 110,110" fill="#12355b"/><path d="M30 40 L14 70 L46 70 Z" fill="none" stroke="#12355b" stroke-width="2"/><path d="M190 40 L174 70 L206 70 Z" fill="none" stroke="#12355b" stroke-width="2"/><text x="110" y="34" text-anchor="middle" font-size="16" fill="#12355b">=</text></svg>
-            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
-            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
-          </div>
-        </div>
-        <div class="hw-work">
           <label class="hw-work-label" for="work_4"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
           <textarea id="work_4" name="work_4" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
         </div>
@@ -3611,12 +3657,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_5" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 3</div>
-        <div class="problem-type-badge">FILL TABLE</div>
+        <div class="problem-type-badge"><span class="lang-en">FILL TABLE</span><span class="lang-es" lang="es">COMPLETAR LA TABLA</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"First decide for each row: is the variable being MULTIPLIED (like 8m) or DIVIDED (like y / 6)?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"First decide for each row: is the variable being MULTIPLIED (like 8m) or DIVIDED (like y / 6)?","es":"Cada fila deshace lo que se le está haciendo a la variable y luego lo comprueba. 8m = 56 multiplica, así que se divide: 56 ÷ 8 = 7, comprobado con 8 × 7 = 56. y / 6 = 11 divide, así que se multiplica: 11 × 6 = 66, comprobado con 66 / 6 = 11. Y 12k = 96 da 96 ÷ 12 = 8, comprobado con 12 × 8 = 96.","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Solve each equation, show your work, and check.</p>
+        <p class="problem-stem"><span class="lang-en">Solve each equation, show your work, and check.</span><span class="lang-es" lang="es">Resuelve cada ecuación, muestra tu trabajo y comprueba.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
         <div class="table-responsive">
           <table class="fill-table">
@@ -3689,12 +3735,12 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_6" data-problem-type="matching-game">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 1</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
+        <div class="problem-type-badge"><span class="lang-en">MATCHING GAME</span><span class="lang-es" lang="es">JUEGO DE PAREJAS</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each vault opens with the inverse operation: 7x = 56 divides to x = 8 and 11m = 33 divides to m = 3, while x / 5 = 4 multiplies to x = 20 and p / 2 = 9 multiplies to p = 18. Substituting each solution back rebuilds the original equation, which proves the match.","es":"Cada bóveda se abre con la operación inversa: 7x = 56 se divide y da x = 8, y 11m = 33 se divide y da m = 3, mientras que x / 5 = 4 se multiplica y da x = 20, y p / 2 = 9 se multiplica y da p = 18. Sustituir cada solución de regreso reconstruye la ecuación original, y eso comprueba la pareja.","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Level 2 Extension - Match each locked vault to the solution that opens it.</p>
+        <p class="problem-stem"><span class="lang-en">Level 2 Extension - Match each locked vault to the solution that opens it.</span><span class="lang-es" lang="es">Extensión de Nivel 2 — Une cada bóveda cerrada con la solución que la abre.</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Say each term out loud, then talk through which match makes sense before choosing.</span><span class="lang-es" lang="es">👪 Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.</span></p>
         <div class="matching-pairs">
           
@@ -3765,14 +3811,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_7" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 2</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"6x means 6 TIMES x — the variable is being multiplied by 6.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"6x means 6 TIMES x — the variable is being multiplied by 6.","es":"Divide ambos lados entre 6: x = 42 ÷ 6 = 7. Comprobación: 6 × 7 = 42 ✓","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Solve: 6x = 42</p>
+        <p class="problem-stem"><span class="lang-en">Solve: 6x = 42</span><span class="lang-es" lang="es">Resuelve: 6x = 42</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Divide both sides by 6: x = 42 ÷ 6 = 7. Check: 6 × 7 = 42 ✓">
+        <div class="mc-options" data-correct="0" data-explanation="Divide both sides by 6: x = 42 ÷ 6 = 7. Check: 6 × 7 = 42 ✓" data-explanation-es="Divide ambos lados entre 6: x = 42 ÷ 6 = 7. Comprobación: 6 × 7 = 42 ✓">
           
             <label class="mc-option-label" id="label_q_7_0">
               <input type="radio" name="q_7" value="0" onchange="saveState(); updateProgress();">
@@ -3835,14 +3881,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_8" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 3</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"n is being DIVIDED by 3. Which operation undoes division?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"n is being DIVIDED by 3. Which operation undoes division?","es":"Multiplica ambos lados por 3: n = 8 × 3 = 24. Comprobación: 24 / 3 = 8 ✓","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Solve: n / 3 = 8</p>
+        <p class="problem-stem"><span class="lang-en">Solve: n / 3 = 8</span><span class="lang-es" lang="es">Resuelve: n / 3 = 8</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Multiply both sides by 3: n = 8 × 3 = 24. Check: 24 / 3 = 8 ✓">
+        <div class="mc-options" data-correct="0" data-explanation="Multiply both sides by 3: n = 8 × 3 = 24. Check: 24 / 3 = 8 ✓" data-explanation-es="Multiplica ambos lados por 3: n = 8 × 3 = 24. Comprobación: 24 / 3 = 8 ✓">
           
             <label class="mc-option-label" id="label_q_8_0">
               <input type="radio" name="q_8" value="0" onchange="saveState(); updateProgress();">
@@ -3905,14 +3951,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_9" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 4</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"9m means 9 times m — that&#39;s multiplication, even with no × symbol written.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"9m means 9 times m — that&#39;s multiplication, even with no × symbol written.","es":"Divide ambos lados entre 9: m = 63 ÷ 9 = 7. Comprobación: 9 × 7 = 63 ✓","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Solve: 9m = 63</p>
+        <p class="problem-stem"><span class="lang-en">Solve: 9m = 63</span><span class="lang-es" lang="es">Resuelve: 9m = 63</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Divide both sides by 9: m = 63 ÷ 9 = 7. Check: 9 × 7 = 63 ✓">
+        <div class="mc-options" data-correct="0" data-explanation="Divide both sides by 9: m = 63 ÷ 9 = 7. Check: 9 × 7 = 63 ✓" data-explanation-es="Divide ambos lados entre 9: m = 63 ÷ 9 = 7. Comprobación: 9 × 7 = 63 ✓">
           
             <label class="mc-option-label" id="label_q_9_0">
               <input type="radio" name="q_9" value="0" onchange="saveState(); updateProgress();">
@@ -3975,14 +4021,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_10" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 5</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"y is split into 7 equal parts. To rebuild y, you need the opposite of dividing.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"y is split into 7 equal parts. To rebuild y, you need the opposite of dividing.","es":"Multiplica ambos lados por 7: y = 5 × 7 = 35. Comprobación: 35 / 7 = 5 ✓","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Solve: y / 7 = 5</p>
+        <p class="problem-stem"><span class="lang-en">Solve: y / 7 = 5</span><span class="lang-es" lang="es">Resuelve: y / 7 = 5</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Multiply both sides by 7: y = 5 × 7 = 35. Check: 35 / 7 = 5 ✓">
+        <div class="mc-options" data-correct="0" data-explanation="Multiply both sides by 7: y = 5 × 7 = 35. Check: 35 / 7 = 5 ✓" data-explanation-es="Multiplica ambos lados por 7: y = 5 × 7 = 35. Comprobación: 35 / 7 = 5 ✓">
           
             <label class="mc-option-label" id="label_q_10_0">
               <input type="radio" name="q_10" value="0" onchange="saveState(); updateProgress();">
@@ -4045,14 +4091,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_11" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 6</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The 4 is multiplying x, so divide both sides by 4: x = 32 / 4 = 8. Check: 4 x 8 = 32.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"An equation stays balanced when the same operation is done to both sides.","es":"Una ecuación se mantiene equilibrada cuando se hace la misma operación en los dos lados.","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Vault A is sealed with 4x = 32. Crack the lock: what is x?</p>
+        <p class="problem-stem"><span class="lang-en">Vault A is sealed with 4x = 32. Crack the lock: what is x?</span><span class="lang-es" lang="es">La bóveda A está sellada con 4x = 32. Abre la cerradura: ¿cuánto vale x?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="The 4 is multiplying x, so divide both sides by 4: x = 32 / 4 = 8. Check: 4 x 8 = 32.">
+        <div class="mc-options" data-correct="0" data-explanation="The 4 is multiplying x, so divide both sides by 4: x = 32 / 4 = 8. Check: 4 x 8 = 32." data-explanation-es="El 4 está multiplicando a x, así que divide ambos lados entre 4: x = 32 / 4 = 8. Comprobación: 4 x 8 = 32.">
           
             <label class="mc-option-label" id="label_q_11_0">
               <input type="radio" name="q_11" value="0" onchange="saveState(); updateProgress();">
@@ -4115,14 +4161,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_12" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 7</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"x is divided by 3, so multiply both sides by 3: x = 6 x 3 = 18. Check: 18 / 3 = 6.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Whatever is done to x can be undone with the opposite operation.","es":"Todo lo que se le hace a x se puede deshacer con la operación contraria.","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Vault B is sealed with x / 3 = 6. Crack the lock: what is x?</p>
+        <p class="problem-stem"><span class="lang-en">Vault B is sealed with x / 3 = 6. Crack the lock: what is x?</span><span class="lang-es" lang="es">La bóveda B está sellada con x / 3 = 6. Abre la cerradura: ¿cuánto vale x?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="x is divided by 3, so multiply both sides by 3: x = 6 x 3 = 18. Check: 18 / 3 = 6.">
+        <div class="mc-options" data-correct="0" data-explanation="x is divided by 3, so multiply both sides by 3: x = 6 x 3 = 18. Check: 18 / 3 = 6." data-explanation-es="x está dividida entre 3, así que multiplica ambos lados por 3: x = 6 x 3 = 18. Comprobación: 18 / 3 = 6.">
           
             <label class="mc-option-label" id="label_q_12_0">
               <input type="radio" name="q_12" value="0" onchange="saveState(); updateProgress();">
@@ -4185,14 +4231,14 @@ header.packet h1::after{
     <section class="problem-section card" id="problem_13" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 8</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge"><span class="lang-en">MULTIPLE CHOICE</span><span class="lang-es" lang="es">OPCIÓN MÚLTIPLE</span></div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The 5 is multiplying n, so divide both sides by 5: n = 45 / 5 = 9. Check: 5 x 9 = 45.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Solving means getting the variable alone on one side of the equation.","es":"Resolver significa dejar la variable sola en un lado de la ecuación.","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Vault C is sealed with 5n = 45. Crack the lock: what is n?</p>
+        <p class="problem-stem"><span class="lang-en">Vault C is sealed with 5n = 45. Crack the lock: what is n?</span><span class="lang-es" lang="es">La bóveda C está sellada con 5n = 45. Abre la cerradura: ¿cuánto vale n?</span></p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="The 5 is multiplying n, so divide both sides by 5: n = 45 / 5 = 9. Check: 5 x 9 = 45.">
+        <div class="mc-options" data-correct="0" data-explanation="The 5 is multiplying n, so divide both sides by 5: n = 45 / 5 = 9. Check: 5 x 9 = 45." data-explanation-es="El 5 está multiplicando a n, así que divide ambos lados entre 5: n = 45 / 5 = 9. Comprobación: 5 x 9 = 45.">
           
             <label class="mc-option-label" id="label_q_13_0">
               <input type="radio" name="q_13" value="0" onchange="saveState(); updateProgress();">
@@ -4516,8 +4562,8 @@ header.packet h1::after{
 <script>
 window.LESSON_ID = "7-3";
 window.LESSON_TITLE = "Solve Multiplication and Division Equations";
-window.__HW_VOCAB__ = [{"term":"Inverse operation","termEs":"Operación inversa","def":"Two math actions that undo each other, like × and ÷.","defEs":"Dos operaciones que se deshacen entre sí, como × y ÷.","example":"Multiplication and division are inverses: 3 × 7 = 21, so 21 ÷ 3 = 7","img":"/assets/vocab-images/equation.svg","imgAlt":"Illustration of Inverse operation: Two math actions that undo each other, like × and ÷."},{"term":"Multiply","termEs":"Multiplicar","def":"To add equal groups again and again.","defEs":"Sumar grupos iguales una y otra vez.","example":"3 × 7 = 21 means 3 groups of 7 equals 21","img":"/assets/vocab-images/multiply.svg","imgAlt":"Illustration of Multiply: To add equal groups again and again."},{"term":"Divide","termEs":"Dividir","def":"To split into equal groups.","defEs":"Repartir en grupos iguales.","example":"36 ÷ 4 = 9 means 36 split into 4 equal groups gives 9 per group","img":"/assets/vocab-images/divide.svg","imgAlt":"Illustration of Divide: To split into equal groups."},{"term":"Isolate","termEs":"Despejar","def":"To get the letter by itself on one side.","defEs":"Dejar la letra sola en un lado.","example":"3x = 21 → divide both sides by 3 → x = 7 (x is alone)","img":"/assets/vocab-images/equation.svg","imgAlt":"Illustration of Isolate: To get the letter by itself on one side."},{"term":"Coefficient","termEs":"Coeficiente","def":"The number in front of a letter, like the 3 in 3x.","defEs":"El número frente a una letra, como el 3 en 3x.","example":"In 6x = 18, the coefficient is 6; divide both sides by 6 to get x = 3.","img":"/assets/vocab-images/coefficient.svg","imgAlt":"Illustration of Coefficient: The number in front of a letter, like the 3 in 3x."},{"term":"Solution","termEs":"Solución","def":"A number that makes the equation or inequality true.","defEs":"Un número que hace verdadera la ecuación o desigualdad.","example":"x = 3 is the solution of 6x = 18 because 6 × 3 = 18.","img":"/assets/vocab-images/equation.svg","imgAlt":"Illustration of Solution: A number that makes the equation or inequality true."}];
-window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Inverse operation|Coefficient|Multiply|Solution|Isolate|Divide)(?:es|s)?\\b","lookup":{"inverse operation":0,"multiply":1,"divide":2,"isolate":3,"coefficient":4,"solution":5}};
+window.__HW_VOCAB__ = [{"term":"Solve Multiplication and Division Equations","termEs":"Resolver ecuaciones de multiplicación y división","def":"Use inverse multiplication or division to isolate the variable.","defEs":"Usar la multiplicación o división inversa para aislar la variable.","example":"4x = 20 → x = 5","img":"","imgAlt":""},{"term":"Inverse operation","termEs":"Operación inversa","def":"Two math actions that undo each other, like × and ÷.","defEs":"Dos operaciones que se deshacen entre sí, como × y ÷.","example":"Multiplication and division are inverses: 3 × 7 = 21, so 21 ÷ 3 = 7","img":"/assets/vocab-images/equation.svg","imgAlt":"Illustration of Inverse operation: Two math actions that undo each other, like × and ÷."},{"term":"Multiply","termEs":"Multiplicar","def":"To add equal groups again and again.","defEs":"Sumar grupos iguales una y otra vez.","example":"3 × 7 = 21 means 3 groups of 7 equals 21","img":"/assets/vocab-images/multiply.svg","imgAlt":"Illustration of Multiply: To add equal groups again and again."},{"term":"Divide","termEs":"Dividir","def":"To split into equal groups.","defEs":"Repartir en grupos iguales.","example":"36 ÷ 4 = 9 means 36 split into 4 equal groups gives 9 per group","img":"/assets/vocab-images/divide.svg","imgAlt":"Illustration of Divide: To split into equal groups."},{"term":"Isolate","termEs":"Despejar","def":"To get the letter by itself on one side.","defEs":"Dejar la letra sola en un lado.","example":"3x = 21 → divide both sides by 3 → x = 7 (x is alone)","img":"/assets/vocab-images/equation.svg","imgAlt":"Illustration of Isolate: To get the letter by itself on one side."},{"term":"Coefficient","termEs":"Coeficiente","def":"The number in front of a letter, like the 3 in 3x.","defEs":"El número frente a una letra, como el 3 en 3x.","example":"In 6x = 18, the coefficient is 6; divide both sides by 6 to get x = 3.","img":"/assets/vocab-images/coefficient.svg","imgAlt":"Illustration of Coefficient: The number in front of a letter, like the 3 in 3x."},{"term":"Solution","termEs":"Solución","def":"A number that makes the equation or inequality true.","defEs":"Un número que hace verdadera la ecuación o desigualdad.","example":"x = 3 is the solution of 6x = 18 because 6 × 3 = 18.","img":"/assets/vocab-images/equation.svg","imgAlt":"Illustration of Solution: A number that makes the equation or inequality true."}];
+window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Solve Multiplication and Division Equations|Inverse operation|Coefficient|Multiply|Solution|Isolate|Divide)(?:es|s)?\\b","lookup":{"solve multiplication and division equation":0,"inverse operation":1,"multiply":2,"divide":3,"isolate":4,"coefficient":5,"solution":6}};
 
 function syncHomeworkChromeHeights() {
   const status = document.querySelector('.bottom-status-bar');
@@ -4651,7 +4697,33 @@ function saveParentSignoff() {
   try {
     localStorage.setItem('hw_parent_signoff_' + lessonId, JSON.stringify(payload));
   } catch(e) {}
-  
+
+  /* localStorage stays the source of truth for what this page displays, but a
+     sign-off the teacher never sees is not a sign-off. Fire-and-forget POST:
+     the endpoint always answers 204, and any failure here is swallowed so a
+     family on a bad connection still gets their confirmation. */
+  try {
+    var signoffBody = JSON.stringify({
+      lessonId: lessonId,
+      lessonTitle: lessonTitle,
+      parentName: nameVal,
+      note: noteVal,
+      date: signoffDate,
+      studentName: (window.NeftSaveResume && window.NeftSaveResume.studentName) || '',
+      section: (window.NeftSaveResume && window.NeftSaveResume.section) || ''
+    });
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('/api/progress/family-signoff', new Blob([signoffBody], { type: 'application/json' }));
+    } else {
+      fetch('/api/progress/family-signoff', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: signoffBody,
+        keepalive: true
+      }).catch(function() {});
+    }
+  } catch(e) {}
+
   updateSignoffUI(payload);
 }
 
@@ -5588,6 +5660,15 @@ function playCheckSound(isCorrect) {
   }
 }
 
+/* Feedback text is built in JS, so it cannot use the .lang-en/.lang-es span
+   pair the rest of the page toggles. Pick the language the family is actually
+   reading; fall back to English whenever no Spanish was authored. */
+function pickLangText(en, es) {
+  const esText = (es || "").trim();
+  if (esText && document.body.classList.contains("lang-mode-es")) return esText;
+  return en || "";
+}
+
 function checkProblem(idx, options) {
   const silent = options && options.silent;
   const section = document.getElementById("problem_" + idx);
@@ -5605,7 +5686,7 @@ function checkProblem(idx, options) {
       const container = section.querySelector(".mc-options");
       const selected = container.querySelector("input[type='radio']:checked");
       const correctIdx = container.dataset.correct;
-      const explanation = container.dataset.explanation;
+      const explanation = pickLangText(container.dataset.explanation, container.dataset.explanationEs);
       
       // Reset radio option styles
       const labels = container.querySelectorAll(".mc-option-label");
@@ -5833,7 +5914,7 @@ function checkProblem(idx, options) {
   if (!feedbackMessage) {
     if (type === "multiple-choice") {
       const container = section.querySelector(".mc-options");
-      const explanation = container?.dataset.explanation || "";
+      const explanation = pickLangText(container?.dataset.explanation, container?.dataset.explanationEs);
       if (isProblemCorrect) {
         feedbackMessage = explanation
           ? "Correct! " + explanation

@@ -187,6 +187,13 @@
   "vocabMode": "matching",
   "vocabulary": [
     {
+      "term": "Display Data with Box Plots",
+      "termEs": "Representar datos con diagramas de caja",
+      "definition": "Show a data set's five-number summary in a box-and-whisker display.",
+      "definitionEs": "Mostrar el resumen de cinco números de un conjunto de datos en un diagrama de caja y bigotes.",
+      "visual": "minimum | Q1 [ median ] Q3 | maximum"
+    },
+    {
       "term": "Box Plot",
       "termEs": "Diagrama de caja",
       "definition": "A graph that shows how data is spread using five key numbers.",
@@ -217,6 +224,22 @@
       "definitionEs": "La extensión de la mitad central de los datos (Q3 − Q1).",
       "visual": "If Q1 = 12 and Q3 = 20, then IQR = 20 − 12 = 8 — the middle 50% spans 8 units",
       "cloze": "The distance between the first and third quartiles, showing the middle 50% of data, is the ___."
+    },
+    {
+      "term": "Data distribution",
+      "termEs": "Distribución de datos",
+      "definition": "How the data looks: where it sits and how spread out it is.",
+      "definitionEs": "Cómo se ven los datos: dónde están y qué tan separados están.",
+      "visual": "A box plot where the median is centered in the box shows symmetric distribution",
+      "cloze": "The way data values are spread out is the ___."
+    },
+    {
+      "term": "Variability",
+      "termEs": "Variabilidad",
+      "definition": "How spread out the numbers are.",
+      "definitionEs": "Qué tan separados están los números.",
+      "visual": "Small IQR = low variability in the middle 50%. Large IQR = high variability",
+      "cloze": "How spread out the data values are is the ___."
     }
   ],
   "launch": {
@@ -365,7 +388,9 @@
           "You're given five numbers, but IQR only uses two of them: Q1 and Q3. Ignore the min, median, and max.",
           "IQR = Q3 − Q1. Find Q3 (28) and Q1 (15) in the summary — the IQR is their difference, the width of the box.",
           "Set up the subtraction Q3 − Q1: that's 28 − 15. The difference you get is the IQR."
-        ]
+        ],
+        "stemEs": "Un diagrama de caja muestra: Mín = 10, Q1 = 15, Mediana = 20, Q3 = 28, Máx = 35. ¿Cuál es el rango intercuartílico (RIC)?",
+        "explanationEs": "RIC = Q3 − Q1 = 28 − 15 = 13."
       },
       {
         "type": "multiple-choice",
@@ -382,13 +407,15 @@
           "",
           "The line shows center—but mean is a different measure.",
           "The line is always the middle value, not an average.",
-          ""
+          "The range is a spread — the whole distance from the smallest value to the largest — not a single line drawn inside the box. Think about which value splits the data in half."
         ],
         "hints": [
           "Picture a box plot: a box with whiskers, and a line cutting through the box. That line marks the CENTER of the data.",
           "The box runs from Q1 to Q3, so the line inside splits the middle 50% in half. Think about which measure splits ordered data into halves.",
           "First step: recall which measure means 'the middle value of the ordered data.' The line inside the box always marks that exact measure."
-        ]
+        ],
+        "stemEs": "En un diagrama de caja, ¿qué representa la línea que está dentro de la caja?",
+        "explanationEs": "La línea dentro de la caja de un diagrama de caja siempre representa la mediana."
       },
       {
         "type": "multiple-choice",
@@ -411,7 +438,9 @@
           "Quartiles cut the data into 4 equal parts — 'quart' like 'quarter.' Each part holds the same share of the data.",
           "Each quarter of the data is 25%. Count how many quarters sit between Q1 and Q3: Q1 to the median, then the median to Q3.",
           "First step: Q1 to the median is one quarter — 25%. Add the quarter from the median up to Q3 to get the box's total share."
-        ]
+        ],
+        "stemEs": "¿Qué porcentaje de los datos queda entre Q1 y Q3 en un diagrama de caja?",
+        "explanationEs": "La caja de un diagrama de caja contiene el 50% central de los datos (de Q1 a Q3)."
       },
       {
         "type": "multiple-choice",
@@ -434,7 +463,9 @@
           "Range = how far the data stretches: the gap between the biggest and smallest values only. The middle values don't matter.",
           "Scan the list 14, 22, 8, 31, 17: find the maximum and the minimum, then subtract the min from the max.",
           "First step: the max is 31 and the min is 8. Set up 31 − 8 — that difference is the range."
-        ]
+        ],
+        "stemEs": "Halla el rango de: 14, 22, 8, 31, 17",
+        "explanationEs": "Rango = máximo − mínimo = 31 − 8 = 23."
       },
       {
         "type": "error-analysis",
@@ -458,7 +489,10 @@
         "hints": [
           "IQR stands for InterQuartile RANGE — a range is found by subtracting, not adding.",
           "IQR = Q3 − Q1 = 30 − 18 = 12, not 48."
-        ]
+        ],
+        "titleEs": "El error del IQR con cuartiles sumados",
+        "explanation": "The final step added the quartiles, but a range is always a difference. The interquartile range measures how wide the box is, so IQR = Q3 − Q1 = 30 − 18 = 12: the middle 50% of the Bobcats' scores covers just 12 points, not 48.",
+        "explanationEs": "El paso final sumó los cuartiles, pero un rango siempre es una diferencia. El rango intercuartílico mide qué tan ancha es la caja, así que IQR = Q3 − Q1 = 30 − 18 = 12: el 50% central de los puntajes de los Bobcats abarca solo 12 puntos, no 48."
       },
       {
         "type": "multiple-choice",
@@ -481,7 +515,9 @@
           "IQR measures the width of the box — how spread out the MIDDLE 50% of each team's scores is.",
           "Compare a narrow box (IQR 8) with a wide box (IQR 22). Ask what narrow vs wide says about consistency — not about which team is better.",
           "First step: translate each number — Team A's middle scores span only 8 points; Team B's span 22. Then choose the statement that matches."
-        ]
+        ],
+        "stemEs": "Dos diagramas de caja muestran: el equipo A tiene un RIC = 8 y el equipo B tiene un RIC = 22. ¿Qué te dice esto?",
+        "explanationEs": "Un RIC más pequeño significa que el 50% central de los datos está más agrupado. La anotación del equipo A es más consistente en el rango central."
       }
     ],
     "onLevel": [
@@ -511,7 +547,10 @@
         "hints": [
           "When a half has an even number of values, the quartile is the average of its two middle values.",
           "Lower half 4, 8, 10, 14: the two middle values are 8 and 10, so Q1 = (8 + 10) ÷ 2 = 9."
-        ]
+        ],
+        "titleEs": "El error de creer que el cuartil es un solo valor",
+        "explanation": "The Q1 step grabbed a single number out of the lower half instead of finding that half's median. The lower half 4, 8, 10, 14 has an even count, so Q1 averages its two middle values: (8 + 10) ÷ 2 = 9 — the same averaging move already used correctly for the median and for Q3.",
+        "explanationEs": "El paso de Q1 tomó un solo número de la mitad inferior en vez de hallar la mediana de esa mitad. La mitad inferior 4, 8, 10, 14 tiene una cantidad par de valores, así que Q1 promedia sus dos valores del medio: (8 + 10) ÷ 2 = 9, el mismo procedimiento que ya se usó correctamente para la mediana y para Q3."
       },
       {
         "type": "multiple-choice",
@@ -529,6 +568,18 @@
           "Median is the middle—with 7 values, which is in the middle?",
           "There's no zero shown—count from the data given.",
           "Seven values: positions 1,2,3,4,5,6,7—which is the 4th?"
+        ],
+        "stemEs": "Los puntos por cuarto de los Hawks son 2, 4, 5, 7, 8, 10, 12. Según el marcador, ¿cuáles son el mínimo, la mediana y el máximo?",
+        "explanationEs": "Los datos ya están ordenados. El valor más pequeño es 2 y el más grande es 12. Hay 7 valores, así que la mediana es el 4.º valor, que es 7.",
+        "hints": [
+          "A five-number summary always starts from a list arranged from least to greatest.",
+          "The minimum and maximum are the two ends of the ordered list; the median is the value sitting right in the middle.",
+          "There are 7 values here, so the middle one is the 4th. Count in from either end to find it."
+        ],
+        "hintsEs": [
+          "Un resumen de cinco números siempre empieza con una lista ordenada de menor a mayor.",
+          "El mínimo y el máximo son los dos extremos de la lista ordenada; la mediana es el valor que queda justo en medio.",
+          "Aquí hay 7 valores, así que el del medio es el 4.º. Cuenta desde cualquiera de los extremos para hallarlo."
         ]
       },
       {
@@ -547,6 +598,18 @@
           "First half: 6, 10, 14, 18—Q1 is the median of these.",
           "Q1 and Q3 come from the halves—not the full data.",
           "Split the data in half, then find median of each half."
+        ],
+        "stemEs": "Los Comets anotaron 6, 10, 14, 18, 22, 26, 30, 34 en 8 juegos. Después de ordenarlos, ¿cuáles son Q1 y Q3?",
+        "explanationEs": "Con 8 valores, la mediana divide los datos en una mitad inferior (6, 10, 14, 18) y una mitad superior (22, 26, 30, 34). Q1 es la mediana de la mitad inferior: (10 + 14) ÷ 2 = 12. Q3 es la mediana de la mitad superior: (26 + 30) ÷ 2 = 28.",
+        "hints": [
+          "Q1 and Q3 are medians too — one for the lower half of the data and one for the upper half.",
+          "Split the 8 ordered values into a lower half of 4 and an upper half of 4, then find the median of each half.",
+          "The lower half is 6, 10, 14, 18. With 4 values its median is the average of the middle two — work that out, then do the same for the upper half."
+        ],
+        "hintsEs": [
+          "Q1 y Q3 también son medianas: una de la mitad inferior de los datos y otra de la mitad superior.",
+          "Divide los 8 valores ordenados en una mitad inferior de 4 y una mitad superior de 4, y luego halla la mediana de cada mitad.",
+          "La mitad inferior es 6, 10, 14, 18. Con 4 valores, su mediana es el promedio de los dos del centro; calcúlalo y después haz lo mismo con la mitad superior."
         ]
       },
       {
@@ -565,6 +628,18 @@
           "The whiskers go to min and max—but the box is 50% of data.",
           "Q1 to median is 25%, median to Q3 is 25%—together?",
           "Q3 to max covers another 25%—is that the middle 50%?"
+        ],
+        "stemEs": "Un diagrama de caja de los Rockets muestra Mín = 8, Q1 = 15, Mediana = 22, Q3 = 30, Máx = 38. ¿El 50% central de sus puntajes queda entre qué dos valores?",
+        "explanationEs": "La caja de un diagrama de caja se extiende de Q1 a Q3, y esa caja siempre contiene el 50% central de los datos. Aquí la caja va de Q1 = 15 a Q3 = 30.",
+        "hints": [
+          "In a box plot it is the box itself — not the whiskers — that holds the middle half of the data.",
+          "The box stretches from Q1 on one end to Q3 on the other.",
+          "Find Q1 and Q3 in the list of values you were given, and read off the two numbers the box runs between."
+        ],
+        "hintsEs": [
+          "En un diagrama de caja es la caja misma, no los bigotes, la que contiene la mitad central de los datos.",
+          "La caja se extiende desde Q1 en un extremo hasta Q3 en el otro.",
+          "Busca Q1 y Q3 en la lista de valores que te dieron y lee los dos números entre los que va la caja."
         ]
       },
       {
@@ -593,7 +668,10 @@
         "hints": [
           "You can never find the median or quartiles until the data is in order from least to greatest.",
           "After ordering (5, 9, 13, 17, 21, 25, 29), the true middle value is 17, not the number that happened to sit in the middle of the unsorted list."
-        ]
+        ],
+        "titleEs": "Extensión de Nivel 2: el error de saltarse el ordenamiento",
+        "explanation": "The median step used whichever number happened to sit in the middle of the unsorted list. Once the scores are ordered as 5, 9, 13, 17, 21, 25, 29, the 4th value is 17, so the median is 17, the lower half 5, 9, 13 gives Q1 = 9, and the upper half 21, 25, 29 gives Q3 = 25.",
+        "explanationEs": "El paso de la mediana usó el número que por casualidad estaba en el centro de la lista sin ordenar. Una vez que los puntajes se ordenan como 5, 9, 13, 17, 21, 25, 29, el cuarto valor es 17, así que la mediana es 17, la mitad inferior 5, 9, 13 da Q1 = 9 y la mitad superior 21, 25, 29 da Q3 = 25."
       },
       {
         "type": "error-analysis",
@@ -621,7 +699,10 @@
         "hints": [
           "Q1 is not just a value in the lower half — it is the MEDIAN of the lower half.",
           "Lower half: 3, 7, 9. The median of these three values is 7, not 9."
-        ]
+        ],
+        "titleEs": "Encuentra el error del diagrama de caja",
+        "explanation": "The quartile step used 9, the last number in the lower half, instead of the middle of that half. The lower half is 3, 7, 9, so its median — and therefore Q1 — is 7. Q3 = 18 was already right, since 18 sits in the middle of 15, 18, 21.",
+        "explanationEs": "El paso de los cuartiles usó 9, el último número de la mitad inferior, en vez del valor del medio de esa mitad. La mitad inferior es 3, 7, 9, así que su mediana —y por lo tanto Q1— es 7. Q3 = 18 ya estaba bien, porque 18 queda en el medio de 15, 18, 21."
       }
     ],
     "extending": [],

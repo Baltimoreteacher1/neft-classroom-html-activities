@@ -143,6 +143,60 @@ async function ensureTelemetrySchema(db) {
     .run();
 }
 
+async function ensureFamilySignoffSchema(db) {
+  // Idempotent: created on first sign-off write — no separate migration needed.
+  await db
+    .prepare(
+      `CREATE TABLE IF NOT EXISTS family_signoff (
+        id           INTEGER PRIMARY KEY AUTOINCREMENT,
+        lesson_id    TEXT NOT NULL,
+        lesson_title TEXT,
+        parent_name  TEXT,
+        note         TEXT,
+        student_name TEXT,
+        section      TEXT,
+        signed_on    TEXT,
+        created_at   TEXT NOT NULL,
+        UNIQUE (lesson_id, parent_name, student_name)
+      )`,
+    )
+    .run();
+}
+
+/* Family homework sign-off. The parent types their name on the family page to
+   confirm they reviewed the work with their student; until now that was written
+   to localStorage only, so the teacher never saw it and it died with the
+   device's browser storage.
+   Best-effort like telemetry: always 204 so a family on a bad connection never
+   sees an error, and the page keeps localStorage as its source of truth. */
+async function storeFamilySignoff(env, body) {
+  if (!env.DB || !body || !body.lessonId) return;
+  await ensureFamilySignoffSchema(env.DB);
+  const now = new Date().toISOString();
+  const trim = (v, max) => (v == null ? "" : String(v).slice(0, max));
+  await env.DB.prepare(
+    `INSERT INTO family_signoff
+       (lesson_id, lesson_title, parent_name, note, student_name, section, signed_on, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+     ON CONFLICT (lesson_id, parent_name, student_name)
+     DO UPDATE SET note = excluded.note,
+                   section = excluded.section,
+                   signed_on = excluded.signed_on,
+                   created_at = excluded.created_at`,
+  )
+    .bind(
+      trim(body.lessonId, 64),
+      trim(body.lessonTitle, 200),
+      trim(body.parentName, 120),
+      trim(body.note, 1000),
+      trim(body.studentName, 120),
+      trim(body.section, 64),
+      trim(body.date, 40),
+      now,
+    )
+    .run();
+}
+
 // Best-effort telemetry sink. NEVER throws into the client: returns 204 whether
 // or not D1 is configured, so the fire-and-forget client never errors or retries.
 async function storeTelemetry(env, body) {
@@ -482,6 +536,50 @@ export async function onRequest(context) {
     return json({ ok: true, backend: "cloudflare", d1: !!env.DB });
   }
 
+  // Family sign-off. POST is fire-and-forget (204 regardless of D1) so a family
+  // never sees an error; GET is the teacher's read and is TEACHER_KEY-gated and
+  // closed by default, like every other route that returns student data.
+  // Must come BEFORE the D1 guard below.
+  if (seg === "family-signoff") {
+    if (method === "POST") {
+      try {
+        await storeFamilySignoff(env, await request.json());
+      } catch (e) {}
+      return new Response(null, { status: 204, headers: JSON_HEADERS });
+    }
+    if (method === "GET") {
+      if (!env.TEACHER_KEY) {
+        return json(
+          {
+            ok: false,
+            error: "not-configured",
+            message: "Set the TEACHER_KEY env var to enable family sign-off review.",
+          },
+          503,
+        );
+      }
+      const key = url.searchParams.get("key") || request.headers.get("x-teacher-key") || "";
+      if (key !== env.TEACHER_KEY) return json({ ok: false, error: "unauthorized" }, 401);
+      if (!env.DB) return json({ ok: false, error: "no-d1" }, 503);
+      await ensureFamilySignoffSchema(env.DB);
+      const section = url.searchParams.get("section") || "";
+      const since = url.searchParams.get("since") || "";
+      const rows = section
+        ? await env.DB.prepare(
+            `SELECT * FROM family_signoff WHERE section = ? AND created_at >= ? ORDER BY created_at DESC LIMIT 500`,
+          )
+            .bind(section, since || "0000")
+            .all()
+        : await env.DB.prepare(
+            `SELECT * FROM family_signoff WHERE created_at >= ? ORDER BY created_at DESC LIMIT 500`,
+          )
+            .bind(since || "0000")
+            .all();
+      return json({ ok: true, signoffs: rows.results || [] });
+    }
+    return json({ ok: false, error: "method-not-allowed" }, 405);
+  }
+
   // Telemetry is fire-and-forget: accept (204) regardless of D1 so the client
   // never errors or retries. Persist only when the binding exists. Must come
   // BEFORE the D1 guard below.
@@ -608,9 +706,7 @@ export async function onRequest(context) {
           variant: group.variant,
           completions: group.completions,
           inProgress: group.inProgress,
-          avgSolved: group.completions
-            ? Math.round(group.solvedSum / group.completions)
-            : 0,
+          avgSolved: group.completions ? Math.round(group.solvedSum / group.completions) : 0,
           avgTotal: group.completions ? Math.round(group.totalSum / group.completions) : 0,
           hintHeavy: group.hintHeavy,
         })),
