@@ -4,6 +4,17 @@ import { writeText, writeJson } from "./util.mjs";
 
 const ICON = { ok: "✅", warn: "⚠️", fail: "❌", skip: "⏭️" };
 
+// "10202874 ms" is unreadable, and it hid that a run had taken 2h50m — the
+// signal that the machine had slept mid-run and the timings were wall-clock.
+function formatDuration(ms) {
+  if (!Number.isFinite(ms)) return "unknown";
+  const s = Math.round(ms / 1000);
+  if (s < 60) return `${s}s`;
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  return h ? `${h}h ${m}m` : `${m}m ${s % 60}s`;
+}
+
 function rollup(results) {
   const counts = { ok: 0, warn: 0, fail: 0, skip: 0 };
   for (const r of results) counts[r.status] = (counts[r.status] || 0) + 1;
@@ -25,7 +36,15 @@ export function buildMarkdown(results, meta) {
     `**Modules:** ${counts.ok}✅ ${counts.warn}⚠️ ${counts.fail}❌ ${counts.skip}⏭️  `,
   );
   lines.push(`**Branch:** \`${meta.branch}\`  **Mode:** ${meta.dryRun ? "dry-run" : "live"}  `);
-  lines.push(`**Duration:** ${meta.durationMs} ms`);
+  // What the source-truth modules actually judged. Without this the briefing
+  // reads as a verdict on the working tree, which is exactly the confusion the
+  // audit worktree exists to end.
+  lines.push(
+    meta.auditRef
+      ? `**Audited:** \`${meta.auditRef}\` @ \`${(meta.auditSha || "").slice(0, 9)}\` (clean worktree)  `
+      : "**Audited:** ⚠️ no clean checkout — source modules inconclusive  ",
+  );
+  lines.push(`**Duration:** ${formatDuration(meta.durationMs)}`);
   lines.push("");
 
   // Actions you may need to take, surfaced first.

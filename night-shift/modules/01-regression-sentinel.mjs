@@ -1,5 +1,7 @@
 // Module 1 — Regression Sentinel.
 // Detects clobbering of hand-maintained critical files vs a baseline git ref.
+// Reads from ctx.auditRoot (clean origin/main worktree), so in-progress edits in
+// the live tree never register as a regression.
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
@@ -21,7 +23,7 @@ export async function run(ctx) {
   for (const entry of files) {
     const rel = typeof entry === "string" ? entry : entry.path;
     const markers = (typeof entry === "object" && entry.requireMarkers) || [];
-    const abs = path.join(ctx.root, rel);
+    const abs = path.join(ctx.auditRoot || ctx.root, rel);
 
     let current = null;
     try {
@@ -53,7 +55,13 @@ export async function run(ctx) {
       if (missingMarkers.length) why.push(`lost marker(s): ${missingMarkers.join(", ")}`);
       details.push(`❌ \`${rel}\` — likely clobbered: ${why.join("; ")}`);
 
-      if (cfg.autoRestore && !ctx.dryRun) {
+      if (cfg.autoRestore && ctx.auditRoot) {
+        // Detection now happens against origin/main; writing a "fix" into the
+        // live tree would repair a file that is not the one we inspected.
+        actions.push(
+          `\`${rel}\` looks clobbered ON \`${ref}\` — autoRestore skipped (audit runs read-only against origin/main). Fix on a branch and ship it.`,
+        );
+      } else if (cfg.autoRestore && !ctx.dryRun) {
         const r = await ctx.git.raw("checkout", ref, "--", rel);
         if (r.ok) {
           details.push(`   ↳ auto-restored \`${rel}\` from \`${ref}\`.`);

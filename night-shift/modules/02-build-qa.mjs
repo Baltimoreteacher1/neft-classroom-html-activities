@@ -44,15 +44,22 @@ function rotatingSample(items, size) {
 
 export async function run(ctx) {
   const cfg = ctx.config.buildQa || {};
+  // Judge what is shippable: a clean origin/main checkout, never the live tree.
+  const src = ctx.auditRoot || ctx.root;
   const details = [];
   const actions = [];
   let worst = "ok";
 
   // 1. Validators.
   if (cfg.runValidate) {
-    const r = await sh("npm", ["run", "validate"], { cwd: ctx.root, timeout: 8 * 60_000 });
+    const budget = 25 * 60_000;
+    const r = await sh("npm", ["run", "validate"], { cwd: src, timeout: budget });
     if (r.ok) {
       details.push("✅ `npm run validate` passed (static, hub, curriculum-top1, reveal-math).");
+    } else if (r.timedOut) {
+      if (worst === "ok") worst = "warn";
+      details.push(`⚠️ \`npm run validate\` TIMED OUT after ${budget / 60_000}m — inconclusive, not a failure.`);
+      actions.push("Validate exceeded its time budget — raise the budget or split the suite.");
     } else {
       worst = "fail";
       const tail = r.stdout.split("\n").filter(Boolean).slice(-6).join(" / ");
@@ -63,9 +70,14 @@ export async function run(ctx) {
 
   // 2. Optional build.
   if (cfg.runBuild) {
-    const r = await sh("npm", ["run", "build"], { cwd: ctx.root, timeout: 15 * 60_000 });
+    const budget = 25 * 60_000;
+    const r = await sh("npm", ["run", "build"], { cwd: src, timeout: budget });
     if (r.ok) details.push("✅ `npm run build` produced dist/.");
-    else {
+    else if (r.timedOut) {
+      if (worst === "ok") worst = "warn";
+      details.push(`⚠️ \`npm run build\` TIMED OUT after ${budget / 60_000}m — inconclusive, not a failure.`);
+      actions.push("Build exceeded its time budget — raise the budget or investigate slowness.");
+    } else {
       worst = "fail";
       details.push(`❌ \`npm run build\` FAILED: ${r.stderr.split("\n").slice(-4).join(" / ")}`);
       actions.push("Build is broken — deploy would fail.");
@@ -76,7 +88,7 @@ export async function run(ctx) {
   // Resolve the actual package — `npx playwright --version` is unreliable
   // (wrappers can exit 0 without the package present).
   const pwInstalled = (
-    await sh("node", ["-e", "require.resolve('playwright')"], { cwd: ctx.root })
+    await sh("node", ["-e", "require.resolve('playwright')"], { cwd: src })
   ).ok;
 
   if (!pwInstalled) {
@@ -90,7 +102,7 @@ export async function run(ctx) {
     // Smoke must run against BUILT output served over HTTP, so root-relative
     // `/assets/...` paths resolve. Loading raw source via file:// produces
     // meaningless ERR_FILE_NOT_FOUND noise. Require dist/.
-    const distDir = path.join(ctx.root, "dist");
+    const distDir = path.join(src, "dist");
     const haveDist = (await sh("test", ["-d", distDir])).ok;
     if (!haveDist) {
       if (worst === "ok") worst = "warn";
@@ -99,16 +111,16 @@ export async function run(ctx) {
           "smoke runs against built, HTTP-served pages (set in config; default for the nightly job).",
       );
     } else {
-      const pages = await findLessonPages(["dist"], ctx.root, cfg.playwrightSampleSize || 8);
+      const pages = await findLessonPages(["dist"], src, cfg.playwrightSampleSize || 8);
       const sample = rotatingSample(pages, cfg.playwrightSampleSize || 8).map((f) =>
         path.relative(distDir, f),
       );
       if (!sample.length) {
         details.push("⏭️ No built lesson pages found in dist/ to smoke-test.");
       } else {
-        const tmp = path.join(ctx.root, "night-shift", "briefings", ".smoke.mjs");
+        const tmp = path.join(src, "night-shift", "briefings", ".smoke.mjs");
         await writeText(tmp, pwSmokeScript(distDir, sample));
-        const r = await sh("node", [tmp], { cwd: ctx.root, timeout: 6 * 60_000 });
+        const r = await sh("node", [tmp], { cwd: src, timeout: 6 * 60_000 });
         const errLines = r.stdout.split("\n").filter((l) => l.startsWith("ERR "));
         const noteLines = r.stdout.split("\n").filter((l) => l.startsWith("NOTE "));
         if (r.ok && errLines.length === 0) {

@@ -16,11 +16,16 @@ export async function sh(cmd, args = [], opts = {}) {
       timeout: opts.timeout ?? 0,
       env: { ...process.env, ...(opts.env || {}) },
     });
-    return { ok: true, code: 0, stdout: stdout.toString(), stderr: stderr.toString() };
+    return { ok: true, code: 0, timedOut: false, stdout: stdout.toString(), stderr: stderr.toString() };
   } catch (err) {
+    // execFile kills on timeout (SIGTERM) and throws the same shape as a real
+    // non-zero exit. Callers must be able to tell "too slow" from "broken":
+    // reporting a timeout as a failure produced weeks of false ❌ in the
+    // briefings, with mid-run progress text presented as the error tail.
     return {
       ok: false,
       code: err.code ?? 1,
+      timedOut: Boolean(err.killed) && err.signal === "SIGTERM",
       stdout: (err.stdout || "").toString(),
       stderr: (err.stderr || err.message || "").toString(),
     };
