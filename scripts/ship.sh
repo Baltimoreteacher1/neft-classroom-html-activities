@@ -246,6 +246,20 @@ say "✓ Pushed. Cloudflare Pages is building..."
 # --- Verify it actually went live ---------------------------------------------------------
 poll_stamp "$NEW_SHA" || exit 1
 
+# --- Post-deploy smoke: the stamp only proves the BUILD promoted ----------------
+# A promoted build can still be broken in ways the source gates cannot see (a
+# truncated bundle, an asset missing from dist, a gate that stopped gating).
+# Verify the deployed site before calling the ship a success.
+say ""
+say "Running post-deploy smoke test against production..."
+if ! node "$ROOT/scripts/smoke-live.mjs" --expect "$NEW_SHA"; then
+  say "" >&2
+  say "✗ The deploy promoted but production is DEGRADED (see failures above)." >&2
+  say "  Roll back by shipping the previous good commit:" >&2
+  say "      ALLOW_DEPLOY=1 npm run ship -- ${MAIN_SHA:0:9}" >&2
+  exit 1
+fi
+
 # /assets/* freshness: RESOLVED 2026-07-14 — the zone "Browser Cache TTL = 4 h"
 # override was switched to "Respect Existing Headers", so _headers' max-age=0,
 # must-revalidate is honored and stable-named assets propagate instantly (the
