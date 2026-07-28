@@ -1619,7 +1619,14 @@ export function renderProblemHintButton(problem, visual = "") {
     problem.hints?.[0] ||
     problem.explanation ||
     "Read the question aloud. What do you notice? What operation or idea fits?";
-  const hintEs = "Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?";
+  /* This used to be one fixed Spanish sentence for every problem on the page —
+     the English hint was problem-specific, the Spanish one never was. Use the
+     curated Spanish hint when the config has one, and only fall back to the
+     generic prompt when it genuinely has none. */
+  const hintEs =
+    problem.hintsEs?.[0] ||
+    problem.explanationEs ||
+    "Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?";
   return helpButton("💡 Stuck? Get a hint / ¿Atorado? Pista", {
     titleEn: "Hint before you check",
     titleEs: "Pista antes de revisar",
@@ -1831,7 +1838,33 @@ function saveParentSignoff() {
   try {
     localStorage.setItem('hw_parent_signoff_' + lessonId, JSON.stringify(payload));
   } catch(e) {}
-  
+
+  /* localStorage stays the source of truth for what this page displays, but a
+     sign-off the teacher never sees is not a sign-off. Fire-and-forget POST:
+     the endpoint always answers 204, and any failure here is swallowed so a
+     family on a bad connection still gets their confirmation. */
+  try {
+    var signoffBody = JSON.stringify({
+      lessonId: lessonId,
+      lessonTitle: lessonTitle,
+      parentName: nameVal,
+      note: noteVal,
+      date: signoffDate,
+      studentName: (window.NeftSaveResume && window.NeftSaveResume.studentName) || '',
+      section: (window.NeftSaveResume && window.NeftSaveResume.section) || ''
+    });
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('/api/progress/family-signoff', new Blob([signoffBody], { type: 'application/json' }));
+    } else {
+      fetch('/api/progress/family-signoff', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: signoffBody,
+        keepalive: true
+      }).catch(function() {});
+    }
+  } catch(e) {}
+
   updateSignoffUI(payload);
 }
 

@@ -162,7 +162,12 @@ function normalizeDragSort(it) {
       steps,
       correctOrder,
       label: it.label || it.instructions || "Put the steps in the correct order.",
+      labelEs:
+        it.labelEs ||
+        it.instructionsEs ||
+        (it.label || it.instructions ? "" : "Pon los pasos en el orden correcto."),
       hints: it.hints || [],
+      hintsEs: it.hintsEs || [],
     };
   }
 
@@ -218,7 +223,12 @@ function normalizeDragSort(it) {
     categories,
     items,
     label: it.label || it.instructions || "Sort the items into the correct groups.",
+    labelEs:
+      it.labelEs ||
+      it.instructionsEs ||
+      (it.label || it.instructions ? "" : "Clasifica los elementos en los grupos correctos."),
     hints: it.hints || [],
+    hintsEs: it.hintsEs || [],
   };
 }
 
@@ -277,6 +287,30 @@ function renderProblemTypeChip(displayType) {
 function renderFamilyTip(typeKey) {
   const tip = FAMILY_TIPS_BY_TYPE[typeKey] || FAMILY_TIPS_BY_TYPE["multiple-choice"];
   return `<p class="family-problem-tip"><span class="lang-en">👪 ${esc(tip.en)}</span><span class="lang-es" lang="es">👪 ${esc(tip.es)}</span></p>`;
+}
+
+/* Bilingual problem text. Every other surface on the page uses the
+   .lang-en / .lang-es span pair that the language selector toggles; the math
+   problems themselves were the one place that emitted bare English, so
+   "Solo Español" left the whole Check tab in English even for the problems
+   whose config already carried curated Spanish.
+
+   Falls back to English-only markup when no Spanish is authored — an
+   untranslated stem must still be readable, never blank. Curated Spanish is
+   the ONLY source: nothing here derives or machine-translates. */
+function bi(en, es) {
+  const enText = String(en ?? "");
+  const esText = String(es ?? "").trim();
+  if (!esText || esText === enText) return esc(enText);
+  return `<span class="lang-en">${esc(enText)}</span><span class="lang-es" lang="es">${esc(esText)}</span>`;
+}
+
+/* True when a stem/choice carries no Spanish, so the page can mark itself for
+   the coverage validator without changing what a family sees. */
+function esMissing(en, es) {
+  const enText = String(en ?? "").trim();
+  const esText = String(es ?? "").trim();
+  return !!enText && !esText;
 }
 
 // Deterministic 32-bit string hash → seed. Keeps the generator reproducible so a
@@ -608,22 +642,25 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
 
   if (type === "multiple-choice") {
     const stem = it.stem || "";
+    const stemEs = it.stemEs || "";
     const choices = it.choices || [];
+    const choicesEs = Array.isArray(it.choicesEs) ? it.choicesEs : [];
     const correctIdx = it.correctIndex !== undefined ? it.correctIndex : 0;
     const explanation = it.explanation || "";
+    const explanationEs = it.explanationEs || "";
 
     content = `
       <div class="problem-body">
-        <p class="problem-stem">${esc(stem)}</p>
+        <p class="problem-stem"${esMissing(stem, stemEs) ? ' data-es-missing="stem"' : ""}>${bi(stem, stemEs)}</p>
         ${renderFamilyTip("multiple-choice")}
-        <div class="mc-options" data-correct="${correctIdx}" data-explanation="${esc(explanation)}">
+        <div class="mc-options" data-correct="${correctIdx}" data-explanation="${esc(explanation)}"${explanationEs ? ` data-explanation-es="${esc(explanationEs)}"` : ""}>
           ${choices
             .map(
               (choice, cIdx) => `
             <label class="mc-option-label" id="label_q_${pIdx}_${cIdx}">
               <input type="radio" name="q_${pIdx}" value="${cIdx}" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">${esc(choice)}</span>
+              <span class="choice-text">${bi(choice, choicesEs[cIdx])}</span>
             </label>
           `,
             )
@@ -633,6 +670,10 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
     `;
   } else if (type === "matching-game") {
     const label = it.label || it.instructions || "Match each item to its correct partner.";
+    const labelEs =
+      it.labelEs ||
+      it.instructionsEs ||
+      (it.label || it.instructions ? "" : "Une cada elemento con su pareja correcta.");
     const pairs = it.pairs || [];
 
     // Get unique sorted matches for dropdown options
@@ -641,7 +682,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
 
     content = `
       <div class="problem-body">
-        <p class="problem-stem">${esc(label)}</p>
+        <p class="problem-stem"${esMissing(label, labelEs) ? ' data-es-missing="stem"' : ""}>${bi(label, labelEs)}</p>
         ${renderFamilyTip("matching-game")}
         <div class="matching-pairs">
           ${pairs
@@ -676,7 +717,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
       );
       content = `
       <div class="problem-body">
-        <p class="problem-stem">${esc(norm.label)}</p>
+        <p class="problem-stem"${esMissing(norm.label, norm.labelEs) ? ' data-es-missing="stem"' : ""}>${bi(norm.label, norm.labelEs)}</p>
         ${renderFamilyTip(familyTipKey)}
         <div class="drag-order-workspace" id="dragorder_${pIdx}" data-correct-order='${esc(JSON.stringify(norm.correctOrder))}' data-initial-order='${esc(JSON.stringify(shuffledSteps))}'>
           <div class="drag-order-list" id="orderlist_${pIdx}">
@@ -707,11 +748,11 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
       const items = norm.items || [];
       content = `
       <div class="problem-body">
-        <p class="problem-stem">${esc(norm.label)}</p>
+        <p class="problem-stem"${esMissing(norm.label, norm.labelEs) ? ' data-es-missing="stem"' : ""}>${bi(norm.label, norm.labelEs)}</p>
         ${renderFamilyTip(familyTipKey)}
         ${
           norm.hints?.length
-            ? `<div class="family-hint-box">${norm.hints.map((h) => `<p>💡 ${esc(h)}</p>`).join("")}</div>`
+            ? `<div class="family-hint-box">${norm.hints.map((h, hIdx) => `<p>💡 ${bi(h, norm.hintsEs?.[hIdx])}</p>`).join("")}</div>`
             : ""
         }
         <div class="drag-sort-workspace" id="dragsort_${pIdx}">
@@ -760,6 +801,8 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
     }
   } else if (type === "fill-table") {
     const label = it.label || it.instructions || "Complete the table.";
+    const labelEs =
+      it.labelEs || it.instructionsEs || (it.label || it.instructions ? "" : "Completa la tabla.");
 
     let headers = [];
     let rowsData = [];
@@ -798,7 +841,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
 
     content = `
       <div class="problem-body">
-        <p class="problem-stem">${esc(label)}</p>
+        <p class="problem-stem"${esMissing(label, labelEs) ? ' data-es-missing="stem"' : ""}>${bi(label, labelEs)}</p>
         ${renderFamilyTip("fill-table")}
         <div class="table-responsive">
           <table class="fill-table">
@@ -846,6 +889,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
     // Canonical schema (see ERROR_ANALYSIS_SCHEMA in generate-worksheets.mjs):
     // errorStep (0-based) + correctWork + optional explanation (the "why").
     const title = it.title || "Analyze the worked steps";
+    const titleEs = it.titleEs || (it.title ? "" : "Analiza los pasos resueltos");
     const workedExample = it.workedExample || [];
     const errorStep = it.errorStep !== undefined ? it.errorStep : 0;
     const correctWork = it.correctWork || "";
@@ -853,8 +897,11 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
 
     content = `
       <div class="problem-body">
-        <h3 class="error-analysis-title">⚠️ ${esc(title)}</h3>
-        <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
+        <h3 class="error-analysis-title"${esMissing(title, titleEs) ? ' data-es-missing="title"' : ""}>⚠️ ${bi(title, titleEs)}</h3>
+        <p class="problem-stem">${bi(
+          "Review the steps below. Identify which step contains the error, and explain why.",
+          "Revisa los pasos de abajo. Identifica cuál paso tiene el error y explica por qué.",
+        )}</p>
         ${renderFamilyTip("error-analysis")}
         
         <div class="clipboard-box">
@@ -899,13 +946,15 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
     `;
   } else if (type === "open-response") {
     const prompt = it.prompt || "";
+    const promptEs = it.promptEs || it.stemEs || "";
     const sentenceFrame = it.sentenceFrame || "";
+    const sentenceFrameEs = it.sentenceFrameEs || "";
     const keywords = it.keywords || [];
     const minLength = it.minLength || 15;
 
     content = `
       <div class="problem-body">
-        <p class="problem-stem">${esc(prompt)}</p>
+        <p class="problem-stem"${esMissing(prompt, promptEs) ? ' data-es-missing="stem"' : ""}>${bi(prompt, promptEs)}</p>
         ${renderFamilyTip("open-response")}
         
         ${
@@ -3210,6 +3259,15 @@ function playCheckSound(isCorrect) {
   }
 }
 
+/* Feedback text is built in JS, so it cannot use the .lang-en/.lang-es span
+   pair the rest of the page toggles. Pick the language the family is actually
+   reading; fall back to English whenever no Spanish was authored. */
+function pickLangText(en, es) {
+  const esText = (es || "").trim();
+  if (esText && document.body.classList.contains("lang-mode-es")) return esText;
+  return en || "";
+}
+
 function checkProblem(idx, options) {
   const silent = options && options.silent;
   const section = document.getElementById("problem_" + idx);
@@ -3227,7 +3285,7 @@ function checkProblem(idx, options) {
       const container = section.querySelector(".mc-options");
       const selected = container.querySelector("input[type='radio']:checked");
       const correctIdx = container.dataset.correct;
-      const explanation = container.dataset.explanation;
+      const explanation = pickLangText(container.dataset.explanation, container.dataset.explanationEs);
       
       // Reset radio option styles
       const labels = container.querySelectorAll(".mc-option-label");
@@ -3455,7 +3513,7 @@ function checkProblem(idx, options) {
   if (!feedbackMessage) {
     if (type === "multiple-choice") {
       const container = section.querySelector(".mc-options");
-      const explanation = container?.dataset.explanation || "";
+      const explanation = pickLangText(container?.dataset.explanation, container?.dataset.explanationEs);
       if (isProblemCorrect) {
         feedbackMessage = explanation
           ? "Correct! " + explanation
