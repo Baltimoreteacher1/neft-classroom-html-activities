@@ -9,19 +9,31 @@
      • Idempotent: re-running (or double-injection) is a no-op.
      • Never touches the page's own globals, inputs, or buildReport().
 
-   WHY THIS EXISTS: Level 2 students generally self-start on these projects.
-   Level 0 and Level 1 students stall at the "what do we actually do first"
-   moment, and pairing them up only helps if both partners know what their job
-   is. This layer gives each step an explicit partner script.
+   WHY THIS EXISTS: pairing students only helps if both partners know what
+   their job is. This layer gives every work step an explicit partner script,
+   pitched differently per level.
 
    LEVEL GATING (L0 < L1 < L2, see the pages' own .lvl0-only / .lvl1-only):
-     • body.level-0 → full script: named roles, one concrete move each, a
-       worked "watch first" line, and sentence starters.
-     • body.level-1 → lighter script: roles + compare-and-explain prompts.
-     • body.level-2 → nothing renders. The dock is not built at all.
+     • body.level-0 → full 5-move script, a worked "watch first" line, and the
+       card AUTO-OPENS the first time the student lands on each step.
+     • body.level-1 → 4-move answer-alone-then-compare script.
+     • body.level-2 → 4-move argument script (trade papers, argue the other
+       answer). Level 2 does not need procedure, it needs to be pushed past
+       "we agreed, we're done".
 
    Roles ALTERNATE by step so the same student is not always the one holding
    the pencil — Driver enters the numbers, Checker re-reads and questions.
+
+   Per-project coaching comes from projects-partner-config.json (keyed by
+   pathname): a "watch out" line naming the mistake THIS project produces and
+   a partner question only that project's math makes sense of. A page with no
+   entry keeps the generic script; a failed fetch never blocks rendering.
+
+   WARM-UP RELOCATION: the .pki-hero "Try it first" challenge is injected at
+   the top of step 1. At Level 2 that is a good hook; at Level 0/1 it is a
+   cold-start barrier in front of the students least able to self-start. At
+   those levels it is moved to the last WORK step and re-badged "Extra
+   practice". Reversible — switching to Level 2 puts it back.
    ========================================================================== */
 (function () {
   "use strict";
@@ -122,8 +134,53 @@
     es: "¿No saben cómo empezar? Abran primero el ejemplo resuelto que está arriba de este paso y copien juntos su primera línea antes de probar con sus propios números.",
   };
 
+  /* Level 2 does not need to be told how to start — it needs to be pushed past
+     "we agreed, we're done". These moves are argument work, not procedure. */
+  var L2_MOVES = [
+    {
+      en: "Solve it separately, then trade papers before you talk.",
+      es: "Resuélvanlo por separado y después intercambien hojas antes de hablar.",
+    },
+    {
+      en: "Find one thing your partner did that you did not. Was it better?",
+      es: "Encuentra algo que tu compañero hizo y tú no. ¿Fue mejor?",
+    },
+    {
+      en: "Argue the OTHER answer on purpose, even if you think yours is right.",
+      es: "Defiende a propósito la OTRA respuesta, aunque creas que la tuya es correcta.",
+    },
+    {
+      en: "Agree on the answer you can defend with numbers, not the one you like.",
+      es: "Pónganse de acuerdo en la respuesta que puedan defender con números, no en la que les gusta.",
+    },
+  ];
+
   function movesFor(lvl) {
-    return lvl === 0 ? L0_MOVES : L1_MOVES;
+    if (lvl === 0) return L0_MOVES;
+    if (lvl === 1) return L1_MOVES;
+    return L2_MOVES;
+  }
+
+  /* Per-project coaching, fetched once. A page with no entry keeps the generic
+     script — never blocks rendering on the network. */
+  var projectCfg = null;
+
+  function loadConfig() {
+    try {
+      return fetch("/shared/projects/projects-partner-config.json", { credentials: "same-origin" })
+        .then(function (r) {
+          return r.ok ? r.json() : null;
+        })
+        .then(function (j) {
+          projectCfg = (j && j.pages && j.pages[location.pathname]) || null;
+          return projectCfg;
+        })
+        .catch(function () {
+          return null;
+        });
+    } catch (e) {
+      return Promise.resolve(null);
+    }
   }
 
   /* ---------- build ------------------------------------------------------ */
@@ -184,6 +241,26 @@
       body.appendChild(watch);
     }
 
+    /* Project-specific coaching. The generic moves above work on any step of
+       any project; these two lines are the only place the widget names the
+       actual mathematics, which is what makes the card worth reading twice. */
+    if (projectCfg && projectCfg.watch) {
+      var pw = document.createElement("p");
+      pw.className = "ntp-watch ntp-watch-project";
+      pw.innerHTML =
+        "<strong>" +
+        bi("Watch out in this project:", "Ojo en este proyecto:") +
+        "</strong> " +
+        bi(projectCfg.watch.en, projectCfg.watch.es);
+      body.appendChild(pw);
+    }
+    if (projectCfg && projectCfg.ask) {
+      var pa = document.createElement("p");
+      pa.className = "ntp-ask";
+      pa.innerHTML = bi(projectCfg.ask.en, projectCfg.ask.es);
+      body.appendChild(pa);
+    }
+
     var starters = document.createElement("details");
     starters.className = "ntp-starters";
     var sSum = document.createElement("summary");
@@ -207,13 +284,147 @@
     return true;
   }
 
+  /* ---------- warm-up relocation (Level 0 / Level 1) ----------------------
+     The interactive hero (`.pki-hero`, "Try it first") is injected at the TOP
+     of step 1, so it is the first thing on the page. At Level 2 that is a good
+     hook. At Level 0/1 it is a cold-start barrier: a multi-stage challenge
+     before any instruction, aimed at exactly the students least able to
+     self-start — so they stall before the project even begins.
+
+     Move it to the LAST work step and re-badge it as practice AFTER the
+     project. The content is kept, only its position and framing change; at
+     Level 2 it is left exactly where it is. Reversible: we stash the original
+     parent so a level switch can put it back. */
+  var heroHome = null;
+
+  /* The submit step. The pages carry no data-finish hook and no .finish-panel
+     class — the only reliable signals are a submit/finish control and the
+     heading text (bilingual, so match both languages). Getting this wrong puts
+     coaching and the warm-up on the "Finish & Submit" screen where there is no
+     math to work on. */
+  function isSubmitPanel(panel) {
+    try {
+      if (panel.querySelector("[data-finish], .finish-panel")) return true;
+      var head = (panel.querySelector("h2, h3, .step-title") || {}).textContent || "";
+      if (/finish|submit|terminar|enviar/i.test(head)) return true;
+      var btns = panel.querySelectorAll("button, input[type=submit]");
+      for (var i = 0; i < btns.length; i++) {
+        var t = (btns[i].textContent || btns[i].value || "").trim();
+        if (/^(submit|finish|turn in|enviar|terminar)/i.test(t)) return true;
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /* Last panel a pair actually does math on. */
+  function lastWorkPanel() {
+    var panels = document.querySelectorAll(".step-panel");
+    for (var i = panels.length - 1; i >= 0; i--) {
+      if (!isSubmitPanel(panels[i])) return panels[i];
+    }
+    return null;
+  }
+
+  function moveWarmUp(lvl) {
+    try {
+      var hero = document.querySelector(".pki-hero");
+      if (!hero) return;
+
+      if (lvl > 1) {
+        // Level 2 — restore to the top of step 1 if we previously moved it.
+        if (heroHome && heroHome.parent && hero.dataset.ntpMoved) {
+          heroHome.parent.insertBefore(hero, heroHome.parent.firstChild);
+          delete hero.dataset.ntpMoved;
+          restoreBadge(hero);
+        }
+        return;
+      }
+
+      if (hero.dataset.ntpMoved) return;
+
+      if (document.querySelectorAll(".step-panel").length < 2) return;
+      var target = lastWorkPanel();
+      if (!target || target.contains(hero)) return;
+
+      heroHome = { parent: hero.parentNode };
+      target.appendChild(hero);
+      hero.dataset.ntpMoved = "1";
+      rebadge(hero);
+    } catch (e) {}
+  }
+
+  function rebadge(hero) {
+    try {
+      var badge = hero.querySelector(".pki-hero-badge");
+      if (badge) {
+        if (!badge.dataset.ntpOrig) badge.dataset.ntpOrig = badge.textContent;
+        badge.textContent = "Extra practice";
+      }
+      var sub = hero.querySelector(".pki-hero-intro");
+      if (sub && !sub.dataset.ntpOrig) {
+        sub.dataset.ntpOrig = sub.innerHTML;
+        sub.innerHTML =
+          bi(
+            "Finished the project? Try this challenge with your partner.",
+            "¿Terminaron el proyecto? Prueben este reto con su compañero.",
+          ) +
+          "<br>" +
+          sub.dataset.ntpOrig;
+      }
+    } catch (e) {}
+  }
+
+  function restoreBadge(hero) {
+    try {
+      var badge = hero.querySelector(".pki-hero-badge");
+      if (badge && badge.dataset.ntpOrig) badge.textContent = badge.dataset.ntpOrig;
+      var sub = hero.querySelector(".pki-hero-intro");
+      if (sub && sub.dataset.ntpOrig) {
+        sub.innerHTML = sub.dataset.ntpOrig;
+        delete sub.dataset.ntpOrig;
+      }
+    } catch (e) {}
+  }
+
+  /* ---------- pop-up behaviour --------------------------------------------
+     At Level 0 the card auto-opens the first time a student lands on a step,
+     so the routine surfaces without them having to know to tap it. After that
+     it stays collapsed (per step, per session) so it never nags. Level 1 and
+     Level 2 open it themselves. */
+  var entrySeen = {};
+  var entryWatching = false;
+
+  function watchStepEntry(lvl) {
+    if (lvl !== 0 || entryWatching) return;
+    entryWatching = true;
+    try {
+      var obs = new MutationObserver(function (muts) {
+        for (var i = 0; i < muts.length; i++) {
+          var t = muts[i].target;
+          if (!t.classList || !t.classList.contains("step-panel")) continue;
+          if (!t.classList.contains("active")) continue;
+          var id = t.id || "step";
+          if (entrySeen[id]) continue;
+          entrySeen[id] = 1;
+          var card = t.querySelector(".ntp-card");
+          if (card) card.open = true;
+        }
+      });
+      document.querySelectorAll(".step-panel").forEach(function (p) {
+        obs.observe(p, { attributes: true, attributeFilter: ["class"] });
+      });
+    } catch (e) {}
+  }
+
   function mount() {
     try {
       if (!document.body || !document.body.classList.contains("pro-projects")) return;
       if (document.body.dataset[MOUNT_FLAG]) return;
 
       var lvl = level();
-      if (lvl === null || lvl > 1) return; // Level 2 gets nothing.
+      if (lvl === null) return;
 
       var panels = document.querySelectorAll(".step-panel");
       if (!panels.length) return;
@@ -221,10 +432,12 @@
       var built = 0;
       for (var i = 0; i < panels.length; i++) {
         /* Skip the final submit/finish panel — there is no math to pair on. */
-        if (panels[i].querySelector("[data-finish], .finish-panel")) continue;
+        if (isSubmitPanel(panels[i])) continue;
         if (buildPanel(panels[i], i, lvl)) built++;
       }
       if (built) document.body.dataset[MOUNT_FLAG] = "1";
+      moveWarmUp(lvl);
+      watchStepEntry(lvl);
     } catch (e) {
       /* Never let coaching break the project. */
     }
@@ -250,11 +463,28 @@
   }
 
   function boot() {
+    /* Render immediately with the generic script so a slow or failed config
+       fetch can never leave a student with no guidance, then re-render once
+       the project-specific lines arrive. */
     mount();
     watchLevel();
+    loadConfig().then(function (cfg) {
+      if (!cfg) return;
+      rebuild();
+    });
     /* Safety net: some pages build their step panels from script after
        DOMContentLoaded. One late retry, then stop. */
     setTimeout(mount, 900);
+  }
+
+  function rebuild() {
+    try {
+      document.querySelectorAll(".ntp-card").forEach(function (n) {
+        n.remove();
+      });
+      delete document.body.dataset[MOUNT_FLAG];
+      mount();
+    } catch (e) {}
   }
 
   if (document.readyState === "loading") {
