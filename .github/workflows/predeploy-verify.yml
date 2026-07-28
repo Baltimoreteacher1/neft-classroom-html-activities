@@ -9,12 +9,17 @@ name: Pre-Deploy Gate
 # and has historically reverted production — see CLAUDE.md). Instead, this
 # workflow GATES what is allowed to reach `main`, in strict order:
 #
-#   1. validate  — repo static + reveal-math + hub-lock checks
-#   2. build     — full Vite production build must succeed
-#   3. claude-predeploy-verify — read-only Claude deploy-readiness review
+#   1. validate-and-build — repo static + reveal-math + hub-lock checks, then
+#      the full Vite production build (sequential steps in one job)
+#   2. claude-predeploy-verify — read-only Claude deploy-readiness review
 #
-# Each stage `needs` the previous one, so Claude only runs after validate+build
-# pass, and the gate only goes green if all three pass. Wire these as REQUIRED
+# Claude `needs` the validate-and-build job, and within that job a failing step
+# aborts the rest, so the strict order still holds: nothing builds unless
+# validation passed, and Claude never runs unless both did. The gate only goes
+# green if every stage passes. Kept to two jobs on purpose — GitHub bills each
+# job rounded up to a whole minute, so extra jobs cost real allowance.
+#
+# Wire these as REQUIRED
 # status checks on `main` (branch protection) so a failing gate blocks the merge
 # that would otherwise trigger the Cloudflare deploy. Deployment therefore runs
 # last, and only when every prior check passes.
@@ -39,9 +44,14 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # ── Stage 1: validation must pass ───────────────────────────────────────────
-  validate:
-    name: Validate
+  # ── Stages 1+2: validation then build, in ONE job ───────────────────────────
+  # These were two jobs, each repeating checkout + setup-node + `npm ci`. GitHub
+  # bills every job rounded up to a full minute, so the split cost a guaranteed
+  # extra minute per run (plus a second dependency install) to buy nothing:
+  # steps within a job already run in order, and a failing step aborts the job,
+  # so "build only runs if validate passed" still holds exactly as before.
+  validate-and-build:
+    name: Validate and build
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -54,31 +64,19 @@ jobs:
       - run: npm ci
       - name: Static + reveal-math + hub-lock validation
         run: npm run validate
-
-  # ── Stage 2: build must pass (only after validate) ──────────────────────────
-  build:
-    name: Build
-    needs: validate
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-          cache: npm
-      - run: npm ci
       - name: Vite production build
         run: npm run build
 
-  # ── Stage 3: Claude deploy-readiness review (only after validate + build) ────
+  # ── Stage 2: Claude deploy-readiness review (only after validate + build) ────
+  # Deliberately still its own job: it needs `id-token: write` and
+  # `pull-requests: read`, and folding it in would widen those onto the build
+  # steps for no saving beyond the one minute already recovered above.
   claude-predeploy-verify:
     name: Claude pre-deploy verification
-    needs: build
+    needs: validate-and-build
     # claude-code-action only supports PR / comment contexts ("Unsupported event
     # type: push"), and PRs are where this gate blocks a merge to main anyway.
-    # On direct pushes to main, validate + build still run; this stage is skipped.
+    # On direct pushes to main, validate-and-build still runs; this stage is skipped.
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     # Read-only: Claude inspects the change but must not write, commit, or deploy.

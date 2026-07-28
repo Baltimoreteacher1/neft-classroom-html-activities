@@ -7,11 +7,18 @@ name: master-copy-guard
 # re-introduced the retired Vercel Forms launcher. This job turns either regression
 # into a red build so the master copy can only be ADDED to, never clobbered.
 
+# Scoped to the ONE file this job inspects. It only greps curriculum/index.html,
+# but it used to run on every push to main — and with the frequent auto-commit
+# automation only ~54 of 482 commits in a sample window actually touched that
+# file. Since GitHub bills each job rounded up to a full minute, ~89% of these
+# runs were a paid minute spent re-checking a file that had not changed.
 on:
   push:
     branches: [main]
+    paths: ["curriculum/index.html"]
   pull_request:
     branches: [main]
+    paths: ["curriculum/index.html"]
 
 # Cancel a superseded run when the frequent auto-commit automation pushes again.
 concurrency:

@@ -2,11 +2,25 @@
 
 Recommended target branch: `main`.
 
+> **Not currently actionable.** Branch protection and rulesets require GitHub Pro
+> for private repositories; this repo is private on the Free plan, so the API
+> returns 403 and none of the settings below can be applied today. Keep this as
+> the target to adopt if the account ever moves to Pro or the repo goes public.
+
 ## Required Checks
 
-- `Validate` from `.github/workflows/validate.yml`
-- `master-copy-guard` from `.github/workflows/master-copy-guard.yml`
-- `Codex Verify / Validate, build, and run Codex checks` from `.github/workflows/codex-verify.yml`
+- `Pre-Deploy Gate / Validate and build` from `.github/workflows/predeploy-verify.yml`
+- `Pre-Deploy Gate / Claude pre-deploy verification` from the same workflow
+- `master-copy-guard` from `.github/workflows/master-copy-guard.yml` — note this
+  workflow is scoped to changes touching `curriculum/index.html`, so it will not
+  report on PRs that do not modify that file; do not mark it "required" without
+  accounting for that.
+
+`validate.yml` and `codex-verify.yml` were removed on 2026-07-28 (Actions-minutes
+reduction — see the header comment in `predeploy-verify.yml`). Their coverage now
+lives in the Pre-Deploy Gate on PRs and in the local `.git/hooks/pre-push` QA loop
+on every push. Local Codex verification remains available as
+`scripts/codex/codex-verify.sh`.
 
 ## Recommended Settings
 
