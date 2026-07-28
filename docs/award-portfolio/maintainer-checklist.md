@@ -53,9 +53,25 @@ Do **not** hand-edit `data/curriculum-manifest.json` or
    and the recommendation rules treat it that way.
 3. If the activity has its own existing store and you do not want to change it,
    write a **read-only adapter** instead — see
-   `shared/evidence/adapters/number-realm-adapter.js` for the pattern. Encode
-   the described value in the `eventId` (`nr:mastery:6.AT.1:5/7`) so re-running
-   `sync()` is idempotent.
+   `shared/evidence/adapters/` for four worked examples. Encode the described
+   value in the `eventId` (`nr:mastery:6.AT.1:5/7`) so re-running `sync()` is
+   idempotent. `collect()` may return an array or a Promise of one; the
+   Thinking Trails adapter is the async example (it reads IndexedDB).
+
+   Three rules an adapter must follow, each of which has a test:
+
+   - **Never write to the store you wrap.** Assert the source is byte-identical
+     after a sync, the way the Number Realm adapter's test does.
+   - **Never report a field the source does not actually contain.** If a record
+     names a unit but not a standard, emit `unitId` and leave `standardIds`
+     empty. Filling the gap with a plausible value manufactures evidence the
+     student never generated, and the recommendation rules will then reason
+     from it. A missing score is `null`, never `0`.
+   - **Leave personal data behind.** The evidence layer derives its own
+     pseudonymous learner id. Student names, ESOL levels, IEP/504 markers,
+     teacher names, and raw item content must not cross into an event. Write
+     the assertion — `assessment-adapter.js` enumerates its banned columns
+     explicitly so a new sensitive column upstream is a visible decision.
 4. If the activity has a substantial written response, use the scaffold ladder
    rather than rolling your own frames:
    ```html
