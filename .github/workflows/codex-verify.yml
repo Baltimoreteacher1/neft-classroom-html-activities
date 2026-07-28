@@ -6,13 +6,11 @@ on:
   # runs the full QA loop before any push reaches main, so re-running here on
   # every (often bursty) auto-commit just burns Actions minutes. PR-only.
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 permissions:
   contents: read
 
+# One concurrency block only. There used to be two — YAML keeps the last, so the
+# first was dead config that read as if it were doing something.
 concurrency:
   group: codex-verify-${{ github.ref }}
   cancel-in-progress: true
@@ -41,11 +39,17 @@ jobs:
             npm install --no-audit --no-fund
           fi
 
-      - name: Run repository validation
-        run: npm run validate --if-present
-
-      - name: Build deployable site
-        run: npm run build --if-present
-
-      - name: Run Codex verification
+      # `npm run validate` and `npm run build` are NOT run as steps here.
+      #
+      # scripts/codex/codex-verify.sh already runs both itself (see its closing
+      # `run_npm_script_if_present validate` / `build`), so having them as steps
+      # too meant this single job ran the full validation suite twice and the
+      # full Vite build twice — on a repo with ~2,600 pages and ~1,000 script
+      # files, that is the most expensive duplicated work in CI.
+      #
+      # Coverage is unchanged: the script runs the same two commands and exits
+      # non-zero if either fails. It is also strictly better at reporting,
+      # because it runs every check and totals the failures instead of stopping
+      # at the first one.
+      - name: Run Codex verification (includes validate + build)
         run: scripts/codex/codex-verify.sh
