@@ -1,0 +1,405 @@
+/*
+ * EduWonderLab — Award Portfolio shared surface styles.
+ *
+ * Extends the existing design system (assets/design-tokens.css +
+ * assets/shared.css) rather than replacing it: every colour, radius, and
+ * spacing value below resolves to a token that already existed, with a
+ * fallback so a page that links only this file still renders correctly.
+ *
+ * Scope: the shared product cards, product summaries, Signature Experiences
+ * strip, scaffold ladder, project-flow rail, and judge-mode chrome. These are
+ * the surfaces that must look like one system. Individual products keep their
+ * own identity — nothing here is applied globally.
+ */
+
+.ewl-portfolio {
+  --ewl-card-bg: var(--card, #ffffff);
+  --ewl-ink: var(--ink, #21313f);
+  --ewl-muted: var(--muted, #5f6f80);
+  --ewl-line: var(--line, #d7e2ed);
+  --ewl-accent: var(--teal-ink, #0c6f6b);
+  --ewl-navy: var(--navy, #12355b);
+  --ewl-radius: var(--radius-md, 14px);
+  --ewl-radius-lg: var(--radius-lg, 22px);
+  color: var(--ewl-ink);
+}
+
+/* ---------------------------------------------------------------- headings */
+
+.ewl-section {
+  margin-block: clamp(2rem, 5vw, 3.25rem);
+}
+
+.ewl-section > h2 {
+  margin: 0 0 0.35rem;
+  font-family: var(--font-display, system-ui, sans-serif);
+  font-size: clamp(1.4rem, 3.4vw, 2rem);
+  line-height: 1.15;
+  color: var(--ewl-navy);
+}
+
+.ewl-section > .ewl-lede {
+  max-width: 68ch;
+  margin: 0 0 1.25rem;
+  color: var(--ewl-muted);
+  font-size: 1.02rem;
+  line-height: 1.55;
+}
+
+.ewl-eyebrow {
+  display: block;
+  margin-bottom: 0.3rem;
+  color: var(--ewl-accent);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ----------------------------------------------------------- product cards */
+
+.ewl-product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 310px), 1fr));
+  gap: clamp(0.9rem, 2vw, 1.25rem);
+}
+
+.ewl-product-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: clamp(1.1rem, 2.5vw, 1.5rem);
+  background: var(--ewl-card-bg);
+  border: 1px solid var(--ewl-line);
+  border-top: 5px solid var(--ewl-accent);
+  border-radius: var(--ewl-radius-lg);
+}
+
+.ewl-product-card h3 {
+  margin: 0;
+  font-family: var(--font-display, system-ui, sans-serif);
+  font-size: 1.25rem;
+  line-height: 1.2;
+  color: var(--ewl-navy);
+}
+
+.ewl-product-card .ewl-tagline {
+  margin: 0;
+  color: var(--ewl-ink);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.ewl-product-card .ewl-summary {
+  margin: 0;
+  color: var(--ewl-muted);
+  font-size: 0.94rem;
+  line-height: 1.55;
+}
+
+.ewl-product-card dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.25rem 0.65rem;
+  margin: 0;
+  font-size: 0.88rem;
+}
+
+.ewl-product-card dt {
+  color: var(--ewl-muted);
+  font-weight: 700;
+}
+
+.ewl-product-card dd {
+  margin: 0;
+}
+
+.ewl-product-card .ewl-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 0.65rem;
+}
+
+/* --------------------------------------------------------------- meta chips */
+
+.ewl-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ewl-chip {
+  padding: 0.2rem 0.6rem;
+  background: var(--teal-light, #dff2ee);
+  color: var(--ewl-accent);
+  border: 1px solid var(--ewl-line);
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.ewl-chip[data-tone="audience"] {
+  background: var(--amber-light, #fef7e0);
+  color: var(--amber-ink, #8a5a00);
+}
+
+.ewl-chip[data-tone="neutral"] {
+  background: transparent;
+  color: var(--ewl-muted);
+}
+
+/* ------------------------------------------------------------------ buttons */
+
+.ewl-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1rem;
+  background: var(--ewl-accent);
+  color: #ffffff;
+  border: 1px solid var(--ewl-accent);
+  border-radius: 999px;
+  font-size: 0.94rem;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.ewl-btn:hover,
+.ewl-btn:focus-visible {
+  background: var(--ewl-navy);
+  border-color: var(--ewl-navy);
+  color: #ffffff;
+}
+
+.ewl-btn[data-variant="ghost"] {
+  background: transparent;
+  color: var(--ewl-accent);
+}
+
+.ewl-btn[data-variant="ghost"]:hover,
+.ewl-btn[data-variant="ghost"]:focus-visible {
+  background: var(--teal-light, #dff2ee);
+  color: var(--ewl-navy);
+}
+
+/* A single visible focus treatment across every portfolio surface. */
+.ewl-portfolio :is(a, button, [tabindex]):focus-visible {
+  outline: 3px solid var(--ewl-navy);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* ------------------------------------------------------- numbered step rail */
+
+.ewl-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: ewl-step;
+}
+
+.ewl-steps > li {
+  position: relative;
+  padding: 1rem 1rem 1rem 2.8rem;
+  background: var(--ewl-card-bg);
+  border: 1px solid var(--ewl-line);
+  border-radius: var(--ewl-radius);
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.ewl-steps > li::before {
+  counter-increment: ewl-step;
+  content: counter(ewl-step);
+  position: absolute;
+  top: 0.95rem;
+  left: 0.85rem;
+  display: grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  background: var(--teal-light, #dff2ee);
+  color: var(--ewl-accent);
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 850;
+}
+
+.ewl-steps > li strong {
+  display: block;
+  color: var(--ewl-navy);
+}
+
+/* ------------------------------------------------------------ notice panels */
+
+.ewl-note {
+  padding: 1rem 1.15rem;
+  background: var(--amber-light, #fef7e0);
+  border: 1px solid var(--ewl-line);
+  border-left: 5px solid var(--amber, #f2c15b);
+  border-radius: var(--ewl-radius);
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.ewl-note[data-tone="demo"] {
+  background: #eef3fb;
+  border-left-color: var(--ewl-navy);
+}
+
+.ewl-note[data-tone="limits"] {
+  background: var(--ewl-card-bg);
+  border-left-color: var(--ewl-muted);
+}
+
+.ewl-note h3,
+.ewl-note h2 {
+  margin: 0 0 0.35rem;
+  font-size: 1.02rem;
+  color: var(--ewl-navy);
+}
+
+.ewl-note p:last-child,
+.ewl-note ul:last-child {
+  margin-bottom: 0;
+}
+
+/* -------------------------------------------------------- scaffold ladder UI */
+
+.ewl-ladder {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ewl-ladder > li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.35rem 0.85rem;
+  align-items: start;
+  padding: 0.9rem 1.05rem;
+  background: var(--ewl-card-bg);
+  border: 1px solid var(--ewl-line);
+  border-left: 5px solid var(--ewl-accent);
+  border-radius: var(--ewl-radius);
+}
+
+.ewl-ladder .ewl-rung {
+  display: grid;
+  place-items: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  background: var(--ewl-accent);
+  color: #ffffff;
+  border-radius: 999px;
+  font-weight: 850;
+}
+
+.ewl-ladder h3 {
+  grid-column: 2;
+  margin: 0;
+  font-size: 1.02rem;
+  color: var(--ewl-navy);
+}
+
+.ewl-ladder p {
+  grid-column: 2;
+  margin: 0;
+  color: var(--ewl-muted);
+  font-size: 0.93rem;
+  line-height: 1.5;
+}
+
+.ewl-ladder .ewl-example {
+  grid-column: 2;
+  margin: 0;
+  padding: 0.55rem 0.75rem;
+  background: var(--cream, #f7f4ec);
+  border-radius: var(--radius-sm, 8px);
+  font-family: var(--font-body, system-ui, sans-serif);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+/* ------------------------------------------------------------------- tables */
+
+.ewl-table-wrap {
+  overflow-x: auto;
+}
+
+.ewl-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+.ewl-table :is(th, td) {
+  padding: 0.55rem 0.7rem;
+  border-bottom: 1px solid var(--ewl-line);
+  text-align: left;
+  vertical-align: top;
+}
+
+.ewl-table th {
+  color: var(--ewl-navy);
+  font-weight: 800;
+}
+
+.ewl-table caption {
+  margin-bottom: 0.5rem;
+  color: var(--ewl-muted);
+  font-size: 0.9rem;
+  text-align: left;
+}
+
+/* ---------------------------------------------------------- states + print */
+
+.ewl-empty,
+.ewl-loading {
+  padding: 1rem 1.15rem;
+  color: var(--ewl-muted);
+  border: 1px dashed var(--ewl-line);
+  border-radius: var(--ewl-radius);
+  font-size: 0.95rem;
+}
+
+.ewl-error {
+  padding: 1rem 1.15rem;
+  background: var(--error-bg, #fef0ec);
+  color: var(--error, #b64e2f);
+  border: 1px solid var(--error, #b64e2f);
+  border-radius: var(--ewl-radius);
+  font-size: 0.95rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ewl-portfolio * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+@media print {
+  .ewl-portfolio .ewl-actions,
+  .ewl-portfolio .ewl-btn {
+    display: none;
+  }
+
+  .ewl-product-card,
+  .ewl-steps > li,
+  .ewl-ladder > li {
+    break-inside: avoid;
+    border-color: #999999;
+  }
+}

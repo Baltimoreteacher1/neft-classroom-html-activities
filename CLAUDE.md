@@ -204,3 +204,30 @@ A repeatable, conservative build → audit → fix → retest loop, defined in
   same failure repeats and needs human judgment, or when the only fix left would
   be a risky structural change — then produce the final report from
   `.claude/loop.md`.
+
+---
+
+## Award Portfolio Layer
+
+Six connected products (Number Realm, Language Bridge, Design Studio,
+Personalized Math Path, Grade 6 Curriculum System, Teacher Studio) presented as
+views of one platform. See [`docs/award-portfolio/architecture.md`](docs/award-portfolio/architecture.md)
+for the schemas and [`docs/award-portfolio/maintainer-checklist.md`](docs/award-portfolio/maintainer-checklist.md)
+before adding a lesson, activity, or product.
+
+**Monster Math Academy is out of scope.** It stays live and unmodified at
+`/curriculum/monster-math-academy/`; it is not in the product registry, not in
+Signature Experiences, and not a dependency. `validate:registries` and
+`validate:public-security` both fail if that changes.
+
+Two new checks run as part of `npm run validate`:
+
+| Command | What it does |
+| --- | --- |
+| `npm run validate:registries` | Canonical curriculum registry + product registry integrity: duplicate/conflicting ids, malformed or unknown standards, standards assigned to the wrong unit, missing learning targets and language objectives, unresolvable routes and resources, dangling aliases, redirect cycles, incomplete product metadata, and the scope exclusion. Writes `reports/registry-validation.md` on every run. |
+| `npm run validate:public-security` | Regression guard for the public-route security posture: the Command Center's dev-host gate and escaping, no unauthenticated roster on any published page, judge mode's synthetic-only isolation and determinism, and the support profile's banned-field ban. |
+
+`npm run generate-canonical-registry` rebuilds `data/curriculum-canonical.json`
+(also part of `npm run curriculum:rebuild`). It is generated — do not hand-edit.
+`data/product-registry.json` is hand-maintained and is the single source for
+every product card on the site.

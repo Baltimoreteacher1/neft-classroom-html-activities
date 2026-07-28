@@ -675,7 +675,12 @@
             margin-top: 16px;
           "
         >
-          <!-- Card: Student Progress Monitor -->
+          <!-- Card: Save/Resume roster pointer.
+               The live student roster table that used to render here was removed
+               on purpose: this page is published to the public production site,
+               and a name + resume-code table has no safe place on an unauthenticated
+               route. Roster data now lives only in the teacher gradebook, which is
+               reached through the existing teacher-key flow. -->
           <div
             class="note-panel"
             style="
@@ -686,74 +691,26 @@
               box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             "
           >
-            <div
+            <h3
               style="
+                font-size: 1.1rem;
+                margin: 0 0 10px;
+                color: var(--navy);
                 display: flex;
-                justify-content: space-between;
                 align-items: center;
-                margin-bottom: 16px;
-                flex-wrap: wrap;
-                gap: 10px;
+                gap: 6px;
               "
             >
-              <h3
-                style="
-                  font-size: 1.1rem;
-                  margin: 0;
-                  color: var(--navy);
-                  display: flex;
-                  align-items: center;
-                  gap: 6px;
-                "
-              >
-                👥 Student Save/Resume Monitor
-              </h3>
-              <input
-                type="text"
-                id="progress-search"
-                placeholder="Search by name, code, or class..."
-                oninput="filterProgressTable()"
-                style="
-                  padding: 6px 12px;
-                  font-size: 0.85rem;
-                  border: 1px solid var(--line);
-                  border-radius: 6px;
-                  width: 220px;
-                  outline: none;
-                  background: var(--surface);
-                "
-              />
-            </div>
-            <div style="overflow-x: auto">
-              <table
-                id="progress-table"
-                style="
-                  width: 100%;
-                  border-collapse: collapse;
-                  font-size: 0.88rem;
-                  text-align: left;
-                "
-              >
-                <thead>
-                  <tr
-                    style="
-                      border-bottom: 2px solid var(--line);
-                      color: var(--muted);
-                      font-weight: 700;
-                    "
-                  >
-                    <th style="padding: 8px 12px">Class Section</th>
-                    <th style="padding: 8px 12px">Student</th>
-                    <th style="padding: 8px 12px">Resume Code</th>
-                    <th style="padding: 8px 12px">Progress</th>
-                    <th style="padding: 8px 12px">Last Saved</th>
-                  </tr>
-                </thead>
-                <tbody id="progress-table-body">
-                  <!-- Populated dynamically -->
-                </tbody>
-              </table>
-            </div>
+              👥 Student Save/Resume Records
+            </h3>
+            <p style="font-size: 0.9rem; line-height: 1.5; color: var(--muted); margin: 0 0 12px;">
+              Student names and resume codes are never rendered on this page. Open
+              the teacher gradebook to review save/resume records behind the
+              existing teacher-key check.
+            </p>
+            <a class="button-link" href="/teacher-tools/gradebook/" style="margin: 0;"
+              >Open Teacher Gradebook</a
+            >
           </div>
 
           <!-- Card: Build & Asset Size Analyzer -->
@@ -837,7 +794,98 @@
     <script>
       const SERVER_URL = "http://localhost:3030";
       let eventSource = null;
-      let studentProgressCache = [];
+
+      /* ------------------------------------------------------------------
+       * Development-only gate.
+       *
+       * Everything below this line drives an OPTIONAL local Node helper
+       * (tools/command-center-server.mjs) that can run repository npm scripts,
+       * stream their stdout, and read QA log files. That is a developer
+       * workstation feature, so it must never run — or advertise itself — on
+       * the published site. Production visitors get the static workspace
+       * overview above and nothing else.
+       *
+       * The page is considered a dev host only when it is actually being served
+       * from a loopback/LAN-dev origin. There is no query-string escape hatch:
+       * a `?dev=1` style flag on the public origin would re-expose the surface
+       * to anyone who guessed it.
+       * ------------------------------------------------------------------ */
+      function isDevHost() {
+        try {
+          // One-way override: `?ewlProduction=1` can only FORCE the restricted
+          // posture, never grant the dev one. It exists so the browser test
+          // suite — which necessarily runs against a localhost preview server —
+          // can assert what a public visitor sees. There is deliberately no
+          // flag in the other direction.
+          if (/[?&]ewlProduction=1\b/.test(location.search)) return false;
+
+          const h = location.hostname;
+          return (
+            h === "localhost" ||
+            h === "127.0.0.1" ||
+            h === "[::1]" ||
+            h === "::1" ||
+            h === "0.0.0.0" ||
+            h.endsWith(".localhost") ||
+            h.endsWith(".local")
+          );
+        } catch (_e) {
+          return false;
+        }
+      }
+
+      /* Server responses come from a process outside this page's trust
+       * boundary, so every value interpolated into markup is escaped. */
+      function ccEscape(value) {
+        return String(value == null ? "" : value).replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[c],
+        );
+      }
+
+      /* Production posture: strip the dev-only sections out of the DOM (not just
+       * hide them), and replace the "connecting…" claim with an honest note. */
+      function applyProductionPosture() {
+        ["terminal-section", "tool-selector-section", "admin-dashboards"].forEach(
+          function (id) {
+            const el = document.getElementById(id);
+            if (el && el.parentNode) el.parentNode.removeChild(el);
+          },
+        );
+
+        const statusPanel = document.getElementById("status-panel");
+        if (statusPanel) {
+          statusPanel.innerHTML = `
+            <p style="font-weight: 700; font-size: 0.95rem; color: var(--navy);">
+              🧰 Build tools run on a workstation, not in the browser
+            </p>
+            <p style="font-size: 0.88rem; margin-top: 4px; color: var(--muted); line-height: 1.4;">
+              The build, audit, packaging, and QA scripts described below are
+              repository commands. They are available to a maintainer running the
+              project locally and are intentionally not executable from the public
+              site. For classroom work, use
+              <a href="/teacher-tools/">Teacher Tools</a>.
+            </p>
+          `;
+        }
+
+        ["card-build", "card-audit", "card-package", "card-qa"].forEach(function (id) {
+          const foot = document.getElementById(`${id}-foot`);
+          if (foot) {
+            foot.innerHTML =
+              '<span class="cc-disabled-btn" aria-disabled="true">Runs locally only</span>';
+          }
+          const pill = document.getElementById(`${id}-pill`);
+          if (pill) pill.innerText = "Local tool";
+        });
+      }
 
       async function checkServerConnection() {
         try {
@@ -859,7 +907,7 @@
         statusPanel.style.background = "#f0fdf4";
         statusPanel.innerHTML = `
           <p style="color: #166534; font-weight: 700; font-size: 0.95rem;">
-            🟢 Local Command Server Connected (Branch: <code>${data.branch}</code>${data.isDirty ? ' - <span style="color:#b91c1c;">*Dirty Changes Present</span>' : ""})
+            🟢 Local Command Server Connected (Branch: <code>${ccEscape(data.branch)}</code>${data.isDirty ? ' - <span style="color:#b91c1c;">*Dirty Changes Present</span>' : ""})
           </p>
           <p style="font-size: 0.88rem; margin-top: 4px; color: #166534; line-height:1.4;">
             Local Node server is online on port 3030. You can now execute build tasks, run audits, and package handouts directly from your browser.
@@ -889,13 +937,15 @@
         const scriptSelect = document.getElementById("script-select");
         scriptSelect.innerHTML = "";
         data.scripts.sort().forEach((script) => {
-          scriptSelect.innerHTML += `<option value="${script}">${script}</option>`;
+          const safe = ccEscape(script);
+          scriptSelect.innerHTML += `<option value="${safe}">${safe}</option>`;
         });
 
-        // Load logs lists, lessons lists, progress, and bundle sizes
+        // Load logs lists, lessons lists, and bundle sizes. Student roster data
+        // is deliberately not fetched or rendered here — see the Save/Resume
+        // panel note above.
         fetchRecentLogs();
         fetchLessons();
-        fetchStudentProgress();
         fetchBundleSizes();
       }
 
@@ -922,60 +972,6 @@
         document.getElementById("admin-dashboards").style.display = "none";
       }
 
-      async function fetchStudentProgress() {
-        try {
-          const res = await fetch(`${SERVER_URL}/api/student-progress`);
-          if (res.ok) {
-            const data = await res.json();
-            studentProgressCache = data.students || [];
-            renderProgressTable(studentProgressCache);
-          }
-        } catch (e) {
-          console.error("Failed to load student progress:", e);
-        }
-      }
-
-      function renderProgressTable(students) {
-        const body = document.getElementById("progress-table-body");
-        body.innerHTML = "";
-        if (students.length === 0) {
-          body.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 12px; color: var(--muted);">No students found matching your criteria.</td></tr>`;
-          return;
-        }
-        students.forEach((student) => {
-          const lastSavedStr = new Date(student.lastSaved).toLocaleTimeString();
-          body.innerHTML += `
-            <tr style="border-bottom: 1px solid var(--line);">
-              <td style="padding: 10px 12px;"><code>${student.section}</code></td>
-              <td style="padding: 10px 12px; font-weight: 600; color: var(--navy);">${student.name}</td>
-              <td style="padding: 10px 12px;"><span style="background: #eff6ff; color: #1d4ed8; padding: 3px 8px; border-radius: 4px; font-family: var(--font-mono); font-size: 0.82rem; font-weight: 700; border: 1px solid rgba(29, 78, 216, 0.15);">${student.code}</span></td>
-              <td style="padding: 10px 12px; min-width: 140px;">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                  <div style="flex: 1; height: 6px; background: #e4e4e7; border-radius: 3px; overflow: hidden;">
-                    <div style="width: ${student.progress}%; height: 100%; background: ${student.progress === 100 ? "#22c55e" : "#3b82f6"};"></div>
-                  </div>
-                  <span style="font-weight: 600; font-size: 0.8rem; width: 35px; text-align: right;">${student.progress}%</span>
-                </div>
-              </td>
-              <td style="padding: 10px 12px; color: var(--muted);">${lastSavedStr}</td>
-            </tr>
-          `;
-        });
-      }
-
-      function filterProgressTable() {
-        const query = document
-          .getElementById("progress-search")
-          .value.toLowerCase();
-        const filtered = studentProgressCache.filter(
-          (student) =>
-            student.name.toLowerCase().includes(query) ||
-            student.code.toLowerCase().includes(query) ||
-            student.section.toLowerCase().includes(query),
-        );
-        renderProgressTable(filtered);
-      }
-
       async function fetchBundleSizes() {
         try {
           const res = await fetch(`${SERVER_URL}/api/bundle-size`);
@@ -999,7 +995,7 @@
               container.innerHTML += `
                 <div>
                   <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom: 4px;">
-                    <span>📂 <strong>${dir.name}</strong> <small style="color:var(--muted);">(${dir.count} files)</small></span>
+                    <span>📂 <strong>${ccEscape(dir.name)}</strong> <small style="color:var(--muted);">(${Number(dir.count) || 0} files)</small></span>
                     <span style="font-weight: 600; color: var(--navy);">${sizeMB} MB</span>
                   </div>
                   <div style="height: 14px; background: #e4e4e7; border-radius: 4px; overflow: hidden; border: 1px solid var(--line);">
@@ -1057,7 +1053,7 @@
         }
 
         eventSource = new EventSource(
-          `${SERVER_URL}/api/run?script=${scriptName}`,
+          `${SERVER_URL}/api/run?script=${encodeURIComponent(scriptName)}`,
         );
 
         eventSource.onmessage = (event) => {
@@ -1132,13 +1128,22 @@
             }
             data.logs.slice(0, 5).forEach((log) => {
               const date = new Date(log.time).toLocaleString();
-              const size = (log.size / 1024).toFixed(1);
-              list.innerHTML += `
-                <li style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--line); font-size:0.88rem;">
-                  <span>📝 <code>${log.name}</code> (${size} KB) - <small style="color:var(--muted);">${date}</small></span>
-                  <button class="button-link" onclick="viewLogFile('${log.name}')" style="font-size:0.75rem; padding:4px 10px; margin:0;">Open</button>
-                </li>
-              `;
+              const size = (Number(log.size) / 1024).toFixed(1);
+              const li = document.createElement("li");
+              li.setAttribute(
+                "style",
+                "display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--line); font-size:0.88rem;",
+              );
+              li.innerHTML = `<span>📝 <code>${ccEscape(log.name)}</code> (${ccEscape(size)} KB) - <small style="color:var(--muted);">${ccEscape(date)}</small></span>`;
+              const btn = document.createElement("button");
+              btn.className = "button-link";
+              btn.setAttribute("style", "font-size:0.75rem; padding:4px 10px; margin:0;");
+              btn.textContent = "Open";
+              // Bound as a listener rather than an inline onclick string so a
+              // filename containing a quote can never break out into script.
+              btn.addEventListener("click", () => viewLogFile(log.name));
+              li.appendChild(btn);
+              list.appendChild(li);
             });
           }
         } catch (e) {
@@ -1149,7 +1154,7 @@
       async function viewLogFile(fileName) {
         try {
           const res = await fetch(
-            `${SERVER_URL}/api/view-log?file=${fileName}`,
+            `${SERVER_URL}/api/view-log?file=${encodeURIComponent(fileName)}`,
           );
           if (res.ok) {
             const text = await res.text();
@@ -1172,7 +1177,10 @@
             const select = document.getElementById("lesson-select");
             select.innerHTML = "";
             data.lessons.forEach((l) => {
-              select.innerHTML += `<option value="${l.id}">${l.id} - ${l.title}</option>`;
+              const opt = document.createElement("option");
+              opt.value = String(l.id == null ? "" : l.id);
+              opt.textContent = `${l.id} - ${l.title}`;
+              select.appendChild(opt);
             });
           }
         } catch (e) {
@@ -1180,8 +1188,15 @@
         }
       }
 
-      // Poll connection status on page load and every 5 seconds
+      // Poll connection status on page load and every 5 seconds — but only on a
+      // developer workstation. On the published site the local-server surface is
+      // removed from the DOM instead, so nothing probes, nothing claims a
+      // connection status, and no dev-only control ever becomes reachable.
       window.addEventListener("load", () => {
+        if (!isDevHost()) {
+          applyProductionPosture();
+          return;
+        }
         checkServerConnection();
         setInterval(checkServerConnection, 5000);
       });

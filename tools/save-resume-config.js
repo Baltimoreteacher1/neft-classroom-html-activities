@@ -73,6 +73,9 @@ export const SKIP_TOPLEVEL = new Set([
   "write-math", // stateless handwriting-recognition pad — nothing to save
   "ar-measure", // stateless WebXR AR measuring tool — nothing to save
   "class-manip", // shared class dot plot — state lives in the room, not save/resume
+  "teacher-studio", // teacher-facing workflow hub — no student state (same as teacher-tools)
+  "design-studio", // project directory/hub; the projects it links to carry save/resume themselves
+  "judge-mode", // synthetic-only demonstrations — must never create a real save record
 ]);
 
 // Filename patterns that are not student-facing activities.

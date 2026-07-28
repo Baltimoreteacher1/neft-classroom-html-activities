@@ -1,0 +1,196 @@
+/*
+ * EduWonderLab — Writing Scaffold Ladder styles.
+ *
+ * Scoped entirely under .ewl-scaffold so dropping the component into any
+ * existing activity cannot disturb that activity's own layout. Colours resolve
+ * to the shared design tokens with literal fallbacks, so the component looks
+ * right on a page that links only this file.
+ */
+
+.ewl-scaffold {
+  display: grid;
+  gap: 0.85rem;
+  padding: clamp(1rem, 2.5vw, 1.4rem);
+  background: var(--card, #ffffff);
+  border: 1px solid var(--line, #d7e2ed);
+  border-left: 5px solid var(--teal-ink, #0c6f6b);
+  border-radius: var(--radius-md, 14px);
+}
+
+.ewl-scaffold-head {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.ewl-scaffold-eyebrow {
+  margin: 0;
+  color: var(--teal-ink, #0c6f6b);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.ewl-scaffold-prompt {
+  margin: 0;
+  color: var(--navy, #12355b);
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.ewl-scaffold-target {
+  margin: 0;
+  color: var(--muted, #5f6f80);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+/* --- support picker ------------------------------------------------------ */
+
+.ewl-scaffold-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.ewl-scaffold-picker-label {
+  flex: 1 0 100%;
+  margin: 0 0 0.15rem;
+  color: var(--ink, #21313f);
+  font-size: 0.94rem;
+  font-weight: 700;
+}
+
+.ewl-scaffold-rung {
+  padding: 0.45rem 0.85rem;
+  background: var(--cream, #f7f4ec);
+  color: var(--ink, #21313f);
+  border: 1px solid var(--line, #d7e2ed);
+  border-radius: 999px;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  /* Comfortable target on a Chromebook trackpad and a phone alike. */
+  min-height: 2.6rem;
+}
+
+.ewl-scaffold-rung[aria-checked="true"] {
+  background: var(--teal-ink, #0c6f6b);
+  color: #ffffff;
+  border-color: var(--teal-ink, #0c6f6b);
+}
+
+.ewl-scaffold-rung:focus-visible {
+  outline: 3px solid var(--navy, #12355b);
+  outline-offset: 2px;
+}
+
+/* --- the scaffold itself ------------------------------------------------- */
+
+.ewl-scaffold-support {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.85rem 1rem;
+  background: var(--teal-light, #dff2ee);
+  border-radius: var(--radius-sm, 8px);
+}
+
+.ewl-scaffold-hint {
+  margin: 0;
+  color: var(--teal-ink, #0c6f6b);
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.ewl-scaffold-frame {
+  margin: 0;
+  color: var(--ink, #21313f);
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+.ewl-scaffold-words {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ewl-scaffold-words li {
+  padding: 0.2rem 0.6rem;
+  background: #ffffff;
+  border: 1px solid var(--line, #d7e2ed);
+  border-radius: 999px;
+  font-size: 0.86rem;
+  font-weight: 650;
+}
+
+/* --- response ------------------------------------------------------------ */
+
+.ewl-scaffold-response-label {
+  color: var(--ink, #21313f);
+  font-size: 0.94rem;
+  font-weight: 700;
+}
+
+.ewl-scaffold-input {
+  width: 100%;
+  padding: 0.7rem 0.85rem;
+  color: var(--ink, #21313f);
+  background: #ffffff;
+  border: 1px solid var(--line, #d7e2ed);
+  border-radius: var(--radius-sm, 8px);
+  font: inherit;
+  font-size: 1rem;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+.ewl-scaffold-input:focus-visible {
+  outline: 3px solid var(--navy, #12355b);
+  outline-offset: 1px;
+}
+
+.ewl-scaffold-footer {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.ewl-scaffold-note {
+  margin: 0;
+  color: var(--muted, #5f6f80);
+  font-size: 0.84rem;
+}
+
+.ewl-scaffold-note:empty {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ewl-scaffold * {
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* A printed copy shows the question and a writing space — the interactive
+   picker is meaningless on paper. */
+@media print {
+  .ewl-scaffold-picker,
+  .ewl-scaffold-footer {
+    display: none;
+  }
+
+  .ewl-scaffold {
+    border-left-width: 2px;
+    break-inside: avoid;
+  }
+
+  .ewl-scaffold-input {
+    min-height: 8rem;
+  }
+}
