@@ -539,6 +539,13 @@
           focus: 0.25,
           health: 0.1,
         },
+        // Push-up payment ladder, parent-editable in Parent settings. Highest
+        // day requirement first; the kid is paid the first tier they reach.
+        pushupTiers: [
+          { days: 4, total: 5 },
+          { days: 2, total: 2 },
+          { days: 1, total: 0.5 },
+        ],
         dailyCap: 5, // max earnable per day (anti-gaming); 0 = no cap
         weeklyCap: 10, // realistic ceiling on a single week's payout; 0 = none
         bonusPerfectWeek: 1, // bonus when there's activity every weekday Mon–Fri
@@ -743,6 +750,9 @@
         focus: Math.max(0, num(rates.focus, base.rates.focus)),
         health: Math.max(0, num(rates.health, base.rates.health)),
       },
+      pushupTiers: (globalThis.ShaiRewardRules?.normalizePushupTiers || ((t) => t || []))(
+        Array.isArray(r.pushupTiers) && r.pushupTiers.length ? r.pushupTiers : base.pushupTiers,
+      ),
       dailyCap: Math.max(0, num(r.dailyCap, base.dailyCap)),
       weeklyCap: Math.max(0, num(r.weeklyCap, base.weeklyCap)),
       bonusPerfectWeek: Math.max(0, num(r.bonusPerfectWeek, base.bonusPerfectWeek)),
@@ -2629,12 +2639,19 @@
     );
   }
 
+  // The live push-up payment ladder (parent-edited), always normalized.
+  function pushupTiers() {
+    const rules = globalThis.ShaiRewardRules;
+    return rules ? rules.normalizePushupTiers(state.rewards?.pushupTiers) : [];
+  }
+
   function awardPushupReward() {
     const rules = globalThis.ShaiRewardRules;
     if (!rules) return 0;
     const amount = rules.pushupRewardIncrement(
       completedPushupDaysThisWeek(),
       pushupEarningsThisWeek(),
+      state.rewards?.pushupTiers,
     );
     return awardRewardAmount("pushups", "10 push-ups weekly reward", amount);
   }
@@ -6335,11 +6352,18 @@ Due May 31"></textarea>
             .filter(Boolean)
             .join(" · "),
           `<div class="rw-rates">
-            <div class="rw-rate"><span>💪 10 push-ups on 1 day</span><b>$0.50 total</b></div>
-            <div class="rw-rate"><span>💪 10 push-ups on 2 separate days</span><b>$2.00 total</b></div>
-            <div class="rw-rate"><span>💪 10 push-ups on 4 separate days</span><b>$5.00 total</b></div>
+            ${pushupTiers()
+              .slice()
+              .sort((a, b) => a.days - b.days)
+              .map(
+                (t) =>
+                  `<div class="rw-rate"><span>💪 10 push-ups on ${t.days} ${
+                    t.days === 1 ? "day" : "separate days"
+                  }</span><b>${money(t.total)} total</b></div>`,
+              )
+              .join("")}
           </div>
-          <button class="btn primary block" data-act="reward-settings" style="margin-top:10px">🔒 Set parent PIN / settings</button>`,
+          <button class="btn primary block" data-act="reward-settings" style="margin-top:10px">🔒 Change amounts / parent PIN</button>`,
         ) +
         card(
           "pay-paidtotal",
@@ -9884,17 +9908,38 @@ Due May 31"></textarea>
       const r = state.rewards;
       const rate = (id, k) =>
         `<div class="field"><label>${id}</label><input id="rw_${k}" type="number" min="0" step="0.05" value="${r.rates[k]}"></div>`;
+      // Push-up ladder, shown fewest-days first so it reads like the schedule
+      // card. Each row's amount is the FULL weekly total at that many days.
+      const tiers = pushupTiers()
+        .slice()
+        .sort((a, b) => a.days - b.days);
       openModal(
         "Parent settings",
         `<p class="sub">Set what each finished thing is worth, and the weekly limits. Only a grown-up should change these.</p>
         <label class="rw-toggle"><input type="checkbox" id="rwEnabled" ${
           r.enabled ? "checked" : ""
         }> Rewards turned on</label>
+        <h4 style="margin:14px 0 4px">💪 Push-up payment schedule</h4>
+        <p class="sub" style="margin:0 0 8px">Each amount is the whole week's total once Shai hits that many days — not an amount per day.</p>
+        <div class="g2 grid">
+          ${tiers
+            .map(
+              (t, i) =>
+                `<div class="field"><label>10 push-ups on ${t.days} ${
+                  t.days === 1 ? "day" : "days"
+                }</label><input id="rwTier_${i}" type="number" min="0" step="0.25" value="${
+                  t.total
+                }"></div>`,
+            )
+            .join("")}
+        </div>
+        <h4 style="margin:14px 0 4px">Everything else</h4>
         <div class="g2 grid">
           ${rate("Assignment / to-do", "task")}
           ${rate("Reminder", "reminder")}
           ${rate("Routine", "routine")}
           ${rate("Focus session", "focus")}
+          ${rate("Biking / lifting", "health")}
         </div>
         <div class="g2 grid">
           <div class="field"><label>Most per day</label><input id="rwCap" type="number" min="0" step="0.25" value="${
@@ -9926,6 +9971,16 @@ Due May 31"></textarea>
       r.rates.reminder = num("rw_reminder");
       r.rates.routine = num("rw_routine");
       r.rates.focus = num("rw_focus");
+      r.rates.health = num("rw_health");
+      // Read the push-up ladder back in the same fewest-days-first order the
+      // modal rendered it, then re-normalize (which re-sorts highest-first).
+      const tierDays = pushupTiers()
+        .slice()
+        .sort((a, b) => a.days - b.days)
+        .map((t) => t.days);
+      r.pushupTiers = globalThis.ShaiRewardRules.normalizePushupTiers(
+        tierDays.map((days, i) => ({ days, total: num(`rwTier_${i}`) })),
+      );
       r.dailyCap = num("rwCap");
       r.weeklyCap = num("rwWeekCap");
       r.bonusPerfectWeek = num("rwBonus");
