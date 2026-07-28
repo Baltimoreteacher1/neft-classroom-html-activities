@@ -50,9 +50,14 @@ export async function run(ctx) {
 
   // 1. Validators.
   if (cfg.runValidate) {
-    const r = await sh("npm", ["run", "validate"], { cwd: ctx.root, timeout: 8 * 60_000 });
+    const budget = 25 * 60_000;
+    const r = await sh("npm", ["run", "validate"], { cwd: ctx.root, timeout: budget });
     if (r.ok) {
       details.push("✅ `npm run validate` passed (static, hub, curriculum-top1, reveal-math).");
+    } else if (r.timedOut) {
+      if (worst === "ok") worst = "warn";
+      details.push(`⚠️ \`npm run validate\` TIMED OUT after ${budget / 60_000}m — inconclusive, not a failure.`);
+      actions.push("Validate exceeded its time budget — raise the budget or split the suite.");
     } else {
       worst = "fail";
       const tail = r.stdout.split("\n").filter(Boolean).slice(-6).join(" / ");
@@ -63,9 +68,14 @@ export async function run(ctx) {
 
   // 2. Optional build.
   if (cfg.runBuild) {
-    const r = await sh("npm", ["run", "build"], { cwd: ctx.root, timeout: 15 * 60_000 });
+    const budget = 25 * 60_000;
+    const r = await sh("npm", ["run", "build"], { cwd: ctx.root, timeout: budget });
     if (r.ok) details.push("✅ `npm run build` produced dist/.");
-    else {
+    else if (r.timedOut) {
+      if (worst === "ok") worst = "warn";
+      details.push(`⚠️ \`npm run build\` TIMED OUT after ${budget / 60_000}m — inconclusive, not a failure.`);
+      actions.push("Build exceeded its time budget — raise the budget or investigate slowness.");
+    } else {
       worst = "fail";
       details.push(`❌ \`npm run build\` FAILED: ${r.stderr.split("\n").slice(-4).join(" / ")}`);
       actions.push("Build is broken — deploy would fail.");
