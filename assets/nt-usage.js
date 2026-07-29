@@ -43,6 +43,9 @@
   var MAX_ERRORS_PER_PAGE = 3; // a broken render loop must not become a flood
   var MAX_MESSAGE = 300;
   var TEACHER_MODE_KEY = "nt-teacher-mode";
+  var DEDUPE_PREFIX = "nt-usage:seen:";
+  /** Below this, a second view of the same path is a reload, not a revisit. */
+  var REVISIT_WINDOW_MS = 30 * 60 * 1000;
 
   var sent = false;
   var errorCount = 0;
@@ -143,10 +146,38 @@
     }
   }
 
+  /**
+   * Suppress a repeat view of the same path within REVISIT_WINDOW_MS.
+   *
+   * The curriculum hub navigates to itself once during startup, so a single
+   * student visit creates TWO documents — each with its own module instance and
+   * its own `sent` flag — and reported two views. Any counter built on document
+   * lifetime inherits that error, and it is the kind of 2x that quietly makes a
+   * page look twice as popular as it is.
+   *
+   * sessionStorage survives the self-reload but not a new tab, so this collapses
+   * reload storms while still counting a genuine return visit later in the day.
+   * Storage failures fall through to sending: under-counting is a worse failure
+   * than the occasional duplicate.
+   */
+  function recentlyCounted() {
+    try {
+      var key = DEDUPE_PREFIX + path();
+      var last = Number(root.sessionStorage.getItem(key) || 0);
+      var now = Date.now();
+      if (last && now - last < REVISIT_WINDOW_MS) return true;
+      root.sessionStorage.setItem(key, String(now));
+    } catch (_) {
+      /* blocked storage: count it rather than lose it */
+    }
+    return false;
+  }
+
   function sendView() {
     if (sent) return;
     sent = true;
     accumulate();
+    if (recentlyCounted()) return;
     post(VIEW_URL, { path: path(), dwellMs: dwellMs, device: device() });
   }
 
