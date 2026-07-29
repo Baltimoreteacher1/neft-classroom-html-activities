@@ -2722,7 +2722,16 @@
     };
   }
 
-  const isWeekPaid = (weekKey) => (state.rewards.payouts || []).some((p) => p.weekKey === weekKey);
+  // How much has already been handed over for a week. A week can be paid more
+  // than once: a parent may settle mid-week and the kid keeps earning after.
+  const paidForWeek = (weekKey) =>
+    round2(
+      (state.rewards.payouts || [])
+        .filter((p) => p.weekKey === weekKey)
+        .reduce((s, p) => s + (Number(p.amount) || 0), 0),
+    );
+  // What a computed week still owes: everything earned minus what's been paid.
+  const owedForWeek = (w) => Math.max(0, round2(w.total - paidForWeek(w.weekKey)));
 
   // Every distinct week that has any earnings, newest first.
   function earnedWeekKeys() {
@@ -2732,28 +2741,19 @@
     return [...set].sort().reverse();
   }
 
-  // Past weeks (before the current one) with money still owed to the kid.
-  function readyWeeks() {
-    const now = thisWeekKey();
-    return earnedWeekKeys()
-      .filter((wk) => wk < now && !isWeekPaid(wk))
-      .map(computeWeek)
-      .filter((w) => w.total > 0);
-  }
-  // Everything a parent can settle in one go. Payday is a single hand-over of
-  // the whole outstanding balance: every finished unpaid week, plus the current
-  // week once it clears the 4-push-up-day unlock. Oldest week first, so the
-  // paystub reads chronologically.
+  // Everything a parent can settle right now — every week that still owes
+  // money, INCLUDING the current one. Payday is never gated on the day or the
+  // time: the balance can be handed over whenever, and whatever is earned
+  // afterwards just becomes a fresh balance for the same week. Oldest week
+  // first, so the paystub reads chronologically.
   function payableWeeks() {
-    const weeks = readyWeeks();
-    const now = thisWeekKey();
-    if (!isWeekPaid(now) && completedPushupDaysThisWeek() >= 4) {
-      const cur = computeWeek(now);
-      if (cur.total > 0) weeks.push(cur);
-    }
-    return weeks.sort((a, b) => String(a.weekKey).localeCompare(String(b.weekKey)));
+    return earnedWeekKeys()
+      .map(computeWeek)
+      .map((w) => ({ ...w, owed: owedForWeek(w) }))
+      .filter((w) => w.owed > 0)
+      .sort((a, b) => String(a.weekKey).localeCompare(String(b.weekKey)));
   }
-  const payableTotal = () => round2(payableWeeks().reduce((s, w) => s + w.total, 0));
+  const payableTotal = () => round2(payableWeeks().reduce((s, w) => s + w.owed, 0));
 
   const GRADIENTS = [
     ["", "Default Navy"],
@@ -6234,11 +6234,11 @@ Due May 31"></textarea>
           }
           <div class="pay-line pay-total"><span>Total</span><b>${money(w.total)}</b></div></div>`;
 
-      // This week so far — accruing, not payable until the week ends.
+      // This week so far — payable at any moment, like every other week.
       const wk = computeWeek(thisWeekKey());
       const currentPushupDays = completedPushupDaysThisWeek();
-      const currentWeekPaid = isWeekPaid(thisWeekKey());
-      const currentAvailable = currentWeekPaid ? 0 : wk.total;
+      const thisWkPaid = paidForWeek(thisWeekKey());
+      const currentAvailable = owedForWeek(wk);
       const dayChips = [0, 1, 2, 3, 4, 5, 6]
         .map((i) => {
           const d = parseLocal(thisWeekKey());
@@ -6254,10 +6254,10 @@ Due May 31"></textarea>
         })
         .join("");
 
-      // Payday is one hand-over that covers every payable week at once —
-      // finished weeks plus this week when its push-up unlock has cleared. The
-      // per-week buttons stay available (secondary) only when there is more
-      // than one week, so the total button is never a duplicate.
+      // Payday is one hand-over that covers every week with money still owed —
+      // including the current one, on any day at any time. The per-week buttons
+      // stay available (secondary) only when there is more than one week, so
+      // the total button is never a duplicate.
       const ready = payableWeeks();
       const payTotal = payableTotal();
       const thisWk = thisWeekKey();
@@ -6278,22 +6278,29 @@ Due May 31"></textarea>
               <div><b>${
                 w.weekKey === thisWk ? "This week" : `Week of ${weekLabel(w.weekKey)}`
               }</b><small>${w.daysActive} active day${w.daysActive === 1 ? "" : "s"}</small></div>
-              <div class="pay-amt">${money(w.total)}</div>
+              <div class="pay-amt">${money(w.owed)}</div>
             </div>
             ${stub(w)}
+            ${
+              w.owed < w.total
+                ? `<p class="sub" style="margin:8px 0 0">${money(
+                    round2(w.total - w.owed),
+                  )} of this week was already paid.</p>`
+                : ""
+            }
             ${
               ready.length > 1
                 ? `<button class="btn block" data-act="reward-payout" data-arg="${
                     w.weekKey
                   }" style="margin-top:10px">Pay just this ${
                     w.weekKey === thisWk ? "week" : "one"
-                  } — ${money(w.total)}</button>`
+                  } — ${money(w.owed)}</button>`
                 : ""
             }
           </div>`,
             )
             .join("")
-        : `<p class="sub" style="margin:0">Nothing waiting — finished weeks show up here every Monday, ready to hand over. 👍</p>`;
+        : `<p class="sub" style="margin:0">Nothing waiting — everything earned so far has been handed over. 👍</p>`;
 
       const payouts = (r.payouts || [])
         .slice()
@@ -6321,8 +6328,8 @@ Due May 31"></textarea>
           "pay-ready",
           ready.length ? "💵 Ready for payday" : "💵 Payday",
           ready.length
-            ? `${money(payTotal)} to hand over — a grown-up taps to pay it all at once.`
-            : "Finished weeks get added up here automatically.",
+            ? `${money(payTotal)} to hand over — a grown-up taps to pay it all, any day, any time.`
+            : "Earnings add up here automatically, ready to pay out whenever you want.",
           readyHtml,
         ) +
         card(
@@ -6333,14 +6340,22 @@ Due May 31"></textarea>
             <div class="pay-this-amt">${money(currentAvailable)}</div>
             <div class="pay-days">${dayChips}</div>
           </div>
-          ${currentWeekPaid ? "" : wk.total > 0 ? stub(wk) : `<p class="sub" style="text-align:center;margin:8px 0 0">Finish some work to start earning this week.</p>`}
+          ${wk.total > 0 ? stub(wk) : `<p class="sub" style="text-align:center;margin:8px 0 0">Finish some work to start earning this week.</p>`}
           ${
-            currentWeekPaid
-              ? `<p class="note" style="margin:10px 0 0;text-align:center">✅ This week has been paid.</p>`
-              : currentPushupDays >= 4
-                ? `<p class="sub" style="margin:10px 0 0;text-align:center">✅ Unlocked — this week's ${money(wk.total)} is included in the <b>Pay out everything</b> button at the top.</p>`
-                : `<p class="sub" style="margin:10px 0 0;text-align:center">${currentPushupDays} of 4 push-up days complete. The payout button unlocks at 4 days.</p>`
-          }`,
+            thisWkPaid > 0
+              ? `<p class="sub" style="margin:10px 0 0;text-align:center">✅ ${money(
+                  thisWkPaid,
+                )} of this week has already been paid.</p>`
+              : ""
+          }
+          ${
+            currentAvailable > 0
+              ? `<p class="sub" style="margin:10px 0 0;text-align:center">💵 ${money(
+                  currentAvailable,
+                )} is included in the <b>Pay out everything</b> button at the top — payable any day, any time.</p>`
+              : ""
+          }
+          <p class="sub" style="margin:10px 0 0;text-align:center">💪 ${currentPushupDays} of 4 push-up days complete this week — more days pay more.</p>`,
         ) +
         card(
           "pay-rates",
@@ -6895,8 +6910,8 @@ Due May 31"></textarea>
           )}</b> ready for payday — tap to pay out</div>`
         : `<p class="sub" style="margin:0">${
             wk.total > 0
-              ? "Earned so far this week · paid out next Monday."
-              : "Finish your work to start earning · paid out next Monday."
+              ? "Earned so far this week · a grown-up can pay it out any time."
+              : "Finish your work to start earning · payable any time."
           }</p>`;
     return `<section class="card pay-home" data-card="payday" data-act="view-rewards" role="button" tabindex="0" aria-label="Open Payday">
       <div class="head">
@@ -9761,7 +9776,7 @@ Due May 31"></textarea>
     "reward-payout-all": () => {
       const weeks = payableWeeks();
       if (!weeks.length) return;
-      const total = round2(weeks.reduce((s, w) => s + w.total, 0));
+      const total = round2(weeks.reduce((s, w) => s + w.owed, 0));
       if (total <= 0) return;
       const r = state.rewards;
       const now = thisWeekKey();
@@ -9769,8 +9784,8 @@ Due May 31"></textarea>
         .map(
           (w) =>
             `<div class="pay-line"><span>${
-              w.weekKey === now ? "This week" : `Week of ${weekLabel(w.weekKey)}`
-            }</span><b>${money(w.total)}</b></div>`,
+              w.weekKey === now ? "This week so far" : `Week of ${weekLabel(w.weekKey)}`
+            }</span><b>${money(w.owed)}</b></div>`,
         )
         .join("");
       openModal(
@@ -9810,15 +9825,16 @@ Due May 31"></textarea>
       let total = 0;
       let count = 0;
       for (const w of weeks) {
-        if (isWeekPaid(w.weekKey) || w.total <= 0) continue;
+        const owed = owedForWeek(w);
+        if (owed <= 0) continue;
         r.payouts.unshift({
           id: uid("pay"),
           weekKey: w.weekKey,
-          amount: w.total,
+          amount: owed,
           paidAt,
           breakdown: { ...w.by, bonus: w.bonus },
         });
-        total = round2(total + w.total);
+        total = round2(total + owed);
         count++;
       }
       if (total <= 0) return closeModal();
@@ -9832,11 +9848,10 @@ Due May 31"></textarea>
 
     // Pay out one finished week. Opens a parent-gated paystub.
     "reward-payout": (_, weekKey) => {
-      if (!weekKey || isWeekPaid(weekKey)) return;
-      if (weekKey === thisWeekKey() && completedPushupDaysThisWeek() < 4)
-        return toast("Complete four push-up days before payout.");
+      if (!weekKey) return;
       const w = computeWeek(weekKey);
-      if (w.total <= 0) return;
+      const owed = owedForWeek(w);
+      if (owed <= 0) return;
       const r = state.rewards;
       const KIND_LABEL = {
         pushups: "10 push-ups",
@@ -9853,9 +9868,10 @@ Due May 31"></textarea>
             `<div class="pay-line"><span>${KIND_LABEL[k]}</span><b>${money(w.by[k])}</b></div>`,
         )
         .join("");
+      const alreadyPaid = paidForWeek(weekKey);
       openModal(
         "Payday",
-        `<p class="sub">Hand <b>${money(w.total)}</b> to ${esc(
+        `<p class="sub">Hand <b>${money(owed)}</b> to ${esc(
           state.settings.studentName || "your child",
         )} for the week of <b>${weekLabel(weekKey)}</b>. A grown-up does this part.</p>
         <div class="pay-stub">${lines}${
@@ -9864,7 +9880,13 @@ Due May 31"></textarea>
                 w.bonus,
               )}</b></div>`
             : ""
-        }<div class="pay-line pay-total"><span>Total</span><b>${money(w.total)}</b></div></div>
+        }${
+          alreadyPaid > 0
+            ? `<div class="pay-line"><span>Already paid this week</span><b>−${money(
+                alreadyPaid,
+              )}</b></div>`
+            : ""
+        }<div class="pay-line pay-total"><span>Still owed</span><b>${money(owed)}</b></div></div>
         ${
           r.pin
             ? `<div class="field" style="margin-top:10px"><label>Parent PIN</label><input id="rwPin" type="password" inputmode="numeric" placeholder="••••" autocomplete="off"></div>`
@@ -9872,14 +9894,13 @@ Due May 31"></textarea>
         }
         <p id="rwErr" class="sub" style="color:#c0473a;display:none">That PIN didn't match.</p>
         <div class="row"><button class="btn" data-act="close-modal">Cancel</button><button class="btn primary" data-act="reward-confirm-payout" data-arg="${weekKey}">💵 Mark paid ${money(
-          w.total,
+          owed,
         )}</button></div>`,
       );
     },
     "reward-confirm-payout": (_, weekKey) => {
       const r = state.rewards;
-      if (!weekKey || isWeekPaid(weekKey)) return closeModal();
-      if (weekKey === thisWeekKey() && completedPushupDaysThisWeek() < 4) return closeModal();
+      if (!weekKey) return closeModal();
       if (r.pin) {
         const entered = ($("#rwPin")?.value || "").trim();
         if (entered !== r.pin) {
@@ -9889,19 +9910,20 @@ Due May 31"></textarea>
         }
       }
       const w = computeWeek(weekKey);
-      if (w.total <= 0) return closeModal();
+      const owed = owedForWeek(w);
+      if (owed <= 0) return closeModal();
       r.payouts.unshift({
         id: uid("pay"),
         weekKey,
-        amount: w.total,
+        amount: owed,
         paidAt: new Date().toISOString(),
         breakdown: { ...w.by, bonus: w.bonus },
       });
-      r.paidOut = round2(r.paidOut + w.total);
+      r.paidOut = round2(r.paidOut + owed);
       save({ immediate: true });
       closeModal();
       render();
-      toast(`Paid ${money(w.total)} for ${weekLabel(weekKey)} 💵`);
+      toast(`Paid ${money(owed)} for ${weekLabel(weekKey)} 💵`);
       triggerConfetti();
     },
     "reward-settings": () => {
