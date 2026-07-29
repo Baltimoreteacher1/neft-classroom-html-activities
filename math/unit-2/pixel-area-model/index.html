@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="en">
 <head>
+<script src="/assets/game-score.js"></script>
+<script>NeftScore.init({ gameId: "pixel-area-model", standard: "6.NOS.3" });</script>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="stylesheet" href="/assets/math-mobile.css">
@@ -1515,6 +1517,8 @@ const AppController = {
   },
   
   triggerQuestSuccess() {
+    // Three quests are offered; count how many have been matched so far.
+    NeftScore.tally("quests", CONFIG.quests.length, STATE.currentQuestIndex + 1);
     AudioEngine.playSuccess();
     document.getElementById("successModal").classList.add("active");
   },

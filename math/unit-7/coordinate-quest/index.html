@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="/assets/game-score.js"></script>
+<script>NeftScore.init({ gameId: "coordinate-quest", standard: "6.NOS.9" });</script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="/assets/math-mobile.css">
@@ -780,6 +782,10 @@
       const ans = parseInt(riddleInput.value);
       const lvl = levels[currentLevelId];
       
+      // Each decryption submit is a judged answer. A wrong one is still an
+      // attempt, so the accuracy figure stays honest.
+      NeftScore.attempt(ans === lvl.riddle.ans);
+
       if (ans === lvl.riddle.ans) {
         Synth.play('correct');
         laserDeactivated = true;

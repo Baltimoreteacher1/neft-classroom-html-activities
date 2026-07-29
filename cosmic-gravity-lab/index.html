@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="/assets/game-score.js"></script>
+<script>NeftScore.init({ gameId: "cosmic-gravity-lab", standard: "" });</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Cosmic Gravity Lab: An immersive multi-body gravitational sandbox and orbital mechanics simulator. Explore Kepler's laws, slingshots, Lagrange points, and gravity soundscapes.">
@@ -1860,6 +1862,10 @@
             if (currentQuest.validator(STATE)) {
                 if (!STATE.completedQuests.includes(STATE.activeQuestId)) {
                     STATE.completedQuests.push(STATE.activeQuestId);
+                    // Missions offered vs missions achieved. A tally, because
+                    // the validator re-runs on every parameter change; recorded
+                    // only on a completion, so an untouched lab writes no row.
+                    NeftScore.tally('missions', CONFIG.quests.length, STATE.completedQuests.length);
                     logDiagnostics(`Quest ${STATE.activeQuestId} completed successfully!`, 'success');
                     
                     if (STATE.audioInitialized) {

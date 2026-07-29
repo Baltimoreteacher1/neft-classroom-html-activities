@@ -2376,6 +2376,10 @@
         fbContainer.appendChild(row);
       });
 
+      // The number line is batch graded and re-checkable: keying it means
+      // fixing a placement replaces the tally instead of adding a second one.
+      NeftScore.tally('tundra', total, correct);
+
       const badge = document.getElementById('sz2-tundra-score');
       badge.textContent = `✔ ${correct} / ${total} Correct`;
       badge.style.display = '';

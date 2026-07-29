@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="en">
   <head>
+<script src="/assets/game-score.js"></script>
+<script>NeftScore.init({ gameId: "cartesian-odyssey", standard: "6.NOS.9" });</script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/assets/math-mobile.css">
@@ -1640,6 +1642,10 @@
         toastTimer = setTimeout(() => el.classList.remove("show"), 2600);
       }
 
+      // Set the first time the student drags a vertex, so an untouched plane
+      // reports nothing at all rather than 0 of N quests.
+      let studentActed = false;
+
       function checkQuests() {
         CONFIG.quests.forEach((q) => {
           if (q.validator(STATE)) {
@@ -1652,6 +1658,13 @@
             }
           }
         });
+        if (studentActed) {
+          NeftScore.tally(
+            "quests",
+            CONFIG.quests.length,
+            STATE.completedQuests.length,
+          );
+        }
       }
 
       // Drag operations for vertices
@@ -1668,6 +1681,7 @@
             target.classList.contains("svg-hit")
           ) {
             isDragging = true;
+            studentActed = true;
             selectedPtIdx = parseInt(target.getAttribute("data-idx"), 10);
             transitionState({ activePointId: STATE.points[selectedPtIdx].id });
           }

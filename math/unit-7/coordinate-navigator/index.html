@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="en">
 <head>
+<script src="/assets/game-score.js"></script>
+<script>NeftScore.init({ gameId: "coordinate-navigator", standard: "6.NOS.9" });</script>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="stylesheet" href="/assets/math-mobile.css">
@@ -922,6 +924,8 @@ const AppController = {
     const input = document.getElementById("inputDistance").value.trim();
     const ans = parseInt(input);
     
+    NeftScore.attempt(ans === q.targetDistance);
+
     if (ans === q.targetDistance) {
       AudioEngine.playSuccess();
       

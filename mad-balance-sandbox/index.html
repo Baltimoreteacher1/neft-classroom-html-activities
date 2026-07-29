@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="/assets/game-score.js"></script>
+<script>NeftScore.init({ gameId: "mad-balance-sandbox", standard: "6.DS.6c" });</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/assets/math-mobile.css">
@@ -1183,6 +1185,7 @@
                     transitionState({ completedQuests: completed });
                     
                     logDiagnostics(`Quest ${STATE.activeQuestId} completed successfully!`, 'success');
+                    NeftScore.tally('quests', CONFIG.quests.length, completed.length);
                     if (STATE.audioInitialized) {
                         AudioEngine.playSuccessChord();
                     }

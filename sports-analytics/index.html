@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="en">
   <head>
+<script src="/assets/game-score.js"></script>
+<script>NeftScore.init({ gameId: "sports-analytics", standard: "" });</script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/assets/math-mobile.css">
@@ -1308,6 +1310,7 @@
         if (!currentQuest) return;
 
         const isCorrect = currentQuest.validator(STATE);
+        NeftScore.attempt(isCorrect);
 
         let completed = [...STATE.completedQuests];
         if (isCorrect && !completed.includes(STATE.activeQuestId)) {

@@ -1597,6 +1597,9 @@ function resetSeq(){
 function pickError(btn){
   let choices=[...document.querySelectorAll("#errorChoices .mc-choice")]
   choices.forEach(c=>c.disabled=true)
+  // The error-analysis question is graded too — one keyed tally, so a retry
+  // replaces the result.
+  NeftScore.tally("error-analysis",1,btn.dataset.correct==="true"?1:0)
   if(btn.dataset.correct==="true"){
     btn.classList.add("correct")
     showFeedback("errorFeedback","errorFeedbackText","Correct! When 6 can't go into 4, a 0 must be placed in the quotient so the place value stays accurate.","good")

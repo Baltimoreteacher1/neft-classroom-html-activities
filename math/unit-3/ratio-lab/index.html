@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="/assets/game-score.js"></script>
+<script>NeftScore.init({ gameId: "ratio-lab", standard: "6.AT.3a" });</script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="/assets/math-mobile.css">
@@ -584,7 +586,7 @@
                 <div class="liquid-fill" id="blue-fill" style="background: rgba(27, 117, 188, 0.85); height: 50%;"></div>
               </div>
               <div class="slider-card">
-                <input type="range" class="chemical-slider blue-theme" id="blue-range" min="1" max="10" value="3" oninput="mixRatio()">
+                <input type="range" class="chemical-slider blue-theme" id="blue-range" min="1" max="10" value="3" oninput="markMixed();mixRatio()">
                 <div style="font-weight: 800; font-size: 1.1rem; color: var(--liquid-blue);" id="blue-val">3 Parts</div>
               </div>
             </div>
@@ -617,7 +619,7 @@
                 <div class="liquid-fill" id="yellow-fill" style="background: rgba(252, 238, 33, 0.85); height: 50%;"></div>
               </div>
               <div class="slider-card">
-                <input type="range" class="chemical-slider yellow-theme" id="yellow-range" min="1" max="10" value="2" oninput="mixRatio()">
+                <input type="range" class="chemical-slider yellow-theme" id="yellow-range" min="1" max="10" value="2" oninput="markMixed();mixRatio()">
                 <div style="font-weight: 800; font-size: 1.1rem; color: #dcb807;" id="yellow-val">2 Parts</div>
               </div>
             </div>
@@ -790,6 +792,10 @@
 
     // State Variables
     let activeScale = 1;
+    // The lab opens with a default mix that already satisfies nothing, so the
+    // tally must wait for a real adjustment — otherwise merely opening the page
+    // would assert the student got every recipe wrong.
+    let studentMixed = false;
     let blueParts = 3;
     let yellowParts = 2;
     let solvedMissions = { 1: false, 2: false, 3: false };
@@ -830,6 +836,12 @@
         bubble.style.animationDuration = `${Math.random() * 2 + 2}s`;
         mixBubbles.appendChild(bubble);
       }
+    }
+
+    // Called from the sliders and scale buttons — a real adjustment by the
+    // student, as opposed to the mixRatio() the page runs during setup.
+    function markMixed() {
+      studentMixed = true;
     }
 
     // Mix Formula Calculations & Rendering
@@ -875,6 +887,7 @@
 
     // Change scale factor
     function changeScale(scale) {
+      markMixed();
       Synth.play('click');
       activeScale = scale;
       document.querySelectorAll('.scale-btn').forEach(btn => btn.classList.remove('active'));
@@ -1051,6 +1064,13 @@
       updateMissionUI(1, m1);
       updateMissionUI(2, m2);
       updateMissionUI(3, m3);
+
+      // Recipes are re-checked on every adjustment, so this is a tally: three
+      // offered, however many currently match. Gated on a real adjustment, so
+      // an untouched lab reports nothing at all.
+      if (studentMixed) {
+        NeftScore.tally("recipes", 3, [m1, m2, m3].filter(Boolean).length);
+      }
     }
 
     function updateMissionUI(id, isSolved) {

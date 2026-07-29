@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="/assets/game-score.js"></script>
+<script>NeftScore.init({ gameId: "fraction-division-soccer", standard: "6.NOS.1" });</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/assets/math-mobile.css">
@@ -1079,6 +1081,13 @@
             const distanceDeviation = Math.abs(currentPosition - STATE.dividend);
             const exactlyHit = distanceDeviation < 0.01;
             const overshotNet = currentPosition > STATE.dividend + 0.01;
+
+            // The judged unit is the match, not the pass: landing exactly in
+            // the net is a correct quotient, overshooting it is a wrong one.
+            // Passes short of the net are still work in progress.
+            if (exactlyHit || overshotNet) {
+                NeftScore.attempt(exactlyHit);
+            }
 
             if (exactlyHit) {
                 // GOAL!

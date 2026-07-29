@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="en">
   <head>
+<script src="/assets/game-score.js"></script>
+<script>NeftScore.init({ gameId: "netfold-pro", standard: "6.GR.4" });</script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
@@ -1171,6 +1173,13 @@
                   ? `Successfully solved: "${q.title}". Amazing folding!`
                   : `Resuelto con éxito: "${q.titleEs}". ¡Pliegue increíble!`;
               showCustomModal(title, desc, "📦");
+              // Quests offered vs quests actually solved. Recorded only once
+              // something has been solved, so an abandoned net writes no row.
+              NeftScore.tally(
+                "quests",
+                CONFIG.quests.length,
+                STATE.completedQuests.length,
+              );
             }
           }
         });

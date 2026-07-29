@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="en">
   <head>
+<script src="/assets/game-score.js"></script>
+<script>NeftScore.init({ gameId: "misconception-lab", standard: "" });</script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/assets/math-mobile.css" />
@@ -1013,6 +1015,14 @@
         const solvedList = [...STATE.solvedBugs];
         if (solved && !solvedList.includes(STATE.currentBugId)) {
           solvedList.push(STATE.currentBugId);
+        }
+
+        // Bugs offered vs bugs actually repaired. A tally rather than an
+        // attempt: a student can keep dragging tiles until a bug is fixed, and
+        // recording it only once one IS fixed keeps an abandoned visit absent
+        // from the data instead of asserting a 0%.
+        if (solvedList.length) {
+          NeftScore.tally("bugs", CONFIG.bugs.length, solvedList.length);
         }
 
         transitionState({
