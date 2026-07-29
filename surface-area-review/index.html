@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="en">
 <head>
+<script src="/assets/game-score.js"></script>
+<script>NeftScore.init({ gameId: "surface-area-review", standard: "6.GR.4" });</script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/assets/math-mobile.css">
@@ -606,6 +608,7 @@
       const ok = Math.abs(value - correct) < 0.01;
       if (!answered) {
         attempts += 1;
+        NeftScore.attempt(ok);
         if (ok) {
           score += 1;
           streak += 1;

@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="/assets/game-score.js"></script>
+<script>NeftScore.init({ gameId: "6-rp-a-3study", standard: "6.AT.3" });</script>
   <link rel="stylesheet" href="/assets/shared.css">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -559,6 +561,8 @@ function checkSort(){
     const ok=el.dataset.ans===el.dataset.bin;
     el.classList.add(ok?'ok':'bad');if(ok)c++;
   });
+  // Re-checking replaces this tally instead of stacking a second one.
+  if(all.length) NeftScore.tally('sort',all.length,c);
   addPts(c*12);
   toast(c===all.length?`🎉 All ${all.length} sorted correctly! +${c*12} pts`:`${c}/${all.length} correct +${c*12} pts`,c===all.length?'ok':'bad');
 }
@@ -574,6 +578,7 @@ function checkRates(){
     el.classList.toggle('ok',ok);el.classList.toggle('bad',!ok);
     if(ok)c++;
   });
+  if(t) NeftScore.tally('rates',t,c);
   addPts(c*12);
   toast(c===t?`📋 Perfect tables! +${c*12} pts`:`${c}/${t} correct +${c*12} pts`,c>=5?'ok':'bad');
 }
@@ -703,6 +708,7 @@ function checkProps(){
     if(!ok&&ph) ph.classList.add('vis');
     if(ok)c++;
   });
+  if(PROP_DATA.length) NeftScore.tally('props',PROP_DATA.length,c);
   addPts(c*20);
   toast(c===PROP_DATA.length?`🔄 All proportions solved! +${c*20} pts`:`${c}/${PROP_DATA.length} correct +${c*20} pts`,c>=3?'ok':'bad');
 }

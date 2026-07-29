@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="/assets/game-score.js"></script>
+<script>NeftScore.init({ gameId: "6-ns-c", standard: "6.NOS.9" });</script>
   <link rel="stylesheet" href="/assets/shared.css">
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -562,6 +564,9 @@ function askChoice(item){
     const b=document.createElement('button'); b.className='choice-btn'; b.textContent=ch;
     b.addEventListener('click',()=>{
       const good=ch===item.a;
+      // Every tapped choice is a judged answer — wrong ones included, or this
+      // game would report a perfect score forever.
+      NeftScore.attempt(good);
       wrap.querySelectorAll('.choice-btn').forEach(btn=>{
         if(btn.textContent===item.a) btn.classList.add('correct');
         else if(btn===b && !good) btn.classList.add('wrong');
@@ -589,6 +594,7 @@ function askChoice(item){
 }
 
 function gameOver(){
+  NeftScore.finish();
   document.getElementById('overlayEyebrow').textContent='Game Over';
   document.getElementById('overlayQuestion').textContent='You ran out of lives. Reset and try again — remember: x first, then y. Use sign to choose direction.';
   const wrap=document.getElementById('overlayChoices'); wrap.innerHTML='';
@@ -622,6 +628,7 @@ function handlePlot(evt){
   evt.preventDefault();
   state.plotted=snapPoint(evt); drawPlane({showQ:true});
   const good=state.plotted.x===state.activeTarget.x&&state.plotted.y===state.activeTarget.y;
+  NeftScore.attempt(good);
   if(good){
     currentM().done++; state.streak++; gainXP(16);
     showFB(true,`<strong>Correct!</strong> You plotted <strong>(${state.plotted.x}, ${state.plotted.y})</strong> by moving along x first, then y.`);
