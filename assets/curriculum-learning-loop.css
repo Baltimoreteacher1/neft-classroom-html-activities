@@ -1,0 +1,307 @@
+/* Curriculum Learning Loop — Unit 3 pilot layer (additive).
+ *
+ * Adds the Diagnose → Teach → Capture Evidence → Interpret → Reteach/Extend →
+ * Check Transfer strip and the role quick-starts beneath the existing hub intro.
+ * Nothing here restyles an existing selector: every rule is scoped under
+ * .nt-loop / .nt-roles, so the current hub renders byte-identically if this file
+ * fails to load.
+ *
+ * Accessibility contract for this layer:
+ *   - all targets >= 44x44 CSS px
+ *   - visible :focus-visible ring that survives forced-colors
+ *   - no meaning carried by colour or emoji alone (every stage has a text label
+ *     and a numbered position)
+ *   - respects prefers-reduced-motion and prefers-contrast
+ *   - readable at 200% zoom and at 360px width without horizontal page scroll
+ */
+
+.nt-loop {
+  margin: 1.25rem 0 0;
+  padding: 1rem 1.1rem 1.15rem;
+  border: 1px solid var(--nt-loop-border, rgba(15, 23, 42, 0.14));
+  border-radius: 14px;
+  background: var(--nt-loop-bg, rgba(248, 250, 252, 0.85));
+}
+
+.nt-loop__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 0.75rem;
+  margin: 0 0 0.15rem;
+}
+
+.nt-loop__title {
+  margin: 0;
+  font-size: 1.02rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+/* Pilot designation — teacher-facing only, and deliberately quiet. */
+.nt-loop__badge {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--nt-loop-badge, #7c2d12);
+  background: var(--nt-loop-badge-bg, rgba(255, 237, 213, 0.7));
+}
+
+.nt-loop__lede {
+  margin: 0.3rem 0 0.85rem;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  max-width: 68ch;
+  opacity: 0.88;
+}
+
+/* The stage list. An ordered list because the order is the point. */
+.nt-loop__stages {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15.5rem), 1fr));
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: nt-loop-step;
+}
+
+.nt-loop__stage {
+  counter-increment: nt-loop-step;
+  display: flex;
+  min-height: 44px;
+  border: 1px solid var(--nt-loop-card-border, rgba(15, 23, 42, 0.12));
+  border-radius: 11px;
+  background: var(--nt-loop-card-bg, #fff);
+}
+
+/* The whole card is one link/button target so it clears 44x44 comfortably. */
+.nt-loop__link {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: 0.15rem 0.6rem;
+  width: 100%;
+  min-height: 44px;
+  padding: 0.65rem 0.75rem;
+  border-radius: inherit;
+  color: inherit;
+  text-decoration: none;
+  background: none;
+  border: 0;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.nt-loop__link::before {
+  content: counter(nt-loop-step);
+  grid-row: 1 / span 2;
+  display: grid;
+  place-items: center;
+  inline-size: 1.6rem;
+  block-size: 1.6rem;
+  border-radius: 50%;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--nt-loop-num, #0f172a);
+  background: var(--nt-loop-num-bg, rgba(15, 23, 42, 0.08));
+}
+
+.nt-loop__name {
+  font-weight: 650;
+  font-size: 0.93rem;
+  line-height: 1.3;
+}
+
+.nt-loop__what {
+  font-size: 0.83rem;
+  line-height: 1.45;
+  opacity: 0.82;
+}
+
+.nt-loop__link:hover .nt-loop__name,
+.nt-loop__link:focus-visible .nt-loop__name {
+  text-decoration: underline;
+}
+
+.nt-loop__link:focus-visible {
+  outline: 3px solid var(--nt-loop-focus, #1d4ed8);
+  outline-offset: 2px;
+}
+
+/* A stage with no classroom evidence behind it yet must SAY so — not look
+   identical to a stage that is wired up. Text, not colour. */
+.nt-loop__stage--unproven .nt-loop__link::after {
+  content: "No classroom evidence yet";
+  grid-column: 2;
+  margin-top: 0.3rem;
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  padding: 0.12rem 0.4rem;
+  border: 1px dashed currentColor;
+  border-radius: 5px;
+  justify-self: start;
+  opacity: 0.75;
+}
+
+/* ---- Role quick starts -------------------------------------------------- */
+
+.nt-roles {
+  margin: 1rem 0 0;
+  padding: 0;
+  border: 0;
+}
+
+.nt-roles__legend {
+  padding: 0;
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.nt-roles__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: 0.7rem;
+}
+
+.nt-roles__group {
+  border: 1px solid var(--nt-loop-card-border, rgba(15, 23, 42, 0.12));
+  border-radius: 11px;
+  padding: 0.7rem 0.8rem 0.8rem;
+  background: var(--nt-loop-card-bg, #fff);
+}
+
+.nt-roles__who {
+  margin: 0 0 0.4rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+.nt-roles__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.25rem;
+}
+
+.nt-roles__list a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0.3rem 0.45rem;
+  border-radius: 8px;
+  color: inherit;
+  font-size: 0.9rem;
+  line-height: 1.35;
+  text-decoration: none;
+}
+
+.nt-roles__list a:hover,
+.nt-roles__list a:focus-visible {
+  text-decoration: underline;
+  background: var(--nt-loop-hover, rgba(15, 23, 42, 0.05));
+}
+
+.nt-roles__list a:focus-visible {
+  outline: 3px solid var(--nt-loop-focus, #1d4ed8);
+  outline-offset: 1px;
+}
+
+/* ---- Dark scheme -------------------------------------------------------- */
+
+@media (prefers-color-scheme: dark) {
+  .nt-loop {
+    --nt-loop-border: rgba(148, 163, 184, 0.28);
+    --nt-loop-bg: rgba(15, 23, 42, 0.5);
+    --nt-loop-card-border: rgba(148, 163, 184, 0.24);
+    --nt-loop-card-bg: rgba(30, 41, 59, 0.65);
+    --nt-loop-num: #e2e8f0;
+    --nt-loop-num-bg: rgba(148, 163, 184, 0.2);
+    --nt-loop-focus: #93c5fd;
+    --nt-loop-badge: #fed7aa;
+    --nt-loop-badge-bg: rgba(124, 45, 18, 0.45);
+  }
+  .nt-roles__group {
+    --nt-loop-card-border: rgba(148, 163, 184, 0.24);
+    --nt-loop-card-bg: rgba(30, 41, 59, 0.65);
+  }
+  .nt-roles__list a:hover,
+  .nt-roles__list a:focus-visible {
+    --nt-loop-hover: rgba(148, 163, 184, 0.16);
+  }
+}
+
+/* ---- High contrast / forced colours ------------------------------------- */
+
+@media (prefers-contrast: more) {
+  .nt-loop,
+  .nt-loop__stage,
+  .nt-roles__group {
+    border-width: 2px;
+  }
+  .nt-loop__what,
+  .nt-loop__lede {
+    opacity: 1;
+  }
+}
+
+@media (forced-colors: active) {
+  .nt-loop,
+  .nt-loop__stage,
+  .nt-roles__group {
+    border: 1px solid CanvasText;
+  }
+  .nt-loop__link:focus-visible,
+  .nt-roles__list a:focus-visible {
+    outline: 3px solid Highlight;
+  }
+  .nt-loop__link::before {
+    border: 1px solid CanvasText;
+  }
+}
+
+/* ---- Reduced motion ------------------------------------------------------ */
+
+@media (prefers-reduced-motion: no-preference) {
+  .nt-loop__stage {
+    transition:
+      border-color 140ms ease,
+      transform 140ms ease;
+  }
+  .nt-loop__stage:hover {
+    transform: translateY(-1px);
+  }
+}
+
+/* ---- Print --------------------------------------------------------------- */
+
+@media print {
+  .nt-loop {
+    border: 1px solid #000;
+    background: none;
+    break-inside: avoid;
+  }
+  .nt-loop__stages {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .nt-loop__badge {
+    border: 1px solid #000;
+    background: none;
+    color: #000;
+  }
+  .nt-roles {
+    break-inside: avoid;
+  }
+}

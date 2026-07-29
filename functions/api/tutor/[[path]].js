@@ -33,6 +33,8 @@
  *     custom domain can reach this endpoint.
  * ========================================================================== */
 
+import { TUTOR_POLICY } from "../../_lib/ai-tutor-guardrails.js";
+
 const JSON_HEADERS = {
   "Content-Type": "application/json",
   "Access-Control-Allow-Origin": "*",
@@ -182,7 +184,12 @@ function parseBody(body) {
 }
 
 function systemPrompt(mode, standard, lang, hintLevel = 1, replyLang = "") {
-  const core = modeSystemPrompt(mode, standard, lang, hintLevel);
+  let core = modeSystemPrompt(mode, standard, lang, hintLevel);
+  /* Apply the shared tutoring contract to conversational student modes only.
+     `translate` must emit a translation and nothing else; `plan` is a
+     teacher-facing coaching note, not tutoring. Single source for the rules is
+     functions/_lib/ai-tutor-guardrails.js so every AI surface behaves the same. */
+  if (mode !== "translate" && mode !== "plan") core += TUTOR_POLICY;
   // Firm reply-language directive for every mode except "translate" (which
   // already targets `lang`). Math notation and numbers stay exactly as written.
   if (!replyLang || mode === "translate") return core;

@@ -169,6 +169,50 @@ const DEFAULT_SENTENCE_FRAMES = [
   "The answer is ___, so ___.",
 ];
 
+/* Learning Loop projection (Unit 3 pilot).
+ *
+ * lessons/<id>/config.json already holds ONLY the student-safe half of the loop
+ * — the teacher half lives in functions/_lib/unit3-loop-teacher.js, which Pages
+ * never serves (see scripts/seed-unit3-learning-loop.mjs). So this is a
+ * pass-through, not a filter.
+ *
+ * It is still written defensively: a hand-edit that reintroduces a teacher key
+ * into the config would otherwise flow straight into the public manifest.
+ * scripts/validate-learning-loop.mjs is the gate; this is the belt.
+ * Lessons with no loop block get `null`, so every existing entry is unchanged. */
+const LOOP_TEACHER_KEYS = new Set([
+  "teacherOnly",
+  "misconceptions",
+  "rubric",
+  "transferSuccess",
+  "retentionSuccess",
+  "reteachMove",
+  "facilitationNote",
+]);
+
+function stripTeacher(node) {
+  if (Array.isArray(node)) return node.map(stripTeacher);
+  if (node && typeof node === "object") {
+    const out = {};
+    for (const [k, v] of Object.entries(node)) {
+      if (LOOP_TEACHER_KEYS.has(k)) continue;
+      out[k] = stripTeacher(v);
+    }
+    return out;
+  }
+  return node;
+}
+
+function loopProjection(cfg) {
+  if (!cfg.loop || typeof cfg.loop !== "object") return null;
+  return stripTeacher(cfg.loop);
+}
+
+function loopFrames(cfg) {
+  const conj = cfg.loop?.scaffolds?.twr?.conjunctions;
+  return Array.isArray(conj) && conj.length ? conj : null;
+}
+
 function buildEntry(id, cfg) {
   const m = id.match(LESSON_DIR_RE);
   const unit = cfg.unit ?? Number(m[1]);
@@ -211,8 +255,11 @@ function buildEntry(id, cfg) {
     supports: {
       esol: Array.isArray(cfg.vocabulary) && cfg.vocabulary.some((v) => v.definitionEs || v.termEs),
       vocabulary: vocabTerms(cfg),
-      sentenceFrames: DEFAULT_SENTENCE_FRAMES,
+      // Per-lesson TWR frames when the Learning Loop supplies them, else the
+      // shared default ladder. Keeps existing lessons byte-identical.
+      sentenceFrames: loopFrames(cfg) || DEFAULT_SENTENCE_FRAMES,
     },
+    loop: loopProjection(cfg),
     status: {
       ready: missingResources.length === 0 && !needsReview,
       needsReview,
