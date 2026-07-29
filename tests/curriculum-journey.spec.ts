@@ -23,13 +23,42 @@ function acceptTeacherPin(page: Page) {
   });
 }
 
-test.describe("guide first-click journeys from Student Mode", () => {
+/**
+ * Enter Teacher Mode the way a teacher's browser does.
+ *
+ * These journeys were originally written when the guide's teacher actions were
+ * rendered for everyone, and they clicked them straight from the public page.
+ * The student-mode-leak fix then gave those controls `hub-teacher-only`
+ * (display:none for students), which is correct — and left these tests asserting
+ * pre-fix behaviour, red ever since. The one-click regression they guard is
+ * still worth guarding; only the precondition changed.
+ *
+ * The hub stores this key as "true"; other modules compare against "1".
+ */
+async function enterTeacherMode(page: Page) {
+  await page.goto("/curriculum/");
+  await page.evaluate(() => {
+    localStorage.setItem("nt-teacher-mode", "true");
+  });
+  await page.reload();
+  await expect(page.locator("#hub-mode-toggle")).toContainText("Teacher Mode");
+}
+
+test.describe("guide first-click journeys in Teacher Mode", () => {
   test("Teach today opens the workflow on Today's Teaching in one click", async ({ page }) => {
     acceptTeacherPin(page);
-    await page.goto("/curriculum/");
-    // Baseline: public default is Student Mode with the workflow hidden.
-    await expect(page.locator("#hub-mode-toggle")).toContainText("Student Mode");
-    await expect(page.locator("#curriculum-teacher-workflow")).toBeHidden();
+    await enterTeacherMode(page);
+
+    const workflowEl = page.locator("#curriculum-teacher-workflow");
+    await expect(workflowEl).toBeVisible();
+    // Move OFF Today first. The workflow opens on Today by default, so clicking
+    // "Teach today" from that state would pass even if guide routing were
+    // completely broken — the regression is only observable as a real switch.
+    await page.locator("button[data-guide-teacher-view='week']").click();
+    await expect(workflowEl.locator("button[data-ctw-view='week']")).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
 
     await page.locator("button[data-guide-teacher-view='today']").click();
 
@@ -46,8 +75,12 @@ test.describe("guide first-click journeys from Student Mode", () => {
 
   test("Plan the week opens Weekly Pacing in one click (not Today)", async ({ page }) => {
     acceptTeacherPin(page);
-    await page.goto("/curriculum/");
-    await expect(page.locator("#curriculum-teacher-workflow")).toBeHidden();
+    await enterTeacherMode(page);
+    // Opens on Today by default; the regression is that "Plan the week" used to
+    // leave it there, so Today being active first is the meaningful baseline.
+    await expect(
+      page.locator("#curriculum-teacher-workflow button[data-ctw-view='today']"),
+    ).toHaveAttribute("aria-pressed", "true");
 
     await page.locator("button[data-guide-teacher-view='week']").click();
 
@@ -79,7 +112,7 @@ test.describe("guide first-click journeys from Student Mode", () => {
 
 test("the guide header is keyboard operable", async ({ page }) => {
   acceptTeacherPin(page);
-  await page.goto("/curriculum/");
+  await enterTeacherMode(page);
   const teachToday = page.locator("button[data-guide-teacher-view='today']");
   await teachToday.focus();
   await expect(teachToday).toBeFocused();
@@ -87,15 +120,26 @@ test("the guide header is keyboard operable", async ({ page }) => {
   await expect(page.locator("#curriculum-teacher-workflow")).toBeVisible();
 });
 
-test("mobile layout keeps the guide actions visible without horizontal overflow", async ({
-  page,
-}) => {
+test("mobile student layout is student-safe and does not scroll sideways", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/curriculum/");
-  await expect(page.locator("button[data-guide-teacher-view='today']")).toBeVisible();
-  await expect(page.locator("button[data-guide-teacher-view='week']")).toBeVisible();
+  // On a student's phone the teacher actions must NOT be present — this used to
+  // assert the opposite, which is what the student-mode-leak fix corrected.
+  await expect(page.locator("button[data-guide-teacher-view='today']")).toBeHidden();
+  await expect(page.locator("button[data-guide-teacher-view='week']")).toBeHidden();
   await expect(page.getByRole("link", { name: /Explore by unit/ })).toBeVisible();
   // The page must not scroll sideways on a phone.
+  const overflow = await page.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  );
+  expect(overflow).toBeLessThanOrEqual(1);
+});
+
+test("mobile teacher layout keeps the guide actions usable", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await enterTeacherMode(page);
+  await expect(page.locator("button[data-guide-teacher-view='today']")).toBeVisible();
+  await expect(page.locator("button[data-guide-teacher-view='week']")).toBeVisible();
   const overflow = await page.evaluate(
     () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
   );

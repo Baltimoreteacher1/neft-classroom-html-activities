@@ -1655,4 +1655,27 @@
       if (pre.autoStart !== false) Engine.init(pre);
     }
   });
+
+  // ---------------------------------------------------------------------------
+  // Anonymous usage + field-error beacon (additive, independent of the engine).
+  // This engine is present on 2306 of ~2637 pages, which makes it the cheapest
+  // honest way to instrument the site: one loader here plus one in
+  // nt-page-enhance.js reaches 2325 pages without editing a single HTML file.
+  // Deliberately NOT wired into the engine's own lifecycle — usage data must
+  // still be reported on pages where save/resume is disabled or fails to init.
+  // See assets/nt-usage.js for what is and is not sent.
+  // ---------------------------------------------------------------------------
+  (function loadUsageSignal() {
+    try {
+      if (window.NTUsage) return;
+      if (document.querySelector("script[data-nt-usage]")) return;
+      var s = document.createElement("script");
+      s.src = "/assets/nt-usage.js";
+      s.defer = true;
+      s.setAttribute("data-nt-usage", "1");
+      (document.head || document.documentElement).appendChild(s);
+    } catch (_) {
+      /* instrumentation must never break save/resume */
+    }
+  })();
 })();

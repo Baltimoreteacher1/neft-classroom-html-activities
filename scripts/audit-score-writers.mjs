@@ -1,0 +1,220 @@
+#!/usr/bin/env node
+/* =============================================================================
+ * audit-score-writers — separate "nobody played it" from "it never could report".
+ * -----------------------------------------------------------------------------
+ * WHY THIS EXISTS
+ * game_scores holds ~98 rows from exactly three game_ids, against ~117 game
+ * pages on disk. The tempting read is "students only played three games". That
+ * read is wrong and expensive: it makes a wiring gap look like a content
+ * preference, and it has silently shaped the build backlog for months.
+ *
+ * A game can be absent from the scores table for two very different reasons:
+ *   SILENT        — it has score-reporting wiring that has never produced a
+ *                   row. That is a broken integration. Go fix it.
+ *   UNINSTRUMENTED— it has no scoring wiring at all, so its absence carries no
+ *                   information whatsoever. It is not unpopular; it is mute.
+ * Those two must never again be summed into one number.
+ *
+ * Discovery mirrors scripts/usage-report.mjs: a "game page" is an index.html
+ * that loads assets/game-fx.js (the shared FX kit every game uses), plus the
+ * engine3d titles under games/3d/. The id is the directory name, which is what
+ * game-base.js defaults game_id to.
+ *
+ *   node scripts/audit-score-writers.mjs            # human summary
+ *   node scripts/audit-score-writers.mjs --json     # machine-readable
+ *   node scripts/audit-score-writers.mjs --strict   # exit 1 on SILENT/orphans
+ *
+ * --strict is for the nightly job, not the pre-push gate: a brand-new game may
+ * legitimately have no plays yet, so this informs rather than blocks a merge.
+ * ========================================================================== */
+
+import { execFileSync } from "node:child_process";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
+
+const ROOT = resolve(import.meta.dirname, "..");
+const AS_JSON = process.argv.includes("--json");
+const STRICT = process.argv.includes("--strict");
+const DB = "neft-student-progress";
+
+/**
+ * Markers meaning "this page can report a score".
+ * engine3d pages import game-base.js (which calls reportScore -> /api/scores);
+ * others post directly or go through the edupulse bridge.
+ */
+const WIRING = [
+  /engine3d\/game-base\.js/,
+  /reportScore\s*\(/,
+  /\/api\/scores/,
+  /edupulse-bridge\.js/,
+  /grade-emit\.js/,
+];
+
+function d1(sql) {
+  try {
+    const out = execFileSync(
+      "npx",
+      ["wrangler", "d1", "execute", DB, "--remote", "--command", sql, "--json"],
+      {
+        cwd: ROOT,
+        encoding: "utf8",
+        maxBuffer: 16 * 1024 * 1024,
+        stdio: ["ignore", "pipe", "ignore"],
+      },
+    );
+    const match = out.match(/\[[\s\S]*\]/);
+    if (!match) return null;
+    return JSON.parse(match[0])[0]?.results ?? [];
+  } catch {
+    return null; // offline / unauthenticated — reported as skipped, not failed
+  }
+}
+
+/**
+ * Redirect stubs left behind by past reorganisations (games/3d/unit-1 is a
+ * meta-refresh to math/unit-3/recipe-factory-line) still carry the FX kit and a
+ * stale game.js, so they look exactly like games to a naive scan. They are not
+ * games — counting them inflates the denominator and, worse, attributes a live
+ * game's id to a dead directory.
+ */
+function isRedirectStub(html) {
+  // A meta refresh is unambiguous.
+  if (/<meta[^>]+http-equiv=["']?refresh/i.test(html)) return true;
+  // A scripted redirect is only a STUB when it is the page's whole purpose:
+  // it fires immediately, before any content. Real games assign location.href
+  // deep in their own navigation logic (the Practice Arcade does it three
+  // times), so matching anywhere in the file would delete live games from the
+  // inventory. Require both "near the top" and "the file is tiny".
+  const head = html.slice(0, 1500);
+  return html.length < 8000 && /location\.(replace|href)\s*[=(]/.test(head);
+}
+
+/**
+ * A game page's real logic usually lives in a sibling module (game.js / main.js)
+ * rather than inline. Read it for both the declared game id and the scoring
+ * wiring the HTML alone would miss.
+ */
+function readSidecar(dir) {
+  for (const name of ["game.js", "main.js", "index.js"]) {
+    let js = "";
+    try {
+      js = readFileSync(resolve(ROOT, dir, name), "utf8");
+    } catch {
+      continue;
+    }
+    const id = js.match(/\bid:\s*["'`]([\w-]+)["'`]/);
+    return { id: id ? id[1] : null, wired: WIRING.some((re) => re.test(js)) };
+  }
+  return { id: null, wired: false };
+}
+
+/** Every index.html that loads the shared FX kit is a game page. */
+function gamePages() {
+  const out = execFileSync(
+    "bash",
+    [
+      "-c",
+      `grep -rl "game-fx.js" --include="index.html" . 2>/dev/null | grep -v node_modules | grep -v "^./dist/"`,
+    ],
+    { cwd: ROOT, encoding: "utf8", maxBuffer: 32 * 1024 * 1024 },
+  );
+
+  return out
+    .split("\n")
+    .map((s) => s.trim().replace(/^\.\//, ""))
+    .filter(Boolean)
+    .map((rel) => {
+      let html = "";
+      try {
+        html = readFileSync(resolve(ROOT, rel), "utf8");
+      } catch {
+        /* unreadable — treated as unwired below */
+      }
+      const dir = rel.replace(/\/index\.html$/, "");
+      // An engine3d title's game_id comes from `id:` in its sibling game.js,
+      // NOT from the folder — games/3d/unit-1 reports as "unit-1-smoothie-stand".
+      // Joining on the folder name would misreport every 3D game as silent.
+      const sidecar = readSidecar(dir);
+      return {
+        id: sidecar.id || dir.split("/").pop(),
+        path: dir,
+        stub: isRedirectStub(html),
+        wired: WIRING.some((re) => re.test(html)) || sidecar.wired,
+      };
+    })
+    .filter((g) => !g.stub)
+    .sort((a, b) => a.path.localeCompare(b.path));
+}
+
+const games = gamePages();
+const rows = d1(
+  "SELECT game_id, COUNT(*) AS n, MAX(created_at) AS last FROM game_scores GROUP BY game_id",
+);
+
+if (rows === null) {
+  if (AS_JSON) console.log(JSON.stringify({ ok: false, reason: "d1-unreachable" }, null, 2));
+  else console.log("audit-score-writers: could not reach D1 (offline or unauthenticated) — skipped.");
+  process.exit(0);
+}
+
+const wrote = new Map(rows.map((r) => [String(r.game_id), r]));
+
+// Evidence beats inference: a game that has actually written rows IS wired,
+// whatever the static scan concluded. Treating a proven writer as
+// "uninstrumented" would hide a real integration and corrupt the counts, so
+// production data is the tiebreak — and the disagreement is reported below as
+// a gap in this script's detector, not as a defect in the game.
+const detectorMissed = games.filter((g) => !g.wired && wrote.has(g.id)).map((g) => g.path);
+for (const g of games) {
+  if (wrote.has(g.id)) g.wired = true;
+}
+
+const wired = games.filter((g) => g.wired);
+const silent = wired.filter((g) => !wrote.has(g.id));
+const uninstrumented = games.filter((g) => !g.wired);
+// A game_id in D1 matching no directory: renamed/deleted game, or a typo'd id.
+// Either way those rows are orphaned and will never join to anything.
+const orphanIds = [...wrote.keys()].filter((id) => !games.some((g) => g.id === id));
+
+const report = {
+  ok: silent.length === 0 && orphanIds.length === 0,
+  pages: games.length,
+  wired: wired.length,
+  reporting: wired.length - silent.length,
+  silent: silent.map((g) => g.path),
+  uninstrumented: uninstrumented.map((g) => g.path),
+  detectorMissed,
+  orphanIds,
+};
+
+if (AS_JSON) {
+  console.log(JSON.stringify(report, null, 2));
+} else {
+  console.log(`audit-score-writers — ${report.pages} game pages on disk\n`);
+  console.log(`  wired to report a score:  ${report.wired}`);
+  console.log(`  actually reporting:       ${report.reporting}`);
+  console.log(`  SILENT (wired, 0 rows):   ${silent.length}   <- broken integrations`);
+  for (const p of report.silent.slice(0, 30)) console.log(`      ${p}`);
+  if (report.silent.length > 30) console.log(`      … and ${report.silent.length - 30} more`);
+
+  console.log(`\n  UNINSTRUMENTED (no scoring wiring at all): ${uninstrumented.length}`);
+  for (const p of report.uninstrumented.slice(0, 12)) console.log(`      ${p}`);
+  if (report.uninstrumented.length > 12) {
+    console.log(`      … and ${report.uninstrumented.length - 12} more`);
+  }
+  console.log(
+    "      ^ these cannot report and never could. Their absence from\n" +
+      "        game_scores is not evidence about whether students play them.",
+  );
+
+  if (detectorMissed.length) {
+    console.log(
+      `\n  detector gap — these write rows but match no wiring pattern: ${detectorMissed.join(", ")}`,
+    );
+  }
+  if (orphanIds.length) {
+    console.log(`\n  ORPHAN game_ids in D1 with no matching directory: ${orphanIds.join(", ")}`);
+  }
+}
+
+if (STRICT && !report.ok) process.exit(1);

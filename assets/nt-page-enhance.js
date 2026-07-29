@@ -15,6 +15,20 @@
   if (window.__ntPageEnhance) return; // idempotent
   window.__ntPageEnhance = true;
 
+  // Anonymous usage + field-error beacon. Loaded here (rather than injected
+  // into ~2600 pages) because this script is already on 862 of them and
+  // save-resume-engine.js covers the rest — one edit instead of a site-wide
+  // HTML injection. See assets/nt-usage.js for the privacy posture.
+  (function loadUsageSignal() {
+    if (window.NTUsage) return;
+    if (document.querySelector("script[data-nt-usage]")) return;
+    var s = document.createElement("script");
+    s.src = "/assets/nt-usage.js";
+    s.defer = true;
+    s.setAttribute("data-nt-usage", "1");
+    document.head.appendChild(s);
+  })();
+
   (function loadProgressBridge() {
     if (window.CurriculumProgressBridge) return;
     if (document.querySelector("script[data-nt-progress-bridge]")) return;

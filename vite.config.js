@@ -237,6 +237,7 @@ function copyStandaloneHtml() {
       const CRITICAL_ASSETS = [
         "assets/neft-theme.js",
         "assets/nt-page-enhance.js",
+        "assets/nt-usage.js",
         "shared/save-resume/save-resume-engine.js",
       ];
       const missingCritical = () =>
