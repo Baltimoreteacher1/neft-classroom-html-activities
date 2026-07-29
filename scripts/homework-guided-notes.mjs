@@ -750,11 +750,11 @@ function conceptVisualSvg(config) {
       <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Exponent example">
         <rect x="8" y="20" width="404" height="160" rx="12" fill="#fef7e0" stroke="#f2c15b" stroke-width="2"/>
         <text x="60" y="70" font-size="42" font-weight="800" fill="#12355b">2</text>
-        <text x="78" y="55" font-size="22" font-weight="800" fill="#d9795d">3</text>
+        <text x="86" y="55" font-size="22" font-weight="800" fill="#d9795d">3</text>
         <text x="120" y="70" font-size="28" fill="#12355b">= 2 × 2 × 2 = 8</text>
         <text x="40" y="110" font-size="13" fill="#21313f">Base = 2 · Exponent = 3 · Multiply 2 three times</text>
         <text x="40" y="135" font-size="13" fill="#21313f" lang="es">Base = 2 · Exponente = 3 · Multiplica 2 tres veces</text>
-        <text x="40" y="165" font-size="12" fill="#5f6f80">${themeEmoji} NOT 2 + 2 + 2 — that's addition!</text>
+        <text x="40" y="165" font-size="12" fill="#5f6f80">${themeEmoji}&#160;&#160;NOT 2 + 2 + 2 — that's addition!</text>
       </svg>`;
   }
 
@@ -763,9 +763,9 @@ function conceptVisualSvg(config) {
       <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Equation example">
         <rect x="8" y="20" width="404" height="160" rx="12" fill="#dff2ee" stroke="#1fa6a2" stroke-width="2"/>
         <text x="210" y="52" text-anchor="middle" font-size="14" font-weight="700" fill="#12355b">Equation / Ecuación</text>
-        <text x="50" y="95" font-size="28" font-weight="800" fill="#12355b">n + 8 = 20</text>
-        <text x="50" y="125" font-size="13" fill="#21313f">n = unknown · + means add · = means both sides equal</text>
-        <text x="50" y="148" font-size="13" fill="#21313f" lang="es">n = incógnita · + suma · = ambos lados iguales</text>
+        <text x="50" y="105" font-size="28" font-weight="800" fill="#12355b">n + 8 = 20</text>
+        <text x="28" y="158" font-size="12" fill="#21313f">n = unknown · + means add · = means both sides equal</text>
+        <text x="28" y="174" font-size="12" fill="#21313f" lang="es">n = incógnita · + suma · = ambos lados iguales</text>
         <rect x="240" y="72" width="150" height="70" rx="8" fill="#fff" stroke="#d7e2ed"/>
         <text x="315" y="98" text-anchor="middle" font-size="12" fill="#5f6f80">Words → symbols</text>
         <text x="315" y="118" text-anchor="middle" font-size="11" fill="#21313f">"plus 8" → + 8</text>
@@ -816,8 +816,10 @@ function conceptVisualSvg(config) {
       <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Area formula">
         <rect x="8" y="20" width="404" height="160" rx="12" fill="#dff2ee" stroke="#1fa6a2" stroke-width="2"/>
         <polygon points="60,140 200,140 240,80 100,80" fill="#fff" stroke="#1fa6a2" stroke-width="2"/>
+        <line x1="100" y1="80" x2="100" y2="140" stroke="#d9795d" stroke-width="2" stroke-dasharray="5 4"/>
+        <path d="M100 131 L109 131 L109 140" fill="none" stroke="#d9795d" stroke-width="1.5"/>
         <text x="130" y="158" font-size="11" fill="#12355b">base</text>
-        <text x="248" y="108" font-size="11" fill="#12355b">height</text>
+        <text x="116" y="114" font-size="11" fill="#d9795d">height</text>
         <text x="260" y="85" font-size="16" font-weight="700" fill="#12355b">Area = base × height</text>
         <text x="260" y="110" font-size="13" fill="#21313f">Square units (in², cm²)</text>
         <text x="260" y="130" font-size="13" fill="#21313f" lang="es">Unidades cuadradas</text>
