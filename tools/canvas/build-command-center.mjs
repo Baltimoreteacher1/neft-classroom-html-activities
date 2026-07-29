@@ -20,6 +20,7 @@ import { fileURLToPath } from "url";
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const QUIZ_MAX = Number(process.env.QUIZ_MAX || 8);
 const STAMP = process.env.CC_STAMP || ""; // optional ISO timestamp (Date.* unavailable here)
+const CHECK = process.argv.includes("--check");
 
 const UNSUPPORTED_TYPES = new Set([
   "drag-sort",
@@ -108,7 +109,10 @@ function pkgInfo(name) {
   const f = resolve(pkgDir, name);
   if (!existsSync(f)) return { name, exists: false };
   const s = statSync(f);
-  return { name, exists: true, sizeKB: Math.round(s.size / 1024), mtime: s.mtime.toISOString() };
+  // File mtimes are machine-local build noise: package content can be identical
+  // while every `npm run build` rewrites status.json with a new timestamp. Keep
+  // only availability and size, which are stable properties teachers can act on.
+  return { name, exists: true, sizeKB: Math.round(s.size / 1024) };
 }
 
 const units = Object.values(unitMap).sort((a, b) => a.unit - b.unit);
@@ -187,7 +191,44 @@ const status = {
 };
 
 const outDir = resolve(repoRoot, "teacher-tools", "canvas-command-center");
-writeFileSync(resolve(outDir, "status.json"), JSON.stringify(status, null, 2) + "\n");
+const outPath = resolve(outDir, "status.json");
+const serialized = JSON.stringify(status, null, 2) + "\n";
+
+/**
+ * CI clones do not contain ignored Canvas package archives, while teacher
+ * workstations often do. Remove that local-only snapshot before comparing so
+ * `--check` catches curriculum/status drift without making clean CI clones lie
+ * about package availability. Timestamps remain forbidden everywhere.
+ */
+function stableStatus(value) {
+  if (Array.isArray(value)) return value.map(stableStatus);
+  if (!value || typeof value !== "object") return value;
+  if (typeof value.name === "string" && typeof value.exists === "boolean") {
+    return { name: value.name };
+  }
+  const next = {};
+  for (const [key, child] of Object.entries(value)) {
+    if (key === "generatedAt") continue;
+    next[key] = stableStatus(child);
+  }
+  return next;
+}
+
+if (CHECK) {
+  if (serialized.includes('"mtime"')) {
+    throw new Error("Command Center status is nondeterministic: package mtime is forbidden.");
+  }
+  const committed = JSON.parse(readFileSync(outPath, "utf8"));
+  if (JSON.stringify(stableStatus(committed)) !== JSON.stringify(stableStatus(status))) {
+    throw new Error(
+      "Command Center status is stale. Run `npm run command-center`, review status.json, and commit it.",
+    );
+  }
+  console.log("✓ Command Center status is deterministic and current.");
+  process.exit(0);
+}
+
+writeFileSync(outPath, serialized);
 console.log(
   `✓ Command Center status: ${units.length} units, ${lessons.length} lessons, ` +
     `${status.totals.mc} MC + ${status.totals.match} matching questions.`,

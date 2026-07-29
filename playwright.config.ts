@@ -13,7 +13,8 @@
 import { defineConfig, devices } from "@playwright/test";
 
 const PORT = 4178;
-const BASE_URL = `http://localhost:${PORT}`;
+const EXTERNAL_BASE_URL = process.env.PLAYWRIGHT_BASE_URL;
+const BASE_URL = EXTERNAL_BASE_URL || `http://localhost:${PORT}`;
 
 export default defineConfig({
   testDir: "./tests",
@@ -40,12 +41,14 @@ export default defineConfig({
   // Build once, then serve the static dist on the contract port. `vite preview`
   // serves the production build; `--strictPort` makes a port clash fail loudly
   // instead of silently picking another port.
-  webServer: {
-    command: `npm run build && npx vite preview --port ${PORT} --strictPort`,
-    url: BASE_URL,
-    reuseExistingServer: !process.env.CI,
-    timeout: 180_000,
-    stdout: "pipe",
-    stderr: "pipe",
-  },
+  webServer: EXTERNAL_BASE_URL
+    ? undefined
+    : {
+        command: `npm run build && npx vite preview --port ${PORT} --strictPort`,
+        url: BASE_URL,
+        reuseExistingServer: !process.env.CI,
+        timeout: 180_000,
+        stdout: "pipe",
+        stderr: "pipe",
+      },
 });

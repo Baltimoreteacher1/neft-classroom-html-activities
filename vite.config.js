@@ -44,7 +44,7 @@ function copyStandaloneHtml() {
   // shipped clobbered this way: a legacy hand-written stub of the same name sat
   // in `assets/`, so every homework page loaded 19 lines of dead code instead of
   // the interactive-visual mounter, and the model never appeared.)
-  const UNHASHED_BUNDLES = ["assets/homework-lesson-models.js"];
+  const UNHASHED_BUNDLES = ["assets/homework-lesson-models.js", "assets/nt-web-vitals.js"];
 
   return {
     name: "copy-standalone-html",
@@ -308,6 +308,16 @@ function copyStandaloneHtml() {
             "every lesson. Aborting so an incomplete bundle is not published.",
         );
       }
+      const vitalsBundle = readFileSync(
+        resolve(__dirname, "dist", "assets/nt-web-vitals.js"),
+        "utf8",
+      );
+      if (!vitalsBundle.includes("nt-web-vitals:v1")) {
+        throw new Error(
+          "copy-standalone-html: dist/assets/nt-web-vitals.js is not the bundled " +
+            "Core Web Vitals adapter. Aborting so field monitoring is not silently disabled.",
+        );
+      }
 
       // Post-build: auto-bust cache for all service workers in dist/
       const buildTimestamp = Date.now();
@@ -340,13 +350,14 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, "index.html"),
         "homework-lesson-models": resolve(__dirname, "engine/homework-lesson-models.js"),
+        "nt-web-vitals": resolve(__dirname, "assets/nt-web-vitals.js"),
         "teacher-live-snapshot": resolve(__dirname, "teacher-tools/live-snapshot/index.html"),
         ...getLessonEntries(),
       },
       output: {
         entryFileNames: (chunk) =>
-          chunk.name === "homework-lesson-models"
-            ? "assets/homework-lesson-models.js"
+          chunk.name === "homework-lesson-models" || chunk.name === "nt-web-vitals"
+            ? `assets/${chunk.name}.js`
             : "assets/[name]-[hash].js",
       },
     },

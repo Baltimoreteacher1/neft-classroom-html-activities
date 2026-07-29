@@ -1,0 +1,49 @@
+name: Production Observability
+
+# Daily read-only checks against the live site: content identity, protected
+# routes, field JavaScript errors, real-user Core Web Vitals, synthetic
+# performance budgets, and WCAG regressions. A failed run emails the owner.
+on:
+  schedule:
+    - cron: "23 10 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-observability
+  cancel-in-progress: true
+
+jobs:
+  live-health:
+    name: Live routes, field signals, performance, and accessibility
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Live content and asset smoke test
+        run: npm run smoke:live
+      - name: Live route identity and deploy freshness
+        run: node scripts/route-monitor.mjs
+      - name: Field JavaScript errors and Core Web Vitals
+        run: npm run monitor:field
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Curriculum performance budgets
+        run: npm run perf:curriculum -- --base https://eduwonderlab.com
+      - name: Production accessibility sweep
+        run: npm run audit:a11y -- --base https://eduwonderlab.com
+      - name: Upload health reports
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-health-reports
+          path: reports/
+          retention-days: 30

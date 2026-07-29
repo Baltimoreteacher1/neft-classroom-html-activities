@@ -9,8 +9,8 @@ name: Pre-Deploy Gate
 # and has historically reverted production — see CLAUDE.md). Instead, this
 # workflow GATES what is allowed to reach `main`, in strict order:
 #
-#   1. validate-and-build — repo static + reveal-math + hub-lock checks, then
-#      the full Vite production build (sequential steps in one job)
+#   1. validate-and-build — dependency audit, Biome, unit tests, repository
+#      validation, production build, and focused real-browser journeys
 #   2. claude-predeploy-verify — read-only Claude deploy-readiness review
 #
 # Claude `needs` the validate-and-build job, and within that job a failing step
@@ -51,8 +51,9 @@ jobs:
   # steps within a job already run in order, and a failing step aborts the job,
   # so "build only runs if validate passed" still holds exactly as before.
   validate-and-build:
-    name: Validate and build
+    name: Required quality gate
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     permissions:
       contents: read
     steps:
@@ -62,10 +63,39 @@ jobs:
           node-version: "22"
           cache: npm
       - run: npm ci
+      - name: Dependency audit (high severity)
+        run: npm audit --audit-level=high
+      - name: Biome check
+        run: npm run check
+      - name: Unit and contract tests
+        run: npm test
       - name: Static + reveal-math + hub-lock validation
         run: npm run validate
       - name: Vite production build
         run: npm run build
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Serve the verified production build
+        run: npx vite preview --host 127.0.0.1 --port 4178 --strictPort &
+      - name: Wait for preview
+        run: |
+          for i in $(seq 1 60); do
+            curl -fsS -o /dev/null http://127.0.0.1:4178/ && exit 0
+            sleep 1
+          done
+          echo "preview server never came up on :4178" >&2
+          exit 1
+      - name: Focused browser journeys
+        env:
+          PLAYWRIGHT_BASE_URL: http://127.0.0.1:4178
+        run: npm run e2e:pr
+      - name: Upload browser report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: predeploy-playwright-report
+          path: playwright-report/
+          retention-days: 7
 
   # ── Stage 2: Claude deploy-readiness review (only after validate + build) ────
   # Deliberately still its own job: it needs `id-token: write` and

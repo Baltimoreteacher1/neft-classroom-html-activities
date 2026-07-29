@@ -9,9 +9,12 @@
  * Routes (catch-all under /api/signal):
  *   POST /api/signal/view    { path, dwellMs, device }              -> { ok }
  *   POST /api/signal/error   { path, message, source, line }        -> { ok }
+ *   POST /api/signal/vital   { path, metric, value, device }        -> { ok }
  *   GET  /api/signal/health                                         -> { ok, d1 }
+ *   GET  /api/signal/status                                         -> aggregate health only
  *   GET  /api/signal/usage?days=14&limit=100   (TEACHER_KEY)        -> { ok, rows }
  *   GET  /api/signal/errors?days=7&limit=100   (TEACHER_KEY)        -> { ok, rows }
+ *   GET  /api/signal/vitals?days=28&limit=200  (TEACHER_KEY)        -> { ok, rows }
  *
  * WRITES ARE UNAUTHENTICATED — they must be, they come from student devices
  * with no login. That is only safe because a write can express nothing worth
@@ -52,6 +55,12 @@ const AREAS = [
 const MAX_PATH = 200;
 const MAX_MESSAGE = 300;
 const MAX_SOURCE = 200;
+const VITAL_LIMITS = { CLS: 10, INP: 60000, LCP: 60000 };
+const VITAL_THRESHOLDS = {
+  CLS: [0.1, 0.25],
+  INP: [200, 500],
+  LCP: [2500, 4000],
+};
 /** 8h. A dwell longer than a school day is a forgotten tab, not attention. */
 const MAX_DWELL_MS = 8 * 60 * 60 * 1000;
 
@@ -139,6 +148,18 @@ async function ensureSchema(db) {
       `CREATE UNIQUE INDEX IF NOT EXISTS idx_client_error_key
          ON client_error (path, message, day)`,
     ),
+    db.prepare(
+      `CREATE TABLE IF NOT EXISTS web_vital (
+         id INTEGER PRIMARY KEY AUTOINCREMENT,
+         path TEXT NOT NULL, area TEXT, day TEXT NOT NULL, device TEXT,
+         metric TEXT NOT NULL, rating TEXT NOT NULL,
+         samples INTEGER DEFAULT 0, value_sum REAL DEFAULT 0,
+         value_max REAL DEFAULT 0, updated_at TEXT NOT NULL)`,
+    ),
+    db.prepare(
+      `CREATE UNIQUE INDEX IF NOT EXISTS idx_web_vital_key
+         ON web_vital (path, day, device, metric, rating)`,
+    ),
   ]);
 }
 
@@ -194,6 +215,42 @@ async function recordError(db, body) {
   return true;
 }
 
+export function vitalRating(metric, value) {
+  const thresholds = VITAL_THRESHOLDS[metric];
+  if (!thresholds || !Number.isFinite(value) || value < 0) return "";
+  if (value <= thresholds[0]) return "good";
+  if (value <= thresholds[1]) return "needs-improvement";
+  return "poor";
+}
+
+async function recordVital(db, body) {
+  const path = normalizePath(body && body.path);
+  const metric = String((body && body.metric) || "").toUpperCase();
+  const rawValue = Number(body && body.value);
+  const rating = vitalRating(metric, rawValue);
+  if (!path || !rating) return false;
+
+  const value = Math.min(rawValue, VITAL_LIMITS[metric]);
+  const day = utcDay();
+  const device = normalizeDevice(body && body.device);
+  const area = areaOf(path);
+  const now = new Date().toISOString();
+  await db
+    .prepare(
+      `INSERT INTO web_vital
+         (path, area, day, device, metric, rating, samples, value_sum, value_max, updated_at)
+       VALUES (?1, ?2, ?3, ?4, ?5, ?6, 1, ?7, ?7, ?8)
+       ON CONFLICT (path, day, device, metric, rating) DO UPDATE SET
+         samples = samples + 1,
+         value_sum = value_sum + ?7,
+         value_max = MAX(value_max, ?7),
+         updated_at = ?8`,
+    )
+    .bind(path, area, day, device, metric, rating, value, now)
+    .run();
+  return true;
+}
+
 /** Reject oversized bodies before parsing — a beacon is a few hundred bytes. */
 async function readBody(request) {
   const length = intOr(request.headers.get("content-length"), 0);
@@ -209,6 +266,68 @@ function sinceDay(days) {
   const n = Math.min(Math.max(intOr(days, 14), 1), 400);
   const d = new Date(Date.now() - n * 86400000);
   return d.toISOString().slice(0, 10);
+}
+
+export function assessFieldHealth({ errors = 0, views = 0, vitals = [] } = {}) {
+  const errorHits = Math.max(Number(errors) || 0, 0);
+  const viewCount = Math.max(Number(views) || 0, 0);
+  const errorRate = viewCount ? errorHits / viewCount : 0;
+  const errorAlert = errorHits >= 10 && errorRate >= 0.02;
+  const vitalChecks = vitals.map((row) => {
+    const samples = Math.max(Number(row.samples) || 0, 0);
+    const good = Math.max(Number(row.good) || 0, 0);
+    const goodPercent = samples ? Math.round((1000 * good) / samples) / 10 : null;
+    return {
+      metric: row.metric,
+      device: row.device,
+      samples,
+      goodPercent,
+      status: samples < 20 ? "insufficient-data" : goodPercent >= 75 ? "good" : "alert",
+    };
+  });
+  const vitalAlert = vitalChecks.some((row) => row.status === "alert");
+  return {
+    ok: !errorAlert && !vitalAlert,
+    clientErrors: {
+      hits: errorHits,
+      views: viewCount,
+      ratePercent: viewCount ? Math.round(errorRate * 1000) / 10 : 0,
+      status: errorAlert ? "alert" : "good",
+    },
+    vitals: vitalChecks,
+  };
+}
+
+async function fieldStatus(db) {
+  const recent = sinceDay(1);
+  const vitalsFrom = sinceDay(28);
+  const [errorResult, viewResult, vitalResult] = await Promise.all([
+    db
+      .prepare("SELECT COALESCE(SUM(hits), 0) AS n FROM client_error WHERE day >= ?1")
+      .bind(recent)
+      .first(),
+    db
+      .prepare("SELECT COALESCE(SUM(views), 0) AS n FROM usage_signal WHERE day >= ?1")
+      .bind(recent)
+      .first(),
+    db
+      .prepare(
+        `SELECT metric, device, SUM(samples) AS samples,
+              SUM(CASE WHEN rating = 'good' THEN samples ELSE 0 END) AS good
+         FROM web_vital WHERE day >= ?1
+        GROUP BY metric, device ORDER BY metric, device`,
+      )
+      .bind(vitalsFrom)
+      .all(),
+  ]);
+  return {
+    ...assessFieldHealth({
+      errors: errorResult && errorResult.n,
+      views: viewResult && viewResult.n,
+      vitals: (vitalResult && vitalResult.results) || [],
+    }),
+    windows: { clientErrors: "2 UTC calendar days", vitals: "29 UTC calendar days" },
+  };
 }
 
 export async function onRequest(context) {
@@ -234,16 +353,25 @@ export async function onRequest(context) {
   }
 
   try {
-    if (request.method === "POST" && (route === "view" || route === "error")) {
+    if (request.method === "POST" && (route === "view" || route === "error" || route === "vital")) {
       const body = await readBody(request);
       if (!body) return accepted();
       await ensureSchema(env.DB);
       if (route === "view") await recordView(env.DB, body);
-      else await recordError(env.DB, body);
+      else if (route === "error") await recordError(env.DB, body);
+      else await recordVital(env.DB, body);
       return accepted();
     }
 
-    if (request.method === "GET" && (route === "usage" || route === "errors")) {
+    if (request.method === "GET" && route === "status") {
+      await ensureSchema(env.DB);
+      return json({ backend: "d1", ...(await fieldStatus(env.DB)) });
+    }
+
+    if (
+      request.method === "GET" &&
+      (route === "usage" || route === "errors" || route === "vitals")
+    ) {
       const auth = teacherAuthorized(env, request, url);
       if (auth !== "ok") {
         return json(
@@ -262,20 +390,34 @@ export async function onRequest(context) {
       const limit = Math.min(Math.max(intOr(url.searchParams.get("limit"), 100), 1), 1000);
       const from = sinceDay(url.searchParams.get("days"));
 
-      const sql =
-        route === "usage"
-          ? `SELECT path, area,
+      let sql;
+      if (route === "usage") {
+        sql = `SELECT path, area,
                     SUM(views) AS views,
                     SUM(dwell_ms_sum) AS dwell_sum,
                     SUM(dwell_n) AS dwell_n,
                     MAX(day) AS last_day
                FROM usage_signal WHERE day >= ?1
-              GROUP BY path, area ORDER BY views DESC LIMIT ?2`
-          : `SELECT path, message, source, line,
+              GROUP BY path, area ORDER BY views DESC LIMIT ?2`;
+      } else if (route === "errors") {
+        sql = `SELECT path, message, source, line,
                     SUM(hits) AS hits, MAX(last_seen) AS last_seen
                FROM client_error WHERE day >= ?1
               GROUP BY path, message, source, line
               ORDER BY hits DESC LIMIT ?2`;
+      } else {
+        sql = `SELECT path, area, device, metric,
+                      SUM(samples) AS samples,
+                      ROUND(SUM(value_sum) / SUM(samples), 3) AS average,
+                      MAX(value_max) AS maximum,
+                      SUM(CASE WHEN rating = 'good' THEN samples ELSE 0 END) AS good,
+                      SUM(CASE WHEN rating = 'needs-improvement' THEN samples ELSE 0 END) AS needs_improvement,
+                      SUM(CASE WHEN rating = 'poor' THEN samples ELSE 0 END) AS poor,
+                      MAX(day) AS last_day
+                 FROM web_vital WHERE day >= ?1
+                GROUP BY path, area, device, metric
+                ORDER BY samples DESC LIMIT ?2`;
+      }
 
       const { results } = await env.DB.prepare(sql).bind(from, limit).all();
       return json({ ok: true, since: from, rows: results || [] });
