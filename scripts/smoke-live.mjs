@@ -153,7 +153,14 @@ const isTransient = (res) => res.status === 0 || res.status === 429 || res.statu
  */
 const RETRY_BUDGET_MS = 90_000;
 const startedAt = Date.now();
-const budgetSpent = () => Date.now() - startedAt >= RETRY_BUDGET_MS;
+/**
+ * The budget guards against retry THRASH delaying an alarm. checkStamp's settle
+ * wait is not thrash — it is a deliberate, bounded wait that runs first, so
+ * counting it would leave every later check retry-less exactly when the CDN is
+ * still in flux. Discount it.
+ */
+let settleSpentMs = 0;
+const budgetSpent = () => Date.now() - startedAt - settleSpentMs >= RETRY_BUDGET_MS;
 let budgetExhausted = false;
 
 async function get(path, { attempts = RETRY_ATTEMPTS, timeoutMs = TIMEOUT_MS } = {}) {
@@ -290,16 +297,21 @@ async function checkStamp() {
   if (matches(first.commit)) return pass("build stamp", `serving ${first.commit.slice(0, 9)} as expected`);
 
   // Stale on first read — wait for the promotion to finish propagating.
-  const deadline = Date.now() + STAMP_SETTLE_MS;
+  const settleStart = Date.now();
+  const deadline = settleStart + STAMP_SETTLE_MS;
   let latest = first;
-  while (Date.now() < deadline) {
-    await sleep(STAMP_SETTLE_INTERVAL_MS);
-    latest = await readStamp();
-    if (latest.error) continue;
-    if (matches(latest.commit)) {
-      const waited = Math.round((STAMP_SETTLE_MS - (deadline - Date.now())) / 1000);
-      return pass("build stamp", `serving ${latest.commit.slice(0, 9)} as expected (converged after ${waited}s)`);
+  try {
+    while (Date.now() < deadline) {
+      await sleep(STAMP_SETTLE_INTERVAL_MS);
+      latest = await readStamp();
+      if (latest.error) continue;
+      if (matches(latest.commit)) {
+        const waited = Math.round((Date.now() - settleStart) / 1000);
+        return pass("build stamp", `serving ${latest.commit.slice(0, 9)} as expected (converged after ${waited}s)`);
+      }
     }
+  } finally {
+    settleSpentMs += Date.now() - settleStart;
   }
   return failCheck(
     "build stamp",
