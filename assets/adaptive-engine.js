@@ -337,6 +337,9 @@
   var THRESHOLD = 2;
   var PCT_GATE = 0.8;
   var MIN_FOR_PCT = 3;
+  // Struggle signal (mirrors engine/core/adaptive.js `struggleBelow`).
+  var STRUGGLE_BELOW = 0.5;
+  var STRUGGLE_MIN_ATTEMPTS = 3;
 
   function freshSkill(id, label) {
     return {
@@ -346,6 +349,7 @@
       correct: 0,
       consecutive: 0,
       mastered: false,
+      struggleReported: false, // one struggle event per skill per session
     };
   }
   function recordAttempt(skill, isCorrect) {
@@ -493,6 +497,36 @@
       ts: Date.now(),
     });
 
+    /* Producer for the "struggle" event. The teacher analytics
+       (functions/api/progress + api/misconception-heatmap) query
+       event_type IN ('struggle', 'hint-exhausted'), but nothing in the client
+       had ever emitted either name — so the misconception heatmap and Insight
+       Brief's risk tiering read zero no matter what students did. This emits the
+       first of the two; see the hint-exhausted producer further down this file.
+
+       Fires ONCE per skill per session: the teacher view counts distinct
+       struggle events, so repeating it on every miss would make one stuck
+       student look like a stuck class. Threshold mirrors
+       engine/core/adaptive.js `struggleBelow` — below 50% after a fair number of
+       tries, the same line the level-down logic already uses. */
+    if (!isCorrect && !skill.struggleReported && skill.attempts >= STRUGGLE_MIN_ATTEMPTS) {
+      var accNow = skill.attempts ? skill.correct / skill.attempts : 0;
+      if (accNow < STRUGGLE_BELOW) {
+        skill.struggleReported = true;
+        track({
+          event: "struggle",
+          activity: activityId(),
+          qid: item.qid,
+          skill: skill.id,
+          attempts: skill.attempts,
+          correct: skill.correct,
+          level: lessonLevel(),
+          misconception: misconceptionFor(item.qid),
+          ts: Date.now(),
+        });
+      }
+    }
+
     if (isCorrect) {
       clearHelp(card);
       celebrate(item.checkBtn || card);
@@ -637,6 +671,19 @@
         if (step >= ladder.hints.length) {
           hintBtn.disabled = true;
           hintBtn.textContent = "That's every hint — you've got this";
+          /* Producer for the "hint-exhausted" event — the second of the two the
+             teacher analytics query but no client emitted (see the struggle
+             producer earlier in this file). The student has now seen every hint
+             for this item and still has it open. */
+          track({
+            event: "hint-exhausted",
+            activity: activityId(),
+            qid: item.qid,
+            skill: item.skillId,
+            hints: ladder.hints.length,
+            misconception: ladder.tag || null,
+            ts: Date.now(),
+          });
         } else {
           hintBtn.textContent = "Show another hint";
         }
