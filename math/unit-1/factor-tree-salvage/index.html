@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="en">
   <head>
+<script src="/assets/game-score.js"></script>
+<script>NeftScore.init({ gameId: "factor-tree-salvage", standard: "6.NOS.4" });</script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/assets/math-mobile.css" />
@@ -1707,6 +1709,9 @@
             throw new Error("Formula contains composite values! Only prime factors are accepted.");
           }
 
+          // A submission that survives both checks is a correct factorization.
+          NeftScore.attempt(true);
+
           // If passed both, Success! pod decrypted
           if (STATE.audioInitialized) {
             AudioEngine.playPodDecryptedChord();
@@ -1728,6 +1733,9 @@
             }
           }
         } catch (e) {
+          // Every rejected submission is a wrong answer, and must be counted as
+          // one — otherwise this game would report 100% accuracy forever.
+          NeftScore.attempt(false);
           const title = STATE.language === "en" ? "Incorrect Equation" : "Ecuación Incorrecta";
           const errorText =
             STATE.language === "en" ? "Incorrect Equation! " : "¡Ecuación incorrecta! ";
