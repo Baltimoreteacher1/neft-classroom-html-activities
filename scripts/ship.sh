@@ -252,7 +252,14 @@ poll_stamp "$NEW_SHA" || exit 1
 # Verify the deployed site before calling the ship a success.
 say ""
 say "Running post-deploy smoke test against production..."
-if ! node "$ROOT/scripts/smoke-live.mjs" --expect "$NEW_SHA"; then
+# Verify with the smoke script from the COMMIT WE JUST SHIPPED ($WT), not the
+# local working tree ($ROOT). $ROOT is whatever branch happens to be checked
+# out, with whatever uncommitted edits are in flight — so a fix to the verifier
+# would not take effect on the very deploy that shipped it, and a stale or dirty
+# tree silently decides whether production is judged healthy. $WT is a clean
+# checkout of origin/main and is alive here (cleanup runs on EXIT). smoke-live
+# imports only node: builtins, so it needs no node_modules.
+if ! node "$WT/scripts/smoke-live.mjs" --expect "$NEW_SHA"; then
   say "" >&2
   say "✗ The deploy promoted but production is DEGRADED (see failures above)." >&2
   say "  Roll back by shipping the previous good commit:" >&2

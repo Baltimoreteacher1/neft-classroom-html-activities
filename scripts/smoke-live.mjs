@@ -28,6 +28,9 @@ const arg = (name) => (argv.includes(name) ? argv[argv.indexOf(name) + 1] : null
 const BASE = (arg("--base") || "https://eduwonderlab.com").replace(/\/$/, "");
 const EXPECT_SHA = arg("--expect");
 const TIMEOUT_MS = 20000;
+// External services get their own, longer budget — and unlike before, a budget
+// at all. Measured: the Apps Script insights endpoint answers in 5.5-10.2s.
+const EXTERNAL_TIMEOUT_MS = 30000;
 
 /** Pages whose failure a student or teacher would hit within the first minute. */
 const PAGES = [
@@ -104,11 +107,70 @@ const fmtSize = (n) => (n < 1024 ? `${n} B` : `${(n / 1024).toFixed(0)} KB`);
 const results = [];
 const pass = (name, detail = "") => results.push({ ok: true, name, detail });
 const failCheck = (name, detail) => results.push({ ok: false, name, detail });
+// A degraded EXTERNAL dependency is not a reason to roll back this deploy —
+// see EXTERNAL_CHECKS. Reported loudly, but never exits non-zero.
+const warnCheck = (name, detail) => results.push({ ok: true, warn: true, name, detail });
 
-async function get(path) {
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/**
+ * A blip is not a regression.
+ *
+ * Every check here used to be single-shot, so one slow edge response or 5xx
+ * during the seconds after a promotion reported "PRODUCTION IS DEGRADED — roll
+ * back", on a deploy that was fine. That fired twice on 2026-07-28 and both
+ * times a re-run immediately passed 19/19. A verifier that cries wolf gets
+ * ignored, and then it cannot do its actual job.
+ *
+ * Only TRANSPORT-level symptoms are retried: no response, a timeout, 5xx, or
+ * 429. A response that arrived and was simply wrong — 200 where 401 was
+ * required, a missing body marker, the wrong commit, a syntax error — is a real
+ * finding and fails on the first attempt. Retrying those would mask exactly the
+ * regressions this script exists to catch.
+ */
+const RETRY_ATTEMPTS = 3;
+const RETRY_BASE_MS = 1500;
+const isTransient = (res) => res.status === 0 || res.status === 429 || res.status >= 500;
+
+/**
+ * Retries must never delay the ALARM.
+ *
+ * Retrying is right for a blip, but a genuinely down site does not refuse
+ * connections — it hangs. Measured against a blackholed host, one check burns
+ * ~36s exhausting its attempts, so 18 sequential checks would sit silent for
+ * ~11 minutes before ship.sh reported anything. During a real outage that is
+ * precisely backwards: the slower the report, the longer production stays
+ * broken. Retries exist to suppress false alarms, not to postpone true ones.
+ *
+ * So the whole run carries a wall-clock budget. Once it is spent, checks still
+ * RUN — coverage is never silently reduced — but they stop retrying, and the
+ * report says so. Normal runs finish in ~10s and never reach it.
+ */
+const RETRY_BUDGET_MS = 90_000;
+const startedAt = Date.now();
+const budgetSpent = () => Date.now() - startedAt >= RETRY_BUDGET_MS;
+let budgetExhausted = false;
+
+async function get(path, { attempts = RETRY_ATTEMPTS, timeoutMs = TIMEOUT_MS } = {}) {
   const url = `${BASE}${path}`;
+  let res;
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    res = await getOnce(url, timeoutMs);
+    if (!isTransient(res)) return { ...res, attempt };
+    if (budgetSpent()) {
+      // Enough of this run has been spent waiting that further retries only
+      // delay the verdict. Fail fast from here on.
+      budgetExhausted = true;
+      return { ...res, attempt, exhausted: true, budgetHit: true };
+    }
+    if (attempt < attempts) await sleep(RETRY_BASE_MS * attempt);
+  }
+  return { ...res, attempt: attempts, exhausted: true };
+}
+
+async function getOnce(url, timeoutMs) {
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
     // Cache-bust so we test the origin's current output, not an edge copy.
     const res = await fetch(`${url}${url.includes("?") ? "&" : "?"}smoke=${Date.now()}`, {
@@ -119,17 +181,20 @@ async function get(path) {
     const body = await res.text();
     return { status: res.status, body, url };
   } catch (err) {
-    return { status: 0, body: "", url, error: err.name === "AbortError" ? `timeout after ${TIMEOUT_MS}ms` : err.message };
+    return { status: 0, body: "", url, error: err.name === "AbortError" ? `timeout after ${timeoutMs}ms` : err.message };
   } finally {
     clearTimeout(timer);
   }
 }
 
+/** Note retries on an otherwise-passing check so flakiness stays visible. */
+const retryNote = (res) => (res.attempt > 1 ? ` (after ${res.attempt} attempts)` : "");
+
 async function checkPages() {
   for (const page of PAGES) {
     const res = await get(page.path);
     if (page.authGated) {
-      if (res.status === 401) { pass(`page ${page.path}`, "401 — auth gate active"); continue; }
+      if (res.status === 401) { pass(`page ${page.path}`, "401 — auth gate active" + retryNote(res)); continue; }
       if (res.status === 200) { failCheck(`page ${page.path}`, "200 without auth — the Basic Auth gate is NOT protecting this surface"); continue; }
       failCheck(`page ${page.path}`, res.error || `HTTP ${res.status} (expected 401)`);
       continue;
@@ -147,7 +212,7 @@ async function checkPages() {
       failCheck(`page ${page.path}`, "served an error page with HTTP 200");
       continue;
     }
-    pass(`page ${page.path}`, fmtSize(res.body.length));
+    pass(`page ${page.path}`, fmtSize(res.body.length) + retryNote(res));
   }
 }
 
@@ -174,7 +239,7 @@ async function checkAssets() {
         continue;
       }
     }
-    pass(`asset ${path}`, `${fmtSize(res.body.length)} parses`);
+    pass(`asset ${path}`, `${fmtSize(res.body.length)} parses${retryNote(res)}`);
   }
 }
 
@@ -198,21 +263,39 @@ async function checkStamp() {
 }
 
 async function checkStatuses() {
-  for (const [label, target, want] of [...STATUS_CHECKS, ...EXTERNAL_CHECKS]) {
-    const isAbsolute = /^https?:\/\//.test(target);
-    let status;
-    if (isAbsolute) {
-      try {
-        status = (await fetch(target, { redirect: "follow" })).status;
-      } catch (err) {
-        failCheck(`status ${label}`, err.message);
-        continue;
-      }
-    } else {
-      status = (await get(target)).status;
+  for (const [label, target, want] of STATUS_CHECKS) {
+    const res = await get(target);
+    if (res.status === want) pass(`status ${label}`, `${res.status}${retryNote(res)}`);
+    else failCheck(`status ${label}`, res.error || `got ${res.status}, expected ${want}`);
+  }
+}
+
+/**
+ * Third-party dependencies, reported as WARNINGS.
+ *
+ * These say nothing about whether THIS deploy is good. The insights endpoint is
+ * Google Apps Script, measured at 5.5–10.2s per call with 2x variance — by far
+ * the slowest check here, and it previously ran through a bare `fetch()` with NO
+ * timeout at all, so a hung Google request could stall the whole verification
+ * indefinitely. Letting it fail the gate told you to roll back a healthy site
+ * because someone else's service was slow, which is both wrong and the kind of
+ * false alarm that trains people to ignore the gate.
+ */
+async function checkExternals() {
+  for (const [label, target, want] of EXTERNAL_CHECKS) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), EXTERNAL_TIMEOUT_MS);
+    let status = 0;
+    let error = null;
+    try {
+      status = (await fetch(target, { redirect: "follow", signal: controller.signal })).status;
+    } catch (err) {
+      error = err.name === "AbortError" ? `no response in ${EXTERNAL_TIMEOUT_MS}ms` : err.message;
+    } finally {
+      clearTimeout(timer);
     }
-    if (status === want) pass(`status ${label}`, `${status}`);
-    else failCheck(`status ${label}`, `got ${status}, expected ${want}`);
+    if (status === want) pass(`external ${label}`, `${status}`);
+    else warnCheck(`external ${label}`, `${error || `got ${status}, expected ${want}`} — third-party, does NOT block this deploy`);
   }
 }
 
@@ -221,12 +304,34 @@ await checkStamp();
 await checkPages();
 await checkAssets();
 await checkStatuses();
+await checkExternals();
 
-for (const r of results) console.log(`  ${r.ok ? "✓" : "✗"} ${r.name}${r.detail ? ` — ${r.detail}` : ""}`);
+for (const r of results) {
+  const icon = r.warn ? "!" : r.ok ? "✓" : "✗";
+  console.log(`  ${icon} ${r.name}${r.detail ? ` — ${r.detail}` : ""}`);
+}
 
 const failed = results.filter((r) => !r.ok);
-console.log(`\n${results.length - failed.length}/${results.length} checks passed`);
+const warned = results.filter((r) => r.warn);
+console.log(`\n${results.length - failed.length}/${results.length} checks passed${warned.length ? ` (${warned.length} warning(s))` : ""}`);
+
+// Repeat failures AFTER the summary. They used to print only in the middle of
+// the list, so `... | tail` showed the rollback advice without ever showing
+// which check failed — which is why two flaky ships could not be diagnosed
+// from their own output.
+if (warned.length) {
+  console.log("\n! Warnings (third-party; not caused by this deploy):");
+  for (const w of warned) console.log(`    ${w.name} — ${w.detail}`);
+}
+if (budgetExhausted) {
+  console.error(
+    `\n! Retry budget (${RETRY_BUDGET_MS / 1000}s) spent — later checks ran WITHOUT retries, so some\n` +
+      "  failures below may be transient. Every check still ran; none were skipped.",
+  );
+}
 if (failed.length) {
+  console.error("\n✗ Failed checks:");
+  for (const f of failed) console.error(`    ${f.name} — ${f.detail}`);
   console.error(`\n✗ PRODUCTION IS DEGRADED — ${failed.length} check(s) failed.`);
   console.error("  Roll back by shipping the last known-good commit:");
   console.error("      ALLOW_DEPLOY=1 npm run ship -- <last-good-sha>");
