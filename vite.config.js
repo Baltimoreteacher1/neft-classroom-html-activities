@@ -38,9 +38,23 @@ function copyStandaloneHtml() {
     /(^|[\\/])\.(claude|git|wrangler|ruff_cache)([\\/]|$)|(^|[\\/])(node_modules|_engine)([\\/]|$)|\.md$/i;
   const copyFilter = (src) => !SKIP_COPY_RE.test(src);
 
+  // Rollup emits these at fixed (unhashed) names, so a same-named file left in a
+  // copied source dir would silently overwrite the real bundle. Snapshot them
+  // before the copy and restore afterwards. (`assets/homework-lesson-models.js`
+  // shipped clobbered this way: a legacy hand-written stub of the same name sat
+  // in `assets/`, so every homework page loaded 19 lines of dead code instead of
+  // the interactive-visual mounter, and the model never appeared.)
+  const UNHASHED_BUNDLES = ["assets/homework-lesson-models.js"];
+
   return {
     name: "copy-standalone-html",
     closeBundle() {
+      const bundleSnapshots = new Map();
+      for (const rel of UNHASHED_BUNDLES) {
+        const built = resolve(__dirname, "dist", rel);
+        if (existsSync(built)) bundleSnapshots.set(rel, readFileSync(built));
+      }
+
       for (const entry of readdirSync(__dirname, { withFileTypes: true })) {
         if (!entry.isDirectory() || entry.name.startsWith(".") || SKIP_DIRS.has(entry.name))
           continue;
@@ -267,14 +281,31 @@ function copyStandaloneHtml() {
         }
       }
 
-      const requiredBundles = ["assets/homework-lesson-models.js"];
-      const missingBundles = requiredBundles.filter(
-        (rel) => !existsSync(resolve(__dirname, "dist", rel)),
+      // Restore any unhashed bundle the static copy just overwrote, then assert
+      // by CONTENT — an existence check passes just as happily on a clobbered
+      // stub, which is exactly how the dead homework model reached production.
+      for (const rel of UNHASHED_BUNDLES) {
+        const dest = resolve(__dirname, "dist", rel);
+        const snapshot = bundleSnapshots.get(rel);
+        if (!snapshot) {
+          throw new Error(
+            `copy-standalone-html: required bundle ${rel} was never emitted by Rollup. ` +
+              "Check build.rollupOptions.input / output.entryFileNames.",
+          );
+        }
+        if (!existsSync(dest) || !readFileSync(dest).equals(snapshot)) {
+          writeFileSync(dest, snapshot);
+        }
+      }
+      const homeworkBundle = readFileSync(
+        resolve(__dirname, "dist", "assets/homework-lesson-models.js"),
+        "utf8",
       );
-      if (missingBundles.length) {
+      if (!homeworkBundle.includes("data-lesson-model-host")) {
         throw new Error(
-          "copy-standalone-html: required homework model bundle missing from dist: " +
-            missingBundles.join(", "),
+          "copy-standalone-html: dist/assets/homework-lesson-models.js does not mount " +
+            "[data-lesson-model-host] — the homework interactive model would be dead on " +
+            "every lesson. Aborting so an incomplete bundle is not published.",
         );
       }
 
