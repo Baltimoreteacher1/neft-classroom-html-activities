@@ -77,12 +77,20 @@ export async function run(ctx) {
     const last = rows[0]?.last ? Date.parse(rows[0].last) : NaN;
 
     if (n === 0) {
-      details.push(`⚠️ \`${table}\` is EMPTY — nothing has ever written to it.`);
-      escalate(critical ? "fail" : "warn");
+      // "Never received anything" is NOT the same failure as "stopped
+      // receiving", and conflating them is how a nightly report gets muted. A
+      // freshly-deployed counter is legitimately empty until the next school
+      // day, so this is a warn; a table that HAD rows and went quiet is the
+      // real regression, and that is handled by the staleness branch below.
+      details.push(
+        `⚠️ \`${table}\` is empty — no first write yet. Expected until the next ` +
+          `class session; investigate if it is still empty after real traffic.`,
+      );
+      escalate("warn");
       if (critical) {
         actions.push(
-          `\`${table}\` has no rows. Check that /assets/nt-usage.js is being served ` +
-            `and that POST /api/signal/view returns 204 in the browser network tab.`,
+          `If \`${table}\` is still empty after students have used the site: check ` +
+            `that /assets/nt-usage.js is served and POST /api/signal/view returns 204.`,
         );
       }
       continue;
@@ -91,11 +99,14 @@ export async function run(ctx) {
     if (staleHours && Number.isFinite(last)) {
       const ageH = Math.round((Date.now() - last) / HOUR);
       if (ageH > staleHours) {
+        // This IS the real failure: the pipeline demonstrably worked and then
+        // stopped. Escalate a critical table to fail — unlike an empty one,
+        // there is no benign explanation.
         details.push(
           `⚠️ \`${table}\` holds ${n} rows but has received none for ${Math.round(ageH / 24)}d — ` +
             `a stalled writer, not an idle feature.`,
         );
-        escalate("warn");
+        escalate(critical ? "fail" : "warn");
         actions.push(`Investigate the writer for \`${table}\`; it has stopped reporting.`);
         continue;
       }
@@ -167,8 +178,8 @@ export async function run(ctx) {
     worst === "ok"
       ? "Telemetry is flowing and the hub is within budget."
       : worst === "fail"
-        ? "The usage instrument is not recording — the site is running blind."
-        : "Signal gaps detected (stalled writer, silent game, or perf budget).";
+        ? "A telemetry writer that used to work has stopped — the site is going blind."
+        : "Signal gaps detected (awaiting first data, silent game, or perf budget).";
 
   return { name, status: worst, summary, details, actions };
 }

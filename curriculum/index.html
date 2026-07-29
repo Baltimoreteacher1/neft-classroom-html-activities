@@ -50,8 +50,8 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <link rel="manifest" href="/manifest.webmanifest" />
-    <link rel="stylesheet" href="/assets/curriculum-enhancements.css?v=ms5c4csw" />
-    <link rel="stylesheet" href="/assets/curriculum-sidebar.css?v=ms5c4csw" />
+    <link rel="stylesheet" href="/assets/curriculum-enhancements.css?v=ms5dzbbn" />
+    <link rel="stylesheet" href="/assets/curriculum-sidebar.css?v=ms5dzbbn" />
     <script>
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", function () {
@@ -62,12 +62,24 @@
             })
             .catch(function () {});
         });
+        // Reload ONLY when a new worker replaces an old one — i.e. a deploy
+        // landed while this tab was open and the HTML in front of the student is
+        // stale. That refresh is deliberate; keep it.
+        //
+        // What is NOT deliberate: sw.js calls clients.claim(), which also fires
+        // controllerchange the FIRST time a worker takes control of an
+        // uncontrolled page. On a fresh session there is nothing stale to
+        // refresh, so this reloaded every first visit — every student paid for
+        // the hub twice, and it double-counted usage until nt-usage.js grew a
+        // dedupe. `controller` is null exactly in that first-claim case, so it
+        // is the precise discriminator.
+        var hadController = !!navigator.serviceWorker.controller;
         var refreshing = false;
         navigator.serviceWorker.addEventListener("controllerchange", function () {
-          if (!refreshing) {
-            refreshing = true;
-            window.location.reload();
-          }
+          if (!hadController) return; // first claim of this session — nothing to refresh
+          if (refreshing) return;
+          refreshing = true;
+          window.location.reload();
         });
       }
     </script>
@@ -1353,11 +1365,11 @@
         color: #ffffff;
       }
     </style>
-    <link rel="stylesheet" href="/assets/curriculum-polish.css?v=ms5c4csw" />
-    <link rel="stylesheet" href="/assets/curriculum-top1.css?v=ms5c4csw" />
-    <link rel="stylesheet" href="/assets/curriculum-teacher-workflow.css?v=ms5c4csw" />
-    <link rel="stylesheet" href="/assets/curriculum-guided-path.css?v=ms5c4csw" />
-    <link rel="stylesheet" href="/assets/curriculum-studio-journey.css?v=ms5c4csw" />
+    <link rel="stylesheet" href="/assets/curriculum-polish.css?v=ms5dzbbn" />
+    <link rel="stylesheet" href="/assets/curriculum-top1.css?v=ms5dzbbn" />
+    <link rel="stylesheet" href="/assets/curriculum-teacher-workflow.css?v=ms5dzbbn" />
+    <link rel="stylesheet" href="/assets/curriculum-guided-path.css?v=ms5dzbbn" />
+    <link rel="stylesheet" href="/assets/curriculum-studio-journey.css?v=ms5dzbbn" />
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
     <link rel="stylesheet" href="/assets/mobile-access.css" />
     <!-- mobile-access-injected:end -->
@@ -1374,9 +1386,9 @@
       }
     </style>
     <!-- generated lesson maps (tools/extract-inlined-generated-maps.mjs) -->
-  <script src="/curriculum/lesson-bonus-activities.js"></script>
-  <script src="/curriculum/lesson-family-homework.js"></script>
-</head>
+    <script src="/curriculum/lesson-bonus-activities.js"></script>
+    <script src="/curriculum/lesson-family-homework.js"></script>
+  </head>
   <body class="light-theme">
     <a class="skip-link" href="#interactive-hub">Skip to units and lessons</a>
     <header class="curriculum-guide" id="curriculum-start">
@@ -13310,7 +13322,7 @@
         window.scrollTo(0, 0);
       })();
     </script>
-    <script src="/assets/curriculum-progress-bridge.js?v=ms5c4csw" defer></script>
+    <script src="/assets/curriculum-progress-bridge.js?v=ms5dzbbn" defer></script>
     <script>
       window.CURRICULUM_SYNC = {
         // Content sync is OFF: same-origin /api/curriculum/content answers with a
@@ -13328,21 +13340,21 @@
             : "",
       };
     </script>
-    <script src="/assets/curriculum-api-loader.js?v=ms5c4csw" defer></script>
+    <script src="/assets/curriculum-api-loader.js?v=ms5dzbbn" defer></script>
     <!-- Vendored: the jsdelivr URL 404'd (minisearch v7 ships dist/umd/index.js,
          not minisearch.min.js), so browsers ORB-blocked the error page and
          MiniSearch never loaded. Serve it locally like the other vendor libs. -->
     <script src="/assets/vendor/minisearch-7.1.2.min.js" defer></script>
-    <script src="/assets/curriculum-enhancements.js?v=ms5c4csw" defer></script>
+    <script src="/assets/curriculum-enhancements.js?v=ms5dzbbn" defer></script>
     <script src="/assets/curriculum-audit-badges.js" defer></script>
-    <script src="/assets/curriculum-sidebar.js?v=ms5c4csw" defer></script>
-    <script src="/assets/curriculum-top1.js?v=ms5c4csw" defer></script>
-    <script src="/assets/curriculum-teacher-planning.js?v=ms5c4csw" defer></script>
-    <script src="/assets/curriculum-live-signal.js?v=ms5c4csw" defer></script>
-    <script src="/assets/curriculum-teacher-workflow.js?v=ms5c4csw" defer></script>
-    <script src="/assets/curriculum-guided-path.js?v=ms5c4csw" defer></script>
-    <script src="/assets/curriculum-studio-journey.js?v=ms5c4csw" defer></script>
-    <script src="/assets/curriculum-lesson-merge.js?v=ms5c4csw" defer></script>
+    <script src="/assets/curriculum-sidebar.js?v=ms5dzbbn" defer></script>
+    <script src="/assets/curriculum-top1.js?v=ms5dzbbn" defer></script>
+    <script src="/assets/curriculum-teacher-planning.js?v=ms5dzbbn" defer></script>
+    <script src="/assets/curriculum-live-signal.js?v=ms5dzbbn" defer></script>
+    <script src="/assets/curriculum-teacher-workflow.js?v=ms5dzbbn" defer></script>
+    <script src="/assets/curriculum-guided-path.js?v=ms5dzbbn" defer></script>
+    <script src="/assets/curriculum-studio-journey.js?v=ms5dzbbn" defer></script>
+    <script src="/assets/curriculum-lesson-merge.js?v=ms5dzbbn" defer></script>
     <script src="/assets/futures-lab.js?v=20260619" defer></script>
     <script src="/assets/gradebook-embed.js?v=20260624" defer></script>
 
@@ -13614,6 +13626,6 @@
       })();
     </script>
     <script src="/assets/class-board-strip.js" defer></script>
-  <script src="/assets/nt-usage.js" data-nt-usage="1" defer></script>
+    <script src="/assets/nt-usage.js" data-nt-usage="1" defer></script>
   </body>
 </html>

@@ -6,7 +6,7 @@
  * Bump CACHE on any deploy that must purge the precached shell.
  * ========================================================================== */
 
-const CACHE = "eduwonderlab-vms5c4csw";
+const CACHE = "eduwonderlab-vms5dzbbn";
 const PRECACHE_URLS = [
   "/curriculum/",
   "/curriculum/arcade/",
