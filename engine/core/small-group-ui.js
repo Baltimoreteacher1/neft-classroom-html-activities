@@ -316,6 +316,32 @@ export function injectSmallGroupStyles(accent) {
     storyboard.href = "/assets/small-group-storyboard.css?v=20260723-light1";
     document.head.appendChild(storyboard);
   }
+  // assets/small-group-designsystem.css remaps the --sg-* tokens above onto the shared
+  // design system (brand navy #12355b on cream #f7f4ec, Outfit headings) so these
+  // pathways stop looking like a different product from the interactive lessons.
+  //
+  // It is loaded HERE rather than from a <link> in the lesson shell, for two reasons:
+  //   1. Cascade. Its component rules sit at the same specificity as the #sg-styles
+  //      rules they replace, so it has to come after this <style> and after
+  //      publisher-polish. A <link> in <head> is always earlier and would lose.
+  //   2. Vite. build.cssCodeSplit is false, so any <link rel=stylesheet> in a lesson
+  //      index.html entry gets stripped and folded into the single shared style-[hash]
+  //      bundle that EVERY lesson loads — which would leak these !important token
+  //      overrides onto all 220 canonical lessons. Runtime-loading keeps it scoped,
+  //      the same reason the four sheets above are loaded this way.
+  const ensureDesignSystem = () => {
+    let ds = document.getElementById("sg-designsystem-styles");
+    if (!ds) {
+      ds = document.createElement("link");
+      ds.id = "sg-designsystem-styles";
+      ds.rel = "stylesheet";
+      ds.href = "/assets/small-group-designsystem.css";
+      document.head.appendChild(ds);
+    } else if (ds.parentNode === document.head) {
+      document.head.appendChild(ds);
+    }
+  };
+
   // Publisher polish must load AFTER base #sg-styles so additive overrides win.
   const ensurePublisherPolish = () => {
     let polish = document.getElementById("sg-publisher-polish");
@@ -331,6 +357,7 @@ export function injectSmallGroupStyles(accent) {
   };
   if (document.getElementById("sg-styles")) {
     ensurePublisherPolish();
+    ensureDesignSystem();
     return;
   }
 
@@ -639,4 +666,5 @@ export function injectSmallGroupStyles(accent) {
   `;
   document.head.appendChild(styles);
   ensurePublisherPolish();
+  ensureDesignSystem();
 }
