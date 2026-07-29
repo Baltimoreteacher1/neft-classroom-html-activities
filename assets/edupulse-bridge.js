@@ -1,9 +1,25 @@
 /**
- * edupulse-bridge.js — wires graded Neft activities into the EduPulse gradebook.
+ * edupulse-bridge.js — wires graded Neft activities into the classroom gradebook.
+ *
+ * DESTINATION CHANGED 2026-07-29. This used to POST to a separate Cloudflare
+ * Worker (edupulse-gradebook-api) with an x-ingest-key. That Worker's secret and
+ * the key shipped in assets/edupulse-config.js had drifted apart, so every write
+ * 401'd: 37 graded activities — every game on the site wired to report — recorded
+ * NOTHING, silently, for weeks. The audit that found it is
+ * `npm run audit:scores`.
+ *
+ * Rather than rotate the key and keep two score backends, this now writes to the
+ * same-origin /api/scores, i.e. `game_scores` in neft-student-progress — the
+ * table engine3d games and the Practice Arcade already use, and the one every
+ * reader (npm run brief, usage-report, insight engine) actually reads. The old
+ * Worker held 4 rows from 2 test students, last written 2026-06-11; it was never
+ * used in production. See [[project_game_score_wiring_gap]].
+ *
+ * The public API is UNCHANGED, so none of the 37 pages needed an edit.
  *
  * WHAT IT DOES
- *   1. Ships the EWLScoreBridge client (POSTs score events to the deployed
- *      Cloudflare Worker at EDUPULSE_CONFIG.apiBase, header x-ingest-key).
+ *   1. Ships the EWLScoreBridge client (POSTs score events to same-origin
+ *      /api/scores; no key, no cross-origin request, no preflight).
  *   2. Auto-wraps the two shared assessment kits so any activity built on either
  *      reports a gradebook event with NO per-activity scoring changes:
  *        - window.NTResults.finish()  (assets/nt-results.js)
@@ -13,19 +29,19 @@
  *
  * GUARANTEES
  *   - NEVER blocks or breaks an activity: all reporting is fire-and-forget and
- *     wrapped in try/catch. If the key is unset or the network fails, the
- *     activity behaves exactly as before.
- *   - Inert until configured: with the placeholder ingest key the bridge is a
- *     no-op (the Worker would 401, so we skip the call entirely).
- *   - Duplicate-safe: identical final submissions collapse to one stable eventId
- *     per student/activity/score/day, so the Worker's INSERT OR IGNORE dedupes
- *     repeated submits. Different real attempts (different score) still record.
- *   - studentId is always non-empty (the Worker requires it): derived from the
- *     typed student name, else a persisted per-device anonymous id.
+ *     wrapped in try/catch. If the network fails, the activity behaves exactly
+ *     as before.
+ *   - Always on: there is no key and nothing to configure. If D1 is unbound the
+ *     endpoint answers 503 and the failure is swallowed here.
+ *   - Duplicate-safe ACROSS RELOADS: identical final submissions collapse to one
+ *     record per student/activity/score/day. /api/scores does a plain INSERT, so
+ *     this is enforced client-side (see alreadySent/markSent) rather than by the
+ *     server as it was on the old Worker. Different real attempts still record.
+ *   - No student identity leaves the page: name, studentId and class period are
+ *     used locally for Canvas codes and roster autofill but are NOT sent.
+ *     `game_scores` has no name column and this must not add one.
  *   - Co-exists with nt-sync.js: both wrap the kits independently and chain
- *     through to the original. Different backends, no conflict.
- *
- * The ADMIN_KEY is never referenced here. Only the write-only ingest key is used.
+ *     through to the original.
  */
 (function (global) {
   "use strict";
@@ -147,6 +163,14 @@
     })();
   }
 
+  /**
+   * Same-origin classroom endpoint. Writes to `game_scores` in the
+   * neft-student-progress D1 — the SAME table engine3d games and the Practice
+   * Arcade already use, and the one `npm run brief`, scripts/usage-report.mjs
+   * and the insight engine read. One score backend, not two.
+   */
+  const SCORES_URL = "/api/scores";
+
   /* -------------------- EWLScoreBridge (ported, unchanged contract) -------- */
   class EWLScoreBridge {
     constructor({ apiBase, ingestKey, deviceId } = {}) {
@@ -167,38 +191,16 @@
 
     async record(activity) {
       activity = activity || {};
-      if (!this.apiBase || !configured(this.ingestKey)) {
-        return { queued: false, error: "Score bridge not configured." };
-      }
-      const event = {
-        eventId: activity.eventId || uuid(),
-        timestamp: activity.timestamp || new Date().toISOString(),
-        studentId: this.student.studentId || activity.studentId || "",
-        studentName: this.student.studentName || activity.studentName || "",
-        classPeriod: this.student.classPeriod || activity.classPeriod || "",
-        activityId: activity.activityId || "",
-        activityTitle: activity.activityTitle || "",
-        standard: activity.standard || "",
-        score: numberOrNull(activity.score),
-        maxScore: numberOrNull(activity.maxScore),
-        percent:
-          activity.percent != null
-            ? activity.percent
-            : calculatePercent(activity.score, activity.maxScore),
-        stars: numberOrNull(activity.stars),
-        problemsCorrect: numberOrNull(activity.problemsCorrect),
-        problemsAttempted: numberOrNull(activity.problemsAttempted),
-        misconceptions: activity.misconceptions || [],
-        durationSec: numberOrNull(activity.durationSec),
-        deviceId: this.deviceId,
-      };
-      const response = await global.fetch(this.apiBase + "/api/scores", {
+      // Same-origin now: no key to check, and nothing to be "unconfigured".
+      // The endpoint degrades to 503 on its own if D1 is unbound, and the
+      // caller below already swallows failures.
+      const event = toGameScore(activity, this.student);
+      if (!event.gameId) return { queued: false, error: "No activityId on the score event." };
+
+      const response = await global.fetch(SCORES_URL, {
         method: "POST",
-        headers: {
-          "content-type": "application/json",
-          "x-ingest-key": this.ingestKey,
-        },
-        body: JSON.stringify({ events: [event] }),
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(event),
         keepalive: true,
       });
       const data = await response.json().catch(function () {
@@ -211,16 +213,42 @@
     }
   }
 
+  /**
+   * Translate a bridge score event into the classroom /api/scores contract.
+   *
+   * `total` is ATTEMPTS, not a score out of something — that column has been
+   * misread before and the endpoint normalises on the same assumption. Map
+   * problemsAttempted to it and let `points` carry the raw score, so a game
+   * reporting "8 points, 6 of 10 correct" does not land as 8/10.
+   *
+   * Student identity is deliberately DROPPED. EduPulse stored student_name,
+   * student_id and class_period; game_scores has no name column by design, and
+   * this consolidation is not an excuse to add one. Only save_code (which the
+   * student chooses) ties a row to a person.
+   */
+  function toGameScore(activity, student) {
+    const attempted = numberOrNull(activity.problemsAttempted);
+    const correct = numberOrNull(activity.problemsCorrect);
+    const misconceptions = activity.misconceptions || [];
+
+    return {
+      gameId: String(activity.activityId || "").slice(0, 120),
+      standard: String(activity.standard || "").slice(0, 120),
+      level: numberOrNull(activity.level) || 1,
+      points: numberOrNull(activity.score) || 0,
+      correct: correct == null ? 0 : correct,
+      // Fall back to maxScore only when the activity reports no item counts at
+      // all; 1 keeps the endpoint's Math.max(1, …) from inventing a denominator.
+      total: attempted != null ? attempted : numberOrNull(activity.maxScore) || 1,
+      steps: numberOrNull(activity.durationSec) || 0,
+      misconceptionTag:
+        (Array.isArray(misconceptions) ? misconceptions[0] : misconceptions) || null,
+      saveCode: (student && student.saveCode) || null,
+      ts: activity.timestamp || new Date().toISOString(),
+    };
+  }
+
   /* -------------------- helpers -------------------- */
-  function configured(key) {
-    return !!key && key !== "PASTE_INGEST_KEY_HERE";
-  }
-  function calculatePercent(score, maxScore) {
-    var s = Number(score),
-      m = Number(maxScore);
-    if (!isFinite(s) || !isFinite(m) || m <= 0) return null;
-    return Math.round((s / m) * 1000) / 10;
-  }
   function numberOrNull(v) {
     if (v === undefined || v === null || v === "") return null;
     var n = Number(v);
@@ -343,6 +371,58 @@
   var startedAt = Date.now();
   var sentHashes = {};
 
+  /**
+   * Cross-reload submission dedupe.
+   *
+   * The old Worker deduped server-side (INSERT OR IGNORE on a stable eventId),
+   * so `sentHashes` only ever had to stop double-sends inside one page session.
+   * The classroom /api/scores does a plain INSERT with no unique constraint, so
+   * moving there without this would turn every reload-and-resubmit into a
+   * duplicate row — silently inflating attempt counts in the one table used to
+   * judge what students actually do.
+   *
+   * The key already carries a day bucket, so this reproduces the Worker's
+   * semantics exactly: identical submission, same student, same day = once.
+   * Storage failures fall back to the in-memory set (a possible duplicate beats
+   * a dropped score).
+   */
+  var SENT_PREFIX = "nt-score-sent:";
+
+  function alreadySent(key) {
+    if (sentHashes[key]) return true;
+    try {
+      return localStorage.getItem(SENT_PREFIX + hash(key)) !== null;
+    } catch (_e) {
+      return false;
+    }
+  }
+
+  function markSent(key) {
+    sentHashes[key] = true;
+    try {
+      localStorage.setItem(SENT_PREFIX + hash(key), "1");
+      pruneSentKeys();
+    } catch (_e) {
+      /* in-memory set still applies for this page session */
+    }
+  }
+
+  /** Keep the key set bounded — a year of daily play must not fill storage. */
+  function pruneSentKeys() {
+    try {
+      var keys = [];
+      for (var i = 0; i < localStorage.length; i++) {
+        var k = localStorage.key(i);
+        if (k && k.indexOf(SENT_PREFIX) === 0) keys.push(k);
+      }
+      if (keys.length <= 400) return;
+      keys.sort();
+      for (var j = 0; j < keys.length - 300; j++) localStorage.removeItem(keys[j]);
+    } catch (_e) {
+      /* pruning is best-effort */
+    }
+  }
+
   /* -------------------- Canvas completion code (math only) -------------------- */
   /* The student-facing completion code is the same one the lesson engine shows.
    * It is computed entirely client-side, so — unlike the gradebook POST below —
@@ -420,7 +500,12 @@
       payload = payload || {};
       // Show the student their Canvas code regardless of gradebook config.
       maybeShowCanvasCode(payload);
-      if (!configured(bridge.ingestKey)) return; // gradebook POST is inert until key pasted
+      // No configuration gate any more: the destination is same-origin
+      // /api/scores, which needs no key. The old gate gave a WRONG ingest key
+      // the same shape as an absent one — the bridge looked "configured",
+      // POSTed, and the Worker 401'd every time. 37 games reported nothing for
+      // weeks and no gate could see it, because a silent write failure and an
+      // unused feature are indistinguishable from the client.
       var id = resolveIdentity(payload.studentName, payload.classPeriod);
       var aId = payload.activityId || activityId();
       var score = payload.score != null ? payload.score : payload.problemsCorrect;
@@ -437,8 +522,8 @@
         (payload.stars != null ? payload.stars : "") +
         "|" +
         dayBucket();
-      if (sentHashes[dedupeKey]) return; // don't spam within this page session
-      sentHashes[dedupeKey] = true;
+      if (alreadySent(dedupeKey)) return;
+      markSent(dedupeKey);
       var eventId = payload.eventId || "ev-" + hash(dedupeKey);
 
       bridge.identify(id);
@@ -576,8 +661,9 @@
     /** Re-run the kit auto-wraps (e.g. after dynamically loading a kit). */
     rewrap: wrapAll,
     bridge: bridge,
+    /** Kept for callers that probed it; same-origin reporting is always on. */
     _configured: function () {
-      return configured(bridge.ingestKey);
+      return true;
     },
   };
 

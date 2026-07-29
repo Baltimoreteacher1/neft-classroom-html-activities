@@ -231,27 +231,69 @@
       }
     </style>
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
   <body>
     <!-- canvas-console-banner:begin -->
-    <div style="background:#12355b;color:#fff;padding:8px 16px;font:600 0.85rem system-ui,sans-serif;display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span>🎛 Part of the</span><a href="/teacher-tools/canvas-console/" style="color:#f2a93b;text-decoration:underline">Canvas Console</a><span>— every Canvas tool in one place.</span></div>
+    <div
+      style="
+        background: #12355b;
+        color: #fff;
+        padding: 8px 16px;
+        font:
+          600 0.85rem system-ui,
+          sans-serif;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+      "
+    >
+      <span>🎛 Part of the</span
+      ><a href="/teacher-tools/canvas-console/" style="color: #f2a93b; text-decoration: underline"
+        >Canvas Console</a
+      ><span>— every Canvas tool in one place.</span>
+    </div>
     <!-- canvas-console-banner:end -->
 
     <header>
       <h1>Canvas Dashboard</h1>
       <p>
-        See who finished each lesson and post grades to Canvas — without
-        collecting codes. Teacher-only.
+        See who finished each lesson and post grades to Canvas — without collecting codes.
+        Teacher-only.
+      </p>
+      <!--
+        This view reads the standalone EduPulse gradebook Worker. As of
+        2026-07-29 activities no longer write there: the bridge was consolidated
+        onto the classroom gradebook (D1 `game_scores`) because the Worker's
+        ingest key had drifted and every write had been 401-ing silently. The
+        Worker still answers, so without this banner the page would keep showing
+        its 4 archived rows as though they were current — which is exactly the
+        kind of quietly-wrong dashboard that caused the original problem to go
+        unnoticed for weeks.
+      -->
+      <p
+        class="note"
+        style="
+          border-left: 4px solid #b45309;
+          background: #fffbeb;
+          color: #7c2d12;
+          padding: 0.75rem 1rem;
+          border-radius: 0 6px 6px 0;
+        "
+      >
+        <strong>Archive view.</strong> Live scores moved to the classroom gradebook on 29 Jul 2026.
+        This page shows only activity recorded before then (4 events, Jun 2026) and will not update.
+        For current data use <a href="/teacher-tools/gradebook/">Gradebook</a> or
+        <a href="/teacher-tools/insight-brief/">Insight Brief</a>.
       </p>
     </header>
     <main>
       <p class="note">
-        Lessons quietly report each student's score to your gradebook backend.
-        This dashboard reads those scores so you can grade an assignment in two
-        clicks, and watch class progress at a glance. Your admin key is stored
-        only in this browser.
+        Lessons quietly report each student's score to your gradebook backend. This dashboard reads
+        those scores so you can grade an assignment in two clicks, and watch class progress at a
+        glance. Your admin key is stored only in this browser.
       </p>
 
       <div class="card">
@@ -259,11 +301,7 @@
         <div class="row">
           <label
             >Admin key
-            <input
-              id="adminKey"
-              type="password"
-              placeholder="paste your EduPulse admin key"
-            />
+            <input id="adminKey" type="password" placeholder="paste your EduPulse admin key" />
           </label>
           <button id="loadBtn">Load gradebook</button>
           <button id="forgetBtn" class="ghost">Forget key</button>
@@ -275,9 +313,8 @@
             No roster saved? Click to add one (once)
           </summary>
           <p class="hint">
-            Export your Canvas gradebook (Grades → Export) and drop it here. It
-            saves your class roster for name-matching (shared with the Grade
-            Bridge tool).
+            Export your Canvas gradebook (Grades → Export) and drop it here. It saves your class
+            roster for name-matching (shared with the Grade Bridge tool).
           </p>
           <input id="csvFile" type="file" accept=".csv,text/csv" />
         </details>
@@ -288,9 +325,7 @@
           <h2>⚡ One-click grade sync</h2>
           <p class="hint" id="oneClickHint"></p>
           <div class="row">
-            <button id="oneClickBtn">
-              Fetch live scores → match roster → download Canvas CSV
-            </button>
+            <button id="oneClickBtn">Fetch live scores → match roster → download Canvas CSV</button>
             <button id="oneClickEditBtn" class="ghost">Change setup</button>
           </div>
           <div id="oneClickStatus" class="status hint"></div>
@@ -319,22 +354,15 @@
               <input id="asgName" type="text" placeholder="exact Canvas name" />
             </label>
             <label
-              >Points
-              <input
-                id="asgPts"
-                type="number"
-                value="100"
-                min="1"
-                style="width: 90px"
+              >Points <input id="asgPts" type="number" value="100" min="1" style="width: 90px"
             /></label>
             <button id="gradeBtn">Match &amp; preview</button>
           </div>
           <div id="gradeReport"></div>
           <div id="gradeMap" class="hidden" style="margin-top: 14px">
             <p class="hint" style="color: var(--warn)">
-              <strong>Resolve name mismatches</strong> — map each lesson name to
-              a roster student. Your choices are remembered, so the same
-              mismatch won't come back.
+              <strong>Resolve name mismatches</strong> — map each lesson name to a roster student.
+              Your choices are remembered, so the same mismatch won't come back.
             </p>
             <div id="gradeMapRows"></div>
             <button id="applyMapBtn" class="ghost" style="margin-top: 8px">
@@ -374,10 +402,7 @@
         };
         var C = window.NeftGradeCore;
         var ADMIN_KEY = "edupulse_admin_key";
-        var apiBase = ((window.EDUPULSE_CONFIG || {}).apiBase || "").replace(
-          /\/$/,
-          "",
-        );
+        var apiBase = ((window.EDUPULSE_CONFIG || {}).apiBase || "").replace(/\/$/, "");
         var roster = C.loadRoster();
         var events = []; // normalized score events
         var built = null;
@@ -435,17 +460,12 @@
           var score = num(e.score != null ? e.score : e.problemsCorrect);
           var max = num(e.maxScore != null ? e.maxScore : e.problemsAttempted);
           var pct =
-            e.percent != null
-              ? num(e.percent)
-              : max
-                ? Math.round((score / max) * 100)
-                : null;
+            e.percent != null ? num(e.percent) : max ? Math.round((score / max) * 100) : null;
           return {
             name: e.studentName || e.student_name || e.studentId || "",
             period: e.classPeriod || e.class_period || "",
             activityId: e.activityId || e.activity_id || "",
-            title:
-              e.activityTitle || e.activity_title || e.activityId || "Lesson",
+            title: e.activityTitle || e.activity_title || e.activityId || "Lesson",
             score: score,
             max: max,
             percent: pct,
@@ -460,14 +480,7 @@
 
         function pickArray(data) {
           if (Array.isArray(data)) return data;
-          return (
-            data.events ||
-            data.scores ||
-            data.rows ||
-            data.data ||
-            data.results ||
-            []
-          );
+          return data.events || data.scores || data.rows || data.data || data.results || [];
         }
 
         /* ---------- load from API (optional onReady callback chains the
@@ -490,8 +503,7 @@
           conn("Loading…", "");
           fetch(apiBase + "/api/scores", { headers: { "x-admin-key": key } })
             .then(function (r) {
-              if (r.status === 401)
-                throw new Error("Admin key rejected (401). Check the key.");
+              if (r.status === 401) throw new Error("Admin key rejected (401). Check the key.");
               if (!r.ok) throw new Error("Server " + r.status);
               return r.json();
             })
@@ -544,8 +556,7 @@
                 : kind === "warn"
                   ? "var(--warn)"
                   : "var(--muted)";
-          $("connStatus").innerHTML =
-            '<span style="color:' + color + '">' + esc(msg) + "</span>";
+          $("connStatus").innerHTML = '<span style="color:' + color + '">' + esc(msg) + "</span>";
         }
 
         /* ---------- best score per (student, activity) ---------- */
@@ -555,8 +566,7 @@
             if (activityId && e.activityId !== activityId) return;
             if (period && e.period !== period) return;
             var k = C.norm(e.name);
-            if (!best[k] || (e.percent || 0) > (best[k].percent || 0))
-              best[k] = e;
+            if (!best[k] || (e.percent || 0) > (best[k].percent || 0)) best[k] = e;
           });
           return best;
         }
@@ -601,10 +611,7 @@
         function syncAsgName() {
           var sel = $("lessonSel");
           var label = sel.options[sel.selectedIndex]
-            ? sel.options[sel.selectedIndex].textContent.replace(
-                /\s*\([^)]*\)\s*$/,
-                "",
-              )
+            ? sel.options[sel.selectedIndex].textContent.replace(/\s*\([^)]*\)\s*$/, "")
             : "";
           if (!$("asgName").value) $("asgName").value = label;
         }
@@ -681,12 +688,8 @@
               $("gradeDl").classList.toggle("hidden", !res.matched.length);
               if (downloadCsv()) {
                 var extra =
-                  (res.unmatched.length
-                    ? " " + res.unmatched.length + " unmatched"
-                    : "") +
-                  (res.missing.length
-                    ? " · " + res.missing.length + " no submission"
-                    : "");
+                  (res.unmatched.length ? " " + res.unmatched.length + " unmatched" : "") +
+                  (res.missing.length ? " · " + res.missing.length + " no submission" : "");
                 $("oneClickStatus").innerHTML =
                   '<span style="color:var(--ok)">Downloaded ' +
                   res.matched.length +
@@ -719,13 +722,7 @@
             '<option value="">— skip —</option>' +
             roster
               .map(function (s) {
-                return (
-                  '<option value="' +
-                  esc(s.name) +
-                  '">' +
-                  esc(s.name) +
-                  "</option>"
-                );
+                return '<option value="' + esc(s.name) + '">' + esc(s.name) + "</option>";
               })
               .join("");
           $("gradeMapRows").innerHTML = d.unmatched
@@ -770,14 +767,10 @@
             d.matched.length +
             " matched</span>" +
             (d.unmatched.length
-              ? '<span class="pill warn">' +
-                d.unmatched.length +
-                " unmatched name</span>"
+              ? '<span class="pill warn">' + d.unmatched.length + " unmatched name</span>"
               : "") +
             (d.missing.length
-              ? '<span class="pill warn">' +
-                d.missing.length +
-                " no submission</span>"
+              ? '<span class="pill warn">' + d.missing.length + " no submission</span>"
               : "") +
             "</div>";
           html +=
@@ -806,13 +799,7 @@
               '<p class="hint t-warn" style="margin-top:12px;"><strong>Unmatched names (fix spelling or grade manually):</strong></p>';
             html += d.unmatched
               .map(function (u) {
-                return (
-                  '<span class="pill warn">' +
-                  esc(u.name) +
-                  " · " +
-                  esc(u.code) +
-                  "</span>"
-                );
+                return '<span class="pill warn">' + esc(u.name) + " · " + esc(u.code) + "</span>";
               })
               .join(" ");
           }
@@ -839,8 +826,7 @@
             if (period && e.period !== period) return;
             byStu[e.name] = byStu[e.name] || {};
             var cur = byStu[e.name][e.activityId];
-            if (cur == null || (e.percent || 0) > cur)
-              byStu[e.name][e.activityId] = e.percent || 0;
+            if (cur == null || (e.percent || 0) > cur) byStu[e.name][e.activityId] = e.percent || 0;
           });
           var names = Object.keys(byStu).sort();
           // summary
@@ -874,8 +860,7 @@
             "%</span>" +
             "</div>";
           if (!names.length) {
-            $("progGrid").innerHTML =
-              '<p class="hint">No data for this period.</p>';
+            $("progGrid").innerHTML = '<p class="hint">No data for this period.</p>';
             return;
           }
           var html = "<table><thead><tr><th>Student</th>";
@@ -964,6 +949,6 @@
         });
       })();
     </script>
-  <script src="/assets/nt-usage.js" data-nt-usage="1" defer></script>
+    <script src="/assets/nt-usage.js" data-nt-usage="1" defer></script>
   </body>
 </html>
