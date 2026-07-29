@@ -29,6 +29,9 @@
     grid.parentNode.insertBefore(shell, grid);
     shell.appendChild(rail);
     shell.appendChild(grid);
+    grid.dataset.lazyUnitCatalog = "1";
+    var orderedCards = cards.slice();
+    var activeNum = null;
 
     cards.forEach(function (card, i) {
       var num = cardNum(card) || String(i + 1);
@@ -49,13 +52,23 @@
       rail.appendChild(btn);
     });
 
-    function getCards() {
-      return Array.prototype.slice.call(grid.querySelectorAll(":scope > .unit-card"));
+    function attachAll() {
+      orderedCards.forEach(function (card) {
+        grid.appendChild(card);
+      });
+    }
+    function showOne(num) {
+      orderedCards.forEach(function (card) {
+        if (cardNum(card) === num) grid.appendChild(card);
+        else if (card.parentNode === grid) card.remove();
+      });
     }
     function activate(num, scroll) {
-      getCards().forEach(function (c) {
+      activeNum = num;
+      orderedCards.forEach(function (c) {
         c.classList.toggle("curr-active", cardNum(c) === num);
       });
+      if (shell.classList.contains("curr-detail-mode")) showOne(num);
       rail.querySelectorAll(".curr-rail-item").forEach(function (b) {
         b.setAttribute("aria-current", b.dataset.num === num ? "true" : "false");
       });
@@ -74,6 +87,8 @@
       var browse = !!(searching || filtering);
       shell.classList.toggle("curr-detail-mode", !browse);
       shell.classList.toggle("curr-browse-mode", browse);
+      if (browse) attachAll();
+      else if (activeNum) showOne(activeNum);
     }
     if (search) search.addEventListener("input", syncMode);
     document.addEventListener("click", function (e) {

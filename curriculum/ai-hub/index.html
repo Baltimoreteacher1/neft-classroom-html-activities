@@ -4923,7 +4923,7 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
           ],
           parent: {
             practicePrompt:
-              "Act as a Grade 6 math teacher. Create 3 ratio scaling problems based on recipe prep or traveling speed rates. Include answers.",
+              "Act as a Grade 6 math teacher. Create 3 ratio scaling problems based on recipe prep or traveling speed rates. Do not include final answers; use progressive hints and ask the learner to explain.",
             analogyPrompt:
               "Explain what a ratio is and how it relates to scaling a recipe to a child using baking or paint-mixing examples.",
           },
@@ -5286,7 +5286,7 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
             }
           ],
           parent: {
-            practicePrompt: "Act as a Grade 6 math teacher. Create 3 volume and surface area word problems for rectangular prisms. Include answers.",
+            practicePrompt: "Act as a Grade 6 math teacher. Create 3 volume and surface area word problems for rectangular prisms. Do not include final answers; use progressive hints and ask the learner to explain.",
             analogyPrompt: "Explain the difference between volume and surface area using a present box (wrapping paper on outside vs filling with toys)."
           }
         },
@@ -5405,7 +5405,7 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
           ],
           parent: {
             practicePrompt:
-              "Act as a Grade 6 math teacher. Write 3 equation word problems where students write and solve one-step or two-step equations. Include answers.",
+              "Act as a Grade 6 math teacher. Write 3 equation word problems where students write and solve one-step or two-step equations. Do not include final answers; use progressive hints and ask the learner to explain.",
             analogyPrompt:
               "Explain variables, constants, and equations using a balanced scale analogy where weights must remain balanced on both sides.",
           },
@@ -5637,7 +5637,7 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
           ],
           parent: {
             practicePrompt:
-              "Act as a Grade 6 math teacher. Write 3 coordinate graphing challenges with points in all four quadrants. Include answers.",
+              "Act as a Grade 6 math teacher. Write 3 coordinate graphing challenges with points in all four quadrants. Do not include final answers; use progressive hints and ask the learner to explain.",
             analogyPrompt:
               "Explain coordinate graphing coordinates to a child using a treasure map analogy with east/west and north/south steps.",
           },
@@ -5746,7 +5746,7 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
             }
           ],
           parent: {
-            practicePrompt: "Act as a Grade 6 math teacher. Create a financial budgeting task with $100 spending limit, discounts, and sales tax. Include answers.",
+            practicePrompt: "Act as a Grade 6 math teacher. Create a financial budgeting task with $100 spending limit, discounts, and sales tax. Do not include final answers; use progressive hints and ask the learner to explain.",
             analogyPrompt: "Explain sales tax and interest using simple sharing analogies, like sharing cookie pieces for community needs."
           }
         }
@@ -5935,7 +5935,7 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
             },
             3: {
               practice:
-                "Act as a Grade 6 math teacher. Create 3 ratio scaling problems based on recipe prep or traveling speed rates. Include answers.",
+                "Act as a Grade 6 math teacher. Create 3 ratio scaling problems based on recipe prep or traveling speed rates. Do not include final answers; use progressive hints and ask the learner to explain.",
               analogy:
                 "Explain what a ratio is and how it relates to scaling a recipe to a child using baking or paint-mixing examples.",
             },
@@ -5953,13 +5953,13 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
             },
             6: {
               practice:
-                "Act as a Grade 6 math teacher. Create 3 volume and surface area word problems for rectangular prisms. Include answers.",
+                "Act as a Grade 6 math teacher. Create 3 volume and surface area word problems for rectangular prisms. Do not include final answers; use progressive hints and ask the learner to explain.",
               analogy:
                 "Explain the difference between volume and surface area using a present box (wrapping paper on outside vs filling with toys).",
             },
             7: {
               practice:
-                "Act as a Grade 6 math teacher. Write 3 equation word problems where students write and solve one-step or two-step equations. Include answers.",
+                "Act as a Grade 6 math teacher. Write 3 equation word problems where students write and solve one-step or two-step equations. Do not include final answers; use progressive hints and ask the learner to explain.",
               analogy:
                 "Explain variables, constants, and equations using a balanced scale analogy where weights must remain balanced on both sides.",
             },
@@ -5971,13 +5971,13 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
             },
             9: {
               practice:
-                "Act as a Grade 6 math teacher. Write 3 coordinate graphing challenges with points in all four quadrants. Include answers.",
+                "Act as a Grade 6 math teacher. Write 3 coordinate graphing challenges with points in all four quadrants. Do not include final answers; use progressive hints and ask the learner to explain.",
               analogy:
                 "Explain coordinate graphing coordinates to a child using a treasure map analogy with east/west and north/south steps.",
             },
             10: {
               practice:
-                "Act as a Grade 6 math teacher. Create a financial budgeting task with $100 spending limit, discounts, and sales tax. Include answers.",
+                "Act as a Grade 6 math teacher. Create a financial budgeting task with $100 spending limit, discounts, and sales tax. Do not include final answers; use progressive hints and ask the learner to explain.",
               analogy:
                 "Explain sales tax and interest using simple sharing analogies, like sharing cookie pieces for community needs.",
             },
@@ -6406,9 +6406,9 @@ My name is Maya Johnson. I live at 18 Cedar Lane. My school password is Tigers20
             if (STATE.hintClickCount === 1) {
               hintText = `💡 <strong>Small Hint:</strong> ${dialogue.hint || "Think about the steps to solve this math problem."}`;
             } else if (STATE.hintClickCount === 2) {
-              hintText = `💡 <strong>Stronger Hint:</strong> The expected value is close to or equal to ${dialogue.expected[0]}. Check your place value or arithmetic!`;
+              hintText = "💡 <strong>Stronger Hint:</strong> Name the representation or inverse operation you will use. Check one step, then explain why that step is valid.";
             } else {
-              hintText = `🎓 <strong>Worked Example:</strong> For this challenge, we follow the math rules. The final target answer is: <strong>${dialogue.expected[0]}</strong>. Try to write this value in the input field!`;
+              hintText = `🎓 <strong>Parallel Example:</strong> ${dialogue.parallelExample || "Try the same strategy with different, simpler numbers. Show each step, check the result, and then return to the target problem."} Do not use the target problem's final value.`;
             }
           }
           

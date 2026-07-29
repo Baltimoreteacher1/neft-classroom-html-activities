@@ -6,11 +6,16 @@
  * Bump CACHE on any deploy that must purge the precached shell.
  * ========================================================================== */
 
-const CACHE = "eduwonderlab-vms5y7hzt";
+const CACHE = "eduwonderlab-vms6d7j7f";
+const USER_OFFLINE_CACHE = "eduwonderlab-user-offline-v1";
 const PRECACHE_URLS = [
   "/curriculum/",
   "/curriculum/arcade/",
+  "/curriculum/student-launch/",
+  "/curriculum/data-privacy/",
   "/math/games/",
+  "/data/curriculum-manifest.json",
+  "/data/curriculum-launch-manifest.json",
   "/assets/game-access.js",
   "/assets/game-fx.js",
   "/assets/game-fx.css",
@@ -22,6 +27,8 @@ const PRECACHE_URLS = [
   "/assets/curriculum-teacher-workflow.css",
   "/assets/curriculum-guided-path.css",
   "/assets/curriculum-studio-journey.css",
+  "/assets/curriculum-product-upgrades.css",
+  "/assets/curriculum-student-launch.css",
   "/assets/mobile-access.css",
   "/assets/nt-signal.js",
   "/assets/curriculum-api-loader.js",
@@ -34,6 +41,8 @@ const PRECACHE_URLS = [
   "/assets/curriculum-teacher-workflow.js",
   "/assets/curriculum-guided-path.js",
   "/assets/curriculum-studio-journey.js",
+  "/assets/curriculum-product-upgrades.js",
+  "/assets/curriculum-student-launch.js",
   "/assets/class-board-strip.js",
   "/assets/vendor/minisearch-7.1.2.min.js",
   "/assets/favicon.svg",
@@ -57,7 +66,7 @@ self.addEventListener("activate", (event) => {
       .then((keys) =>
         Promise.all(
           keys.map((key) => {
-            if (key !== CACHE) {
+            if (key !== CACHE && key !== USER_OFFLINE_CACHE) {
               return caches.delete(key);
             }
           }),

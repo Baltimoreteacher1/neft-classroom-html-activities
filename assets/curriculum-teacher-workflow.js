@@ -649,12 +649,28 @@
       });
     }
 
-    // "Lesson Readiness" and "Favorites & recent lessons" sections retired to
-    // keep the cockpit lean — the full readiness detail (success criteria,
-    // misconceptions, WIDA supports, sequences, substitute plan) still ships in
-    // the printable lesson plan (Print lesson plan) and the Weekly Pacing /
-    // Next-Day Plan tabs. The docked Units & Lessons library below is the place
-    // to browse; the cockpit is just: pick a lesson → teach / launch it.
+    var readinessCard = el("section", "ctw-readiness");
+    readinessCard.appendChild(el("h3", null, "Lesson Readiness"));
+    readinessCard.appendChild(
+      el(
+        "p",
+        "ctw-muted",
+        "Use the success criteria and likely misconception to make the first instructional move.",
+      ),
+    );
+    var readinessGrid = el("div", "ctw-readiness-grid");
+    readinessGrid.append(
+      _kv("Success criteria", readiness.successCriteria),
+      _kv("Prerequisite", readiness.prerequisite),
+      _kv("Common misconception", readiness.misconception),
+      _kv("Teacher response", readiness.responseMove),
+      _kv("WIDA 1–2", support.wida12),
+      _kv("WIDA 3–4", support.wida34),
+      _kv("SPED access", support.sped),
+      _kv("Extension", support.extension),
+    );
+    readinessCard.appendChild(readinessGrid);
+    stage.appendChild(readinessCard);
   }
 
   function renderPanel() {

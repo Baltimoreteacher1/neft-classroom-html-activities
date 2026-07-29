@@ -62,6 +62,11 @@ check(
   launcher.includes('searchParams.set("student", "1")'),
   "student launcher forces student-safe lesson routes",
 );
+check(
+  launcher.includes("function querySupports()") &&
+    launcher.includes('url.hash = "supports=" + supports.join(",")'),
+  "student launcher safely carries teacher-selected supports into lessons",
+);
 check(launcher.includes("updateNextStep"), "student progress produces a next instructional move");
 check(
   launcherHtml.includes("first name and last initial"),

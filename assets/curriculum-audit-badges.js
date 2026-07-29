@@ -74,6 +74,10 @@
     if (entry.supports && entry.supports.esol)
       wrap.appendChild(el("span", "audit-badge info", "ESOL Support"));
     var r = entry.resources || {};
+    if (entry.standard) wrap.appendChild(el("span", "audit-badge gray", entry.standard));
+    if (entry.timeEstimate) wrap.appendChild(el("span", "audit-badge gray", entry.timeEstimate));
+    if (r.lesson?.exists && (r.guidedNotes?.exists || r.handout?.exists))
+      wrap.appendChild(el("span", "audit-badge gray", "Digital + print"));
     if (r.familyPage && r.familyPage.exists)
       wrap.appendChild(el("span", "audit-badge gray", "Family Page"));
     if (r.teacherNotes && r.teacherNotes.exists)
@@ -90,6 +94,7 @@
 
   function enhanceCard(card, entry) {
     var status = statusOf(entry);
+    card.setAttribute("data-quality-source", "curriculum-manifest");
     // problem = anything not fully ready, used by the "show only problems" filter.
     card.setAttribute(
       "data-audit-status",

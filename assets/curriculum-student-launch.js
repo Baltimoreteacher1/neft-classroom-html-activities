@@ -42,6 +42,19 @@
     return ids.slice(0, 20);
   }
 
+  function querySupports() {
+    var raw = new URLSearchParams(window.location.search).get("supports") || "";
+    return raw
+      .split(",")
+      .map(function (item) {
+        return item.trim();
+      })
+      .filter(function (item) {
+        return /^[a-z0-9][a-z0-9-]{0,49}$/.test(item);
+      })
+      .slice(0, 30);
+  }
+
   function setText(id, value) {
     var node = byId(id);
     if (node) node.textContent = value || "";
@@ -51,6 +64,8 @@
     if (!path || !path.startsWith("/lessons/")) return path;
     var url = new URL(path, window.location.origin);
     url.searchParams.set("student", "1");
+    var supports = querySupports();
+    if (supports.length) url.hash = "supports=" + supports.join(",");
     return url.pathname + url.search + url.hash;
   }
 
@@ -106,7 +121,8 @@
     } else if (boxes.lesson && boxes.explain && !boxes.check) {
       message = "Next: complete the final check to show what you know.";
     } else if (boxes.lesson && boxes.explain && boxes.check) {
-      message = "Lesson complete. If the final check felt difficult, use Student Help; if it felt solid, choose Practice or Challenge in the lesson.";
+      message =
+        "Lesson complete. If the final check felt difficult, use Student Help; if it felt solid, choose Practice or Challenge in the lesson.";
     }
     setText("next-step", message);
   }

@@ -13,13 +13,14 @@
  *  3. Any function in the CRITICAL list (chat pipeline) is missing or never
  *     referenced.
  *  4. Any element id is duplicated (getElementById silently picks the first).
+ *  5. Progressive hints do not reveal a target response or request final answers.
  *
  * Runs via `npm run validate:ai-hub` (part of `npm run validate`, which the
  * pre-push qa:loop executes), so a regression cannot reach main unnoticed.
  */
 
 import { readFileSync } from "node:fs";
-import { resolve, dirname } from "node:path";
+import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -29,9 +30,7 @@ const src = readFileSync(filePath, "utf8");
 const failures = [];
 
 // ---------------------------------------------------------------- script text
-const scriptBlocks = [...src.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(
-  (m) => m[1],
-);
+const scriptBlocks = [...src.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((m) => m[1]);
 if (scriptBlocks.length === 0) {
   failures.push("no inline <script> block found — page rewrite removed it?");
 }
@@ -71,9 +70,7 @@ for (const m of src.matchAll(
 }
 for (const fn of [...handlerNames].sort()) {
   if (!isDefined(fn)) {
-    failures.push(
-      `inline handler calls ${fn}() but no definition exists (dead button)`,
-    );
+    failures.push(`inline handler calls ${fn}() but no definition exists (dead button)`);
   }
 }
 
@@ -92,7 +89,11 @@ const CRITICAL = [
 for (const fn of CRITICAL) {
   if (!new RegExp(`function\\s+${fn}\\s*\\(`).test(script)) {
     failures.push(`critical function ${fn} is not defined (tutor chat breaks)`);
-  } else if (!new RegExp(`${fn}\\s*\\(`, "g").test(script.replace(new RegExp(`function\\s+${fn}\\s*\\(`), ""))) {
+  } else if (
+    !new RegExp(`${fn}\\s*\\(`, "g").test(
+      script.replace(new RegExp(`function\\s+${fn}\\s*\\(`), ""),
+    )
+  ) {
     failures.push(`critical function ${fn} is defined but never called`);
   }
 }
@@ -107,6 +108,20 @@ for (const [id, count] of idCounts) {
   if (count > 1) {
     failures.push(`duplicate id "${id}" appears ${count}× in static markup`);
   }
+}
+
+// 5. Student help must scaffold reasoning, never disclose the target response.
+if (src.includes("Include answers.")) {
+  failures.push("practice prompt requests final answers instead of progressive hints");
+}
+if (src.includes("final target answer")) {
+  failures.push("fallback hint exposes the final target response");
+}
+if (/Stronger Hint:[\s\S]{0,220}dialogue\.expected/.test(script)) {
+  failures.push("stronger hint interpolates the expected response");
+}
+if (/Worked Example:[\s\S]{0,220}dialogue\.expected/.test(script)) {
+  failures.push("worked example interpolates the expected response");
 }
 
 // ------------------------------------------------------------------- report

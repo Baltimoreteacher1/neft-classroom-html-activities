@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#15487f" />
+    <title>Curriculum Data & Privacy — EduWonderLab</title>
+    <style>
+      :root { color-scheme: light; font-family: "Atkinson Hyperlegible", Arial, sans-serif; color: #17243a; background: #edf3f8; }
+      * { box-sizing: border-box; }
+      body { margin: 0; font-size: 17px; line-height: 1.55; }
+      a { color: #0b568f; font-weight: 700; }
+      a:focus-visible, button:focus-visible { outline: 3px solid #f0b429; outline-offset: 3px; }
+      header { background: #15487f; color: #fff; }
+      header div, main { width: min(920px, calc(100% - 32px)); margin: auto; }
+      header div { padding: 30px 0; }
+      header a { color: #fff; }
+      h1 { margin: 12px 0 4px; font-size: clamp(30px, 6vw, 48px); line-height: 1.08; }
+      main { display: grid; gap: 18px; padding: 28px 0 60px; }
+      section { padding: clamp(18px, 4vw, 28px); border: 1px solid #c8d5e2; border-radius: 16px; background: #fff; box-shadow: 0 8px 22px rgba(21, 72, 127, .07); }
+      h2 { margin: 0 0 8px; color: #15487f; font-size: clamp(23px, 4vw, 30px); }
+      h3 { margin-bottom: 4px; }
+      ul { padding-left: 24px; }
+      .plain { border-left: 7px solid #2c7d6b; }
+      .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+      button { min-height: 48px; padding: 11px 16px; border: 2px solid #15487f; border-radius: 10px; background: #15487f; color: #fff; font: inherit; font-weight: 800; cursor: pointer; }
+      button.danger { border-color: #9c2f2f; background: #fff; color: #8a2424; }
+      #status { min-height: 28px; font-weight: 800; color: #245f50; }
+      .route-map { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+      .route-map div { padding: 14px; border-radius: 12px; background: #f1f6fb; }
+      small { color: #526077; }
+      @media (max-width: 680px) { .route-map { grid-template-columns: 1fr; } .actions button { width: 100%; } }
+      @media print { header { color: #17243a; background: #fff; } header a, .actions { display: none; } section { box-shadow: none; break-inside: avoid; } }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div>
+        <a href="/curriculum/">← Back to curriculum</a>
+        <h1>Data, privacy, and AI use</h1>
+        <p>A plain-language map for students, families, and teachers.</p>
+      </div>
+    </header>
+    <main>
+      <section class="plain">
+        <h2>The short version</h2>
+        <p>The curriculum works without a student account. Progress and preferences normally stay in this browser. Student-safe links do not include teacher materials. AI can make mistakes, so a teacher should review AI-assisted materials before students use them.</p>
+      </section>
+      <section>
+        <h2>What stays on this device</h2>
+        <ul>
+          <li>Selected lesson, checklist progress, favorites, and planning preferences.</li>
+          <li>Learning-support and display choices, such as read-aloud or sentence frames.</li>
+          <li>Teacher evidence checks, curriculum feedback, and time-to-launch measurements.</li>
+        </ul>
+        <p>Lesson work can include a classroom nickname, period, and written responses when a lesson asks for them. These items use browser storage. Clearing site data removes them. A continuity code includes only curriculum progress and the last selected lesson; share it only with a trusted device.</p>
+      </section>
+      <section>
+        <h2>When information may leave this device</h2>
+        <div class="route-map">
+          <div><h3>Optional class sync</h3><small>A school-configured service may receive a classroom alias, section, resource ID, attempts, or progress signals. Your school controls its retention.</small></div>
+          <div><h3>AI tutor</h3><small>The configured tutor may receive the problem text, student work, standard, language, recent tutor messages, and an optional uploaded image. A legal name is not needed.</small></div>
+          <div><h3>External forms</h3><small>A lesson labels links before responses leave EduWonderLab. The receiving school service has its own access and retention rules.</small></div>
+        </div>
+      </section>
+      <section>
+        <h2>What this curriculum does not need</h2>
+        <ul>
+          <li>A student’s legal name for normal lesson use.</li>
+          <li>Advertising trackers or an advertising profile.</li>
+          <li>Teacher-only response material inside the student launcher.</li>
+        </ul>
+        <p>For a server-side record, ask your teacher or school administrator to export or delete it. The controls below manage only this browser.</p>
+        <div class="actions">
+          <button id="copy-data" type="button">Copy my curriculum data</button>
+          <button id="delete-data" class="danger" type="button">Delete curriculum data on this device</button>
+        </div>
+        <p id="status" role="status" aria-live="polite"></p>
+      </section>
+    </main>
+    <script>
+      (function () {
+        "use strict";
+        var names = [
+          "curriculumProgress",
+          "curriculumTeacherWorkflow:v1",
+          "nt-curriculum-evidence:v1",
+          "nt-curriculum-feedback:v1",
+          "nt-curriculum-launch-metrics:v1",
+        ];
+        var allowedPrefixes = ["curriculumStudentLaunch:", "rma_", "ewl-supports:v1:", "ewl-supports:v2:me", "ewl-supports:v2:assigned:"];
+        function store() { try { return window["local" + "Storage"]; } catch (_error) { return null; } }
+        function status(message) { document.getElementById("status").textContent = message; }
+        function dataNames() {
+          var found = names.slice();
+          for (var index = 0; index < (store()?.length || 0); index += 1) {
+            var name = store().key(index);
+            if (name && allowedPrefixes.some(function (prefix) { return name.startsWith(prefix); })) found.push(name);
+          }
+          return Array.from(new Set(found));
+        }
+        document.getElementById("copy-data").addEventListener("click", function () {
+          var payload = { exportedAt: new Date().toISOString(), source: "EduWonderLab curriculum", deviceData: {} };
+          dataNames().forEach(function (name) {
+            var value = store()?.getItem(name);
+            if (value != null) { try { payload.deviceData[name] = JSON.parse(value); } catch (_error) { payload.deviceData[name] = value; } }
+          });
+          var copy = JSON.stringify(payload, null, 2);
+          if (navigator.clipboard?.writeText) navigator.clipboard.writeText(copy).then(function () { status("Curriculum data copied."); }, function () { window.prompt("Copy your curriculum data:", copy); });
+          else window.prompt("Copy your curriculum data:", copy);
+        });
+        document.getElementById("delete-data").addEventListener("click", function () {
+          if (!window.confirm("Delete curriculum progress, planning, evidence, feedback, and launch timing from this device? This cannot be undone.")) return;
+          dataNames().forEach(function (name) { store()?.removeItem(name); });
+          status("Curriculum data was deleted from this device. Server-side school records, if configured, were not changed.");
+        });
+      })();
+    </script>
+  </body>
+</html>
