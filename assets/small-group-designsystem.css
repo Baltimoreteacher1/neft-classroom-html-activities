@@ -1,0 +1,296 @@
+/* ============================================================================
+   small-group-designsystem.css
+   Retrofits the EduWonderLab shared design system onto small-group pathways
+   (*-group1, *-group2, *-catchup) so they match the interactive lessons.
+
+   WHY THIS FILE EXISTS
+   The small-group renderer ships a private style island: engine/core/small-group-ui.js
+   injects ~330 of its own rules at runtime under an --sg-* token namespace. The shared
+   bundle (engine/styles/design-system.css) is on the page, but the island never reads a
+   single token from it. Three consequences:
+
+     1. Off-brand palette.  Small group uses hue #33568f / soft #eef2fa (cold
+        slate blue). The site brand is navy #12355b on warm cream #f7f4ec.
+     2. Fallback typography. Small-group CSS asks for "Nunito", which the lesson
+        shell never loads — so it silently renders in the browser's generic
+        sans while interactive lessons render in Outfit / Hanken Grotesk.
+        This is the single biggest "looks unfinished" tell.
+     3. Heavier chrome. Rotating ring pseudo-elements, a floating hero mark,
+        900-weight clamp(30px,5vw,48px) headings, 18px radii and deep shadows,
+        against the restrained section-title / badge / btn system used elsewhere.
+
+   HOW IT WORKS
+   Overrides the --sg-* custom properties rather than rewriting components, so a
+   single file restyles all 128 small-group pathways at once and survives
+   rebuilds of small-group-renderer.js as long as the token names hold.
+   !important is required on the token declarations because the renderer writes
+   its palette from a JS theme object into an injected <style> at runtime.
+
+   LOAD ORDER — DO NOT add a <link> to this file in a lesson index.html
+   This sheet is appended at runtime by injectSmallGroupStyles() in
+   engine/core/small-group-ui.js, and it has to stay that way:
+
+     1. Cascade. Its component rules sit at the SAME specificity as the
+        #sg-styles rules they replace, so it must come after that injected
+        <style> and after small-group-publisher-polish.css. A <link> in <head>
+        is always earlier in the cascade and would silently lose — only the
+        !important token block above would survive.
+     2. Vite. build.cssCodeSplit is false, so a <link rel=stylesheet> in a
+        lesson index.html entry gets stripped from the page and folded into the
+        single shared style-[hash].css that EVERY lesson loads — leaking these
+        !important --sg-* overrides onto all 220 canonical lessons.
+
+   Both were observed, not assumed. See the commit that added this file.
+   ============================================================================ */
+
+/* ---------------------------------------------------------------------------
+   1. TOKEN REMAP — small-group palette -> shared design system
+   --------------------------------------------------------------------------- */
+
+:root,
+html,
+body,
+[data-sg-scene],
+[class*="sg-"] {
+  /* Core hue: cold slate #33568f -> brand navy */
+  --sg:        #12355b !important;  /* was #33568f */
+  --sg-deep:   #0d2846 !important;  /* was #284164 */
+  --sg-ink:    #12355b !important;
+  --sg-rule:   #12355b !important;
+
+  /* Surfaces: cold blue-grey -> warm cream + white cards */
+  --sg-soft:   #f7f4ec !important;  /* was #eef2fa — brand cream */
+  --sg-card:   #ffffff !important;
+  --sg-paper:  #ffffff !important;
+  --sg-figure: #ffffff !important;
+  --sg-fill:   #e8eef4 !important;
+
+  /* Lines + text: match --line / --muted / --ink */
+  --sg-line:   #d7e2ed !important;
+  --sg-muted:  #45535f !important;
+  --sg-text:   #19262f !important;
+
+  /* Status colors: align to shared teal / coral / amber */
+  --sg-good:      #0c6f6b !important;  /* --teal-ink */
+  --sg-good-bg:   #dff2ee !important;  /* --teal-light */
+  --sg-good-ink:  #0a4f4c !important;
+  --sg-bad:       #d9795d !important;  /* --coral */
+  --sg-bad-bg:    #fbeee9 !important;
+  --sg-bad-ink:   #7c3a26 !important;
+  --sg-warn:      #8a5a00 !important;  /* --amber-ink */
+  --sg-warn-bg:   #fdf3e0 !important;
+  --sg-warn-ink:  #8a5a00 !important;
+  --sg-warn-line: #f2c15b !important;  /* --amber */
+}
+
+/* Per-pathway accent.
+   The renderer writes --sg-pop as an INLINE style on <html> from its JS theme
+   object, so it can only be beaten by !important, and the pathway can only be
+   identified by matching the value it wrote. Substring selectors keep the three
+   pathways visually distinct while pulling each onto a brand accent. */
+html                    { --sg-pop: #1fa6a2 !important; }  /* fallback: teal  */
+html[style*="2f8f7d"]   { --sg-pop: #1fa6a2 !important; }  /* Foundations -> teal  */
+html[style*="e0a63c"]   { --sg-pop: #f2c15b !important; }  /* Challenge   -> amber */
+html[style*="5a9e52"]   { --sg-pop: #d9795d !important; }  /* Catch-Up    -> coral */
+
+/* ---------------------------------------------------------------------------
+   2. TYPOGRAPHY — stop asking for a font the shell never loads
+   --------------------------------------------------------------------------- */
+
+[class*="sg-"],
+.sg-hero h1,
+.sg-h h2,
+.sg-eyebrow,
+.sg-kicker,
+.sg-step,
+.sg-mode,
+.sg-teacher summary,
+.sg-obj-more > summary,
+.sg-h .n {
+  font-family: var(--fl-body, "Hanken Grotesk", system-ui, -apple-system, sans-serif);
+}
+
+/* Display face for headings, matching the interactive lesson shell. */
+.sg-hero h1,
+.sg-h h2 {
+  font-family: "Outfit", var(--fl-body, system-ui), sans-serif;
+}
+
+/* Type scale: pull back from 900-weight display sizing to .section-title. */
+.sg-hero h1 {
+  font-size: clamp(1.9rem, 1.4rem + 2.2vw, 2.6rem);
+  font-weight: 800;
+  letter-spacing: -.02em;
+}
+
+.sg-h h2 {
+  font-size: 1.7rem;          /* matches .section-title */
+  font-weight: 800;
+  letter-spacing: -.02em;
+  color: var(--navy, #12355b);
+}
+
+.sg-eyebrow {
+  font-size: .78rem;
+  font-weight: 800;
+  letter-spacing: .04em;      /* matches .badge tracking, was .07em */
+  color: var(--teal-ink, #0c6f6b);
+}
+
+.sg-obj      { font-size: 1.05rem; font-weight: 700; }
+.sg-context  { font-size: 1.05rem; font-weight: 600; line-height: 1.6; }
+.sg-tagline  { font-size: 1rem;    font-weight: 600; }
+.sg-build-intro { font-size: 1.05rem; font-weight: 600; line-height: 1.6; }
+
+/* ---------------------------------------------------------------------------
+   3. HERO — flatten to the interactive lesson hero
+   --------------------------------------------------------------------------- */
+
+.sg-hero {
+  padding: 26px 24px 24px;
+  border-radius: var(--radius-lg, 22px);
+  background: linear-gradient(135deg, var(--sg-deep) 0%, var(--sg) 72%);
+  box-shadow: var(--shadow-md, 0 8px 24px #12355b1a);
+}
+
+/* Remove the rotating ring + radial bloom — the interactive hero has neither. */
+.sg-hero::before,
+.sg-hero::after { content: none !important; }
+
+/* Stop the floating animation on the hero mark. */
+.sg-hero-mark { animation: none !important; }
+
+/* Kicker -> .lesson-hero-badge */
+.sg-kicker {
+  padding: 4px 10px;
+  border: 1px solid #ffffff33;
+  border-radius: var(--radius-full, 999px);
+  background: #ffffff24;
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+/* Chips -> pill badges rather than square tags */
+.sg-chip {
+  padding: 5px 12px;
+  border: 1px solid #ffffff2e;
+  border-radius: var(--radius-full, 999px);
+  background: #ffffff1f;
+  font-size: .78rem;
+  font-weight: 800;
+  letter-spacing: .04em;
+}
+
+/* ---------------------------------------------------------------------------
+   4. STEP RAIL — quieter, aligned to .phase-btn
+   --------------------------------------------------------------------------- */
+
+.sg-rail,
+.sg-tabs {
+  border-radius: var(--radius-md, 16px);
+  border: 1px solid var(--sg-line);
+  background: #fffffff2;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 2px 10px #12355b12;
+}
+
+.sg-step { border-radius: var(--radius-sm, 12px); font-weight: 700; }
+.sg-step .dot { border-radius: 8px; font-weight: 800; }
+.sg-step[aria-selected="true"] { background: var(--sg); color: #fff; }
+.sg-step[aria-selected="true"] .dot { background: var(--sg-pop); color: var(--sg-deep); }
+
+/* ---------------------------------------------------------------------------
+   5. CARDS + CONTROLS — match shared radii, borders, shadows
+   --------------------------------------------------------------------------- */
+
+.sg-mission,
+.sg-talk,
+.prob,
+.sg-vcard {
+  border: 1px solid var(--sg-line);
+  border-radius: var(--radius-md, 16px);
+  box-shadow: var(--shadow-md, 0 8px 24px #12355b1a);
+}
+
+.sg-vcard-picture { border-radius: var(--radius-sm, 12px); }
+
+/* Section number badge: drop the asymmetric 12/5 corner cut. */
+.sg-h .n {
+  border-radius: var(--radius-sm, 12px);
+  font-weight: 800;
+}
+
+/* Buttons -> .btn-primary / .btn-secondary */
+.sg-next-btn {
+  border-radius: var(--radius-sm, 12px);
+  background: var(--teal-ink, #0c6f6b);
+  color: #fff;
+  font-weight: 800;
+  box-shadow: 0 4px 12px #0c6f6b52;
+}
+.sg-next-btn:hover:not(:disabled) { transform: none; background: #0a5b57; }
+
+.sg-pulse-btn,
+.sg-role-btn,
+.sg-match-btn {
+  border-width: 2px;
+  border-radius: var(--radius-sm, 12px);
+  font-weight: 700;
+}
+.sg-pulse-btn:hover,
+.sg-role-btn:hover,
+.sg-match-btn:hover { border-color: var(--teal, #1fa6a2); }
+
+.sg-ta {
+  border-width: 2px;
+  border-radius: var(--radius-sm, 12px);
+}
+
+/* Sentence frames -> .sentence-frame */
+.sg-frame,
+.sg-word {
+  border-radius: var(--radius-sm, 12px);
+  background: #1fa6a20f;
+  border: 1px dashed #1fa6a240;
+  color: var(--ink, #19262f);
+  font-weight: 700;
+}
+
+/* Teacher panel: solid border reads more finished than dashed. */
+.sg-teacher details {
+  border: 1px solid var(--sg-line);
+  border-left: 4px solid var(--amber, #f2c15b);
+  border-radius: var(--radius-md, 16px);
+}
+
+/* Mode bar -> brand navy instead of #28344c */
+.sg-mode { background: var(--sg-deep); }
+.sg-mode--teacher { background: #5c3c05; }
+.sg-mode-action { border-radius: var(--radius-sm, 12px); }
+
+/* ---------------------------------------------------------------------------
+   6. QUALITY FLOOR — focus + reduced motion
+   --------------------------------------------------------------------------- */
+
+.sg-step:focus-visible,
+.sg-next-btn:focus-visible,
+.sg-pulse-btn:focus-visible,
+.sg-role-btn:focus-visible,
+.sg-match-btn:focus-visible,
+.sg-mode-action:focus-visible,
+.sg-ta:focus-visible {
+  outline: 3px solid var(--ewl-color-focus, #3b82f6);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sg-hero-mark,
+  .sg-tabpanel:not([hidden]),
+  .sg-match-btn.correct,
+  .sg-match-btn.wrong {
+    animation: none !important;
+  }
+  .sg-next-btn:hover:not(:disabled) { transform: none !important; }
+}
