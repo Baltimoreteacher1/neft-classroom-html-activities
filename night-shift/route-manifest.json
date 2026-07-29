@@ -1,7 +1,7 @@
 {
   "$schema": "./route-manifest.note",
   "name": "Neft Classroom — Live Route Smoke Manifest",
-  "updated": "2026-07-03",
+  "updated": "2026-07-29",
   "note": "Source of truth for the synthetic live-route monitor (scripts/route-monitor.mjs and night-shift module 05). Each route asserts the LIVE site serves the RIGHT app: correct HTTP status AND distinctive content markers present. This is what catches the whole-site-overwrite / curriculum-clobber incident class — a deploy can return 200 while serving foreign or stripped content. Markers are real substrings present in each page's source; add routes as new public surfaces ship.",
   "base": "https://eduwonderlab.com",
   "timeoutMs": 15000,
@@ -125,6 +125,27 @@
       "expect": "gated",
       "requireMarkers": [
         "Canvas"
+      ]
+    },
+    {
+      "path": "/api/signal/health",
+      "label": "Anonymous field-signal backend",
+      "expect": "public",
+      "contentTypeOk": "json",
+      "requireMarkers": [
+        "\"ok\":true",
+        "\"d1\":true"
+      ]
+    },
+    {
+      "path": "/api/signal/status",
+      "label": "Aggregate JavaScript error and Core Web Vitals health",
+      "expect": "public",
+      "contentTypeOk": "json",
+      "requireMarkers": [
+        "\"backend\":\"d1\"",
+        "\"clientErrors\"",
+        "\"vitals\""
       ]
     }
   ]

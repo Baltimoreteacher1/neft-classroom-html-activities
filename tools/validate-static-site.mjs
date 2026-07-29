@@ -22,6 +22,11 @@ const requiredFiles = [
 
 const errors = [];
 const warnings = [];
+// Stable public paths emitted by Rollup from source modules. They deliberately
+// do not exist under the same source path; vite.config.js snapshots/restores
+// them after the static assets copy and fails the build if their contracts are
+// missing. Treating them as absent here produced 74 false warnings per run.
+const VITE_EMITTED_ASSETS = new Set(["/assets/homework-lesson-models.js"]);
 
 for (const file of requiredFiles) {
   if (!existsSync(join(root, file))) errors.push(`Missing required deployment file: ${file}`);
@@ -48,6 +53,7 @@ for (const file of htmlFiles) {
     const normalized = asset.endsWith("/") ? `${asset}index.html` : asset;
     if (
       asset.match(/\.(css|js|json|txt|xml|png|jpg|jpeg|webp|svg|ico)$/i) &&
+      !VITE_EMITTED_ASSETS.has(asset) &&
       !existsSync(join(root, normalized))
     ) {
       warnings.push(`${rel}: linked asset not found: ${asset}`);

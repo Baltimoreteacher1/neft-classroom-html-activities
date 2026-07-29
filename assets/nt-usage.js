@@ -4,6 +4,7 @@
  * things and nothing else:
  *   1. that this path was opened (once per page load, on hide)
  *   2. that this path threw a JS error (deduped per page load)
+ *   3. its LCP, INP, and CLS rating from the official web-vitals library
  *
  * It is the network-facing counterpart to assets/nt-signal.js (which is
  * device-local and never phones home). Read that file's header first: the
@@ -13,6 +14,7 @@
  * WHAT IS SENT
  *   { path, dwellMs, device }            -> POST /api/signal/view
  *   { path, message, source, line }      -> POST /api/signal/error
+ *   { path, metric, value, device }       -> POST /api/signal/vital
  * No names, no save codes, no roster ids, no cookies, no storage writes, no
  * query strings, no referrer, no user-agent string, no stack traces. `device`
  * is a 3-value width bucket. There is no client-generated id of any kind, so
@@ -40,7 +42,9 @@
 
   var VIEW_URL = "/api/signal/view";
   var ERROR_URL = "/api/signal/error";
+  var VITAL_URL = "/api/signal/vital";
   var MAX_ERRORS_PER_PAGE = 3; // a broken render loop must not become a flood
+  var MAX_VITALS_PER_PAGE = 3; // exactly CLS, INP, and LCP
   var MAX_MESSAGE = 300;
   var TEACHER_MODE_KEY = "nt-teacher-mode";
   var DEDUPE_PREFIX = "nt-usage:seen:";
@@ -49,6 +53,7 @@
 
   var sent = false;
   var errorCount = 0;
+  var vitalCount = 0;
   var seenErrors = {};
   var visibleSince = 0;
   var dwellMs = 0;
@@ -198,6 +203,29 @@
     });
   }
 
+  function sendVital(metric) {
+    if (vitalCount >= MAX_VITALS_PER_PAGE || !metric) return;
+    var name = String(metric.metric || "").toUpperCase();
+    var value = Number(metric.value);
+    if (!/^(CLS|INP|LCP)$/.test(name) || !Number.isFinite(value) || value < 0) return;
+    vitalCount += 1;
+    post(VITAL_URL, {
+      path: path(),
+      metric: name,
+      value: value,
+      device: device(),
+    });
+  }
+
+  function loadWebVitals() {
+    if (doc.querySelector('script[data-nt-web-vitals="1"]')) return;
+    var script = doc.createElement("script");
+    script.type = "module";
+    script.src = "/assets/nt-web-vitals.js";
+    script.setAttribute("data-nt-web-vitals", "1");
+    doc.head.appendChild(script);
+  }
+
   function onVisibility() {
     if (doc.visibilityState === "hidden") {
       sendView();
@@ -240,7 +268,9 @@
       /** Exposed for tests and for pages that unload without a hide event. */
       flush: sendView,
       reportError: sendError,
+      reportVital: sendVital,
     };
+    loadWebVitals();
   } catch (_) {
     /* instrumentation must never break a lesson */
   }
