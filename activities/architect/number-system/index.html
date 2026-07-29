@@ -1,0 +1,1706 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Unit 1 — Riverbend Relief Depot | The Number System (6.NOS.2–4)</title>
+    <meta
+      name="description"
+      content="Grade 6 Math Architect challenge for Unit 1: prime factorization, GCF, LCM, multi-digit division, and decimal operations in a community relief-depot packing line."
+    />
+
+    <!-- Shared theme -->
+    <link rel="stylesheet" href="/assets/neft-theme.css" />
+    <script src="/assets/neft-theme.js" defer></script>
+    <!-- Activity kit (grading + save) -->
+    <link rel="stylesheet" href="/assets/nt-activity-kit.css" />
+    <script src="/assets/nt-activity-kit.js"></script>
+
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/edupulse-bridge.js"></script>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        background: var(--nt-bg);
+        color: var(--nt-text);
+        line-height: 1.5;
+        font-size: 18px;
+      }
+      .wrap {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 20px 16px 72px;
+      }
+
+      /* Chrome shared with every Architect page lives in
+         /assets/architect-polish.css — only widget geometry belongs here. */
+      .learning-target,
+      .card {
+        background: var(--nt-surface);
+      }
+      /* Fallback so white hero text stays legible if the shared polish
+         stylesheet ever fails to load; polish.css restyles this in place. */
+      header.hero {
+        color: #fff;
+        background: linear-gradient(135deg, #a8365f, #631f3a);
+        border-radius: 16px;
+        padding: 26px 24px 22px;
+        margin-bottom: 18px;
+      }
+      .learning-target ul {
+        margin: 0 0 12px;
+        padding-left: 1.4em;
+      }
+      .lt-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+      }
+      header.hero .tag {
+        display: inline-block;
+        font:
+          700 12px ui-monospace,
+          Menlo,
+          Consolas,
+          monospace;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+      }
+      header.hero h1 {
+        margin: 0 0 8px;
+      }
+      .badges,
+      .cycle {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 14px;
+      }
+      .cycle div {
+        flex: 1 1 150px;
+      }
+      .cycle b {
+        display: block;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+      }
+      .progress {
+        margin-top: 14px;
+      }
+      .bar {
+        height: 12px;
+        margin-top: 8px;
+      }
+      .bar > span {
+        display: block;
+        height: 100%;
+        width: 0;
+        transition: width 220ms ease;
+      }
+      .muted {
+        color: var(--nt-muted);
+      }
+      .grid2 {
+        display: grid;
+        gap: 18px;
+      }
+      @media (min-width: 760px) {
+        .grid2 {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      .grid3 {
+        display: grid;
+        gap: 14px;
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      }
+
+      /* ── Depot panel: the dark "worksite" surface every widget sits on ── */
+      .bp {
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        color: #dbe4ff;
+      }
+      .bp-cap {
+        font:
+          700 11px ui-monospace,
+          monospace;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #a9bcf0;
+      }
+
+      /* ── Factor tree ── */
+      .tree {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+      }
+      .tree-row {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .node {
+        min-width: 62px;
+        min-height: 44px;
+        padding: 8px 12px;
+        border-radius: 10px;
+        font:
+          800 20px system-ui,
+          sans-serif;
+        color: #0f1b3d;
+        background: #cfe0ff;
+        border: 2px solid #7fa4f0;
+        cursor: pointer;
+      }
+      .node[data-state="prime"] {
+        background: #b8f0d8;
+        border-color: #3ec99a;
+        cursor: default;
+      }
+      .node[data-state="done"] {
+        background: #dfe7f7;
+        border-color: #9db4dd;
+        color: #465b86;
+        cursor: default;
+      }
+      .node:disabled {
+        cursor: default;
+      }
+      .split-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .split {
+        min-height: 44px;
+        padding: 8px 14px;
+        border-radius: 999px;
+        font:
+          700 16px ui-monospace,
+          monospace;
+        background: #10182f;
+        color: #dbe4ff;
+        border: 2px solid #6f8ed6;
+        cursor: pointer;
+      }
+      .split:hover {
+        background: #1b2b52;
+      }
+
+      /* ── Steppers (kit packer, pallet stacker) ── */
+      .stepper {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .stepbtn {
+        min-width: 48px;
+        min-height: 48px;
+        border-radius: 12px;
+        font:
+          800 22px system-ui,
+          sans-serif;
+        background: var(--nt-surface);
+        color: var(--nt-text);
+        border: 2px solid var(--nt-border);
+        cursor: pointer;
+      }
+      .stepval {
+        min-width: 92px;
+        text-align: center;
+        font:
+          800 26px ui-monospace,
+          monospace;
+        color: #fff;
+      }
+      .readout {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        background: rgba(255, 255, 255, 0.07);
+        border: 1px solid rgba(160, 185, 255, 0.28);
+      }
+      .readout .k {
+        display: block;
+        text-transform: uppercase;
+        color: #a9bcf0;
+        font-weight: 700;
+      }
+      .readout .v {
+        font-weight: 800;
+        color: #fff;
+      }
+      .verdict {
+        font-weight: 800;
+        border-radius: 10px;
+        padding: 8px 12px;
+      }
+      .verdict.ok {
+        background: rgba(62, 201, 154, 0.22);
+        color: #b8f0d8;
+      }
+      .verdict.no {
+        background: rgba(255, 138, 160, 0.18);
+        color: #ffd2da;
+      }
+
+      /* ── Kit / pallet tiles ── */
+      .tiles {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+      }
+      .tile {
+        width: 20px;
+        height: 20px;
+        border-radius: 5px;
+        background: #4f79d8;
+        border: 1px solid #7fa4f0;
+      }
+      .tile.left {
+        background: transparent;
+        border-style: dashed;
+        border-color: #ff9db0;
+      }
+
+      /* ── Delivery calendar ── */
+      .cal {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(44px, 1fr));
+        gap: 6px;
+      }
+      .day {
+        min-height: 44px;
+        border-radius: 9px;
+        border: 1px solid rgba(160, 185, 255, 0.3);
+        background: rgba(255, 255, 255, 0.05);
+        color: #dbe4ff;
+        font:
+          700 14px ui-monospace,
+          monospace;
+        cursor: pointer;
+      }
+      .day[data-a="1"] {
+        background: rgba(90, 150, 255, 0.4);
+        border-color: #7fa4f0;
+      }
+      .day[data-b="1"] {
+        background: rgba(255, 196, 92, 0.35);
+        border-color: #ffc45c;
+        color: #fff4dc;
+      }
+      .day[data-a="1"][data-b="1"] {
+        background: linear-gradient(135deg, #5a96ff, #ffc45c);
+        color: #10182f;
+        font-weight: 800;
+      }
+      .legend {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        font-size: 14px;
+      }
+      .legend span::before {
+        content: "";
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        border-radius: 4px;
+        margin-right: 6px;
+        vertical-align: -2px;
+      }
+      .legend .la::before {
+        background: #5a96ff;
+      }
+      .legend .lb::before {
+        background: #ffc45c;
+      }
+      .legend .lc::before {
+        background: linear-gradient(135deg, #5a96ff, #ffc45c);
+      }
+
+      /* ── Cost board ── */
+      table.bt {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      table.bt th,
+      table.bt td {
+        text-align: left;
+        padding: 9px 10px;
+        border-bottom: 1px solid var(--nt-border);
+      }
+      table.bt td.n {
+        text-align: right;
+        font-family: ui-monospace, monospace;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+
+      /* ── Distributive chips ── */
+      .chips {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .chip {
+        min-height: 48px;
+        padding: 10px 20px;
+        border-radius: 12px;
+        font:
+          800 20px ui-monospace,
+          monospace;
+        background: var(--nt-surface);
+        color: var(--nt-text);
+        border: 2px solid var(--nt-border);
+        cursor: pointer;
+      }
+      .chip[aria-pressed="true"] {
+        border-color: #0b7a55;
+        background: rgba(16, 160, 121, 0.16);
+      }
+      .identity {
+        font:
+          800 clamp(20px, 3.4vw, 28px) ui-monospace,
+          monospace;
+        text-align: center;
+        padding: 16px;
+        border-radius: 12px;
+        background: var(--nt-bg);
+        border: 1px solid var(--nt-border);
+      }
+
+      /* ── Questions ── */
+      .q .lbl {
+        font-weight: 700;
+      }
+      .q .row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .q input[type="text"] {
+        width: 150px;
+        font:
+          700 18px ui-monospace,
+          monospace;
+        background: var(--nt-surface);
+        color: var(--nt-text);
+        border: 2px solid var(--nt-border);
+      }
+      .q .unit {
+        font-weight: 700;
+        color: var(--nt-muted);
+      }
+      .q .fb {
+        min-height: 1.3em;
+        font-weight: 700;
+      }
+      .btn {
+        font: inherit;
+        font-weight: 700;
+        border-radius: 10px;
+        border: 2px solid var(--nt-accent);
+        background: var(--nt-accent);
+        color: #fff;
+        cursor: pointer;
+      }
+      .btn.ghost {
+        background: transparent;
+        color: var(--nt-accent);
+      }
+      #submitBtn {
+        font-size: 1.15rem;
+        padding: 14px 26px;
+        margin: 6px 0 18px;
+      }
+      .lvl p {
+        margin: 0;
+      }
+      .lvl .pill {
+        display: inline-block;
+        font-weight: 800;
+        border-radius: 999px;
+        color: #fff;
+      }
+      .es {
+        display: block;
+        font-style: italic;
+      }
+      .tag-shape {
+        display: inline-block;
+      }
+
+      details.teacher-only {
+        border: 1px dashed var(--nt-border);
+        border-radius: 12px;
+        padding: 12px 16px;
+        margin-bottom: 18px;
+        background: var(--nt-surface);
+      }
+      details.teacher-only summary {
+        font-weight: 800;
+        color: var(--nt-accent);
+        cursor: pointer;
+      }
+      .details-body h3 {
+        margin: 14px 0 6px;
+      }
+      .rubric-wrap {
+        overflow-x: auto;
+      }
+      table.rubric {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 560px;
+      }
+      table.rubric th,
+      table.rubric td {
+        text-align: left;
+        padding: 10px;
+        border-bottom: 1px solid var(--nt-border);
+        vertical-align: top;
+      }
+      #ntkit {
+        margin-top: 12px;
+      }
+
+      @media print {
+        details.teacher-only,
+        .btn,
+        #submitBtn {
+          display: none !important;
+        }
+      }
+    </style>
+    <!-- Math Architect shared polish layer (assets/architect-polish.css) -->
+    <link rel="stylesheet" href="/assets/architect-polish.css" />
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
+  <!-- nsr-injected:end -->
+  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+  <link rel="stylesheet" href="/assets/mobile-access.css">
+  <!-- mobile-access-injected:end -->
+</head>
+
+  <body class="nt-theme-aware" data-arc-unit="ns">
+    <div id="a11y-feedback" role="status" aria-live="polite" aria-atomic="true"></div>
+
+    <div class="wrap">
+      <!-- ══ LEARNING TARGETS ══ -->
+      <section class="learning-target" aria-label="Learning targets">
+        <h2>Learning Targets</h2>
+        <ul>
+          <li>I can write the prime factorization of a number using a factor tree.</li>
+          <li>
+            I can find the greatest common factor (GCF) of two numbers and use it to make equal
+            groups with nothing left over.
+          </li>
+          <li>
+            I can find the least common multiple (LCM) of two numbers and use it to predict when two
+            repeating events happen on the same day.
+          </li>
+          <li>I can divide multi-digit numbers and explain what the remainder means.</li>
+          <li>I can add, subtract, multiply, and divide decimals to plan a budget.</li>
+          <li>
+            I can use the distributive property to rewrite a sum of two numbers with a common
+            factor.
+          </li>
+        </ul>
+        <div class="lt-meta">
+          <span>Standards: CCSS 6.NOS.2 · 6.NOS.3 · 6.NOS.4</span>
+          <span>Time: ~45 min</span>
+          <span>Materials: This activity (device or printed), scratch paper</span>
+          <span>Grade 6</span>
+        </div>
+      </section>
+
+      <!-- ══ TEACHER NOTES (hidden in print) ══ -->
+      <details class="teacher-only" aria-label="Teacher notes">
+        <summary>Teacher Notes (not printed)</summary>
+        <div class="details-body">
+          <h3>Pacing</h3>
+          <ul>
+            <li>
+              <strong>Launch (5 min):</strong> Read "The Brief" together. Anchor the job: every kit
+              must be <em>identical</em> and nothing may be left over — that is what makes it a GCF
+              problem, not a division problem.
+            </li>
+            <li>
+              <strong>Depot work (30 min):</strong> Students complete Task 1 → 6 in order. Task 2
+              needs the factor trees from Task 1, and Task 5 needs the case count from Task 4, so
+              encourage them to check each task before moving on.
+            </li>
+            <li>
+              <strong>Debrief (5–10 min):</strong> Compare Task 2 (GCF — cutting a total into equal
+              groups) with Task 3 (LCM — waiting for two cycles to line up). Students routinely swap
+              these; the depot context makes the difference concrete.
+            </li>
+          </ul>
+          <h3>Differentiation</h3>
+          <ul>
+            <li>
+              <strong>Level 1 (support):</strong> Use the green callouts and the bilingual (EN/ES)
+              prompts. The kit packer and the calendar both let students find the answer by trial
+              before computing it — let them, then ask "how could the factor tree have told you
+              that?"
+            </li>
+            <li>
+              <strong>Level 2 (enrichment):</strong> Use the purple callouts. Ask students to prove
+              the GCF from the two prime factorizations instead of listing factors, and to explain
+              why LCM(6, 8) is 24 and not 48.
+            </li>
+          </ul>
+          <h3>Watch for</h3>
+          <ul>
+            <li>
+              <strong>Task 4:</strong> students who write 189.58 instead of "189 cases, 14 cans
+              left." Remainders are cans, not decimals — you cannot ship 0.58 of a case.
+            </li>
+            <li>
+              <strong>Task 5:</strong> lining up decimal points. $19.20 × 189 is a multi-digit
+              decimal product; encourage estimating first (≈ $19 × 190 ≈ $3,610) so a misplaced
+              decimal stands out.
+            </li>
+          </ul>
+          <h3>STEM Connection</h3>
+          <ul>
+            <li>
+              Relief logistics is real applied number theory: packers use GCF to build identical
+              kits, schedulers use LCM to sync deliveries, and buyers use decimal arithmetic to hold
+              a budget. Same five-step cycle engineers use: Sort → Pack → Schedule → Stack → Cost.
+            </li>
+          </ul>
+        </div>
+      </details>
+
+      <!-- ══ HERO ══ -->
+      <header class="hero">
+        <span class="tag">Unit 1 · Math Architect · The Number System (6.NOS.2–4)</span>
+        <h1>Supply Challenge: The Riverbend Relief Depot</h1>
+        <p class="lede">
+          You are the <strong>packing-line engineer</strong> at the Riverbend Relief Depot. A storm
+          hit the county, and the depot has to turn a warehouse full of loose supplies into
+          identical family kits, get them on the right trucks, and pay for it all with
+          <strong>$4,000.00</strong>. Factor it, pack it, schedule it, stack it, and cost it out.
+        </p>
+        <div class="badges">
+          <span class="badge">6.NOS.2 · 6.NOS.3 · 6.NOS.4</span>
+          <span class="badge">Prime Factorization</span>
+          <span class="badge">GCF &amp; LCM</span>
+          <span class="badge">Decimal Budget</span>
+          <span class="badge">STEM Design Challenge</span>
+        </div>
+        <div class="cycle">
+          <div><b>1 · Sort</b>Break each count into its prime factors.</div>
+          <div><b>2 · Pack</b>Use the GCF to build identical kits.</div>
+          <div><b>3 · Schedule</b>Use the LCM to sync two trucks.</div>
+          <div><b>4 · Stack</b>Divide to fill cases; read the remainder.</div>
+          <div><b>5 · Cost</b>Work the decimal budget and sign off.</div>
+        </div>
+        <div class="progress" role="status" aria-label="Activity progress">
+          Depot checks passed: <span id="pcount">0</span> / 12
+          <div
+            class="bar"
+            id="progBar"
+            role="progressbar"
+            aria-valuenow="0"
+            aria-valuemin="0"
+            aria-valuemax="12"
+          >
+            <span id="pbar"></span>
+          </div>
+        </div>
+      </header>
+
+      <!-- ══ BRIEF ══ -->
+      <section class="card" aria-label="The brief">
+        <h2>The Brief</h2>
+        <p>
+          This morning's delivery is on the dock:
+          <strong>84 water bottles</strong>, <strong>126 granola bars</strong>, and
+          <strong>4,550 canned meals</strong>. Every family kit must be
+          <strong>exactly the same</strong>, and <strong>nothing may be left over</strong> — that is
+          the rule that makes this a factor problem.
+        </p>
+        <div class="grid3">
+          <div class="lvl"><b>Deliverable 1</b><br />Build identical kits with no leftovers.</div>
+          <div class="lvl"><b>Deliverable 2</b><br />Schedule the two supply trucks.</div>
+          <div class="lvl">
+            <b>Deliverable 3</b><br />Keep the whole order under <strong>$4,000.00</strong>.
+          </div>
+        </div>
+        <div class="lvl lvl1">
+          <span class="pill">Level 1 · Support</span>
+          <p>
+            A <strong>factor</strong> divides a number with nothing left over. A
+            <strong>prime</strong> number has only two factors: 1 and itself (2, 3, 5, 7, 11 …).
+            Breaking a number into primes tells you every way it can be split into equal groups.
+          </p>
+          <span class="es"
+            >Español: Un <b>factor</b> divide un número sin dejar residuo. Un número
+            <b>primo</b> solo tiene dos factores: 1 y él mismo. Separar un número en primos te dice
+            todas las formas de hacer grupos iguales.</span
+          >
+        </div>
+      </section>
+
+      <!-- ══ TASK 1 — SORT ══ -->
+      <section class="card" aria-label="Task 1: Sort the inventory">
+        <h2>Task 1 · Sort the Inventory <span class="tag-shape">Prime factorization</span></h2>
+        <p>
+          Click a blue number to split it into two factors. Keep splitting until every branch is
+          <strong>green</strong> — green means prime and cannot be split again.
+        </p>
+        <div class="grid2">
+          <div class="bp">
+            <span class="bp-cap">Factor tree · 84 water bottles</span>
+            <div class="tree" id="tree84" data-target="84"></div>
+            <div class="split-row" id="splits84"></div>
+            <span class="bp-cap">Factor tree · 126 granola bars</span>
+            <div class="tree" id="tree126" data-target="126"></div>
+            <div class="split-row" id="splits126"></div>
+            <div class="readout">
+              <div><span class="k">84 =</span><span class="v" id="pf84">not sorted yet</span></div>
+              <div>
+                <span class="k">126 =</span><span class="v" id="pf126">not sorted yet</span>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="q" id="qb-largest">
+              <p class="lbl">
+                Q1.1 — Finish both trees. What is the
+                <strong>largest prime factor</strong> that 84 and 126 share?
+              </p>
+              <div class="row">
+                <input
+                  type="text"
+                  id="q-largest"
+                  inputmode="numeric"
+                  data-ans="7"
+                  data-why="7 is prime and appears in both trees."
+                  aria-label="Largest shared prime factor"
+                />
+                <button type="button" class="btn" data-check="largest">Check</button>
+                <button type="button" class="btn ghost" data-hint="largest">Hint</button>
+              </div>
+              <p class="fb" id="fb-largest"></p>
+            </div>
+            <div class="lvl lvl1">
+              <span class="pill">Level 1 · Support</span>
+              <p>
+                Write both prime lists side by side. Circle the primes that show up in
+                <em>both</em> lists. The biggest circled prime is the answer.
+              </p>
+              <span class="es"
+                >Español: Escribe las dos listas de primos. Encierra los primos que aparecen en
+                <b>las dos</b> listas. El mayor de esos primos es la respuesta.</span
+              >
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ TASK 2 — PACK ══ -->
+      <section class="card" aria-label="Task 2: Pack the kits">
+        <h2>Task 2 · Pack the Family Kits <span class="tag-shape">GCF</span></h2>
+        <p>
+          Use the packer to try a number of kits. The depot needs the
+          <strong>greatest</strong> number of identical kits with <strong>zero</strong> bottles and
+          <strong>zero</strong> bars left over.
+        </p>
+        <div class="grid2">
+          <div class="bp">
+            <span class="bp-cap">Kit packer · 84 bottles · 126 bars</span>
+            <div class="stepper">
+              <button type="button" class="stepbtn" id="kitDown" aria-label="Fewer kits">−</button>
+              <span class="stepval" id="kitVal">10</span>
+              <button type="button" class="stepbtn" id="kitUp" aria-label="More kits">+</button>
+              <span class="bp-cap">kits</span>
+            </div>
+            <div class="readout">
+              <div><span class="k">Bottles per kit</span><span class="v" id="kBot">—</span></div>
+              <div><span class="k">Bars per kit</span><span class="v" id="kBar">—</span></div>
+              <div><span class="k">Left over</span><span class="v" id="kLeft">—</span></div>
+            </div>
+            <div class="verdict no" id="kitVerdict">Leftovers on the dock — not allowed.</div>
+            <span class="bp-cap">Bottles: filled ▪ leftover ▫</span>
+            <div class="tiles" id="kitTiles" aria-hidden="true"></div>
+          </div>
+          <div>
+            <div class="q" id="qb-kits">
+              <p class="lbl">
+                Q2.1 — What is the <strong>greatest</strong> number of identical kits?
+              </p>
+              <div class="row">
+                <input
+                  type="text"
+                  id="q-kits"
+                  inputmode="numeric"
+                  data-ans="42"
+                  data-why="GCF(84, 126) = 2 × 3 × 7 = 42."
+                  aria-label="Greatest number of kits"
+                />
+                <span class="unit">kits</span>
+                <button type="button" class="btn" data-check="kits">Check</button>
+                <button type="button" class="btn ghost" data-hint="kits">Hint</button>
+              </div>
+              <p class="fb" id="fb-kits"></p>
+            </div>
+            <div class="q" id="qb-bot">
+              <p class="lbl">Q2.2 — Water bottles in each kit?</p>
+              <div class="row">
+                <input
+                  type="text"
+                  id="q-bot"
+                  inputmode="numeric"
+                  data-ans="2"
+                  data-why="84 ÷ 42 = 2."
+                  aria-label="Bottles per kit"
+                />
+                <span class="unit">bottles</span>
+                <button type="button" class="btn" data-check="bot">Check</button>
+                <button type="button" class="btn ghost" data-hint="bot">Hint</button>
+              </div>
+              <p class="fb" id="fb-bot"></p>
+            </div>
+            <div class="q" id="qb-bar">
+              <p class="lbl">Q2.3 — Granola bars in each kit?</p>
+              <div class="row">
+                <input
+                  type="text"
+                  id="q-bar"
+                  inputmode="numeric"
+                  data-ans="3"
+                  data-why="126 ÷ 42 = 3."
+                  aria-label="Bars per kit"
+                />
+                <span class="unit">bars</span>
+                <button type="button" class="btn" data-check="bar">Check</button>
+                <button type="button" class="btn ghost" data-hint="bar">Hint</button>
+              </div>
+              <p class="fb" id="fb-bar"></p>
+            </div>
+            <div class="lvl lvl1">
+              <span class="pill">Level 1 · Support</span>
+              <p>
+                <strong>GCF</strong> = greatest common factor. From Task 1, 84 = 2 × 2 × 3 × 7 and
+                126 = 2 × 3 × 3 × 7. Multiply the primes they <em>share</em>: 2 × 3 × 7.
+              </p>
+              <span class="es"
+                >Español: El <b>MCD</b> (máximo común divisor) es el producto de los primos que los
+                dos números comparten: 2 × 3 × 7.</span
+              >
+            </div>
+            <div class="lvl lvl2">
+              <span class="pill">Level 2 · Enrichment</span>
+              <p>
+                Prove it without listing factors: any number of kits must divide both 84 and 126, so
+                it can only be built from the primes both share. Why does that make 2 × 3 × 7 the
+                largest possible?
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ TASK 3 — SCHEDULE ══ -->
+      <section class="card" aria-label="Task 3: Schedule the trucks">
+        <h2>Task 3 · Schedule the Trucks <span class="tag-shape">LCM</span></h2>
+        <p>
+          Truck A returns every <strong>6 days</strong>. Truck B returns every
+          <strong>8 days</strong>. Both were at the depot on Day 0. Click the buttons to mark each
+          truck's days, then find the next day they meet.
+        </p>
+        <div class="grid2">
+          <div class="bp">
+            <span class="bp-cap">Delivery calendar · Day 0 to Day 24</span>
+            <div class="legend">
+              <span class="la">Truck A (every 6)</span>
+              <span class="lb">Truck B (every 8)</span>
+              <span class="lc">Both trucks</span>
+            </div>
+            <div class="cal" id="cal" role="group" aria-label="Delivery calendar days"></div>
+            <div class="stepper">
+              <button type="button" class="btn ghost" id="markA">Mark Truck A</button>
+              <button type="button" class="btn ghost" id="markB">Mark Truck B</button>
+              <button type="button" class="btn ghost" id="calReset">Clear</button>
+            </div>
+            <div class="readout">
+              <div>
+                <span class="k">Days both trucks are here</span
+                ><span class="v" id="bothDays">—</span>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="q" id="qb-lcm">
+              <p class="lbl">
+                Q3.1 — After Day 0, what is the
+                <strong>next day</strong> both trucks are at the depot?
+              </p>
+              <div class="row">
+                <input
+                  type="text"
+                  id="q-lcm"
+                  inputmode="numeric"
+                  data-ans="24"
+                  data-why="LCM(6, 8) = 24."
+                  aria-label="Next day both trucks arrive"
+                />
+                <span class="unit">Day</span>
+                <button type="button" class="btn" data-check="lcm">Check</button>
+                <button type="button" class="btn ghost" data-hint="lcm">Hint</button>
+              </div>
+              <p class="fb" id="fb-lcm"></p>
+            </div>
+            <div class="q" id="qb-cycles">
+              <p class="lbl">
+                Q3.2 — The depot runs for <strong>72 days</strong>. Not counting Day 0, how many
+                times do both trucks arrive together?
+              </p>
+              <div class="row">
+                <input
+                  type="text"
+                  id="q-cycles"
+                  inputmode="numeric"
+                  data-ans="3"
+                  data-why="72 ÷ 24 = 3 (Days 24, 48, 72)."
+                  aria-label="Number of shared arrivals in 72 days"
+                />
+                <span class="unit">times</span>
+                <button type="button" class="btn" data-check="cycles">Check</button>
+                <button type="button" class="btn ghost" data-hint="cycles">Hint</button>
+              </div>
+              <p class="fb" id="fb-cycles"></p>
+            </div>
+            <div class="lvl lvl1">
+              <span class="pill">Level 1 · Support</span>
+              <p>
+                <strong>LCM</strong> = least common multiple. Count by 6: 6, 12, 18,
+                <strong>24</strong>. Count by 8: 8, 16, <strong>24</strong>. The first number in
+                <em>both</em> lists is the LCM.
+              </p>
+              <span class="es"
+                >Español: El <b>mcm</b> (mínimo común múltiplo) es el primer número que aparece en
+                las dos listas: cuenta de 6 en 6 y de 8 en 8.</span
+              >
+            </div>
+            <div class="lvl lvl2">
+              <span class="pill">Level 2 · Enrichment</span>
+              <p>
+                6 × 8 = 48, but the trucks meet on Day 24. Explain why multiplying the two cycles
+                does not always give the LCM. (Hint: look at the prime factors they share.)
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ TASK 4 — STACK ══ -->
+      <section class="card" aria-label="Task 4: Stack the cases">
+        <h2>Task 4 · Stack the Cases <span class="tag-shape">Multi-digit division</span></h2>
+        <p>
+          <strong>4,550 canned meals</strong> arrived. A shipping case holds exactly
+          <strong>24 cans</strong>. Use the stacker to fill cases, then answer what the depot
+          supervisor needs to know.
+        </p>
+        <div class="grid2">
+          <div class="bp">
+            <span class="bp-cap">Pallet stacker · 4,550 cans ÷ 24 per case</span>
+            <div class="stepper">
+              <button type="button" class="stepbtn" id="caseDown" aria-label="Fewer cases">
+                −
+              </button>
+              <span class="stepval" id="caseVal">100</span>
+              <button type="button" class="stepbtn" id="caseUp" aria-label="More cases">+</button>
+              <span class="bp-cap">cases</span>
+            </div>
+            <div class="stepper">
+              <button type="button" class="btn ghost" id="caseJump10">+10 cases</button>
+              <button type="button" class="btn ghost" id="caseFill">
+                Fill as many as possible
+              </button>
+            </div>
+            <div class="readout">
+              <div><span class="k">Cans packed</span><span class="v" id="cPacked">—</span></div>
+              <div><span class="k">Cans still loose</span><span class="v" id="cLoose">—</span></div>
+            </div>
+            <div class="verdict no" id="caseVerdict">Keep stacking — cans are still loose.</div>
+          </div>
+          <div>
+            <div class="q" id="qb-cases">
+              <p class="lbl">Q4.1 — How many <strong>full cases</strong> can the depot ship?</p>
+              <div class="row">
+                <input
+                  type="text"
+                  id="q-cases"
+                  inputmode="numeric"
+                  data-ans="189"
+                  data-why="4,550 ÷ 24 = 189 with 14 left over."
+                  aria-label="Number of full cases"
+                />
+                <span class="unit">cases</span>
+                <button type="button" class="btn" data-check="cases">Check</button>
+                <button type="button" class="btn ghost" data-hint="cases">Hint</button>
+              </div>
+              <p class="fb" id="fb-cases"></p>
+            </div>
+            <div class="q" id="qb-rem">
+              <p class="lbl">
+                Q4.2 — How many cans are <strong>left loose</strong> after the last full case?
+              </p>
+              <div class="row">
+                <input
+                  type="text"
+                  id="q-rem"
+                  inputmode="numeric"
+                  data-ans="14"
+                  data-why="24 × 189 = 4,536, and 4,550 − 4,536 = 14."
+                  aria-label="Cans left over"
+                />
+                <span class="unit">cans</span>
+                <button type="button" class="btn" data-check="rem">Check</button>
+                <button type="button" class="btn ghost" data-hint="rem">Hint</button>
+              </div>
+              <p class="fb" id="fb-rem"></p>
+            </div>
+            <div class="lvl lvl1">
+              <span class="pill">Level 1 · Support</span>
+              <p>
+                The remainder is <strong>cans</strong>, not a decimal. You cannot ship 0.58 of a
+                case. Multiply your case count by 24 and subtract from 4,550 to find what is left.
+              </p>
+              <span class="es"
+                >Español: El residuo son <b>latas</b>, no un decimal. Multiplica las cajas por 24 y
+                resta de 4,550.</span
+              >
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ TASK 5 — COST ══ -->
+      <section class="card" aria-label="Task 5: Work the budget">
+        <h2>Task 5 · Work the Budget <span class="tag-shape">Decimal operations</span></h2>
+        <p>
+          Each full case costs <strong>$19.20</strong>. Pallet wrap for the whole order is a flat
+          <strong>$5.20</strong>. The depot has <strong>$4,000.00</strong>. Fill in the cost board.
+        </p>
+        <table class="bt">
+          <thead>
+            <tr>
+              <th>Line item</th>
+              <th>Math</th>
+              <th class="n">Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Full cases of canned meals</td>
+              <td>189 cases × $19.20</td>
+              <td class="n" id="lineCases">Q5.1</td>
+            </tr>
+            <tr>
+              <td>Pallet wrap</td>
+              <td>flat charge</td>
+              <td class="n">$5.20</td>
+            </tr>
+            <tr>
+              <td><strong>Money left from $4,000.00</strong></td>
+              <td>$4,000.00 − (cases + wrap)</td>
+              <td class="n" id="lineLeft">Q5.2</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="q" id="qb-total">
+          <p class="lbl">Q5.1 — Cost of the 189 full cases at $19.20 each.</p>
+          <div class="row">
+            <span class="unit">$</span>
+            <input
+              type="text"
+              id="q-total"
+              inputmode="decimal"
+              data-ans="3628.8"
+              data-tol="0.005"
+              data-why="19.20 × 189 = 3,628.80."
+              aria-label="Total cost of cases"
+            />
+            <button type="button" class="btn" data-check="total">Check</button>
+            <button type="button" class="btn ghost" data-hint="total">Hint</button>
+          </div>
+          <p class="fb" id="fb-total"></p>
+        </div>
+        <div class="q" id="qb-left">
+          <p class="lbl">
+            Q5.2 — Add the $5.20 wrap, then subtract from $4,000.00. How much is left?
+          </p>
+          <div class="row">
+            <span class="unit">$</span>
+            <input
+              type="text"
+              id="q-left"
+              inputmode="decimal"
+              data-ans="366"
+              data-tol="0.005"
+              data-why="3,628.80 + 5.20 = 3,634.00, and 4,000.00 − 3,634.00 = 366.00."
+              aria-label="Money left over"
+            />
+            <button type="button" class="btn" data-check="left">Check</button>
+            <button type="button" class="btn ghost" data-hint="left">Hint</button>
+          </div>
+          <p class="fb" id="fb-left"></p>
+        </div>
+        <div class="q" id="qb-percan">
+          <p class="lbl">
+            Q5.3 — A case is $19.20 for 24 cans. What does
+            <strong>one can</strong> cost?
+          </p>
+          <div class="row">
+            <span class="unit">$</span>
+            <input
+              type="text"
+              id="q-percan"
+              inputmode="decimal"
+              data-ans="0.8"
+              data-tol="0.005"
+              data-why="19.20 ÷ 24 = 0.80."
+              aria-label="Cost per can"
+            />
+            <button type="button" class="btn" data-check="percan">Check</button>
+            <button type="button" class="btn ghost" data-hint="percan">Hint</button>
+          </div>
+          <p class="fb" id="fb-percan"></p>
+        </div>
+        <div class="lvl lvl1">
+          <span class="pill">Level 1 · Support</span>
+          <p>
+            Estimate first, then compute. $19.20 is about $19, and 189 is about 190, so the answer
+            should land near $3,600. If your answer is $362 or $36,000, your decimal point moved.
+          </p>
+          <span class="es"
+            >Español: Primero estima. $19 × 190 ≈ $3,600. Si tu respuesta está muy lejos, el punto
+            decimal está mal colocado.</span
+          >
+        </div>
+        <div class="lvl lvl2">
+          <span class="pill">Level 2 · Enrichment</span>
+          <p>
+            With the $366.00 left over, how many more full cases could the depot buy at $19.20 each
+            — and how much would still be unspent?
+          </p>
+        </div>
+      </section>
+
+      <!-- ══ TASK 6 — SIGN OFF ══ -->
+      <section class="card" aria-label="Task 6: Rewrite the order">
+        <h2>Task 6 · Write the Order Slip <span class="tag-shape">Distributive property</span></h2>
+        <p>
+          The order slip lists <strong>84 bottles + 126 bars</strong>. Rewrite it as
+          <em>one</em> multiplication using the number of kits. Tap a factor to pull it out front.
+        </p>
+        <div class="chips" id="dchips" role="group" aria-label="Choose a common factor">
+          <button type="button" class="chip" data-f="2" aria-pressed="false">2</button>
+          <button type="button" class="chip" data-f="6" aria-pressed="false">6</button>
+          <button type="button" class="chip" data-f="21" aria-pressed="false">21</button>
+          <button type="button" class="chip" data-f="42" aria-pressed="false">42</button>
+        </div>
+        <p class="identity" id="identity">84 + 126 = ? × ( ? + ? )</p>
+        <div class="q" id="qb-dist">
+          <p class="lbl">
+            Q6.1 — Using the greatest common factor, complete:
+            <strong>84 + 126 = 42 × ( ___ )</strong>
+          </p>
+          <div class="row">
+            <input
+              type="text"
+              id="q-dist"
+              inputmode="numeric"
+              data-ans="5"
+              data-why="84 ÷ 42 = 2 and 126 ÷ 42 = 3, so the sum inside is 2 + 3 = 5."
+              aria-label="Sum inside the parentheses"
+            />
+            <button type="button" class="btn" data-check="dist">Check</button>
+            <button type="button" class="btn ghost" data-hint="dist">Hint</button>
+          </div>
+          <p class="fb" id="fb-dist"></p>
+        </div>
+        <div class="lvl lvl1">
+          <span class="pill">Level 1 · Support</span>
+          <p>
+            Divide each part by 42: 84 ÷ 42 = 2 and 126 ÷ 42 = 3. Put those inside the parentheses
+            and add them. Check it: 42 × 5 = 210, and 84 + 126 = 210.
+          </p>
+          <span class="es"
+            >Español: Divide cada parte entre 42: 84 ÷ 42 = 2 y 126 ÷ 42 = 3. Suma esos números
+            dentro del paréntesis.</span
+          >
+        </div>
+      </section>
+
+      <!-- ══ SIGN-OFF ══ -->
+      <section class="card" aria-label="Engineer sign-off">
+        <h2>Packing-Line Engineer's Sign-off</h2>
+        <p class="muted" style="margin-top: 0">
+          When every depot check passes, submit your supply plan. Enter your name in the field
+          below, then press
+          <strong>Submit plan &amp; grade</strong> to save your score as a PDF or DOC.
+        </p>
+        <button type="button" class="btn" id="submitBtn">Submit plan &amp; grade</button>
+        <div id="ntkit"></div>
+      </section>
+
+      <!-- ══ RUBRIC ══ -->
+      <section class="card" aria-label="Scoring rubric">
+        <h2>Performance Rubric — The Number System (6.NOS.2–4)</h2>
+        <div class="rubric-wrap">
+          <table class="rubric">
+            <thead>
+              <tr>
+                <th>Level</th>
+                <th>Score</th>
+                <th>Descriptor</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>4 — Exceeds</strong></td>
+                <td>11–12 / 12</td>
+                <td>
+                  Builds both prime factorizations and uses them to justify the GCF and LCM rather
+                  than guessing. Divides accurately, explains the remainder as cans, holds the
+                  decimal budget, and rewrites the sum with the distributive property.
+                </td>
+              </tr>
+              <tr>
+                <td><strong>3 — Meets</strong></td>
+                <td>9–10 / 12</td>
+                <td>
+                  Finds the GCF, the LCM, the case count, and the budget totals with at most one
+                  arithmetic slip. Distinguishes GCF from LCM correctly.
+                </td>
+              </tr>
+              <tr>
+                <td><strong>2 — Approaching</strong></td>
+                <td>5–8 / 12</td>
+                <td>
+                  Completes factor trees and simple division but confuses GCF with LCM, or reports
+                  the remainder as a decimal. Partial budget work.
+                </td>
+              </tr>
+              <tr>
+                <td><strong>1 — Beginning</strong></td>
+                <td>0–4 / 12</td>
+                <td>
+                  Few correct answers. Needs reteaching on prime factorization and on what "nothing
+                  left over" means. Re-run Tasks 1 and 2 with the Level 1 supports.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      (function () {
+        "use strict";
+
+        var BOTTLES = 84;
+        var BARS = 126;
+        var CANS = 4550;
+        var PER_CASE = 24;
+
+        function num(s) {
+          return parseFloat(String(s == null ? "" : s).replace(/[$,\s]/g, ""));
+        }
+        function money(n) {
+          return (
+            "$" +
+            Number(n || 0).toLocaleString("en-US", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })
+          );
+        }
+        function live(msg) {
+          var fb = document.getElementById("a11y-feedback");
+          if (fb) fb.textContent = msg;
+        }
+        function el(id) {
+          return document.getElementById(id);
+        }
+
+        /* ── Graded problems (numeric; NTKit string-compares canonical form) ── */
+        var problems = [
+          {
+            id: "largest",
+            ans: "7",
+            skill: "Prime factorization",
+            prompt: "Largest prime factor shared by 84 and 126",
+          },
+          {
+            id: "kits",
+            ans: "42",
+            skill: "Greatest common factor",
+            prompt: "Greatest number of identical kits from 84 and 126",
+          },
+          {
+            id: "bot",
+            ans: "2",
+            skill: "Greatest common factor",
+            prompt: "Bottles per kit: 84 ÷ 42",
+          },
+          {
+            id: "bar",
+            ans: "3",
+            skill: "Greatest common factor",
+            prompt: "Granola bars per kit: 126 ÷ 42",
+          },
+          {
+            id: "lcm",
+            ans: "24",
+            skill: "Least common multiple",
+            prompt: "Next day both trucks arrive: LCM(6, 8)",
+          },
+          {
+            id: "cycles",
+            ans: "3",
+            skill: "Least common multiple",
+            prompt: "Shared arrivals in 72 days: 72 ÷ 24",
+          },
+          {
+            id: "cases",
+            ans: "189",
+            skill: "Multi-digit division",
+            prompt: "Full cases: 4,550 ÷ 24",
+          },
+          {
+            id: "rem",
+            ans: "14",
+            skill: "Multi-digit division",
+            prompt: "Cans left loose: 4,550 − (24 × 189)",
+          },
+          {
+            id: "total",
+            ans: "3628.8",
+            skill: "Decimal multiplication",
+            prompt: "Cost of 189 cases at $19.20",
+          },
+          {
+            id: "left",
+            ans: "366",
+            skill: "Decimal addition and subtraction",
+            prompt: "$4,000.00 − ($3,628.80 + $5.20)",
+          },
+          {
+            id: "percan",
+            ans: "0.8",
+            skill: "Decimal division",
+            prompt: "Cost per can: $19.20 ÷ 24",
+          },
+          {
+            id: "dist",
+            ans: "5",
+            skill: "Distributive property",
+            prompt: "84 + 126 = 42 × ( ? ), the sum inside the parentheses",
+          },
+        ];
+        var pById = {};
+        problems.forEach(function (p) {
+          pById[p.id] = p;
+        });
+        var correct = {};
+
+        var HINTS = {
+          largest:
+            "Split 84 and 126 all the way to primes, then look for the biggest prime in both lists.",
+          kits: "Multiply only the primes that BOTH trees contain: 2 × 3 × 7.",
+          bot: "Divide the bottles by your kit count: 84 ÷ 42.",
+          bar: "Divide the bars by your kit count: 126 ÷ 42.",
+          lcm: "Count by 6 and by 8. What is the first number that shows up in both lists?",
+          cycles: "Divide the 72 days by the number of days between shared arrivals.",
+          cases:
+            "How many 24s fit inside 4,550? Estimate first: 24 × 200 = 4,800, so it is a bit under 200.",
+          rem: "Multiply your case count by 24, then subtract that from 4,550.",
+          total:
+            "19.20 × 189. Estimate: about $19 × 190 ≈ $3,600, so your answer should be near that.",
+          left: "First add: 3,628.80 + 5.20. Then subtract that total from 4,000.00.",
+          percan: "Divide the case price by how many cans are in a case: 19.20 ÷ 24.",
+          dist: "84 ÷ 42 = 2 and 126 ÷ 42 = 3. Add those two numbers.",
+        };
+
+        function inputFor(id) {
+          return el("q-" + id);
+        }
+        function isCorrect(id) {
+          var inp = inputFor(id);
+          if (!inp) return false;
+          var got = num(inp.value);
+          var want = num(inp.getAttribute("data-ans"));
+          var tol = num(inp.getAttribute("data-tol"));
+          if (isNaN(tol)) tol = 0.001;
+          return !isNaN(got) && Math.abs(got - want) <= tol;
+        }
+        function paint() {
+          var n = 0;
+          problems.forEach(function (p) {
+            if (correct[p.id]) n++;
+          });
+          el("pcount").textContent = n;
+          el("pbar").style.width = (n / problems.length) * 100 + "%";
+          el("progBar").setAttribute("aria-valuenow", n);
+          paintBoard();
+        }
+        function check(id) {
+          var inp = inputFor(id);
+          var fb = el("fb-" + id);
+          if (!inp || !fb) return;
+          var ok = isCorrect(id);
+          inp.classList.toggle("ok", ok);
+          inp.classList.toggle("bad", !ok);
+          fb.className = "fb " + (ok ? "ok" : "bad");
+          fb.textContent = ok
+            ? "Checked — " + inp.getAttribute("data-why")
+            : "Not yet. Re-read the numbers, set up the operation, then compute.";
+          correct[id] = ok;
+          live(ok ? "Depot check passed." : "Not correct yet, try again.");
+          paint();
+        }
+        function hint(id) {
+          var fb = el("fb-" + id);
+          if (!fb) return;
+          fb.className = "fb";
+          fb.textContent = "Hint: " + (HINTS[id] || "");
+          live("Hint shown.");
+        }
+
+        document.querySelector(".wrap").addEventListener("click", function (e) {
+          var t = e.target.closest("[data-check], [data-hint]");
+          if (!t) return;
+          if (t.hasAttribute("data-check")) check(t.getAttribute("data-check"));
+          else hint(t.getAttribute("data-hint"));
+        });
+        document.querySelector(".wrap").addEventListener("keydown", function (e) {
+          if (e.key !== "Enter") return;
+          var inp = e.target.closest('input[type="text"]');
+          if (!inp || !inp.id.indexOf) return;
+          if (inp.id.slice(0, 2) === "q-") {
+            e.preventDefault();
+            check(inp.id.slice(2));
+          }
+        });
+
+        /* ── Task 1: factor trees ───────────────────────────────────────── */
+        function smallestFactor(n) {
+          for (var d = 2; d * d <= n; d++) if (n % d === 0) return d;
+          return 0; // prime
+        }
+        function factorPairs(n) {
+          var out = [];
+          for (var d = 2; d <= n / 2; d++) if (n % d === 0) out.push([d, n / d]);
+          return out.slice(0, 4);
+        }
+        function makeTree(treeId, splitsId, target, pfId) {
+          var treeEl = el(treeId);
+          var splitsEl = el(splitsId);
+          var rows = [[target]];
+          var selected = null;
+
+          function primes() {
+            return rows[rows.length - 1].slice().sort(function (a, b) {
+              return a - b;
+            });
+          }
+          function allPrime() {
+            return rows[rows.length - 1].every(function (v) {
+              return smallestFactor(v) === 0;
+            });
+          }
+          function render() {
+            treeEl.innerHTML = "";
+            rows.forEach(function (row, ri) {
+              var r = document.createElement("div");
+              r.className = "tree-row";
+              row.forEach(function (v, vi) {
+                var b = document.createElement("button");
+                b.type = "button";
+                b.className = "node";
+                b.textContent = v;
+                var isPrime = smallestFactor(v) === 0;
+                var isLast = ri === rows.length - 1;
+                b.setAttribute("data-state", isPrime ? "prime" : isLast ? "open" : "done");
+                if (isPrime || !isLast) {
+                  b.disabled = true;
+                  b.setAttribute("aria-label", isPrime ? v + ", prime" : v + ", already split");
+                } else {
+                  b.setAttribute("aria-label", "Split " + v);
+                  b.addEventListener("click", function () {
+                    selected = { row: ri, idx: vi, value: v };
+                    renderSplits();
+                  });
+                }
+                r.appendChild(b);
+              });
+              treeEl.appendChild(r);
+            });
+            var pf = el(pfId);
+            if (allPrime() && rows.length > 1) {
+              pf.textContent = primes().join(" × ");
+            } else {
+              pf.textContent = "not sorted yet";
+            }
+            renderSplits();
+          }
+          function renderSplits() {
+            splitsEl.innerHTML = "";
+            if (!selected) {
+              if (!allPrime()) {
+                var tip = document.createElement("span");
+                tip.className = "bp-cap";
+                tip.textContent = "Tap a blue number to split it.";
+                splitsEl.appendChild(tip);
+              }
+              return;
+            }
+            var v = selected.value;
+            factorPairs(v).forEach(function (pair) {
+              var b = document.createElement("button");
+              b.type = "button";
+              b.className = "split";
+              b.textContent = v + " = " + pair[0] + " × " + pair[1];
+              b.addEventListener("click", function () {
+                var last = rows[rows.length - 1].slice();
+                last.splice(selected.idx, 1, pair[0], pair[1]);
+                rows.push(last);
+                selected = null;
+                render();
+                live(v + " split into " + pair[0] + " and " + pair[1] + ".");
+              });
+              splitsEl.appendChild(b);
+            });
+          }
+          render();
+        }
+        makeTree("tree84", "splits84", BOTTLES, "pf84");
+        makeTree("tree126", "splits126", BARS, "pf126");
+
+        /* ── Task 2: kit packer ─────────────────────────────────────────── */
+        var kits = 10;
+        function paintKits() {
+          el("kitVal").textContent = kits;
+          var perBot = Math.floor(BOTTLES / kits);
+          var perBar = Math.floor(BARS / kits);
+          var leftBot = BOTTLES - perBot * kits;
+          var leftBar = BARS - perBar * kits;
+          el("kBot").textContent = perBot;
+          el("kBar").textContent = perBar;
+          el("kLeft").textContent = leftBot + " bottles, " + leftBar + " bars";
+          var clean = leftBot === 0 && leftBar === 0;
+          var v = el("kitVerdict");
+          v.className = "verdict " + (clean ? "ok" : "no");
+          v.textContent = clean
+            ? "Every kit is identical and nothing is left over."
+            : "Leftovers on the dock — not allowed.";
+          var tiles = el("kitTiles");
+          tiles.innerHTML = "";
+          for (var i = 0; i < BOTTLES; i++) {
+            var d = document.createElement("div");
+            d.className = "tile" + (i >= perBot * kits ? " left" : "");
+            tiles.appendChild(d);
+          }
+        }
+        el("kitUp").addEventListener("click", function () {
+          kits = Math.min(84, kits + 1);
+          paintKits();
+        });
+        el("kitDown").addEventListener("click", function () {
+          kits = Math.max(1, kits - 1);
+          paintKits();
+        });
+        paintKits();
+
+        /* ── Task 3: delivery calendar ──────────────────────────────────── */
+        var DAYS = 24;
+        var calEl = el("cal");
+        for (var d = 0; d <= DAYS; d++) {
+          var b = document.createElement("button");
+          b.type = "button";
+          b.className = "day";
+          b.textContent = d;
+          b.setAttribute("data-day", d);
+          b.setAttribute("aria-label", "Day " + d);
+          b.setAttribute("aria-pressed", "false");
+          calEl.appendChild(b);
+        }
+        function paintBoth() {
+          var both = [];
+          Array.prototype.forEach.call(calEl.querySelectorAll(".day"), function (day) {
+            if (day.getAttribute("data-a") === "1" && day.getAttribute("data-b") === "1")
+              both.push(day.getAttribute("data-day"));
+          });
+          el("bothDays").textContent = both.length ? both.join(", ") : "—";
+        }
+        calEl.addEventListener("click", function (e) {
+          var day = e.target.closest(".day");
+          if (!day) return;
+          var on = day.getAttribute("aria-pressed") === "true";
+          day.setAttribute("aria-pressed", on ? "false" : "true");
+          day.style.outline = on ? "" : "3px solid #fff";
+        });
+        function markEvery(step, attr, label) {
+          Array.prototype.forEach.call(calEl.querySelectorAll(".day"), function (day) {
+            var n = parseInt(day.getAttribute("data-day"), 10);
+            if (n % step === 0) day.setAttribute(attr, "1");
+          });
+          paintBoth();
+          live(label + " marked on the calendar.");
+        }
+        el("markA").addEventListener("click", function () {
+          markEvery(6, "data-a", "Truck A");
+        });
+        el("markB").addEventListener("click", function () {
+          markEvery(8, "data-b", "Truck B");
+        });
+        el("calReset").addEventListener("click", function () {
+          Array.prototype.forEach.call(calEl.querySelectorAll(".day"), function (day) {
+            day.removeAttribute("data-a");
+            day.removeAttribute("data-b");
+            day.setAttribute("aria-pressed", "false");
+            day.style.outline = "";
+          });
+          paintBoth();
+          live("Calendar cleared.");
+        });
+        paintBoth();
+
+        /* ── Task 4: pallet stacker ─────────────────────────────────────── */
+        var cases = 100;
+        function paintCases() {
+          if (cases * PER_CASE > CANS) cases = Math.floor(CANS / PER_CASE);
+          el("caseVal").textContent = cases;
+          var packed = cases * PER_CASE;
+          var loose = CANS - packed;
+          el("cPacked").textContent = packed.toLocaleString("en-US");
+          el("cLoose").textContent = loose.toLocaleString("en-US");
+          var full = loose < PER_CASE;
+          var v = el("caseVerdict");
+          v.className = "verdict " + (full ? "ok" : "no");
+          v.textContent = full
+            ? "Pallet full — only " + loose + " loose cans remain."
+            : "Keep stacking — " + loose + " cans could still fill more cases.";
+        }
+        el("caseUp").addEventListener("click", function () {
+          cases += 1;
+          paintCases();
+        });
+        el("caseDown").addEventListener("click", function () {
+          cases = Math.max(0, cases - 1);
+          paintCases();
+        });
+        el("caseJump10").addEventListener("click", function () {
+          cases += 10;
+          paintCases();
+        });
+        el("caseFill").addEventListener("click", function () {
+          cases = Math.floor(CANS / PER_CASE);
+          paintCases();
+          live("Stacker filled to " + cases + " cases.");
+        });
+        paintCases();
+
+        /* ── Task 5: cost board mirrors the checked answers ─────────────── */
+        function paintBoard() {
+          el("lineCases").textContent = correct.total ? money(3628.8) : "Q5.1";
+          el("lineLeft").textContent = correct.left ? money(366) : "Q5.2";
+        }
+
+        /* ── Task 6: distributive chips ─────────────────────────────────── */
+        var chips = el("dchips");
+        chips.addEventListener("click", function (e) {
+          var c = e.target.closest(".chip");
+          if (!c) return;
+          Array.prototype.forEach.call(chips.querySelectorAll(".chip"), function (x) {
+            x.setAttribute("aria-pressed", "false");
+          });
+          c.setAttribute("aria-pressed", "true");
+          var f = parseInt(c.getAttribute("data-f"), 10);
+          var idEl = el("identity");
+          if (BOTTLES % f === 0 && BARS % f === 0) {
+            idEl.textContent = "84 + 126 = " + f + " × (" + BOTTLES / f + " + " + BARS / f + ")";
+            live(
+              "84 plus 126 equals " +
+                f +
+                " times the quantity " +
+                BOTTLES / f +
+                " plus " +
+                BARS / f +
+                ".",
+            );
+          } else {
+            idEl.textContent = f + " does not divide both 84 and 126.";
+            live(f + " is not a common factor.");
+          }
+        });
+
+        /* ── Mount NTKit + grade on submit ──────────────────────────────── */
+        if (window.NTKit && NTKit.mount) NTKit.mount("#ntkit");
+
+        el("submitBtn").addEventListener("click", function () {
+          var items = problems.map(function (p) {
+            var inp = inputFor(p.id);
+            var v = inp ? num(inp.value) : NaN;
+            return {
+              prompt: p.prompt,
+              studentAnswer: isNaN(v) ? "" : String(v),
+              correctAnswer: p.ans,
+              points: 1,
+              skill: p.skill,
+            };
+          });
+          if (window.NTKit && NTKit.grade) {
+            NTKit.grade({
+              activityId: "architect-unit-1-number-system",
+              activityTitle: "Unit 1 · Math Architect — Riverbend Relief Depot (The Number System)",
+              standard: "6.NOS.2 · 6.NOS.3 · 6.NOS.4",
+              items: items,
+            });
+            var panel = el("ntkit");
+            if (panel && panel.scrollIntoView)
+              panel.scrollIntoView({ behavior: "smooth", block: "start" });
+          } else {
+            var n = items.filter(function (x) {
+              return num(x.studentAnswer) === num(x.correctAnswer);
+            }).length;
+            alert("Plan submitted: " + n + " of " + items.length + " checks passed.");
+          }
+        });
+
+        paint();
+      })();
+    </script>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+  <!-- nsr-injected:end -->
+  </body>
+</html>
