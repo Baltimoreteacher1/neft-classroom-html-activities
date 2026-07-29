@@ -112,13 +112,40 @@
       return "lesson";
     }
   }
+  /* Normalize a standard to the canonical key used by data/ccss-standards.json
+     and lessons/<id>/config.json — "6.AT.3a", "6.NOS.4", "6.GR.1".
+     Page badges carry the cluster letter ("6.AT.A.3a") and the registry does
+     not, so the cluster letter is dropped. Legacy CCSS codes keep their domain
+     (translating RP/NS/EE -> AT/NOS needs the crosswalk table, which is not
+     available client-side); only the shape is normalized. */
+  function normalizeStandard(raw) {
+    var s = String(raw || "").trim();
+    if (!s) return "";
+    // First standard-looking code in the string: 6.<DOMAIN>[.<CLUSTER>].<n><suffix>
+    var m = s.match(/\b(\d)\.([A-Z]{1,3})(?:\.([A-Z]))?\.(\d+[a-z]?)\b/i);
+    if (!m) return "";
+    return m[1] + "." + m[2].toUpperCase() + "." + m[4].toLowerCase();
+  }
+
+  /* The stored standard is a JOIN KEY: functions/api/progress builds the teacher
+     standards matrix by grouping lesson_telemetry AND game_scores into the same
+     per-standard cell. This used to return raw badge TEXT, which the API then
+     clamped to 20 chars — so rows landed under keys like "6.AT.C.8 · 6.AT.C.8 "
+     and "6.AT · 6.DS" that matched neither game_scores ("6.GR.1") nor the
+     standards registry. One standard fragmented across several cells and never
+     aggregated. Prefer the explicit sources, then extract a code from the badge. */
   function deriveStandard() {
-    if (CFG.standard) return String(CFG.standard);
+    if (CFG.standard) return normalizeStandard(CFG.standard) || String(CFG.standard).slice(0, 20);
     try {
+      // The lesson platform config writes the exact code here (see
+      // scripts/generate-lesson-platform-config.mjs) — the most reliable source.
+      var fromGlobal = normalizeStandard(window.NT_LESSON_STANDARD);
+      if (fromGlobal) return fromGlobal;
+
       var el = document.querySelector(".standard-badge, [data-standard]");
       if (!el) return "";
       var attr = el.getAttribute && el.getAttribute("data-standard");
-      return (attr || el.textContent || "").trim().slice(0, 80);
+      return normalizeStandard(attr || el.textContent || "");
     } catch (_e) {
       return "";
     }
