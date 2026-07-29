@@ -142,6 +142,13 @@
       var fromGlobal = normalizeStandard(window.NT_LESSON_STANDARD);
       if (fromGlobal) return fromGlobal;
 
+      // Runtime-rendered lessons (/lessons/<id>/) are a bare SPA shell with no
+      // standard anywhere in their static HTML — engine/core/app.js sets it from
+      // the lesson's config.json, already in canonical form, just before it
+      // lazy-loads this module.
+      var fromMeta = normalizeStandard(window.__ntLessonMeta && window.__ntLessonMeta.standard);
+      if (fromMeta) return fromMeta;
+
       var el = document.querySelector(".standard-badge, [data-standard]");
       if (!el) return "";
       var attr = el.getAttribute && el.getAttribute("data-standard");

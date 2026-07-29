@@ -127,9 +127,7 @@ function computeTarget(r) {
     case "compare":
       return r.pick === "greater" ? Math.max(r.a, r.b) : Math.min(r.a, r.b);
     case "order":
-      return r.pick === "greatest"
-        ? Math.max(...r.values)
-        : Math.min(...r.values);
+      return r.pick === "greatest" ? Math.max(...r.values) : Math.min(...r.values);
     default:
       return 0;
   }
@@ -145,8 +143,7 @@ export default {
     },
     {
       term: "Negative number",
-      definition:
-        "A number less than zero, like -3. Here it means below the surface.",
+      definition: "A number less than zero, like -3. Here it means below the surface.",
       emoji: "⬇️",
     },
     {
@@ -157,8 +154,7 @@ export default {
     },
     {
       term: "Number line",
-      definition:
-        "A line where numbers are placed in order. Up is positive, down is negative.",
+      definition: "A line where numbers are placed in order. Up is positive, down is negative.",
       emoji: "📏",
     },
     {
@@ -252,10 +248,7 @@ export default {
     const lineLabels = [];
     for (let n = RANGE_MIN; n <= RANGE_MAX; n++) {
       const isZero = n === 0;
-      const tick = new THREE.Mesh(
-        isZero ? zeroTickGeo : tickGeo,
-        isZero ? zeroMat : tickMat,
-      );
+      const tick = new THREE.Mesh(isZero ? zeroTickGeo : tickGeo, isZero ? zeroMat : tickMat);
       tick.position.set(-2.4, yFor(n), SUB_Z);
       group.add(tick);
 
@@ -391,10 +384,7 @@ export default {
       ior: 1.4,
     });
     disposables.push(portMat);
-    const port = new THREE.Mesh(
-      new THREE.SphereGeometry(0.16, 16, 12),
-      portMat,
-    );
+    const port = new THREE.Mesh(new THREE.SphereGeometry(0.16, 16, 12), portMat);
     port.position.set(0, 0, -0.55);
     disposables.push(port.geometry);
     subGroup.add(port);
@@ -696,16 +686,15 @@ export default {
       updateHud();
       announceTask();
       caption(taskText());
-      if (typeof hud.setProgress === "function")
-        hud.setProgress(roundIndex, cfg.rounds.length);
+      if (typeof hud.setProgress === "function") hud.setProgress(roundIndex, cfg.rounds.length);
       if (clarity) {
         clarity.setTarget(taskText());
       }
       if (cfg.hints) {
-        hud.message(
-          "Take your time. Steer to your depth, then press Enter / ✓ to grab.",
-          { tone: "info", duration: 2600 },
-        );
+        hud.message("Take your time. Steer to your depth, then press Enter / ✓ to grab.", {
+          tone: "info",
+          duration: 2600,
+        });
       }
       feel.sfx("select");
     }
@@ -782,10 +771,7 @@ export default {
         { x: SUB_X, y: subGroup.position.y, z: SUB_Z },
         { color: COLORS.bad, count: reduced ? 0 : 22, spread: 2.0 },
       );
-      const msg =
-        lives > 0
-          ? `${reason} ${lives} ${lives === 1 ? "life" : "lives"} left.`
-          : reason;
+      const msg = lives > 0 ? `${reason} ${lives} ${lives === 1 ? "life" : "lives"} left.` : reason;
       if (typeof hud.feedback === "function") hud.feedback(false, msg);
       else hud.message(msg, { tone: "warn", duration: 2200 });
       announce(msg);
@@ -827,9 +813,7 @@ export default {
     function grabHere() {
       if (!started || gameOver || surfacing || roundCleared) return;
       const here = subInt();
-      const s = streamers.find(
-        (m) => m.active && !m.resolved && Math.round(m.depth) === here,
-      );
+      const s = streamers.find((m) => m.active && !m.resolved && Math.round(m.depth) === here);
       if (!s) {
         readOut(); // nothing at this depth — no penalty, just orient the player
         return;
@@ -920,17 +904,12 @@ export default {
         const dir = (input.state.up ? 1 : 0) - (input.state.down ? 1 : 0);
         if (dir !== 0) {
           subDepthY += dir * VERT_SPEED * UNIT * d;
-          subDepthY = Math.max(
-            yFor(RANGE_MIN),
-            Math.min(yFor(RANGE_MAX), subDepthY),
-          );
+          subDepthY = Math.max(yFor(RANGE_MIN), Math.min(yFor(RANGE_MAX), subDepthY));
         }
       }
 
       // Smooth the visible sub toward its depth; depth read-out tracks it.
-      const subY =
-        subGroup.position.y +
-        (subDepthY - subGroup.position.y) * Math.min(1, d * 14);
+      const subY = subGroup.position.y + (subDepthY - subGroup.position.y) * Math.min(1, d * 14);
       subGroup.position.y = subY;
       depthLabel.position.y = subY;
       updateLabel(depthLabel, String(subInt()));
@@ -951,8 +930,7 @@ export default {
             k.position.y = columnBotY + 1.4 + Math.random() * 0.6;
           }
           if (!reduced)
-            k.position.x =
-              k.userData.baseX + Math.sin(t * 1.2 + k.userData.phase) * 0.18;
+            k.position.x = k.userData.baseX + Math.sin(t * 1.2 + k.userData.phase) * 0.18;
         }
         // Bubbles drift up + gently toward the camera.
         const bp = bubbleGeo.attributes.position.array;
@@ -976,8 +954,7 @@ export default {
           if (!reduced) {
             if (s.kind === "mine") s.mineMesh.rotation.y += d * 2.2;
             else s.tokenMesh.rotation.z += d * 1.4;
-            s.obj.position.y =
-              yFor(s.depth) + Math.sin(t * 1.5 + s.depth) * 0.04;
+            s.obj.position.y = yFor(s.depth) + Math.sin(t * 1.5 + s.depth) * 0.04;
           }
           // Live "lined-up" cue: brighten the marker the sub is level with, so
           // the student can confirm they are at the right depth before grabbing.
@@ -1109,7 +1086,7 @@ export default {
             "No clock, no rush — take all the time you need. Read the task at the top and work out the right depth. The markers just hover in place: move the sub UP or DOWN with the arrows until you are level with the GREEN token, then press Enter / ✓ to grab it. The red mines are wrong numbers — leave them alone.",
           objectiveEs:
             "Sin reloj, sin prisa: tómate el tiempo que necesites. Lee la tarea de arriba y calcula la profundidad correcta. Las fichas se quedan quietas: mueve el submarino ARRIBA o ABAJO hasta quedar al nivel de la ficha VERDE y pulsa Enter / ✓ para atraparla. Las minas rojas son números incorrectos: déjalas en paz.",
-          standard: "6.NOS.C.5–7 · Integers, Opposites & Absolute Value",
+          standard: "6.NOS.C.6–8 · Integers, Opposites & Absolute Value",
           controls: [
             {
               key: "↑ / W",
@@ -1123,10 +1100,8 @@ export default {
             },
             {
               key: "Enter / ✓",
-              actionEn:
-                "Grab the marker at your depth (or read your depth if none is there)",
-              actionEs:
-                "Atrapa la ficha a tu profundidad (o di tu profundidad si no hay ninguna)",
+              actionEn: "Grab the marker at your depth (or read your depth if none is there)",
+              actionEs: "Atrapa la ficha a tu profundidad (o di tu profundidad si no hay ninguna)",
             },
             {
               key: "Tap / d-pad",
@@ -1159,11 +1134,7 @@ export default {
         scene.remove(group);
         disposables.forEach((dp) => dp.dispose && dp.dispose());
         // Dispose all label sprites (textures + materials).
-        const sprites = [
-          depthLabel,
-          ...lineLabels,
-          ...streamers.map((s) => s.label),
-        ];
+        const sprites = [depthLabel, ...lineLabels, ...streamers.map((s) => s.label)];
         sprites.forEach(disposeSprite);
       },
     };
