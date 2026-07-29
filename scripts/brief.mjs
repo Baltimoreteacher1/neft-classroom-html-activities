@@ -100,6 +100,74 @@ async function probe(path) {
   }
 }
 
+/* --- 2b. Can anything WRITE to the empty tables? -------------------------- */
+// A 0-row table has two completely different causes and the row count cannot
+// tell them apart: either nothing has used the feature yet (benign), or the
+// writer is unreachable/misconfigured so nothing CAN write (a live outage).
+// Guessing wrong is expensive in both directions — the broken score bridge sat
+// unnoticed for weeks because a rejected write and an unused feature look
+// identical from the outside, and conversely these three tables have been
+// flagged every morning all summer for the benign reason.
+//
+// So ask the writer directly. Each probe is deliberately unauthenticated and
+// read-only: a healthy gated endpoint answers 401 BEFORE touching the table, so
+// this proves reachability without writing a row or needing the teacher key.
+const WRITERS = {
+  student_progress: {
+    path: "/api/progress/health",
+    writer: "save/resume (student)",
+    // Health endpoint reports whether the D1 binding actually resolved.
+    ok: (status, body) => status === 200 && body?.ok === true && body?.d1 === true,
+  },
+  insight_signal: {
+    path: "/api/progress/insight",
+    method: "POST",
+    writer: "Insight Brief (teacher)",
+    // 401 = TEACHER_KEY is set and the gate works. 503 "not-configured" means
+    // the key was never bound, which silently disables persistence entirely.
+    ok: (status, body) => status === 401 && body?.error === "unauthorized",
+  },
+  class_roster: {
+    path: "/api/roster/health",
+    writer: "roster tool (teacher)",
+    ok: (status, body) => status === 200 && body?.ok === true && body?.d1 === true,
+  },
+};
+
+async function writerHealth(tables) {
+  const results = {};
+  await Promise.all(
+    tables.map(async (table) => {
+      const spec = WRITERS[table];
+      if (!spec) {
+        results[table] = { reachable: null, detail: "no writer probe defined" };
+        return;
+      }
+      try {
+        const res = await fetch(`${SITE}${spec.path}`, {
+          method: spec.method || "GET",
+          headers: spec.method === "POST" ? { "content-type": "application/json" } : undefined,
+          body: spec.method === "POST" ? "{}" : undefined,
+          redirect: "follow",
+        });
+        const body = await res.json().catch(() => null);
+        results[table] = {
+          reachable: spec.ok(res.status, body),
+          writer: spec.writer,
+          detail: `${spec.path} -> ${res.status}${body?.error ? ` ${body.error}` : ""}`,
+        };
+      } catch (err) {
+        results[table] = {
+          reachable: false,
+          writer: spec.writer,
+          detail: `${spec.path} -> ${String(err.message || err)}`,
+        };
+      }
+    }),
+  );
+  return results;
+}
+
 /* --- 3. What is on disk? ------------------------------------------------- */
 function inventory() {
   const count = (cmd) => {
@@ -153,6 +221,12 @@ if (!FAST) {
       ["/", "/curriculum/", "/math/games/practice-arcade/", "/api/signal/health"].map(probe),
     ),
   };
+  // Only the empty tables need a writer probe — a table with rows has already
+  // proven its writer works.
+  const emptyTables = Object.entries(out.d1)
+    .filter(([, s]) => s.n === 0)
+    .map(([t]) => t);
+  out.writers = emptyTables.length ? await writerHealth(emptyTables) : {};
 }
 
 if (AS_JSON) {
@@ -209,9 +283,35 @@ if (!FAST) {
 
 const empty = Object.entries(out.d1).filter(([, s]) => s.n === 0).map(([t]) => t);
 if (empty.length) {
-  console.log(
-    `\n${YELLOW}Note:${RESET} ${empty.join(", ")} ${empty.length === 1 ? "is" : "are"} empty. ` +
-      `An empty table is not proof of non-use —\n      it is usually proof that nothing writes to it. Check the writer first.`,
-  );
+  const w = out.writers || {};
+  const broken = empty.filter((t) => w[t]?.reachable === false);
+  const healthy = empty.filter((t) => w[t]?.reachable === true);
+  const unknown = empty.filter((t) => w[t]?.reachable == null);
+
+  console.log(`\n${YELLOW}Empty tables — is the writer alive?${RESET}`);
+  for (const t of empty) {
+    const r = w[t];
+    if (!r || r.reachable == null) {
+      console.log(`  ${YELLOW}?${RESET} ${t.padEnd(18)} ${DIM}${r?.detail || "not probed"}${RESET}`);
+    } else if (r.reachable) {
+      console.log(
+        `  ${GREEN}✓${RESET} ${t.padEnd(18)} writer OK ${DIM}— ${r.writer}; unused, not broken (${r.detail})${RESET}`,
+      );
+    } else {
+      console.log(
+        `  ${RED}✗${RESET} ${t.padEnd(18)} ${RED}WRITER UNREACHABLE${RESET} ${DIM}— ${r.writer} (${r.detail})${RESET}`,
+      );
+    }
+  }
+  if (broken.length) {
+    console.log(
+      `\n${RED}Action:${RESET} ${broken.join(", ")} cannot be written to right now. ` +
+        `Nothing will\n      record until the writer is fixed — this is an outage, not idle data.`,
+    );
+  } else if (healthy.length && !unknown.length) {
+    console.log(
+      `\n${DIM}All writers answered. These tables are empty because the feature has not been\n      used yet, not because anything is broken.${RESET}`,
+    );
+  }
 }
 console.log("");
