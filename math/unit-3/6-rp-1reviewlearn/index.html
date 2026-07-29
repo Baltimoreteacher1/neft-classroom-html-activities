@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="en">
   <head>
+<script src="/assets/game-score.js"></script>
+<script>NeftScore.init({ gameId: "6-rp-1reviewlearn", standard: "6.AT.1" });</script>
     <link rel="stylesheet" href="/assets/shared.css" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -1440,6 +1442,9 @@
         fillTotal = 8;
       function checkFill(qn, sel, answer) {
         var res = document.getElementById("fr" + qn);
+        // Keyed per question so changing a dropdown REPLACES that
+        // question's result instead of stacking another attempt.
+        if (sel.value !== "") NeftScore.tally("fr" + qn, 1, sel.value === answer ? 1 : 0);
         if (sel.value === answer) {
           sel.style.borderColor = "#27ae60";
           sel.style.background = "#d5f5e3";
@@ -1465,6 +1470,9 @@
         writeTotal = 6;
       function checkWrite(qn, sel, answer) {
         var res = document.getElementById("wr" + qn);
+        // Keyed per question so changing a dropdown REPLACES that
+        // question's result instead of stacking another attempt.
+        if (sel.value !== "") NeftScore.tally("wr" + qn, 1, sel.value === answer ? 1 : 0);
         if (sel.value === answer) {
           sel.style.borderColor = "#27ae60";
           sel.style.background = "#d5f5e3";

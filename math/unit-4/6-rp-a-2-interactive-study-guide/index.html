@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="en">
   <head>
+<script src="/assets/game-score.js"></script>
+<script>NeftScore.init({ gameId: "6-rp-a-2-interactive-study-guide", standard: "6.AT.2" });</script>
     <link rel="stylesheet" href="/assets/shared.css" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -2193,6 +2195,7 @@
         fb.classList.add("show");
         if (Math.abs(v - correct) < 0.01) {
           fb.className = "fbx show correct";
+          NeftScore.attempt(true);
           fb.textContent = "✅ Correct! Unit rate = " + correct;
           document.getElementById("p" + n).classList.add("correct");
           score++;
@@ -2202,6 +2205,7 @@
             (score / 6) * 100 + "%";
         } else {
           fb.className = "fbx show wrong";
+          NeftScore.attempt(false);
           fb.textContent = "❌ Not quite. Check your division and try again!";
           const el = document.getElementById("p" + n);
           el.classList.add("wrong");
@@ -2333,6 +2337,7 @@
           fb.textContent = "🎉 Perfect! All 10 sorted correctly!";
         } else {
           fb.className = "fbx show wrong";
+          NeftScore.tally("sort", 10, ok);
           fb.textContent = ok + "/10 correct. Red = wrong category.";
         }
       }

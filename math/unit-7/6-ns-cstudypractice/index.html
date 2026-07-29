@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="en">
   <head>
+<script src="/assets/game-score.js"></script>
+<script>NeftScore.init({ gameId: "6-ns-cstudypractice", standard: "6.NOS.9" });</script>
     <link rel="stylesheet" href="/assets/shared.css" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -2522,6 +2524,7 @@
         fb.classList.add("show");
         if (!isNaN(v) && Math.abs(v - correct) < 0.01) {
           fb.className = "fbx show correct";
+          NeftScore.attempt(true);
           fb.textContent = "✅ Correct! Distance = " + correct + " units";
           document.getElementById("p" + n).classList.add("correct");
           score++;
@@ -2531,6 +2534,7 @@
             (score / 7) * 100 + "%";
         } else {
           fb.className = "fbx show wrong";
+          NeftScore.attempt(false);
           fb.textContent =
             "❌ Not quite. Check: are you subtracting the right coordinates?";
           const el = document.getElementById("p" + n);
@@ -2547,9 +2551,11 @@
         fb.classList.add("show");
         if (!isNaN(v) && Math.abs(v - ans) < 0.01) {
           fb.className = "fbx show correct";
+          NeftScore.attempt(true);
           fb.textContent = "✅ Correct! Answer = " + ans;
         } else {
           fb.className = "fbx show wrong";
+          NeftScore.attempt(false);
           fb.textContent = "❌ Try again. Use |coord₁ − coord₂|.";
         }
       }
