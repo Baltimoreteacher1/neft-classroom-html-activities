@@ -140,6 +140,48 @@ for (const [app, themeKey] of APPS) {
     assert.equal(S.merge(a, b).celebrated, 4);
   });
 
+  test(`${app}: a daily streak builds, breaks, and pays a bonus`, () => {
+    const day1 = S.award(S.normalize(null), "task", 10, "2026-03-02");
+    assert.equal(day1.streak, 1, "first day of work starts a streak");
+    assert.equal(day1.formBonus > 0, true, "keeping form pays something");
+
+    const sameDay = S.award(day1.sport, "task", 10, "2026-03-02");
+    assert.equal(sameDay.formBonus, 0, "the bonus is once per day, not per task");
+    assert.equal(sameDay.streak, 1);
+
+    const day2 = S.award(sameDay.sport, "task", 10, "2026-03-03");
+    assert.equal(day2.streak, 2, "the next calendar day extends the streak");
+
+    const afterGap = S.award(day2.sport, "task", 10, "2026-03-09");
+    assert.equal(afterGap.streak, 1, "a missed day restarts the streak");
+    assert.equal(afterGap.sport.bestStreak, 2, "the best streak is remembered");
+    assert.ok(
+      afterGap.sport.xp > day2.sport.xp,
+      "breaking a streak still earns points — form never takes anything away",
+    );
+  });
+
+  test(`${app}: merging keeps the streak from whichever device worked last`, () => {
+    const stale = S.award(S.normalize(null), "task", 10, "2026-03-01").sport;
+    const fresh = S.award(S.normalize({ xp: 50 }), "task", 10, "2026-03-08").sport;
+    const merged = S.merge(stale, fresh);
+    assert.equal(merged.lastDay, "2026-03-08");
+    assert.equal(merged.streak, fresh.streak);
+  });
+
+  test(`${app}: trophies follow the ladder and cannot be lost`, () => {
+    assert.ok(S.THEME.trophies.length > 0);
+    for (const t of S.THEME.trophies) {
+      assert.ok(t.level >= 1 && t.level <= S.THEME.levels.length, `${t.name} sits off the ladder`);
+    }
+    const esc = (v) => String(v);
+    const rookie = S.renderView(S.normalize({ xp: 0 }), { esc });
+    const veteran = S.renderView(S.normalize({ xp: 99999 }), { esc });
+    const locks = (html) => (html.match(/Reach level/g) || []).length;
+    assert.equal(locks(rookie), S.THEME.trophies.length, "a new season has every trophy locked");
+    assert.equal(locks(veteran), 0, "the top of the ladder has won them all");
+  });
+
   test(`${app}: rendering escapes and never leaks a locked item`, () => {
     const esc = (v) =>
       String(v).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);

@@ -6442,8 +6442,11 @@ Due May 31"></textarea>
   function awardSportPoints(kind) {
     const api = sports();
     if (!api) return;
-    const res = api.award(state.sport, kind);
+    const res = api.award(state.sport, kind, undefined, todayKey());
     state.sport = res.sport;
+    if (res.formBonus > 0 && res.streak > 1) {
+      toast(`🔥 ${res.streak} days in a row — +${res.formBonus} bonus`);
+    }
     if (res.leveledUp && res.level.level > (state.sport.celebrated || 0)) {
       state.sport.celebrated = res.level.level;
       toast(api.levelUpMessage(res.level));

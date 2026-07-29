@@ -205,6 +205,15 @@
     pointWord: "training points",
     moveLine: "Every finished thing moves the runner.",
     maxLine: "You have run every base there is.",
+    formWord: "Hot streak",
+    formLine: "days in a row with work finished",
+    // Awarded purely by reaching a level — nothing extra to grind for.
+    trophies: [
+      { level: 3, emoji: "🥎", name: "Called Up" },
+      { level: 6, emoji: "💥", name: "Big Bat" },
+      { level: 9, emoji: "🧤", name: "Two-Way Star" },
+      { level: 12, emoji: "🏛️", name: "Hall of Fame" },
+    ],
   };
 
   // --- Points ---------------------------------------------------------------
@@ -235,9 +244,17 @@
         equipped[slot] = id;
       }
     }
+    const day = typeof src.lastDay === "string" && /^\d{4}-\d{2}-\d{2}$/.test(src.lastDay)
+      ? src.lastDay
+      : "";
     return {
       xp: clampInt(src.xp, 0, 10_000_000),
       equipped,
+      // Consecutive days with something finished. Form is a reason to come
+      // back tomorrow; it never takes points away, it only adds a bonus.
+      streak: clampInt(src.streak, 0, 3650),
+      bestStreak: clampInt(src.bestStreak, 0, 3650),
+      lastDay: day,
       // Highest level the kid has actually been CONGRATULATED for, so a
       // level-up celebration fires exactly once per level, on any device.
       celebrated: clampInt(src.celebrated, 0, THEME.levels.length),
@@ -250,10 +267,16 @@
     const a = normalize(local);
     const b = normalize(remote);
     const winner = b.xp > a.xp ? b : a;
+    // The device that worked most recently owns the running streak; the best
+    // streak ever is simply the higher of the two.
+    const recent = b.lastDay > a.lastDay ? b : a;
     return {
       xp: Math.max(a.xp, b.xp),
       equipped: { ...a.equipped, ...winner.equipped },
       celebrated: Math.max(a.celebrated, b.celebrated),
+      streak: recent.streak,
+      lastDay: recent.lastDay,
+      bestStreak: Math.max(a.bestStreak, b.bestStreak, recent.streak),
     };
   }
 
@@ -287,10 +310,40 @@
 
   // Add points for one finished thing. Returns the new sport object plus what
   // just changed, so the caller can celebrate without recomputing anything.
-  function award(sport, kind, amount) {
+  const dayBefore = (isoDay) => {
+    const d = new Date(`${isoDay}T12:00:00`);
+    if (Number.isNaN(d.getTime())) return "";
+    d.setDate(d.getDate() - 1);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
+      d.getDate(),
+    ).padStart(2, "0")}`;
+  };
+
+  // Points for keeping a streak alive, paid once on the first finished thing
+  // of a new day. Capped so a long streak stays a nice bonus rather than the
+  // only thing that matters.
+  const formBonusFor = (streak) => Math.min(7, Math.max(0, streak)) * 5;
+
+  // Add points for one finished thing. `today` (YYYY-MM-DD) lets the caller's
+  // clock own what "a day" means. Returns the new sport object plus what just
+  // changed, so the caller can celebrate without recomputing anything.
+  function award(sport, kind, amount, today) {
     const before = normalize(sport);
     const gain = Math.max(0, Math.round(Number(amount) || pointsFor(kind)));
-    const after = { ...before, xp: before.xp + gain };
+    let streak = before.streak;
+    let bonus = 0;
+    const isNewDay = typeof today === "string" && today && today !== before.lastDay;
+    if (isNewDay) {
+      streak = before.lastDay && dayBefore(today) === before.lastDay ? before.streak + 1 : 1;
+      bonus = formBonusFor(streak);
+    }
+    const after = {
+      ...before,
+      xp: before.xp + gain + bonus,
+      streak,
+      bestStreak: Math.max(before.bestStreak, streak),
+      lastDay: isNewDay ? today : before.lastDay,
+    };
     const wasLevel = levelInfo(before.xp).level;
     const nowLevel = levelInfo(after.xp).level;
     const fresh = THEME.gear.filter((g) => g.level > wasLevel && g.level <= nowLevel);
@@ -301,6 +354,8 @@
     return {
       sport: after,
       gain,
+      formBonus: bonus,
+      streak,
       leveledUp: nowLevel > wasLevel,
       level: levelInfo(after.xp),
       unlocked: fresh,
@@ -393,6 +448,8 @@
       } · ${esc(lv.name)}</p></div><div class="sp-emoji">${esc(avatarFor(s))}</div></div>
       <div class="sp-bar"><span style="width:${lv.pct}%"></span></div>
       <p class="sp-sub">${
+        s.streak > 1 ? `🔥 ${s.streak} days in a row · ` : ""
+      }${
         lv.isMax
           ? `Hall of Fame — every piece of gear is yours. 🏛️`
           : `${lv.toNext} more ${THEME.pointWord} to ${esc(lv.nextName)}.`
@@ -424,7 +481,16 @@
       lv.isMax
         ? esc(THEME.maxLine)
         : `${esc(THEME.moveLine)} ${esc(lv.pct)}% of this ${esc(THEME.lapWord)}.`
-    }</p>`;
+    }</p>
+    ${
+      s.streak > 0
+        ? `<p class="sp-sub" style="text-align:center">🔥 ${esc(THEME.formWord)}: <b>${
+            s.streak
+          }</b> ${esc(THEME.formLine)}${
+            s.bestStreak > s.streak ? ` · best ${s.bestStreak}` : ""
+          }</p>`
+        : ""
+    }`;
 
     const lockerHtml =
       THEME.slots
@@ -461,6 +527,19 @@
       )
       .join("")}</div>`;
 
+    // Trophies are pure recognition: they follow the ladder, so there is
+    // nothing extra to grind for and nothing that can be lost.
+    const trophyHtml = `<div class="sp-grid">${THEME.trophies
+      .map((t) => {
+        const won = lv.level >= t.level;
+        return `<div class="sp-item" data-on="${won ? 1 : 0}">
+          <span class="sp-emoji">${won ? t.emoji : "🔒"}</span>
+          <b>${esc(t.name)}</b>
+          <small>${won ? "Earned" : `Reach level ${t.level}`}</small>
+        </div>`;
+      })
+      .join("")}</div>`;
+
     const wrap = (id, title, sub, body) =>
       card
         ? card(id, title, sub, body)
@@ -472,11 +551,11 @@
       esc(THEME.tagline),
       playerHtml,
     )}${wrap("sp-locker", "🎒 Gear locker", "Tap to wear it.", lockerHtml)}${wrap(
-      "sp-ladder",
-      "📈 Season ladder",
-      "Where this season goes.",
-      ladderHtml,
-    )}</div>`;
+      "sp-trophies",
+      "🏆 Trophy case",
+      "Won by climbing the ladder.",
+      trophyHtml,
+    )}${wrap("sp-ladder", "📈 Season ladder", "Where this season goes.", ladderHtml)}</div>`;
   }
 
   // A short, kid-facing line for the level-up toast.
