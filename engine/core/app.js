@@ -53,6 +53,28 @@ export function createApp(config) {
       sig.defer = true;
       document.head.append(sig);
     }
+    /* Teacher-facing telemetry (assets/lesson-telemetry.js → window.NTtelemetry).
+       Lazy-loaded here for the same reason as nt-signal above: no HTML change to
+       975 lesson shells, and every consumer already guards on window.NTtelemetry
+       so a failed load is a silent no-op.
+
+       Why this was needed: reportMisconception() in lesson-renderer.js has always
+       called window.NTtelemetry.track("misconception", …) — one of the exact
+       event types the teacher analytics query — but nothing on a /lessons/<id>/
+       page ever loaded the telemetry module, so that sink never fired and these
+       pages contributed no evidence at all. Loading it AFTER __ntLessonMeta is
+       set (line above) also means the module can read the lesson's canonical
+       standard on init, which matters because the page is a runtime-rendered
+       shell with no standard in its static HTML. */
+    if (
+      !window.NTtelemetry &&
+      !document.querySelector('script[src^="/assets/lesson-telemetry.js"]')
+    ) {
+      const tel = document.createElement("script");
+      tel.src = "/assets/lesson-telemetry.js";
+      tel.defer = true;
+      document.head.append(tel);
+    }
   } catch {
     /* signals are optional */
   }
