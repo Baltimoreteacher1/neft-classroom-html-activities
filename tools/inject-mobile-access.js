@@ -12,8 +12,8 @@
  *   node tools/inject-mobile-access.js --dry-run  # report only
  *   node tools/inject-mobile-access.js --revert   # remove the injected blocks
  */
-import { readdirSync, statSync, readFileSync, writeFileSync } from "fs";
-import { join, dirname } from "path";
+import { readdirSync, readFileSync, statSync, writeFileSync } from "fs";
+import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -57,7 +57,6 @@ const report = {
   reverted: 0,
   skippedNoTags: [],
 };
-
 
 // Find the real closing tag: skip occurrences that sit inside a <script> block
 // (vendored libs / print-template string literals contain "</head>"/"</body>"

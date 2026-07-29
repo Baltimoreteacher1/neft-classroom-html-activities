@@ -1,7 +1,7 @@
 // One-off: make 3D game WebGL-failure fallbacks accurate + add a 2D fallback
 // link for units that have a Phaser 2D edition. Three.js is vendored locally
 // (not a CDN), so the old "loads from a CDN" message was misleading.
-import { readFileSync, writeFileSync, readdirSync, existsSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 const ROOT = new URL("..", import.meta.url).pathname;

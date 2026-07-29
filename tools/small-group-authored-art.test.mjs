@@ -39,14 +39,26 @@ globalThis.document = { createElement: () => fakeEl() };
 const { mountAuthoredArt } = await import("../engine/core/small-group-storyboard.js");
 
 test("returns false with no usable src (fallback path stays intact)", () => {
-  assert.equal(mountAuthoredArt(fakeEl(), null, () => {}), false);
-  assert.equal(mountAuthoredArt(fakeEl(), {}, () => {}), false);
-  assert.equal(mountAuthoredArt(null, { src: "/a.webp" }, () => {}), false);
+  assert.equal(
+    mountAuthoredArt(fakeEl(), null, () => {}),
+    false,
+  );
+  assert.equal(
+    mountAuthoredArt(fakeEl(), {}, () => {}),
+    false,
+  );
+  assert.equal(
+    mountAuthoredArt(null, { src: "/a.webp" }, () => {}),
+    false,
+  );
 });
 
 test("renders a lazy img with the src and a real alt", () => {
   const host = fakeEl();
-  assert.equal(mountAuthoredArt(host, { src: "/a.webp", alt: "a robot" }, () => {}), true);
+  assert.equal(
+    mountAuthoredArt(host, { src: "/a.webp", alt: "a robot" }, () => {}),
+    true,
+  );
   const img = host._children[0];
   assert.equal(img._src, "/a.webp");
   assert.equal(img.loading, "lazy");
@@ -73,6 +85,9 @@ test("on load error, the fallback fires and the broken img is removed", () => {
 
 test("accepts a bare string src (treated as decorative)", () => {
   const host = fakeEl();
-  assert.equal(mountAuthoredArt(host, "/c.webp", () => {}), true);
+  assert.equal(
+    mountAuthoredArt(host, "/c.webp", () => {}),
+    true,
+  );
   assert.equal(host._children[0].attrs["aria-hidden"], "true");
 });

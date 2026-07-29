@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { execFileSync } from "node:child_process";
 /**
  * validate-js-syntax — parse every shipped .js/.mjs file and every inline
  * <script> block in every .html page, and fail on any SyntaxError.
@@ -17,9 +18,8 @@
  */
 import fs from "node:fs";
 import path from "node:path";
-import vm from "node:vm";
-import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import vm from "node:vm";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(HERE, "..");
@@ -35,7 +35,8 @@ const SKIP_DIRS = new Set([
 ]);
 
 // Vendored third-party bundles: not ours to fix, and some ship exotic syntax.
-const SKIP_FILE = /(?:\.min\.js$|\/vendor\/|\/vendored\/|phaser|minisearch|three(?:\.module)?\.js$)/i;
+const SKIP_FILE =
+  /(?:\.min\.js$|\/vendor\/|\/vendored\/|phaser|minisearch|three(?:\.module)?\.js$)/i;
 
 function walk(dir, out = []) {
   let entries;

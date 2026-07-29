@@ -1,9 +1,9 @@
 // Builds curriculum/lesson-bonus-activities.js from lesson config.json files.
 // Each lesson with practice.optionalActivity gets a curriculum-hub dropdown entry
 // that deep-links to /lessons/<id>/?extra=activity.
-import { readFileSync, writeFileSync, readdirSync, existsSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");

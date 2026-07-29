@@ -3,8 +3,8 @@
 // Scaffolded (honest "not yet supported"): pptx, pdf, docx, gslides.
 // Every adapter returns a partial lesson-analysis object (see
 // schemas/lesson-analysis.schema.json). analyze.mjs enriches it further.
-import { readFileSync, existsSync } from "node:fs";
-import { extname, basename } from "node:path";
+import { existsSync, readFileSync } from "node:fs";
+import { basename, extname } from "node:path";
 import { CCSS_RE } from "./util.mjs";
 
 const EXT_MAP = {

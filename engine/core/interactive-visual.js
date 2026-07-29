@@ -339,8 +339,10 @@ const REGISTRY = {
 /**
  * Build the mount-host HTML string for an interactive visual kind. Returns "" if
  * the kind is not interactive, so `buildVisual()` can fall through to its static
- * cases. `ariaLabel` is a plain, screen-reader-friendly description; `fallback`
- * is shown when JavaScript is unavailable so the figure never renders blank.
+ * cases. `ariaLabel` names the interactive group for assistive technology;
+ * `fallback` is shown when JavaScript is unavailable so the figure never renders
+ * blank. The host must not use `role="img"` because hydrated models contain
+ * focusable controls, and interactive descendants are invalid inside an image.
  */
 export function interactiveVisualHost(v, { ariaLabel, fallback } = {}) {
   if (!v || !REGISTRY[v.kind]) return "";
@@ -358,7 +360,7 @@ export function interactiveVisualHost(v, { ariaLabel, fallback } = {}) {
   const noscript = fallback
     ? `<noscript><div class="interactive-visual-fallback">${fallback}</div></noscript>`
     : "";
-  return `<div class="interactive-visual" data-visual="${v.kind}" data-config="${cfgJson}" role="img" aria-label="${label}" style="margin:var(--sp-3) 0;">${noscript}</div>`;
+  return `<div class="interactive-visual" data-visual="${v.kind}" data-config="${cfgJson}" role="group" aria-label="${label}" style="margin:var(--sp-3) 0;">${noscript}</div>`;
 }
 
 /**

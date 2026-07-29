@@ -5,8 +5,8 @@
  * Writes data/content-coverage.json and prints a summary table.
  */
 import { readFileSync, writeFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const graph = JSON.parse(readFileSync(join(root, "data/content-graph.json"), "utf8"));

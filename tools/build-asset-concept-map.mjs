@@ -30,8 +30,8 @@
 //   - `misconceptions` is an enrichment slot, intentionally EMPTY until tagged.
 // =============================================================================
 import { readFileSync, writeFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const read = (p) => JSON.parse(readFileSync(resolve(root, p), "utf8"));

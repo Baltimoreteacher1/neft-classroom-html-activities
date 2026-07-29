@@ -13,9 +13,9 @@
  *     coverage: { "6.AT.A.2": {Activity:n, Game:n, ...} }
  *   }
  */
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const registry = JSON.parse(readFileSync(join(root, "data/registry.json"), "utf8"));

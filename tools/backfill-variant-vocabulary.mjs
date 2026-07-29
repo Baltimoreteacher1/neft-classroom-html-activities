@@ -20,7 +20,10 @@ const LIMIT = 8;
 const dryRun = process.argv.includes("--dry-run");
 
 const readJson = (file) => JSON.parse(fs.readFileSync(file, "utf8"));
-const termKey = (entry) => String(entry?.term || "").trim().toLowerCase();
+const termKey = (entry) =>
+  String(entry?.term || "")
+    .trim()
+    .toLowerCase();
 
 let changed = 0;
 let added = 0;

@@ -50,11 +50,11 @@ const SKIP_EXACT = new Set(["404.html"]);
 const GENERATED_BASENAMES = new Set(["printable.html"]);
 
 function listHtml() {
-  const out = execFileSync(
-    "git",
-    ["ls-files", "*.html"],
-    { cwd: ROOT, encoding: "utf8", maxBuffer: 32 * 1024 * 1024 },
-  );
+  const out = execFileSync("git", ["ls-files", "*.html"], {
+    cwd: ROOT,
+    encoding: "utf8",
+    maxBuffer: 32 * 1024 * 1024,
+  });
   return out
     .split("\n")
     .map((s) => s.trim())

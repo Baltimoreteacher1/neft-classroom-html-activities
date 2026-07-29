@@ -1,8 +1,8 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { buildTptSlideDeckV3 } from "./lib/tpt-slide-deck-v3.mjs";
 import { EDITORIAL_FONT_IMPORT } from "./lib/editorial-print.mjs";
+import { buildTptSlideDeckV3 } from "./lib/tpt-slide-deck-v3.mjs";
 
 // Editorial finish for slides: serif titles only. A deck is a presentation
 // medium with designed per-slide backgrounds, so (unlike the document
@@ -14,9 +14,10 @@ const SLIDES_EDITORIAL = `
   font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
   letter-spacing:-0.01em;
 }`;
-import { getUnitPalette, paletteToCssVars } from "./lib/slide-theme-palettes.mjs";
-import { lessonScope, inScope } from "./lib/lesson-scope.mjs";
+
+import { inScope, lessonScope } from "./lib/lesson-scope.mjs";
 import { REFERENCE_CSS, tokensToCssVars } from "./lib/slide-reference-theme.mjs";
+import { getUnitPalette, paletteToCssVars } from "./lib/slide-theme-palettes.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "..");

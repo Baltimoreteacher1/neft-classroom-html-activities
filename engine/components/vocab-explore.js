@@ -24,13 +24,13 @@
 import { resolveVocabImage, vocabImageAlt } from "../core/vocab-images.js";
 import { renderShape3D } from "./shape-3d.js";
 import {
-  escapeHtml,
-  buildSayItRow,
   bilingualTermEl,
-  buildPredictReveal,
-  buildExampleSort,
-  buildUseInContext,
   buildConfirmation,
+  buildExampleSort,
+  buildPredictReveal,
+  buildSayItRow,
+  buildUseInContext,
+  escapeHtml,
 } from "./vocab-explore-tasks.js";
 
 // ── Inject-once scoped polish ─────────────────────────────────────────────

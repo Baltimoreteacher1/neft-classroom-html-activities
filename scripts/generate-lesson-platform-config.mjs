@@ -28,8 +28,8 @@
  *   node scripts/generate-lesson-platform-config.mjs --dry-run  # report only
  *   node scripts/generate-lesson-platform-config.mjs --revert   # remove blocks
  */
-import { readdirSync, statSync, readFileSync, writeFileSync, existsSync } from "fs";
-import { join, dirname } from "path";
+import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from "fs";
+import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");

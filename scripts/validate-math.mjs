@@ -18,7 +18,14 @@
  */
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { Rat, evaluateExpression, matchesAnswer, parseAnswerValue, splitEquivalents, stripUnits } from "./lib/rational.mjs";
+import {
+  evaluateExpression,
+  matchesAnswer,
+  parseAnswerValue,
+  Rat,
+  splitEquivalents,
+  stripUnits,
+} from "./lib/rational.mjs";
 
 const LESSONS_DIR = "lessons";
 const args = new Set(process.argv.slice(2));
@@ -40,11 +47,16 @@ function isPrime(n) {
 function intOf(rat) {
   return rat && rat.isInt() && rat.n >= -1e15 && rat.n <= 1e15 ? Number(rat.n) : null;
 }
-function gcdInt(a, b) { while (b) [a, b] = [b, a % b]; return Math.abs(a); }
+function gcdInt(a, b) {
+  while (b) [a, b] = [b, a % b];
+  return Math.abs(a);
+}
 
 /** "18 and 24" / "6, 10" → [18, 24]. Returns null unless every part is an integer. */
 function parsePair(str) {
-  const parts = text(str).split(/\s*(?:and|,|&)\s*/i).filter(Boolean);
+  const parts = text(str)
+    .split(/\s*(?:and|,|&)\s*/i)
+    .filter(Boolean);
   if (parts.length < 2) return null;
   const nums = parts.map((p) => intOf(evaluateExpression(p)));
   return nums.every((n) => n !== null) ? nums : null;
@@ -75,7 +87,7 @@ function equationHolds(equation, variable, value) {
 
 /** Detect the single variable letter in an equation, if there is exactly one. */
 function soleVariable(equation) {
-  const letters = new Set((text(equation).match(/[A-Za-z]/g) || []));
+  const letters = new Set(text(equation).match(/[A-Za-z]/g) || []);
   return letters.size === 1 ? [...letters][0] : null;
 }
 
@@ -102,7 +114,10 @@ const rules = [
         for (const t of targets) {
           if (!isNum(node[t])) continue;
           const rhs = parseAnswerValue(node[t]);
-          if (rhs === null) { add.skip(`${s}/${t} answer not evaluable: ${text(node[t])}`); continue; }
+          if (rhs === null) {
+            add.skip(`${s}/${t} answer not evaluable: ${text(node[t])}`);
+            continue;
+          }
           add.check(lhs.eq(rhs), `${raw} = ${lhs.toString()} but ${t} says ${text(node[t])}`);
         }
       }
@@ -122,7 +137,10 @@ const rules = [
         if (value === null) continue;
         const filled = raw.replace(/___+|\[\s*\]/, `(${value.n}/${value.d})`);
         const holds = equationHolds(filled, null, value);
-        if (holds === null) { add.skip(`blank equation not evaluable: ${raw}`); continue; }
+        if (holds === null) {
+          add.skip(`blank equation not evaluable: ${raw}`);
+          continue;
+        }
         add.check(holds, `${raw} is not satisfied by ${text(ans)}`);
       }
     },
@@ -140,7 +158,10 @@ const rules = [
       const variable = text(node.variable) || soleVariable(eq);
       if (!variable) return;
       const holds = equationHolds(eq, variable, value);
-      if (holds === null) { add.skip(`equation not evaluable: ${eq}`); return; }
+      if (holds === null) {
+        add.skip(`equation not evaluable: ${eq}`);
+        return;
+      }
       add.check(holds, `${eq} is not satisfied by ${variable} = ${text(ans)}`);
     },
   },
@@ -158,19 +179,28 @@ const rules = [
       if (p === null) return;
       // Only treat as a factorization when every base is prime — otherwise this
       // is an ordinary product and expression-answer already covered it.
-      const bases = ansText.split(/[×*]/).map((b) => intOf(evaluateExpression(b.replace(/(\^|[⁰-⁹]).*$/, "").trim())));
+      const bases = ansText
+        .split(/[×*]/)
+        .map((b) => intOf(evaluateExpression(b.replace(/(\^|[⁰-⁹]).*$/, "").trim())));
       if (bases.some((b) => b === null)) return;
       if (!bases.every((b) => isPrime(b))) {
         // A `split`/`pf` sibling is the factor-tree workflow: the intermediate
         // split is shown separately, so `answer` is required to be fully prime.
         // Without that signal, "24 → 4 × 6" may just be "write it as a product".
         const isFactorTree = node.split !== undefined || node.pf !== undefined;
-        if (isFactorTree) add.check(false, `answer "${ansText}" is not a prime factorization of ${given} (${bases.filter((b) => !isPrime(b)).join(", ")} not prime)`);
+        if (isFactorTree)
+          add.check(
+            false,
+            `answer "${ansText}" is not a prime factorization of ${given} (${bases.filter((b) => !isPrime(b)).join(", ")} not prime)`,
+          );
         else if (p === given) add.skip(`non-prime bases in "${ansText}" (product is right)`);
         else add.check(false, `given ${given} but "${ansText}" = ${p}`);
         return;
       }
-      add.check(p === given, `prime factorization of ${given} is not "${ansText}" (that product is ${p})`);
+      add.check(
+        p === given,
+        `prime factorization of ${given} is not "${ansText}" (that product is ${p})`,
+      );
     },
   },
   {
@@ -185,7 +215,8 @@ const rules = [
       const [a, b] = pair;
       const isGcf = /shared|gcf|\bpf\b/.test(keys) && !/multiple|lcm/.test(keys);
       const isLcm = /first|second|lcm|multiple|powers/.test(keys);
-      if (isGcf && !isLcm) add.check(ans === gcdInt(a, b), `GCF(${a}, ${b}) = ${gcdInt(a, b)}, not ${ans}`);
+      if (isGcf && !isLcm)
+        add.check(ans === gcdInt(a, b), `GCF(${a}, ${b}) = ${gcdInt(a, b)}, not ${ans}`);
       else if (isLcm && !isGcf) {
         const lcm = Math.abs(a * b) / gcdInt(a, b);
         add.check(ans === lcm, `LCM(${a}, ${b}) = ${lcm}, not ${ans}`);
@@ -206,7 +237,10 @@ const rules = [
       if ([dividend, divisor, quotient, remainder].some((v) => v === null) || divisor === 0) return;
       const okQ = Math.floor(dividend / divisor) === quotient;
       const okR = dividend - divisor * quotient === remainder;
-      add.check(okQ && okR, `${dividend} ÷ ${divisor} = ${Math.floor(dividend / divisor)} R ${dividend % divisor}, not ${quotient} R ${remainder}`);
+      add.check(
+        okQ && okR,
+        `${dividend} ÷ ${divisor} = ${Math.floor(dividend / divisor)} R ${dividend % divisor}, not ${quotient} R ${remainder}`,
+      );
     },
   },
   {
@@ -215,24 +249,38 @@ const rules = [
     //   given "24", split "4 × 6"      → 4×6 must be 24
     //   given "1/2 ÷ 1/6", kcf "1/2 × 6/1 = 6/2"  → both sides equal, and equal answer
     run(node, add) {
-      const anchor = ["given", "problem", "original"].find((k) => isNum(node[k]) && evaluateExpression(text(node[k])) !== null);
+      const anchor = ["given", "problem", "original"].find(
+        (k) => isNum(node[k]) && evaluateExpression(text(node[k])) !== null,
+      );
       if (!anchor) return;
       const base = evaluateExpression(text(node[anchor]));
       for (const k of ["split", "expanded", "convert", "kcf", "rewrite", "whole", "work"]) {
         if (!isNum(node[k])) continue;
         const raw = text(node[k]);
         if (!raw) continue;
-        const parts = raw.split("=").map((p) => p.trim()).filter(Boolean);
+        const parts = raw
+          .split("=")
+          .map((p) => p.trim())
+          .filter(Boolean);
         const values = parts.map((p) => evaluateExpression(p));
-        if (values.some((v) => v === null)) { add.skip(`${k} not evaluable: ${raw}`); continue; }
+        if (values.some((v) => v === null)) {
+          add.skip(`${k} not evaluable: ${raw}`);
+          continue;
+        }
         // Every side of the shown work must be equal to every other side.
         for (let x = 1; x < values.length; x++) {
-          add.check(values[0].eq(values[x]), `${k}: "${parts[0]}" (${values[0].toString()}) ≠ "${parts[x]}" (${values[x].toString()})`);
+          add.check(
+            values[0].eq(values[x]),
+            `${k}: "${parts[0]}" (${values[0].toString()}) ≠ "${parts[x]}" (${values[x].toString()})`,
+          );
         }
         // …and equal to the problem it rewrites. "whole" is deliberately
         // excluded: "2.5 × 4" → whole "25 × 4 = 100" rescales on purpose.
         if (k !== "whole" && k !== "work") {
-          add.check(values[0].eq(base), `${k} "${parts[0]}" = ${values[0].toString()} does not match ${anchor} "${text(node[anchor])}" = ${base.toString()}`);
+          add.check(
+            values[0].eq(base),
+            `${k} "${parts[0]}" = ${values[0].toString()} does not match ${anchor} "${text(node[anchor])}" = ${base.toString()}`,
+          );
         }
       }
     },
@@ -249,7 +297,10 @@ const rules = [
         const values = forms.map((f) => evaluateExpression(f));
         if (values.length < 2 || values.some((v) => v === null)) continue;
         for (let x = 1; x < values.length; x++) {
-          add.check(values[0].eq(values[x]), `${k} lists "${forms[0]}" and "${forms[x]}" as equal, but they are ${values[0].toString()} and ${values[x].toString()}`);
+          add.check(
+            values[0].eq(values[x]),
+            `${k} lists "${forms[0]}" and "${forms[x]}" as equal, but they are ${values[0].toString()} and ${values[x].toString()}`,
+          );
         }
       }
     },
@@ -264,7 +315,12 @@ const rules = [
       // Prompts that ask for a TRANSFORMATION of the shown number, not its
       // value, belong to the specialised rules below. Without this, "Use the
       // reciprocal of 1/4: ___" would be graded as if it asked for 1/4.
-      if (/reciprocal|as a (decimal|fraction|percent|ratio)|factors of|simplif|round|estimate|reduce|convert|rewrite|equivalent/i.test(prompt)) return;
+      if (
+        /reciprocal|as a (decimal|fraction|percent|ratio)|factors of|simplif|round|estimate|reduce|convert|rewrite|equivalent/i.test(
+          prompt,
+        )
+      )
+        return;
       // The arithmetic run immediately preceding the blank, separated from it by
       // ":" or "=" — "Multiply 2 × 2: ___", "Base area: 3 × 5 = ___". Requiring
       // that separator keeps prose numbers ("Write 5% as a decimal: ___") out.
@@ -277,8 +333,14 @@ const rules = [
       const exact = evaluateExpression(expr);
       if (exact === null) return;
       const verdict = matchesAnswer(exact, node.answer);
-      if (verdict === null) { add.skip(`prompt answer not evaluable: ${text(node.answer)}`); return; }
-      add.check(verdict, `"${expr}" = ${exact.toString()} but the step answer is ${text(node.answer)}`);
+      if (verdict === null) {
+        add.skip(`prompt answer not evaluable: ${text(node.answer)}`);
+        return;
+      }
+      add.check(
+        verdict,
+        `"${expr}" = ${exact.toString()} but the step answer is ${text(node.answer)}`,
+      );
     },
   },
   {
@@ -297,7 +359,10 @@ const rules = [
       for (let f = 1; f <= n; f++) if (n % f === 0) expected.push(f);
       const got = [...parts].sort((a, b) => a - b);
       const same = got.length === expected.length && got.every((v, i) => v === expected[i]);
-      add.check(same, `factors of ${n} are ${expected.join(", ")}, but the answer lists ${node.answer}`);
+      add.check(
+        same,
+        `factors of ${n} are ${expected.join(", ")}, but the answer lists ${node.answer}`,
+      );
     },
   },
   {
@@ -320,12 +385,16 @@ const rules = [
       const prompt = text(node.prompt) || text(node.stem);
       const m = /reciprocal of\s+(\d+)\s*\/\s*(\d+)/i.exec(prompt);
       if (!m || node.answer === undefined) return;
-      const a = Number(m[1]), b = Number(m[2]);
+      const a = Number(m[1]),
+        b = Number(m[2]);
       if (!a || !b) return;
       const exact = new Rat(BigInt(b), BigInt(a));
       const verdict = matchesAnswer(exact, node.answer);
       if (verdict === null) return;
-      add.check(verdict, `the reciprocal of ${a}/${b} is ${exact.toString()}, not ${text(node.answer)}`);
+      add.check(
+        verdict,
+        `the reciprocal of ${a}/${b} is ${exact.toString()}, not ${text(node.answer)}`,
+      );
     },
   },
   {
@@ -343,7 +412,10 @@ const rules = [
       if (product === null) return;
       const p = intOf(product);
       if (p === null) return;
-      add.check(p === target, `stem asks for the prime factorization of ${target} but "${ansText}" = ${p}`);
+      add.check(
+        p === target,
+        `stem asks for the prime factorization of ${target} but "${ansText}" = ${p}`,
+      );
     },
   },
 ];
@@ -395,7 +467,9 @@ function main() {
   const skips = new Map();
 
   const lessons = existsSync(LESSONS_DIR)
-    ? readdirSync(LESSONS_DIR).filter((d) => existsSync(join(LESSONS_DIR, d, "config.json"))).sort()
+    ? readdirSync(LESSONS_DIR)
+        .filter((d) => existsSync(join(LESSONS_DIR, d, "config.json")))
+        .sort()
     : [];
 
   for (const lesson of lessons) {
@@ -403,7 +477,12 @@ function main() {
     try {
       config = JSON.parse(readFileSync(join(LESSONS_DIR, lesson, "config.json"), "utf8"));
     } catch (err) {
-      failures.push({ lesson, path: "config.json", rule: "parse", detail: `unreadable config: ${err.message}` });
+      failures.push({
+        lesson,
+        path: "config.json",
+        rule: "parse",
+        detail: `unreadable config: ${err.message}`,
+      });
       continue;
     }
     stats.lessons++;
@@ -422,7 +501,8 @@ function main() {
 
   if (JSON_OUT) {
     const out = { stats, failures };
-    if (existsSync("reports")) writeFileSync("reports/math-validation.json", JSON.stringify(out, null, 2));
+    if (existsSync("reports"))
+      writeFileSync("reports/math-validation.json", JSON.stringify(out, null, 2));
     console.log(JSON.stringify(out, null, 2));
   } else {
     const byLesson = new Map();
@@ -431,14 +511,17 @@ function main() {
       byLesson.get(f.lesson).push(f);
     }
     console.log(`\nMath answer validation — ${stats.lessons} lesson configs`);
-    console.log(`  checked ${stats.checked}  passed ${stats.passed}  FAILED ${failures.length}  skipped(undecidable) ${stats.skipped}\n`);
+    console.log(
+      `  checked ${stats.checked}  passed ${stats.passed}  FAILED ${failures.length}  skipped(undecidable) ${stats.skipped}\n`,
+    );
     for (const [lesson, items] of [...byLesson].sort()) {
       console.log(`✗ ${lesson}`);
       for (const f of items) console.log(`    [${f.rule}] ${f.path}\n      ${f.detail}`);
     }
     if (REPORT && skips.size) {
       console.log("\nSkipped shapes (not machine-decidable):");
-      for (const [k, n] of [...skips].sort((a, b) => b[1] - a[1]).slice(0, 40)) console.log(`  [${n}] ${k}`);
+      for (const [k, n] of [...skips].sort((a, b) => b[1] - a[1]).slice(0, 40))
+        console.log(`  [${n}] ${k}`);
     }
     if (!failures.length) console.log("✓ No arithmetic errors found.");
   }

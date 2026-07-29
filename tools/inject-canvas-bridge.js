@@ -10,8 +10,8 @@
  *   node tools/inject-canvas-bridge.js --dry-run  # report only
  *   node tools/inject-canvas-bridge.js --revert   # remove injected blocks
  */
-import { readFileSync, writeFileSync, existsSync } from "fs";
-import { join, dirname, resolve } from "path";
+import { existsSync, readFileSync, writeFileSync } from "fs";
+import { dirname, join, resolve } from "path";
 import { fileURLToPath } from "url";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");

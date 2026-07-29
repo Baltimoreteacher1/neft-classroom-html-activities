@@ -15,8 +15,8 @@
 //
 // Run:  npm run validate:canvas-coverage        (part of `npm run validate`)
 // Exit: 0 = all invariants hold, 1 = violations (each printed).
-import { readFileSync, existsSync } from "fs";
-import { join, dirname, resolve } from "path";
+import { existsSync, readFileSync } from "fs";
+import { dirname, join, resolve } from "path";
 import { fileURLToPath } from "url";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");

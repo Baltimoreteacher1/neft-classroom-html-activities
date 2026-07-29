@@ -3,7 +3,7 @@
    Run: node scripts/intervention/build.mjs
    Output: math/intervention/index.html and math/intervention/<slug>/index.html
    ========================================================================== */
-import { mkdirSync, writeFileSync, readdirSync, rmSync } from "node:fs";
+import { mkdirSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { META, TOPICS } from "./data.mjs";

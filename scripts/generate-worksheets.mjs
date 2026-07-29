@@ -24,8 +24,8 @@
  * Source of truth: each lessons/<id>/config.json (practice tiers + vocabulary).
  * Re-run after editing configs:  npm run generate-worksheets
  */
-import { readFileSync, writeFileSync, readdirSync, existsSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
 

@@ -14,26 +14,52 @@ assert.ok(Array.isArray(bank.questions) && bank.questions.length > 100, "bank ha
 const seed = "2026-09-08";
 const a = pickSpiral(bank, { count: 4, scope: { mode: "all" }, seed });
 const b = pickSpiral(bank, { count: 4, scope: { mode: "all" }, seed });
-assert.deepEqual(a.map((q) => q.id), b.map((q) => q.id), "same seed → same picks");
+assert.deepEqual(
+  a.map((q) => q.id),
+  b.map((q) => q.id),
+  "same seed → same picks",
+);
 
 // Different seed usually differs (not a hard guarantee, but for this bank it does)
 const c = pickSpiral(bank, { count: 4, scope: { mode: "all" }, seed: "different" });
-assert.notDeepEqual(a.map((q) => q.id), c.map((q) => q.id), "different seed → different picks");
+assert.notDeepEqual(
+  a.map((q) => q.id),
+  c.map((q) => q.id),
+  "different seed → different picks",
+);
 
 // Count respected
-assert.equal(pickSpiral(bank, { count: 3, scope: { mode: "all" }, seed }).length, 3, "count honored");
+assert.equal(
+  pickSpiral(bank, { count: 3, scope: { mode: "all" }, seed }).length,
+  3,
+  "count honored",
+);
 
 // Scope: upto
 const upto3 = pickSpiral(bank, { count: 8, scope: { mode: "upto", upto: 3 }, seed });
-assert.ok(upto3.every((q) => q.unit <= 3), "upto:3 keeps units ≤ 3");
+assert.ok(
+  upto3.every((q) => q.unit <= 3),
+  "upto:3 keeps units ≤ 3",
+);
 
 // Scope: range
 const r56 = pickSpiral(bank, { count: 6, scope: { mode: "range", from: 5, to: 6 }, seed });
-assert.ok(r56.every((q) => q.unit >= 5 && q.unit <= 6), "range 5-6 stays in range");
+assert.ok(
+  r56.every((q) => q.unit >= 5 && q.unit <= 6),
+  "range 5-6 stays in range",
+);
 
 // unitsInScope helper
-assert.deepEqual(unitsInScope([3, 1, 2, 4], { mode: "upto", upto: 2 }), [1, 2], "unitsInScope upto");
-assert.deepEqual(unitsInScope([1, 2, 3, 4, 5], { mode: "range", from: 4, to: 2 }), [2, 3, 4], "range normalizes");
+assert.deepEqual(
+  unitsInScope([3, 1, 2, 4], { mode: "upto", upto: 2 }),
+  [1, 2],
+  "unitsInScope upto",
+);
+assert.deepEqual(
+  unitsInScope([1, 2, 3, 4, 5], { mode: "range", from: 4, to: 2 }),
+  [2, 3, 4],
+  "range normalizes",
+);
 
 // correctIndex stays valid and points at the intended answer after shuffling
 for (const q of a) {

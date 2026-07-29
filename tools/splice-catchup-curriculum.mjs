@@ -2,14 +2,15 @@
 // Byte-preserving insertion of catch-up rows into curriculum/index.html:
 // after the </details> of each band's last lesson. No re-serialization.
 import { readFileSync, writeFileSync } from "node:fs";
-import { join, dirname, resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = process.env.REPO || resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const FILE = join(ROOT, "curriculum", "index.html");
 const rows = JSON.parse(readFileSync(new URL("./catchup-rows.json", import.meta.url)));
 
-const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+const esc = (s) =>
+  s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
 let html = readFileSync(FILE, "utf8");
 const before = html;

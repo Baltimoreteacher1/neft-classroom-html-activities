@@ -130,7 +130,10 @@ if (manifest?.lessons && launch?.lessons) {
     );
   }
   if (typeof launch.lessonCount === "number" && launch.lessonCount !== launch.lessons.length) {
-    fail("launch-manifest.lessonCount", `declares ${launch.lessonCount}, carries ${launch.lessons.length}`);
+    fail(
+      "launch-manifest.lessonCount",
+      `declares ${launch.lessonCount}, carries ${launch.lessons.length}`,
+    );
   }
 }
 
@@ -152,7 +155,10 @@ function checkPaths(label, entries, field) {
     if (!candidates.some((p) => existsSync(p))) missing.push(raw);
   }
   if (missing.length) {
-    fail(`${label}.${field}`, `${missing.length} paths resolve to nothing (e.g. ${missing.slice(0, 3).join(", ")})`);
+    fail(
+      `${label}.${field}`,
+      `${missing.length} paths resolve to nothing (e.g. ${missing.slice(0, 3).join(", ")})`,
+    );
   } else {
     notes.push(`${label}: all ${field} paths resolve`);
   }

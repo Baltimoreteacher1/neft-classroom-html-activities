@@ -16,8 +16,8 @@
  *   node tools/inject-support-enhance.js --dry-run  # report only
  *   node tools/inject-support-enhance.js --revert   # remove the injected blocks
  */
-import { readdirSync, statSync, readFileSync, writeFileSync } from "fs";
-import { join, dirname } from "path";
+import { readdirSync, readFileSync, statSync, writeFileSync } from "fs";
+import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");

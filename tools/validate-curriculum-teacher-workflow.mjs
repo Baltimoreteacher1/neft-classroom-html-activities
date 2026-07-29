@@ -50,7 +50,10 @@ for (const marker of [
 }
 
 check(/localStorage/.test(workflowJs), "teacher workflow persists locally");
-check(!/fetch\([^)]*(?:api|worker|forms)/i.test(workflowJs), "teacher workflow has no remote data submission");
+check(
+  !/fetch\([^)]*(?:api|worker|forms)/i.test(workflowJs),
+  "teacher workflow has no remote data submission",
+);
 check(/curriculum\/student-launch/.test(workflowJs), "workflow creates student-safe launch links");
 check(/qrcode|qrCanvas|renderQr/i.test(workflowJs), "workflow renders a local QR code");
 
@@ -61,11 +64,20 @@ check(/curriculum-student-launch\.css/.test(launcherHtml), "student launcher wir
 check(/curriculum-student-launch\.js/.test(launcherHtml), "student launcher wires JS");
 check(/speechSynthesis/.test(launcherJs), "student launcher has local read-aloud support");
 check(/localStorage/.test(launcherJs), "student launcher stores completion locally");
-check(!/innerHTML\s*=\s*(?:params|query|lessonId)/.test(launcherJs), "query values are not injected as HTML");
+check(
+  !/innerHTML\s*=\s*(?:params|query|lessonId)/.test(launcherJs),
+  "query values are not injected as HTML",
+);
 check(/min-height:\s*44px/.test(workflowCss), "teacher controls meet 44px target size");
 check(/min-height:\s*48px/.test(launcherCss), "student controls meet 48px target size");
-check(/:focus-visible/.test(workflowCss) && /:focus-visible/.test(launcherCss), "both surfaces have visible focus styles");
-check(/@media\s+print/.test(workflowCss) && /@media\s+print/.test(launcherCss), "both surfaces have print styles");
+check(
+  /:focus-visible/.test(workflowCss) && /:focus-visible/.test(launcherCss),
+  "both surfaces have visible focus styles",
+);
+check(
+  /@media\s+print/.test(workflowCss) && /@media\s+print/.test(launcherCss),
+  "both surfaces have print styles",
+);
 check(/prefers-reduced-motion/.test(launcherCss), "student launcher respects reduced motion");
 
 let workflowData = null;
@@ -122,8 +134,14 @@ if (workflowData && supportData && launchData) {
     return match?.family || "general";
   };
   const lessonsById = new Map((launchData.lessons || []).map((lesson) => [lesson.id, lesson]));
-  check(resolveFamily(lessonsById.get("1-1")) === "numberTheory", "Prime Factorization uses number-theory readiness");
-  check(resolveFamily(lessonsById.get("1-5")) === "decimals", "decimal operations use decimal readiness");
+  check(
+    resolveFamily(lessonsById.get("1-1")) === "numberTheory",
+    "Prime Factorization uses number-theory readiness",
+  );
+  check(
+    resolveFamily(lessonsById.get("1-5")) === "decimals",
+    "decimal operations use decimal readiness",
+  );
   check(
     (launchData.lessons || []).every((lesson) => {
       const family = resolveFamily(lesson);
@@ -136,13 +154,24 @@ if (workflowData && supportData && launchData) {
 if (launchData) {
   const lessons = launchData.lessons || [];
   check(lessons.length >= 74, "launch manifest contains all curriculum lessons");
-  check(new Set(lessons.map((lesson) => lesson.id)).size === lessons.length, "launch lesson IDs are unique");
+  check(
+    new Set(lessons.map((lesson) => lesson.id)).size === lessons.length,
+    "launch lesson IDs are unique",
+  );
   check(
     lessons.every((lesson) => lesson.resources && lesson.resources.lesson),
     "every launch lesson includes a primary student lesson",
   );
   const serialized = JSON.stringify(launchData).toLowerCase();
-  for (const forbidden of ["slides", "teachernotes", "answerkey", "gradebook", "dashboard", "docx", ".pdf"]) {
+  for (const forbidden of [
+    "slides",
+    "teachernotes",
+    "answerkey",
+    "gradebook",
+    "dashboard",
+    "docx",
+    ".pdf",
+  ]) {
     check(!serialized.includes(forbidden.toLowerCase()), `launch manifest excludes ${forbidden}`);
   }
   check(
@@ -155,7 +184,10 @@ if (launchData) {
   );
 }
 
-check(/FORBIDDEN_RESOURCE/.test(generator), "manifest generator enforces forbidden-resource policy");
+check(
+  /FORBIDDEN_RESOURCE/.test(generator),
+  "manifest generator enforces forbidden-resource policy",
+);
 
 console.log("curriculum teacher workflow validation");
 passes.forEach((message) => console.log(`  PASS ${message}`));

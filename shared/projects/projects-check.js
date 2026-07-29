@@ -422,7 +422,7 @@
           },
           used,
         );
-      } catch (e) {
+      } catch (_e) {
         return { status: "blank" };
       }
       if (isNaN(target) || !isFinite(target)) {
@@ -894,7 +894,7 @@
           },
           [],
         );
-      } catch (e) {
+      } catch (_e) {
         return NaN;
       }
     },

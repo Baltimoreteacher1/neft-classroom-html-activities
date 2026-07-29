@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { execFileSync } from "child_process";
 // Build a SCORM package for EVERY canonical lesson (non-flagship), so the whole
 // Grade 6 course can be uploaded into Canvas's SCORM tool as auto-graded
 // assignments. Each package iframes the LIVE lesson, so re-running this is only
@@ -12,10 +13,9 @@
 //   node tools/scorm/build-all-scorm.mjs            # build all
 //   node tools/scorm/build-all-scorm.mjs --unit 3   # one unit only
 // Output: scorm-packages/neft-lesson-<id>.zip  +  scorm-packages/UPLOAD-CHECKLIST.md
-import { readFileSync, writeFileSync, mkdirSync } from "fs";
+import { mkdirSync, readFileSync, writeFileSync } from "fs";
 import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
-import { execFileSync } from "child_process";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, "../..");

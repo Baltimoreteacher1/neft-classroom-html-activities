@@ -544,7 +544,7 @@ export async function onRequest(context) {
     if (method === "POST") {
       try {
         await storeFamilySignoff(env, await request.json());
-      } catch (e) {}
+      } catch (_e) {}
       return new Response(null, { status: 204, headers: JSON_HEADERS });
     }
     if (method === "GET") {
@@ -1171,27 +1171,25 @@ export async function onRequest(context) {
         const since = Number.isFinite(sinceMs)
           ? new Date(sinceMs).toISOString()
           : new Date(Date.now() - 7 * 86400000).toISOString(); // default: last 7 days
-        const prog = await (
-          section
-            ? env.DB.prepare(
-                `SELECT * FROM student_progress WHERE updated_at >= ? AND section = ?
+        const prog = await (section
+          ? env.DB.prepare(
+              `SELECT * FROM student_progress WHERE updated_at >= ? AND section = ?
                 ORDER BY section, student_name`,
-              ).bind(since, section)
-            : env.DB.prepare(
-                `SELECT * FROM student_progress WHERE updated_at >= ?
+            ).bind(since, section)
+          : env.DB.prepare(
+              `SELECT * FROM student_progress WHERE updated_at >= ?
                 ORDER BY section, student_name`,
-              ).bind(since)
+            ).bind(since)
         ).all();
-        const tel = await (
-          section
-            ? env.DB.prepare(
-                `SELECT standard, student_name, section, event_type FROM lesson_telemetry
+        const tel = await (section
+          ? env.DB.prepare(
+              `SELECT standard, student_name, section, event_type FROM lesson_telemetry
                 WHERE created_at >= ? AND section = ? ORDER BY id DESC LIMIT 5000`,
-              ).bind(since, section)
-            : env.DB.prepare(
-                `SELECT standard, student_name, section, event_type FROM lesson_telemetry
+            ).bind(since, section)
+          : env.DB.prepare(
+              `SELECT standard, student_name, section, event_type FROM lesson_telemetry
                 WHERE created_at >= ? ORDER BY id DESC LIMIT 5000`,
-              ).bind(since)
+            ).bind(since)
         ).all();
 
         const students = new Map();
@@ -1267,18 +1265,17 @@ export async function onRequest(context) {
           return stu.cells.get(std);
         };
 
-        const tel = await (
-          section
-            ? env.DB.prepare(
-                `SELECT standard, student_name, event_type, payload_json, section
+        const tel = await (section
+          ? env.DB.prepare(
+              `SELECT standard, student_name, event_type, payload_json, section
                  FROM lesson_telemetry
                  WHERE created_at >= ? AND section = ? ORDER BY id DESC LIMIT 10000`,
-              ).bind(since, section)
-            : env.DB.prepare(
-                `SELECT standard, student_name, event_type, payload_json, section
+            ).bind(since, section)
+          : env.DB.prepare(
+              `SELECT standard, student_name, event_type, payload_json, section
                  FROM lesson_telemetry
                  WHERE created_at >= ? ORDER BY id DESC LIMIT 10000`,
-              ).bind(since)
+            ).bind(since)
         ).all();
         for (const r of tel.results || []) {
           if (!r.student_name || !r.standard) continue;
@@ -1306,24 +1303,23 @@ export async function onRequest(context) {
         }
 
         try {
-          const scores = await (
-            section
-              ? env.DB.prepare(
-                  `SELECT gs.standard AS standard, gs.correct AS correct,
+          const scores = await (section
+            ? env.DB.prepare(
+                `SELECT gs.standard AS standard, gs.correct AS correct,
                           sp.student_name AS student_name, sp.section AS section
                      FROM game_scores gs
                      JOIN student_progress sp ON sp.save_code = gs.save_code
                     WHERE gs.created_at >= ? AND sp.section = ?
                     ORDER BY gs.id DESC LIMIT 10000`,
-                ).bind(since, section)
-              : env.DB.prepare(
-                  `SELECT gs.standard AS standard, gs.correct AS correct,
+              ).bind(since, section)
+            : env.DB.prepare(
+                `SELECT gs.standard AS standard, gs.correct AS correct,
                           sp.student_name AS student_name, sp.section AS section
                      FROM game_scores gs
                      JOIN student_progress sp ON sp.save_code = gs.save_code
                     WHERE gs.created_at >= ?
                     ORDER BY gs.id DESC LIMIT 10000`,
-                ).bind(since)
+              ).bind(since)
           ).all();
           for (const r of scores.results || []) {
             if (!r.student_name || !r.standard) continue;
@@ -1375,16 +1371,15 @@ export async function onRequest(context) {
             });
           return groups.get(k);
         };
-        const tel = await (
-          section
-            ? env.DB.prepare(
-                `SELECT standard, section, event_type, payload_json FROM lesson_telemetry
+        const tel = await (section
+          ? env.DB.prepare(
+              `SELECT standard, section, event_type, payload_json FROM lesson_telemetry
                 WHERE section = ? ORDER BY id DESC LIMIT 10000`,
-              ).bind(section)
-            : env.DB.prepare(
-                `SELECT standard, section, event_type, payload_json FROM lesson_telemetry
+            ).bind(section)
+          : env.DB.prepare(
+              `SELECT standard, section, event_type, payload_json FROM lesson_telemetry
                 ORDER BY id DESC LIMIT 10000`,
-              )
+            )
         ).all();
         for (const r of tel.results || []) {
           if (!r.standard) continue;
@@ -1399,22 +1394,21 @@ export async function onRequest(context) {
           }
         }
         try {
-          const scores = await (
-            section
-              ? env.DB.prepare(
-                  `SELECT gs.standard AS standard, gs.correct AS correct,
+          const scores = await (section
+            ? env.DB.prepare(
+                `SELECT gs.standard AS standard, gs.correct AS correct,
                         gs.misconception_tag AS tag, sp.section AS section
                    FROM game_scores gs
                    LEFT JOIN student_progress sp ON sp.save_code = gs.save_code
                   WHERE sp.section = ? ORDER BY gs.id DESC LIMIT 10000`,
-                ).bind(section)
-              : env.DB.prepare(
-                  `SELECT gs.standard AS standard, gs.correct AS correct,
+              ).bind(section)
+            : env.DB.prepare(
+                `SELECT gs.standard AS standard, gs.correct AS correct,
                         gs.misconception_tag AS tag, sp.section AS section
                    FROM game_scores gs
                    LEFT JOIN student_progress sp ON sp.save_code = gs.save_code
                   ORDER BY gs.id DESC LIMIT 10000`,
-                )
+              )
           ).all();
           for (const r of scores.results || []) {
             if (!r.standard) continue;
@@ -1455,24 +1449,23 @@ export async function onRequest(context) {
       const minutes = Math.min(Math.max(Number(url.searchParams.get("minutes")) || 30, 5), 1440);
       const since = new Date(Date.now() - minutes * 60000).toISOString();
       const rows = [];
-      const tel = await (
-        section
-          ? env.DB.prepare(
-              `SELECT lesson_slug, lesson_title, standard, student_name, section,
+      const tel = await (section
+        ? env.DB.prepare(
+            `SELECT lesson_slug, lesson_title, standard, student_name, section,
                     event_type, payload_json, created_at
                FROM lesson_telemetry
               WHERE created_at >= ? AND section = ?
                 AND event_type IN ('struggle', 'misconception', 'hint-exhausted')
               ORDER BY id DESC LIMIT 200`,
-            ).bind(since, section)
-          : env.DB.prepare(
-              `SELECT lesson_slug, lesson_title, standard, student_name, section,
+          ).bind(since, section)
+        : env.DB.prepare(
+            `SELECT lesson_slug, lesson_title, standard, student_name, section,
                     event_type, payload_json, created_at
                FROM lesson_telemetry
               WHERE created_at >= ?
                 AND event_type IN ('struggle', 'misconception', 'hint-exhausted')
               ORDER BY id DESC LIMIT 200`,
-            ).bind(since)
+          ).bind(since)
       ).all();
       for (const r of tel.results || []) {
         rows.push({
@@ -1490,10 +1483,9 @@ export async function onRequest(context) {
       try {
         // Recent low performance: per (game, save code, standard) within the
         // window, ≥2 attempts with under 60% correct. Named via the roster join.
-        const low = await (
-          section
-            ? env.DB.prepare(
-                `SELECT gs.game_id AS game_id, gs.standard AS standard,
+        const low = await (section
+          ? env.DB.prepare(
+              `SELECT gs.game_id AS game_id, gs.standard AS standard,
                       gs.save_code AS save_code,
                       COUNT(*) AS attempts, SUM(gs.correct) AS correct_sum,
                       MAX(gs.created_at) AS last_at, MAX(gs.misconception_tag) AS tag,
@@ -1504,9 +1496,9 @@ export async function onRequest(context) {
                 GROUP BY gs.game_id, gs.save_code, gs.standard
                HAVING COUNT(*) >= 2 AND (SUM(gs.correct) * 1.0) / COUNT(*) < 0.6
                 ORDER BY last_at DESC LIMIT 100`,
-              ).bind(since, section)
-            : env.DB.prepare(
-                `SELECT gs.game_id AS game_id, gs.standard AS standard,
+            ).bind(since, section)
+          : env.DB.prepare(
+              `SELECT gs.game_id AS game_id, gs.standard AS standard,
                       gs.save_code AS save_code,
                       COUNT(*) AS attempts, SUM(gs.correct) AS correct_sum,
                       MAX(gs.created_at) AS last_at, MAX(gs.misconception_tag) AS tag,
@@ -1517,7 +1509,7 @@ export async function onRequest(context) {
                 GROUP BY gs.game_id, gs.save_code, gs.standard
                HAVING COUNT(*) >= 2 AND (SUM(gs.correct) * 1.0) / COUNT(*) < 0.6
                 ORDER BY last_at DESC LIMIT 100`,
-              ).bind(since)
+            ).bind(since)
         ).all();
         for (const r of low.results || []) {
           rows.push({

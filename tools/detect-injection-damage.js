@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { execFileSync } from "child_process";
 /**
  * One-time detector for the injection-damage repair.
  *
@@ -14,17 +15,16 @@
  * Exits non-zero if any page is broken. Pure read-only.
  */
 import {
-  readFileSync,
-  readdirSync,
-  statSync,
-  writeFileSync,
   mkdtempSync,
+  readdirSync,
+  readFileSync,
   rmSync,
+  statSync,
   unlinkSync,
+  writeFileSync,
 } from "fs";
-import { join, relative } from "path";
 import { tmpdir } from "os";
-import { execFileSync } from "child_process";
+import { join, relative } from "path";
 import vm from "vm";
 
 const ROOT = process.cwd();

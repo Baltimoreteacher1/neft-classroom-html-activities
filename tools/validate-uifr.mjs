@@ -8,8 +8,8 @@
  * can never drift. Fails (exit 1) if any lesson is missing a direct indicator.
  * T6–T7 are teacher-facilitated and reported, not gated. Run: npm run validate:uifr
  */
-import { readdirSync, readFileSync, existsSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { computeTeachL4Evidence } from "../engine/core/uifr.js";
 import { targets } from "./inject-uifr.js";
@@ -38,7 +38,9 @@ for (const id of readdirSync(lessonsDir).sort()) {
 }
 
 if (failures.length) {
-  console.error("validate-uifr: FAIL — lessons missing TEACH Level 4 conditions on direct indicators:");
+  console.error(
+    "validate-uifr: FAIL — lessons missing TEACH Level 4 conditions on direct indicators:",
+  );
   for (const f of failures) console.error(`  ${f}`);
   process.exit(1);
 }
@@ -61,7 +63,8 @@ for (const t of targets()) {
   }
   const b = html.split("uifr-injected:begin").length - 1;
   const e = html.split("uifr-injected:end").length - 1;
-  if (b !== 1 || e !== 1) stampMisses.push(`${t.label}: expected 1 balanced stamp, found begin=${b} end=${e}`);
+  if (b !== 1 || e !== 1)
+    stampMisses.push(`${t.label}: expected 1 balanced stamp, found begin=${b} end=${e}`);
 }
 
 if (stampMisses.length) {

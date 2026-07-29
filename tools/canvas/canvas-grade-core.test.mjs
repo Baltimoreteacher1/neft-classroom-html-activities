@@ -9,10 +9,11 @@
  * Lives under tools/ (not deployed) and is picked up by `npm test`
  * (tools/run-tests.mjs). Lives or dies by top-level assertions + exit code.
  */
+
+import assert from "node:assert/strict";
 import { createRequire } from "node:module";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import assert from "node:assert/strict";
 
 const require = createRequire(import.meta.url);
 const CORE = resolve(dirname(fileURLToPath(import.meta.url)), "../../assets/canvas-grade-core.js");
@@ -36,7 +37,11 @@ const roster = [
 const lookup = G.rosterLookup(roster);
 assert.equal(G.matchIndex(lookup, "Maria Garcia"), 0, "First Last matches Last, First");
 assert.equal(G.matchIndex(lookup, "binh   nguyen"), 1, "case/whitespace-insensitive match");
-assert.equal(G.matchIndex(lookup, "Binĥ Nguyêñ"), 1, "accented names match normalized roster entries");
+assert.equal(
+  G.matchIndex(lookup, "Binĥ Nguyêñ"),
+  1,
+  "accented names match normalized roster entries",
+);
 assert.equal(G.matchIndex(lookup, "Nobody Here"), -1, "unknown name -> -1");
 
 /* 3. applyScores + buildImportCsv end-to-end — mirrors the live-gradebook path

@@ -13,18 +13,18 @@
 //   node scripts/generate-activity-teacher-docs.mjs            # all lessons
 //   node scripts/generate-activity-teacher-docs.mjs 1-1 5-1    # specific lessons
 
-import { readFileSync, writeFileSync, readdirSync, existsSync, mkdirSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import {
-  Document,
-  Packer,
-  Paragraph,
-  TextRun,
-  HeadingLevel,
   AlignmentType,
   BorderStyle,
+  Document,
+  HeadingLevel,
+  Packer,
+  Paragraph,
   ShadingType,
+  TextRun,
 } from "docx";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));

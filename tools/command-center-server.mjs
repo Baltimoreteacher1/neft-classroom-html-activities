@@ -1,6 +1,6 @@
-import http from "node:http";
-import { spawn, exec } from "node:child_process";
+import { exec, spawn } from "node:child_process";
 import fs from "node:fs";
+import http from "node:http";
 import path from "node:path";
 import { fileURLToPath, URL } from "node:url";
 

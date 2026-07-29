@@ -19,14 +19,14 @@
  * ========================================================================== */
 
 import {
-  CAPS,
-  buildStudyPackPrompt,
   buildAskPrompt,
   buildAudioPrompt,
-  coerceStudyPack,
+  buildStudyPackPrompt,
+  CAPS,
   coerceAudioScript,
-  extractJsonObject,
+  coerceStudyPack,
   extractJsonArray,
+  extractJsonObject,
 } from "../../../shared/study-pack/contract.mjs";
 
 const JSON_HEADERS = {

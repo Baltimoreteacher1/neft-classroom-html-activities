@@ -2,7 +2,7 @@
 // No fabricated metadata: structured fields come from lessons/<id>/config.json;
 // every other activity contributes its real page <title> and derived URL.
 // Output: data/registry.json  (run: npm run generate-registry)
-import { readFileSync, writeFileSync, readdirSync, existsSync, statSync, mkdirSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { join, relative } from "node:path";
 
 const ROOT = new URL("..", import.meta.url).pathname.replace(/\/$/, "");

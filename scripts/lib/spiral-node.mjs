@@ -96,7 +96,10 @@ function shuffleChoices(q, rng) {
  */
 export function pickSpiral(bank, { count = 3, scope = { mode: "all" }, seed = null } = {}) {
   const rng = makeRng(seed);
-  const units = unitsInScope(bank.meta?.units || [...new Set(bank.questions.map((q) => q.unit))], scope);
+  const units = unitsInScope(
+    bank.meta?.units || [...new Set(bank.questions.map((q) => q.unit))],
+    scope,
+  );
   const inScope = new Set(units);
   const maxUnit = Math.max(...units);
   const candidates = bank.questions
@@ -106,4 +109,4 @@ export function pickSpiral(bank, { count = 3, scope = { mode: "all" }, seed = nu
   return weightedSampleNoReplace(candidates, count, rng).map((q) => shuffleChoices(q, rng));
 }
 
-export { SPIRAL_STRENGTH, BANK_PATH };
+export { BANK_PATH, SPIRAL_STRENGTH };

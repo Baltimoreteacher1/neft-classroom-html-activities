@@ -13,8 +13,8 @@
  *
  * Usage: node tools/generate-access-printables.mjs [outDir]
  */
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 // docx is optional at build time: if it can't load, we still emit the HTML

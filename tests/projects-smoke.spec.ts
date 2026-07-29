@@ -53,7 +53,13 @@ for (const u of UNITS) {
 }
 ROUTES.push({ url: "/math/unit-10/projects/world-architect/", kind: "extra" });
 
-const IGNORE_404 = [/\/favicon\.ico$/, /\/api\/progress\/telemetry$/];
+const IGNORE_404 = [
+  /\/favicon\.ico$/,
+  /\/api\/progress\/telemetry$/,
+  // Vite preview cannot serve the Cloudflare Pages Function. The dedicated
+  // score-bridge suite intercepts this route and verifies its full contract.
+  /\/api\/scores$/,
+];
 
 const IGNORE_CONSOLE = [
   /edupulse/i,

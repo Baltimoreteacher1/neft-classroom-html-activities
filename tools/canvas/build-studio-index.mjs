@@ -11,8 +11,8 @@
  * Env:    NEFT_SITE (default https://eduwonderlab.com), CC_STAMP (ISO time).
  * Output: teacher-tools/canvas-studio/library.json
  */
-import { writeFileSync, readFileSync } from "fs";
-import { resolve, dirname } from "path";
+import { readFileSync, writeFileSync } from "fs";
+import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
 import { selectLibrary } from "./lib/library-select.mjs";
 
@@ -72,7 +72,12 @@ titleByKey.set(SG_MODULE.key, SG_MODULE.title);
 const modCounts = new Map();
 for (const it of enriched) modCounts.set(it.moduleKey, (modCounts.get(it.moduleKey) || 0) + 1);
 const modulesOut = [...modCounts.keys()]
-  .map((key) => ({ key, title: titleByKey.get(key), count: modCounts.get(key), order: orderByKey.get(key) ?? 999 }))
+  .map((key) => ({
+    key,
+    title: titleByKey.get(key),
+    count: modCounts.get(key),
+    order: orderByKey.get(key) ?? 999,
+  }))
   .sort((a, b) => a.order - b.order || String(a.title).localeCompare(String(b.title)))
   .map(({ key, title, count }) => ({ key, title, count }));
 

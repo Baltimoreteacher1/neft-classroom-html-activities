@@ -49,7 +49,12 @@
     { id: "2.2", title: "Multiply Fractions", unit: "Unit 2 - Fractions", standard: "6.NOS.1" },
     { id: "2.3", title: "Divide Fractions", unit: "Unit 2 - Fractions", standard: "6.NOS.1" },
     { id: "2.4", title: "Divide Mixed Numbers", unit: "Unit 2 - Fractions", standard: "6.NOS.1" },
-    { id: "2.5", title: "Solve Fraction Problems", unit: "Unit 2 - Fractions", standard: "6.NOS.1" },
+    {
+      id: "2.5",
+      title: "Solve Fraction Problems",
+      unit: "Unit 2 - Fractions",
+      standard: "6.NOS.1",
+    },
     {
       id: "3.1",
       title: "Understand Ratios",

@@ -23,9 +23,9 @@
 // Run: node scripts/mcap-practice/extract-items.mjs
 //      npm run extract-mcap-practice  (if wired)
 
-import { writeFileSync, mkdirSync, readdirSync, readFileSync, existsSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import JSZip from "jszip";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));

@@ -21,14 +21,34 @@ const PRACTICE_BELOW = 70;
 /** Band + bilingual sentence fragment for an average (null = no scored work). */
 export function bandInfo(pct) {
   if (pct == null || Number.isNaN(pct))
-    return { band: "Getting Started", en: "is just getting started this term.", es: "está comenzando este período." };
+    return {
+      band: "Getting Started",
+      en: "is just getting started this term.",
+      es: "está comenzando este período.",
+    };
   if (pct >= STRONG)
-    return { band: "Strong", en: "is doing excellent work in math.", es: "está haciendo un trabajo excelente en matemáticas." };
+    return {
+      band: "Strong",
+      en: "is doing excellent work in math.",
+      es: "está haciendo un trabajo excelente en matemáticas.",
+    };
   if (pct >= 70)
-    return { band: "Likely Ready", en: "is doing well and is on track.", es: "va bien y está en camino." };
+    return {
+      band: "Likely Ready",
+      en: "is doing well and is on track.",
+      es: "va bien y está en camino.",
+    };
   if (pct >= 60)
-    return { band: "Approaching", en: "is making steady progress and building skills.", es: "está progresando de manera constante y desarrollando habilidades." };
-  return { band: "Needs Practice", en: "would benefit from some extra practice at home.", es: "se beneficiaría de práctica adicional en casa." };
+    return {
+      band: "Approaching",
+      en: "is making steady progress and building skills.",
+      es: "está progresando de manera constante y desarrollando habilidades.",
+    };
+  return {
+    band: "Needs Practice",
+    en: "would benefit from some extra practice at home.",
+    es: "se beneficiaría de práctica adicional en casa.",
+  };
 }
 
 /**
@@ -64,7 +84,10 @@ function numeric(v) {
 }
 
 export function esc(s) {
-  return String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+  return String(s ?? "").replace(
+    /[&<>"]/g,
+    (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c],
+  );
 }
 
 const li = (items) => items.map((t) => `<li>${esc(t)}</li>`).join("");
@@ -76,8 +99,12 @@ const li = (items) => items.map((t) => `<li>${esc(t)}</li>`).join("");
 export function buildNoteHTML(s, { date = "" } = {}) {
   const b = bandInfo(s.average);
   const avgText = s.average == null ? "—" : `${s.average}%`;
-  const strengthsEn = s.strengths.length ? `<ul>${li(s.strengths)}</ul>` : `<p>Keep up the great effort!</p>`;
-  const strengthsEs = s.strengths.length ? `<ul>${li(s.strengths)}</ul>` : `<p>¡Sigan con el gran esfuerzo!</p>`;
+  const strengthsEn = s.strengths.length
+    ? `<ul>${li(s.strengths)}</ul>`
+    : `<p>Keep up the great effort!</p>`;
+  const strengthsEs = s.strengths.length
+    ? `<ul>${li(s.strengths)}</ul>`
+    : `<p>¡Sigan con el gran esfuerzo!</p>`;
   const practiceEn = s.practice.length
     ? `<ul>${li(s.practice)}</ul><p>Try the <strong>Spiral Review</strong> together at eduwonderlab.com/spiral-review — 5 minutes a few nights a week makes a big difference.</p>`
     : `<p>Nothing specific to reteach right now — a few minutes of Spiral Review keeps skills sharp.</p>`;
@@ -110,7 +137,11 @@ export function buildNoteHTML(s, { date = "" } = {}) {
 }
 
 function firstName(name) {
-  return String(name || "your child").trim().split(/\s+/)[0] || "your child";
+  return (
+    String(name || "your child")
+      .trim()
+      .split(/\s+/)[0] || "your child"
+  );
 }
 
 /* ---- Weekly bilingual digest (GET /api/progress/digest students[]) -------- */
@@ -184,7 +215,8 @@ export function buildWeeklyDigest(s, { date = "", homeworkMap = null, site = "" 
   // One thing to ask your child: weakest scored activity if one dipped below
   // the practice threshold, else the strongest — always concrete and positive.
   const byScore = [...scored].sort((a, z) => Number(a.scorePct) - Number(z.scorePct));
-  const weakest = byScore.length && Number(byScore[0].scorePct) < PRACTICE_BELOW ? byScore[0] : null;
+  const weakest =
+    byScore.length && Number(byScore[0].scorePct) < PRACTICE_BELOW ? byScore[0] : null;
   const strongest = byScore.length ? byScore[byScore.length - 1] : null;
   const askTarget = weakest || strongest;
   let askEn;
@@ -279,54 +311,65 @@ export function buildWeeklyDigest(s, { date = "", homeworkMap = null, site = "" 
  * @param {string} [options.site] - base URL
  * @returns {string} HTML fragment
  */
-export function buildWeeklyWarmupExitSummary(student, { date = "", teacherName = "", site = "" } = {}) {
+export function buildWeeklyWarmupExitSummary(
+  student,
+  { date = "", teacherName = "", site = "" } = {},
+) {
   const lessons = Array.isArray(student.weeklyLessons) ? student.weeklyLessons : [];
-  
-  const scoredWarmups = lessons.filter((l) => l && l.warmupPct != null && Number.isFinite(Number(l.warmupPct)));
+
+  const scoredWarmups = lessons.filter(
+    (l) => l && l.warmupPct != null && Number.isFinite(Number(l.warmupPct)),
+  );
   const avg = scoredWarmups.length
     ? Math.round(scoredWarmups.reduce((t, l) => t + Number(l.warmupPct), 0) / scoredWarmups.length)
     : null;
-    
+
   const b = bandInfo(avg);
   const fn = firstName(student.studentName);
   const avgText = avg == null ? "" : ` (average ${avg}%).`;
   const avgTextEs = avg == null ? "" : ` (promedio ${avg}%).`;
 
   const byScore = [...scoredWarmups].sort((a, z) => Number(a.warmupPct) - Number(z.warmupPct));
-  const weakest = byScore.length && Number(byScore[0].warmupPct) < PRACTICE_BELOW ? byScore[0] : null;
+  const weakest =
+    byScore.length && Number(byScore[0].warmupPct) < PRACTICE_BELOW ? byScore[0] : null;
 
-  const rowHtml = lessons.map((l) => {
-    const wp = l.warmupPct != null && Number.isFinite(Number(l.warmupPct)) ? Number(l.warmupPct) : null;
-    let color = "";
-    if (wp != null) {
-      if (wp >= STRONG) color = "green";
-      else if (wp >= PRACTICE_BELOW) color = "orange";
-      else color = "red";
-    }
-    const scoreSpan = wp != null ? `<span style="color:${color}">${wp}%</span>` : "—";
-    const et = l.exitTicketCorrect === true ? "✅" : (l.exitTicketCorrect === false ? "❌" : "—");
-    return `<tr>
+  const rowHtml = lessons
+    .map((l) => {
+      const wp =
+        l.warmupPct != null && Number.isFinite(Number(l.warmupPct)) ? Number(l.warmupPct) : null;
+      let color = "";
+      if (wp != null) {
+        if (wp >= STRONG) color = "green";
+        else if (wp >= PRACTICE_BELOW) color = "orange";
+        else color = "red";
+      }
+      const scoreSpan = wp != null ? `<span style="color:${color}">${wp}%</span>` : "—";
+      const et = l.exitTicketCorrect === true ? "✅" : l.exitTicketCorrect === false ? "❌" : "—";
+      return `<tr>
       <td>${esc(l.lessonTitle || l.lessonId || "Lesson")}</td>
       <td>${scoreSpan}</td>
       <td>${et}</td>
       <td>${esc(l.date || "")}</td>
     </tr>`;
-  }).join("");
+    })
+    .join("");
 
   const tableEn = lessons.length
     ? `<table><thead><tr><th>Lesson</th><th>Warmup</th><th>Exit Ticket</th><th>Date</th></tr></thead><tbody>${rowHtml}</tbody></table>`
     : `<p>No lessons recorded this week.</p>`;
-    
+
   const tableEs = lessons.length
     ? `<table><thead><tr><th>Lección</th><th>Calentamiento</th><th>Boleto de Salida</th><th>Fecha</th></tr></thead><tbody>${rowHtml}</tbody></table>`
     : `<p>No hay lecciones registradas esta semana.</p>`;
 
-  const hwEn = (avg != null && avg < PRACTICE_BELOW && weakest)
-    ? `<p><strong>5-minute home activity:</strong> <a href="${esc(site)}/lessons/${esc(weakest.lessonId)}/family/">Review “${esc(weakest.lessonTitle || weakest.lessonId)}” together</a>.</p>`
-    : "";
-  const hwEs = (avg != null && avg < PRACTICE_BELOW && weakest)
-    ? `<p><strong>Actividad de 5 minutos en casa:</strong> <a href="${esc(site)}/lessons/${esc(weakest.lessonId)}/family/">Repasen “${esc(weakest.lessonTitle || weakest.lessonId)}” juntos</a>.</p>`
-    : "";
+  const hwEn =
+    avg != null && avg < PRACTICE_BELOW && weakest
+      ? `<p><strong>5-minute home activity:</strong> <a href="${esc(site)}/lessons/${esc(weakest.lessonId)}/family/">Review “${esc(weakest.lessonTitle || weakest.lessonId)}” together</a>.</p>`
+      : "";
+  const hwEs =
+    avg != null && avg < PRACTICE_BELOW && weakest
+      ? `<p><strong>Actividad de 5 minutos en casa:</strong> <a href="${esc(site)}/lessons/${esc(weakest.lessonId)}/family/">Repasen “${esc(weakest.lessonTitle || weakest.lessonId)}” juntos</a>.</p>`
+      : "";
 
   return `<article class="parent-note pn-digest" data-name="${esc(student.studentName)}" data-section="${esc(student.section)}">
   <header class="pn-head">

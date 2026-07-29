@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 /* =============================================================================
  * extract-inlined-generated-maps — stage 1 of un-monolithing the curriculum hub.
  * -----------------------------------------------------------------------------
@@ -27,9 +28,9 @@
  *   node tools/extract-inlined-generated-maps.mjs --write   # apply
  * ========================================================================== */
 
+import assert from "node:assert";
 import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
-import assert from "node:assert";
 
 const ROOT = resolve(import.meta.dirname, "..");
 const HUB = resolve(ROOT, "curriculum/index.html");
@@ -133,9 +134,7 @@ for (const map of MAPS) {
 const HEAD_MARK = "<!-- generated lesson maps (tools/extract-inlined-generated-maps.mjs) -->";
 if (!html.includes(HEAD_MARK)) {
   const tags =
-    `  ${HEAD_MARK}\n` +
-    MAPS.map((m) => `  <script src="${m.src}"></script>`).join("\n") +
-    "\n";
+    `  ${HEAD_MARK}\n` + MAPS.map((m) => `  <script src="${m.src}"></script>`).join("\n") + "\n";
   const headClose = html.indexOf("</head>");
   if (headClose === -1) {
     console.error("✗ no </head> in curriculum/index.html — refusing to guess an insertion point.");

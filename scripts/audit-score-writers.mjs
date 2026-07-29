@@ -166,7 +166,8 @@ const rows = d1(
 
 if (rows === null) {
   if (AS_JSON) console.log(JSON.stringify({ ok: false, reason: "d1-unreachable" }, null, 2));
-  else console.log("audit-score-writers: could not reach D1 (offline or unauthenticated) — skipped.");
+  else
+    console.log("audit-score-writers: could not reach D1 (offline or unauthenticated) — skipped.");
   process.exit(0);
 }
 
@@ -258,11 +259,13 @@ const reviewed = uninstrumented.map((g) => [g, exclusionStatus(g)]).filter(([, r
 const staleExclusions = reviewed.filter(([, r]) => r.stale).map(([g]) => g.path);
 
 const scorable = uninstrumented.filter(
-  (g) => !isHub(g) && !g.walkthrough && g.graded && !(REVIEWED_UNSCORABLE[g.path] && !exclusionStatus(g).stale),
+  (g) =>
+    !isHub(g) &&
+    !g.walkthrough &&
+    g.graded &&
+    !(REVIEWED_UNSCORABLE[g.path] && !exclusionStatus(g).stale),
 );
-const notScorable = uninstrumented.filter(
-  (g) => !isHub(g) && !g.walkthrough && !g.graded,
-);
+const notScorable = uninstrumented.filter((g) => !isHub(g) && !g.walkthrough && !g.graded);
 // A game_id in D1 matching no directory: renamed/deleted game, or a typo'd id.
 // Either way those rows are orphaned and will never join to anything.
 const orphanIds = [...wrote.keys()].filter((id) => !games.some((g) => g.id === id));
@@ -303,7 +306,9 @@ if (AS_JSON) {
       "        would mean anything:",
   );
 
-  console.log(`\n    SCORABLE — judges answers, reports nothing: ${scorable.length}   <- the real backlog`);
+  console.log(
+    `\n    SCORABLE — judges answers, reports nothing: ${scorable.length}   <- the real backlog`,
+  );
   for (const p of report.scorable.slice(0, 30)) console.log(`        ${p}`);
   if (report.scorable.length > 30) console.log(`        … and ${report.scorable.length - 30} more`);
 
@@ -321,12 +326,16 @@ if (AS_JSON) {
   }
 
   console.log(`\n    Not a gap — a score here would be meaningless or false:`);
-  console.log(`        ${String(hubs.length).padStart(3)} hub / landing pages   (no gameplay to score)`);
+  console.log(
+    `        ${String(hubs.length).padStart(3)} hub / landing pages   (no gameplay to score)`,
+  );
   console.log(
     `        ${String(walkthroughs.length).padStart(3)} guided walkthroughs   (finish = 100% by construction;`,
   );
   console.log(`                                   reporting it would inflate accuracy)`);
-  console.log(`        ${String(notScorable.length).padStart(3)} sandboxes / labs      (nothing is judged right or wrong)`);
+  console.log(
+    `        ${String(notScorable.length).padStart(3)} sandboxes / labs      (nothing is judged right or wrong)`,
+  );
 
   if (detectorMissed.length) {
     console.log(

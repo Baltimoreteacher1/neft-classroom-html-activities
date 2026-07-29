@@ -22,8 +22,8 @@
  * USAGE: node tools/validate-injection-integrity.mjs
  * ========================================================================== */
 
-import { readdirSync, statSync, readFileSync } from "fs";
-import { join, relative, dirname } from "path";
+import { readdirSync, readFileSync, statSync } from "fs";
+import { dirname, join, relative } from "path";
 import { fileURLToPath } from "url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");

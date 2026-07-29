@@ -25,16 +25,16 @@
  * replaces (not appends) the config `printables` key each run.
  */
 import {
-  readdirSync,
-  existsSync,
-  rmSync,
-  mkdirSync,
   copyFileSync,
+  existsSync,
+  mkdirSync,
+  readdirSync,
   readFileSync,
-  writeFileSync,
+  rmSync,
   statSync,
+  writeFileSync,
 } from "node:fs";
-import { resolve, join, basename } from "node:path";
+import { basename, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const REPO = resolve(fileURLToPath(import.meta.url), "..", "..");

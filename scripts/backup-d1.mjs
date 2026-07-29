@@ -21,10 +21,19 @@
  *   npx wrangler d1 execute neft-student-progress --remote --file restore.sql
  */
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, unlinkSync, writeFileSync } from "node:fs";
-import { gzipSync } from "node:zlib";
-import { join, resolve } from "node:path";
+import {
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  statSync,
+  unlinkSync,
+  writeFileSync,
+} from "node:fs";
 import { homedir, tmpdir } from "node:os";
+import { join, resolve } from "node:path";
+import { gzipSync } from "node:zlib";
 
 const DATABASE = "neft-student-progress";
 // Backups land OUTSIDE the repo by default. They contain student data, and this
@@ -40,9 +49,16 @@ const REQUIRED_TABLES = ["student_progress"];
 // first write (class_roster is not provisioned in production as of 2026-07-28),
 // so a hard requirement here would rot into a false alarm.
 const EXPECTED_TABLES = [
-  "board_codes", "class_board", "class_roster", "family_connections_state",
-  "game_progress", "game_scores", "lesson_telemetry", "monster_saves",
-  "site_settings", "supports_roster",
+  "board_codes",
+  "class_board",
+  "class_roster",
+  "family_connections_state",
+  "game_progress",
+  "game_scores",
+  "lesson_telemetry",
+  "monster_saves",
+  "site_settings",
+  "supports_roster",
 ];
 
 const argv = process.argv.slice(2);
@@ -74,8 +90,15 @@ function exportDatabase(target) {
   try {
     run("npx", ["wrangler", "d1", "export", DATABASE, "--remote", "--output", target, "-y"]);
   } catch (err) {
-    const detail = (err.stderr || err.stdout || err.message || "").toString().trim().split("\n").slice(-6).join("\n");
-    fail(`wrangler export failed:\n${detail}\n\n  Check CLOUDFLARE_API_TOKEN / \`npx wrangler login\`.`);
+    const detail = (err.stderr || err.stdout || err.message || "")
+      .toString()
+      .trim()
+      .split("\n")
+      .slice(-6)
+      .join("\n");
+    fail(
+      `wrangler export failed:\n${detail}\n\n  Check CLOUDFLARE_API_TOKEN / \`npx wrangler login\`.`,
+    );
   }
   if (!existsSync(target)) fail("wrangler reported success but wrote no file");
   const sql = readFileSync(target, "utf8");
@@ -94,12 +117,22 @@ function verifyRestore(sqlPath) {
   try {
     rmSync(scratch, { force: true });
     try {
-      run("sqlite3", [scratch], { input: readFileSync(sqlPath, "utf8"), stdio: ["pipe", "pipe", "pipe"] });
+      run("sqlite3", [scratch], {
+        input: readFileSync(sqlPath, "utf8"),
+        stdio: ["pipe", "pipe", "pipe"],
+      });
     } catch (err) {
-      fail(`the dump does not replay into SQLite — it is NOT restorable:\n${(err.stderr || err.message).toString().trim()}`);
+      fail(
+        `the dump does not replay into SQLite — it is NOT restorable:\n${(err.stderr || err.message).toString().trim()}`,
+      );
     }
-    const tableList = run("sqlite3", [scratch, "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE '_cf_%';"])
-      .split("\n").map((t) => t.trim()).filter(Boolean);
+    const tableList = run("sqlite3", [
+      scratch,
+      "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE '_cf_%';",
+    ])
+      .split("\n")
+      .map((t) => t.trim())
+      .filter(Boolean);
     const counts = {};
     for (const t of tableList) {
       counts[t] = Number(run("sqlite3", [scratch, `SELECT COUNT(*) FROM "${t}";`]).trim()) || 0;
@@ -135,7 +168,9 @@ const rawPath = join(BACKUP_DIR, `${DATABASE}-${stamp}.sql`);
 const gzPath = `${rawPath}.gz`;
 
 if (DRY_RUN) {
-  log(`DRY RUN — would export ${DATABASE} → ${gzPath}, verify the restore, and prune backups older than ${KEEP_DAYS} days.`);
+  log(
+    `DRY RUN — would export ${DATABASE} → ${gzPath}, verify the restore, and prune backups older than ${KEEP_DAYS} days.`,
+  );
   process.exit(0);
 }
 

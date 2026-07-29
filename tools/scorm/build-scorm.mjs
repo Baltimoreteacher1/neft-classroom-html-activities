@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { execSync } from "child_process";
 /**
  * build-scorm.mjs — package a Neft lesson as a SCORM 1.2 zip for Canvas upload.
  *
@@ -13,8 +14,7 @@
  * Env: NEFT_SITE overrides the base site (default https://eduwonderlab.com).
  * Output: scorm-packages/neft-lesson-<lessonId>.zip
  */
-import { readFileSync, writeFileSync, mkdirSync, rmSync } from "fs";
-import { execSync } from "child_process";
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
 import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
 

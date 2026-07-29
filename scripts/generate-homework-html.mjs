@@ -1,41 +1,41 @@
-import { readFileSync, writeFileSync, readdirSync, existsSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { resolveVocabImage, vocabImageAlt, hasRealVocabImage } from "../engine/core/vocab-images.js";
+import { fileURLToPath } from "node:url";
 import { interactiveVisualHost } from "../engine/core/interactive-visual.js";
-import { EDITORIAL_FONT_IMPORT, EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
 import {
-  selectQuickCheckProblems,
-  renderWelcomeBanner,
-  renderQuickCheckIntro,
-  renderHomeworkTabs,
-  renderLearnTab,
-  renderArcadeTabPanel,
-  renderWordsTab,
-  renderTogetherTab,
-  renderCheckTab,
-  renderWorkbenchTab,
-  renderHelpTab,
-  renderMoreTab,
-  renderPlayTabPanel,
-  renderDoneTab,
-  renderHelpModal,
-  renderProblemHintButton,
-  displayLessonId,
-  GUIDED_NOTES_CSS,
-  HOMEWORK_TABS_JS,
-} from "./homework-guided-notes.mjs";
-import { HOMEWORK_GAME_JS } from "./homework-games.mjs";
-import {
-  renderVisualMathLab,
-  VISUAL_LABS_CSS,
-  VISUAL_LABS_JS,
-} from "./homework-visual-labs.mjs";
+  hasRealVocabImage,
+  resolveVocabImage,
+  vocabImageAlt,
+} from "../engine/core/vocab-images.js";
 import {
   detectVisualTopic,
   selectMorePracticeProblems,
   selectTieredQuickCheckProblems,
 } from "./homework-alignment.mjs";
+import { HOMEWORK_GAME_JS } from "./homework-games.mjs";
+import {
+  displayLessonId,
+  GUIDED_NOTES_CSS,
+  HOMEWORK_TABS_JS,
+  renderArcadeTabPanel,
+  renderCheckTab,
+  renderDoneTab,
+  renderHelpModal,
+  renderHelpTab,
+  renderHomeworkTabs,
+  renderLearnTab,
+  renderMoreTab,
+  renderPlayTabPanel,
+  renderProblemHintButton,
+  renderQuickCheckIntro,
+  renderTogetherTab,
+  renderWelcomeBanner,
+  renderWordsTab,
+  renderWorkbenchTab,
+  selectQuickCheckProblems,
+} from "./homework-guided-notes.mjs";
+import { renderVisualMathLab, VISUAL_LABS_CSS, VISUAL_LABS_JS } from "./homework-visual-labs.mjs";
+import { EDITORIAL_FONT_IMPORT, EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
@@ -278,7 +278,9 @@ const PROBLEM_TYPE_LABELS = {
 };
 
 function renderProblemTypeChip(displayType) {
-  const fallback = String(displayType || "").replace(/-/g, " ").toUpperCase();
+  const fallback = String(displayType || "")
+    .replace(/-/g, " ")
+    .toUpperCase();
   const label = PROBLEM_TYPE_LABELS[displayType];
   if (!label) return `<div class="problem-type-badge">${esc(fallback)}</div>`;
   return `<div class="problem-type-badge"><span class="lang-en">${esc(label.en)}</span><span class="lang-es" lang="es">${esc(label.es)}</span></div>`;
@@ -710,11 +712,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
 
     if (norm.kind === "order") {
       problemSubtype = "drag-order";
-      const shuffledSteps = shuffleSteps(
-        norm.steps,
-        norm.correctOrder,
-        `${pIdx}|${norm.label}`,
-      );
+      const shuffledSteps = shuffleSteps(norm.steps, norm.correctOrder, `${pIdx}|${norm.label}`);
       content = `
       <div class="problem-body">
         <p class="problem-stem"${esMissing(norm.label, norm.labelEs) ? ' data-es-missing="stem"' : ""}>${bi(norm.label, norm.labelEs)}</p>
@@ -948,7 +946,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
     const prompt = it.prompt || "";
     const promptEs = it.promptEs || it.stemEs || "";
     const sentenceFrame = it.sentenceFrame || "";
-    const sentenceFrameEs = it.sentenceFrameEs || "";
+    const _sentenceFrameEs = it.sentenceFrameEs || "";
     const keywords = it.keywords || [];
     const minLength = it.minLength || 15;
 

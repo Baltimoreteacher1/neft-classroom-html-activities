@@ -7,7 +7,7 @@
 // bundles must not appear on live cards). The report documents exactly what
 // would change; promoting to live is the deliberate publish step.
 import { resolve } from "node:path";
-import { existsSync, readJSON, writeFile, writeJSON, REPO_ROOT } from "./util.mjs";
+import { existsSync, REPO_ROOT, readJSON, writeFile, writeJSON } from "./util.mjs";
 
 const BUTTON_DEFS = [
   ["studentLesson", "Student Lesson", "student-practice.md"],

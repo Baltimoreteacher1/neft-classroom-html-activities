@@ -178,7 +178,7 @@
         .catch(function () {
           return null;
         });
-    } catch (e) {
+    } catch (_e) {
       return Promise.resolve(null);
     }
   }
@@ -313,7 +313,7 @@
         if (/^(submit|finish|turn in|enviar|terminar)/i.test(t)) return true;
       }
       return false;
-    } catch (e) {
+    } catch (_e) {
       return false;
     }
   }
@@ -352,7 +352,7 @@
       target.appendChild(hero);
       hero.dataset.ntpMoved = "1";
       rebadge(hero);
-    } catch (e) {}
+    } catch (_e) {}
   }
 
   function rebadge(hero) {
@@ -373,7 +373,7 @@
           "<br>" +
           sub.dataset.ntpOrig;
       }
-    } catch (e) {}
+    } catch (_e) {}
   }
 
   function restoreBadge(hero) {
@@ -385,7 +385,7 @@
         sub.innerHTML = sub.dataset.ntpOrig;
         delete sub.dataset.ntpOrig;
       }
-    } catch (e) {}
+    } catch (_e) {}
   }
 
   /* ---------- pop-up behaviour --------------------------------------------
@@ -415,7 +415,7 @@
       document.querySelectorAll(".step-panel").forEach(function (p) {
         obs.observe(p, { attributes: true, attributeFilter: ["class"] });
       });
-    } catch (e) {}
+    } catch (_e) {}
   }
 
   function mount() {
@@ -438,7 +438,7 @@
       if (built) document.body.dataset[MOUNT_FLAG] = "1";
       moveWarmUp(lvl);
       watchStepEntry(lvl);
-    } catch (e) {
+    } catch (_e) {
       /* Never let coaching break the project. */
     }
   }
@@ -459,7 +459,7 @@
         mount();
       });
       obs.observe(document.body, { attributes: true, attributeFilter: ["class"] });
-    } catch (e) {}
+    } catch (_e) {}
   }
 
   function boot() {
@@ -484,7 +484,7 @@
       });
       delete document.body.dataset[MOUNT_FLAG];
       mount();
-    } catch (e) {}
+    } catch (_e) {}
   }
 
   if (document.readyState === "loading") {

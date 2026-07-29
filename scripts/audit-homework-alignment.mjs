@@ -2,9 +2,9 @@
 /**
  * Audit all family homework.html files for tab UI, games, links, alignment, and no curriculum nav.
  */
-import { readFileSync, readdirSync, existsSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { scoreHomeworkAlignment, detectVisualMismatch } from "./homework-alignment.mjs";
+import { detectVisualMismatch, scoreHomeworkAlignment } from "./homework-alignment.mjs";
 
 const root = join(import.meta.dirname, "..");
 const lessonsDir = join(root, "lessons");

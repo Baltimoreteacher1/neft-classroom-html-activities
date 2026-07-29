@@ -8,14 +8,14 @@
 //   cardforge stage   <job.json>         → build + qa in one step
 //   cardforge publish <package-dir>      → guarded manual publish procedure (no live writes)
 import { resolve } from "node:path";
-import { existsSync, readJSON, writeJSON, CF_ROOT } from "../lib/util.mjs";
-import { runAdapter, detectType } from "../lib/adapters.mjs";
+import { detectType, runAdapter } from "../lib/adapters.mjs";
 import { analyzeLesson } from "../lib/analyze.mjs";
-import { buildPackage } from "../lib/generate.mjs";
-import { runQa } from "../lib/qa.mjs";
 import { auditCards } from "../lib/audit.mjs";
-import { publishGuard } from "../lib/publish.mjs";
 import { updateCard } from "../lib/card-updater.mjs";
+import { buildPackage } from "../lib/generate.mjs";
+import { publishGuard } from "../lib/publish.mjs";
+import { runQa } from "../lib/qa.mjs";
+import { CF_ROOT, existsSync, readJSON, writeJSON } from "../lib/util.mjs";
 
 const [cmd, arg] = process.argv.slice(2);
 const log = (...a) => console.log(...a);

@@ -7,8 +7,8 @@
  *
  * Note: this is a dev tool and is NOT published (tools/ is excluded from dist).
  */
-import { readFileSync, existsSync, statSync, readdirSync } from "node:fs";
-import { join, dirname, resolve, extname } from "node:path";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
+import { dirname, extname, join, resolve } from "node:path";
 
 const ROOT = process.cwd();
 const SKIP_DIRS = new Set([

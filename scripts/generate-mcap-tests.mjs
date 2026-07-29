@@ -16,10 +16,10 @@
 // only if they already exist in the prior file, re-emitting them in their correct
 // place so tools/inject-save-resume.js stays a no-op on regeneration.
 
-import { writeFileSync, readFileSync, existsSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { PRACTICE_TESTS, DOMAIN_NAMES } from "../mcap-review/data/mcap-test-items.mjs";
+import { fileURLToPath } from "node:url";
+import { DOMAIN_NAMES, PRACTICE_TESTS } from "../mcap-review/data/mcap-test-items.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");

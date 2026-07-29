@@ -26,10 +26,11 @@
  * Without --deploy it wires + reports, then tells you to review and deploy.
  * Everything stays local until you push.
  */
-import fs from "fs";
-import path from "path";
-import os from "os";
+
 import { execFileSync } from "child_process";
+import fs from "fs";
+import os from "os";
+import path from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

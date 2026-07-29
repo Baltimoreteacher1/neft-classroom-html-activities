@@ -1,15 +1,15 @@
-import { PHASE_TIME_ESTIMATES, countPracticeProblems } from "./content-enrichment.js";
-import { t, stackHtml, phaseName } from "./i18n.js";
-import { teachEvidencePanelHtml } from "./uifr.js";
+import { countPracticeProblems, PHASE_TIME_ESTIMATES } from "./content-enrichment.js";
+import { phaseName, stackHtml, t } from "./i18n.js";
 // Objective vocab popups + highlight, shared with the student-facing Launch
 // header / Objectives page so teacher-mode objectives read identically.
 // Runtime-only use, so the teacher-mode ↔ lesson-renderer import cycle is safe.
 import {
+  linkifyObjectiveTerms,
   resolveContentObjective,
   resolveLanguageObjective,
-  linkifyObjectiveTerms,
   wireObjectiveTermPopups,
 } from "./lesson-renderer.js";
+import { teachEvidencePanelHtml } from "./uifr.js";
 
 function esc(s) {
   const d = document.createElement("div");

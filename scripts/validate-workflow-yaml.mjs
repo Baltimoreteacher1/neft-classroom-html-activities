@@ -21,7 +21,7 @@
  *
  * Run: npm run validate:workflow-yaml   (part of `npm run validate`)
  */
-import { readdirSync, readFileSync, existsSync, realpathSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, realpathSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 

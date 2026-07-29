@@ -5,12 +5,13 @@
  *
  * Picked up by `npm test` (tools/run-tests.mjs).
  */
-import { execFileSync } from "node:child_process";
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync, cpSync, readdirSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { dirname, resolve, join } from "node:path";
-import { fileURLToPath } from "node:url";
+
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
+import { cpSync, mkdirSync, mkdtempSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { validateCartridgeDir } from "./validate-cartridge.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));

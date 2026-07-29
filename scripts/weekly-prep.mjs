@@ -69,7 +69,8 @@ function parseArgs(argv) {
 
 function resolveLessons(unit, lessonsSpec, includeFlagship) {
   const u = Number(unit);
-  if (!Number.isInteger(u) || u < 0) throw new Error(`--unit must be a whole number (got "${unit}")`);
+  if (!Number.isInteger(u) || u < 0)
+    throw new Error(`--unit must be a whole number (got "${unit}")`);
   let from;
   let to;
   const m = String(lessonsSpec).match(/^(\d+)(?:-(\d+))?$/);
@@ -94,14 +95,61 @@ function resolveLessons(unit, lessonsSpec, includeFlagship) {
  * `args:true`    → passes lesson ids as positional argv (natively scopeable).
  * `default`      → whether it runs unless --only/--skip says otherwise. */
 const STEPS = [
-  { key: "shells", label: "Lesson page shells", script: "scripts/generate-lesson-shells.mjs", args: true, default: true },
-  { key: "notes", label: "TWR notes · learn · vocab", script: "scripts/generate-notes.mjs", scoped: true, default: true },
-  { key: "slides", label: "Premium slides", script: "scripts/generate-slides.mjs", scoped: true, default: true },
-  { key: "worksheets", label: "Printable worksheets", script: "scripts/generate-worksheets.mjs", args: true, default: true },
-  { key: "homework", label: "Family homework (.docx)", script: "scripts/generate-homework.mjs", scoped: true, default: true },
-  { key: "docx", label: "Editable Word downloads", script: "scripts/generate-docx.mjs", args: true, default: true },
-  { key: "pdf", label: "PDF downloads (heavy)", script: "scripts/generate-pdf.mjs", args: true, default: false },
-  { key: "printables", label: "Printable integration", script: "scripts/integrate-lesson-printables.mjs", default: false },
+  {
+    key: "shells",
+    label: "Lesson page shells",
+    script: "scripts/generate-lesson-shells.mjs",
+    args: true,
+    default: true,
+  },
+  {
+    key: "notes",
+    label: "TWR notes · learn · vocab",
+    script: "scripts/generate-notes.mjs",
+    scoped: true,
+    default: true,
+  },
+  {
+    key: "slides",
+    label: "Premium slides",
+    script: "scripts/generate-slides.mjs",
+    scoped: true,
+    default: true,
+  },
+  {
+    key: "worksheets",
+    label: "Printable worksheets",
+    script: "scripts/generate-worksheets.mjs",
+    args: true,
+    default: true,
+  },
+  {
+    key: "homework",
+    label: "Family homework (.docx)",
+    script: "scripts/generate-homework.mjs",
+    scoped: true,
+    default: true,
+  },
+  {
+    key: "docx",
+    label: "Editable Word downloads",
+    script: "scripts/generate-docx.mjs",
+    args: true,
+    default: true,
+  },
+  {
+    key: "pdf",
+    label: "PDF downloads (heavy)",
+    script: "scripts/generate-pdf.mjs",
+    args: true,
+    default: false,
+  },
+  {
+    key: "printables",
+    label: "Printable integration",
+    script: "scripts/integrate-lesson-printables.mjs",
+    default: false,
+  },
 ];
 
 /* Global aggregates — always rebuilt once after any lesson change.
@@ -136,7 +184,9 @@ function run(label, file, args, { scope, dry }) {
     return { label, ms, ok: true };
   } catch (err) {
     const ms = Date.now() - t0;
-    process.stdout.write(`  ${C.red("✗")} ${label} FAILED ${C.dim(`(${(ms / 1000).toFixed(1)}s)`)}\n`);
+    process.stdout.write(
+      `  ${C.red("✗")} ${label} FAILED ${C.dim(`(${(ms / 1000).toFixed(1)}s)`)}\n`,
+    );
     return { label, ms, ok: false, err };
   }
 }
@@ -187,7 +237,8 @@ function main() {
     `\n${C.bold("📚 Weekly Prep Autopilot")}  ${C.dim(`unit ${a.unit} · lessons ${a.lessons}`)}\n`,
   );
   process.stdout.write(`   Lessons: ${C.bold(resolved.join(", "))}\n`);
-  if (missing.length) process.stdout.write(C.yellow(`   ⚠ Missing (skipped): ${missing.join(", ")}\n`));
+  if (missing.length)
+    process.stdout.write(C.yellow(`   ⚠ Missing (skipped): ${missing.join(", ")}\n`));
   process.stdout.write(`   Steps:   ${steps.map((s) => s.key).join(" → ")}\n`);
   if (dry) process.stdout.write(C.yellow("   DRY RUN — nothing will be executed.\n"));
 
@@ -196,7 +247,10 @@ function main() {
   const results = [];
   process.stdout.write(`\n${C.bold("Lesson artifacts")}\n`);
   for (const s of steps) {
-    const r = run(s.label, s.script, s.args ? resolved : [], { scope: s.scoped ? resolved : null, dry });
+    const r = run(s.label, s.script, s.args ? resolved : [], {
+      scope: s.scoped ? resolved : null,
+      dry,
+    });
     results.push(r);
     if (!r.ok) return finish(results, resolved, a, 1);
   }
@@ -212,7 +266,12 @@ function main() {
 
   if (flag("canvas")) {
     process.stdout.write(`\n${C.bold("Canvas package")}\n`);
-    const r = run(`Unit ${a.unit} Canvas pack`, "tools/canvas/build-unit-pack.mjs", [String(a.unit)], { dry });
+    const r = run(
+      `Unit ${a.unit} Canvas pack`,
+      "tools/canvas/build-unit-pack.mjs",
+      [String(a.unit)],
+      { dry },
+    );
     results.push(r);
     if (!r.ok) return finish(results, resolved, a, 1);
   }
@@ -241,7 +300,9 @@ function deploy(results, resolved, a, dry) {
   if (!process.env.ALLOW_DEPLOY) {
     process.stdout.write(
       C.yellow("   --deploy requires ALLOW_DEPLOY=1. Skipping. Run:\n") +
-        C.dim(`   ALLOW_DEPLOY=1 npm run prep -- --unit ${a.unit} --lessons ${a.lessons} --deploy\n`),
+        C.dim(
+          `   ALLOW_DEPLOY=1 npm run prep -- --unit ${a.unit} --lessons ${a.lessons} --deploy\n`,
+        ),
     );
     return finish(results, resolved, a, 0);
   }

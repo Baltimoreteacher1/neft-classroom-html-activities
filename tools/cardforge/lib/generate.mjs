@@ -1,10 +1,10 @@
 // CardForge package generator. Renders every artifact for a lesson package
 // deterministically from a job.json (schemas/job.schema.json).
 import { resolve } from "node:path";
-import { writeFile, writeJSON, slugify, CF_ROOT } from "./util.mjs";
-import { renderSubPacket } from "./sub-packet.mjs";
 import { renderActivityPack } from "./activity-pack.mjs";
 import { renderInteractive } from "./interactive.mjs";
+import { renderSubPacket } from "./sub-packet.mjs";
+import { CF_ROOT, slugify, writeFile, writeJSON } from "./util.mjs";
 
 function mdList(items, fmt = (x) => x) {
   return (items || []).map((x) => `- ${fmt(x)}`).join("\n") || "_None._";

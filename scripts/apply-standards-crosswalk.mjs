@@ -30,9 +30,9 @@
  *   npm run generate-curriculum-manifest && npm run validate && npm run audit
  *   (plus the content-graph / coverage / search-index generators).
  */
-import { readFileSync, writeFileSync, existsSync, readdirSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const TAX_PATH = join(root, "data", "standards-taxonomy.json");

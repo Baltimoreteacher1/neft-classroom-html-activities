@@ -24,7 +24,7 @@
  */
 
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -96,7 +96,8 @@ function usage() {
 function inventory() {
   let lessons = [];
   try {
-    lessons = JSON.parse(readFileSync(join(ROOT, "data/curriculum-manifest.json"), "utf8")).lessons || [];
+    lessons =
+      JSON.parse(readFileSync(join(ROOT, "data/curriculum-manifest.json"), "utf8")).lessons || [];
   } catch {
     lessons = [];
   }
@@ -177,7 +178,9 @@ const repair = scored
   .filter((l) => l.starts >= 5 && l.finishRate != null && l.finishRate < 0.4)
   .sort((a, b) => a.finishRate - b.finishRate);
 
-const retire = scored.filter((l) => l.events === 0).sort((a, b) => String(a.id).localeCompare(String(b.id)));
+const retire = scored
+  .filter((l) => l.events === 0)
+  .sort((a, b) => String(a.id).localeCompare(String(b.id)));
 
 /* ------------------------------------------------------------------ report */
 
@@ -214,7 +217,9 @@ if (!repair.length) {
   L.push("| Lesson | Starts | Finish rate |");
   L.push("| --- | ---: | ---: |");
   for (const l of repair.slice(0, 20)) {
-    L.push(`| [${l.id} · ${l.title}](${l.lessonPath || "#"}) | ${l.starts} | ${Math.round(l.finishRate * 100)}% |`);
+    L.push(
+      `| [${l.id} · ${l.title}](${l.lessonPath || "#"}) | ${l.starts} | ${Math.round(l.finishRate * 100)}% |`,
+    );
   }
 }
 L.push("");

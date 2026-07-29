@@ -27,12 +27,12 @@
 // and exits 0 (so the build is never blocked); the HTML/DOCX downloads still
 // work and the PDF link will resolve once a binary is available.
 
-import { readdirSync, existsSync, mkdirSync, rmSync, readFileSync, writeFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
-import { dirname, join } from "node:path";
 import { spawn } from "node:child_process";
-import { tmpdir } from "node:os";
 import { createHash } from "node:crypto";
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 

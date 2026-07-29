@@ -5,10 +5,10 @@
 //
 // Run: node scripts/generate-readiness-docx.mjs            (all data files)
 //      node scripts/generate-readiness-docx.mjs 1-2 3-4    (specific lessons)
-import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { Document, Packer, Paragraph, TextRun, PageBreak } from "docx";
+import { fileURLToPath } from "node:url";
+import { Document, Packer, PageBreak, Paragraph, TextRun } from "docx";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");

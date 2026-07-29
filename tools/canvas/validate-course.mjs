@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { execSync } from "child_process";
 /**
  * validate-course.mjs — answer-key integrity check for the Canvas QTI quizzes
  * produced by build-course.mjs.
@@ -26,10 +27,9 @@
  * Env: QUIZ_MAX (default 12) — must match the value used for the build.
  * Exit code 0 = flawless, 1 = at least one defect (so it can gate CI/regen).
  */
-import { readFileSync, existsSync, readdirSync } from "fs";
-import { resolve, dirname } from "path";
+import { existsSync, readdirSync, readFileSync } from "fs";
+import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
-import { execSync } from "child_process";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const LETTERS = "ABCDEFGHIJKLMNOP".split("");

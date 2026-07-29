@@ -15,8 +15,8 @@
  * Re-run after adding/removing novels:  node tools/build-graphic-novel-teacher-launcher.mjs
  * ========================================================================== */
 
-import { readdirSync, statSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
-import { join, dirname, basename, relative } from "node:path";
+import { mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { basename, dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");

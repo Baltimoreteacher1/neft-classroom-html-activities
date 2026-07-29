@@ -21,12 +21,9 @@ global.localStorage = dom.window.localStorage;
 global.speechSynthesis = { speak() {}, cancel() {}, getVoices: () => [] };
 dom.window.speechSynthesis = global.speechSynthesis;
 
-const { collectPracticeItems } = await import(
-  "../engine/core/small-group-practice.js"
-);
+const { collectPracticeItems } = await import("../engine/core/small-group-practice.js");
 
-const load = (id) =>
-  JSON.parse(fs.readFileSync(`lessons/${id}/config.json`, "utf8"));
+const load = (id) => JSON.parse(fs.readFileSync(`lessons/${id}/config.json`, "utf8"));
 
 let failures = 0;
 const check = (label, ok, detail = "") => {
@@ -43,14 +40,25 @@ const summarize = (id) => {
 
 for (const id of ["1-1-group1", "5-3-group1", "9-4-group1"]) {
   const { items, types, kinds } = summarize(id);
-  check(`${id} gains format variety`, kinds >= 2, `${items.length} items, types=${JSON.stringify(types)}`);
+  check(
+    `${id} gains format variety`,
+    kinds >= 2,
+    `${items.length} items, types=${JSON.stringify(types)}`,
+  );
   check(`${id} still leads with guided-fill`, items[0]?.type === "guided-fill");
-  check(`${id} every item carries a standard`, items.every((i) => i._standard));
+  check(
+    `${id} every item carries a standard`,
+    items.every((i) => i._standard),
+  );
 }
 
 for (const id of ["1-3-catchup", "10-5-catchup"]) {
   const { items, types, kinds } = summarize(id);
-  check(`${id} gains format variety`, kinds >= 2, `${items.length} items, types=${JSON.stringify(types)}`);
+  check(
+    `${id} gains format variety`,
+    kinds >= 2,
+    `${items.length} items, types=${JSON.stringify(types)}`,
+  );
 }
 
 // Level 2 must be untouched by the variety append (it has its own extending path).

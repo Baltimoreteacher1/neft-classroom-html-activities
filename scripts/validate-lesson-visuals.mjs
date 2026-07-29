@@ -27,7 +27,7 @@
  * or point --base at production. Never point it at production casually: booting a
  * lesson satisfies the identity gate and can emit student telemetry.
  */
-import { readFileSync, readdirSync, existsSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { chromium } from "playwright";
 
@@ -37,7 +37,7 @@ const arg = (name, fallback = null) => {
   return i > -1 && process.argv[i + 1] ? process.argv[i + 1] : fallback;
 };
 
-const BASE = (arg("--base", "http://localhost:4499")).replace(/\/$/, "");
+const BASE = arg("--base", "http://localhost:4499").replace(/\/$/, "");
 const ONLY = arg("--lesson");
 const SAMPLE = Number(arg("--sample", "0")) || 0;
 const CONCURRENCY = Number(arg("--concurrency", "4")) || 4;
@@ -57,10 +57,18 @@ function selfTest() {
   const cases = [
     ["rendered widget is ok", { mountedFlag: true, hasContent: true }, "ok"],
     ["flagged but empty is a failure", { mountedFlag: true, hasContent: false }, "empty"],
-    ["no flag means the kind is not in the REGISTRY", { mountedFlag: false, hasContent: false }, "unknown-kind"],
+    [
+      "no flag means the kind is not in the REGISTRY",
+      { mountedFlag: false, hasContent: false },
+      "unknown-kind",
+    ],
     // Guard the trap directly: content without the flag is still a REGISTRY miss,
     // because something else (a fallback SVG) put that content there.
-    ["content without a flag is still unknown-kind", { mountedFlag: false, hasContent: true }, "unknown-kind"],
+    [
+      "content without a flag is still unknown-kind",
+      { mountedFlag: false, hasContent: true },
+      "unknown-kind",
+    ],
   ];
   const bad = cases.filter(([, input, want]) => classifyHost(input) !== want);
   if (bad.length) {
@@ -81,16 +89,27 @@ function selfTest() {
       { practice: { problems: [{ kind: "multiple-choice", diagram: { kind: "number-line" } }] } },
       ["number-line"],
     ],
-    ["a problem kind is not a visual", { practice: { problems: [{ kind: "multiple-choice" }] } }, []],
+    [
+      "a problem kind is not a visual",
+      { practice: { problems: [{ kind: "multiple-choice" }] } },
+      [],
+    ],
     ["no visuals at all", { title: "x" }, []],
   ];
   const dkBad = dkCases.filter(
-    ([, cfg, want]) => JSON.stringify(declaredKinds(cfg).map((d) => d.kind).sort()) !== JSON.stringify([...want].sort()),
+    ([, cfg, want]) =>
+      JSON.stringify(
+        declaredKinds(cfg)
+          .map((d) => d.kind)
+          .sort(),
+      ) !== JSON.stringify([...want].sort()),
   );
   if (dkBad.length) {
     console.error(`declaredKinds self-test: ${dkBad.length} FAILED`);
     for (const [name, cfg, want] of dkBad) {
-      console.error(`  ✗ ${name}: expected ${JSON.stringify(want)}, got ${JSON.stringify(declaredKinds(cfg).map((d) => d.kind))}`);
+      console.error(
+        `  ✗ ${name}: expected ${JSON.stringify(want)}, got ${JSON.stringify(declaredKinds(cfg).map((d) => d.kind))}`,
+      );
     }
     process.exit(1);
   }
@@ -123,7 +142,8 @@ function selfTest() {
 function parseKnownKinds() {
   const rendererSrc = readFileSync(join(root, "engine/core/lesson-renderer.js"), "utf8");
   const start = rendererSrc.indexOf("function buildVisual(");
-  if (start < 0) throw new Error("buildVisual() not found in lesson-renderer.js — update this parser");
+  if (start < 0)
+    throw new Error("buildVisual() not found in lesson-renderer.js — update this parser");
   let depth = 0;
   let open = rendererSrc.indexOf("{", start);
   let end = -1;
@@ -150,7 +170,8 @@ function parseKnownKinds() {
 
   const ivSrc = readFileSync(join(root, "engine/core/interactive-visual.js"), "utf8");
   const regStart = ivSrc.indexOf("const REGISTRY = {");
-  if (regStart < 0) throw new Error("REGISTRY not found in interactive-visual.js — update this parser");
+  if (regStart < 0)
+    throw new Error("REGISTRY not found in interactive-visual.js — update this parser");
   depth = 0;
   open = ivSrc.indexOf("{", regStart);
   end = -1;
@@ -165,7 +186,9 @@ function parseKnownKinds() {
   // matching only quoted ones silently drops histogram and condemns every lesson
   // that uses it.
   const registry = new Set(
-    [...ivSrc.slice(open, end).matchAll(/^\s{2}"?([a-zA-Z0-9-]+)"?:\s*(?:async\s*)?\(/gm)].map((m) => m[1]),
+    [...ivSrc.slice(open, end).matchAll(/^\s{2}"?([a-zA-Z0-9-]+)"?:\s*(?:async\s*)?\(/gm)].map(
+      (m) => m[1],
+    ),
   );
 
   if (buildable.size < 10 || registry.size < 10) {
@@ -188,7 +211,8 @@ function declaredKinds(config) {
       return;
     }
     if (inVisualSlot && typeof node.kind === "string") out.push({ kind: node.kind, path });
-    for (const [k, v] of Object.entries(node)) walk(v, path ? `${path}.${k}` : k, VISUAL_SLOTS.has(k));
+    for (const [k, v] of Object.entries(node))
+      walk(v, path ? `${path}.${k}` : k, VISUAL_SLOTS.has(k));
   };
   walk(config, "", false);
   return out;
@@ -237,7 +261,8 @@ async function probeLesson(browser, id) {
   const mountWarnings = [];
   const pageErrors = [];
   page.on("console", (m) => {
-    if (/interactive-visual: failed to mount/i.test(m.text())) mountWarnings.push(m.text().slice(0, 160));
+    if (/interactive-visual: failed to mount/i.test(m.text()))
+      mountWarnings.push(m.text().slice(0, 160));
   });
   page.on("pageerror", (e) => pageErrors.push(e.message.slice(0, 160)));
 
@@ -263,14 +288,28 @@ async function probeLesson(browser, id) {
         const enter = page.locator(".flagship-mission-start").first();
         if (!(await enter.count())) {
           await page.close();
-          return { id, renderer, booted: false, hosts, mountWarnings, pageErrors, error: "no .flagship-mission-start entry control" };
+          return {
+            id,
+            renderer,
+            booted: false,
+            hosts,
+            mountWarnings,
+            pageErrors,
+            error: "no .flagship-mission-start entry control",
+          };
         }
         await enter.click({ timeout: 10000 }).catch(() => {});
         await page.waitForTimeout(2000);
       }
       // Identity gate: #id-start stays disabled until a name is present.
-      await page.locator("#id-name").fill("QA Probe").catch(() => {});
-      await page.locator("#id-period").fill("3").catch(() => {});
+      await page
+        .locator("#id-name")
+        .fill("QA Probe")
+        .catch(() => {});
+      await page
+        .locator("#id-period")
+        .fill("3")
+        .catch(() => {});
       await page.waitForTimeout(250);
       const start = page.locator("#id-start");
       if (await start.count()) {
@@ -286,7 +325,8 @@ async function probeLesson(browser, id) {
       }
       for (let phase = 0; phase < PHASE_COUNT; phase++) {
         await page.evaluate(
-          (ph) => document.dispatchEvent(new CustomEvent("rma:navigate", { detail: { phase: ph } })),
+          (ph) =>
+            document.dispatchEvent(new CustomEvent("rma:navigate", { detail: { phase: ph } })),
           phase,
         );
         await page.waitForTimeout(1100);
@@ -294,11 +334,27 @@ async function probeLesson(browser, id) {
       }
     } else {
       await page.close();
-      return { id, renderer, booted: false, hosts, mountWarnings, pageErrors, error: "unknown renderer" };
+      return {
+        id,
+        renderer,
+        booted: false,
+        hosts,
+        mountWarnings,
+        pageErrors,
+        error: "unknown renderer",
+      };
     }
   } catch (err) {
     await page.close();
-    return { id, renderer, booted, hosts, mountWarnings, pageErrors, error: err.message.slice(0, 120) };
+    return {
+      id,
+      renderer,
+      booted,
+      hosts,
+      mountWarnings,
+      pageErrors,
+      error: err.message.slice(0, 120),
+    };
   }
   await page.close();
   return { id, renderer, booted, hosts, mountWarnings, pageErrors };
@@ -383,7 +439,8 @@ for (const r of results.sort((a, b) => a.id.localeCompare(b.id))) {
     bootFailures++;
     const why = {
       core: "core lesson app never booted (no __ntLessonClearApi after the identity gate)",
-      flagship: "flagship never opened its mission (content did not grow after .flagship-mission-start)",
+      flagship:
+        "flagship never opened its mission (content did not grow after .flagship-mission-start)",
       "small-group": "small-group lesson never rendered",
     };
     failures.push(`${r.id} [${r.renderer}]: ${why[r.renderer] || "did not boot"}`);
@@ -437,9 +494,13 @@ for (const fam of families) {
   const rs = results.filter((r) => r.renderer === fam);
   const withHosts = rs.filter((r) => r.hosts.length > 0).length;
   const booted = rs.filter((r) => r.booted).length;
-  console.log(`  ${fam.padEnd(12)} ${rs.length} lesson(s), ${booted} booted, ${withHosts} with visuals`);
+  console.log(
+    `  ${fam.padEnd(12)} ${rs.length} lesson(s), ${booted} booted, ${withHosts} with visuals`,
+  );
   if (booted === 0) {
-    failures.push(`renderer "${fam}": 0 of ${rs.length} lessons booted — the probe cannot reach this family`);
+    failures.push(
+      `renderer "${fam}": 0 of ${rs.length} lessons booted — the probe cannot reach this family`,
+    );
   }
 }
 

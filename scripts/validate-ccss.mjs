@@ -7,9 +7,9 @@
  * not present in the canonical registry, so the registry can't silently drift
  * out of sync with the curriculum. Run: npm run validate:ccss
  */
-import { readdirSync, readFileSync, existsSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { isKnownStandard, allStandardCodes } from "./lib/ccss.mjs";
+import { allStandardCodes, isKnownStandard } from "./lib/ccss.mjs";
 
 const root = process.cwd();
 const lessonsDir = join(root, "lessons");

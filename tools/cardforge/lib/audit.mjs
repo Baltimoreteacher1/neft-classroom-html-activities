@@ -1,7 +1,7 @@
 // CardForge card audit. Reports completeness of existing live Math lesson cards
 // using the curriculum manifest (the canonical card catalog). Read-only.
 import { resolve } from "node:path";
-import { existsSync, readJSON, REPO_ROOT } from "./util.mjs";
+import { existsSync, REPO_ROOT, readJSON } from "./util.mjs";
 
 const CARD_FIELDS = [
   "title",

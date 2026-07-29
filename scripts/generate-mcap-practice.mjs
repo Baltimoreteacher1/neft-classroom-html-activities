@@ -19,23 +19,23 @@
 // Run: node scripts/generate-mcap-practice.mjs
 //      npm run generate-mcap-practice
 
-import { writeFileSync, readFileSync, readdirSync, existsSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import {
-  Document,
-  Packer,
-  Paragraph,
-  TextRun,
   AlignmentType,
   BorderStyle,
-  Table,
-  TableRow,
-  TableCell,
-  WidthType,
-  ShadingType,
-  PageNumber,
+  Document,
   Footer,
+  Packer,
+  PageNumber,
+  Paragraph,
+  ShadingType,
+  Table,
+  TableCell,
+  TableRow,
+  TextRun,
+  WidthType,
 } from "docx";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));

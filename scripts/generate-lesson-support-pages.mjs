@@ -27,7 +27,7 @@
  *   node scripts/generate-lesson-support-pages.mjs --dry      # report only
  */
 
-import { existsSync, readFileSync, readdirSync, writeFileSync, mkdirSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { execFileSync } from "node:child_process";
 // Synthetic live-route monitor for the classroom site.
 //
 // Hits a manifest of LIVE routes and asserts each one serves the RIGHT app:
@@ -19,9 +20,8 @@
 // Exit code: 0 = all clean (warnings allowed), 1 = one or more FAILs,
 //            2 = could not run (no manifest / bad args).
 import { readFile } from "node:fs/promises";
-import { fileURLToPath, pathToFileURL } from "node:url";
-import { execFileSync } from "node:child_process";
 import path from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_MANIFEST = path.join(HERE, "..", "night-shift", "route-manifest.json");
@@ -97,10 +97,9 @@ function classifyFreshness({ stampRes, expectedCommit, graceHours, staleHours, n
 
   if (expectedCommit && live && live !== "local") {
     const match =
-      live === expectedCommit ||
-      live.startsWith(expectedCommit) ||
-      expectedCommit.startsWith(live);
-    if (match) return { level: "ok", note: `fresh — live ${short(live)} == main, built ${age} ago` };
+      live === expectedCommit || live.startsWith(expectedCommit) || expectedCommit.startsWith(live);
+    if (match)
+      return { level: "ok", note: `fresh — live ${short(live)} == main, built ${age} ago` };
     if (ageH <= graceHours)
       return {
         level: "warn",
@@ -133,8 +132,7 @@ function classify(route, forbidMarkers, r) {
     if (r.status !== route.expectStatus)
       return { level: "fail", note: `status ${r.status} (expected ${route.expectStatus})` };
     const forbid = presentMarkers(r.body, forbidMarkers);
-    if (forbid.length)
-      return { level: "fail", note: `foreign-app marker present: "${forbid[0]}"` };
+    if (forbid.length) return { level: "fail", note: `foreign-app marker present: "${forbid[0]}"` };
     const miss = missingMarkers(r.body, route.requireMarkers);
     if (miss.length)
       return {

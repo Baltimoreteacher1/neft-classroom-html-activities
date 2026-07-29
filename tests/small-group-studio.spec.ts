@@ -15,9 +15,9 @@ test.describe("small-group guided math studio", () => {
     // Vocabulary is the landing tab: the match game works immediately.
     const match = page.locator(".sg-match");
     await expect(
-      match.getByText("A number bigger than 1 that you can only divide by 1 and itself."),
+      match.getByText("Writing a whole number as a product of only prime numbers."),
     ).toBeVisible();
-    await match.getByRole("button", { name: "Prime number", exact: true }).click();
+    await match.getByRole("button", { name: "Prime Factorization", exact: true }).click();
     await expect(match.getByText(/1 of \d+ unlocked/)).toBeVisible();
 
     // Learn It: readiness pulse + leveled build CTA earn the tab checkmark.
@@ -73,7 +73,10 @@ test.describe("small-group guided math studio", () => {
     await expect(page.getByLabel("Predict", { exact: true })).toHaveCount(0);
     await expect(page.getByLabel("Test", { exact: true })).toHaveCount(0);
 
-    const equation = page.getByRole("button", { name: "Equation: open definition" }).first();
+    const equation = page.getByRole("button", {
+      name: "Equation: open definition",
+      exact: true,
+    }).first();
     await equation.click();
     const definition = page.getByRole("dialog", { name: "Equation" });
     await expect(definition.getByText(/math sentence with an equal sign/i)).toBeVisible();
@@ -231,14 +234,16 @@ test.describe("small-group guided math studio", () => {
   }) => {
     await page.goto("/lessons/1-1-group1/");
 
-    const firstCard = page.locator(".sg-vcard").first();
-    await expect(firstCard.getByText(/ES:\s*Número primo/)).toBeVisible();
-    await expect(firstCard.getByText(/VI:|AR:/)).toHaveCount(0);
+    const primeCard = page.locator(".sg-vcard").filter({
+      has: page.getByText("Prime number", { exact: true }),
+    });
+    await expect(primeCard.getByText(/ES:\s*Número primo/)).toBeVisible();
+    await expect(primeCard.getByText(/VI:|AR:/)).toHaveCount(0);
     await expect(
-      firstCard.getByText("A number bigger than 1 that you can only divide by 1 and itself."),
+      primeCard.getByText("A number bigger than 1 that you can only divide by 1 and itself."),
     ).toBeVisible();
     await expect(
-      firstCard.getByText("Un número mayor que 1 que solo se puede dividir entre 1 y sí mismo."),
+      primeCard.getByText("Un número mayor que 1 que solo se puede dividir entre 1 y sí mismo."),
     ).toBeVisible();
 
     // Inline triggers install across every tab; the key-idea occurrence
@@ -398,8 +403,8 @@ test.describe("small-group guided math studio", () => {
         window.setTimeout(() => cb(performance.now()), 16) as unknown as number;
     });
     await page.goto("/curriculum/");
-    const dropdowns = page.locator(".lesson-select");
-    await expect(dropdowns).toHaveCount(10);
+    const dropdown = page.locator(".lesson-select");
+    await expect(dropdown).toHaveCount(1);
 
     function expectGuidedGroupsAfterMain(labels: string[]) {
       const mainLessons = labels.filter((label) => /^Lesson \d+-\d+ ·/.test(label));
@@ -420,8 +425,10 @@ test.describe("small-group guided math studio", () => {
       }
     }
 
-    for (let dropdownIndex = 0; dropdownIndex < 10; dropdownIndex += 1) {
-      const labels = await dropdowns.nth(dropdownIndex).locator("option").allTextContents();
+    for (let unit = 1; unit <= 10; unit += 1) {
+      await page.getByRole("button", { name: new RegExp(`^Unit ${unit} `) }).click();
+      await expect(dropdown).toHaveCount(1);
+      const labels = await dropdown.locator("option").allTextContents();
       expectGuidedGroupsAfterMain(labels);
     }
 

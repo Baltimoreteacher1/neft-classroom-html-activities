@@ -4,6 +4,11 @@
 
 import { createRhythmCoach } from "./facilitation-rhythm.js";
 import { createGoDeeper } from "./go-deeper.js";
+// NOTE: present-mode.css is NOT imported here. tools/small-group-modes.test.mjs
+// imports this module under bare Node, which cannot resolve a CSS import at
+// all — the stylesheet reaches the page through Vite's shared CSS chunk, which
+// every lesson entry links.
+import { mountPresentWidget } from "./present-mode.js";
 import { installSmallGroupAnnotation } from "./small-group-annotation.js";
 import { createBuildVisualizer } from "./small-group-build-visuals.js";
 import {
@@ -23,13 +28,13 @@ import {
   createStudioPacket,
   createTeacherEvidenceConsole,
 } from "./small-group-innovation.js";
-import { createMathCheckLab } from "./small-group-math-check.js";
 import {
   createApplyLab,
   createExploreLab,
   createModelLab,
   figureBlock,
 } from "./small-group-labs.js";
+import { createMathCheckLab } from "./small-group-math-check.js";
 import { installSmallGroupPassport } from "./small-group-passport.js";
 import {
   collectPracticeItems,
@@ -60,11 +65,6 @@ import {
   voiceFor,
 } from "./small-group-ui.js";
 import { mountTeacherClearButton } from "./teacher-clear.js";
-// NOTE: present-mode.css is NOT imported here. tools/small-group-modes.test.mjs
-// imports this module under bare Node, which cannot resolve a CSS import at
-// all — the stylesheet reaches the page through Vite's shared CSS chunk, which
-// every lesson entry links.
-import { mountPresentWidget } from "./present-mode.js";
 import { isToolsMode, mountToolsMenuItem, renderToolsPage } from "./tools-mode.js";
 
 // One Build stage rendered as an interactive player instead of a static list.

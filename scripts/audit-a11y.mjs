@@ -18,11 +18,13 @@
  * Writes reports/a11y-audit.md.
  */
 import { mkdirSync, writeFileSync } from "node:fs";
-import { chromium } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { chromium } from "@playwright/test";
 
 const argv = process.argv.slice(2);
-const BASE = ((argv.includes("--base") ? argv[argv.indexOf("--base") + 1] : null) || "https://eduwonderlab.com").replace(/\/$/, "");
+const BASE = (
+  (argv.includes("--base") ? argv[argv.indexOf("--base") + 1] : null) || "https://eduwonderlab.com"
+).replace(/\/$/, "");
 
 /** Student-facing surfaces, weighted toward what a class actually opens. */
 const PAGES = [
@@ -92,14 +94,20 @@ for (const page of PAGES) {
   try {
     const res = await tab.goto(url, { waitUntil: "domcontentloaded", timeout: 30000 });
     if (!res || res.status() >= 400) {
-      errors.push({ page: page.name, path: page.path, detail: `HTTP ${res ? res.status() : "no response"}` });
+      errors.push({
+        page: page.name,
+        path: page.path,
+        detail: `HTTP ${res ? res.status() : "no response"}`,
+      });
       await ctx.close();
       continue;
     }
     // Give injected layers (supports, chrome docks, FX) a chance to mount.
     await tab.waitForTimeout(1500);
 
-    const results = await new AxeBuilder({ page: tab }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
+    const results = await new AxeBuilder({ page: tab })
+      .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
+      .analyze();
     for (const v of results.violations) {
       if (MUTED_RULES.has(v.id)) continue;
       // axe cannot compute contrast against a gradient: it walks up to the
@@ -111,7 +119,10 @@ for (const page of PAGES) {
       const realNodes = v.nodes.filter((n) => !reviewNodes.includes(n));
       if (reviewNodes.length) {
         manualReview.push({
-          page: page.name, path: page.path, id: v.id, nodes: reviewNodes.length,
+          page: page.name,
+          path: page.path,
+          id: v.id,
+          nodes: reviewNodes.length,
           sample: (reviewNodes[0]?.html || "").slice(0, 120),
           why: "sits over a gradient — axe reported the nearest solid ancestor colour",
         });
@@ -153,7 +164,8 @@ for (const page of PAGES) {
           const sel = r.selectorText || "";
           if (/:focus(-visible)?/.test(sel)) hasFocusStyle = true;
           const outline = r.style?.outline ?? r.style?.getPropertyValue?.("outline") ?? "";
-          if (/^(none|0)/.test(String(outline).trim()) && !/:focus-visible/.test(sel)) suppressesOutline = true;
+          if (/^(none|0)/.test(String(outline).trim()) && !/:focus-visible/.test(sel))
+            suppressesOutline = true;
         }
       }
       const positiveTabindex = [...document.querySelectorAll("[tabindex]")].filter(
@@ -172,7 +184,10 @@ await browser.close();
 
 /* ------------------------------------------------------------------ report */
 
-findings.sort((a, b) => (IMPACT_ORDER[a.impact] ?? 9) - (IMPACT_ORDER[b.impact] ?? 9) || a.page.localeCompare(b.page));
+findings.sort(
+  (a, b) =>
+    (IMPACT_ORDER[a.impact] ?? 9) - (IMPACT_ORDER[b.impact] ?? 9) || a.page.localeCompare(b.page),
+);
 
 const byRule = new Map();
 for (const f of findings) {
@@ -190,7 +205,9 @@ lines.push(`# Accessibility audit — ${new Date().toISOString().slice(0, 10)}`)
 lines.push("");
 lines.push(`Target: \`${BASE}\` · ${PAGES.length} pages · axe-core WCAG 2.1 A/AA`);
 lines.push("");
-lines.push(`**${findings.length}** violations — critical ${counts.critical || 0}, serious ${counts.serious || 0}, moderate ${counts.moderate || 0}, minor ${counts.minor || 0}.`);
+lines.push(
+  `**${findings.length}** violations — critical ${counts.critical || 0}, serious ${counts.serious || 0}, moderate ${counts.moderate || 0}, minor ${counts.minor || 0}.`,
+);
 lines.push("");
 lines.push(`Muted as cosmetic: \`${[...MUTED_RULES].join("`, `")}\`.`);
 lines.push("");
@@ -200,7 +217,10 @@ lines.push("");
 if (byRule.size) {
   lines.push("| Impact | Rule | Elements | Pages | What it means |");
   lines.push("| --- | --- | ---: | ---: | --- |");
-  for (const r of [...byRule.values()].sort((a, b) => (IMPACT_ORDER[a.impact] ?? 9) - (IMPACT_ORDER[b.impact] ?? 9) || b.totalNodes - a.totalNodes)) {
+  for (const r of [...byRule.values()].sort(
+    (a, b) =>
+      (IMPACT_ORDER[a.impact] ?? 9) - (IMPACT_ORDER[b.impact] ?? 9) || b.totalNodes - a.totalNodes,
+  )) {
     lines.push(`| ${r.impact} | \`${r.id}\` | ${r.totalNodes} | ${r.pages.size} | ${r.help} |`);
   }
 } else {
@@ -229,8 +249,12 @@ lines.push("| --- | ---: | --- | ---: |");
 for (const k of keyboard) {
   // Suppressing the UA ring is only a defect when nothing replaces it.
   const focusState = k.hasFocusStyle
-    ? (k.suppressesOutline ? "custom (UA ring replaced)" : "custom")
-    : (k.suppressesOutline ? "**NONE — focus is invisible**" : "browser default");
+    ? k.suppressesOutline
+      ? "custom (UA ring replaced)"
+      : "custom"
+    : k.suppressesOutline
+      ? "**NONE — focus is invisible**"
+      : "browser default";
   lines.push(`| ${k.page} | ${k.focusable} | ${focusState} | ${k.positiveTabindex || 0} |`);
 }
 lines.push("");
@@ -248,7 +272,10 @@ for (const page of PAGES) {
   if (!own.length) continue;
   lines.push(`### ${page.name} — \`${page.path}\``);
   lines.push("");
-  for (const f of own) lines.push(`- **${f.impact}** \`${f.id}\` (${f.nodes} element${f.nodes === 1 ? "" : "s"}) — ${f.help}\n  - e.g. \`${f.sample.replace(/`/g, "'")}\``);
+  for (const f of own)
+    lines.push(
+      `- **${f.impact}** \`${f.id}\` (${f.nodes} element${f.nodes === 1 ? "" : "s"}) — ${f.help}\n  - e.g. \`${f.sample.replace(/`/g, "'")}\``,
+    );
   lines.push("");
 }
 
@@ -263,7 +290,10 @@ mkdirSync("reports", { recursive: true });
 writeFileSync("reports/a11y-audit.md", lines.join("\n"));
 
 console.log("✓ reports/a11y-audit.md");
-console.log(`  ${findings.length} violations across ${PAGES.length - errors.length} pages · ${byRule.size} distinct rules`);
+console.log(
+  `  ${findings.length} violations across ${PAGES.length - errors.length} pages · ${byRule.size} distinct rules`,
+);
 const blindFocus = keyboard.filter((k) => k.suppressesOutline && !k.hasFocusStyle);
-if (blindFocus.length) console.log(`  ⚠ ${blindFocus.length} page(s) suppress the focus ring without replacing it`);
+if (blindFocus.length)
+  console.log(`  ⚠ ${blindFocus.length} page(s) suppress the focus ring without replacing it`);
 if (errors.length) console.log(`  ⚠ ${errors.length} page(s) could not be loaded`);

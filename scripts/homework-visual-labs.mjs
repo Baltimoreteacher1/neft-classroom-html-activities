@@ -19,91 +19,133 @@ const LABS = {
     nameEs: "Constructor de exponentes",
     prompt: "Change the base and exponent. Watch repeated multiplication grow.",
     promptEs: "Cambia la base y el exponente. Observa cómo crece la multiplicación repetida.",
-    controls: [["base", "Base", "Base", 2, 5, 2], ["power", "Exponent", "Exponente", 1, 4, 3]],
+    controls: [
+      ["base", "Base", "Base", 2, 5, 2],
+      ["power", "Exponent", "Exponente", 1, 4, 3],
+    ],
   },
   ratios: {
     name: "Ratio Mixer",
     nameEs: "Mezclador de razones",
     prompt: "Build equivalent batches and compare the two colors.",
     promptEs: "Construye lotes equivalentes y compara los dos colores.",
-    controls: [["batches", "Batches", "Lotes", 1, 5, 2], ["blue", "Blue per batch", "Azules por lote", 1, 4, 2]],
+    controls: [
+      ["batches", "Batches", "Lotes", 1, 5, 2],
+      ["blue", "Blue per batch", "Azules por lote", 1, 4, 2],
+    ],
   },
   equations: {
     name: "Balance the Equation",
     nameEs: "Equilibra la ecuación",
     prompt: "Change the unknown and the added blocks. Both pans stay equal.",
     promptEs: "Cambia la incógnita y los bloques añadidos. Ambos lados quedan iguales.",
-    controls: [["unknown", "Unknown x", "Incógnita x", 1, 12, 5], ["add", "Add to x", "Suma a x", 1, 10, 3]],
+    controls: [
+      ["unknown", "Unknown x", "Incógnita x", 1, 12, 5],
+      ["add", "Add to x", "Suma a x", 1, 10, 3],
+    ],
   },
   inequalities: {
     name: "Inequality Number Line",
     nameEs: "Recta de desigualdades",
     prompt: "Move the boundary and test a point in the shaded solution set.",
     promptEs: "Mueve el límite y prueba un punto en el conjunto sombreado.",
-    controls: [["boundary", "Boundary", "Límite", -5, 5, 1], ["test", "Test point", "Punto de prueba", -5, 5, 3]],
+    controls: [
+      ["boundary", "Boundary", "Límite", -5, 5, 1],
+      ["test", "Test point", "Punto de prueba", -5, 5, 3],
+    ],
   },
   properties: {
     name: "Distributive Array",
     nameEs: "Arreglo distributivo",
     prompt: "Split one array into two parts without changing its total area.",
     promptEs: "Divide un arreglo en dos partes sin cambiar su área total.",
-    controls: [["rows", "Rows", "Filas", 1, 6, 3], ["left", "Left columns", "Columnas izquierdas", 1, 6, 2], ["right", "Right columns", "Columnas derechas", 1, 6, 3]],
+    controls: [
+      ["rows", "Rows", "Filas", 1, 6, 3],
+      ["left", "Left columns", "Columnas izquierdas", 1, 6, 2],
+      ["right", "Right columns", "Columnas derechas", 1, 6, 3],
+    ],
   },
   expressions: {
     name: "Algebra Tile Builder",
     nameEs: "Constructor de fichas algebraicas",
     prompt: "Change the coefficient and constant to build an expression.",
     promptEs: "Cambia el coeficiente y la constante para construir una expresión.",
-    controls: [["coefficient", "x tiles", "Fichas x", 1, 6, 3], ["constant", "Unit tiles", "Fichas de unidad", 0, 10, 5]],
+    controls: [
+      ["coefficient", "x tiles", "Fichas x", 1, 6, 3],
+      ["constant", "Unit tiles", "Fichas de unidad", 0, 10, 5],
+    ],
   },
   area: {
     name: "Area Grid",
     nameEs: "Cuadrícula de área",
     prompt: "Resize the rectangle. Count rows and columns of square units.",
     promptEs: "Cambia el rectángulo. Cuenta filas y columnas de unidades cuadradas.",
-    controls: [["width", "Width", "Ancho", 1, 10, 6], ["height", "Height", "Altura", 1, 7, 4]],
+    controls: [
+      ["width", "Width", "Ancho", 1, 10, 6],
+      ["height", "Height", "Altura", 1, 7, 4],
+    ],
   },
   volume: {
     name: "Volume Layer Builder",
     nameEs: "Constructor de capas de volumen",
     prompt: "Resize a prism and see how many unit cubes fill each layer.",
     promptEs: "Cambia un prisma y observa cuántos cubos llenan cada capa.",
-    controls: [["length", "Length", "Largo", 1, 6, 4], ["width", "Width", "Ancho", 1, 5, 3], ["height", "Layers", "Capas", 1, 5, 2]],
+    controls: [
+      ["length", "Length", "Largo", 1, 6, 4],
+      ["width", "Width", "Ancho", 1, 5, 3],
+      ["height", "Layers", "Capas", 1, 5, 2],
+    ],
   },
   "surface-area": {
     name: "Prism Net Studio",
     nameEs: "Estudio de redes de prismas",
     prompt: "Resize the prism. Watch all six faces change in its net.",
     promptEs: "Cambia el prisma. Observa cómo cambian las seis caras de su red.",
-    controls: [["length", "Length", "Largo", 1, 6, 4], ["width", "Width", "Ancho", 1, 5, 3], ["height", "Height", "Altura", 1, 5, 2]],
+    controls: [
+      ["length", "Length", "Largo", 1, 6, 4],
+      ["width", "Width", "Ancho", 1, 5, 3],
+      ["height", "Height", "Altura", 1, 5, 2],
+    ],
   },
   statistics: {
     name: "Data Shape Studio",
     nameEs: "Estudio de forma de datos",
     prompt: "Change the center and spread. Watch the dot plot reshape.",
     promptEs: "Cambia el centro y la dispersión. Observa cómo cambia el diagrama.",
-    controls: [["center", "Center", "Centro", 3, 8, 5], ["spread", "Spread", "Dispersión", 1, 4, 2]],
+    controls: [
+      ["center", "Center", "Centro", 3, 8, 5],
+      ["spread", "Spread", "Dispersión", 1, 4, 2],
+    ],
   },
   "coordinate-plane": {
     name: "Coordinate Mover",
     nameEs: "Punto móvil de coordenadas",
     prompt: "Move x and y. Track the ordered pair across the four quadrants.",
     promptEs: "Mueve x y y. Sigue el par ordenado por los cuatro cuadrantes.",
-    controls: [["x", "x-coordinate", "Coordenada x", -5, 5, 3], ["y", "y-coordinate", "Coordenada y", -5, 5, 2]],
+    controls: [
+      ["x", "x-coordinate", "Coordenada x", -5, 5, 3],
+      ["y", "y-coordinate", "Coordenada y", -5, 5, 2],
+    ],
   },
   "number-line": {
     name: "Integer Number Line",
     nameEs: "Recta de enteros",
     prompt: "Move the point and change its distance from zero.",
     promptEs: "Mueve el punto y cambia su distancia desde cero.",
-    controls: [["point", "Point", "Punto", -10, 10, -4], ["jump", "Jump", "Salto", -5, 5, 3]],
+    controls: [
+      ["point", "Point", "Punto", -10, 10, -4],
+      ["jump", "Jump", "Salto", -5, 5, 3],
+    ],
   },
   fractions: {
     name: "Fraction Bar Builder",
     nameEs: "Constructor de barras de fracciones",
     prompt: "Change the numerator and denominator. Watch the part-whole model.",
     promptEs: "Cambia el numerador y el denominador. Observa el modelo parte-todo.",
-    controls: [["numerator", "Numerator", "Numerador", 0, 12, 3], ["denominator", "Denominator", "Denominador", 2, 12, 4]],
+    controls: [
+      ["numerator", "Numerator", "Numerador", 0, 12, 3],
+      ["denominator", "Denominator", "Denominador", 2, 12, 4],
+    ],
   },
   decimals: {
     name: "Hundred Grid",
@@ -117,14 +159,20 @@ const LABS = {
     nameEs: "Laboratorio de arreglos de factores",
     prompt: "Arrange dots in equal rows. A complete rectangle shows a factor pair.",
     promptEs: "Ordena puntos en filas iguales. Un rectángulo completo muestra un par de factores.",
-    controls: [["number", "Number of dots", "Número de puntos", 2, 36, 24], ["columns", "Columns", "Columnas", 1, 12, 6]],
+    controls: [
+      ["number", "Number of dots", "Número de puntos", 2, 36, 24],
+      ["columns", "Columns", "Columnas", 1, 12, 6],
+    ],
   },
   fallback: {
     name: "Math Model Builder",
     nameEs: "Constructor de modelos matemáticos",
     prompt: "Change the groups and items. Explain what stays the same.",
     promptEs: "Cambia los grupos y los objetos. Explica qué permanece igual.",
-    controls: [["groups", "Groups", "Grupos", 1, 6, 3], ["items", "Items per group", "Objetos por grupo", 1, 8, 4]],
+    controls: [
+      ["groups", "Groups", "Grupos", 1, 6, 3],
+      ["items", "Items per group", "Objetos por grupo", 1, 8, 4],
+    ],
   },
 };
 
@@ -141,15 +189,22 @@ function initialPreview() {
 function renderSharedLessonModel(topic, config, lessonModel) {
   const kind = lessonModel.kind || "interactive model";
   const isFactorTree = kind === "factor-tree" || kind === "factor-tree-lab";
-  const modelName = lessonModel.title || (isFactorTree ? "Factor Tree Builder" : "Interactive Lesson Model");
-  const modelNameEs = isFactorTree ? "Constructor de árboles de factores" : "Modelo interactivo de la lección";
+  const modelName =
+    lessonModel.title || (isFactorTree ? "Factor Tree Builder" : "Interactive Lesson Model");
+  const modelNameEs = isFactorTree
+    ? "Constructor de árboles de factores"
+    : "Modelo interactivo de la lección";
   const prompt = isFactorTree
     ? "Enter two factors for each composite circle. Keep splitting until every leaf is prime."
     : "Use the same interactive model from the lesson. Change it, notice the pattern, and explain what the model shows.";
   const promptEs = isFactorTree
     ? "Escribe dos factores para cada círculo compuesto. Sigue dividiendo hasta que cada hoja sea prima."
     : "Usa el mismo modelo interactivo de la lección. Cámbialo, observa el patrón y explica lo que muestra.";
-  const idea = config.launch?.conceptIntro?.keyIdea || config.explore?.conceptIntro?.keyIdea || config.contentObjective || config.title;
+  const idea =
+    config.launch?.conceptIntro?.keyIdea ||
+    config.explore?.conceptIntro?.keyIdea ||
+    config.contentObjective ||
+    config.title;
 
   return `<section class="family-visual-lab" data-visual-lab="${esc(topic)}" data-lesson-model="${esc(kind)}" aria-labelledby="visual_lab_title">
     <div class="visual-lab-heading">
@@ -171,13 +226,25 @@ export function renderVisualMathLab(topic, config, lessonModel = null) {
   const lab = LABS[topic] || LABS.fallback;
   const controls = lab.controls
     .map(
-      ([key, en, es, min, max, value]) => `<label class="visual-lab-control" for="visual_${esc(key)}">
+      ([
+        key,
+        en,
+        es,
+        min,
+        max,
+        value,
+      ]) => `<label class="visual-lab-control" for="visual_${esc(key)}">
         <span class="visual-lab-control-label"><span class="lang-en">${esc(en)}</span><span class="lang-es" lang="es">${esc(es)}</span> <output data-lab-output="${esc(key)}">${value}</output></span>
         <input id="visual_${esc(key)}" type="range" min="${min}" max="${max}" value="${value}" step="1" data-lab-input="${esc(key)}" />
       </label>`,
     )
     .join("");
-  const idea = config.launch?.conceptIntro?.keyIdea || config.explore?.conceptIntro?.keyIdea || config.contentObjective || config.title || "Explain what changes and what stays the same.";
+  const idea =
+    config.launch?.conceptIntro?.keyIdea ||
+    config.explore?.conceptIntro?.keyIdea ||
+    config.contentObjective ||
+    config.title ||
+    "Explain what changes and what stays the same.";
 
   return `<section class="family-visual-lab" data-visual-lab="${esc(topic)}" aria-labelledby="visual_lab_title">
     <div class="visual-lab-heading">

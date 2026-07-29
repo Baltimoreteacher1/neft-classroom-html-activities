@@ -13,27 +13,27 @@
 // Run: node scripts/generate-mcap-packets.mjs
 //      npm run generate-mcap
 
-import { writeFileSync, mkdirSync, existsSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import {
-  Document,
-  Packer,
-  Paragraph,
-  TextRun,
-  HeadingLevel,
   AlignmentType,
   BorderStyle,
-  PageNumber,
-  Header,
+  Document,
   Footer,
-  Table,
-  TableRow,
-  TableCell,
-  WidthType,
+  Header,
+  HeadingLevel,
+  Packer,
+  PageNumber,
+  Paragraph,
   ShadingType,
+  Table,
+  TableCell,
+  TableRow,
+  TextRun,
+  WidthType,
 } from "docx";
-import { DOMAINS, ALL_SKILLS, skillFileSlug } from "../mcap-review/data/mcap-skills.mjs";
+import { ALL_SKILLS, DOMAINS, skillFileSlug } from "../mcap-review/data/mcap-skills.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");

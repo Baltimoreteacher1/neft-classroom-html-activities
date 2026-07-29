@@ -38,7 +38,12 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, isAbsolute, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { buildDocument, buildNoteHTML, buildWeeklyDigest, summarizeGrades } from "./lib/parent-note.mjs";
+import {
+  buildDocument,
+  buildNoteHTML,
+  buildWeeklyDigest,
+  summarizeGrades,
+} from "./lib/parent-note.mjs";
 
 const REPO = resolve(join(dirname(fileURLToPath(import.meta.url)), ".."));
 const DEFAULT_SITE = process.env.NEFT_SITE || "https://eduwonderlab.com";
@@ -47,7 +52,8 @@ function parseArgs(argv) {
   const a = { flags: new Set() };
   for (let i = 0; i < argv.length; i++) {
     const t = argv[i];
-    if (["--source", "--site", "--key", "--fixture", "--section", "--out"].includes(t)) a[t.slice(2)] = argv[++i];
+    if (["--source", "--site", "--key", "--fixture", "--section", "--out"].includes(t))
+      a[t.slice(2)] = argv[++i];
     else if (t.startsWith("--")) a.flags.add(t.slice(2));
     else throw new Error(`Unexpected argument: ${t}`);
   }
@@ -55,7 +61,12 @@ function parseArgs(argv) {
 }
 
 function slug(s) {
-  return String(s || "student").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "student";
+  return (
+    String(s || "student")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "") || "student"
+  );
 }
 
 /** Refuse output paths inside the repo (unless a dot-dir or --force) so PII never gets committed. */
@@ -80,7 +91,8 @@ async function fetchGrades(site, key, section) {
   if (section) qs.set("section", section);
   const r = await fetch(`${site}/api/progress/grades?${qs}`, { headers: { "x-teacher-key": key } });
   if (r.status === 401) throw new Error("Unauthorized (401): wrong teacher key.");
-  if (r.status === 503) throw new Error("Gradebook not configured on the server (TEACHER_KEY unset).");
+  if (r.status === 503)
+    throw new Error("Gradebook not configured on the server (TEACHER_KEY unset).");
   if (!r.ok) throw new Error(`grades request failed: HTTP ${r.status}`);
   const d = await r.json();
   if (!d.ok) throw new Error(`grades error: ${d.error || "unknown"}`);
@@ -117,7 +129,9 @@ function readDigestFixture(path) {
 function readHomeworkMap() {
   try {
     const src = readFileSync(join(REPO, "curriculum", "lesson-family-homework.js"), "utf8");
-    return new Function(`const window = {}; ${src}; return window.LESSON_FAMILY_HOMEWORK || null;`)();
+    return new Function(
+      `const window = {}; ${src}; return window.LESSON_FAMILY_HOMEWORK || null;`,
+    )();
   } catch {
     return null; // digest simply omits the 5-minute activity link
   }
@@ -148,7 +162,10 @@ async function main() {
     process.exit(1);
   }
 
-  const outDir = guardOut(a.out || join(tmpdir(), `neft-parent-notes-${date}`), a.flags.has("force"));
+  const outDir = guardOut(
+    a.out || join(tmpdir(), `neft-parent-notes-${date}`),
+    a.flags.has("force"),
+  );
   if (!existsSync(outDir)) mkdirSync(outDir, { recursive: true });
 
   const notes = summaries.map((s) => buildNoteHTML(s, { date }));
@@ -159,7 +176,10 @@ async function main() {
     let base = slug(`${s.name}-${s.section}`);
     seen.set(base, (seen.get(base) || 0) + 1);
     if (seen.get(base) > 1) base += `-${seen.get(base)}`;
-    writeFileSync(join(outDir, `note-${base}.html`), buildDocument([buildNoteHTML(s, { date })], { title: s.name, date }));
+    writeFileSync(
+      join(outDir, `note-${base}.html`),
+      buildDocument([buildNoteHTML(s, { date })], { title: s.name, date }),
+    );
   }
 
   process.stdout.write(
@@ -190,7 +210,10 @@ async function weeklyMain(a, source, site, date) {
     process.exit(1);
   }
 
-  const outDir = guardOut(a.out || join(tmpdir(), `neft-weekly-digest-${date}`), a.flags.has("force"));
+  const outDir = guardOut(
+    a.out || join(tmpdir(), `neft-weekly-digest-${date}`),
+    a.flags.has("force"),
+  );
   if (!existsSync(outDir)) mkdirSync(outDir, { recursive: true });
 
   const homeworkMap = readHomeworkMap();
@@ -198,7 +221,10 @@ async function weeklyMain(a, source, site, date) {
   const title = `Weekly Family Digest${a.section ? ` — ${a.section}` : ""}`;
   writeFileSync(
     join(outDir, "index.html"),
-    buildDocument(students.map((s) => buildWeeklyDigest(s, opts)), { title, date }),
+    buildDocument(
+      students.map((s) => buildWeeklyDigest(s, opts)),
+      { title, date },
+    ),
   );
   const seen = new Map();
   for (const s of students) {

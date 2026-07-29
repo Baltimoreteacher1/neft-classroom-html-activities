@@ -15,8 +15,8 @@
  * USAGE: node tools/audit-save-resume-integration.js
  * ========================================================================== */
 
-import { readdirSync, statSync, readFileSync, existsSync } from "fs";
-import { join, relative, sep, dirname } from "path";
+import { existsSync, readdirSync, readFileSync, statSync } from "fs";
+import { dirname, join, relative, sep } from "path";
 import { fileURLToPath } from "url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -24,13 +24,13 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 // Skip rules + ref/marker strings are shared with the injector via one module,
 // so the audit can never drift out of sync with what inject-save-resume.js does.
 import {
-  MARK,
   CSS_REF,
   JS_REF,
+  MARK,
   SKIP_DIRS,
-  SKIP_TOPLEVEL,
   SKIP_FILE_RE,
   SKIP_PATH_RE,
+  SKIP_TOPLEVEL,
 } from "./save-resume-config.js";
 
 const issues = [];

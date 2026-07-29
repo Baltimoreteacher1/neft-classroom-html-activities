@@ -92,7 +92,9 @@ function printPreview(questions, section, scopeSpec) {
       const mark = ci === q.correctIndex ? " ✅" : "";
       process.stdout.write(`       ${LETTERS[ci]}) ${c}${mark}\n`);
     });
-    process.stdout.write(`       ↳ answer: ${LETTERS[q.correctIndex]} · ${q.standard} · ${q.lessonTitle}\n`);
+    process.stdout.write(
+      `       ↳ answer: ${LETTERS[q.correctIndex]} · ${q.standard} · ${q.lessonTitle}\n`,
+    );
     if (q.explanation) process.stdout.write(`       ↳ ${q.explanation}\n`);
     process.stdout.write("\n");
   });
@@ -133,7 +135,9 @@ async function main() {
   }
 
   if (a.flags.has("json")) {
-    process.stdout.write(`${JSON.stringify({ section, scope: scopeSpec, seed, questions }, null, 2)}\n`);
+    process.stdout.write(
+      `${JSON.stringify({ section, scope: scopeSpec, seed, questions }, null, 2)}\n`,
+    );
     return;
   }
 
@@ -172,7 +176,9 @@ async function main() {
   const state = current.state;
   // Merge ONLY the warm-up surfaces; preserve every other panel.
   state.focus = { ...(state.focus || {}), ...focus };
-  const kept = (state.notes || []).filter((n) => !(n && typeof n.text === "string" && n.text.startsWith(DONOW_MARK)));
+  const kept = (state.notes || []).filter(
+    (n) => !(n && typeof n.text === "string" && n.text.startsWith(DONOW_MARK)),
+  );
   state.notes = [...notes, ...kept];
 
   const res = await publishBoard(site, section, state, key);

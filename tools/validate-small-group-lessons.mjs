@@ -43,7 +43,10 @@ function assertCopyQuality(config, id) {
   const scan = (value) => {
     if (typeof value === "string") {
       const m = value.match(BANNED_RE);
-      if (m) fail(`${id} student copy uses flagged AI-filler word "${m[1]}" (see LESSON_PRODUCT_FACTORY.md). Rewrite in plain teacher voice.`);
+      if (m)
+        fail(
+          `${id} student copy uses flagged AI-filler word "${m[1]}" (see LESSON_PRODUCT_FACTORY.md). Rewrite in plain teacher voice.`,
+        );
     } else if (Array.isArray(value)) {
       value.forEach(scan);
     } else if (value && typeof value === "object") {

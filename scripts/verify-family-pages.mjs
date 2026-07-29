@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -89,7 +89,17 @@ if (!existsSync(dataPath)) {
     }
 
     for (const lesson of familyLessons) {
-      for (const field of ["lessonId", "title", "standard", "objective", "languageObjective", "unit", "unitName", "topic", "resources"]) {
+      for (const field of [
+        "lessonId",
+        "title",
+        "standard",
+        "objective",
+        "languageObjective",
+        "unit",
+        "unitName",
+        "topic",
+        "resources",
+      ]) {
         if (lesson[field] === undefined || lesson[field] === null || lesson[field] === "") {
           fail(`Lesson ${lesson.lessonId || "(unknown)"} is missing data field ${field}`);
         }
@@ -97,7 +107,10 @@ if (!existsSync(dataPath)) {
       if (!Array.isArray(lesson.resources)) {
         fail(`Lesson ${lesson.lessonId || "(unknown)"} resources must be an array`);
       }
-      if (lesson.lessonId?.endsWith("-flagship") && lesson.variantLabel !== "Flagship / Enrichment Version") {
+      if (
+        lesson.lessonId?.endsWith("-flagship") &&
+        lesson.variantLabel !== "Flagship / Enrichment Version"
+      ) {
         fail(`Lesson ${lesson.lessonId} must use the exact flagship label`);
       }
     }
@@ -110,7 +123,11 @@ if (!existsSync(indexPath)) {
 } else {
   const indexHtml = readFileSync(indexPath, "utf8");
   assertIncludes(indexHtml, "Family Math Support", "families/index.html");
-  assertIncludes(indexHtml, "Grade 6 Math help for families, parents, and guardians.", "families/index.html");
+  assertIncludes(
+    indexHtml,
+    "Grade 6 Math help for families, parents, and guardians.",
+    "families/index.html",
+  );
   assertIncludes(indexHtml, "family-search", "families/index.html");
   assertIncludes(indexHtml, "unit-filter", "families/index.html");
   assertIncludes(indexHtml, "topic-filter", "families/index.html");

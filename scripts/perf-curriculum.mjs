@@ -120,8 +120,7 @@ async function measure() {
       // Uncompressed weight the browser must actually parse — the number that
       // drives main-thread time on a low-end Chromebook.
       decodedKb: Math.round(
-        (resources.reduce((s, r) => s + (r.decodedBodySize || 0), 0) +
-          (nav.decodedBodySize || 0)) /
+        (resources.reduce((s, r) => s + (r.decodedBodySize || 0), 0) + (nav.decodedBodySize || 0)) /
           1024,
       ),
     };
@@ -171,7 +170,9 @@ const run = await measure();
 console.log(`\nperf — /curriculum/ (${run.target})`);
 console.log(`  LCP                 ${run.lcp ?? "n/a"} ms      (budget ${BUDGET.lcp})`);
 console.log(`  FCP                 ${run.fcp ?? "n/a"} ms`);
-console.log(`  DOMContentLoaded    ${run.domContentLoaded} ms      (budget ${BUDGET.domContentLoaded})`);
+console.log(
+  `  DOMContentLoaded    ${run.domContentLoaded} ms      (budget ${BUDGET.domContentLoaded})`,
+);
 console.log(`  transfer            ${run.transferKb} KB      (budget ${BUDGET.transferKb})`);
 console.log(`  decoded             ${run.decodedKb} KB      (budget ${BUDGET.decodedKb})`);
 console.log(`  requests            ${run.requests}         (budget ${BUDGET.requests})`);

@@ -9,7 +9,7 @@
 //
 // Idempotent: re-running with no data change rewrites byte-identical output.
 import { writeFileSync } from "fs";
-import { join, dirname } from "path";
+import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import { GAMES_2D } from "./data.mjs";
 

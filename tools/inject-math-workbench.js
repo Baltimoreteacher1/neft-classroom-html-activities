@@ -12,8 +12,8 @@
  *   node tools/inject-math-workbench.js --dry-run  # report only
  *   node tools/inject-math-workbench.js --revert   # remove the injected blocks
  */
-import { readdirSync, statSync, readFileSync, writeFileSync } from "fs";
-import { join, relative, sep, dirname } from "path";
+import { readdirSync, readFileSync, statSync, writeFileSync } from "fs";
+import { dirname, join, relative, sep } from "path";
 import { fileURLToPath } from "url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");

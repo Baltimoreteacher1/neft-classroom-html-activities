@@ -50,8 +50,10 @@ async function enterTeacherMode(page: Page) {
  * way to judge a student-mode leak.
  */
 async function freshStudentSession(page: Page) {
-  await page.goto("/curriculum/");
-  await page.evaluate(() => {
+  // Clear storage before any hub script runs. Clearing after the first load
+  // and reloading let Chromium restore transient <details open> state under
+  // heavy parallel load, which produced two different mobile screenshots.
+  await page.addInitScript(() => {
     try {
       localStorage.clear();
       sessionStorage.clear();
@@ -59,7 +61,7 @@ async function freshStudentSession(page: Page) {
       /* blocked storage is already a clean slate */
     }
   });
-  await page.reload();
+  await page.goto("/curriculum/");
 }
 
 /**

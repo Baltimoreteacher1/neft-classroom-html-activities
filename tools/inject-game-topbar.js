@@ -11,7 +11,7 @@
  * Run: node tools/inject-game-topbar.js
  */
 import { readFileSync, writeFileSync } from "fs";
-import { resolve, join, dirname } from "path";
+import { dirname, join, resolve } from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));

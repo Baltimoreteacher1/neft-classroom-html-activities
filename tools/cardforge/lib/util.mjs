@@ -1,5 +1,5 @@
 // CardForge shared utilities. No external dependencies — Node ESM only.
-import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -30,7 +30,7 @@ export function slugify(s) {
     .replace(/^-+|-+$/g, "");
 }
 
-export { existsSync, readFileSync, readdirSync, resolve };
+export { existsSync, readdirSync, readFileSync, resolve };
 
 // Generic AI-slop phrases CardForge flags in any teacher/student-facing prose.
 export const AI_SLOP_PHRASES = [

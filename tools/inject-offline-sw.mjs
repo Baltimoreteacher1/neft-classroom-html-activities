@@ -21,7 +21,7 @@
  *   node tools/inject-offline-sw.mjs --check    # verify status (exit 1 on gap)
  * ========================================================================== */
 
-import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 

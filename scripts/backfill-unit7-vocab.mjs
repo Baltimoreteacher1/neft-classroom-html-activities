@@ -4,8 +4,8 @@
 // terms (bilingual term/def + a `visual` caption + a cloze) consistent with the
 // lesson's standard. Idempotent: skips any term already present (by term name).
 import { readFileSync, writeFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 

@@ -1,11 +1,11 @@
-import { renderThemeIllustration } from "./theme-illustrations.js";
 import {
-  PHASE_TIME_ESTIMATES,
   countPracticeProblems,
   deriveLaunchBeats,
+  PHASE_TIME_ESTIMATES,
 } from "./content-enrichment.js";
+import { badgeName, phaseName, stackHtml, t } from "./i18n.js";
 import { renderMathText } from "./math-typography.js";
-import { t, stackHtml, phaseName, badgeName } from "./i18n.js";
+import { renderThemeIllustration } from "./theme-illustrations.js";
 
 function esc(s) {
   const d = document.createElement("div");

@@ -1,8 +1,8 @@
 // Generate all 5 mission pages for The Almost-Right Lab
 // Run: node generate_missions.mjs (from repo root, but written as one-off script)
-import { writeFileSync, mkdirSync } from 'fs';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+import { mkdirSync, writeFileSync } from "fs";
+import { dirname, join } from "path";
+import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -16,7 +16,8 @@ const MISSIONS = [
     badgeId: "mission-1",
     badgeEmoji: "🔧",
     badgeName: "Addition Fixer",
-    intro: "Your creature just tried to solve an addition equation — but made a classic mistake. When the creature sees addition, it thinks it should add MORE. Let's teach it the right move.",
+    intro:
+      "Your creature just tried to solve an addition equation — but made a classic mistake. When the creature sees addition, it thinks it should add MORE. Let's teach it the right move.",
     misconceptionLabel: "adds instead of subtracting",
     creature: {
       equation: "x + 7 = 19",
@@ -37,17 +38,25 @@ const MISSIONS = [
     ruleShort: "Undo addition → subtract",
     checkExplanation: "Substitute x = 12 back in: 12 + 7 = 19. ✓ Both sides match!",
     practice: [
-      { equation: "x + 5 = 17", answer: 12,  checkEq: "12 + 5 = 17 ✓" },
-      { equation: "x + 8 = 23", answer: 15,  checkEq: "15 + 8 = 23 ✓" },
+      { equation: "x + 5 = 17", answer: 12, checkEq: "12 + 5 = 17 ✓" },
+      { equation: "x + 8 = 23", answer: 15, checkEq: "15 + 8 = 23 ✓" },
       { equation: "x + 11 = 30", answer: 19, checkEq: "19 + 11 = 30 ✓" },
     ],
     creatureRetry: {
       equation: "x + 4 = 13",
       steps: ["x + 4 = 13", "x = 13 − 4", "x = 9"],
       answer: "9",
-      check: "9 + 4 = 13 ✓"
+      check: "9 + 4 = 13 ✓",
     },
-    vocab: ["equation","variable","inverse operation","subtract","balance","check","solution"],
+    vocab: [
+      "equation",
+      "variable",
+      "inverse operation",
+      "subtract",
+      "balance",
+      "check",
+      "solution",
+    ],
   },
   {
     id: "mission-2",
@@ -58,7 +67,8 @@ const MISSIONS = [
     badgeId: "mission-2",
     badgeEmoji: "🔄",
     badgeName: "Subtraction Coach",
-    intro: "Your creature tried to solve a subtraction equation — and went the wrong way. It subtracted MORE instead of adding back. Time to coach!",
+    intro:
+      "Your creature tried to solve a subtraction equation — and went the wrong way. It subtracted MORE instead of adding back. Time to coach!",
     misconceptionLabel: "subtracts more instead of adding",
     creature: {
       equation: "x − 6 = 11",
@@ -79,17 +89,17 @@ const MISSIONS = [
     ruleShort: "Undo subtraction → add",
     checkExplanation: "Substitute x = 17 back in: 17 − 6 = 11. ✓ Both sides match!",
     practice: [
-      { equation: "x − 4 = 9",   answer: 13, checkEq: "13 − 4 = 9 ✓" },
-      { equation: "x − 7 = 15",  answer: 22, checkEq: "22 − 7 = 15 ✓" },
+      { equation: "x − 4 = 9", answer: 13, checkEq: "13 − 4 = 9 ✓" },
+      { equation: "x − 7 = 15", answer: 22, checkEq: "22 − 7 = 15 ✓" },
       { equation: "x − 12 = 18", answer: 30, checkEq: "30 − 12 = 18 ✓" },
     ],
     creatureRetry: {
       equation: "x − 5 = 8",
       steps: ["x − 5 = 8", "x = 8 + 5", "x = 13"],
       answer: "13",
-      check: "13 − 5 = 8 ✓"
+      check: "13 − 5 = 8 ✓",
     },
-    vocab: ["equation","variable","inverse operation","add","balance","check","solution"],
+    vocab: ["equation", "variable", "inverse operation", "add", "balance", "check", "solution"],
   },
   {
     id: "mission-3",
@@ -100,7 +110,8 @@ const MISSIONS = [
     badgeId: "mission-3",
     badgeEmoji: "🦁",
     badgeName: "Monster Tamer",
-    intro: "Uh oh! The creature sees multiplication and thinks — multiply MORE. But that just makes x bigger and bigger. Teach it that dividing is the way to undo multiplication.",
+    intro:
+      "Uh oh! The creature sees multiplication and thinks — multiply MORE. But that just makes x bigger and bigger. Teach it that dividing is the way to undo multiplication.",
     misconceptionLabel: "multiplies instead of dividing",
     creature: {
       equation: "4x = 28",
@@ -129,9 +140,18 @@ const MISSIONS = [
       equation: "6x = 42",
       steps: ["6x = 42", "x = 42 ÷ 6", "x = 7"],
       answer: "7",
-      check: "6 × 7 = 42 ✓"
+      check: "6 × 7 = 42 ✓",
     },
-    vocab: ["equation","variable","inverse operation","multiply","divide","balance","check","solution"],
+    vocab: [
+      "equation",
+      "variable",
+      "inverse operation",
+      "multiply",
+      "divide",
+      "balance",
+      "check",
+      "solution",
+    ],
   },
   {
     id: "mission-4",
@@ -142,7 +162,8 @@ const MISSIONS = [
     badgeId: "mission-4",
     badgeEmoji: "🎯",
     badgeName: "Division Detective",
-    intro: "The creature sees division and panics — it tries to divide MORE. But to undo division, you need to multiply! Help the creature understand the inverse.",
+    intro:
+      "The creature sees division and panics — it tries to divide MORE. But to undo division, you need to multiply! Help the creature understand the inverse.",
     misconceptionLabel: "divides instead of multiplying",
     creature: {
       equation: "x ÷ 3 = 9",
@@ -171,9 +192,18 @@ const MISSIONS = [
       equation: "x ÷ 6 = 4",
       steps: ["x ÷ 6 = 4", "x = 4 × 6", "x = 24"],
       answer: "24",
-      check: "24 ÷ 6 = 4 ✓"
+      check: "24 ÷ 6 = 4 ✓",
     },
-    vocab: ["equation","variable","inverse operation","multiply","divide","balance","check","solution"],
+    vocab: [
+      "equation",
+      "variable",
+      "inverse operation",
+      "multiply",
+      "divide",
+      "balance",
+      "check",
+      "solution",
+    ],
   },
   {
     id: "mission-5",
@@ -184,7 +214,8 @@ const MISSIONS = [
     badgeId: "mission-5",
     badgeEmoji: "🏆",
     badgeName: "Equation Champion",
-    intro: "The creature has learned a lot — but now things get mixed up! It's facing all four types of equations at once and isn't sure which inverse operation to use. You've trained it. Now coach it through the final test.",
+    intro:
+      "The creature has learned a lot — but now things get mixed up! It's facing all four types of equations at once and isn't sure which inverse operation to use. You've trained it. Now coach it through the final test.",
     misconceptionLabel: "picks the wrong inverse operation",
     creature: {
       equation: "2x = 18",
@@ -205,45 +236,56 @@ const MISSIONS = [
     ruleShort: "Match the inverse to the operation on x",
     checkExplanation: "Substitute x = 9 back in: 2 × 9 = 18. ✓ Both sides match!",
     practice: [
-      { equation: "x + 6 = 20",  answer: 14, checkEq: "14 + 6 = 20 ✓" },
-      { equation: "x − 9 = 14",  answer: 23, checkEq: "23 − 9 = 14 ✓" },
-      { equation: "4x = 32",      answer: 8,  checkEq: "4 × 8 = 32 ✓" },
-      { equation: "x ÷ 3 = 11",  answer: 33, checkEq: "33 ÷ 3 = 11 ✓" },
+      { equation: "x + 6 = 20", answer: 14, checkEq: "14 + 6 = 20 ✓" },
+      { equation: "x − 9 = 14", answer: 23, checkEq: "23 − 9 = 14 ✓" },
+      { equation: "4x = 32", answer: 8, checkEq: "4 × 8 = 32 ✓" },
+      { equation: "x ÷ 3 = 11", answer: 33, checkEq: "33 ÷ 3 = 11 ✓" },
     ],
     creatureRetry: {
       equation: "x + 15 = 28",
       steps: ["x + 15 = 28", "x = 28 − 15", "x = 13"],
       answer: "13",
-      check: "13 + 15 = 28 ✓"
+      check: "13 + 15 = 28 ✓",
     },
-    vocab: ["equation","variable","inverse operation","add","subtract","multiply","divide","balance","check","solution"],
+    vocab: [
+      "equation",
+      "variable",
+      "inverse operation",
+      "add",
+      "subtract",
+      "multiply",
+      "divide",
+      "balance",
+      "check",
+      "solution",
+    ],
   },
 ];
 
 const VOCAB_FULL = {
-  equation:          { en: "equation",          es: "ecuación" },
-  variable:          { en: "variable",           es: "variable" },
-  "inverse operation":{ en: "inverse operation", es: "operación inversa" },
-  add:               { en: "add",                es: "sumar" },
-  subtract:          { en: "subtract",           es: "restar" },
-  multiply:          { en: "multiply",           es: "multiplicar" },
-  divide:            { en: "divide",             es: "dividir" },
-  balance:           { en: "balance",            es: "balance" },
-  check:             { en: "check",              es: "comprobar" },
-  solution:          { en: "solution",           es: "solución" },
+  equation: { en: "equation", es: "ecuación" },
+  variable: { en: "variable", es: "variable" },
+  "inverse operation": { en: "inverse operation", es: "operación inversa" },
+  add: { en: "add", es: "sumar" },
+  subtract: { en: "subtract", es: "restar" },
+  multiply: { en: "multiply", es: "multiplicar" },
+  divide: { en: "divide", es: "dividir" },
+  balance: { en: "balance", es: "balance" },
+  check: { en: "check", es: "comprobar" },
+  solution: { en: "solution", es: "solución" },
 };
 
 function makeCreatureSVG(emotion) {
   // emotion: 'confused' | 'happy' | 'thinking'
   const mouth = {
-    confused:  `<path d="M41 47 Q50 43 59 47" stroke="#c04a1f" stroke-width="1.8" stroke-linecap="round" fill="none"/>`,
-    happy:     `<path d="M41 45 Q50 50 59 45" stroke="#2c7d6b" stroke-width="1.8" stroke-linecap="round" fill="none"/>`,
-    thinking:  `<path d="M43 46 Q50 46 57 46" stroke="#205fa6" stroke-width="1.8" stroke-linecap="round" fill="none"/>`,
+    confused: `<path d="M41 47 Q50 43 59 47" stroke="#c04a1f" stroke-width="1.8" stroke-linecap="round" fill="none"/>`,
+    happy: `<path d="M41 45 Q50 50 59 45" stroke="#2c7d6b" stroke-width="1.8" stroke-linecap="round" fill="none"/>`,
+    thinking: `<path d="M43 46 Q50 46 57 46" stroke="#205fa6" stroke-width="1.8" stroke-linecap="round" fill="none"/>`,
   };
   const headAcc = {
-    confused:  `<text x="47" y="30" font-size="9" font-weight="900" fill="#e05a2b" font-family="Nunito,sans-serif">?</text>`,
-    happy:     `<text x="46" y="30" font-size="9" font-weight="900" fill="#2c7d6b" font-family="Nunito,sans-serif">✓</text>`,
-    thinking:  `<text x="46" y="30" font-size="9" font-weight="900" fill="#205fa6" font-family="Nunito,sans-serif">…</text>`,
+    confused: `<text x="47" y="30" font-size="9" font-weight="900" fill="#e05a2b" font-family="Nunito,sans-serif">?</text>`,
+    happy: `<text x="46" y="30" font-size="9" font-weight="900" fill="#2c7d6b" font-family="Nunito,sans-serif">✓</text>`,
+    thinking: `<text x="46" y="30" font-size="9" font-weight="900" fill="#205fa6" font-family="Nunito,sans-serif">…</text>`,
   };
   return `<svg width="80" height="80" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
   <ellipse cx="50" cy="66" rx="28" ry="25" fill="#f4d9c6"/>
@@ -264,17 +306,21 @@ function makeCreatureSVG(emotion) {
 }
 
 function makeVocabRows(keys) {
-  return keys.map(k => {
-    const v = VOCAB_FULL[k];
-    if (!v) return '';
-    return `<tr><td class="vt-en">${v.en}</td><td class="vt-es">${v.es}</td></tr>`;
-  }).join('\n            ');
+  return keys
+    .map((k) => {
+      const v = VOCAB_FULL[k];
+      if (!v) return "";
+      return `<tr><td class="vt-en">${v.en}</td><td class="vt-es">${v.es}</td></tr>`;
+    })
+    .join("\n            ");
 }
 
 function makePracticeItems(mission) {
-  return mission.practice.map((p, i) => `
+  return mission.practice
+    .map(
+      (p, i) => `
           <div class="practice-item" id="practice-${i}" data-answer="${p.answer}" data-check="${p.checkEq}" data-idx="${i}">
-            <div class="practice-num" aria-hidden="true">${i+1}</div>
+            <div class="practice-num" aria-hidden="true">${i + 1}</div>
             <div class="practice-body">
               <div class="practice-eq" aria-label="Practice equation: ${p.equation}">${p.equation}</div>
               <div class="practice-input-row">
@@ -288,7 +334,7 @@ function makePracticeItems(mission) {
                   inputmode="numeric"
                   step="any"
                 />
-                <button class="check-ans-btn" type="button" data-idx="${i}" aria-label="Check answer for problem ${i+1}">Check</button>
+                <button class="check-ans-btn" type="button" data-idx="${i}" aria-label="Check answer for problem ${i + 1}">Check</button>
               </div>
               <div class="practice-feedback" id="pf-${i}" role="status" aria-live="polite"></div>
               <div class="check-step hidden" id="check-step-${i}">
@@ -296,19 +342,26 @@ function makePracticeItems(mission) {
                 <div class="check-eq" aria-label="Checking: ${p.checkEq}">${p.checkEq}</div>
               </div>
             </div>
-          </div>`).join('');
+          </div>`,
+    )
+    .join("");
 }
 
 function makeDiagnosisChoices(mission) {
-  return mission.diagnosisChoices.map((c, i) =>
-    `<button class="diag-btn" type="button" data-correct="${c.correct}" data-idx="${i}" aria-label="Choice ${i+1}: ${c.text}">${c.text}</button>`
-  ).join('\n            ');
+  return mission.diagnosisChoices
+    .map(
+      (c, i) =>
+        `<button class="diag-btn" type="button" data-correct="${c.correct}" data-idx="${i}" aria-label="Choice ${i + 1}: ${c.text}">${c.text}</button>`,
+    )
+    .join("\n            ");
 }
 
 function makeRetrySteps(mission) {
-  return mission.creatureRetry.steps.map((s, i) =>
-    `<div class="retry-step step-${i+1}" aria-label="Step ${i+1}: ${s}">${s}</div>`
-  ).join('\n              ');
+  return mission.creatureRetry.steps
+    .map(
+      (s, i) => `<div class="retry-step step-${i + 1}" aria-label="Step ${i + 1}: ${s}">${s}</div>`,
+    )
+    .join("\n              ");
 }
 
 function makePage(mission) {
@@ -539,15 +592,17 @@ function makePage(mission) {
             <h2 class="step-heading" id="intro-heading">Your creature made an error.</h2>
             <p class="intro-text">${mission.intro}</p>
             <div class="creature-row" style="margin-top:18px;">
-              <div class="creature-face" id="creature-intro" aria-hidden="true">${makeCreatureSVG('confused')}</div>
+              <div class="creature-face" id="creature-intro" aria-hidden="true">${makeCreatureSVG("confused")}</div>
               <div class="speech-bubble" role="img" aria-label="Creature says: I tried to solve ${mission.creature.equation}. Here is my work.">
                 <div class="creature-says">Here's what I did…</div>
                 <div class="wrong-work" aria-label="Creature's wrong work">
-                  ${mission.creature.wrongSteps.map((s, i) =>
-                    i === mission.creature.wrongSteps.length - 1
-                      ? `<div class="wrong-line" aria-label="Incorrect final answer: ${s}">${s} ❌</div>`
-                      : `<div>${s}</div>`
-                  ).join('')}
+                  ${mission.creature.wrongSteps
+                    .map((s, i) =>
+                      i === mission.creature.wrongSteps.length - 1
+                        ? `<div class="wrong-line" aria-label="Incorrect final answer: ${s}">${s} ❌</div>`
+                        : `<div>${s}</div>`,
+                    )
+                    .join("")}
                 </div>
               </div>
             </div>
@@ -651,7 +706,7 @@ function makePage(mission) {
             <h2 class="step-heading" id="retry-heading">Watch your creature try again.</h2>
             <p style="font-size:15px; color:var(--muted); margin-bottom:16px;">Your teaching worked! The creature is trying <strong>${mission.creatureRetry.equation}</strong> with the correct method.</p>
             <div class="creature-row">
-              <div class="creature-face" id="creature-retry" aria-hidden="true">${makeCreatureSVG('thinking')}</div>
+              <div class="creature-face" id="creature-retry" aria-hidden="true">${makeCreatureSVG("thinking")}</div>
               <div class="speech-bubble happy">
                 <div class="creature-says" style="color:var(--green)">Let me try using the inverse operation…</div>
                 <div class="retry-steps" id="retry-steps" aria-label="Creature's corrected work">
@@ -666,7 +721,7 @@ function makePage(mission) {
                 <div class="check-eq">${mission.creatureRetry.check}</div>
               </div>
               <div class="creature-row">
-                <div class="creature-face" id="creature-happy" aria-hidden="true">${makeCreatureSVG('happy')}</div>
+                <div class="creature-face" id="creature-happy" aria-hidden="true">${makeCreatureSVG("happy")}</div>
                 <div class="speech-bubble happy" role="img" aria-label="Creature says: That helped! I will use the inverse operation from now on.">
                   <div style="font-size:15px; color:var(--green); font-weight:700;">That helped! I will use the inverse operation from now on. 🎉</div>
                 </div>
@@ -692,9 +747,10 @@ function makePage(mission) {
               </div>
               <div class="nav-buttons">
                 <a href="/curriculum/almost-right-lab/equations/" class="btn-secondary" aria-label="Back to unit hub">← Back to Unit</a>
-                ${hasNext
-                  ? `<a href="/curriculum/almost-right-lab/equations/mission-${nextNum}/" class="btn-primary" aria-label="Go to Mission ${nextNum}">Mission ${nextNum} →</a>`
-                  : `<a href="/curriculum/almost-right-lab/equations/" class="btn-primary" aria-label="All missions complete — back to unit">All Done! 🏆</a>`
+                ${
+                  hasNext
+                    ? `<a href="/curriculum/almost-right-lab/equations/mission-${nextNum}/" class="btn-primary" aria-label="Go to Mission ${nextNum}">Mission ${nextNum} →</a>`
+                    : `<a href="/curriculum/almost-right-lab/equations/" class="btn-primary" aria-label="All missions complete — back to unit">All Done! 🏆</a>`
                 }
                 <button class="btn-secondary" type="button" onclick="window.print()" aria-label="Print mission summary">🖨 Print</button>
               </div>
@@ -878,8 +934,8 @@ function makePage(mission) {
       document.getElementById("main-ans-input").addEventListener("keydown", e => { if (e.key === "Enter") checkMainAnswer(); });
 
       // ── STEP 5: Practice ──
-      const practiceAnswers = ${JSON.stringify(mission.practice.map(p => p.answer))};
-      const practiceChecks  = ${JSON.stringify(mission.practice.map(p => p.checkEq))};
+      const practiceAnswers = ${JSON.stringify(mission.practice.map((p) => p.answer))};
+      const practiceChecks  = ${JSON.stringify(mission.practice.map((p) => p.checkEq))};
       let practiceState = new Array(TOTAL_PRACTICE).fill(false);
 
       document.querySelectorAll(".check-ans-btn").forEach(btn => {
@@ -965,7 +1021,7 @@ function makePage(mission) {
 }
 
 // Write pages
-MISSIONS.forEach(mission => {
+MISSIONS.forEach((mission) => {
   const dir = join(__dirname, `curriculum/almost-right-lab/equations/${mission.id}`);
   mkdirSync(dir, { recursive: true });
   writeFileSync(join(dir, "index.html"), makePage(mission), "utf8");

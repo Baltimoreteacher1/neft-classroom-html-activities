@@ -41,9 +41,7 @@ function makeStorageShim() {
 globalThis.localStorage = makeStorageShim();
 
 const here = dirname(fileURLToPath(import.meta.url));
-const { createState } = await import(
-  pathToFileURL(resolve(here, "../engine/core/state.js")).href
-);
+const { createState } = await import(pathToFileURL(resolve(here, "../engine/core/state.js")).href);
 
 const PHASES = [
   { name: "Launch", icon: "🚀" },

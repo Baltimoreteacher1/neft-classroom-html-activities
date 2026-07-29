@@ -13,8 +13,8 @@
  *
  * Usage:  node tools/canvas/build-command-center.mjs   |   npm run command-center
  */
-import { readFileSync, writeFileSync, existsSync, statSync, readdirSync } from "fs";
-import { resolve, dirname } from "path";
+import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from "fs";
+import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");

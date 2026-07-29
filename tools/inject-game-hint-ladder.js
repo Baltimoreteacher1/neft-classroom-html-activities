@@ -17,8 +17,8 @@
  *   node tools/inject-game-hint-ladder.js --dry-run  # report only
  *   node tools/inject-game-hint-ladder.js --revert   # remove injected blocks
  */
-import { readFileSync, writeFileSync, existsSync } from "fs";
-import { join, dirname } from "path";
+import { existsSync, readFileSync, writeFileSync } from "fs";
+import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");

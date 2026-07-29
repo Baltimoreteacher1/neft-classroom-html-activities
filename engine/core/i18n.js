@@ -279,7 +279,16 @@ export function badgeName(id, lang) {
 
 /** Phase name by engine index (0=Warmup, 1=Launch … 5=Reflect). */
 export function phaseName(index, lang) {
-  const keys = ["warmup", "objectives", "launch", "explore", "practice", "connect", "reflect", "objectives"];
+  const keys = [
+    "warmup",
+    "objectives",
+    "launch",
+    "explore",
+    "practice",
+    "connect",
+    "reflect",
+    "objectives",
+  ];
   const key = keys[index];
   const entry = PHASE_NAMES[key];
   if (!entry) return `Phase ${index + 1}`;
@@ -323,4 +332,4 @@ function esc(s) {
   return d.innerHTML;
 }
 
-export { STRINGS, PHASE_NAMES, BADGE_NAMES, HINT_LABELS };
+export { BADGE_NAMES, HINT_LABELS, PHASE_NAMES, STRINGS };

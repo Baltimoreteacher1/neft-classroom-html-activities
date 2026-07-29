@@ -12,9 +12,10 @@
  *
  * Lives under tools/ (not deployed) and runs via `npm test` (tools/run-tests.mjs).
  */
+
+import assert from "node:assert/strict";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import assert from "node:assert/strict";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const modUrl = pathToFileURL(resolve(here, "../functions/api/progress/[[path]].js")).href;

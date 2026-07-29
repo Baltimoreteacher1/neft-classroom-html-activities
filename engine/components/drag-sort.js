@@ -426,7 +426,8 @@ function createDragItem(item) {
   el.draggable = true;
   el.dataset.itemId = item._id != null ? item._id : item.text;
 
-  el.style.cssText = "display:inline-flex; flex-direction:column; align-items:center; justify-content:center; padding:10px 14px; gap:4px; text-align:center; min-width:80px;";
+  el.style.cssText =
+    "display:inline-flex; flex-direction:column; align-items:center; justify-content:center; padding:10px 14px; gap:4px; text-align:center; min-width:80px;";
 
   const labelSpan = document.createElement("span");
   labelSpan.textContent = item.text;
@@ -607,7 +608,7 @@ function setupDragDrop(zones, _ctx) {
 
 function createNumberArraySVG(num) {
   if (isNaN(num) || num <= 1 || num > 30) return "";
-  
+
   // Find closest factor pair (a, b) where a <= b and a * b = num
   let r = Math.floor(Math.sqrt(num));
   let cols = num;
@@ -619,20 +620,20 @@ function createNumberArraySVG(num) {
       break;
     }
   }
-  
-  const isPrime = (rows === 1);
+
+  const isPrime = rows === 1;
   const dotRadius = 3;
   const gap = 9;
   const padding = 4;
-  
+
   const width = (cols - 1) * gap + padding * 2;
   const height = (rows - 1) * gap + padding * 2;
-  
+
   let dotsSvg = "";
   // In drag-sort: dark theme is not active, standard light styling is used.
   // We use standard colors: teal-dark (#0d7a76) for primes, amber-dark (#b07a10) for composites.
   const color = isPrime ? "#0d7a76" : "#b07a10";
-  
+
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
       const cx = padding + c * gap;
@@ -640,7 +641,6 @@ function createNumberArraySVG(num) {
       dotsSvg += `<circle cx="${cx}" cy="${cy}" r="${dotRadius}" fill="${color}" opacity="0.85" />`;
     }
   }
-  
+
   return `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" style="display:block; margin:4px auto 0; overflow:visible;">${dotsSvg}</svg>`;
 }
-

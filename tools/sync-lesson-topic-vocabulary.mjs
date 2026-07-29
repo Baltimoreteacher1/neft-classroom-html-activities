@@ -11,7 +11,10 @@ const catalog = JSON.parse(
 );
 const checkOnly = process.argv.includes("--check");
 const fields = ["term", "termEs", "definition", "definitionEs", "visual"];
-const termKey = (value) => String(value || "").trim().toLocaleLowerCase("en-US");
+const termKey = (value) =>
+  String(value || "")
+    .trim()
+    .toLocaleLowerCase("en-US");
 const clone = (value) => JSON.parse(JSON.stringify(value));
 
 function sourceLessonIds(lessonId) {

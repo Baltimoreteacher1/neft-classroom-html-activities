@@ -6,10 +6,10 @@
  *
  *   node scripts/generate-curriculum-search-index.mjs
  */
-import { readFileSync, writeFileSync, existsSync } from "fs";
-import { resolve, dirname } from "path";
-import { fileURLToPath } from "url";
+import { existsSync, readFileSync, writeFileSync } from "fs";
 import MiniSearch from "minisearch";
+import { dirname, resolve } from "path";
+import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, "..");

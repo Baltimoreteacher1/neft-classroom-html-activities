@@ -15,7 +15,7 @@
 // Run:  npm run validate:scorm        (part of `npm run validate`)
 // Exit: 0 = all invariants hold, 1 = one or more missing (each printed).
 import { readFileSync } from "fs";
-import { join, dirname, resolve } from "path";
+import { dirname, join, resolve } from "path";
 import { fileURLToPath } from "url";
 import { buildScormFiles, zipStore } from "../../functions/_lib/scorm.js";
 

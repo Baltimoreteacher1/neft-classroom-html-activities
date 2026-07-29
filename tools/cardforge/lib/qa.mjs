@@ -2,13 +2,13 @@
 // writes qa-report.md. Returns { status, checks }.
 import { resolve } from "node:path";
 import {
-  existsSync,
-  readFileSync,
-  readdirSync,
-  readJSON,
-  writeFile,
-  scanSlop,
   checkStatClaim,
+  existsSync,
+  readdirSync,
+  readFileSync,
+  readJSON,
+  scanSlop,
+  writeFile,
 } from "./util.mjs";
 
 const REQUIRED_CARD_FIELDS = ["id", "title", "objective", "status", "resources"];

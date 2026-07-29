@@ -7,8 +7,8 @@
 
 import { attachVoiceInput } from "../components/voice-explain.js";
 import { interactiveVisualHost, mountInteractiveVisuals } from "./interactive-visual.js";
-import { celebrate, createVoiceMemo, el, esc, sectionHeading, speak } from "./small-group-ui.js";
 import { markScene } from "./small-group-storyboard.js";
+import { celebrate, createVoiceMemo, el, esc, sectionHeading, speak } from "./small-group-ui.js";
 import {
   barChartSVG,
   boxPlotSVG,
@@ -353,9 +353,7 @@ export function createModelLab(config, variant, { number, store, events, onDone 
   // Device-local "record our best explanation" — a second discourse-capture
   // option that also reaches Catch-Up (which renders no Talk section). Playback
   // only; nothing is uploaded.
-  card.appendChild(
-    createVoiceMemo("Optional: record your spoken explanation, then play it back."),
-  );
+  card.appendChild(createVoiceMemo("Optional: record your spoken explanation, then play it back."));
   section.appendChild(card);
   return section;
 }

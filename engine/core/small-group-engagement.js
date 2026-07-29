@@ -1,3 +1,4 @@
+import { renderLaunchStoryBeats } from "./premium.js";
 import { figureBlock } from "./small-group-labs.js";
 import {
   markScene,
@@ -5,7 +6,6 @@ import {
   mountThemeArt,
   themeDisplayName,
 } from "./small-group-storyboard.js";
-import { renderLaunchStoryBeats } from "./premium.js";
 import {
   celebrate,
   createVoiceMemo,

@@ -19,7 +19,7 @@
  * Writes reports/dead-code.md.
  */
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { extname, join } from "node:path";
 
 const EXCLUDE = ["!node_modules", "!dist", "!.git", "!backups", "!canvas-packages", "!.qa-logs"];
@@ -62,9 +62,13 @@ console.log("• Building the reference graph (one ripgrep pass)...");
 const globArgs = EXCLUDE.flatMap((g) => ["-g", g]);
 // Every file-like token in the tree, with the file that mentions it.
 const raw = rg([
-  "-o", "--no-heading", "--with-filename", "--no-line-number",
+  "-o",
+  "--no-heading",
+  "--with-filename",
+  "--no-line-number",
   "[A-Za-z0-9_.-]+\\.(?:js|mjs|cjs|css|sh)",
-  ...globArgs, ".",
+  ...globArgs,
+  ".",
 ]);
 
 /** basename -> Set of files that mention it */
@@ -122,7 +126,8 @@ if (dead.length) {
   lines.push("");
   lines.push("| File | Size |");
   lines.push("| --- | ---: |");
-  for (const d of dead.sort((a, b) => b.bytes - a.bytes)) lines.push(`| \`${d.path}\` | ${fmtKb(d.bytes)} |`);
+  for (const d of dead.sort((a, b) => b.bytes - a.bytes))
+    lines.push(`| \`${d.path}\` | ${fmtKb(d.bytes)} |`);
 } else {
   lines.push("_None._");
 }
@@ -148,5 +153,7 @@ mkdirSync("reports", { recursive: true });
 writeFileSync("reports/dead-code.md", lines.join("\n"));
 
 console.log(`✓ reports/dead-code.md`);
-console.log(`  ${candidates.length} scanned · ${dead.length} unreferenced (${fmtKb(totalBytes)}) · ${nearlyDead.length} single-referrer`);
+console.log(
+  `  ${candidates.length} scanned · ${dead.length} unreferenced (${fmtKb(totalBytes)}) · ${nearlyDead.length} single-referrer`,
+);
 console.log("  Nothing deleted — review the report and remove by hand.");

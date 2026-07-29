@@ -20,7 +20,7 @@
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { computeTeachL4Evidence, classifyActivityTeachSupport } from "../engine/core/uifr.js";
+import { classifyActivityTeachSupport, computeTeachL4Evidence } from "../engine/core/uifr.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const LESSONS_DIR = join(ROOT, "lessons");

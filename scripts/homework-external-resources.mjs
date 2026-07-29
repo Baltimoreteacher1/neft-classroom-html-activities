@@ -2,8 +2,8 @@
  * Curated topic-specific external links for family homework pages.
  * URLs verified against Khan Academy / Math Antics slugs for Grade 6 topics.
  */
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { detectVisualTopic } from "./homework-alignment.mjs";
 

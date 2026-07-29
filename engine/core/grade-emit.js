@@ -96,7 +96,7 @@ export function completeLesson(state, config) {
 export function reportExitTicketScore(state, config) {
   try {
     const { lms, ltik } = readLaunch();
-    if (lms !== "lti" || !ltik) return;   // LTI-only for now; SCORM waits for full completion
+    if (lms !== "lti" || !ltik) return; // LTI-only for now; SCORM waits for full completion
     const { scoreGiven, scoreMaximum } = scoreFrom(state);
     const body = JSON.stringify({
       ltik,
@@ -113,7 +113,9 @@ export function reportExitTicketScore(state, config) {
       body,
       keepalive: true,
     }).catch(() => {});
-  } catch { /* never throw into lesson flow */ }
+  } catch {
+    /* never throw into lesson flow */
+  }
 }
 
 /**

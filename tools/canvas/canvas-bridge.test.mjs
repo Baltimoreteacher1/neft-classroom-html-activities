@@ -11,10 +11,11 @@
  * Lives under tools/ (not deployed) and is picked up by `npm test`
  * (tools/run-tests.mjs). Lives or dies by top-level assertions + exit code.
  */
+
+import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import assert from "node:assert/strict";
 import jsdomPkg from "jsdom";
 
 const { JSDOM } = jsdomPkg;

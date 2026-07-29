@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { execSync } from "child_process";
 /**
  * build-course.mjs — generate a full Canvas course package (Common Cartridge)
  * with NATIVE auto-graded quizzes. No SCORM, no LTI, no codes, no admin.
@@ -18,8 +19,7 @@
  *   npm run course -- 1
  * Env: NEFT_SITE (default https://eduwonderlab.com), QUIZ_MAX (default 12 questions).
  */
-import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from "fs";
-import { execSync } from "child_process";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
 import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
 
@@ -36,7 +36,7 @@ const unitFilter = unitArg ? Number(unitArg) : null;
 
 // QTI markup + escapes live in lib/qti.mjs — the single source of truth shared
 // with build-pretest-qti.mjs. Edit QTI XML there, not here.
-import { xml, html, qtiAssessment, assessmentMeta } from "./lib/qti.mjs";
+import { assessmentMeta, html, qtiAssessment, xml } from "./lib/qti.mjs";
 
 const manifest = JSON.parse(
   readFileSync(resolve(repoRoot, "data/curriculum-manifest.json"), "utf8"),

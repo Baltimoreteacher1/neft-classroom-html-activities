@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { execFileSync } from "child_process";
 // Build a SCORM package for every assignable standalone activity in
 // tools/scorm/activity-catalog.json (the non-lesson "work": games, labs,
 // reviews). Each wraps the LIVE activity URL with ?lms=scorm&embed=1 so the
@@ -8,10 +9,9 @@
 //
 // Usage:  node tools/scorm/build-activities-scorm.mjs
 // Output: scorm-packages/neft-lesson-<slug>.zip + scorm-packages/ACTIVITIES-CHECKLIST.md
-import { readFileSync, writeFileSync, mkdirSync } from "fs";
+import { mkdirSync, readFileSync, writeFileSync } from "fs";
 import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
-import { execFileSync } from "child_process";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, "../..");

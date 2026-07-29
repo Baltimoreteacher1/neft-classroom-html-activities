@@ -293,8 +293,7 @@ function mountFractionDivide(host, cfg = {}) {
     const v = parseFrac(inp("answer").value);
     if (!v)
       return (
-        mark(inp("answer"), false),
-        setStatus(3, "Type a fraction, whole, or mixed number.", false)
+        mark(inp("answer"), false), setStatus(3, "Type a fraction, whole, or mixed number.", false)
       );
     const ok = fracEq(v, answer);
     mark(inp("answer"), ok);

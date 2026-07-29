@@ -4,10 +4,10 @@
  * ========================================================================== */
 
 import assert from "node:assert/strict";
-import { JSDOM } from "jsdom";
-import { readFileSync, existsSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { existsSync, readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { JSDOM } from "jsdom";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const JS_PATH = join(ROOT, "assets", "learning-supports", "learning-supports.js");
@@ -24,8 +24,8 @@ const mockManifest = {
       {
         term: "Prime number",
         definition: "A number bigger than 1 that you can only divide by 1 and itself.",
-        visual: "7 has factors 1, 7"
-      }
+        visual: "7 has factors 1, 7",
+      },
     ],
     workedExample: "Split 60: 60 = 6 x 10 -> (2 x 3) x (2 x 5) -> 2^2 x 3 x 5.",
     sentenceFrames: ["I know ___ is prime because ___."],
@@ -37,9 +37,9 @@ const mockManifest = {
       "build-math": true,
       "express-thinking": true,
       "language-support": true,
-      "challenge-extend": true
-    }
-  }
+      "challenge-extend": true,
+    },
+  },
 };
 
 async function runTests() {
@@ -65,8 +65,8 @@ async function runTests() {
     </html>`,
     {
       url: "https://eduwonderlab.com/lessons/1-1/",
-      runScripts: "outside-only"
-    }
+      runScripts: "outside-only",
+    },
   );
 
   // Setup global environment
@@ -75,16 +75,24 @@ async function runTests() {
   Object.defineProperty(globalThis, "navigator", {
     value: dom.window.navigator,
     writable: true,
-    configurable: true
+    configurable: true,
   });
-  
+
   // Mock localStorage
   const store = {};
   globalThis.localStorage = {
-    getItem(key) { return store[key] || null; },
-    setItem(key, val) { store[key] = String(val); },
-    removeItem(key) { delete store[key]; },
-    clear() { Object.keys(store).forEach(k => delete store[k]); }
+    getItem(key) {
+      return store[key] || null;
+    },
+    setItem(key, val) {
+      store[key] = String(val);
+    },
+    removeItem(key) {
+      delete store[key];
+    },
+    clear() {
+      Object.keys(store).forEach((k) => delete store[k]);
+    },
   };
   localStorage.setItem("existing-lesson-key", "keep-me");
   // "Prepare Supports" is teacher-only; enable Teacher Mode so it renders.
@@ -96,7 +104,7 @@ async function runTests() {
     if (String(url).includes("manifest.json")) {
       return {
         ok: true,
-        json: async () => mockManifest
+        json: async () => mockManifest,
       };
     }
     return { ok: false };
@@ -116,8 +124,15 @@ async function runTests() {
 
   // Assertions from Step 1
   assert.equal(document.querySelectorAll("[data-ewl-supports-root]").length, 1);
-  assert.equal(document.querySelector("[data-ewl-supports-teacher]").textContent.includes("Prepare Supports"), true);
-  assert.equal(document.querySelector("[data-ewl-supports-teacher]").hidden, false, "Teacher panel must be visible in Teacher Mode");
+  assert.equal(
+    document.querySelector("[data-ewl-supports-teacher]").textContent.includes("Prepare Supports"),
+    true,
+  );
+  assert.equal(
+    document.querySelector("[data-ewl-supports-teacher]").hidden,
+    false,
+    "Teacher panel must be visible in Teacher Mode",
+  );
   assert.equal(document.querySelector("[data-ewl-supports-tools]").hidden, true);
 
   const originalInput = document.getElementById("original-input");
@@ -133,8 +148,7 @@ async function runTests() {
   // Accessible name may come from aria-label OR aria-labelledby (both valid).
   const labelledbyId = dialog.getAttribute("aria-labelledby");
   const dialogHasName =
-    dialog.getAttribute("aria-label") ||
-    (labelledbyId && document.getElementById(labelledbyId));
+    dialog.getAttribute("aria-label") || (labelledbyId && document.getElementById(labelledbyId));
   assert.ok(dialogHasName, "Dialog must have an accessible name (aria-label or aria-labelledby)");
 
   // Modal backdrop must exist for a true modal dialog.
@@ -144,7 +158,7 @@ async function runTests() {
   );
 
   // No positive tabindex
-  const positiveTab = Array.from(document.querySelectorAll("[tabindex]")).some(el => {
+  const positiveTab = Array.from(document.querySelectorAll("[tabindex]")).some((el) => {
     const val = Number(el.getAttribute("tabindex"));
     return !isNaN(val) && val > 0;
   });
@@ -156,11 +170,19 @@ async function runTests() {
   for (const btn of allButtons) {
     const hasText = btn.textContent.trim().length > 0;
     const hasLabel = btn.getAttribute("aria-label");
-    assert.ok(hasText || hasLabel, "Accessibility fail: All buttons must have text content or an aria-label");
+    assert.ok(
+      hasText || hasLabel,
+      "Accessibility fail: All buttons must have text content or an aria-label",
+    );
 
     // 44px class contract check
-    const hasNamespacedClass = Array.from(btn.classList).some(cls => cls.startsWith("ewl-supports-"));
-    assert.ok(hasNamespacedClass, `CSS contract fail: Button does not have namespaced support class: ${btn.className}`);
+    const hasNamespacedClass = Array.from(btn.classList).some((cls) =>
+      cls.startsWith("ewl-supports-"),
+    );
+    assert.ok(
+      hasNamespacedClass,
+      `CSS contract fail: Button does not have namespaced support class: ${btn.className}`,
+    );
   }
 
   // Keyboard Dialog Flow & Focus Return
@@ -192,7 +214,7 @@ async function runTests() {
   console.log("PASS: All JSDOM tests passed!");
 }
 
-runTests().catch(err => {
+runTests().catch((err) => {
   console.error("FAIL:", err);
   process.exit(1);
 });

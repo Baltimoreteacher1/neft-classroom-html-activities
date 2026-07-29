@@ -42,7 +42,12 @@ function d1(sql) {
     const raw = execFileSync(
       "npx",
       ["wrangler", "d1", "execute", DB, "--remote", "--command", sql, "--json"],
-      { cwd: ROOT, encoding: "utf8", maxBuffer: 16 * 1024 * 1024, stdio: ["ignore", "pipe", "ignore"] },
+      {
+        cwd: ROOT,
+        encoding: "utf8",
+        maxBuffer: 16 * 1024 * 1024,
+        stdio: ["ignore", "pipe", "ignore"],
+      },
     );
     const match = raw.match(/\[[\s\S]*\]/);
     return match ? (JSON.parse(match[0])[0]?.results ?? []) : null;
@@ -244,9 +249,9 @@ for (const [table, s] of Object.entries(out.d1)) {
   }
   const age = daysSince(s.last);
   const stale = s.n > 0 && age !== null && age > 7;
-  const mark = s.n === 0 ? `${YELLOW}0${RESET}` : stale ? `${YELLOW}!${RESET}` : `${GREEN}✓${RESET}`;
-  const when =
-    s.last === null ? "" : age === 0 ? "last write today" : `last write ${age}d ago`;
+  const mark =
+    s.n === 0 ? `${YELLOW}0${RESET}` : stale ? `${YELLOW}!${RESET}` : `${GREEN}✓${RESET}`;
+  const when = s.last === null ? "" : age === 0 ? "last write today" : `last write ${age}d ago`;
   console.log(
     `  ${mark} ${table.padEnd(18)} ${String(s.n).padStart(7)} rows   ${DIM}${when}${RESET}`,
   );
@@ -276,12 +281,16 @@ if (!FAST) {
   for (const r of out.live.routes) {
     const ok = r.status >= 200 && r.status < 400;
     const mark = ok ? `${GREEN}✓${RESET}` : `${RED}✗${RESET}`;
-    const detail = r.error ? `${RED}${r.error}${RESET}` : `${r.status}  ${r.ms}ms  ${Math.round((r.bytes || 0) / 1024)}KB`;
+    const detail = r.error
+      ? `${RED}${r.error}${RESET}`
+      : `${r.status}  ${r.ms}ms  ${Math.round((r.bytes || 0) / 1024)}KB`;
     console.log(`  ${mark} ${r.path.padEnd(32)} ${detail}`);
   }
 }
 
-const empty = Object.entries(out.d1).filter(([, s]) => s.n === 0).map(([t]) => t);
+const empty = Object.entries(out.d1)
+  .filter(([, s]) => s.n === 0)
+  .map(([t]) => t);
 if (empty.length) {
   const w = out.writers || {};
   const broken = empty.filter((t) => w[t]?.reachable === false);
@@ -292,7 +301,9 @@ if (empty.length) {
   for (const t of empty) {
     const r = w[t];
     if (!r || r.reachable == null) {
-      console.log(`  ${YELLOW}?${RESET} ${t.padEnd(18)} ${DIM}${r?.detail || "not probed"}${RESET}`);
+      console.log(
+        `  ${YELLOW}?${RESET} ${t.padEnd(18)} ${DIM}${r?.detail || "not probed"}${RESET}`,
+      );
     } else if (r.reachable) {
       console.log(
         `  ${GREEN}✓${RESET} ${t.padEnd(18)} writer OK ${DIM}— ${r.writer}; unused, not broken (${r.detail})${RESET}`,

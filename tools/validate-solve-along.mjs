@@ -34,7 +34,14 @@ function safeEval(expr) {
 }
 
 function biOk(obj) {
-  return obj && typeof obj === "object" && typeof obj.en === "string" && obj.en.trim() && typeof obj.es === "string" && obj.es.trim();
+  return (
+    obj &&
+    typeof obj === "object" &&
+    typeof obj.en === "string" &&
+    obj.en.trim() &&
+    typeof obj.es === "string" &&
+    obj.es.trim()
+  );
 }
 
 const errors = [];
@@ -78,7 +85,8 @@ for (const u of UNITS) {
       } else {
         s.steps.forEach((w, j) => {
           if (!biOk(w.do)) errors.push(`${at}.steps[${j}]: do must be {en,es}`);
-          if (typeof w.math !== "string" || !w.math.trim()) errors.push(`${at}.steps[${j}]: math string required`);
+          if (typeof w.math !== "string" || !w.math.trim())
+            errors.push(`${at}.steps[${j}]: math string required`);
           if (!biOk(w.why)) errors.push(`${at}.steps[${j}]: why must be {en,es}`);
         });
       }
@@ -97,11 +105,14 @@ for (const u of UNITS) {
         if (typeof item.answer !== "number" || !Number.isFinite(item.answer)) {
           errors.push(`${iat}: numeric answer required`);
         }
-        const tol = typeof item.tolerance === "number" && item.tolerance >= 0 ? item.tolerance : 0.01;
+        const tol =
+          typeof item.tolerance === "number" && item.tolerance >= 0 ? item.tolerance : 0.01;
         try {
           const computed = safeEval(item.expr);
           if (Math.abs(computed - item.answer) > tol) {
-            errors.push(`${iat}: expr "${item.expr}" = ${computed}, but answer = ${item.answer} (Δ ${Math.abs(computed - item.answer)} > tol ${tol})`);
+            errors.push(
+              `${iat}: expr "${item.expr}" = ${computed}, but answer = ${item.answer} (Δ ${Math.abs(computed - item.answer)} > tol ${tol})`,
+            );
           }
         } catch (e) {
           errors.push(`${iat}: ${e.message}`);
@@ -111,7 +122,8 @@ for (const u of UNITS) {
         } else {
           item.solution.forEach((w, j) => {
             if (!biOk(w.do)) errors.push(`${iat}.solution[${j}]: do must be {en,es}`);
-            if (typeof w.math !== "string" || !w.math.trim()) errors.push(`${iat}.solution[${j}]: math string required`);
+            if (typeof w.math !== "string" || !w.math.trim())
+              errors.push(`${iat}.solution[${j}]: math string required`);
             if (!biOk(w.why)) errors.push(`${iat}.solution[${j}]: why must be {en,es}`);
           });
         }
@@ -138,17 +150,22 @@ for (const u of UNITS) {
             errors.push(`${eat}: work[] must have at least 2 steps`);
           } else {
             e.work.forEach((w, j) => {
-              if (typeof w.math !== "string" || !w.math.trim()) errors.push(`${eat}.work[${j}]: math string required`);
-              if (w.note !== undefined && !biOk(w.note)) errors.push(`${eat}.work[${j}]: note must be {en,es} when present`);
+              if (typeof w.math !== "string" || !w.math.trim())
+                errors.push(`${eat}.work[${j}]: math string required`);
+              if (w.note !== undefined && !biOk(w.note))
+                errors.push(`${eat}.work[${j}]: note must be {en,es} when present`);
             });
             if (!Number.isInteger(e.flawIndex) || e.flawIndex < 0 || e.flawIndex >= e.work.length) {
-              errors.push(`${eat}: flawIndex ${e.flawIndex} out of range for ${e.work.length} steps`);
+              errors.push(
+                `${eat}: flawIndex ${e.flawIndex} out of range for ${e.work.length} steps`,
+              );
             }
           }
           if (!e.fix || typeof e.fix !== "object") {
             errors.push(`${eat}: fix { math, why } required`);
           } else {
-            if (typeof e.fix.math !== "string" || !e.fix.math.trim()) errors.push(`${eat}.fix: math string required`);
+            if (typeof e.fix.math !== "string" || !e.fix.math.trim())
+              errors.push(`${eat}.fix: math string required`);
             if (!biOk(e.fix.why)) errors.push(`${eat}.fix: why must be {en,es}`);
           }
         });

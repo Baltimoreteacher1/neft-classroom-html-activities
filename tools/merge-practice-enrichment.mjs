@@ -82,8 +82,7 @@ const stats = {
 const readJson = (file) => JSON.parse(fs.readFileSync(file, "utf8"));
 const isBlank = (value) => value == null || String(value).trim() === "";
 /** Same identity the engine uses in `collectPracticeItems`. */
-const identity = (item) =>
-  item?.stem || item?.title || JSON.stringify(item ?? {}).slice(0, 120);
+const _identity = (item) => item?.stem || item?.title || JSON.stringify(item ?? {}).slice(0, 120);
 
 /** Fields still missing on an authored item — mirrors the extraction pass. */
 function gapsFor(item) {

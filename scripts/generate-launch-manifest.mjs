@@ -5,7 +5,7 @@
 // Emits data/launch-manifest.json, used by the Teacher Launch Mode page
 // (/teacher-tools/launch/). Run: node scripts/generate-launch-manifest.mjs
 
-import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 

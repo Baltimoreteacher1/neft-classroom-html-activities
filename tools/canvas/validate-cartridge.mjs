@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { execSync } from "child_process";
 /**
  * validate-cartridge.mjs — structural validator for the Common Cartridges this
  * repo builds (library, lessons, course). Institutionalizes the checks we'd
@@ -18,10 +19,9 @@
  * CLI:           node tools/canvas/validate-cartridge.mjs <package.imscc | dir>
  *                node tools/canvas/validate-cartridge.mjs            # all canvas-packages/*.imscc
  */
-import { readFileSync, readdirSync, statSync, existsSync, mkdtempSync } from "fs";
-import { execSync } from "child_process";
+import { existsSync, mkdtempSync, readdirSync, readFileSync, statSync } from "fs";
 import { tmpdir } from "os";
-import { dirname, resolve, join } from "path";
+import { dirname, join, resolve } from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));

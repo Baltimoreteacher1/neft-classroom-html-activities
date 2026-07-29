@@ -69,7 +69,7 @@ function inject(rel) {
 
 const ONLY = (process.argv.find((a) => a.startsWith("--only=")) || "").split("=")[1] || "";
 const UNITS = [...Array.from({ length: 10 }, (_, i) => `unit-${i + 1}`), "statistics"].filter(
-  (u) => !ONLY || u === ONLY
+  (u) => !ONLY || u === ONLY,
 );
 
 /* Enumerate version folders from disk (version-a, version-b, version-c, …).

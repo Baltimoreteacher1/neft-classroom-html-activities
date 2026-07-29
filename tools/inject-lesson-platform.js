@@ -18,8 +18,8 @@
  *   node tools/inject-lesson-platform.js --dry-run  # report only
  *   node tools/inject-lesson-platform.js --revert   # remove the injected blocks
  */
-import { readdirSync, statSync, readFileSync, writeFileSync, existsSync } from "fs";
-import { join, dirname, basename } from "path";
+import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from "fs";
+import { basename, dirname, join } from "path";
 import { fileURLToPath } from "url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");

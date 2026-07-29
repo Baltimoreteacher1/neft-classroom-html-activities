@@ -13,8 +13,8 @@
  *   node scripts/generate-printable-lesson.mjs            # all lessons
  *   node scripts/generate-printable-lesson.mjs 1-1 10-3   # specific lessons
  */
-import { readFileSync, writeFileSync, readdirSync, existsSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -47,8 +47,7 @@ function seededShuffle(arr, seedStr) {
   return out;
 }
 
-const workLines = (n = 3) =>
-  `<div class="work">${'<div class="wl"></div>'.repeat(n)}</div>`;
+const workLines = (n = 3) => `<div class="work">${'<div class="wl"></div>'.repeat(n)}</div>`;
 const answerBlank = (label = "Answer") =>
   `<p class="ans"><strong>${esc(label)}:</strong> <span class="blank"></span></p>`;
 
@@ -56,13 +55,7 @@ const answerBlank = (label = "Answer") =>
 
 function questionText(item) {
   return (
-    item.stem ||
-    item.prompt ||
-    item.label ||
-    item.question ||
-    item.instructions ||
-    item.text ||
-    ""
+    item.stem || item.prompt || item.label || item.question || item.instructions || item.text || ""
   );
 }
 
@@ -83,11 +76,7 @@ function renderFillTable(item) {
     .map((r) => {
       const vals = keys.map((k) => r[k]);
       return `<tr>${vals
-        .map((v, i) =>
-          i === vals.length - 1
-            ? `<td class="fill"></td>`
-            : `<td>${esc(v)}</td>`,
-        )
+        .map((v, i) => (i === vals.length - 1 ? `<td class="fill"></td>` : `<td>${esc(v)}</td>`))
         .join("")}</tr>`;
     })
     .join("");
@@ -231,15 +220,12 @@ function renderItem(item, idx) {
       body = renderBalance(item);
       break;
     case "bar-model":
-      body =
-        (item.questionText ? `<p>${esc(item.questionText)}</p>` : "") +
-        workLines(3);
+      body = (item.questionText ? `<p>${esc(item.questionText)}</p>` : "") + workLines(3);
       break;
     case "open-response":
       body =
-        (item.sentenceFrame
-          ? `<p class="frame">${esc(item.sentenceFrame)}</p>`
-          : "") + workLines(5);
+        (item.sentenceFrame ? `<p class="frame">${esc(item.sentenceFrame)}</p>` : "") +
+        workLines(5);
       break;
     default:
       body = workLines(4);
@@ -257,8 +243,7 @@ function section(title, emoji, inner) {
 
 function buildPrintable(config) {
   const id = config.lessonId || "";
-  const bilingual = (en, es) =>
-    `${esc(en)}${es ? ` <span class="es">${esc(es)}</span>` : ""}`;
+  const bilingual = (en, es) => `${esc(en)}${es ? ` <span class="es">${esc(es)}</span>` : ""}`;
 
   // Objectives
   const objectives = section(
@@ -318,20 +303,14 @@ function buildPrintable(config) {
   // Launch
   const ci = config.launch?.conceptIntro;
   const launchInner = [
-    config.launch?.narrative
-      ? `<p class="context">${esc(config.launch.narrative)}</p>`
-      : "",
+    config.launch?.narrative ? `<p class="context">${esc(config.launch.narrative)}</p>` : "",
     ci?.heading ? `<h3>${esc(ci.heading)}</h3>` : "",
     ci?.intro ? `<p>${esc(ci.intro)}</p>` : "",
-    ci?.keyIdea
-      ? `<p class="keyidea"><strong>Key idea:</strong> ${esc(ci.keyIdea)}</p>`
-      : "",
+    ci?.keyIdea ? `<p class="keyidea"><strong>Key idea:</strong> ${esc(ci.keyIdea)}</p>` : "",
     ...["iDo", "weDo", "youDo"].map((k) => {
       const step = ci?.[k];
       if (!step) return "";
-      const lines = (step.lines || [])
-        .map((l) => `<li>${esc(l)}</li>`)
-        .join("");
+      const lines = (step.lines || []).map((l) => `<li>${esc(l)}</li>`).join("");
       return `<div class="cistep"><p class="cititle">${esc(step.title || k)}</p><ul>${lines}</ul></div>`;
     }),
   ].join("");
@@ -355,9 +334,7 @@ function buildPrintable(config) {
     (p.approaching && p.approaching.length && p.approaching) ||
     (p.extending && p.extending.length && p.extending) ||
     [];
-  const practiceInner = band.length
-    ? band.map((it, i) => renderItem(it, i)).join("")
-    : "";
+  const practiceInner = band.length ? band.map((it, i) => renderItem(it, i)).join("") : "";
   const practice = practiceInner ? section("Practice", "✏️", practiceInner) : "";
 
   // Connect
@@ -373,22 +350,16 @@ function buildPrintable(config) {
           : ""
       }${workLines(4)}`
     : "";
-  const connect = connectInner
-    ? section("Connect to the Real World", "🌍", connectInner)
-    : "";
+  const connect = connectInner ? section("Connect to the Real World", "🌍", connectInner) : "";
 
   // Reflect / Exit Ticket
   const et = config.reflect?.exitTicket;
   const reflectInner = et
     ? `<p class="qtext">${esc(et.stem)}</p>${
-        (et.choices || []).length
-          ? renderChoices(et.choices) + answerBlank()
-          : workLines(3)
+        (et.choices || []).length ? renderChoices(et.choices) + answerBlank() : workLines(3)
       }`
     : "";
-  const reflect = reflectInner
-    ? section("Exit Ticket", "🎟️", reflectInner)
-    : "";
+  const reflect = reflectInner ? section("Exit Ticket", "🎟️", reflectInner) : "";
 
   const title = esc(config.title || "Lesson");
   const meta = `${esc(config.standard || "")} · Unit ${esc(config.unit ?? "")}${config.lesson != null ? " · Lesson " + esc(config.lesson) : ""}`;
@@ -498,14 +469,8 @@ const targets = argv.length ? argv.filter((d) => all.includes(d)) : all;
 
 let n = 0;
 for (const id of targets) {
-  const config = JSON.parse(
-    readFileSync(join(lessonsDir, id, "config.json"), "utf8"),
-  );
-  writeFileSync(
-    join(lessonsDir, id, "printable.html"),
-    buildPrintable(config),
-    "utf8",
-  );
+  const config = JSON.parse(readFileSync(join(lessonsDir, id, "config.json"), "utf8"));
+  writeFileSync(join(lessonsDir, id, "printable.html"), buildPrintable(config), "utf8");
   n++;
 }
 console.log(`✓ generated ${n} printable.html file(s)`);

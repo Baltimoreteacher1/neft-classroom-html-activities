@@ -11,9 +11,9 @@
  * Idempotent: skips any lesson that already has a graphicNovel block.
  * Inserts as the last top-level key to keep the JSON diff minimal.
  */
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 

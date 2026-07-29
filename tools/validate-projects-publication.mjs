@@ -53,7 +53,8 @@ for (const unit of UNITS) {
     ];
     for (const [needle, expected] of requirements) {
       const actual = count(html, needle);
-      if (actual !== expected) fail(rel, `expected ${expected} occurrence of ${needle}, found ${actual}`);
+      if (actual !== expected)
+        fail(rel, `expected ${expected} occurrence of ${needle}, found ${actual}`);
     }
 
     if (!html.includes('class="step-panel') && !html.includes("class='step-panel")) {
@@ -71,7 +72,9 @@ for (const unit of UNITS) {
 if (pages.length !== 23) failures.push(`expected 23 project pages, enumerated ${pages.length}`);
 
 if (failures.length) {
-  console.error(`Publication Studio validation failed (${failures.length} issue${failures.length === 1 ? "" : "s"}):`);
+  console.error(
+    `Publication Studio validation failed (${failures.length} issue${failures.length === 1 ? "" : "s"}):`,
+  );
   failures.forEach((failure) => console.error(`- ${failure}`));
   process.exit(1);
 }

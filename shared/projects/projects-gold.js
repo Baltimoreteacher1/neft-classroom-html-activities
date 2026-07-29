@@ -200,9 +200,31 @@
 
   /* --- 6. Clamp unbounded number inputs ------------------------------------ */
   function clampNumberInputs() {
-    document.querySelectorAll('input[type="number"]:not([max])').forEach(function (el) {
+    function clamp(el) {
       el.max = "1000000";
-    });
+    }
+
+    document.querySelectorAll('input[type="number"]:not([max])').forEach(clamp);
+
+    // Several project layers mount math workspaces after GOLD initializes.
+    // Keep the same safety invariant for those late-added controls instead of
+    // relying on script order.
+    if ("MutationObserver" in window) {
+      var mo = new MutationObserver(function (muts) {
+        for (var m = 0; m < muts.length; m++) {
+          var nodes = muts[m].addedNodes;
+          for (var n = 0; n < nodes.length; n++) {
+            var node = nodes[n];
+            if (node.nodeType !== 1) continue;
+            if (node.matches && node.matches('input[type="number"]:not([max])')) clamp(node);
+            if (node.querySelectorAll) {
+              node.querySelectorAll('input[type="number"]:not([max])').forEach(clamp);
+            }
+          }
+        }
+      });
+      mo.observe(document.body, { childList: true, subtree: true });
+    }
   }
 
   /* --- 7. Gate the teacher answer console ---------------------------------- */
@@ -317,25 +339,29 @@
     overlay.innerHTML =
       '<div class="gold-level-card">' +
       '  <div class="gold-level-emoji">🎉</div>' +
-      '  <h1 class="gold-level-title">' + titleHtml + '</h1>' +
-      '  <p class="gold-level-sub">' + subHtml + '</p>' +
+      '  <h1 class="gold-level-title">' +
+      titleHtml +
+      "</h1>" +
+      '  <p class="gold-level-sub">' +
+      subHtml +
+      "</p>" +
       '  <h3 class="gold-level-heading">' +
       '    <span class="en-text">Choose your support level to begin:</span>' +
       '    <span class="es-text">Elige tu nivel de apoyo para comenzar:</span>' +
-      '  </h3>' +
+      "  </h3>" +
       '  <button class="gold-level-option opt-lv0" type="button" data-level="0">' +
       '    <span class="en-text">🟠 Level 0 · Extra Support</span>' +
       '    <span class="es-text">🟠 Nivel 0 · Apoyo Extra</span>' +
-      '  </button>' +
+      "  </button>" +
       '  <button class="gold-level-option opt-lv1" type="button" data-level="1">' +
       '    <span class="en-text">🟢 Level 1 — With Support</span>' +
       '    <span class="es-text">🟢 Nivel 1 — Con apoyo</span>' +
-      '  </button>' +
+      "  </button>" +
       '  <button class="gold-level-option opt-lv2" type="button" data-level="2">' +
       '    <span class="en-text">🔵 Level 2 — Challenge</span>' +
       '    <span class="es-text">🔵 Nivel 2 — Desafío</span>' +
-      '  </button>' +
-      '</div>';
+      "  </button>" +
+      "</div>";
 
     document.body.appendChild(overlay);
 
@@ -343,7 +369,7 @@
       btn.addEventListener("click", function () {
         var lvl = parseInt(btn.dataset.level, 10);
         lockLevel(lvl);
-        
+
         overlay.classList.add("fade-out");
         setTimeout(function () {
           overlay.remove();

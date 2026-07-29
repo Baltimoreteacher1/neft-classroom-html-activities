@@ -3,21 +3,21 @@
  * Navy header bars, sand backgrounds, sage side panels, Reveal Math Grade 6.
  */
 
-import { getActivityPlan, ACTIVITY_VARIANTS } from "./slide-activity-map.mjs";
+import { ACTIVITY_VARIANTS, getActivityPlan } from "./slide-activity-map.mjs";
 import {
-  refTitleOpener,
+  refChoiceBoardGrid,
+  refExitSplit,
+  refGoalTrackerLayout,
+  refNoticeWonder,
   refSectionOpener,
   refSlideFrame,
-  refTwoColumn,
-  refChoiceBoardGrid,
-  refThinkWriteFrames,
-  refGoalTrackerLayout,
-  refExitSplit,
-  refVocabTable,
-  refNoticeWonder,
-  refSortLayout,
   refSortBucket,
+  refSortLayout,
   refTeacherNote,
+  refThinkWriteFrames,
+  refTitleOpener,
+  refTwoColumn,
+  refVocabTable,
 } from "./slide-reference-theme.mjs";
 
 function esc(str) {
@@ -768,7 +768,13 @@ function buildBecauseButSoSlide(_contentObj, _themeEmoji, _themeName, keyIdea, v
  * the question words (who/what/when/where/why/how) plus a sentence-starter bank.
  * Builds detail and academic syntax for multilingual learners.
  */
-function buildSentenceExpansionSlide(_contentObj, _themeEmoji, _themeName, _keyIdea, vocabList = []) {
+function buildSentenceExpansionSlide(
+  _contentObj,
+  _themeEmoji,
+  _themeName,
+  _keyIdea,
+  vocabList = [],
+) {
   const terms = (vocabList || []).map((v) => v.term).filter(Boolean);
   const t1 = terms[0] || "this idea";
   const kernel = `Today we used ${esc(t1)}.`;

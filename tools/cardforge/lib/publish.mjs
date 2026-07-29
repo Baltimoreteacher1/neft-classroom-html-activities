@@ -2,7 +2,7 @@
 // curriculum data or move files into live routes. It validates the staged
 // package, checks for collisions, and prints the exact manual steps.
 import { resolve } from "node:path";
-import { existsSync, readJSON, readdirSync, REPO_ROOT } from "./util.mjs";
+import { existsSync, REPO_ROOT, readdirSync, readJSON } from "./util.mjs";
 
 export function publishGuard(pkgDir) {
   const dir = resolve(pkgDir);

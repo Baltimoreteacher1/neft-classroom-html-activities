@@ -36,72 +36,101 @@ const ANCHOR_RE = /<div class="step-panel active" id="step-\d+">/;
 // theme-appropriate defaults (e.g. gcf-bags = party goodie bags).
 const MAP = {
   "math/unit-1/projects": {
-    kind: "block-party", emoji: "🎉", attrs: {},
+    kind: "block-party",
+    emoji: "🎉",
+    attrs: {},
     title: "Plan the block party",
     es: "Planea la fiesta del barrio",
-    intro: "Split the goodie bags (GCF), sync the entertainment (LCM), and set the budget to get the party ready.",
+    intro:
+      "Split the goodie bags (GCF), sync the entertainment (LCM), and set the budget to get the party ready.",
   },
   "math/unit-2/projects": {
-    kind: "recipe-rush", emoji: "🧁", attrs: {},
+    kind: "recipe-rush",
+    emoji: "🧁",
+    attrs: {},
     title: "Portion the batter",
     es: "Reparte la masa en porciones",
-    intro: "Slice the batter into servings and watch how dividing by a smaller fraction makes MORE portions.",
+    intro:
+      "Slice the batter into servings and watch how dividing by a smaller fraction makes MORE portions.",
   },
   "math/unit-3/projects": {
-    kind: "mix-lab", emoji: "🥤", attrs: {},
+    kind: "mix-lab",
+    emoji: "🥤",
+    attrs: {},
     title: "Mix the ratio",
     es: "Mezcla la razón",
     intro: "Build the recipe and scale it up — keep the ratio equivalent as the batch grows.",
   },
   "math/unit-4/projects": {
-    kind: "market-day", emoji: "🏪",
+    kind: "market-day",
+    emoji: "🏪",
     attrs: {},
     title: "Market Day: price to win",
     es: "Día de mercado: pon el precio para ganar",
-    intro: "Set your discount to beat the rival kiosk AND stay above cost, then open the shop and clear the rent.",
+    intro:
+      "Set your discount to beat the rival kiosk AND stay above cost, then open the shop and clear the rent.",
   },
   "math/unit-5/projects": {
-    kind: "blueprint-studio", emoji: "📐", attrs: {},
+    kind: "blueprint-studio",
+    emoji: "📐",
+    attrs: {},
     title: "Measure each room",
     es: "Halla el área de cada cuarto",
-    intro: "Find the area of each room — rectangles, triangles, trapezoids — to pass the blueprint.",
+    intro:
+      "Find the area of each room — rectangles, triangles, trapezoids — to pass the blueprint.",
   },
   "math/unit-6/projects": {
-    kind: "combo-forge", emoji: "🎮", attrs: {},
+    kind: "combo-forge",
+    emoji: "🎮",
+    attrs: {},
     title: "Build the scoring machine",
     es: "Arma la máquina de puntaje",
-    intro: "Evaluate each expression to hit the target score — powers, coefficients, and order of operations.",
+    intro:
+      "Evaluate each expression to hit the target score — powers, coefficients, and order of operations.",
   },
   "math/unit-7/projects": {
-    kind: "park-map", emoji: "🗺️", attrs: {},
+    kind: "park-map",
+    emoji: "🗺️",
+    attrs: {},
     title: "Design the park map",
     es: "Diseña el mapa del parque",
-    intro: "Plot each attraction across the four quadrants and measure the distance between them to finish the map.",
+    intro:
+      "Plot each attraction across the four quadrants and measure the distance between them to finish the map.",
   },
   "math/unit-8/projects": {
-    kind: "escape-chain", emoji: "🕵️",
+    kind: "escape-chain",
+    emoji: "🕵️",
     attrs: {},
     title: "Detective: crack the vault",
     es: "Detective: descifra la bóveda",
-    intro: "Solve each lock's equation by undoing it on BOTH sides — open every lock to reveal the vault code.",
+    intro:
+      "Solve each lock's equation by undoing it on BOTH sides — open every lock to reveal the vault code.",
   },
   "math/unit-9/projects": {
-    kind: "growth-room", emoji: "📈", attrs: {},
+    kind: "growth-room",
+    emoji: "📈",
+    attrs: {},
     title: "Grow the channel",
     es: "Haz crecer el canal",
     intro: "Set the growth rate and graph it — the slope is subscribers gained each week.",
   },
   "math/unit-10/projects": {
-    kind: "fold-fill", emoji: "📦", attrs: {},
+    kind: "fold-fill",
+    emoji: "📦",
+    attrs: {},
     title: "Design the package",
     es: "Diseña el paquete",
-    intro: "Size the box and unfold it — watch the volume fill and the surface area add up face by face.",
+    intro:
+      "Size the box and unfold it — watch the volume fill and the surface area add up face by face.",
   },
   "math/statistics/projects": {
-    kind: "stat-draft", emoji: "🔍", attrs: {},
+    kind: "stat-draft",
+    emoji: "🔍",
+    attrs: {},
     title: "Read the data",
     es: "Interpreta los datos",
-    intro: "Spot the outlier that yanks the mean, then pick the measure — mean or median — that tells the truth.",
+    intro:
+      "Spot the outlier that yanks the mean, then pick the measure — mean or median — that tells the truth.",
   },
 };
 
@@ -146,18 +175,22 @@ function heroBlock(cfg) {
 function stripSentinels(html) {
   return html.replace(
     /[ \t]*<!-- projects-interactive-hero-injected:begin[\s\S]*?projects-interactive-hero-injected:end -->\n?/g,
-    ""
+    "",
   );
 }
 
 function addHead(html) {
   if (html.includes("projects-interactive-hero.css")) return html;
-  const indented = headBlock().map((l) => "    " + l).join("\n");
+  const indented = headBlock()
+    .map((l) => "    " + l)
+    .join("\n");
   return html.replace(/([ \t]*)<\/head>/i, `${indented}\n$1</head>`);
 }
 function addBody(html, kind) {
   if (html.includes(`manip-${kind}.js`)) return html;
-  const indented = bodyBlock(kind).map((l) => "  " + l).join("\n");
+  const indented = bodyBlock(kind)
+    .map((l) => "  " + l)
+    .join("\n");
   return html.replace(/([ \t]*)<\/body>/i, `${indented}\n$1</body>`);
 }
 function addHero(html, cfg) {

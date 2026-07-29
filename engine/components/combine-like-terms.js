@@ -237,7 +237,7 @@ function mountCombine(host, cfg = {}) {
   }
   function check3() {
     const v = parseLinear(inp("expr").value);
-    if (!v) return (mark(inp("expr"), false), setStatus(3, "Write it like 8x - 2.", false));
+    if (!v) return mark(inp("expr"), false), setStatus(3, "Write it like 8x - 2.", false);
     const ok = linEq(v, answer);
     mark(inp("expr"), ok);
     if (ok) {

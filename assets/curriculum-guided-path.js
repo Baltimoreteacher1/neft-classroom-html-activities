@@ -66,14 +66,26 @@
 
   function wrapTools() {
     var bar = document.querySelector(".curriculum-tools-bar");
-    if (!bar || bar.closest(".curriculum-tools-disclosure")) return Boolean(bar);
-    var details = document.createElement("details");
-    details.className = "curriculum-tools-disclosure";
-    var summary = document.createElement("summary");
-    summary.textContent = "🧰 More teacher tools and featured resources";
-    details.appendChild(summary);
-    bar.parentNode.insertBefore(details, bar);
-    details.appendChild(bar);
+    if (!bar) return false;
+    var details = bar.closest(".curriculum-tools-disclosure");
+    if (!details) {
+      details = document.createElement("details");
+      details.className = "curriculum-tools-disclosure";
+      var summary = document.createElement("summary");
+      summary.textContent = "🧰 More teacher tools and featured resources";
+      details.appendChild(summary);
+      bar.parentNode.insertBefore(details, bar);
+      details.appendChild(bar);
+    }
+
+    // curriculum-enhancements builds the mode control asynchronously. If it
+    // wins the race with this wrapper, its lift script can place the control
+    // outside the disclosure; if this wrapper wins, it lands inside. Reconcile
+    // both orders so the public hub has one stable layout.
+    var modeControls = document.getElementById("hub-enhance-bar");
+    if (modeControls && !details.contains(modeControls)) {
+      details.insertBefore(modeControls, bar);
+    }
     return true;
   }
 

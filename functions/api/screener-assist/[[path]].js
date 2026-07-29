@@ -31,10 +31,13 @@ function clampStr(v, n) {
   return typeof v === "string" ? v.slice(0, n).trim() : "";
 }
 function clientIp(request) {
-  return request.headers.get("CF-Connecting-IP") || request.headers.get("X-Forwarded-For") || "anon";
+  return (
+    request.headers.get("CF-Connecting-IP") || request.headers.get("X-Forwarded-For") || "anon"
+  );
 }
 function rateLimited(ip) {
-  const now = Date.now(), cutoff = now - RATE.windowMs;
+  const now = Date.now(),
+    cutoff = now - RATE.windowMs;
   const arr = (RATE.hits.get(ip) || []).filter((t) => t > cutoff);
   arr.push(now);
   RATE.hits.set(ip, arr);
@@ -66,7 +69,7 @@ function systemPrompt() {
     "- Be professional, specific to the data, and appropriately cautious. Do not invent findings beyond what is provided.",
     "- Frame next steps consistent with the given tier (e.g., monitor/strategies vs. refer for a comprehensive evaluation).",
     "- For multilingual students, note that difference is not disorder where relevant.",
-    "Return STRICT JSON: {\"impression\":\"4-6 sentence clinical impression paragraph\",\"parent\":\"3-4 sentence plain, warm explanation a family can understand\"}. No markdown, no extra keys.",
+    'Return STRICT JSON: {"impression":"4-6 sentence clinical impression paragraph","parent":"3-4 sentence plain, warm explanation a family can understand"}. No markdown, no extra keys.',
   ].join("\n");
 }
 function userPrompt(v) {
@@ -75,7 +78,9 @@ function userPrompt(v) {
   if (v.homeLanguage) lines.push("Home language(s): " + v.homeLanguage);
   lines.push("Screening conclusion (tier): " + (v.tier || "unspecified"));
   lines.push("Domain results:");
-  v.domains.forEach((d) => lines.push("- " + d.name + ": " + d.result + (d.detail ? " (" + d.detail + ")" : "")));
+  v.domains.forEach((d) =>
+    lines.push("- " + d.name + ": " + d.result + (d.detail ? " (" + d.detail + ")" : "")),
+  );
   lines.push("\nWrite the JSON now.");
   return lines.join("\n");
 }
@@ -97,10 +102,15 @@ async function callClaude(env, v) {
   if (!resp.ok) return { ok: false, status: resp.status === 429 ? 429 : 502 };
   const data = await resp.json().catch(() => null);
   const text = Array.isArray(data?.content)
-    ? data.content.filter((x) => x && x.type === "text" && typeof x.text === "string").map((x) => x.text).join("").trim()
+    ? data.content
+        .filter((x) => x && x.type === "text" && typeof x.text === "string")
+        .map((x) => x.text)
+        .join("")
+        .trim()
     : "";
   if (!text) return { ok: false, status: 502 };
-  let impression = "", parent = "";
+  let impression = "",
+    parent = "";
   try {
     const m = text.match(/\{[\s\S]*\}/);
     const obj = JSON.parse(m ? m[0] : text);
@@ -122,13 +132,25 @@ export async function onRequest(context) {
     return json({ ok: true, backend: hasClaude ? "claude" : "none", live: hasClaude });
   if (method !== "POST" || seg) return json({ ok: false, error: "not-found" }, 404);
   if (!hasClaude)
-    return json({ ok: false, offline: true, error: "not-configured", message: "AI assist backend is not configured (ANTHROPIC_API_KEY)." }, 503);
+    return json(
+      {
+        ok: false,
+        offline: true,
+        error: "not-configured",
+        message: "AI assist backend is not configured (ANTHROPIC_API_KEY).",
+      },
+      503,
+    );
   if (rateLimited(clientIp(request))) return json({ ok: false, error: "rate-limited" }, 429);
   const parsed = parseBody(await request.json().catch(() => null));
   if (!parsed.ok) return json({ ok: false, error: parsed.error }, 400);
   try {
     const out = await callClaude(env, parsed.value);
-    if (!out || !out.ok) return json({ ok: false, offline: true, error: "unavailable" }, out && out.status === 429 ? 429 : 503);
+    if (!out || !out.ok)
+      return json(
+        { ok: false, offline: true, error: "unavailable" },
+        out && out.status === 429 ? 429 : 503,
+      );
     return json({ ok: true, impression: out.impression, parent: out.parent });
   } catch {
     return json({ ok: false, offline: true, error: "server-error" }, 503);

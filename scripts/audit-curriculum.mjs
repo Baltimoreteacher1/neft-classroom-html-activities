@@ -33,8 +33,8 @@
  * Exit code: 0 if no ERROR-severity findings, 1 otherwise (CI-friendly).
  */
 
-import { existsSync, readFileSync, readdirSync, statSync, mkdirSync, writeFileSync } from "node:fs";
-import { join, dirname, resolve, relative, posix } from "node:path";
+import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { dirname, join, posix, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = process.cwd();

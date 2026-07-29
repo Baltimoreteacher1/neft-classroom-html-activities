@@ -48,8 +48,8 @@
  */
 import fs from "fs";
 import path from "path";
-import { fileURLToPath } from "url";
 import pptxgen from "pptxgenjs";
+import { fileURLToPath } from "url";
 import { buildPptxDeck } from "./lib/pptx-deck.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

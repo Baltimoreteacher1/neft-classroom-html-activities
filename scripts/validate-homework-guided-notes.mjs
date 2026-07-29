@@ -2,7 +2,7 @@
 /**
  * Quality gate for generated family homework guided notes.
  */
-import { readFileSync, readdirSync, existsSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import vm from "node:vm";
 
@@ -20,9 +20,8 @@ const LESSON_DIR_RE = /^(\d+)-(\d+)(-flagship)?$/;
 // site-wide and meant nothing.
 export function countQuickChecks(html) {
   return (
-    html.match(
-      /class="problem-number-badge">(?:Warm-up \/ Calentamiento|Level up \/ Reto) \d/g,
-    ) || []
+    html.match(/class="problem-number-badge">(?:Warm-up \/ Calentamiento|Level up \/ Reto) \d/g) ||
+    []
   ).length;
 }
 
@@ -46,7 +45,11 @@ function selfTestCountQuickChecks() {
         badge("Warm-up / Calentamiento", 1),
       1,
     ],
-    ["ignores an unnumbered label", '<div class="problem-number-badge">Warm-up / Calentamiento</div>', 0],
+    [
+      "ignores an unnumbered label",
+      '<div class="problem-number-badge">Warm-up / Calentamiento</div>',
+      0,
+    ],
     ["ignores Bonus / Más", badge("Bonus / Más", 1), 0],
     ["empty document counts zero", "<html></html>", 0],
   ];
@@ -96,9 +99,9 @@ const REQUIRED_MARKERS = [
   'data-visual-lab="',
   'class="visual-lab-stage"',
   'data-lesson-model="',
-  'data-lesson-model-host',
+  "data-lesson-model-host",
   'class="interactive-visual"',
-  '/assets/homework-lesson-models.js',
+  "/assets/homework-lesson-models.js",
   'class="visual-representation-grid"',
   "TOUCH &amp; TRY",
   "TOCA Y PRUEBA",
@@ -180,13 +183,25 @@ for (const id of lessonIds) {
   const lessonModels = (html.match(/data-lesson-model="/g) || []).length;
   const representationCards = (html.match(/class="visual-representation-card /g) || []).length;
   if (visualLabs !== 1) {
-    issues.push({ id, level: "CRITICAL", msg: `Expected one visual math lab, found ${visualLabs}` });
+    issues.push({
+      id,
+      level: "CRITICAL",
+      msg: `Expected one visual math lab, found ${visualLabs}`,
+    });
   }
   if (lessonModels !== 1) {
-    issues.push({ id, level: "CRITICAL", msg: `Expected one shared lesson model, found ${lessonModels}` });
+    issues.push({
+      id,
+      level: "CRITICAL",
+      msg: `Expected one shared lesson model, found ${lessonModels}`,
+    });
   }
   if (representationCards !== 3) {
-    issues.push({ id, level: "HIGH", msg: `Expected three representations, found ${representationCards}` });
+    issues.push({
+      id,
+      level: "HIGH",
+      msg: `Expected three representations, found ${representationCards}`,
+    });
   }
 
   const script = html.match(/<script>([\s\S]*?)<\/script>/i)?.[1];

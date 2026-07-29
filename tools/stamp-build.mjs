@@ -7,8 +7,8 @@
  * Shows the commit + build time actually serving in production. Runs in the
  * build, after dist exists. Never fails the build.
  */
-import { writeFileSync, readFileSync, mkdirSync, existsSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 try {
@@ -40,7 +40,8 @@ try {
   writeFileSync(join(dir, "config.json"), JSON.stringify(stamp, null, 2));
 
   // Stamp Service Worker cache key & curriculum assets with build timestamp
-  const buildStamp = process.env.CF_PAGES_COMMIT_SHA || process.env.GITHUB_SHA || Date.now().toString(36);
+  const buildStamp =
+    process.env.CF_PAGES_COMMIT_SHA || process.env.GITHUB_SHA || Date.now().toString(36);
   const swCacheName = `eduwonderlab-v${buildStamp.slice(0, 10)}`;
 
   const swFiles = [
@@ -53,9 +54,12 @@ try {
     if (existsSync(swPath)) {
       try {
         let swContent = readFileSync(swPath, "utf8");
-        swContent = swContent.replace(/const CACHE = "eduwonderlab-v[^"]+";/, `const CACHE = "${swCacheName}";`);
+        swContent = swContent.replace(
+          /const CACHE = "eduwonderlab-v[^"]+";/,
+          `const CACHE = "${swCacheName}";`,
+        );
         writeFileSync(swPath, swContent, "utf8");
-      } catch (e) {}
+      } catch (_e) {}
     }
   }
 
@@ -68,9 +72,12 @@ try {
     if (existsSync(currPath)) {
       try {
         let currContent = readFileSync(currPath, "utf8");
-        currContent = currContent.replace(/(\/assets\/curriculum-[^"']+\.(?:css|js))\?v=[^"']+/g, `$1?v=${buildStamp.slice(0, 10)}`);
+        currContent = currContent.replace(
+          /(\/assets\/curriculum-[^"']+\.(?:css|js))\?v=[^"']+/g,
+          `$1?v=${buildStamp.slice(0, 10)}`,
+        );
         writeFileSync(currPath, currContent, "utf8");
-      } catch (e) {}
+      } catch (_e) {}
     }
   }
 

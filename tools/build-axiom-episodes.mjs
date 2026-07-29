@@ -19,8 +19,8 @@
  *         node tools/build-axiom-episodes.mjs u7e1 u8e2  (build some)
  */
 import { readFileSync, writeFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const AC = join(ROOT, "graphic-novels", "axiom-city");

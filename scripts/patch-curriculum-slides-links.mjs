@@ -2,7 +2,7 @@
  * Patch hand-maintained curriculum/index.html so Google Slides pills point at
  * reference-matched /lessons/{id}/slides.html (with optional Drive legacy copy).
  */
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 

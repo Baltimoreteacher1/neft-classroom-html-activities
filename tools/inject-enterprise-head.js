@@ -26,8 +26,8 @@
  * Re-run this after regenerating lesson pages (notes/worksheets/etc.), same
  * as the other injector layers.
  */
-import { readdirSync, statSync, readFileSync, writeFileSync } from "fs";
-import { join, dirname, basename } from "path";
+import { readdirSync, readFileSync, statSync, writeFileSync } from "fs";
+import { basename, dirname, join } from "path";
 import { fileURLToPath } from "url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");

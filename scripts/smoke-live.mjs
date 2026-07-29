@@ -61,7 +61,11 @@ const STATUS_CHECKS = [
 
 /** External dependency: the mailbox insights endpoint (Apps Script). */
 const EXTERNAL_CHECKS = [
-  ["insights endpoint", "https://script.google.com/macros/s/AKfycbxs4s0aA4LQCuIyrmdg6RIvv27eVm7PpbDrWR1SVmWsqvRVdfDWHEzFzaEpnorpPe7wrQ/exec", 200],
+  [
+    "insights endpoint",
+    "https://script.google.com/macros/s/AKfycbxs4s0aA4LQCuIyrmdg6RIvv27eVm7PpbDrWR1SVmWsqvRVdfDWHEzFzaEpnorpPe7wrQ/exec",
+    200,
+  ],
 ];
 
 /**
@@ -193,7 +197,12 @@ async function getOnce(url, timeoutMs) {
     const body = await res.text();
     return { status: res.status, body, url };
   } catch (err) {
-    return { status: 0, body: "", url, error: err.name === "AbortError" ? `timeout after ${timeoutMs}ms` : err.message };
+    return {
+      status: 0,
+      body: "",
+      url,
+      error: err.name === "AbortError" ? `timeout after ${timeoutMs}ms` : err.message,
+    };
   } finally {
     clearTimeout(timer);
   }
@@ -206,8 +215,17 @@ async function checkPages() {
   for (const page of PAGES) {
     const res = await get(page.path);
     if (page.authGated) {
-      if (res.status === 401) { pass(`page ${page.path}`, "401 — auth gate active" + retryNote(res)); continue; }
-      if (res.status === 200) { failCheck(`page ${page.path}`, "200 without auth — the Basic Auth gate is NOT protecting this surface"); continue; }
+      if (res.status === 401) {
+        pass(`page ${page.path}`, "401 — auth gate active" + retryNote(res));
+        continue;
+      }
+      if (res.status === 200) {
+        failCheck(
+          `page ${page.path}`,
+          "200 without auth — the Basic Auth gate is NOT protecting this surface",
+        );
+        continue;
+      }
       failCheck(`page ${page.path}`, res.error || `HTTP ${res.status} (expected 401)`);
       continue;
     }
@@ -216,7 +234,10 @@ async function checkPages() {
       continue;
     }
     if (!page.marker.test(res.body)) {
-      failCheck(`page ${page.path}`, `200 but body does not look like ${page.name} (${res.body.length} bytes)`);
+      failCheck(
+        `page ${page.path}`,
+        `200 but body does not look like ${page.name} (${res.body.length} bytes)`,
+      );
       continue;
     }
     // A page that renders its own error shell is a 200 too.
@@ -294,7 +315,8 @@ async function checkStamp() {
   let first = await readStamp();
   if (first.error) return failCheck("build stamp", first.error);
   if (!EXPECT_SHA) return pass("build stamp", `serving ${first.commit.slice(0, 9)}`);
-  if (matches(first.commit)) return pass("build stamp", `serving ${first.commit.slice(0, 9)} as expected`);
+  if (matches(first.commit))
+    return pass("build stamp", `serving ${first.commit.slice(0, 9)} as expected`);
 
   // Stale on first read — wait for the promotion to finish propagating.
   const settleStart = Date.now();
@@ -307,7 +329,10 @@ async function checkStamp() {
       if (latest.error) continue;
       if (matches(latest.commit)) {
         const waited = Math.round((Date.now() - settleStart) / 1000);
-        return pass("build stamp", `serving ${latest.commit.slice(0, 9)} as expected (converged after ${waited}s)`);
+        return pass(
+          "build stamp",
+          `serving ${latest.commit.slice(0, 9)} as expected (converged after ${waited}s)`,
+        );
       }
     }
   } finally {
@@ -353,7 +378,11 @@ async function checkExternals() {
       clearTimeout(timer);
     }
     if (status === want) pass(`external ${label}`, `${status}`);
-    else warnCheck(`external ${label}`, `${error || `got ${status}, expected ${want}`} — third-party, does NOT block this deploy`);
+    else
+      warnCheck(
+        `external ${label}`,
+        `${error || `got ${status}, expected ${want}`} — third-party, does NOT block this deploy`,
+      );
   }
 }
 
@@ -371,7 +400,9 @@ for (const r of results) {
 
 const failed = results.filter((r) => !r.ok);
 const warned = results.filter((r) => r.warn);
-console.log(`\n${results.length - failed.length}/${results.length} checks passed${warned.length ? ` (${warned.length} warning(s))` : ""}`);
+console.log(
+  `\n${results.length - failed.length}/${results.length} checks passed${warned.length ? ` (${warned.length} warning(s))` : ""}`,
+);
 
 // Repeat failures AFTER the summary. They used to print only in the middle of
 // the list, so `... | tail` showed the rollback advice without ever showing

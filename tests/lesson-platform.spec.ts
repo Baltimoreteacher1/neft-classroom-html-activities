@@ -164,10 +164,9 @@ test.describe("lesson engine launcher — award layer", () => {
     if (await period.count()) await period.fill("3");
     await page.getByRole("button", { name: /Start Activity/ }).click();
 
-    // Jump straight to Practice via the platform's own navigation event.
-    await page.evaluate(() =>
-      document.dispatchEvent(new CustomEvent("rma:navigate", { detail: { phase: 2 } })),
-    );
+    // Navigate by the visible phase label. Pre-lesson resources now precede
+    // the core phases, so positional phase indexes are intentionally fluid.
+    await page.locator(".phase-nav").getByRole("button", { name: /Practice/ }).click();
 
     // The leveled coaching line follows the served problem's tier.
     const tierVoice = page.locator(".practice-tier-voice");

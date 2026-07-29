@@ -1,6 +1,6 @@
-import { defineConfig } from "vite";
+import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "fs";
 import { resolve } from "path";
-import { readdirSync, existsSync, cpSync, mkdirSync, readFileSync, writeFileSync } from "fs";
+import { defineConfig } from "vite";
 
 function getLessonEntries() {
   const lessonsDir = resolve(__dirname, "lessons");
@@ -321,7 +321,7 @@ function copyStandaloneHtml() {
             let content = readFileSync(full, "utf8");
             content = content.replace(
               /const CACHE = "[^"]*";/g,
-              `const CACHE = "nt-cache-${buildTimestamp}";`
+              `const CACHE = "nt-cache-${buildTimestamp}";`,
             );
             writeFileSync(full, content);
           }

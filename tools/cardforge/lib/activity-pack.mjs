@@ -5,7 +5,7 @@
 //   3. Error Analysis (find + fix the mistake)
 //   4. Exit Ticket
 //   5. Challenge Task
-import { htmlPage, esc, nameBar } from "./print-style.mjs";
+import { esc, htmlPage, nameBar } from "./print-style.mjs";
 
 // ---- Word search ----------------------------------------------------------
 function buildWordSearch(terms, size = 12) {

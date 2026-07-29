@@ -3,21 +3,21 @@
  * Derives bilingual EN/ES content from lesson config.json fields.
  */
 
-import { readFileSync, existsSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { existsSync, readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import {
-  plainObjective,
-  translateFamilyText,
-  translateLanguageObjective,
-  translateConceptLine,
-  spanishKernel,
-  spanishKeyIdea,
-  polishSpanish,
-} from "./homework-spanish.mjs";
 import { detectVisualTopic, selectAlignedQuickCheckProblems } from "./homework-alignment.mjs";
 import { getExternalResources } from "./homework-external-resources.mjs";
 import { renderPlayTab } from "./homework-games.mjs";
+import {
+  plainObjective,
+  polishSpanish,
+  spanishKernel,
+  spanishKeyIdea,
+  translateConceptLine,
+  translateFamilyText,
+  translateLanguageObjective,
+} from "./homework-spanish.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const _root = join(__dirname, "..");
@@ -1040,9 +1040,10 @@ export function renderConceptExplainer(config) {
             const cue = stepCue(index);
             const en = splitExplanation(s.en);
             const es = splitExplanation(s.es);
-            const moreDetail = en.detail || es.detail
-              ? `<details class="step-detail"><summary><span class="lang-en">More detail</span><span class="lang-es" lang="es">Más detalle</span></summary>${en.detail ? `<p class="lang-en">${esc(en.detail)}</p>` : ""}${es.detail ? `<p class="lang-es" lang="es">${esc(es.detail)}</p>` : ""}</details>`
-              : "";
+            const moreDetail =
+              en.detail || es.detail
+                ? `<details class="step-detail"><summary><span class="lang-en">More detail</span><span class="lang-es" lang="es">Más detalle</span></summary>${en.detail ? `<p class="lang-en">${esc(en.detail)}</p>` : ""}${es.detail ? `<p class="lang-es" lang="es">${esc(es.detail)}</p>` : ""}</details>`
+                : "";
             return `
           <li class="guided-step step-color-${s.stepNum}">
             <div class="guided-step-head">

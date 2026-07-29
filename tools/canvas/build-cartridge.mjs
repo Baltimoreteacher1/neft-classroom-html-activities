@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { execSync } from "child_process";
 /**
  * build-cartridge.mjs — generate a Canvas-importable Common Cartridge (.imscc)
  * that creates one graded assignment per Reveal Math lesson, each linking to the
@@ -25,8 +26,7 @@
  * Env: NEFT_SITE overrides base site (default https://eduwonderlab.com).
  * Output: canvas-packages/neft-lessons[-unitN].imscc
  */
-import { readFileSync, writeFileSync, mkdirSync, rmSync } from "fs";
-import { execSync } from "child_process";
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
 import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
 

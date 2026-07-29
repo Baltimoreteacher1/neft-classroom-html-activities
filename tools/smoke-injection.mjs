@@ -1,8 +1,8 @@
-import { chromium } from "playwright";
-import http from "http";
-import { readFile, stat } from "fs/promises";
 import { existsSync } from "fs";
-import { join, extname, relative } from "path";
+import { readFile, stat } from "fs/promises";
+import http from "http";
+import { extname, join, relative } from "path";
+import { chromium } from "playwright";
 
 const ROOT = process.cwd();
 const EXE = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome";

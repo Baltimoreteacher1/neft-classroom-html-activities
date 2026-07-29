@@ -111,8 +111,12 @@ function checkFile(file, lessonId) {
   const beginCount = html.split("ewl-supports-injected:begin").length - 1;
   const endCount = html.split("ewl-supports-injected:end").length - 1;
   const hasAttr = html.includes(`data-ewl-supports-lesson="${lessonId}"`);
-  const hasCss = html.includes("/assets/learning-supports/learning-supports.css?v=20260714-supports-v26");
-  const hasJs = html.includes("/assets/learning-supports/learning-supports.js?v=20260714-supports-v26");
+  const hasCss = html.includes(
+    "/assets/learning-supports/learning-supports.css?v=20260714-supports-v26",
+  );
+  const hasJs = html.includes(
+    "/assets/learning-supports/learning-supports.js?v=20260714-supports-v26",
+  );
 
   return beginCount === 2 && endCount === 2 && hasAttr && hasCss && hasJs;
 }

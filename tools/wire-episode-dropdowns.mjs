@@ -7,8 +7,8 @@
  * Idempotent: re-running makes no further changes.
  */
 import { readFileSync, writeFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const IDX = join(ROOT, "graphic-novels", "index.html");

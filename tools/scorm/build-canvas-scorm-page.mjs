@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { execFileSync } from "child_process";
 // Build the on-site Canvas SCORM hub: generate a SCORM package for every lesson
 // and assignable activity, copy them into the SERVED teacher dir, and emit the
 // data index the teacher page renders. One command keeps the whole "auto-grade
@@ -9,10 +10,9 @@
 // Output:
 //   teacher-tools/canvas-scorm/packages/*.zip   (downloadable SCORM packages)
 //   teacher-tools/canvas-scorm/packages-index.json  (drives index.html)
-import { readFileSync, writeFileSync, mkdirSync, copyFileSync, rmSync, existsSync } from "fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
 import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
-import { execFileSync } from "child_process";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, "../..");
@@ -22,7 +22,8 @@ const pageDir = resolve(repoRoot, "teacher-tools/canvas-scorm");
 const pkgDir = resolve(pageDir, "packages");
 const SITE = (process.env.NEFT_SITE || "https://eduwonderlab.com").replace(/\/$/, "");
 
-if (existsSync(pkgDir)) rmSync(pkgDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
+if (existsSync(pkgDir))
+  rmSync(pkgDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
 mkdirSync(pkgDir, { recursive: true });
 mkdirSync(scormOut, { recursive: true });
 

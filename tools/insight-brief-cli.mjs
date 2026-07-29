@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { execFileSync } from "node:child_process";
 /**
  * Insight Brief CLI — generates the same one-click class brief as
  * /teacher-tools/insight-brief/, headlessly, and writes it to an HTML file.
@@ -13,7 +14,6 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -127,7 +127,10 @@ const grpHtml = brief.groups
   )
   .join("");
 const planHtml = brief.planning
-  .map((p) => `<li><b>Class ${esc(p.section)}</b><ul>${p.ideas.map((i) => `<li>${esc(i)}</li>`).join("")}</ul></li>`)
+  .map(
+    (p) =>
+      `<li><b>Class ${esc(p.section)}</b><ul>${p.ideas.map((i) => `<li>${esc(i)}</li>`).join("")}</ul></li>`,
+  )
   .join("");
 
 const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Insight Brief ${esc(

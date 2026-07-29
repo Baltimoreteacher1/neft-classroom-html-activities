@@ -8,6 +8,7 @@ import { isRight } from "./small-group-answers.js";
 // match (not substring) so bar-MODEL, scale-bars, double-rate-bars, etc. keep
 // their own renderings.
 const DATA_KINDS = new Set(["dot-plot", "data-dots", "histogram", "box-plot", "bar-chart"]);
+
 import { el, esc, esLane, speak } from "./small-group-ui.js";
 
 // Pull just the equation out of a solve-it stem like

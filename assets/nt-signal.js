@@ -248,7 +248,8 @@
       crypto.getRandomValues(bytes);
       for (var i = 0; i < bytes.length; i++) suffix += ALPHABET[bytes[i] % ALPHABET.length];
     } else {
-      for (var j = 0; j < 6; j++) suffix += ALPHABET.charAt(Math.floor(Math.random() * ALPHABET.length));
+      for (var j = 0; j < 6; j++)
+        suffix += ALPHABET.charAt(Math.floor(Math.random() * ALPHABET.length));
     }
     return "NT-" + suffix;
   }
@@ -296,7 +297,9 @@
         return r.ok ? r.json() : null;
       })
       .then(function (res) {
-        return res && res.ok ? { ok: true, code: code, updatedAt: res.updatedAt } : { ok: false, code: code };
+        return res && res.ok
+          ? { ok: true, code: code, updatedAt: res.updatedAt }
+          : { ok: false, code: code };
       })
       .catch(function () {
         return { ok: false, code: code };
@@ -312,7 +315,8 @@
         return r.ok ? r.json() : null;
       })
       .then(function (res) {
-        if (!res || !res.ok || !res.record || !res.record.state) return { ok: false, error: "not-found" };
+        if (!res || !res.ok || !res.record || !res.record.state)
+          return { ok: false, error: "not-found" };
         writeStore(res.record.state);
         return { ok: true, code: code, profile: res.record.state };
       })

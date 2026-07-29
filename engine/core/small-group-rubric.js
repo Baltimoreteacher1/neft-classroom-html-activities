@@ -107,7 +107,8 @@ const LEVEL_HEADS = ["1 · Starting", "2 · Developing", "3 · Meeting", "4 · E
  * bar is public and consistent — the publisher's rubric page, in-line.
  */
 export function createRubricDetails(variant = "group1", config = {}) {
-  const rows = Array.isArray(config.rubric) && config.rubric.length ? config.rubric : DEFAULT_RUBRIC;
+  const rows =
+    Array.isArray(config.rubric) && config.rubric.length ? config.rubric : DEFAULT_RUBRIC;
   const details = el("details", "sg-rubric");
   const lede =
     variant === "group2"

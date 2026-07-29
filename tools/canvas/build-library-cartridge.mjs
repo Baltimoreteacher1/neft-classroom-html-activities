@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { execSync } from "child_process";
 /**
  * build-library-cartridge.mjs — turn the ENTIRE EduWonderLab library (every
  * lesson, activity, game, project, assessment — current AND future) into one
@@ -34,13 +35,12 @@
  * Env: NEFT_SITE overrides the base site (default https://eduwonderlab.com).
  * Output: canvas-packages/neft-library[-suffix].imscc  (+ a manifest .json sidecar)
  */
-import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from "fs";
-import { execSync } from "child_process";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
 import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
-import { selectLibrary, norm } from "./lib/library-select.mjs";
-import { validateCartridgeDir } from "./validate-cartridge.mjs";
 import { buildCartridgeFiles } from "../../teacher-tools/canvas-studio/cartridge-files.mjs";
+import { norm, selectLibrary } from "./lib/library-select.mjs";
+import { validateCartridgeDir } from "./validate-cartridge.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, "../..");

@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+import { writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 /**
  * Generates the social/Open Graph share image for the Curriculum Hub.
  * 1200×630 branded card rasterized from SVG via @resvg/resvg-js.
@@ -10,9 +13,6 @@
  *   navy #15487f · teal #205fa6 · green #2c7d6b · ink #14223a
  */
 import { Resvg } from "@resvg/resvg-js";
-import { writeFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
-import { dirname, join } from "node:path";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const out = join(root, "assets", "og-curriculum.png");

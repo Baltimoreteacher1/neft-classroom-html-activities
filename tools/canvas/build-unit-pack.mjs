@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { execFileSync } from "child_process";
 /**
  * build-unit-pack.mjs — one command to assemble EVERYTHING a teacher needs to
  * put one unit (or every unit) into Canvas, in a single folder.
@@ -17,9 +18,8 @@
  *   node tools/canvas/build-unit-pack.mjs 3      |  npm run unit-pack -- 3
  *   node tools/canvas/build-unit-pack.mjs all    |  npm run unit-pack -- all
  */
-import { readFileSync, writeFileSync, mkdirSync, existsSync, renameSync, rmSync } from "fs";
-import { execFileSync } from "child_process";
-import { resolve, dirname } from "path";
+import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from "fs";
+import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));

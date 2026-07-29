@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { execSync } from "child_process";
 /**
  * build-pretest-qti.mjs — convert the 10 unit pre-tests into ONE native Canvas
  * quiz package (QTI .zip): a "Unit N Pre-Test" quiz per unit, item-scored, in a
@@ -19,12 +20,11 @@
  * Output: <outDir|canvas-packages>/neft-pretest-quizzes.zip
  * Import: Canvas → Settings → Import Course Content → "QTI .zip file".
  */
-import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from "fs";
-import { execSync } from "child_process";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
 import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
 import vm from "vm";
-import { LETTERS, xml, qtiAssessment, assessmentMeta } from "./lib/qti.mjs";
+import { assessmentMeta, LETTERS, qtiAssessment, xml } from "./lib/qti.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, "../..");

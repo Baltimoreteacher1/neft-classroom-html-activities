@@ -1,5 +1,5 @@
 import { deriveHintLadder } from "./content-enrichment.js";
-import { t, stackHtml, hintLabel } from "./i18n.js";
+import { hintLabel, stackHtml, t } from "./i18n.js";
 
 function esc(s) {
   const d = document.createElement("div");

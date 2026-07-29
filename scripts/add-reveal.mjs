@@ -16,10 +16,11 @@
  * Everything stays local. Nothing is uploaded. Re-running replaces the lesson's
  * existing Reveal slides (no duplicates).
  */
-import fs from "fs";
-import path from "path";
-import os from "os";
+
 import { execFileSync } from "child_process";
+import fs from "fs";
+import os from "os";
+import path from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

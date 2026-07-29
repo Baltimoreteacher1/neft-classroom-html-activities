@@ -11,8 +11,8 @@
  * Safe: only adds two tags; never removes lesson content; skips pages that
  * already carry the markers. Re-run after regenerating lesson HTML.
  */
-import { readdirSync, existsSync, readFileSync, writeFileSync } from "fs";
-import { join, dirname, relative } from "path";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "fs";
+import { dirname, join, relative } from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));

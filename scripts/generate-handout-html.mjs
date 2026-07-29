@@ -6,7 +6,7 @@
  * Run: node scripts/generate-handout-html.mjs
  */
 
-import { readFileSync, writeFileSync, readdirSync, existsSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { EDITORIAL_FONT_IMPORT, EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
 

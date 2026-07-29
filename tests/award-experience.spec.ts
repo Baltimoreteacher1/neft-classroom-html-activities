@@ -21,6 +21,10 @@ async function enterLesson(page: Page, path: string) {
   await page.locator("#id-start").click();
 }
 
+async function openPractice(page: Page) {
+  await page.locator(".phase-nav").getByRole("button", { name: /Practice/ }).click();
+}
+
 async function completeGoDeeper(page: Page, root: ReturnType<Page["locator"]>) {
   await root.locator("summary").click();
   const stepOne = root.locator(".ntgd-step").nth(0);
@@ -45,7 +49,7 @@ async function completeGoDeeper(page: Page, root: ReturnType<Page["locator"]>) {
 test.describe("Go Deeper Lab — whole-class Practice (advanced tier)", () => {
   test("full three-step flow completes, persists, and celebrates", async ({ page }) => {
     await enterLesson(page, "/lessons/1-1/");
-    await page.locator('.phase-nav [data-phase="2"]').click();
+    await openPractice(page);
     const lab = page.locator(".ntgd");
     await expect(lab).toBeVisible();
     // Invitation-only: collapsed by default, so it never blocks Level 0.
@@ -57,7 +61,7 @@ test.describe("Go Deeper Lab — whole-class Practice (advanced tier)", () => {
 
   test("bilingual sublines are present (ESOL L1/2)", async ({ page }) => {
     await enterLesson(page, "/lessons/1-1/");
-    await page.locator('.phase-nav [data-phase="2"]').click();
+    await openPractice(page);
     await page.locator(".ntgd summary").click();
     await expect(page.locator(".ntgd summary .ntgd-es")).toContainText("Ve más allá");
     await expect(page.locator(".ntgd-step .ntgd-es").first()).toContainText("Acepta el reto");
@@ -67,7 +71,7 @@ test.describe("Go Deeper Lab — whole-class Practice (advanced tier)", () => {
     const context = await browser.newContext({ reducedMotion: "reduce" });
     const page = await context.newPage();
     await enterLesson(page, "/lessons/1-1/");
-    await page.locator('.phase-nav [data-phase="2"]').click();
+    await openPractice(page);
     const lab = page.locator(".ntgd");
     await completeGoDeeper(page, lab);
     for (const spark of await page.locator(".ntgd-spark").all()) {

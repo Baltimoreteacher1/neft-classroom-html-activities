@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { spawn } from "node:child_process";
 // smoke-lesson-boot.mjs — headless render smoke test for client-rendered pages.
 //
 // WHY: lessons (and several hubs/SPAs) render client-side into a mount element.
@@ -35,10 +36,9 @@
 //   node tools/smoke-lesson-boot.mjs --lessons 1-1,5-3   # only these lessons
 //   node tools/smoke-lesson-boot.mjs --all               # every lesson
 //   node tools/smoke-lesson-boot.mjs --no-routes         # skip the SPA manifest
-import { readdir, readFile, access } from "node:fs/promises";
-import { spawn } from "node:child_process";
-import { fileURLToPath } from "node:url";
+import { access, readdir, readFile } from "node:fs/promises";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(HERE, "..");
@@ -188,7 +188,9 @@ async function startPreviewServer() {
     // If vite exits early (e.g. the just-freed port got taken), fail loudly now
     // instead of polling a dead process for the full timeout.
     if (child.exitCode !== null) {
-      throw new Error(`vite preview exited early (code ${child.exitCode}) before serving on port ${port}.`);
+      throw new Error(
+        `vite preview exited early (code ${child.exitCode}) before serving on port ${port}.`,
+      );
     }
     try {
       const res = await fetch(base + "/", { redirect: "manual" });
@@ -279,13 +281,23 @@ async function main() {
   // Build the route list: lessons (mount #app) + optional SPA manifest.
   const routes = [];
   let lessonIds;
-  if (args.lessons) lessonIds = args.lessons.split(",").map((s) => s.trim()).filter(Boolean);
+  if (args.lessons)
+    lessonIds = args.lessons
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
   else {
     const all = await listLessonIds();
     lessonIds = args.all ? all : sampleByUnit(all);
   }
   for (const id of lessonIds) {
-    routes.push({ url: `/lessons/${id}/`, label: id, selector: "#app", min: LESSON_MIN, measure: "html" });
+    routes.push({
+      url: `/lessons/${id}/`,
+      label: id,
+      selector: "#app",
+      min: LESSON_MIN,
+      measure: "html",
+    });
   }
   if (args.routes && !args.lessons) {
     for (const r of await loadRouteManifest()) {
@@ -333,8 +345,12 @@ async function main() {
       console.log("   These committed shared assets exist in source but are missing from dist/:");
       for (const a of missing) console.log(`     • ${a}`);
       console.log("   Every hub loads these, so probing would report false blank pages. The cause");
-      console.log("   is build tooling (typically concurrent builds sharing node_modules), not the");
-      console.log("   pages — CF's production build is unaffected. Rebuild in isolation to run the");
+      console.log(
+        "   is build tooling (typically concurrent builds sharing node_modules), not the",
+      );
+      console.log(
+        "   pages — CF's production build is unaffected. Rebuild in isolation to run the",
+      );
       console.log("   full render smoke. Skipping to avoid a false failure that blocks deploys.");
       server.child.kill("SIGKILL");
       process.exit(0);
@@ -375,7 +391,9 @@ async function main() {
     }
     results.push(r);
     const tag = r.ok ? "PASS" : "FAIL";
-    const extra = r.ok ? `${r.measure === "html" ? "#app/mount" : "text"} ${r.len}` : r.reasons.join("; ");
+    const extra = r.ok
+      ? `${r.measure === "html" ? "#app/mount" : "text"} ${r.len}`
+      : r.reasons.join("; ");
     console.log(`  ${tag}  ${String(r.label).padEnd(22)} ${extra}`);
     if (r.ok && r.consoleErrors.length) {
       console.log(`        (note: ${r.consoleErrors.length} console.error — non-fatal)`);
@@ -385,7 +403,9 @@ async function main() {
   if (server) server.child.kill("SIGKILL");
 
   const failed = results.filter((r) => !r.ok);
-  console.log(`\n${results.length - failed.length}/${results.length} pages rendered; ${failed.length} failed.`);
+  console.log(
+    `\n${results.length - failed.length}/${results.length} pages rendered; ${failed.length} failed.`,
+  );
   if (failed.length) {
     console.log("FAIL — a page did not render. This is the blank-page class of bug.");
     process.exit(1);

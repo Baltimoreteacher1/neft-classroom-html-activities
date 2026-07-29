@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
-import { join, extname } from "node:path";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
+import { extname, join } from "node:path";
 
 const root = process.cwd();
 const requiredFiles = [

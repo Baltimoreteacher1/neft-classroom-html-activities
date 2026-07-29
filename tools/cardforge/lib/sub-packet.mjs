@@ -3,7 +3,7 @@
 // a lesson job: cover page + simple sub directions, then 3 days of independent
 // work (each: warm-up + modeled example + practice), plus a full answer key.
 // Large readable fonts, no color-dependent instructions, no filler.
-import { htmlPage, esc, nameBar, problemList } from "./print-style.mjs";
+import { esc, htmlPage, nameBar, problemList } from "./print-style.mjs";
 
 function chunk(arr, n) {
   const out = [];

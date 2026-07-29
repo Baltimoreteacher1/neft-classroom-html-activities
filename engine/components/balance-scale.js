@@ -125,7 +125,15 @@ export function renderBalanceScale(container, config) {
     "#5f6f80",
     1.5,
   );
-  const _rightPan = svgRect(rightPanG, MID + 150 - PAN_W / 2, BEAM_Y + 30, PAN_W, 40, 10, "#fef7e0");
+  const _rightPan = svgRect(
+    rightPanG,
+    MID + 150 - PAN_W / 2,
+    BEAM_Y + 30,
+    PAN_W,
+    40,
+    10,
+    "#fef7e0",
+  );
   svgRect(rightPanG, MID + 150 - PAN_W / 2, BEAM_Y + 30, PAN_W, 40, 10, "none", "#f2c15b", 1.5);
   svg.append(rightPanG);
 

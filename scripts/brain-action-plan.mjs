@@ -5,9 +5,9 @@
  * auto-assigned CCSS tags are low-confidence and worth a teacher's eyes.
  * Output: reports/math-brain-action-plan.md
  */
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const graph = JSON.parse(readFileSync(join(root, "data/content-graph.json"), "utf8"));

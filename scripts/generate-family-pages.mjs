@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -18,7 +18,8 @@ const CANONICAL_LESSONS = loadCanonicalLessons();
 const UNIT_THEMES = {
   1: {
     name: "Number System Launch",
-    blurb: "Factors, multiples, and decimal operations that help students talk clearly about numbers.",
+    blurb:
+      "Factors, multiples, and decimal operations that help students talk clearly about numbers.",
   },
   2: {
     name: "Fraction Detective Agency",
@@ -38,7 +39,8 @@ const UNIT_THEMES = {
   },
   6: {
     name: "Music Studio",
-    blurb: "Expressions, exponents, and properties that describe patterns and repeated calculations.",
+    blurb:
+      "Expressions, exponents, and properties that describe patterns and repeated calculations.",
   },
   7: {
     name: "Equation Detective Agency",
@@ -60,7 +62,12 @@ const UNIT_THEMES = {
 
 const TOPIC_FALLBACK_VOCAB = {
   "Ratios, rates, and percents": [
-    ["ratio", "razón", "A comparison of two quantities.", "2 cups of juice for every 3 cups of water"],
+    [
+      "ratio",
+      "razón",
+      "A comparison of two quantities.",
+      "2 cups of juice for every 3 cups of water",
+    ],
     ["rate", "tasa", "A ratio that compares two different units.", "60 miles in 2 hours"],
     ["unit rate", "tasa unitaria", "A rate for one unit.", "$3 for 1 notebook"],
     ["percent", "porcentaje", "A number out of 100.", "25% means 25 out of 100"],
@@ -72,32 +79,77 @@ const TOPIC_FALLBACK_VOCAB = {
     ["formula", "fórmula", "A rule that helps calculate a value.", "A = base x height"],
   ],
   "Expressions and equations": [
-    ["variable", "variable", "A letter that stands for a number.", "x can stand for the missing value"],
-    ["expression", "expresión", "Numbers, variables, and operations without an equal sign.", "3x + 4"],
+    [
+      "variable",
+      "variable",
+      "A letter that stands for a number.",
+      "x can stand for the missing value",
+    ],
+    [
+      "expression",
+      "expresión",
+      "Numbers, variables, and operations without an equal sign.",
+      "3x + 4",
+    ],
     ["equation", "ecuación", "A math sentence with an equal sign.", "x + 5 = 12"],
     ["solution", "solución", "A value that makes an equation true.", "x = 7"],
   ],
   "Statistics and data": [
-    ["data", "datos", "Information collected to answer a question.", "Survey answers from classmates"],
-    ["frequency", "frecuencia", "How many times a value or group appears.", "Six students chose soccer"],
-    ["distribution", "distribución", "The shape or spread of a data set.", "Most scores are near 80"],
-    ["display", "representación", "A graph or plot that organizes data.", "A histogram or dot plot"],
+    [
+      "data",
+      "datos",
+      "Information collected to answer a question.",
+      "Survey answers from classmates",
+    ],
+    [
+      "frequency",
+      "frecuencia",
+      "How many times a value or group appears.",
+      "Six students chose soccer",
+    ],
+    [
+      "distribution",
+      "distribución",
+      "The shape or spread of a data set.",
+      "Most scores are near 80",
+    ],
+    [
+      "display",
+      "representación",
+      "A graph or plot that organizes data.",
+      "A histogram or dot plot",
+    ],
   ],
   "Integers and coordinate plane": [
     ["integer", "entero", "A whole number, its opposite, or zero.", "-3, 0, and 5"],
-    ["opposite", "opuesto", "A number the same distance from zero in the other direction.", "-4 and 4"],
+    [
+      "opposite",
+      "opuesto",
+      "A number the same distance from zero in the other direction.",
+      "-4 and 4",
+    ],
     ["coordinate", "coordenada", "A number that shows a location on a graph.", "(2, -3)"],
     ["absolute value", "valor absoluto", "A number's distance from zero.", "|-6| = 6"],
   ],
   "Number system": [
     ["factor", "factor", "A number that divides another number evenly.", "3 is a factor of 12"],
-    ["multiple", "múltiplo", "The product of a number and a whole number.", "20 is a multiple of 5"],
+    [
+      "multiple",
+      "múltiplo",
+      "The product of a number and a whole number.",
+      "20 is a multiple of 5",
+    ],
     ["quotient", "cociente", "The answer to a division problem.", "18 / 3 = 6"],
     ["decimal", "decimal", "A number with digits to the right of a decimal point.", "4.75"],
   ],
   "Grade 6 math": [
     ["strategy", "estrategia", "A plan for solving a problem.", "Draw a model first"],
-    ["model", "modelo", "A picture, table, or equation that shows math thinking.", "A tape diagram"],
+    [
+      "model",
+      "modelo",
+      "A picture, table, or equation that shows math thinking.",
+      "A tape diagram",
+    ],
     ["estimate", "estimar", "A reasonable answer before calculating exactly.", "About 50"],
     ["explain", "explicar", "Tell why an answer makes sense.", "Use words and numbers"],
   ],
@@ -145,11 +197,15 @@ function mainSkill(lesson) {
 function spanishSkill(lesson) {
   const topic = String(lesson.topic || "").toLowerCase();
   if (topic.includes("number system")) return "usar números con cuidado y explicar sus pasos";
-  if (topic.includes("ratios") || topic.includes("rates") || topic.includes("percent")) return "comparar cantidades y explicar relaciones";
+  if (topic.includes("ratios") || topic.includes("rates") || topic.includes("percent"))
+    return "comparar cantidades y explicar relaciones";
   if (topic.includes("geometry")) return "medir y resolver problemas de geometría";
-  if (topic.includes("expressions") || topic.includes("equations")) return "usar letras, números y reglas para resolver problemas";
-  if (topic.includes("statistics") || topic.includes("data")) return "leer datos, hacer gráficas y explicar patrones";
-  if (topic.includes("integers")) return "usar números positivos y negativos en una recta numérica o plano";
+  if (topic.includes("expressions") || topic.includes("equations"))
+    return "usar letras, números y reglas para resolver problemas";
+  if (topic.includes("statistics") || topic.includes("data"))
+    return "leer datos, hacer gráficas y explicar patrones";
+  if (topic.includes("integers"))
+    return "usar números positivos y negativos en una recta numérica o plano";
   return "resolver problemas y explicar su pensamiento";
 }
 
@@ -162,12 +218,33 @@ function lessonSort(a, b) {
 function topicFor(config) {
   const title = String(config.title || "").toLowerCase();
   const standard = String(config.standard || "");
-  if (standard.startsWith("6.RP") || /ratio|rate|percent|proportion/.test(title)) return "Ratios, rates, and percents";
-  if (standard.startsWith("6.G") || /area|volume|surface|polygon|triangle|quadrilateral|net/.test(title)) return "Geometry";
-  if (standard.startsWith("6.EE") || /equation|inequal|expression|exponent|property|variable/.test(title)) return "Expressions and equations";
-  if (standard.startsWith("6.SP") || /data|histogram|box|dot|mean|median|statistic|quartile|variability/.test(title)) return "Statistics and data";
-  if (standard.startsWith("6.NS") && /integer|coordinate|opposite|absolute|plane|negative|positive/.test(title)) return "Integers and coordinate plane";
-  if (standard.startsWith("6.NS") || /fraction|decimal|factor|multiple|divide|division|quotient/.test(title)) return "Number system";
+  if (standard.startsWith("6.RP") || /ratio|rate|percent|proportion/.test(title))
+    return "Ratios, rates, and percents";
+  if (
+    standard.startsWith("6.G") ||
+    /area|volume|surface|polygon|triangle|quadrilateral|net/.test(title)
+  )
+    return "Geometry";
+  if (
+    standard.startsWith("6.EE") ||
+    /equation|inequal|expression|exponent|property|variable/.test(title)
+  )
+    return "Expressions and equations";
+  if (
+    standard.startsWith("6.SP") ||
+    /data|histogram|box|dot|mean|median|statistic|quartile|variability/.test(title)
+  )
+    return "Statistics and data";
+  if (
+    standard.startsWith("6.NS") &&
+    /integer|coordinate|opposite|absolute|plane|negative|positive/.test(title)
+  )
+    return "Integers and coordinate plane";
+  if (
+    standard.startsWith("6.NS") ||
+    /fraction|decimal|factor|multiple|divide|division|quotient/.test(title)
+  )
+    return "Number system";
   return "Grade 6 math";
 }
 
@@ -184,19 +261,28 @@ function resourcesFor(lessonId, canonicalLesson) {
     return Object.entries(safeLabels)
       .map(([key, label]) => ({ label, href: canonicalLesson.resources[key] }))
       .filter(
-        (resource) =>
-          typeof resource.href === "string" && resource.href.startsWith("/lessons/"),
+        (resource) => typeof resource.href === "string" && resource.href.startsWith("/lessons/"),
       );
   }
   const base = join(root, "lessons", lessonId);
   const candidates = [
     ["Interactive Lesson", `/lessons/${lessonId}/`, join(base, "index.html")],
     ["Guided Notes", `/lessons/${lessonId}/notes.html`, join(base, "notes.html")],
-    ["Notes PDF", `/lessons/${lessonId}/downloads/${lessonId}-notes.pdf`, join(base, "downloads", `${lessonId}-notes.pdf`)],
-    ["Notes DOCX", `/lessons/${lessonId}/downloads/${lessonId}-notes.docx`, join(base, "downloads", `${lessonId}-notes.docx`)],
+    [
+      "Notes PDF",
+      `/lessons/${lessonId}/downloads/${lessonId}-notes.pdf`,
+      join(base, "downloads", `${lessonId}-notes.pdf`),
+    ],
+    [
+      "Notes DOCX",
+      `/lessons/${lessonId}/downloads/${lessonId}-notes.docx`,
+      join(base, "downloads", `${lessonId}-notes.docx`),
+    ],
     ["Homework", `/lessons/${lessonId}/homework.docx`, join(base, "homework.docx")],
   ];
-  return candidates.filter(([, , filePath]) => existsSync(filePath)).map(([label, href]) => ({ label, href }));
+  return candidates
+    .filter(([, , filePath]) => existsSync(filePath))
+    .map(([label, href]) => ({ label, href }));
 }
 
 function normalizeVocabulary(config, topic) {
@@ -240,16 +326,31 @@ function practiceFor(config, topic) {
     return [
       ["A triangle has base 8 cm and height 5 cm. What is its area?", "20 square centimeters"],
       ["A triangle has area 18 square units and base 6 units. What is its height?", "6 units"],
-      ["Why do we multiply by 1/2 when finding triangle area?", "A triangle is half of a related rectangle or parallelogram."],
-      ["Draw a triangle and label a base and height.", "Answers vary; height should be perpendicular to the base."],
+      [
+        "Why do we multiply by 1/2 when finding triangle area?",
+        "A triangle is half of a related rectangle or parallelogram.",
+      ],
+      [
+        "Draw a triangle and label a base and height.",
+        "Answers vary; height should be perpendicular to the base.",
+      ],
     ];
   }
   if (/histogram/.test(title)) {
     return [
-      ["A histogram interval 10-19 has frequency 6. What does that mean?", "Six data values are from 10 through 19."],
-      ["Make intervals of width 5 from 0 to 20.", "0-4, 5-9, 10-14, 15-19, 20-24 or similar consistent groups"],
+      [
+        "A histogram interval 10-19 has frequency 6. What does that mean?",
+        "Six data values are from 10 through 19.",
+      ],
+      [
+        "Make intervals of width 5 from 0 to 20.",
+        "0-4, 5-9, 10-14, 15-19, 20-24 or similar consistent groups",
+      ],
       ["Which interval has the most data: 0-9 has 3, 10-19 has 8, 20-29 has 5?", "10-19"],
-      ["Why do histograms use intervals?", "They group many numbers so patterns are easier to see."],
+      [
+        "Why do histograms use intervals?",
+        "They group many numbers so patterns are easier to see.",
+      ],
     ];
   }
   if (topic === "Ratios, rates, and percents") {
@@ -264,8 +365,14 @@ function practiceFor(config, topic) {
     return [
       ["A rectangle is 7 ft by 4 ft. What is its area?", "28 square feet"],
       ["A parallelogram has base 9 cm and height 3 cm. What is its area?", "27 square centimeters"],
-      ["Name two units that could measure area.", "Square inches, square feet, square centimeters, or similar"],
-      ["Why is labeling units helpful?", "It shows what the number measures and helps catch mistakes."],
+      [
+        "Name two units that could measure area.",
+        "Square inches, square feet, square centimeters, or similar",
+      ],
+      [
+        "Why is labeling units helpful?",
+        "It shows what the number measures and helps catch mistakes.",
+      ],
     ];
   }
   if (topic === "Expressions and equations") {
@@ -281,7 +388,10 @@ function practiceFor(config, topic) {
       ["Find the mean of 4, 6, 8, and 10.", "7"],
       ["Find the median of 3, 5, 9, 12, and 20.", "9"],
       ["A dot plot has four dots above 6. What does that mean?", "The value 6 appears four times."],
-      ["Name one question data could help answer.", "Answers vary, such as which lunch is most popular."],
+      [
+        "Name one question data could help answer.",
+        "Answers vary, such as which lunch is most popular.",
+      ],
     ];
   }
   if (topic === "Integers and coordinate plane") {
@@ -296,7 +406,10 @@ function practiceFor(config, topic) {
     ["Estimate first, then solve: 48 / 6.", "Estimate about 50 / 5 = 10; exact answer 8"],
     ["Explain one way to check an answer.", "Use the opposite operation, a model, or estimation."],
     ["Write a number story for 12 x 3.", "Answers vary; for example, 12 rows of 3 chairs."],
-    ["What should you do if an answer seems too big or too small?", "Re-read the problem and check with an estimate."],
+    [
+      "What should you do if an answer seems too big or too small?",
+      "Re-read the problem and check with an estimate.",
+    ],
   ];
 }
 
@@ -338,11 +451,16 @@ function spanishLearning(lesson) {
 }
 
 function spanishWhy(topic) {
-  if (topic === "Ratios, rates, and percents") return "Esta matemática aparece en recetas, compras, deportes, descuentos y comparaciones. Ayuda a los estudiantes a decidir qué es justo o cuál opción conviene más.";
-  if (topic === "Geometry") return "La geometría se usa para construir, decorar, empacar, leer mapas y diseñar. Ayuda a planear espacios y calcular materiales.";
-  if (topic === "Expressions and equations") return "Las expresiones y ecuaciones ayudan a describir patrones y números desconocidos. Son útiles para planear, presupuestar y resolver problemas paso a paso.";
-  if (topic === "Statistics and data") return "Los datos ayudan a tomar decisiones. Su hijo/a aprende a leer gráficas, comparar resultados y explicar patrones.";
-  if (topic === "Integers and coordinate plane") return "Los enteros y las coordenadas se usan con temperaturas, dinero, mapas, elevadores y juegos. Ayudan a describir ubicación y distancia.";
+  if (topic === "Ratios, rates, and percents")
+    return "Esta matemática aparece en recetas, compras, deportes, descuentos y comparaciones. Ayuda a los estudiantes a decidir qué es justo o cuál opción conviene más.";
+  if (topic === "Geometry")
+    return "La geometría se usa para construir, decorar, empacar, leer mapas y diseñar. Ayuda a planear espacios y calcular materiales.";
+  if (topic === "Expressions and equations")
+    return "Las expresiones y ecuaciones ayudan a describir patrones y números desconocidos. Son útiles para planear, presupuestar y resolver problemas paso a paso.";
+  if (topic === "Statistics and data")
+    return "Los datos ayudan a tomar decisiones. Su hijo/a aprende a leer gráficas, comparar resultados y explicar patrones.";
+  if (topic === "Integers and coordinate plane")
+    return "Los enteros y las coordenadas se usan con temperaturas, dinero, mapas, elevadores y juegos. Ayudan a describir ubicación y distancia.";
   return "Esta habilidad ayuda con dinero, medidas, juegos, planificación y con revisar si una respuesta es razonable.";
 }
 
@@ -361,7 +479,10 @@ function buildLessonRecords() {
       const canonical = CANONICAL_LESSONS.get(lessonId);
       const lessonSource = canonical ? { ...config, ...canonical } : config;
       const unit = Number(lessonSource.unit || lessonId.match(lessonDirPattern)[1]);
-      const unitInfo = UNIT_THEMES[unit] || { name: `Unit ${unit}`, blurb: "Grade 6 math practice and support." };
+      const unitInfo = UNIT_THEMES[unit] || {
+        name: `Unit ${unit}`,
+        blurb: "Grade 6 math practice and support.",
+      };
       const topic = topicFor(lessonSource);
       const isFlagship = lessonId.endsWith("-flagship") || Boolean(lessonSource.flagship);
       return {
@@ -387,14 +508,17 @@ function buildLessonRecords() {
 }
 
 function resourceLinks(resources, className = "resource-list") {
-  if (!resources.length) return `<p class="muted">No linked classroom resources are available for this lesson yet.</p>`;
+  if (!resources.length)
+    return `<p class="muted">No linked classroom resources are available for this lesson yet.</p>`;
   return `<div class="${className}">${resources
     .map((resource) => `<a href="${esc(resource.href)}">${esc(resource.label)}</a>`)
     .join("")}</div>`;
 }
 
 function renderIndex(lessons) {
-  const units = [...new Map(lessons.map((lesson) => [lesson.unit, lesson])).values()].sort((a, b) => a.unit - b.unit);
+  const units = [...new Map(lessons.map((lesson) => [lesson.unit, lesson])).values()].sort(
+    (a, b) => a.unit - b.unit,
+  );
   const topics = [...new Set(lessons.map((lesson) => lesson.topic))].sort();
   return `<!doctype html>
 <html lang="en">
@@ -504,7 +628,9 @@ function renderIndex(lessons) {
       <div class="lesson-grid">
         ${unitLessons
           .map(
-            (lesson) => `<article class="lesson-card" data-lesson-card data-unit="${lesson.unit}" data-topic="${esc(lesson.topic)}" data-search="${esc(`${lesson.lessonId} ${lesson.title} ${lesson.standard} ${lesson.objective} ${lesson.topic}`.toLowerCase())}">
+            (
+              lesson,
+            ) => `<article class="lesson-card" data-lesson-card data-unit="${lesson.unit}" data-topic="${esc(lesson.topic)}" data-search="${esc(`${lesson.lessonId} ${lesson.title} ${lesson.standard} ${lesson.objective} ${lesson.topic}`.toLowerCase())}">
           <div class="meta-row">
             <span class="lesson-id">Lesson ${esc(lesson.lessonId)}</span>
             <span class="standard">${esc(lesson.standard)}</span>
@@ -516,7 +642,7 @@ function renderIndex(lessons) {
             ${lesson.resources.map((resource) => `<span class="badge">${esc(resource.label)}</span>`).join("")}
           </div>
           <a class="open-button" href="/families/lessons/${esc(lesson.lessonId)}/">Open family guide</a>
-        </article>`
+        </article>`,
           )
           .join("\n        ")}
       </div>
@@ -685,7 +811,7 @@ function renderLessonPage(lesson) {
           <p>${esc(item.definition)}</p>${
             item.example ? `\n          <p class="muted">Example: ${esc(item.example)}</p>` : ""
           }
-        </article>`
+        </article>`,
           )
           .join("\n        ")}
       </div>
@@ -703,7 +829,7 @@ function renderLessonPage(lesson) {
             <summary>Show answer</summary>
             <p>${esc(item.answer)}</p>
           </details>
-        </li>`
+        </li>`,
           )
           .join("\n        ")}
       </ol>
@@ -717,7 +843,10 @@ function renderLessonPage(lesson) {
 const lessons = buildLessonRecords();
 
 mkdirSync(join(root, "src", "data"), { recursive: true });
-writeFileSync(join(root, "src", "data", "family-lessons.json"), `${JSON.stringify(lessons, null, 2)}\n`);
+writeFileSync(
+  join(root, "src", "data", "family-lessons.json"),
+  `${JSON.stringify(lessons, null, 2)}\n`,
+);
 
 mkdirSync(join(root, "families"), { recursive: true });
 writeFileSync(join(root, "families", "index.html"), renderIndex(lessons));

@@ -512,7 +512,6 @@
     // here and won the #nt-present-widget id race on interactive lessons, which
     // left Present Mode unreachable on those pages. Do not re-add it.
 
-
     // 2. Prepare Supports Configuration Dialog
     const dialog = document.createElement("div");
     dialog.id = "ewl-supports-dialog";

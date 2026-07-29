@@ -138,7 +138,9 @@ export function createState(lessonId, studentId) {
   // "Vocabulary" is explicitly in the saved phases array.
   function migrateVocabPhaseRemoval(s) {
     if (!Array.isArray(s.phases)) return s;
-    const vocabIdx = s.phases.findIndex((p) => p && (p.name === "Vocabulary" || p.name === "Vocabulario"));
+    const vocabIdx = s.phases.findIndex(
+      (p) => p && (p.name === "Vocabulary" || p.name === "Vocabulario"),
+    );
     if (vocabIdx === -1) return s;
 
     s.phases = s.phases.filter((_, i) => i !== vocabIdx).map((p, i) => ({ ...p, id: i }));

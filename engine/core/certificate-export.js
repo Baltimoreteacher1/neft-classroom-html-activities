@@ -1,5 +1,5 @@
-import { drawQrOnCanvas } from "./qr-mini.js";
 import { t } from "./i18n.js";
+import { drawQrOnCanvas } from "./qr-mini.js";
 
 function lessonUrl(config) {
   if (typeof window === "undefined") return "";

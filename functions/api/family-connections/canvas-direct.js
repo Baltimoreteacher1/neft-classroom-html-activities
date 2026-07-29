@@ -143,7 +143,9 @@ async function loadMappings(db) {
       "CREATE TABLE IF NOT EXISTS family_canvas_meeting_sync (slot_id TEXT PRIMARY KEY, canvas_event_id TEXT NOT NULL, updated_at TEXT NOT NULL)",
     )
     .run();
-  const rows = await db.prepare("SELECT slot_id, canvas_event_id FROM family_canvas_meeting_sync").all();
+  const rows = await db
+    .prepare("SELECT slot_id, canvas_event_id FROM family_canvas_meeting_sync")
+    .all();
   return Object.fromEntries((rows.results ?? []).map((row) => [row.slot_id, row.canvas_event_id]));
 }
 
@@ -173,7 +175,8 @@ export async function handleCanvasDirectRequest(context, services, access) {
         course: await testCanvasConnection(target, body.accessToken, services.fetchImpl),
       });
     }
-    if (context.params.path[0] !== "canvas-sync") return json({ ok: false, error: "not-found" }, 404);
+    if (context.params.path[0] !== "canvas-sync")
+      return json({ ok: false, error: "not-found" }, 404);
     if (body.action === "announcement") {
       const result = await publishCanvasAnnouncement(
         target,

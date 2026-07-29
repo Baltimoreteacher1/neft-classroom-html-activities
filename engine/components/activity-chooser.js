@@ -1,9 +1,9 @@
 import {
-  renderVocabIntro,
-  renderVocabDragMatch,
-  renderVocabCloze,
-  renderVocabSort,
   renderMatchingGame,
+  renderVocabCloze,
+  renderVocabDragMatch,
+  renderVocabIntro,
+  renderVocabSort,
 } from "./index.js";
 
 // ── Optional "Extra Practice" opt-in card ─────────────────────────────

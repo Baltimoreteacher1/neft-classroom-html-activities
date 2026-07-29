@@ -13,9 +13,9 @@
 // binary was available), the validator reports that and exits 0 — there is
 // nothing to regress against.
 
-import { readdirSync, existsSync, readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");

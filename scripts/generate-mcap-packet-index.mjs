@@ -12,7 +12,7 @@
  * Source of truth: the skill .html files already in each folder (their <title>
  * gives the skill name + standard). Idempotent — safe to re-run.
  */
-import { readdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { domainName } from "./lib/ccss.mjs";
 

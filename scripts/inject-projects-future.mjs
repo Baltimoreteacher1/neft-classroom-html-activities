@@ -14,9 +14,9 @@
  *   node scripts/inject-projects-future.mjs           # inject missing includes
  *   node scripts/inject-projects-future.mjs --check    # report only, exit 1 if any missing
  */
-import { readFileSync, writeFileSync, globSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { globSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const CHECK = process.argv.includes("--check");

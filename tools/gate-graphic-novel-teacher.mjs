@@ -28,8 +28,8 @@
  *   - Never touches node_modules/dist/.git.
  * ========================================================================== */
 
-import { readdirSync, statSync, readFileSync, writeFileSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");

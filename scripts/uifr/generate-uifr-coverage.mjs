@@ -17,12 +17,12 @@
  * Nothing student-facing changes; no rubric language reaches the student view.
  * Run: npm run generate:uifr
  */
-import { readdirSync, readFileSync, existsSync, writeFileSync, mkdirSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
-  computeTeachL4Evidence,
   classifyActivityTeachSupport,
+  computeTeachL4Evidence,
   TEACH_INDICATORS,
 } from "../../engine/core/uifr.js";
 
@@ -84,7 +84,10 @@ const json = {
 
 mkdirSync(reportsDir, { recursive: true });
 mkdirSync(pageDir, { recursive: true });
-writeFileSync(join(reportsDir, "uifr-teach-l4-coverage.json"), JSON.stringify(json, null, 2) + "\n");
+writeFileSync(
+  join(reportsDir, "uifr-teach-l4-coverage.json"),
+  JSON.stringify(json, null, 2) + "\n",
+);
 writeFileSync(join(pageDir, "coverage.json"), JSON.stringify(json) + "\n");
 
 // ── Markdown: lessons ───────────────────────────────────────────────────────
@@ -96,9 +99,15 @@ lessonMd.push(
   `_Framework: ${json.framework} · Domain: TEACH · Target: Level 4 (Highly Effective) · Generated: ${generated}_`,
 );
 lessonMd.push("");
-lessonMd.push("> Materials create the **conditions** for a Level 4 rating. The actual rating on any");
-lessonMd.push("> given day depends on **observed student practice**. Indicators **T1–T5** are addressed");
-lessonMd.push("> directly by the lesson surfaces; **T6–T7** are teacher-facilitated. Nothing in this");
+lessonMd.push(
+  "> Materials create the **conditions** for a Level 4 rating. The actual rating on any",
+);
+lessonMd.push(
+  "> given day depends on **observed student practice**. Indicators **T1–T5** are addressed",
+);
+lessonMd.push(
+  "> directly by the lesson surfaces; **T6–T7** are teacher-facilitated. Nothing in this",
+);
 lessonMd.push("> record is shown to students.");
 lessonMd.push("");
 lessonMd.push("## Indicators");
@@ -142,7 +151,9 @@ actMd.push("");
 actMd.push("> Standalone activities are not engine-driven, so they cannot carry the full lesson");
 actMd.push("> scaffold. Only the indicators **structurally supported** by an interactive practice");
 actMd.push("> task are listed — base **T2** (students choose their approach) + **T4** (immediate,");
-actMd.push("> no-fail feedback with retry), plus **T5** (talk/writing) or **T3** (explore/build) when");
+actMd.push(
+  "> no-fail feedback with retry), plus **T5** (talk/writing) or **T3** (explore/build) when",
+);
 actMd.push("> the task's nature makes them true. This is a conservative *supports* claim, not a");
 actMd.push("> Level 4 rating, and none of it is shown to students.");
 actMd.push("");

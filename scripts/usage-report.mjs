@@ -94,7 +94,9 @@ function lessonInventory() {
       let title = d;
       try {
         title = JSON.parse(readFileSync(join("lessons", d, "config.json"), "utf8")).title || d;
-      } catch { /* keep the folder name */ }
+      } catch {
+        /* keep the folder name */
+      }
       return { dir: d, title };
     });
 }
@@ -104,7 +106,10 @@ function countGamePages() {
   try {
     const out = execFileSync(
       "bash",
-      ["-c", `grep -rl "game-fx.js" --include="index.html" . 2>/dev/null | grep -v node_modules | grep -v "^./dist/" | grep -cv "^\\./\\."`],
+      [
+        "-c",
+        `grep -rl "game-fx.js" --include="index.html" . 2>/dev/null | grep -v node_modules | grep -v "^./dist/" | grep -cv "^\\./\\."`,
+      ],
       { encoding: "utf8" },
     );
     return Number(out.trim()) || 0;
@@ -139,13 +144,15 @@ for (const [key, sql] of Object.entries(QUERIES)) {
   try {
     data[key] = query(sql);
   } catch (err) {
-    console.error(`⚠ query "${key}" failed: ${(err.stderr || err.message).toString().trim().split("\n").slice(-2).join(" ")}`);
+    console.error(
+      `⚠ query "${key}" failed: ${(err.stderr || err.message).toString().trim().split("\n").slice(-2).join(" ")}`,
+    );
     data[key] = [];
   }
 }
 
 const lessons = lessonInventory();
-const catalog = catalogInventory();
+const _catalog = catalogInventory();
 const touched = new Set();
 for (const row of data.lessonEvents) {
   const dir = slugToLessonDir(row.slug || "");
@@ -171,11 +178,19 @@ lines.push(`Source: \`${LOCAL_DB || `D1 ${DATABASE} (remote)`}\``);
 lines.push("");
 lines.push("## Headline");
 lines.push("");
-lines.push(`- **${fmt(totalEvents)}** telemetry events across **${data.lessonEvents.length}** distinct lessons.`);
-lines.push(`- **${touched.size} of ${lessons.length}** lesson folders have ever reported activity — **${untouched.length} have never been opened** with telemetry on.`);
-lines.push(`- **${playedGames.size} of ${gamePages}** playable game pages have ever recorded a score.`);
+lines.push(
+  `- **${fmt(totalEvents)}** telemetry events across **${data.lessonEvents.length}** distinct lessons.`,
+);
+lines.push(
+  `- **${touched.size} of ${lessons.length}** lesson folders have ever reported activity — **${untouched.length} have never been opened** with telemetry on.`,
+);
+lines.push(
+  `- **${playedGames.size} of ${gamePages}** playable game pages have ever recorded a score.`,
+);
 if (data.activeDays.length) {
-  lines.push(`- Most recent activity: **${data.activeDays[0].day}** (${fmt(data.activeDays[0].events)} events).`);
+  lines.push(
+    `- Most recent activity: **${data.activeDays[0].day}** (${fmt(data.activeDays[0].events)} events).`,
+  );
 }
 lines.push("");
 lines.push("> Telemetry only counts sessions where the beacon fired. Treat these as");
@@ -189,7 +204,9 @@ lines.push("| Lesson | Events | Sessions | Time on task | Last seen |");
 lines.push("| --- | ---: | ---: | ---: | --- |");
 for (const r of data.lessonEvents.slice(0, 20)) {
   const secs = secondsBySlug.get(r.slug) || 0;
-  lines.push(`| ${r.title || r.slug} | ${fmt(r.events)} | ${fmt(r.sessions || 0)} | ${Math.round(secs / 60)} min | ${(r.last_seen || "").slice(0, 10)} |`);
+  lines.push(
+    `| ${r.title || r.slug} | ${fmt(r.events)} | ${fmt(r.sessions || 0)} | ${Math.round(secs / 60)} min | ${(r.last_seen || "").slice(0, 10)} |`,
+  );
 }
 lines.push("");
 
@@ -247,4 +264,6 @@ mkdirSync("reports", { recursive: true });
 writeFileSync("reports/usage-report.md", lines.join("\n"));
 
 console.log(`✓ reports/usage-report.md`);
-console.log(`  ${fmt(totalEvents)} events · ${touched.size}/${lessons.length} lessons touched · ${playedGames.size} games played · ${untouched.length} lessons silent`);
+console.log(
+  `  ${fmt(totalEvents)} events · ${touched.size}/${lessons.length} lessons touched · ${playedGames.size} games played · ${untouched.length} lessons silent`,
+);

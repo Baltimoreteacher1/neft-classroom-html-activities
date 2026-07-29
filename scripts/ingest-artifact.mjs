@@ -50,7 +50,9 @@ const KIND = argVal("--kind", "assessment");
 const OUT = argVal("--out", "");
 
 if (!FILE) {
-  console.error("Usage: npm run ingest -- --file <path> [--kind assessment|pacing] [--out <prefix>]");
+  console.error(
+    "Usage: npm run ingest -- --file <path> [--kind assessment|pacing] [--out <prefix>]",
+  );
   process.exit(1);
 }
 if (!existsSync(FILE)) {
@@ -92,7 +94,8 @@ function knownStandards() {
 /** Which lessons already cover a standard — so the output points somewhere real. */
 function lessonIndex() {
   try {
-    const lessons = JSON.parse(readFileSync(join(ROOT, "data/curriculum-manifest.json"), "utf8")).lessons || [];
+    const lessons =
+      JSON.parse(readFileSync(join(ROOT, "data/curriculum-manifest.json"), "utf8")).lessons || [];
     const index = new Map();
     for (const l of lessons) {
       if (!l.standard) continue;
@@ -125,7 +128,9 @@ const SCHEMA = {
         properties: {
           ref: { type: "string" },
           what_it_asks: { type: "string" },
-          standard: STANDARDS.length ? { type: "string", enum: [...STANDARDS, "UNMAPPED"] } : { type: "string" },
+          standard: STANDARDS.length
+            ? { type: "string", enum: [...STANDARDS, "UNMAPPED"] }
+            : { type: "string" },
           confidence: { type: "string", enum: ["high", "medium", "low"] },
         },
       },
@@ -228,7 +233,9 @@ mkdirSync(dirname(join(ROOT, prefix)), { recursive: true });
 const L = [];
 L.push(`# Ingest — ${basename(FILE)}`);
 L.push("");
-L.push(`Kind: **${KIND}** · ${result.items.length} items · generated ${new Date().toISOString().slice(0, 10)}`);
+L.push(
+  `Kind: **${KIND}** · ${result.items.length} items · generated ${new Date().toISOString().slice(0, 10)}`,
+);
 L.push("");
 L.push(result.summary);
 L.push("");
@@ -274,7 +281,9 @@ const lowConfidence = result.items.filter((i) => i.confidence === "low").length;
 if (lowConfidence) {
   L.push("---");
   L.push("");
-  L.push(`> ${lowConfidence} item(s) were mapped with **low** confidence. Check those rows before acting.`);
+  L.push(
+    `> ${lowConfidence} item(s) were mapped with **low** confidence. Check those rows before acting.`,
+  );
 }
 
 writeFileSync(join(ROOT, `${prefix}.md`), L.join("\n"));
@@ -282,4 +291,6 @@ writeFileSync(join(ROOT, `${prefix}.json`), JSON.stringify(result, null, 2));
 
 console.log(`✓ ${prefix}.md`);
 console.log(`✓ ${prefix}.json`);
-console.log(`  ${result.items.length} items · ${gaps.length} coverage gap(s) · ${lowConfidence} low-confidence`);
+console.log(
+  `  ${result.items.length} items · ${gaps.length} coverage gap(s) · ${lowConfidence} low-confidence`,
+);

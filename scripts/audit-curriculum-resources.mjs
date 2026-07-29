@@ -24,7 +24,7 @@
  *   node scripts/audit-curriculum-resources.mjs --no-write # skip writing reports
  */
 
-import { existsSync, readFileSync, statSync, writeFileSync, mkdirSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 

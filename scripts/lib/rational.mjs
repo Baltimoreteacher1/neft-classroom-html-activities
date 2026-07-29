@@ -11,7 +11,18 @@
  * it — an unparseable answer is never reported as a wrong answer.
  */
 
-const SUPERSCRIPTS = { "⁰": "0", "¹": "1", "²": "2", "³": "3", "⁴": "4", "⁵": "5", "⁶": "6", "⁷": "7", "⁸": "8", "⁹": "9" };
+const SUPERSCRIPTS = {
+  "⁰": "0",
+  "¹": "1",
+  "²": "2",
+  "³": "3",
+  "⁴": "4",
+  "⁵": "5",
+  "⁶": "6",
+  "⁷": "7",
+  "⁸": "8",
+  "⁹": "9",
+};
 
 function gcd(a, b) {
   a = a < 0n ? -a : a;
@@ -45,11 +56,22 @@ export class Rat {
     const scale = 10n ** BigInt(frac.length);
     return new Rat(sign * (BigInt(whole) * scale + BigInt(frac || "0")), scale);
   }
-  add(o) { return new Rat(this.n * o.d + o.n * this.d, this.d * o.d); }
-  sub(o) { return new Rat(this.n * o.d - o.n * this.d, this.d * o.d); }
-  mul(o) { return new Rat(this.n * o.n, this.d * o.d); }
-  div(o) { if (o.n === 0n) return null; return new Rat(this.n * o.d, this.d * o.n); }
-  neg() { return new Rat(-this.n, this.d); }
+  add(o) {
+    return new Rat(this.n * o.d + o.n * this.d, this.d * o.d);
+  }
+  sub(o) {
+    return new Rat(this.n * o.d - o.n * this.d, this.d * o.d);
+  }
+  mul(o) {
+    return new Rat(this.n * o.n, this.d * o.d);
+  }
+  div(o) {
+    if (o.n === 0n) return null;
+    return new Rat(this.n * o.d, this.d * o.n);
+  }
+  neg() {
+    return new Rat(-this.n, this.d);
+  }
   /** Integer exponents only — fractional powers are not curriculum content here. */
   pow(o) {
     if (o.d !== 1n) return null;
@@ -57,15 +79,30 @@ export class Rat {
     const invert = e < 0n;
     if (invert) e = -e;
     if (e > 4096n) return null;
-    let n = 1n, d = 1n;
-    for (let i = 0n; i < e; i++) { n *= this.n; d *= this.d; }
-    if (invert) { if (n === 0n) return null; return new Rat(d, n); }
+    let n = 1n,
+      d = 1n;
+    for (let i = 0n; i < e; i++) {
+      n *= this.n;
+      d *= this.d;
+    }
+    if (invert) {
+      if (n === 0n) return null;
+      return new Rat(d, n);
+    }
     return new Rat(n, d);
   }
-  eq(o) { return this.n === o.n && this.d === o.d; }
-  isInt() { return this.d === 1n; }
-  toNumber() { return Number(this.n) / Number(this.d); }
-  toString() { return this.d === 1n ? String(this.n) : `${this.n}/${this.d}`; }
+  eq(o) {
+    return this.n === o.n && this.d === o.d;
+  }
+  isInt() {
+    return this.d === 1n;
+  }
+  toNumber() {
+    return Number(this.n) / Number(this.d);
+  }
+  toString() {
+    return this.d === 1n ? String(this.n) : `${this.n}/${this.d}`;
+  }
 }
 
 /**
@@ -85,7 +122,10 @@ export function normalizeExpression(input) {
   s = s.replace(/(\d),(?=\d{3}(\D|$))/g, "$1");
   s = s.replace(/(\d+(?:\.\d+)?)\s*%/g, "($1/100)");
   // Mixed numbers: "2 1/2" and "-2 1/2" → (2+1/2) / -(2+1/2).
-  s = s.replace(/(-?)(\d+)\s+(\d+)\s*\/\s*(\d+)/g, (_, sign, w, n, d) => `${sign ? "-" : ""}(${w}+${n}/${d})`);
+  s = s.replace(
+    /(-?)(\d+)\s+(\d+)\s*\/\s*(\d+)/g,
+    (_, sign, w, n, d) => `${sign ? "-" : ""}(${w}+${n}/${d})`,
+  );
   return s.trim();
 }
 
@@ -102,7 +142,10 @@ export function evaluateExpression(input) {
   if (/[A-Za-zÀ-ÖØ-öø-ÿ_]/.test(src)) return null;
   if (/[=<>≤≥≠?_]/.test(src)) return null; // equations/blanks are handled by callers
   let i = 0;
-  const peek = () => { while (src[i] === " ") i++; return src[i]; };
+  const peek = () => {
+    while (src[i] === " ") i++;
+    return src[i];
+  };
 
   function parseExpr() {
     let left = parseTerm();
@@ -139,8 +182,15 @@ export function evaluateExpression(input) {
   }
   function parseUnary() {
     const c = peek();
-    if (c === "-") { i++; const v = parseUnary(); return v === null ? null : v.neg(); }
-    if (c === "+") { i++; return parseUnary(); }
+    if (c === "-") {
+      i++;
+      const v = parseUnary();
+      return v === null ? null : v.neg();
+    }
+    if (c === "+") {
+      i++;
+      return parseUnary();
+    }
     return parsePower();
   }
   function parsePower() {

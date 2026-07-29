@@ -163,7 +163,7 @@
           if (v.length > 24) continue;
           out.push({ label: labelFor(f).replace(/\s+/g, " ").slice(0, 42), value: v });
         }
-      } catch (e) {}
+      } catch (_e) {}
       return out;
     }
 
@@ -236,7 +236,7 @@
         } else {
           said.textContent = "Select the text above and copy it.";
         }
-      } catch (err) {
+      } catch (_err) {
         said.textContent = "Select the text above and copy it.";
       }
       setTimeout(function () {

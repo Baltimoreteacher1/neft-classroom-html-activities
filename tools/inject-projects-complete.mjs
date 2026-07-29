@@ -106,7 +106,9 @@ function inject(rel) {
    are re-injected automatically on every deploy. Non-fatal by design. */
 try {
   const pages = discoverPages();
-  console.log(`Projects COMPLETE injection${DRY ? " (dry-run)" : ""}: ${pages.length} page(s) found`);
+  console.log(
+    `Projects COMPLETE injection${DRY ? " (dry-run)" : ""}: ${pages.length} page(s) found`,
+  );
   let changed = 0;
   for (const rel of pages) {
     if (inject(rel)) changed++;

@@ -8,9 +8,9 @@
  *  - accessibility: 44px progress-check target + focus-visible styles exist
  * Exits non-zero on any failure so it can gate the build.
  */
-import { readFileSync, existsSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const fails = [];

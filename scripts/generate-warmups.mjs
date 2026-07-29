@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import { readFileSync, writeFileSync, readdirSync, existsSync } from "node:fs";
-import { resolve, join } from "node:path";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { join, resolve } from "node:path";
 
 const ROOT = resolve(process.cwd());
 const BANK_PATH = join(ROOT, "spiral-review", "bank.json");
@@ -22,16 +22,74 @@ for (const q of questions) {
 
 // Ordered list of base lessons across 10 units
 const ALL_LESSON_IDS = [
-  "1-1", "1-2", "1-3", "1-4", "1-5", "1-6", "1-7",
-  "2-1", "2-2", "2-3", "2-4", "2-5", "2-6", "2-7",
-  "3-1", "3-2", "3-3", "3-4", "3-5", "3-6",
-  "4-1", "4-2", "4-3", "4-4", "4-5", "4-6", "4-7", "4-8", "4-9",
-  "5-1", "5-2", "5-3", "5-4", "5-5", "5-6", "5-7",
-  "6-1", "6-2", "6-3", "6-4", "6-5", "6-6",
-  "7-1", "7-2", "7-3", "7-4", "7-5", "7-6", "7-7", "7-8",
-  "8-1", "8-2", "8-3", "8-4", "8-5", "8-6", "8-7",
-  "9-1", "9-2", "9-3", "9-4", "9-5", "9-6",
-  "10-1", "10-2", "10-3", "10-4", "10-5"
+  "1-1",
+  "1-2",
+  "1-3",
+  "1-4",
+  "1-5",
+  "1-6",
+  "1-7",
+  "2-1",
+  "2-2",
+  "2-3",
+  "2-4",
+  "2-5",
+  "2-6",
+  "2-7",
+  "3-1",
+  "3-2",
+  "3-3",
+  "3-4",
+  "3-5",
+  "3-6",
+  "4-1",
+  "4-2",
+  "4-3",
+  "4-4",
+  "4-5",
+  "4-6",
+  "4-7",
+  "4-8",
+  "4-9",
+  "5-1",
+  "5-2",
+  "5-3",
+  "5-4",
+  "5-5",
+  "5-6",
+  "5-7",
+  "6-1",
+  "6-2",
+  "6-3",
+  "6-4",
+  "6-5",
+  "6-6",
+  "7-1",
+  "7-2",
+  "7-3",
+  "7-4",
+  "7-5",
+  "7-6",
+  "7-7",
+  "7-8",
+  "8-1",
+  "8-2",
+  "8-3",
+  "8-4",
+  "8-5",
+  "8-6",
+  "8-7",
+  "9-1",
+  "9-2",
+  "9-3",
+  "9-4",
+  "9-5",
+  "9-6",
+  "10-1",
+  "10-2",
+  "10-3",
+  "10-4",
+  "10-5",
 ];
 
 function getPrevLessonId(baseId) {
@@ -50,9 +108,9 @@ function getBaseLessonId(folderName) {
 
 function pickWarmupQuestions(prevLessonId, currentLessonId) {
   const pool = questionsByLesson[prevLessonId] || questionsByLesson[currentLessonId] || questions;
-  
+
   // Filter for approaching / on-level questions (easy but not too easy)
-  let candidates = pool.filter(q => q.tier === "approaching" || q.tier === "on-level");
+  let candidates = pool.filter((q) => q.tier === "approaching" || q.tier === "on-level");
   if (candidates.length < 3) {
     candidates = pool;
   }
@@ -65,8 +123,8 @@ function pickWarmupQuestions(prevLessonId, currentLessonId) {
 
   const picked = [];
   const cloned = [...candidates];
-  
-  const count = (seed % 2 === 0) ? 3 : 4;
+
+  const count = seed % 2 === 0 ? 3 : 4;
 
   while (picked.length < count && cloned.length > 0) {
     const idx = (seed + picked.length * 7) % cloned.length;
@@ -76,7 +134,7 @@ function pickWarmupQuestions(prevLessonId, currentLessonId) {
       stem: q.stem,
       choices: q.choices,
       correctIndex: q.correctIndex,
-      explanation: q.explanation || "Review previous lesson concept."
+      explanation: q.explanation || "Review previous lesson concept.",
     });
   }
 
@@ -93,7 +151,7 @@ for (const dirName of readdirSync(LESSONS_DIR)) {
     const cfg = JSON.parse(readFileSync(configPath, "utf8"));
     const baseId = getBaseLessonId(dirName);
     const prevId = getPrevLessonId(baseId);
-    
+
     // Find prev lesson title from config if possible
     let prevTitle = `Lesson ${prevId}`;
     const prevConfigPath = join(LESSONS_DIR, prevId, "config.json");
@@ -108,7 +166,7 @@ for (const dirName of readdirSync(LESSONS_DIR)) {
       title: "Warmup: Previous Lesson Check",
       prevLessonId: prevId,
       prevLessonTitle: prevTitle,
-      questions: warmupQuestions
+      questions: warmupQuestions,
     };
 
     writeFileSync(configPath, JSON.stringify(cfg, null, 2) + "\n");
@@ -118,4 +176,6 @@ for (const dirName of readdirSync(LESSONS_DIR)) {
   }
 }
 
-console.log(`Successfully generated and injected 3-4 autograded Warmup questions into ${countUpdated} lesson configs!`);
+console.log(
+  `Successfully generated and injected 3-4 autograded Warmup questions into ${countUpdated} lesson configs!`,
+);

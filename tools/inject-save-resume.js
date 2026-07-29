@@ -26,10 +26,9 @@
  *   - Reversible: --revert strips exactly what was injected; git diff shows all.
  * ========================================================================== */
 
-import { readdirSync, statSync, readFileSync, writeFileSync } from "fs";
-import { join, relative, sep } from "path";
+import { readdirSync, readFileSync, statSync, writeFileSync } from "fs";
+import { dirname, join, relative, sep } from "path";
 import { fileURLToPath } from "url";
-import { dirname } from "path";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -37,15 +36,15 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 // the audit (tools/audit-save-resume-integration.js) can never drift apart.
 // The injector applies SKIP_PATH_RE to injection only (revert stays allowed).
 import {
-  MARK,
-  LINK_TAG,
-  SCRIPT_TAG,
   BEGIN,
   END,
+  LINK_TAG,
+  MARK,
+  SCRIPT_TAG,
   SKIP_DIRS,
-  SKIP_TOPLEVEL,
   SKIP_FILE_RE,
   SKIP_PATH_RE as SKIP_INJECT_PATH_RE,
+  SKIP_TOPLEVEL,
 } from "./save-resume-config.js";
 
 const args = new Set(process.argv.slice(2));
@@ -64,7 +63,6 @@ const report = {
   skippedDir: 0,
   skippedFile: [],
 };
-
 
 // Find the real closing tag: skip occurrences inside <script> blocks (vendored
 // libs / print-template string literals contain "</head>" text; injecting

@@ -2,27 +2,27 @@
 // Output: lessons/<id>/homework.docx
 //
 // Run: node scripts/generate-homework.mjs
-import { readFileSync, writeFileSync, readdirSync, existsSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import {
-  Document,
-  Packer,
-  Paragraph,
-  TextRun,
-  ImageRun,
-  HeadingLevel,
-  AlignmentType,
-  PageBreak,
-  Table,
-  TableRow,
-  TableCell,
-  WidthType,
-  BorderStyle,
-} from "docx";
+import { fileURLToPath } from "node:url";
 import { Resvg } from "@resvg/resvg-js";
+import {
+  AlignmentType,
+  BorderStyle,
+  Document,
+  HeadingLevel,
+  ImageRun,
+  Packer,
+  PageBreak,
+  Paragraph,
+  Table,
+  TableCell,
+  TableRow,
+  TextRun,
+  WidthType,
+} from "docx";
 import { resolveVocabImage } from "../engine/core/vocab-images.js";
-import { lessonScope, inScope } from "./lib/lesson-scope.mjs";
+import { inScope, lessonScope } from "./lib/lesson-scope.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
