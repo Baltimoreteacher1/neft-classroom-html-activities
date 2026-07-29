@@ -213,7 +213,53 @@ const uninstrumented = games.filter((g) => !g.wired);
 const isHub = (g) => games.filter((o) => o.path.startsWith(`${g.path}/`)).length >= 3;
 const hubs = uninstrumented.filter(isHub);
 const walkthroughs = uninstrumented.filter((g) => !isHub(g) && g.walkthrough);
-const scorable = uninstrumented.filter((g) => !isHub(g) && !g.walkthrough && g.graded);
+/**
+ * Pages REVIEWED BY A HUMAN and found to have nothing a score could describe.
+ * They match the loose grading regex on descriptive prose ("multiplies in the
+ * wrong direction" is museum copy ABOUT a misconception, not a judged answer),
+ * so without this they sit in the actionable backlog forever — an alarm nobody
+ * can act on, which is how a real gap gets lost among false ones.
+ *
+ * This list can only ever SHRINK the backlog, so it is deliberately hard to
+ * abuse: every entry needs a reason, all of them print on every run, and the
+ * `evidence` string must still be ABSENT from the page. If someone later adds
+ * real grading to one of these, its evidence appears, the exclusion is reported
+ * as STALE and the page returns to the backlog on its own.
+ */
+const REVIEWED_UNSCORABLE = {
+  "fix-it-design-challenge": {
+    why: "design checklists only — checkKey() builds a checkbox id, nothing judges an answer",
+    evidence: /Incorrect|Try again|not quite/,
+  },
+  "misconception-museum": {
+    why: "exhibit copy describing misconceptions; the word 'wrong' is prose, not a verdict",
+    evidence: /Incorrect|Try again|answer-wrong/,
+  },
+  ratiolab: {
+    why: "mixer readout — '✓ Math calculations check' displays a computation, it does not grade one",
+    evidence: /Incorrect|Try again|not quite/,
+  },
+};
+
+/** An exclusion is stale the moment its page starts grading something. */
+function exclusionStatus(g) {
+  const rule = REVIEWED_UNSCORABLE[g.path];
+  if (!rule) return null;
+  let html = "";
+  try {
+    html = readFileSync(resolve(ROOT, g.path, "index.html"), "utf8");
+  } catch {
+    return { ...rule, stale: false };
+  }
+  return { ...rule, stale: rule.evidence.test(html) };
+}
+
+const reviewed = uninstrumented.map((g) => [g, exclusionStatus(g)]).filter(([, r]) => r);
+const staleExclusions = reviewed.filter(([, r]) => r.stale).map(([g]) => g.path);
+
+const scorable = uninstrumented.filter(
+  (g) => !isHub(g) && !g.walkthrough && g.graded && !(REVIEWED_UNSCORABLE[g.path] && !exclusionStatus(g).stale),
+);
 const notScorable = uninstrumented.filter(
   (g) => !isHub(g) && !g.walkthrough && !g.graded,
 );
@@ -230,6 +276,8 @@ const report = {
   uninstrumented: uninstrumented.map((g) => g.path),
   // The uninstrumented total, split by whether a score would mean anything.
   scorable: scorable.map((g) => g.path),
+  reviewedUnscorable: reviewed.map(([g, r]) => ({ path: g.path, why: r.why, stale: r.stale })),
+  staleExclusions,
   hubs: hubs.map((g) => g.path),
   walkthroughs: walkthroughs.map((g) => g.path),
   notScorable: notScorable.map((g) => g.path),
@@ -258,6 +306,19 @@ if (AS_JSON) {
   console.log(`\n    SCORABLE — judges answers, reports nothing: ${scorable.length}   <- the real backlog`);
   for (const p of report.scorable.slice(0, 30)) console.log(`        ${p}`);
   if (report.scorable.length > 30) console.log(`        … and ${report.scorable.length - 30} more`);
+
+  if (reviewed.length) {
+    console.log(`\n    Reviewed and deliberately unscored: ${reviewed.length}`);
+    for (const [g, r] of reviewed) {
+      console.log(`        ${r.stale ? "STALE " : ""}${g.path} — ${r.why}`);
+    }
+    if (staleExclusions.length) {
+      console.log(
+        "      ^ STALE means the page now grades something after all. Its\n" +
+          "        exclusion no longer holds and it is back in the backlog above.",
+      );
+    }
+  }
 
   console.log(`\n    Not a gap — a score here would be meaningless or false:`);
   console.log(`        ${String(hubs.length).padStart(3)} hub / landing pages   (no gameplay to score)`);
