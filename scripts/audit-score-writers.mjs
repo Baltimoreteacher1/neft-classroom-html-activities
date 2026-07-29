@@ -50,6 +50,16 @@ const WIRING = [
   /grade-emit\.js/,
 ];
 
+/**
+ * Does this page judge answers at all? Only a page that can tell right from
+ * wrong has a score worth reporting — the vocabulary varies per game (one
+ * counts `correct`, another tracks `wrong`, another just a `Score`), so match
+ * the idioms rather than a single house style. Deliberately loose: a false
+ * positive lands a page on the backlog for a human to look at, while a false
+ * negative silently excuses it forever.
+ */
+const GRADING = [/\bincorrect\b/i, /\bcorrect\b/i, /\bwrong\b/i, /\bscore\b/i, /\bstreak\b/i];
+
 function d1(sql) {
   try {
     const out = execFileSync(
@@ -103,9 +113,9 @@ function readSidecar(dir) {
       continue;
     }
     const id = js.match(/\bid:\s*["'`]([\w-]+)["'`]/);
-    return { id: id ? id[1] : null, wired: WIRING.some((re) => re.test(js)) };
+    return { id: id ? id[1] : null, wired: WIRING.some((re) => re.test(js)), js };
   }
-  return { id: null, wired: false };
+  return { id: null, wired: false, js: "" };
 }
 
 /** Every index.html that loads the shared FX kit is a game page. */
@@ -140,6 +150,8 @@ function gamePages() {
         path: dir,
         stub: isRedirectStub(html),
         wired: WIRING.some((re) => re.test(html)) || sidecar.wired,
+        graded: GRADING.some((re) => re.test(html) || re.test(sidecar.js || "")),
+        walkthrough: /step-flow\.js/.test(html),
       };
     })
     .filter((g) => !g.stub)
@@ -172,6 +184,38 @@ for (const g of games) {
 const wired = games.filter((g) => g.wired);
 const silent = wired.filter((g) => !wrote.has(g.id));
 const uninstrumented = games.filter((g) => !g.wired);
+
+/**
+ * "63 pages cannot report a score" is a true sentence and a misleading number.
+ * It counts three different things as one backlog:
+ *
+ *   HUB          — a landing page listing other games. It has no gameplay, so
+ *                  a score row would be meaningless. Detected by evidence (it
+ *                  contains other game pages), never by a hand-kept list.
+ *   WALKTHROUGH  — a guided step-flow mission. It "finishes" by reaching the
+ *                  last step, so any score it reported would be 100% every
+ *                  time; writing that would inflate every accuracy figure
+ *                  downstream. Absence of a score here is CORRECT.
+ *   SCORABLE     — genuinely judges answers, and still reports nothing. This
+ *                  is the only real backlog.
+ *
+ * Collapsing these is the same mistake as summing SILENT and UNINSTRUMENTED:
+ * it turns a wiring question into a headcount and mis-shapes planning. Usage is
+ * already answered elsewhere — every page carries the nt-usage beacon — so this
+ * audit is strictly about "how well did they do", never "was it opened".
+ */
+// Containment is the evidence: a page that CONTAINS other game pages is a
+// landing page for them. A hub that instead links outward (number-system) is
+// not caught and falls through to one of the other not-a-gap buckets — the
+// label is then imprecise, but the actionable SCORABLE count is unaffected,
+// which is the number this audit exists to get right.
+const isHub = (g) => games.filter((o) => o.path.startsWith(`${g.path}/`)).length >= 3;
+const hubs = uninstrumented.filter(isHub);
+const walkthroughs = uninstrumented.filter((g) => !isHub(g) && g.walkthrough);
+const scorable = uninstrumented.filter((g) => !isHub(g) && !g.walkthrough && g.graded);
+const notScorable = uninstrumented.filter(
+  (g) => !isHub(g) && !g.walkthrough && !g.graded,
+);
 // A game_id in D1 matching no directory: renamed/deleted game, or a typo'd id.
 // Either way those rows are orphaned and will never join to anything.
 const orphanIds = [...wrote.keys()].filter((id) => !games.some((g) => g.id === id));
@@ -183,6 +227,11 @@ const report = {
   reporting: wired.length - silent.length,
   silent: silent.map((g) => g.path),
   uninstrumented: uninstrumented.map((g) => g.path),
+  // The uninstrumented total, split by whether a score would mean anything.
+  scorable: scorable.map((g) => g.path),
+  hubs: hubs.map((g) => g.path),
+  walkthroughs: walkthroughs.map((g) => g.path),
+  notScorable: notScorable.map((g) => g.path),
   detectorMissed,
   orphanIds,
 };
@@ -198,14 +247,24 @@ if (AS_JSON) {
   if (report.silent.length > 30) console.log(`      … and ${report.silent.length - 30} more`);
 
   console.log(`\n  UNINSTRUMENTED (no scoring wiring at all): ${uninstrumented.length}`);
-  for (const p of report.uninstrumented.slice(0, 12)) console.log(`      ${p}`);
-  if (report.uninstrumented.length > 12) {
-    console.log(`      … and ${report.uninstrumented.length - 12} more`);
-  }
   console.log(
     "      ^ these cannot report and never could. Their absence from\n" +
-      "        game_scores is not evidence about whether students play them.",
+      "        game_scores is not evidence about whether students play them\n" +
+      "        (the nt-usage beacon answers that). Split by whether a score\n" +
+      "        would mean anything:",
   );
+
+  console.log(`\n    SCORABLE — judges answers, reports nothing: ${scorable.length}   <- the real backlog`);
+  for (const p of report.scorable.slice(0, 30)) console.log(`        ${p}`);
+  if (report.scorable.length > 30) console.log(`        … and ${report.scorable.length - 30} more`);
+
+  console.log(`\n    Not a gap — a score here would be meaningless or false:`);
+  console.log(`        ${String(hubs.length).padStart(3)} hub / landing pages   (no gameplay to score)`);
+  console.log(
+    `        ${String(walkthroughs.length).padStart(3)} guided walkthroughs   (finish = 100% by construction;`,
+  );
+  console.log(`                                   reporting it would inflate accuracy)`);
+  console.log(`        ${String(notScorable.length).padStart(3)} sandboxes / labs      (nothing is judged right or wrong)`);
 
   if (detectorMissed.length) {
     console.log(
