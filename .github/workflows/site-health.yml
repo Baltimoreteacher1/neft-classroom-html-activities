@@ -32,6 +32,35 @@ jobs:
       - name: Save/Resume integration audit
         run: node tools/audit-save-resume-integration.js
 
+  lesson-visuals:
+    # Renders lessons in a real browser and asserts every interactive visual
+    # actually drew something. Source gates cannot see this: mountInteractiveVisuals
+    # flags a host BEFORE running its factory and swallows the throw, so a dead
+    # manipulative still parses, still lints, and still serves 200. Weekly rather
+    # than per-push because it drives ~220 lessons through 8 phases each.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run build
+      - name: Serve the built site
+        run: npx vite preview --port 4499 &
+      - name: Wait for the preview server
+        run: |
+          for i in $(seq 1 60); do
+            curl -fsS -o /dev/null http://localhost:4499/ && exit 0
+            sleep 1
+          done
+          echo "preview server never came up on :4499" >&2
+          exit 1
+      - name: Interactive visuals render
+        run: npm run validate:lesson-visuals -- --concurrency 4
+
   live-smoke:
     # Checks the DEPLOYED site (catches a broken Cloudflare deploy that source
     # audits would miss). Runs independently of the source-audit job.
