@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="/assets/game-score.js"></script>
+<script>NeftScore.init({ gameId: "6-ns-b-2reviewactivities", standard: "6.NOS.2" });</script>
   <link rel="stylesheet" href="/assets/shared.css">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1571,6 +1573,9 @@ function renderSeq(){
 
 function checkSeq(){
   let correct=seqChosen.join(",")===CORRECT_SEQ.join(",")
+  // Re-checkable: key it so pressing Check again replaces this exercise's
+  // result rather than logging another attempt.
+  NeftScore.tally("seq", 1, correct ? 1 : 0)
   let fb=document.getElementById("seqFeedback")
   let txt=document.getElementById("seqFeedbackText")
   fb.className="feedback-box show "+(correct?"good":"bad")
@@ -1675,6 +1680,7 @@ buildPractice()
 function checkWorkspace(){
   let val=document.getElementById("workspace").value
   let correct=val.replace(/\s/g,"").includes("294")
+  NeftScore.tally("workspace", 1, correct ? 1 : 0)
   let fb=document.getElementById("workspaceFeedback")
   let txt=document.getElementById("workspaceFeedbackText")
   fb.className="feedback-box show "+(correct?"good":"bad")
@@ -1699,6 +1705,8 @@ function scoreExit(){
   else{i1.classList.remove("correct");i1.classList.add("incorrect")}
   if(v2==="315"){i2.classList.remove("incorrect");i2.classList.add("correct");s++}
   else{i2.classList.remove("correct");i2.classList.add("incorrect")}
+  // Exit ticket is two questions, re-scorable; one keyed tally covers both.
+  NeftScore.tally("exit", 2, s)
   let pct=s/2*100
   document.getElementById("scoreMeter").style.display="block"
   document.getElementById("scorePct").textContent=pct+"%"

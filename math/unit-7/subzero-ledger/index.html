@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="/assets/game-score.js"></script>
+<script>NeftScore.init({ gameId: "subzero-ledger", standard: "" });</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="/assets/math-mobile.css">
@@ -2550,6 +2552,9 @@
       if (sz2QuizResults[sz2QuizIdx] === 'correct') return; // already done
 
       sz2QuizAttempts[sz2QuizIdx]++;
+      // The game already guards re-answering a solved question above, so each
+      // submission that reaches here is a genuine attempt.
+      NeftScore.attempt(val === p.answer);
 
       if (val === p.answer) {
         sz2QuizResults[sz2QuizIdx] = 'correct';
