@@ -320,6 +320,7 @@
     ["assignments", "Assignment list"],
     ["momentum", "Your Week"],
     ["soon", "Coming up"],
+    ["sports", "Soccer Season"],
   ];
 
   const STEP_TEMPLATES = {
@@ -687,6 +688,7 @@
             },
       rewards: normalizeRewards(x.rewards),
       health: normalizeHealth(x.health),
+      sport: normalizeSport(x.sport),
       importInbox: Array.isArray(x.importInbox)
         ? x.importInbox.map(normalizeImportCandidate).slice(-100)
         : [],
@@ -1787,6 +1789,7 @@
     ["health", "Workout", "💪"],
     ["reading", "Reading", "📚"],
     ["rewards", "Payout", "💵"],
+    ["sports", "Soccer", "⚽"],
   ];
   let view = "health";
   const NAV_USAGE_KEY = "focus-school:nav-usage";
@@ -2570,12 +2573,15 @@
   // honors the per-day cap so a kid can't farm reminders for unlimited cash.
   function earnReward(kind, label) {
     const r = state.rewards;
-    if (!r || !r.enabled) return;
+    // The season is not money: it keeps running even with allowance switched
+    // off. awardRewardAmount pays the points on the normal path.
+    if (!r || !r.enabled) return awardSportPoints(kind);
     const rate = Number(r.rates?.[kind]) || 0;
     awardRewardAmount(kind, label, rate);
   }
 
   function awardRewardAmount(kind, label, amount) {
+    awardSportPoints(kind);
     const r = state.rewards;
     if (!r || !r.enabled) return 0;
     let amt = Number(amount) || 0;
@@ -4799,6 +4805,7 @@
         assignments: assignmentListCard(),
         routine: routineCard(routine),
         momentum: momentumCard(),
+        sports: sportsCard(),
         soon: card(
           "soon",
           "Coming up",
@@ -6196,6 +6203,14 @@ Due May 31"></textarea>
       );
     },
 
+    sports() {
+      const api = sports();
+      if (!api) return backHeader("Soccer Season", "health");
+      ensureSportsCss();
+      return (
+        backHeader("Soccer Season", "health") + api.renderView(state.sport, { esc, card })
+      );
+    },
     rewards() {
       const r = state.rewards;
       const rateRow = (k, label) =>
@@ -6302,9 +6317,18 @@ Due May 31"></textarea>
             .join("")
         : `<p class="sub" style="margin:0">Nothing waiting — everything earned so far has been handed over. 👍</p>`;
 
-      const payouts = (r.payouts || [])
-        .slice()
-        .sort((a, b) => String(b.paidAt).localeCompare(String(a.paidAt)))
+      // Grouped by week: a week settled in three goes is one line that adds up,
+      // not three lookalike rows a parent has to mentally total.
+      const byWeek = new Map();
+      for (const p of r.payouts || []) {
+        const g = byWeek.get(p.weekKey) || { weekKey: p.weekKey, amount: 0, count: 0, last: "" };
+        g.amount = round2(g.amount + (Number(p.amount) || 0));
+        g.count++;
+        if (String(p.paidAt) > g.last) g.last = String(p.paidAt || "");
+        byWeek.set(p.weekKey, g);
+      }
+      const payouts = [...byWeek.values()]
+        .sort((a, b) => String(b.last).localeCompare(String(a.last)))
         .slice(0, 12);
       const historyHtml = payouts.length
         ? payouts
@@ -6312,9 +6336,11 @@ Due May 31"></textarea>
               (p) =>
                 `<div class="rw-row"><span class="rw-ic" aria-hidden="true">💵</span><span class="rw-lbl">Week of ${esc(
                   weekLabel(p.weekKey),
-                )}<small>Paid ${esc(
-                  p.paidAt ? niceDate(p.paidAt.slice(0, 10)) : "",
-                )}</small></span><b class="rw-out">${money(p.amount)}</b></div>`,
+                )}<small>${
+                  p.count > 1 ? `${p.count} payments · last ` : "Paid "
+                }${esc(p.last ? niceDate(p.last.slice(0, 10)) : "")}</small></span><b class="rw-out">${money(
+                  p.amount,
+                )}</b></div>`,
             )
             .join("")
         : emptyState("🧾", "No payouts yet.");
@@ -6392,6 +6418,45 @@ Due May 31"></textarea>
       );
     },
   };
+
+  // ---- Sports season (sports.js) -----------------------------------------
+  // The engine is a separate file so this bundle only carries the seams. If it
+  // ever fails to load, every helper below degrades to "no season" rather than
+  // throwing mid-render and blanking the app.
+  const sports = () => globalThis.NeftSports || null;
+  const normalizeSport = (s) =>
+    sports() ? sports().normalize(s) : { xp: 0, equipped: {}, celebrated: 0 };
+
+  let sportsCssInjected = false;
+  function ensureSportsCss() {
+    if (sportsCssInjected || !sports()) return;
+    const el = document.createElement("style");
+    el.id = "sports-css";
+    el.textContent = sports().CSS;
+    document.head.appendChild(el);
+    sportsCssInjected = true;
+  }
+
+  // Award training points for one finished thing, and celebrate a level-up
+  // exactly once (`celebrated` is synced, so a second device stays quiet).
+  function awardSportPoints(kind) {
+    const api = sports();
+    if (!api) return;
+    const res = api.award(state.sport, kind);
+    state.sport = res.sport;
+    if (res.leveledUp && res.level.level > (state.sport.celebrated || 0)) {
+      state.sport.celebrated = res.level.level;
+      toast(api.levelUpMessage(res.level));
+      triggerConfetti();
+    }
+  }
+
+  function sportsCard() {
+    const api = sports();
+    if (!api) return "";
+    ensureSportsCss();
+    return api.renderCard(state.sport, { esc });
+  }
 
   function backHeader(title, back) {
     return `<div class="view-head"><div class="row" style="gap:10px"><button class="btn sm ghost" data-act="nav" data-arg="${back}" aria-label="Back">← Back</button><h2 class="view-title">${esc(title)}</h2></div></div>`;
@@ -8249,7 +8314,11 @@ Due May 31"></textarea>
       const paidFromPayouts = payouts.reduce((s, p) => s + (Number(p.amount) || 0), 0);
       const cfg = (remote.updatedAt || 0) > (local.updatedAt || 0) ? rr : lr;
       const numc = (v, d) => (Number.isFinite(Number(v)) ? Number(v) : d);
-      merged.rewards = {
+      merged.sport = sports()
+      ? sports().merge(local.sport, remote.sport)
+      : local.sport || remote.sport;
+
+    merged.rewards = {
         enabled: cfg.enabled !== false,
         currency: cfg.currency || "$",
         rates: { ...(lr.rates || {}), ...(cfg.rates || {}) },
@@ -9769,6 +9838,18 @@ Due May 31"></textarea>
     "view-sync": () => setView("sync"),
     "view-about": () => setView("about"),
     "view-insights": () => setView("insights"),
+    "view-sports": () => setView("sports"),
+    // Wearing a piece of gear is the whole reward — it changes the player card
+    // on the Now screen, so it has to survive a reload like anything else.
+    "sports-equip": (_, itemId) => {
+      const api = sports();
+      if (!api || !itemId) return;
+      state.sport = api.equip(state.sport, itemId);
+      save();
+      render();
+      const item = api.itemById(itemId);
+      if (item) toast(`${item.emoji} ${item.name} on.`);
+    },
     "view-rewards": () => setView("rewards"),
 
     // Pay out EVERYTHING owed in one hand-over. Opens a parent-gated paystub
@@ -9798,15 +9879,15 @@ Due May 31"></textarea>
         <div class="pay-stub">${lines}<div class="pay-line pay-total"><span>Total</span><b>${money(
           total,
         )}</b></div></div>
+        <div class="field" style="margin-top:10px"><label>Amount to hand over now</label><input id="rwAmt" type="number" min="0" step="0.25" max="${total}" value="${total}"></div>
+        <p class="sub" style="margin:4px 0 0">Paying less is fine — the rest stays owed and shows up here next time.</p>
         ${
           r.pin
             ? `<div class="field" style="margin-top:10px"><label>Parent PIN</label><input id="rwPin" type="password" inputmode="numeric" placeholder="••••" autocomplete="off"></div>`
             : ""
         }
         <p id="rwErr" class="sub" style="color:#c0473a;display:none">That PIN didn't match.</p>
-        <div class="row"><button class="btn" data-act="close-modal">Cancel</button><button class="btn primary" data-act="reward-confirm-payout-all">💵 Mark paid ${money(
-          total,
-        )}</button></div>`,
+        <div class="row"><button class="btn" data-act="close-modal">Cancel</button><button class="btn primary" data-act="reward-confirm-payout-all">💵 Mark paid</button></div>`,
       );
     },
     "reward-confirm-payout-all": () => {
@@ -9821,20 +9902,31 @@ Due May 31"></textarea>
           return;
         }
       }
+      const outstanding = round2(weeks.reduce((s, w) => s + owedForWeek(w), 0));
+      const typed = $("#rwAmt")?.value;
+      const requested =
+        typed === undefined || typed === ""
+          ? outstanding
+          : Math.min(outstanding, Math.max(0, round2(Number(typed) || 0)));
       const paidAt = new Date().toISOString();
+      let left = requested;
       let total = 0;
       let count = 0;
       for (const w of weeks) {
+        if (left <= 0) break;
         const owed = owedForWeek(w);
         if (owed <= 0) continue;
+        const pay = round2(Math.min(owed, left));
+        if (pay <= 0) continue;
         r.payouts.unshift({
           id: uid("pay"),
           weekKey: w.weekKey,
-          amount: owed,
+          amount: pay,
           paidAt,
           breakdown: { ...w.by, bonus: w.bonus },
         });
-        total = round2(total + owed);
+        left = round2(left - pay);
+        total = round2(total + pay);
         count++;
       }
       if (total <= 0) return closeModal();
@@ -9842,7 +9934,12 @@ Due May 31"></textarea>
       save();
       closeModal();
       render();
-      toast(`Paid ${money(total)} for ${count} week${count === 1 ? "" : "s"} 💵`);
+      const stillOwed = round2(outstanding - total);
+      toast(
+        stillOwed > 0
+          ? `Paid ${money(total)} — ${money(stillOwed)} still owed 💵`
+          : `Paid ${money(total)} for ${count} week${count === 1 ? "" : "s"} 💵`,
+      );
       triggerConfetti();
     },
 
