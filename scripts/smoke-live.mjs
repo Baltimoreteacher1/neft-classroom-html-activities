@@ -124,9 +124,14 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
  *
  * Only TRANSPORT-level symptoms are retried: no response, a timeout, 5xx, or
  * 429. A response that arrived and was simply wrong — 200 where 401 was
- * required, a missing body marker, the wrong commit, a syntax error — is a real
- * finding and fails on the first attempt. Retrying those would mask exactly the
- * regressions this script exists to catch.
+ * required, a missing body marker, a syntax error — is a real finding and fails
+ * on the first attempt. Retrying those would mask exactly the regressions this
+ * script exists to catch.
+ *
+ * The build stamp is the one exception, and it is handled in checkStamp() rather
+ * than here: a stale commit straight after a deploy is usually edge-propagation
+ * lag, not a failed build, and the two are distinguished by whether it converges.
+ * See the comment there.
  */
 const RETRY_ATTEMPTS = 3;
 const RETRY_BASE_MS = 1500;
@@ -243,23 +248,64 @@ async function checkAssets() {
   }
 }
 
-async function checkStamp() {
+/**
+ * Cloudflare promotes a Pages build across edge nodes over some seconds, so
+ * right after a deploy one node can serve the new commit while another still
+ * serves the old one. ship.sh's poll_stamp confirms on whichever node answers
+ * it, then hands off to this script — which may hit a node that has not caught
+ * up yet. Failing on that first read is how ship.sh twice reported
+ * "PRODUCTION IS DEGRADED" (and advised a rollback) over a perfectly healthy
+ * deploy on 2026-07-29.
+ *
+ * A stale stamp is therefore not automatically a finding — but it is not
+ * automatically fine either. The two cases are told apart by whether they
+ * CONVERGE: propagation lag resolves in seconds, a stuck or failed build never
+ * does. So re-poll for a bounded window and only then fail. This does not mask
+ * the regression the fail-fast rule was protecting: a build that genuinely did
+ * not promote still fails, just ~STAMP_SETTLE_MS later.
+ *
+ * Only applies with --expect (i.e. straight after a deploy). Without it there
+ * is nothing to converge ON, and the check just reports what is live.
+ */
+const STAMP_SETTLE_MS = 120_000;
+const STAMP_SETTLE_INTERVAL_MS = 10_000;
+
+async function readStamp() {
   const res = await get("/access-practice-lab/config.json");
-  if (res.status !== 200) return failCheck("build stamp", res.error || `HTTP ${res.status}`);
-  let stamp;
+  if (res.status !== 200) return { error: res.error || `HTTP ${res.status}` };
   try {
-    stamp = JSON.parse(res.body);
+    const commit = String(JSON.parse(res.body).commit || "");
+    return commit ? { commit } : { error: "config.json has no commit field" };
   } catch {
-    return failCheck("build stamp", "config.json is not valid JSON");
+    return { error: "config.json is not valid JSON" };
   }
-  const live = String(stamp.commit || "");
-  if (!live) return failCheck("build stamp", "config.json has no commit field");
-  if (EXPECT_SHA) {
-    const match = live.startsWith(EXPECT_SHA) || EXPECT_SHA.startsWith(live);
-    if (!match) return failCheck("build stamp", `production serves ${live.slice(0, 9)}, expected ${EXPECT_SHA.slice(0, 9)}`);
-    return pass("build stamp", `serving ${live.slice(0, 9)} as expected`);
+}
+
+async function checkStamp() {
+  const matches = (live) => live.startsWith(EXPECT_SHA) || EXPECT_SHA.startsWith(live);
+
+  let first = await readStamp();
+  if (first.error) return failCheck("build stamp", first.error);
+  if (!EXPECT_SHA) return pass("build stamp", `serving ${first.commit.slice(0, 9)}`);
+  if (matches(first.commit)) return pass("build stamp", `serving ${first.commit.slice(0, 9)} as expected`);
+
+  // Stale on first read — wait for the promotion to finish propagating.
+  const deadline = Date.now() + STAMP_SETTLE_MS;
+  let latest = first;
+  while (Date.now() < deadline) {
+    await sleep(STAMP_SETTLE_INTERVAL_MS);
+    latest = await readStamp();
+    if (latest.error) continue;
+    if (matches(latest.commit)) {
+      const waited = Math.round((STAMP_SETTLE_MS - (deadline - Date.now())) / 1000);
+      return pass("build stamp", `serving ${latest.commit.slice(0, 9)} as expected (converged after ${waited}s)`);
+    }
   }
-  pass("build stamp", `serving ${live.slice(0, 9)}`);
+  return failCheck(
+    "build stamp",
+    `production still serves ${(latest.commit || first.commit).slice(0, 9)}, expected ` +
+      `${EXPECT_SHA.slice(0, 9)} after ${STAMP_SETTLE_MS / 1000}s — the build did not promote`,
+  );
 }
 
 async function checkStatuses() {
