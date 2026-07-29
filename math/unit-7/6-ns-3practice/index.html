@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="/assets/game-score.js"></script>
+<script>NeftScore.init({ gameId: "6-ns-3practice", standard: "6.NOS.6" });</script>
   <link rel="stylesheet" href="/assets/shared.css">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -707,6 +709,9 @@
   }
 
   function addCheck(isCorrect, xp){
+    // Single funnel for every judged answer here, so one hook counts wrong
+    // answers as faithfully as right ones.
+    NeftScore.attempt(!!isCorrect);
     state.checks += 1;
     if(isCorrect){
       state.correct += 1;
@@ -1087,6 +1092,7 @@
     }
 
     if(state.tabsDone.size === 6){
+      NeftScore.finish(); // all six tabs done
       const accuracy = Math.round((state.correct / Math.max(1,state.checks)) * 100);
       document.getElementById("celebrateBox").classList.add("show");
       document.getElementById("celebrateText").innerHTML =

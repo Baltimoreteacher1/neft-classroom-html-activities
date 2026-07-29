@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="en">
 <head>
+<script src="/assets/game-score.js"></script>
+<script>NeftScore.init({ gameId: "unit-rate-duel", standard: "6.AT.2" });</script>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="stylesheet" href="/assets/math-mobile.css">
@@ -891,7 +893,11 @@ const AppController = {
   
   chooseBest(choice) {
     const q = STATE.quest();
-    
+
+    // Count every judged answer, right or wrong. A game that counts only wins
+    // reports 100% accuracy, which is worse than reporting nothing.
+    NeftScore.attempt(choice === q.correct);
+
     if (choice === q.correct) {
       AudioEngine.playSuccess();
       document.getElementById("successModal").classList.add("active");
@@ -907,6 +913,7 @@ const AppController = {
     
     let nextQuestIdx = STATE.currentQuestIndex + 1;
     if (nextQuestIdx >= CONFIG.quests.length) {
+      NeftScore.finish(); // all quests cleared — the run is genuinely over
       alert("🏆 SUPERMARKET DUEL ACCOMPLISHED! YOU ARE A UNIT RATE MASTER!");
       nextQuestIdx = 0;
     }

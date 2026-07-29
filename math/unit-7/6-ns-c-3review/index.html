@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="en">
   <head>
+<script src="/assets/game-score.js"></script>
+<script>NeftScore.init({ gameId: "6-ns-c-3review", standard: "6.NOS.8" });</script>
     <link rel="stylesheet" href="/assets/shared.css" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -1757,6 +1759,9 @@
           }
         });
         const total = CAT_DATA.items.length;
+        // Batch-graded: record the latest state of this exercise rather than
+        // one attempt per chip, so pressing Check again cannot inflate it.
+        NeftScore.tally("categorize", total, correct);
         const pct = Math.round((correct / total) * 100);
         document.getElementById("cat-results").style.display = "block";
         document.getElementById("cat-score-display").innerText =

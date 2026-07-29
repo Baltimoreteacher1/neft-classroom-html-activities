@@ -44,6 +44,7 @@ const DB = "neft-student-progress";
  */
 const WIRING = [
   /engine3d\/game-base\.js/,
+  /game-score\.js/,
   /reportScore\s*\(/,
   /\/api\/scores/,
   /edupulse-bridge\.js/,
