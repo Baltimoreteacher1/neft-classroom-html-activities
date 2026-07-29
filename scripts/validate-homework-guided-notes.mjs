@@ -10,6 +10,61 @@ const root = join(import.meta.dirname, "..");
 const lessonsDir = join(root, "lessons");
 const LESSON_DIR_RE = /^(\d+)-(\d+)(-flagship)?$/;
 
+// Core Quick Check = the Warm-up tier + the Level-up (challenge) tier.
+// Bonus / Más problems are excluded by design.
+//
+// Anchored on the rendered badge element on purpose: an earlier version matched
+// the bare label anywhere in the file, which also counted the two mentions inside
+// the stylesheet comment documenting the old " / Repaso" suffix bug. Every one of
+// the 74 pages then reported 8 instead of its real 6, so the HIGH warning fired
+// site-wide and meant nothing.
+export function countQuickChecks(html) {
+  return (
+    html.match(
+      /class="problem-number-badge">(?:Warm-up \/ Calentamiento|Level up \/ Reto) \d/g,
+    ) || []
+  ).length;
+}
+
+// Self-test first, so a counter that silently stops counting fails loudly instead
+// of reporting a clean curriculum (same rule as validate:math / validate:workflow-yaml).
+function selfTestCountQuickChecks() {
+  const badge = (label, n) => `<div class="problem-number-badge">${label} ${n}</div>`;
+  const cases = [
+    ["counts warm-up badges", badge("Warm-up / Calentamiento", 1), 1],
+    ["counts level-up badges", badge("Level up / Reto", 2), 1],
+    [
+      "counts a full 3+3 core set",
+      [1, 2, 3].map((n) => badge("Warm-up / Calentamiento", n)).join("") +
+        [1, 2, 3].map((n) => badge("Level up / Reto", n)).join(""),
+      6,
+    ],
+    [
+      "ignores the label inside a comment (the 8-vs-6 regression)",
+      `/* ("Warm-up / Calentamiento 1"), so appending " / Repaso" produced
+         "Warm-up / Calentamiento 1 / Repaso" on every problem. */` +
+        badge("Warm-up / Calentamiento", 1),
+      1,
+    ],
+    ["ignores an unnumbered label", '<div class="problem-number-badge">Warm-up / Calentamiento</div>', 0],
+    ["ignores Bonus / Más", badge("Bonus / Más", 1), 0],
+    ["empty document counts zero", "<html></html>", 0],
+  ];
+  const failures = [];
+  for (const [name, html, expected] of cases) {
+    const got = countQuickChecks(html);
+    if (got !== expected) failures.push(`  ✗ ${name}: expected ${expected}, got ${got}`);
+  }
+  if (failures.length) {
+    console.error(`countQuickChecks self-test: ${failures.length} FAILED`);
+    for (const f of failures) console.error(f);
+    process.exit(1);
+  }
+  console.log(`countQuickChecks self-test: ${cases.length} passed, 0 failed`);
+}
+
+selfTestCountQuickChecks();
+
 const REQUIRED_MARKERS = [
   "Family Math Night",
   "Ayuda a tu estudiante",
@@ -87,10 +142,7 @@ for (const id of lessonIds) {
     }
   }
 
-  // Core Quick Check is split into a Warm-up tier and a Level-up (challenge) tier.
-  // Count both as the core problem set (Bonus/Más are excluded by design).
-  const quickChecks = (html.match(/(?:Warm-up \/ Calentamiento|Level up \/ Reto) \d/g) || [])
-    .length;
+  const quickChecks = countQuickChecks(html);
   if (quickChecks > 6) {
     issues.push({ id, level: "HIGH", msg: `Too many quick check problems: ${quickChecks}` });
   }
