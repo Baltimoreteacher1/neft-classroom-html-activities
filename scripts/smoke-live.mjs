@@ -132,12 +132,37 @@ const RETRY_ATTEMPTS = 3;
 const RETRY_BASE_MS = 1500;
 const isTransient = (res) => res.status === 0 || res.status === 429 || res.status >= 500;
 
+/**
+ * Retries must never delay the ALARM.
+ *
+ * Retrying is right for a blip, but a genuinely down site does not refuse
+ * connections — it hangs. Measured against a blackholed host, one check burns
+ * ~36s exhausting its attempts, so 18 sequential checks would sit silent for
+ * ~11 minutes before ship.sh reported anything. During a real outage that is
+ * precisely backwards: the slower the report, the longer production stays
+ * broken. Retries exist to suppress false alarms, not to postpone true ones.
+ *
+ * So the whole run carries a wall-clock budget. Once it is spent, checks still
+ * RUN — coverage is never silently reduced — but they stop retrying, and the
+ * report says so. Normal runs finish in ~10s and never reach it.
+ */
+const RETRY_BUDGET_MS = 90_000;
+const startedAt = Date.now();
+const budgetSpent = () => Date.now() - startedAt >= RETRY_BUDGET_MS;
+let budgetExhausted = false;
+
 async function get(path, { attempts = RETRY_ATTEMPTS, timeoutMs = TIMEOUT_MS } = {}) {
   const url = `${BASE}${path}`;
   let res;
   for (let attempt = 1; attempt <= attempts; attempt++) {
     res = await getOnce(url, timeoutMs);
     if (!isTransient(res)) return { ...res, attempt };
+    if (budgetSpent()) {
+      // Enough of this run has been spent waiting that further retries only
+      // delay the verdict. Fail fast from here on.
+      budgetExhausted = true;
+      return { ...res, attempt, exhausted: true, budgetHit: true };
+    }
     if (attempt < attempts) await sleep(RETRY_BASE_MS * attempt);
   }
   return { ...res, attempt: attempts, exhausted: true };
@@ -297,6 +322,12 @@ console.log(`\n${results.length - failed.length}/${results.length} checks passed
 if (warned.length) {
   console.log("\n! Warnings (third-party; not caused by this deploy):");
   for (const w of warned) console.log(`    ${w.name} — ${w.detail}`);
+}
+if (budgetExhausted) {
+  console.error(
+    `\n! Retry budget (${RETRY_BUDGET_MS / 1000}s) spent — later checks ran WITHOUT retries, so some\n` +
+      "  failures below may be transient. Every check still ran; none were skipped.",
+  );
 }
 if (failed.length) {
   console.error("\n✗ Failed checks:");
