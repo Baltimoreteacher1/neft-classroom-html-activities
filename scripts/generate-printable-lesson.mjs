@@ -478,6 +478,12 @@ function buildPrintable(config) {
   ${connect}
   ${reflect}
   <footer>Neft Teacher · ${esc(id)} · Printable full-lesson packet · Complete every section, then bring it to class.</footer>
+  <!-- Anonymous usage beacon. It has to be emitted HERE rather than added by
+       tools/inject-usage-signal.mjs: this file is regenerated on every build,
+       so an injected tag is silently stripped again on the next \`npm run build\`
+       (which is exactly what happened the first time). Generated pages must be
+       instrumented by their generator. -->
+  <script src="/assets/nt-usage.js" data-nt-usage="1" defer></script>
 </body>
 </html>`;
 }

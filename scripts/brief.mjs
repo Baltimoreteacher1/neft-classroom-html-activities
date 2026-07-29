@@ -109,8 +109,16 @@ function inventory() {
       return 0;
     }
   };
+  // Numerator and denominator MUST come from the same file set. They did not at
+  // first — tracked files vs a filesystem walk — which reported 100% coverage
+  // while 74 generated pages carried no beacon at all. A metric that flatters
+  // itself is worse than no metric.
+  // NUL-delimited: seven tracked pages are macOS "index 2.html" duplicates, and
+  // a newline+xargs pipeline splits them on the space and reports them as
+  // uninstrumented when they are fine.
+  const TRACKED = `git ls-files -z '*.html' | grep -zv '^dist/'`;
   return {
-    htmlPages: count(`git ls-files '*.html' | grep -v '^dist/' | wc -l`),
+    htmlPages: count(`${TRACKED} | tr -dc '\\0' | wc -c`),
     gamePages: count(
       `grep -rl "game-fx.js" --include="index.html" . 2>/dev/null | grep -v node_modules | grep -v "^./dist/" | wc -l`,
     ),
@@ -118,7 +126,7 @@ function inventory() {
     // a shared runtime that injects it (save-resume-engine / nt-page-enhance).
     // Counting only the literal tag reports ~12% when real coverage is ~100%.
     instrumented: count(
-      `grep -rlE "nt-usage\\.js|save-resume-engine\\.js|nt-page-enhance\\.js" --include="*.html" . 2>/dev/null | grep -v node_modules | grep -v "^./dist/" | wc -l`,
+      `${TRACKED} | xargs -0 grep -lE "nt-usage\\.js|save-resume-engine\\.js|nt-page-enhance\\.js" 2>/dev/null | wc -l`,
     ),
   };
 }

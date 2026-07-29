@@ -42,6 +42,13 @@ const HOST_SCRIPTS = ["save-resume/save-resume-engine.js", "assets/nt-page-enhan
 const SKIP_PREFIXES = ["dist/", "node_modules/", "test/", "tests/", "tmp/", "test-results/"];
 const SKIP_EXACT = new Set(["404.html"]);
 
+/**
+ * Files rewritten by a generator on every build. Injecting into these appears to
+ * work and then silently reverts on the next `npm run build`, so their tag must
+ * live in the GENERATOR instead (see scripts/generate-printable-lesson.mjs).
+ */
+const GENERATED_BASENAMES = new Set(["printable.html"]);
+
 function listHtml() {
   const out = execFileSync(
     "git",
@@ -53,7 +60,8 @@ function listHtml() {
     .map((s) => s.trim())
     .filter(Boolean)
     .filter((p) => !SKIP_PREFIXES.some((pre) => p.startsWith(pre)))
-    .filter((p) => !SKIP_EXACT.has(p));
+    .filter((p) => !SKIP_EXACT.has(p))
+    .filter((p) => !GENERATED_BASENAMES.has(p.split("/").pop()));
 }
 
 function alreadyCovered(html) {
