@@ -115,13 +115,56 @@
     return 1;
   }
   // Domain-level fallback: when no per-item NT_MISCONCEPTIONS[qid] is authored,
-  // derive a misconception tag from the lesson's CCSS standard so the targeted
+  // derive a misconception tag from the lesson's standard so the targeted
   // re-teach + Socratic hint ladders fire (instead of the generic scaffold).
   // Specialized tags available: operation-choice | place-value | ratio-proportion
-  // | sign-error. SP/G return null on purpose (no specialized ladder → generic).
+  // | sign-error. Statistics/geometry return null on purpose (no specialized
+  // ladder exists for them → generic re-teach).
+  //
+  // Standards here are the 2025 Maryland MCCRS codes (AT / NOS / GR / DS) — the
+  // curriculum was re-coded from CCSS, and generate-lesson-platform-config.mjs
+  // writes the new codes into NT_LESSON_STANDARD. This function originally only
+  // matched the 2010 CCSS domains (RP/NS/EE/SP/G), so on the re-coded pages the
+  // regex simply failed and every lesson fell through to the generic scaffold.
+  // The cluster map below reproduces the ORIGINAL intent exactly, via each
+  // cluster's CCSS predecessor recorded as `oldId` in data/ccss-standards.json:
+  //
+  //   6.AT.A  ratios                     <- RP    ratio-proportion
+  //   6.AT.B  exponents, expressions     <- EE    operation-choice
+  //   6.AT.C  inequalities               <- EE    operation-choice
+  //   6.AT.D  expressions                <- EE    operation-choice
+  //   6.NOS.A fractions                  <- NS.A  operation-choice
+  //   6.NOS.B decimals, factors          <- NS.B  place-value
+  //   6.NOS.C coordinate plane, integers <- NS.C  sign-error
+  //   6.GR.*  area, surface area, volume <- G     null (generic)
+  //   6.DS.*  statistics                 <- SP    null (generic)
+  var MCCRS_CLUSTER_TAGS = {
+    "AT.A": "ratio-proportion",
+    "AT.B": "operation-choice",
+    "AT.C": "operation-choice",
+    "AT.D": "operation-choice",
+    "NOS.A": "operation-choice",
+    "NOS.B": "place-value",
+    "NOS.C": "sign-error",
+  };
+
   function defaultMisconceptionForStandard() {
     try {
       var std = String(window.NT_LESSON_STANDARD || "");
+
+      // Current codes: 6.<AT|NOS|GR|DS>.<cluster letter>.<number>
+      var mc = std.match(/6\.(AT|NOS|GR|DS)\.([A-D])/i);
+      if (mc) {
+        var key = mc[1].toUpperCase() + "." + mc[2].toUpperCase();
+        return MCCRS_CLUSTER_TAGS[key] || null; // GR / DS → generic
+      }
+      // A code with no cluster letter (e.g. "6.AT.1") still tells us the domain.
+      // Ratios are the only AT cluster with a specialized ladder, so anything
+      // less specific stays generic rather than guessing wrong.
+      var md = std.match(/6\.(AT|NOS|GR|DS)\b/i);
+      if (md) return null;
+
+      // Legacy 2010 CCSS codes, kept so any page not yet re-coded still works.
       var m = std.match(/6\.(RP|NS|EE|SP|G)\.?([A-C])?/i);
       if (!m) return null;
       var dom = m[1].toUpperCase();
