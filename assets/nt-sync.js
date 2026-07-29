@@ -89,6 +89,31 @@
     return anon;
   }
 
+  /* Normalize a standard to the canonical key used by data/ccss-standards.json
+     and lessons/<id>/config.json — "6.AT.1", "6.AT.3a", "6.GR.1".
+
+     WHY: the stored `standard` is a JOIN KEY. functions/api/progress groups
+     game_scores and lesson_telemetry into the same per-standard cell for the
+     teacher standards matrix. But most activities author this field as a DISPLAY
+     label — "6.GR.A.4 · Nets & Surface Area", "6.NOS.C.5–7 · Integers…", and one
+     retired CCSS range, "6.RP.A.1-3" — so the rows never matched each other or
+     the standards registry. Normalizing here fixes every producer at once and
+     leaves the authored label untouched for anything that renders it.
+
+     Page badges carry a cluster letter ("6.AT.A.1") and the registry does not,
+     so the cluster letter is dropped. A label naming several standards yields
+     the first one — a single column cannot hold a range, and the first is the
+     anchor standard in every current case. Legacy CCSS codes keep their domain
+     (translating RP/NS/EE -> AT/NOS needs the crosswalk table, which is not
+     available client-side); only the shape is normalized. */
+  function normalizeStandard(raw) {
+    var s = String(raw == null ? "" : raw).trim();
+    if (!s) return null;
+    var m = s.match(/\b(\d)\.([A-Z]{1,3})(?:\.([A-Z]))?\.(\d+[a-z]?)\b/i);
+    if (!m) return null; // prose with no code -> null, never store the label
+    return m[1] + "." + m[2].toUpperCase() + "." + m[4].toLowerCase();
+  }
+
   /* Enqueue a privacy-safe result. Synchronous; returns immediately. */
   function record(result) {
     var item = {
@@ -97,7 +122,7 @@
       class_code: cfg.class_code,
       student_ref: studentRef(),
       activity_slug: cfg.activity_slug || (result && result.activity_slug) || "unknown",
-      standard: cfg.standard || (result && result.standard) || null,
+      standard: normalizeStandard(cfg.standard || (result && result.standard)),
       score: result.score,
       total: result.total,
       misconception_tags: Array.isArray(result.misconception_tags) ? result.misconception_tags : [],
