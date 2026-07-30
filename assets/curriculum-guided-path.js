@@ -1,14 +1,6 @@
 (function () {
   "use strict";
 
-  var printUnits = document.createDocumentFragment();
-  // Published seam: detachPrintFallbackUnits() moves every details.unit out of
-  // the document, so anything that looks them up with a document query finds
-  // nothing. Expose the fragment so those callers can still reach them.
-  // Consumer: printSingleUnit() in assets/curriculum-enhancements.js.
-  window.NTPrintUnits = printUnits;
-  var printUnitsAnchor = null;
-
   // Open the requested workflow view once the teacher panel exists. The panel
   // is built asynchronously by curriculum-teacher-workflow.js after its data
   // loads, so poll briefly for the tab before giving up.
@@ -94,38 +86,25 @@
     return true;
   }
 
-  function detachPrintFallbackUnits() {
-    var units = Array.from(document.querySelectorAll("details.unit"));
-    if (!units.length) return;
-    if (!printUnitsAnchor) {
-      printUnitsAnchor = document.createComment("print curriculum units");
-      units[0].parentNode.insertBefore(printUnitsAnchor, units[0]);
-    }
-    units.forEach(function (unit) {
+  // The canonical unit rail replaces this static list on screen, so hide it --
+  // but leave it IN THE DOCUMENT. This used to move every details.unit into a
+  // DocumentFragment, which took all 74 details.lesson nodes out of the
+  // document with them. Every consumer that looks lessons up with a document
+  // query silently found nothing: status badges and resource pills stopped
+  // rendering, "Print unit" fell through to printing all ten units, and the
+  // beforeprint expand/restore pair closed everything it had just opened.
+  // Hiding is enough -- curriculum-enhancements.css forces `details.unit` and
+  // `details.lesson` back to `display: block !important` inside @media print.
+  function hidePrintFallbackUnits() {
+    document.querySelectorAll("details.unit").forEach(function (unit) {
       unit.hidden = true;
       if ("inert" in unit) unit.inert = true;
-      printUnits.appendChild(unit);
     });
-  }
-
-  function restorePrintFallbackUnits() {
-    if (!printUnitsAnchor || !printUnits.childNodes.length) return;
-    Array.from(printUnits.children).forEach(function (unit) {
-      unit.hidden = false;
-      if ("inert" in unit) unit.inert = false;
-    });
-    printUnitsAnchor.parentNode.insertBefore(printUnits, printUnitsAnchor.nextSibling);
   }
 
   function init() {
     wireGuideActions();
-    detachPrintFallbackUnits();
-    window.addEventListener("beforeprint", function () {
-      restorePrintFallbackUnits();
-    });
-    window.addEventListener("afterprint", function () {
-      detachPrintFallbackUnits();
-    });
+    hidePrintFallbackUnits();
 
     var attempts = 0;
     var timer = setInterval(function () {

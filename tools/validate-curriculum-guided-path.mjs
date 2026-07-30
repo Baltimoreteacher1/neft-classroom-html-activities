@@ -52,9 +52,17 @@ check(
   !guidedJs.includes("card.hidden") && !guidedJs.includes("curriculum-unit-nav"),
   "guided path does not compete with the canonical unit rail",
 );
+// This gate used to assert the OPPOSITE -- that guided-path called
+// `printUnits.appendChild(unit)` to move every details.unit into a
+// DocumentFragment. That pinned a real bug in place: the 74 details.lesson
+// nodes nested inside those units left the document too, so audit badges,
+// resource pills, "Print unit" and the beforeprint expand/restore pair all
+// queried an empty DOM. Units must now stay in the document and merely hide.
 check(
-  guidedJs.includes("details.unit") && guidedJs.includes("printUnits.appendChild(unit)"),
-  "print-only units leave the interactive DOM until printing",
+  guidedJs.includes("details.unit") &&
+    guidedJs.includes("unit.hidden = true") &&
+    !guidedJs.includes("printUnits.appendChild"),
+  "print-only units stay in the interactive DOM and are hidden, not detached",
 );
 check(/min-height:\s*(?:48|52)px/.test(guidedCss), "guided actions use accessible target sizes");
 
