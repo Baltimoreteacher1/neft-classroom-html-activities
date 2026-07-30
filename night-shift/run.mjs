@@ -13,6 +13,7 @@ import * as routeMonitor from "./modules/05-route-monitor.mjs";
 import * as lessonRender from "./modules/06-lesson-render.mjs";
 import * as backupSentinel from "./modules/07-backup-sentinel.mjs";
 import * as signalHealth from "./modules/08-signal-health.mjs";
+import * as memoryIndex from "./modules/09-memory-index.mjs";
 
 // `audit: true` = the module judges SOURCE, so it must run against a clean
 // checkout of origin/main, not the live working tree. Everything else is either
@@ -26,6 +27,8 @@ const MODULES = [
   { key: "divergence-watch", mod: divergence },
   { key: "backup-sentinel", mod: backupSentinel },
   { key: "signal-health", mod: signalHealth },
+  // Reads ~/.claude, not the repo — root-independent, so no audit worktree.
+  { key: "memory-index", mod: memoryIndex },
   { key: "backlog-advancer", mod: backlog },
 ];
 
