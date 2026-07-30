@@ -14,7 +14,8 @@
  * Run:  npm run report:usage            # live D1
  *       npm run report:usage -- --db <file.sqlite>   # a restored backup
  *
- * Writes reports/usage-report.md.
+ * Writes reports/usage-report.md. Exits non-zero and writes NOTHING if any
+ * query fails — see the abort block below for why that matters.
  */
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -76,11 +77,50 @@ function query(sql) {
   const raw = execFileSync(
     "npx",
     ["wrangler", "d1", "execute", DATABASE, "--remote", "--json", "--command", sql],
-    { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 },
+    { encoding: "utf8", maxBuffer: 64 * 1024 * 1024, stdio: ["ignore", "pipe", "pipe"] },
   );
   // wrangler prefixes npm notices; the payload starts at the first bracket.
-  const parsed = JSON.parse(raw.slice(raw.indexOf("[")));
+  const start = raw.indexOf("[");
+  if (start === -1) {
+    throw new Error(`wrangler returned no JSON payload:\n${raw.trim().slice(-500)}`);
+  }
+  const parsed = JSON.parse(raw.slice(start));
   return parsed[0]?.results ?? [];
+}
+
+/**
+ * wrangler writes an npm notice and a proxy banner to stderr on every run, so
+ * the naive "last two lines of stderr" is almost always that banner and almost
+ * never the actual error — which is how a hard auth failure once surfaced as
+ * `⚠ query "games" failed: Proxy environment variables detected.` Strip the
+ * known noise and keep whatever is left.
+ */
+const STDERR_NOISE = /^(npm (warn|notice)\b|▲|.*Proxy environment variables detected)/;
+function describeQueryError(err) {
+  const raw = [err?.stderr, err?.stdout, err?.message]
+    .map((v) => (v == null ? "" : v.toString()))
+    .join("\n")
+    .replace(/\u001B\[[0-9;]*m/g, "");
+
+  // wrangler puts the real reason in a JSON envelope — {"error":{"text":"…set a
+  // CLOUDFLARE_API_TOKEN…"}} — and then echoes the whole failing SQL statement,
+  // which is far longer than the diagnostic and pushes it out of any tail slice.
+  // Prefer the envelope whenever it is present.
+  const texts = [...raw.matchAll(/"text":\s*"((?:[^"\\]|\\.)*)"/g)].map((m) => {
+    try {
+      return JSON.parse(`"${m[1]}"`);
+    } catch {
+      return m[1];
+    }
+  });
+  if (texts.length) return [...new Set(texts)].join("\n");
+
+  const signal = raw
+    .split("\n")
+    .map((l) => l.trimEnd())
+    // Drop the echoed command and its SQL: that is the input, not the failure.
+    .filter((l) => l.trim() && !STDERR_NOISE.test(l.trim()) && !/^Command failed:/.test(l.trim()));
+  return signal.slice(-6).join("\n") || String(err?.message || "unknown error");
 }
 
 /* ---------------------------------------------------------------- inventory */
@@ -140,15 +180,42 @@ function slugToLessonDir(slug) {
 /* ------------------------------------------------------------------- report */
 
 const data = {};
+const failures = [];
 for (const [key, sql] of Object.entries(QUERIES)) {
   try {
     data[key] = query(sql);
   } catch (err) {
-    console.error(
-      `⚠ query "${key}" failed: ${(err.stderr || err.message).toString().trim().split("\n").slice(-2).join(" ")}`,
-    );
+    failures.push({ key, detail: describeQueryError(err) });
     data[key] = [];
   }
+}
+
+// A failed query and an empty table both hand back `[]`, and this script used
+// to render them identically: it caught every failure, substituted [], and
+// wrote a full report anyway. On 2026-07-30 all six queries failed and the
+// report still announced "0 of 222 lesson folders have ever reported activity —
+// 222 have never been opened", then listed all 222 under a heading that reads
+// "build-next / prune candidates". It exited 0. Acting on that list would have
+// retired the entire curriculum on the strength of a connection error.
+//
+// An empty result set is a finding and stays reportable. A failed query is the
+// absence of a finding and must never be rendered as one.
+if (failures.length) {
+  console.error(
+    `\n✗ usage report ABORTED — ${failures.length} of ${Object.keys(QUERIES).length} queries failed.\n`,
+  );
+  for (const f of failures) {
+    console.error(`  • ${f.key}\n      ${f.detail.replace(/\n/g, "\n      ")}\n`);
+  }
+  console.error(
+    "  No report written. Any existing reports/usage-report.md is left untouched\n" +
+      "  rather than overwritten with zeros — a stale report is recoverable, a\n" +
+      "  fabricated one is not.\n" +
+      (LOCAL_DB
+        ? `  Reading a local backup (${LOCAL_DB}); check the file exists and sqlite3 is installed.\n`
+        : "  Live D1 needs Cloudflare auth: npx wrangler login\n"),
+  );
+  process.exit(1);
 }
 
 const lessons = lessonInventory();
