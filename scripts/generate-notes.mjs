@@ -5,6 +5,7 @@ import { deriveTWR } from "../engine/core/twr.js";
 import { resolveVocabImage, vocabImageAlt } from "../engine/core/vocab-images.js";
 import { deriveWorkedSteps } from "../engine/core/worked-steps.js";
 import { EDITORIAL_FONT_IMPORT, EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
+import { workedFigure } from "./lib/learn-figures.mjs";
 import { inScope, lessonScope } from "./lib/lesson-scope.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -1234,6 +1235,15 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
     });
   }
 
+  // A labelled picture of THIS problem, drawn from the worked example's own
+  // numbers. A publisher never prints a worked example without one, and the
+  // lesson's vocabulary art shows the general idea, not the case being solved.
+  // Only appears when the figure can be identified with certainty.
+  const fig = workedFigure(cfg);
+  const figureCard = fig
+    ? `<figure class="li-fig"><figcaption class="li-fig-cap">The problem looks like this</figcaption>${fig.svg}</figure>`
+    : "";
+
   // ② Worked example (I do) — read-only model, revealed ONE STEP AT A TIME so
   // the page never opens as a wall of text. Each step prints its own equation
   // as a large display line, and key math words become tap-to-define pop-ups.
@@ -1244,7 +1254,7 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
       icon: "👀",
       label: "Watch me solve it",
       sub: "I do — read one step at a time",
-      body: `<p class="li-lead">Read one step, then press the button for the next one. Tap any <span class="li-pop-demo">blue word</span> to see what it means.</p>
+      body: `${figureCard}<p class="li-lead">Read one step, then press the button for the next one. Tap any <span class="li-pop-demo">blue word</span> to see what it means.</p>
         <ol class="li-steps li-steps-paced">${iLines.map((l) => `<li>${liStepBody(l, vocab)}</li>`).join("")}</ol>
         <div class="li-pace no-print">
           <button type="button" class="li-pace-next">Show me the next step ▸</button>
@@ -1847,6 +1857,11 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .li-wordrow-term{font-weight:800;color:var(--navy);font-size:18px;}
 .li-wordrow-def{font-size:16.5px;line-height:1.55;color:var(--ink);}
 @media (max-width:560px){.li-wordrows>li{grid-template-columns:1fr;}}
+/* Worked-example figure — the picture of the problem being solved. */
+.li-fig{margin:0 0 20px;padding:16px 18px 12px;border:1.5px solid var(--teal);border-radius:14px;background:#fbfdfc;}
+.li-fig-cap{margin:0 0 10px;font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--teal-ink);}
+.li-fig-svg{display:block;width:100%;max-width:520px;height:auto;margin:0 auto;}
+@media print{.li-fig{background:#fff;border-color:#000;page-break-inside:avoid;}.li-fig-cap{color:#000;}}
 .li-visual-title{font-weight:700;color:var(--navy);margin:0 0 10px;font-size:16px;}
 .li-chips{display:flex;flex-wrap:wrap;gap:10px;}
 .li-chip{display:inline-flex;align-items:center;justify-content:center;min-width:48px;padding:10px 16px;
