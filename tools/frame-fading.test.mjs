@@ -35,7 +35,11 @@ let checks = 0;
 
 // ── The ladder ─────────────────────────────────────────────────────────────
 checks += 1;
-assert.equal(resolveFrameLevel({ unit: 3 }), FRAME_LEVELS.full, "a new unit starts at full support");
+assert.equal(
+  resolveFrameLevel({ unit: 3 }),
+  FRAME_LEVELS.full,
+  "a new unit starts at full support",
+);
 
 for (let i = 0; i < 3; i++) recordTurnAndTalk(3);
 checks += 1;

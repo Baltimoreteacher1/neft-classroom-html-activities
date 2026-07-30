@@ -1,7 +1,7 @@
+import { topMisconceptions } from "./misconceptions.js";
 import { selectedTalk } from "./small-group-engagement.js";
 import { mathCheckFor } from "./small-group-math-check.js";
 import { el, esc } from "./small-group-ui.js";
-import { topMisconceptions } from "./misconceptions.js";
 
 const PATHS = {
   stabilize: {
@@ -545,7 +545,9 @@ export function createEvidenceCard(config, state, getBand = null) {
     // named thing to practise. Shown only when the detector identified a
     // specific mechanism, so the card never invents a weakness.
     const focus = topMisconceptions(state.misconceptions, 1)[0];
-    const focusCell = focus ? `<div><span>Practise next</span><b>${esc(focus.label)}</b></div>` : "";
+    const focusCell = focus
+      ? `<div><span>Practise next</span><b>${esc(focus.label)}</b></div>`
+      : "";
     const band = getBand?.();
     const bandCell = band
       ? `<div><span>Today's band</span><b>${band.emoji || ""} ${esc(band.label)}</b></div>`

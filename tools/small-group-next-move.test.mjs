@@ -123,8 +123,7 @@ for (let i = 0; i < 9; i++) {
       kind: "complete",
       reported: 1,
       checkBand: i < 6 ? "approaching" : "meeting",
-      misconceptions:
-        i < 5 ? { "fraction-added-denominators": 2 } : { "decimal-place-value": 1 },
+      misconceptions: i < 5 ? { "fraction-added-denominators": 2 } : { "decimal-place-value": 1 },
       reachedTabs: ["sg-tab-vocab", "sg-tab-learn", "sg-tab-practice"],
     },
   });
@@ -137,8 +136,16 @@ await seed(many);
   assert.equal(move.data.devicesReporting, 9);
   assert.equal(move.data.confidence, "good");
   assert.equal(move.data.lastLesson, "2-3", "the base lesson is derived, not the variant slug");
-  assert.equal(move.data.recommendedLane, "group1", "a 6/9 approaching majority pulls the support lane");
-  assert.equal(move.data.watchFor.length, 2, "exactly two things to watch — a list of ten is not a plan");
+  assert.equal(
+    move.data.recommendedLane,
+    "group1",
+    "a 6/9 approaching majority pulls the support lane",
+  );
+  assert.equal(
+    move.data.watchFor.length,
+    2,
+    "exactly two things to watch — a list of ten is not a plan",
+  );
   assert.equal(move.data.watchFor[0].id, "fraction-added-denominators");
   assert.equal(move.data.watchFor[0].count, 10, "counts sum across the window");
   assert.equal(move.data.pacing, null, "everyone reached practice → no pacing warning");
@@ -163,8 +170,16 @@ await seed(shallow);
 {
   checks += 1;
   const move = await nextMove("section=6P");
-  assert.equal(move.data.recommendedLane, "group2", "an exceeding majority pulls the challenge lane");
-  assert.match(move.data.pacing, /cut a section before adding one/i, "nobody reached practice → pacing warning");
+  assert.equal(
+    move.data.recommendedLane,
+    "group2",
+    "an exceeding majority pulls the challenge lane",
+  );
+  assert.match(
+    move.data.pacing,
+    /cut a section before adding one/i,
+    "nobody reached practice → pacing warning",
+  );
 }
 
 // -------------------------------------------------- no names, ever, in output
@@ -175,7 +190,12 @@ await seed(shallow);
       slug: "4-1-group1",
       section: "6N",
       at: now,
-      payload: { kind: "complete", reported: 1, checkBand: "meeting", studentName: "Should Not Appear" },
+      payload: {
+        kind: "complete",
+        reported: 1,
+        checkBand: "meeting",
+        studentName: "Should Not Appear",
+      },
     },
   ]);
   const move = await nextMove("section=6N");

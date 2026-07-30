@@ -103,12 +103,14 @@ function screenExplanation(raw) {
   if (/[\w.+-]+@[\w-]+\.[a-z]{2,}/i.test(text)) return { ok: false, reason: "contact" };
   if (/\b\d{3}[\s.-]?\d{3}[\s.-]?\d{4}\b/.test(text)) return { ok: false, reason: "contact" };
   if (/\b(?:https?:\/\/|www\.)\S+/i.test(text)) return { ok: false, reason: "contact" };
-  if (/\b(?:snap|insta|instagram|tiktok|discord)\b/i.test(text)) return { ok: false, reason: "contact" };
+  if (/\b(?:snap|insta|instagram|tiktok|discord)\b/i.test(text))
+    return { ok: false, reason: "contact" };
 
   // A short, explicit list. Kept small on purpose: an aggressive filter that
   // silently eats ordinary maths words ("hell" inside "shell") would teach
   // students that the feature is broken and is worse than a narrow one.
-  const SLURS = /\b(f+u+c+k+|sh+i+t+|b+i+t+c+h+|a+s+s+h+o+l+e+|d+i+c+k+h+e+a+d+|c+u+n+t+|n+i+g+\w*|f+a+g+\w*|r+e+t+a+r+d+\w*)\b/i;
+  const SLURS =
+    /\b(f+u+c+k+|sh+i+t+|b+i+t+c+h+|a+s+s+h+o+l+e+|d+i+c+k+h+e+a+d+|c+u+n+t+|n+i+g+\w*|f+a+g+\w*|r+e+t+a+r+d+\w*)\b/i;
   if (SLURS.test(text)) return { ok: false, reason: "language" };
 
   return { ok: true, text };

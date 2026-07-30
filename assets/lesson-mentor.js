@@ -537,7 +537,9 @@
         '<div class="ntm-toast-body">' +
         html +
         "</div>" +
-        '<button class="ntm-toast-x" type="button" aria-label="' + esc(s_("dismiss")) + '">✕</button>';
+        '<button class="ntm-toast-x" type="button" aria-label="' +
+        esc(s_("dismiss")) +
+        '">✕</button>';
       t.querySelector(".ntm-toast-x").addEventListener("click", function () {
         if (t.parentNode) t.parentNode.removeChild(t);
       });

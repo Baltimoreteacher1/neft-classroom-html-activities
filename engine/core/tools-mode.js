@@ -38,15 +38,6 @@ function titleCase(slug) {
 }
 
 /**
- * Canonical tool name. Presentation metadata (names, purpose, how-to, try-this)
- * lives in tool-catalog.js so this page and the in-lesson tool drawer describe
- * the same tool the same way.
- */
-function toolTitle(v) {
-  return toolMeta(v).name;
-}
-
-/**
  * True when the student has the Spanish lane on. Two keys because the two
  * renderers own different language controls: the full lesson engine writes
  * `nt-lang` (i18n.js) and the small-group studio writes `nt-sg-lang` from its

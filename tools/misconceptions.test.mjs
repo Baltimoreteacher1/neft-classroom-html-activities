@@ -10,9 +10,9 @@
 
 import assert from "node:assert/strict";
 import {
-  MISCONCEPTIONS,
   detectMisconception,
   diagnoseChoice,
+  MISCONCEPTIONS,
   recordMisconception,
   scanExpression,
   studentExplanation,

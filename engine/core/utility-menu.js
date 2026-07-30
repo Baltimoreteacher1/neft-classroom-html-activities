@@ -10,9 +10,8 @@
 // Save/Resume also lives here (per Joel 2026-07-14): the menu item drives the
 // hidden #nsr-launcher, whose panel still opens in its usual spot.
 
-import { isTeacherMode } from "./teacher-mode.js";
-
 import { applyPlainLanguage, isPlainLanguageOn, setPlainLanguage } from "./plain-language.js";
+import { isTeacherMode } from "./teacher-mode.js";
 
 export function mountUtilityMenu() {
   if (document.querySelector(".nt-utility-menu")) return;

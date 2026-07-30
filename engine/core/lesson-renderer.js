@@ -31,6 +31,13 @@ import { mountCertificateDownload } from "./certificate-export.js";
 import { mountChalkAnnotations } from "./chalk-annotate.js";
 import { deriveCommonMistake, deriveErrorExample } from "./content-enrichment.js";
 import { mountDiscussionMoment } from "./discourse.js";
+import { getFeedbackMode, MODES, mountFeedbackModeToggle } from "./feedback-mode.js";
+import {
+  fadeNoteFor,
+  framePartsFor,
+  recordTurnAndTalk,
+  resolveFrameLevel,
+} from "./frame-fading.js";
 import { createGoDeeper } from "./go-deeper.js";
 import { buildGradeCard } from "./grade.js";
 import { recommendedNext } from "./grade-emit.js";
@@ -41,21 +48,11 @@ import { getLevel, levelOverride, mountLevelSelector } from "./levels.js";
 import { augmentVocabWithGlossary, surfaceMatchesEntry } from "./math-glossary.js";
 import { renderMathText } from "./math-typography.js";
 import { diagnoseChoice } from "./misconceptions.js";
-import { getFeedbackMode, MODES, mountFeedbackModeToggle } from "./feedback-mode.js";
-import {
-  fadeNoteFor,
-  framePartsFor,
-  recordTurnAndTalk,
-  resolveFrameLevel,
-} from "./frame-fading.js";
-import { mountRetrievalOpener } from "./retrieval.js";
-import { mountPeerExchange } from "./peer-exchange.js";
-import { mountQuestionLadderReader } from "./socratic.js";
-import { mountWodbOpener } from "./wodb.js";
 import {
   normalizeAcademicWord,
   resolveNoticeWonderAcademicWord,
 } from "./notice-wonder-glossary.js";
+import { mountPeerExchange } from "./peer-exchange.js";
 import {
   buildPhaseTransitionMeta,
   buildPrintableSummary,
@@ -65,6 +62,8 @@ import {
 } from "./premium.js";
 import { createProblemCard, problemTypeLabel } from "./problem-shell.js";
 import { mountReadingProgress } from "./reading-progress.js";
+import { mountRetrievalOpener } from "./retrieval.js";
+import { mountQuestionLadderReader } from "./socratic.js";
 import { mountStuckSupport } from "./stuck-support.js";
 import { isTeacherMode } from "./teacher-mode.js";
 import { renderThemeIllustration } from "./theme-illustrations.js";
@@ -82,6 +81,7 @@ import {
   tapeDiagramSVG,
 } from "./visual-figures.js";
 import resolveVocabImage, { hasRealVocabImage, vocabImageAlt } from "./vocab-images.js";
+import { mountWodbOpener } from "./wodb.js";
 import { deriveWorkedSteps } from "./worked-steps.js";
 
 export function bootLesson(config) {

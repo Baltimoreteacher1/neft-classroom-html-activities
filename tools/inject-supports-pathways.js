@@ -72,7 +72,7 @@ function revert(html) {
     .replace(/(<html\b[^>]*?)\s+data-ewl-supports-lesson="[^"]*"/i, "$1");
 }
 
-function processFile(id, base, file) {
+function processFile(base, file) {
   report.scanned++;
   let html = readFileSync(file, "utf8");
 
@@ -117,7 +117,9 @@ function processFile(id, base, file) {
   report.injected++;
 }
 
-for (const d of readdirSync(LESSONS, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
+for (const d of readdirSync(LESSONS, { withFileTypes: true }).sort((a, b) =>
+  a.name.localeCompare(b.name),
+)) {
   if (!d.isDirectory()) continue;
   const m = PATHWAY_RE.exec(d.name);
   if (!m) continue;
@@ -129,10 +131,12 @@ for (const d of readdirSync(LESSONS, { withFileTypes: true }).sort((a, b) => a.n
     report.noManifest.push(`${d.name} -> ${base}`);
     continue;
   }
-  processFile(d.name, base, file);
+  processFile(base, file);
 }
 
-console.log(`Learning-supports pathway injection ${DRY ? "(dry-run)" : ""}${REVERT ? " — revert" : ""}`);
+console.log(
+  `Learning-supports pathway injection ${DRY ? "(dry-run)" : ""}${REVERT ? " — revert" : ""}`,
+);
 console.log("  pathway shells scanned :", report.scanned);
 if (REVERT) {
   console.log("  reverted               :", report.reverted);

@@ -423,8 +423,7 @@ export async function onRequest(context) {
   }
 
   const auth = teacherOk(request, env);
-  if (auth.configured === false)
-    return json({ ok: false, error: "not-configured" }, 503, request);
+  if (auth.configured === false) return json({ ok: false, error: "not-configured" }, 503, request);
   if (!auth.ok) return json({ ok: false, error: "unauthorized" }, 401, request);
 
   if (!hasClaude) {

@@ -21,14 +21,14 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { JSDOM } from "jsdom";
+import { selectReviewItems } from "../engine/core/retrieval.js";
 import {
-  OUTPUT,
   buildBank,
   isPortable,
+  OUTPUT,
   reviewStem,
   serialize,
 } from "../scripts/generate-retrieval-bank.mjs";
-import { selectReviewItems } from "../engine/core/retrieval.js";
 
 let checks = 0;
 

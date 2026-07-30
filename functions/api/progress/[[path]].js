@@ -793,11 +793,13 @@ export async function onRequest(context) {
         }
       }
       const share = (key) => (scored ? bands[key] / scored : 0);
-      const lane =
-        !scored ? null
-        : share("approaching") >= 0.5 ? "group1"
-        : share("exceeding") >= 0.5 ? "group2"
-        : "group1";
+      const lane = !scored
+        ? null
+        : share("approaching") >= 0.5
+          ? "group1"
+          : share("exceeding") >= 0.5
+            ? "group2"
+            : "group1";
 
       // Named misconceptions, summed across the window. This is the only part of
       // the recommendation a teacher can act on in the moment.

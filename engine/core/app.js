@@ -14,8 +14,8 @@ import {
   wireObjectiveTermPopups,
 } from "./lesson-renderer.js";
 import { augmentVocabWithGlossary } from "./math-glossary.js";
-import { applyPhaseAccent, buildLessonCoverExtras, mountCoverArt } from "./premium.js";
 import { applyPlainLanguage, isPlainLanguageOn } from "./plain-language.js";
+import { applyPhaseAccent, buildLessonCoverExtras, mountCoverArt } from "./premium.js";
 import { initPresentMode } from "./present-mode.js";
 import { reportScore } from "./score-reporter.js";
 import { clearLessonStorage, createState, findSavedStudents, normalizeStudentId } from "./state.js";

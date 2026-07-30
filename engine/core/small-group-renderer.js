@@ -4,6 +4,12 @@
 
 import { createRhythmCoach } from "./facilitation-rhythm.js";
 import { createGoDeeper } from "./go-deeper.js";
+import {
+  detectMisconception,
+  MISCONCEPTIONS,
+  recordMisconception,
+  topMisconceptions,
+} from "./misconceptions.js";
 // NOTE: present-mode.css is NOT imported here. tools/small-group-modes.test.mjs
 // imports this module under bare Node, which cannot resolve a CSS import at
 // all — the stylesheet reaches the page through Vite's shared CSS chunk, which
@@ -36,12 +42,6 @@ import {
   figureBlock,
 } from "./small-group-labs.js";
 import { createMathCheckLab } from "./small-group-math-check.js";
-import {
-  detectMisconception,
-  MISCONCEPTIONS,
-  recordMisconception,
-  topMisconceptions,
-} from "./misconceptions.js";
 import { installSmallGroupPassport } from "./small-group-passport.js";
 import {
   collectPracticeItems,
