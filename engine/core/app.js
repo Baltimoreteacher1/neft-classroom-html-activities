@@ -15,6 +15,7 @@ import {
 } from "./lesson-renderer.js";
 import { augmentVocabWithGlossary } from "./math-glossary.js";
 import { applyPhaseAccent, buildLessonCoverExtras, mountCoverArt } from "./premium.js";
+import { applyPlainLanguage, isPlainLanguageOn } from "./plain-language.js";
 import { initPresentMode } from "./present-mode.js";
 import { reportScore } from "./score-reporter.js";
 import { clearLessonStorage, createState, findSavedStudents, normalizeStudentId } from "./state.js";
@@ -1105,6 +1106,14 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       el.setAttribute("aria-label", phaseConfigs[index]?.name || `Phase ${index + 1}`);
       phaseContainer.append(el);
       renderFn(el, state, this);
+      // Plain-words pass runs BEFORE the vocabulary underliner. It rewrites text
+      // nodes, and the underliner replaces matched terms with tappable glossary
+      // spans — doing it the other way round would rewrite the glossary markup
+      // instead of the prose. Today's vocabulary is passed through as protected
+      // terms so the words the lesson is TEACHING are never paraphrased away.
+      const protectedTerms = (config.vocabulary || []).map((v) => v?.term).filter(Boolean);
+      window.__ntProtectedTerms = protectedTerms;
+      if (isPlainLanguageOn()) applyPlainLanguage(el, true, protectedTerms);
       // Underline every lesson-vocabulary term in the rendered phase body and
       // wire it to the tap-to-open glossary popup (EN/ES + illustration), so
       // academic math words are defined in context throughout the lesson — the

@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Who Have I Heard From? · Neft Teacher</title>
+    <meta name="robots" content="noindex" />
+    <link rel="icon" href="/assets/favicon.svg" />
+    <style>
+      /* ==================================================================
+       * Participation equity tracker.
+       *
+       * The problem it solves is not measurement, it is memory. Over a
+       * 45-minute lesson a teacher genuinely believes they spread questions
+       * around, and the same six hands carry the room. The gap is invisible
+       * from the front and obvious from a tally.
+       *
+       * PRIVACY MODEL, and it is the reason this is a page and not a
+       * dashboard: the roster comes DOWN from the class-code endpoint, and
+       * the participation tally never goes UP. Counts of who spoke live in
+       * this browser's localStorage and nowhere else. There is no endpoint
+       * to write them to, deliberately — a per-student speech record on a
+       * server is a different thing entirely, and not one a classroom needs.
+       * ================================================================== */
+      :root {
+        --bg: #f4f7fb;
+        --panel: #fff;
+        --line: #d9e2ec;
+        --ink: #17233a;
+        --muted: #5f6f80;
+        --accent: #15487f;
+        --cold: #1e6fa8;
+        --warm: #1f8a55;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font:
+          17px/1.5 system-ui,
+          -apple-system,
+          "Segoe UI",
+          sans-serif;
+      }
+      header {
+        background: var(--accent);
+        color: #fff;
+        padding: 18px 20px;
+      }
+      header h1 {
+        margin: 0;
+        font-size: 1.35rem;
+      }
+      header p {
+        margin: 4px 0 0;
+        opacity: 0.9;
+        font-size: 0.92rem;
+      }
+      main {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 16px;
+        margin-bottom: 18px;
+      }
+      .row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      input,
+      select,
+      button {
+        font: inherit;
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        padding: 9px 12px;
+        background: #fff;
+        color: var(--ink);
+      }
+      button {
+        cursor: pointer;
+        font-weight: 700;
+      }
+      button.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+      }
+      button:focus-visible,
+      input:focus-visible,
+      select:focus-visible {
+        outline: 3px solid var(--accent);
+        outline-offset: 2px;
+      }
+      .msg {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+        gap: 10px;
+      }
+      .student {
+        border: 1px solid var(--line);
+        border-left: 6px solid var(--line);
+        border-radius: 12px;
+        padding: 12px;
+        background: #fff;
+        text-align: left;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        min-height: 84px;
+      }
+      .student.cold {
+        border-left-color: var(--cold);
+        background: #f2f8fd;
+      }
+      .student.warm {
+        border-left-color: var(--warm);
+      }
+      .student .name {
+        font-weight: 800;
+      }
+      .student .tally {
+        color: var(--muted);
+        font-size: 0.88rem;
+      }
+      .student .marks {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .student .marks button {
+        padding: 4px 10px;
+        font-size: 0.85rem;
+        border-radius: 999px;
+      }
+      h2 {
+        font-size: 1.05rem;
+        margin: 0 0 6px;
+      }
+      .blurb {
+        color: var(--muted);
+        font-size: 0.9rem;
+        margin: 0 0 12px;
+      }
+      .pick {
+        background: #fffdf5;
+        border: 1px solid #e6d9a8;
+      }
+      .pick .who {
+        font-size: 1.5rem;
+        font-weight: 800;
+        margin: 8px 0;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.95rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 8px 10px;
+        border-top: 1px solid var(--line);
+      }
+      th {
+        color: var(--muted);
+        font-weight: 600;
+      }
+      td.num {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+      .hint {
+        color: var(--muted);
+        font-size: 0.85rem;
+      }
+      @media print {
+        header,
+        .no-print {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Who Have I Heard From?</h1>
+      <p>
+        A tally of who has spoken this week. Stays in this browser — no participation data is ever
+        sent anywhere.
+      </p>
+    </header>
+
+    <main>
+      <section class="panel no-print">
+        <h2>Class</h2>
+        <p class="blurb">
+          Load a class with its roster code (from
+          <a href="/teacher-tools/class-roster/">Class Roster</a>), or paste names one per line.
+        </p>
+        <div class="row">
+          <input id="code" placeholder="Roster code" maxlength="8" autocomplete="off" />
+          <button class="primary" id="loadBtn">Load class</button>
+          <span class="msg" id="loadMsg"></span>
+        </div>
+        <div class="row" style="margin-top: 10px">
+          <textarea
+            id="names"
+            rows="3"
+            style="
+              flex: 1;
+              min-width: 260px;
+              border-radius: 10px;
+              border: 1px solid var(--line);
+              padding: 9px 12px;
+              font: inherit;
+            "
+            placeholder="Or paste names, one per line"
+          ></textarea>
+          <button id="pasteBtn">Use these names</button>
+        </div>
+      </section>
+
+      <section class="panel pick no-print" id="pickPanel" hidden>
+        <h2>Call on someone</h2>
+        <p class="blurb">
+          Picks at random from whoever has been heard from least this week — the digital version of
+          the cup of sticks, minus the bias of your own memory.
+        </p>
+        <div class="who" id="pickWho">—</div>
+        <div class="row">
+          <button class="primary" id="pickBtn">Pick someone</button>
+          <button id="pickCountBtn" hidden>Count that as spoken</button>
+        </div>
+      </section>
+
+      <section class="panel" id="classPanel" hidden>
+        <h2>This week <span class="hint" id="weekLabel"></span></h2>
+        <p class="blurb">
+          Tap a mark each time you hear from someone. <strong>Spoke</strong> = said something out
+          loud to the class or their group. <strong>Wrote</strong> = turned work in or shared a
+          written response.
+        </p>
+        <div class="grid" id="grid"></div>
+      </section>
+
+      <section class="panel" id="summaryPanel" hidden>
+        <h2>Summary</h2>
+        <p class="blurb" id="summaryLede"></p>
+        <table>
+          <thead>
+            <tr>
+              <th>Student</th>
+              <th class="num">Spoke</th>
+              <th class="num">Wrote</th>
+              <th>Last heard from</th>
+            </tr>
+          </thead>
+          <tbody id="summaryBody"></tbody>
+        </table>
+        <div class="row no-print" style="margin-top: 12px">
+          <button id="printBtn">Print / save PDF</button>
+          <button id="resetBtn">Start a new week</button>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      "use strict";
+
+      var LS_TALLY = "nt-participation:v1";
+      var LS_CLASS = "nt-participation-class:v1";
+      // "Cold" = nobody has heard from this student yet this week. The threshold
+      // is zero on purpose: the useful question is not "who is below average",
+      // it is "who has said nothing at all", and averages hide exactly that.
+      var COLD = 0;
+
+      function $(id) {
+        return document.getElementById(id);
+      }
+      function esc(s) {
+        return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) {
+          return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+        });
+      }
+
+      /** Monday-anchored week key, so a tally means "this week" without a date picker. */
+      function weekKey(d) {
+        var t = d ? new Date(d) : new Date();
+        var day = (t.getDay() + 6) % 7; // Monday = 0
+        t.setDate(t.getDate() - day);
+        t.setHours(0, 0, 0, 0);
+        return t.toISOString().slice(0, 10);
+      }
+
+      function readJson(key, fallback) {
+        try {
+          var raw = localStorage.getItem(key);
+          var v = raw ? JSON.parse(raw) : null;
+          return v || fallback;
+        } catch (e) {
+          return fallback;
+        }
+      }
+      function writeJson(key, value) {
+        try {
+          localStorage.setItem(key, JSON.stringify(value));
+          return true;
+        } catch (e) {
+          return false;
+        }
+      }
+
+      var roster = readJson(LS_CLASS, { section: "", students: [] });
+      var store = readJson(LS_TALLY, {});
+      var week = weekKey();
+
+      function tallyFor(id) {
+        var byWeek = store[week] || (store[week] = {});
+        return byWeek[id] || (byWeek[id] = { spoke: 0, wrote: 0, last: 0 });
+      }
+
+      function mark(id, kind) {
+        var t = tallyFor(id);
+        t[kind] = (t[kind] || 0) + 1;
+        t.last = Date.now();
+        writeJson(LS_TALLY, store);
+        render();
+      }
+
+      function heardCount(id) {
+        var t = (store[week] || {})[id];
+        if (!t) return 0;
+        return (t.spoke || 0) + (t.wrote || 0);
+      }
+
+      function lastLabel(ts) {
+        if (!ts) return "not yet this week";
+        var mins = Math.floor((Date.now() - ts) / 60000);
+        if (mins < 1) return "just now";
+        if (mins < 60) return mins + " min ago";
+        var hrs = Math.floor(mins / 60);
+        if (hrs < 24) return hrs + "h ago";
+        return Math.floor(hrs / 24) + "d ago";
+      }
+
+      function render() {
+        var hasClass = roster.students.length > 0;
+        $("classPanel").hidden = !hasClass;
+        $("summaryPanel").hidden = !hasClass;
+        $("pickPanel").hidden = !hasClass;
+        if (!hasClass) return;
+
+        $("weekLabel").textContent =
+          "· week of " + week + (roster.section ? " · " + roster.section : "");
+
+        $("grid").innerHTML = roster.students
+          .map(function (s) {
+            var n = heardCount(s.id);
+            var t = (store[week] || {})[s.id] || {};
+            return (
+              '<div class="student ' +
+              (n <= COLD ? "cold" : "warm") +
+              '"><span class="name">' +
+              esc(s.name) +
+              '</span><span class="tally">' +
+              (n === 0
+                ? "not yet this week"
+                : (t.spoke || 0) + " spoke · " + (t.wrote || 0) + " wrote") +
+              '</span><span class="marks">' +
+              '<button data-mark="spoke" data-id="' +
+              esc(s.id) +
+              '">＋ Spoke</button>' +
+              '<button data-mark="wrote" data-id="' +
+              esc(s.id) +
+              '">＋ Wrote</button>' +
+              "</span></div>"
+            );
+          })
+          .join("");
+
+        var cold = roster.students.filter(function (s) {
+          return heardCount(s.id) <= COLD;
+        });
+        $("summaryLede").textContent = cold.length
+          ? cold.length +
+            " of " +
+            roster.students.length +
+            " students have not been heard from yet this week."
+          : "Every student has been heard from at least once this week.";
+
+        var sorted = roster.students.slice().sort(function (a, b) {
+          return heardCount(a.id) - heardCount(b.id) || a.name.localeCompare(b.name);
+        });
+        $("summaryBody").innerHTML = sorted
+          .map(function (s) {
+            var t = (store[week] || {})[s.id] || {};
+            return (
+              "<tr><td>" +
+              esc(s.name) +
+              '</td><td class="num">' +
+              (t.spoke || 0) +
+              '</td><td class="num">' +
+              (t.wrote || 0) +
+              "</td><td>" +
+              esc(lastLabel(t.last)) +
+              "</td></tr>"
+            );
+          })
+          .join("");
+      }
+
+      document.addEventListener("click", function (e) {
+        var btn = e.target.closest("[data-mark]");
+        if (!btn) return;
+        mark(btn.dataset.id, btn.dataset.mark);
+      });
+
+      // ── Equitable random pick ────────────────────────────────────────────
+      // Restricted to the least-heard-from tier rather than the whole class. A
+      // uniform random pick over 28 students re-creates the same problem it is
+      // meant to solve, just without the teacher's fingerprints on it.
+      var pending = null;
+      $("pickBtn").addEventListener("click", function () {
+        if (!roster.students.length) return;
+        var min = Math.min.apply(
+          null,
+          roster.students.map(function (s) {
+            return heardCount(s.id);
+          }),
+        );
+        var pool = roster.students.filter(function (s) {
+          return heardCount(s.id) === min;
+        });
+        pending = pool[Math.floor(Math.random() * pool.length)];
+        $("pickWho").textContent = pending.name;
+        $("pickCountBtn").hidden = false;
+      });
+      $("pickCountBtn").addEventListener("click", function () {
+        if (!pending) return;
+        mark(pending.id, "spoke");
+        $("pickCountBtn").hidden = true;
+        pending = null;
+      });
+
+      // ── Loading a class ──────────────────────────────────────────────────
+      function setRoster(section, students) {
+        roster = { section: section || "", students: students };
+        writeJson(LS_CLASS, roster);
+        render();
+      }
+
+      $("loadBtn").addEventListener("click", function () {
+        var code = $("code").value.trim().toUpperCase();
+        if (!code) {
+          $("loadMsg").textContent = "Enter the roster code.";
+          return;
+        }
+        $("loadMsg").textContent = "Loading…";
+        fetch("/api/roster/get?code=" + encodeURIComponent(code), { credentials: "omit" })
+          .then(function (r) {
+            return r.ok ? r.json() : null;
+          })
+          .then(function (d) {
+            if (!d || !d.ok || !d.students || !d.students.length) {
+              $("loadMsg").textContent = "No class found for that code.";
+              return;
+            }
+            $("loadMsg").textContent = d.students.length + " students loaded.";
+            setRoster(d.section, d.students);
+          })
+          .catch(function () {
+            $("loadMsg").textContent = "Could not reach the roster service. Paste names instead.";
+          });
+      });
+
+      $("pasteBtn").addEventListener("click", function () {
+        var names = $("names")
+          .value.split(/\r?\n/)
+          .map(function (s) {
+            return s.trim();
+          })
+          .filter(Boolean);
+        if (!names.length) {
+          $("loadMsg").textContent = "Paste at least one name.";
+          return;
+        }
+        setRoster(
+          "",
+          names.map(function (n) {
+            return { id: n.toLowerCase().replace(/[^a-z0-9]+/g, "-"), name: n };
+          }),
+        );
+        $("loadMsg").textContent = names.length + " students added.";
+      });
+
+      $("printBtn").addEventListener("click", function () {
+        window.print();
+      });
+      $("resetBtn").addEventListener("click", function () {
+        if (!window.confirm("Clear this week's tally? Earlier weeks are kept.")) return;
+        delete store[week];
+        writeJson(LS_TALLY, store);
+        render();
+      });
+
+      render();
+    </script>
+  </body>
+</html>

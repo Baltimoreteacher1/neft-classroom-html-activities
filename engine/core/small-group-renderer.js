@@ -40,7 +40,7 @@ import {
   MISCONCEPTIONS,
   recordMisconception,
   topMisconceptions,
-} from "./small-group-misconceptions.js";
+} from "./misconceptions.js";
 import { installSmallGroupPassport } from "./small-group-passport.js";
 import {
   collectPracticeItems,

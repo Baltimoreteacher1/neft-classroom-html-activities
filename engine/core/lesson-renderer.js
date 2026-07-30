@@ -19,6 +19,7 @@ import {
   renderOpenResponse,
   renderRemediation,
   renderTwrWriting,
+  renderWhichOneDoesntBelong,
 } from "../components/index.js";
 import { attachRegenPractice } from "../components/regen-practice.js";
 import { attachAnnotator } from "../components/scene-annotate.js";
@@ -36,9 +37,21 @@ import { recommendedNext } from "./grade-emit.js";
 import { mountHintLadder } from "./hint-ladder.js";
 import { badgeName, phaseName, stackHtml, t } from "./i18n.js";
 import { interactiveVisualHost, mountInteractiveVisuals } from "./interactive-visual.js";
-import { levelOverride, mountLevelSelector } from "./levels.js";
+import { getLevel, levelOverride, mountLevelSelector } from "./levels.js";
 import { augmentVocabWithGlossary, surfaceMatchesEntry } from "./math-glossary.js";
 import { renderMathText } from "./math-typography.js";
+import { diagnoseChoice } from "./misconceptions.js";
+import { getFeedbackMode, MODES, mountFeedbackModeToggle } from "./feedback-mode.js";
+import {
+  fadeNoteFor,
+  framePartsFor,
+  recordTurnAndTalk,
+  resolveFrameLevel,
+} from "./frame-fading.js";
+import { mountRetrievalOpener } from "./retrieval.js";
+import { mountPeerExchange } from "./peer-exchange.js";
+import { mountQuestionLadderReader } from "./socratic.js";
+import { mountWodbOpener } from "./wodb.js";
 import {
   normalizeAcademicWord,
   resolveNoticeWonderAcademicWord,
@@ -657,7 +670,10 @@ let turnTalkSeq = 0;
 
 // Render the Turn & Talk card into `host`. Calls `onDone` (if given) when the
 // student confirms they talked. Fully keyboard- and screen-reader-accessible.
-function renderTurnAndTalk(host, prompt, state, phaseId, onDone) {
+// `config` is needed for the unit (the span the scaffold ladder counts over) —
+// see frame-fading.js. Appended rather than inserted so the existing positional
+// call sites keep reading naturally.
+function renderTurnAndTalk(host, prompt, state, phaseId, onDone, config) {
   const uid = `tt-${phaseId}-${turnTalkSeq++}`;
   const respKey = `turntalk_${prompt.phase}`;
   const alreadyDone = state.getResponse(phaseId, respKey) === "done";
@@ -690,15 +706,51 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone) {
         .join("")}</span>
     </div>`
       : "";
-  const supportHtml =
-    kernelHtml || wordBankHtml || stemsHtml
-      ? `<div style="border-left:4px solid var(--teal); padding-left:var(--sp-3); margin:0 0 var(--sp-4);">
-      <span class="badge badge-teal" style="margin-bottom:var(--sp-2);">Level 1 support</span>
-      ${kernelHtml}
-      <p style="font-weight:700; margin:var(--sp-2) 0 var(--sp-2);">Use a sentence starter / <span style="font-style:italic;">Usa un inicio de oración</span>:</p>
-      <ul style="margin:0 0 var(--sp-3); padding:0;">${stemsHtml}</ul>
-      ${wordBankHtml}
+  // Scaffold fading: how much of the support block LEADS depends on how much
+  // Turn & Talk this student has already done in this unit (see frame-fading.js).
+  // Everything the fade hides stays one tap away — the "Show sentence starters"
+  // control below restores the full block, always, at no cost.
+  const frameLevel = resolveFrameLevel({
+    unit: config?.unit,
+    chosenLevel: getLevel(state),
+  });
+  const parts = framePartsFor(frameLevel);
+  const fadeNote = fadeNoteFor(frameLevel);
+
+  const shownStemsHtml =
+    parts.stems === 0
+      ? ""
+      : prompt.stems
+          .slice(0, parts.stems === Number.POSITIVE_INFINITY ? undefined : parts.stems)
+          .map(
+            (s) => `
+      <li class="sentence-frame" style="margin-bottom:var(--sp-2); list-style:none;">
+        <span style="font-weight:700;">${esc(s.en)}</span>
+        ${s.es ? `<span style="display:block; color:var(--muted); font-style:italic; font-weight:600;">${esc(s.es)}</span>` : ""}
+      </li>`,
+          )
+          .join("");
+
+  const supportInner = (kernel, stems, bank, showLabel) => `
+      ${showLabel ? '<span class="badge badge-teal" style="margin-bottom:var(--sp-2);">Sentence support</span>' : ""}
+      ${kernel}
+      ${stems ? `<p style="font-weight:700; margin:var(--sp-2) 0 var(--sp-2);">Use a sentence starter / <span style="font-style:italic;">Usa un inicio de oración</span>:</p><ul style="margin:0 0 var(--sp-3); padding:0;">${stems}</ul>` : ""}
+      ${bank}`;
+
+  const shownKernel = parts.kernel ? kernelHtml : "";
+  const shownBank = parts.wordBank ? wordBankHtml : "";
+  const hasShownSupport = Boolean(shownKernel || shownBank || shownStemsHtml);
+  const hasMoreSupport =
+    Boolean(kernelHtml || wordBankHtml || stemsHtml) &&
+    (parts.stems !== Number.POSITIVE_INFINITY || !parts.kernel || !parts.wordBank);
+
+  const supportHtml = hasShownSupport
+    ? `<div class="tt-support" style="border-left:4px solid var(--teal); padding-left:var(--sp-3); margin:0 0 var(--sp-4);">
+      ${supportInner(shownKernel, shownStemsHtml, shownBank, true)}
+      ${fadeNote ? `<p class="tt-fade-note" style="margin:0; font-size:0.85rem; color:var(--muted);">${esc(fadeNote)}</p>` : ""}
     </div>`
+    : fadeNote
+      ? `<p class="tt-fade-note" style="margin:0 0 var(--sp-3); font-size:0.85rem; color:var(--muted);">${esc(fadeNote)}</p>`
       : "";
 
   // Level 2 (enrichment): a deeper "extend" push question + stretch stems.
@@ -730,6 +782,27 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone) {
     ${supportHtml}
     ${extendHtml}
   `;
+
+  // The escape hatch that makes fading legitimate. It is a plain, unremarkable
+  // button — no "are you sure", no counter, nothing recorded — because a student
+  // who hesitates to ask for the frames will simply not talk instead.
+  if (hasMoreSupport) {
+    const moreBtn = document.createElement("button");
+    moreBtn.type = "button";
+    moreBtn.className = "btn btn-secondary btn-sm tt-show-frames";
+    moreBtn.style.cssText = "margin:0 0 var(--sp-3);";
+    moreBtn.textContent = "Show sentence starters";
+    moreBtn.addEventListener("click", () => {
+      const full = document.createElement("div");
+      full.className = "tt-support tt-support-full";
+      full.style.cssText =
+        "border-left:4px solid var(--teal); padding-left:var(--sp-3); margin:0 0 var(--sp-4);";
+      full.innerHTML = supportInner(kernelHtml, stemsHtml, wordBankHtml, true);
+      moreBtn.replaceWith(full);
+      card.querySelector(".tt-fade-note")?.remove();
+    });
+    card.append(moreBtn);
+  }
 
   // Optional ~60s talk timer (low-friction, fully optional).
   const timerRow = document.createElement("div");
@@ -769,12 +842,15 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone) {
   const confirmBtn = document.createElement("button");
   confirmBtn.type = "button";
   confirmBtn.className = "btn btn-primary";
-  const markDone = () => {
+  const markDone = ({ fresh = false } = {}) => {
     confirmBtn.textContent = "We talked! ✓";
     confirmBtn.classList.add("btn-success");
     confirmBtn.setAttribute("aria-pressed", "true");
     confirmBtn.disabled = true;
     state.saveResponse(phaseId, respKey, "done");
+    // Only a NEW completion advances the ladder. Re-rendering a lesson the
+    // student already finished must not fast-forward their scaffolding.
+    if (fresh) recordTurnAndTalk(config?.unit);
   };
   if (alreadyDone) {
     markDone();
@@ -782,7 +858,7 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone) {
     confirmBtn.textContent = "We talked! ✓";
     confirmBtn.setAttribute("aria-pressed", "false");
     confirmBtn.addEventListener("click", () => {
-      markDone();
+      markDone({ fresh: true });
       onDone?.();
     });
   }
@@ -825,11 +901,20 @@ async function completePhase(el, ctx, state, phaseIdx, name, correct, total, opt
  */
 function reportMisconception(problemDef, selected, state) {
   try {
+    // Authored tag first, then the inference engine. Before this, the ONLY items
+    // that could ever report a named misconception were the 91 (of 1,840) that
+    // carried an authored `misconceptionTags` array — every other wrong answer
+    // recorded a bare `correct: false` and the teacher heatmap saw nothing but a
+    // miss count. diagnoseChoice() reads the stem and predicts what each named
+    // error would produce, and stays silent when two of them predict the same
+    // number, so a tag here still means one specific thing.
+    const inferred = diagnoseChoice(problemDef, selected);
     const tag =
       (Array.isArray(problemDef.misconceptionTags) &&
         selected != null &&
         problemDef.misconceptionTags[selected]) ||
       problemDef.misconceptionTag ||
+      inferred?.id ||
       null;
     const meta = (typeof window !== "undefined" && window.__ntLessonMeta) || {};
     if (window.NTSignal)
@@ -910,6 +995,15 @@ export function renderComponent(container, problemDef, onAnswer, shellOpts) {
       renderDragSort(body, {
         ...problemDef,
         onComplete: (c, t) => wrappedOnAnswer(c === t),
+      });
+      break;
+    case "wodb":
+      // Ungradeable by construction: every quadrant is defensible, so the
+      // component always reports true. Authors put it in Launch or Connect,
+      // never inside a scored practice set.
+      renderWhichOneDoesntBelong(body, {
+        ...problemDef,
+        onComplete: () => wrappedOnAnswer(true),
       });
       break;
     case "error-analysis":
@@ -2225,6 +2319,17 @@ function renderWarmupPhase(el, state, ctx, config) {
     "Complete these 3–4 quick warmup questions reviewing previous lesson material before starting today's lesson.",
   );
 
+  // Spaced retrieval runs BEFORE today's warmup. The warmup reviews the previous
+  // lesson (yesterday); this reviews what the schedule says is about to be
+  // forgotten (weeks ago). They answer different questions and both belong here,
+  // in that order — nearest first, so the student warms up before reaching back.
+  // Renders nothing at all when nothing is due, which is most page loads.
+  const retrievalHost = document.createElement("div");
+  el.append(retrievalHost);
+  mountRetrievalOpener(retrievalHost, config, state, 0).catch(() => {
+    /* the opener is additive — never block Warmup on it */
+  });
+
   const card = document.createElement("div");
   card.className = "card card-warmup-phase";
   card.style.cssText =
@@ -2849,6 +2954,17 @@ function renderLaunchPhase(el, state, ctx, config) {
   // Opt-in; no-op when the lesson has no launch visual.
   renderLaunchVisual(el, cfg.visual);
 
+  // Which One Doesn't Belong — a low-floor argument before any notation appears.
+  // It sits between the scene and the notice/wonder boxes on purpose: it warms
+  // up the same justification move those boxes ask for, but with four concrete
+  // objects instead of a blank field. Async and opt-in — a lesson whose standard
+  // has no authored set renders nothing here and the phase is unchanged.
+  const wodbHost = document.createElement("div");
+  el.append(wodbHost);
+  mountWodbOpener(wodbHost, config, state, 0).catch(() => {
+    /* the opener is additive — never block Launch on it */
+  });
+
   // Notice & Wonder + language support laid out side-by-side: the notice/wonder
   // boxes fill the left column (nwMain); the "Words & phrases to use" support
   // card sits to their right (nwAside) and drops below on narrow screens.
@@ -3009,7 +3125,9 @@ function renderExplorePhase(el, state, ctx, config) {
     figCard.className = "card";
     figCard.innerHTML = cfg.diagram ? buildVisual(cfg.diagram) : histogramSVG(cfg.histogram);
     el.append(figCard);
-    mountInteractiveVisuals(figCard);
+    // Explore is where the building happens, so this is the mount that most
+    // needs to remember. phaseId 1 = Explore.
+    mountInteractiveVisuals(figCard, { state, phaseId: 1 });
   }
 
   // Surface a Turn & Talk discussion moment after the Explore interaction.
@@ -3018,9 +3136,16 @@ function renderExplorePhase(el, state, ctx, config) {
   // An optional `ttPrompt` overrides the generic explore prompt — used to run
   // the authored post-activity discussion as a SPOKEN follow-up (see below).
   const showTurnTalkThenComplete = (ttPrompt) => {
-    renderTurnAndTalk(el, ttPrompt || resolveTurnTalk("explore", config), state, 2, () => {
-      completePhase(el, ctx, state, 1, "Explore", 1, 1);
-    });
+    renderTurnAndTalk(
+      el,
+      ttPrompt || resolveTurnTalk("explore", config),
+      state,
+      2,
+      () => {
+        completePhase(el, ctx, state, 1, "Explore", 1, 1);
+      },
+      config,
+    );
     const cont = document.createElement("button");
     cont.type = "button";
     cont.className = "btn btn-primary btn-lg mt-4";
@@ -3195,11 +3320,29 @@ function renderSkillPractice(host, config, state) {
   if (!pool.length) return;
 
   const total = pool.length;
+  const delayed = getFeedbackMode(config) === MODES.delayed;
+  const checkers = [];
   const card = document.createElement("div");
-  card.className = "card skill-practice";
+  card.className = `card skill-practice${delayed ? " skill-practice-delayed" : ""}`;
   card.innerHTML = `
     <h4 style="color:var(--navy,#264653); margin:0 0 var(--sp-2,8px);">✏️ Practice the skill — solve these</h4>
-    <p class="sp-intro">Work each problem. Show your steps, write your answer, then tap <strong>Check answer</strong>.</p>`;
+    <p class="sp-intro">${
+      delayed
+        ? `Work all ${total} problems first. You will see how you did once every answer is in — thinking it through without a hint after each one is what makes it stick.`
+        : "Work each problem. Show your steps, write your answer, then tap <strong>Check answer</strong>."
+    }</p>`;
+
+  // The teacher control sits ABOVE the problems so a teacher setting up the room
+  // sees it before the class does, and re-renders the section on change so the
+  // switch takes effect immediately instead of on the next lesson.
+  if (isTeacherMode()) {
+    const toggleSlot = document.createElement("div");
+    card.append(toggleSlot);
+    mountFeedbackModeToggle(toggleSlot, config, () => {
+      card.remove();
+      renderSkillPractice(host, config, state);
+    });
+  }
 
   pool.forEach((it, i) => {
     const answer =
@@ -3239,7 +3382,8 @@ function renderSkillPractice(host, config, state) {
     // a first miss coaches (no answer named) so "check again" stays meaningful;
     // only a second miss reveals the answer. No zero-effort giveaways.
     let spMisses = 0;
-    wrap.querySelector(".sp-check").addEventListener("click", () => {
+    const checkBtn = wrap.querySelector(".sp-check");
+    const runCheck = () => {
       reveal.hidden = false;
       const why = it.explanation
         ? `<br><span style="color:var(--muted,#5f6f80);">${esc(it.explanation)}</span>`
@@ -3270,12 +3414,54 @@ function renderSkillPractice(host, config, state) {
         reveal.style.borderColor = "var(--teal,#2a9d8f)";
         reveal.innerHTML = `<strong>✅ Answer:</strong> ${esc(answer)}${why} <br><span style="color:var(--muted,#5f6f80);">Compare each of your steps with this answer. Where do they match? Where do they differ?</span>`;
       }
+    };
+    checkBtn.addEventListener("click", runCheck);
+    // Delayed mode drives every problem from ONE set-level button below, so the
+    // per-problem buttons are removed rather than hidden: a disabled-looking
+    // control that does nothing reads as a bug to a twelve-year-old.
+    if (delayed) checkBtn.remove();
+    checkers.push({
+      run: runCheck,
+      hasAnswer: () => Boolean(ansEl.value.trim() || workEl.value.trim()),
     });
     card.append(wrap);
     // "Try another like this": generator-backed infinite reps, shown only when
     // this problem can be safely regenerated (correctness-verified variants).
     attachRegenPractice(wrap, it);
   });
+
+  if (delayed) {
+    const submitRow = document.createElement("div");
+    submitRow.className = "sp-submit-row";
+    submitRow.style.cssText =
+      "margin-top:var(--sp-4); display:flex; gap:var(--sp-3); align-items:center; flex-wrap:wrap;";
+    const submit = document.createElement("button");
+    submit.type = "button";
+    submit.className = "btn btn-primary";
+    submit.textContent = `Check all ${total} answers`;
+    const note = document.createElement("span");
+    note.setAttribute("role", "status");
+    note.style.cssText = "font-size:0.9rem; color:var(--muted);";
+    submit.addEventListener("click", () => {
+      const blank = checkers.filter((c) => !c.hasAnswer()).length;
+      if (blank) {
+        // Nudge rather than block: a student who genuinely cannot do one of them
+        // still needs to reach the feedback, and refusing to mark the set would
+        // strand them on the problem they most need the answer to.
+        note.textContent = `${blank} still blank — check them anyway?`;
+        if (!submitRow.dataset.warned) {
+          submitRow.dataset.warned = "1";
+          return;
+        }
+      }
+      checkers.forEach((c) => c.run());
+      submit.disabled = true;
+      submit.textContent = "Answers checked";
+      note.textContent = "Scroll up — every problem is marked.";
+    });
+    submitRow.append(submit, note);
+    card.append(submitRow);
+  }
 
   host.append(card);
   // Let students mark up each problem stem (highlight / underline / bold).
@@ -3312,7 +3498,7 @@ function renderPracticePhase(el, state, ctx, config) {
       labCard.className = "card";
       labCard.innerHTML = buildVisual(lab);
       el.append(labCard);
-      mountInteractiveVisuals(labCard);
+      mountInteractiveVisuals(labCard, { state, phaseId: 2 });
     }
   }
 
@@ -3552,11 +3738,11 @@ function renderConnectPhase(el, state, ctx, config) {
     );
   }
   el.append(card);
-  mountInteractiveVisuals(card);
+  mountInteractiveVisuals(card, { state, phaseId: 3 });
 
   // Turn & Talk primes the written response below. Non-graded; does not gate
   // the Connect submit, so phase completion/scoring are unaffected.
-  renderTurnAndTalk(el, resolveTurnTalk("connect", config), state, 4);
+  renderTurnAndTalk(el, resolveTurnTalk("connect", config), state, 4, undefined, config);
 
   // The Writing Revolution (TWR) writing step. Auto-derived from config; shows
   // on every lesson. Formative only — persisted but never gates phase scoring.
@@ -3676,12 +3862,30 @@ function renderConnectPhase(el, state, ctx, config) {
 
   respCard.append(submitBtn);
   el.append(respCard);
+
+  // Peer explanation exchange (MLR 3). Placed AFTER the response card, because
+  // the justification the student just wrote is what they trade — asking them to
+  // exchange before they have written one would be asking them to read first,
+  // which is exactly what the routine is designed to prevent. Renders its own
+  // "start or join a table" affordance and degrades to nothing without D1.
+  mountPeerExchange(el, {
+    config,
+    state,
+    phaseId: 3,
+    itemKey: "connect",
+    prompt: cfg?.prompt || "Why does your answer work?",
+  });
 }
 
 // ── Phase 6: Reflect ──
 function renderReflectPhase(el, state, ctx, config) {
   const cfg = config.reflect;
   phaseHeader(el, "💡", "section-icon-coral", phaseName(4), t("reflectDesc"));
+
+  // Teacher-only: the Socratic question ladders this student worked through.
+  // Reflect is where a teacher conferring with a student ends up, so the record
+  // of which question stopped them belongs here rather than behind another tab.
+  if (isTeacherMode()) mountQuestionLadderReader(el, state);
 
   // 3-2-1
   const rCard = document.createElement("div");

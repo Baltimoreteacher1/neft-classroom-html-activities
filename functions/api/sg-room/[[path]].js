@@ -49,6 +49,14 @@ const ROOM_TTL_SEC = 4 * 60 * 60; // one school day's worth of rotations
 const MAX_SEATS = 6; // a small group; past this it is a class, not a table
 const MAX_ANSWER = 60; // short math answers only — never prose
 const MAX_ITEM_KEY = 80;
+// Peer explanations ARE prose — that is the point of them — so they get their
+// own cap. They are stored in the same table under an "x:" item-key prefix, which
+// keeps them completely outside the answer-commit reveal gate: a table where
+// three students have written explanations must not thereby be treated as having
+// three committed ANSWERS.
+const MAX_EXPLANATION = 600;
+const MIN_EXPLANATION = 15;
+const EXPLAIN_PREFIX = "x:";
 
 // Unambiguous alphabet: no O/0, no I/1/L. Students read these off a board and
 // type them on a Chromebook; a code that is hard to transcribe is a code that
@@ -62,9 +70,49 @@ function makeCode() {
 }
 
 const validCode = (code) => typeof code === "string" && /^[A-Z2-9]{4}$/.test(code);
+// Small-group lessons ("7-2-group2", "4-4-catchup") AND main-path lessons
+// ("4-4"). Peer explanation exchange runs in ordinary lessons, and rooms are
+// rooms — standing up a second room backend for the main path would have meant
+// two implementations of seats, codes, expiry and pruning.
 const validLessonId = (id) =>
-  typeof id === "string" && /^\d{1,2}-\d{1,2}-(group[12]|catchup)$/.test(id);
+  typeof id === "string" && /^\d{1,2}-\d{1,2}(-(group[12]|catchup))?$/.test(id);
 const validSeat = (seat) => Number.isInteger(seat) && seat >= 1 && seat <= MAX_SEATS;
+
+/**
+ * Screen a peer explanation before another child reads it.
+ *
+ * Deliberately narrow. This does not attempt to judge mathematics or tone — it
+ * blocks the two things that make peer exchange unsafe rather than merely
+ * unhelpful: contact details leaving the classroom, and slurs. Everything else,
+ * including a wrong or confused explanation, is exactly what the routine is FOR;
+ * critiquing a flawed explanation is the learning, so "this seems wrong" is
+ * never grounds for suppression.
+ *
+ * @returns {{ ok: true, text: string } | { ok: false, reason: string }}
+ */
+function screenExplanation(raw) {
+  const text = String(raw ?? "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, MAX_EXPLANATION);
+
+  if (text.length < MIN_EXPLANATION) return { ok: false, reason: "too-short" };
+
+  // Contact details: a shared surface between minors must not carry them, even
+  // when the intent is innocent.
+  if (/[\w.+-]+@[\w-]+\.[a-z]{2,}/i.test(text)) return { ok: false, reason: "contact" };
+  if (/\b\d{3}[\s.-]?\d{3}[\s.-]?\d{4}\b/.test(text)) return { ok: false, reason: "contact" };
+  if (/\b(?:https?:\/\/|www\.)\S+/i.test(text)) return { ok: false, reason: "contact" };
+  if (/\b(?:snap|insta|instagram|tiktok|discord)\b/i.test(text)) return { ok: false, reason: "contact" };
+
+  // A short, explicit list. Kept small on purpose: an aggressive filter that
+  // silently eats ordinary maths words ("hell" inside "shell") would teach
+  // students that the feature is broken and is worse than a narrow one.
+  const SLURS = /\b(f+u+c+k+|sh+i+t+|b+i+t+c+h+|a+s+s+h+o+l+e+|d+i+c+k+h+e+a+d+|c+u+n+t+|n+i+g+\w*|f+a+g+\w*|r+e+t+a+r+d+\w*)\b/i;
+  if (SLURS.test(text)) return { ok: false, reason: "language" };
+
+  return { ok: true, text };
+}
 
 async function ensureSchema(db) {
   await db.batch([
@@ -214,6 +262,85 @@ export async function onRequest(context) {
         .bind(room.code, itemKey)
         .first();
       return json({ ok: true, committed: Number(count?.n) || 0, seats: Number(room.seats) });
+    }
+
+    // ── Peer explanation exchange (MLR 3: Critique, Correct, Clarify) ───────
+    //
+    // Two routes, deliberately asymmetric: you must WRITE before you can READ.
+    // A student who reads a peer's reasoning first will anchor on it, and the
+    // exchange stops being an exchange — so `peer` refuses anyone who has not
+    // committed their own explanation for the same item.
+    if (route === "explain" && request.method === "POST") {
+      const body = await readBody(request);
+      if (!validCode(body?.code)) return json({ ok: false, error: "bad-code" }, 400);
+      if (!validSeat(body?.seat)) return json({ ok: false, error: "bad-seat" }, 400);
+      const itemKey = String(body?.itemKey ?? "").slice(0, MAX_ITEM_KEY - EXPLAIN_PREFIX.length);
+      if (!itemKey) return json({ ok: false, error: "bad-item" }, 400);
+
+      const screened = screenExplanation(body?.text);
+      if (!screened.ok) return json({ ok: false, error: screened.reason }, 400);
+
+      const room = await liveRoom(db, body.code, now);
+      if (!room) return json({ ok: false, error: "no-room" }, 404);
+      if (body.seat > Number(room.seats)) return json({ ok: false, error: "no-seat" }, 409);
+
+      // Like an answer commit, an explanation is final for that seat and item.
+      // Revising after reading a peer's is how a critique task becomes a copy.
+      await db
+        .prepare(
+          `INSERT OR IGNORE INTO sg_room_commit (code, item_key, seat, answer, at)
+           VALUES (?, ?, ?, ?, ?)`,
+        )
+        .bind(room.code, EXPLAIN_PREFIX + itemKey, body.seat, screened.text, now)
+        .run();
+      const count = await db
+        .prepare(`SELECT COUNT(*) AS n FROM sg_room_commit WHERE code = ? AND item_key = ?`)
+        .bind(room.code, EXPLAIN_PREFIX + itemKey)
+        .first();
+      return json({ ok: true, written: Number(count?.n) || 0, seats: Number(room.seats) });
+    }
+
+    if (route === "peer" && request.method === "GET") {
+      const url = new URL(request.url);
+      const code = (url.searchParams.get("code") || "").toUpperCase();
+      const seat = Number(url.searchParams.get("seat"));
+      const itemKey = String(url.searchParams.get("itemKey") || "").slice(
+        0,
+        MAX_ITEM_KEY - EXPLAIN_PREFIX.length,
+      );
+      if (!validCode(code)) return json({ ok: false, error: "bad-code" }, 400);
+      if (!validSeat(seat)) return json({ ok: false, error: "bad-seat" }, 400);
+      if (!itemKey) return json({ ok: false, error: "bad-item" }, 400);
+      const room = await liveRoom(db, code, now);
+      if (!room) return json({ ok: false, error: "no-room" }, 404);
+
+      const { results } = await db
+        .prepare(
+          `SELECT seat, answer FROM sg_room_commit WHERE code = ? AND item_key = ? ORDER BY seat`,
+        )
+        .bind(code, EXPLAIN_PREFIX + itemKey)
+        .all();
+      const rows = results || [];
+
+      // Write-before-read.
+      if (!rows.some((row) => Number(row.seat) === seat)) {
+        return json({ ok: false, error: "write-first" }, 409);
+      }
+
+      const others = rows.filter((row) => Number(row.seat) !== seat);
+      if (!others.length) return json({ ok: true, waiting: true, written: rows.length });
+
+      // Deterministic rotation: the next seat round the table, wrapping. Stable
+      // across refreshes (a student must not be able to reroll until they get an
+      // explanation they like) and it spreads the reading around the table
+      // instead of everyone critiquing seat 1.
+      const ordered = others.sort((a, b) => Number(a.seat) - Number(b.seat));
+      const next = ordered.find((row) => Number(row.seat) > seat) || ordered[0];
+
+      // The seat number is NOT returned. Inside a group of four, "seat 3" names a
+      // person as surely as a name does, and the critique should be of the
+      // reasoning.
+      return json({ ok: true, waiting: false, peer: next.answer, written: rows.length });
     }
 
     if (route === "state" && request.method === "GET") {

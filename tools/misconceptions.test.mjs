@@ -12,10 +12,12 @@ import assert from "node:assert/strict";
 import {
   MISCONCEPTIONS,
   detectMisconception,
+  diagnoseChoice,
   recordMisconception,
   scanExpression,
+  studentExplanation,
   topMisconceptions,
-} from "../engine/core/small-group-misconceptions.js";
+} from "../engine/core/misconceptions.js";
 
 let checks = 0;
 const detects = (item, typed, expected, note) => {
@@ -230,6 +232,78 @@ for (const [id, entry] of Object.entries(MISCONCEPTIONS)) {
   assert.ok(entry.label, `${id} needs a label`);
   assert.ok(entry.labelEs, `${id} needs a Spanish label`);
   assert.ok(entry.watchFor, `${id} needs a teacher move`);
+  assert.ok(entry.student, `${id} needs a student-facing explanation`);
+  assert.ok(entry.studentEs, `${id} needs a Spanish student-facing explanation`);
 }
 
-console.log(`small-group misconception detector: ${checks} checks passed.`);
+// ------------------------------------------------- multiple-choice item shape
+//
+// The lesson renderer passes items shaped `choices` + `correctIndex`, with no
+// `answer` field at all. Before diagnoseChoice existed, every one of those
+// 1,840 items fell straight through the detector and reported nothing, so these
+// cases are the ones standing between the main lesson path and silence.
+{
+  const item = {
+    stem: "A recipe needs 3/4 ÷ 1/4 cups of flour per batch. What is the quotient?",
+    choices: ["3", "3/16", "1/3", "4"],
+    correctIndex: 0,
+  };
+  checks += 1;
+  assert.equal(
+    diagnoseChoice(item, 1)?.id,
+    "fraction-no-reciprocal",
+    "multiplying 3/4 by 1/4 instead of inverting is 3/16",
+  );
+  checks += 1;
+  assert.equal(diagnoseChoice(item, 0), null, "the correct choice is never diagnosed");
+  checks += 1;
+  assert.equal(diagnoseChoice(item, 9), null, "an out-of-range choice index is not a diagnosis");
+  checks += 1;
+  assert.equal(diagnoseChoice(item, null), null, "a null choice index is not a diagnosis");
+}
+
+{
+  // Authored tags still outrank inference on the choice path.
+  const item = {
+    stem: "What is 4.51 × 1.2?",
+    choices: ["5.412", "54.12", "5.71", "3.31"],
+    correctIndex: 0,
+    misconceptionTags: [null, "place-value", null, null],
+  };
+  checks += 1;
+  assert.equal(diagnoseChoice(item, 1)?.id, "decimal-place-value", "authored tag wins");
+  checks += 1;
+  assert.ok(diagnoseChoice(item, 1)?.student, "a diagnosis always carries student copy");
+}
+
+{
+  // A distractor no named misconception predicts must produce NO diagnosis —
+  // this is the case that keeps the chip from mislabelling a student's thinking.
+  const item = { stem: "What is 12 + 5?", choices: ["17", "19", "60", "7"], correctIndex: 0 };
+  checks += 1;
+  assert.equal(diagnoseChoice(item, 1), null, "an unexplained distractor stays unnamed");
+  checks += 1;
+  assert.equal(
+    diagnoseChoice(item, 2)?.id,
+    "op-multiplied-instead-of-added",
+    "12 × 5 = 60 is the named multiply-for-add error",
+  );
+}
+
+// studentExplanation falls back to English rather than to blank.
+checks += 1;
+assert.ok(studentExplanation("ratio-inverted", "es").length > 0, "Spanish copy resolves");
+checks += 1;
+assert.equal(
+  studentExplanation("not-a-real-id"),
+  "",
+  "unknown ids resolve to empty, not undefined",
+);
+checks += 1;
+assert.equal(
+  studentExplanation("sign-dropped", "fr"),
+  MISCONCEPTIONS["sign-dropped"].student,
+  "an unsupported language falls back to English",
+);
+
+console.log(`misconception detector: ${checks} checks passed.`);

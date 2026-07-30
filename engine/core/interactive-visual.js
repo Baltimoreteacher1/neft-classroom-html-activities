@@ -17,6 +17,8 @@
 //     returned handle on the host as `__ivHandle` so a caller can `destroy()`
 //     eagerly if it wants to.
 
+import { attachManipulativePersistence } from "./manipulative-state.js";
+
 // Load a classic (non-module) script once and resolve when it has executed.
 // Memoized by src so repeated grapher mounts share one network fetch/parse.
 const _scriptPromises = new Map();
@@ -368,7 +370,7 @@ export function interactiveVisualHost(v, { ariaLabel, fallback } = {}) {
  * Safe to call multiple times and on subtrees. Returns immediately; components
  * mount asynchronously.
  */
-export function mountInteractiveVisuals(root) {
+export function mountInteractiveVisuals(root, opts) {
   if (!root || typeof root.querySelectorAll !== "function") return;
   const hosts = root.matches?.(".interactive-visual[data-visual]")
     ? [root, ...root.querySelectorAll(".interactive-visual[data-visual]")]
@@ -395,6 +397,14 @@ export function mountInteractiveVisuals(root) {
         console.warn(`interactive-visual: failed to mount "${host.dataset.visual}"`, err);
       });
   });
+
+  // Opt-in persistence: callers that have a lesson state store pass it, and what
+  // the student builds survives leaving the phase. Callers without one (the
+  // tools-mode browser, small-group labs, the homework page) pass nothing and
+  // behave exactly as before.
+  if (opts?.state) {
+    attachManipulativePersistence(root, opts);
+  }
 }
 
 export default mountInteractiveVisuals;

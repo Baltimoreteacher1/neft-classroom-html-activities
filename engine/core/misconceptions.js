@@ -1,4 +1,4 @@
-// small-group-misconceptions.js — turn a wrong answer into a NAMED misconception.
+// misconceptions.js — turn a wrong answer into a NAMED misconception.
 //
 // Why this exists: until now the studio could only ever say "not right". Every
 // judgment ran through isRight(), which is a boolean, so the richest signal in
@@ -6,6 +6,12 @@
 // red outline, and thrown away. A teacher does not need to know that four
 // students missed item 3; they need to know that three of them added the
 // denominators.
+//
+// It was named `small-group-misconceptions.js` while the small-group studio was
+// its only caller. It is now also the diagnosis behind every wrong multiple-choice
+// answer in the main lesson path, so the name no longer earns the prefix. The
+// taxonomy carries BOTH voices for each entry: `watchFor` is the teacher's next
+// move, `student` is what the learner reads instead of "Not quite."
 //
 // How it works: we never guess from the wrong answer alone. We read the problem,
 // derive the operands, and PREDICT the specific wrong result each named
@@ -24,39 +30,69 @@ import { numberOf } from "./small-group-answers.js";
 const EPS = 1e-9;
 const near = (a, b) => Number.isFinite(a) && Number.isFinite(b) && Math.abs(a - b) < EPS;
 
-// The taxonomy. `watchFor` is teacher-facing and deliberately imperative — it is
-// surfaced in the facilitation console and the next-move recommendation, where a
-// noun phrase ("place value") is useless and an instruction is not.
+// The taxonomy. Each entry carries two voices, because the same detection feeds
+// two very different surfaces:
+//   `watchFor` — teacher-facing and deliberately imperative. It appears in the
+//                facilitation console and the next-move recommendation, where a
+//                noun phrase ("place value") is useless and an instruction is not.
+//   `student`  — what the learner reads in place of "Not quite." It names the
+//                thinking without blaming the thinker and ends with ONE thing to
+//                check. It never states the answer: the student still has a retry,
+//                and a diagnosis that hands over the number wastes it.
 export const MISCONCEPTIONS = {
   "op-added-instead-of-multiplied": {
     label: "Added when the problem multiplies",
     labelEs: "Sumó cuando el problema multiplica",
     watchFor: "Ask what the operation *does* to the quantity before they compute.",
+    student:
+      "It looks like you added those two numbers. This one is asking for groups of something, which means multiplying. How many groups are there, and how big is each one?",
+    studentEs:
+      "Parece que sumaste esos dos números. Aquí se piden grupos de algo, y eso es multiplicar. ¿Cuántos grupos hay y de qué tamaño es cada uno?",
   },
   "op-multiplied-instead-of-added": {
     label: "Multiplied when the problem adds",
     labelEs: "Multiplicó cuando el problema suma",
     watchFor: "Have them restate the problem as a story, then name the operation.",
+    student:
+      "It looks like you multiplied. This problem puts two amounts together, so it adds. Try telling it back as a story first, then pick the operation.",
+    studentEs:
+      "Parece que multiplicaste. Este problema junta dos cantidades, así que se suma. Cuéntalo como una historia primero y luego escoge la operación.",
   },
   "op-reversed-subtraction": {
     label: "Subtracted in the wrong order",
     labelEs: "Restó en el orden equivocado",
     watchFor: "Anchor both numbers on a number line before subtracting.",
+    student:
+      "You subtracted in the other order. Check which amount you started with — that one goes first.",
+    studentEs:
+      "Restaste en el orden contrario. Fíjate con cuál cantidad empezaste: esa va primero.",
   },
   "op-reversed-division": {
     label: "Divided in the wrong order",
     labelEs: "Dividió en el orden equivocado",
     watchFor: "Ask “what is being split, and into how many?” before they write it.",
+    student:
+      "The two numbers got swapped in the division. Ask yourself: what is being split up? That number goes first.",
+    studentEs:
+      "Los dos números se intercambiaron en la división. Pregúntate: ¿qué se está repartiendo? Ese número va primero.",
   },
   "op-divided-instead-of-multiplied": {
     label: "Divided when the problem multiplies",
     labelEs: "Dividió cuando el problema multiplica",
     watchFor: "Estimate first — should the answer be bigger or smaller than you started?",
+    student:
+      "It looks like you divided. Estimate before you compute: should this answer end up bigger or smaller than what you started with?",
+    studentEs:
+      "Parece que dividiste. Estima antes de calcular: ¿la respuesta debe ser más grande o más pequeña que con lo que empezaste?",
   },
   "op-multiplied-instead-of-divided": {
     label: "Multiplied when the problem divides",
     labelEs: "Multiplicó cuando el problema divide",
     watchFor: "Estimate first — should the answer be bigger or smaller than you started?",
+    student:
+      "It looks like you multiplied. Estimate before you compute: should this answer end up bigger or smaller than what you started with?",
+    studentEs:
+      "Parece que multiplicaste. Estima antes de calcular: ¿la respuesta debe ser más grande o más pequeña que con lo que empezaste?",
   },
   // One id, not two, and deliberately so. "Multiplied the digits and ignored the
   // points" and "computed correctly then misplaced the point" produce the SAME
@@ -69,66 +105,118 @@ export const MISCONCEPTIONS = {
     label: "Right digits, wrong magnitude",
     labelEs: "Dígitos correctos, magnitud equivocada",
     watchFor: "Estimate to the nearest whole first, then count decimal places out loud.",
+    student:
+      "Your digits are right — the decimal point landed in the wrong spot. Round to the nearest whole number first and see roughly where the answer should sit.",
+    studentEs:
+      "Tus dígitos están bien: el punto decimal quedó en el lugar equivocado. Redondea al número entero más cercano y fíjate más o menos dónde debe caer la respuesta.",
   },
   "fraction-added-denominators": {
     label: "Added the denominators",
     labelEs: "Sumó los denominadores",
     watchFor: "Return to a bar model — thirds plus fifths cannot become eighths.",
+    student:
+      "It looks like you added the bottom numbers too. Thirds plus fifths cannot turn into eighths — draw the bars and check what size the pieces really are.",
+    studentEs:
+      "Parece que también sumaste los números de abajo. Tercios más quintos no pueden volverse octavos: dibuja las barras y revisa de qué tamaño son las piezas.",
   },
   "fraction-straight-across-division": {
     label: "Divided numerators and denominators straight across",
     labelEs: "Dividió numeradores y denominadores directamente",
     watchFor: "Reground division as “how many of these fit into that?”",
+    student:
+      "You divided the tops and the bottoms straight across. Dividing asks “how many of these fit into that?” — try that question on a whole-number case you already trust.",
+    studentEs:
+      "Dividiste los de arriba y los de abajo directamente. Dividir pregunta “¿cuántos de estos caben en aquello?” — prueba esa pregunta con números enteros que ya conoces.",
   },
   "fraction-no-reciprocal": {
     label: "Divided fractions without inverting",
     labelEs: "Dividió fracciones sin invertir",
     watchFor: "Ask them to check with a whole-number case they already trust.",
+    student:
+      "You multiplied the fractions just as they were written. When you divide by a fraction, the second one flips first.",
+    studentEs:
+      "Multiplicaste las fracciones tal como estaban escritas. Cuando divides entre una fracción, primero se invierte la segunda.",
   },
   "percent-used-as-whole-number": {
     label: "Used the percent as a plain number",
     labelEs: "Usó el porcentaje como número entero",
     watchFor: "Make them say the percent as “per hundred” out loud.",
+    student:
+      "The percent got used as a plain number. Say it out loud as “per hundred” — 15% means 15 out of every 100, not 15.",
+    studentEs:
+      "El porcentaje se usó como número común. Dilo en voz alta como “por cien”: 15% significa 15 de cada 100, no 15.",
   },
   "percent-scale-off-by-100": {
     label: "Percent answer off by a factor of 100",
     labelEs: "Respuesta de porcentaje errada por un factor de 100",
     watchFor: "Benchmark against 50% and 10% before trusting the number.",
+    student:
+      "Your answer is off by a factor of 100. Check it against something you already know: 50% is half, and 10% is one tenth.",
+    studentEs:
+      "Tu respuesta está errada por un factor de 100. Compárala con algo que ya sabes: 50% es la mitad y 10% es una décima parte.",
   },
   "ratio-inverted": {
     label: "Flipped the ratio",
     labelEs: "Invirtió la razón",
     watchFor: "Have them label both quantities with units before writing the ratio.",
+    student:
+      "The ratio is flipped. Label both quantities with their units, then write them in the same order the question names them.",
+    studentEs:
+      "La razón está invertida. Etiqueta las dos cantidades con sus unidades y escríbelas en el mismo orden en que la pregunta las nombra.",
   },
   "rate-not-per-one": {
     label: "Gave the total instead of the unit rate",
     labelEs: "Dio el total en vez de la tasa unitaria",
     watchFor: "Ask “per ONE what?” and make them finish the sentence.",
+    student:
+      "That is the total, not the amount for ONE. Finish this sentence out loud: “for one ___, there is ___.”",
+    studentEs:
+      "Eso es el total, no la cantidad por UNO. Termina esta oración en voz alta: “por un ___, hay ___.”",
   },
   "exponent-as-multiplication": {
     label: "Multiplied the base by the exponent",
     labelEs: "Multiplicó la base por el exponente",
     watchFor: "Expand it once — write out every factor before evaluating.",
+    student:
+      "It looks like you multiplied the base by the exponent. 2³ means 2 × 2 × 2 — write out every factor before you evaluate.",
+    studentEs:
+      "Parece que multiplicaste la base por el exponente. 2³ significa 2 × 2 × 2: escribe todos los factores antes de calcular.",
   },
   "order-of-operations-left-to-right": {
     label: "Worked left to right instead of by operation order",
     labelEs: "Trabajó de izquierda a derecha en vez de por orden de operaciones",
     watchFor: "Have them circle the operation that must go first, then compute.",
+    student:
+      "You worked straight across from left to right. Circle the operation that has to happen first, then compute.",
+    studentEs:
+      "Trabajaste de izquierda a derecha sin parar. Encierra la operación que debe hacerse primero y luego calcula.",
   },
   "sign-dropped": {
     label: "Right magnitude, lost the negative sign",
     labelEs: "Magnitud correcta, perdió el signo negativo",
     watchFor: "Place the answer on a number line — which side of zero?",
+    student:
+      "The size of your answer is right, but the negative sign went missing. Put it on a number line — which side of zero does it belong on?",
+    studentEs:
+      "El tamaño de tu respuesta está bien, pero se perdió el signo negativo. Ponla en una recta numérica: ¿de qué lado del cero va?",
   },
   "stat-summed-instead-of-averaged": {
     label: "Added the data set instead of averaging it",
     labelEs: "Sumó el conjunto de datos en vez de promediarlo",
     watchFor: "Ask whether the answer could be a realistic single value in that set.",
+    student:
+      "That is the total of the data, not its average. Could your answer be one realistic value from that list? An average has to land inside the data.",
+    studentEs:
+      "Eso es el total de los datos, no su promedio. ¿Tu respuesta podría ser un valor real de esa lista? Un promedio tiene que caer dentro de los datos.",
   },
   "measure-area-perimeter-swap": {
     label: "Swapped area and perimeter",
     labelEs: "Confundió área y perímetro",
     watchFor: "Ask what the unit should be — units or square units?",
+    student:
+      "Area and perimeter got swapped. Check the unit you should end with — plain units, or square units?",
+    studentEs:
+      "Se confundieron área y perímetro. Revisa con qué unidad debes terminar: ¿unidades o unidades cuadradas?",
   },
 };
 
@@ -212,6 +300,46 @@ export function scanExpression(stem) {
   return found.length === 1 ? found[0] : null;
 }
 
+/**
+ * Recover the operands from the authored EXPLANATION when the stem is prose.
+ *
+ * Most grade-6 items are word problems — "Maria buys 3 shirts for $12 each" —
+ * so scanExpression() finds nothing and the detector goes silent. Of the 581
+ * multiple-choice items with a numeric answer, only 128 carry an expression in
+ * the stem; 278 more have one in their explanation.
+ *
+ * Reading the explanation is safe ONLY because of the gate below: an extracted
+ * (a, op, b) is accepted just when applying it actually REPRODUCES the item's
+ * known-correct answer. If our reading of the problem does not reconstruct the
+ * answer the author wrote, we read it wrong and stay silent — the extraction
+ * verifies itself instead of trusting a regex. A tie (two different triples that
+ * both reproduce the answer, e.g. 12 ÷ 4 and 1 × 3) predicts different wrong
+ * answers, so it is ambiguous and also yields nothing.
+ */
+const EXPLANATION_EXPRESSION =
+  /(-?\d+(?:\.\d+)?(?:\s*\/\s*\d+)?)\s*([×·*÷+−–—-])\s*(-?\d+(?:\.\d+)?(?:\s*\/\s*\d+)?)/g;
+
+function verifiedExpression(item, correct) {
+  if (correct == null || !Number.isFinite(correct)) return null;
+  const text = String(item?.explanation ?? "");
+  if (!text) return null;
+  const seen = new Map();
+  EXPLANATION_EXPRESSION.lastIndex = 0;
+  let match = EXPLANATION_EXPRESSION.exec(text);
+  while (match) {
+    const op = /[×·*]/.test(match[2]) ? "*" : match[2] === "÷" ? "/" : match[2] === "+" ? "+" : "-";
+    const aText = match[1].trim();
+    const bText = match[3].trim();
+    const a = numberOf(aText);
+    const b = numberOf(bText);
+    if (a != null && b != null && near(apply(a, b, op), correct)) {
+      seen.set(`${a}${op}${b}`, { a, b, op, aText, bText });
+    }
+    match = EXPLANATION_EXPRESSION.exec(text);
+  }
+  return seen.size === 1 ? [...seen.values()][0] : null;
+}
+
 /** Every number in the stem, in order — used by the statistics detector. */
 function allNumbers(stem) {
   return (String(stem ?? "").match(/-?\d+(?:\.\d+)?/g) || []).map(Number).filter(Number.isFinite);
@@ -236,7 +364,10 @@ function predictions(item, correct) {
   const push = (id, value) => {
     if (value != null && Number.isFinite(value)) out.push({ id, value });
   };
-  const expression = scanExpression(stem);
+  // Stem first — an operator the student can SEE is the strongest evidence of
+  // what they were asked to do. The verified explanation path only runs when the
+  // stem is prose, so it can never override or weaken an existing detection.
+  const expression = scanExpression(stem) || verifiedExpression(item, correct);
 
   if (expression) {
     const { a, b, op, aText, bText } = expression;
@@ -371,9 +502,24 @@ function predictions(item, correct) {
 }
 
 /**
+ * The correct answer as written, across the two item shapes this engine sees.
+ * Small-group items carry a free-text `answer`; main-path lesson items carry
+ * `choices` + `correctIndex`. Reading both here — rather than at each call site —
+ * is what let the same detector serve the lesson renderer without a second copy
+ * of the taxonomy.
+ */
+function correctAnswerText(item) {
+  if (item?.answer != null) return item.answer;
+  if (Array.isArray(item?.choices) && Number.isInteger(item?.correctIndex)) {
+    return item.choices[item.correctIndex];
+  }
+  return null;
+}
+
+/**
  * Name the misconception behind a wrong response, or return null.
  *
- * @param {object} item   the practice item (stem + answer)
+ * @param {object} item   the practice item (stem + answer, or stem + choices)
  * @param {string} typed  what the student actually entered or selected
  * @returns {string|null} a key of MISCONCEPTIONS
  */
@@ -384,7 +530,7 @@ export function detectMisconception(item, typed, choiceIndex = null) {
     const authored = AUTHORED_TAGS[item.misconceptionTags[choiceIndex]];
     if (authored) return authored;
   }
-  const answer = numberOf(item?.answer);
+  const answer = numberOf(correctAnswerText(item));
   const response = numberOf(String(typed ?? "").replace(/[a-z°²³\s./$%]+$/i, ""));
   if (response == null) return null;
   const candidates = predictions(item, answer);
@@ -400,6 +546,38 @@ export function detectMisconception(item, typed, choiceIndex = null) {
     ),
   ];
   return matched.length === 1 ? matched[0] : null;
+}
+
+/**
+ * Diagnose a wrong multiple-choice selection.
+ *
+ * The lesson renderer knows only WHICH option was clicked, so it cannot call
+ * detectMisconception() without first resolving that index back to the text the
+ * student chose. Doing that here keeps the index→text step in one place and
+ * keeps the ambiguity rule (below, in detectMisconception) authoritative for
+ * every surface.
+ *
+ * @returns {{ id: string, label: string, student: string, watchFor: string }|null}
+ */
+export function diagnoseChoice(item, choiceIndex) {
+  if (!Number.isInteger(choiceIndex)) return null;
+  const chosen = Array.isArray(item?.choices) ? item.choices[choiceIndex] : null;
+  if (chosen == null) return null;
+  const id = detectMisconception(item, chosen, choiceIndex);
+  if (!id || !MISCONCEPTIONS[id]) return null;
+  return { id, ...MISCONCEPTIONS[id] };
+}
+
+/**
+ * The learner-facing sentence for a misconception id, in the requested language.
+ * Falls back to English when a Spanish string is absent so a partially
+ * translated taxonomy degrades to readable, never to blank.
+ */
+export function studentExplanation(id, lang = "en") {
+  const entry = MISCONCEPTIONS[id];
+  if (!entry) return "";
+  if (lang === "es") return entry.studentEs || entry.student || "";
+  return entry.student || "";
 }
 
 /**

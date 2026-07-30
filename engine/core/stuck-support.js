@@ -12,6 +12,9 @@
 // and the sentence starters are templated frames (not open prose) so multilingual
 // learners have a scaffold to fill in — without lowering the math demand.
 
+import { toPlainLanguage } from "./plain-language.js";
+import { mountSocraticDialogue } from "./socratic.js";
+
 function esc(s) {
   const d = document.createElement("div");
   d.textContent = s ?? "";
@@ -71,11 +74,21 @@ function buildSentenceStarter(item, config) {
     </ul>`;
 }
 
-function buildSimpler(item) {
-  return (
-    item?.simpler ||
-    "In simpler words: take it one small step at a time. Ask yourself — what is the <strong>first</strong> thing I can figure out with the numbers I have? Do that step, then look again."
-  );
+// "Explain it in simpler words" used to have nothing to say: it read an authored
+// `simpler` field that no lesson in the fleet has ever set (0 of 3,691 items),
+// so every student who tapped it got the same generic advice about taking small
+// steps. It now runs the problem's own stem through the shared plain-language
+// rewriter — the same one behind the lesson-wide "Plain words" toggle — so there
+// is one implementation and the chip actually restates THIS problem.
+function buildSimpler(item, config) {
+  if (item?.simpler) return item.simpler;
+  const stem = item?.stem || item?.prompt || config?.revealWordProblem?.text || "";
+  const terms = (config?.vocabulary || []).map((v) => v?.term).filter(Boolean);
+  const { text, changed } = toPlainLanguage(stem, terms);
+  if (changed) {
+    return `<strong>In simpler words:</strong> ${esc(text)}<br><span class="stuck-es">The numbers are exactly the same — only the wording changed.</span>`;
+  }
+  return "Take it one small step at a time. Ask yourself — what is the <strong>first</strong> thing I can figure out with the numbers I have? Do that step, then look again.";
 }
 
 /**
@@ -120,6 +133,14 @@ export function mountStuckSupport(host, opts = {}) {
   if (!host) return null;
   const { config = {}, item = null, state = null } = opts;
 
+  // The bar's only caller mounts it beside the "Show Your Work" solve and passes
+  // no per-item object, because the problem being worked there is the lesson's
+  // own `revealWordProblem`. Anything that needs the PROBLEM TEXT (rather than an
+  // item's authored hints) has to fall back to it, or it silently never appears —
+  // which is exactly what happened to the Socratic option on first wiring.
+  const problemText = item?.stem || item?.prompt || config?.revealWordProblem?.text || "";
+  const socraticItem = problemText ? { ...(item || {}), stem: problemText } : null;
+
   const options = [
     {
       key: "hint",
@@ -161,9 +182,20 @@ export function mountStuckSupport(host, opts = {}) {
       key: "simpler",
       icon: "🔤",
       label: "Explain it in simpler words",
-      html: `<p>${buildSimpler(item)}</p>`,
+      html: `<p>${buildSimpler(item, config)}</p>`,
     },
-  ].filter((o) => o.html && o.html.trim());
+    // Every other option on this bar TELLS the student something. This one is
+    // the opposite move and belongs last, after the ones that unstick a student
+    // who needs to move: it is for the student who is thinking and should keep
+    // thinking. `mount` instead of `html` because it is a live dialogue, not a
+    // panel of text.
+    {
+      key: "socratic",
+      icon: "❓",
+      label: "Ask me questions instead",
+      mount: (panel) => mountSocraticDialogue(panel, { item: socraticItem, config, state }),
+    },
+  ].filter((o) => (o.mount ? Boolean(socraticItem) : o.html && o.html.trim()));
 
   const wrap = document.createElement("section");
   wrap.className = "stuck-support";
@@ -202,7 +234,12 @@ export function mountStuckSupport(host, opts = {}) {
         return;
       }
       chip.classList.add("is-active");
-      panel.innerHTML = opt ? opt.html : "";
+      panel.innerHTML = "";
+      if (opt?.mount) {
+        opt.mount(panel);
+      } else {
+        panel.innerHTML = opt ? opt.html : "";
+      }
       panel.hidden = false;
     });
   });

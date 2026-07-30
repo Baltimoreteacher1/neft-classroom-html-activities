@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="What you can do in Grade 6 math — your progress by skill, not by how many lessons you have opened."
+    />
+    <title>What You Can Do — Neft Teacher</title>
+    <link rel="canonical" href="https://eduwonderlab.com/curriculum/my-progress/" />
+    <!-- noindex: this page renders one device's own practice history. There is
+         nothing here worth indexing and nothing that should be searchable. -->
+    <meta name="robots" content="noindex, follow" />
+    <meta name="theme-color" content="#15487f" />
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/assets/favicon.svg" />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      :root {
+        --ink: #17233a;
+        --muted: #5f6f80;
+        --line: #d9e2ec;
+        --surface: #fff;
+        --bg: #f4f7fb;
+        --solid: #1f8a55;
+        --growing: #b7791f;
+        --revisit: #1e6fa8;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font:
+          17px/1.6 "Atkinson Hyperlegible",
+          system-ui,
+          -apple-system,
+          sans-serif;
+      }
+      header {
+        background: #15487f;
+        color: #fff;
+        padding: 28px 20px;
+      }
+      header .wrap,
+      main {
+        max-width: 860px;
+        margin: 0 auto;
+      }
+      header h1 {
+        margin: 0 0 6px;
+        font-size: 1.7rem;
+      }
+      header p {
+        margin: 0;
+        opacity: 0.92;
+      }
+      main {
+        padding: 24px 20px 60px;
+      }
+      .lede {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 18px;
+        margin-bottom: 24px;
+      }
+      .lede p {
+        margin: 0;
+      }
+      h2 {
+        font-size: 1.15rem;
+        margin: 30px 0 6px;
+      }
+      h2 .count {
+        color: var(--muted);
+        font-weight: 400;
+        font-size: 0.95rem;
+      }
+      .band-note {
+        color: var(--muted);
+        margin: 0 0 12px;
+        font-size: 0.95rem;
+      }
+      ul.skills {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 10px;
+      }
+      li.skill {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-left: 5px solid var(--line);
+        border-radius: 12px;
+        padding: 14px 16px;
+      }
+      li.skill.solid {
+        border-left-color: var(--solid);
+      }
+      li.skill.growing {
+        border-left-color: var(--growing);
+      }
+      li.skill.revisit {
+        border-left-color: var(--revisit);
+      }
+      .skill-can {
+        font-weight: 700;
+        margin: 0 0 4px;
+      }
+      .skill-meta {
+        color: var(--muted);
+        font-size: 0.9rem;
+        margin: 0;
+      }
+      .skill-actions {
+        margin-top: 10px;
+      }
+      .btn {
+        display: inline-block;
+        background: #15487f;
+        color: #fff;
+        border: 0;
+        border-radius: 999px;
+        padding: 7px 16px;
+        font: inherit;
+        font-size: 0.9rem;
+        font-weight: 700;
+        text-decoration: none;
+        cursor: pointer;
+      }
+      .btn.ghost {
+        background: transparent;
+        color: #15487f;
+        border: 2px solid #15487f;
+      }
+      .empty {
+        background: var(--surface);
+        border: 1px dashed var(--line);
+        border-radius: 14px;
+        padding: 28px;
+        text-align: center;
+        color: var(--muted);
+      }
+      .foot {
+        margin-top: 36px;
+        color: var(--muted);
+        font-size: 0.9rem;
+        border-top: 1px solid var(--line);
+        padding-top: 16px;
+      }
+      .foot button {
+        margin-top: 8px;
+      }
+      @media print {
+        header {
+          background: #fff;
+          color: #000;
+        }
+        .btn {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="wrap">
+        <h1>What You Can Do</h1>
+        <p>
+          Your Grade 6 math skills — by what you can actually do, not by how many pages you opened.
+        </p>
+      </div>
+    </header>
+
+    <main>
+      <div class="lede">
+        <p>
+          Every line below is a <strong>skill</strong>, not a lesson. It moves when you practise —
+          in a lesson, in a game, or in a Remember When review. This page lives only on this device
+          and is never sent anywhere.
+        </p>
+      </div>
+
+      <div id="content"></div>
+
+      <div class="foot">
+        <p id="footNote"></p>
+        <button type="button" class="btn ghost" id="clearBtn">Clear my practice history</button>
+      </div>
+    </main>
+
+    <script src="/assets/nt-signal.js" defer></script>
+    <script>
+      "use strict";
+
+      // Bands. Deliberately three, and deliberately named for what the student
+      // CAN do rather than for a score. "Worth another look" is not a failure
+      // label — it is the honest description of a skill whose recent evidence is
+      // thin, which is also exactly what the spaced-review scheduler acts on.
+      var BANDS = [
+        {
+          id: "solid",
+          title: "You can do these",
+          note: "Your recent work on these has been steady. They will still come back for review — that is how they stay solid.",
+          min: 0.8,
+        },
+        {
+          id: "growing",
+          title: "Getting there",
+          note: "You are landing more of these than not. A few more goes and they move up.",
+          min: 0.5,
+        },
+        {
+          id: "revisit",
+          title: "Worth another look",
+          note: "These are the ones to spend time on. Nothing here is a verdict — it is just where the practice will pay off most.",
+          min: 0,
+        },
+      ];
+
+      // Below this, there is not enough evidence to say anything at all, and
+      // saying something anyway would be the whole problem with progress bars.
+      var MIN_ATTEMPTS = 3;
+
+      function esc(s) {
+        return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) {
+          return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+        });
+      }
+
+      function daysAgo(ts) {
+        if (!ts) return "";
+        var d = Math.floor((Date.now() - ts) / 86400000);
+        if (d <= 0) return "today";
+        if (d === 1) return "yesterday";
+        if (d < 14) return d + " days ago";
+        if (d < 60) return Math.round(d / 7) + " weeks ago";
+        return Math.round(d / 30) + " months ago";
+      }
+
+      /** "You can …" from the standard registry, falling back to the code. */
+      function canDoLine(code, entry) {
+        if (!entry) return code;
+        // shortLabel is a noun phrase ("Unit Rate"); fullText is the standard's
+        // own sentence, which is written at adult reading level. The label is the
+        // student-facing one, with the full text available on hover.
+        return entry.shortLabel || code;
+      }
+
+      function render(profile, registry) {
+        var content = document.getElementById("content");
+        var standards = (profile && profile.standards) || {};
+        var rows = [];
+
+        Object.keys(standards).forEach(function (code) {
+          var s = standards[code];
+          var attempts = Number(s.attempts) || 0;
+          if (attempts < MIN_ATTEMPTS) return;
+          var correct = Number(s.correct) || 0;
+          rows.push({
+            code: code,
+            attempts: attempts,
+            correct: correct,
+            rate: correct / attempts,
+            lastTs: Number(s.lastTs) || 0,
+            entry: registry[code] || null,
+          });
+        });
+
+        if (!rows.length) {
+          content.innerHTML =
+            '<div class="empty"><p><strong>Nothing to show yet.</strong></p>' +
+            "<p>Work through a lesson or a practice game and your skills will start appearing here. " +
+            "It takes a few tries on a skill before this page will say anything about it — " +
+            "one question is not evidence.</p>" +
+            '<p><a class="btn" href="/curriculum/">Go to the lessons</a></p></div>';
+          document.getElementById("footNote").textContent = "";
+          return;
+        }
+
+        var html = "";
+        BANDS.forEach(function (band, i) {
+          var next = BANDS[i - 1];
+          var inBand = rows.filter(function (r) {
+            return r.rate >= band.min && (!next || r.rate < next.min);
+          });
+          if (!inBand.length) return;
+          inBand.sort(function (a, b) {
+            return b.lastTs - a.lastTs;
+          });
+          html +=
+            "<h2>" +
+            esc(band.title) +
+            ' <span class="count">(' +
+            inBand.length +
+            ")</span></h2>" +
+            '<p class="band-note">' +
+            esc(band.note) +
+            "</p>" +
+            '<ul class="skills">' +
+            inBand
+              .map(function (r) {
+                var full = r.entry && r.entry.fullText ? r.entry.fullText : "";
+                var unit = r.entry && r.entry.unit ? "Unit " + r.entry.unit + " · " : "";
+                return (
+                  '<li class="skill ' +
+                  band.id +
+                  '"><p class="skill-can" title="' +
+                  esc(full) +
+                  '">' +
+                  esc(canDoLine(r.code, r.entry)) +
+                  '</p><p class="skill-meta">' +
+                  esc(unit) +
+                  esc(r.code) +
+                  " · " +
+                  r.correct +
+                  " of " +
+                  r.attempts +
+                  " recent tries · last practised " +
+                  esc(daysAgo(r.lastTs)) +
+                  '</p><p class="skill-actions">' +
+                  '<a class="btn ghost" href="/curriculum/?q=' +
+                  encodeURIComponent(r.code) +
+                  '">Practise this</a></p></li>'
+                );
+              })
+              .join("") +
+            "</ul>";
+        });
+
+        content.innerHTML = html;
+
+        // The spaced-review line. It is the one thing on this page that says what
+        // happens NEXT rather than what already happened.
+        var due =
+          window.NTSignal && window.NTSignal.dueStandards ? window.NTSignal.dueStandards(5) : [];
+        document.getElementById("footNote").textContent = due.length
+          ? due.length +
+            (due.length === 1 ? " skill is" : " skills are") +
+            " due to come back up in a Remember When review: " +
+            due
+              .map(function (d) {
+                var e = registry[d.standard];
+                return (e && e.shortLabel) || d.standard;
+              })
+              .join(", ") +
+            "."
+          : "Nothing is due for review right now.";
+      }
+
+      function boot() {
+        var registry = {};
+        fetch("/data/ccss-standards.json", { credentials: "omit" })
+          .then(function (r) {
+            return r.ok ? r.json() : null;
+          })
+          .then(function (d) {
+            if (d && d.standards) registry = d.standards;
+          })
+          .catch(function () {
+            /* the page still works with bare standard codes */
+          })
+          .then(function () {
+            var profile =
+              window.NTSignal && window.NTSignal.profile ? window.NTSignal.profile() : null;
+            render(profile, registry);
+          });
+      }
+
+      document.getElementById("clearBtn").addEventListener("click", function () {
+        if (
+          !window.confirm(
+            "Clear the practice history on this device? Your lesson answers are not affected.",
+          )
+        )
+          return;
+        if (window.NTSignal && window.NTSignal.clear) window.NTSignal.clear();
+        boot();
+      });
+
+      // nt-signal.js is deferred; wait for it rather than racing it.
+      if (window.NTSignal) boot();
+      else window.addEventListener("DOMContentLoaded", boot);
+    </script>
+  </body>
+</html>

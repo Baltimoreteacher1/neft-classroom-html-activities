@@ -69,6 +69,11 @@ const MODES = new Set([
   "solve",
   "translate",
   "recognize",
+  // Question-only tutoring. Distinct from "hint" because a hint still TELLS the
+  // student something — the next step, the operation to use — and a Level 3 hint
+  // works a parallel example all the way through. Socratic mode never asserts
+  // any mathematics at all: every reply is a question the student answers.
+  "socratic",
   // Teacher-facing: Insight Brief narrative over an ANONYMIZED class snapshot
   // (standards, counts, misconception tags — never student names).
   "plan",
@@ -258,6 +263,25 @@ function modeSystemPrompt(mode, standard, lang, hintLevel) {
       `(4) Build on what the student already tried if they shared work.`
     );
   }
+  if (mode === "socratic") {
+    return (
+      base +
+      ` You are running a SOCRATIC dialogue. You may ONLY ask questions. Rules you MUST ` +
+      `follow, without exception: ` +
+      `(1) Every reply is exactly ONE question, ending in a question mark. Nothing else — no ` +
+      `preamble, no summary of what they said, no encouragement sentence before it. ` +
+      `(2) NEVER state a fact about this problem, never name the operation to use, never give a ` +
+      `number that is not already in the problem or in what the student wrote, and never confirm ` +
+      `or deny whether their answer is right. ` +
+      `(3) Ask about the NEXT smallest thing they have not yet settled. Start from what they have ` +
+      `already told you. If they have said nothing, ask what the question is asking them to find. ` +
+      `(4) Keep it under 20 words and use grade-6 words. ` +
+      `(5) If the student says they are completely stuck, ask a smaller question — one they can ` +
+      `answer from the problem text alone — rather than helping. ` +
+      `(6) If the student has clearly reached a correct result, do not congratulate them: ask how ` +
+      `they could check it.`
+    );
+  }
   if (mode === "explain") {
     return (
       base +
@@ -356,6 +380,8 @@ function userPrompt(v) {
         (v.studentWork ? " First tell me if my answer above is right." : ""),
     );
   else if (v.mode === "hint") lines.push(`\nGive me a hint for the next step (not the answer).`);
+  else if (v.mode === "socratic")
+    lines.push(`\nAsk me one question that moves my thinking forward. Do not tell me anything.`);
   else if (v.mode === "explain") lines.push(`\nExplain why / how this works.`);
   else if (v.mode === "diagnose")
     lines.push(

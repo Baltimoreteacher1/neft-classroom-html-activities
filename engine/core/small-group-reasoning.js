@@ -12,7 +12,7 @@
 // never a score, never the answer.
 //
 // It also forwards the misconception the deterministic detector already named
-// from the student's numeric work (see small-group-misconceptions.js), which is
+// from the student's numeric work (see misconceptions.js), which is
 // what keeps the coaching pointed at the error the student actually made instead
 // of one the model invented.
 

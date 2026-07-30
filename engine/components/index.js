@@ -18,11 +18,7 @@ export { renderTwrWriting } from "./twr-writing.js";
 export { renderVocabBuilder } from "./vocab-builder.js";
 export { renderVocabCloze } from "./vocab-cloze.js";
 export { renderVocabDragMatch } from "./vocab-drag-match.js";
-export {
-  exploreLabel,
-  openExplorer,
-  resolveExplorer,
-} from "./vocab-explore.js";
+export { exploreLabel, openExplorer, resolveExplorer } from "./vocab-explore.js";
 export {
   bilingualDefinitionEl,
   bilingualTermEl,
@@ -31,3 +27,4 @@ export {
 } from "./vocab-explore-tasks.js";
 export { renderVocabIntro } from "./vocab-intro.js";
 export { renderVocabSort } from "./vocab-sort.js";
+export { renderWhichOneDoesntBelong } from "./which-one-doesnt-belong.js";

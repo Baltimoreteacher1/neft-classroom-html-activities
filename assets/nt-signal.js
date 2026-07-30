@@ -15,7 +15,7 @@
  *   - Idempotent: loads at most once per page (sentinel below).
  *
  * Storage key: "nt-signal:v1" ->
- *   { standards:      { [code]: { attempts, correct, lastTs } },
+ *   { standards:      { [code]: { attempts, correct, lastTs, box?, reviewTs? } },
  *     misconceptions: { [tag]:  { count, lastTs } },
  *     lastLesson:     "6-1-2",
  *     updatedAt:      1710000000000 }
@@ -26,6 +26,12 @@
  *   weakStandards(n)     -> [{ standard, attempts, correct, rate, lastTs }]
  *                           lowest correct-rate first (needs >=2 attempts)
  *   topMisconceptions(n) -> [{ tag, count, lastTs }] highest count first
+ *   dueStandards(n, now?)-> [{ standard, box, overdueMs, attempts, correct }]
+ *                           standards whose spaced-review interval has elapsed,
+ *                           most overdue first (needs >=3 attempts)
+ *   recordReview(std, ok, now?)
+ *                        -> log a spaced-review outcome: promotes the Leitner
+ *                           box on success, resets it to 0 on a miss
  *   suggestTier()        -> "l1" | "l2" | "both" (arcade tier ids): "l1" when
  *                           the recent rolling correct-rate < 0.6, "l2" when
  *                           > 0.85, else "both" (also "both" on thin data)
@@ -170,6 +176,90 @@
       return out.slice(0, Math.max(1, Number(n) || 3));
     } catch (_e) {
       return [];
+    }
+  }
+
+  // ── Spaced retrieval ───────────────────────────────────────────────────────
+  //
+  // A standard becomes DUE again after an interval that grows each time the
+  // student recalls it successfully and collapses when they do not. That is a
+  // Leitner box in the plainest form: `box` indexes REVIEW_INTERVALS_DAYS, a
+  // correct recall promotes, a miss demotes to 0.
+  //
+  // The schedule is derived from data this store already keeps, plus two small
+  // additive fields on the SAME per-standard record (`box`, `reviewTs`), so the
+  // existing MAX_STANDARDS eviction bounds the retrieval state for free and a
+  // store written by an older build still reads (both fields default to 0/absent
+  // and the standard simply comes due immediately, which is the safe direction).
+
+  var REVIEW_INTERVALS_DAYS = [1, 3, 7, 21, 45];
+  var DAY_MS = 24 * 60 * 60 * 1000;
+  // Below this, the student has not practised the standard enough for a review
+  // to be a RE-trial rather than a first encounter dressed up as one.
+  var MIN_REVIEW_ATTEMPTS = 3;
+
+  function intervalMsFor(box) {
+    var i = Math.max(0, Math.min(REVIEW_INTERVALS_DAYS.length - 1, Number(box) || 0));
+    return REVIEW_INTERVALS_DAYS[i] * DAY_MS;
+  }
+
+  /**
+   * Standards whose review interval has elapsed, most overdue first.
+   * @param {number} n     how many to return
+   * @param {number} [now] injectable clock, for tests
+   */
+  function dueStandards(n, now) {
+    try {
+      var store = readStore();
+      var t = Number(now) || Date.now();
+      var out = [];
+      var codes = Object.keys(store.standards);
+      for (var i = 0; i < codes.length; i++) {
+        var s = store.standards[codes[i]];
+        var attempts = Number(s && s.attempts) || 0;
+        if (attempts < MIN_REVIEW_ATTEMPTS) continue;
+        // Never review something the student is working on right now: the last
+        // touch is the practice itself, not a retrieval opportunity.
+        var since = t - (Number(s.reviewTs) || Number(s.lastTs) || 0);
+        var interval = intervalMsFor(s.box);
+        if (since < interval) continue;
+        out.push({
+          standard: codes[i],
+          box: Number(s.box) || 0,
+          overdueMs: since - interval,
+          attempts: attempts,
+          correct: Number(s.correct) || 0,
+        });
+      }
+      out.sort(function (a, b) {
+        return b.overdueMs - a.overdueMs || a.standard.localeCompare(b.standard);
+      });
+      return out.slice(0, Math.max(1, Number(n) || 3));
+    } catch (_e) {
+      return [];
+    }
+  }
+
+  /**
+   * Record the outcome of a spaced-review attempt. Promotes or demotes the box
+   * and stamps the review time. Also records the attempt itself through the
+   * normal path, so a review counts toward the standard's rate like any work.
+   */
+  function recordReview(standard, correct, now) {
+    try {
+      var std = cleanKey(standard);
+      if (!std) return;
+      record({ standard: std, correct: !!correct });
+      var store = readStore();
+      var s = store.standards[std];
+      if (!s) return;
+      var box = Number(s.box) || 0;
+      s.box = correct ? Math.min(REVIEW_INTERVALS_DAYS.length - 1, box + 1) : 0;
+      s.reviewTs = Number(now) || Date.now();
+      store.standards[std] = s;
+      writeStore(store);
+    } catch (_e) {
+      /* signals are best-effort — never break the page */
     }
   }
 
@@ -329,6 +419,8 @@
     record: record,
     profile: profile,
     weakStandards: weakStandards,
+    dueStandards: dueStandards,
+    recordReview: recordReview,
     topMisconceptions: topMisconceptions,
     suggestTier: suggestTier,
     setLastLesson: setLastLesson,

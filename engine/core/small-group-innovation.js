@@ -1,7 +1,7 @@
 import { selectedTalk } from "./small-group-engagement.js";
 import { mathCheckFor } from "./small-group-math-check.js";
 import { el, esc } from "./small-group-ui.js";
-import { topMisconceptions } from "./small-group-misconceptions.js";
+import { topMisconceptions } from "./misconceptions.js";
 
 const PATHS = {
   stabilize: {

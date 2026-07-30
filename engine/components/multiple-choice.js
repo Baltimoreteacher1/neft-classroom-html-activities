@@ -1,4 +1,18 @@
+import { diagnoseChoice } from "../core/misconceptions.js";
+
 const LETTERS = ["A", "B", "C", "D", "E", "F"];
+
+// Authored per-choice feedback that carries no information about the chosen
+// distractor. These exact strings are templated across hundreds of items, so
+// when one of them is what an author left, an inferred diagnosis is strictly
+// more useful and takes precedence. Substantive authored feedback still wins.
+const BOILERPLATE_FEEDBACK = new Set([
+  "Check your operation. Re-read what the problem asks.",
+  "Double-check: verify the math step-by-step against the question.",
+  "Re-read the problem carefully and try again.",
+  "Take another look and try again.",
+  "Not quite — try again.",
+]);
 
 function esc(s) {
   const d = document.createElement("div");
@@ -83,6 +97,23 @@ function injectMultipleChoiceStyles() {
         pointer-events: none;
         overflow: visible;
         z-index: 2;
+      }
+
+      /* Named-misconception chip above the coaching sentence. Deliberately
+         quiet: amber, not red, because it describes thinking rather than
+         marking a failure. */
+      .mc-diagnosis {
+        display: block;
+        margin-bottom: var(--sp-2, 0.5rem);
+        font-weight: 700;
+        font-size: 0.9rem;
+        line-height: 1.35;
+        color: var(--amber-ink, #7c4a03);
+      }
+      .mc-feedback-line {
+        display: flex;
+        gap: var(--sp-2, 0.5rem);
+        align-items: flex-start;
       }
 
       .mc-celebrate-piece {
@@ -175,10 +206,18 @@ function fireChoiceConfetti(wrapper) {
   window.setTimeout(() => layer.remove(), 1100);
 }
 
-export function renderMultipleChoice(
-  container,
-  { stem, choices, correctIndex, explanation, onAnswer, hideStem, choiceFeedback, hint, scaffold },
-) {
+export function renderMultipleChoice(container, opts) {
+  let {
+    stem,
+    choices,
+    correctIndex,
+    explanation,
+    onAnswer,
+    hideStem,
+    choiceFeedback,
+    hint,
+    scaffold,
+  } = opts || {};
   injectMultipleChoiceStyles();
 
   // Fail safe on malformed authoring rather than throwing at check time
@@ -291,6 +330,7 @@ export function renderMultipleChoice(
 
     const isCorrect = selected === correctIndex;
     const labels = optionsWrap.querySelectorAll(".mc-option-label");
+    const diagnosis = isCorrect ? null : diagnoseChoice(opts, selected);
 
     labels.forEach((l) => l.classList.remove("is-correct", "is-incorrect", "is-selected"));
 
@@ -323,8 +363,16 @@ export function renderMultipleChoice(
         // Coach the retry instead of a bare "wrong": prefer authored
         // per-choice feedback (why THIS distractor tempts), then the problem's
         // own hint/scaffold — never text that names the correct letter.
-        const coach =
-          (Array.isArray(choiceFeedback) && choiceFeedback[selected]) || hint || scaffold || "";
+        //
+        // The diagnosis outranks BOILERPLATE authored feedback but not real
+        // authored feedback. That ordering is measured, not assumed: 5,262 of
+        // the distractor slots carry a string, but the three sentences in
+        // BOILERPLATE_FEEDBACK alone account for ~450 of them and say nothing
+        // about the chosen distractor, so "Check your operation." was actively
+        // worse than naming what the student appears to have done.
+        const authored = (Array.isArray(choiceFeedback) && choiceFeedback[selected]) || "";
+        const useful = authored && !BOILERPLATE_FEEDBACK.has(authored.trim());
+        const coach = useful ? authored : diagnosis?.student || authored || hint || scaffold || "";
         fbMsg = coach ? `Not quite. ${coach}` : "Not quite — take another look and try again.";
         tryAgainBtn.style.display = "inline-flex";
       }
@@ -332,7 +380,14 @@ export function renderMultipleChoice(
 
     feedbackSlot.className = `problem-check-result visible ${isCorrect ? "is-correct" : "is-incorrect"}`;
     feedbackSlot.setAttribute("role", "alert");
-    feedbackSlot.innerHTML = `<span class="feedback-icon">${isCorrect ? "✓" : "💡"}</span><span>${esc(fbMsg)}</span>`;
+    // The named diagnosis rides ABOVE the coaching sentence as a short chip. It
+    // is a noun phrase ("Added the denominators") where the sentence is a next
+    // step, so the two do not repeat each other, and a student who reads only
+    // the chip still learns what their thinking was.
+    const chip = diagnosis
+      ? `<span class="mc-diagnosis"><span aria-hidden="true">💭</span> Looks like: ${esc(diagnosis.label)}</span>`
+      : "";
+    feedbackSlot.innerHTML = `${chip}<span class="mc-feedback-line"><span class="feedback-icon">${isCorrect ? "✓" : "💡"}</span><span>${esc(fbMsg)}</span></span>`;
 
     // Second arg is additive: existing single-arg callers are unaffected, and
     // misconception-aware callers can see WHICH distractor was chosen.

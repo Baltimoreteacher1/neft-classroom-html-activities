@@ -12,6 +12,8 @@
 
 import { isTeacherMode } from "./teacher-mode.js";
 
+import { applyPlainLanguage, isPlainLanguageOn, setPlainLanguage } from "./plain-language.js";
+
 export function mountUtilityMenu() {
   if (document.querySelector(".nt-utility-menu")) return;
   document.body.classList.add("has-nt-utility-menu");
@@ -69,6 +71,31 @@ export function mountUtilityMenu() {
     close();
   });
   actions.appendChild(clearAnswers);
+
+  // Plain words — the same problems at a lower reading level. A student choice,
+  // not a teacher one: reading level is an access need and the student is the
+  // one who knows whether they can read the sentence. The numbers never change
+  // (see plain-language.js, which verifies that before showing a rewrite).
+  const plainWords = document.createElement("button");
+  plainWords.type = "button";
+  plainWords.className = "nt-utility-item";
+  const paintPlain = () => {
+    plainWords.innerHTML = `<span aria-hidden="true">🔤</span><span>Plain words${
+      isPlainLanguageOn() ? " ✓" : ""
+    }</span>`;
+    plainWords.setAttribute("aria-pressed", isPlainLanguageOn() ? "true" : "false");
+  };
+  paintPlain();
+  plainWords.addEventListener("click", () => {
+    const next = !isPlainLanguageOn();
+    setPlainLanguage(next);
+    paintPlain();
+    // The lesson re-applies on every phase render (see app.js renderPhase); this
+    // covers the phase already on screen.
+    applyPlainLanguage(document, next, window.__ntProtectedTerms || []);
+    close();
+  });
+  actions.appendChild(plainWords);
 
   // Save / Resume — drives the save-resume engine's launcher (hidden by the
   // menu's CSS on lesson pages); its panel opens in its usual corner.

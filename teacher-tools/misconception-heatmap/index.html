@@ -158,6 +158,12 @@
         background: var(--panel-2);
         margin: 1px 2px 1px 0;
       }
+      .tag-move {
+        color: var(--muted);
+        font-size: 12px;
+        margin-top: 4px;
+        max-width: 46ch;
+      }
       .trend-up {
         color: var(--bad);
         font-weight: 700;
@@ -210,9 +216,9 @@
       }
     </style>
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
   <body>
     <!-- Gate -->
     <div id="gate" class="gate">
@@ -314,6 +320,31 @@
       var ENDPOINT = "/api/misconception-heatmap";
       var raw = []; // per-(lesson, section) rows from the API
       var meta = { days: 30, recentDays: 7 };
+
+      // Tag slug -> human name, generated from the engine taxonomy by
+      // scripts/generate-misconception-labels.mjs. Fetched rather than inlined so
+      // this page and the lesson engine can never disagree about what a tag
+      // means. A failed fetch degrades to showing the raw slug, which is exactly
+      // what this page did before the taxonomy reached the main lesson path.
+      var TAG_LABELS = {};
+      function tagName(tag) {
+        var entry = TAG_LABELS[tag];
+        return entry && entry.label ? entry.label : tag;
+      }
+      function tagMove(tag) {
+        var entry = TAG_LABELS[tag];
+        return entry && entry.watchFor ? entry.watchFor : "";
+      }
+      fetch("/data/misconception-labels.json")
+        .then(function (r) {
+          return r.ok ? r.json() : null;
+        })
+        .then(function (d) {
+          if (d && d.tags) TAG_LABELS = d.tags;
+        })
+        .catch(function () {
+          /* labels are cosmetic — the slug still identifies the misconception */
+        });
 
       var $ = function (s) {
         return document.querySelector(s);
@@ -451,7 +482,7 @@
           ["Lessons with signal", lessons.length],
           ["Miss signals (" + meta.days + "d)", totalMiss],
           ["Tagged misconceptions", totalMisc],
-          ["Top misconception", topTag ? topTag + " ×" + tagTotals[topTag] : "—"],
+          ["Top misconception", topTag ? tagName(topTag) + " ×" + tagTotals[topTag] : "—"],
         ]
           .map(function (c) {
             return (
@@ -538,7 +569,15 @@
                 (m.topTags.length
                   ? m.topTags
                       .map(function (t) {
-                        return '<span class="pill">' + esc(t.tag) + " ×" + t.count + "</span>";
+                        return (
+                          '<span class="pill" title="' +
+                          esc(t.tag) +
+                          '">' +
+                          esc(tagName(t.tag)) +
+                          " ×" +
+                          t.count +
+                          "</span>"
+                        );
                       })
                       .join("")
                   : "—") +
@@ -566,9 +605,13 @@
           tagList
             .map(function (t) {
               return (
-                '<tr><td><span class="pill">' +
+                '<tr><td><span class="pill" title="' +
                 esc(t.tag) +
-                '</span></td><td class="num">' +
+                '">' +
+                esc(tagName(t.tag)) +
+                "</span>" +
+                (tagMove(t.tag) ? '<div class="tag-move">' + esc(tagMove(t.tag)) + "</div>" : "") +
+                '</td><td class="num">' +
                 t.count +
                 '</td><td class="num">' +
                 t.lessons.length +
@@ -656,6 +699,6 @@
         if (saved) enter(saved);
       })();
     </script>
-  <script src="/assets/nt-usage.js" data-nt-usage="1" defer></script>
+    <script src="/assets/nt-usage.js" data-nt-usage="1" defer></script>
   </body>
 </html>

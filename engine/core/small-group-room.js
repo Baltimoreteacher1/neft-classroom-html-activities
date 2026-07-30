@@ -27,6 +27,29 @@ const POLL_MS = 3000;
 // stale code from period 1 never binds period 4's group.
 const seatKey = (lessonId) => `nt-sg-room:${lessonId}`;
 
+/**
+ * Like call(), but returns the parsed body even when the server says `ok:false`.
+ *
+ * call() collapses every failure to null, which is right for the room routes
+ * whose only question is "did it work". The peer-exchange routes answer a
+ * different question: WHY it did not — "write-first", "too-short", "language" —
+ * and each of those needs a different sentence in front of a twelve-year-old.
+ * Collapsing them to null would produce "something went wrong" for a student who
+ * simply needs to write two more words.
+ */
+async function callRaw(path, options = {}) {
+  try {
+    const response = await fetch(`${BASE}/${path}`, {
+      credentials: "omit",
+      ...options,
+      headers: options.body ? { "content-type": "application/json" } : undefined,
+    });
+    return await response.json();
+  } catch {
+    return null;
+  }
+}
+
 async function call(path, options = {}) {
   try {
     const response = await fetch(`${BASE}/${path}`, {
@@ -115,6 +138,36 @@ export function createRoom(lessonId) {
         method: "POST",
         body: JSON.stringify({ code: membership.code, seat: membership.seat, itemKey, answer }),
       });
+    },
+
+    /**
+     * Peer explanation exchange (MLR 3). Write your reasoning, then read
+     * someone else's — in that order, enforced server-side.
+     *
+     * @returns {Promise<{ok:true,written:number}|{ok:false,error:string}>}
+     */
+    async explain(itemKey, text) {
+      if (!membership) return { ok: false, error: "no-room" };
+      const data = await callRaw("explain", {
+        method: "POST",
+        body: JSON.stringify({ code: membership.code, seat: membership.seat, itemKey, text }),
+      });
+      if (!data) return { ok: false, error: "offline" };
+      return data.ok ? { ok: true, written: data.written } : { ok: false, error: data.error };
+    },
+
+    /**
+     * Fetch one anonymous peer explanation for the same item.
+     * @returns {Promise<{ok:true,waiting:boolean,peer?:string}|{ok:false,error:string}>}
+     */
+    async peer(itemKey) {
+      if (!membership) return { ok: false, error: "no-room" };
+      const query = `peer?code=${encodeURIComponent(membership.code)}&seat=${membership.seat}&itemKey=${encodeURIComponent(itemKey)}`;
+      const data = await callRaw(query);
+      if (!data) return { ok: false, error: "offline" };
+      return data.ok
+        ? { ok: true, waiting: Boolean(data.waiting), peer: data.peer }
+        : { ok: false, error: data.error };
     },
 
     /**
