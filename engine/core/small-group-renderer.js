@@ -539,14 +539,14 @@ function renderStudio(config) {
   const room = createRoom(config.lessonId || "lesson");
 
   const events = {
-    onAttempt({ correct, item, response }) {
+    onAttempt({ correct, item, response, choiceIndex = null }) {
       state.attempts++;
       reach.markFirstProblem();
       if (!correct && item) {
         // A wrong answer is the richest signal in the room; until now it was
         // rendered as a red outline and discarded. Name it when — and only
         // when — the arithmetic identifies exactly one mechanism.
-        const named = detectMisconception(item, response);
+        const named = detectMisconception(item, response, choiceIndex);
         if (named) {
           state.misconceptions = recordMisconception(store, named) || state.misconceptions;
           state.lastMisconception = named;

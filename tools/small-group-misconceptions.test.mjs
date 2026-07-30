@@ -178,6 +178,22 @@ detects(
   "two candidate expressions is ambiguous → scan refuses",
 );
 
+// ------------------------------------------------------- authored tags win
+{
+  checks += 1;
+  const item = {
+    stem: "What is 3.4 × 2.6?",
+    answer: "8.84",
+    misconceptionTags: [null, "place-value", "place-value", null],
+  };
+  // Choice index 1 is authored as a place-value error; the author's call stands
+  // even though inference would also have to work this out.
+  assert.equal(detectMisconception(item, "88.4", 1), "decimal-place-value");
+  // An unauthored distractor falls through to inference and stays silent when
+  // nothing identifies it.
+  assert.equal(detectMisconception(item, "8.48", 3), null);
+}
+
 // ---------------------------------------------------------------- scanner API
 {
   checks += 1;

@@ -62,7 +62,19 @@ function makeItem(
   // engine's bi() helper falls back to English for every other item, so a
   // half-translated unit never leaks "undefined" or a stray Spanish hint.
   const strategy = hint || "Use the visual model, then complete one step at a time.";
-  const firstStep = steps[0] ? String(steps[0][0]).replace("___", String(steps[0][1])) : null;
+  // The comment above says "never the answer", and until now the code broke that
+  // promise: for any item whose FIRST step answer is also the item's final answer
+  // (every LCM/GCF guided-fill, among others) filling the blank printed the answer
+  // into hint 3. Detected fleet-wide by tools/eval-small-group-fleet.mjs. When the
+  // first step would give the answer away, the hint points AT the step and leaves
+  // the blank blank; otherwise it still works the step, which is the useful case.
+  const firstStepIsAnswer = steps[0] && String(steps[0][1]) === String(answer);
+  const firstStep = steps[0]
+    ? firstStepIsAnswer
+      ? String(steps[0][0])
+      : String(steps[0][0]).replace("___", String(steps[0][1]))
+    : null;
+  const firstStepLead = firstStepIsAnswer ? "Start with this step" : "Start like this";
   const hasEs = Boolean(stemEs);
   const item = {
     id: `${context.lessonId}-parallel-${String(index + 1).padStart(2, "0")}`,
@@ -78,7 +90,7 @@ function makeItem(
     hints: [
       "Re-read the question. What exactly is it asking you to find?",
       strategy,
-      ...(firstStep ? [`Start like this: ${firstStep}`] : []),
+      ...(firstStep ? [`${firstStepLead}: ${firstStep}`] : []),
     ],
     explanation:
       explanation || steps.map(([prompt, value]) => prompt.replace("___", value)).join(" "),
@@ -86,11 +98,16 @@ function makeItem(
   if (hasEs) {
     item.stemEs = stemEs;
     const firstStepEs =
-      steps[0] && steps[0][2] ? String(steps[0][2]).replace("___", String(steps[0][1])) : null;
+      steps[0] && steps[0][2]
+        ? firstStepIsAnswer
+          ? String(steps[0][2])
+          : String(steps[0][2]).replace("___", String(steps[0][1]))
+        : null;
+    const firstStepLeadEs = firstStepIsAnswer ? "Empieza con este paso" : "Empieza así";
     item.hintsEs = [
       ES_REREAD_HINT,
       hintEs || ES_DEFAULT_STRATEGY,
-      ...(firstStepEs ? [`Empieza así: ${firstStepEs}`] : []),
+      ...(firstStepEs ? [`${firstStepLeadEs}: ${firstStepEs}`] : []),
     ];
     const explEs =
       explanationEs ||

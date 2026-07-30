@@ -132,6 +132,9 @@ function multipleChoiceCard(item, index, onSolved, events = {}) {
         correct: sourceIndex === item.correctIndex,
         item,
         response: choice,
+        // Authored index, not the shuffled slot — misconceptionTags is keyed to
+        // the config's original choice order.
+        choiceIndex: sourceIndex,
       });
       if (sourceIndex !== item.correctIndex) {
         button.classList.add("wrong");

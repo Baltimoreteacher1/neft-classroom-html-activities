@@ -132,6 +132,16 @@ export const MISCONCEPTIONS = {
   },
 };
 
+// Configs already carry a sparse authored vocabulary in `misconceptionTags` (a
+// tag per choice, present on 91 of 3,429 items and using only two values). Where
+// an author HAS named the error, that is ground truth and beats inference — so it
+// is mapped into the taxonomy rather than ignored. The inference path below is
+// what gives the remaining ~97% of items any coverage at all.
+const AUTHORED_TAGS = {
+  "place-value": "decimal-place-value",
+  "sign-error": "sign-dropped",
+};
+
 /** Split "3/4" into parts. Returns null unless the whole string is a fraction. */
 function fractionParts(text) {
   const match = String(text ?? "")
@@ -367,7 +377,13 @@ function predictions(item, correct) {
  * @param {string} typed  what the student actually entered or selected
  * @returns {string|null} a key of MISCONCEPTIONS
  */
-export function detectMisconception(item, typed) {
+export function detectMisconception(item, typed, choiceIndex = null) {
+  // Authored tag first: an author who named the error for this distractor knows
+  // more than any predictor can.
+  if (Number.isInteger(choiceIndex) && Array.isArray(item?.misconceptionTags)) {
+    const authored = AUTHORED_TAGS[item.misconceptionTags[choiceIndex]];
+    if (authored) return authored;
+  }
   const answer = numberOf(item?.answer);
   const response = numberOf(String(typed ?? "").replace(/[a-z°²³\s./$%]+$/i, ""));
   if (response == null) return null;
