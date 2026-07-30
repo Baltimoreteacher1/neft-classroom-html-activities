@@ -133,10 +133,20 @@ the strongest one(s) relevant to what you changed:
 | `npm run generate-support-pages`              | Generates missing family/teacher-notes/student-help pages from lesson configs (skips `<!-- hand-edited -->`).                                                                                                        | Repairing missing lesson support pages.                                                         |
 | `node tools/audit-save-resume-integration.js` | Audits Save/Resume wiring across activities (same as `npm run validate:save-resume`; on failure it prints the `fix:save-resume` remediation command).                                                                | Any change near activity state, Save, or Resume.                                                |
 
-> **Note:** This repo has **no `npm run lint` and no `npm test`** scripts. Do not
-> invent them. The equivalents here are `npm run validate`, `npm run audit`, the
-> Save/Resume audit, `npm run build`, and manual browser smoke tests via
-> `npm run preview`. If you add a new check, document it in this table.
+> **Note:** `npm test` **does exist** — `node tools/run-tests.mjs`, which walks
+> the repo for `*.test.{mjs,cjs,js}` (ignoring `node_modules`, `dist`, `.git`,
+> `.qa-logs`, `coverage`) and currently runs 65 test scripts green in a few
+> seconds. It is wired into `npm run validate`, so every `ship` gates on it.
+> There is also `npm run check` (Biome), `npm run e2e` (Playwright), and
+> `npm run qa` (check + test + e2e).
+>
+> This note previously claimed the repo had no `npm test` and told agents not to
+> invent one. That was wrong, and the cost was concrete: `assets/game-score.test.mjs`
+> describes itself as guarding the counting contract that had already silently
+> corrupted every accuracy figure on the site once — and because the doc said the
+> runner did not exist, nobody checked `package.json`, so the test was never put
+> in front of a deploy. **Verify a claim like this against `package.json` before
+> repeating it.** If you add a new check, document it in this table.
 
 If `node_modules` is missing, run `npm ci` first (or `npm install` if no
 lockfile match), then run the checks.
