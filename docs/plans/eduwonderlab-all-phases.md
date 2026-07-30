@@ -29,13 +29,17 @@
    - Migration `004_curriculum_content.sql`
    - Public read: `GET /api/curriculum/content?tenant_id=&course=grade6-math`
    - Seed script: `scripts/migrate-curriculum-to-d1.mjs`
-   - Optional hub loader: `assets/curriculum-api-loader.js` (set `window.CURRICULUM_SYNC.useApiContent = true`)
+   - ~~Optional hub loader: `assets/curriculum-api-loader.js` (set `window.CURRICULUM_SYNC.useApiContent = true`)~~
+     **Removed 2026-07-30.** It shipped permanently disabled (`useApiContent: false`) and could not have
+     worked if enabled — `renderHub()` reads a closure variable, not `hub.unitsData`, so the content swap
+     was a no-op. Deleted along with its hub include and precache entry.
 
 Static HTML curriculum remains the default fallback until API content is seeded and flag enabled.
 
 ## Deploy
 
 ### API (`neft-school-hub-api`)
+
 ```bash
 npm run db:migrate:progress        # remote D1
 npm run db:migrate:content         # remote D1 (Phase C schema)
@@ -44,6 +48,7 @@ npm run deploy
 ```
 
 ### Classroom (`neft-classroom-html-activities`)
+
 ```bash
 npm install
 npm run build
