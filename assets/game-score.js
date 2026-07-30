@@ -35,34 +35,84 @@
   "use strict";
 
   var BRIDGE_SRC = "/assets/edupulse-bridge.js";
+  var SCORES_URL = "/api/scores";
+  // If the bridge has not loaded by now it is not going to in time to matter.
+  var BRIDGE_TIMEOUT_MS = 3000;
   var state = null;
   var reported = false;
 
   function ensureBridge() {
     if (global.EduPulse) return Promise.resolve(global.EduPulse);
     return new Promise(function (resolve) {
+      var settled = false;
+      function settle(value) {
+        if (settled) return;
+        settled = true;
+        resolve(value);
+      }
+
       var s = document.querySelector('script[src="' + BRIDGE_SRC + '"]');
       if (!s) {
         s = document.createElement("script");
         s.src = BRIDGE_SRC;
         document.body.appendChild(s);
       }
-      s.addEventListener(
-        "load",
-        function () {
-          resolve(global.EduPulse || null);
-        },
-        { once: true },
-      );
-      s.addEventListener(
-        "error",
-        function () {
-          resolve(null);
-        },
-        { once: true },
-      );
-      if (global.EduPulse) resolve(global.EduPulse);
+      s.addEventListener("load", function () {
+        settle(global.EduPulse || null);
+      });
+      s.addEventListener("error", function () {
+        settle(null);
+      });
+      // The tag may already have been in the document and already finished
+      // loading, in which case its `load` event fired before we subscribed and
+      // will never fire again — this promise would hang forever and report()
+      // would silently do nothing. If the script ran, EduPulse is defined and
+      // the check below settles at once; if it ran and did NOT define EduPulse
+      // (404 served as HTML, ORB block, truncated file), only the timeout can
+      // tell us, so always arm one.
+      setTimeout(function () {
+        settle(global.EduPulse || null);
+      }, BRIDGE_TIMEOUT_MS);
+      if (global.EduPulse) settle(global.EduPulse);
     });
+  }
+
+  /**
+   * The unload path cannot await anything. ensureBridge() may inject a <script>
+   * and wait on its load event, and a document being torn down will never get
+   * there — which is why pagehide reporting produced nothing. sendBeacon hands
+   * the row to the browser, which delivers it after the page is gone.
+   *
+   * This posts the same row shape toGameScore() builds in edupulse-bridge.js:
+   * the endpoint is the contract, and `total` is ATTEMPTS, never maxScore.
+   * saveCode is null on both paths (identify() never sets one) and game_scores
+   * carries no name column by design, so the beacon loses no identity data.
+   */
+  function beaconReport(payload) {
+    try {
+      if (!global.navigator || typeof global.navigator.sendBeacon !== "function") return false;
+      var row = JSON.stringify({
+        gameId: String(payload.activityId || "").slice(0, 120),
+        standard: String(payload.standard || "").slice(0, 120),
+        level: payload.level || 1,
+        points: payload.score || 0,
+        correct: payload.problemsCorrect,
+        total: payload.problemsAttempted,
+        steps: payload.durationSec || 0,
+        misconceptionTag: null,
+        saveCode: null,
+        ts: new Date().toISOString(),
+      });
+      // Blob carries the JSON content type; the string fallback still parses,
+      // since the Worker calls request.json() without inspecting the header.
+      var body =
+        typeof global.Blob === "function"
+          ? new global.Blob([row], { type: "application/json" })
+          : row;
+      return global.navigator.sendBeacon(SCORES_URL, body) === true;
+    } catch (_e) {
+      return false;
+    }
   }
 
   /** Fall back to the folder name, which is what the audit joins on. */
@@ -89,7 +139,7 @@
     state.correct = c;
   }
 
-  function report() {
+  function report(unloading) {
     // Nothing judged means nothing to say. A row here would assert the student
     // scored 0%, when in fact they never answered anything.
     if (reported || !state || state.attempts === 0) return;
@@ -104,6 +154,9 @@
       problemsCorrect: state.correct,
       durationSec: Math.round((Date.now() - state.startedAt) / 1000),
     };
+    // Leaving the page: beacon it. Only fall through to the bridge if the
+    // browser has no sendBeacon or refused the payload.
+    if (unloading && beaconReport(payload)) return;
     ensureBridge().then(function (ep) {
       // Reporting must never break a game: if the bridge cannot load, the
       // student keeps playing and we simply have no row.
@@ -171,9 +224,14 @@
   };
 
   // A closed tab is still data: report whatever was attempted. Idempotent with
-  // finish(), so a game that ends properly does not report twice.
-  global.addEventListener("pagehide", report);
+  // finish(), so a game that ends properly does not report twice. Both of these
+  // fire while the document is going away, so they take the beacon path --
+  // note the explicit wrappers: passing `report` directly would hand it the
+  // Event object as `unloading`.
+  global.addEventListener("pagehide", function () {
+    report(true);
+  });
   document.addEventListener("visibilitychange", function () {
-    if (document.visibilityState === "hidden") report();
+    if (document.visibilityState === "hidden") report(true);
   });
 })(window);

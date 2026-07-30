@@ -17,24 +17,46 @@ import { resolve } from "node:path";
 
 const SRC = readFileSync(resolve(import.meta.dirname, "game-score.js"), "utf8");
 
-/** Fresh sandbox per case, so state never leaks between assertions. */
-function load() {
+/**
+ * Fresh sandbox per case, so state never leaks between assertions.
+ *
+ * opts.beacon      — give the window a navigator.sendBeacon (a real browser has
+ *                    one; omitting it exercises the fallback to the bridge).
+ * opts.beaconOk    — what sendBeacon returns; false means the browser refused
+ *                    the payload and we must fall through to the bridge.
+ * opts.silentLoad  — the bridge <script> never fires `load`. This is the real
+ *                    browser case where the tag was already in the document and
+ *                    had already finished loading, so the event fired before we
+ *                    subscribed and will never fire again.
+ * opts.lateBridge  — EduPulse appears without any `load` event, so only the
+ *                    ensureBridge timeout can discover it.
+ */
+function load(opts = {}) {
   const recorded = [];
+  const beacons = [];
   const listeners = {};
   const scriptEl = {
     addEventListener(evt, fn) {
       // Resolve the bridge load immediately so report() completes in-band.
-      if (evt === "load") setTimeout(fn, 0);
+      if (evt === "load" && !opts.silentLoad) setTimeout(fn, 0);
     },
   };
   const win = {
     location: { pathname: "/math/unit-4/unit-rate-duel/index.html" },
-    EduPulse: { record: (p) => recorded.push(p) },
     addEventListener(evt, fn) {
       listeners[evt] = listeners[evt] || [];
       listeners[evt].push(fn);
     },
   };
+  if (!opts.lateBridge) win.EduPulse = { record: (p) => recorded.push(p) };
+  if (opts.beacon) {
+    win.navigator = {
+      sendBeacon(url, body) {
+        beacons.push({ url, body: JSON.parse(body) });
+        return opts.beaconOk !== false;
+      },
+    };
+  }
   const doc = {
     visibilityState: "visible",
     querySelector: () => scriptEl,
@@ -45,10 +67,13 @@ function load() {
       listeners[evt].push(fn);
     },
   };
+  // Collapse the module's 3s bridge timeout so the timeout path is testable
+  // without a 3s wait. Short delays keep their real ordering.
+  const fastTimeout = (fn, ms) => setTimeout(fn, ms > 100 ? 1 : ms);
   const fn = new Function("window", "document", "setTimeout", "Promise", "Date", `${SRC}\nreturn window.NeftScore;`);
-  const NeftScore = fn(win, doc, setTimeout, Promise, Date);
+  const NeftScore = fn(win, doc, fastTimeout, Promise, Date);
   const fire = (evt) => (listeners[evt] || []).forEach((f) => f());
-  return { NeftScore, recorded, fire };
+  return { NeftScore, recorded, beacons, fire, win };
 }
 
 const flush = () => new Promise((r) => setTimeout(r, 5));
@@ -143,6 +168,7 @@ console.log("game-score: 6 cases passed");
   assert.equal(recorded[0].problemsCorrect, 5, "latest state of that exercise wins");
 }
 
+
 /* --- batches and per-answer grading coexist without clobbering ----------- */
 {
   const { NeftScore, recorded } = load();
@@ -158,3 +184,88 @@ console.log("game-score: 6 cases passed");
 }
 
 console.log("game-score: batch cases passed");
+
+/* =============================================================================
+ * The unload path. These guard the defect that made pagehide reporting a no-op:
+ * report() awaited ensureBridge(), which injects a <script> and waits on its
+ * load event, and a document being torn down never gets there.
+ * ========================================================================== */
+
+/* --- leaving the page beacons the row instead of awaiting a script load --- */
+{
+  const { NeftScore, recorded, beacons, fire } = load({ beacon: true });
+  NeftScore.init({ gameId: "unit-rate-duel", standard: "6.RP.A.2" });
+  NeftScore.attempt(true);
+  NeftScore.attempt(false);
+  NeftScore.attempt(false);
+  fire("pagehide");
+  await flush();
+  assert.equal(beacons.length, 1, "pagehide reports via sendBeacon");
+  assert.equal(beacons[0].url, "/api/scores", "beacon posts to the scores endpoint");
+  assert.equal(recorded.length, 0, "the unload path does not wait on the bridge");
+  const row = beacons[0].body;
+  assert.equal(row.total, 3, "total is ATTEMPTS — never maxScore");
+  assert.equal(row.correct, 1);
+  assert.equal(row.points, 1, "points is the correct count");
+  assert.equal(row.gameId, "unit-rate-duel");
+  assert.equal(row.standard, "6.RP.A.2");
+}
+
+/* --- an explicit finish() still goes through the bridge ------------------- */
+{
+  const { NeftScore, recorded, beacons } = load({ beacon: true });
+  NeftScore.init({ gameId: "unit-rate-duel" });
+  NeftScore.attempt(true);
+  NeftScore.finish();
+  await flush();
+  assert.equal(recorded.length, 1, "finish() keeps using EduPulse.record");
+  assert.equal(beacons.length, 0, "no beacon when the page is not going away");
+}
+
+/* --- a refused beacon must fall back, not silently drop the row ----------- */
+{
+  const { NeftScore, recorded, beacons, fire } = load({ beacon: true, beaconOk: false });
+  NeftScore.init({ gameId: "unit-rate-duel" });
+  NeftScore.attempt(true);
+  fire("pagehide");
+  await flush();
+  assert.equal(beacons.length, 1, "the beacon was attempted");
+  assert.equal(recorded.length, 1, "and the bridge still got the row");
+}
+
+/* --- beacon and finish() cannot both write ------------------------------- */
+{
+  const { NeftScore, recorded, beacons, fire } = load({ beacon: true });
+  NeftScore.init({ gameId: "unit-rate-duel" });
+  NeftScore.attempt(true);
+  NeftScore.finish();
+  fire("pagehide");
+  await flush();
+  assert.equal(recorded.length + beacons.length, 1, "still exactly one row across paths");
+}
+
+/* --- nothing attempted writes nothing, on the unload path too ------------- */
+{
+  const { NeftScore, beacons, fire } = load({ beacon: true });
+  NeftScore.init({ gameId: "unit-rate-duel" });
+  fire("pagehide");
+  await flush();
+  assert.equal(beacons.length, 0, "an abandoned game beacons no 0% row");
+}
+
+/* --- a bridge tag that already finished loading must not hang report() ---- */
+{
+  // silentLoad: the `load` event fired before ensureBridge subscribed, so it
+  // will never fire again. lateBridge: EduPulse exists but only the timeout can
+  // discover it. Without the timeout this promise never settles and the row is
+  // lost in silence.
+  const { NeftScore, recorded, win } = load({ silentLoad: true, lateBridge: true });
+  NeftScore.init({ gameId: "unit-rate-duel" });
+  NeftScore.attempt(true);
+  win.EduPulse = { record: (p) => recorded.push(p) };
+  NeftScore.finish();
+  await flush();
+  assert.equal(recorded.length, 1, "the ensureBridge timeout recovers the report");
+}
+
+console.log("game-score: unload + bridge-timeout cases passed");
