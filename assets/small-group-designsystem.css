@@ -59,14 +59,14 @@ body,
   --sg-rule:   #12355b !important;
 
   /* Surfaces: cold blue-grey -> warm cream + white cards */
-  --sg-soft:   #f7f4ec !important;  /* was #eef2fa — brand cream */
+  --sg-soft:   #fbf9f4 !important;  /* was #eef2fa — pale brand cream */
   --sg-card:   #ffffff !important;
   --sg-paper:  #ffffff !important;
   --sg-figure: #ffffff !important;
-  --sg-fill:   #e8eef4 !important;
+  --sg-fill:   #f2f6fa !important;
 
-  /* Lines + text: match --line / --muted / --ink */
-  --sg-line:   #d7e2ed !important;
+  /* Lines + text: match --line / --muted / --ink, lightened one step (see §3a) */
+  --sg-line:   #e4ecf3 !important;
   --sg-muted:  #45535f !important;
   --sg-text:   #19262f !important;
 
@@ -146,26 +146,54 @@ html[style*="5a9e52"]   { --sg-pop: #d9795d !important; }  /* Catch-Up    -> cor
    3. HERO — flatten to the interactive lesson hero
    --------------------------------------------------------------------------- */
 
+/* Light hero (chosen 2026-07-29): a pale tinted band with navy text instead of
+   white-on-deep-navy. This is a deliberate departure from mirroring the
+   interactive lesson hero — small-group pathways read softer on purpose.
+
+   EVERY white-on-navy rule below has to be recoloured together. The base sheet
+   and publisher-polish set `color:#fff` (or translucent white borders and
+   backgrounds) on .sg-hero, h1, .sg-obj, .sg-tagline, .sg-kicker,
+   .sg-obj-more>summary, .sg-chip, .sg-hero-scene-chip and .sg-hero-mark. Miss one
+   and it turns white-on-cream — invisible. The per-pathway --sg-pop accent bar
+   along the bottom edge is what keeps the three pathways distinguishable. */
 .sg-hero {
   padding: 26px 24px 24px;
   border-radius: var(--radius-lg, 22px);
-  background: linear-gradient(135deg, var(--sg-deep) 0%, var(--sg) 72%);
-  box-shadow: var(--shadow-md, 0 8px 24px #12355b1a);
+  background: linear-gradient(135deg, #eef4fa 0%, #fbf9f4 100%);
+  color: var(--sg-ink);
+  box-shadow: 0 2px 10px #12355b10;
 }
+
+.sg-hero h1 {
+  color: var(--navy, #12355b);
+  text-shadow: none;          /* publisher-polish adds one for dark backgrounds */
+}
+
+.sg-obj,
+.sg-langobj { color: var(--sg-ink); }
+
+.sg-tagline { color: var(--sg-muted); }
 
 /* Remove the rotating ring + radial bloom — the interactive hero has neither. */
 .sg-hero::before,
 .sg-hero::after { content: none !important; }
 
-/* Stop the floating animation on the hero mark. */
-.sg-hero-mark { animation: none !important; }
+/* Stop the floating animation on the hero mark, and give it a visible edge now
+   that the translucent-white treatment has nothing dark to sit on. */
+.sg-hero-mark {
+  animation: none !important;
+  border: 1px solid var(--sg-line);
+  background: #ffffff;
+  box-shadow: 0 4px 14px #12355b12;
+}
 
-/* Kicker -> .lesson-hero-badge */
+/* Kicker -> .lesson-hero-badge, on the pathway accent rather than white */
 .sg-kicker {
   padding: 4px 10px;
-  border: 1px solid #ffffff33;
+  border: 1px solid #0c6f6b33;
   border-radius: var(--radius-full, 999px);
-  background: #ffffff24;
+  background: #ffffff;
+  color: var(--teal-ink, #0c6f6b);
   font-size: .72rem;
   font-weight: 800;
   letter-spacing: .04em;
@@ -173,14 +201,22 @@ html[style*="5a9e52"]   { --sg-pop: #d9795d !important; }  /* Catch-Up    -> cor
 }
 
 /* Chips -> pill badges rather than square tags */
-.sg-chip {
+.sg-chip,
+.sg-hero-scene-chip {
   padding: 5px 12px;
-  border: 1px solid #ffffff2e;
+  border: 1px solid var(--sg-line);
   border-radius: var(--radius-full, 999px);
-  background: #ffffff1f;
+  background: #ffffff;
+  color: var(--sg-ink);
   font-size: .78rem;
   font-weight: 800;
   letter-spacing: .04em;
+}
+
+.sg-obj-more > summary {
+  border: 1px solid var(--sg-line);
+  background: #ffffff;
+  color: var(--sg-ink);
 }
 
 /* ---------------------------------------------------------------------------
@@ -271,7 +307,31 @@ html[style*="5a9e52"]   { --sg-pop: #d9795d !important; }  /* Catch-Up    -> cor
 .sg-mode-action { border-radius: var(--radius-sm, 12px); }
 
 /* ---------------------------------------------------------------------------
-   6. QUALITY FLOOR — focus + reduced motion
+   6. FLOATING-CONTROL COLLISION — annotation vs the Learning-Supports dock
+
+   Both want the right edge, vertically centred: .sg-annotation-tools is
+   `right:0; top:50%; translateY(-50%)` at z-index 40, and .ewl-supports-tools-dock
+   lands on the same band at z-index 9998. Once supports were wired into these
+   pathways (tools/inject-supports-pathways.js) the dock covered the "Mark up this
+   page" button outright, silently costing students the highlighter.
+
+   Nudge the annotation rail clear of the dock. Done here rather than in
+   small-group-annotation.css because the dock's height is what sets the offset,
+   and this is the only sheet that loads on exactly the pages that have both.
+   --------------------------------------------------------------------------- */
+
+/* Offsetting from the centre (rather than pinning to a corner) is what keeps this
+   safe on short screens: the rail stays proportionally placed, so it clears the
+   dock above it and the Save/Resume + Math Workbench cluster in the bottom-right.
+   An earlier attempt pinned it to `bottom:8px` under a max-height query and
+   promptly collided with Save/Resume at 1024x540 — verified across 1280x900,
+   1366x768, 1024x540, 1024x420 and 390x844. */
+.sg-annotation-tools {
+  transform: translateY(calc(-50% + 58px));
+}
+
+/* ---------------------------------------------------------------------------
+   7. QUALITY FLOOR — focus + reduced motion
    --------------------------------------------------------------------------- */
 
 .sg-step:focus-visible,

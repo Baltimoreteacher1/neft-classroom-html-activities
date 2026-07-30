@@ -39,15 +39,28 @@ function readTitle(lessonDir) {
   }
 }
 
+// Which lesson's Learning-Supports adaptations this shell should load.
+// Canonical lessons use their own id. Differentiated pathways (1-1-group1,
+// 1-3-catchup) use their BASE lesson id, because learning-supports.js looks the
+// id up in assets/learning-supports/manifest.json — which is keyed by canonical
+// ids only — and silently skips every adaptation on a miss. A pathway teaches the
+// same lesson's objective and vocabulary, so the base entry is the correct one.
+// Pathways used to get no supports at all; see tools/inject-supports-pathways.js.
+function supportsLessonId(lessonId) {
+  if (/^\d+-\d+$/.test(lessonId)) return lessonId;
+  const pathway = /^(\d+-\d+)-(?:group\d+|catchup)$/.exec(lessonId);
+  return pathway ? pathway[1] : null;
+}
+
 function buildShell(lessonId, title) {
-  const isCanonical = /^\d+-\d+$/.test(lessonId);
-  const htmlTag = isCanonical
-    ? `<html lang="en" data-ewl-supports-lesson="${lessonId}">`
+  const supportsId = supportsLessonId(lessonId);
+  const htmlTag = supportsId
+    ? `<html lang="en" data-ewl-supports-lesson="${supportsId}">`
     : `<html lang="en">`;
-  const supportHead = isCanonical
+  const supportHead = supportsId
     ? `\n<!-- ewl-supports-injected:begin -->\n  <link rel="stylesheet" href="/assets/learning-supports/learning-supports.css" />\n<!-- ewl-supports-injected:end -->`
     : "";
-  const supportBody = isCanonical
+  const supportBody = supportsId
     ? `\n<!-- ewl-supports-injected:begin -->\n  <script src="/assets/learning-supports/learning-supports.js" defer></script>\n<!-- ewl-supports-injected:end -->`
     : "";
 
