@@ -302,7 +302,7 @@ function buildSenseMakingLoop(steps, term, siblings) {
   });
 
   const img = document.createElement("img");
-  img.src = resolveVocabImage(term.term);
+  img.src = resolveVocabImage(term.term, term.image);
   img.alt = vocabImageAlt(term.term, term.definition);
   img.loading = "lazy";
 

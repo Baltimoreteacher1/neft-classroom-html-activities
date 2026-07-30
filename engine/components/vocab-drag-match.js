@@ -86,10 +86,13 @@ function injectVocabDragMatchStyles() {
   (document.head || document.documentElement).append(style);
 }
 
-function vocabImageEl(term, definition) {
+// Takes the whole vocab entry so a lesson's `image` override (a term like
+// "base" means something different in 4.4, 5.1, 6.1 and 10.5) is honored here
+// too, not just in the glossary popup.
+function vocabImageEl(entry) {
   const img = document.createElement("img");
-  img.src = resolveVocabImage(term);
-  img.alt = vocabImageAlt(term, definition);
+  img.src = resolveVocabImage(entry.term, entry.image);
+  img.alt = vocabImageAlt(entry.term, entry.definition);
   img.loading = "lazy";
   img.draggable = false;
   img.style.cssText = `
@@ -159,7 +162,7 @@ export function renderVocabDragMatch(container, { terms, onComplete }) {
       cursor:pointer; transition:all var(--duration-fast) ease; width:100%;
       color:var(--ink);
     `;
-    el.append(vocabImageEl(term.term, term.definition));
+    el.append(vocabImageEl(term));
     const termLabel = document.createElement("span");
     if (term.termEs) {
       termLabel.innerHTML = "";

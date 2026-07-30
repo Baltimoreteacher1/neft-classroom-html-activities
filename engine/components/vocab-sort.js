@@ -85,10 +85,12 @@ function injectVocabSortStyles() {
   (document.head || document.documentElement).append(style);
 }
 
-function vocabImageEl(term, definition, max = 96) {
+// Takes the whole vocab entry so a lesson's `image` override is honored here
+// too, not just in the glossary popup.
+function vocabImageEl(entry, max = 96) {
   const img = document.createElement("img");
-  img.src = resolveVocabImage(term);
-  img.alt = vocabImageAlt(term, definition);
+  img.src = resolveVocabImage(entry.term, entry.image);
+  img.alt = vocabImageAlt(entry.term, entry.definition);
   img.loading = "lazy";
   img.style.cssText = `
     display:block; width:${max}px; aspect-ratio:4 / 3; flex:0 0 auto;
@@ -192,7 +194,7 @@ export function renderVocabSort(container, { terms, onComplete }) {
       display:flex; align-items:center; gap:var(--sp-2); margin-bottom:var(--sp-2);
       padding-bottom:var(--sp-2); border-bottom:2px solid var(--line);
     `;
-    labelRow.append(vocabImageEl(t.term, t.definition));
+    labelRow.append(vocabImageEl(t));
 
     const bucketLabel = document.createElement("div");
     bucketLabel.style.cssText = "font-weight:800; font-size:0.95rem; color:var(--navy);";

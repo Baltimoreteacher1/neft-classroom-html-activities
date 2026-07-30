@@ -93,9 +93,11 @@ function spawnBurst(anchor) {
   setTimeout(() => layer.remove(), 800);
 }
 
-function vocabImageEl(term, definition) {
+// Takes the whole vocab entry so a lesson's `image` override is honored here
+// too, not just in the glossary popup.
+function vocabImageEl(entry) {
   const img = document.createElement("img");
-  img.alt = vocabImageAlt(term, definition);
+  img.alt = vocabImageAlt(entry.term, entry.definition);
   img.loading = "lazy";
   img.className = "vb-img-skeleton";
   img.style.cssText = `
@@ -109,7 +111,7 @@ function vocabImageEl(term, definition) {
   };
   img.addEventListener("load", clearSkeleton);
   img.addEventListener("error", clearSkeleton);
-  img.src = resolveVocabImage(term);
+  img.src = resolveVocabImage(entry.term, entry.image);
   if (img.complete) clearSkeleton();
   return img;
 }
@@ -170,7 +172,7 @@ export function renderVocabBuilder(container, { terms, onComplete }) {
     const card = document.createElement("div");
     card.className = "card vb-card-in";
 
-    card.append(vocabImageEl(term.term, term.definition));
+    card.append(vocabImageEl(term));
 
     const termDisplay = document.createElement("div");
     termDisplay.style.cssText = `
