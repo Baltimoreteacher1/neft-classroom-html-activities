@@ -29,10 +29,18 @@ Directive honored: **no notice/wonder anywhere in small-group lessons** (Joel,
    completion telemetry enriched (attempts/hints/band/…), mid-rotation
    checkpoint ping, live this-device console strip, and an aggregate name-free
    class view via `/api/progress/small-group-summary`.
-2. **Adaptive practice ladder** — use `chooseAdaptivePath` output to reorder
-   or swap `practice.extending` items in when a Group 2 session is clean, and
-   auto-scaffold (`scaffold=true`) every item after repeated misses.
-   (Partial: stretch eligibility is now variant-agnostic.)
+2. ~~**Adaptive practice ladder**~~ — SHIPPED 2026-07-30. Reordering and
+   swapping in `practice.extending` on a clean session was already live
+   (`orderItemsForAdaptivePath`, `bringInExtendingItems`); what was missing was
+   the automatic half. Set-wide scaffolding could only be reached by tapping
+   "Find our next move" in the coach, so students who never opened it worked an
+   unscaffolded set no matter how it went. `createAutoSupportTracker`
+   (`small-group-innovation.js`) now counts distinct problems missed and opens
+   every unsolved card's supports at two, via its own `sg:auto-support` event.
+   Deliberately narrower than the coach's `sg:adaptive-path`: it adds support
+   without reordering the set or resetting pagination, since it fires
+   underneath a student who is mid-problem. Escalation is support-only and
+   never auto-stretches.
 3. **Voice recording for Talk** — MediaRecorder "record our best explanation"
    (device-local playback only) in the Talk + Model sections; ties to the
    reciprocal-questioning work in the discussion pop-ups layer.
@@ -43,9 +51,13 @@ Directive honored: **no notice/wonder anywhere in small-group lessons** (Joel,
    with graceful fallback (many devices lack vi-VN/ar-SA voices).
 6. **Printable studio packet** — one-click print bundling the evidence card,
    solved practice, and apply-lab work using the existing `printOnly()` lanes.
-7. **Catch-up Apply Lab content** — catch-up configs lack `revealWordProblem`;
-   regenerate via `generate-catchup-lessons.mjs` to add one so catch-ups get
-   the Polya workbench too (regen order in project memory).
+7. ~~**Catch-up Apply Lab content**~~ — ALREADY DONE; this entry was stale.
+   Verified 2026-07-30: all 20 catch-up configs carry a `revealWordProblem`
+   with distinct authored content (20 distinct titles, 154–611 characters of
+   text), `createApplyLab` has no variant gate, and a browser pass over every
+   catch-up found all 20 rendering the full four-step Polya workbench
+   (Understand / Plan / Solve / Check). No regeneration needed — do not re-run
+   `generate-catchup-lessons.mjs` for this.
 8. **Group composer hook** — deep-link `?group=1|2` from The Class Board's
    Group Builder so a tap on a student group opens the right variant.
 
