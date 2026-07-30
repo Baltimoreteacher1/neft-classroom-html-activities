@@ -119,7 +119,59 @@ for (const [id, config] of configs) {
 }
 assert.ok(equations >= 19, `expected the equation lessons to be wired, found ${equations}`);
 
-// ── 4. The generated cards match their generator. ─────────────────────────
+// ── 4. No vocab word may show a generic category placeholder. ─────────────
+// cat-number.svg is a literal "#" tile. 203 entries used to land on one — the
+// lesson-title term that opens nearly every word wall ("Divide Decimals",
+// "Write Inequalities") has no slug of its own, so it fell through the
+// category fallback and the first picture in the lesson meant nothing.
+// A new lesson gets the same treatment unless it wires a concept card.
+const placeholders = [];
+for (const [id, config] of configs) {
+  for (const entry of config.vocabulary ?? []) {
+    if (!entry?.term) continue;
+    const src = resolveVocabImage(entry.term, entry.image);
+    if (/\/cat-[a-z]+\.svg$/.test(src)) placeholders.push(`${id}: ${entry.term} → ${src}`);
+  }
+}
+assert.deepEqual(
+  placeholders,
+  [],
+  `${placeholders.length} vocab word(s) show a generic "#" tile. Give the term a\n` +
+    "`visual` and run scripts/generate-vocab-context-images.mjs to mint its concept card.\n  " +
+    `${placeholders.slice(0, 10).join("\n  ")}`,
+);
+
+// ── 5. Concept cards draw their own lesson's example, verbatim. ───────────
+let conceptCards = 0;
+for (const [id, config] of configs) {
+  for (const entry of config.vocabulary ?? []) {
+    if (typeof entry.image !== "string" || !entry.image.includes("/concept-")) continue;
+    conceptCards += 1;
+    const svg = readFileSync(new URL(`..${entry.image}`, import.meta.url), "utf8");
+    // Group the runs by baseline: tokens on one line abut, but a wrapped line
+    // break stands for the space the wrapper consumed.
+    const lines = new Map();
+    for (const m of svg.matchAll(/<text[^>]*\by="([\d.]+)"[^>]*class="row"[^>]*>([^<]*)</g)) {
+      lines.set(m[1], (lines.get(m[1]) ?? "") + m[2]);
+    }
+    const drawn = [...lines.values()]
+      .join(" ")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&quot;/g, '"')
+      .replace(/&amp;/g, "&")
+      .replace(/\s+/g, " ")
+      .trim();
+    assert.equal(
+      drawn,
+      (entry.visual ?? "").replace(/\s+/g, " ").trim(),
+      `${id}: the concept card for "${entry.term}" no longer draws its own example`,
+    );
+  }
+}
+assert.ok(conceptCards >= 200, `expected the concept cards to be wired, found ${conceptCards}`);
+
+// ── 6. The generated cards match their generator. ─────────────────────────
 execFileSync(
   process.execPath,
   [
@@ -129,4 +181,7 @@ execFileSync(
   { stdio: "pipe" },
 );
 
-console.log(`Vocab context images passed: ${overrides} overrides, ${equations} equation lessons.`);
+console.log(
+  `Vocab context images passed: ${overrides} overrides, ${equations} equation lessons, ` +
+    `${conceptCards} concept cards, 0 placeholders.`,
+);

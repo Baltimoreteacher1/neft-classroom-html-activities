@@ -21,9 +21,10 @@
 // Adding a card: append to CARDS, run the script, commit the SVG, and point the
 // lesson's vocab entry at it with `"image": "/assets/vocab-images/<slug>.svg"`.
 
-import { readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { hasRealVocabImage, slugify } from "../engine/core/vocab-images.js";
 
 const OUT_DIR = join(dirname(fileURLToPath(import.meta.url)), "..", "assets", "vocab-images");
 
@@ -127,7 +128,54 @@ function round(n) {
   return Math.round(n * 10) / 10;
 }
 
+// Greedy word wrap at a given size. Returns null when the text needs more than
+// `maxLines`, which is how fitParagraph() searches for a size that fits.
+function wrapToLines(text, fontSize, maxLines) {
+  const words = String(text).split(/\s+/).filter(Boolean);
+  const lines = [];
+  let cur = "";
+  for (const word of words) {
+    const next = cur ? `${cur} ${word}` : word;
+    if (cur && textWidth(next, fontSize) > MAX_ROW_W) {
+      lines.push(cur);
+      if (lines.length >= maxLines) return null;
+      cur = word;
+    } else {
+      cur = next;
+    }
+  }
+  if (cur) lines.push(cur);
+  return lines.length <= maxLines ? lines : null;
+}
+
+// Biggest type that still fits the whole example in `maxLines`.
+function fitParagraph(text, maxLines = 3) {
+  for (let size = 15; size >= 8.5; size -= 0.5) {
+    const lines = wrapToLines(text, size, maxLines);
+    if (lines) return { size, lines };
+  }
+  return { size: 8.5, lines: wrapToLines(text, 8.5, 99) ?? [String(text)] };
+}
+
+// Split a line so a lone "=" renders coral, matching the equation cards.
+function tintEquals(line) {
+  return line
+    .split(/(=)/)
+    .filter((piece) => piece !== "")
+    .map((piece) => (piece === "=" ? { t: piece, accent: true } : { t: piece }));
+}
+
 function renderCard(card) {
+  if (card.paragraph) {
+    const { size, lines } = fitParagraph(card.paragraph);
+    const lineHeight = size * 1.45;
+    const top = 62 - ((lines.length - 1) * lineHeight) / 2;
+    const body = lines.flatMap((line, i) =>
+      renderRow(tintEquals(line), top + i * lineHeight, size),
+    );
+    return wrapSvg(card, body);
+  }
+
   const rows = card.rows;
   const size = card.size || (rows.length > 1 ? 14 : 16);
   // Two rows sit above the caption; one row centers in the same space.
@@ -148,6 +196,10 @@ function renderCard(card) {
     );
   }
 
+  return wrapSvg(card, body, caption);
+}
+
+function wrapSvg(card, body, caption = "") {
   return [
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${VIEW_W} ${VIEW_H}" role="img" aria-labelledby="t">`,
     `<title id="t">${esc(card.title)}</title>`,
@@ -248,10 +300,64 @@ export const CARDS = [
   },
 ];
 
+// ─────────────────────────────────────────────────────────────────────────
+// Concept cards, derived from the lessons themselves.
+//
+// Nearly every lesson opens its word wall with a term named after the lesson —
+// "Divide Decimals", "Write Inequalities", "Ratio Tables". None of those have a
+// slug in DEDICATED, so all 203 of them resolved to a cat-*.svg category
+// placeholder; cat-number.svg is a literal "#" tile. The first picture a
+// student sees in a lesson meant nothing.
+//
+// Each of those terms already carries a worked example in its `visual`, so the
+// card is that example, typeset. Reading it from the config (rather than
+// copying it here) means --check fails the moment a lesson rewrites its example
+// and the picture stops matching.
+// ─────────────────────────────────────────────────────────────────────────
+const LESSONS_DIR = join(dirname(fileURLToPath(import.meta.url)), "..", "lessons");
+
+// Terms deliberately handled by a hand-authored card above, which can highlight
+// the specific number the definition is about.
+const BESPOKE_TERMS = new Set(["percent of a number"]);
+
+export function conceptCards() {
+  const byTerm = new Map();
+  for (const id of readdirSync(LESSONS_DIR, { withFileTypes: true })
+    .filter((d) => d.isDirectory())
+    .map((d) => d.name)
+    .sort()) {
+    const file = join(LESSONS_DIR, id, "config.json");
+    if (!existsSync(file)) continue;
+    for (const entry of JSON.parse(readFileSync(file, "utf8")).vocabulary ?? []) {
+      const term = (entry?.term ?? "").trim();
+      if (!term || !entry.visual) continue;
+      if (BESPOKE_TERMS.has(term.toLowerCase())) continue;
+      // Resolve WITHOUT the override: the question is whether this term has art
+      // of its own, which must not change once we write the override back.
+      if (hasRealVocabImage(term)) continue;
+      const slug = `concept-${slugify(term)}`;
+      if (!byTerm.has(slug)) {
+        byTerm.set(slug, {
+          slug,
+          term,
+          title: `${term}: ${entry.visual}`,
+          paragraph: entry.visual,
+        });
+      } else if (byTerm.get(slug).paragraph !== entry.visual) {
+        throw new Error(
+          `${id}: "${term}" has a different example than another lesson using the same term:\n` +
+            `  ${byTerm.get(slug).paragraph}\n  ${entry.visual}`,
+        );
+      }
+    }
+  }
+  return [...byTerm.values()];
+}
+
 const check = process.argv.includes("--check");
 let stale = 0;
 
-for (const card of CARDS) {
+for (const card of [...CARDS, ...conceptCards()]) {
   const file = join(OUT_DIR, `${card.slug}.svg`);
   const svg = renderCard(card);
   let current = null;
