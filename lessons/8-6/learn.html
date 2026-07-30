@@ -108,9 +108,11 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .li-keyidea p{margin:0;font-size:21px;line-height:1.6;color:var(--navy);font-weight:600;}
 /* The formula, pulled out of the Key Idea and printed big — the one thing a
    student should be able to find on this page in under a second. */
-.li-formula{margin:14px 0 0;padding:14px 18px;background:#fff;border:2.5px dashed var(--teal);
+/* Specificity note: a bare .li-formula loses to .li-keyidea p and gets shrunk
+   back to body size — the formula is the one line that must be unmissable. */
+.li-keyidea .li-formula,.li-formula{margin:16px 0 0;padding:16px 20px;background:#fff;border:2.5px dashed var(--teal);
   border-radius:12px;text-align:center;font-family:Outfit,system-ui,sans-serif;
-  font-size:clamp(24px,3vw,34px);line-height:1.25;font-weight:800;color:var(--navy);
+  font-size:clamp(25px,2.6vw,34px);line-height:1.3;font-weight:800;color:var(--navy);
   font-variant-numeric:tabular-nums;letter-spacing:.01em;}
 .li-seeit{background:#fbfdfc;border:1px solid var(--line);border-radius:14px;padding:18px 20px;}
 .li-figure{margin:0 0 18px;padding:16px 18px;border:1px solid var(--line);border-radius:12px;background:#fff;}
@@ -122,11 +124,18 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .li-photo-label{display:block;font-size:12.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
   color:var(--teal-ink);margin-bottom:5px;}
 .li-graphics{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:18px;}
-.li-graphic{margin:0;text-align:center;border:1px solid var(--line);border-radius:14px;background:#fff;padding:14px;}
+.li-graphic{margin:0;display:flex;flex-direction:column;text-align:center;border:1px solid var(--line);
+  border-radius:14px;background:#fff;padding:14px;}
 .li-graphic img{display:block;width:100%;max-height:190px;object-fit:contain;}
-.li-graphic figcaption{margin-top:10px;}
+.li-graphic figcaption{margin-top:10px;display:flex;flex-direction:column;gap:5px;}
 .li-graphic-term{display:block;font-weight:800;color:var(--navy);font-size:18px;}
 .li-graphic-def{display:block;margin-top:5px;font-size:15.5px;line-height:1.5;color:var(--ink);}
+.li-wordrows{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:10px;}
+.li-wordrows>li{display:grid;grid-template-columns:minmax(120px,auto) 1fr;gap:6px 16px;align-items:baseline;
+  padding:12px 16px;background:#fff;border:1px solid var(--line);border-radius:12px;}
+.li-wordrow-term{font-weight:800;color:var(--navy);font-size:18px;}
+.li-wordrow-def{font-size:16.5px;line-height:1.55;color:var(--ink);}
+@media (max-width:560px){.li-wordrows>li{grid-template-columns:1fr;}}
 .li-visual-title{font-weight:700;color:var(--navy);margin:0 0 10px;font-size:16px;}
 .li-chips{display:flex;flex-wrap:wrap;gap:10px;}
 .li-chip{display:inline-flex;align-items:center;justify-content:center;min-width:48px;padding:10px 16px;
@@ -158,8 +167,9 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
   padding:11px 20px;font-weight:800;font-size:16px;cursor:pointer;}
 .li-pace-all:hover{background:var(--teal-light);}
 /* Per-section read-aloud — big ESOL support, one section at a time. */
-.li-say{margin-left:auto;background:#fff;border:2px solid var(--teal);color:var(--teal-ink);
-  border-radius:999px;width:38px;height:38px;font-size:17px;line-height:1;cursor:pointer;flex:0 0 auto;}
+.li-say{position:absolute;top:18px;right:18px;margin:0;background:#fff;border:2px solid var(--teal);
+  color:var(--teal-ink);border-radius:999px;width:40px;height:40px;font-size:18px;line-height:1;
+  cursor:pointer;flex:0 0 auto;z-index:1;}
 .li-say:hover{background:var(--teal-light);}
 .li-say[data-speaking="1"]{background:var(--teal-ink);color:#fff;border-color:var(--teal-ink);}
 .li-block-practice{background:#fbfdfc;border:1px solid var(--line);border-radius:14px;padding:22px 24px;}
@@ -209,9 +219,14 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .li-stepcheck-body{margin-top:10px;padding:12px 16px;background:var(--teal-light);border:1px solid var(--teal);
   border-radius:10px;font-size:19px;line-height:1.65;color:var(--navy);}
 .li-stepcheck-body .li-math{margin-top:10px;background:#fff;}
-.li-work{margin:8px 0 18px;min-height:120px;border:1.5px dashed var(--line);border-radius:10px;
-  position:relative;background:#fff;}
-.li-work-label{position:absolute;top:9px;left:14px;font-size:13.5px;font-weight:700;color:var(--muted);}
+.li-work{margin:10px 0 18px;border:1.5px dashed var(--line);border-radius:12px;background:#fff;padding:12px 14px;}
+.li-work-label{display:block;margin:0 0 8px;font-size:14px;font-weight:800;color:var(--teal-ink);
+  letter-spacing:.03em;text-transform:uppercase;}
+.li-work-area{display:block;width:100%;min-height:104px;resize:vertical;border:0;background:transparent;
+  font:inherit;font-size:19px;line-height:1.6;color:var(--navy);padding:0;}
+.li-work-area:focus{outline:none;}
+.li-work:focus-within{border-color:var(--teal);border-style:solid;background:#fbfdfc;}
+.li-work-area::placeholder{color:#8aa2b2;font-style:italic;font-size:17px;}
 .li-answer{display:flex;align-items:center;gap:12px;margin:4px 0 0;flex-wrap:wrap;}
 .li-answer-label{flex:0 0 auto;font-size:15px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--teal-ink);}
 .li-input-answer{flex:1;min-width:180px;margin-top:0;}
@@ -258,7 +273,9 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
   .li-mistakes-head,.li-hints-label{color:#000;}
   .li-stepcheck-body{background:#fff;border-color:#000;}
   .li-input{border-bottom-color:#000;}
-  .li-work{min-height:120px;border-color:#000;}
+  .li-work{min-height:130px;border-color:#000;background:#fff;}
+  .li-work-label{color:#000;}
+  .li-work-area{min-height:110px;color:#000;}
   .li-chip{border-color:#000;}
 }
 /* Vocab Explorer — interactive vocab home (Word Wall, Match, Fill-in, Use it) */
@@ -923,9 +940,12 @@ html.nt-embed .li-stage{padding:clamp(16px,1.8vw,24px)!important;}
   .li-hook-label{margin:0 0 6px;font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--amber);}
   .li-hook-text{margin:0;font-size:18.5px;line-height:1.6;}
   /* Learning-journey map — a "you are here" roadmap of the gradual release. */
-  .li-journey{display:flex;flex-wrap:wrap;align-items:stretch;gap:6px;margin:0 0 22px;}
+  /* The path is a grid, not a wrapped flex row: at every container width the
+     pills stay the same size and the rows stay balanced, instead of
+     stranding one lonely pill on a second line. */
+  .li-journey{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:8px;margin:0 0 26px;}
   .li-jstep{display:flex;align-items:center;gap:8px;text-decoration:none;background:#fff;border:1.5px solid var(--line);
-    border-radius:999px;padding:9px 16px 9px 9px;color:var(--navy);font-weight:700;font-size:15.5px;transition:transform .12s,border-color .12s,box-shadow .12s;}
+    border-radius:999px;padding:7px 12px 7px 7px;color:var(--navy);font-weight:700;font-size:14.5px;transition:transform .12s,border-color .12s,box-shadow .12s;}
   .li-jstep:hover{transform:translateY(-1px);border-color:var(--teal);box-shadow:0 4px 12px rgba(18,53,91,.10);}
   .li-jnum{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;
     background:var(--navy);color:#fff;font-size:15px;font-weight:800;flex:0 0 auto;}
@@ -934,8 +954,13 @@ html.nt-embed .li-stage{padding:clamp(16px,1.8vw,24px)!important;}
   .li-jstep-together .li-jnum{background:#c98a10;}
   .li-jstep-own .li-jnum{background:var(--navy);}
   .li-jico{font-size:17px;}
-  .li-jarrow{align-self:center;color:var(--muted);font-weight:800;font-size:15px;}
-  @media (max-width:560px){.li-jlabel{display:none;}.li-jarrow{display:none;}.li-jstep{padding:7px;}}
+  .li-jarrow{display:none;}
+  /* Between tablet and desktop the six pills wrap 5 + 1, which reads as a
+     mistake. Below the width where the path fits on one line, lay it out as a
+     deliberate three-across grid instead and drop the arrows. */
+
+  .li-jlabel{line-height:1.25;}
+  @media (max-width:560px){.li-journey{grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;}.li-jlabel{display:none;}.li-jstep{padding:8px;justify-content:center;}}
   /* Numbered gradual-release stage cards — each rung gets a colored left rail,
      an auto-numbered badge, an icon and a plain-language subtitle. */
   .li{counter-reset:li-stage;}
@@ -1006,7 +1031,15 @@ html.nt-embed .li-stage{padding:clamp(16px,1.8vw,24px)!important;}
       for (var j = 0; j < boxes.length; j++) list.push(boxes[j]);
       return list;
     }
-    function fieldKey(el, i) { return (el.type === 'checkbox' ? 'c' : 'f') + i; }
+    // Positional keys scramble the moment a field is added or removed, so a
+    // field may name itself with data-nt-key. Restore still falls back to the
+    // old positional key, so work typed before a layout change survives.
+    function fieldKey(el, i) {
+      var k = el.getAttribute && el.getAttribute('data-nt-key');
+      if (k) return (el.type === 'checkbox' ? 'c:' : 'f:') + k;
+      return legacyKey(el, i);
+    }
+    function legacyKey(el, i) { return (el.type === 'checkbox' ? 'c' : 'f') + i; }
     function setStatus(text) { if (statusEl) statusEl.textContent = text; }
     function readStore() {
       try { return JSON.parse(localStorage.getItem(KEY) || '{}') || {}; }
@@ -1031,6 +1064,7 @@ html.nt-embed .li-stage{padding:clamp(16px,1.8vw,24px)!important;}
       var data = readStore();
       for (var i = 0; i < fields.length; i++) {
         var el = fields[i], k = fieldKey(el, i);
+        if (!(k in data)) k = legacyKey(el, i);
         if (!(k in data)) continue;
         if (el.type === 'checkbox') el.checked = !!data[k];
         else el.value = data[k];
@@ -1268,7 +1302,9 @@ html.nt-embed .li-stage{padding:clamp(16px,1.8vw,24px)!important;}
           <figcaption><span class="li-photo-label">Where you see this in real life</span>A basketball league tracked the points-per-game average for all 30 of its players this season. The histogram below groups those averages into equal intervals of 10 points. What was the most common scoring interval for the players?</figcaption>
         </figure>
           <div class="li-figure"><div class="li-visual-title">League Scoreboard — Points Per Game (30 players)</div><div class="li-chips"><span class="li-chip">2</span><span class="li-chip">5</span><span class="li-chip">7</span><span class="li-chip">8</span><span class="li-chip">9</span><span class="li-chip">10</span><span class="li-chip">11</span><span class="li-chip">11</span><span class="li-chip">12</span><span class="li-chip">13</span><span class="li-chip">13</span><span class="li-chip">14</span><span class="li-chip">14</span><span class="li-chip">15</span><span class="li-chip">15</span><span class="li-chip">16</span><span class="li-chip">16</span><span class="li-chip">17</span><span class="li-chip">18</span><span class="li-chip">18</span><span class="li-chip">19</span><span class="li-chip">20</span><span class="li-chip">21</span><span class="li-chip">22</span><span class="li-chip">23</span><span class="li-chip">24</span><span class="li-chip">25</span><span class="li-chip">28</span><span class="li-chip">30</span><span class="li-chip">32</span></div><div class="li-visual-unit">Each tile is one player's scoring average.</div></div>
-          <p class="li-lead">These are the words you will use today. The picture shows what each one means.</p><div class="li-graphics"><figure class="li-graphic"><img src="../../assets/vocab-images/concept-display-data-with-histograms.svg" alt="Illustration of Display Data with Histograms: Group numerical data into intervals and show each interval's frequency with a bar." loading="lazy" onerror="this.closest('.li-graphic').style.display='none'" /><figcaption><span class="li-graphic-term">Display Data with Histograms</span><span class="li-graphic-def">Group numerical data into intervals and show each interval's frequency with a bar.</span></figcaption></figure><figure class="li-graphic"><img src="../../assets/vocab-images/histogram.svg" alt="Illustration of Histogram: A bar graph that groups data into equal ranges. The bars touch." loading="lazy" onerror="this.closest('.li-graphic').style.display='none'" /><figcaption><span class="li-graphic-term">Histogram</span><span class="li-graphic-def">A bar graph that groups data into equal ranges. The bars touch.</span></figcaption></figure><figure class="li-graphic"><img src="../../assets/vocab-images/frequency.svg" alt="Illustration of Frequency: How many times a value shows up." loading="lazy" onerror="this.closest('.li-graphic').style.display='none'" /><figcaption><span class="li-graphic-term">Frequency</span><span class="li-graphic-def">How many times a value shows up.</span></figcaption></figure><figure class="li-graphic"><img src="../../assets/vocab-images/histogram.svg" alt="Illustration of Interval: A range of numbers used to group data." loading="lazy" onerror="this.closest('.li-graphic').style.display='none'" /><figcaption><span class="li-graphic-term">Interval</span><span class="li-graphic-def">A range of numbers used to group data.</span></figcaption></figure></div>
+          <p class="li-lead">These are the words you will use today.</p>
+          <div class="li-graphics"><figure class="li-graphic"><img src="../../assets/vocab-images/concept-display-data-with-histograms.svg" alt="Illustration of Display Data with Histograms: Group numerical data into intervals and show each interval's frequency with a bar." loading="lazy" onerror="this.closest('.li-graphic').style.display='none'" /><figcaption><span class="li-graphic-term">Display Data with Histograms</span><span class="li-graphic-def">Group numerical data into intervals and show each interval's frequency with a bar.</span></figcaption></figure><figure class="li-graphic"><img src="../../assets/vocab-images/histogram.svg" alt="Illustration of Histogram: A bar graph that groups data into equal ranges. The bars touch." loading="lazy" onerror="this.closest('.li-graphic').style.display='none'" /><figcaption><span class="li-graphic-term">Histogram</span><span class="li-graphic-def">A bar graph that groups data into equal ranges. The bars touch.</span></figcaption></figure><figure class="li-graphic"><img src="../../assets/vocab-images/frequency.svg" alt="Illustration of Frequency: How many times a value shows up." loading="lazy" onerror="this.closest('.li-graphic').style.display='none'" /><figcaption><span class="li-graphic-term">Frequency</span><span class="li-graphic-def">How many times a value shows up.</span></figcaption></figure><figure class="li-graphic"><img src="../../assets/vocab-images/distribution.svg" alt="Illustration of Distribution: How the data is spread out." loading="lazy" onerror="this.closest('.li-graphic').style.display='none'" /><figcaption><span class="li-graphic-term">Distribution</span><span class="li-graphic-def">How the data is spread out.</span></figcaption></figure></div>
+          <ul class="li-wordrows"><li><span class="li-wordrow-term">Interval</span><span class="li-wordrow-def">A range of numbers used to group data.</span></li><li><span class="li-wordrow-term">Variability</span><span class="li-wordrow-def">How spread out the numbers are.</span></li></ul>
       </section><section class="li-block li-stage li-stage-watch" id="li-watch">
         <p class="li-eyebrow"><span class="li-stage-ico" aria-hidden="true">👀</span><span class="li-stage-label">Watch me solve it</span><span class="li-stage-sub">I do — read one step at a time</span><button type="button" class="li-say no-print" data-li-say aria-label="Listen to the section: Watch me solve it">🔊</button></p>
         <p class="li-lead">Read one step, then press the button for the next one. Tap any <span class="li-pop-demo">blue word</span> to see what it means.</p>
@@ -1279,28 +1315,26 @@ html.nt-embed .li-stage{padding:clamp(16px,1.8vw,24px)!important;}
         </div>
       </section><section class="li-mistakes" id="li-mistakes">
         <p class="li-mistakes-head"><span aria-hidden="true">⚠️</span> Watch out — mistakes students make here</p>
-        <ul><li>That interval has 4 — compare each bar's frequency.</li><li>That's the smallest count (2) — look for the tallest bar.</li><li>That has 7 — check which interval has the highest frequency.</li></ul>
+        <ul><li>5 is less than 10—which bar is tallest?</li><li>Compare: 2, 5, 10, 8, 3—the largest is 10.</li><li>A symmetric shape would have the bars mirroring each other around the center. Compare the 9 at the low end with the 1 at the high end.</li></ul>
         <p class="li-mistakes-note">Check your work against this list before you say you are done.</p>
       </section><section class="li-block li-stage li-stage-together li-block-practice" id="li-together">
         <p class="li-eyebrow"><span class="li-stage-ico" aria-hidden="true">🤝</span><span class="li-stage-label">Try it with me</span><span class="li-stage-sub">We do — you answer first, then check</span><button type="button" class="li-say no-print" data-li-say aria-label="Listen to the section: Try it with me">🔊</button></p>
         <p class="li-lead">Same steps, new numbers. Type your answer for each step, then open <strong>Check this step</strong> to see if you got it.</p>
-        <ol class="li-steps li-steps-fill"><li><span class="li-step-text">New data: 2, 4, 8, 11, 13, 16, 21. We will use <button type="button" class="li-pop" data-popover data-term="Interval" data-term-es="Intervalo" data-def="A range of numbers used to group data." data-def-es="Un rango de números para agrupar datos." data-img="../../assets/vocab-images/histogram.svg" aria-label="intervals — what does Interval mean?">intervals<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> of 10 again: 0–9, 10–19, 20–29.</span><input class="li-input" type="text" data-nt-field placeholder="your work…" /></li><li><span class="li-step-text">How many values fall in 0–9?</span><input class="li-input" type="text" data-nt-field placeholder="Type your answer for this step…" /><details class="li-stepcheck"><summary>Check this step</summary><div class="li-stepcheck-body"><span class="li-step-text">Count them. How many fall in 10–19?</span></div></details></li><li><span class="li-step-text">How many fall in 20–29?</span><input class="li-input" type="text" data-nt-field placeholder="Type your answer for this step…" /><details class="li-stepcheck"><summary>Check this step</summary><div class="li-stepcheck-body"><span class="li-step-text">Which <button type="button" class="li-pop" data-popover data-term="Interval" data-term-es="Intervalo" data-def="A range of numbers used to group data." data-def-es="Un rango de números para agrupar datos." data-img="../../assets/vocab-images/histogram.svg" aria-label="interval — what does Interval mean?">interval<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> would have the tallest bar?</span></div></details></li></ol>
-        <div class="li-work"><span class="li-work-label">Show your work</span></div>
-        <p class="li-answer"><span class="li-answer-label">Answer</span><input class="li-input li-input-answer" type="text" data-nt-field placeholder="Type the answer" /></p>
+        <ol class="li-steps li-steps-fill"><li><span class="li-step-text">New data: 2, 4, 8, 11, 13, 16, 21. We will use <button type="button" class="li-pop" data-popover data-term="Interval" data-term-es="Intervalo" data-def="A range of numbers used to group data." data-def-es="Un rango de números para agrupar datos." data-img="../../assets/vocab-images/histogram.svg" aria-label="intervals — what does Interval mean?">intervals<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> of 10 again: 0–9, 10–19, 20–29.</span><input class="li-input" type="text" data-nt-field data-nt-key="we-1" placeholder="your work…" /></li><li><span class="li-step-text">How many values fall in 0–9?</span><input class="li-input" type="text" data-nt-field data-nt-key="we-2" placeholder="Type your answer for this step…" /><details class="li-stepcheck"><summary>Check this step</summary><div class="li-stepcheck-body"><span class="li-step-text">Count them. How many fall in 10–19?</span></div></details></li><li><span class="li-step-text">How many fall in 20–29?</span><input class="li-input" type="text" data-nt-field data-nt-key="we-3" placeholder="Type your answer for this step…" /><details class="li-stepcheck"><summary>Check this step</summary><div class="li-stepcheck-body"><span class="li-step-text">Which <button type="button" class="li-pop" data-popover data-term="Interval" data-term-es="Intervalo" data-def="A range of numbers used to group data." data-def-es="Un rango de números para agrupar datos." data-img="../../assets/vocab-images/histogram.svg" aria-label="interval — what does Interval mean?">interval<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> would have the tallest bar?</span></div></details></li></ol>
       </section><section class="li-block li-stage li-stage-own" id="li-own">
         <p class="li-eyebrow"><span class="li-stage-ico" aria-hidden="true">🚀</span><span class="li-stage-label">On your own</span><span class="li-stage-sub">You do — solve this one by yourself</span><button type="button" class="li-say no-print" data-li-say aria-label="Listen to the section: On your own">🔊</button></p>
-        <ul class="li-list"><li>Next, you will build a <button type="button" class="li-pop" data-popover data-term="Frequency" data-term-es="Frecuencia" data-def="How many times a value shows up." data-def-es="Cuántas veces aparece un valor." data-img="../../assets/vocab-images/frequency.svg" aria-label="frequency — what does Frequency mean?">frequency<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> table for all 30 players' scoring averages using <button type="button" class="li-pop" data-popover data-term="Interval" data-term-es="Intervalo" data-def="A range of numbers used to group data." data-def-es="Un rango de números para agrupar datos." data-img="../../assets/vocab-images/histogram.svg" aria-label="intervals — what does Interval mean?">intervals<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> of 10.</li><li>Then you will read the <button type="button" class="li-pop" data-popover data-term="Histogram" data-term-es="Histograma" data-def="A bar graph that groups data into equal ranges. The bars touch." data-def-es="Una gráfica de barras que agrupa datos en rangos iguales. Las barras se tocan." data-img="../../assets/vocab-images/histogram.svg" aria-label="histogram — what does Histogram mean?">histogram<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> shape to see where most players cluster.</li></ul>
+        
         <p class="li-problem-q"><strong>Solve:</strong> A <button type="button" class="li-pop" data-popover data-term="Histogram" data-term-es="Histograma" data-def="A bar graph that groups data into equal ranges. The bars touch." data-def-es="Una gráfica de barras que agrupa datos en rangos iguales. Las barras se tocan." data-img="../../assets/vocab-images/histogram.svg" aria-label="histogram — what does Histogram mean?">histogram<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> of test scores shows: 50–59: 2, 60–69: 5, 70–79: 10, 80–89: 8, 90–99: 3. Which <button type="button" class="li-pop" data-popover data-term="Interval" data-term-es="Intervalo" data-def="A range of numbers used to group data." data-def-es="Un rango de números para agrupar datos." data-img="../../assets/vocab-images/histogram.svg" aria-label="interval — what does Interval mean?">interval<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> has the most students?</p>
-        <div class="li-work"><span class="li-work-label">Show your work</span></div>
-        <p class="li-answer"><span class="li-answer-label">My answer</span><input class="li-input li-input-answer" type="text" data-nt-field placeholder="Type your answer" /></p>
+        <div class="li-work"><label class="li-work-label" for="w-own">Show your work</label><textarea class="li-work-area" id="w-own" data-nt-field data-nt-key="own" rows="3" placeholder="Write or sketch your thinking here…"></textarea></div>
+        <p class="li-answer"><span class="li-answer-label">My answer</span><input class="li-input li-input-answer" type="text" data-nt-field data-nt-key="own-answer" placeholder="Type your answer" /></p>
         <div class="li-hints no-print"><p class="li-hints-label">Stuck? Open one hint at a time.</p><details class="li-hint"><summary>Hint 1</summary><p>'Most students' means the highest frequency — compare the counts 2, 5, 10, 8, 3, not the score ranges themselves.</p></details><details class="li-hint"><summary>Hint 2</summary><p>Careful: the highest scores (90–99) don't mean the most students. Find the largest of the five frequencies first, then read off its interval.</p></details><details class="li-hint"><summary>Hint 3</summary><p>First step: circle the largest number among 2, 5, 10, 8, 3. Then match that count back to its interval — and check the choice pairs both parts.</p></details></div>
         <details class="li-check"><summary>Check my answer</summary><div class="li-check-body"><strong>✅ Answer:</strong> 70–79 with 10 students<br><span class="li-check-why">The 70–79 interval has the highest frequency of 10 students.</span></div></details>
       </section><section class="li-block li-stage li-stage-apply" id="li-apply">
         <p class="li-eyebrow"><span class="li-stage-ico" aria-hidden="true">🌍</span><span class="li-stage-label">Apply it</span><span class="li-stage-sub">Use the same math in a real situation</span><button type="button" class="li-say no-print" data-li-say aria-label="Listen to the section: Apply it">🔊</button></p>
         <p class="li-lead"><strong>Making Moves</strong></p>
         <p class="li-problem-q">A group of friends are planning to make a movie. They research the running times of movies made. The data they collected are shown in the <button type="button" class="li-pop" data-popover data-term="Histogram" data-term-es="Histograma" data-def="A bar graph that groups data into equal ranges. The bars touch." data-def-es="Una gráfica de barras que agrupa datos en rangos iguales. Las barras se tocan." data-img="../../assets/vocab-images/histogram.svg" aria-label="histogram — what does Histogram mean?">histogram<span class="li-pop-i" aria-hidden="true">ⓘ</span></button>. They have asked for your advice on how long their movie should run. What do you recommend? Explain your recommendation based on the data presented in the histogram.</p>
-        <div class="li-work"><span class="li-work-label">Show your work</span></div>
-        <p class="li-answer"><span class="li-answer-label">My answer</span><input class="li-input li-input-answer" type="text" data-nt-field placeholder="Type your answer" /></p>
+        <div class="li-work"><label class="li-work-label" for="w-apply">Show your work</label><textarea class="li-work-area" id="w-apply" data-nt-field data-nt-key="apply" rows="3" placeholder="Write or sketch your thinking here…"></textarea></div>
+        <p class="li-answer"><span class="li-answer-label">My answer</span><input class="li-input li-input-answer" type="text" data-nt-field data-nt-key="apply-answer" placeholder="Type your answer" /></p>
         <details class="li-check"><summary>Check my answer</summary><div class="li-check-body"><strong>✅ Sample answer:</strong> Add up the histogram's frequencies: 7 + 30 + 39 + 22 + 12 + 2 + 1 + 1 = 114 movies total. The tallest bar is the 101–115 minute interval with 39 movies, the mode of the data. Combined with the neighboring 86–100 minute interval (30 movies), that's 30 + 39 = 69 of the 114 movies, or 69 ÷ 114 ≈ 0.605 = 60.5%, running between 86 and 115 minutes. Very few movies run longer than 145 minutes (2 + 1 + 1 = 4 movies, about 3.5%). Based on this data, I'd recommend the friends aim for a running time in the 101–115 minute range, since that's the most common length and keeps their movie in line with most movies made.</div></details>
       </section><section class="li-block li-stage li-stage-talk" id="li-talk">
         <p class="li-eyebrow"><span class="li-stage-ico" aria-hidden="true">💬</span><span class="li-stage-label">Turn &amp; Talk</span><span class="li-stage-sub">Say it out loud with a partner</span><button type="button" class="li-say no-print" data-li-say aria-label="Listen to the section: Turn &amp; Talk">🔊</button></p>
@@ -1310,7 +1344,7 @@ html.nt-embed .li-stage{padding:clamp(16px,1.8vw,24px)!important;}
       </section>
     <section class="li-ready-card" id="li-ready">
       <p class="li-ready-head">🎉 Ready to launch?</p>
-      <label class="li-ready-check"><input type="checkbox" /> <span>I can solve one of these on my own.</span></label>
+      <label class="li-ready-check"><input type="checkbox" data-nt-field data-nt-key="ready" /> <span>I can solve one of these on my own.</span></label>
       <p class="li-ready-note">When you can finish <strong>Try it with me</strong> without help, head to the lesson activities and show what you know!</p>
     </section>
   </article>

@@ -56,7 +56,15 @@ function autoSaveScript(storeKey) {
       for (var j = 0; j < boxes.length; j++) list.push(boxes[j]);
       return list;
     }
-    function fieldKey(el, i) { return (el.type === 'checkbox' ? 'c' : 'f') + i; }
+    // Positional keys scramble the moment a field is added or removed, so a
+    // field may name itself with data-nt-key. Restore still falls back to the
+    // old positional key, so work typed before a layout change survives.
+    function fieldKey(el, i) {
+      var k = el.getAttribute && el.getAttribute('data-nt-key');
+      if (k) return (el.type === 'checkbox' ? 'c:' : 'f:') + k;
+      return legacyKey(el, i);
+    }
+    function legacyKey(el, i) { return (el.type === 'checkbox' ? 'c' : 'f') + i; }
     function setStatus(text) { if (statusEl) statusEl.textContent = text; }
     function readStore() {
       try { return JSON.parse(localStorage.getItem(KEY) || '{}') || {}; }
@@ -81,6 +89,7 @@ function autoSaveScript(storeKey) {
       var data = readStore();
       for (var i = 0; i < fields.length; i++) {
         var el = fields[i], k = fieldKey(el, i);
+        if (!(k in data)) k = legacyKey(el, i);
         if (!(k in data)) continue;
         if (el.type === 'checkbox') el.checked = !!data[k];
         else el.value = data[k];
@@ -944,7 +953,11 @@ function liMathSpan(line) {
     .replace(/[.?!,;:]/g, "");
   const trailing = rest === "";
   const prose = toks.slice(0, best.start).join(" ").trim();
-  return { math, lead: trailing ? prose : String(line).trim() };
+  // Split only when the words before the equation end a clause ("I multiply:").
+  // Otherwise the remainder is a sentence fragment ("What is"), so keep the
+  // whole line and let the strip be a visual echo of it.
+  const splits = trailing && (prose === "" || /[:,]$/.test(prose));
+  return { math, lead: splits ? prose : String(line).trim() };
 }
 
 // The one line a student should be able to find on this page in a second.
@@ -984,6 +997,13 @@ function liFormula(text) {
   if (!span) return null;
   const math = span.math.replace(/[,;.]+$/, "");
   return math.length >= 3 ? { math } : null;
+}
+
+// "Show your work" used to be an empty dashed rectangle — a paper artifact
+// that a student on a Chromebook cannot write in. It is a real, saved writing
+// space now, and still prints as a box.
+function liWork(key, label) {
+  return `<div class="li-work"><label class="li-work-label" for="w-${key}">${esc(label || "Show your work")}</label><textarea class="li-work-area" id="w-${key}" data-nt-field data-nt-key="${esc(key)}" rows="3" placeholder="Write or sketch your thinking here…"></textarea></div>`;
 }
 
 // Render one teaching step: the sentence, then the equation from that sentence
@@ -1029,6 +1049,15 @@ function liMistakes(cfg = {}) {
     const t = String(s || "")
       .replace(/\s+/g, " ")
       .trim();
+    // Replies to a choice the reader cannot see ("That looks like…", "Right
+    // number, wrong unit") read as non-sequiturs in a standalone list.
+    if (
+      /^(?:that|this|it|right|close|almost|yes|no|not quite|correct|nice|good|careful|oops|you|nope|exactly)\b/i.test(
+        t,
+      )
+    )
+      return;
+    if (/\b(?:choice|option|answer above)\b/i.test(t)) return;
     if (!t || t.length < 14 || seen.has(t.toLowerCase())) return;
     seen.add(t.toLowerCase());
     out.push(t);
@@ -1168,15 +1197,29 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
         </figure>`
     : "";
   const authored = learnVisual(cfg);
-  const vocabPics = vocab
+  const seenPic = new Set();
+  const picCards = [];
+  const wordRows = [];
+  vocab
     .filter((v) => v && v.term)
-    .slice(0, 4)
-    .map((v) => {
+    .slice(0, 6)
+    .forEach((v) => {
       const src = resolveVocabImage(v.term, v.image).replace(/^\//, "../../");
-      return `<figure class="li-graphic"><img src="${esc(src)}" alt="${esc(vocabImageAlt(v.term, v.definition))}" loading="lazy" onerror="this.closest('.li-graphic').style.display='none'" /><figcaption><span class="li-graphic-term">${esc(v.term)}</span>${v.definition ? `<span class="li-graphic-def">${esc(v.definition)}</span>` : ""}</figcaption></figure>`;
-    })
-    .join("");
-  if (photo || authored || vocabPics) {
+      if (picCards.length < 4 && !seenPic.has(src)) {
+        seenPic.add(src);
+        picCards.push(
+          `<figure class="li-graphic"><img src="${esc(src)}" alt="${esc(vocabImageAlt(v.term, v.definition))}" loading="lazy" onerror="this.closest('.li-graphic').style.display='none'" /><figcaption><span class="li-graphic-term">${esc(v.term)}</span>${v.definition ? `<span class="li-graphic-def">${esc(v.definition)}</span>` : ""}</figcaption></figure>`,
+        );
+        return;
+      }
+      if (v.definition)
+        wordRows.push(
+          `<li><span class="li-wordrow-term">${esc(v.term)}</span><span class="li-wordrow-def">${esc(v.definition)}</span></li>`,
+        );
+    });
+  const vocabPics = picCards.join("");
+  const vocabRows = wordRows.length ? `<ul class="li-wordrows">${wordRows.join("")}</ul>` : "";
+  if (photo || authored || vocabPics || vocabRows) {
     stages.push({
       id: "see",
       accent: "see",
@@ -1185,7 +1228,9 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
       sub: "See what the math looks like before you read about it",
       body: `${photo}
           ${authored ? `<div class="li-figure">${authored}</div>` : ""}
-          ${vocabPics ? `<p class="li-lead">These are the words you will use today. The picture shows what each one means.</p><div class="li-graphics">${vocabPics}</div>` : ""}`,
+          ${vocabPics || vocabRows ? `<p class="li-lead">These are the words you will use today.</p>` : ""}
+          ${vocabPics ? `<div class="li-graphics">${vocabPics}</div>` : ""}
+          ${vocabRows}`,
     });
   }
 
@@ -1223,18 +1268,16 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
       practice: true,
       body: `<p class="li-lead">Same steps, new numbers. Type your answer for each step, then open <strong>Check this step</strong> to see if you got it.</p>
         <ol class="li-steps li-steps-fill">${weLines
-          .map((l) => {
+          .map((l, i) => {
             const g = liSplitGuided(l);
             const tell = g.tell
               ? `<details class="li-stepcheck"><summary>Check this step</summary><div class="li-stepcheck-body">${liStepBody(g.tell, vocab)}</div></details>`
               : "";
             const asks = /\?\s*$/.test(g.ask);
             const ph = asks ? "Type your answer for this step…" : "your work…";
-            return `<li>${liStepBody(g.ask, vocab)}<input class="li-input" type="text" data-nt-field placeholder="${ph}" />${tell}</li>`;
+            return `<li>${liStepBody(g.ask, vocab)}<input class="li-input" type="text" data-nt-field data-nt-key="we-${i + 1}" placeholder="${ph}" />${tell}</li>`;
           })
-          .join("")}</ol>
-        <div class="li-work"><span class="li-work-label">Show your work</span></div>
-        <p class="li-answer"><span class="li-answer-label">Answer</span><input class="li-input li-input-answer" type="text" data-nt-field placeholder="Type the answer" /></p>`,
+          .join("")}</ol>`,
     });
   }
 
@@ -1252,8 +1295,14 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
         (Array.isArray(it.choices) || it.sampleAnswer || it.answer) &&
         (it.type === "multiple-choice" || it.type === "open-response" || !it.type),
     );
-  const ownGuidance = youLines.length
-    ? `<ul class="li-list">${youLines.map((l) => `<li>${popoverize(l, vocab)}</li>`).join("")}</ul>`
+  const coachLines = youLines.filter(
+    (l) =>
+      !/^(?:next|then|later|after (?:this|that)|soon)\b[^.]{0,60}\byou(?:'ll| will)\b/i.test(l),
+  );
+  const ownGuidance = coachLines.length
+    ? `<p class="li-lead">Before you start, remember:</p><ul class="li-list">${coachLines
+        .map((l) => `<li>${popoverize(l, vocab)}</li>`)
+        .join("")}</ul>`
     : "";
   if (ownProblem) {
     const ownAns =
@@ -1268,8 +1317,8 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
       sub: "You do — solve this one by yourself",
       body: `${ownGuidance}
         <p class="li-problem-q"><strong>Solve:</strong> ${popoverize(ownProblem.stem, vocab)}</p>
-        <div class="li-work"><span class="li-work-label">Show your work</span></div>
-        <p class="li-answer"><span class="li-answer-label">My answer</span><input class="li-input li-input-answer" type="text" data-nt-field placeholder="Type your answer" /></p>
+        ${liWork("own", "Show your work")}
+        <p class="li-answer"><span class="li-answer-label">My answer</span><input class="li-input li-input-answer" type="text" data-nt-field data-nt-key="own-answer" placeholder="Type your answer" /></p>
         ${liHintLadder(ownProblem)}
         ${ownAns ? `<details class="li-check"><summary>Check my answer</summary><div class="li-check-body"><strong>✅ Answer:</strong> ${esc(ownAns)}${ownProblem.explanation ? `<br><span class="li-check-why">${esc(ownProblem.explanation)}</span>` : ""}</div></details>` : ""}`,
     });
@@ -1281,7 +1330,7 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
       label: "On your own",
       sub: "You do — solve this one by yourself",
       body: `${ownGuidance}
-        <p class="li-answer"><span class="li-answer-label">My answer</span><input class="li-input li-input-answer" type="text" data-nt-field placeholder="Type your answer" /></p>`,
+        <p class="li-answer"><span class="li-answer-label">My answer</span><input class="li-input li-input-answer" type="text" data-nt-field data-nt-key="own-answer" placeholder="Type your answer" /></p>`,
     });
   }
 
@@ -1299,8 +1348,8 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
       sub: "Use the same math in a real situation",
       body: `${applyTitle ? `<p class="li-lead"><strong>${esc(applyTitle)}</strong></p>` : ""}
         <p class="li-problem-q">${popoverize(apply.text, vocab)}</p>
-        <div class="li-work"><span class="li-work-label">Show your work</span></div>
-        <p class="li-answer"><span class="li-answer-label">My answer</span><input class="li-input li-input-answer" type="text" data-nt-field placeholder="Type your answer" /></p>
+        ${liWork("apply", "Show your work")}
+        <p class="li-answer"><span class="li-answer-label">My answer</span><input class="li-input li-input-answer" type="text" data-nt-field data-nt-key="apply-answer" placeholder="Type your answer" /></p>
         ${apply.sampleAnswer ? `<details class="li-check"><summary>Check my answer</summary><div class="li-check-body"><strong>✅ Sample answer:</strong> ${esc(apply.sampleAnswer)}</div></details>` : ""}`,
     });
   }
@@ -1371,7 +1420,7 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
   // metacognition, plus a warm send-off into the lesson.
   const ready = `<section class="li-ready-card" id="li-ready">
       <p class="li-ready-head">🎉 Ready to launch?</p>
-      <label class="li-ready-check"><input type="checkbox" /> <span>I can solve one of these on my own.</span></label>
+      <label class="li-ready-check"><input type="checkbox" data-nt-field data-nt-key="ready" /> <span>I can solve one of these on my own.</span></label>
       <p class="li-ready-note">When you can finish <strong>Try it with me</strong> without help, head to the lesson activities and show what you know!</p>
     </section>`;
 
@@ -1770,9 +1819,11 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .li-keyidea p{margin:0;font-size:21px;line-height:1.6;color:var(--navy);font-weight:600;}
 /* The formula, pulled out of the Key Idea and printed big — the one thing a
    student should be able to find on this page in under a second. */
-.li-formula{margin:14px 0 0;padding:14px 18px;background:#fff;border:2.5px dashed var(--teal);
+/* Specificity note: a bare .li-formula loses to .li-keyidea p and gets shrunk
+   back to body size — the formula is the one line that must be unmissable. */
+.li-keyidea .li-formula,.li-formula{margin:16px 0 0;padding:16px 20px;background:#fff;border:2.5px dashed var(--teal);
   border-radius:12px;text-align:center;font-family:Outfit,system-ui,sans-serif;
-  font-size:clamp(24px,3vw,34px);line-height:1.25;font-weight:800;color:var(--navy);
+  font-size:clamp(25px,2.6vw,34px);line-height:1.3;font-weight:800;color:var(--navy);
   font-variant-numeric:tabular-nums;letter-spacing:.01em;}
 .li-seeit{background:#fbfdfc;border:1px solid var(--line);border-radius:14px;padding:18px 20px;}
 .li-figure{margin:0 0 18px;padding:16px 18px;border:1px solid var(--line);border-radius:12px;background:#fff;}
@@ -1784,11 +1835,18 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .li-photo-label{display:block;font-size:12.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
   color:var(--teal-ink);margin-bottom:5px;}
 .li-graphics{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:18px;}
-.li-graphic{margin:0;text-align:center;border:1px solid var(--line);border-radius:14px;background:#fff;padding:14px;}
+.li-graphic{margin:0;display:flex;flex-direction:column;text-align:center;border:1px solid var(--line);
+  border-radius:14px;background:#fff;padding:14px;}
 .li-graphic img{display:block;width:100%;max-height:190px;object-fit:contain;}
-.li-graphic figcaption{margin-top:10px;}
+.li-graphic figcaption{margin-top:10px;display:flex;flex-direction:column;gap:5px;}
 .li-graphic-term{display:block;font-weight:800;color:var(--navy);font-size:18px;}
 .li-graphic-def{display:block;margin-top:5px;font-size:15.5px;line-height:1.5;color:var(--ink);}
+.li-wordrows{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:10px;}
+.li-wordrows>li{display:grid;grid-template-columns:minmax(120px,auto) 1fr;gap:6px 16px;align-items:baseline;
+  padding:12px 16px;background:#fff;border:1px solid var(--line);border-radius:12px;}
+.li-wordrow-term{font-weight:800;color:var(--navy);font-size:18px;}
+.li-wordrow-def{font-size:16.5px;line-height:1.55;color:var(--ink);}
+@media (max-width:560px){.li-wordrows>li{grid-template-columns:1fr;}}
 .li-visual-title{font-weight:700;color:var(--navy);margin:0 0 10px;font-size:16px;}
 .li-chips{display:flex;flex-wrap:wrap;gap:10px;}
 .li-chip{display:inline-flex;align-items:center;justify-content:center;min-width:48px;padding:10px 16px;
@@ -1820,8 +1878,9 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
   padding:11px 20px;font-weight:800;font-size:16px;cursor:pointer;}
 .li-pace-all:hover{background:var(--teal-light);}
 /* Per-section read-aloud — big ESOL support, one section at a time. */
-.li-say{margin-left:auto;background:#fff;border:2px solid var(--teal);color:var(--teal-ink);
-  border-radius:999px;width:38px;height:38px;font-size:17px;line-height:1;cursor:pointer;flex:0 0 auto;}
+.li-say{position:absolute;top:18px;right:18px;margin:0;background:#fff;border:2px solid var(--teal);
+  color:var(--teal-ink);border-radius:999px;width:40px;height:40px;font-size:18px;line-height:1;
+  cursor:pointer;flex:0 0 auto;z-index:1;}
 .li-say:hover{background:var(--teal-light);}
 .li-say[data-speaking="1"]{background:var(--teal-ink);color:#fff;border-color:var(--teal-ink);}
 .li-block-practice{background:#fbfdfc;border:1px solid var(--line);border-radius:14px;padding:22px 24px;}
@@ -1871,9 +1930,14 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .li-stepcheck-body{margin-top:10px;padding:12px 16px;background:var(--teal-light);border:1px solid var(--teal);
   border-radius:10px;font-size:19px;line-height:1.65;color:var(--navy);}
 .li-stepcheck-body .li-math{margin-top:10px;background:#fff;}
-.li-work{margin:8px 0 18px;min-height:120px;border:1.5px dashed var(--line);border-radius:10px;
-  position:relative;background:#fff;}
-.li-work-label{position:absolute;top:9px;left:14px;font-size:13.5px;font-weight:700;color:var(--muted);}
+.li-work{margin:10px 0 18px;border:1.5px dashed var(--line);border-radius:12px;background:#fff;padding:12px 14px;}
+.li-work-label{display:block;margin:0 0 8px;font-size:14px;font-weight:800;color:var(--teal-ink);
+  letter-spacing:.03em;text-transform:uppercase;}
+.li-work-area{display:block;width:100%;min-height:104px;resize:vertical;border:0;background:transparent;
+  font:inherit;font-size:19px;line-height:1.6;color:var(--navy);padding:0;}
+.li-work-area:focus{outline:none;}
+.li-work:focus-within{border-color:var(--teal);border-style:solid;background:#fbfdfc;}
+.li-work-area::placeholder{color:#8aa2b2;font-style:italic;font-size:17px;}
 .li-answer{display:flex;align-items:center;gap:12px;margin:4px 0 0;flex-wrap:wrap;}
 .li-answer-label{flex:0 0 auto;font-size:15px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--teal-ink);}
 .li-input-answer{flex:1;min-width:180px;margin-top:0;}
@@ -1920,7 +1984,9 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
   .li-mistakes-head,.li-hints-label{color:#000;}
   .li-stepcheck-body{background:#fff;border-color:#000;}
   .li-input{border-bottom-color:#000;}
-  .li-work{min-height:120px;border-color:#000;}
+  .li-work{min-height:130px;border-color:#000;background:#fff;}
+  .li-work-label{color:#000;}
+  .li-work-area{min-height:110px;color:#000;}
   .li-chip{border-color:#000;}
 }
 /* Vocab Explorer — interactive vocab home (Word Wall, Match, Fill-in, Use it) */
@@ -3033,9 +3099,12 @@ ${EMBED_CSS}
   .li-hook-label{margin:0 0 6px;font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--amber);}
   .li-hook-text{margin:0;font-size:18.5px;line-height:1.6;}
   /* Learning-journey map — a "you are here" roadmap of the gradual release. */
-  .li-journey{display:flex;flex-wrap:wrap;align-items:stretch;gap:6px;margin:0 0 22px;}
+  /* The path is a grid, not a wrapped flex row: at every container width the
+     pills stay the same size and the rows stay balanced, instead of
+     stranding one lonely pill on a second line. */
+  .li-journey{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:8px;margin:0 0 26px;}
   .li-jstep{display:flex;align-items:center;gap:8px;text-decoration:none;background:#fff;border:1.5px solid var(--line);
-    border-radius:999px;padding:9px 16px 9px 9px;color:var(--navy);font-weight:700;font-size:15.5px;transition:transform .12s,border-color .12s,box-shadow .12s;}
+    border-radius:999px;padding:7px 12px 7px 7px;color:var(--navy);font-weight:700;font-size:14.5px;transition:transform .12s,border-color .12s,box-shadow .12s;}
   .li-jstep:hover{transform:translateY(-1px);border-color:var(--teal);box-shadow:0 4px 12px rgba(18,53,91,.10);}
   .li-jnum{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;
     background:var(--navy);color:#fff;font-size:15px;font-weight:800;flex:0 0 auto;}
@@ -3044,8 +3113,13 @@ ${EMBED_CSS}
   .li-jstep-together .li-jnum{background:#c98a10;}
   .li-jstep-own .li-jnum{background:var(--navy);}
   .li-jico{font-size:17px;}
-  .li-jarrow{align-self:center;color:var(--muted);font-weight:800;font-size:15px;}
-  @media (max-width:560px){.li-jlabel{display:none;}.li-jarrow{display:none;}.li-jstep{padding:7px;}}
+  .li-jarrow{display:none;}
+  /* Between tablet and desktop the six pills wrap 5 + 1, which reads as a
+     mistake. Below the width where the path fits on one line, lay it out as a
+     deliberate three-across grid instead and drop the arrows. */
+
+  .li-jlabel{line-height:1.25;}
+  @media (max-width:560px){.li-journey{grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;}.li-jlabel{display:none;}.li-jstep{padding:8px;justify-content:center;}}
   /* Numbered gradual-release stage cards — each rung gets a colored left rail,
      an auto-numbered badge, an icon and a plain-language subtitle. */
   .li{counter-reset:li-stage;}

@@ -108,9 +108,11 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .li-keyidea p{margin:0;font-size:21px;line-height:1.6;color:var(--navy);font-weight:600;}
 /* The formula, pulled out of the Key Idea and printed big — the one thing a
    student should be able to find on this page in under a second. */
-.li-formula{margin:14px 0 0;padding:14px 18px;background:#fff;border:2.5px dashed var(--teal);
+/* Specificity note: a bare .li-formula loses to .li-keyidea p and gets shrunk
+   back to body size — the formula is the one line that must be unmissable. */
+.li-keyidea .li-formula,.li-formula{margin:16px 0 0;padding:16px 20px;background:#fff;border:2.5px dashed var(--teal);
   border-radius:12px;text-align:center;font-family:Outfit,system-ui,sans-serif;
-  font-size:clamp(24px,3vw,34px);line-height:1.25;font-weight:800;color:var(--navy);
+  font-size:clamp(25px,2.6vw,34px);line-height:1.3;font-weight:800;color:var(--navy);
   font-variant-numeric:tabular-nums;letter-spacing:.01em;}
 .li-seeit{background:#fbfdfc;border:1px solid var(--line);border-radius:14px;padding:18px 20px;}
 .li-figure{margin:0 0 18px;padding:16px 18px;border:1px solid var(--line);border-radius:12px;background:#fff;}
@@ -122,11 +124,18 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .li-photo-label{display:block;font-size:12.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
   color:var(--teal-ink);margin-bottom:5px;}
 .li-graphics{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:18px;}
-.li-graphic{margin:0;text-align:center;border:1px solid var(--line);border-radius:14px;background:#fff;padding:14px;}
+.li-graphic{margin:0;display:flex;flex-direction:column;text-align:center;border:1px solid var(--line);
+  border-radius:14px;background:#fff;padding:14px;}
 .li-graphic img{display:block;width:100%;max-height:190px;object-fit:contain;}
-.li-graphic figcaption{margin-top:10px;}
+.li-graphic figcaption{margin-top:10px;display:flex;flex-direction:column;gap:5px;}
 .li-graphic-term{display:block;font-weight:800;color:var(--navy);font-size:18px;}
 .li-graphic-def{display:block;margin-top:5px;font-size:15.5px;line-height:1.5;color:var(--ink);}
+.li-wordrows{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:10px;}
+.li-wordrows>li{display:grid;grid-template-columns:minmax(120px,auto) 1fr;gap:6px 16px;align-items:baseline;
+  padding:12px 16px;background:#fff;border:1px solid var(--line);border-radius:12px;}
+.li-wordrow-term{font-weight:800;color:var(--navy);font-size:18px;}
+.li-wordrow-def{font-size:16.5px;line-height:1.55;color:var(--ink);}
+@media (max-width:560px){.li-wordrows>li{grid-template-columns:1fr;}}
 .li-visual-title{font-weight:700;color:var(--navy);margin:0 0 10px;font-size:16px;}
 .li-chips{display:flex;flex-wrap:wrap;gap:10px;}
 .li-chip{display:inline-flex;align-items:center;justify-content:center;min-width:48px;padding:10px 16px;
@@ -158,8 +167,9 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
   padding:11px 20px;font-weight:800;font-size:16px;cursor:pointer;}
 .li-pace-all:hover{background:var(--teal-light);}
 /* Per-section read-aloud — big ESOL support, one section at a time. */
-.li-say{margin-left:auto;background:#fff;border:2px solid var(--teal);color:var(--teal-ink);
-  border-radius:999px;width:38px;height:38px;font-size:17px;line-height:1;cursor:pointer;flex:0 0 auto;}
+.li-say{position:absolute;top:18px;right:18px;margin:0;background:#fff;border:2px solid var(--teal);
+  color:var(--teal-ink);border-radius:999px;width:40px;height:40px;font-size:18px;line-height:1;
+  cursor:pointer;flex:0 0 auto;z-index:1;}
 .li-say:hover{background:var(--teal-light);}
 .li-say[data-speaking="1"]{background:var(--teal-ink);color:#fff;border-color:var(--teal-ink);}
 .li-block-practice{background:#fbfdfc;border:1px solid var(--line);border-radius:14px;padding:22px 24px;}
@@ -209,9 +219,14 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .li-stepcheck-body{margin-top:10px;padding:12px 16px;background:var(--teal-light);border:1px solid var(--teal);
   border-radius:10px;font-size:19px;line-height:1.65;color:var(--navy);}
 .li-stepcheck-body .li-math{margin-top:10px;background:#fff;}
-.li-work{margin:8px 0 18px;min-height:120px;border:1.5px dashed var(--line);border-radius:10px;
-  position:relative;background:#fff;}
-.li-work-label{position:absolute;top:9px;left:14px;font-size:13.5px;font-weight:700;color:var(--muted);}
+.li-work{margin:10px 0 18px;border:1.5px dashed var(--line);border-radius:12px;background:#fff;padding:12px 14px;}
+.li-work-label{display:block;margin:0 0 8px;font-size:14px;font-weight:800;color:var(--teal-ink);
+  letter-spacing:.03em;text-transform:uppercase;}
+.li-work-area{display:block;width:100%;min-height:104px;resize:vertical;border:0;background:transparent;
+  font:inherit;font-size:19px;line-height:1.6;color:var(--navy);padding:0;}
+.li-work-area:focus{outline:none;}
+.li-work:focus-within{border-color:var(--teal);border-style:solid;background:#fbfdfc;}
+.li-work-area::placeholder{color:#8aa2b2;font-style:italic;font-size:17px;}
 .li-answer{display:flex;align-items:center;gap:12px;margin:4px 0 0;flex-wrap:wrap;}
 .li-answer-label{flex:0 0 auto;font-size:15px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--teal-ink);}
 .li-input-answer{flex:1;min-width:180px;margin-top:0;}
@@ -258,7 +273,9 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
   .li-mistakes-head,.li-hints-label{color:#000;}
   .li-stepcheck-body{background:#fff;border-color:#000;}
   .li-input{border-bottom-color:#000;}
-  .li-work{min-height:120px;border-color:#000;}
+  .li-work{min-height:130px;border-color:#000;background:#fff;}
+  .li-work-label{color:#000;}
+  .li-work-area{min-height:110px;color:#000;}
   .li-chip{border-color:#000;}
 }
 /* Vocab Explorer — interactive vocab home (Word Wall, Match, Fill-in, Use it) */
@@ -923,9 +940,12 @@ html.nt-embed .li-stage{padding:clamp(16px,1.8vw,24px)!important;}
   .li-hook-label{margin:0 0 6px;font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--amber);}
   .li-hook-text{margin:0;font-size:18.5px;line-height:1.6;}
   /* Learning-journey map — a "you are here" roadmap of the gradual release. */
-  .li-journey{display:flex;flex-wrap:wrap;align-items:stretch;gap:6px;margin:0 0 22px;}
+  /* The path is a grid, not a wrapped flex row: at every container width the
+     pills stay the same size and the rows stay balanced, instead of
+     stranding one lonely pill on a second line. */
+  .li-journey{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:8px;margin:0 0 26px;}
   .li-jstep{display:flex;align-items:center;gap:8px;text-decoration:none;background:#fff;border:1.5px solid var(--line);
-    border-radius:999px;padding:9px 16px 9px 9px;color:var(--navy);font-weight:700;font-size:15.5px;transition:transform .12s,border-color .12s,box-shadow .12s;}
+    border-radius:999px;padding:7px 12px 7px 7px;color:var(--navy);font-weight:700;font-size:14.5px;transition:transform .12s,border-color .12s,box-shadow .12s;}
   .li-jstep:hover{transform:translateY(-1px);border-color:var(--teal);box-shadow:0 4px 12px rgba(18,53,91,.10);}
   .li-jnum{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;
     background:var(--navy);color:#fff;font-size:15px;font-weight:800;flex:0 0 auto;}
@@ -934,8 +954,13 @@ html.nt-embed .li-stage{padding:clamp(16px,1.8vw,24px)!important;}
   .li-jstep-together .li-jnum{background:#c98a10;}
   .li-jstep-own .li-jnum{background:var(--navy);}
   .li-jico{font-size:17px;}
-  .li-jarrow{align-self:center;color:var(--muted);font-weight:800;font-size:15px;}
-  @media (max-width:560px){.li-jlabel{display:none;}.li-jarrow{display:none;}.li-jstep{padding:7px;}}
+  .li-jarrow{display:none;}
+  /* Between tablet and desktop the six pills wrap 5 + 1, which reads as a
+     mistake. Below the width where the path fits on one line, lay it out as a
+     deliberate three-across grid instead and drop the arrows. */
+
+  .li-jlabel{line-height:1.25;}
+  @media (max-width:560px){.li-journey{grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;}.li-jlabel{display:none;}.li-jstep{padding:8px;justify-content:center;}}
   /* Numbered gradual-release stage cards — each rung gets a colored left rail,
      an auto-numbered badge, an icon and a plain-language subtitle. */
   .li{counter-reset:li-stage;}
@@ -1006,7 +1031,15 @@ html.nt-embed .li-stage{padding:clamp(16px,1.8vw,24px)!important;}
       for (var j = 0; j < boxes.length; j++) list.push(boxes[j]);
       return list;
     }
-    function fieldKey(el, i) { return (el.type === 'checkbox' ? 'c' : 'f') + i; }
+    // Positional keys scramble the moment a field is added or removed, so a
+    // field may name itself with data-nt-key. Restore still falls back to the
+    // old positional key, so work typed before a layout change survives.
+    function fieldKey(el, i) {
+      var k = el.getAttribute && el.getAttribute('data-nt-key');
+      if (k) return (el.type === 'checkbox' ? 'c:' : 'f:') + k;
+      return legacyKey(el, i);
+    }
+    function legacyKey(el, i) { return (el.type === 'checkbox' ? 'c' : 'f') + i; }
     function setStatus(text) { if (statusEl) statusEl.textContent = text; }
     function readStore() {
       try { return JSON.parse(localStorage.getItem(KEY) || '{}') || {}; }
@@ -1031,6 +1064,7 @@ html.nt-embed .li-stage{padding:clamp(16px,1.8vw,24px)!important;}
       var data = readStore();
       for (var i = 0; i < fields.length; i++) {
         var el = fields[i], k = fieldKey(el, i);
+        if (!(k in data)) k = legacyKey(el, i);
         if (!(k in data)) continue;
         if (el.type === 'checkbox') el.checked = !!data[k];
         else el.value = data[k];
@@ -1256,7 +1290,7 @@ html.nt-embed .li-stage{padding:clamp(16px,1.8vw,24px)!important;}
   <article class="li" aria-label="Learn It — how the math works">
     <p class="li-kicker">Learn It</p>
     <h2 class="li-title">How can one value be written as a fraction, a decimal, AND a percent?</h2>
-    <p class="li-intro">Equivalent forms name the same value in different ways. Percent means "out of 100," so a fraction is already a percent once its denominator is 100.</p>
+    <p class="li-intro">Equivalent forms name the same value in different ways. Percent means &quot;out of 100,&quot; so a fraction is already a percent once its denominator is 100.</p>
     <aside class="li-keyidea"><span class="li-keyidea-label">Key idea — remember this</span><p>To turn a fraction into a percent, build an equivalent fraction with a denominator of 100: ask “what do I multiply the denominator by to get 100?” and multiply the numerator by that same number. The new numerator is the percent.</p></aside>
     <nav class="li-journey no-print" aria-label="Your learning path">
         <a class="li-jstep li-jstep-see" href="#li-see"><span class="li-jnum">1</span><span class="li-jico" aria-hidden="true">👁️</span><span class="li-jlabel">Picture it</span></a><span class="li-jarrow" aria-hidden="true">→</span><a class="li-jstep li-jstep-watch" href="#li-watch"><span class="li-jnum">2</span><span class="li-jico" aria-hidden="true">👀</span><span class="li-jlabel">Watch me solve it</span></a><span class="li-jarrow" aria-hidden="true">→</span><a class="li-jstep li-jstep-together" href="#li-together"><span class="li-jnum">3</span><span class="li-jico" aria-hidden="true">🤝</span><span class="li-jlabel">Try it with me</span></a><span class="li-jarrow" aria-hidden="true">→</span><a class="li-jstep li-jstep-own" href="#li-own"><span class="li-jnum">4</span><span class="li-jico" aria-hidden="true">🚀</span><span class="li-jlabel">On your own</span></a><span class="li-jarrow" aria-hidden="true">→</span><a class="li-jstep li-jstep-apply" href="#li-apply"><span class="li-jnum">5</span><span class="li-jico" aria-hidden="true">🌍</span><span class="li-jlabel">Apply it</span></a><span class="li-jarrow" aria-hidden="true">→</span><a class="li-jstep li-jstep-talk" href="#li-talk"><span class="li-jnum">6</span><span class="li-jico" aria-hidden="true">💬</span><span class="li-jlabel">Turn &amp; Talk</span></a>
@@ -1268,39 +1302,39 @@ html.nt-embed .li-stage{padding:clamp(16px,1.8vw,24px)!important;}
           <figcaption><span class="li-photo-label">Where you see this in real life</span>Some middle school students are organizing a canned food drive. Their goal is to collect 100 cans each week for the local food pantry. So far this week, students have brought in 75 cans. How can the students represent the part of the goal that they have achieved so far this week? What information do you know?</figcaption>
         </figure>
           
-          <p class="li-lead">These are the words you will use today. The picture shows what each one means.</p><div class="li-graphics"><figure class="li-graphic"><img src="../../assets/vocab-images/concept-fractions-decimals-and-percents.svg" alt="Illustration of Fractions, Decimals, and Percents: Three equivalent ways to name the same part of a whole." loading="lazy" onerror="this.closest('.li-graphic').style.display='none'" /><figcaption><span class="li-graphic-term">Fractions, Decimals, and Percents</span><span class="li-graphic-def">Three equivalent ways to name the same part of a whole.</span></figcaption></figure><figure class="li-graphic"><img src="../../assets/vocab-images/percent.svg" alt="Illustration of Percent: A way to compare a number to 100, shown with the % sign." loading="lazy" onerror="this.closest('.li-graphic').style.display='none'" /><figcaption><span class="li-graphic-term">Percent</span><span class="li-graphic-def">A way to compare a number to 100, shown with the % sign.</span></figcaption></figure><figure class="li-graphic"><img src="../../assets/vocab-images/decimal.svg" alt="Illustration of Decimal: A number with a dot, like 0.5, that shows a part less than one." loading="lazy" onerror="this.closest('.li-graphic').style.display='none'" /><figcaption><span class="li-graphic-term">Decimal</span><span class="li-graphic-def">A number with a dot, like 0.5, that shows a part less than one.</span></figcaption></figure><figure class="li-graphic"><img src="../../assets/vocab-images/fraction.svg" alt="Illustration of Equivalent: Having the same value, just written a different way." loading="lazy" onerror="this.closest('.li-graphic').style.display='none'" /><figcaption><span class="li-graphic-term">Equivalent</span><span class="li-graphic-def">Having the same value, just written a different way.</span></figcaption></figure></div>
+          <p class="li-lead">These are the words you will use today.</p>
+          <div class="li-graphics"><figure class="li-graphic"><img src="../../assets/vocab-images/concept-fractions-decimals-and-percents.svg" alt="Illustration of Fractions, Decimals, and Percents: Three equivalent ways to name the same part of a whole." loading="lazy" onerror="this.closest('.li-graphic').style.display='none'" /><figcaption><span class="li-graphic-term">Fractions, Decimals, and Percents</span><span class="li-graphic-def">Three equivalent ways to name the same part of a whole.</span></figcaption></figure><figure class="li-graphic"><img src="../../assets/vocab-images/percent.svg" alt="Illustration of Percent: A way to compare a number to 100, shown with the % sign." loading="lazy" onerror="this.closest('.li-graphic').style.display='none'" /><figcaption><span class="li-graphic-term">Percent</span><span class="li-graphic-def">A way to compare a number to 100, shown with the % sign.</span></figcaption></figure><figure class="li-graphic"><img src="../../assets/vocab-images/decimal.svg" alt="Illustration of Decimal: A number with a dot, like 0.5, that shows a part less than one." loading="lazy" onerror="this.closest('.li-graphic').style.display='none'" /><figcaption><span class="li-graphic-term">Decimal</span><span class="li-graphic-def">A number with a dot, like 0.5, that shows a part less than one.</span></figcaption></figure><figure class="li-graphic"><img src="../../assets/vocab-images/fraction.svg" alt="Illustration of Equivalent: Having the same value, just written a different way." loading="lazy" onerror="this.closest('.li-graphic').style.display='none'" /><figcaption><span class="li-graphic-term">Equivalent</span><span class="li-graphic-def">Having the same value, just written a different way.</span></figcaption></figure></div>
+          <ul class="li-wordrows"><li><span class="li-wordrow-term">Benchmark</span><span class="li-wordrow-def">A familiar number you use to guess, like 50% or 1/2.</span></li><li><span class="li-wordrow-term">Discount</span><span class="li-wordrow-def">Money taken off the first price to make it cheaper.</span></li></ul>
       </section><section class="li-block li-stage li-stage-watch" id="li-watch">
         <p class="li-eyebrow"><span class="li-stage-ico" aria-hidden="true">👀</span><span class="li-stage-label">Watch me solve it</span><span class="li-stage-sub">I do — read one step at a time</span><button type="button" class="li-say no-print" data-li-say aria-label="Listen to the section: Watch me solve it">🔊</button></p>
         <p class="li-lead">Read one step, then press the button for the next one. Tap any <span class="li-pop-demo">blue word</span> to see what it means.</p>
-        <ol class="li-steps li-steps-paced"><li><span class="li-step-text">A player scored 3/4 of the points. I want this as a <button type="button" class="li-pop" data-popover data-term="Decimal" data-term-es="Decimal" data-def="A number with a dot, like 0.5, that shows a part less than one." data-def-es="Un número con un punto, como 0.5, que muestra una parte menor que uno." data-img="../../assets/vocab-images/decimal.svg" aria-label="decimal — what does Decimal mean?">decimal<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> and a <button type="button" class="li-pop" data-popover data-term="Percent" data-term-es="Porcentaje" data-def="A way to compare a number to 100, shown with the % sign." data-def-es="Una manera de comparar un número con 100, con el signo %." data-img="../../assets/vocab-images/percent.svg" aria-label="percent — what does Percent mean?">percent<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> — and percent means out of 100.</span></li><li><span class="li-step-text">What do I multiply the denominator 4 by to get 100? 4 × 25 = 100, so my scale factor is 25. Scaling will also give me the <button type="button" class="li-pop" data-popover data-term="Decimal" data-term-es="Decimal" data-def="A number with a dot, like 0.5, that shows a part less than one." data-def-es="Un número con un punto, como 0.5, que muestra una parte menor que uno." data-img="../../assets/vocab-images/decimal.svg" aria-label="decimal — what does Decimal mean?">decimal<span class="li-pop-i" aria-hidden="true">ⓘ</span></button>.</span><span class="li-math" role="math" aria-label="3 ÷ 4 = 0.75">3 ÷ 4 = 0.75</span></li><li><span class="li-step-text">Then I multiply by 100:</span><span class="li-math" role="math" aria-label="0.75 × 100 = 75%">0.75 × 100 = 75%</span></li><li><span class="li-step-text">75 out of 100 is 75%. And 75/100 as a decimal is 0.75, because hundredths sit two places after the point.</span></li></ol>
+        <ol class="li-steps li-steps-paced"><li><span class="li-step-text">A player scored 3/4 of the points. <button type="button" class="li-pop" data-popover data-term="Percent" data-term-es="Porcentaje" data-def="A way to compare a number to 100, shown with the % sign." data-def-es="Una manera de comparar un número con 100, con el signo %." data-img="../../assets/vocab-images/percent.svg" aria-label="Percent — what does Percent mean?">Percent<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> means out of 100, so I want an <button type="button" class="li-pop" data-popover data-term="Equivalent" data-term-es="Equivalente" data-def="Having the same value, just written a different way." data-def-es="Tener el mismo valor, escrito de otra forma." data-img="../../assets/vocab-images/fraction.svg" aria-label="equivalent — what does Equivalent mean?">equivalent<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> fraction with 100 on the bottom.</span></li><li><span class="li-step-text">What do I multiply the denominator 4 by to get 100? 4 × 25 = 100, so my scale factor is 25.</span><span class="li-math" role="math" aria-label="100? 4 × 25 = 100">100? 4 × 25 = 100</span></li><li><span class="li-step-text">I have to multiply the top by that same 25: 3 × 25 = 75. So 3/4 = 75/100.</span><span class="li-math" role="math" aria-label="3 × 25 = 75">3 × 25 = 75</span></li><li><span class="li-step-text">75 out of 100 is 75%. And 75/100 as a <button type="button" class="li-pop" data-popover data-term="Decimal" data-term-es="Decimal" data-def="A number with a dot, like 0.5, that shows a part less than one." data-def-es="Un número con un punto, como 0.5, que muestra una parte menor que uno." data-img="../../assets/vocab-images/decimal.svg" aria-label="decimal — what does Decimal mean?">decimal<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> is 0.75, because hundredths sit two places after the point.</span></li><li><span class="li-step-text">So 3/4 = 75/100 = 0.75 = 75%. All three name the same score.</span></li></ol>
         <div class="li-pace no-print">
           <button type="button" class="li-pace-next">Show me the next step ▸</button>
           <button type="button" class="li-pace-all">Show all steps</button>
         </div>
       </section><section class="li-mistakes" id="li-mistakes">
         <p class="li-mistakes-head"><span aria-hidden="true">⚠️</span> Watch out — mistakes students make here</p>
-        <ul><li>Try converting 0.45 to a fraction and percent differently.</li><li>Check: 0.45 as a fraction should be 45/100, and as a percent is 45%.</li><li>Look at both the fraction and percent for each option.</li></ul>
+        <ul><li>Try converting 0.45 to a fraction and percent differently.</li><li>Check: 0.45 as a fraction should be 45/100, and as a percent is 45%.</li><li>8 will not scale to 100 evenly — divide 7 by 8, then multiply by 100.</li></ul>
         <p class="li-mistakes-note">Check your work against this list before you say you are done.</p>
       </section><section class="li-block li-stage li-stage-together li-block-practice" id="li-together">
         <p class="li-eyebrow"><span class="li-stage-ico" aria-hidden="true">🤝</span><span class="li-stage-label">Try it with me</span><span class="li-stage-sub">We do — you answer first, then check</span><button type="button" class="li-say no-print" data-li-say aria-label="Listen to the section: Try it with me">🔊</button></p>
         <p class="li-lead">Same steps, new numbers. Type your answer for each step, then open <strong>Check this step</strong> to see if you got it.</p>
-        <ol class="li-steps li-steps-fill"><li><span class="li-step-text">Let's change 1/5 into a <button type="button" class="li-pop" data-popover data-term="Decimal" data-term-es="Decimal" data-def="A number with a dot, like 0.5, that shows a part less than one." data-def-es="Un número con un punto, como 0.5, que muestra una parte menor que uno." data-img="../../assets/vocab-images/decimal.svg" aria-label="decimal — what does Decimal mean?">decimal<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> and a <button type="button" class="li-pop" data-popover data-term="Percent" data-term-es="Porcentaje" data-def="A way to compare a number to 100, shown with the % sign." data-def-es="Una manera de comparar un número con 100, con el signo %." data-img="../../assets/vocab-images/percent.svg" aria-label="percent — what does Percent mean?">percent<span class="li-pop-i" aria-hidden="true">ⓘ</span></button>.</span><input class="li-input" type="text" data-nt-field placeholder="your work…" /></li><li><span class="li-step-text">What is</span><span class="li-math" role="math" aria-label="1 ÷ 5">1 ÷ 5</span><input class="li-input" type="text" data-nt-field placeholder="Type your answer for this step…" /><details class="li-stepcheck"><summary>Check this step</summary><div class="li-stepcheck-body"><span class="li-step-text">(0.2)</span></div></details></li><li><span class="li-step-text">Now multiply 0.2 × 100. What <button type="button" class="li-pop" data-popover data-term="Percent" data-term-es="Porcentaje" data-def="A way to compare a number to 100, shown with the % sign." data-def-es="Una manera de comparar un número con 100, con el signo %." data-img="../../assets/vocab-images/percent.svg" aria-label="percent — what does Percent mean?">percent<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> do we get?</span><span class="li-math" role="math" aria-label="0.2 × 100">0.2 × 100</span><input class="li-input" type="text" data-nt-field placeholder="Type your answer for this step…" /><details class="li-stepcheck"><summary>Check this step</summary><div class="li-stepcheck-body"><span class="li-step-text">(20%)</span></div></details></li></ol>
-        <div class="li-work"><span class="li-work-label">Show your work</span></div>
-        <p class="li-answer"><span class="li-answer-label">Answer</span><input class="li-input li-input-answer" type="text" data-nt-field placeholder="Type the answer" /></p>
+        <ol class="li-steps li-steps-fill"><li><span class="li-step-text">Let's change 1/5 into a fraction out of 100, then a <button type="button" class="li-pop" data-popover data-term="Decimal" data-term-es="Decimal" data-def="A number with a dot, like 0.5, that shows a part less than one." data-def-es="Un número con un punto, como 0.5, que muestra una parte menor que uno." data-img="../../assets/vocab-images/decimal.svg" aria-label="decimal — what does Decimal mean?">decimal<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> and a <button type="button" class="li-pop" data-popover data-term="Percent" data-term-es="Porcentaje" data-def="A way to compare a number to 100, shown with the % sign." data-def-es="Una manera de comparar un número con 100, con el signo %." data-img="../../assets/vocab-images/percent.svg" aria-label="percent — what does Percent mean?">percent<span class="li-pop-i" aria-hidden="true">ⓘ</span></button>.</span><input class="li-input" type="text" data-nt-field data-nt-key="we-1" placeholder="your work…" /></li><li><span class="li-step-text">What do we multiply the denominator 5 by to get 100?</span><input class="li-input" type="text" data-nt-field data-nt-key="we-2" placeholder="Type your answer for this step…" /><details class="li-stepcheck"><summary>Check this step</summary><div class="li-stepcheck-body"><span class="li-step-text">(20)</span></div></details></li><li><span class="li-step-text">Now multiply the numerator by that same 20: 1 × 20 = ?</span><span class="li-math" role="math" aria-label="1 × 20">1 × 20</span><input class="li-input" type="text" data-nt-field data-nt-key="we-3" placeholder="Type your answer for this step…" /><details class="li-stepcheck"><summary>Check this step</summary><div class="li-stepcheck-body"><span class="li-step-text">(20) So 1/5 = 20/100.</span></div></details></li><li><span class="li-step-text">20 out of 100 is what <button type="button" class="li-pop" data-popover data-term="Percent" data-term-es="Porcentaje" data-def="A way to compare a number to 100, shown with the % sign." data-def-es="Una manera de comparar un número con 100, con el signo %." data-img="../../assets/vocab-images/percent.svg" aria-label="percent — what does Percent mean?">percent<span class="li-pop-i" aria-hidden="true">ⓘ</span></button>?</span><input class="li-input" type="text" data-nt-field data-nt-key="we-4" placeholder="Type your answer for this step…" /><details class="li-stepcheck"><summary>Check this step</summary><div class="li-stepcheck-body"><span class="li-step-text">(20%) And as a <button type="button" class="li-pop" data-popover data-term="Decimal" data-term-es="Decimal" data-def="A number with a dot, like 0.5, that shows a part less than one." data-def-es="Un número con un punto, como 0.5, que muestra una parte menor que uno." data-img="../../assets/vocab-images/decimal.svg" aria-label="decimal — what does Decimal mean?">decimal<span class="li-pop-i" aria-hidden="true">ⓘ</span></button>? (0.2)</span></div></details></li></ol>
       </section><section class="li-block li-stage li-stage-own" id="li-own">
         <p class="li-eyebrow"><span class="li-stage-ico" aria-hidden="true">🚀</span><span class="li-stage-label">On your own</span><span class="li-stage-sub">You do — solve this one by yourself</span><button type="button" class="li-say no-print" data-li-say aria-label="Listen to the section: On your own">🔊</button></p>
-        <ul class="li-list"><li>In the table, fill in the missing fraction, <button type="button" class="li-pop" data-popover data-term="Decimal" data-term-es="Decimal" data-def="A number with a dot, like 0.5, that shows a part less than one." data-def-es="Un número con un punto, como 0.5, que muestra una parte menor que uno." data-img="../../assets/vocab-images/decimal.svg" aria-label="decimal — what does Decimal mean?">decimal<span class="li-pop-i" aria-hidden="true">ⓘ</span></button>, or <button type="button" class="li-pop" data-popover data-term="Percent" data-term-es="Porcentaje" data-def="A way to compare a number to 100, shown with the % sign." data-def-es="Una manera de comparar un número con 100, con el signo %." data-img="../../assets/vocab-images/percent.svg" aria-label="percent — what does Percent mean?">percent<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> for each row.</li><li>Remember: divide to get a <button type="button" class="li-pop" data-popover data-term="Decimal" data-term-es="Decimal" data-def="A number with a dot, like 0.5, that shows a part less than one." data-def-es="Un número con un punto, como 0.5, que muestra una parte menor que uno." data-img="../../assets/vocab-images/decimal.svg" aria-label="decimal — what does Decimal mean?">decimal<span class="li-pop-i" aria-hidden="true">ⓘ</span></button>, then multiply by 100 to get a <button type="button" class="li-pop" data-popover data-term="Percent" data-term-es="Porcentaje" data-def="A way to compare a number to 100, shown with the % sign." data-def-es="Una manera de comparar un número con 100, con el signo %." data-img="../../assets/vocab-images/percent.svg" aria-label="percent — what does Percent mean?">percent<span class="li-pop-i" aria-hidden="true">ⓘ</span></button>.</li></ul>
+        <p class="li-lead">Before you start, remember:</p><ul class="li-list"><li>In the table, first build the <button type="button" class="li-pop" data-popover data-term="Equivalent" data-term-es="Equivalente" data-def="Having the same value, just written a different way." data-def-es="Tener el mismo valor, escrito de otra forma." data-img="../../assets/vocab-images/fraction.svg" aria-label="equivalent — what does Equivalent mean?">equivalent<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> fraction out of 100 — you find the number that turns the denominator into 100.</li><li>Then read the <button type="button" class="li-pop" data-popover data-term="Percent" data-term-es="Porcentaje" data-def="A way to compare a number to 100, shown with the % sign." data-def-es="Una manera de comparar un número con 100, con el signo %." data-img="../../assets/vocab-images/percent.svg" aria-label="percent — what does Percent mean?">percent<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> straight off the new numerator, and write the same value as a <button type="button" class="li-pop" data-popover data-term="Decimal" data-term-es="Decimal" data-def="A number with a dot, like 0.5, that shows a part less than one." data-def-es="Un número con un punto, como 0.5, que muestra una parte menor que uno." data-img="../../assets/vocab-images/decimal.svg" aria-label="decimal — what does Decimal mean?">decimal<span class="li-pop-i" aria-hidden="true">ⓘ</span></button>.</li><li>If the denominator will not scale to 100 evenly (like 8 or 3), divide the numerator by the denominator instead, then multiply by 100.</li></ul>
         <p class="li-problem-q"><strong>Solve:</strong> A game shows your score as 7/8 complete. What <button type="button" class="li-pop" data-popover data-term="Percent" data-term-es="Porcentaje" data-def="A way to compare a number to 100, shown with the % sign." data-def-es="Una manera de comparar un número con 100, con el signo %." data-img="../../assets/vocab-images/percent.svg" aria-label="percent — what does Percent mean?">percent<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> is that?</p>
-        <div class="li-work"><span class="li-work-label">Show your work</span></div>
-        <p class="li-answer"><span class="li-answer-label">My answer</span><input class="li-input li-input-answer" type="text" data-nt-field placeholder="Type your answer" /></p>
+        <div class="li-work"><label class="li-work-label" for="w-own">Show your work</label><textarea class="li-work-area" id="w-own" data-nt-field data-nt-key="own" rows="3" placeholder="Write or sketch your thinking here…"></textarea></div>
+        <p class="li-answer"><span class="li-answer-label">My answer</span><input class="li-input li-input-answer" type="text" data-nt-field data-nt-key="own-answer" placeholder="Type your answer" /></p>
         <div class="li-hints no-print"><p class="li-hints-label">Stuck? Open one hint at a time.</p><details class="li-hint"><summary>Hint 1</summary><p>Try the out-of-100 move first: is there a whole number you can multiply 8 by to get exactly 100?</p></details><details class="li-hint"><summary>Hint 2</summary><p>There isn't (8 × 12 = 96, 8 × 13 = 104), so use the backup method: divide the numerator by the denominator.</p></details><details class="li-hint"><summary>Hint 3</summary><p>7 ÷ 8 = 0.875, which is 87.5/100 — slide the decimal two places right to read the percent.</p></details></div>
         <details class="li-check"><summary>Check my answer</summary><div class="li-check-body"><strong>✅ Answer:</strong> 87.5%<br><span class="li-check-why">8 does not scale to 100 by a whole number, so divide: 7 ÷ 8 = 0.875, and 0.875 × 100 = 87.5%. That is 87.5 out of 100.</span></div></details>
       </section><section class="li-block li-stage li-stage-apply" id="li-apply">
         <p class="li-eyebrow"><span class="li-stage-ico" aria-hidden="true">🌍</span><span class="li-stage-label">Apply it</span><span class="li-stage-sub">Use the same math in a real situation</span><button type="button" class="li-say no-print" data-li-say aria-label="Listen to the section: Apply it">🔊</button></p>
         <p class="li-lead"><strong>Build the Arcade Scoreboard</strong></p>
         <p class="li-problem-q">You are programming the scoreboard for a new arcade game. A player clears 7/8 of the level. The leaderboard must show this score as a <button type="button" class="li-pop" data-popover data-term="Percent" data-term-es="Porcentaje" data-def="A way to compare a number to 100, shown with the % sign." data-def-es="Una manera de comparar un número con 100, con el signo %." data-img="../../assets/vocab-images/percent.svg" aria-label="percent — what does Percent mean?">percent<span class="li-pop-i" aria-hidden="true">ⓘ</span></button>, and the game engine stores it as a <button type="button" class="li-pop" data-popover data-term="Decimal" data-term-es="Decimal" data-def="A number with a dot, like 0.5, that shows a part less than one." data-def-es="Un número con un punto, como 0.5, que muestra una parte menor que uno." data-img="../../assets/vocab-images/decimal.svg" aria-label="decimal — what does Decimal mean?">decimal<span class="li-pop-i" aria-hidden="true">ⓘ</span></button>. What percent and what decimal should the scoreboard display for 7/8? Show how you converted between all three forms.</p>
-        <div class="li-work"><span class="li-work-label">Show your work</span></div>
-        <p class="li-answer"><span class="li-answer-label">My answer</span><input class="li-input li-input-answer" type="text" data-nt-field placeholder="Type your answer" /></p>
+        <div class="li-work"><label class="li-work-label" for="w-apply">Show your work</label><textarea class="li-work-area" id="w-apply" data-nt-field data-nt-key="apply" rows="3" placeholder="Write or sketch your thinking here…"></textarea></div>
+        <p class="li-answer"><span class="li-answer-label">My answer</span><input class="li-input li-input-answer" type="text" data-nt-field data-nt-key="apply-answer" placeholder="Type your answer" /></p>
         <details class="li-check"><summary>Check my answer</summary><div class="li-check-body"><strong>✅ Sample answer:</strong> The denominator 8 does not scale to 100 by a whole number (8 × 12 = 96, 8 × 13 = 104), so I divide instead: 7 ÷ 8 = 0.875, and 0.875 × 100 = 87.5%. That is the same as 87.5/100. So 7/8 = 0.875 = 87.5%. The leaderboard shows 87.5% and the game engine stores 0.875.</div></details>
       </section><section class="li-block li-stage li-stage-talk" id="li-talk">
         <p class="li-eyebrow"><span class="li-stage-ico" aria-hidden="true">💬</span><span class="li-stage-label">Turn &amp; Talk</span><span class="li-stage-sub">Say it out loud with a partner</span><button type="button" class="li-say no-print" data-li-say aria-label="Listen to the section: Turn &amp; Talk">🔊</button></p>
@@ -1310,7 +1344,7 @@ html.nt-embed .li-stage{padding:clamp(16px,1.8vw,24px)!important;}
       </section>
     <section class="li-ready-card" id="li-ready">
       <p class="li-ready-head">🎉 Ready to launch?</p>
-      <label class="li-ready-check"><input type="checkbox" /> <span>I can solve one of these on my own.</span></label>
+      <label class="li-ready-check"><input type="checkbox" data-nt-field data-nt-key="ready" /> <span>I can solve one of these on my own.</span></label>
       <p class="li-ready-note">When you can finish <strong>Try it with me</strong> without help, head to the lesson activities and show what you know!</p>
     </section>
   </article>
