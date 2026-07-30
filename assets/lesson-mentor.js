@@ -134,6 +134,7 @@
       thatIs: "That is",
       sMove: "'s move",
       dismiss: "Dismiss",
+      langLabel: "Language",
     },
     es: {
       youWork: "Trabajas con",
@@ -153,6 +154,7 @@
       thatIs: "Esa es la manera de",
       sMove: "",
       dismiss: "Descartar",
+      langLabel: "Idioma",
     },
   };
 
@@ -380,9 +382,9 @@
       esc(mentor.say) +
       "</p>" +
       '<p class="ntm-where">' +
-      esc(mentor.years) +
+      esc(mField(mentor, "years")) +
       " · " +
-      esc(mentor.where) +
+      esc(mField(mentor, "where")) +
       "</p>" +
       "</div>" +
       "</div>" +
@@ -436,12 +438,32 @@
       '">' +
       esc(s_("visit")) +
       "</a>" +
+      '<div class="ntm-lang" role="group" aria-label="' +
+      esc(s_("langLabel")) +
+      '">' +
+      '<button type="button" data-ntm-lang="en" aria-pressed="' +
+      (state.lang === "es" ? "false" : "true") +
+      '"' +
+      (state.lang === "es" ? "" : ' class="is-on"') +
+      ">English</button>" +
+      '<button type="button" data-ntm-lang="es" aria-pressed="' +
+      (state.lang === "es" ? "true" : "false") +
+      '"' +
+      (state.lang === "es" ? ' class="is-on"' : "") +
+      ">Español</button>" +
+      "</div>" +
       "</div>" +
       "</div>";
 
     wrap.addEventListener("click", function (ev) {
       var t = ev.target;
-      if (t && t.getAttribute && t.getAttribute("data-ntm-close")) close();
+      if (!t) return;
+      var langBtn = t.closest && t.closest("[data-ntm-lang]");
+      if (langBtn) {
+        setLang(langBtn.getAttribute("data-ntm-lang"));
+        return;
+      }
+      if (t.getAttribute && t.getAttribute("data-ntm-close")) close();
     });
 
     var story = wrap.querySelector(".ntm-story");
@@ -455,6 +477,21 @@
     }
 
     return wrap;
+  }
+
+  /* The panel carries its own EN/ES toggle so a student who never opened Unit 0
+     — or who is handed a device mid-lesson — can still switch. It writes the
+     same `nt_mentor.lang` Unit 0 uses, so the choice is one preference, not two. */
+  function setLang(next) {
+    var want = next === "es" ? "es" : "en";
+    if (state.lang === want) return;
+    state.lang = want;
+    save(state);
+    renderPill();
+    if (els.panel) {
+      close();
+      open();
+    }
   }
 
   function onKey(ev) {
@@ -676,6 +713,7 @@
       save(state);
       renderPill();
     },
+    setLang: setLang,
     open: open,
     close: close,
   };

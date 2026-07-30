@@ -287,10 +287,11 @@
     }
   ];
 
-  /* ── Mentors ─────────────────────────────────────────────────────────
+  /* ── Mentors ──────────────────────────────────────
    * `face` drives assets/mentor-avatar.js — descriptive drawing features,
    * never a category. `simple` is the plain-language line (ESOL/Level 1).
-   * `es` carries the FULL Spanish text: thought, simple, did and struggle.
+   * `es` carries the FULL Spanish text a student reads: thought, simple, did,
+   * struggle, plus years and where — nothing on the card falls back to English.
    * Ordered A–Z by name at render time, never grouped by `rep`.
    */
   var MENTORS = [
@@ -321,7 +322,9 @@
         "thought": "Cómo predecir dónde estarían las estrellas y los planetas.",
         "simple": "Aprendió solo a predecir dónde estarían las estrellas.",
         "did": "Aprendió astronomía por su cuenta con libros prestados y calculó las tablas de estrellas y mareas para varios almanaques — página tras página de aritmética, todo a mano. También construyó un reloj de madera que daba las horas, tallando cada engranaje él mismo, después de desarmar un reloj de bolsillo para ver cómo funcionaba.",
-        "struggle": "Casi no fue a la escuela y no tuvo maestro. Todo lo que aprendió de astronomía salió de libros que le prestó un vecino, estudiados solo, de noche, en una mesa junto a la ventana. Los editores rechazaron su primer almanaque. Guardó los cálculos, los corrigió y volvió a intentarlo al año siguiente."
+        "struggle": "Casi no fue a la escuela y no tuvo maestro. Todo lo que aprendió de astronomía salió de libros que le prestó un vecino, estudiados solo, de noche, en una mesa junto a la ventana. Los editores rechazaron su primer almanaque. Guardó los cálculos, los corrigió y volvió a intentarlo al año siguiente.",
+        "years": "1731–1806",
+        "where": "Maryland, Estados Unidos"
       }
     },
     {
@@ -351,7 +354,9 @@
         "thought": "Cómo tomar la mejor decisión sin tener toda la información.",
         "simple": "Estudió cómo decidir bien cuando no estás seguro.",
         "did": "Trabajó en estadística y en teoría de juegos — las matemáticas de escoger bien cuando no hay certeza. Escribió un libro de estadística tan claro que todavía se lee hoy, y fue el primer académico negro elegido para la Academia Nacional de Ciencias.",
-        "struggle": "Obtuvo su doctorado a los 22 años y luego no lo contrataban. Solicitó empleo en universidades que no consideraban a un profesor negro, y pasó un año en Princeton donde algunos objetaron su nombramiento. Enseñó diez años en la Universidad Howard antes de que Berkeley finalmente le ofreciera un puesto."
+        "struggle": "Obtuvo su doctorado a los 22 años y luego no lo contrataban. Solicitó empleo en universidades que no consideraban a un profesor negro, y pasó un año en Princeton donde algunos objetaron su nombramiento. Enseñó diez años en la Universidad Howard antes de que Berkeley finalmente le ofreciera un puesto.",
+        "years": "1919–2010",
+        "where": "Illinois, Estados Unidos"
       }
     },
     {
@@ -381,7 +386,9 @@
         "thought": "Cómo resolver ecuaciones empezando por el caso más simple.",
         "simple": "Fue la primera persona negra del mundo con un doctorado en matemáticas.",
         "did": "En 1925 se convirtió en la primera persona negra del mundo en obtener un doctorado en matemáticas. Después enseñó por décadas en la Universidad Howard, donde formó a generaciones de estudiantes que siguieron sus propias carreras en matemáticas.",
-        "struggle": "Para que su doctorado fuera reconocido internacionalmente, su tesis tenía que ser aceptada por una universidad en el extranjero — y tenía que estar traducida. Dos universidades la rechazaron antes de que una en Japón la aceptara. Él mismo pagó la traducción."
+        "struggle": "Para que su doctorado fuera reconocido internacionalmente, su tesis tenía que ser aceptada por una universidad en el extranjero — y tenía que estar traducida. Dos universidades la rechazaron antes de que una en Japón la aceptara. Él mismo pagó la traducción.",
+        "years": "1895–1969",
+        "where": "Indiana, Estados Unidos"
       }
     },
     {
@@ -411,7 +418,9 @@
         "thought": "Cómo partir un problema enorme en capas que sí puedes manejar.",
         "simple": "Entró a la universidad a los 13 años y terminó su doctorado a los 19.",
         "did": "Entró a la Universidad de Chicago a los 13 años y terminó su doctorado en matemáticas a los 19. Después trabajó en cómo la radiación atraviesa la materia — matemáticas que todavía se usan hoy para diseñar blindajes.",
-        "struggle": "Los periódicos lo llamaron un 'genio negro', y esa etiqueta lo siguió por años, reduciendo décadas de trabajo real a un titular sobre su edad. Después de la guerra, a pesar de su historial, no consiguió un puesto académico en el sur segregado y trabajó en la industria gran parte de su carrera."
+        "struggle": "Los periódicos lo llamaron un 'genio negro', y esa etiqueta lo siguió por años, reduciendo décadas de trabajo real a un titular sobre su edad. Después de la guerra, a pesar de su historial, no consiguió un puesto académico en el sur segregado y trabajó en la industria gran parte de su carrera.",
+        "years": "1923–2011",
+        "where": "Illinois, Estados Unidos"
       }
     },
     {
@@ -441,7 +450,9 @@
         "thought": "Cómo la gravedad dobla la luz, y qué nos deja ver ese doblez.",
         "simple": "Estudia cómo la gravedad dobla la luz en el espacio.",
         "did": "Construyó las matemáticas de las lentes gravitacionales — describiendo cómo la luz de una estrella lejana se curva alrededor de un objeto pesado que está en medio, para que los astrónomos puedan deducir qué hay ahí aunque no lo vean directamente.",
-        "struggle": "Creció en Belice y no conoció a su padre hasta que era adolescente, cuando se mudó a Nueva York. Llegó a un país nuevo y a un sistema escolar nuevo al mismo tiempo, y tuvo que averiguar dónde encajaba mientras aprendía matemáticas muy por encima de lo que ofrecía su escuela."
+        "struggle": "Creció en Belice y no conoció a su padre hasta que era adolescente, cuando se mudó a Nueva York. Llegó a un país nuevo y a un sistema escolar nuevo al mismo tiempo, y tuvo que averiguar dónde encajaba mientras aprendía matemáticas muy por encima de lo que ofrecía su escuela.",
+        "years": "n. 1964",
+        "where": "Belice, y Estados Unidos"
       }
     },
     {
@@ -471,7 +482,9 @@
         "thought": "Por qué unos estudiantes creen que pueden con las matemáticas y otros no.",
         "simple": "Demostró que cualquier estudiante puede ser bueno en matemáticas.",
         "did": "Creó una forma de enseñar — después llamada el Modelo Potsdam — que tomaba estudiantes comunes y producía una cantidad extraordinaria de graduados en matemáticas, partiendo de que cada estudiante podía lograrlo y construyendo una comunidad en vez de un filtro.",
-        "struggle": "Quedó huérfano de niño y lo criaron sus parientes. Fue el noveno estadounidense negro en obtener un doctorado en matemáticas, en una época en que casi ninguna universidad contrataría a uno. Pasó su carrera en universidades que nadie volteaba a ver, y ahí demostró que los estudiantes nunca fueron el problema."
+        "struggle": "Quedó huérfano de niño y lo criaron sus parientes. Fue el noveno estadounidense negro en obtener un doctorado en matemáticas, en una época en que casi ninguna universidad contrataría a uno. Pasó su carrera en universidades que nadie volteaba a ver, y ahí demostró que los estudiantes nunca fueron el problema.",
+        "years": "1917–2018",
+        "where": "Carolina del Norte, Estados Unidos"
       }
     },
     {
@@ -502,7 +515,9 @@
         "thought": "Exactamente dónde estaría una nave espacial, y exactamente cuándo.",
         "simple": "Revisó a mano la computadora de la NASA para que los astronautas pudieran volar.",
         "did": "Calculó trayectorias de vuelo para la NASA — incluida la del primer estadounidense en el espacio y la órbita de regreso de John Glenn. Cuando la NASA empezó a usar computadoras electrónicas, Glenn pidió que ella revisara los números de la máquina a mano antes de aceptar volar.",
-        "struggle": "Trabajaba en un edificio donde no la dejaban usar el mismo baño ni la misma cafetera que sus colegas, y al principio la excluían de las reuniones donde se discutía el trabajo que ella misma hacía. Pidió asistir de todos modos, una y otra vez, hasta que dejaron de decirle que no."
+        "struggle": "Trabajaba en un edificio donde no la dejaban usar el mismo baño ni la misma cafetera que sus colegas, y al principio la excluían de las reuniones donde se discutía el trabajo que ella misma hacía. Pidió asistir de todos modos, una y otra vez, hasta que dejaron de decirle que no.",
+        "years": "1918–2020",
+        "where": "Virginia Occidental, Estados Unidos"
       }
     },
     {
@@ -532,7 +547,9 @@
         "thought": "Cómo lograr que una máquina haga el trabajo repetitivo.",
         "simple": "Aprendió programación antes que nadie y le enseñó a todo su equipo.",
         "did": "Dirigió el grupo de computación del Área Oeste de la NASA y luego se dio cuenta de que las computadoras electrónicas iban a reemplazar el cálculo a mano — así que aprendió sola el lenguaje de programación FORTRAN y se lo enseñó a todo su equipo antes de que llegara el cambio.",
-        "struggle": "Dirigió su grupo durante años antes de que la NASA le diera el título de supervisora. Cuando llegaron las máquinas, entendió que los trabajos de su equipo estaban a punto de desaparecer y, en lugar de esperar, capacitó de nuevo a cada una de ellas."
+        "struggle": "Dirigió su grupo durante años antes de que la NASA le diera el título de supervisora. Cuando llegaron las máquinas, entendió que los trabajos de su equipo estaban a punto de desaparecer y, en lugar de esperar, capacitó de nuevo a cada una de ellas.",
+        "years": "1910–2008",
+        "where": "Misuri, Estados Unidos"
       }
     },
     {
@@ -562,7 +579,9 @@
         "thought": "Qué hace el aire de verdad alrededor de un ala, no lo que debería hacer.",
         "simple": "Probó el aire real en las alas en vez de solo predecirlo.",
         "did": "Se convirtió en la primera mujer negra ingeniera de la NASA, analizando datos de experimentos en túneles de viento — comparando el aire real con las predicciones, a casi el doble de la velocidad del sonido. Después dejó la ingeniería a propósito para trabajar en contratar y ascender a otras mujeres en la NASA.",
-        "struggle": "Los cursos de ingeniería que necesitaba se daban en una preparatoria segregada para blancos. Tuvo que pedir permiso a la ciudad de Hampton para tomar clases en un edificio al que por lo demás no podía entrar — y después sentarse en esas clases como la única estudiante negra del salón."
+        "struggle": "Los cursos de ingeniería que necesitaba se daban en una preparatoria segregada para blancos. Tuvo que pedir permiso a la ciudad de Hampton para tomar clases en un edificio al que por lo demás no podía entrar — y después sentarse en esas clases como la única estudiante negra del salón.",
+        "years": "1921–2005",
+        "where": "Virginia, Estados Unidos"
       }
     },
     {
@@ -593,7 +612,9 @@
         "thought": "Qué forma tiene de verdad la Tierra, no la bola lisa del libro.",
         "simple": "Su modelo de la forma real de la Tierra ayuda al GPS a saber dónde estás.",
         "did": "Programó los cálculos que modelaron la forma verdadera de la Tierra, ligeramente irregular, usando datos de satélites. Ese modelo es parte de la base que hace preciso al GPS — la razón por la que un teléfono puede decirte en qué calle estás parado.",
-        "struggle": "Creció en una granja donde el futuro esperado era el trabajo agrícola o una fábrica de tabaco, y estudió para salir de ahí terminando como la mejor de su generación para ganar una beca. Por décadas casi nadie supo en qué se había convertido su trabajo; la conexión con el GPS se hizo pública cuando ya se había jubilado."
+        "struggle": "Creció en una granja donde el futuro esperado era el trabajo agrícola o una fábrica de tabaco, y estudió para salir de ahí terminando como la mejor de su generación para ganar una beca. Por décadas casi nadie supo en qué se había convertido su trabajo; la conexión con el GPS se hizo pública cuando ya se había jubilado.",
+        "years": "n. 1930",
+        "where": "Virginia, Estados Unidos"
       }
     },
     {
@@ -624,7 +645,9 @@
         "thought": "Qué queremos decir de verdad cuando decimos que dos cantidades tienen una razón.",
         "simple": "Descubrió las reglas que están debajo de cada problema de razones.",
         "did": "En 1943 se convirtió en la primera mujer negra estadounidense en obtener un doctorado en matemáticas. Su tesis desarrolló las reglas cuidadosas que hay debajo de comparar dos cantidades — las ideas que sostienen todo problema de razones. Después enseñó 47 años en las escuelas de Washington D.C. y luchó por acabar con su sistema segregado de 'niveles'.",
-        "struggle": "Obtuvo su doctorado a los 52 años, habiendo enseñado tiempo completo todo el camino. Cuando después formó parte del consejo escolar, estaba discutiendo contra un sistema de niveles que sacaba a los estudiantes negros de exactamente las matemáticas a las que ella le había dedicado la vida."
+        "struggle": "Obtuvo su doctorado a los 52 años, habiendo enseñado tiempo completo todo el camino. Cuando después formó parte del consejo escolar, estaba discutiendo contra un sistema de niveles que sacaba a los estudiantes negros de exactamente las matemáticas a las que ella le había dedicado la vida.",
+        "years": "1890–1980",
+        "where": "Washington D. C., Estados Unidos"
       }
     },
     {
@@ -654,7 +677,9 @@
         "thought": "Las estructuras que no cambian sin importar cómo las gires.",
         "simple": "Estudió formas que siguen iguales aunque las gires.",
         "did": "Una de las primeras mujeres negras estadounidenses en obtener un doctorado en matemáticas. Construyó el departamento de matemáticas de la Universidad Central de Carolina del Norte y ganó una de las primeras becas que llevaron computadoras a una universidad históricamente negra.",
-        "struggle": "Su madre murió cuando ella tenía dos años. Amaba las matemáticas pero la orientaron hacia la docencia como el único camino realista, e hizo su doctorado mientras enseñaba tiempo completo. Durante años pagó de su propio dinero la matrícula de sus estudiantes, sin decirlo."
+        "struggle": "Su madre murió cuando ella tenía dos años. Amaba las matemáticas pero la orientaron hacia la docencia como el único camino realista, e hizo su doctorado mientras enseñaba tiempo completo. Durante años pagó de su propio dinero la matrícula de sus estudiantes, sin decirlo.",
+        "years": "1914–1979",
+        "where": "Tennessee, Estados Unidos"
       }
     },
     {
@@ -684,7 +709,9 @@
         "thought": "El camino exacto de una nave, calculado antes de que alguien vuele.",
         "simple": "Programó los caminos que volarían los cohetes.",
         "did": "La segunda mujer negra estadounidense en obtener un doctorado en matemáticas. Escribió programas de computadora para los programas espaciales Vanguard y Mercury, calculando órbitas y trayectorias de cohetes, y después pasó décadas enseñando matemáticas a futuros maestros.",
-        "struggle": "Se graduó de Yale con un doctorado y aun así le negaron puestos de docencia. Cuando años después le dijeron que seguramente había enfrentado discriminación, respondió que en ese momento simplemente no se había dado cuenta — había estado demasiado ocupada trabajando para dejarse detener."
+        "struggle": "Se graduó de Yale con un doctorado y aun así le negaron puestos de docencia. Cuando años después le dijeron que seguramente había enfrentado discriminación, respondió que en ese momento simplemente no se había dado cuenta — había estado demasiado ocupada trabajando para dejarse detener.",
+        "years": "1924–2023",
+        "where": "Washington D. C., Estados Unidos"
       }
     },
     {
@@ -714,7 +741,9 @@
         "thought": "¿De cuántas maneras se puede acomodar esto? ¿Y puedo contarlo de otra forma?",
         "simple": "Cuenta de cuántas maneras se pueden acomodar las cosas.",
         "did": "Trabaja en combinatoria, las matemáticas de contar arreglos. También es conocido por una lista corta de reglas con las que enseña: que el talento matemático está repartido por igual entre todas las personas, y que todos en un salón merecen estar ahí.",
-        "struggle": "Llegó de Colombia a Estados Unidos para el posgrado y ha escrito sobre cuánto de la cultura de las matemáticas de élite no se dice en voz alta: de quién se supone que pertenece y de quién se supone que está perdido. Ahora construye salones y grupos de investigación diseñados a propósito para que esa suposición no se haga."
+        "struggle": "Llegó de Colombia a Estados Unidos para el posgrado y ha escrito sobre cuánto de la cultura de las matemáticas de élite no se dice en voz alta: de quién se supone que pertenece y de quién se supone que está perdido. Ahora construye salones y grupos de investigación diseñados a propósito para que esa suposición no se haga.",
+        "years": "n. 1977",
+        "where": "Colombia, y Estados Unidos"
       }
     },
     {
@@ -744,7 +773,9 @@
         "thought": "El borde exacto donde algo cambia de un estado a otro.",
         "simple": "Estudia el borde exacto donde el hielo se vuelve agua.",
         "did": "Estudia problemas de frontera libre — por ejemplo, la línea que se mueve donde el hielo se encuentra con el agua en la que se está derritiendo. En 2023 recibió el Premio Abel, uno de los mayores honores en matemáticas, y el primero otorgado a un matemático latinoamericano.",
-        "struggle": "Se formó en Argentina durante un periodo de grave agitación política, cuando las universidades eran allanadas y se expulsaba a profesores. Muchos de su generación de científicos argentinos salieron del país; él construyó su carrera en el extranjero mientras buena parte de la comunidad matemática de la que venía quedaba dispersa."
+        "struggle": "Se formó en Argentina durante un periodo de grave agitación política, cuando las universidades eran allanadas y se expulsaba a profesores. Muchos de su generación de científicos argentinos salieron del país; él construyó su carrera en el extranjero mientras buena parte de la comunidad matemática de la que venía quedaba dispersa.",
+        "years": "n. 1948",
+        "where": "Argentina, y Estados Unidos"
       }
     },
     {
@@ -774,7 +805,9 @@
         "thought": "Qué tan rápido se contagia algo en una población, y qué lo frena.",
         "simple": "Usa matemáticas para mostrar qué tan rápido se contagia una enfermedad.",
         "did": "Construye modelos matemáticos de cómo las enfermedades se mueven por las comunidades — trabajo que ayudó a definir cómo las autoridades de salud pública se preparan para un brote. También fundó un instituto de verano que ha guiado a cientos de estudiantes latinos y negros hacia doctorados en matemáticas.",
-        "struggle": "Llegó a Estados Unidos a los 18 años y trabajó en una fábrica, y luego como conserje de noche, mientras aprendía inglés. No empezó el doctorado hasta años después, ya en sus treintas, tras una temporada dando clases en preparatoria."
+        "struggle": "Llegó a Estados Unidos a los 18 años y trabajó en una fábrica, y luego como conserje de noche, mientras aprendía inglés. No empezó el doctorado hasta años después, ya en sus treintas, tras una temporada dando clases en preparatoria.",
+        "years": "n. 1952",
+        "where": "México, y Estados Unidos"
       }
     },
     {
@@ -804,7 +837,9 @@
         "thought": "Si te acercas lo suficiente a algo complicado, ¿se vuelve simple?",
         "simple": "Se acercaba a los problemas difíciles hasta que se veían simples.",
         "did": "Creó, junto con otro matemático, un conjunto de herramientas — hoy llamado teoría de Calderón–Zygmund — para partir una función complicada en pedazos lo bastante simples para analizarlos. Esos métodos son la base de las matemáticas detrás del procesamiento de señales e imágenes.",
-        "struggle": "Su padre lo empujó hacia la ingeniería, así que primero se formó y trabajó como ingeniero en una compañía petrolera, haciendo matemáticas por su cuenta. No comenzó su carrera matemática en serio hasta que un profesor visitante se fijó en él y le dijo que se fuera a Chicago."
+        "struggle": "Su padre lo empujó hacia la ingeniería, así que primero se formó y trabajó como ingeniero en una compañía petrolera, haciendo matemáticas por su cuenta. No comenzó su carrera matemática en serio hasta que un profesor visitante se fijó en él y le dijo que se fuera a Chicago.",
+        "years": "1920–1998",
+        "where": "Argentina, y Estados Unidos"
       }
     },
     {
@@ -834,7 +869,9 @@
         "thought": "Qué pasa cuando haces la misma operación dos veces seguidas.",
         "simple": "Descubrió qué pasa cuando repites el mismo paso dos veces.",
         "did": "Descubrió relaciones — hoy llamadas relaciones de Adem — que describen qué pasa cuando ciertas operaciones en topología se aplican una después de otra. Después regresó a México y ayudó a construir su instituto nacional de investigación matemática.",
-        "struggle": "Venía de una familia de inmigrantes libaneses en México, y estudió en una época en que México casi no tenía matemáticas de investigación propias. Hacer trabajo serio significaba irse; construir algo en casa significaba volver y empezar una cultura de investigación que todavía no existía."
+        "struggle": "Venía de una familia de inmigrantes libaneses en México, y estudió en una época en que México casi no tenía matemáticas de investigación propias. Hacer trabajo serio significaba irse; construir algo en casa significaba volver y empezar una cultura de investigación que todavía no existía.",
+        "years": "1921–1991",
+        "where": "México"
       }
     },
     {
@@ -864,7 +901,9 @@
         "thought": "Dónde es probable que termine un camino que se mueve al azar.",
         "simple": "Estudia dónde puede terminar un camino que se mueve al azar.",
         "did": "Estudia probabilidad y las matemáticas del movimiento aleatorio — cómo algo que se mueve de forma impredecible aun así sigue reglas que se pueden describir con el tiempo. Ha dedicado buena parte de su carrera a guiar a estudiantes de orígenes como el suyo hacia las matemáticas.",
-        "struggle": "Llegó a California desde el México rural a los 15 años y trabajó en los campos con su familia. Aprendió inglés en la preparatoria, entró a un colegio comunitario y solo entonces pasó a una universidad — una ruta que casi nadie toma en las matemáticas de investigación."
+        "struggle": "Llegó a California desde el México rural a los 15 años y trabajó en los campos con su familia. Aprendió inglés en la preparatoria, entró a un colegio comunitario y solo entonces pasó a una universidad — una ruta que casi nadie toma en las matemáticas de investigación.",
+        "years": "n. 1954",
+        "where": "México, y Estados Unidos"
       }
     },
     {
@@ -894,7 +933,9 @@
         "thought": "Cómo ver la forma de la roca a kilómetros bajo tierra sin excavar.",
         "simple": "Usó matemáticas para ver la roca muy por debajo de la tierra.",
         "did": "En 1986 se convirtió en la primera mujer hispana estadounidense en obtener un doctorado en matemáticas. Trabajó como geofísica, usando matemáticas para convertir ecos de ondas de sonido en imágenes de las capas de roca bajo la superficie.",
-        "struggle": "Fue una de muy pocas mujeres y la única estudiante hispana durante casi toda su formación, en un campo donde se daba por hecho que estaba en el salón equivocado. Ha contado que aprendió a propósito a no gastar energía en esa suposición."
+        "struggle": "Fue una de muy pocas mujeres y la única estudiante hispana durante casi toda su formación, en un campo donde se daba por hecho que estaba en el salón equivocado. Ha contado que aprendió a propósito a no gastar energía en esa suposición.",
+        "years": "n. 1954",
+        "where": "Texas, Estados Unidos"
       }
     },
     {
@@ -924,7 +965,9 @@
         "thought": "Cuántas maneras hay de construir algo, contadas con exactitud.",
         "simple": "Cuenta el número exacto de maneras de construir algo.",
         "did": "Trabaja en combinatoria — contando de cuántas maneras se pueden armar ciertas estructuras. También cofundó proyectos que hacen visible la comunidad matemática para estudiantes que nunca han visto a un matemático parecido a ellos.",
-        "struggle": "Su familia se mudó a Estados Unidos cuando era niña y estuvo indocumentada por años, lo que significaba que no podía solicitar casi ninguna beca ni ayuda federal, y no tenía certeza de que la dejarían quedarse. Ha escrito abiertamente sobre hacer una carrera de matemáticas sin saber si le permitirían terminarla."
+        "struggle": "Su familia se mudó a Estados Unidos cuando era niña y estuvo indocumentada por años, lo que significaba que no podía solicitar casi ninguna beca ni ayuda federal, y no tenía certeza de que la dejarían quedarse. Ha escrito abiertamente sobre hacer una carrera de matemáticas sin saber si le permitirían terminarla.",
+        "years": "n. 1983",
+        "where": "México, y Estados Unidos"
       }
     },
     {
@@ -954,7 +997,9 @@
         "thought": "Cómo convertir una forma en una ecuación, y una ecuación en forma.",
         "simple": "Convierte formas en ecuaciones, y ecuaciones en formas.",
         "did": "Trabaja en geometría algebraica, conectando figuras geométricas con las ecuaciones polinomiales que las describen — incluidas aplicaciones a la química y la biología. Fue vicepresidenta de la Unión Matemática Internacional.",
-        "struggle": "Estudió y enseñó en Argentina durante los años de la dictadura militar, cuando la universidad estaba bajo control directo y colegas desaparecían. Se quedó y construyó un grupo de investigación ahí en lugar de irse, en un sistema con muy poco financiamiento para eso."
+        "struggle": "Estudió y enseñó en Argentina durante los años de la dictadura militar, cuando la universidad estaba bajo control directo y colegas desaparecían. Se quedó y construyó un grupo de investigación ahí en lugar de irse, en un sistema con muy poco financiamiento para eso.",
+        "years": "n. 1955",
+        "where": "Argentina"
       }
     },
     {
@@ -984,7 +1029,9 @@
         "thought": "Qué tan áspera puede ser una superficie y aun así portarse como una lisa.",
         "simple": "Mide formas demasiado irregulares para la geometría normal.",
         "did": "Estudia teoría geométrica de la medida — las matemáticas de medir formas demasiado irregulares para la geometría común. Ha dirigido el Instituto Simons Laufer de Ciencias Matemáticas, uno de los principales centros de investigación matemática del mundo.",
-        "struggle": "Llegó a las matemáticas por las olimpiadas matemáticas colombianas y luego se fue al extranjero para el posgrado, entrando a un campo donde casi nadie compartía su origen ni su primer idioma. Ha hablado del trabajo que cuesta construir una carrera siendo constantemente la única."
+        "struggle": "Llegó a las matemáticas por las olimpiadas matemáticas colombianas y luego se fue al extranjero para el posgrado, entrando a un campo donde casi nadie compartía su origen ni su primer idioma. Ha hablado del trabajo que cuesta construir una carrera siendo constantemente la única.",
+        "years": "n. 1964",
+        "where": "Colombia, y Estados Unidos"
       }
     },
     {
@@ -1014,7 +1061,9 @@
         "thought": "Por qué mueren las células del ojo, escrito como un sistema.",
         "simple": "Modela las células del ojo para entender la ceguera.",
         "did": "Construye modelos matemáticos de la retina — describiendo cómo las células fotorreceptoras se sostienen entre sí, para entender enfermedades degenerativas que causan ceguera. También ha trabajado en la Fundación Nacional de Ciencias ampliando el acceso a las matemáticas.",
-        "struggle": "Creció en el Este de Los Ángeles, donde su maestro Jaime Escalante le enseñó cálculo. Su amiga más cercana de esa clase murió por suicidio durante la universidad. Camacho ha dicho que siguió en las matemáticas en parte para llevar adelante el trabajo que habían planeado hacer juntas."
+        "struggle": "Creció en el Este de Los Ángeles, donde su maestro Jaime Escalante le enseñó cálculo. Su amiga más cercana de esa clase murió por suicidio durante la universidad. Camacho ha dicho que siguió en las matemáticas en parte para llevar adelante el trabajo que habían planeado hacer juntas.",
+        "years": "n. 1974",
+        "where": "México, y Estados Unidos"
       }
     },
     {
@@ -1045,7 +1094,9 @@
         "thought": "Cómo ajustar una curva suave a medidas dispersas.",
         "simple": "Ajusta curvas suaves a medidas dispersas.",
         "did": "En 1960 se convirtió en la primera mujer negra cubana en obtener un doctorado en matemáticas en Cuba, trabajando sobre la teoría de ciertos polinomios. Después dirigió programas en el Departamento de Educación de Estados Unidos para ampliar el acceso a la ciencia y las matemáticas.",
-        "struggle": "Salió de Cuba en 1962 como refugiada política con sus dos hijos pequeños, llegando a Estados Unidos con su doctorado y sin credenciales reconocidas. Reconstruyó su carrera desde el principio, enseñando en colegios comunitarios hasta que sus títulos volvieron a contar."
+        "struggle": "Salió de Cuba en 1962 como refugiada política con sus dos hijos pequeños, llegando a Estados Unidos con su doctorado y sin credenciales reconocidas. Reconstruyó su carrera desde el principio, enseñando en colegios comunitarios hasta que sus títulos volvieron a contar.",
+        "years": "n. 1936",
+        "where": "Cuba, y Estados Unidos"
       }
     },
     {
@@ -1075,7 +1126,9 @@
         "thought": "Cómo convertir un dibujo en números, y los números otra vez en dibujo.",
         "simple": "Inventó la cuadrícula con el eje x y el eje y.",
         "did": "Conectó el álgebra con la geometría poniendo las figuras sobre una cuadrícula de líneas numeradas — por eso el plano de coordenadas se llama cartesiano. Toda gráfica con un eje x y un eje y viene de esta idea.",
-        "struggle": "Fue un niño enfermizo y en la escuela le permitían quedarse en la cama hasta tarde por la mañana, una costumbre que mantuvo toda la vida y en la que hacía su trabajo de pensar. Publicaba con cuidado y despacio, y retuvo un libro entero al enterarse de que Galileo había sido condenado por decir algo parecido."
+        "struggle": "Fue un niño enfermizo y en la escuela le permitían quedarse en la cama hasta tarde por la mañana, una costumbre que mantuvo toda la vida y en la que hacía su trabajo de pensar. Publicaba con cuidado y despacio, y retuvo un libro entero al enterarse de que Galileo había sido condenado por decir algo parecido.",
+        "years": "1596–1650",
+        "where": "Francia"
       }
     },
     {
@@ -1106,7 +1159,9 @@
         "thought": "Si hay un atajo escondido en un problema que todos hacen a la fuerza.",
         "simple": "De niño sumó del 1 al 100 en segundos formando parejas.",
         "did": "De niño en la escuela, cuando le pidieron sumar todos los números del 1 al 100, notó que se podían formar parejas — 1 con 100, 2 con 99, y así — cincuenta parejas de 101. Dio la respuesta casi de inmediato. Después transformó la teoría de números, la geometría y la astronomía.",
-        "struggle": "Su padre era albañil y no veía razón para que siguiera en la escuela; esperaba que aprendiera un oficio. Solo continuó porque un maestro se fijó en él y lo defendió. Más adelante guardó descubrimientos por años sin publicarlos, y tuvo que ver cómo otros los anunciaban primero."
+        "struggle": "Su padre era albañil y no veía razón para que siguiera en la escuela; esperaba que aprendiera un oficio. Solo continuó porque un maestro se fijó en él y lo defendió. Más adelante guardó descubrimientos por años sin publicarlos, y tuvo que ver cómo otros los anunciaban primero.",
+        "years": "1777–1855",
+        "where": "Alemania"
       }
     },
     {
@@ -1137,7 +1192,9 @@
         "thought": "Cómo volver a dibujar una situación real como un diagrama simple de puntos y líneas.",
         "simple": "Siguió haciendo matemáticas después de quedar ciego.",
         "did": "Cuando le preguntaron si se podían caminar los siete puentes de Königsberg cruzando cada uno exactamente una vez, tiró el mapa y dibujó solo las conexiones — inventando la teoría de grafos y demostrando que era imposible. Está entre los matemáticos más productivos que han existido.",
-        "struggle": "Perdió la vista de un ojo cuando tenía treinta y tantos y quedó casi completamente ciego alrededor de los sesenta. En lugar de parar, les dictaba su trabajo a asistentes y produjo cerca de la mitad de toda su obra después de perder la vista, sosteniendo los cálculos en la cabeza."
+        "struggle": "Perdió la vista de un ojo cuando tenía treinta y tantos y quedó casi completamente ciego alrededor de los sesenta. En lugar de parar, les dictaba su trabajo a asistentes y produjo cerca de la mitad de toda su obra después de perder la vista, sosteniendo los cálculos en la cabeza.",
+        "years": "1707–1783",
+        "where": "Suiza, y Rusia"
       }
     },
     {
@@ -1167,7 +1224,9 @@
         "thought": "Cómo construir la siguiente fila de un patrón con la fila de arriba.",
         "simple": "Hizo un triángulo donde cada número es la suma de los dos de arriba.",
         "did": "Estudió el triángulo de números que hoy lleva su nombre, donde cada entrada es la suma de las dos de arriba. Con Fermat desarrolló los comienzos de la probabilidad — cómo razonar sobre lo que es probable en vez de lo que es seguro.",
-        "struggle": "Estuvo enfermo casi toda su corta vida y con dolor frecuente. A los 19 años construyó una calculadora mecánica para ahorrarle a su padre meses de aritmética de impuestos, y le tomó tres años y unos cincuenta prototipos fallidos lograr que funcionara. Murió a los 39."
+        "struggle": "Estuvo enfermo casi toda su corta vida y con dolor frecuente. A los 19 años construyó una calculadora mecánica para ahorrarle a su padre meses de aritmética de impuestos, y le tomó tres años y unos cincuenta prototipos fallidos lograr que funcionara. Murió a los 39.",
+        "years": "1623–1662",
+        "where": "Francia"
       }
     },
     {
@@ -1198,7 +1257,9 @@
         "thought": "Si hay una forma mejor de escribir números que la que todos usan.",
         "simple": "Llevó los números del 0 al 9 a Europa.",
         "did": "Creció entre los puertos comerciales del norte de África, ahí aprendió los dígitos hindú-arábigos del 0 al 9, y escribió el libro que los introdujo en Europa — reemplazando los números romanos. La sucesión que lleva su nombre, donde cada número es la suma de los dos anteriores, apareció en un pequeño ejemplo de ese libro.",
-        "struggle": "Comerciantes y funcionarios se resistieron a los nuevos dígitos por generaciones — algunas ciudades los prohibieron, sospechando que eran más fáciles de alterar en un libro de cuentas que los números romanos. El sistema que él defendió tardó cerca de tres siglos en reemplazar por completo al que superaba."
+        "struggle": "Comerciantes y funcionarios se resistieron a los nuevos dígitos por generaciones — algunas ciudades los prohibieron, sospechando que eran más fáciles de alterar en un libro de cuentas que los números romanos. El sistema que él defendió tardó cerca de tres siglos en reemplazar por completo al que superaba.",
+        "years": "aprox. 1170–1250",
+        "where": "Italia, y el norte de África"
       }
     },
     {
@@ -1228,7 +1289,9 @@
         "thought": "Cómo medir algo curvo usando cosas rectas que ya entiendes.",
         "simple": "Halló el área del círculo apretándolo entre otras figuras.",
         "did": "Encontró el área de un círculo apretándolo entre polígonos dibujados por dentro y por fuera, y luego agregando más y más lados hasta que el espacio entre ellos casi se cerraba. Esa idea de apretar es la semilla del cálculo, unos dos mil años antes.",
-        "struggle": "Buena parte de su obra se perdió. Uno de sus textos más importantes sobrevivió solo porque siglos después un copista raspó la tinta del pergamino para reutilizarlo en un libro de oraciones — y el original, apenas visible, no se volvió a leer hasta el siglo veinte."
+        "struggle": "Buena parte de su obra se perdió. Uno de sus textos más importantes sobrevivió solo porque siglos después un copista raspó la tinta del pergamino para reutilizarlo en un libro de oraciones — y el original, apenas visible, no se volvió a leer hasta el siglo veinte.",
+        "years": "aprox. 287–212 a. C.",
+        "where": "Siracusa, Sicilia"
       }
     },
     {
@@ -1258,7 +1321,9 @@
         "thought": "Lo que se queda igual mientras todo lo demás cambia.",
         "simple": "Encontró lo que se queda igual mientras todo lo demás cambia.",
         "did": "Demostró que cada simetría en un sistema físico corresponde a algo que se conserva — un resultado tan central que la física todavía se construye sobre él. También reorganizó el álgebra moderna en torno a la estructura en vez del cálculo.",
-        "struggle": "No la dejaron inscribirse como estudiante regular, y dio clases cuatro años en Gotinga sin sueldo ni título, con sus cursos anunciados bajo el nombre de un colega hombre porque la facultad no nombraría a una mujer. En 1933 la despidieron por ser judía y se fue a Estados Unidos, donde murió dos años después."
+        "struggle": "No la dejaron inscribirse como estudiante regular, y dio clases cuatro años en Gotinga sin sueldo ni título, con sus cursos anunciados bajo el nombre de un colega hombre porque la facultad no nombraría a una mujer. En 1933 la despidieron por ser judía y se fue a Estados Unidos, donde murió dos años después.",
+        "years": "1882–1935",
+        "where": "Alemania, y Estados Unidos"
       }
     },
     {
@@ -1288,7 +1353,9 @@
         "thought": "Cómo escribir instrucciones tan exactas que una máquina pueda seguirlas.",
         "simple": "Escribió el primer programa de computadora, antes de que existieran.",
         "did": "Mientras traducía un artículo sobre una computadora mecánica propuesta, agregó notas más largas que el artículo mismo — incluido un procedimiento paso a paso para que la máquina calculara una sucesión de números. En general se considera el primer programa de computadora publicado.",
-        "struggle": "Su madre la hizo estudiar matemáticas intensamente justo para suprimir cualquier rastro de su padre, el poeta Byron. Estuvo enferma por largos periodos, y la máquina para la que escribió nunca se construyó en su vida — sus notas describían un programa para una computadora que no existía."
+        "struggle": "Su madre la hizo estudiar matemáticas intensamente justo para suprimir cualquier rastro de su padre, el poeta Byron. Estuvo enferma por largos periodos, y la máquina para la que escribió nunca se construyó en su vida — sus notas describían un programa para una computadora que no existía.",
+        "years": "1815–1852",
+        "where": "Inglaterra"
       }
     },
     {
@@ -1318,7 +1385,9 @@
         "thought": "Cómo dibujar los datos tan claro que nadie pueda discutirlos.",
         "simple": "Dibujó los datos tan claro que los líderes tuvieron que cambiar las reglas.",
         "did": "Recopiló datos de mortalidad en hospitales militares e inventó un diagrama circular para mostrarlos — haciendo visible que morían muchos más soldados por infecciones evitables que por heridas. La imagen cambió las políticas donde los números solos no lo habían logrado. Fue la primera mujer elegida a la Real Sociedad de Estadística.",
-        "struggle": "Su familia esperaba que se casara, no que trabajara, y por años no la dejaron formarse. Después de la guerra pasó gran parte del tiempo en cama e hizo la mayoría de su trabajo estadístico desde su cuarto, enviando gráficas y cartas a funcionarios que no la habrían recibido en persona."
+        "struggle": "Su familia esperaba que se casara, no que trabajara, y por años no la dejaron formarse. Después de la guerra pasó gran parte del tiempo en cama e hizo la mayoría de su trabajo estadístico desde su cuarto, enviando gráficas y cartas a funcionarios que no la habrían recibido en persona.",
+        "years": "1820–1910",
+        "where": "Inglaterra"
       }
     },
     {
@@ -1349,7 +1418,9 @@
         "thought": "Cómo hacer que una computadora entienda palabras y no solo números.",
         "simple": "Hizo que las computadoras entendieran palabras, no solo números.",
         "did": "Construyó el primer compilador — un programa que convierte instrucciones legibles para personas en código de máquina — e impulsó la creación de COBOL, un lenguaje escrito para que lo pudiera leer gente que no era programadora. También pegó en una libreta una polilla encontrada en un relé, popularizando la palabra 'depurar'.",
-        "struggle": "Le dijeron muchas veces que su idea del compilador era imposible, porque 'las computadoras solo hacen aritmética'. Lo construyó de todos modos, y después pasó años convenciendo a la gente de usarlo. La Marina intentó retirarla más de una vez; la volvían a llamar, y sirvió hasta los 79 años."
+        "struggle": "Le dijeron muchas veces que su idea del compilador era imposible, porque 'las computadoras solo hacen aritmética'. Lo construyó de todos modos, y después pasó años convenciendo a la gente de usarlo. La Marina intentó retirarla más de una vez; la volvían a llamar, y sirvió hasta los 79 años.",
+        "years": "1906–1992",
+        "where": "Nueva York, Estados Unidos"
       }
     },
     {
@@ -1379,7 +1450,9 @@
         "thought": "Si puede existir un solo método que resuelva toda una clase de ecuaciones.",
         "simple": "Trabajó en un solo problema por más de veinte años.",
         "did": "Pasó décadas en el décimo problema de Hilbert y construyó casi toda la estructura que finalmente lo resolvió — mostrando que no existe tal método universal. Fue la primera mujer elegida a la sección de matemáticas de la Academia Nacional de Ciencias y la primera presidenta de la Sociedad Matemática Estadounidense.",
-        "struggle": "La escarlatina y la fiebre reumática le costaron más de dos años de escuela cuando era niña y le dañaron el corazón de forma permanente. Le dijeron que no esperara una vida larga. Trabajó en el mismo problema más de veinte años sin saber si tenía solución."
+        "struggle": "La escarlatina y la fiebre reumática le costaron más de dos años de escuela cuando era niña y le dañaron el corazón de forma permanente. Le dijeron que no esperara una vida larga. Trabajó en el mismo problema más de veinte años sin saber si tenía solución.",
+        "years": "1919–1985",
+        "where": "California, Estados Unidos"
       }
     },
     {
@@ -1409,7 +1482,9 @@
         "thought": "Si una regla que falla en general todavía funciona en un grupo más pequeño de casos.",
         "simple": "Estudió en secreto usando el nombre de un hombre.",
         "did": "Logró el primer avance general importante en el último teorema de Fermat al demostrarlo para toda una clase de casos a la vez — los primos que llevan su nombre. También ganó el premio de la Academia Francesa por las matemáticas de cómo vibran las superficies.",
-        "struggle": "Sus padres le quitaban las velas y la lumbre para que no estudiara de noche; ella trabajaba envuelta en cobijas. Como mujer no la admitían en la Escuela Politécnica, así que consiguió los apuntes de las clases de segunda mano y entregó trabajos bajo el nombre de un estudiante hombre — Monsieur LeBlanc — por años antes de revelar quién era."
+        "struggle": "Sus padres le quitaban las velas y la lumbre para que no estudiara de noche; ella trabajaba envuelta en cobijas. Como mujer no la admitían en la Escuela Politécnica, así que consiguió los apuntes de las clases de segunda mano y entregó trabajos bajo el nombre de un estudiante hombre — Monsieur LeBlanc — por años antes de revelar quién era.",
+        "years": "1776–1831",
+        "where": "Francia"
       }
     },
     {
@@ -1439,7 +1514,9 @@
         "thought": "La forma de una superficie curva, y todos los caminos que podrías tomar sobre ella.",
         "simple": "Dibujaba en el piso hojas enormes para pensar despacio.",
         "did": "Estudió la geometría de las superficies curvas y cómo los caminos se enredan sobre ellas. En 2014 se convirtió en la primera mujer — y la primera persona iraní — en recibir la Medalla Fields, el máximo honor de las matemáticas.",
-        "struggle": "Se describía a sí misma como alguien que pensaba despacio, y trabajaba extendiendo dibujos enormes en hojas sobre el piso, a veces por meses, tanto que su hija creía que era pintora. De niña quería ser escritora y no creía ser buena en matemáticas. Murió de cáncer a los 40 años."
+        "struggle": "Se describía a sí misma como alguien que pensaba despacio, y trabajaba extendiendo dibujos enormes en hojas sobre el piso, a veces por meses, tanto que su hija creía que era pintora. De niña quería ser escritora y no creía ser buena en matemáticas. Murió de cáncer a los 40 años.",
+        "years": "1977–2017",
+        "where": "Irán, y Estados Unidos"
       }
     },
     {
@@ -1470,7 +1547,9 @@
         "thought": "Un solo procedimiento confiable que resuelva toda ecuación de la misma forma.",
         "simple": "El álgebra se llama así por su libro. La palabra algoritmo también.",
         "did": "Escribió el libro que le da su nombre al álgebra — al-jabr, que significa 'restaurar', el movimiento de sumar lo mismo a los dos lados para mantener la ecuación equilibrada. Su nombre, en latín, se convirtió en la palabra 'algoritmo'.",
-        "struggle": "Trabajaba sin símbolos. No existía la x, ni el signo de igual, ni forma de escribir una fórmula — cada ecuación y cada solución tenía que exponerse en oraciones completas, y cada regla general explicarse con ejemplos resueltos. La notación que hace fácil el álgebra estaba a siete siglos de distancia."
+        "struggle": "Trabajaba sin símbolos. No existía la x, ni el signo de igual, ni forma de escribir una fórmula — cada ecuación y cada solución tenía que exponerse en oraciones completas, y cada regla general explicarse con ejemplos resueltos. La notación que hace fácil el álgebra estaba a siete siglos de distancia.",
+        "years": "aprox. 780–850",
+        "where": "Bagdad"
       }
     },
     {
@@ -1500,7 +1579,9 @@
         "thought": "Patrones en los números que nadie había notado que estaban ahí.",
         "simple": "Encontró patrones de números solo, con un libro viejo.",
         "did": "Trabajando casi solo con un libro de texto desactualizado, produjo miles de resultados en teoría de números — muchos ciertos, muchos extraños, y algunos que nadie más demostró hasta ochenta años después.",
-        "struggle": "Lo dieron de baja de la universidad dos veces, porque no estudiaba nada más que matemáticas. Trabajó como empleado de una oficina de embarques y escribió a matemáticos ingleses pidiendo que lo tomaran en serio; casi todos lo ignoraron. Cuando uno por fin le respondió, Ramanujan viajó a Inglaterra, se enfermó de gravedad en un país cuya comida y clima no toleraba, y murió a los 32 años."
+        "struggle": "Lo dieron de baja de la universidad dos veces, porque no estudiaba nada más que matemáticas. Trabajó como empleado de una oficina de embarques y escribió a matemáticos ingleses pidiendo que lo tomaran en serio; casi todos lo ignoraron. Cuando uno por fin le respondió, Ramanujan viajó a Inglaterra, se enfermó de gravedad en un país cuya comida y clima no toleraba, y murió a los 32 años.",
+        "years": "1887–1920",
+        "where": "India, e Inglaterra"
       }
     },
     {
@@ -1531,7 +1612,9 @@
         "thought": "Si la forma en que te enseñaron a calcular es de verdad la más rápida.",
         "simple": "Multiplicaba números enormes en su cabeza en segundos.",
         "did": "Hacía aritmética enorme mentalmente — una vez multiplicó correctamente dos números de trece dígitos en menos de medio minuto. Dedicó gran parte de su vida a escribir libros sosteniendo que el cálculo mental es un conjunto de estrategias que se aprenden, no un don, y a enseñar esas estrategias a niños.",
-        "struggle": "Nunca fue a la escuela. Su familia descubrió su habilidad cuando tenía unos tres años y la puso en el escenario para ganar el dinero de la casa, así que su infancia fueron presentaciones en lugar de educación. Pasó su vida adulta insistiendo en que era una técnica que cualquiera podía aprender, contra la preferencia de todos por llamarlo magia."
+        "struggle": "Nunca fue a la escuela. Su familia descubrió su habilidad cuando tenía unos tres años y la puso en el escenario para ganar el dinero de la casa, así que su infancia fueron presentaciones en lugar de educación. Pasó su vida adulta insistiendo en que era una técnica que cualquiera podía aprender, contra la preferencia de todos por llamarlo magia.",
+        "years": "1929–2013",
+        "where": "India"
       }
     },
     {
@@ -1562,7 +1645,9 @@
         "thought": "Cómo manejar varias cantidades desconocidas al mismo tiempo.",
         "simple": "Resolvió sistemas de ecuaciones antes que Europa.",
         "did": "Desarrolló un método para resolver sistemas de ecuaciones usando determinantes, llegando a la idea por su cuenta y al menos una década antes que Leibniz en Europa. Construyó buena parte de los fundamentos del wasan, las matemáticas japonesas propias de esa época.",
-        "struggle": "Japón estuvo casi completamente cerrado al exterior durante su vida, así que él no tuvo acceso a las matemáticas europeas ni ellas a las suyas. Además, él y sus discípulos guardaban sus métodos en secreto frente a escuelas rivales, y en parte por eso todavía se discute cuánto alcanzó realmente su obra."
+        "struggle": "Japón estuvo casi completamente cerrado al exterior durante su vida, así que él no tuvo acceso a las matemáticas europeas ni ellas a las suyas. Además, él y sus discípulos guardaban sus métodos en secreto frente a escuelas rivales, y en parte por eso todavía se discute cuánto alcanzó realmente su obra.",
+        "years": "aprox. 1642–1708",
+        "where": "Japón"
       }
     },
     {
@@ -1592,7 +1677,9 @@
         "thought": "La estructura de espacios que tienen infinitas direcciones.",
         "simple": "Dejó las matemáticas por años y volvió a los 37.",
         "did": "Trabaja en análisis funcional y escribió un libro de texto de posgrado que es una referencia sobre teoría de espacios de Banach. Miembro de la nación oglala lakota, ha dedicado buena parte de su carrera a crear programas de matemáticas en universidades tribales y a acercar a estudiantes nativos al campo.",
-        "struggle": "Dejó las matemáticas después de su maestría y trabajó años como programador antes de volver a hacer un doctorado a los 37. Ha descrito lo pocos que eran los matemáticos nativos americanos a quienes seguir — y que el trabajo de abrirle paso a otros había que construirlo casi desde cero."
+        "struggle": "Dejó las matemáticas después de su maestría y trabajó años como programador antes de volver a hacer un doctorado a los 37. Ha descrito lo pocos que eran los matemáticos nativos americanos a quienes seguir — y que el trabajo de abrirle paso a otros había que construirlo casi desde cero.",
+        "years": "n. 1948",
+        "where": "Illinois, Estados Unidos"
       }
     },
     {
@@ -1623,7 +1710,9 @@
         "thought": "A dónde va de verdad el agua bajo tierra, y qué lleva consigo.",
         "simple": "Modela por dónde se mueven el agua y la contaminación bajo tierra.",
         "did": "Matemática aplicada y miembro de la tribu lumbee, modela el flujo de agua subterránea y la contaminación — matemáticas que se usan para entender cómo se extiende la contaminación bajo la superficie y cómo limpiarla. Ha dirigido programas de ciencias ambientales al servicio de comunidades tribales.",
-        "struggle": "Fue una de muy pocas mujeres nativas americanas en un doctorado en matemáticas, y ha hablado de lo aislante que fue eso. Construyó su carrera a propósito alrededor de problemas que afectaban a su propia comunidad, en un campo que premia la abstracción y muchas veces trata el trabajo aplicado como algo menor."
+        "struggle": "Fue una de muy pocas mujeres nativas americanas en un doctorado en matemáticas, y ha hablado de lo aislante que fue eso. Construyó su carrera a propósito alrededor de problemas que afectaban a su propia comunidad, en un campo que premia la abstracción y muchas veces trata el trabajo aplicado como algo menor.",
+        "years": "n. 1957",
+        "where": "Carolina del Norte, Estados Unidos"
       }
     }
   ];

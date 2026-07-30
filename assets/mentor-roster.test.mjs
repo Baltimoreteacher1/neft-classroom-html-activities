@@ -117,7 +117,7 @@ const REQUIRED = [
 
     // FULL Spanish — the long story too. A student reading in Spanish must not
     // hit an English wall at the one paragraph that matters most.
-    for (const field of ["thought", "simple", "did", "struggle"]) {
+    for (const field of ["thought", "simple", "did", "struggle", "years", "where"]) {
       assert.ok(
         m.es && typeof m.es[field] === "string" && m.es[field].length > 0,
         `mentor ${m.id}: missing Spanish "${field}"`,
@@ -265,7 +265,7 @@ const REQUIRED = [
  */
 {
   const surfaces = {
-    "mentor-lab/mentor-lab.js": ["mStruggle", "mDid"],
+    "mentor-lab/mentor-lab.js": ["mStruggle", "mDid", "mLoc"],
     "assets/lesson-mentor.js": ["mField"],
   };
   for (const [rel, helpers] of Object.entries(surfaces)) {
@@ -273,13 +273,39 @@ const REQUIRED = [
     for (const h of helpers) {
       assert.ok(src.includes(h), `${rel}: missing language helper ${h}()`);
     }
-    for (const raw of ["m.struggle", "m.did", "mentor.struggle", "mentor.did"]) {
+    for (const raw of [
+      "m.struggle",
+      "m.did",
+      "m.where",
+      "m.years",
+      "mentor.struggle",
+      "mentor.did",
+      "mentor.where",
+      "mentor.years",
+    ]) {
       assert.ok(
         !src.includes("esc(" + raw + ")"),
         `${rel} renders ${raw} directly — Spanish readers would get English there`,
       );
     }
   }
+}
+
+/* ── the in-lesson layer must be switchable on its own ─────────────────────
+ * A student handed a device mid-lesson, or who never opened Unit 0, still needs
+ * a way into Spanish. The layer writes the same nt_mentor.lang Unit 0 uses, so
+ * there is one preference rather than two that can disagree.
+ */
+{
+  const layer = readFileSync(resolve(ROOT, "assets/lesson-mentor.js"), "utf8");
+  assert.ok(/function setLang\(/.test(layer), "lesson-mentor.js: no setLang()");
+  assert.ok(/data-ntm-lang/.test(layer), "lesson-mentor.js: panel has no language toggle");
+  assert.ok(
+    /state\.lang = want[\s\S]{0,80}save\(state\)/.test(layer),
+    "lesson-mentor.js: setLang() must persist to nt_mentor.lang, not just re-render",
+  );
+  const css = readFileSync(resolve(ROOT, "assets/lesson-mentor.css"), "utf8");
+  assert.ok(/\.ntm-lang/.test(css), "lesson-mentor.css: language toggle unstyled");
 }
 
 console.log(

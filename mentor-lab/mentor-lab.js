@@ -170,6 +170,9 @@
   function mStruggle(m) {
     return lang === "es" && m.es && m.es.struggle ? m.es.struggle : m.struggle;
   }
+  function mLoc(m, field) {
+    return lang === "es" && m.es && m.es[field] ? m.es[field] : m[field];
+  }
   function labField(lab, field) {
     return lang === "es" && lab.es && lab.es[field] ? lab.es[field] : lab[field];
   }
@@ -503,9 +506,9 @@
       esc(m.say) +
       "</p>" +
       '<p class="ml-detail-where">' +
-      esc(m.years) +
+      esc(mLoc(m, "years")) +
       " · " +
-      esc(m.where) +
+      esc(mLoc(m, "where")) +
       "</p>" +
       "</div>" +
       "</div>" +
