@@ -145,7 +145,10 @@ const aiReturning = (text) => ({
 {
   checks += 1;
   const junk = await review(
-    { prompt: "Explain how you know.", response: "I did the thing with the numbers and it worked." },
+    {
+      prompt: "Explain how you know.",
+      response: "I did the thing with the numbers and it worked.",
+    },
     aiReturning("I think you did great!"),
   );
   assert.equal(junk.status, 502, "unparseable model output → 502, never a raw model string");
@@ -177,13 +180,43 @@ const aiReturning = (text) => ({
       response: "I added the top numbers and I added the bottom numbers too.",
       misconception: "Added the denominators",
     },
-    aiReturning('{"strengths":"","gap":"Thirds and fifths cannot become eighths.","question":"What does the bottom number tell you?"}'),
+    aiReturning(
+      '{"strengths":"","gap":"Thirds and fifths cannot become eighths.","question":"What does the bottom number tell you?"}',
+    ),
   );
   assert.equal(
     withMisconception.data.usedMisconception,
     "Added the denominators",
     "the deterministic detector's finding is echoed so the studio can show what was aimed at",
   );
+}
+
+// ------------------------------------------------------------- rate limiting
+// This endpoint calls a PAID model on a student-facing button. The sibling tutor
+// endpoint has always throttled per IP; this one shipped without it, which is a
+// budget hole, not a theoretical one.
+{
+  checks += 1;
+  const env = aiReturning('{"strengths":"","gap":"","question":"Why does that work?"}');
+  const body = {
+    prompt: "Explain how you know.",
+    response: "I multiplied the whole numbers and then placed the decimal point.",
+  };
+  let limited = 0;
+  for (let i = 0; i < 20; i++) {
+    const result = await review(body, env);
+    if (result.status === 429) limited += 1;
+  }
+  assert.ok(limited > 0, "sustained requests from one IP must eventually 429");
+}
+{
+  // The local short-entry path is free, so it must NOT consume the allowance —
+  // otherwise a student typing two words repeatedly locks themselves out of the
+  // feature without a single model call being made.
+  checks += 1;
+  const before = await review({ prompt: "Explain.", response: "because yes" }, aiReturning("{}"));
+  assert.equal(before.data.source, "local");
+  assert.equal(before.status, 200, "a locally-answered request is never rate-limited");
 }
 
 console.log(`reasoning reader: ${checks} checks passed.`);

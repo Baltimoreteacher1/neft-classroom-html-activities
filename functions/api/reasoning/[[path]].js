@@ -55,6 +55,40 @@ const WORKERS_AI_MODEL = "@cf/meta/llama-3.1-8b-instruct";
 const MAX_RESPONSE = 1200; // one paragraph of grade-6 writing, generously
 const MAX_PROMPT = 400;
 
+// Best-effort in-memory per-IP limiter, mirroring functions/api/tutor. Not a hard
+// guarantee across edge isolates, but it blunts an accidental client loop and a
+// bored student holding the button down — both of which spend real budget on a paid
+// model. A whole class shares one NAT here, so the cap is per minute and generous:
+// a student asking for coaching 12 times in a minute is not writing reasoning in
+// between.
+const RATE = { windowMs: 60_000, max: 12, hits: new Map() };
+
+function clientIp(request) {
+  return (
+    request.headers.get("CF-Connecting-IP") || request.headers.get("X-Forwarded-For") || "anon"
+  );
+}
+
+function rateLimited(ip) {
+  const now = Date.now();
+  const cutoff = now - RATE.windowMs;
+  let hits = RATE.hits.get(ip);
+  if (!hits) {
+    hits = [];
+    RATE.hits.set(ip, hits);
+  }
+  while (hits.length && hits[0] < cutoff) hits.shift();
+  if (hits.length >= RATE.max) return true;
+  hits.push(now);
+  // Opportunistic prune so a long-lived isolate does not grow a map per client.
+  if (RATE.hits.size > 500) {
+    for (const [key, stamps] of RATE.hits) {
+      if (!stamps.length || stamps[stamps.length - 1] < cutoff) RATE.hits.delete(key);
+    }
+  }
+  return false;
+}
+
 // The whole contract, stated once. Written as constraints rather than
 // encouragement because a model told to "be helpful" to a struggling 12-year-old
 // will hand over the answer, and that is the one thing this must never do.
@@ -218,6 +252,12 @@ export async function onRequest(context) {
 
   if (!env.ANTHROPIC_API_KEY && !env.AI) {
     return json({ ok: false, error: "not-configured" }, 503);
+  }
+
+  // Checked HERE, not at the top: the short-entry path above is answered locally
+  // and costs nothing, so it must never consume a student's allowance.
+  if (rateLimited(clientIp(request))) {
+    return json({ ok: false, error: "rate-limited" }, 429);
   }
 
   const payload = {
