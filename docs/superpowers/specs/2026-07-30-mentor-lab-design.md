@@ -95,9 +95,16 @@ Not a bolt-on pass. Built into every screen:
 
 - Every mentor leads with `simple` — one plain-English sentence, capped at 16
   words by the test. The longer paragraphs sit behind a "Tell me more".
-- **EN/ES toggle** swaps the UI chrome, the lab strings, and the short mentor
-  strings (`es.thought`, `es.simple`). Long struggle stories stay English with
-  read-aloud rather than machine-translated — stated, not faked.
+- **EN/ES toggle** swaps everything a student reads: UI chrome, lab strings,
+  and the full mentor text — `es.thought`, `es.simple`, `es.did` **and
+  `es.struggle`**. The struggle story is the single most important paragraph on
+  the page, so leaving it in English would have made the toggle decorative for
+  the students it exists for. The test requires all four fields.
+- The language choice is **persisted on the shared `nt_mentor` record**, so the
+  in-lesson layer shows the same language. A preference that resets on every
+  page is not a preference.
+- Read-aloud prefers a **Latin American** Spanish voice (es-US / es-MX / es-419)
+  before Castilian, falling back to any `es-*`.
 - **Read-aloud**: tap any text to hear it, in the selected language, via Web
   Speech. Mirrors the Level 0 read-aloud pattern already used site-wide.
 - Every mentor has a **pronunciation guide** (`say`). A student will not choose
@@ -174,11 +181,13 @@ floors, so an added unit passes.
 
 - `npm run validate:js-syntax`, `validate:static`, `validate:hub`,
   `validate:injection`, `validate:save-resume`
-- `npm test` (already wired into `validate`) auto-discovers
+- `npm test` (wired into `validate` as step 2 upstream) auto-discovers
   `assets/mentor-roster.test.mjs`: schema, coverage floors, unique ids, lab
   resolution, ESOL fields, Spanish presence, `simple` length cap, portrait
-  features all drawable, **all 44 portraits actually rendered**, no `rep` in any
-  student-facing surface, and the move-collection contract. Shipped as a test
+  features all drawable, **all 44 portraits actually rendered**, full EN+ES text
+  for all four long/short fields, no student-facing surface rendering an
+  English-only mentor field, no `rep` in any student-facing surface, and the
+  move-collection contract. Shipped as a test
   rather than a 30th bespoke `validate:*` script.
 - `npm run build`
 - Playwright: full Unit 0 flow end to end; mentor pill present on a real lesson;

@@ -115,12 +115,18 @@ const REQUIRED = [
       `mentor ${m.id}: "simple" is ${simpleWords} words — must stay <= 16`,
     );
 
-    for (const field of ["thought", "simple"]) {
+    // FULL Spanish — the long story too. A student reading in Spanish must not
+    // hit an English wall at the one paragraph that matters most.
+    for (const field of ["thought", "simple", "did", "struggle"]) {
       assert.ok(
         m.es && typeof m.es[field] === "string" && m.es[field].length > 0,
         `mentor ${m.id}: missing Spanish "${field}"`,
       );
     }
+    assert.ok(
+      m.es.struggle.split(/\s+/).length >= 25,
+      `mentor ${m.id}: Spanish struggle story looks truncated`,
+    );
   }
 }
 
@@ -253,7 +259,30 @@ const REQUIRED = [
   );
 }
 
+/* ── the long story must be rendered through the language helpers ──────────
+ * Reading `m.struggle` / `m.did` directly is how a Spanish page silently falls
+ * back to English on its most important paragraph.
+ */
+{
+  const surfaces = {
+    "mentor-lab/mentor-lab.js": ["mStruggle", "mDid"],
+    "assets/lesson-mentor.js": ["mField"],
+  };
+  for (const [rel, helpers] of Object.entries(surfaces)) {
+    const src = readFileSync(resolve(ROOT, rel), "utf8");
+    for (const h of helpers) {
+      assert.ok(src.includes(h), `${rel}: missing language helper ${h}()`);
+    }
+    for (const raw of ["m.struggle", "m.did", "mentor.struggle", "mentor.did"]) {
+      assert.ok(
+        !src.includes("esc(" + raw + ")"),
+        `${rel} renders ${raw} directly — Spanish readers would get English there`,
+      );
+    }
+  }
+}
+
 console.log(
   `mentor-roster: ${R.mentors.length} mentors across ${R.labs.length} labs, ` +
-    `${R.mentors.length} portraits rendered — all checks passed`,
+    `${R.mentors.length} portraits rendered, full EN+ES text — all checks passed`,
 );

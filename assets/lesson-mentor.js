@@ -70,7 +70,14 @@
   /* ── state ─────────────────────────────────────────────────────────────── */
 
   function blank() {
-    return { version: STATE_VERSION, id: null, chosenAt: null, moves: [], seenStories: [] };
+    return {
+      version: STATE_VERSION,
+      id: null,
+      chosenAt: null,
+      moves: [],
+      seenStories: [],
+      lang: "en",
+    };
   }
 
   function load() {
@@ -85,6 +92,9 @@
         chosenAt: s.chosenAt || null,
         moves: Array.isArray(s.moves) ? s.moves.slice() : [],
         seenStories: Array.isArray(s.seenStories) ? s.seenStories.slice() : [],
+        // Set in Unit 0. This layer has no toggle of its own — it follows the
+        // choice the student already made rather than resetting them to English.
+        lang: s.lang === "es" ? "es" : "en",
       };
     } catch (_e) {
       return blank();
@@ -100,6 +110,66 @@
   }
 
   var state = load();
+
+  /* ── language ──────────────────────────────────────────────────────────────
+   * Chosen in Unit 0 and carried on the shared record. The layer shows the
+   * student's language for every mentor string, including the long story.
+   */
+  var STR = {
+    en: {
+      youWork: "You work with",
+      sayIt: "say it",
+      theirMove: "Their move",
+      thought: "What they thought about",
+      hard: "The hard part",
+      collected: "Moves you have collected",
+      of: "of",
+      notYet: "not yet",
+      visit: "Visit the mentor lab",
+      choose: "Choose your mentor",
+      chooseAria: "Choose your math mentor — opens Unit 0",
+      close: "Close",
+      hardToo: "had a hard time too",
+      readHard: "Read the hard part",
+      thatIs: "That is",
+      sMove: "'s move",
+      dismiss: "Dismiss",
+    },
+    es: {
+      youWork: "Trabajas con",
+      sayIt: "se dice",
+      theirMove: "Su manera",
+      thought: "En qué pensaban",
+      hard: "La parte difícil",
+      collected: "Maneras que has reunido",
+      of: "de",
+      notYet: "todavía no",
+      visit: "Ir al laboratorio de mentores",
+      choose: "Escoge tu mentor",
+      chooseAria: "Escoge tu mentor de matemáticas — abre la Unidad 0",
+      close: "Cerrar",
+      hardToo: "también pasó por algo difícil",
+      readHard: "Leer la parte difícil",
+      thatIs: "Esa es la manera de",
+      sMove: "",
+      dismiss: "Descartar",
+    },
+  };
+
+  function s_(key) {
+    var L = STR[state.lang === "es" ? "es" : "en"] || STR.en;
+    return L[key] != null ? L[key] : STR.en[key] || "";
+  }
+
+  function mField(m, field) {
+    if (state.lang === "es" && m && m.es && m.es[field]) return m.es[field];
+    return (m && m[field]) || "";
+  }
+
+  function labF(lab, field) {
+    if (state.lang === "es" && lab && lab.es && lab.es[field]) return lab.es[field];
+    return (lab && lab[field]) || "";
+  }
 
   /* ── roster access (the roster may load after us) ──────────────────────── */
 
@@ -208,8 +278,8 @@
         var chip = el("a", "ntm-chip");
         chip.href = UNIT0_URL;
         chip.innerHTML =
-          '<span class="ntm-chip-dot" aria-hidden="true">✦</span> Choose your mentor';
-        chip.setAttribute("aria-label", "Choose your math mentor — opens Unit 0");
+          '<span class="ntm-chip-dot" aria-hidden="true">✦</span> ' + esc(s_("choose"));
+        chip.setAttribute("aria-label", s_("chooseAria"));
         els.pill = chip;
         document.body.appendChild(chip);
         return;
@@ -228,7 +298,7 @@
         esc(mentor.name) +
         "</span>" +
         '<span class="ntm-pill-lab">' +
-        esc((lab && lab.name) || "") +
+        esc(labF(lab, "name")) +
         "</span>" +
         "</span>";
       pill.addEventListener("click", function () {
@@ -261,11 +331,11 @@
         "</span>" +
         '<span class="ntm-move-body">' +
         '<span class="ntm-move-name">' +
-        esc(lab.move) +
+        esc(labF(lab, "move")) +
         "</span>" +
         '<span class="ntm-move-lab">' +
-        esc(lab.name) +
-        (has ? "" : " · not yet") +
+        esc(labF(lab, "name")) +
+        (has ? "" : " · " + esc(s_("notYet"))) +
         "</span>" +
         "</span>" +
         "</li>";
@@ -290,17 +360,23 @@
       '<div class="ntm-panel" style="--ntm-color:' +
       esc((lab && lab.color) || "#334155") +
       '">' +
-      '<button class="ntm-close" type="button" data-ntm-close="1" aria-label="Close">✕</button>' +
+      '<button class="ntm-close" type="button" data-ntm-close="1" aria-label="' +
+      esc(s_("close")) +
+      '">✕</button>' +
       '<div class="ntm-head">' +
       '<div class="ntm-head-med" aria-hidden="true">' +
       medallion(mentor, lab, 76) +
       "</div>" +
       '<div class="ntm-head-text">' +
-      '<p class="ntm-eyebrow">You work with</p>' +
+      '<p class="ntm-eyebrow">' +
+      esc(s_("youWork")) +
+      "</p>" +
       "<h2>" +
       esc(mentor.name) +
       "</h2>" +
-      '<p class="ntm-say">say it: ' +
+      '<p class="ntm-say">' +
+      esc(s_("sayIt")) +
+      ": " +
       esc(mentor.say) +
       "</p>" +
       '<p class="ntm-where">' +
@@ -311,35 +387,45 @@
       "</div>" +
       "</div>" +
       '<div class="ntm-movecard">' +
-      '<p class="ntm-eyebrow">Their move</p>' +
+      '<p class="ntm-eyebrow">' +
+      esc(s_("theirMove")) +
+      "</p>" +
       '<p class="ntm-movecard-move">' +
-      esc((lab && lab.move) || "") +
+      esc(labF(lab, "move")) +
       "</p>" +
       '<p class="ntm-movecard-blurb">' +
-      esc((lab && lab.blurb) || "") +
+      esc(labF(lab, "blurb")) +
       "</p>" +
       "</div>" +
       '<div class="ntm-section">' +
-      '<p class="ntm-eyebrow">What they thought about</p>' +
-      "<p>" +
-      esc(mentor.thought) +
+      '<p class="ntm-eyebrow">' +
+      esc(s_("thought")) +
       "</p>" +
       "<p>" +
-      esc(mentor.did) +
+      esc(mField(mentor, "thought")) +
+      "</p>" +
+      "<p>" +
+      esc(mField(mentor, "did")) +
       "</p>" +
       "</div>" +
       '<details class="ntm-story"' +
       (state.seenStories.indexOf(mentor.id) !== -1 ? "" : "") +
       ">" +
-      "<summary>The hard part</summary>" +
+      "<summary>" +
+      esc(s_("hard")) +
+      "</summary>" +
       "<p>" +
-      esc(mentor.struggle) +
+      esc(mField(mentor, "struggle")) +
       "</p>" +
       "</details>" +
       '<div class="ntm-section">' +
-      '<p class="ntm-eyebrow">Moves you have collected · ' +
+      '<p class="ntm-eyebrow">' +
+      esc(s_("collected")) +
+      " · " +
       earned +
-      " of 8</p>" +
+      " " +
+      esc(s_("of")) +
+      " 8</p>" +
       '<ul class="ntm-moves">' +
       collectedHtml() +
       "</ul>" +
@@ -347,7 +433,9 @@
       '<div class="ntm-foot">' +
       '<a class="ntm-link" href="' +
       UNIT0_URL +
-      '">Visit the mentor lab</a>' +
+      '">' +
+      esc(s_("visit")) +
+      "</a>" +
       "</div>" +
       "</div>";
 
@@ -412,7 +500,7 @@
         '<div class="ntm-toast-body">' +
         html +
         "</div>" +
-        '<button class="ntm-toast-x" type="button" aria-label="Dismiss">✕</button>';
+        '<button class="ntm-toast-x" type="button" aria-label="' + esc(s_("dismiss")) + '">✕</button>';
       t.querySelector(".ntm-toast-x").addEventListener("click", function () {
         if (t.parentNode) t.parentNode.removeChild(t);
       });
@@ -465,8 +553,12 @@
     toast(
       "<strong>" +
         esc(mentor.name) +
-        " had a hard time too</strong>" +
-        '<button class="ntm-toast-act" type="button" data-ntm-act="1">Read the hard part</button>',
+        " " +
+        esc(s_("hardToo")) +
+        "</strong>" +
+        '<button class="ntm-toast-act" type="button" data-ntm-act="1">' +
+        esc(s_("readHard")) +
+        "</button>",
       function () {
         open();
         try {

@@ -155,13 +155,20 @@
     return (T[lang] && T[lang][key]) || T.en[key] || "";
   }
 
-  /* Short mentor/lab strings follow the language toggle; long stories are
-     English with read-aloud, which is stated in the UI rather than faked. */
+  /* Every mentor string a student reads follows the language toggle — the
+     short lines AND the long ones (did, struggle). Nothing is left in English
+     with a "use read-aloud" excuse. */
   function mThought(m) {
     return lang === "es" && m.es ? m.es.thought : m.thought;
   }
   function mSimple(m) {
     return lang === "es" && m.es ? m.es.simple : m.simple;
+  }
+  function mDid(m) {
+    return lang === "es" && m.es && m.es.did ? m.es.did : m.did;
+  }
+  function mStruggle(m) {
+    return lang === "es" && m.es && m.es.struggle ? m.es.struggle : m.struggle;
   }
   function labField(lab, field) {
     return lang === "es" && lab.es && lab.es[field] ? lab.es[field] : lab[field];
@@ -169,12 +176,35 @@
 
   /* ── read-aloud ────────────────────────────────────────────────────────── */
 
+  /* Prefer a Latin American Spanish voice — these students are far more likely
+     to be served by es-US/es-MX than by Castilian. Falls back to any es-* and
+     then to whatever the browser picks. */
+  var VOICE_ORDER = { es: ["es-US", "es-MX", "es-419", "es-ES", "es"], en: ["en-US", "en"] };
+
+  function pickVoice() {
+    try {
+      var voices = window.speechSynthesis.getVoices() || [];
+      var order = VOICE_ORDER[lang] || [];
+      for (var i = 0; i < order.length; i++) {
+        for (var v = 0; v < voices.length; v++) {
+          var vl = (voices[v].lang || "").replace("_", "-");
+          if (vl.toLowerCase().indexOf(order[i].toLowerCase()) === 0) return voices[v];
+        }
+      }
+    } catch (_e) {
+      /* ignore */
+    }
+    return null;
+  }
+
   function speak(text) {
     try {
       if (!window.speechSynthesis || !text) return;
       window.speechSynthesis.cancel();
       var u = new SpeechSynthesisUtterance(String(text).replace(/\s+/g, " ").trim());
-      u.lang = lang === "es" ? "es-ES" : "en-US";
+      var voice = pickVoice();
+      if (voice) u.voice = voice;
+      u.lang = (voice && voice.lang) || (lang === "es" ? "es-US" : "en-US");
       u.rate = 0.92;
       window.speechSynthesis.speak(u);
     } catch (_e) {
@@ -257,6 +287,30 @@
       return true;
     } catch (_e) {
       return false;
+    }
+  }
+
+  /* Language lives on the shared mentor record, so the in-lesson layer shows
+     the same language a student picked here. A preference that resets on every
+     page is not a preference. */
+  function saveLang() {
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      var st = raw ? JSON.parse(raw) : {};
+      st.lang = lang;
+      localStorage.setItem(STORE_KEY, JSON.stringify(st));
+    } catch (_e) {
+      /* ignore */
+    }
+  }
+
+  function loadLang() {
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      var st = raw ? JSON.parse(raw) : null;
+      if (st && st.lang === "es") lang = "es";
+    } catch (_e) {
+      /* ignore */
     }
   }
 
@@ -478,13 +532,13 @@
       "</h2><p>" +
       esc(mThought(m)) +
       "</p><p>" +
-      esc(m.did) +
+      esc(mDid(m)) +
       "</p></section>" +
       "</details>" +
       '<section class="ml-detail-sec ml-detail-hard"><h2>' +
       esc(t("hardPart")) +
       "</h2><p>" +
-      esc(m.struggle) +
+      esc(mStruggle(m)) +
       "</p></section>" +
       (lab
         ? '<section class="ml-detail-sec ml-tryit"><h2>' +
@@ -641,6 +695,7 @@
     var langBtn = el.closest("[data-lang]");
     if (langBtn) {
       lang = langBtn.getAttribute("data-lang") === "es" ? "es" : "en";
+      saveLang();
       applyLang();
       return;
     }
@@ -746,10 +801,8 @@
       }
       return;
     }
-    heroStrip();
-    renderLabs();
-    renderAll();
-    renderWelcome();
+    loadLang();
+    applyLang();
     show(1);
     document.addEventListener("click", onClick);
     // `toggle` does not bubble — capture it at the document instead.
