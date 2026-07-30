@@ -42,9 +42,9 @@ check(
   "selected lesson can be saved for offline recovery",
 );
 check(
-  product.includes("Evidence and teacher approval") &&
-    product.includes("Retrieval practice is scheduled"),
-  "teacher workflow includes an evidence and approval loop",
+  !product.includes("Evidence and teacher approval") &&
+    !product.includes("Retrieval practice is scheduled"),
+  "retired evidence-approval checklist stays removed from the curriculum hub",
 );
 check(
   product.includes("WIDA 1–2") && product.includes("TWR explanation"),

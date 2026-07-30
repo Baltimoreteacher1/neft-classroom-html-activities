@@ -9,7 +9,6 @@
   var launchData = null;
   var progressName = "curriculumProgress";
   var workflowName = "curriculumTeacherWorkflow:v1";
-  var evidenceName = "nt-curriculum-evidence:v1";
   var feedbackName = "nt-curriculum-feedback:v1";
   var metricsName = "nt-curriculum-launch-metrics:v1";
 
@@ -381,43 +380,9 @@
     var hero = document.querySelector(".ctw-today-card");
     if (!hero || hero.nextElementSibling?.classList.contains("cpu-evidence")) return;
     var id = lessonFromHero(hero);
-    var records = readStore(evidenceName, {});
-    var record = records[id] || {};
     var card = el("section", "cpu-evidence");
     card.dataset.lesson = id;
-    card.appendChild(el("h3", null, "Evidence and teacher approval"));
-    card.appendChild(
-      el(
-        "p",
-        "cpu-evidence-note",
-        "Use these checks before sharing AI-assisted or adapted materials with students.",
-      ),
-    );
-    var grid = el("div", "cpu-evidence-grid");
-    [
-      ["approved", "Teacher reviewed the student view"],
-      ["model", "Model or worked example is accurate"],
-      ["explain", "Students must explain their reasoning"],
-      ["revise", "Students can revise after feedback"],
-      ["transfer", "A new transfer problem is included"],
-      ["retrieval", "Retrieval practice is scheduled"],
-    ].forEach(function (item) {
-      var label = el("label", "cpu-evidence-check");
-      var input = el("input");
-      input.type = "checkbox";
-      input.checked = !!record[item[0]];
-      input.addEventListener("change", function () {
-        var latest = readStore(evidenceName, {});
-        latest[id] = Object.assign({}, latest[id], {
-          [item[0]]: input.checked,
-          updatedAt: Date.now(),
-        });
-        writeStore(evidenceName, latest);
-      });
-      label.append(input, document.createTextNode(item[1]));
-      grid.appendChild(label);
-    });
-    card.appendChild(grid);
+    card.appendChild(el("h3", null, "Launch with supports"));
     var supports = el("div", "cpu-support-actions");
     supports.append(
       supportLink("Launch with WIDA 1–2 supports", id, widaItems(2)),
@@ -442,7 +407,7 @@
       el(
         "p",
         "cpu-provenance",
-        "Source: canonical curriculum manifest → lesson configuration → student-safe launcher. Feedback, evidence checks, and launch timing stay on this device unless your school configures an approved sync.",
+        "Source: canonical curriculum manifest → lesson configuration → student-safe launcher. Feedback and launch timing stay on this device unless your school configures an approved sync.",
       ),
     );
     hero.insertAdjacentElement("afterend", card);
