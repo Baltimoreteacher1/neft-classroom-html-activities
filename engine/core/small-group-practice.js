@@ -128,7 +128,11 @@ function multipleChoiceCard(item, index, onSolved, events = {}) {
     button.type = "button";
     button.onclick = () => {
       if (complete) return;
-      events.onAttempt?.({ correct: sourceIndex === item.correctIndex });
+      events.onAttempt?.({
+        correct: sourceIndex === item.correctIndex,
+        item,
+        response: choice,
+      });
       if (sourceIndex !== item.correctIndex) {
         button.classList.add("wrong");
         button.disabled = true;
@@ -365,7 +369,9 @@ function answerControl(item, answer, scaffold, status, onSolved, events = {}, on
   check.onclick = () => {
     tries++;
     const correct = isRight(input.value, answer);
-    events.onAttempt?.({ correct });
+    // The raw response travels with the attempt so the misconception detector can
+    // name HOW this was wrong. It is read on-device and never leaves it.
+    events.onAttempt?.({ correct, item, response: input.value });
     if (!correct) {
       input.classList.add("bad");
       const opened = tries >= 2 && onStruggle?.();

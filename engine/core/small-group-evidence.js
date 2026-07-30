@@ -10,6 +10,12 @@
 //
 // Fire-and-forget: the endpoint always 204s and swallows errors, and this
 // helper never throws or blocks the studio.
+//
+// Reporting honesty (see docs/specs/epistemic-policy.md): because a device with
+// no class identity sends nothing at all, any aggregate built from these events
+// is a SAMPLE, never a census. Every event therefore declares `reported: 1` so a
+// dashboard can show its own coverage — "4 devices reported" — instead of
+// rendering a bare 0 that a teacher will read as "nobody understood this."
 
 export function syncSmallGroupEvidence(config, summary) {
   let section = "";
@@ -27,7 +33,16 @@ export function syncSmallGroupEvidence(config, summary) {
     standard: config.standard || "",
     studentName: "", // never sent from the small-group studio, by design
     section,
-    events: [{ type: "small_group_evidence", ...summary, at: new Date().toISOString() }],
+    events: [
+      {
+        type: "small_group_evidence",
+        ...summary,
+        // Coverage marker: one device, one report. This is the denominator any
+        // aggregate of these numbers must be displayed against.
+        reported: 1,
+        at: new Date().toISOString(),
+      },
+    ],
   };
 
   try {

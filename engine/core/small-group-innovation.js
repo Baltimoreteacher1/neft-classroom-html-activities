@@ -1,6 +1,7 @@
 import { selectedTalk } from "./small-group-engagement.js";
 import { mathCheckFor } from "./small-group-math-check.js";
 import { el, esc } from "./small-group-ui.js";
+import { topMisconceptions } from "./small-group-misconceptions.js";
 
 const PATHS = {
   stabilize: {
@@ -401,11 +402,16 @@ export function createEvidenceCard(config, state, getBand = null) {
         : state.revision === "kept"
           ? "Kept after testing the evidence"
           : "Talked through out loud";
+    // The most useful line on this card is not what went right — it is the one
+    // named thing to practise. Shown only when the detector identified a
+    // specific mechanism, so the card never invents a weakness.
+    const focus = topMisconceptions(state.misconceptions, 1)[0];
+    const focusCell = focus ? `<div><span>Practise next</span><b>${esc(focus.label)}</b></div>` : "";
     const band = getBand?.();
     const bandCell = band
       ? `<div><span>Today's band</span><b>${band.emoji || ""} ${esc(band.label)}</b></div>`
       : "";
-    section.innerHTML = `<div class="sg-evidence-top"><div><div class="sg-innovation-kicker">Printable learning artifact</div><h2>Studio Evidence Card</h2></div><span>Evidence over points</span></div><p class="sg-evidence-title"><b>${esc(config.title || "Small-Group Math Studio")}</b>${config.standard ? ` · ${esc(config.standard)}` : ""}</p><div class="sg-evidence-grid"><div><span>Confidence journey</span><b>${before || "—"} → ${after || "—"}${change > 0 ? ` (+${change})` : ""}</b></div>${bandCell}${strategyCell}<div><span>Math language</span><b>${esc(vocabulary)}</b></div><div><span>Discussion move</span><b>${discussionMove}</b></div><div><span>Adaptive move</span><b>${esc(PATHS[state.adaptivePath]?.label || "Student choice")}</b></div><div><span>Best streak</span><b>${Number(state.bestStreak) >= 2 ? `🔥 ${Number(state.bestStreak)} in a row` : "Steady effort"}</b></div></div>`;
+    section.innerHTML = `<div class="sg-evidence-top"><div><div class="sg-innovation-kicker">Printable learning artifact</div><h2>Studio Evidence Card</h2></div><span>Evidence over points</span></div><p class="sg-evidence-title"><b>${esc(config.title || "Small-Group Math Studio")}</b>${config.standard ? ` · ${esc(config.standard)}` : ""}</p><div class="sg-evidence-grid"><div><span>Confidence journey</span><b>${before || "—"} → ${after || "—"}${change > 0 ? ` (+${change})` : ""}</b></div>${bandCell}${strategyCell}<div><span>Math language</span><b>${esc(vocabulary)}</b></div><div><span>Discussion move</span><b>${discussionMove}</b></div><div><span>Adaptive move</span><b>${esc(PATHS[state.adaptivePath]?.label || "Student choice")}</b></div><div><span>Best streak</span><b>${Number(state.bestStreak) >= 2 ? `🔥 ${Number(state.bestStreak)} in a row` : "Steady effort"}</b></div>${focusCell}</div>`;
     const print = el("button", "btn ghost", "Print Studio Evidence Card");
     print.type = "button";
     print.onclick = () => printOnly("evidence", section);
@@ -494,6 +500,20 @@ function deviceEvidenceStrip(state, getBand) {
       `<b>${Number(state.hints) || 0}</b> hints · ` +
       `confidence <b>${state.before || "—"}→${state.after || "—"}</b>` +
       (band ? ` · <b>${band.emoji || ""} ${esc(band.label)}</b>` : "");
+    // Named misconceptions, with the move to make about them. This is the line
+    // a teacher can actually act on mid-rotation: "3 missed item 4" tells you
+    // nothing, "added the denominators (2×) — go back to the bar model" does.
+    const named = topMisconceptions(state.misconceptions, 2);
+    if (named.length) {
+      strip.innerHTML += `<div class="sg-console-watch"><span class="sg-console-device-label">Watch for:</span>${named
+        .map(
+          (entry) =>
+            `<span class="sg-console-watch-item"><b>${esc(entry.label)}</b>${
+              entry.count > 1 ? ` ×${entry.count}` : ""
+            } — ${esc(entry.watchFor)}</span>`,
+        )
+        .join("")}</div>`;
+    }
   };
   render();
   const timer = window.setInterval(() => {

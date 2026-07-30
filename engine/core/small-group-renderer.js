@@ -21,6 +21,11 @@ import {
 } from "./small-group-engagement.js";
 import { syncSmallGroupEvidence } from "./small-group-evidence.js";
 import {
+  detectMisconception,
+  recordMisconception,
+  topMisconceptions,
+} from "./small-group-misconceptions.js";
+import {
   createAdaptiveCoach,
   createConsensusLab,
   createEvidenceCard,
@@ -51,6 +56,7 @@ import {
   mountThemeArt,
   themeDisplayName,
 } from "./small-group-storyboard.js";
+import { createReachLog } from "./small-group-reach.js";
 import { mountSmallGroupTabs } from "./small-group-tabs.js";
 import { mountSmallGroupTeacherAccess } from "./small-group-teacher-access.js";
 import {
@@ -515,10 +521,29 @@ function renderStudio(config) {
     // Best consecutive-correct run, persisted so the Evidence Card can show
     // it across sessions (session streak itself always restarts at zero).
     bestStreak: Number(store.get("bestStreak")) || 0,
+    // Named misconceptions seen on this device, as {id: count}. Counts only —
+    // the typed response that produced them is never stored or transmitted.
+    misconceptions: store.get("misconceptions") || {},
   };
+  // Reach instrumentation: which tabs students actually arrive at, and how long
+  // the studio takes to put a problem in front of them. See small-group-reach.js
+  // for why arrivals — not completions — are the number that matters here.
+  const reach = createReachLog(store);
+
   const events = {
-    onAttempt({ correct }) {
+    onAttempt({ correct, item, response }) {
       state.attempts++;
+      reach.markFirstProblem();
+      if (!correct && item) {
+        // A wrong answer is the richest signal in the room; until now it was
+        // rendered as a red outline and discarded. Name it when — and only
+        // when — the arithmetic identifies exactly one mechanism.
+        const named = detectMisconception(item, response);
+        if (named) {
+          state.misconceptions = recordMisconception(store, named) || state.misconceptions;
+          state.lastMisconception = named;
+        }
+      }
       if (correct) {
         state.streak = (state.streak || 0) + 1;
         if (state.streak > (state.bestStreak || 0)) {
@@ -627,6 +652,12 @@ function renderStudio(config) {
         // Every rendered item carries its standard, so evidence rolls up per
         // standard and not only per lesson.
         standards: [...new Set(allPractice.map((item) => item._standard).filter(Boolean))],
+        // Named misconceptions as {id: count} — counts only, never the typed
+        // response. This is the signal a next-move recommendation runs on.
+        misconceptions: state.misconceptions || {},
+        // Which tabs were ever reached, and seconds to the first problem. Without
+        // this a feature wave cannot tell whether it added value or just surface.
+        ...reach.summary(),
       });
     },
     store,
@@ -706,6 +737,10 @@ function renderStudio(config) {
       hints: state.hints,
       confidenceBefore: state.before,
       band: getBand().id,
+      // Mid-rotation checkpoints carry misconceptions too: a teacher needs the
+      // named error while the group is still at the table, not at completion.
+      misconceptions: state.misconceptions || {},
+      ...reach.summary(),
     });
   };
   const guided = createPracticeSection(config, guidedDoneWithCheckpoint, tally, events, store, {
@@ -892,7 +927,11 @@ function renderStudio(config) {
   for (const step of activeTabSteps) app.appendChild(step.panel);
   const foot = footer();
   app.appendChild(foot);
-  tabs = mountSmallGroupTabs(app, activeTabSteps, { store, voice });
+  tabs = mountSmallGroupTabs(app, activeTabSteps, {
+    store,
+    voice,
+    onReach: (id) => reach.mark(id),
+  });
   pendingMarks.forEach((id) => tabs.markDone(id));
   tally.update();
   // Chalkie storyboard skin: one-shot scene enters (presentation only).

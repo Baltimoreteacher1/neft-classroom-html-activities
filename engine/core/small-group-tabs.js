@@ -1,6 +1,10 @@
 import { celebrate, el, esLane, voiceFor } from "./small-group-ui.js";
 
-export function mountSmallGroupTabs(app, steps, { store = null, voice = null } = {}) {
+export function mountSmallGroupTabs(
+  app,
+  steps,
+  { store = null, voice = null, onReach = null } = {},
+) {
   const tabs = el("nav", "sg-tabs");
   tabs.setAttribute("role", "tablist");
   tabs.setAttribute("aria-label", "Lesson steps");
@@ -17,6 +21,10 @@ export function mountSmallGroupTabs(app, steps, { store = null, voice = null } =
   }
 
   function activate(id, moveFocus = false) {
+    // Single funnel for every tab arrival — clicks, Next buttons, keyboard
+    // navigation, and the restored lastTab. The reach log needs arrivals, not
+    // completions, so this is the only correct place to record them.
+    onReach?.(id);
     for (const step of activeSteps) {
       const active = step.id === id;
       step.panel.hidden = !active;
@@ -102,7 +110,7 @@ export function mountSmallGroupTabs(app, steps, { store = null, voice = null } =
     const toHalfway = Math.ceil(total / 2) - solved;
     fill.style.width = `${percent}%`;
     if (percent >= 100) {
-      label.textContent = `All ${total} checks complete 🏆`;
+      label.textContent = `All ${total} steps done 🏆`;
     } else if (remaining === 1 || percent >= 90) {
       label.textContent = esLane()
         ? remaining === 1
@@ -118,7 +126,7 @@ export function mountSmallGroupTabs(app, steps, { store = null, voice = null } =
     } else if (percent >= 50) {
       label.textContent = `${solved} of ${total} — over halfway 💪`;
     } else {
-      label.textContent = `${solved} of ${total} checks complete`;
+      label.textContent = `${solved} of ${total} steps done`;
     }
     if (lastPercent !== null && lastPercent < 100 && percent >= 100) celebrate("🏆");
     lastPercent = percent;
