@@ -649,6 +649,19 @@
       });
     }
 
+    // Additive module (assets/curriculum-next-move.js): reads section-level
+    // evidence and recommends a lane plus two misconceptions to watch for. Same
+    // contract as the live-signal card above — renders only when loaded, so the
+    // core workflow stays local and private.
+    if (window.CurriculumNextMove?.render) {
+      window.CurriculumNextMove.render(stage, {
+        el: el,
+        button: button,
+        link: link,
+        section: state.section,
+      });
+    }
+
     var readinessCard = el("section", "ctw-readiness");
     readinessCard.appendChild(el("h3", null, "Lesson Readiness"));
     readinessCard.appendChild(

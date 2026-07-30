@@ -716,6 +716,142 @@ export async function onRequest(context) {
     }
   }
 
+  // --- Next move (the policy) ------------------------------------------------
+  // The classroom asks one question every day: given yesterday, what should these
+  // students do for the next fifteen minutes? Until now the system had 232
+  // navigable surfaces, telemetry flowing IN, and nothing flowing OUT — the whole
+  // action space built and no controller. This is the controller.
+  //
+  // It answers three things and refuses to answer more: which lesson is next,
+  // which lane to pull, and the two named misconceptions to watch for. The teacher
+  // overrides it freely; it is a recommendation, not an assignment.
+  //
+  // Honesty rules (docs/specs/epistemic-policy.md):
+  //   - Every response carries `devicesReporting` and a `confidence` band. An
+  //     aggregate over 2 devices is not the same claim as one over 22, and a
+  //     surface that hides its own denominator invites a teacher to act on noise.
+  //   - With no evidence at all it says so and recommends nothing. A default
+  //     recommendation dressed as a data-driven one is worse than a blank.
+  // Aggregate-only and ungated for the same reason as small-group-summary above:
+  // the source rows carry no names and nothing per-student is echoed back.
+  if (seg === "next-move" && method === "GET") {
+    const section = clamp(url.searchParams.get("section") || "", 40);
+    if (!section) return json({ ok: false, error: "section-required" }, 400);
+    if (!env.DB) return json({ ok: true, evidence: false, reason: "backend-not-configured" });
+    try {
+      await ensureTelemetrySchema(env.DB);
+      const days = Math.min(30, Math.max(1, Number(url.searchParams.get("days")) || 10));
+      const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+      const rows = await env.DB.prepare(
+        `SELECT lesson_slug, payload_json, created_at
+           FROM lesson_telemetry
+          WHERE event_type = 'small_group_evidence'
+            AND section = ?
+            AND created_at >= ?
+          ORDER BY id DESC LIMIT 400`,
+      )
+        .bind(section, since)
+        .all();
+
+      const events = (rows.results || []).map((row) => ({
+        slug: String(row.lesson_slug || ""),
+        at: row.created_at,
+        payload: parseJsonOr(row.payload_json, {}),
+      }));
+      if (!events.length) {
+        return json({
+          ok: true,
+          evidence: false,
+          section,
+          devicesReporting: 0,
+          reason: "no-evidence-in-window",
+          note: `No small-group evidence from ${section} in the last ${days} days. Nothing here is a recommendation.`,
+        });
+      }
+
+      // Coverage denominator. Each completion event declares reported:1.
+      const devicesReporting = events.reduce(
+        (sum, event) => sum + (Number(event.payload.reported) || 0),
+        0,
+      );
+
+      // The most recent base lesson with evidence anchors "what is next".
+      const latest = events[0];
+      const base = latest.slug.replace(/-(?:group[12]|catchup)$/, "");
+
+      // Band mix decides the lane. Independent evidence (checkBand, scored on
+      // first attempt across the exit ticket and its transfer item) outranks the
+      // session band, which is inflated by hints and retries.
+      const bands = { approaching: 0, meeting: 0, exceeding: 0 };
+      let scored = 0;
+      for (const event of events) {
+        if (event.slug.replace(/-(?:group[12]|catchup)$/, "") !== base) continue;
+        const band = event.payload.checkBand || event.payload.band;
+        if (band && bands[band] !== undefined) {
+          bands[band] += 1;
+          scored += 1;
+        }
+      }
+      const share = (key) => (scored ? bands[key] / scored : 0);
+      const lane =
+        !scored ? null
+        : share("approaching") >= 0.5 ? "group1"
+        : share("exceeding") >= 0.5 ? "group2"
+        : "group1";
+
+      // Named misconceptions, summed across the window. This is the only part of
+      // the recommendation a teacher can act on in the moment.
+      const counts = {};
+      for (const event of events) {
+        const bag = event.payload.misconceptions;
+        if (!bag || typeof bag !== "object") continue;
+        for (const [id, count] of Object.entries(bag)) {
+          const n = Number(count);
+          if (Number.isFinite(n) && n > 0) counts[id] = (counts[id] || 0) + n;
+        }
+      }
+      const watchFor = Object.entries(counts)
+        .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+        .slice(0, 2)
+        .map(([id, count]) => ({ id, count }));
+
+      // Reach: which tabs students actually arrived at. A lesson nobody reaches
+      // the check on is a pacing problem, not a comprehension one.
+      const reachEvents = events.filter((event) => Array.isArray(event.payload.reachedTabs));
+      const reachedCheck = reachEvents.filter((event) =>
+        event.payload.reachedTabs.some((tab) => String(tab).includes("practice")),
+      ).length;
+
+      // Confidence is about the denominator, not the effect size.
+      const confidence =
+        devicesReporting >= 8 ? "good" : devicesReporting >= 3 ? "thin" : "very-thin";
+
+      return json({
+        ok: true,
+        evidence: true,
+        section,
+        windowDays: days,
+        devicesReporting,
+        confidence,
+        lastLesson: base,
+        recommendedLane: lane,
+        laneBasis: scored ? bands : null,
+        watchFor,
+        pacing:
+          reachEvents.length && reachedCheck / reachEvents.length < 0.6
+            ? "Fewer than 60% of reporting devices reached the practice check — cut a section before adding one."
+            : null,
+        note:
+          confidence === "very-thin"
+            ? "One or two devices reported. Treat this as an anecdote, not a pattern."
+            : null,
+      });
+    } catch (_err) {
+      // A recommendation that fails should vanish, not guess.
+      return json({ ok: true, evidence: false, reason: "unavailable" });
+    }
+  }
+
   // --- Public exemplar gallery ----------------------------------------------
   // Approved-only, heavily redacted student work for the "From students like
   // you" cards on project pages. Rows appear here ONLY after a teacher flips
