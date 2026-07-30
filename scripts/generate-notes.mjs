@@ -123,33 +123,99 @@ function autoSaveScript(storeKey) {
 function readAloudScript() {
   return `<script>
   (function(){
-    var btn=null, speaking=false, hi=null;
-    function collect(){
-      var sel='.li-hook-text, .li-intro, .li-keyidea p, .li-block .li-eyebrow, .li-steps li, .li-lead, .li-list li, .li-problem-q, .li-stems li';
-      return Array.prototype.slice.call(document.querySelectorAll(sel)).filter(function(el){
+    var SEL='.li-hook-text, .li-intro, .li-keyidea p, .li-formula, .li-block .li-eyebrow, .li-steps li, .li-lead, .li-list li, .li-problem-q, .li-stems li, .li-mistakes-head, .li-mistakes li';
+    var btn=null, speaking=false, hi=null, activeSay=null;
+    function collect(root){
+      return Array.prototype.slice.call((root||document).querySelectorAll(SEL)).filter(function(el){
         return el.offsetParent!==null && el.textContent.trim();
       });
     }
+    function say(el){
+      // Drop the speaker glyph on section headers so it is not read out loud.
+      return el.textContent.replace(/[\\u{1F50A}\\u{23F9}]/gu,' ').replace(/\\s+/g,' ').trim();
+    }
     function clearHi(){ if(hi){ hi.classList.remove('li-reading'); hi=null; } }
-    function stop(){ speaking=false; try{window.speechSynthesis.cancel();}catch(e){} clearHi(); if(btn) btn.textContent='🔊 Listen to this page'; }
-    function speakAll(){
-      var els=collect(), i=0; speaking=true; if(btn) btn.textContent='⏹ Stop';
+    function reset(){
+      speaking=false;
+      try{window.speechSynthesis.cancel();}catch(e){}
+      clearHi();
+      if(btn) btn.textContent='\\u{1F50A} Listen to this page';
+      if(activeSay){ activeSay.removeAttribute('data-speaking'); activeSay=null; }
+    }
+    function speakList(els, onBtn){
+      var i=0; speaking=true;
+      if(onBtn===btn && btn) btn.textContent='\\u23F9 Stop';
+      if(onBtn && onBtn!==btn){ onBtn.setAttribute('data-speaking','1'); activeSay=onBtn; }
       function next(){
         clearHi();
-        if(!speaking || i>=els.length){ stop(); return; }
+        if(!speaking || i>=els.length){ reset(); return; }
         var el=els[i++]; hi=el; el.classList.add('li-reading');
         try{ el.scrollIntoView({block:'center', behavior:'smooth'}); }catch(e){}
-        var u=new SpeechSynthesisUtterance(el.textContent.replace(/\\s+/g,' ').trim());
-        u.rate=0.9; u.lang='en-US'; u.onend=next; u.onerror=next;
+        var u=new SpeechSynthesisUtterance(say(el));
+        u.rate=0.85; u.lang='en-US'; u.onend=next; u.onerror=next;
         window.speechSynthesis.speak(u);
       }
       next();
     }
     document.addEventListener('DOMContentLoaded', function(){
+      if(!('speechSynthesis' in window)){
+        var b=document.getElementById('li-listen'); if(b) b.style.display='none';
+        Array.prototype.forEach.call(document.querySelectorAll('[data-li-say]'), function(s){ s.style.display='none'; });
+        return;
+      }
       btn=document.getElementById('li-listen');
-      if(!btn) return;
-      if(!('speechSynthesis' in window)){ btn.style.display='none'; return; }
-      btn.addEventListener('click', function(){ if(speaking) stop(); else speakAll(); });
+      if(btn) btn.addEventListener('click', function(){ if(speaking) reset(); else speakList(collect(document), btn); });
+      // Per-section listen buttons: hear one stage at a time (ESOL support).
+      Array.prototype.forEach.call(document.querySelectorAll('[data-li-say]'), function(s){
+        s.addEventListener('click', function(ev){
+          ev.preventDefault();
+          var wasActive = (activeSay===s && speaking);
+          reset();
+          if(wasActive) return;
+          var section=s.closest('.li-stage');
+          if(section) speakList(collect(section), s);
+        });
+      });
+    });
+  })();
+</script>`;
+}
+
+// Paces the worked example: the page opens with step 1 and the student presses
+// for the next one. A wall of eight steps is the fastest way to lose a sixth
+// grader — one step at a time keeps them reading. Progressive enhancement: with
+// no JavaScript, and on every printout, all steps are visible.
+function pacingScript() {
+  return `<script>
+  (function(){
+    function wire(list){
+      var steps=Array.prototype.slice.call(list.children);
+      var section=list.parentNode;
+      var pace=section?section.querySelector('.li-pace'):null;
+      if(!pace) return;
+      if(steps.length<3){ pace.style.display='none'; return; }
+      var next=pace.querySelector('.li-pace-next');
+      var all=pace.querySelector('.li-pace-all');
+      if(!next||!all){ pace.style.display='none'; return; }
+      var shown=1;
+      function paint(){
+        for(var i=0;i<steps.length;i++){
+          if(i<shown) steps[i].removeAttribute('hidden');
+          else steps[i].setAttribute('hidden','');
+        }
+        if(shown>=steps.length) pace.style.display='none';
+        else next.textContent='Show me step '+(shown+1)+' of '+steps.length+' \\u25B8';
+      }
+      next.addEventListener('click', function(){
+        shown++; paint();
+        var el=steps[Math.min(shown,steps.length)-1];
+        if(el&&el.scrollIntoView){ try{ el.scrollIntoView({block:'center',behavior:'smooth'}); }catch(e){} }
+      });
+      all.addEventListener('click', function(){ shown=steps.length; paint(); });
+      paint();
+    }
+    document.addEventListener('DOMContentLoaded', function(){
+      Array.prototype.forEach.call(document.querySelectorAll('.li-steps-paced'), wire);
     });
   })();
 </script>`;
@@ -699,12 +765,288 @@ function learnVisual(cfg) {
     return `${title}<div class="li-chips">${chips}</div>${unit}`;
   }
   // Non-chip chart: surface the authored title/unit so the data is still seen.
-  if (title || unit) {
-    return `${title}${unit || `<div class="li-visual-unit">See this picture in the Launch.</div>`}`;
-  }
+  // Only emit a figure when there is something to actually look at — a bare
+  // title with a "see it elsewhere" note is a dead end for a student who is
+  // standing on THIS page.
+  if (title && unit) return `${title}${unit}`;
   return "";
 }
 
+/* ---------- Learn It clarity helpers ----------
+   Sixth graders — English learners most of all — lose the math inside the
+   prose of a teaching line ("I put in the numbers: A = 14 × 9."). These
+   helpers pull structure OUT of the sentences the lesson already authors, so
+   the Learn It page can show a big display equation, ask before it tells, and
+   surface hints and common mistakes. Nothing is invented: every character
+   rendered comes from the lesson's own config.json. */
+
+// Words that behave like math in a formula ("base × height", "A = b × h").
+const LI_FORMULA_WORDS = new Set([
+  "base",
+  "height",
+  "length",
+  "width",
+  "area",
+  "side",
+  "sides",
+  "perimeter",
+  "radius",
+  "diameter",
+  "volume",
+  "rate",
+  "time",
+  "distance",
+  "total",
+  "sum",
+  "mean",
+  "product",
+  "quotient",
+  "difference",
+  "numerator",
+  "denominator",
+  "part",
+  "whole",
+  "percent",
+  "cost",
+  "price",
+  "speed",
+]);
+
+// Units may ride along inside an equation ("base = 5 cm, height = 4 cm") but
+// never make a run "mathy" on their own.
+const LI_UNIT_WORDS = new Set([
+  "cm",
+  "mm",
+  "m",
+  "km",
+  "in",
+  "ft",
+  "yd",
+  "mi",
+  "sq",
+  "square",
+  "cubic",
+  "g",
+  "kg",
+  "lb",
+  "lbs",
+  "oz",
+  "ml",
+  "l",
+  "min",
+  "sec",
+  "hr",
+  "hrs",
+  "hours",
+  "minutes",
+  "seconds",
+  "feet",
+  "foot",
+  "inch",
+  "inches",
+  "yards",
+  "miles",
+  "meters",
+  "centimeters",
+  "millimeters",
+  "kilometers",
+  "grams",
+  "kilograms",
+  "pounds",
+  "ounces",
+  "liters",
+  "milliliters",
+  "dollars",
+  "cents",
+  "units",
+  "unit",
+  "%",
+]);
+
+const LI_OP_RE = /^[×÷·*+=\-–—/]$/;
+
+// Classify one whitespace-separated token as an operator, a value, a unit, or
+// not-math. Single letters are values (A, b, h) except the ones that are
+// ordinary English words on their own (a, I, o).
+function liTokenKind(tok) {
+  const src = String(tok).trim();
+  // A token that ends in a colon or semicolon is a LABEL ("price:", "100:"),
+  // never part of the equation that follows — it must break the run, or the
+  // display line reads as nonsense ("100: 0.75 × 100 = 75%").
+  if (/[:;]$/.test(src)) return null;
+  const raw = src.replace(/[.?!,]+$/, "");
+  if (!raw) return null;
+  if (LI_OP_RE.test(raw)) return "op";
+  const bare = raw.replace(/^[("'“‘]+|[)"'”’]+$/g, "");
+  if (!bare) return null;
+  if (/^\$?-?\d+(?:[.,]\d+)*(?:\/\d+)?%?$/.test(bare)) return "val";
+  if (/^-?\d[\d.,]*\s*[×÷·*/+=-]\s*\d[\d.,]*$/.test(bare)) return "val";
+  if (/^-?\d+\(-?\d+(?:[.,]\d+)?\)$/.test(bare)) return "val"; // substitution: 3(4)
+  if (/^\d+\/\d+$/.test(bare)) return "val"; // fraction: 2/3
+  if (/^[A-Za-z]$/.test(bare)) return /^(?:[aio]|[IO])$/.test(bare) ? null : "val";
+  const w = bare.toLowerCase();
+  if (LI_FORMULA_WORDS.has(w)) return "val";
+  if (LI_UNIT_WORDS.has(w)) return "unit";
+  return null;
+}
+
+// Find the longest genuine equation inside an authored line. Returns
+// { math, lead } where `lead` is the text to print above the big equation —
+// the sentence stem when the equation ends the line ("I multiply:" + "14 × 9 =
+// 126"), or the whole line when the equation sits mid-sentence and the strip
+// is a visual echo. Returns null when the line carries no real equation.
+function liMathSpan(line) {
+  const toks = String(line || "")
+    .trim()
+    .split(/\s+/);
+  if (toks.length < 3) return null;
+  const kinds = toks.map(liTokenKind);
+  let best = null;
+  let i = 0;
+  while (i < toks.length) {
+    if (!kinds[i]) {
+      i++;
+      continue;
+    }
+    let j = i;
+    while (j < toks.length && kinds[j]) j++;
+    let a = i;
+    let b = j - 1;
+    while (a <= b && kinds[a] !== "val") a++;
+    while (b >= a && kinds[b] === "op") b--;
+    const run = kinds.slice(a, b + 1);
+    const ops = run.filter((k) => k === "op").length;
+    const vals = run.filter((k) => k === "val").length;
+    if (ops >= 1 && vals >= 2 && b - a + 1 >= 3 && (!best || b - a + 1 > best.len)) {
+      best = { start: a, end: b, len: b - a + 1 };
+    }
+    i = j;
+  }
+  if (!best) return null;
+  // Guard against printing a FALSE equation. When a run begins "<value> = …"
+  // in the middle of a sentence, the real left-hand side is usually prose the
+  // scanner cannot read ("120 divided by 8 = 15" → "8 = 15", which is simply
+  // untrue). Only trust such a run when the words before it ended a clause.
+  if (best.start > 0) {
+    const prev = toks[best.start - 1];
+    if (/[+\-×÷*/=]$/.test(prev)) return null;
+    const startsWithEquals =
+      kinds[best.start + 1] === "op" && /^=$/.test(toks[best.start + 1].replace(/[.?!,;:]+$/, ""));
+    if (startsWithEquals && !/[.,;:—–-]$/.test(prev)) return null;
+  }
+  const parts = toks.slice(best.start, best.end + 1);
+  parts[parts.length - 1] = parts[parts.length - 1].replace(/[.?!;:,]+$/, "");
+  const math = parts.join(" ").trim();
+  if (math.length < 3 || math.length > 80) return null;
+  const rest = toks
+    .slice(best.end + 1)
+    .join("")
+    .replace(/[.?!,;:]/g, "");
+  const trailing = rest === "";
+  const prose = toks.slice(0, best.start).join(" ").trim();
+  return { math, lead: trailing ? prose : String(line).trim() };
+}
+
+// The one line a student should be able to find on this page in a second.
+// Prefer the whole "left side = right side" definition around the equals sign;
+// fall back to the token scanner for key ideas written without one.
+function liFormula(text) {
+  const s = String(text || "")
+    .replace(/\s+/g, " ")
+    .trim();
+  const eq = s.indexOf("=");
+  if (eq > 0) {
+    // Left-hand side: back up to the start of the clause, on word boundaries
+    // only — a formula chopped mid-word ("…mber of triangles") is worse than
+    // no formula at all.
+    let left = s.slice(0, eq).trim();
+    const cut = Math.max(
+      left.lastIndexOf(". "),
+      left.lastIndexOf("; "),
+      left.lastIndexOf(": "),
+      left.lastIndexOf(", "),
+    );
+    if (cut >= 0) left = left.slice(cut + 1);
+    left = left
+      .trim()
+      .replace(/^(?:the|a|an|so|then|and|therefore|that is|which means)\s+/i, "")
+      .trim();
+    // Right-hand side: stop at the first clause break.
+    let right = s.slice(eq + 1);
+    const stop = right.search(/[.,;:!?]|\s\(|\s(?:where|when|so|which|because|and then)\s/i);
+    if (stop >= 0) right = right.slice(0, stop);
+    right = right.trim();
+    if (left && right && left.length <= 50 && right.length <= 70 && /[0-9a-z]/i.test(right)) {
+      return { math: `${left} = ${right}` };
+    }
+  }
+  const span = liMathSpan(s);
+  if (!span) return null;
+  const math = span.math.replace(/[,;.]+$/, "");
+  return math.length >= 3 ? { math } : null;
+}
+
+// Render one teaching step: the sentence, then the equation from that sentence
+// as a big display line the student can find at a glance.
+function liStepBody(line, vocab) {
+  const m = liMathSpan(line);
+  if (!m) return `<span class="li-step-text">${popoverize(line, vocab)}</span>`;
+  const lead = m.lead ? `<span class="li-step-text">${popoverize(m.lead, vocab)}</span>` : "";
+  return `${lead}<span class="li-math" role="math" aria-label="${esc(m.math)}">${esc(m.math)}</span>`;
+}
+
+// Guided ("we do") lines usually ASK and then immediately TELL — "What is
+// 5 × 4? Yes, 20, so the area is 20 square centimeters." Splitting them lets
+// the page ask first and hide the telling behind a reveal, so the blank the
+// student types into is worth typing into.
+function liSplitGuided(line) {
+  const s = String(line || "").trim();
+  const m = s.match(/^(.*?\?)\s+(\S.*)$/);
+  if (m && m[2].replace(/[^A-Za-z0-9]/g, "").length > 0) return { ask: m[1], tell: m[2] };
+  return { ask: s, tell: "" };
+}
+
+// Progressive hint ladder from the problem's own authored hints — opened one
+// at a time, so help is earned rather than handed over.
+function liHintLadder(item) {
+  const hints = Array.isArray(item && item.hints) ? item.hints.filter(Boolean).slice(0, 3) : [];
+  if (!hints.length) return "";
+  return `<div class="li-hints no-print"><p class="li-hints-label">Stuck? Open one hint at a time.</p>${hints
+    .map(
+      (h, i) =>
+        `<details class="li-hint"><summary>Hint ${i + 1}</summary><p>${esc(h)}</p></details>`,
+    )
+    .join("")}</div>`;
+}
+
+// The lesson already writes, for every wrong answer choice, WHY it is wrong.
+// That is the best misconception data in the file — surfaced here as a
+// "watch out" card so students can check their own work against it.
+function liMistakes(cfg = {}) {
+  const out = [];
+  const seen = new Set();
+  const push = (s) => {
+    const t = String(s || "")
+      .replace(/\s+/g, " ")
+      .trim();
+    if (!t || t.length < 14 || seen.has(t.toLowerCase())) return;
+    seen.add(t.toLowerCase());
+    out.push(t);
+  };
+  const p = cfg.practice || {};
+  const items = [(cfg.reflect || {}).exitTicket].concat(
+    p.onLevel || [],
+    p.approaching || [],
+    p.extending || [],
+  );
+  items.forEach((it) => {
+    if (!it || !Array.isArray(it.choiceFeedback)) return;
+    it.choiceFeedback.forEach((f, i) => {
+      if (i !== it.correctIndex) push(f);
+    });
+  });
+  return out.slice(0, 3);
+}
 // Textbook-style "Learn It" teaching block. Built from the lesson's authored
 // `launch.conceptIntro`. Two variants:
 //   • compact (default) — used inside the guided-notes packet: concept +
@@ -778,16 +1120,35 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
     </div>`;
   }
 
-  // ── Expanded variant (Learn It page) — clean, publisher-style ──
-  // One concept statement, one Key Idea, one fully worked example, then one
-  // guided "Try it with me" the student completes. Calm single-accent layout
-  // with generous whitespace — no stacked colored panels, no redundant vocab
-  // (that lives in its own Vocab tab) and minimal, purposeful typing.
+  // ── Expanded variant (Learn It page) — publisher-quality guided teaching ──
+  // The concept in plain words, a Key Idea with the formula pulled out big, a
+  // real photograph of where the math lives, a worked example paced one step at
+  // a time with each step's equation shown as a large display line, a guided
+  // "Try it with me" that ASKS before it tells, a solo problem with an earned
+  // hint ladder, and a common-mistakes card. Everything is derived from data
+  // the lesson already authors — no per-lesson writing.
+  const kiMath = intro.keyIdea ? liFormula(intro.keyIdea) : null;
   const keyIdeaClean = intro.keyIdea
-    ? `<aside class="li-keyidea"><span class="li-keyidea-label">Key idea</span><p>${esc(intro.keyIdea)}</p></aside>`
+    ? `<aside class="li-keyidea"><span class="li-keyidea-label">Key idea — remember this</span><p>${esc(intro.keyIdea)}</p>${
+        kiMath
+          ? `<p class="li-formula" role="math" aria-label="${esc(kiMath.math)}">${esc(kiMath.math)}</p>`
+          : ""
+      }</aside>`
     : "";
 
   const vocab = Array.isArray(cfg.vocabulary) ? cfg.vocabulary : [];
+
+  // "Watch out" card — the lesson already explains, for every wrong answer
+  // choice, WHY it is wrong. That is the sharpest misconception data in the
+  // file, so it is printed right after the worked example as a self-check list.
+  const mistakes = liMistakes(cfg);
+  const mistakesCard = mistakes.length
+    ? `<section class="li-mistakes" id="li-mistakes">
+        <p class="li-mistakes-head"><span aria-hidden="true">⚠️</span> Watch out — mistakes students make here</p>
+        <ul>${mistakes.map((m) => `<li>${esc(m)}</li>`).join("")}</ul>
+        <p class="li-mistakes-note">Check your work against this list before you say you are done.</p>
+      </section>`
+    : "";
 
   // Each rung of the gradual-release ladder is captured as a stage object so the
   // "learning journey" map at the top and the numbered stage cards below are
@@ -795,59 +1156,82 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
   // that is missing a rung simply drops that pill and renumbers cleanly.
   const stages = [];
 
-  // ① "Picture it" — concrete graphics so English learners can SEE the math:
-  // the authored launch visual (chips / number line) plus the lesson's
-  // vocabulary pictures (concept diagrams — factor trees, models, etc.).
+  // ① "Picture it" — concrete graphics so English learners can SEE the math
+  // before they read about it: a real-world photograph of the concept, the
+  // authored launch visual, and the lesson's vocabulary pictures with their
+  // plain-language meanings printed underneath.
+  const nw = cfg.noticeAndWonder || {};
+  const photo = nw.image
+    ? `<figure class="li-photo">
+          <img src="${esc(String(nw.image).replace(/^\//, "../../"))}" alt="${esc(nw.context || `A real-world picture for ${cfg.title || "this lesson"}`)}" loading="lazy" onerror="this.closest('.li-photo').style.display='none'" />
+          ${nw.context ? `<figcaption><span class="li-photo-label">Where you see this in real life</span>${esc(nw.context)}</figcaption>` : ""}
+        </figure>`
+    : "";
   const authored = learnVisual(cfg);
   const vocabPics = vocab
     .filter((v) => v && v.term)
-    .slice(0, 3)
+    .slice(0, 4)
     .map((v) => {
       const src = resolveVocabImage(v.term, v.image).replace(/^\//, "../../");
-      return `<figure class="li-graphic"><img src="${esc(src)}" alt="${esc(vocabImageAlt(v.term, v.definition))}" loading="lazy" onerror="this.closest('.li-graphic').style.display='none'" /><figcaption>${esc(v.term)}</figcaption></figure>`;
+      return `<figure class="li-graphic"><img src="${esc(src)}" alt="${esc(vocabImageAlt(v.term, v.definition))}" loading="lazy" onerror="this.closest('.li-graphic').style.display='none'" /><figcaption><span class="li-graphic-term">${esc(v.term)}</span>${v.definition ? `<span class="li-graphic-def">${esc(v.definition)}</span>` : ""}</figcaption></figure>`;
     })
     .join("");
-  if (authored || vocabPics) {
+  if (photo || authored || vocabPics) {
     stages.push({
       id: "see",
       accent: "see",
       icon: "👁️",
       label: "Picture it",
-      sub: "See what the math looks like",
-      body: `${authored ? `<div class="li-figure">${authored}</div>` : ""}
-          ${vocabPics ? `<div class="li-graphics">${vocabPics}</div>` : ""}`,
+      sub: "See what the math looks like before you read about it",
+      body: `${photo}
+          ${authored ? `<div class="li-figure">${authored}</div>` : ""}
+          ${vocabPics ? `<p class="li-lead">These are the words you will use today. The picture shows what each one means.</p><div class="li-graphics">${vocabPics}</div>` : ""}`,
     });
   }
 
-  // ② Worked example (I do) — read-only model, clean numbered steps. Key math
-  // words become tap-to-define pop-ups (English-learner friendly).
+  // ② Worked example (I do) — read-only model, revealed ONE STEP AT A TIME so
+  // the page never opens as a wall of text. Each step prints its own equation
+  // as a large display line, and key math words become tap-to-define pop-ups.
   if (iLines.length) {
     stages.push({
       id: "watch",
       accent: "watch",
       icon: "👀",
       label: "Watch me solve it",
-      sub: "I do — read every step",
-      body: `<p class="li-lead">Read each step. Tap a <span class="li-pop-demo">blue word</span> to see what it means.</p>
-        <ol class="li-steps">${iLines.map((l) => `<li>${popoverize(l, vocab)}</li>`).join("")}</ol>`,
+      sub: "I do — read one step at a time",
+      body: `<p class="li-lead">Read one step, then press the button for the next one. Tap any <span class="li-pop-demo">blue word</span> to see what it means.</p>
+        <ol class="li-steps li-steps-paced">${iLines.map((l) => `<li>${liStepBody(l, vocab)}</li>`).join("")}</ol>
+        <div class="li-pace no-print">
+          <button type="button" class="li-pace-next">Show me the next step ▸</button>
+          <button type="button" class="li-pace-all">Show all steps</button>
+        </div>`,
+      tail: mistakesCard,
     });
   }
 
-  // ③ Guided practice (We do) — student fills in each step, then the answer.
+  // ③ Guided practice (We do) — the page ASKS, the student answers in the box,
+  // and only then can they open the answer for that step. Splitting the
+  // authored line into its question and its telling is what makes the blank
+  // worth filling in (before, the answer sat in the sentence above it).
   if (weLines.length) {
     stages.push({
       id: "together",
       accent: "together",
       icon: "🤝",
       label: "Try it with me",
-      sub: "We do — fill in each step",
+      sub: "We do — you answer first, then check",
       practice: true,
-      body: `<p class="li-lead">Work through the same steps on this one. Fill in each blank as we go.</p>
+      body: `<p class="li-lead">Same steps, new numbers. Type your answer for each step, then open <strong>Check this step</strong> to see if you got it.</p>
         <ol class="li-steps li-steps-fill">${weLines
-          .map(
-            (l) =>
-              `<li>${popoverize(l, vocab)}<input class="li-input" type="text" data-nt-field placeholder="your work…" /></li>`,
-          )
+          .map((l) => {
+            const g = liSplitGuided(l);
+            const tell = g.tell
+              ? `<details class="li-stepcheck"><summary>Check this step</summary><div class="li-stepcheck-body">${liStepBody(g.tell, vocab)}</div></details>`
+              : "";
+            const asks = /\?\s*$/.test(g.ask);
+            const ph = asks ? "Type your answer for this step…" : "your work…";
+            return `<li>${liStepBody(g.ask, vocab)}<input class="li-input" type="text" data-nt-field placeholder="${ph}" />${tell}</li>`;
+          })
           .join("")}</ol>
         <div class="li-work"><span class="li-work-label">Show your work</span></div>
         <p class="li-answer"><span class="li-answer-label">Answer</span><input class="li-input li-input-answer" type="text" data-nt-field placeholder="Type the answer" /></p>`,
@@ -856,8 +1240,8 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
 
   // ④ On your own (You do) — a REAL problem to solve independently, drawn from
   // the lesson's own practice items, so the gradual-release ladder has a final
-  // rung (not just a "next you will…" preview). Work box + answer + a no-JS
-  // reveal that is earned, not given (scaffold, not giveaway).
+  // rung (not just a "next you will…" preview). Work box + answer + an earned
+  // hint ladder + a reveal that is earned, not given (scaffold, not giveaway).
   const p = cfg.practice || {};
   const ownProblem = []
     .concat(p.onLevel || [], p.approaching || [], p.extending || [])
@@ -881,11 +1265,12 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
       accent: "own",
       icon: "🚀",
       label: "On your own",
-      sub: "You do — solve it solo",
+      sub: "You do — solve this one by yourself",
       body: `${ownGuidance}
         <p class="li-problem-q"><strong>Solve:</strong> ${popoverize(ownProblem.stem, vocab)}</p>
         <div class="li-work"><span class="li-work-label">Show your work</span></div>
         <p class="li-answer"><span class="li-answer-label">My answer</span><input class="li-input li-input-answer" type="text" data-nt-field placeholder="Type your answer" /></p>
+        ${liHintLadder(ownProblem)}
         ${ownAns ? `<details class="li-check"><summary>Check my answer</summary><div class="li-check-body"><strong>✅ Answer:</strong> ${esc(ownAns)}${ownProblem.explanation ? `<br><span class="li-check-why">${esc(ownProblem.explanation)}</span>` : ""}</div></details>` : ""}`,
     });
   } else if (youLines.length) {
@@ -894,7 +1279,7 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
       accent: "own",
       icon: "🚀",
       label: "On your own",
-      sub: "You do — solve it solo",
+      sub: "You do — solve this one by yourself",
       body: `${ownGuidance}
         <p class="li-answer"><span class="li-answer-label">My answer</span><input class="li-input li-input-answer" type="text" data-nt-field placeholder="Type your answer" /></p>`,
     });
@@ -911,7 +1296,7 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
       accent: "apply",
       icon: "🌍",
       label: "Apply it",
-      sub: "Use the math in a real situation",
+      sub: "Use the same math in a real situation",
       body: `${applyTitle ? `<p class="li-lead"><strong>${esc(applyTitle)}</strong></p>` : ""}
         <p class="li-problem-q">${popoverize(apply.text, vocab)}</p>
         <div class="li-work"><span class="li-work-label">Show your work</span></div>
@@ -951,6 +1336,12 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
 
   if (!stages.length && !introP) return "";
 
+  // If there is no worked example to hang it on, the common-mistakes card still
+  // belongs on the page — attach it to the last stage instead of dropping it.
+  if (mistakesCard && !stages.some((s) => s.tail) && stages.length) {
+    stages[stages.length - 1].tail = mistakesCard;
+  }
+
   // Learning-journey map — a visual "you are here" roadmap of the gradual
   // release, each pill an anchor to its stage. Purely presentational; the
   // pill count always equals the number of stage cards that follow.
@@ -969,9 +1360,9 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
     .map(
       (s) =>
         `<section class="li-block li-stage li-stage-${s.accent}${s.practice ? " li-block-practice" : ""}" id="li-${s.id}">
-        <p class="li-eyebrow"><span class="li-stage-ico" aria-hidden="true">${s.icon}</span><span class="li-stage-label">${esc(s.label)}</span><span class="li-stage-sub">${esc(s.sub)}</span></p>
+        <p class="li-eyebrow"><span class="li-stage-ico" aria-hidden="true">${s.icon}</span><span class="li-stage-label">${esc(s.label)}</span><span class="li-stage-sub">${esc(s.sub)}</span><button type="button" class="li-say no-print" data-li-say aria-label="Listen to the section: ${esc(s.label)}">🔊</button></p>
         ${s.body}
-      </section>`,
+      </section>${s.tail || ""}`,
     )
     .join("");
 
@@ -1262,9 +1653,9 @@ html.nt-embed .vx-mdef{
   min-height:44px;
 }
 html.nt-embed header.packet h1{font-size:clamp(22px,2vw,28px)!important;}
-html.nt-embed .li-title{font-size:clamp(20px,1.9vw,26px)!important;}
-html.nt-embed .li-steps>li{font-size:clamp(15px,1.15vw,17.5px)!important;}
-html.nt-embed .li-stage{padding:clamp(12px,1.4vw,18px)!important;}
+html.nt-embed .li-title{font-size:clamp(24px,2.3vw,32px)!important;}
+html.nt-embed .li-steps>li{font-size:clamp(18px,1.5vw,21px)!important;}
+html.nt-embed .li-stage{padding:clamp(16px,1.8vw,24px)!important;}
 @media (max-width:1100px){
   html.nt-embed .vx-wall{
     grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),280px))!important;
@@ -1369,39 +1760,74 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .gn-subhead-note{margin:-4px 0 12px;font-size:14px;color:var(--muted);}
 /* Learn It — clean, publisher-style teaching page (single accent, lots of air) */
 .li{max-width:none;}
-.li-kicker{margin:0 0 4px;font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--teal-ink);}
-.li-title{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:26px;line-height:1.2;margin:0 0 14px;}
-.li-intro{font-size:17px;line-height:1.7;color:var(--ink);margin:0 0 20px;max-width:60ch;}
-.li-keyidea{border-left:4px solid var(--teal);background:var(--teal-light);border-radius:0 10px 10px 0;
-  padding:14px 18px;margin:0 0 24px;}
-.li-keyidea-label{display:block;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
-  color:var(--teal-ink);margin-bottom:4px;}
-.li-keyidea p{margin:0;font-size:17px;line-height:1.6;color:var(--navy);font-weight:600;}
+.li-kicker{margin:0 0 6px;font-size:13.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--teal-ink);}
+.li-title{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:32px;line-height:1.22;margin:0 0 16px;}
+.li-intro{font-size:20px;line-height:1.75;color:var(--ink);margin:0 0 22px;max-width:62ch;}
+.li-keyidea{border-left:6px solid var(--teal);background:var(--teal-light);border-radius:0 12px 12px 0;
+  padding:18px 22px;margin:0 0 26px;}
+.li-keyidea-label{display:block;font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--teal-ink);margin-bottom:6px;}
+.li-keyidea p{margin:0;font-size:21px;line-height:1.6;color:var(--navy);font-weight:600;}
+/* The formula, pulled out of the Key Idea and printed big — the one thing a
+   student should be able to find on this page in under a second. */
+.li-formula{margin:14px 0 0;padding:14px 18px;background:#fff;border:2.5px dashed var(--teal);
+  border-radius:12px;text-align:center;font-family:Outfit,system-ui,sans-serif;
+  font-size:clamp(24px,3vw,34px);line-height:1.25;font-weight:800;color:var(--navy);
+  font-variant-numeric:tabular-nums;letter-spacing:.01em;}
 .li-seeit{background:#fbfdfc;border:1px solid var(--line);border-radius:14px;padding:18px 20px;}
-.li-figure{margin:0 0 16px;padding:16px 18px;border:1px solid var(--line);border-radius:12px;background:#fff;}
+.li-figure{margin:0 0 18px;padding:16px 18px;border:1px solid var(--line);border-radius:12px;background:#fff;}
 .li-seeit .li-figure{margin:0 0 16px;}
-.li-graphics{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px;}
-.li-graphic{margin:0;text-align:center;border:1px solid var(--line);border-radius:12px;background:#fff;padding:12px;}
-.li-graphic img{display:block;width:100%;max-height:150px;object-fit:contain;}
-.li-graphic figcaption{margin-top:8px;font-weight:700;color:var(--navy);font-size:14.5px;}
-.li-visual-title{font-weight:700;color:var(--navy);margin:0 0 10px;font-size:14px;}
+/* Real-world photograph of the concept — the page's first visual anchor. */
+.li-photo{margin:0 0 20px;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#fff;}
+.li-photo img{display:block;width:100%;max-height:360px;object-fit:cover;}
+.li-photo figcaption{padding:14px 18px;font-size:17px;line-height:1.6;color:var(--ink);background:#fbfdfc;}
+.li-photo-label{display:block;font-size:12.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--teal-ink);margin-bottom:5px;}
+.li-graphics{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:18px;}
+.li-graphic{margin:0;text-align:center;border:1px solid var(--line);border-radius:14px;background:#fff;padding:14px;}
+.li-graphic img{display:block;width:100%;max-height:190px;object-fit:contain;}
+.li-graphic figcaption{margin-top:10px;}
+.li-graphic-term{display:block;font-weight:800;color:var(--navy);font-size:18px;}
+.li-graphic-def{display:block;margin-top:5px;font-size:15.5px;line-height:1.5;color:var(--ink);}
+.li-visual-title{font-weight:700;color:var(--navy);margin:0 0 10px;font-size:16px;}
 .li-chips{display:flex;flex-wrap:wrap;gap:10px;}
-.li-chip{display:inline-flex;align-items:center;justify-content:center;min-width:42px;padding:8px 14px;
-  background:#fff;border:1.5px solid var(--teal);border-radius:10px;font-weight:800;color:var(--navy);font-size:18px;}
-.li-visual-unit{font-size:14px;color:var(--muted);margin-top:10px;font-weight:600;}
+.li-chip{display:inline-flex;align-items:center;justify-content:center;min-width:48px;padding:10px 16px;
+  border:2px solid var(--teal);border-radius:10px;background:#fff;font-weight:800;color:var(--navy);font-size:18px;}
+.li-visual-unit{font-size:16px;color:var(--ink);margin-top:10px;font-weight:600;}
 .li-block{margin:0 0 28px;}
-.li-eyebrow{margin:0 0 10px;font-size:13px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--navy);padding-bottom:6px;border-bottom:2px solid var(--line);}
-.li-lead{margin:0 0 14px;font-size:15px;color:var(--muted);}
+.li-eyebrow{margin:0 0 12px;font-size:13px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--teal-ink);border-bottom:2px solid var(--line);padding-bottom:6px;}
+.li-lead{margin:0 0 16px;font-size:17.5px;line-height:1.6;color:var(--ink);}
 .li-steps{margin:0;padding:0;list-style:none;counter-reset:li-step;}
-.li-steps>li{position:relative;counter-increment:li-step;padding:2px 0 22px 50px;font-size:19px;line-height:1.75;color:var(--ink);}
-.li-steps>li::before{content:counter(li-step);position:absolute;left:0;top:0;width:34px;height:34px;border-radius:50%;
-  background:var(--navy);color:#fff;font-size:16px;font-weight:800;display:flex;align-items:center;justify-content:center;}
-.li-steps>li:not(:last-child)::after{content:"";position:absolute;left:16px;top:36px;bottom:2px;width:2px;background:var(--line);}
+.li-steps>li{position:relative;counter-increment:li-step;padding:2px 0 26px 60px;font-size:21px;line-height:1.75;color:var(--ink);}
+.li-steps>li::before{content:counter(li-step);position:absolute;left:0;top:0;width:42px;height:42px;border-radius:50%;
+  background:var(--teal-ink);color:#fff;font-size:20px;font-weight:800;display:flex;align-items:center;justify-content:center;}
+.li-steps>li:not(:last-child)::after{content:"";position:absolute;left:20px;top:46px;bottom:2px;width:2px;background:var(--line);}
+.li-step-text{display:block;}
+/* The math from a step, echoed as a large display line so the numbers never
+   hide inside the sentence. */
+.li-math{display:block;margin:12px 0 0;padding:12px 18px;background:var(--teal-light);
+  border-left:5px solid var(--teal);border-radius:10px;font-family:Outfit,system-ui,sans-serif;
+  font-size:clamp(22px,2.4vw,30px);line-height:1.3;font-weight:800;color:var(--navy);
+  font-variant-numeric:tabular-nums;letter-spacing:.01em;overflow-x:auto;}
+/* Paced worked example — one step at a time, so the page never opens as a wall. */
+.li-steps-paced>li[hidden]{display:none;}
+.li-pace{display:flex;flex-wrap:wrap;gap:12px;margin:4px 0 0;}
+.li-pace-next{background:var(--teal-ink);color:#fff;border:0;border-radius:999px;padding:13px 24px;
+  font-weight:800;font-size:17px;cursor:pointer;}
+.li-pace-next:hover{background:var(--navy);}
+.li-pace-all{background:#fff;color:var(--teal-ink);border:2px solid var(--teal);border-radius:999px;
+  padding:11px 20px;font-weight:800;font-size:16px;cursor:pointer;}
+.li-pace-all:hover{background:var(--teal-light);}
+/* Per-section read-aloud — big ESOL support, one section at a time. */
+.li-say{margin-left:auto;background:#fff;border:2px solid var(--teal);color:var(--teal-ink);
+  border-radius:999px;width:38px;height:38px;font-size:17px;line-height:1;cursor:pointer;flex:0 0 auto;}
+.li-say:hover{background:var(--teal-light);}
+.li-say[data-speaking="1"]{background:var(--teal-ink);color:#fff;border-color:var(--teal-ink);}
 .li-block-practice{background:#fbfdfc;border:1px solid var(--line);border-radius:14px;padding:22px 24px;}
-/* Tap-to-define pop-up triggers inside Learn It steps */
+.li-block-practice .li-eyebrow{border-bottom-color:var(--teal);}
 .li-pop{display:inline;border:0;background:transparent;padding:0;font:inherit;font-size:inherit;color:var(--teal-ink);
-  font-weight:700;cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;}
+  font-weight:700;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer;}
 .li-pop:hover{color:var(--navy);}
 .li-pop-i{font-size:.7em;vertical-align:super;margin-left:1px;opacity:.8;}
 .li-pop-demo{color:var(--teal-ink);font-weight:700;text-decoration:underline;text-decoration-style:dotted;}
@@ -1430,35 +1856,69 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
   .nt-popover.open { transform: translateY(0); }
 }
 @media print{.li-pop{color:#000;}.li-pop-i,.nt-popover,.nt-popover-overlay{display:none!important;}}
-.li-steps-fill>li{padding-bottom:20px;}
-.li-input{display:block;width:100%;margin-top:10px;border:0;border-bottom:2px solid var(--teal);
-  padding:7px 4px;font:inherit;font-size:16px;color:var(--navy);background:transparent;}
-.li-input::placeholder{color:#9bb0bd;font-style:italic;}
+.li-steps-fill>li{padding-bottom:24px;}
+.li-input{display:block;width:100%;margin-top:12px;border:0;border-bottom:2.5px solid var(--teal);
+  padding:10px 6px;font:inherit;font-size:19px;color:var(--navy);background:#fff;min-height:48px;}
+.li-input::placeholder{color:#8aa2b2;font-style:italic;font-size:17px;}
 .li-input:focus{outline:none;border-bottom-color:var(--amber);background:#fffdf5;}
-.li-work{margin:6px 0 16px;min-height:90px;border:1.5px dashed var(--line);border-radius:10px;
+/* Per-step answer reveal — the page asks, the student answers, THEN checks. */
+.li-stepcheck{margin-top:10px;}
+.li-stepcheck>summary{cursor:pointer;display:inline-block;list-style:none;font-size:15.5px;font-weight:800;
+  color:var(--teal-ink);background:#fff;border:2px solid var(--teal);border-radius:999px;padding:7px 16px;}
+.li-stepcheck>summary::-webkit-details-marker{display:none;}
+.li-stepcheck>summary::before{content:"👁️ ";}
+.li-stepcheck>summary:hover{background:var(--teal-light);}
+.li-stepcheck-body{margin-top:10px;padding:12px 16px;background:var(--teal-light);border:1px solid var(--teal);
+  border-radius:10px;font-size:19px;line-height:1.65;color:var(--navy);}
+.li-stepcheck-body .li-math{margin-top:10px;background:#fff;}
+.li-work{margin:8px 0 18px;min-height:120px;border:1.5px dashed var(--line);border-radius:10px;
   position:relative;background:#fff;}
-.li-work-label{position:absolute;top:8px;left:12px;font-size:12px;font-weight:700;color:var(--muted);}
+.li-work-label{position:absolute;top:9px;left:14px;font-size:13.5px;font-weight:700;color:var(--muted);}
 .li-answer{display:flex;align-items:center;gap:12px;margin:4px 0 0;flex-wrap:wrap;}
-.li-answer-label{flex:0 0 auto;font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--teal-ink);}
-.li-input-answer{flex:1;min-width:160px;margin-top:0;}
-.li-list{margin:0 0 14px;padding-left:22px;}
-.li-list>li{font-size:17px;line-height:1.65;margin:0 0 6px;color:var(--ink);}
-.li-problem-q{font-size:18px;line-height:1.6;font-weight:600;color:var(--navy);margin:6px 0 12px;
-  padding:12px 16px;background:#fff;border:1px solid var(--line);border-left:4px solid var(--navy);border-radius:0 10px 10px 0;}
-.li-check{margin-top:12px;}
-.li-check>summary{cursor:pointer;display:inline-block;font-weight:800;color:var(--teal-ink);font-size:15px;
-  list-style:none;padding:6px 0;}
+.li-answer-label{flex:0 0 auto;font-size:15px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--teal-ink);}
+.li-input-answer{flex:1;min-width:180px;margin-top:0;}
+.li-list{margin:0 0 16px;padding-left:24px;}
+.li-list>li{font-size:19.5px;line-height:1.7;margin:0 0 8px;color:var(--ink);}
+.li-problem-q{font-size:21px;line-height:1.65;font-weight:600;color:var(--navy);margin:8px 0 14px;
+  padding:16px 20px;background:#fff;border:1px solid var(--line);border-left:6px solid var(--navy);border-radius:0 10px 10px 0;}
+/* Earned hint ladder — one hint at a time, never the answer. */
+.li-hints{margin:14px 0 0;padding:14px 18px;background:#fffdf7;border:1.5px dashed var(--amber);border-radius:12px;}
+.li-hints-label{margin:0 0 10px;font-size:16px;font-weight:800;color:#8a5a00;}
+.li-hint{margin:0 0 8px;}
+.li-hint>summary{cursor:pointer;list-style:none;display:inline-block;font-size:15.5px;font-weight:800;
+  color:#8a5a00;background:#fff;border:2px solid var(--amber);border-radius:999px;padding:7px 16px;}
+.li-hint>summary::-webkit-details-marker{display:none;}
+.li-hint>summary::before{content:"💡 ";}
+.li-hint>p{margin:8px 0 0;font-size:18px;line-height:1.65;color:var(--ink);}
+/* Common mistakes — built from the lesson's own wrong-answer explanations. */
+.li-mistakes{border:1.5px solid var(--amber);border-left-width:6px;background:#fffdf7;border-radius:12px;
+  padding:18px 22px;margin:-8px 0 28px;}
+.li-mistakes-head{margin:0 0 10px;font-size:19px;font-weight:800;color:#8a5a00;}
+.li-mistakes ul{margin:0;padding-left:24px;}
+.li-mistakes li{font-size:18px;line-height:1.65;color:var(--ink);margin:0 0 8px;}
+.li-mistakes-note{margin:10px 0 0;font-size:16px;font-weight:600;color:var(--ink);}
+.li-check{margin-top:14px;}
+.li-check>summary{cursor:pointer;display:inline-block;font-weight:800;color:var(--teal-ink);font-size:17px;
+  list-style:none;background:#fff;border:2px solid var(--teal);border-radius:999px;padding:9px 18px;}
 .li-check>summary::-webkit-details-marker{display:none;}
 .li-check>summary::before{content:"👁️ ";}
-.li-check-body{margin-top:8px;padding:12px 14px;background:var(--teal-light);border:1px solid var(--teal);
-  border-radius:10px;font-size:16px;line-height:1.6;color:var(--navy);}
-.li-check-why{color:var(--muted);font-size:14.5px;}
+.li-check>summary:hover{background:var(--teal-light);}
+.li-check-body{margin-top:10px;padding:14px 18px;background:var(--teal-light);border:1px solid var(--teal);
+  border-radius:10px;font-size:19px;line-height:1.65;color:var(--navy);}
+.li-check-why{color:var(--ink);font-size:17px;}
 @media print{.li-check>summary{color:#000;}.li-check-body{background:#fff;border-color:#000;}}
 .li-ready{margin:8px 0 0;padding:14px 18px;background:var(--teal-light);border-radius:10px;
-  font-size:15px;font-weight:600;color:var(--navy);}
+  font-size:17px;font-weight:600;color:var(--navy);}
 @media print{
   .li-keyidea,.li-figure,.li-block-practice,.li-ready{background:#fff;border-color:#000;}
   .li-steps>li::before{background:#000;}
+  .li-steps-paced>li[hidden]{display:list-item!important;}
+  .li-pace,.li-say,.li-hints{display:none!important;}
+  .li-math,.li-formula{background:#fff;border-color:#000;color:#000;}
+  .li-photo figcaption{background:#fff;}
+  .li-mistakes{background:#fff;border-color:#000;}
+  .li-mistakes-head,.li-hints-label{color:#000;}
+  .li-stepcheck-body{background:#fff;border-color:#000;}
   .li-input{border-bottom-color:#000;}
   .li-work{min-height:120px;border-color:#000;}
   .li-chip{border-color:#000;}
@@ -2555,49 +3015,49 @@ ${EMBED_CSS}
   .learn-intro-note{display:flex;gap:12px;align-items:flex-start;background:var(--teal-light);
     border:1px solid var(--teal);border-radius:10px;padding:12px 14px;margin:0 0 16px;}
   .learn-intro-note .lin-icon{font-size:22px;line-height:1;flex:0 0 auto;}
-  .learn-intro-note p{margin:0;font-size:14.5px;color:var(--navy);font-weight:600;}
+  .learn-intro-note p{margin:0;font-size:18px;line-height:1.6;color:var(--navy);font-weight:600;}
   .learn-listen{margin:0 0 18px;}
-  .li-listen-btn{background:var(--teal-ink);color:#fff;border:0;border-radius:999px;padding:11px 20px;font-weight:800;font-size:15px;cursor:pointer;}
+  .li-listen-btn{background:var(--teal-ink);color:#fff;border:0;border-radius:999px;padding:13px 24px;font-weight:800;font-size:17px;cursor:pointer;}
   .li-listen-btn:hover{background:var(--navy);}
   .learn-actions{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 18px;}
   .li-workbench-btn{display:inline-flex;align-items:center;gap:8px;text-decoration:none;
     background:linear-gradient(135deg,#4f46e5,#0e8a7d);color:#fff;border:0;border-radius:999px;
-    padding:11px 20px;font-weight:800;font-size:15px;cursor:pointer;}
+    padding:13px 24px;font-weight:800;font-size:17px;cursor:pointer;}
   .li-workbench-btn:hover{filter:brightness(1.08);}
   .li-reading{background:#fff3cd;box-shadow:0 0 0 3px #fff3cd, 0 0 0 5px var(--amber);border-radius:6px;}
   /* Real-world hook — a themed "why we're learning this" story card that ties
      the Learn It page to the lesson's Launch narrative. */
   .li-hook{display:flex;gap:14px;align-items:flex-start;background:linear-gradient(135deg,var(--navy),#1b4a7a);
     color:#fff;border-radius:14px;padding:16px 20px;margin:0 0 18px;box-shadow:0 6px 18px rgba(18,53,91,.14);}
-  .li-hook-emoji{font-size:34px;line-height:1;flex:0 0 auto;}
-  .li-hook-label{margin:0 0 4px;font-size:11.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--amber);}
-  .li-hook-text{margin:0;font-size:15.5px;line-height:1.55;}
+  .li-hook-emoji{font-size:44px;line-height:1;flex:0 0 auto;}
+  .li-hook-label{margin:0 0 6px;font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--amber);}
+  .li-hook-text{margin:0;font-size:18.5px;line-height:1.6;}
   /* Learning-journey map — a "you are here" roadmap of the gradual release. */
   .li-journey{display:flex;flex-wrap:wrap;align-items:stretch;gap:6px;margin:0 0 22px;}
   .li-jstep{display:flex;align-items:center;gap:8px;text-decoration:none;background:#fff;border:1.5px solid var(--line);
-    border-radius:999px;padding:7px 14px 7px 8px;color:var(--navy);font-weight:700;font-size:13.5px;transition:transform .12s,border-color .12s,box-shadow .12s;}
+    border-radius:999px;padding:9px 16px 9px 9px;color:var(--navy);font-weight:700;font-size:15.5px;transition:transform .12s,border-color .12s,box-shadow .12s;}
   .li-jstep:hover{transform:translateY(-1px);border-color:var(--teal);box-shadow:0 4px 12px rgba(18,53,91,.10);}
-  .li-jnum{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;
-    background:var(--navy);color:#fff;font-size:13px;font-weight:800;flex:0 0 auto;}
+  .li-jnum{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;
+    background:var(--navy);color:#fff;font-size:15px;font-weight:800;flex:0 0 auto;}
   .li-jstep-see .li-jnum{background:var(--teal);}
   .li-jstep-watch .li-jnum{background:var(--teal-ink);}
   .li-jstep-together .li-jnum{background:#c98a10;}
   .li-jstep-own .li-jnum{background:var(--navy);}
-  .li-jico{font-size:15px;}
+  .li-jico{font-size:17px;}
   .li-jarrow{align-self:center;color:var(--muted);font-weight:800;font-size:15px;}
   @media (max-width:560px){.li-jlabel{display:none;}.li-jarrow{display:none;}.li-jstep{padding:7px;}}
   /* Numbered gradual-release stage cards — each rung gets a colored left rail,
      an auto-numbered badge, an icon and a plain-language subtitle. */
   .li{counter-reset:li-stage;}
   .li-stage{position:relative;border:1px solid var(--line);border-left-width:5px;border-radius:14px;
-    padding:18px 20px 18px 22px;margin:0 0 18px;counter-increment:li-stage;background:#fff;}
-  .li-stage>.li-eyebrow{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;border-bottom:0;padding:2px 0 4px 46px;position:relative;
-    color:var(--navy);font-size:16px;letter-spacing:.01em;text-transform:none;min-height:34px;}
-  .li-stage>.li-eyebrow::before{content:counter(li-stage);position:absolute;left:0;top:0;width:34px;height:34px;border-radius:50%;
-    background:var(--navy);color:#fff;font-size:16px;font-weight:800;display:flex;align-items:center;justify-content:center;}
-  .li-stage-ico{font-size:19px;flex:0 0 auto;}
+    padding:24px 26px 24px 28px;margin:0 0 22px;counter-increment:li-stage;background:#fff;}
+  .li-stage>.li-eyebrow{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;border-bottom:0;padding:2px 0 6px 56px;position:relative;
+    color:var(--navy);font-size:20px;letter-spacing:.01em;text-transform:none;min-height:42px;}
+  .li-stage>.li-eyebrow::before{content:counter(li-stage);position:absolute;left:0;top:0;width:42px;height:42px;border-radius:50%;
+    background:var(--navy);color:#fff;font-size:20px;font-weight:800;display:flex;align-items:center;justify-content:center;}
+  .li-stage-ico{font-size:24px;flex:0 0 auto;}
   .li-stage-label{font-weight:800;white-space:nowrap;}
-  .li-stage-sub{flex-basis:100%;padding-left:0;margin:1px 0 0;font-size:12.5px;font-weight:600;color:var(--muted);text-transform:none;letter-spacing:0;}
+  .li-stage-sub{flex-basis:100%;padding-left:0;margin:3px 0 0;font-size:15.5px;font-weight:600;color:var(--ink);text-transform:none;letter-spacing:0;}
   .li-stage-see{border-left-color:var(--teal);}
   .li-stage-see>.li-eyebrow::before{background:var(--teal);}
   .li-stage-watch{border-left-color:var(--teal-ink);}
@@ -2613,20 +3073,20 @@ ${EMBED_CSS}
   .li-stage-talk>.li-eyebrow::before{background:var(--teal);}
   .li-jstep-talk .li-jnum{background:var(--teal);}
   /* Turn & Talk sentence starters + word bank */
-  .li-stems-label{margin:2px 0 6px;font-size:13px;font-weight:700;color:var(--navy);}
+  .li-stems-label{margin:4px 0 8px;font-size:16px;font-weight:700;color:var(--navy);}
   .li-stems{margin:0 0 14px;padding-left:22px;}
-  .li-stems>li{font-size:16px;line-height:1.6;margin:0 0 8px;color:var(--ink);}
-  .li-stem-es{display:block;font-size:13.5px;color:var(--muted);font-style:italic;}
+  .li-stems>li{font-size:19px;line-height:1.7;margin:0 0 12px;color:var(--ink);}
+  .li-stem-es{display:block;font-size:16px;color:var(--muted);font-style:italic;}
   .li-wordbank{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:#f0faf8;
     border:1px dashed var(--teal);border-radius:10px;padding:10px 12px;}
-  .li-wordbank-label{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--teal-ink);}
-  .li-word{background:#fff;border:1.5px solid var(--teal);color:var(--navy);border-radius:999px;padding:4px 12px;font-weight:700;font-size:14px;}
+  .li-wordbank-label{font-size:13.5px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--teal-ink);}
+  .li-word{background:#fff;border:1.5px solid var(--teal);color:var(--navy);border-radius:999px;padding:6px 14px;font-weight:700;font-size:16.5px;}
   /* Confidence check + send-off */
   .li-ready-card{background:var(--teal-light);border:1.5px solid var(--teal);border-radius:14px;padding:18px 20px;margin:6px 0 0;}
-  .li-ready-head{margin:0 0 10px;font-size:18px;font-weight:800;color:var(--navy);}
-  .li-ready-check{display:flex;align-items:center;gap:10px;font-size:15.5px;font-weight:700;color:var(--navy);cursor:pointer;margin:0 0 8px;}
-  .li-ready-check input{width:20px;height:20px;accent-color:var(--teal-ink);flex:0 0 auto;cursor:pointer;}
-  .li-ready-note{margin:0;font-size:14.5px;line-height:1.55;color:var(--ink);}
+  .li-ready-head{margin:0 0 12px;font-size:22px;font-weight:800;color:var(--navy);}
+  .li-ready-check{display:flex;align-items:center;gap:12px;font-size:18px;font-weight:700;color:var(--navy);cursor:pointer;margin:0 0 8px;}
+  .li-ready-check input{width:26px;height:26px;accent-color:var(--teal-ink);flex:0 0 auto;cursor:pointer;}
+  .li-ready-note{margin:0;font-size:17px;line-height:1.6;color:var(--ink);}
   @media print{
     .li-hook{background:#fff;color:#000;border:1px solid #000;box-shadow:none;}
     .li-hook-label{color:#000;}
@@ -2647,6 +3107,7 @@ ${EMBED_CSS}
 ${autoSaveScript(`nt-learn:${esc(id)}`)}
 ${popoverScript()}
 ${readAloudScript()}
+${pacingScript()}
 </head>
 <body>
 <div class="topbar no-print">
@@ -2664,7 +3125,7 @@ ${readAloudScript()}
   </header>
   <div class="learn-intro-note">
     <span class="lin-icon" aria-hidden="true">🧭</span>
-    <p>Read this first. It explains what we are learning and shows you exactly how to solve it — step by step. Then head to the lesson activities and practice.</p>
+    <p>Start here. This page shows you the math one step at a time — a picture first, then a worked example, then one you try with help, then one you do on your own. Take your time. When it makes sense, go do the lesson activities.</p>
   </div>
   ${hookCard}
   <div class="learn-actions no-print">
