@@ -861,6 +861,61 @@
       return st;
     });
   }
+  // ---- Routine step lists --------------------------------------------------
+  // Routine steps used to ride the whole-routine last-write-wins: whichever
+  // device saved a routine most recently supplied the ENTIRE `items` array. So a
+  // step added on one device was erased the moment another device saved that
+  // same routine from a stale copy — it looked exactly like "I added it and it
+  // never synced". Steps now carry `__ts` (when the step was last written) and
+  // deleting a step leaves a `removedItems[id] = ts` tombstone, so both sides'
+  // step lists can be unioned without resurrecting a real delete.
+  const ITEM_TOMB_TTL = 180 * 86400000; // same horizon as `deletedIds`
+  function normalizeItemTombs(map, nowTs = Date.now()) {
+    const out = {};
+    if (!map || typeof map !== "object" || Array.isArray(map)) return out;
+    for (const [id, t] of Object.entries(map)) {
+      const n = Number(t);
+      if (!Number.isFinite(n) || n <= 0 || n < nowTs - ITEM_TOMB_TTL) continue;
+      out[String(id)] = n;
+    }
+    return out;
+  }
+  function mergeItemTombs(a, b, nowTs = Date.now()) {
+    const out = normalizeItemTombs(a, nowTs);
+    for (const [id, t] of Object.entries(normalizeItemTombs(b, nowTs))) {
+      out[id] = Math.max(out[id] || 0, t);
+    }
+    return out;
+  }
+  // Union both devices' steps (the whole-object winner supplies the order and
+  // wins ties), then drop anything a tombstone says was deleted at or after the
+  // step was last written. A step re-added AFTER its delete has the newer stamp
+  // and survives.
+  function mergeRoutineItems(winner, loser, nowTs = Date.now()) {
+    const removedItems = mergeItemTombs(winner.removedItems, loser.removedItems, nowTs);
+    const byId = new Map();
+    const order = [];
+    for (const src of [winner, loser]) {
+      for (const it of Array.isArray(src.items) ? src.items : []) {
+        if (!it || !it.id) continue;
+        const prev = byId.get(it.id);
+        if (prev) {
+          if ((Number(it.__ts) || 0) > (Number(prev.__ts) || 0)) byId.set(it.id, it);
+          continue;
+        }
+        byId.set(it.id, it);
+        order.push(it.id);
+      }
+    }
+    const items = [];
+    for (const id of order) {
+      const it = byId.get(id);
+      const tomb = removedItems[id] || 0;
+      if (tomb && tomb >= (Number(it.__ts) || 0)) continue;
+      items.push(it);
+    }
+    return { items, removedItems };
+  }
   function normalizeClass(c) {
     c = c || {};
     return {
@@ -1292,11 +1347,22 @@
       endMin: normalizeMinuteOverride(r.endMin),
       days: Array.isArray(r.days) ? r.days.filter((d) => DAYS.includes(d)) : [],
       items: Array.isArray(r.items)
-        ? r.items.map((it) => ({
-            id: it.id || uid("i"),
-            text: String(it.text || "").slice(0, 120),
-          }))
+        ? r.items.map((it) => {
+            it = it || {};
+            const ts = Number(it.__ts);
+            return {
+              id: it.id || uid("i"),
+              text: String(it.text || "").slice(0, 120),
+              // When this step was last added/saved. Drives the step-level merge
+              // below; absent on data written before that existed.
+              ...(Number.isFinite(ts) && ts > 0 ? { __ts: ts } : {}),
+            };
+          })
         : [],
+      ...(() => {
+        const tombs = normalizeItemTombs(r.removedItems);
+        return Object.keys(tombs).length ? { removedItems: tombs } : {};
+      })(),
       updatedAt: r.updatedAt || Date.now(),
       ...(r.seeded === true ? { seeded: true } : {}),
     };
@@ -6367,7 +6433,7 @@ Due May 31"></textarea>
             </div>`
           : emptyState(
               "🔁",
-              "No routine is active right now. Morning is 6:00–8:00 AM, after school is 3:30–6:00 PM, and nighttime is 7:00–11:30 PM.",
+              `No routine is active right now. ${routineWindowsHint()}`,
             ),
       );
     }
@@ -6379,7 +6445,6 @@ Due May 31"></textarea>
       `${done.length}/${r.items.length} done`,
       `<div class="bar" aria-hidden="true"><span style="width:${pct}%"></span></div>
        <ul class="steps">${r.items
-         .slice(0, 5)
          .map(
            (it) =>
              `<li><input class="check" type="checkbox" data-check="routine" data-id="${r.id}" data-sid="${it.id}" ${done.includes(it.id) ? "checked" : ""} aria-label="${esc(it.text)}"><span class="steptext ${done.includes(it.id) ? "done" : ""}">${esc(it.text)}</span></li>`,
@@ -6520,6 +6585,22 @@ Due May 31"></textarea>
   }
   function formatWindow(win) {
     return `${formatClock(win.startsAt)}-${formatClock(win.endsAt)}`;
+  }
+  // "6:00 AM" from minutes-since-midnight, so the Now card can describe the
+  // routine windows straight from ROUTINE_WINDOWS. Hardcoded prose drifted out
+  // of date the last time a window moved.
+  function clockLabel(mins) {
+    const h24 = Math.floor(mins / 60) % 24;
+    const m = mins % 60;
+    const h = h24 % 12 || 12;
+    return `${h}:${String(m).padStart(2, "0")} ${h24 < 12 ? "AM" : "PM"}`;
+  }
+  function routineWindowsHint() {
+    const parts = ROUTINE_WINDOWS.map(
+      (w) => `${w.label.toLowerCase()} is ${clockLabel(w.start)}–${clockLabel(w.end)}`,
+    );
+    if (parts.length < 2) return parts[0] ? `${parts[0]}.` : "";
+    return `${parts.slice(0, -1).join(", ")}, and ${parts[parts.length - 1]}.`;
   }
   function relativeStart(startsAt, now = new Date()) {
     const diff = startsAt - now;
@@ -8067,8 +8148,17 @@ Due May 31"></textarea>
     for (const id of allRoutineIds) {
       const loc = localRoutinesMap.get(id);
       const rem = remoteRoutinesMap.get(id);
-      const chosen =
+      let chosen =
         loc && rem ? ((loc.updatedAt || 0) >= (rem.updatedAt || 0) ? loc : rem) : loc || rem;
+      if (loc && rem) {
+        // The newer routine still supplies name/slot/days/order, but the step
+        // list itself is unioned per step so neither device can silently erase a
+        // step the other just added.
+        const { items, removedItems } = mergeRoutineItems(chosen, chosen === loc ? rem : loc);
+        chosen = { ...chosen, items };
+        if (Object.keys(removedItems).length) chosen.removedItems = removedItems;
+        else delete chosen.removedItems;
+      }
       if (!isDeleted(id, chosen.updatedAt)) {
         mergedRoutines.push(chosen);
       }
@@ -10437,10 +10527,17 @@ Due May 31"></textarea>
       const existing = id ? state.routines.find((r) => r.id === id) : null;
       // Read the stable per-item id off each <li data-iid> so reordering or
       // deleting middle steps never remaps ids (which would desync routineLog).
-      const items = $$("#rSteps li").map((li) => ({
-        id: li.dataset.iid || uid("i"),
-        text: li.querySelector(".steptext")?.textContent || "",
-      }));
+      const savedAt = Date.now();
+      const prevItems = new Map(((existing && existing.items) || []).map((it) => [it.id, it]));
+      const items = $$("#rSteps li").map((li) => {
+        const id = li.dataset.iid || uid("i");
+        const text = li.querySelector(".steptext")?.textContent || "";
+        const prev = prevItems.get(id);
+        // Keep an untouched step's original stamp; stamp anything new or edited
+        // now, so the cross-device step merge can tell them apart.
+        const ts = prev && prev.text === text ? Number(prev.__ts) || savedAt : savedAt;
+        return { id, text, __ts: ts };
+      });
       const days = $$("#rDays [data-arg]")
         .filter((b) => b.getAttribute("aria-pressed") === "true")
         .map((b) => b.dataset.arg)
@@ -10453,8 +10550,20 @@ Due May 31"></textarea>
       r.startMin = hhmmToMins($("#rStartTime").value);
       r.endMin = hhmmToMins($("#rEndTime").value);
       r.days = days;
-      r.items = items.length ? items : r.items;
-      r.updatedAt = Date.now();
+      const keptIds = new Set(items.map((it) => it.id));
+      if (items.length) {
+        // Tombstone every step this edit removed, so a peer holding a stale copy
+        // can't union it back on the next sync.
+        const tombs = normalizeItemTombs(r.removedItems, savedAt);
+        for (const it of prevItems.values()) {
+          if (!keptIds.has(it.id)) tombs[it.id] = savedAt;
+        }
+        for (const id of keptIds) delete tombs[id];
+        r.items = items;
+        if (Object.keys(tombs).length) r.removedItems = tombs;
+        else delete r.removedItems;
+      }
+      r.updatedAt = savedAt;
       if (!existing) state.routines.push(r);
       save();
       closeModal();
@@ -12314,6 +12423,7 @@ ${name}`;
       ledgerDayKey,
       mergeAssignmentSteps,
       mergeChangeLog,
+      mergeRoutineItems,
       mergeRoutineLogs,
       mergeStates,
       nextRoutineWindow,
