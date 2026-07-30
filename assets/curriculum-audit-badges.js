@@ -46,7 +46,16 @@
       "body.audit-only-problems details.lesson:not([data-audit-status=problem]){display:none!important;}" +
       "body.audit-filter-ready details.lesson:not([data-audit-status=ready]){display:none!important;}" +
       "body.audit-filter-review details.lesson:not([data-audit-status=review]){display:none!important;}" +
-      "body.audit-filter-missing details.lesson:not([data-audit-status=problem]){display:none!important;}";
+      "body.audit-filter-missing details.lesson:not([data-audit-status=problem]){display:none!important;}" +
+      // The static details.lesson list above is hidden on screen (the unit rail
+      // replaced it), so every rule above only ever affects the print view.
+      // These mirror them onto the VISIBLE hub items, which is where a teacher
+      // actually reads and filters them.
+      ".lesson-outline-item .audit-badges{margin:4px 0 0;}" +
+      "body.audit-only-problems .lesson-outline-item:not([data-audit-status=problem]){display:none!important;}" +
+      "body.audit-filter-ready .lesson-outline-item:not([data-audit-status=ready]){display:none!important;}" +
+      "body.audit-filter-review .lesson-outline-item:not([data-audit-status=review]){display:none!important;}" +
+      "body.audit-filter-missing .lesson-outline-item:not([data-audit-status=problem]){display:none!important;}";
     var s = el("style");
     s.id = "audit-badge-styles";
     s.textContent = css;
@@ -121,10 +130,63 @@
     }
   }
 
+  /** "/lessons/1-1/" -> "1-1", the manifest key. */
+  function lessonIdFromHref(href) {
+    var m = /\/lessons\/([^/?#]+)/.exec(href || "");
+    return m ? m[1] : "";
+  }
+
+  /**
+   * Decorate the VISIBLE hub. curriculum-sidebar.js re-renders .unit-card on
+   * every rail click, so this runs again on each mutation; it is idempotent via
+   * the [data-audit-strip] check. Ready/Needs Review/Missing is curriculum QA,
+   * not something a student should read, so each strip carries hub-teacher-only
+   * — curriculum-top1.css hides that outside body.teacher-mode.
+   */
+  function enhanceHubItems(byId) {
+    var items = document.querySelectorAll("#interactive-hub .lesson-outline-item");
+    var n = 0;
+    Array.prototype.forEach.call(items, function (item) {
+      if (item.querySelector("[data-audit-strip]")) return;
+      var link = item.querySelector("a[href*='/lessons/']");
+      var entry = link && byId[lessonIdFromHref(link.getAttribute("href"))];
+      if (!entry) return;
+      var status = statusOf(entry);
+      item.setAttribute("data-quality-source", "curriculum-manifest");
+      item.setAttribute(
+        "data-audit-status",
+        status === "ready" ? "ready" : status === "review" ? "review" : "problem",
+      );
+      var strip = badgeStrip(entry, status);
+      strip.className += " hub-teacher-only";
+      item.appendChild(strip);
+      n += 1;
+    });
+    return n;
+  }
+
+  function watchHub(byId) {
+    enhanceHubItems(byId);
+    var scheduled = false;
+    var observer = new MutationObserver(function () {
+      if (scheduled) return;
+      scheduled = true;
+      requestAnimationFrame(function () {
+        scheduled = false;
+        enhanceHubItems(byId);
+      });
+    });
+    // Never disconnect: the rail rebuilds the cards for the whole session.
+    observer.observe(document.body, { childList: true, subtree: true });
+  }
+
   function addControls(_byId) {
     var controls = document.querySelector(".controls");
     if (!controls || document.querySelector(".audit-controls")) return;
-    var bar = el("div", "audit-controls");
+    // Teacher-only: these filter curriculum-QA status. Before this they were
+    // injected ungated AND filtered only the hidden static list, so every
+    // visitor — students included — saw two controls that did nothing.
+    var bar = el("div", "audit-controls hub-teacher-only");
 
     var probLabel = el("label", null, "");
     var cb = el("input");
@@ -172,11 +234,14 @@
         manifest.lessons.forEach(function (l) {
           byId[l.id] = l;
         });
+        // The static list is hidden on screen but still prints, so keep
+        // decorating it — badges are genuinely useful in the print view.
         var cards = document.querySelectorAll("details.lesson");
         Array.prototype.forEach.call(cards, function (card) {
           var entry = byId[lessonIdOf(card)];
           if (entry) enhanceCard(card, entry);
         });
+        watchHub(byId);
         addControls(byId);
       })
       .catch(function () {
