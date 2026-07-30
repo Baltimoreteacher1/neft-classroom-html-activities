@@ -72,6 +72,15 @@
       css: "lesson-focus.css",
       global: "NTFocus",
     },
+    // Carries the mentor chosen in Unit 0 (/mentor-lab/) into every lesson.
+    // Self-skipping: with no mentor set it renders one quiet chip and nothing
+    // else, so a student who never visits Unit 0 loses nothing.
+    {
+      name: "mentor",
+      js: "lesson-mentor.js",
+      css: "lesson-mentor.css",
+      global: "NTMentor",
+    },
     /*
     {
       name: "passport",

@@ -73,6 +73,7 @@ export const SKIP_TOPLEVEL = new Set([
   "write-math", // stateless handwriting-recognition pad — nothing to save
   "ar-measure", // stateless WebXR AR measuring tool — nothing to save
   "class-manip", // shared class dot plot — state lives in the room, not save/resume
+  "mentor-lab", // Unit 0 mentor choice — durable in `nt_mentor`, nothing partial to resume
 ]);
 
 // Filename patterns that are not student-facing activities.

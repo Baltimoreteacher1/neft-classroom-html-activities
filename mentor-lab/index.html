@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Unit 0 — choose a mathematician to work with this year, and the thinking move they give you."
+    />
+    <title>Unit 0 · Choose Your Math Mentor — EduWonderLab</title>
+    <link rel="stylesheet" href="/mentor-lab/mentor-lab.css?v=20260730b" />
+  </head>
+  <body>
+    <a class="ml-skip" href="#ml-main">Skip to the main part</a>
+
+    <header class="ml-top">
+      <a class="ml-brand" href="/curriculum/" aria-label="Back to the Curriculum Hub">
+        <span aria-hidden="true">✦</span> EduWonderLab
+      </a>
+
+      <!-- Access controls. Both are ESOL/Level 1 supports and stay on every step. -->
+      <div class="ml-access">
+        <div class="ml-lang" role="group" aria-label="Language / Idioma">
+          <button type="button" class="is-on" data-lang="en" aria-pressed="true">English</button>
+          <button type="button" data-lang="es" aria-pressed="false">Español</button>
+        </div>
+        <button
+          type="button"
+          id="ml-speak-toggle"
+          class="ml-speak-toggle"
+          aria-pressed="false"
+          data-i18n="readAloud"
+        >
+          🔊 Read to me
+        </button>
+      </div>
+    </header>
+
+    <p id="ml-speak-hint" class="ml-speak-hint" hidden data-i18n="readAloudHint">
+      Read-aloud is on. Tap any words to hear them.
+    </p>
+
+    <nav class="ml-rail" aria-label="Where you are">
+      <ol id="ml-steps">
+        <li data-step="1"><span>1</span> <em data-i18n="s1">Start</em></li>
+        <li data-step="2"><span>2</span> <em data-i18n="s2">Your move</em></li>
+        <li data-step="3"><span>3</span> <em data-i18n="s3">Meet them</em></li>
+        <li data-step="4"><span>4</span> <em data-i18n="s4">Learn one</em></li>
+        <li data-step="5"><span>5</span> <em data-i18n="s5">Done</em></li>
+      </ol>
+    </nav>
+
+    <main id="ml-main" tabindex="-1">
+      <p id="ml-live" class="ml-sr" role="status" aria-live="polite"></p>
+
+      <!-- ── Step 1 · Welcome ──────────────────────────────────────────── -->
+      <section class="ml-step" data-step="1" aria-labelledby="ml-h1">
+        <div class="ml-hero" id="ml-hero">
+          <div class="ml-hero-strip" id="ml-hero-strip" aria-hidden="true"></div>
+          <p class="ml-eyebrow" data-i18n="heroEyebrow">Before the math starts</p>
+          <h1 id="ml-h1" data-i18n="heroTitle">Pick someone to think with.</h1>
+          <div class="ml-lede">
+            <p class="ml-big" data-i18n="heroBig">
+              You will choose a mathematician to work <strong>with</strong> this year.
+            </p>
+            <ul class="ml-facts">
+              <li>
+                <span aria-hidden="true">🙂</span>
+                <em data-i18n="heroF1">You keep your own name.</em>
+              </li>
+              <li>
+                <span aria-hidden="true">🧠</span>
+                <em data-i18n="heroF2"
+                  >They give you one <strong>move</strong> — a way to think.</em
+                >
+              </li>
+              <li>
+                <span aria-hidden="true">💪</span>
+                <em data-i18n="heroF3">Every one of them got stuck. They kept going.</em>
+              </li>
+            </ul>
+          </div>
+          <div class="ml-actions">
+            <button class="ml-btn ml-btn-go" type="button" data-go="2" data-i18n="heroStart">
+              Let's start →
+            </button>
+            <button class="ml-btn ml-btn-quiet" type="button" data-browse="1" data-i18n="showAll">
+              Show me everyone
+            </button>
+            <button
+              class="ml-btn ml-btn-quiet"
+              type="button"
+              data-surprise="1"
+              data-i18n="surprise"
+            >
+              🎲 Surprise me
+            </button>
+          </div>
+        </div>
+
+        <div class="ml-current" id="ml-current" hidden>
+          <p class="ml-eyebrow" data-i18n="already">You already have a mentor</p>
+          <div class="ml-current-card">
+            <div class="ml-current-med" id="ml-current-med" aria-hidden="true"></div>
+            <div>
+              <h2 id="ml-current-name"></h2>
+              <p class="ml-current-lab" id="ml-current-lab"></p>
+            </div>
+          </div>
+          <div class="ml-actions">
+            <a class="ml-btn ml-btn-go" href="/curriculum/" data-i18n="backLessons"
+              >Back to my lessons</a
+            >
+            <button class="ml-btn ml-btn-quiet" type="button" data-go="2" data-i18n="changeOne">
+              Choose someone different
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Step 2 · Pick a move ──────────────────────────────────────── -->
+      <section class="ml-step" data-step="2" aria-labelledby="ml-h2" hidden>
+        <h1 id="ml-h2" data-i18n="moveTitle">Which one sounds most like you?</h1>
+        <p class="ml-sub" data-i18n="moveSub">
+          There is no wrong answer. Pick the one closest to how you already think.
+        </p>
+        <ul class="ml-labs" id="ml-labs"></ul>
+        <div class="ml-actions">
+          <button class="ml-btn ml-btn-quiet" type="button" data-browse="1" data-i18n="showAll">
+            Show me everyone
+          </button>
+          <button class="ml-btn ml-btn-quiet" type="button" data-surprise="1" data-i18n="surprise">
+            🎲 Surprise me
+          </button>
+        </div>
+      </section>
+
+      <!-- ── Step 3 · Matches ──────────────────────────────────────────── -->
+      <section class="ml-step" data-step="3" aria-labelledby="ml-h3" hidden>
+        <div class="ml-labhead" id="ml-labhead"></div>
+        <h1 id="ml-h3" data-i18n="matchTitle">People who think like that</h1>
+        <ul class="ml-people" id="ml-people"></ul>
+        <div class="ml-actions">
+          <button class="ml-btn ml-btn-quiet" type="button" data-go="2" data-i18n="diffMove">
+            ← Different move
+          </button>
+          <button class="ml-btn ml-btn-quiet" type="button" data-browse="1" data-i18n="showAll">
+            Show me everyone
+          </button>
+        </div>
+      </section>
+
+      <!-- ── Step 4 · Learn one ────────────────────────────────────────── -->
+      <section class="ml-step" data-step="4" aria-labelledby="ml-h4" hidden>
+        <article class="ml-detail" id="ml-detail"></article>
+      </section>
+
+      <!-- ── Step 5 · Confirmed ────────────────────────────────────────── -->
+      <section class="ml-step" data-step="5" aria-labelledby="ml-h5" hidden>
+        <div class="ml-done" id="ml-done"></div>
+      </section>
+
+      <!-- ── Browse everyone (A–Z) ─────────────────────────────────────── -->
+      <section class="ml-step" data-step="browse" aria-labelledby="ml-hb" hidden>
+        <h1 id="ml-hb" data-i18n="allTitle">Everyone in the lab</h1>
+        <p class="ml-sub">
+          <span data-i18n="allSub">Listed A to Z. Tap anyone to read about them.</span>
+          <span id="ml-count"></span>
+        </p>
+        <ul class="ml-people ml-people-all" id="ml-all"></ul>
+        <div class="ml-actions">
+          <button class="ml-btn ml-btn-quiet" type="button" data-go="2" data-i18n="backMoves">
+            ← Back to the moves
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="ml-foot">
+      <p data-i18n="footer">
+        These are real people. Nothing here asks you to be one of them — you are borrowing how they
+        thought. The pictures are drawings, not photographs.
+      </p>
+    </footer>
+
+    <script src="/assets/mentor-avatar.js?v=20260730b" defer></script>
+    <script src="/assets/mentor-roster.js?v=20260730b" defer></script>
+    <script src="/mentor-lab/mentor-lab.js?v=20260730b" defer></script>
+    <script src="/assets/nt-usage.js" data-nt-usage="1" defer></script>
+  </body>
+</html>
