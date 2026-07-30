@@ -2939,6 +2939,42 @@
     });
   }
 
+  /*
+   * shared-identity.js (window.NTIdentity) is the canonical bridge between the
+   * two student records this platform grew independently:
+   *   "ewl-supports:v2:me" { section, initials }  — used here, keys the roster
+   *   "nt_student"         { alias, section }     — used by telemetry,
+   *                                                 passport, family letters
+   * Claiming an identity in one place must populate both; before this, students
+   * declared themselves twice and telemetry rows landed with an empty student.
+   *
+   * Lazy-loaded (same cache-token trick as the schema) and STRICTLY OPTIONAL —
+   * if it fails to load, the identity handling below behaves exactly as it did
+   * before, which keeps the never-worse invariant intact.
+   * Note the "../": this one lives in /assets/, not /assets/learning-supports/.
+   */
+  let sharedIdentityLoading = null;
+  function loadSharedIdentity() {
+    if (window.NTIdentity) return Promise.resolve(window.NTIdentity);
+    if (sharedIdentityLoading) return sharedIdentityLoading;
+    sharedIdentityLoading = new Promise((resolve) => {
+      let url;
+      try {
+        url = new URL("../shared-identity.js", SCRIPT_URL).href;
+        const token = new URL(SCRIPT_URL).search;
+        if (token) url += token;
+      } catch (_e) {
+        url = "/assets/shared-identity.js";
+      }
+      const s = document.createElement("script");
+      s.src = url;
+      s.onload = () => resolve(window.NTIdentity || null);
+      s.onerror = () => resolve(null);
+      document.head.appendChild(s);
+    });
+    return sharedIdentityLoading;
+  }
+
   // Behavior-changing accommodations (extended time, chunking, adjusted
   // workload, praise, check-in/movement nudges) + the directions/highlighter/
   // organizer tools live in supports-adaptations.js — lazy-loaded with the same
@@ -3033,6 +3069,46 @@
     } catch (_e) {
       /* ignore */
     }
+    // Mirror into the shared record so telemetry / passport / family letters
+    // finally know who this is. Fire-and-forget: NTIdentity only ADDS an alias
+    // when nothing else has named the student, so this can never overwrite a
+    // real display name, and a load failure leaves the line above untouched.
+    if (me && me.section && me.initials) {
+      loadSharedIdentity().then((id) => {
+        if (id) id.set({ section: me.section, initials: me.initials });
+      });
+    }
+  }
+
+  /*
+   * Identity handed to us in the URL: "?me=<section>.<initials>".
+   *
+   * The curriculum hub stamps this onto its lesson links so a student who
+   * claimed themselves once at /curriculum arrives already identified — no
+   * second modal, no re-pick on a device that has never seen them.
+   *
+   * NOT the same thing as "?supports=": that transport carries a frozen COARSE
+   * bundle and deliberately overrides the roster. "?me=" carries only WHO the
+   * student is and lets the roster resolve their real, current, fine-grained
+   * accommodations — so a stamped link keeps working after an IEP edit.
+   */
+  function v2IdentityFromUrl() {
+    let raw = "";
+    try {
+      raw = new URLSearchParams(window.location.search).get("me") || "";
+      if (!raw) {
+        raw =
+          new URLSearchParams(String(window.location.hash || "").replace(/^#/, "")).get("me") || "";
+      }
+    } catch (_e) {
+      return null;
+    }
+    const bits = String(raw).split(".");
+    if (bits.length !== 2) return null;
+    const section = String(bits[0]).trim().slice(0, 8);
+    const initials = String(bits[1]).trim().toUpperCase().slice(0, 6);
+    if (!section || !initials) return null;
+    return { section, initials };
   }
   function v2CacheKey(section, initials) {
     return "ewl-supports:v2:assigned:" + section + ":" + initials;
@@ -3642,7 +3718,12 @@
   // it leaves the existing state untouched rather than applying an empty set.
   async function v2StudentBoot(schema) {
     if (!schema) return;
-    let me = v2GetMe();
+    // An identity carried in the URL is an explicit statement of who is at the
+    // keyboard for THIS launch, so it outranks whatever this device remembers
+    // (the shared-Chromebook case) and is persisted for the rest of the visit.
+    const urlMe = v2IdentityFromUrl();
+    if (urlMe) v2SetMe(urlMe);
+    let me = urlMe || v2GetMe();
     // A stale "skipped" expires weekly so newly-rostered students get re-asked.
     if (me && me.skipped && (!me.at || Date.now() - me.at > V2_SKIP_TTL_MS)) me = null;
     if (!me) {

@@ -1,0 +1,212 @@
+/*
+ * curriculum-supports-identity.css — hub identity chip, the "who's working?"
+ * picker, and the hub-side passive accommodations.
+ *
+ * Scoped entirely to .nt-ident-* plus the three shared passive classes the
+ * lesson engine already uses (ewl-supports-text-lg / -contrast-active /
+ * -comfort-active), so this file composes with learning-supports.css instead
+ * of competing with it. Nothing here restyles existing hub furniture.
+ *
+ * z-index: the picker sits at 9000 — above hub content and the teacher side
+ * tab, deliberately BELOW the Save/Resume launcher (#nsr-root, ~2147483000)
+ * so it can never trap a student behind an un-closable overlay.
+ */
+
+/* ---- chip ---------------------------------------------------------------- */
+
+.nt-ident-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 14px;
+  padding: 9px 16px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--teal, #0f766e);
+  background: rgba(255, 255, 255, 0.85);
+  border: 2px dashed var(--teal, #0f766e);
+  border-radius: 999px;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    transform 0.15s ease;
+}
+
+.nt-ident-chip:hover,
+.nt-ident-chip:focus-visible {
+  background: #fff;
+  transform: translateY(-1px);
+}
+
+/* Claimed reads as settled, not as a call to action. */
+.nt-ident-chip.is-claimed {
+  color: #fff;
+  background: var(--teal, #0f766e);
+  border-style: solid;
+}
+
+/* ---- picker -------------------------------------------------------------- */
+
+.nt-ident-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(3px);
+}
+
+.nt-ident-panel {
+  width: min(560px, 100%);
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 24px;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.35);
+}
+
+.nt-ident-title {
+  margin: 0 0 6px;
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.nt-ident-sub {
+  margin: 0 0 18px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #475569;
+}
+
+.nt-ident-row {
+  margin-bottom: 16px;
+}
+
+.nt-ident-rowlabel {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--teal, #0f766e);
+}
+
+.nt-ident-opts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Deliberately large: these are the only two taps a student makes, and many
+   of the students using them have fine-motor accommodations. */
+.nt-ident-opt {
+  min-width: 62px;
+  min-height: 46px;
+  padding: 10px 16px;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+  background: #f1f5f9;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.nt-ident-opt:hover,
+.nt-ident-opt:focus-visible {
+  border-color: var(--teal, #0f766e);
+}
+
+.nt-ident-opt.is-on {
+  color: #fff;
+  background: var(--teal, #0f766e);
+}
+
+.nt-ident-empty {
+  font-size: 14px;
+  color: #64748b;
+}
+
+.nt-ident-foot {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.nt-ident-ghost {
+  padding: 8px 14px;
+  font: inherit;
+  font-size: 14px;
+  color: #475569;
+  background: transparent;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.nt-ident-ghost:hover,
+.nt-ident-ghost:focus-visible {
+  color: #0f172a;
+  border-color: #94a3b8;
+}
+
+/* ---- assigned-lesson badge ------------------------------------------------ */
+
+.nt-ident-assigned {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 7px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #7c2d12;
+  white-space: nowrap;
+  background: #fed7aa;
+  border-radius: 999px;
+}
+
+/* ---- hub-side passive accommodations -------------------------------------
+   Same class names the lesson engine applies, so a student sees a consistent
+   presentation on the hub and inside the lesson. learning-supports.css is not
+   loaded here, hence the hub-local definitions. */
+
+body.ewl-supports-text-lg {
+  font-size: 118%;
+}
+
+body.ewl-supports-contrast-active {
+  background: #fff !important;
+}
+
+body.ewl-supports-contrast-active .card,
+body.ewl-supports-contrast-active .lesson-outline-item {
+  color: #000 !important;
+  background: #fff !important;
+  border-color: #000 !important;
+}
+
+body.ewl-supports-comfort-active * {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+
+@media (max-width: 560px) {
+  .nt-ident-panel {
+    padding: 18px;
+  }
+
+  .nt-ident-chip {
+    width: 100%;
+    justify-content: center;
+  }
+}
