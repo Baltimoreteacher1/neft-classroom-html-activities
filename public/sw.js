@@ -6,7 +6,7 @@
  * Bump CACHE on any deploy that must purge the precached shell.
  * ========================================================================== */
 
-const CACHE = "eduwonderlab-vms7eqelm";
+const CACHE = "eduwonderlab-vms7frty2";
 const USER_OFFLINE_CACHE = "eduwonderlab-user-offline-v1";
 const PRECACHE_URLS = [
   "/curriculum/",
@@ -43,6 +43,9 @@ const PRECACHE_URLS = [
   "/assets/curriculum-studio-journey.js",
   "/assets/curriculum-product-upgrades.js",
   "/assets/curriculum-student-launch.js",
+  "/assets/curriculum-live-signal.js",
+  "/assets/curriculum-next-move.js",
+  "/assets/curriculum-lesson-merge.js",
   "/assets/class-board-strip.js",
   "/assets/vendor/minisearch-7.1.2.min.js",
   "/assets/favicon.svg",
@@ -102,9 +105,14 @@ self.addEventListener("fetch", (event) => {
   // HTML / navigations and curriculum assets: NETWORK-FIRST. Always fetch live page
   // and curriculum assets so a deploy appears immediately on the next load with no
   // stale first paint or double refresh. Fall back to cache only when offline.
+  // game-score.js and edupulse-bridge.js are the reporting path: a stale copy
+  // silently mis-records or drops student scores, so they are never served from
+  // the stale-while-revalidate branch below.
   const isCurriculumAsset =
     url.pathname.startsWith("/curriculum") ||
     url.pathname.startsWith("/assets/curriculum") ||
+    url.pathname === "/assets/game-score.js" ||
+    url.pathname === "/assets/edupulse-bridge.js" ||
     url.pathname.includes("routes.json");
 
   if (isNavigation || isCurriculumAsset) {
@@ -117,7 +125,25 @@ self.addEventListener("fetch", (event) => {
           }
           return networkResponse;
         })
-        .catch(() => caches.match(req).then((cached) => cached || caches.match("/curriculum/"))),
+        // Offline. The precache stores these URLs unversioned, but the hub
+        // requests them with ?v=<stamp>, and a cache key includes the query
+        // string -- so an exact match never hit and the whole curriculum
+        // precache was downloaded on install and never once served.
+        // ignoreSearch fixes that. It is safe HERE and only here: this branch
+        // runs after the network already failed, so a stamp-mismatched cache
+        // entry is strictly better than nothing. The SWR branch below must NOT
+        // do this -- there it would serve last deploy's asset to an online user.
+        //
+        // The /curriculum/ fallback is gated behind isNavigation because it
+        // returns an HTML document: handing that to a <script src> request
+        // makes the browser refuse it on MIME type, which took down every hub
+        // script offline instead of just the ones genuinely missing.
+        .catch(() =>
+          caches.match(req, { ignoreSearch: true }).then((cached) => {
+            if (cached) return cached;
+            return isNavigation ? caches.match("/curriculum/") : undefined;
+          }),
+        ),
     );
     return;
   }
