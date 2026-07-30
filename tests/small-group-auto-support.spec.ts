@@ -15,9 +15,17 @@ import { expect, test } from "@playwright/test";
 // test has nothing to do with motion, so take motion out of it.
 test.use({ reducedMotion: "reduce" });
 
+// Every goto here uses `domcontentloaded`. The studio's shared-table room holds
+// a connection open, so the `load` event never fires and the default wait burned
+// ~13s per navigation doing nothing — which put both tests within a second of
+// the repo-wide 30s timeout and failed them roughly one run in three on timing
+// alone. With that removed they finish in ~17s; the raised ceiling is headroom,
+// not the fix.
+test.describe.configure({ timeout: 90_000 });
+
 test.describe("small-group automatic support escalation", () => {
   test("misses on two different problems open supports across the set", async ({ page }) => {
-    await page.goto("/lessons/1-1-group1/");
+    await page.goto("/lessons/1-1-group1/", { waitUntil: "domcontentloaded" });
     await page.locator("#sg-tab-sg-tab-guided").click();
     const guided = page.locator("#sg-guided-practice");
     await expect(guided.locator(".prob").first()).toBeVisible();
@@ -62,7 +70,7 @@ test.describe("small-group automatic support escalation", () => {
   });
 
   test("a student answering correctly is never rescaffolded", async ({ page }) => {
-    await page.goto("/lessons/1-1-group1/");
+    await page.goto("/lessons/1-1-group1/", { waitUntil: "domcontentloaded" });
     await page.locator("#sg-tab-sg-tab-guided").click();
     const guided = page.locator("#sg-guided-practice");
 

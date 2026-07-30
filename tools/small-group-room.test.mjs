@@ -128,7 +128,11 @@ await hit("commit", { method: "POST", body: { code, seat: 3, itemKey, answer: "m
   // Seat numbers only. If a name ever reaches this table the privacy promise in
   // the studio header is a lie.
   for (const row of state.data.answers) {
-    assert.deepEqual(Object.keys(row).sort(), ["answer", "seat"], "answers carry seat + answer only");
+    assert.deepEqual(
+      Object.keys(row).sort(),
+      ["answer", "seat"],
+      "answers carry seat + answer only",
+    );
   }
 }
 
@@ -161,12 +165,18 @@ await hit("commit", { method: "POST", body: { code, seat: 3, itemKey, answer: "m
 // ------------------------------------------------------------------ validation
 {
   checks += 1;
-  const badSeat = await hit("commit", { method: "POST", body: { code, seat: 99, itemKey, answer: "x" } });
+  const badSeat = await hit("commit", {
+    method: "POST",
+    body: { code, seat: 99, itemKey, answer: "x" },
+  });
   assert.equal(badSeat.status, 400, "seat numbers are bounded");
 }
 {
   checks += 1;
-  const empty = await hit("commit", { method: "POST", body: { code, seat: 1, itemKey, answer: "   " } });
+  const empty = await hit("commit", {
+    method: "POST",
+    body: { code, seat: 1, itemKey, answer: "   " },
+  });
   assert.equal(empty.status, 400, "a blank answer is not a commit");
 }
 {

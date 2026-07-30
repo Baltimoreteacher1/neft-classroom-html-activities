@@ -9,7 +9,7 @@
 
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { OUTPUT, buildLabels, serialize } from "../scripts/generate-misconception-labels.mjs";
+import { buildLabels, OUTPUT, serialize } from "../scripts/generate-misconception-labels.mjs";
 
 const expected = serialize(buildLabels());
 let actual;
