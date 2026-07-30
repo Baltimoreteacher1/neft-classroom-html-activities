@@ -22,6 +22,7 @@ import {
 import { syncSmallGroupEvidence } from "./small-group-evidence.js";
 import {
   createAdaptiveCoach,
+  createAutoSupportTracker,
   createConsensusLab,
   createEvidenceCard,
   createMisconceptionCard,
@@ -540,10 +541,29 @@ function renderStudio(config) {
   // the studio behaves exactly as it always has. See small-group-room.js.
   const room = createRoom(config.lessonId || "lesson");
 
+  // Opens every unsolved problem's supports once misses spread across two
+  // different problems. Until now the only route to set-wide scaffolding was
+  // tapping "Find our next move" in the adaptive coach, so students who never
+  // opened the coach worked the whole set unscaffolded no matter how it went.
+  const autoSupport = createAutoSupportTracker();
+
   const events = {
     onAttempt({ correct, item, response, choiceIndex = null }) {
       state.attempts++;
       reach.markFirstProblem();
+      // Identify the PROBLEM, not the attempt: `_practiceIndex` is the authored
+      // slot and survives adaptive reordering, so repeat misses on one card
+      // collapse to a single entry instead of counting twice.
+      if (
+        autoSupport.recordAttempt({
+          correct,
+          key: Number.isInteger(item?._practiceIndex)
+            ? `i${item._practiceIndex}`
+            : item?.stem || item?.title || "",
+        })
+      ) {
+        document.dispatchEvent(new CustomEvent("sg:auto-support"));
+      }
       if (!correct && item) {
         // A wrong answer is the richest signal in the room; until now it was
         // rendered as a red outline and discarded. Name it when — and only
