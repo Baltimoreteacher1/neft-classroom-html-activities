@@ -107,8 +107,21 @@ const expectedLinks = [
 for (const expected of expectedLinks)
   if (!curriculum.includes(expected)) failures.push(`curriculum/index.html: missing ${expected}`);
 
+/* answer-key-gate.js must carry no client-side teacher secret.
+   This used to grep for the then-current PIN literal. A rotated PIN would have
+   sailed straight past it — the check would keep passing while the very thing
+   it guards against sat in the file under a new name. Read the live values out
+   of teacher-mode.js instead, so the gate follows every future rotation
+   without anyone remembering to update it here. */
+const teacherModeSource = read("engine/core/teacher-mode.js");
+const livePins = [...teacherModeSource.matchAll(/(?:master|coteacher):\s*"([^"]+)"/g)].map(
+  (m) => m[1],
+);
+if (!livePins.length)
+  failures.push("validate-projects-award: could not read TEACHER_PINS from teacher-mode.js");
+
 const answerGate = read("shared/projects/answer-key-gate.js");
-if (/TEACHER_PIN|TeacherNeft/.test(answerGate))
+if (/TEACHER_PIN/.test(answerGate) || livePins.some((pin) => answerGate.includes(pin)))
   failures.push("answer-key-gate.js: client-side teacher secret remains");
 
 const packageJson = JSON.parse(read("package.json"));
