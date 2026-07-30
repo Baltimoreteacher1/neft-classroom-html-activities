@@ -885,6 +885,10 @@
       // Only counts once the canvas has actually been worked on.
       if (activePixels > 0) {
         NeftScore.tally('blueprints', 3, [m1, m2, m3].filter(Boolean).length);
+        // Everything done: the run is over, so report it. finish() latches, so
+        // firing it on an earlier check would freeze the row there. A partial
+        // run still reports on pagehide.
+        if ([m1, m2, m3].filter(Boolean).length >= 3) NeftScore.finish();
       }
     }
 

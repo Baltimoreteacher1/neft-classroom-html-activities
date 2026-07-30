@@ -947,6 +947,8 @@ const AppController = {
     
     let nextQuestIdx = STATE.currentQuestIndex + 1;
     if (nextQuestIdx >= CONFIG.quests.length) {
+      // All quests navigated — the expedition is the end of the run.
+      NeftScore.finish();
       alert("🏆 PILOT EXPEDITION SECURED! ALL COORDINATE SHORELINES NAVIGATION COMPLETE!");
       nextQuestIdx = 0;
     }

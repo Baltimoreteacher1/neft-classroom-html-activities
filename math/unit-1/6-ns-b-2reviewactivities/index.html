@@ -1722,6 +1722,10 @@ function scoreExit(){
     txt.textContent="Both correct — mastery demonstrated!"
     document.getElementById("masteryBanner").classList.add("show")
     markDone(6)
+    // Exit ticket is the last exercise, so full marks is the end of the run.
+    // finish() latches; firing it on a partial press would freeze the row
+    // below what the student went on to earn. Partials report on pagehide.
+    NeftScore.finish()
   } else {
     fb.className="feedback-box show bad"
     fb.querySelector(".feedback-icon").textContent="❌"

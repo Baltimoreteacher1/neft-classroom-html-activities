@@ -1180,6 +1180,8 @@
           if (STATE.completedQuests.length > prevSolvedCount) {
             const finishedLab = STATE.activeQuestId === null && !prevAllDone;
             FX.questCelebrate(finishedLab);
+            // Every quest solved: the lab is over, so report the run.
+            if (finishedLab) NeftScore.finish();
           } else if (STATE.activeQuestId === null && !prevAllDone) {
             FX.questCelebrate(true);
           }

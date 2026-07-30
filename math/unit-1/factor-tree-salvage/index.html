@@ -1730,6 +1730,8 @@
             if (!STATE.completedQuests.includes(STATE.activeQuestId)) {
               const completed = [...STATE.completedQuests, STATE.activeQuestId];
               transitionState({ completedQuests: completed });
+              // Last pod decrypted: the salvage run is over, so report it.
+              if (completed.length >= CONFIG.quests.length) NeftScore.finish();
             }
           }
         } catch (e) {

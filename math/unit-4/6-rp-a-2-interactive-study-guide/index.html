@@ -2200,6 +2200,8 @@
           document.getElementById("p" + n).classList.add("correct");
           score++;
           answered.add(n);
+          // Every practice item answered: the set is done, so report it.
+          if (answered.size >= 6) NeftScore.finish();
           document.getElementById("sdis").textContent = score + " / 6";
           document.getElementById("spbar").style.width =
             (score / 6) * 100 + "%";

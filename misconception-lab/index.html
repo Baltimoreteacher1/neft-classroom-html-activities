@@ -1023,6 +1023,10 @@
         // from the data instead of asserting a 0%.
         if (solvedList.length) {
           NeftScore.tally("bugs", CONFIG.bugs.length, solvedList.length);
+          // Everything done: the run is over, so report it. finish() latches, so
+          // firing it on an earlier check would freeze the row there. A partial
+          // run still reports on pagehide.
+          if (solvedList.length >= CONFIG.bugs.length) NeftScore.finish();
         }
 
         transitionState({

@@ -1070,6 +1070,10 @@
       // an untouched lab reports nothing at all.
       if (studentMixed) {
         NeftScore.tally("recipes", 3, [m1, m2, m3].filter(Boolean).length);
+        // Everything done: the run is over, so report it. finish() latches, so
+        // firing it on an earlier check would freeze the row there. A partial
+        // run still reports on pagehide.
+        if ([m1, m2, m3].filter(Boolean).length >= 3) NeftScore.finish();
       }
     }
 

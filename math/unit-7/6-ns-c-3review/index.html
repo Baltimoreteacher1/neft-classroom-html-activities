@@ -1762,6 +1762,10 @@
         // Batch-graded: record the latest state of this exercise rather than
         // one attempt per chip, so pressing Check again cannot inflate it.
         NeftScore.tally("categorize", total, correct);
+        // Everything done: the run is over, so report it. finish() latches, so
+        // firing it on an earlier check would freeze the row there. A partial
+        // run still reports on pagehide.
+        if (correct >= total) NeftScore.finish();
         const pct = Math.round((correct / total) * 100);
         document.getElementById("cat-results").style.display = "block";
         document.getElementById("cat-score-display").innerText =

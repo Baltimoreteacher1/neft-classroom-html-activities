@@ -1186,6 +1186,10 @@
                     
                     logDiagnostics(`Quest ${STATE.activeQuestId} completed successfully!`, 'success');
                     NeftScore.tally('quests', CONFIG.quests.length, completed.length);
+                    // Everything done: the run is over, so report it. finish() latches, so
+                    // firing it on an earlier check would freeze the row there. A partial
+                    // run still reports on pagehide.
+                    if (completed.length >= CONFIG.quests.length) NeftScore.finish();
                     if (STATE.audioInitialized) {
                         AudioEngine.playSuccessChord();
                     }

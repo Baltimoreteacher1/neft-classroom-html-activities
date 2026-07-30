@@ -1113,6 +1113,8 @@
                     if (!STATE.completedQuests.includes(STATE.activeQuestId)) {
                         const completed = [...STATE.completedQuests, STATE.activeQuestId];
                         transitionState({ completedQuests: completed });
+                        // Last quest scored: the match is over, so report it.
+                        if (completed.length >= CONFIG.quests.length) NeftScore.finish();
                     }
                 }
 

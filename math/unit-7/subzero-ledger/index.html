@@ -1943,6 +1943,8 @@
 
       if (allCompsOk && !STATE.casesCompleted.includes(activeCase.id)) {
         STATE.casesCompleted.push(activeCase.id);
+        // All six cases closed: the ledger is complete, so report the run.
+        if (STATE.casesCompleted.length >= 6) NeftScore.finish();
         renderQuests();
         playSynthNote(440, 'sine', 0.2);
         setTimeout(() => {
@@ -2386,6 +2388,8 @@
 
       if (correct === total && !STATE.casesCompleted.includes(4)) {
         STATE.casesCompleted.push(4);
+        // All six cases closed: the ledger is complete, so report the run.
+        if (STATE.casesCompleted.length >= 6) NeftScore.finish();
         renderQuests();
         playSynthNote(440, 'sine', 0.2);
         setTimeout(() => { playSynthNote(554.37,'sine',0.2); playSynthNote(659.25,'sine',0.35); }, 150);
@@ -2574,6 +2578,8 @@
         // Check if all 4 done
         if (sz2QuizResults.every(r => r === 'correct') && !STATE.casesCompleted.includes(6)) {
           STATE.casesCompleted.push(6);
+        // All six cases closed: the ledger is complete, so report the run.
+        if (STATE.casesCompleted.length >= 6) NeftScore.finish();
           renderQuests();
           playSynthNote(659.25,'sine',0.35);
           logDiag('EXPEDITION SECURED: Mission 6 — Signal Word Problems completed!');

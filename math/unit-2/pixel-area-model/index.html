@@ -1519,6 +1519,10 @@ const AppController = {
   triggerQuestSuccess() {
     // Three quests are offered; count how many have been matched so far.
     NeftScore.tally("quests", CONFIG.quests.length, STATE.currentQuestIndex + 1);
+    // Everything done: the run is over, so report it. finish() latches, so
+    // firing it on an earlier check would freeze the row there. A partial
+    // run still reports on pagehide.
+    if (STATE.currentQuestIndex + 1 >= CONFIG.quests.length) NeftScore.finish();
     AudioEngine.playSuccess();
     document.getElementById("successModal").classList.add("active");
   },

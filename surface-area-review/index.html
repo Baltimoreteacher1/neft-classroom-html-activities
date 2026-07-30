@@ -620,6 +620,8 @@
         results[index] = ok;
         answered = true;
         saveProgress();
+        // Every problem answered: the review set is done, so report it.
+        if (results.every((r) => r !== null)) NeftScore.finish();
       }
       $("feedback").className = "feedback " + (ok ? "good" : "bad");
       $("feedback").innerHTML = feedbackText(p, ok);

@@ -1664,6 +1664,10 @@
             CONFIG.quests.length,
             STATE.completedQuests.length,
           );
+          // Everything done: the run is over, so report it. finish() latches, so
+          // firing it on an earlier check would freeze the row there. A partial
+          // run still reports on pagehide.
+          if (STATE.completedQuests.length >= CONFIG.quests.length) NeftScore.finish();
         }
       }
 
