@@ -57,6 +57,7 @@ import {
   themeDisplayName,
 } from "./small-group-storyboard.js";
 import { createReachLog } from "./small-group-reach.js";
+import { createRoom, createRoomChip } from "./small-group-room.js";
 import { mountSmallGroupTabs } from "./small-group-tabs.js";
 import { mountSmallGroupTeacherAccess } from "./small-group-teacher-access.js";
 import {
@@ -524,11 +525,18 @@ function renderStudio(config) {
     // Named misconceptions seen on this device, as {id: count}. Counts only —
     // the typed response that produced them is never stored or transmitted.
     misconceptions: store.get("misconceptions") || {},
+    // Last revealed table distribution, so "convince a skeptic" can name a real
+    // peer's position instead of inventing an objection.
+    roomConsensus: store.get("roomConsensus") || null,
   };
   // Reach instrumentation: which tabs students actually arrive at, and how long
   // the studio takes to put a problem in front of them. See small-group-reach.js
   // for why arrivals — not completions — are the number that matters here.
   const reach = createReachLog(store);
+
+  // The shared table. Strictly additive: with no room, no backend, or no network
+  // the studio behaves exactly as it always has. See small-group-room.js.
+  const room = createRoom(config.lessonId || "lesson");
 
   const events = {
     onAttempt({ correct, item, response }) {
@@ -717,7 +725,7 @@ function renderStudio(config) {
     variant === "group2"
       ? null
       : createTalkSection(config, variant, phaseDone("sg-tab-practice", "talkDone"));
-  if (talk) talk.appendChild(createConsensusLab(config, variant, state, store));
+  if (talk) talk.appendChild(createConsensusLab(config, variant, state, store, room));
   // Mid-rotation checkpoint: when the guided set lands, send one name-free
   // section-scoped ping so the teacher's class view moves DURING the rotation,
   // not only after completion. Same privacy gate as the completion sync.
@@ -806,7 +814,7 @@ function renderStudio(config) {
   // (group2 already has the topic-specific Math Check lab). Deliberately NOT registered in
   // trackedPhases — it's an invitation, never part of the progress denominator.
   const goDeeper =
-    variant === "group2" ? null : createGoDeeper({ config, lessonId: config.lessonId, variant });
+    variant === "group2" ? null : createGoDeeper({ config, lessonId: config.lessonId, variant, peers: state.roomConsensus });
 
   // Register the phase checks that exist in THIS lesson (labs are optional),
   // and restore ones finished last session, so the meter's denominator is
@@ -888,6 +896,17 @@ function renderStudio(config) {
   ];
 
   const heroNode = hero(config, accent, voice);
+  // The table chip sits in the hero on purpose: a group that discovers the room
+  // halfway through has already answered everything alone, and the reveal only
+  // teaches anything if nobody has spoken yet.
+  heroNode.appendChild(
+    createRoomChip(room, {
+      onJoined: () => {
+        // Re-render the talk section's consensus lab against the new membership.
+        window.location.reload();
+      },
+    }),
+  );
   app.appendChild(heroNode);
   // Publisher-grade standards display: resolve the bare code to its full MCCRS
   // wording (best-effort) and fold it into the hero's objectives detail, so

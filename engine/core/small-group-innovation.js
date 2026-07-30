@@ -207,7 +207,85 @@ function createConsensusGuide(variant, sample) {
   return wrap;
 }
 
-export function createConsensusLab(config, variant, state, store = null) {
+/**
+ * Live board for a real table: this seat casts ONE vote, then the studio waits
+ * for the other seats and reveals the true distribution. No early reveal — the
+ * whole pedagogical point is that you commit before you know what anyone else
+ * said, so the disagreement that follows is real.
+ */
+function liveConsensusBoard(config, variant, state, store, room) {
+  const wrap = el("div", "sg-vote-board sg-vote-live");
+  const status = el("div", "sg-consensus-reveal", `🔒 Waiting for your table…`);
+  status.setAttribute("aria-live", "polite");
+  const itemKey = `consensus:${config.lessonId || "lesson"}`;
+  const row = el("div", "sg-vote-row");
+  row.appendChild(el("b", null, `Your seat (${room.seat()})`));
+
+  let stop = null;
+  const paint = (data) => {
+    if (!data) return;
+    if (!data.revealed) {
+      status.classList.remove("is-revealed");
+      status.textContent = `🔒 ${data.committed} of ${data.seats} seats ready — choices stay private`;
+      return;
+    }
+    // Real distribution from real people. Persisted onto state so the
+    // "convince a skeptic" step can name an actual peer position instead of a
+    // canned objection.
+    const counts = {};
+    data.answers.forEach(({ answer }) => {
+      counts[answer] = (counts[answer] || 0) + 1;
+    });
+    state.roomConsensus = { mine: state.consensusVotes?.[0] || null, answers: data.answers };
+    store?.set("roomConsensus", state.roomConsensus);
+    status.classList.add("is-revealed");
+    const spread = Object.keys(counts).length;
+    status.innerHTML =
+      `<b>${spread > 1 ? "Your table disagrees — that is the discussion" : "Your table agrees"}</b>` +
+      Object.entries(counts)
+        .map(
+          ([id, count]) =>
+            `<span>${esc(labelFor(id))} · ${count} ${count === 1 ? "seat" : "seats"}</span>`,
+        )
+        .join("");
+  };
+
+  proofEntries(variant).forEach((path) => {
+    const button = el(
+      "button",
+      "sg-vote-button",
+      `<span aria-hidden="true">${path.icon || ""}</span> ${esc(path.label)}`,
+    );
+    button.type = "button";
+    button.setAttribute("aria-label", `Your choice · ${path.label}`);
+    const cast = async (persist) => {
+      [...row.querySelectorAll("button")].forEach((item) => {
+        item.disabled = true;
+        item.setAttribute("aria-pressed", String(item === button));
+      });
+      state.consensusVotes = [path.id];
+      if (persist) {
+        store?.set("consensusVotes", [path.id]);
+        await room.commit(itemKey, path.id);
+      }
+      status.textContent = "🔒 Locked in. Waiting for the rest of your table…";
+      stop?.();
+      stop = room.watch(itemKey, paint);
+    };
+    button.onclick = () => cast(true);
+    if (state.consensusVotes?.[0] === path.id) cast(false);
+    row.appendChild(button);
+  });
+  wrap.append(row, status);
+  // A returning student who already committed should see the live state at once.
+  if (state.consensusVotes?.[0]) {
+    stop?.();
+    stop = room.watch(itemKey, paint);
+  }
+  return wrap;
+}
+
+export function createConsensusLab(config, variant, state, store = null, room = null) {
   const fieldset = el("fieldset", "sg-consensus sg-innovation");
   fieldset.setAttribute("aria-label", "Team consensus protocol");
   fieldset.appendChild(el("legend", "sg-innovation-title", "Team consensus protocol"));
@@ -230,29 +308,41 @@ export function createConsensusLab(config, variant, state, store = null) {
     problemCard.appendChild(el("p", "sg-consensus-problem-stem", esc(problem)));
     fieldset.appendChild(problemCard);
   }
+  // A real table gets a real board. One seat, one vote, revealed only when
+  // everyone has committed. The simulated three-voice board below is the SOLO
+  // fallback, and it now says so — a device counting "0 of 3 voices ready" while
+  // one student taps all three is a ritual of collaboration, not collaboration,
+  // and labelling it honestly is the difference between a scaffold and a fiction.
+  const live = room?.active?.() ? liveConsensusBoard(config, variant, state, store, room) : null;
   fieldset.appendChild(
     el(
       "p",
       "sg-innovation-lede",
-      problem
-        ? "Each voice picks the single best way to prove the answer to the problem above. With a group, pass the device so each choice stays private until all three respond; on your own, cast all three votes as different points of view."
-        : "With a group: pass the device so each voice chooses privately — the distribution stays hidden until all three respond. On your own: cast all three votes as different points of view.",
+      live
+        ? `Everyone at table ${esc(room.code())} picks the single best way to prove the answer${problem ? " to the problem above" : ""}. Your choice stays private until every seat has committed — then all of them appear at once.`
+        : problem
+          ? "Pick the single best way to prove the answer to the problem above. Working alone, you are casting all three positions yourself — try to argue each one honestly. With a group at one table, start a table code above so each seat votes for real."
+          : "Working alone, you are casting all three positions yourself — try to argue each one honestly. With a group at one table, start a table code above so each seat votes for real.",
     ),
   );
+  if (live) {
+    fieldset.appendChild(live);
+  }
   const voteBoard = el("div", "sg-vote-board");
-  const reveal = el("div", "sg-consensus-reveal", "🔒 0 of 3 voices ready");
+  const reveal = el("div", "sg-consensus-reveal", "🔒 0 of 3 positions argued");
   reveal.setAttribute("aria-live", "polite");
   const votes = Array.isArray(state.consensusVotes) ? [...state.consensusVotes] : [];
   const updateReveal = () => {
     const ready = votes.filter(Boolean).length;
-    if (ready < 3) reveal.textContent = `🔒 ${ready} of 3 voices ready — choices stay private`;
+    if (ready < 3)
+      reveal.textContent = `🔒 ${ready} of 3 positions argued — you are arguing all three`;
     else {
       const counts = votes.reduce((all, id) => ({ ...all, [id]: (all[id] || 0) + 1 }), {});
       reveal.classList.add("is-revealed");
-      reveal.innerHTML = `<b>Anonymous distribution revealed</b>${Object.entries(counts)
+      reveal.innerHTML = `<b>Your three positions, side by side</b>${Object.entries(counts)
         .map(
           ([id, count]) =>
-            `<span>${esc(labelFor(id))} · ${count} ${count === 1 ? "voice" : "voices"}</span>`,
+            `<span>${esc(labelFor(id))} · ${count} ${count === 1 ? "position" : "positions"}</span>`,
         )
         .join("")}`;
     }
@@ -316,7 +406,11 @@ export function createConsensusLab(config, variant, state, store = null) {
     store?.set("revisionReason", state.revisionReason);
   };
   revision.appendChild(reasonLabel);
-  fieldset.append(createConsensusGuide(variant, problem), voteBoard, reveal, revision);
+  // With a real table the live board above IS the vote; the simulated
+  // three-position board would only invite students to argue with themselves
+  // while their group waits.
+  if (live) fieldset.append(createConsensusGuide(variant, problem), revision);
+  else fieldset.append(createConsensusGuide(variant, problem), voteBoard, reveal, revision);
   return fieldset;
 }
 

@@ -218,7 +218,7 @@ function textStep({ number, titleEn, titleEs, hintHtml, value, minLength, placeh
  * lesson has no challenge-worthy item. `variant` is "lesson" | "group1" |
  * "catchup" — callers keep group2 on its Prove It lab instead.
  */
-export function createGoDeeper({ config, lessonId, variant = "lesson" }) {
+export function createGoDeeper({ config, lessonId, variant = "lesson", peers = null }) {
   const item = pickChallenge(config);
   if (!item || !lessonId) return null;
   injectStyles();
@@ -296,13 +296,30 @@ export function createGoDeeper({ config, lessonId, variant = "lesson" }) {
   const two = (() => {
     const step = document.createElement("section");
     step.className = "ntgd-step";
-    step.innerHTML = `<h4><span class="ntgd-n">2</span><span>${bi(
-      "Convince a skeptic",
-      "Convence a un escéptico",
-    )}</span></h4><p style="margin:0">${bi(
-      "A skeptic says: “I don't believe you.” Pick a proof move, then use the frame.",
-      "Un escéptico dice: “No te creo.” Elige una estrategia y usa el marco de oración.",
-    )}</p>`;
+    // A REAL skeptic when there is one. `peers` carries the revealed table
+    // distribution, so if a seat at this table proved it a different way we name
+    // that seat and that position. A canned "I don't believe you" is the fallback
+    // for a student working alone — it was never a good substitute for the three
+    // actual skeptics sitting at the table.
+    const dissent = (() => {
+      if (!peers?.answers?.length || !peers.mine) return null;
+      const other = peers.answers.find((entry) => entry.answer && entry.answer !== peers.mine);
+      return other || null;
+    })();
+    const challenge = dissent
+      ? bi(
+          `Seat ${dissent.seat} at your table proved it a different way. Convince them yours works too — pick a proof move, then use the frame.`,
+          `El asiento ${dissent.seat} de tu mesa lo demostró de otra manera. Convéncelos de que el tuyo también funciona: elige una estrategia y usa el marco de oración.`,
+        )
+      : bi(
+          "A skeptic says: “I don't believe you.” Pick a proof move, then use the frame.",
+          "Un escéptico dice: “No te creo.” Elige una estrategia y usa el marco de oración.",
+        );
+    step.innerHTML = `<h4><span class="ntgd-n">2</span><span>${
+      dissent
+        ? bi("Convince your table", "Convence a tu mesa")
+        : bi("Convince a skeptic", "Convence a un escéptico")
+    }</span></h4><p style="margin:0">${challenge}</p>`;
     const chips = document.createElement("div");
     chips.className = "ntgd-moves";
     chips.setAttribute("role", "group");
