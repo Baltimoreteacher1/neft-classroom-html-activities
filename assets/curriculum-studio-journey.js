@@ -208,16 +208,26 @@
         if (!manifest || !manifest.lessons) return;
         var unitStats = collectSignals(manifest);
         renderContinueChip();
-        if (renderStrips(unitStats)) return;
-        // #interactive-hub renders from an inline script at runtime — if the
-        // cards are not there yet, watch briefly, then give up silently.
+        renderStrips(unitStats);
+        // #interactive-hub renders from an inline script at runtime, and
+        // curriculum-sidebar.js removes every non-active .unit-card from the
+        // DOM, re-appending one on each rail click. So a successful first pass
+        // proves nothing about later units: this used to return early whenever
+        // renderStrips found a single card, which skipped installing the
+        // observer entirely and left 9 of 10 units strip-less for the session.
+        // Watch for the whole session and never disconnect -- renderStrips is
+        // idempotent via its .ntj-strip check, and rAF coalesces the bursts our
+        // own insertAdjacentElement calls trigger.
+        var scheduled = false;
         var observer = new MutationObserver(function () {
-          if (renderStrips(unitStats)) observer.disconnect();
+          if (scheduled) return;
+          scheduled = true;
+          requestAnimationFrame(function () {
+            scheduled = false;
+            renderStrips(unitStats);
+          });
         });
         observer.observe(document.body, { childList: true, subtree: true });
-        setTimeout(function () {
-          observer.disconnect();
-        }, 8000);
       })
       .catch(function () {
         /* offline or manifest missing — the hub works exactly as before */
