@@ -73,10 +73,12 @@ test.describe("small-group guided math studio", () => {
     await expect(page.getByLabel("Predict", { exact: true })).toHaveCount(0);
     await expect(page.getByLabel("Test", { exact: true })).toHaveCount(0);
 
-    const equation = page.getByRole("button", {
-      name: "Equation: open definition",
-      exact: true,
-    }).first();
+    const equation = page
+      .getByRole("button", {
+        name: "Equation: open definition",
+        exact: true,
+      })
+      .first();
     await equation.click();
     const definition = page.getByRole("dialog", { name: "Equation" });
     await expect(definition.getByText(/math sentence with an equal sign/i)).toBeVisible();
@@ -106,12 +108,19 @@ test.describe("small-group guided math studio", () => {
     // Team consensus protocol lives with partner talk in the Practice tab.
     await page.locator("#sg-tab-sg-tab-practice").click();
     const consensus = page.getByRole("group", { name: "Team consensus protocol" });
-    await expect(consensus.getByText(/stays private|stays hidden/i).first()).toBeVisible();
+    // Without a table code this is the SOLO board, and the innovation wave made it
+    // say so: one student tapping all three seats is a ritual of collaboration, not
+    // collaboration. The honest labelling is the assertion — and the old
+    // "your choice stays private" promise must NOT appear here, because with one
+    // device there is nobody to keep it private from. That promise is now scoped to
+    // the live table branch (createConsensusLab in small-group-innovation.js).
+    await expect(consensus.getByText(/casting all three positions yourself/i)).toBeVisible();
+    await expect(consensus.getByText(/stays private|stays hidden/i)).toHaveCount(0);
     for (const voice of ["Voice 1", "Voice 2", "Voice 3"]) {
       await consensus.getByRole("button", { name: new RegExp(`${voice}.*Model it`, "i") }).click();
     }
-    await expect(consensus.getByText(/Anonymous distribution revealed/i)).toBeVisible();
-    await expect(consensus.getByText(/Model it · 3 voices/)).toBeVisible();
+    await expect(consensus.getByText(/Your three positions, side by side/i)).toBeVisible();
+    await expect(consensus.getByText(/Model it · 3 positions/)).toBeVisible();
     await consensus.getByRole("radio", { name: "Revised the position" }).check();
     await consensus
       .getByLabel("Why did your thinking change?")
