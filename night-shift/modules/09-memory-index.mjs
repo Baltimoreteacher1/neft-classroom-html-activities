@@ -28,8 +28,15 @@ export async function run(ctx) {
     path.join(homedir(), ".claude", "projects", "-Users-joelneft", "memory");
   const file = path.join(dir, "MEMORY.md");
   // The read limit the harness enforces. warnBytes leaves deliberate headroom.
+  //
+  // These MUST track the harness's own compaction hook, which warns at ~80% of
+  // the limit and asks for ~70%. The first version warned at 23000 (94%) and so
+  // reported a cheerful "✅ healthy, 83% of limit" on the very same file the
+  // harness was already telling the assistant to compact — a sentinel that
+  // contradicts the thing it is meant to watch is worse than no sentinel.
   const limitBytes = cfg.limitBytes ?? 24_400;
-  const warnBytes = cfg.warnBytes ?? 23_000;
+  const warnBytes = cfg.warnBytes ?? 19_520;
+  const targetBytes = cfg.targetBytes ?? 17_100;
 
   let text;
   try {
@@ -67,10 +74,19 @@ export async function run(ctx) {
   } else if (bytes >= warnBytes) {
     status = "warn";
     details.push(
-      `⚠️ \`MEMORY.md\` is ${bytes} bytes (${pct}% of the ${limitBytes} limit) — room for about ${roomFor} more ${roomFor === 1 ? "entry" : "entries"}.`,
+      `⚠️ \`MEMORY.md\` is ${bytes} bytes (${pct}% of the ${limitBytes} limit) — room for about ${roomFor} more ${roomFor === 1 ? "entry" : "entries"}. Target is ${targetBytes}.`,
+    );
+    // Trimming prose is the obvious move and it runs out fast: the link syntax
+    // itself is a floor that only shrinks by RETIRING or MERGING memory files.
+    // Reporting that floor stops the advice from being impossible to follow.
+    const linkBytes = (text.match(/\[[^\]]*\]\([^)]*\.md\)|\[\[[^\]]*\]\]/g) || []).join("").length;
+    details.push(
+      `ℹ️ ${linkBytes} of those bytes are link syntax alone (${entries} entries) — prose trimming can only reach ~${linkBytes + 1500}.`,
     );
     actions.push(
-      `Compact \`MEMORY.md\` while there is still headroom: retire finished entries and merge related ones. Deliberate now beats silent truncation later.`,
+      linkBytes >= targetBytes
+        ? `Prose trimming CANNOT reach ${targetBytes} — link syntax alone is ${linkBytes}. Retire or MERGE memory files (each removed entry frees ~${perEntry} bytes); do not gut the descriptions, they are what make an entry findable.`
+        : `Compact \`MEMORY.md\` while there is still headroom: retire finished entries and merge related ones. Deliberate now beats silent truncation later.`,
     );
   } else {
     details.push(
