@@ -32,9 +32,9 @@
 
   if (typeof document === "undefined") return;
 
-  // ⚠️ KEEP IN SYNC with TEACHER_PIN in assets/curriculum-enhancements.js
-  // and engine/core/teacher-mode.js (client-side gate against casual access).
-  var TEACHER_PIN = "TeacherNeft";
+  // ⚠️ Canonical copy is engine/core/teacher-mode.js — see the full rotation
+  // list there (six files). Client-side gate against casual access only.
+  var TEACHER_PIN = "BlueHeron2026";
   var SESSION_KEY = "nt-answer-console-ok";
   var LEVEL_KEY_PREFIX = "nt-project-level:";
   var lockedLevel = null;

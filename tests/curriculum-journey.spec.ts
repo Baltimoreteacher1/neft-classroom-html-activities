@@ -12,7 +12,7 @@ import { expect, test, type Page } from "@playwright/test";
  * second click was needed).
  */
 
-const TEACHER_PIN = "TeacherNeft";
+const TEACHER_PIN = "BlueHeron2026";
 
 // Switching INTO Teacher Mode fires window.prompt("Enter teacher password:").
 // Accept it with the master PIN so a first click can complete end to end.

@@ -27,10 +27,20 @@ const TEACHER_PIN_ROLE_KEY = "nt-teacher-pin-role";
 // page, so a determined student could read it from source. It stops casual
 // clicking/peeking, which is the real classroom risk. Either PIN unlocks the
 // same Teacher Mode sticky flag; neither is SITE_PASSWORD.
-// ⚠️ KEEP IN SYNC with TEACHER_PINS in assets/curriculum-enhancements.js.
+// ⚠️ THIS FILE IS THE CANONICAL COPY. The same literal is duplicated in five
+// other places, and the sync comments used to disagree with each other — this
+// one named a single file, so a rotation that followed it left three live
+// surfaces on the old PIN. Rotate ALL of these together:
+//   assets/curriculum-enhancements.js      (TEACHER_PINS)
+//   math/student-board/index.html          (TEACHER_PIN)
+//   shared/projects/projects-gold.js       (TEACHER_PIN)
+//   teacher-tools/teaching-evidence/index.html (PIN)
+//   tests/curriculum-journey.spec.ts       (TEACHER_PIN)
+// tools/validate-projects-award.mjs reads the values below at runtime, so it
+// needs no edit — it follows a rotation on its own.
 const TEACHER_PINS = Object.freeze({
-  master: "TeacherNeft",
-  coteacher: "TeacherAlba",
+  master: "BlueHeron2026",
+  coteacher: "RiverStone2026",
 });
 
 function matchTeacherPin(pin) {
