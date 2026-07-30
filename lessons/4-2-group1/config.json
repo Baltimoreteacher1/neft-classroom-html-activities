@@ -45,7 +45,7 @@
   "revealWordProblem": {
     "title": "Apply: Build the Arcade Scoreboard",
     "text": "You are programming the scoreboard for a new arcade game. A player clears 7/8 of the level. The leaderboard must show this score as a percent, and the game engine stores it as a decimal. What percent and what decimal should the scoreboard display for 7/8? Show how you converted between all three forms.",
-    "sampleAnswer": "7 ÷ 8 = 0.875, and 0.875 × 100 = 87.5%. So 7/8 = 0.875 = 87.5%. The leaderboard shows 87.5% and the game engine stores 0.875."
+    "sampleAnswer": "The denominator 8 does not scale to 100 by a whole number (8 × 12 = 96, 8 × 13 = 104), so I divide instead: 7 ÷ 8 = 0.875, and 0.875 × 100 = 87.5%. That is the same as 87.5/100. So 7/8 = 0.875 = 87.5%. The leaderboard shows 87.5% and the game engine stores 0.875."
   },
   "turnAndTalk": [
     {
@@ -76,16 +76,16 @@
     },
     {
       "phase": "explore",
-      "question": "How did you convert a fraction like 3/5 into a decimal and a percent in the table?",
-      "kernel": "I divided the numerator by the denominator, then multiplied by 100 to get the percent.",
+      "question": "How did you turn a fraction like 3/5 into a fraction out of 100, and then into a decimal and a percent?",
+      "kernel": "I multiplied the top and bottom by the same number to make the denominator 100, then the new numerator was the percent.",
       "stems": [
         {
-          "en": "To change ___ to a decimal I divided ___ by ___.",
-          "es": "Para cambiar ___ a decimal dividí ___ entre ___."
+          "en": "To change ___ into a percent I multiplied the top and bottom by ___.",
+          "es": "Para cambiar ___ a porcentaje multipliqué arriba y abajo por ___."
         },
         {
-          "en": "To get the percent I multiplied the decimal by ___.",
-          "es": "Para obtener el porcentaje multipliqué el decimal por ___."
+          "en": "That gave me ___/100, so the percent is ___%.",
+          "es": "Eso me dio ___/100, así que el porcentaje es ___%."
         }
       ],
       "wordBank": [
@@ -94,7 +94,7 @@
         "equivalent",
         "benchmark"
       ],
-      "extend": "Some fractions like 1/4 give a clean decimal, but others do not. How can a benchmark like 1/2 or 1/4 help you estimate before you divide?",
+      "extend": "Some denominators scale to 100 easily (2, 4, 5, 10, 20, 25, 50) and some do not (3, 7, 8). How do you decide which method to use, and what do you do when 100 will not work?",
       "extendStems": [
         "A benchmark helps because ___.",
         "I know ___ is close to ___ because ___."
@@ -129,11 +129,11 @@
     {
       "phase": "practice",
       "question": "During practice on Relate Fractions, Decimals, and Percents, what strategy did you use when a problem felt tricky?",
-      "kernel": "To turn a fraction into a percent, divide the top by the bottom to get a decimal, then multiply by 100.",
+      "kernel": "To turn a fraction into a percent, build an equivalent fraction with a denominator of 100: ask “what do I multiply the denominator by to get 100?” and multiply the numerator by that same number. The new numerator is the percent.",
       "stems": [
         {
-          "en": "To change ___ to a decimal I divided ___ by ___.",
-          "es": "Para cambiar ___ a decimal dividí ___ entre ___."
+          "en": "To change ___ into a percent I multiplied the top and bottom by ___.",
+          "es": "Para cambiar ___ a porcentaje multipliqué arriba y abajo por ___."
         },
         {
           "en": "I knew my answer was reasonable because ___.",
@@ -261,22 +261,22 @@
     "conceptIntro": {
       "heading": "Let's build it together — How can one value be written as a fraction, a decimal, AND a percent?",
       "intro": "Equivalent forms name the same value in different ways. A fraction, a decimal, and a percent can all show the same amount. We'll walk through a worked example, try one together, then you'll try a few with hints right there when you need them.",
-      "keyIdea": "To turn a fraction into a percent, divide the top by the bottom to get a decimal, then multiply by 100.",
+      "keyIdea": "To turn a fraction into a percent, build an equivalent fraction with a denominator of 100: ask “what do I multiply the denominator by to get 100?” and multiply the numerator by that same number. The new numerator is the percent.",
       "iDo": {
         "title": "Watch me",
         "lines": [
-          "A player scored 3/4 of the points. I want this as a decimal and a percent.",
-          "First I divide: 3 ÷ 4 = 0.75. That is the decimal.",
-          "Then I multiply by 100: 0.75 × 100 = 75%.",
-          "So 3/4 = 0.75 = 75%. All three name the same score."
+          "A player scored 3/4 of the points. Percent means out of 100, so I want an equivalent fraction with 100 on the bottom.",
+          "What do I multiply the denominator 4 by to get 100? 4 × 25 = 100, so my scale factor is 25.",
+          "I have to multiply the top by that same 25: 3 × 25 = 75. So 3/4 = 75/100.",
+          "75 out of 100 is 75%. And 75/100 as a decimal is 0.75, because hundredths sit two places after the point."
         ]
       },
       "weDo": {
         "title": "Let's try together",
         "lines": [
-          "Let's change 1/5 into a decimal and a percent.",
+          "Let's change 1/5 into a fraction out of 100, then a decimal and a percent.",
           "What is 1 ÷ 5? (0.2)",
-          "Now multiply 0.2 × 100. What percent do we get? (20%)",
+          "Now multiply the numerator by that same 20: 1 × 20 = ? (20) So 1/5 = 20/100.",
           "Sentence frame — say it with me: \"The multiples/steps I need are ___ , and the answer is ___ .\""
         ]
       },
@@ -291,24 +291,28 @@
   },
   "explore": {
     "type": "fill-table",
-    "instructions": "Quick warm-up together: Complete the conversion table. Each row shows the same value in three forms.",
+    "instructions": "Quick warm-up together: Complete the conversion table. Build the equivalent fraction out of 100 first — that column is what makes the percent easy to read.",
     "headers": [
       "Fraction",
+      "Equivalent fraction out of 100",
       "Decimal",
       "Percent"
     ],
     "rows": [
       [
         "1/2",
+        "50/100",
         "0.5",
         "50%"
       ],
       [
         "1/4",
         "",
+        "",
         ""
       ],
       [
+        "",
         "",
         "0.75",
         ""
@@ -316,14 +320,17 @@
       [
         "",
         "",
+        "",
         "20%"
       ],
       [
         "3/5",
         "",
+        "",
         ""
       ],
       [
+        "",
         "",
         "0.1",
         ""
@@ -333,11 +340,16 @@
       {
         "row": 1,
         "col": 1,
-        "answer": "0.25"
+        "answer": "25/100"
       },
       {
         "row": 1,
         "col": 2,
+        "answer": "0.25"
+      },
+      {
+        "row": 1,
+        "col": 3,
         "answer": "25%"
       },
       {
@@ -347,7 +359,12 @@
       },
       {
         "row": 2,
-        "col": 2,
+        "col": 1,
+        "answer": "75/100"
+      },
+      {
+        "row": 2,
+        "col": 3,
         "answer": "75%"
       },
       {
@@ -358,16 +375,26 @@
       {
         "row": 3,
         "col": 1,
+        "answer": "20/100"
+      },
+      {
+        "row": 3,
+        "col": 2,
         "answer": "0.2"
       },
       {
         "row": 4,
         "col": 1,
-        "answer": "0.6"
+        "answer": "60/100"
       },
       {
         "row": 4,
         "col": 2,
+        "answer": "0.6"
+      },
+      {
+        "row": 4,
+        "col": 3,
         "answer": "60%"
       },
       {
@@ -377,20 +404,25 @@
       },
       {
         "row": 5,
-        "col": 2,
+        "col": 1,
+        "answer": "10/100"
+      },
+      {
+        "row": 5,
+        "col": 3,
         "answer": "10%"
       }
     ],
     "discourse": {
-      "prompt": "What pattern do you notice when converting between fractions, decimals, and percents?",
-      "sentenceFrame": "To convert a fraction to a percent, I can ___ because ___.",
+      "prompt": "What number did you multiply by to turn each denominator into 100, and how did that fraction out of 100 give you the percent?",
+      "sentenceFrame": "I multiplied the top and bottom of ___ by ___ to get ___/100, so the percent is ___%.",
       "keywords": [
-        "divide",
-        "multiply",
-        "100",
+        "equivalent",
         "denominator",
         "numerator",
-        "equivalent"
+        "out of 100",
+        "scale factor",
+        "percent"
       ]
     },
     "diagram": {
@@ -422,13 +454,13 @@
         "choiceFeedback": [
           "",
           "Try again: 3 ÷ 5 × 100.",
-          "Divide the numerator by the denominator, then multiply by 100.",
+          "Build an equivalent fraction with denominator 100 — multiply the top and bottom by the same number.",
           "Check your calculation."
         ],
         "hints": [
-          "3/5 means 3 divided by 5. A percent is just that decimal scaled to 'out of 100'.",
-          "Convert fraction → decimal → percent: divide, then multiply the decimal by 100.",
-          "Start with 3 ÷ 5 = 0.6. Now move the decimal point two places right to name it as a percent."
+          "Percent means out of 100. What do you multiply the denominator 5 by to get 100?",
+          "5 × 20 = 100, so multiply the numerator by that same 20 to build the equivalent fraction.",
+          "3 × 20 = 60, so 3/5 = 60/100. A fraction out of 100 IS the percent."
         ],
         "stemEs": "Convierte 3/5 a porcentaje.",
         "explanationEs": "3 ÷ 5 = 0.6 = 60%."
@@ -446,8 +478,8 @@
         "explanation": "7 ÷ 20 = 0.35 = 35%.",
         "choiceFeedback": [
           "",
-          "Double-check: 7 ÷ 20 × 100.",
-          "Divide 7 by 20 first, then convert to a percent.",
+          "Double-check: 20 × 5 = 100, so the top must be multiplied by 5 too.",
+          "Scale 7/20 up to a denominator of 100 first.",
           "Review your arithmetic."
         ],
         "hints": [
@@ -474,7 +506,7 @@
           "place-value",
           "place-value"
         ],
-        "explanation": "To convert a percent to a decimal, divide by 100: 45 ÷ 100 = 0.45.",
+        "explanation": "45% means 45/100, and 45/100 written as a decimal is 0.45 (forty-five hundredths).",
         "choiceFeedback": [
           "",
           "Divide the percent by 100, or move the decimal point left 2 places.",
@@ -482,12 +514,12 @@
           "Remember: a percent is per 100."
         ],
         "hints": [
-          "Percent means 'per 100', so 45% is really 45 out of 100.",
+          "Percent means 'out of 100', so 45% is the fraction 45/100.",
           "To turn a percent into a decimal, divide by 100 — the decimal point slides two places to the LEFT.",
           "Start at 45. and move the decimal two places left: 45 → 4.5 → where does it land after the second hop?"
         ],
         "stemEs": "¿Qué decimal es equivalente a 45%?",
-        "explanationEs": "Para convertir un porcentaje a decimal, divide entre 100: 45 ÷ 100 = 0.45."
+        "explanationEs": "45% significa 45/100, y 45/100 escrito como decimal es 0.45 (cuarenta y cinco centésimos)."
       },
       {
         "type": "multiple-choice",
@@ -532,14 +564,14 @@
           }
         ],
         "errorStep": 1,
-        "correctWork": "You cannot just read the digits. Divide first: 3 ÷ 5 = 0.6, then multiply by 100. So 3/5 = 0.6 = 60%, not 35%.",
+        "correctWork": "You cannot just read the digits. Percent means out of 100, so build the equivalent fraction: 5 × 20 = 100, and 3 × 20 = 60. So 3/5 = 60/100 = 0.6 = 60%, not 35%.",
         "hints": [
-          "Does writing the two digits 3 and 5 actually divide 3 by 5?",
-          "Divide 3 ÷ 5 to get 0.6, then × 100 → 60%."
+          "Do the digits 3 and 5 tell you how many parts out of 100?",
+          "Scale it: 5 × 20 = 100, so 3 × 20 = 60. That gives 3/5 = 60/100 = 60%."
         ],
         "titleEs": "Detecta el error común",
-        "explanation": "A fraction bar means divide, so you cannot read the numerator and denominator as the two digits of a percent. Dividing first gives 3 ÷ 5 = 0.6, and 0.6 × 100 = 60%. So 3/5 = 60%, not 35%.",
-        "explanationEs": "La barra de fracción significa dividir, así que no puedes leer el numerador y el denominador como si fueran las dos cifras de un por ciento. Al dividir primero se obtiene 3 ÷ 5 = 0.6, y 0.6 × 100 = 60%. Entonces 3/5 = 60%, no 35%."
+        "explanation": "The two digits of a fraction are not the two digits of a percent. Percent means out of 100, so rewrite 3/5 with a denominator of 100: multiply the bottom by 20 to reach 100, and the top by that same 20. That gives 3/5 = 60/100 = 60%, not 35%.",
+        "explanationEs": "Las dos cifras de una fracción no son las dos cifras de un por ciento. Porcentaje significa de cada 100, así que reescribe 3/5 con denominador 100: multiplica abajo por 20 para llegar a 100 y arriba por ese mismo 20. Eso da 3/5 = 60/100 = 60%, no 35%."
       },
       {
         "type": "multiple-choice",
@@ -551,20 +583,20 @@
           "88%"
         ],
         "correctIndex": 0,
-        "explanation": "7 ÷ 8 = 0.875, and 0.875 × 100 = 87.5%.",
+        "explanation": "8 does not scale to 100 by a whole number, so divide: 7 ÷ 8 = 0.875, and 0.875 × 100 = 87.5%. That is 87.5 out of 100.",
         "choiceFeedback": [
           "",
-          "Divide 7 by 8, then multiply by 100.",
+          "8 will not scale to 100 evenly — divide 7 by 8, then multiply by 100.",
           "Convert the fraction to a decimal first.",
           "Check your calculation on the conversion."
         ],
         "hints": [
-          "7/8 means 7 divided by 8 — the answer will be a decimal just under 1, so the percent is just under 100%.",
-          "Divide the numerator by the denominator, then multiply the decimal by 100 to get the percent.",
-          "Compute 7 ÷ 8 = 0.875. Now slide the decimal two places right to read it as a percent."
+          "Try the out-of-100 move first: is there a whole number you can multiply 8 by to get exactly 100?",
+          "There isn't (8 × 12 = 96, 8 × 13 = 104), so use the backup method: divide the numerator by the denominator.",
+          "7 ÷ 8 = 0.875, which is 87.5/100 — slide the decimal two places right to read the percent."
         ],
         "stemEs": "Un juego muestra tu puntaje como 7/8 completado. ¿Qué porcentaje es eso?",
-        "explanationEs": "7 ÷ 8 = 0.875, y 0.875 × 100 = 87.5%."
+        "explanationEs": "8 no escala a 100 con un número entero, así que divide: 7 ÷ 8 = 0.875, y 0.875 × 100 = 87.5%. Eso es 87.5 de cada 100."
       }
     ],
     "onLevel": [
@@ -608,24 +640,24 @@
           "0.65 and 65%"
         ],
         "correctIndex": 0,
-        "explanation": "Divide 3 ÷ 5 = 0.6, then multiply by 100: 0.6 = 60%. So 3/5 = 0.6 = 60%.",
+        "explanation": "5 × 20 = 100 and 3 × 20 = 60, so 3/5 = 60/100 = 0.6 = 60%.",
         "choiceFeedback": [
           "",
-          "Divide 3 by 5 to get the decimal, then multiply by 100 for the percent.",
+          "Scale 3/5 to a denominator of 100, then read the decimal and percent.",
           "Check both the decimal and percent conversions.",
-          "Try dividing the fraction to get the decimal first."
+          "Try building the equivalent fraction out of 100 first."
         ],
         "stemEs": "Un jugador cargó 3/5 de la barra de energía. ¿Qué decimal y qué porcentaje nombran la misma cantidad?",
-        "explanationEs": "Divide 3 ÷ 5 = 0.6, luego multiplica por 100: 0.6 = 60%. Entonces 3/5 = 0.6 = 60%.",
+        "explanationEs": "5 × 20 = 100 y 3 × 20 = 60, así que 3/5 = 60/100 = 0.6 = 60%.",
         "hints": [
-          "A fraction is also a division problem, and every fraction has a matching decimal and percent.",
-          "Divide the numerator by the denominator to get the decimal, then multiply that decimal by 100 to get the percent.",
-          "Set up 3 ÷ 5 and think of 3 as 3.0. Finish the division, then move the decimal point two places right to name the percent."
+          "Percent means out of 100, so rewrite 3/5 with 100 on the bottom.",
+          "What do you multiply 5 by to get 100? Multiply the numerator by that same number.",
+          "5 × 20 = 100 and 3 × 20 = 60, so 3/5 = 60/100. Read the percent off the top, then write 60/100 as a decimal."
         ],
         "hintsEs": [
-          "Una fracción también es una división, y toda fracción tiene un decimal y un porcentaje que le corresponden.",
-          "Divide el numerador entre el denominador para obtener el decimal y luego multiplica ese decimal por 100 para obtener el porcentaje.",
-          "Plantea 3 ÷ 5 y piensa en 3 como 3.0. Termina la división y después mueve el punto decimal dos lugares a la derecha para nombrar el porcentaje."
+          "Porcentaje significa de cada 100, así que reescribe 3/5 con 100 abajo.",
+          "¿Por cuánto multiplicas 5 para llegar a 100? Multiplica el numerador por ese mismo número.",
+          "5 × 20 = 100 y 3 × 20 = 60, así que 3/5 = 60/100. Lee el porcentaje arriba y luego escribe 60/100 como decimal."
         ]
       },
       {
@@ -706,8 +738,8 @@
         "hint": "Convert 3/8 and 40% to the same form (both fractions or both percents) so you can compare them fairly.",
         "hints": [
           "Bigger digits do NOT mean a bigger value — 3/8 and 40% can only be compared in the same form.",
-          "Turn 3/8 into a percent (divide, then multiply by 100) so both values are percents.",
-          "Compute 3 ÷ 8 = 0.375. Multiply by 100 to get its percent, then say whether that percent is above or below 40%."
+          "You can put 40% in fraction form instantly — it is 40/100. Now get 3/8 out of 100: check whether 8 scales to 100 by a whole number.",
+          "8 does not scale to 100, so divide: 3 ÷ 8 = 0.375 = 37.5/100 = 37.5%. Compare that with 40/100."
         ],
         "explanation": "Bigger-looking digits do not mean a bigger value — the two amounts have to be in the same form before you compare them. Converting the fraction gives 3 ÷ 8 = 0.375, which is 37.5%. Since 37.5% is less than 40%, the student is not correct: 3/8 is the smaller value.",
         "explanationEs": "Que las cifras se vean más grandes no significa que el valor sea mayor: las dos cantidades tienen que estar en la misma forma antes de compararlas. Al convertir la fracción se obtiene 3 ÷ 8 = 0.375, que es 37.5%. Como 37.5% es menor que 40%, el estudiante no tiene razón: 3/8 es el valor más pequeño."
@@ -761,8 +793,8 @@
         ],
         "hints": [
           "50% is the same as 1/2 or 0.5 — that is your comparison line for every card.",
-          "Turn each card into a decimal, then ask: is it more or less than 0.5?",
-          "Try 3/4 first: 3 ÷ 4 = 0.75. Is 0.75 above or below 0.5? Sort it, then test the other cards the same way."
+          "Turn each card into a fraction out of 100 or a decimal, then ask: is it more or less than 50/100?",
+          "Try 3/4 first: 4 × 25 = 100, so multiply the top by 25 too — 3/4 = 75/100 = 0.75. Is 75/100 above or below 50/100? Sort it, then test the other cards the same way."
         ],
         "explanation": "50% is the same value as 0.5 and 1/2, so turning each card into a decimal makes the sort quick. 3/4 = 0.75, 0.8, 65% = 0.65, and 7/10 = 0.7 all sit above 0.5. 1/3 ≈ 0.33, 0.25, 40% = 0.4, and 2/5 = 0.4 all sit below 0.5.",
         "explanationEs": "50% es el mismo valor que 0.5 y que 1/2, así que convertir cada tarjeta en decimal hace rápida la clasificación. 3/4 = 0.75, 0.8, 65% = 0.65 y 7/10 = 0.7 quedan todos por encima de 0.5. 1/3 ≈ 0.33, 0.25, 40% = 0.4 y 2/5 = 0.4 quedan todos por debajo de 0.5."
@@ -770,7 +802,7 @@
     ],
     "extending": [],
     "optional": [],
-    "commonMistake": "A common mistake in Relate Fractions, Decimals, and Percents is treating the numerator and denominator as the percent's digits instead of dividing — for example, turning 3/5 into \"35%\" by just reading the 3 and the 5, instead of dividing 3 ÷ 5 = 0.6 and multiplying by 100 to get the correct 60%. A second version of this mistake is dividing the denominator by the numerator (flipping the division), like computing 8 ÷ 5 = 1.6 for 5/8 instead of 5 ÷ 8 = 0.625 — always divide the top (numerator) by the bottom (denominator), never the other way around.",
+    "commonMistake": "A common mistake in Relate Fractions, Decimals, and Percents is treating the numerator and denominator as the percent's digits — turning 3/5 into \"35%\" by just reading the 3 and the 5. Percent means out of 100, so the fix is to build an equivalent fraction with denominator 100: 5 × 20 = 100, so multiply the top by 20 too — 3/5 = 60/100 = 60%. A second version of this mistake is scaling only ONE part of the fraction (writing 3/5 = 3/100 or 60/5). Whatever you multiply the denominator by, you must multiply the numerator by the same number. When a denominator will not reach 100 evenly (8, 3, 7), divide the numerator by the denominator instead and then multiply by 100.",
     "optionalActivity": {
       "name": "Percent Conversion Puzzle Tiles",
       "emoji": "🕹️",
