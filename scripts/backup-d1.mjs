@@ -109,6 +109,28 @@ function exportDatabase(target) {
 /* ------------------------------------------------------- restore verification */
 
 /**
+ * The restore check shells out to `sqlite3`. When that binary is absent the
+ * spawn throws ENOENT, which lands in verifyRestore's catch and gets reported
+ * as "the dump does not replay into SQLite — it is NOT restorable" — condemning
+ * a perfectly good export because the CHECKER was missing. Those are opposite
+ * situations (one means the data is bad, the other means we cannot tell) and
+ * they must never share a message. Checked up front, before the export spends
+ * time and bandwidth on a run that cannot be verified anyway.
+ */
+function requireSqlite3() {
+  try {
+    run("sqlite3", ["-version"]);
+  } catch (err) {
+    fail(
+      "sqlite3 is not installed, so no export can be restore-verified.\n" +
+        "  This says NOTHING about the database — it is the checker that is missing,\n" +
+        "  not the backup that is broken. Install sqlite3 and re-run.\n" +
+        `  (${String(err?.message || err).split("\n")[0]})`,
+    );
+  }
+}
+
+/**
  * Replay the dump into a scratch SQLite file and return {table: rowCount}.
  * This is the part that turns a dump into a verified backup.
  */
@@ -173,6 +195,9 @@ if (DRY_RUN) {
   );
   process.exit(0);
 }
+
+// Before spending a remote export on a run that could not be verified anyway.
+requireSqlite3();
 
 const sql = exportDatabase(rawPath);
 
