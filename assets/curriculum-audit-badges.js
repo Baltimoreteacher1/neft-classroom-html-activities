@@ -4,7 +4,7 @@
  * Loaded by curriculum/index.html alongside curriculum-enhancements.js. Fetches
  * the generated manifest (/data/curriculum-manifest.json) and, for each existing
  * lesson card, injects:
- *   - a small status badge strip (Ready / Needs Review / Missing, + ESOL)
+ *   - a small status badge strip (Ready / Needs Review / Missing, + Level 1)
  *   - Family / Student Help / Teacher Notes resource pills (the newly generated
  *     support pages), so they are discoverable from the hub.
  *   - a "Show only problems" toggle + status filter in the controls bar.
@@ -71,8 +71,11 @@
     else if (status === "review")
       wrap.appendChild(el("span", "audit-badge review", "Needs Review"));
     else wrap.appendChild(el("span", "audit-badge missing", "Missing Resource"));
+    // Visible label is "Level 1 Support" -- the site does not surface "ESOL" to
+    // students or teachers. The manifest key stays `supports.esol` because it
+    // is the published data contract; only the rendered text changes.
     if (entry.supports && entry.supports.esol)
-      wrap.appendChild(el("span", "audit-badge info", "ESOL Support"));
+      wrap.appendChild(el("span", "audit-badge info", "Level 1 Support"));
     var r = entry.resources || {};
     if (entry.standard) wrap.appendChild(el("span", "audit-badge gray", entry.standard));
     if (entry.timeEstimate) wrap.appendChild(el("span", "audit-badge gray", entry.timeEstimate));
