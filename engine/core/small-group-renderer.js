@@ -21,12 +21,6 @@ import {
 } from "./small-group-engagement.js";
 import { syncSmallGroupEvidence } from "./small-group-evidence.js";
 import {
-  MISCONCEPTIONS,
-  detectMisconception,
-  recordMisconception,
-  topMisconceptions,
-} from "./small-group-misconceptions.js";
-import {
   createAdaptiveCoach,
   createConsensusLab,
   createEvidenceCard,
@@ -41,12 +35,20 @@ import {
   figureBlock,
 } from "./small-group-labs.js";
 import { createMathCheckLab } from "./small-group-math-check.js";
+import {
+  detectMisconception,
+  MISCONCEPTIONS,
+  recordMisconception,
+  topMisconceptions,
+} from "./small-group-misconceptions.js";
 import { installSmallGroupPassport } from "./small-group-passport.js";
 import {
   collectPracticeItems,
   createCheckSection,
   createPracticeSection,
 } from "./small-group-practice.js";
+import { createReachLog } from "./small-group-reach.js";
+import { createRoom, createRoomChip } from "./small-group-room.js";
 import { masteryBand } from "./small-group-rubric.js";
 import { resolveStandard } from "./small-group-standards.js";
 import { createStudioStore } from "./small-group-state.js";
@@ -57,8 +59,6 @@ import {
   mountThemeArt,
   themeDisplayName,
 } from "./small-group-storyboard.js";
-import { createReachLog } from "./small-group-reach.js";
-import { createRoom, createRoomChip } from "./small-group-room.js";
 import { mountSmallGroupTabs } from "./small-group-tabs.js";
 import { mountSmallGroupTeacherAccess } from "./small-group-teacher-access.js";
 import {
@@ -73,6 +73,7 @@ import {
   voiceFor,
 } from "./small-group-ui.js";
 import { mountTeacherClearButton } from "./teacher-clear.js";
+import { mountToolDrawer } from "./tool-drawer.js";
 import { isToolsMode, mountToolsMenuItem, renderToolsPage } from "./tools-mode.js";
 
 // One Build stage rendered as an interactive player instead of a static list.
@@ -819,7 +820,9 @@ function renderStudio(config) {
   // (group2 already has the topic-specific Math Check lab). Deliberately NOT registered in
   // trackedPhases — it's an invitation, never part of the progress denominator.
   const goDeeper =
-    variant === "group2" ? null : createGoDeeper({ config, lessonId: config.lessonId, variant, peers: state.roomConsensus });
+    variant === "group2"
+      ? null
+      : createGoDeeper({ config, lessonId: config.lessonId, variant, peers: state.roomConsensus });
 
   // Register the phase checks that exist in THIS lesson (labs are optional),
   // and restore ones finished last session, so the meter's denominator is
@@ -969,6 +972,14 @@ function renderStudio(config) {
       number.textContent = badges.length > 1 ? `${index + 1}.${position + 1}` : String(index + 1);
     });
   });
+
+  // Point-of-use interactive tools. Purely additive: it appends a chip row to the
+  // panels whose lesson sections authored a manipulative (plus one in the hero),
+  // and each chip opens the tool in a modal dialog. It never touches lesson
+  // content, the store, or the progress meter — see engine/core/tool-drawer.js.
+  // Mounted here, after numbering, so its rows can never be mistaken for a
+  // numbered lesson section.
+  mountToolDrawer(config, { panels: activeTabSteps, hero: heroNode });
 
   // Print must show everything: open collapsed tools/steps for the duration
   // of the print, then restore the on-screen state.

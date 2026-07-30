@@ -19,7 +19,10 @@
 //     word-search, …) are excluded automatically, and any new registered kind
 //     is picked up with no change here.
 
+import { getPreferredLang } from "./i18n.js";
 import { interactiveVisualHost, mountInteractiveVisuals } from "./interactive-visual.js";
+import { resolveStandard } from "./small-group-standards.js";
+import { SECTION_LABEL, toolMeta } from "./tool-catalog.js";
 
 // Sections whose visual slots hold genuine lesson manipulatives, in the order we
 // want them to appear on the tools page (hands-on practice first, hook last).
@@ -28,45 +31,44 @@ const SECTION_ORDER = ["explore", "practice", "connect", "launch", "reflect"];
 // object or an array of them).
 const VISUAL_KEYS = ["diagram", "visual", "simulator", "lab"];
 
-// Friendly display names per kind (falls back to a title-cased kind).
-const KIND_LABEL = {
-  "equation-balance-lab": "Equation Balance Lab",
-  "step-solver": "Work It Out — Step Solver",
-  "tape-diagram": "Tape Diagram",
-  "coordinate-plane": "Coordinate Plane",
-  "number-line": "Number Line",
-  "factor-tree": "Factor Tree",
-  "factor-tree-lab": "Factor Tree Lab",
-  "line-grapher": "Line Grapher",
-  "scenario-sim": "Scenario Simulator",
-  "algebra-expand": "Distribute Lab",
-  "combine-like-terms": "Combine Like Terms",
-  "percent-builder": "Percent Lab",
-  "unit-rate-builder": "Unit Rate Lab",
-  "ratio-table-builder": "Ratio Table Lab",
-  histogram: "Data Explorer",
-  "dot-plot": "Data Explorer",
-  "box-plot": "Data Explorer",
-  "bar-chart": "Data Explorer",
-  "stats-data-lab": "Stats Data Lab",
-  "number-line-explorer": "Number Line Explorer",
-};
-
-const MANIP_LABEL = {
-  balance: "Balance Scale",
-  "number-line": "Number Line",
-  "line-grapher": "Line Grapher",
-};
-
-function titleCase(kind) {
-  return String(kind || "Interactive Tool")
+function titleCase(slug) {
+  return String(slug || "")
     .replace(/-/g, " ")
     .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
+/**
+ * Canonical tool name. Presentation metadata (names, purpose, how-to, try-this)
+ * lives in tool-catalog.js so this page and the in-lesson tool drawer describe
+ * the same tool the same way.
+ */
 function toolTitle(v) {
-  if (v.kind === "manip") return MANIP_LABEL[v.manip] || titleCase(v.manip);
-  return v.title || v.label || KIND_LABEL[v.kind] || titleCase(v.kind);
+  return toolMeta(v).name;
+}
+
+/**
+ * True when the student has the Spanish lane on. Two keys because the two
+ * renderers own different language controls: the full lesson engine writes
+ * `nt-lang` (i18n.js) and the small-group studio writes `nt-sg-lang` from its
+ * vocabulary language bar. A tools page reached from either must honour it.
+ */
+function esOn() {
+  try {
+    if (window.localStorage.getItem("nt-sg-lang") === "es") return true;
+  } catch {
+    /* storage blocked — fall through to the engine preference */
+  }
+  try {
+    return getPreferredLang() === "es";
+  } catch {
+    return false;
+  }
+}
+
+// Bilingual line: English always, Spanish stacked beneath when the lane is on.
+// Mirrors the family-homework / small-group `bi()` convention.
+function bi(en, es) {
+  return es && esOn() ? `${esc(en)}<span class="nt-es" lang="es">${esc(es)}</span>` : esc(en);
 }
 
 /** True if `mode=tools` is on the current URL. */
@@ -120,10 +122,53 @@ const CSS = `
 .nt-tools-nav a.primary { background: var(--accent, #0d7a76); border-color: var(--accent, #0d7a76); color: #fff; }
 .nt-tools-nav a.primary:hover { filter: brightness(.95); }
 .nt-tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: clamp(16px, 2.4vw, 24px); margin-top: clamp(20px, 3vw, 30px); }
-.nt-tool-card { background: #fff; border: 1px solid #e2ebf3; border-radius: 18px; padding: clamp(14px, 2.4vw, 22px); box-shadow: 0 1px 2px rgba(18,53,91,.05), 0 8px 24px rgba(18,53,91,.05); overflow-x: auto; }
-.nt-tool-card > h2 { display: flex; align-items: baseline; gap: 10px; font: 700 19px/1.2 var(--font-display, "Outfit", system-ui, sans-serif); color: var(--ink, #12355b); margin: 0 0 12px; }
+.nt-tool-card { background: #fff; border: 1px solid #e2ebf3; border-radius: 18px; padding: clamp(14px, 2.4vw, 22px); box-shadow: 0 1px 2px rgba(18,53,91,.05), 0 8px 24px rgba(18,53,91,.05); overflow-x: auto; scroll-margin-top: 16px; }
+.nt-tool-card > h2 { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; font: 700 19px/1.2 var(--font-display, "Outfit", system-ui, sans-serif); color: var(--ink, #12355b); margin: 0 0 6px; }
 .nt-tool-card .nt-tool-tag { font: 600 11px/1 var(--font-ui, system-ui, sans-serif); letter-spacing: .08em; text-transform: uppercase; color: var(--accent, #0d7a76); background: #e7f4f2; padding: 4px 8px; border-radius: 6px; }
 .nt-tools-empty { margin-top: 30px; padding: 28px; border: 1px dashed #cdd9e5; border-radius: 16px; color: #5f6f80; font: 400 16px/1.5 var(--font-body, system-ui, sans-serif); text-align: center; }
+/* ── Publisher layer: purpose, how-to, try-this, per-card actions ─────────── */
+.nt-es { display: block; font-style: italic; color: #5f6f80; }
+.nt-tool-instance { font: 500 14px/1.45 var(--font-body, system-ui, sans-serif); color: #5f6f80; margin: 0 0 8px; }
+.nt-tool-purpose { font: 400 15px/1.5 var(--font-body, system-ui, sans-serif); color: var(--ink, #12355b); margin: 0 0 12px; max-width: 60ch; }
+.nt-tool-guide { margin: 0 0 12px; border: 1px solid #dbe6f0; border-radius: 12px; background: #fbfdff; }
+.nt-tool-guide > summary { cursor: pointer; list-style: none; padding: 9px 14px; font: 600 14px/1.2 var(--font-ui, system-ui, sans-serif); color: var(--ink, #12355b); user-select: none; display: flex; align-items: center; gap: 8px; }
+.nt-tool-guide > summary::-webkit-details-marker { display: none; }
+/* Explicit caret: the native marker is off (it renders differently per browser),
+   so the row needs its own visible "this opens" affordance. */
+.nt-tool-guide > summary::after { content: "▸"; margin-left: auto; color: var(--accent, #0d7a76); transition: transform .15s ease; }
+.nt-tool-guide[open] > summary::after { transform: rotate(90deg); }
+.nt-tool-guide[open] > summary { border-bottom: 1px solid #dbe6f0; }
+.nt-tool-guide .nt-guide-body { padding: 10px 16px 14px; }
+.nt-tool-guide ol { margin: 0; padding-left: 20px; font: 400 15px/1.55 var(--font-body, system-ui, sans-serif); color: var(--ink, #12355b); }
+.nt-tool-guide ol li + li { margin-top: 4px; }
+.nt-try { margin: 0 0 14px; padding: 10px 14px; border-left: 3px solid var(--accent, #0d7a76); background: #f4faf9; border-radius: 0 10px 10px 0; }
+.nt-try-label { font: 700 11px/1 var(--font-ui, system-ui, sans-serif); letter-spacing: .1em; text-transform: uppercase; color: var(--accent, #0d7a76); display: block; margin-bottom: 6px; }
+.nt-try ul { margin: 0; padding-left: 18px; font: 400 15px/1.5 var(--font-body, system-ui, sans-serif); color: var(--ink, #12355b); }
+.nt-try ul li + li { margin-top: 3px; }
+.nt-tool-foot { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.nt-tool-foot button { font: 600 13px/1 var(--font-ui, system-ui, sans-serif); padding: 8px 14px; border-radius: 999px; cursor: pointer; border: 1px solid #cdd9e5; background: #fff; color: var(--ink, #12355b); }
+.nt-tool-foot button:hover { background: #eef4f9; }
+.nt-tools-objective { margin: 14px 0 0; padding: 12px 16px; border-radius: 12px; background: #f4faf9; border: 1px solid #d8ece9; font: 400 15px/1.5 var(--font-body, system-ui, sans-serif); color: var(--ink, #12355b); max-width: 70ch; }
+.nt-tools-objective b { font-weight: 700; }
+.nt-tools-standard { margin: 8px 0 0; font: 400 14px/1.5 var(--font-body, system-ui, sans-serif); color: #5f6f80; max-width: 70ch; }
+.nt-tools-jump { margin-top: 18px; }
+.nt-tools-jump h2 { font: 700 12px/1 var(--font-ui, system-ui, sans-serif); letter-spacing: .1em; text-transform: uppercase; color: #5f6f80; margin: 0 0 8px; }
+.nt-tools-jump ul { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; }
+.nt-tools-jump a { display: inline-flex; align-items: center; gap: 6px; font: 600 14px/1 var(--font-ui, system-ui, sans-serif); text-decoration: none; padding: 9px 14px; border-radius: 999px; border: 1px solid #d7e2ed; color: var(--ink, #12355b); background: #fff; }
+.nt-tools-jump a:hover { background: #f2f7fb; border-color: #b9cee0; }
+.nt-tools-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.nt-tools-actions button { font: 600 13px/1 var(--font-ui, system-ui, sans-serif); padding: 8px 14px; border-radius: 999px; cursor: pointer; border: 1px solid #d7e2ed; background: #fff; color: var(--ink, #12355b); }
+.nt-tools-actions button:hover { background: #f2f7fb; border-color: #b9cee0; }
+.nt-tools-toast { position: fixed; inset-inline: 0; bottom: 18px; margin: 0 auto; width: max-content; max-width: 90vw; background: var(--ink, #12355b); color: #fff; font: 600 14px/1.3 var(--font-ui, system-ui, sans-serif); padding: 10px 18px; border-radius: 999px; box-shadow: 0 8px 24px rgba(18,53,91,.25); z-index: 50; }
+.nt-tools :focus-visible { outline: 3px solid var(--accent, #0d7a76); outline-offset: 2px; border-radius: 4px; }
+/* Print: the widget and its guidance, none of the editing chrome. */
+@media print {
+  .nt-theme-row, .nt-tools-jump, .nt-tools-actions, .nt-tool-edit, .nt-tool-foot, .nt-tools-toast { display: none !important; }
+  .nt-tool-card { break-inside: avoid; box-shadow: none; border-color: #b9cee0; }
+  .nt-tools-grid { grid-template-columns: 1fr; }
+  .nt-tool-guide { border-color: #b9cee0; }
+  .nt-tool-guide > summary { font-weight: 700; }
+}
 .nt-tool-edit { margin: 0 0 14px; border: 1px solid #dbe6f0; border-radius: 12px; background: #f7fafd; }
 .nt-tool-edit > summary { cursor: pointer; list-style: none; padding: 10px 14px; font: 600 14px/1.2 var(--font-ui, system-ui, sans-serif); color: var(--accent, #0d7a76); user-select: none; }
 .nt-tool-edit > summary::-webkit-details-marker { display: none; }
@@ -159,6 +204,24 @@ body.nt-tools-dark .nt-edit-reset { background: #16202b; color: #eef3f8; border-
 body.nt-tools-dark .nt-edit-reset:hover { background: #1c2833; }
 body.nt-tools-dark .nt-theme-toggle { background: #16202b; border-color: #2b3a47; color: #eef3f8; }
 body.nt-tools-dark .nt-theme-toggle:hover { background: #1c2833; }
+body.nt-tools-dark .nt-es { color: #9fb0c0; }
+body.nt-tools-dark .nt-tool-instance { color: #9fb0c0; }
+body.nt-tools-dark .nt-tool-purpose { color: #dce6ef; }
+body.nt-tools-dark .nt-tool-guide { background: #131c25; border-color: #2b3a47; }
+body.nt-tools-dark .nt-tool-guide > summary { color: #eef3f8; }
+body.nt-tools-dark .nt-tool-guide[open] > summary { border-color: #2b3a47; }
+body.nt-tools-dark .nt-tool-guide ol { color: #dce6ef; }
+body.nt-tools-dark .nt-try { background: #13232a; }
+body.nt-tools-dark .nt-try ul { color: #dce6ef; }
+body.nt-tools-dark .nt-tool-foot button,
+body.nt-tools-dark .nt-tools-actions button,
+body.nt-tools-dark .nt-tools-jump a { background: #16202b; border-color: #2b3a47; color: #eef3f8; }
+body.nt-tools-dark .nt-tool-foot button:hover,
+body.nt-tools-dark .nt-tools-actions button:hover,
+body.nt-tools-dark .nt-tools-jump a:hover { background: #1c2833; }
+body.nt-tools-dark .nt-tools-jump h2 { color: #9fb0c0; }
+body.nt-tools-dark .nt-tools-objective { background: #13232a; border-color: #2b3a47; color: #dce6ef; }
+body.nt-tools-dark .nt-tools-standard { color: #9fb0c0; }
 `;
 
 function ensureStyles() {
@@ -342,26 +405,103 @@ function readField(f, inputEl) {
   return s || null;
 }
 
-// Build one tool card: heading, optional "Change the numbers" editor, live widget.
-function buildToolCard({ v, section }) {
+let cardSeq = 0;
+
+/**
+ * Build one publisher-grade tool card.
+ *
+ * Structure, in the order a student needs it: what the tool IS (canonical name +
+ * where the lesson uses it), what it is FOR (one-line purpose), HOW to work it
+ * (collapsed steps), something to TRY, the teacher's number editor, then the
+ * live widget. The old card was a bare heading over a widget — a student who
+ * arrived cold had nothing telling them what to do with it, which is precisely
+ * the "not publisher-ready" gap.
+ *
+ * @param {{v: object, section: string}} tool authored block + its lesson section
+ * @param {{ seed?: Record<string, unknown>|null, onNumbers?: ((values: Record<string, unknown>|null) => void)|null, showTry?: boolean, showEditor?: boolean }} [opts]
+ *   `seed` restores previously applied numbers (share link / this device);
+ *   `onNumbers` reports applied values (null on reset) so a surface can persist
+ *   them; `showTry`/`showEditor` let a compact surface drop those blocks.
+ */
+export function buildToolCard({ v, section }, opts = {}) {
+  const { seed = null, onNumbers = null, showTry = true, showEditor = true } = opts;
+  // The card's stylesheet lives in this module, and callers outside the tools page
+  // (the in-lesson drawer) never run renderToolsPage — so ensure it here rather
+  // than shipping unstyled cards into a dialog. Idempotent.
+  ensureStyles();
+  const meta = toolMeta(v);
   const card = document.createElement("section");
   card.className = "nt-tool-card";
+  const headingId = `nt-tool-h-${++cardSeq}`;
+  card.setAttribute("aria-labelledby", headingId);
 
   const h2 = document.createElement("h2");
-  h2.innerHTML = `${esc(toolTitle(v))}<span class="nt-tool-tag">${esc(section)}</span>`;
+  h2.id = headingId;
+  const phase = SECTION_LABEL[section] || titleCase(section);
+  h2.innerHTML = `<span>${bi(meta.name, meta.nameEs)}</span><span class="nt-tool-tag">${esc(phase)}</span>`;
   card.appendChild(h2);
+
+  // What this lesson set the tool up to do (the authored config title), kept as
+  // a subtitle so the canonical tool name can own the heading.
+  if (meta.instance) {
+    const instance = document.createElement("p");
+    instance.className = "nt-tool-instance";
+    instance.textContent = `In this lesson: ${meta.instance}`;
+    card.appendChild(instance);
+  }
+
+  if (meta.purpose) {
+    const purpose = document.createElement("p");
+    purpose.className = "nt-tool-purpose";
+    purpose.innerHTML = bi(meta.purpose, meta.purposeEs);
+    card.appendChild(purpose);
+  }
+
+  if (meta.howTo.length) {
+    const guide = document.createElement("details");
+    guide.className = "nt-tool-guide";
+    const gs = document.createElement("summary");
+    gs.textContent = "🧭 How to use it";
+    const body = document.createElement("div");
+    body.className = "nt-guide-body";
+    const ol = document.createElement("ol");
+    for (const step of meta.howTo) {
+      const li = document.createElement("li");
+      li.textContent = step;
+      ol.appendChild(li);
+    }
+    body.appendChild(ol);
+    guide.append(gs, body);
+    card.appendChild(guide);
+  }
+
+  if (showTry && meta.tryThis.length) {
+    const tryBox = document.createElement("div");
+    tryBox.className = "nt-try";
+    const label = document.createElement("span");
+    label.className = "nt-try-label";
+    label.textContent = "Try this";
+    const ul = document.createElement("ul");
+    for (const prompt of meta.tryThis) {
+      const li = document.createElement("li");
+      li.textContent = prompt;
+      ul.appendChild(li);
+    }
+    tryBox.append(label, ul);
+    card.appendChild(tryBox);
+  }
 
   const host = document.createElement("div");
   host.className = "nt-tool-host";
   let current = clone(v);
   const remount = () => {
     host.innerHTML = interactiveVisualHost(current, {
-      ariaLabel: `${toolTitle(current)} interactive tool`,
+      ariaLabel: `${meta.name} interactive tool`,
     });
     mountInteractiveVisuals(host);
   };
 
-  const fields = editableFields(v);
+  const fields = showEditor ? editableFields(v) : [];
   if (fields.length) {
     const ed = document.createElement("details");
     ed.className = "nt-tool-edit";
@@ -387,6 +527,32 @@ function buildToolCard({ v, section }) {
       form.appendChild(row);
     });
 
+    // Restore numbers this device (or a shared link) applied earlier, keyed by
+    // the field's stable label. The fields come from the same config every time,
+    // so labels are a durable key and survive a field-order change.
+    const applyValues = (values, { live = true } = {}) => {
+      const next = clone(v);
+      let touched = false;
+      for (const { f, inp } of inputs) {
+        if (!Object.hasOwn(values, f.label)) continue;
+        inp.value = String(values[f.label]);
+        const val = readField(f, inp);
+        if (val === null) continue;
+        if (f.set) f.set(next, val);
+        else setPath(next, f.path, val);
+        touched = true;
+      }
+      if (!touched) return false;
+      delete next.presets;
+      current = next;
+      // The initial mount happens once at the end of this function, so a seeded
+      // restore only needs to swap `current` — remounting here would render the
+      // widget twice on first paint.
+      if (live) remount();
+      return true;
+    };
+    if (seed && typeof seed === "object") applyValues(seed, { live: false });
+
     const btns = document.createElement("div");
     btns.className = "nt-edit-btns";
     const apply = document.createElement("button");
@@ -403,11 +569,13 @@ function buildToolCard({ v, section }) {
 
     apply.addEventListener("click", () => {
       const next = clone(current);
+      const values = {};
       for (const { f, inp } of inputs) {
         const val = readField(f, inp);
         if (val === null) continue;
         if (f.set) f.set(next, val);
         else setPath(next, f.path, val);
+        values[f.label] = inp.value;
       }
       // Several widgets (lcm-lab, step-solver, …) render presets[0] and IGNORE
       // the top-level scalars when a `presets` array is present. Drop it so the
@@ -415,25 +583,130 @@ function buildToolCard({ v, section }) {
       delete next.presets;
       current = next;
       remount();
+      onNumbers?.(values);
     });
     reset.addEventListener("click", () => {
       current = clone(v);
       for (const { f, inp } of inputs) inp.value = String(f.value);
       remount();
+      onNumbers?.(null);
     });
     card.appendChild(ed);
   }
 
   card.appendChild(host);
+
+  // A "start over" that is about the WORK, not the numbers: a student who has
+  // filled a factor tree or piled up dots needs one obvious way back to a blank
+  // tool without reloading the page and losing the others.
+  const foot = document.createElement("div");
+  foot.className = "nt-tool-foot";
+  const restart = document.createElement("button");
+  restart.type = "button";
+  restart.textContent = "↺ Start this tool over";
+  restart.addEventListener("click", () => {
+    remount();
+    host.querySelector("button, input, [tabindex]")?.focus?.();
+  });
+  foot.appendChild(restart);
+  card.appendChild(foot);
+
   remount();
+  // Most widgets ship their own Clear / Start over control. Two of them side by
+  // side is exactly the kind of seam a reviewer notices, so the card's generic
+  // one removes itself as soon as the widget proves it already has one. Widgets
+  // mount asynchronously (lazy import), hence the observer.
+  const dropRedundantRestart = () => {
+    const hasOwn = [...host.querySelectorAll("button")].some((b) =>
+      /start over|reset|clear/i.test(b.textContent || ""),
+    );
+    if (hasOwn) foot.remove();
+    return hasOwn;
+  };
+  if (!dropRedundantRestart() && typeof MutationObserver !== "undefined") {
+    const observer = new MutationObserver(() => {
+      if (dropRedundantRestart()) observer.disconnect();
+    });
+    observer.observe(host, { childList: true, subtree: true });
+    // A widget that never renders a reset must not leave an observer running.
+    // `unref` (Node only, a no-op in browsers) keeps this timer from holding the
+    // event loop open when a test boots a card under JSDOM.
+    setTimeout(() => observer.disconnect(), 8000)?.unref?.();
+  }
   return card;
+}
+
+// ── Saved / shared numbers ──────────────────────────────────────────────────
+// Applied numbers persist per lesson on the device, and a teacher can hand out
+// one link that opens the tools with THEIR numbers already in place. Both use the
+// same shape: { "<tool index>": { "<field label>": "<input value>" } }.
+const numsKey = (lessonId) => `nt-tools-nums:${lessonId || "lesson"}`;
+
+function readSavedNums(lessonId) {
+  try {
+    const raw = window.localStorage.getItem(numsKey(lessonId));
+    const parsed = raw ? JSON.parse(raw) : null;
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function writeSavedNums(lessonId, all) {
+  try {
+    if (Object.keys(all).length) {
+      window.localStorage.setItem(numsKey(lessonId), JSON.stringify(all));
+    } else {
+      window.localStorage.removeItem(numsKey(lessonId));
+    }
+  } catch {
+    /* storage blocked — numbers just won't survive a reload */
+  }
+}
+
+// URL-safe base64 of a JSON payload (and back). Only edited field VALUES travel,
+// never the config, so the link stays short enough to paste into Canvas.
+function encodeNums(all) {
+  const json = JSON.stringify(all);
+  return btoa(unescape(encodeURIComponent(json)))
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "");
+}
+
+function decodeNums(param) {
+  if (!param) return null;
+  try {
+    const b64 = param.replace(/-/g, "+").replace(/_/g, "/");
+    const parsed = JSON.parse(decodeURIComponent(escape(atob(b64))));
+    return parsed && typeof parsed === "object" ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+/** A brief, polite confirmation for copy/print actions. */
+function toast(message) {
+  const existing = document.querySelector(".nt-tools-toast");
+  existing?.remove();
+  const node = document.createElement("div");
+  node.className = "nt-tools-toast";
+  node.setAttribute("role", "status");
+  node.textContent = message;
+  document.body.appendChild(node);
+  window.setTimeout(() => node.remove(), 2600);
 }
 
 /**
  * Render the standalone Interactive Tools page for `config` into `root`,
- * replacing whatever it held. Each tool gets a live widget plus a "Change the
- * numbers" editor. No links to other lessons — safe to post to students on its
- * own (only an optional same-lesson back link).
+ * replacing whatever it held.
+ *
+ * Publisher layer, beyond the live widgets: the lesson's goal and its standard in
+ * full wording, a jump list, per-tool purpose / how-to / try-this (from
+ * tool-catalog.js), applied numbers that survive a reload, a shareable link that
+ * carries those numbers, and a print path.
+ *
+ * No links to other lessons — safe to post to students on its own.
  */
 export function renderToolsPage(config, root) {
   if (!root) return;
@@ -441,31 +714,147 @@ export function renderToolsPage(config, root) {
   document.body.classList.add("nt-tools-mode");
   const tools = collectTools(config);
   const title = config?.title || "This Lesson";
-  const lessonNo = config?.lessonId ? `Lesson ${config.lessonId}` : "";
+  const lessonId = String(config?.lessonId || "");
+  const lessonNo = lessonId ? `Lesson ${lessonId}` : "";
   if (document.title) document.title = `Interactive Tools · ${title}`;
+
+  // Every lesson config carries a contentObjective; the fallbacks cover any
+  // hand-authored config that predates that field.
+  const objective = String(
+    config?.contentObjective || config?.objective || config?.goal || "",
+  ).trim();
 
   root.innerHTML = `<main class="nt-tools">
     <header class="nt-tools-head">
       <div class="nt-theme-row">
+        <div class="nt-tools-actions">
+          <button type="button" class="nt-tools-print">🖨 Print</button>
+          <button type="button" class="nt-tools-share">🔗 Copy link with these numbers</button>
+        </div>
         <button type="button" class="nt-theme-toggle" id="nt-theme-toggle" aria-pressed="false"></button>
       </div>
       <p class="nt-tools-eyebrow">${esc(lessonNo)} · Interactive Tools</p>
       <h1 class="nt-tools-title">${esc(title)}</h1>
-      <p class="nt-tools-sub">Keep practicing with the hands-on models from this lesson. Use “Change the numbers” to build your own examples — nothing here is graded.</p>
+      <p class="nt-tools-sub">${bi(
+        "Keep practicing with the hands-on models from this lesson. Use “Change the numbers” to build your own examples — nothing here is graded.",
+        "Sigue practicando con los modelos de esta lección. Usa “Cambiar los números” para crear tus propios ejemplos: nada aquí se califica.",
+      )}</p>
+      ${
+        objective
+          ? `<p class="nt-tools-objective"><b>${esc("Today's goal:")}</b> ${esc(objective)}</p>`
+          : ""
+      }
+      ${config?.standard ? `<p class="nt-tools-standard">📐 ${esc(config.standard)}</p>` : ""}
+      <nav class="nt-tools-jump" aria-label="Tools on this page" hidden>
+        <h2>On this page</h2>
+        <ul></ul>
+      </nav>
     </header>
-    <div class="nt-tools-grid" id="nt-tools-grid"></div>
-    <div class="nt-tools-empty" id="nt-tools-empty" hidden>This lesson doesn't have standalone interactive tools yet.</div>
+    <div class="nt-tools-grid"></div>
+    <div class="nt-tools-empty" hidden>This lesson doesn't have standalone interactive tools yet.</div>
   </main>`;
 
   setupThemeToggle();
+  root.querySelector(".nt-tools-print")?.addEventListener("click", () => window.print());
+  // Standards display: show what the code MEANS, not just the badge. Best-effort
+  // — a failed registry fetch leaves the code-only line already rendered.
+  if (config?.standard) {
+    resolveStandard(config.standard)
+      .then((entry) => {
+        const line = root.querySelector(".nt-tools-standard");
+        if (!entry || !line) return;
+        line.innerHTML = `📐 <b>${esc(entry.code)}${entry.shortLabel ? ` · ${esc(entry.shortLabel)}` : ""}:</b> ${esc(entry.fullText)}`;
+      })
+      .catch(() => {});
+  }
 
-  const grid = root.querySelector("#nt-tools-grid");
+  const grid = root.querySelector(".nt-tools-grid");
   if (!tools.length) {
-    root.querySelector("#nt-tools-empty").hidden = false;
+    root.querySelector(".nt-tools-empty").hidden = false;
     grid.hidden = true;
+    // Nothing to print or share — leave no buttons that would do nothing.
+    root.querySelector(".nt-tools-actions")?.remove();
     return;
   }
-  for (const t of tools) grid.appendChild(buildToolCard(t));
+
+  // A shared link wins over this device's saved numbers: the teacher who sent it
+  // meant those numbers for this session.
+  let shared = null;
+  try {
+    shared = decodeNums(new URLSearchParams(window.location.search).get("nums"));
+  } catch {
+    shared = null;
+  }
+  const saved = shared || readSavedNums(lessonId);
+  const applied = { ...saved };
+
+  const jump = root.querySelector(".nt-tools-jump");
+  const jumpList = jump.querySelector("ul");
+  // A lesson can use the same tool twice with different numbers (a factor tree for
+  // 84 in Practice and for 72 in Connect). Two identical jump-list entries are
+  // useless, so repeated names carry what makes each one different.
+  const nameCounts = tools.reduce((counts, t) => {
+    const name = toolMeta(t.v).name;
+    counts.set(name, (counts.get(name) || 0) + 1);
+    return counts;
+  }, new Map());
+  tools.forEach((t, index) => {
+    const card = buildToolCard(t, {
+      seed: saved[String(index)] || null,
+      onNumbers: (values) => {
+        if (values && Object.keys(values).length) applied[String(index)] = values;
+        else delete applied[String(index)];
+        writeSavedNums(lessonId, applied);
+      },
+    });
+    card.id = `nt-tool-${index + 1}`;
+    grid.appendChild(card);
+
+    const li = document.createElement("li");
+    const link = document.createElement("a");
+    link.href = `#nt-tool-${index + 1}`;
+    const meta = toolMeta(t.v);
+    const qualifier = meta.instance || SECTION_LABEL[t.section] || t.section;
+    link.textContent = nameCounts.get(meta.name) > 1 ? `${meta.name} · ${qualifier}` : meta.name;
+    li.appendChild(link);
+    jumpList.appendChild(li);
+  });
+  // One tool needs no table of contents.
+  jump.hidden = tools.length < 2;
+
+  // Print must show the collapsed guidance, then restore the screen state.
+  const openedForPrint = new Set();
+  window.addEventListener("beforeprint", () => {
+    for (const details of root.querySelectorAll("details:not([open])")) {
+      details.open = true;
+      openedForPrint.add(details);
+    }
+  });
+  window.addEventListener("afterprint", () => {
+    for (const details of openedForPrint) details.open = false;
+    openedForPrint.clear();
+  });
+
+  // Share the numbers actually applied, resolved at click time.
+  root.querySelector(".nt-tools-share")?.addEventListener("click", async (event) => {
+    const button = event.currentTarget;
+    const url = new URL(window.location.href);
+    if (Object.keys(applied).length) url.searchParams.set("nums", encodeNums(applied));
+    else url.searchParams.delete("nums");
+    const link = url.toString();
+    try {
+      await navigator.clipboard.writeText(link);
+      toast("Link copied — it opens these tools with these numbers.");
+    } catch {
+      // Clipboard blocked (insecure context / permission): show the link so the
+      // teacher can still copy it by hand rather than getting a dead button.
+      button.insertAdjacentHTML(
+        "afterend",
+        `<input class="nt-share-fallback" readonly value="${esc(link)}" style="min-width:min(420px,60vw)" aria-label="Shareable link">`,
+      );
+      button.nextElementSibling?.select?.();
+    }
+  });
 }
 
 // Teacher light/dark toggle. Default is LIGHT (classroom pages never auto-follow
