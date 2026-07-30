@@ -4,6 +4,21 @@
 // 5-phase renderer and the small-group studio renderer share ONE source of
 // truth for static figures. Pure string builders — no DOM side effects.
 
+// Data-encoding colours for the figures below.
+//
+// These are deliberately NOT the theme tokens. `.sg-lab` remaps the generic
+// palette onto the small-group accent (--teal becomes var(--sg), --navy becomes
+// var(--sg-deep)), which is right for chrome and wrong for data: inside a
+// small-group lesson every bar, dot and box rendered in the same navy, and a
+// tape diagram's first and last segment colours collapsed into two shades of
+// one blue, so the parts stopped being tellable apart. Colour here encodes
+// meaning, so it is fixed, and picked to clear 3:1 on white for graphical
+// objects.
+const DATA_1 = "#0f8a84"; // teal - primary series
+const DATA_2 = "#c2603f"; // clay - second series
+const DATA_3 = "#b07d12"; // ochre - third series
+const DATA_4 = "#3b6ea5"; // blue - fourth series
+
 function esc(s) {
   const d = document.createElement("div");
   d.textContent = s ?? "";
@@ -82,7 +97,7 @@ export function histogramSVG(cfg) {
       const h = (v / maxV) * plotH;
       const x = padL + i * bw;
       const y = baseY - h;
-      const fill = i === hi ? "var(--coral, #d9795d)" : "var(--teal, #2a9d8f)";
+      const fill = i === hi ? DATA_2 : DATA_1;
       return (
         `<rect class="hist-bar" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${(bw - 1).toFixed(1)}" height="${h.toFixed(1)}" fill="${fill}" stroke="#fff" stroke-width="1"/>` +
         `<text class="hist-val" x="${(x + bw / 2).toFixed(1)}" y="${(y - 6).toFixed(1)}" text-anchor="middle" font-size="12" font-weight="700" fill="var(--navy, #264653)">${v}</text>` +
@@ -131,7 +146,7 @@ export function dotPlotSVG(cfg) {
     .map((v) => {
       counts[v] = (counts[v] || 0) + 1;
       const cy = baseY - 12 - (counts[v] - 1) * 16;
-      return `<circle class="dot-mark" cx="${xOf(v).toFixed(1)}" cy="${cy.toFixed(1)}" r="6" fill="var(--teal,#2a9d8f)" stroke="#fff" stroke-width="1.5"/>`;
+      return `<circle class="dot-mark" cx="${xOf(v).toFixed(1)}" cy="${cy.toFixed(1)}" r="6" fill="${DATA_1}" stroke="#fff" stroke-width="1.5"/>`;
     })
     .join("");
   // axis ticks at each integer (capped) or at the distinct values
@@ -167,14 +182,14 @@ export function boxPlotSVG(cfg) {
     boxH = 54,
     top = midY - boxH / 2,
     bot = midY + boxH / 2;
-  const teal = "var(--teal,#2a9d8f)";
+  const teal = DATA_1;
   const parts = [
     `<line class="box-whisker" x1="${xOf(min)}" y1="${midY}" x2="${xOf(q1)}" y2="${midY}" stroke="var(--ink,#333)" stroke-width="2"/>`,
     `<line class="box-whisker" x1="${xOf(q3)}" y1="${midY}" x2="${xOf(max)}" y2="${midY}" stroke="var(--ink,#333)" stroke-width="2"/>`,
     `<line class="box-whisker" x1="${xOf(min)}" y1="${top + 10}" x2="${xOf(min)}" y2="${bot - 10}" stroke="var(--ink,#333)" stroke-width="2"/>`,
     `<line class="box-whisker" x1="${xOf(max)}" y1="${top + 10}" x2="${xOf(max)}" y2="${bot - 10}" stroke="var(--ink,#333)" stroke-width="2"/>`,
     `<rect class="box-body" x="${xOf(q1)}" y="${top}" width="${(xOf(q3) - xOf(q1)).toFixed(1)}" height="${boxH}" fill="${teal}" fill-opacity="0.25" stroke="${teal}" stroke-width="2"/>`,
-    `<line class="box-median" x1="${xOf(median)}" y1="${top}" x2="${xOf(median)}" y2="${bot}" stroke="var(--coral,#d9795d)" stroke-width="3"/>`,
+    `<line class="box-median" x1="${xOf(median)}" y1="${top}" x2="${xOf(median)}" y2="${bot}" stroke="${DATA_2}" stroke-width="3"/>`,
   ];
   const labels = [
     [min, "Min"],
@@ -215,7 +230,7 @@ export function barChartSVG(cfg) {
       const x = padL + i * slot + (slot - bw) / 2;
       const y = baseY - h;
       return (
-        `<rect class="bar-rect" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="3" fill="var(--teal,#2a9d8f)"/>` +
+        `<rect class="bar-rect" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="3" fill="${DATA_1}"/>` +
         `<text class="bar-val" x="${(x + bw / 2).toFixed(1)}" y="${(y - 6).toFixed(1)}" text-anchor="middle" font-size="12" font-weight="700" fill="var(--navy,#264653)">${v}</text>` +
         `<text x="${(x + bw / 2).toFixed(1)}" y="${(baseY + 18).toFixed(1)}" text-anchor="middle" font-size="11" fill="var(--ink,#333)">${esc(b.label ?? "")}</text>`
       );
@@ -332,9 +347,9 @@ export function numberLineSVG(cfg) {
   const pts = (cfg.points || [])
     .map(
       (p) =>
-        `<circle class="nl-point" cx="${xOf(Number(p.value)).toFixed(1)}" cy="${y}" r="7" fill="var(--coral,#d9795d)" stroke="#fff" stroke-width="2"/>` +
+        `<circle class="nl-point" cx="${xOf(Number(p.value)).toFixed(1)}" cy="${y}" r="7" fill="${DATA_2}" stroke="#fff" stroke-width="2"/>` +
         (p.label
-          ? `<text class="nl-point-label" x="${xOf(Number(p.value)).toFixed(1)}" y="${y - 14}" text-anchor="middle" font-size="11" font-weight="700" fill="var(--coral,#d9795d)">${esc(p.label)}</text>`
+          ? `<text class="nl-point-label" x="${xOf(Number(p.value)).toFixed(1)}" y="${y - 14}" text-anchor="middle" font-size="11" font-weight="700" fill="${DATA_2}">${esc(p.label)}</text>`
           : ""),
     )
     .join("");
@@ -365,12 +380,7 @@ export function tapeDiagramSVG(cfg) {
     gap = 14,
     labelW = 96;
   const H = 8 + rows.length * (rowH + gap);
-  const palette = [
-    "var(--teal,#2a9d8f)",
-    "var(--coral,#d9795d)",
-    "var(--amber,#e9c46a)",
-    "var(--navy,#264653)",
-  ];
+  const palette = [DATA_1, DATA_2, DATA_3, DATA_4];
   // Scale so the longest row (by total) fills the track.
   const totals = rows.map((r) => (r.parts || []).reduce((s, p) => s + (Number(p.value) || 0), 0));
   const maxTotal = Math.max(...totals, 1);
@@ -447,7 +457,7 @@ export function coordPlaneSVG(cfg) {
       const px = X(p.x),
         py = Y(p.y);
       const lbl = p.label || `(${p.x}, ${p.y})`;
-      return `<circle class="cp-point" cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="6" fill="var(--coral,#d9795d)" stroke="#fff" stroke-width="2"/><text class="cp-point-label" x="${(px + 8).toFixed(1)}" y="${(py - 8).toFixed(1)}" font-size="11" font-weight="700" fill="var(--navy,#264653)">${esc(lbl)}</text>`;
+      return `<circle class="cp-point" cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="6" fill="${DATA_2}" stroke="#fff" stroke-width="2"/><text class="cp-point-label" x="${(px + 8).toFixed(1)}" y="${(py - 8).toFixed(1)}" font-size="11" font-weight="700" fill="var(--navy,#264653)">${esc(lbl)}</text>`;
     })
     .join("");
   return svgFigure(cfg, `${grid}${axes}${outline}${pts}`, W, H, 16, "coord-plane-figure");

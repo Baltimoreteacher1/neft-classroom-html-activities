@@ -14,6 +14,13 @@
 //   cfg.title (optional heading) · cfg.caption (optional footnote).
 // Also:        scenarioAria(cfg) -> one-line plain-language description string.
 
+// Data-encoding colours: fixed, not theme tokens. Inside .sg-lab the generic
+// palette is remapped onto the group accent (--teal becomes var(--sg)), which
+// turns every data mark the same navy. Colour that carries meaning belongs to
+// the figure. See engine/light-only-surfaces.test.mjs.
+const DATA_1 = "#0f8a84"; // teal - primary
+const DATA_2 = "#c2603f"; // clay - secondary
+
 const STYLE_ID = "scenario-sim-styles";
 
 function injectStyles() {
@@ -21,7 +28,7 @@ function injectStyles() {
   const s = document.createElement("style");
   s.id = STYLE_ID;
   s.textContent = `
-  .ssim{--ss-teal:var(--teal,#2a9d8f);--ss-coral:var(--coral,#d9795d);--ss-navy:var(--navy,#264653);--ss-ink:var(--ink,#333);--ss-muted:var(--muted,#6b7280);
+  .ssim{color-scheme:light;--ss-teal:${DATA_1};--ss-coral:${DATA_2};--ss-navy:var(--navy,#264653);--ss-ink:var(--ink,#333);--ss-muted:var(--muted,#6b7280);
     border:1px solid rgba(38,70,83,.14);border-radius:14px;padding:14px 14px 12px;margin:var(--sp-3,12px) 0;background:linear-gradient(180deg,#fff,#fbfdfc);box-shadow:0 1px 3px rgba(38,70,83,.06)}
   .ssim-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
   .ssim-title{font-weight:800;color:var(--ss-navy);font-size:1rem}
@@ -44,11 +51,7 @@ function injectStyles() {
   .ssim-cap{margin-top:10px;font-size:.8rem;color:var(--ss-muted);text-align:center;font-style:italic}
   .ssim-cap:empty{display:none}
   .ssim-sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
-  @media (prefers-color-scheme:dark){
-    .ssim{background:#182226;border-color:rgba(255,255,255,.12)}
-    .ssim-title,.ssim-read{color:#e7eef0}
-    .ssim-cell{background:rgba(255,255,255,.12)}
-  }`;
+`;
   document.head.appendChild(s);
 }
 
@@ -150,7 +153,7 @@ function proportional(host, cfg) {
       const model =
         `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Bar showing ${esc(yName)}">` +
         `<rect x="${padL}" y="10" width="${barMax}" height="${H - 20}" rx="6" fill="rgba(38,70,83,.08)"/>` +
-        `<rect x="${padL}" y="10" width="${len.toFixed(1)}" height="${H - 20}" rx="6" fill="var(--teal,#2a9d8f)"/>` +
+        `<rect x="${padL}" y="10" width="${len.toFixed(1)}" height="${H - 20}" rx="6" fill="${DATA_1}"/>` +
         `<text x="${padL + 8}" y="${H / 2 + 4}" font-size="13" font-weight="800" fill="#fff">${fmt(y)} ${esc(yUnit)}</text>` +
         `</svg>`;
       const readout = `${fmt(x)} ${esc(xUnit)} &rarr; <b>${fmt(y)} ${esc(yUnit)}</b>`;
@@ -249,9 +252,9 @@ function linear(host, cfg) {
         `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Point plotted on the line">` +
         `<line x1="${padL}" y1="${padT}" x2="${padL}" y2="${baseY}" stroke="var(--ink,#333)" stroke-width="1.5"/>` +
         `<line x1="${padL}" y1="${baseY}" x2="${W - padR}" y2="${baseY}" stroke="var(--ink,#333)" stroke-width="1.5"/>` +
-        `<line x1="${xOf(xMin).toFixed(1)}" y1="${yOf(yA).toFixed(1)}" x2="${xOf(xMax).toFixed(1)}" y2="${yOf(yB).toFixed(1)}" stroke="var(--teal,#2a9d8f)" stroke-width="2.5" stroke-dasharray="5 4"/>` +
+        `<line x1="${xOf(xMin).toFixed(1)}" y1="${yOf(yA).toFixed(1)}" x2="${xOf(xMax).toFixed(1)}" y2="${yOf(yB).toFixed(1)}" stroke="${DATA_1}" stroke-width="2.5" stroke-dasharray="5 4"/>` +
         `<line x1="${px.toFixed(1)}" y1="${baseY}" x2="${px.toFixed(1)}" y2="${py.toFixed(1)}" stroke="var(--muted,#6b7280)" stroke-width="1" stroke-dasharray="2 3"/>` +
-        `<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="6" fill="var(--coral,#d9795d)" stroke="#fff" stroke-width="1.5"/>` +
+        `<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="6" fill="${DATA_2}" stroke="#fff" stroke-width="1.5"/>` +
         `<text x="${(W / 2).toFixed(1)}" y="${H - 6}" text-anchor="middle" font-size="11" font-weight="700" fill="var(--muted,#6b7280)">${esc(xName)}</text>` +
         `<text x="10" y="${(padT + plotH / 2).toFixed(1)}" text-anchor="middle" font-size="11" font-weight="700" fill="var(--muted,#6b7280)" transform="rotate(-90 10 ${(padT + plotH / 2).toFixed(1)})">${esc(yName)}</text>` +
         `</svg>`;

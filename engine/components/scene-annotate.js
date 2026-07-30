@@ -40,10 +40,7 @@ function injectStyles() {
   .sanno-pin:focus-visible{outline:3px solid var(--sa-teal);outline-offset:2px}
   .sanno-pin.done{background:var(--sa-teal)}
   .sanno-pin.done::after{content:"✓";position:absolute}
-  @media (prefers-color-scheme:dark){
-    .sanno-btn{background:#20303540;color:#e7eef0}
-    .sanno-tools .lab{color:#e7eef0}
-  }`;
+`;
   document.head.appendChild(s);
 }
 
