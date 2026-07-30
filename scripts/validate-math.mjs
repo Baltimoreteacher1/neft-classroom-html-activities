@@ -431,13 +431,30 @@ function walk(node, path, visit) {
 }
 
 /**
+ * Multiple-choice items store `answer` as an INDEX into `choices`, not as the
+ * value itself. Every rule above reasons about answer VALUES, so resolve the
+ * index to the chosen text before the rules see the node. Without this an MC
+ * stem that shows its own arithmetic ("2.45 + 2.60 + 2.38 = ?") gets graded
+ * against the integer 0 and fails no matter which choice is correct — and,
+ * worse, an MC item whose keyed choice is wrong is never caught at all.
+ * Nodes without a usable index are passed through untouched.
+ */
+function resolveChoiceAnswer(node) {
+  if (!Array.isArray(node.choices) || node.choices.length === 0) return node;
+  const idx = node.answer ?? node.correct;
+  if (!Number.isInteger(idx) || idx < 0 || idx >= node.choices.length) return node;
+  return { ...node, answer: node.choices[idx] };
+}
+
+/**
  * Run every rule over one lesson config.
  * Exported so scripts/validate-math.selftest.mjs can assert on fixtures — a
  * gate that silently stops firing is worse than no gate.
  */
 export function validateConfig(config) {
   const result = { checked: 0, passed: 0, failures: [], skips: [] };
-  walk(config, "", (node, path) => {
+  walk(config, "", (rawNode, path) => {
+    const node = resolveChoiceAnswer(rawNode);
     for (const rule of rules) {
       const add = {
         check(ok, detail) {

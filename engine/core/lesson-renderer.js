@@ -3702,6 +3702,194 @@ function renderPracticePhase(el, state, ctx, config) {
   if (goDeeper) el.append(goDeeper);
 }
 
+// ── Connect answer-checking helpers ──
+//
+// Connect used to be write-only: the scenario posed a question ("your friend
+// says 35%, another says 60% — who is right?"), the sentence frame drew dead
+// `___` spans a student could not type into, and Submit always replied "Great
+// response!" no matter what was written. A student could finish the phase
+// having never answered the question the scenario asked, and never find out
+// whether the friend was right. These helpers make the frame answerable and
+// the answer checkable.
+
+// Tolerant comparison for a single blank. Students type "$16", "16", "16.00",
+// ".6" and "0.6" for the same value, so strip currency/percent/comma/space
+// noise and normalize decimal spelling before comparing. Deliberately NOT a
+// numeric parse: blanks also hold words ("60% off", "decimal").
+function normalizeBlankValue(v) {
+  return String(v ?? "")
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[\s$,%]/g, "")
+    .replace(/^0+(?=\d)/, "")
+    .replace(/^(?=\.\d)/, "0")
+    .replace(/(\.\d*?)0+$/, "$1")
+    .replace(/\.$/, "")
+    .trim();
+}
+
+// One blank accepts a single string or an array of equivalent strings.
+// `null`/omitted means "no authored answer" — the blank is still typed into and
+// still saved, it just is not marked right or wrong.
+function blankIsCorrect(value, accepted) {
+  if (accepted == null) return null;
+  const v = normalizeBlankValue(value);
+  if (!v) return false;
+  const list = Array.isArray(accepted) ? accepted : [accepted];
+  return list.some((a) => normalizeBlankValue(a) === v);
+}
+
+/**
+ * "Check Your Thinking" — auto-graded questions that walk the student through
+ * the scenario BEFORE they write about it, each with immediate feedback and an
+ * authored explanation. Optional: returns null when a lesson authors no
+ * `connect.check`, so every existing lesson keeps its current behavior.
+ *
+ * Returns { el, correctCount(), total } so the caller can fold the result into
+ * phase scoring.
+ */
+function renderConnectCheck(cfg, state) {
+  const items = Array.isArray(cfg.check) ? cfg.check.filter((q) => q && q.stem) : [];
+  if (items.length === 0) return null;
+
+  const card = document.createElement("div");
+  card.className = "card card-amber connect-check-card";
+  card.innerHTML = `
+    <div class="connect-check-header">
+      <span class="badge badge-amber">🤔 Check Your Thinking</span>
+      <p class="connect-check-intro">Answer these before you write. You get feedback right away.</p>
+    </div>`;
+
+  const results = new Array(items.length).fill(false);
+
+  items.forEach((q, qi) => {
+    const key = `connect_check_${qi}`;
+    const box = document.createElement("div");
+    box.className = "connect-check-item";
+
+    const stem = document.createElement("p");
+    stem.className = "connect-check-stem";
+    stem.innerHTML = `<span class="connect-check-num">${qi + 1}</span> ${renderMathText(q.stem)}`;
+    box.append(stem);
+
+    const choices = Array.isArray(q.choices) ? q.choices : [];
+    const answerIdx = Number(q.answer ?? q.correct ?? 0);
+
+    const opts = document.createElement("div");
+    opts.className = "connect-check-choices";
+
+    const fb = document.createElement("div");
+    fb.className = "connect-check-feedback";
+
+    // Restore a previously chosen answer so Save/Resume brings the student back
+    // to the graded state rather than a blank question.
+    const saved = state.getResponse(3, key);
+    const savedIdx = saved === null || saved === undefined || saved === "" ? null : Number(saved);
+
+    const settle = (picked) => {
+      const isRight = picked === answerIdx;
+      results[qi] = isRight;
+      opts.querySelectorAll("button").forEach((b, bi) => {
+        b.disabled = true;
+        b.classList.toggle("is-correct", bi === answerIdx);
+        b.classList.toggle("is-wrong", bi === picked && !isRight);
+      });
+      fb.classList.add("visible", isRight ? "is-correct" : "is-wrong");
+      fb.innerHTML = `<span class="connect-check-icon">${isRight ? "✓" : "💡"}</span><span>${
+        isRight ? "Yes — " : "Not quite. "
+      }${esc(q.explanation || "")}</span>`;
+    };
+
+    choices.forEach((choice, ci) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "connect-check-choice";
+      btn.innerHTML = renderMathText(String(choice));
+      btn.addEventListener("click", () => {
+        state.saveResponse(3, key, String(ci));
+        settle(ci);
+        if (ci !== answerIdx) reportMisconception(q, ci, state);
+      });
+      opts.append(btn);
+    });
+
+    box.append(opts, fb);
+    card.append(box);
+
+    if (savedIdx !== null && Number.isFinite(savedIdx) && choices[savedIdx] !== undefined) {
+      settle(savedIdx);
+    }
+  });
+
+  return { el: card, correctCount: () => results.filter(Boolean).length, total: items.length };
+}
+
+/**
+ * Turns the authored sentence frame into typed blanks. Every `___` in
+ * `connect.prompt` becomes a real input; `connect.answers[i]` (string or array
+ * of equivalents) is the accepted answer for blank i. Lessons that author no
+ * `answers` still get typable, saved blanks — an "opportunity to answer" —
+ * they just are not marked.
+ *
+ * Returns null when the prompt has no blanks, so the caller falls back to the
+ * original static frame.
+ */
+function renderConnectFrame(cfg, state) {
+  const raw = String(cfg.prompt || "");
+  const segments = raw.split("___");
+  const blankCount = segments.length - 1;
+  if (blankCount < 1) return null;
+
+  const answers = Array.isArray(cfg.answers) ? cfg.answers : [];
+
+  const frame = document.createElement("div");
+  frame.className = "sentence-frame sentence-frame-live";
+
+  const inputs = [];
+  segments.forEach((text, i) => {
+    if (text) frame.append(document.createTextNode(text.replace(/\s+/g, " ")));
+    if (i >= blankCount) return;
+    const input = document.createElement("input");
+    input.type = "text";
+    input.className = "frame-blank";
+    input.autocomplete = "off";
+    input.setAttribute("aria-label", `Blank ${i + 1} of ${blankCount}`);
+    input.value = state.getResponse(3, `connect_blank_${i}`) || "";
+    input.addEventListener("input", () => {
+      state.saveResponse(3, `connect_blank_${i}`, input.value);
+      input.classList.remove("is-correct", "is-wrong");
+    });
+    frame.append(input);
+    inputs.push(input);
+  });
+
+  // Fill the frame in with what the student typed, so the saved response reads
+  // as a complete sentence rather than a bag of fragments.
+  const composed = () =>
+    segments
+      .map((text, i) => text + (i < blankCount ? ` ${inputs[i].value.trim() || "___"} ` : ""))
+      .join("")
+      .replace(/\s+/g, " ")
+      .trim();
+
+  const grade = () => {
+    let graded = 0;
+    let right = 0;
+    inputs.forEach((input, i) => {
+      const verdict = blankIsCorrect(input.value, answers[i]);
+      if (verdict === null) return;
+      graded += 1;
+      if (verdict) right += 1;
+      input.classList.toggle("is-correct", verdict);
+      input.classList.toggle("is-wrong", !verdict);
+    });
+    return { graded, right, allFilled: inputs.every((i) => i.value.trim().length > 0) };
+  };
+
+  return { el: frame, inputs, composed, grade, blankCount };
+}
+
 // ── Phase 5: Connect ──
 function renderConnectPhase(el, state, ctx, config) {
   const cfg = config.connect;
@@ -3754,6 +3942,12 @@ function renderConnectPhase(el, state, ctx, config) {
   // Inline Reveal Math slides for the Connect section.
   renderRevealSlides(el, config, "connect");
 
+  // "Check Your Thinking": auto-graded questions about the scenario itself,
+  // placed BEFORE the written response so the student settles the math (is the
+  // friend right? what is the sale price?) before explaining it.
+  const check = renderConnectCheck(cfg, state);
+  if (check) el.append(check.el);
+
   // Editable response box (core-owned), mirroring Launch/Reflect persistence.
   const minLength = 25;
   const promptText = cfg.promptQuestion || "How does this connect to what we learned?";
@@ -3769,7 +3963,12 @@ function renderConnectPhase(el, state, ctx, config) {
   label.textContent = promptText;
   respCard.append(label);
 
-  if (cfg.prompt) {
+  // Typable sentence frame. Falls back to the original read-only frame only if
+  // the authored prompt has no blanks at all.
+  const frameUi = cfg.prompt ? renderConnectFrame(cfg, state) : null;
+  if (frameUi) {
+    respCard.append(frameUi.el);
+  } else if (cfg.prompt) {
     const frame = document.createElement("div");
     frame.className = "sentence-frame";
     frame.innerHTML = String(cfg.prompt).replace(/___/g, '<span class="blank">&nbsp;</span>');
@@ -3830,6 +4029,32 @@ function renderConnectPhase(el, state, ctx, config) {
     if (submitted) return;
     const text = textarea.value.trim();
 
+    // The sentence frame is part of the answer, so it is checked first: a
+    // student who leaves the blanks empty has not answered the question the
+    // scenario asked, however long their paragraph is.
+    let frameScore = null;
+    if (frameUi) {
+      frameScore = frameUi.grade();
+      if (!frameScore.allFilled) {
+        showFeedback("hint", `Fill in all ${frameUi.blankCount} blanks in the sentence first.`);
+        return;
+      }
+      if (frameScore.graded > 0 && frameScore.right < frameScore.graded) {
+        // Wrong blanks are marked in place, and the student gets another try
+        // rather than a silent pass. Only after a retry does Submit go through,
+        // so nobody is trapped on a blank they cannot get.
+        showFeedback(
+          "hint",
+          `Check the highlighted blanks — ${frameScore.right} of ${frameScore.graded} match. Look back at the scenario, then submit again.`,
+        );
+        frameUi.el.dataset.retried = "1";
+        if (frameUi.el.dataset.warned !== "1") {
+          frameUi.el.dataset.warned = "1";
+          return;
+        }
+      }
+    }
+
     if (text.length < minLength) {
       showFeedback("hint", `Write at least ${minLength} characters. You have ${text.length}.`);
       return;
@@ -3843,6 +4068,7 @@ function renderConnectPhase(el, state, ctx, config) {
         showFeedback(
           "hint",
           `Try using math vocabulary in your response. Think about: ${cfg.keywords
+            .filter((kw) => !/^[\d.$%/\s-]+$/.test(String(kw)))
             .slice(0, 3)
             .join(", ")}.`,
         );
@@ -3853,11 +4079,55 @@ function renderConnectPhase(el, state, ctx, config) {
     }
 
     submitted = true;
-    state.saveResponse(3, "connect", textarea.value);
+    // Persist the filled-in sentence alongside the paragraph, so the teacher
+    // view and Save/Resume show the complete answer.
+    const composedAnswer = frameUi ? `${frameUi.composed()}\n\n${textarea.value}` : textarea.value;
+    state.saveResponse(3, "connect", composedAnswer);
     textarea.readOnly = true;
+    if (frameUi) frameUi.inputs.forEach((i) => (i.readOnly = true));
     submitBtn.style.display = "none";
-    showFeedback("success", "Great response! Your thinking is recorded.");
-    completePhase(el, ctx, state, 3, "Connect", valid ? 1 : 0, 1);
+
+    const blanksRight =
+      frameScore && frameScore.graded > 0 && frameScore.right === frameScore.graded;
+    showFeedback(
+      "success",
+      blanksRight
+        ? "Correct — and your explanation is recorded."
+        : "Your thinking is recorded. Check the answer below.",
+    );
+
+    const earned = (valid ? 1 : 0) + (check ? check.correctCount() : 0) + (blanksRight ? 1 : 0);
+    const total = 1 + (check ? check.total : 0) + (frameScore && frameScore.graded > 0 ? 1 : 0);
+    const finish = () => completePhase(el, ctx, state, 3, "Connect", earned, total);
+
+    // Answer reveal. Until now a student could finish Connect without ever
+    // learning whether the friend in the scenario was right. `modelAnswer` is
+    // the authored resolution; the diagram caption is the fallback, since it
+    // already states the worked result for most lessons.
+    //
+    // completePhase() advances to the next phase as soon as it is called, which
+    // tears this card off the screen — so the reveal MUST gate it behind an
+    // explicit "continue". Calling completePhase() first would render the
+    // answer into a DOM node the student never sees.
+    const modelText = cfg.modelAnswer || cfg.diagram?.caption || cfg.visual?.caption;
+    if (!modelText) {
+      finish();
+      return;
+    }
+
+    const reveal = document.createElement("div");
+    reveal.className = "connect-reveal";
+    reveal.innerHTML = `
+      <div class="connect-reveal-title">✅ The answer</div>
+      <p class="connect-reveal-body">${renderMathText(String(modelText))}</p>`;
+    const continueBtn = document.createElement("button");
+    continueBtn.type = "button";
+    continueBtn.className = "btn btn-primary mt-4";
+    continueBtn.textContent = "Got it — continue →";
+    continueBtn.addEventListener("click", finish, { once: true });
+    reveal.append(continueBtn);
+    respCard.append(reveal);
+    reveal.scrollIntoView({ behavior: "smooth", block: "nearest" });
   });
 
   respCard.append(submitBtn);

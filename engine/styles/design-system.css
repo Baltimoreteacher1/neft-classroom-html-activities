@@ -579,6 +579,170 @@ h4 {
   font-weight: 700;
 }
 
+/* Typable sentence-frame blanks (Connect). Replaces the read-only `.blank`
+   span a student could not answer into. Sized for a touch target on a phone
+   while still sitting inline in the sentence. */
+.sentence-frame-live .frame-blank {
+  display: inline-block;
+  /* Wide enough to tap on a phone, narrow enough that a multi-blank frame
+     still reads as one sentence instead of breaking after every blank. */
+  min-width: 84px;
+  max-width: 12ch;
+  width: 84px;
+  min-height: 44px;
+  border: 0;
+  border-bottom: 2px solid var(--teal);
+  border-radius: 6px 6px 0 0;
+  background: rgba(255, 255, 255, 0.85);
+  padding: 4px 8px;
+  margin: 0 4px;
+  color: var(--teal-ink);
+  font-family: inherit;
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.sentence-frame-live .frame-blank:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  background: #fff;
+}
+
+.sentence-frame-live .frame-blank.is-correct {
+  border-bottom-color: var(--success, #16a34a);
+  background: rgba(22, 163, 74, 0.12);
+}
+
+.sentence-frame-live .frame-blank.is-wrong {
+  border-bottom-color: #dc2626;
+  background: rgba(220, 38, 38, 0.1);
+}
+
+/* ── Connect: Check Your Thinking ── */
+.connect-check-intro {
+  margin: var(--sp-2) 0 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.connect-check-item {
+  margin-top: var(--sp-4);
+  padding-top: var(--sp-4);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.connect-check-item:first-of-type {
+  border-top: 0;
+}
+
+.connect-check-stem {
+  margin: 0 0 var(--sp-3);
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.connect-check-num {
+  display: inline-block;
+  min-width: 26px;
+  height: 26px;
+  margin-right: 6px;
+  border-radius: 50%;
+  background: var(--amber, #f59e0b);
+  color: #1f2937;
+  font-weight: 800;
+  line-height: 26px;
+  text-align: center;
+}
+
+.connect-check-choices {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.connect-check-choice {
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 2px solid rgba(0, 0, 0, 0.12);
+  border-radius: var(--radius-md);
+  background: #fff;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.connect-check-choice:hover:not(:disabled) {
+  border-color: var(--teal);
+}
+
+.connect-check-choice:disabled {
+  cursor: default;
+  opacity: 0.85;
+}
+
+.connect-check-choice.is-correct {
+  border-color: var(--success, #16a34a);
+  background: rgba(22, 163, 74, 0.12);
+  opacity: 1;
+}
+
+.connect-check-choice.is-wrong {
+  border-color: #dc2626;
+  background: rgba(220, 38, 38, 0.1);
+  opacity: 1;
+}
+
+.connect-check-feedback {
+  display: none;
+  gap: 8px;
+  margin-top: var(--sp-3);
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.connect-check-feedback.visible {
+  display: flex;
+}
+
+.connect-check-feedback.is-correct {
+  background: rgba(22, 163, 74, 0.1);
+  color: #14532d;
+}
+
+.connect-check-feedback.is-wrong {
+  background: rgba(245, 158, 11, 0.14);
+  color: #713f12;
+}
+
+.connect-check-icon {
+  font-weight: 800;
+}
+
+/* Answer reveal, shown only after the response is submitted. */
+.connect-reveal {
+  margin-top: var(--sp-4);
+  padding: var(--sp-4);
+  border: 2px solid var(--success, #16a34a);
+  border-radius: var(--radius-md);
+  background: rgba(22, 163, 74, 0.08);
+}
+
+.connect-reveal-title {
+  margin-bottom: var(--sp-2);
+  color: #14532d;
+  font-weight: 800;
+}
+
+.connect-reveal-body {
+  margin: 0;
+  color: #14532d;
+  line-height: 1.6;
+}
+
 /* ── Feedback Messages ── */
 .feedback {
   display: none;

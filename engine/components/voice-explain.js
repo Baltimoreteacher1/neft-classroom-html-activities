@@ -123,15 +123,23 @@ export function attachVoiceInput(textarea, opts = {}) {
     const statusEl = wrap.querySelector('[data-el="status"]');
     const chipsEl = wrap.querySelector('[data-el="chips"]');
 
-    keywords.forEach((k) => {
-      const c = document.createElement("span");
-      c.className = "vexp-chip";
-      c.dataset.used = "0";
-      c.dataset.word = k;
-      c.setAttribute("role", "listitem");
-      c.textContent = k;
-      chipsEl.appendChild(c);
-    });
+    // Chips are a VOCABULARY scaffold ("percent", "decimal"), not an answer key.
+    // Connect keyword lists mix vocabulary with the scenario's numeric answers
+    // (lesson 4-2 listed 60, 0.6 and 16 — the percent, the decimal and the sale
+    // price), so rendering every keyword printed the answers on screen before
+    // the student had answered. Numeric keywords still count toward the written
+    // check below; they are just not displayed.
+    keywords
+      .filter((k) => !/^[\d.,$%/\s:-]+$/.test(k))
+      .forEach((k) => {
+        const c = document.createElement("span");
+        c.className = "vexp-chip";
+        c.dataset.used = "0";
+        c.dataset.word = k;
+        c.setAttribute("role", "listitem");
+        c.textContent = k;
+        chipsEl.appendChild(c);
+      });
 
     let rec = null;
     let listening = false;
