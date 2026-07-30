@@ -30,6 +30,12 @@ function copyStandaloneHtml() {
     "tools",
     "docs",
     "night-shift",
+    // Backend Worker sources are deployed with `wrangler deploy`, never served by
+    // Pages. They were shipping to the public site: /workers/noam-school-cron.js
+    // and /workers/wrangler.toml.example both returned 200 on eduwonderlab.com,
+    // publishing infrastructure config on a student-facing domain. Nothing on the
+    // site references /workers/, so skipping the whole directory is safe.
+    "workers",
   ]);
   const ROOT_FILES = ["_headers", "_redirects", "404.html", "robots.txt", "sitemap.xml"];
   // Keep dev artifacts out of the published site: nested .claude/.git/node_modules
