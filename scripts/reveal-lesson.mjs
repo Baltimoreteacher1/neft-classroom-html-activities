@@ -39,9 +39,12 @@ const lessonsDir = path.join(root, "lessons");
 const REVEAL_ASSETS_DIRNAME = "reveal-assets";
 const EXTRACTOR = path.join(__dirname, "lib", "extract_reveal.py");
 
-// Generic, reusable sentence starters. The Reveal decks rarely supply explicit
-// I-notice / I-wonder stems, so we provide classroom-friendly defaults that
-// work for any data-analysis Notice & Wonder.
+// PLACEHOLDERS, not shippable copy. The Reveal decks rarely supply explicit
+// I-notice / I-wonder stems, so a freshly generated lesson lands with these —
+// but they name nothing in the image and give a struggling reader no way in, so
+// they MUST be replaced with starters written against that lesson's own picture
+// and numbers before the lesson ships. `test/lesson-notice-wonder-starters.test.mjs`
+// fails on any lesson still carrying them, which is the intended tripwire.
 const DEFAULT_NOTICE_STARTERS = ["I notice that…", "I notice ___, so…", "I see…"];
 const DEFAULT_WONDER_STARTERS = [
   "I wonder why…",
