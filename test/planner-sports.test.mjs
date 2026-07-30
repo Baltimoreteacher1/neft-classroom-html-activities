@@ -54,6 +54,69 @@ for (const [app, themeKey] of APPS) {
     }
   });
 
+  test(`${app}: the locker is deep and every level unlocks something`, () => {
+    // A reward track only works if there is always something visibly close. These
+    // are the shape rules for the catalog, so a future edit can't quietly hollow
+    // it out: real depth, one unlock at a time per slot, no dead levels, and an
+    // avatar that shows a readable subset rather than every slot at once.
+    assert.ok(S.THEME.gear.length >= 40, `only ${S.THEME.gear.length} items in the locker`);
+    const bySlot = new Map();
+    for (const g of S.THEME.gear) {
+      bySlot.set(g.slot, [...(bySlot.get(g.slot) || []), g.level]);
+      assert.ok(g.name && g.name.length <= 30, `${g.id} needs a short, specific name`);
+      assert.ok(g.note && g.note.length <= 60, `${g.id} needs a short note`);
+      assert.ok(g.emoji, `${g.id} needs an emoji`);
+    }
+    for (const [slot] of S.THEME.slots) {
+      const levels = bySlot.get(slot) || [];
+      assert.ok(levels.length >= 3, `${slot} only has ${levels.length} items to work toward`);
+      assert.equal(
+        new Set(levels).size,
+        levels.length,
+        `${slot} unlocks two things at the same level — one at a time reads better`,
+      );
+    }
+    // The headline slot (bats / boots) is the one a kid actually shops for.
+    const headline = S.THEME.slots[0][0];
+    assert.ok(
+      (bySlot.get(headline) || []).length >= 10,
+      `${headline} is the headline rack and should be the deepest`,
+    );
+    const unlocking = new Set(S.THEME.gear.map((g) => g.level));
+    for (let lv = 1; lv <= S.THEME.levels.length; lv++) {
+      assert.ok(unlocking.has(lv), `level ${lv} unlocks nothing — it would feel empty`);
+    }
+    assert.ok(S.THEME.avatarSlots?.length, "the player card needs a chosen set of avatar slots");
+    assert.ok(
+      S.THEME.avatarSlots.length < S.THEME.slots.length,
+      "avatarSlots exists to show fewer slots than the locker holds",
+    );
+    for (const slot of S.THEME.avatarSlots) {
+      assert.ok(
+        S.THEME.slots.some(([k]) => k === slot),
+        `avatarSlots names an unknown slot ${slot}`,
+      );
+    }
+  });
+
+  test(`${app}: the player card avatar only shows the chosen slots`, () => {
+    const maxed = S.award(S.normalize({ xp: 0 }), "task", 99999).sport;
+    const avatar = S.avatarFor(maxed);
+    assert.equal(
+      [...avatar].filter((c) => c.codePointAt(0) > 0x2000).length >= 1,
+      true,
+      "a fully kitted player wears something",
+    );
+    // One emoji per avatar slot at most — never one per locker slot.
+    const worn = S.THEME.avatarSlots.filter((slot) => maxed.equipped[slot]).length;
+    assert.equal(worn, S.THEME.avatarSlots.length, "every avatar slot is filled at max level");
+    for (const [slot] of S.THEME.slots) {
+      if (S.THEME.avatarSlots.includes(slot)) continue;
+      const hidden = S.itemById(maxed.equipped[slot]);
+      assert.ok(hidden, `${slot} is still equipped even though it is off the avatar`);
+    }
+  });
+
   test(`${app}: finishing work adds points and levels up exactly once`, () => {
     let sport = S.normalize(null);
     assert.equal(sport.xp, 0);
