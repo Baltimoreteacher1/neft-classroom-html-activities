@@ -66,6 +66,7 @@ import { mountRetrievalOpener } from "./retrieval.js";
 import { mountQuestionLadderReader } from "./socratic.js";
 import { mountStuckSupport } from "./stuck-support.js";
 import { isTeacherMode } from "./teacher-mode.js";
+import { mountLevel3Launch } from "./level3-launch.js";
 import { renderThemeIllustration } from "./theme-illustrations.js";
 import { isToolsMode, mountToolsMenuItem, renderToolsPage } from "./tools-mode.js";
 import { stampTeachL4Meta } from "./uifr.js";
@@ -2964,6 +2965,10 @@ function renderLaunchPhase(el, state, ctx, config) {
   mountWodbOpener(wodbHost, config, state, 0).catch(() => {
     /* the opener is additive — never block Launch on it */
   });
+
+  // Level 3 · Adaptive Small Group launch link. Teacher-only, and only for
+  // lessons with a validated configuration. Additive: see level3-launch.js.
+  mountLevel3Launch(el, config);
 
   // Notice & Wonder + language support laid out side-by-side: the notice/wonder
   // boxes fill the left column (nwMain); the "Words & phrases to use" support
