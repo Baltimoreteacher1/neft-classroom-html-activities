@@ -90,10 +90,11 @@ function json(data, status = 200, request) {
   });
 }
 
-// Same posture as /api/roster and /api/board: writes are open only while
-// TEACHER_KEY is unset (fresh project / local dev), gated once it is bound.
+// Same posture as /api/roster and /api/board: fail CLOSED. An unbound
+// TEACHER_KEY previously left this Claude-backed endpoint open to anonymous
+// POSTs on the project's ANTHROPIC_API_KEY.
 function teacherOk(request, env) {
-  if (!env.TEACHER_KEY) return { ok: true, gated: false };
+  if (!env.TEACHER_KEY) return { ok: false, gated: true, configured: false };
   const url = new URL(request.url);
   const key = url.searchParams.get("key") || request.headers.get("x-teacher-key") || "";
   return { ok: key === env.TEACHER_KEY, gated: true };
@@ -422,6 +423,8 @@ export async function onRequest(context) {
   }
 
   const auth = teacherOk(request, env);
+  if (auth.configured === false)
+    return json({ ok: false, error: "not-configured" }, 503, request);
   if (!auth.ok) return json({ ok: false, error: "unauthorized" }, 401, request);
 
   if (!hasClaude) {

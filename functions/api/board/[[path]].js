@@ -161,7 +161,11 @@ function cleanField(raw, max) {
 // Writes are allowed when TEACHER_KEY is unset (fresh project / local dev) so
 // the board is usable out of the box; once the key is set, writes require it.
 function authorizeWrite(request, env, url) {
-  if (!env.TEACHER_KEY) return { ok: true, gated: false };
+  // Fail CLOSED. An unbound TEACHER_KEY used to return ok:true, so a secret
+  // that silently failed to bind at deploy left every student name, save code
+  // and roster write world-open. Mirrors teacherAuthorized() in
+  // functions/api/progress: no key -> 503 not-configured, wrong key -> 401.
+  if (!env.TEACHER_KEY) return { ok: false, gated: true, configured: false };
   const key = url.searchParams.get("key") || request.headers.get("x-teacher-key") || "";
   return { ok: key === env.TEACHER_KEY, gated: true };
 }
@@ -232,6 +236,8 @@ export async function onRequest(context) {
   // ---- PUT/POST /api/board/save ------------------------------------------
   if (seg === "save" && (method === "PUT" || method === "POST")) {
     const auth = authorizeWrite(request, env, url);
+    if (auth.configured === false)
+      return json({ ok: false, error: "not-configured" }, 503, request);
     if (!auth.ok) return json({ ok: false, error: "unauthorized" }, 401, request);
 
     const id = boardId(url.searchParams.get("board"));
@@ -335,6 +341,8 @@ export async function onRequest(context) {
   // TEACHER-gated: every submitted code for a section, newest first.
   if (seg === "codes" && method === "GET") {
     const auth = authorizeWrite(request, env, url);
+    if (auth.configured === false)
+      return json({ ok: false, error: "not-configured" }, 503, request);
     if (!auth.ok) return json({ ok: false, error: "unauthorized" }, 401, request);
     const id = boardId(url.searchParams.get("board"));
     if (!id) return json({ ok: false, error: "invalid board id" }, 400, request);
@@ -366,6 +374,8 @@ export async function onRequest(context) {
   // TEACHER-gated: clear one student's code or the whole section's codes.
   if (seg === "codes" && method === "DELETE") {
     const auth = authorizeWrite(request, env, url);
+    if (auth.configured === false)
+      return json({ ok: false, error: "not-configured" }, 503, request);
     if (!auth.ok) return json({ ok: false, error: "unauthorized" }, 401, request);
     const id = boardId(url.searchParams.get("board"));
     if (!id) return json({ ok: false, error: "invalid board id" }, 400, request);

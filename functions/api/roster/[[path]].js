@@ -172,7 +172,11 @@ async function guardNote(db, ip, bucket) {
 // Writes are allowed when TEACHER_KEY is unset (fresh project / local dev);
 // once the key is set, writes require it — same contract as /api/board.
 function authorizeWrite(request, env, url) {
-  if (!env.TEACHER_KEY) return { ok: true, gated: false };
+  // Fail CLOSED. An unbound TEACHER_KEY used to return ok:true, so a secret
+  // that silently failed to bind at deploy left every student name, save code
+  // and roster write world-open. Mirrors teacherAuthorized() in
+  // functions/api/progress: no key -> 503 not-configured, wrong key -> 401.
+  if (!env.TEACHER_KEY) return { ok: false, gated: true, configured: false };
   const key = url.searchParams.get("key") || request.headers.get("x-teacher-key") || "";
   return { ok: key === env.TEACHER_KEY, gated: true };
 }
@@ -247,6 +251,8 @@ export async function onRequest(context) {
   // preserving each returning student's id (matched by name, case-insensitive).
   if (seg === "save" && method === "POST") {
     const auth = authorizeWrite(request, env, url);
+    if (auth.configured === false)
+      return json({ ok: false, error: "not-configured" }, 503, request);
     if (!auth.ok) return json({ ok: false, error: "unauthorized" }, 401, request);
 
     let body;
@@ -326,6 +332,8 @@ export async function onRequest(context) {
   // ---- DELETE /api/roster/save?code= --------------------------------------
   if (seg === "save" && method === "DELETE") {
     const auth = authorizeWrite(request, env, url);
+    if (auth.configured === false)
+      return json({ ok: false, error: "not-configured" }, 503, request);
     if (!auth.ok) return json({ ok: false, error: "unauthorized" }, 401, request);
     const code = cleanCode(url.searchParams.get("code"));
     if (!code) return json({ ok: false, error: "invalid code" }, 400, request);
