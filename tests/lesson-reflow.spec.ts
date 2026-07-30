@@ -16,9 +16,14 @@ test.describe("shared lesson shell reflow", () => {
       await page.getByRole("button", { name: "Continue to Phase 3: Launch 🚀" }).click();
       await expect(page.locator('[data-bind="hero-phase-name"]')).toHaveText("Launch");
 
-      const launchResponses = page.locator(".phase textarea");
-      await launchResponses.nth(0).fill("I notice a math pattern in the example.");
-      await launchResponses.nth(1).fill("I wonder how the pattern will help me solve it.");
+      // Address these boxes by what they ARE, not by where they sit. This used
+      // to take `.phase textarea` nth(0)/nth(1), which silently assumed the
+      // notice/wonder boxes were the first two textareas in the phase. The
+      // Which One Doesn't Belong opener now renders above them by design, and
+      // its textarea is collapsed until opened — so nth(0) resolved to a hidden
+      // element and the fill retried until the test timed out.
+      await page.locator("#nw-notice").fill("I notice a math pattern in the example.");
+      await page.locator("#nw-wonder").fill("I wonder how the pattern will help me solve it.");
       await page.getByRole("button", { name: "Continue to Vocab →" }).click();
       await expect(page.locator(".extra-panel")).toHaveAttribute("aria-label", "Vocab");
       await page.getByRole("button", { name: "Continue to Learn It →" }).click();
