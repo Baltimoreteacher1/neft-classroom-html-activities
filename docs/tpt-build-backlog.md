@@ -46,21 +46,40 @@ Shared activity kit: `assets/NT-ACTIVITY-KIT.md`, `assets/neft-theme.css`.
 
 ## Remaining / open (priority order)
 
-### 1. Webquest / Hyperdoc / Architect originality — units 7-10 — NEEDS JOEL DECISION ⚠️
+### 1. Webquest / Hyperdoc / Architect originality — units 7-10 — RESOLVED ✅
 
 **Memory said:** units 7-10 still hold "old recycled content with teacher notes"
 and need the same original rewrite as 1-6.
 
-**2026-06-21 audit found this is now ambiguous / likely already addressed:** all
-10 webquest and hyperdoc files are comparable size (52-66 KB) and share the same
-modern template, including the same `details.teacher-only` answer-key block in
-units 1-6 AND 7-10. There is no longer an obvious "old vs new" split by structure.
+**2026-06-21 audit found this ambiguous:** all 10 webquest and hyperdoc files are
+comparable size (52-66 KB) and share the same modern template, including the same
+`details.teacher-only` answer-key block in units 1-6 AND 7-10. There was no
+obvious "old vs new" split by structure.
 
-**Action before any work:** Joel (or an agent with Joel's sign-off) should open
-units 7-10 webquests/hyperdocs and confirm whether the _content_ is original and
-TpT-quality, or still recycled. This is a **content-quality judgment, not a
-mechanical check** — do not auto-rewrite. If a rewrite is needed, it must follow
-the U5 exemplar and the relevant `*_SPEC.md`, and stays gated on Joel's review.
+**2026-07-30 content audit — units 7-10 are original. No rewrite needed.**
+Three independent checks, all pointing the same way:
+
+- **Cross-unit prose overlap.** Longest-shared-phrase (8-word shingle) overlap
+  against every other unit, teacher-only blocks and markup excluded. Recycled
+  pages reuse long runs of prose; original ones share only template chrome.
+  Units 7-10 land at 1.8-4.0% (webquests) and 3.8-6.1% (hyperdocs) — the same
+  band as the known-original exemplars, and in several cases LOWER than units
+  1 and 5 (unit-1 hyperdoc is the highest of all ten at 7.5%).
+- **Teacher-note leakage.** Every unit — 1 through 10 — has exactly four hits
+  for teacher-directed phrasing, and in all of them the four are the same
+  intentional `details.teacher-only` scaffolding (CSS comment, HTML comment,
+  the `<details>`, its `<summary>`). Unit 1 and unit 9 are identical here.
+  Zero inline instructional notes leaked into student-facing prose.
+- **Topic alignment + original premise.** Each carries its own themed scenario
+  matched to its own standard: U7 museum cryptographer (one-step equations →
+  inequalities), U8 Student Data Council (mean/median/MAD/box plots/histograms),
+  U9 the two meanings of a negative, U10 "The Aquarium Build-Out" (volume with
+  fractional edges → nets → surface area). Unit-10's webquest is the longest of
+  all ten at 1,999 words.
+
+Nothing here is a mechanical proxy for taste, so a spot-read is still worth
+doing before a TpT listing — but the "recycled content" premise does not hold,
+and no rewrite should be scheduled on the strength of it.
 
 > Note on `details.teacher-only`: these answer-key blocks are intentional teacher
 > scaffolding hidden in print, present site-wide — NOT the "teacher notes" Joel
