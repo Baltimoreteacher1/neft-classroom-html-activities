@@ -70,8 +70,13 @@ body,
   --sg-figure: #ffffff !important;
   --sg-fill:   #f2f6fa !important;
 
-  /* Lines + text: match --line / --muted / --ink, lightened one step (see §3a) */
-  --sg-line:   #e4ecf3 !important;
+  /* Lines + text: match --line / --muted / --ink.
+     NOT lightened. An earlier pass took this to #e4ecf3 as part of "lighten the
+     palette" and it cost the manipulatives their edges — draggable number tiles and
+     the prime/composite drop zones are drawn from --sg-line, so they faded into the
+     card behind them. Page chrome can be soft; interactive targets cannot. §6a
+     pushes this further still inside graphics. */
+  --sg-line:   #d7e2ed !important;
   --sg-muted:  #45535f !important;
   --sg-text:   #19262f !important;
 
@@ -310,6 +315,48 @@ html[style*="5a9e52"]   { --sg-pop: #d9795d !important; }  /* Catch-Up    -> cor
 .sg-mode { background: var(--sg-deep); }
 .sg-mode--teacher { background: #5c3c05; }
 .sg-mode-action { border-radius: var(--radius-sm, 12px); }
+
+/* ---------------------------------------------------------------------------
+   6a. GRAPHICS NEED FIRMER EDGES THAN PAGE CHROME
+
+   Manipulatives (number tiles, drop zones, factor-tree nodes, model cells) sit on
+   a white card and draw their outlines from --sg-line / --line. At the page-chrome
+   value they read as suggestions rather than objects you can grab — the
+   prime/composite drop zones in particular nearly vanished. Bump the line token
+   *inside graphics only*, so the page stays light while anything a student has to
+   see or drag keeps a definite edge, and give tray fills enough tint to separate
+   from the card.
+
+   These declarations need !important to beat the token block in §1, and they sit
+   later in this file so the same-specificity tie resolves in their favour.
+   --------------------------------------------------------------------------- */
+
+.sg-lab,
+.sg-lab-mount,
+.sg-figure,
+.sg-problem-visual,
+.sg-problem-model,
+.sg-mission-visual {
+  /* #7b93ab, not a softer grey: manipulatives are interactive controls, so their
+     boundaries fall under WCAG 2.1 SC 1.4.11 Non-text Contrast, which wants 3:1.
+     Measured against the white card — #b9c9d8 gave 1.69:1 and #8099b2 only 2.95:1,
+     both failing; #7b93ab is 3.18:1 and is the lightest step that clears it
+     (3.02:1 against the cream paper for graphics that sit directly on it). */
+  --sg-line: #7b93ab !important;
+  --line:    #7b93ab !important;   /* engine/components/* draw with the generic token */
+  --sg-fill: #e7eef6 !important;
+  --sg-soft: #eef3f9 !important;
+}
+
+/* Drop targets are the weakest link: a dashed 1px hairline is not a visible
+   "put it here". Give them a real dashed edge and a faint tint. */
+.sg-lab-mount [class*="drop"],
+.sg-lab-mount [class*="zone"],
+.sg-lab-mount [class*="bucket"],
+.sg-lab-mount [class*="target"] {
+  border-style: dashed;
+  border-width: 2px;
+}
 
 /* ---------------------------------------------------------------------------
    6. FLOATING-CONTROL COLLISION — annotation vs the Learning-Supports dock
