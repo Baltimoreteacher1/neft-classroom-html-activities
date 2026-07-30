@@ -1,5 +1,6 @@
 import { attachRegenPractice } from "../components/regen-practice.js";
 import { isRight, numberOf } from "./small-group-answers.js";
+import { mountReasoningReader } from "./small-group-reasoning.js";
 import { createRubricDetails } from "./small-group-rubric.js";
 import { bi, biHtml, celebrate, el, esc, speak } from "./small-group-ui.js";
 import { appendVisualPractice } from "./small-group-visual-practice.js";
@@ -508,6 +509,14 @@ function responseCard(item, index, variant, onSolved, scaffold, events = {}) {
       variant === "group2"
         ? "Make a claim, use evidence, and explain why…"
         : "Show or explain your thinking…";
+    // A reader on the writing. Until now this box collected a student's best
+    // thinking and nothing on earth read it.
+    const reader = mountReasoningReader(response, {
+      prompt: itemStem(item) || "Explain your thinking.",
+      standard: item._standard || "",
+      answerShown: item.answer || "",
+      misconception: events.misconception,
+    });
     const ready = el("button", "btn", "I'm ready to share");
     ready.type = "button";
     ready.onclick = () => {
@@ -536,7 +545,7 @@ function responseCard(item, index, variant, onSolved, scaffold, events = {}) {
       );
       onSolved();
     };
-    card.append(response, el("div", "row"));
+    card.append(response, reader, el("div", "row"));
     card.lastElementChild.appendChild(ready);
   }
   // Feedback lands directly under the answer control so it is on-screen the
@@ -1077,6 +1086,12 @@ export function createCheckSection(config, onSolved, tally, events = {}, store =
       ta.value = store?.get("checkExplainResponse") || "";
       const status = el("div", "fb");
       status.setAttribute("aria-live", "polite");
+      const explainReader = mountReasoningReader(ta, {
+        prompt: "Explain how you know your answer is correct.",
+        standard: config.standard || "",
+        answerShown: String(ticket?.answer ?? ""),
+        misconception: events.misconception,
+      });
       const submit = el("button", "btn", "Submit my explanation");
       submit.type = "button";
       submit.onclick = () => {
@@ -1096,7 +1111,7 @@ export function createCheckSection(config, onSolved, tally, events = {}, store =
       };
       const row = el("div", "row");
       row.appendChild(submit);
-      wrap.append(ta, row, status, createRubricDetails(config.variant));
+      wrap.append(ta, explainReader, row, status, createRubricDetails(config.variant));
       if (store?.get("checkExplained")) {
         ta.disabled = true;
         submit.disabled = true;

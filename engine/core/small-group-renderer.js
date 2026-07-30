@@ -21,6 +21,7 @@ import {
 } from "./small-group-engagement.js";
 import { syncSmallGroupEvidence } from "./small-group-evidence.js";
 import {
+  MISCONCEPTIONS,
   detectMisconception,
   recordMisconception,
   topMisconceptions,
@@ -574,6 +575,10 @@ function renderStudio(config) {
       state.solved++;
     },
     streak: () => state.streak || 0,
+    // Human-readable name for the misconception the deterministic detector last
+    // identified, handed to the reasoning reader so its coaching points at the
+    // error this student actually made rather than one the model invents.
+    misconception: () => MISCONCEPTIONS[state.lastMisconception]?.label || "",
   };
 
   // Restored interactions can finish before the tabs mount, so buffer marks.
