@@ -9,10 +9,36 @@ name: Backup D1
 #
 # Backups are uploaded as workflow ARTIFACTS, never committed: they contain
 # student data, and this repo auto-commits during agent sessions.
+#
+# ⛔ SCHEDULE DISABLED 2026-07-30 — DO NOT RE-ENABLE WHILE THIS REPO IS PUBLIC.
+#
+# The line above ("artifacts, never committed") was written when this
+# repository was private. It defends against the auto-commit habit, not against
+# the artifact itself being readable. This repo went public on 2026-07-30, and
+# workflow artifacts are downloadable by anyone with read access to the
+# repository — which is now everyone. An unattended nightly run would therefore
+# publish a full export of student progress, the class roster, and telemetry,
+# and keep it downloadable for the 90-day retention window.
+#
+# Nothing is lost by disabling this: the workflow has never once succeeded (3
+# runs, all killed by the 2026-07-14→07-30 runner outage, 0 artifacts), so
+# there is no backup history to interrupt. But the FIRST successful run would
+# have been the leak.
+#
+# To restore nightly backups, pick one and then re-enable the cron:
+#   • make the repository private again, or
+#   • encrypt the dump before upload (age/gpg with a passphrase in Actions
+#     secrets), so the public artifact is inert, or
+#   • push the dump to private storage (R2/S3) instead of upload-artifact.
+# Until then, run `npm run backup:d1` locally — it writes to ~/neft-backups,
+# outside the repo, and never touches Actions.
 on:
-  schedule:
-    # 07:10 UTC (~3:10am ET) — after the night-shift jobs, before the school day.
-    - cron: "10 7 * * *"
+  # schedule:
+  #   # 07:10 UTC (~3:10am ET) — after the night-shift jobs, before the school day.
+  #   - cron: "10 7 * * *"
+  # Manual dispatch is kept as a deliberate, attended act — but it publishes the
+  # same public artifact while this repo is public. Do not run it until one of
+  # the three fixes above is in place.
   workflow_dispatch: {}
 
 permissions:
