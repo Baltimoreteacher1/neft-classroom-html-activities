@@ -63,9 +63,16 @@ try {
     }
   }
 
+  // Every page that loads a /assets/curriculum-*.{css,js} with a ?v= belongs
+  // here. student-launch was missing, so its two assets sat pinned at
+  // ?v=20260709 while curriculum-student-launch.js changed three times in July
+  // 2026 -- students kept getting the cached July 9 copy. A page absent from
+  // this list does not fail loudly; it just silently stops being cache-busted.
   const currFiles = [
     join(root, "curriculum", "index.html"),
     join(root, "dist", "curriculum", "index.html"),
+    join(root, "curriculum", "student-launch", "index.html"),
+    join(root, "dist", "curriculum", "student-launch", "index.html"),
   ];
 
   for (const currPath of currFiles) {
