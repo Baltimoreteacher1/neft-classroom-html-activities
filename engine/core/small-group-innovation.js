@@ -44,6 +44,51 @@ export function chooseAdaptivePath(state = {}, _variant = "group1") {
   return { ...PATHS[id], reason: reasons[id], alternatives: alternatives() };
 }
 
+/** Distinct problems a student must miss before supports open by themselves. */
+export const AUTO_SUPPORT_DISTINCT_MISSES = 2;
+
+/**
+ * Decides when a practice set should open its own supports.
+ *
+ * Two separate rules were already in place and neither covered this case. A
+ * single card opens its bank and step guide on the second try of THAT card
+ * (small-group-practice.js), which handles one tricky problem. The coach's
+ * "stabilize" move opens supports across the whole set — but only when a
+ * student taps "Find our next move", which most never do. So a student missing
+ * problem after problem worked an unscaffolded set the entire time.
+ *
+ * The signal that the SET is too hard, rather than one item, is breadth: misses
+ * spread across different problems. Repeat misses on a single card are already
+ * handled and deliberately do not count here, or hammering one hard problem
+ * would scaffold eleven others that were going fine.
+ *
+ * Fires exactly once. Escalation is one-way and support-only — this never
+ * withdraws support and never promotes a student to the stretch path, because
+ * it acts without being asked and only adding help is safe to do unasked.
+ */
+export function createAutoSupportTracker(threshold = AUTO_SUPPORT_DISTINCT_MISSES) {
+  const missed = new Set();
+  let fired = false;
+  return {
+    /** @returns {boolean} true on the single attempt that crosses the threshold. */
+    recordAttempt({ correct = false, key = null } = {}) {
+      if (fired || correct) return false;
+      const id = key == null ? "" : String(key);
+      if (!id) return false;
+      missed.add(id);
+      if (missed.size < threshold) return false;
+      fired = true;
+      return true;
+    },
+    get missedCount() {
+      return missed.size;
+    },
+    get fired() {
+      return fired;
+    },
+  };
+}
+
 const PROOF_PATHS = {
   model: {
     label: "Model it",

@@ -999,6 +999,37 @@ export function createPracticeSection(
         card.sgApplySupport?.();
     }
   });
+
+  // Automatic support escalation — dispatched by the renderer once a student has
+  // missed on two DIFFERENT problems (see createAutoSupportTracker).
+  //
+  // Deliberately narrower than the coach's "stabilize" move: it opens supports
+  // and nothing else. It never reorders the set and never resets pagination,
+  // because it fires underneath a student who is mid-problem rather than in
+  // answer to a button they pressed — moving the furniture at that moment would
+  // read as the page breaking.
+  document.addEventListener("sg:auto-support", () => {
+    if (section.dataset.autoSupport === "on") return;
+    const unsolved = [...section.querySelectorAll(":scope > .prob:not(.sg-done-all)")];
+    if (!unsolved.length) return;
+    section.dataset.autoSupport = "on";
+    for (const card of unsolved) card.sgApplySupport?.();
+    // Name the change. Supports that appear silently read as a glitch; announced,
+    // they read as help — and the wording stays matter-of-fact, never "you are
+    // struggling", which is the student's business and not the page's to narrate.
+    const note = el(
+      "div",
+      "sg-adaptive-banner",
+      biHtml(
+        "Supports are open: every problem now shows its tap-to-try bank and step guide.",
+        "Los apoyos están abiertos: cada problema ahora muestra su banco de opciones y su guía de pasos.",
+      ),
+    );
+    note.setAttribute("aria-live", "polite");
+    const header = section.querySelector(":scope > .sg-h");
+    if (header) header.after(note);
+    else section.prepend(note);
+  });
   const optional = config.practice?.optionalActivity;
   if (optional && options.includeOptional)
     section.appendChild(
