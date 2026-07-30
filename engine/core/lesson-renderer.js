@@ -37,7 +37,7 @@ import { mountHintLadder } from "./hint-ladder.js";
 import { badgeName, phaseName, stackHtml, t } from "./i18n.js";
 import { interactiveVisualHost, mountInteractiveVisuals } from "./interactive-visual.js";
 import { levelOverride, mountLevelSelector } from "./levels.js";
-import { augmentVocabWithGlossary } from "./math-glossary.js";
+import { augmentVocabWithGlossary, surfaceMatchesEntry } from "./math-glossary.js";
 import { renderMathText } from "./math-typography.js";
 import {
   normalizeAcademicWord,
@@ -1621,10 +1621,12 @@ export function linkifyObjectiveTerms(escapedText, vocab) {
   // otherwise students tap an underlined word and get an empty/dead popup. A
   // term needs a definition (EN or ES) or an authored visual/example to qualify.
   const hasPopupContent = (v) => !!(v && (v.definition || v.definitionEs || v.visual || v.example));
-  // Skip very short terms to avoid noisy matches inside ordinary words.
+  // Skip very short terms to avoid noisy matches inside ordinary words — except
+  // acronym entries (LCM, SA…), which are matched case-sensitively and so are
+  // safe at two letters.
   const entries = vocab
     .map((v, i) => ({ i, term: String((v && v.term) || "").trim() }))
-    .filter((e) => e.term.length > 2 && hasPopupContent(vocab[e.i]));
+    .filter((e) => (e.term.length > 2 || vocab[e.i]?.caseSensitive) && hasPopupContent(vocab[e.i]));
   if (!entries.length) return escapedText;
   // Normalize for lookup: lowercase and drop a single trailing plural "s".
   const norm = (s) => s.toLowerCase().replace(/s$/, "").trim();
@@ -1641,6 +1643,8 @@ export function linkifyObjectiveTerms(escapedText, vocab) {
   const linked = escapedText.replace(re, (match) => {
     const idx = lookup.has(norm(match)) ? lookup.get(norm(match)) : -1;
     if (idx < 0) return match;
+    // Acronym entries only match their exact uppercase form.
+    if (!surfaceMatchesEntry(match, vocab[idx])) return match;
     return `<button type="button" class="obj-term" data-term-idx="${idx}" aria-haspopup="dialog">${match}</button>`;
   });
   // Glue trailing punctuation to the term: buttons are atomic inline boxes,
@@ -1690,7 +1694,10 @@ function openObjectiveTermPopup(entry) {
   if (!entry) return;
   const backdrop = getObjectivePopup();
   const term = String(entry.term || "").trim();
-  backdrop.querySelector(".obj-popup-term").textContent = term;
+  // An acronym titles itself with what it stands for ("LCM — least common
+  // multiple") and then shows the full term's definition unchanged.
+  const title = entry.expandsTo ? `${term} — ${String(entry.expandsTo).trim()}` : term;
+  backdrop.querySelector(".obj-popup-term").textContent = title;
 
   // Spanish translation of the word itself (e.g. Ratio → Razón). Hidden when
   // the vocab entry has no termEs so we never show an empty "Español:" row.
@@ -1714,7 +1721,7 @@ function openObjectiveTermPopup(entry) {
   const showImg = hasRealVocabImage(term, entry.image);
   if (showImg) {
     img.src = resolveVocabImage(term, entry.image);
-    img.alt = vocabImageAlt(term, entry.definition);
+    img.alt = vocabImageAlt(title, entry.definition);
     img.hidden = false;
   } else {
     img.removeAttribute("src");
@@ -1801,9 +1808,11 @@ export function underlineVocabTerms(container, vocab) {
   if (!container) return;
   const list = Array.isArray(vocab) ? vocab : [];
   const hasPopupContent = (v) => !!(v && (v.definition || v.definitionEs || v.visual || v.example));
+  // Acronym entries (LCM, GCF, SA…) are matched case-sensitively, so they are
+  // allowed below the 3-character floor that keeps ordinary short words out.
   const entries = list
     .map((v, i) => ({ i, term: String((v && v.term) || "").trim() }))
-    .filter((e) => e.term.length > 2 && hasPopupContent(list[e.i]));
+    .filter((e) => (e.term.length > 2 || list[e.i]?.caseSensitive) && hasPopupContent(list[e.i]));
   if (!entries.length) return;
   const norm = (s) => s.toLowerCase().replace(/s$/, "").trim();
   const lookup = new Map();
@@ -1875,6 +1884,9 @@ export function underlineVocabTerms(container, vocab) {
     for (const match of text.matchAll(re)) {
       const idx = lookup.has(norm(match[0])) ? lookup.get(norm(match[0])) : -1;
       if (idx < 0) continue;
+      // Acronym entries only match their exact uppercase form, so "MAD" opens
+      // the mean-absolute-deviation popup and "mad" in a sentence never does.
+      if (!surfaceMatchesEntry(match[0], list[idx])) continue;
       fragment.append(text.slice(cursor, match.index));
       const btn = document.createElement("button");
       btn.type = "button";

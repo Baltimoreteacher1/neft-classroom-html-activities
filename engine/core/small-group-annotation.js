@@ -1,4 +1,4 @@
-import { augmentVocabWithGlossary } from "./math-glossary.js";
+import { augmentVocabWithGlossary, surfaceMatchesEntry } from "./math-glossary.js";
 import { el } from "./small-group-ui.js";
 import { configureVocabImage } from "./vocab-images.js";
 
@@ -176,7 +176,10 @@ function createVocabularyDialog() {
 
 function openVocabulary(dialog, word, trigger) {
   const definition = word.definition || word.visual || "A useful word for today's math thinking.";
-  dialog.querySelector("h2").textContent = word.term;
+  // Acronyms say what they stand for, then give the full term's definition.
+  dialog.querySelector("h2").textContent = word.expandsTo
+    ? `${word.term} — ${word.expandsTo}`
+    : word.term;
   dialog.querySelector(".sg-vocab-definition-en").textContent = definition;
   // English + Spanish only; hide the Spanish block when a word has no
   // translation instead of rendering an empty (or "undefined") line.
@@ -186,7 +189,8 @@ function openVocabulary(dialog, word, trigger) {
   dialog.querySelector(".sg-vocab-definition-es").textContent = word.definitionEs || "";
   dialog.querySelector(".sg-vocab-term-es").textContent = word.termEs || "";
   const example = dialog.querySelector(".sg-vocab-example");
-  example.textContent = word.visual || `Look for ${word.term.toLowerCase()} in the lesson model.`;
+  example.textContent =
+    word.visual || `Look for ${(word.expandsTo || word.term).toLowerCase()} in the lesson model.`;
   configureVocabImage(dialog.querySelector("img"), word, { eager: true });
   dialog.addEventListener("close", () => trigger.focus(), { once: true });
   dialog.showModal();
@@ -250,6 +254,8 @@ function addVocabularyTriggers(app, words, dialog) {
       const count = counts.get(countKey) || 0;
       const termStart = match.index + match[1].length;
       if (!word || count >= 2) continue;
+      // Acronym entries (LCM, GCF, MAD…) only match their exact uppercase form.
+      if (!surfaceMatchesEntry(termText, word)) continue;
       fragment.append(text.slice(cursor, termStart));
       const trigger = el("button", "sg-vocab-inline", termText);
       trigger.type = "button";

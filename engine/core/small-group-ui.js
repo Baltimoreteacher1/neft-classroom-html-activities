@@ -262,6 +262,48 @@ export function createVoiceMemo(prompt = "Record your best explanation") {
   return wrap;
 }
 
+// Shared "what does this mean?" popup. One <dialog> is reused for every caller
+// (plan moves today), so a student can tap any ⓘ and read a plain-language
+// explanation plus a worked example without leaving the step.
+let infoDialogEl = null;
+
+function getInfoDialog() {
+  if (infoDialogEl?.isConnected) return infoDialogEl;
+  const dialog = document.createElement("dialog");
+  dialog.className = "sg-info-dialog";
+  dialog.innerHTML = `
+    <div class="sg-info-body" style="position:relative">
+      <button type="button" class="sg-info-close" aria-label="Close">&times;</button>
+      <h2></h2>
+      <p class="sg-info-what"></p>
+      <div class="sg-info-example-wrap">
+        <div class="sg-info-label">Looks like</div>
+        <p class="sg-info-example"></p>
+      </div>
+    </div>
+  `;
+  dialog.querySelector(".sg-info-close").addEventListener("click", () => dialog.close());
+  // Tapping the backdrop closes it — the same gesture as the vocabulary popup.
+  dialog.addEventListener("click", (event) => {
+    if (event.target === dialog) dialog.close();
+  });
+  document.body.appendChild(dialog);
+  infoDialogEl = dialog;
+  return dialog;
+}
+
+export function openInfoDialog({ title, what, example }, trigger) {
+  const dialog = getInfoDialog();
+  dialog.querySelector("h2").textContent = title || "";
+  dialog.querySelector(".sg-info-what").textContent = what || "";
+  const wrap = dialog.querySelector(".sg-info-example-wrap");
+  wrap.hidden = !example;
+  dialog.querySelector(".sg-info-example").textContent = example || "";
+  if (trigger) dialog.addEventListener("close", () => trigger.focus(), { once: true });
+  dialog.showModal();
+  dialog.querySelector(".sg-info-close").focus();
+}
+
 export function celebrate(symbol = "✨") {
   const burst = el("div", "sg-burst");
   burst.setAttribute("aria-hidden", "true");
@@ -553,8 +595,19 @@ export function injectSmallGroupStyles(accent) {
     .sg-num{margin:0 2px;padding:2px 9px;border:2px dashed var(--sg);border-radius:9px;background:var(--sg-card);color:var(--sg-ink);font-weight:900;font-size:17px;cursor:pointer}
     .sg-num.on{background:var(--sg-pop);border-style:solid;color:#332000;box-shadow:0 2px 0 rgba(0,0,0,.15)}
     .sg-planrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:9px}
-    .sg-plan{min-height:46px;padding:9px 12px;border:2px solid var(--sg-line);border-radius:11px;background:var(--sg-card);font-weight:700;text-align:left;cursor:pointer}
+    .sg-planopt{display:flex;align-items:stretch;gap:6px}
+    .sg-plan{flex:1;min-height:46px;padding:9px 12px;border:2px solid var(--sg-line);border-radius:11px;background:var(--sg-card);font-weight:700;text-align:left;cursor:pointer}
     .sg-plan.on{border-color:var(--sg);background:var(--sg-soft);color:var(--sg-ink)}
+    .sg-plan-why{flex:0 0 auto;width:46px;min-height:46px;border:2px solid var(--sg-line);border-radius:11px;background:var(--sg-card);color:var(--sg);font-weight:900;font-size:17px;cursor:pointer}
+    .sg-plan-why:hover{background:var(--sg-soft)}
+    .sg-info-dialog{width:min(440px,92vw);padding:0;border:0;border-radius:16px;box-shadow:0 24px 60px rgba(23,32,51,.28)}
+    .sg-info-dialog::backdrop{background:rgba(23,32,51,.45)}
+    .sg-info-body{padding:20px 22px 22px;background:var(--sg-card);color:var(--sg-ink)}
+    .sg-info-body h2{margin:0 34px 10px 0;font-size:21px;line-height:1.3}
+    .sg-info-what{margin:0 0 12px;font-size:17px;font-weight:600;line-height:1.6}
+    .sg-info-label{font-family:"Nunito",sans-serif;font-size:12px;font-weight:900;letter-spacing:.07em;text-transform:uppercase;color:var(--sg)}
+    .sg-info-example{margin:4px 0 0;padding:10px 12px;border-radius:11px;background:var(--sg-soft);font-weight:600;line-height:1.6}
+    .sg-info-close{position:absolute;top:10px;right:12px;width:38px;height:38px;border:0;border-radius:50%;background:transparent;font-size:24px;line-height:1;color:var(--sg-ink);cursor:pointer}
     .sg-sample{margin:10px 0;border:1px solid var(--sg-line);border-radius:12px;background:var(--sg-soft)}
     .sg-sample summary{cursor:pointer;padding:11px 14px;color:var(--sg-ink)}
     .sg-sample p{padding:0 14px 12px;margin:0;font-weight:600}

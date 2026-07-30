@@ -8,7 +8,15 @@
 import { attachVoiceInput } from "../components/voice-explain.js";
 import { interactiveVisualHost, mountInteractiveVisuals } from "./interactive-visual.js";
 import { markScene } from "./small-group-storyboard.js";
-import { celebrate, createVoiceMemo, el, esc, sectionHeading, speak } from "./small-group-ui.js";
+import {
+  celebrate,
+  createVoiceMemo,
+  el,
+  esc,
+  openInfoDialog,
+  sectionHeading,
+  speak,
+} from "./small-group-ui.js";
 import {
   barChartSVG,
   boxPlotSVG,
@@ -383,13 +391,46 @@ function tappableProblem(text, onTap) {
   return wrap;
 }
 
+// The six planning moves, each with a plain-language "what this move means" and
+// a short worked example. Students tap ⓘ next to a move to read them, so picking
+// a plan never depends on already knowing the math vocabulary.
 const PLAN_MOVES = [
-  ["➕", "Add or combine"],
-  ["➖", "Subtract or compare"],
-  ["✖️", "Multiply or scale"],
-  ["➗", "Divide or share"],
-  ["🧱", "Break into factors or parts"],
-  ["📊", "Draw a model first"],
+  [
+    "➕",
+    "Add or combine",
+    "You put amounts together to find one total. Use it when the problem gives you parts and asks how much there is altogether.",
+    "You bought 3 bags and 5 bags → 3 + 5 = 8 bags in all.",
+  ],
+  [
+    "➖",
+    "Subtract or compare",
+    "You take one amount away from another, or find how much bigger one is. Use it for how many are left or how much more.",
+    "You had $20 and spent $12 → 20 − 12 = $8 left.",
+  ],
+  [
+    "✖️",
+    "Multiply or scale",
+    "You add the same amount over and over, or make something a number of times bigger. Use it for equal groups.",
+    "6 boxes with 4 markers each → 6 × 4 = 24 markers.",
+  ],
+  [
+    "➗",
+    "Divide or share",
+    "You split an amount into equal groups, or find how many fit in each group. Use it for sharing fairly or finding one unit.",
+    "24 markers shared by 6 friends → 24 ÷ 6 = 4 markers each.",
+  ],
+  [
+    "🧱",
+    "Break into factors or parts",
+    "You split a number or a shape into smaller pieces that are easier to work with, then handle one piece at a time.",
+    "To find 15% of 60, break it up: 10% is 6 and 5% is 3, so 6 + 3 = 9.",
+  ],
+  [
+    "📊",
+    "Draw a model first",
+    "You sketch the problem — a tape diagram, number line, table, or picture — before you calculate, so you can see what it is asking.",
+    "Draw a tape split into 4 equal parts to show 3/4 of 20.",
+  ],
 ];
 
 export function createApplyLab(config, variant, { number, store, events, onDone }) {
@@ -432,11 +473,19 @@ export function createApplyLab(config, variant, { number, store, events, onDone 
   const plan = el("div", "card sg-apply-step locked");
   plan.appendChild(el("div", "sg-step-lab", "2 · Plan"));
   plan.appendChild(
-    el("p", "block-lab", "Which move(s) will you try first? (Your call — plans can change.)"),
+    el(
+      "p",
+      "block-lab",
+      "Which move(s) will you try first? (Your call — plans can change. Tap ⓘ to see what a move means.)",
+    ),
   );
   const moves = el("div", "sg-planrow");
   let planned = false;
-  PLAN_MOVES.forEach(([emoji, label]) => {
+  PLAN_MOVES.forEach(([emoji, label, what, example]) => {
+    // Two controls per move: the chip picks it, the ⓘ explains it. They are
+    // siblings (never nested) so tapping "what does this mean?" can't be
+    // mistaken for choosing the move.
+    const option = el("div", "sg-planopt");
     const chip = el("button", "sg-plan", `${emoji} ${esc(label)}`);
     chip.type = "button";
     chip.setAttribute("aria-pressed", "false");
@@ -448,7 +497,13 @@ export function createApplyLab(config, variant, { number, store, events, onDone 
         unlock(2);
       }
     };
-    moves.appendChild(chip);
+    const why = el("button", "sg-plan-why", "ⓘ");
+    why.type = "button";
+    why.setAttribute("aria-label", `What does "${label}" mean?`);
+    why.setAttribute("aria-haspopup", "dialog");
+    why.onclick = () => openInfoDialog({ title: `${emoji} ${label}`, what, example }, why);
+    option.append(chip, why);
+    moves.appendChild(option);
   });
   plan.appendChild(moves);
 

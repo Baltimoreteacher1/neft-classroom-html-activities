@@ -6,6 +6,13 @@
 // Images resolve automatically via resolveVocabImage (a dedicated SVG when one
 // exists, otherwise a category illustration). Lesson-authored vocabulary always
 // wins over a glossary entry with the same term.
+//
+// Acronyms (LCM, GCF, MAD, IQR, SA…) are handled by MATH_ACRONYMS below: each
+// one becomes a synthetic vocab entry carrying the FULL term's definition,
+// translation, example, and image, so "LCM" in a problem stem underlines and
+// opens exactly the same popup as "least common multiple".
+
+import { hasRealVocabImage, resolveVocabImage } from "./vocab-images.js";
 
 export const MATH_GLOSSARY = [
   // — operations & number —
@@ -261,6 +268,13 @@ export const MATH_GLOSSARY = [
     definition: "The spread of the middle half of the data.",
     definitionEs: "La dispersión de la mitad central de los datos.",
   },
+  {
+    term: "mean absolute deviation",
+    termEs: "desviación media absoluta",
+    definition: "The average distance each data value sits from the mean.",
+    definitionEs: "La distancia promedio entre cada dato y la media.",
+    visual: "A small one means the data clump near the mean; a big one means they spread out.",
+  },
   // — two-word math terms —
   // Registered so the WHOLE phrase underlines as one definition+image popup.
   // Without these, a sub-word that is itself a glossary term ("factor", "ratio",
@@ -313,6 +327,14 @@ export const MATH_GLOSSARY = [
     definitionEs: "Un número que es múltiplo de dos o más números.",
   },
   {
+    term: "least common denominator",
+    termEs: "mínimo común denominador",
+    definition: "The smallest denominator two fractions can share so you can compare or add them.",
+    definitionEs:
+      "El denominador más pequeño que dos fracciones pueden compartir para compararlas o sumarlas.",
+    visual: "For 3/5 and 4/7 the least common denominator is 35: 21/35 and 20/35.",
+  },
+  {
     term: "prime factor",
     termEs: "factor primo",
     definition:
@@ -336,6 +358,79 @@ export const MATH_GLOSSARY = [
   },
 ];
 
+// Acronyms students actually meet in this curriculum's print and problem stems.
+// Each row maps a written acronym to the FULL vocabulary term it stands for, so
+// the acronym gets the identical underline + tap-to-open definition popup. `es`
+// is the Spanish acronym for the same idea (Spanish lesson lanes write MCM /
+// MCD / RIC / DMA), which resolves to the same definition entry.
+// Only unambiguously-mathematical acronyms belong here: they are matched
+// CASE-SENSITIVELY (uppercase as written), so ordinary words like "mad" or "sa"
+// inside a sentence are never underlined.
+export const MATH_ACRONYMS = [
+  { acronym: "LCM", term: "least common multiple", es: "MCM", esTerm: "mínimo común múltiplo" },
+  { acronym: "GCF", term: "greatest common factor", es: "MCD", esTerm: "máximo común divisor" },
+  { acronym: "GCD", term: "greatest common factor" },
+  { acronym: "LCD", term: "least common denominator" },
+  { acronym: "IQR", term: "interquartile range", es: "RIC", esTerm: "rango intercuartílico" },
+  {
+    acronym: "MAD",
+    term: "mean absolute deviation",
+    es: "DMA",
+    esTerm: "desviación media absoluta",
+  },
+  { acronym: "SA", term: "surface area" },
+];
+
+const normTerm = (s) =>
+  String(s || "")
+    .toLowerCase()
+    .replace(/s$/, "")
+    .trim();
+
+// Build the synthetic acronym entries for a merged vocabulary list. An acronym
+// is only wired when its full term is actually defined (lesson vocabulary or
+// shared glossary), and never when the list already defines that acronym itself.
+// The entry copies the full term's definition/translation/example verbatim and
+// carries `expandsTo` so the popup can title itself "LCM — least common
+// multiple", plus `caseSensitive` so only the uppercase form matches.
+function acronymEntries(list) {
+  const byTerm = new Map();
+  for (const v of list) {
+    const key = normTerm(v && v.term);
+    if (key && !byTerm.has(key)) byTerm.set(key, v);
+  }
+  const taken = new Set(list.map((v) => String((v && v.term) || "").trim()));
+  const out = [];
+  const add = (acronym, base, expandsTo) => {
+    if (!acronym || taken.has(acronym)) return;
+    taken.add(acronym);
+    const image =
+      hasRealVocabImage(base.term, base.image) && resolveVocabImage(base.term, base.image);
+    out.push({
+      term: acronym,
+      termEs: base.termEs || "",
+      definition: base.definition || "",
+      definitionEs: base.definitionEs || "",
+      visual: base.visual || "",
+      example: base.example || "",
+      ...(image ? { image } : {}),
+      acronym: true,
+      caseSensitive: true,
+      expandsTo,
+    });
+  };
+  for (const row of MATH_ACRONYMS) {
+    const base = byTerm.get(normTerm(row.term));
+    if (!base) continue;
+    add(row.acronym, base, base.term);
+    // Spanish lanes write the Spanish acronym; its expansion comes from the
+    // acronym row (not the lesson entry) so the title never degenerates into
+    // "MCM — MCM" when a lesson abbreviates its own translation.
+    if (row.es) add(row.es, base, row.esTerm || base.termEs || base.term);
+  }
+  return out;
+}
+
 // Merge a lesson's own vocabulary with the shared glossary. Lesson entries win on
 // any duplicate term (so a lesson can define a word its own way). Returns a new
 // array safe to pass to the vocab underliner / popup wiring.
@@ -353,7 +448,17 @@ export function augmentVocabWithGlossary(vocab) {
     const key = g.term.toLowerCase().replace(/s$/, "").trim();
     return !seen.has(key);
   });
-  return list.concat(extras);
+  const merged = list.concat(extras);
+  return merged.concat(acronymEntries(merged));
+}
+
+// True when an entry only matches its exact written form (the acronym entries
+// above). Shared by every underliner so "MAD" opens the popup and "mad" never
+// does. Plurals ("LCMs") still match — only the lowercase plural suffix is
+// stripped before comparing.
+export function surfaceMatchesEntry(surface, entry) {
+  if (!entry || !entry.caseSensitive) return true;
+  return String(surface || "").replace(/(?:es|s)$/, "") === String(entry.term);
 }
 
 export default MATH_GLOSSARY;
