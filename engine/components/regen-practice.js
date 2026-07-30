@@ -39,7 +39,7 @@ function injectStyles() {
   .regen-fb.ok{color:var(--rg-teal);font-weight:700}
   .regen-fb.no{color:var(--rg-coral)}
   .regen-streak{font-size:.8rem;color:var(--rg-muted);font-weight:700}
-  @media (prefers-color-scheme:dark){.regen-choice,.regen-btn,.regen-input{background:#20303540;color:#e7eef0}.regen-stem,.regen-open b{color:#e7eef0}}`;
+`;
   document.head.appendChild(s);
 }
 

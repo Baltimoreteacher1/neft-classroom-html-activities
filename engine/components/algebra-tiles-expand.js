@@ -16,6 +16,13 @@
 //   { kind:"algebra-tiles", values:[a, _, c] }  (values[1] is vestigial — ignored)
 // The problem is a(x + c) and the correct expansion is a·x + (a·c).
 
+// Data-encoding colours: fixed, not theme tokens. Inside .sg-lab the generic
+// palette is remapped onto the group accent (--teal becomes var(--sg)), which
+// turns every data mark the same navy. Colour that carries meaning belongs to
+// the figure. See engine/light-only-surfaces.test.mjs.
+const DATA_1 = "#0f8a84"; // teal - primary
+const DATA_2 = "#c2603f"; // clay - secondary
+
 const STYLE_ID = "algebra-tiles-expand-styles";
 
 function injectStyles() {
@@ -23,7 +30,7 @@ function injectStyles() {
   const s = document.createElement("style");
   s.id = STYLE_ID;
   s.textContent = `
-  .atx{--atx-teal:var(--teal,#2a9d8f);--atx-coral:var(--coral,#d9795d);--atx-navy:var(--navy,#264653);--atx-ink:var(--ink,#333);--atx-muted:var(--muted,#6b7280);
+  .atx{color-scheme:light;--atx-teal:${DATA_1};--atx-coral:var(--coral,#d9795d);--atx-navy:var(--navy,#264653);--atx-ink:var(--ink,#333);--atx-muted:var(--muted,#6b7280);
     border:1px solid rgba(38,70,83,.14);border-radius:14px;padding:14px 14px 12px;margin:var(--sp-3,12px) 0;background:linear-gradient(180deg,#fff,#fbfdfc);box-shadow:0 1px 3px rgba(38,70,83,.06)}
   .atx-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
   .atx-title{font-weight:800;color:var(--atx-navy);font-size:1rem}
@@ -52,12 +59,7 @@ function injectStyles() {
   .atx-note{margin-top:9px;font-size:.86rem;color:var(--atx-ink);background:rgba(42,157,143,.08);border-left:3px solid var(--atx-teal);border-radius:0 8px 8px 0;padding:7px 10px;min-height:1.2em}
   .atx-note:empty{display:none}
   @media (prefers-reduced-motion:reduce){.atx.done .atx-expr{animation:none}}
-  @media (prefers-color-scheme:dark){
-    .atx{background:#182226;border-color:rgba(255,255,255,.12)}
-    .atx-title,.atx-count{color:#e7eef0}
-    .atx-step,.atx-nudge button{background:#20303540;color:#e7eef0}
-    .atx-step-q{color:#e7eef0}
-  }`;
+`;
   document.head.appendChild(s);
 }
 
@@ -95,7 +97,7 @@ function modelSvg(a, c) {
     const cy = y0 + r * rowH;
     // one tall x-tile per row (teal)
     cells +=
-      `<rect x="${x0 + 1}" y="${cy + 1}" width="${xColW - 2}" height="${rowH - 2}" rx="3" fill="var(--teal,#2a9d8f)" fill-opacity="0.9" stroke="#fff" stroke-width="1"/>` +
+      `<rect x="${x0 + 1}" y="${cy + 1}" width="${xColW - 2}" height="${rowH - 2}" rx="3" fill="${DATA_1}" fill-opacity="0.9" stroke="#fff" stroke-width="1"/>` +
       `<text x="${x0 + xColW / 2}" y="${cy + rowH / 2 + 4}" text-anchor="middle" font-size="12" font-weight="800" fill="#fff">x</text>`;
     // c unit tiles (alternating coral/navy for countability)
     for (let k = 0; k < c; k++) {
@@ -153,7 +155,7 @@ export function renderAlgebraExpand(host, cfg = {}) {
       `<span class="atx-badge">Build It</span></div>` +
       `<div class="atx-model">${modelSvg(a, c)}</div>` +
       `<div class="atx-steps">` +
-      stepMarkup("x", "x-tiles: how many?", "var(--teal,#2a9d8f)", "x-tiles") +
+      stepMarkup("x", "x-tiles: how many?", "${DATA_1}", "x-tiles") +
       stepMarkup("u", "unit tiles: how many?", "var(--coral,#d9795d)", "unit tiles") +
       `</div>` +
       `<div class="atx-expr" data-el="expr" role="status" aria-live="polite"></div>` +

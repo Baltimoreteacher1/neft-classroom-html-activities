@@ -17,6 +17,21 @@
 // fields the matching *SVG builder uses: bars[], values[], min/q1/median/q3/max,
 // xLabel, yLabel, title, unit).
 
+// Data-encoding colours for the figures below.
+//
+// These are deliberately NOT the theme tokens. `.sg-lab` remaps the generic
+// palette onto the small-group accent (--teal becomes var(--sg), --navy becomes
+// var(--sg-deep)), which is right for chrome and wrong for data: inside a
+// small-group lesson every bar, dot and box rendered in the same navy, and a
+// tape diagram's first and last segment colours collapsed into two shades of
+// one blue, so the parts stopped being tellable apart. Colour here encodes
+// meaning, so it is fixed, and picked to clear 3:1 on white for graphical
+// objects.
+const DATA_1 = "#0f8a84"; // teal - primary series
+const DATA_2 = "#c2603f"; // clay - second series
+const DATA_3 = "#b07d12"; // ochre - third series
+const DATA_4 = "#3b6ea5"; // blue - fourth series
+
 const STYLE_ID = "data-live-styles";
 
 function injectStyles() {
@@ -24,7 +39,7 @@ function injectStyles() {
   const s = document.createElement("style");
   s.id = STYLE_ID;
   s.textContent = `
-  .dlive{--dl-teal:var(--teal,#2a9d8f);--dl-coral:var(--coral,#d9795d);--dl-navy:var(--navy,#264653);--dl-ink:var(--ink,#333);--dl-muted:var(--muted,#6b7280);
+  .dlive{color-scheme:light;--dl-teal:${DATA_1};--dl-coral:${DATA_2};--dl-navy:var(--navy,#264653);--dl-ink:var(--ink,#333);--dl-muted:var(--muted,#6b7280);
     border:1px solid rgba(38,70,83,.14);border-radius:14px;padding:14px 14px 12px;margin:var(--sp-3,12px) 0;background:linear-gradient(180deg,#fff, #fbfdfc);box-shadow:0 1px 3px rgba(38,70,83,.06)}
   .dlive-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
   .dlive-title{font-weight:800;color:var(--dl-navy);font-size:1rem}
@@ -50,11 +65,7 @@ function injectStyles() {
   .dlive-stat.hi b{color:var(--dl-coral)}
   .dlive-note{margin-top:9px;font-size:.86rem;color:var(--dl-ink);background:rgba(42,157,143,.08);border-left:3px solid var(--dl-teal);border-radius:0 8px 8px 0;padding:7px 10px;min-height:1.2em}
   .dlive-note:empty{display:none}
-  @media (prefers-color-scheme:dark){
-    .dlive{background:#182226;border-color:rgba(255,255,255,.12)}
-    .dlive-stat,.dlive-btn,.dlive-nudge button{background:#20303540;color:#e7eef0}
-    .dlive-title{color:#e7eef0}
-  }`;
+`;
   document.head.appendChild(s);
 }
 
@@ -212,7 +223,7 @@ function dotPlot(host, cfg, viewOpts) {
         .map((v) => {
           counts[v] = (counts[v] || 0) + 1;
           const cy = baseY - 12 - (counts[v] - 1) * 15;
-          return `<circle data-hit data-v="${v}" cx="${xOf(v).toFixed(1)}" cy="${cy.toFixed(1)}" r="6.5" fill="var(--teal,#2a9d8f)" stroke="#fff" stroke-width="1.5"/>`;
+          return `<circle data-hit data-v="${v}" cx="${xOf(v).toFixed(1)}" cy="${cy.toFixed(1)}" r="6.5" fill="${DATA_1}" stroke="#fff" stroke-width="1.5"/>`;
         })
         .join("");
       let overlay = "";
@@ -220,9 +231,9 @@ function dotPlot(host, cfg, viewOpts) {
         const mn = mean(data),
           md = median([...data].sort((x, y) => x - y));
         overlay =
-          `<line x1="${xOf(md).toFixed(1)}" y1="26" x2="${xOf(md).toFixed(1)}" y2="${baseY}" stroke="var(--coral,#d9795d)" stroke-width="2.5" stroke-dasharray="4 3"/>` +
-          `<text x="${xOf(md).toFixed(1)}" y="20" text-anchor="middle" font-size="10.5" font-weight="800" fill="var(--coral,#d9795d)">median ${num(md)}</text>` +
-          `<path d="M${xOf(mn).toFixed(1)},${baseY - 2} l-7,12 l14,0 z" fill="var(--navy,#264653)"/>` +
+          `<line x1="${xOf(md).toFixed(1)}" y1="26" x2="${xOf(md).toFixed(1)}" y2="${baseY}" stroke="${DATA_2}" stroke-width="2.5" stroke-dasharray="4 3"/>` +
+          `<text x="${xOf(md).toFixed(1)}" y="20" text-anchor="middle" font-size="10.5" font-weight="800" fill="${DATA_2}">median ${num(md)}</text>` +
+          `<path d="M${xOf(mn).toFixed(1)},${baseY - 2} l-7,12 l14,0 z" fill="${DATA_4}"/>` +
           `<text x="${xOf(mn).toFixed(1)}" y="${baseY + 34}" text-anchor="middle" font-size="10.5" font-weight="800" fill="var(--navy,#264653)">mean ${num(mn)}</text>`;
       }
       const xLabel = cfg.xLabel
@@ -316,7 +327,7 @@ function barFigure(host, cfg, opts) {
             x = padL + i * slot + (touching ? 0 : (slot - bw) / 2),
             y = baseY - h;
           const on = state.whatif && i === focus;
-          const fill = on ? "var(--coral,#d9795d)" : "var(--teal,#2a9d8f)";
+          const fill = on ? DATA_2 : DATA_1;
           return (
             `<rect data-hit data-i="${i}" data-on="${on ? 1 : 0}" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}"${touching ? ' stroke="#fff" stroke-width="1"' : ' rx="3"'} fill="${fill}"/>` +
             `<text x="${(x + bw / 2).toFixed(1)}" y="${(y - 6).toFixed(1)}" text-anchor="middle" font-size="12" font-weight="700" fill="var(--navy,#264653)">${b.value}</text>` +
@@ -456,12 +467,12 @@ function boxPlot(host, cfg, viewOpts) {
     svg(state) {
       const top = midY - boxH / 2,
         bot = midY + boxH / 2,
-        teal = "var(--teal,#2a9d8f)";
+        teal = DATA_1;
       const region = (id, x1, x2, tip) =>
         `<rect data-hit data-r="${id}" x="${Math.min(x1, x2).toFixed(1)}" y="${top - 8}" width="${Math.abs(x2 - x1).toFixed(1)}" height="${boxH + 16}" fill="transparent"><title>${esc(tip)}</title></rect>`;
       const handles = KEYS.map((k, i) => {
         const on = state.whatif && i === sel;
-        return `<circle data-hit data-h="${i}" cx="${xOf(fn[k]).toFixed(1)}" cy="${midY}" r="${on ? 8 : 5}" fill="${on ? "var(--coral,#d9795d)" : "#fff"}" stroke="${k === "median" ? "var(--coral,#d9795d)" : "var(--navy,#264653)"}" stroke-width="2"/>`;
+        return `<circle data-hit data-h="${i}" cx="${xOf(fn[k]).toFixed(1)}" cy="${midY}" r="${on ? 8 : 5}" fill="${on ? DATA_2 : "#fff"}" stroke="${k === "median" ? DATA_2 : "var(--navy,#264653)"}" stroke-width="2"/>`;
       }).join("");
       const labels = [
         ["min", "Min"],
@@ -482,7 +493,7 @@ function boxPlot(host, cfg, viewOpts) {
         `<line x1="${xOf(fn.min)}" y1="${top + 8}" x2="${xOf(fn.min)}" y2="${bot - 8}" stroke="var(--ink,#333)" stroke-width="2"/>` +
         `<line x1="${xOf(fn.max)}" y1="${top + 8}" x2="${xOf(fn.max)}" y2="${bot - 8}" stroke="var(--ink,#333)" stroke-width="2"/>` +
         `<rect x="${xOf(fn.q1)}" y="${top}" width="${(xOf(fn.q3) - xOf(fn.q1)).toFixed(1)}" height="${boxH}" fill="${teal}" fill-opacity="0.22" stroke="${teal}" stroke-width="2"/>` +
-        `<line x1="${xOf(fn.median)}" y1="${top}" x2="${xOf(fn.median)}" y2="${bot}" stroke="var(--coral,#d9795d)" stroke-width="3"/>` +
+        `<line x1="${xOf(fn.median)}" y1="${top}" x2="${xOf(fn.median)}" y2="${bot}" stroke="${DATA_2}" stroke-width="3"/>` +
         region(
           "whisker-l",
           xOf(fn.min),

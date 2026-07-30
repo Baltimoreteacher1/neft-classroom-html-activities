@@ -40,11 +40,7 @@ function injectStyles() {
   .vexp-chips:empty{display:none}
   .vexp-chip{font-size:.74rem;font-weight:700;color:var(--vx-navy);background:#fff;border:1.5px solid rgba(38,70,83,.22);border-radius:999px;padding:3px 9px;transition:.15s}
   .vexp-chip[data-used="1"]{color:#fff;background:var(--vx-teal);border-color:var(--vx-teal)}
-  @media (prefers-color-scheme:dark){
-    .vexp-status{color:#9fb3b8}
-    .vexp-status .interim{color:#e7eef0}
-    .vexp-chip{background:#20303540;color:#e7eef0}
-  }`;
+`;
   document.head.appendChild(s);
 }
 

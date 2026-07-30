@@ -29,7 +29,7 @@ function injectStyles() {
   const style = document.createElement("style");
   style.id = "ntfr-styles";
   style.textContent = `
-.ntfr{border:2px solid #0e7490;border-radius:14px;background:#ecfeff;color:#164e63;padding:14px 16px;margin:14px 0;display:grid;gap:10px}
+.ntfr{color-scheme:light;border:2px solid #0e7490;border-radius:14px;background:#ecfeff;color:#164e63;padding:14px 16px;margin:14px 0;display:grid;gap:10px}
 .ntfr-head{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0}
 .ntfr-head strong{font-size:1rem}
 .ntfr-clock{font-variant-numeric:tabular-nums;font-weight:800;font-size:1.15rem;margin-left:auto}
@@ -50,10 +50,6 @@ function injectStyles() {
 :root[data-theme="dark"] .ntfr-seg{background:#12303c;border-color:#1c7d99;color:#cdeef6}
 :root[data-theme="dark"] .ntfr-move{background:#12303c}
 :root[data-theme="dark"] .ntfr button{background:#12303c;color:#67e8f9;border-color:#1c7d99}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .ntfr{background:#0c2530;border-color:#1c7d99;color:#cdeef6}
-:root:not([data-theme="light"]) .ntfr-seg{background:#12303c;border-color:#1c7d99;color:#cdeef6}
-:root:not([data-theme="light"]) .ntfr-move{background:#12303c}
-:root:not([data-theme="light"]) .ntfr button{background:#12303c;color:#67e8f9;border-color:#1c7d99}}
 `;
   document.head.appendChild(style);
 }
