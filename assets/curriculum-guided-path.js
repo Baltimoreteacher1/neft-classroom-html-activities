@@ -2,6 +2,11 @@
   "use strict";
 
   var printUnits = document.createDocumentFragment();
+  // Published seam: detachPrintFallbackUnits() moves every details.unit out of
+  // the document, so anything that looks them up with a document query finds
+  // nothing. Expose the fragment so those callers can still reach them.
+  // Consumer: printSingleUnit() in assets/curriculum-enhancements.js.
+  window.NTPrintUnits = printUnits;
   var printUnitsAnchor = null;
 
   // Open the requested workflow view once the teacher panel exists. The panel

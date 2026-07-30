@@ -1140,6 +1140,14 @@
 
   function printSingleUnit(idx, unitName) {
     var statics = document.querySelectorAll("details.unit");
+    // The units live in a detached fragment until beforeprint (see
+    // detachPrintFallbackUnits in assets/curriculum-guided-path.js), so the
+    // document query is empty on a normal page. Without this fallback target
+    // was undefined and we fell through to a bare window.print() -- printing
+    // all 10 units instead of the one the teacher asked for.
+    if (!statics.length && window.NTPrintUnits) {
+      statics = window.NTPrintUnits.querySelectorAll("details.unit");
+    }
     var target = statics[idx];
     if (!target) {
       window.print();
