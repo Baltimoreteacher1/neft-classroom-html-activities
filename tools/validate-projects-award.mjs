@@ -114,11 +114,30 @@ for (const expected of expectedLinks)
    of teacher-mode.js instead, so the gate follows every future rotation
    without anyone remembering to update it here. */
 const teacherModeSource = read("engine/core/teacher-mode.js");
-const livePins = [...teacherModeSource.matchAll(/(?:master|coteacher):\s*"([^"]+)"/g)].map(
-  (m) => m[1],
-);
+/* Read EVERY value out of the TEACHER_PINS block, not just the keys literally
+   named `master` and `coteacher`. The object also carries `masterAlt` and
+   `coteacherAlt`, and the previous pattern skipped them silently — so a
+   rotation onto the Alt pins would have left this gate green while the live
+   secret sat in answer-key-gate.js, which is the exact failure the comment
+   above says this check exists to prevent. */
+const pinsBlock = teacherModeSource.match(/TEACHER_PINS\s*=\s*Object\.freeze\(\{([\s\S]*?)\}\)/);
+const livePins = pinsBlock ? [...pinsBlock[1].matchAll(/:\s*"([^"]+)"/g)].map((m) => m[1]) : [];
 if (!livePins.length)
   failures.push("validate-projects-award: could not read TEACHER_PINS from teacher-mode.js");
+
+/* A reader that quietly finds FEWER pins than are actually in use is the whole
+   bug class here, so cross-check it instead of trusting the match.
+   ACCEPTED_TEACHER_PINS is derived from TEACHER_PINS, so every key it
+   references must have produced a value above. */
+const acceptedBlock = teacherModeSource.match(/ACCEPTED_TEACHER_PINS\s*=\s*\[([\s\S]*?)\]/);
+const acceptedKeys = acceptedBlock
+  ? [...acceptedBlock[1].matchAll(/TEACHER_PINS\.(\w+)/g)].map((m) => m[1])
+  : [];
+if (acceptedKeys.length && livePins.length < acceptedKeys.length)
+  failures.push(
+    `validate-projects-award: read ${livePins.length} PIN(s) from TEACHER_PINS but ` +
+      `ACCEPTED_TEACHER_PINS uses ${acceptedKeys.length} — the reader is missing some`,
+  );
 
 const answerGate = read("shared/projects/answer-key-gate.js");
 if (/TEACHER_PIN/.test(answerGate) || livePins.some((pin) => answerGate.includes(pin)))
