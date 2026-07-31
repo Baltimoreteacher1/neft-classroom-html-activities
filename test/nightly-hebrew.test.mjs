@@ -110,19 +110,22 @@ test("app pays the Hebrew rate and reports it on the paystub", () => {
   );
 });
 
-test("the Now-screen card exists, is registered, and links to the lessons", () => {
-  assert.match(app, /\["hebrew", "Nightly Hebrew"\]/, "registered in CARDS");
-  assert.match(app, /hebrew: hebrewCard\(\)/, "rendered on the Now screen");
-  assert.match(app, /href="\/hebrew\/"/, "links to the lesson hub");
-  // It must sit next to the routine card for BOTH a fresh install (seed order)
-  // and an established account (the migration) — normalize() returns the seed
-  // untouched when there is no stored state, so the migration never sees it.
-  const cards = app.slice(app.indexOf("const CARDS = ["), app.indexOf("const STEP_TEMPLATES"));
-  assert.ok(
-    cards.indexOf('"hebrew"') < cards.indexOf('"glance"'),
-    "seed order puts Nightly Hebrew second, right under the routine card",
+test("Nightly Hebrew is its own nav button, pinned and pointed at the lessons", () => {
+  assert.match(app, /\["hebrew", "Hebrew", "📖"\]/, "registered as a tab");
+  // Pinned, not usage-ranked: a brand-new tab ranks last and would land under
+  // "More", which is the one place a nightly-habit button cannot live.
+  assert.match(app, /const PINNED = \["home", "homework", "hebrew"\]/, "pinned in the compact bar");
+  // The tab leaves the SPA — every other tab renders an in-app view, so without
+  // this branch the bar would switch to a view that draws nothing.
+  assert.match(
+    app,
+    /if \(v === "hebrew"\) \{[\s\S]{0,140}location\.href = "\/hebrew\/";/,
+    "the button navigates to the lesson hub",
   );
-  assert.match(app, /if \(!s\.hebrewCardMigrated\)/, "existing accounts get a one-time placement");
+  // The Now-screen card was retired in favour of the button; nothing should
+  // still reference it (normalize() drops the stale homeOrder key on its own).
+  assert.doesNotMatch(app, /hebrewCard\(/, "no leftover Now-screen card");
+  assert.doesNotMatch(app, /\["hebrew", "Nightly Hebrew"\]/, "not registered in CARDS");
 });
 
 test("app drains the outbox on open, on refocus, and cross-tab", () => {

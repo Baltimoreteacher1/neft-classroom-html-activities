@@ -81,8 +81,15 @@ assert.equal(recovery[0].minutes, 20, "missing estimates use the configured focu
 const compactTabs = api.rankNavigation({ ai: 9, reading: 7, calendar: 5, routines: 2 });
 assert.deepEqual(
   [...compactTabs].map((tab) => tab[0]),
-  ["home", "homework", "ai", "reading", "calendar", "more"],
-  "compact navigation pins core views, ranks three favorites, and keeps More",
+  ["home", "homework", "hebrew", "ai", "reading", "calendar", "more"],
+  "compact navigation pins core views + Hebrew, ranks three favorites, keeps More",
+);
+// Hebrew is pinned deliberately: it is a nightly habit, and a usage-ranked new
+// tab starts at zero and falls into "More". If it ever needs to be un-pinned,
+// change PINNED in app.js and this expectation together.
+assert.ok(
+  compactTabs.some((tab) => tab[0] === "hebrew"),
+  "Nightly Hebrew is reachable from the bar without opening More",
 );
 
 const insights = api.buildSupportInsights({

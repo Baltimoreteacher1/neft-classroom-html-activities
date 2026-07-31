@@ -306,11 +306,6 @@
 
   const CARDS = [
     ["routine", "Right routine"],
-    // Nightly Hebrew sits directly under the routine card: it IS a step inside
-    // the nighttime routine, and a fresh install takes its Now-screen order
-    // straight from this list (normalize() returns the seed untouched when
-    // there is no stored state, so the migration below never sees it).
-    ["hebrew", "Nightly Hebrew"],
     ["glance", "Today at a glance"],
     ["plan", "Afternoon Plan"],
     ["payday", "Allowance"],
@@ -596,17 +591,6 @@
     if (!s.routineTopMigrated) {
       s.homeOrder = ["routine", ...s.homeOrder.filter((k) => k !== "routine")];
       s.routineTopMigrated = true;
-      s.homeOrderAt = Date.now();
-    }
-    // One-time: surface Nightly Hebrew directly under the routine card. It is
-    // a step INSIDE the nighttime routine, so burying it at the bottom of the
-    // Now screen (where a newly-registered card lands) would hide it.
-    if (!s.hebrewCardMigrated) {
-      const rest = s.homeOrder.filter((k) => k !== "hebrew");
-      const at = rest.indexOf("routine");
-      rest.splice(at >= 0 ? at + 1 : 0, 0, "hebrew");
-      s.homeOrder = rest;
-      s.hebrewCardMigrated = true;
       s.homeOrderAt = Date.now();
     }
     s.fontScale = clamp(Number(s.fontScale) || 1, 0.9, 1.5);
@@ -1852,6 +1836,7 @@
     ["calming", "Calming", "🧘"],
     ["health", "Health", "💪"],
     ["sports", "Baseball", "⚾"],
+    ["hebrew", "Hebrew", "📖"],
     ["ai", "Academic Help", "🤖"],
     ["more", "More", "⋯"],
   ];
@@ -1880,6 +1865,15 @@
   const expanded = new Set(); // task ids expanded inline
 
   function setView(v) {
+    // Nightly Hebrew is not an in-app view — it is nine standalone lesson pages
+    // under /hebrew/, and that hub is the single source of truth for the inning
+    // list. Send the tap there instead of rendering an empty view. Same origin,
+    // and the service worker precaches the hub, so it opens offline too.
+    if (v === "hebrew") {
+      recordNavUse("hebrew");
+      location.href = "/hebrew/";
+      return;
+    }
     // Leaving the Now screen always exits arrange mode so it can't get "stuck".
     if (v !== "home") arrangeMode = false;
     recordNavUse(v);
@@ -4669,8 +4663,12 @@
   }
 
   function rankNavigation(usage = {}) {
-    const pinned = TABS.filter((tab) => ["home", "homework"].includes(tab[0]));
-    const candidates = TABS.filter((tab) => !["home", "homework", "more"].includes(tab[0]))
+    // Hebrew is pinned rather than usage-ranked: it is a nightly habit, and a
+    // brand-new tab would rank last and fall into "More". Pinned + the 3
+    // most-used + More keeps the bar at the same 7 slots it had before.
+    const PINNED = ["home", "homework", "hebrew"];
+    const pinned = TABS.filter((tab) => PINNED.includes(tab[0]));
+    const candidates = TABS.filter((tab) => ![...PINNED, "more"].includes(tab[0]))
       .sort(
         (a, b) =>
           (Number(usage[b[0]]) || 0) - (Number(usage[a[0]]) || 0) ||
@@ -4777,7 +4775,6 @@
         routine: routineCard(routine),
         momentum: momentumCard(),
         sports: sportsCard(),
-        hebrew: hebrewCard(),
         soon: card(
           "soon",
           "Coming up",
@@ -6426,43 +6423,13 @@ Due May 31"></textarea>
 
   // ---- Nightly Hebrew ------------------------------------------------------
   // The lessons are static pages under /hebrew/ (nine "innings" of letters and
-  // sounds). They deliberately do NOT write into this app's state: the app owns
-  // that blob and the sync merge would fight over it. Instead a finished inning
-  // drops a claim into a localStorage outbox and we convert it into a real
-  // ledger entry here. The claim id is deterministic (unit + calendar day), so
-  // draining twice — or on two synced devices — can never double-pay.
-  const HEBREW_UNITS = 9;
-  const HEBREW_PROGRESS_KEY = "nightly-hebrew:progress";
+  // sounds), reached from the Hebrew tab. They deliberately do NOT write into
+  // this app's state: the app owns that blob and the sync merge would fight
+  // over it. Instead a finished inning drops a claim into a localStorage outbox
+  // and we convert it into a real ledger entry here. The claim id is
+  // deterministic (unit + calendar day), so draining twice — or on two synced
+  // devices — can never double-pay.
   const HEBREW_EARN_KEY = "focus-school:hebrew-earnings";
-
-  function readHebrewProgress() {
-    try {
-      const p = JSON.parse(localStorage.getItem(HEBREW_PROGRESS_KEY) || "{}");
-      return p && typeof p === "object" ? p : {};
-    } catch {
-      return {};
-    }
-  }
-
-  function hebrewStats() {
-    const p = readHebrewProgress();
-    let done = 0;
-    let next = 1;
-    for (let i = 1; i <= HEBREW_UNITS; i++) {
-      const u = p["u" + i];
-      const finished = !!(u && (u.finishedOn || (u.finishes || 0) > 0));
-      if (finished) done++;
-      if (finished && next === i) next = i + 1;
-    }
-    const cur = Math.min(next, HEBREW_UNITS);
-    const tonight = p["u" + cur];
-    const acts =
-      tonight && tonight.day === todayKey() && tonight.acts
-        ? Object.values(tonight.acts).filter(Boolean).length
-        : 0;
-    const paidTonight = Object.keys(p).some((k) => p[k] && p[k].paidOn === todayKey());
-    return { done, next: cur, acts, paidTonight, allDone: done >= HEBREW_UNITS };
-  }
 
   function drainHebrewEarnings() {
     let queue = [];
@@ -6513,34 +6480,6 @@ Due May 31"></textarea>
       return true;
     }
     return false;
-  }
-
-  function hebrewCard() {
-    const s = hebrewStats();
-    const pct = Math.round((s.done / HEBREW_UNITS) * 100);
-    const rate = money((state.rewards && state.rewards.rates && state.rewards.rates.hebrew) || 0.2);
-    const line = s.paidTonight
-      ? `Tonight's inning is done and paid. ${s.done}/${HEBREW_UNITS} innings finished.`
-      : s.acts > 0
-        ? `You're ${s.acts}/7 through the ${ordinal(s.next)} inning — finish it for ${rate}.`
-        : s.allDone
-          ? `All nine innings finished. Replay any of them for ${rate} a night.`
-          : `Up next: the ${ordinal(s.next)} inning. Seven activities, ${rate} when you finish.`;
-    return card(
-      "hebrew",
-      "⚾ Nightly Hebrew",
-      `${s.done}/${HEBREW_UNITS} innings`,
-      `<p class="sub" style="margin:0 0 10px">${esc(line)}</p>
-       <div class="bar" aria-hidden="true"><span style="width:${pct}%"></span></div>
-       <a class="btn primary block" href="/hebrew/" style="margin-top:10px">📖 Open Nightly Hebrew</a>`,
-    );
-  }
-
-  // 1st / 2nd / 3rd … for the inning label.
-  function ordinal(n) {
-    const s = ["th", "st", "nd", "rd"];
-    const v = n % 100;
-    return n + (s[(v - 20) % 10] || s[v] || s[0]);
   }
 
   function sportsCard() {
