@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Class Boss — Neft Teacher</title>
+    <meta
+      name="description"
+      content="The whole class fights one boss. Its attacks are the class's own top three math misconceptions this week. Shared health bar, no timers, English and Spanish."
+    />
+    <meta name="robots" content="noindex" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Nunito:wght@600;700;800;900&display=swap"
+    />
+    <link rel="stylesheet" href="./boss.css" />
+  </head>
+
+  <body>
+    <a class="skip-link" href="#battle" data-i18n="skipLink">Skip to the questions</a>
+
+    <div class="wrap">
+      <div class="topbar">
+        <a class="back-link" href="/curriculum/">
+          <span aria-hidden="true">←</span>
+          <span data-i18n="back">Back to curriculum</span>
+        </a>
+        <div class="topbar-tools">
+          <button
+            id="langBtn"
+            class="pill-btn"
+            type="button"
+            lang="es"
+            aria-label="Cambiar a español"
+          >
+            Español
+          </button>
+          <button id="projectorBtn" class="pill-btn" type="button" aria-pressed="false">
+            <span data-i18n="projector">Projector mode</span>
+          </button>
+        </div>
+      </div>
+
+      <header>
+        <p class="eyebrow" data-i18n="eyebrow">This week's raid</p>
+        <h1 class="page-title" data-i18n="title">Class Boss</h1>
+        <p class="page-sub" data-i18n="intro">
+          One boss. One health bar for the whole class. Every attack it uses is a mistake our class
+          has actually been making — so every answer you get right takes a piece out of it. No
+          timers. Go at your own pace.
+        </p>
+        <p class="data-note" id="dataNote" data-i18n="loading">Loading this week's boss…</p>
+      </header>
+
+      <div class="layout">
+        <!-- LEFT: the boss, its health, its attacks -->
+        <section aria-labelledby="stageHeading">
+          <h2 id="stageHeading" class="sr-only" data-i18n="stageHeading">The boss</h2>
+
+          <div class="card stage boss-stage" id="bossStage">
+            <p class="boss-name" id="bossName">…</p>
+            <p class="boss-tagline" id="bossTagline"></p>
+            <div id="bossArt" role="img" aria-label="Boss creature"></div>
+
+            <div class="hp" id="hpBlock">
+              <div class="hp-head">
+                <span id="hpLabel" data-i18n="hpLabel">Class health bar</span>
+                <span id="hpNumbers">—</span>
+              </div>
+              <div
+                class="hp-track"
+                role="progressbar"
+                id="hpBar"
+                aria-labelledby="hpLabel"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="100"
+              >
+                <div class="hp-fill" id="hpFill"></div>
+              </div>
+              <p class="hp-caption" id="hpCaption" aria-live="polite">—</p>
+              <div class="victory" id="victory" hidden></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2 class="card-title" data-i18n="attacksTitle">Its three attacks</h2>
+            <ul class="attacks" id="attackList"></ul>
+          </div>
+
+          <div class="card">
+            <h2 class="card-title" data-i18n="feedTitle">Live from the class</h2>
+            <ul class="feed" id="feed" aria-live="polite">
+              <li class="feed-empty" data-i18n="feedEmpty">
+                Nothing yet. The first hit shows up here.
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- RIGHT: the student's turn -->
+        <section class="battle" id="battle" aria-labelledby="battleHeading">
+          <div class="card">
+            <h2 id="battleHeading" class="card-title" data-i18n="yourTurn">Your turn</h2>
+            <div id="questionBlock" tabindex="-1">
+              <p class="question" id="questionText" data-i18n="loading">
+                Loading this week's boss…
+              </p>
+              <p class="question-tag" id="questionTag"></p>
+            </div>
+
+            <div class="choices" id="choices"></div>
+
+            <div class="feedback" id="feedback" aria-live="assertive" aria-atomic="true"></div>
+
+            <button class="next-btn" id="nextBtn" type="button" hidden>
+              <span data-i18n="next">Next question</span>
+            </button>
+
+            <p class="no-fail" data-i18n="noFail">
+              Nothing is being scored against you. A wrong answer just shows you the fix and gives
+              you another go — as many as you want.
+            </p>
+          </div>
+        </section>
+      </div>
+
+      <p class="privacy" id="privacyNote" data-i18n="privacy">
+        This page never shows anyone's name. It reads only how often the class as a whole picked
+        each kind of mistake, and only once enough people have played that no single person can be
+        picked out.
+      </p>
+    </div>
+
+    <script type="module" src="./boss.js"></script>
+  </body>
+</html>

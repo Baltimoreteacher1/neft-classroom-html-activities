@@ -2777,6 +2777,191 @@
             })();
           </script>
 
+          <!-- ===== Curriculum Nervous System =====================================
+               Six surfaces that share one spine: the prerequisite graph in
+               data/curriculum-nervous-system.json and the live misconception
+               signal from /api/class-pulse. The map SENSES what the class is
+               getting wrong, the Forge ACTS on it, and the rest close the loop
+               back to students and families. Cards are deliberately first in the
+               grid — this is the headline of the hub, not an appendix.
+               Card markup follows the existing .mailbox-feature contract so the
+               tab filter (data-category) and the hub lock both keep working. -->
+          <style>
+            .cns-section-header {
+              border-left-color: #7c5cff !important;
+            }
+            .cns-feature .mf-icon {
+              background: linear-gradient(135deg, #7c5cff, #12355b);
+              color: #fff;
+            }
+            .cns-feature .mf-tag {
+              color: #3b2a8c;
+              background: rgba(124, 92, 255, 0.15);
+            }
+            .cns-feature {
+              position: relative;
+            }
+            .cns-feature::after {
+              content: "";
+              position: absolute;
+              inset: 0;
+              border-radius: inherit;
+              pointer-events: none;
+              box-shadow: inset 0 0 0 1px rgba(124, 92, 255, 0.25);
+            }
+            .cns-flagship .mf-icon {
+              background: linear-gradient(135deg, #7c5cff, #1fa6a2);
+            }
+          </style>
+
+          <div class="features-section-header cns-section-header">
+            <span class="fsh-icon" aria-hidden="true">🧠</span>
+            <h2>The Curriculum Nervous System</h2>
+          </div>
+
+          <section
+            class="mailbox-feature cns-feature cns-flagship"
+            aria-labelledby="cns-map-feature-title"
+          >
+            <span class="mf-icon" aria-hidden="true">🗺️</span>
+            <div class="mf-body">
+              <span class="mf-tag">Start Here</span>
+              <h2 id="cns-map-feature-title">Living Curriculum Map</h2>
+              <p class="mf-sub">
+                The whole year as one navigable map — 42 standards wired by what has to be
+                understood first.
+              </p>
+              <p class="mf-text">
+                Click any standard and the map traces backward through its prerequisites to show
+                what is actually underneath a struggle, then forward to what it unlocks. Every
+                lesson, game, and project orbits the standard it teaches. When enough of the class
+                has worked, the standards they are stuck on light up from live class data.
+              </p>
+              <div class="mf-actions">
+                <a class="mf-btn solid" href="/curriculum/map/">Open the Map</a>
+                <a class="mf-btn outline" href="/curriculum/map/?node=6.AT.2">See a trace</a>
+              </div>
+            </div>
+          </section>
+
+          <section
+            class="mailbox-feature cns-feature hub-teacher-only"
+            data-category="teacher"
+            aria-labelledby="cns-forge-feature-title"
+          >
+            <span class="mf-icon" aria-hidden="true">⚒️</span>
+            <div class="mf-body">
+              <span class="mf-tag">Teacher Tool</span>
+              <h2 id="cns-forge-feature-title">The Forge — Build the Fix</h2>
+              <p class="mf-sub">
+                Name a standard and a misconception; get a complete, running lesson at a shareable
+                link.
+              </p>
+              <p class="mf-text">
+                Not a worksheet — a real lesson on the same engine every other lesson here uses,
+                with vocabulary pop-ups, a three-step hint ladder, wrong answers that name the
+                specific error, Spanish throughout, and an exit ticket. Every forged lesson passes
+                the same quality gates before it is allowed to exist.
+              </p>
+              <div class="mf-actions">
+                <a class="mf-btn solid" href="/curriculum/forge/">Open the Forge</a>
+              </div>
+            </div>
+          </section>
+
+          <section
+            class="mailbox-feature cns-feature"
+            data-category="games"
+            aria-labelledby="cns-boss-feature-title"
+          >
+            <span class="mf-icon" aria-hidden="true">🐉</span>
+            <div class="mf-body">
+              <span class="mf-tag">Class Game</span>
+              <h2 id="cns-boss-feature-title">The Class Boss</h2>
+              <p class="mf-sub">
+                A weekly boss whose attacks are the mistakes your class is actually making.
+              </p>
+              <p class="mf-text">
+                One shared health bar for the whole class. Every correct answer lands a hit; every
+                wrong answer earns the coaching line for that exact error instead of a scolding. No
+                timers, no lives, nothing to lose. Put it on the board in projector mode and let the
+                room work as one.
+              </p>
+              <div class="mf-actions">
+                <a class="mf-btn solid" href="/curriculum/class-boss/">Fight the Boss</a>
+                <a class="mf-btn outline" href="/curriculum/class-boss/?mode=projector"
+                  >Projector Mode</a
+                >
+              </div>
+            </div>
+          </section>
+
+          <section class="mailbox-feature cns-feature" aria-labelledby="cns-ttm-feature-title">
+            <span class="mf-icon" aria-hidden="true">🤖</span>
+            <div class="mf-body">
+              <span class="mf-tag">For Students</span>
+              <h2 id="cns-ttm-feature-title">Teach the Machine</h2>
+              <p class="mf-sub">
+                Explain the math to a learner that is confused in exactly the way your class is
+                confused.
+              </p>
+              <p class="mf-text">
+                The machine holds a specific wrong idea and asks real questions until your
+                explanation actually addresses it. A visible checklist shows what it still does not
+                get, so students can see their own reasoning improving. Scored on the explanation,
+                never on the answer. Available in English and Spanish.
+              </p>
+              <div class="mf-actions">
+                <a class="mf-btn solid" href="/curriculum/teach-the-machine/">Start Teaching</a>
+              </div>
+            </div>
+          </section>
+
+          <section
+            class="mailbox-feature cns-feature"
+            aria-labelledby="cns-broadcast-feature-title"
+          >
+            <span class="mf-icon" aria-hidden="true">📻</span>
+            <div class="mf-body">
+              <span class="mf-tag">For Families</span>
+              <h2 id="cns-broadcast-feature-title">Weekly Family Broadcast</h2>
+              <p class="mf-sub">
+                A one-minute, bilingual recap of what your child actually did this week.
+              </p>
+              <p class="mf-text">
+                Built from your own child's work, not a class newsletter: what they did, where they
+                grew, what they are still building, and one five-minute activity you can do at the
+                kitchen table tonight. English and Spanish, equally. Opens with your child's save
+                code.
+              </p>
+              <div class="mf-actions">
+                <a class="mf-btn solid" href="/curriculum/family-connections/broadcast/"
+                  >Open the Broadcast</a
+                >
+                <a class="mf-btn outline" href="/curriculum/family-connections/">Family Hub</a>
+              </div>
+            </div>
+          </section>
+
+          <section class="mailbox-feature cns-feature" aria-labelledby="cns-showcase-feature-title">
+            <span class="mf-icon" aria-hidden="true">🏛️</span>
+            <div class="mf-body">
+              <span class="mf-tag">Student Work</span>
+              <h2 id="cns-showcase-feature-title">Student Work Gallery</h2>
+              <p class="mf-sub">
+                Student thinking, approved by a teacher, promoted into the curriculum itself.
+              </p>
+              <p class="mf-text">
+                Browse how other students reasoned about a standard, right next to the lesson that
+                teaches it. Nothing appears here until a teacher reads it and approves it, names are
+                off by default, and a teacher can unpublish anything instantly.
+              </p>
+              <div class="mf-actions">
+                <a class="mf-btn solid" href="/curriculum/showcase/">Open the Gallery</a>
+              </div>
+            </div>
+          </section>
+
           <div class="features-section-header hub-teacher-only">
             <span class="fsh-icon" aria-hidden="true">🧰</span>
             <h2>Teacher Tools &amp; Command Console</h2>

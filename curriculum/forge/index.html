@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="The Forge — build a targeted Grade 6 re-teach lesson for a standard and a misconception, then share it with students."
+    />
+    <meta name="robots" content="noindex" />
+    <title>The Forge — Neft Teacher</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Hanken+Grotesk:ital,wght@0,400;0,500;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Absolute href on purpose: Vite leaves absolute stylesheet URLs alone, so the
+         console's styles stay in their own file instead of being merged into the
+         single global CSS bundle (cssCodeSplit:false) that every lesson page loads. -->
+    <link rel="stylesheet" href="/curriculum/forge/forge.css" />
+    <!-- Same learning-supports layer every lesson page gets (tools/inject-learning-supports.mjs
+         injects these into lessons/<id>/index.html; a forged lesson has no static shell of
+         its own, so it carries them here). -->
+    <link rel="stylesheet" href="/assets/learning-supports/learning-supports.css" />
+
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#15487f" />
+  </head>
+  <body>
+    <!-- The forge console. Removed from the DOM before a forged lesson boots, so the
+         page never has two <main> landmarks. -->
+    <main class="forge" id="forge-console" hidden>
+      <a class="forge-skip" href="#forge-form">Skip to the form</a>
+
+      <header class="forge-head">
+        <p class="forge-eyebrow">Neft Teacher · Curriculum</p>
+        <h1>The Forge</h1>
+        <p class="forge-lede">
+          Name the standard your class is failing and the mistake they keep making. The Forge writes
+          a complete re-teach lesson — hint ladders, Spanish, distractor feedback that names the
+          error — runs it through a quality gate, and gives you a link you can hand to students.
+        </p>
+      </header>
+
+      <form class="forge-card" id="forge-form" novalidate>
+        <div class="forge-field">
+          <label for="forge-standard">Standard</label>
+          <p class="forge-help" id="forge-standard-help">
+            The standard the lesson will target. Loaded from the curriculum nervous system.
+          </p>
+          <select
+            id="forge-standard"
+            name="standard"
+            aria-describedby="forge-standard-help"
+            required
+          >
+            <option value="">Loading standards…</option>
+          </select>
+        </div>
+
+        <div class="forge-field">
+          <label for="forge-tag">Misconception to attack</label>
+          <p class="forge-help" id="forge-tag-help">
+            Optional. When you pick one, at least two practice items are built around that exact
+            error, and their wrong answers are the answers that error produces.
+          </p>
+          <select id="forge-tag" name="tag" aria-describedby="forge-tag-help">
+            <option value="">No specific misconception</option>
+          </select>
+        </div>
+
+        <fieldset class="forge-field forge-fieldset">
+          <legend>Difficulty</legend>
+          <p class="forge-help" id="forge-difficulty-help">
+            Support is reachable a year below grade level. Stretch adds multi-step reasoning.
+          </p>
+          <div class="forge-radios" aria-describedby="forge-difficulty-help">
+            <label class="forge-radio">
+              <input type="radio" name="difficulty" value="support" />
+              <span>Support</span>
+            </label>
+            <label class="forge-radio">
+              <input type="radio" name="difficulty" value="core" checked />
+              <span>Core</span>
+            </label>
+            <label class="forge-radio">
+              <input type="radio" name="difficulty" value="stretch" />
+              <span>Stretch</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <div class="forge-field">
+          <label for="forge-focus">Anything else the lesson should know</label>
+          <p class="forge-help" id="forge-focus-help">
+            Optional. A context your class cares about, a number range to stay inside, a strategy
+            you already taught.
+          </p>
+          <textarea
+            id="forge-focus"
+            name="focus"
+            rows="3"
+            maxlength="400"
+            aria-describedby="forge-focus-help"
+            placeholder="e.g. Keep the money amounts under $20 and use the school store, not a supermarket."
+          ></textarea>
+        </div>
+
+        <div class="forge-field" id="forge-key-field" hidden>
+          <label for="forge-key">Teacher key</label>
+          <p class="forge-help" id="forge-key-help">
+            Generating a lesson costs money and writes content, so it is gated. Stored on this
+            device only.
+          </p>
+          <input
+            type="password"
+            id="forge-key"
+            name="key"
+            autocomplete="off"
+            aria-describedby="forge-key-help"
+          />
+        </div>
+
+        <div class="forge-actions">
+          <button class="forge-btn forge-btn-primary" type="submit" id="forge-submit">
+            Forge the lesson
+          </button>
+          <button class="forge-btn forge-btn-quiet" type="button" id="forge-forget-key" hidden>
+            Use a different teacher key
+          </button>
+        </div>
+      </form>
+
+      <!-- Live region: generation takes 30-60s, so this never shows a frozen spinner. -->
+      <section
+        class="forge-card forge-progress"
+        id="forge-progress"
+        aria-live="polite"
+        aria-busy="false"
+        hidden
+      >
+        <h2>Forging</h2>
+        <p class="forge-timer">
+          <span id="forge-elapsed">0</span><span class="forge-unit">s</span>
+        </p>
+        <p class="forge-status" id="forge-status">Sending the request…</p>
+        <ol class="forge-stages" id="forge-stages">
+          <li data-stage="0">Reading the standard, its prerequisite chain and the misconception</li>
+          <li data-stage="1">
+            Writing the lesson — launch, explore, six practice items, exit ticket
+          </li>
+          <li data-stage="2">Running the quality gate (retries once if it fails)</li>
+          <li data-stage="3">Saving it and minting the share link</li>
+        </ol>
+        <p class="forge-help">
+          The API answers in one shot, so these stages are the server's sequence timed from your
+          request — only the clock above is measured.
+        </p>
+      </section>
+
+      <section class="forge-card forge-error" id="forge-error" role="alert" hidden></section>
+
+      <section class="forge-card forge-share" id="forge-share" hidden>
+        <h2>Ready to teach</h2>
+        <p class="forge-share-title" id="forge-share-title"></p>
+        <label class="forge-share-label" for="forge-share-url">Student link</label>
+        <div class="forge-share-row">
+          <input type="text" id="forge-share-url" readonly />
+          <button class="forge-btn forge-btn-quiet" type="button" id="forge-copy">Copy</button>
+        </div>
+        <p class="forge-help" id="forge-copy-status" aria-live="polite"></p>
+        <div class="forge-actions">
+          <a class="forge-btn forge-btn-primary" id="forge-open" href="#">Open the lesson →</a>
+          <button class="forge-btn forge-btn-quiet" type="button" id="forge-again">
+            Forge another
+          </button>
+        </div>
+      </section>
+
+      <section class="forge-card forge-list" id="forge-list" hidden>
+        <h2>Forged lessons</h2>
+        <div id="forge-list-body"></div>
+      </section>
+
+      <p class="forge-foot"><a href="/curriculum/">← Back to the Curriculum Hub</a></p>
+    </main>
+
+    <!-- The real lesson engine mounts here (engine/core/lesson-renderer.js → createApp). -->
+    <div id="app" hidden></div>
+
+    <noscript>
+      <div class="forge-noscript" role="alert">
+        <h1>The Forge needs JavaScript</h1>
+        <p>Please turn JavaScript on in your browser, then reload this page.</p>
+        <p><a href="/curriculum/">← Back to the Curriculum Hub</a></p>
+      </div>
+    </noscript>
+
+    <script>
+      window.NT_ACTIVITY = false;
+    </script>
+    <script type="module" src="./forge.js"></script>
+    <script src="/assets/learning-supports/learning-supports.js" defer></script>
+  </body>
+</html>

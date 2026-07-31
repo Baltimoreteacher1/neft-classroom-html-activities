@@ -21,7 +21,7 @@
 // turns every data mark the same navy. Colour that carries meaning belongs to
 // the figure. See engine/light-only-surfaces.test.mjs.
 const DATA_1 = "#0f8a84"; // teal - primary
-const DATA_2 = "#c2603f"; // clay - secondary
+const _DATA_2 = "#c2603f"; // clay - secondary (reserved; documents the palette)
 
 const STYLE_ID = "algebra-tiles-expand-styles";
 

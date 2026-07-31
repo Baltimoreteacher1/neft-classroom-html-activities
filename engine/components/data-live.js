@@ -29,7 +29,7 @@
 // objects.
 const DATA_1 = "#0f8a84"; // teal - primary series
 const DATA_2 = "#c2603f"; // clay - second series
-const DATA_3 = "#b07d12"; // ochre - third series
+const _DATA_3 = "#b07d12"; // ochre - third series (reserved; documents the palette)
 const DATA_4 = "#3b6ea5"; // blue - fourth series
 
 const STYLE_ID = "data-live-styles";
