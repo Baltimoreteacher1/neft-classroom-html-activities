@@ -686,6 +686,32 @@
     }
   }
 
+  function triggerMentorCameo(name, quote) {
+    try {
+      var existing = document.getElementById("ntm-cameo-toast");
+      if (existing) existing.remove();
+
+      var toast = el("div", "ntm-cameo-toast");
+      toast.id = "ntm-cameo-toast";
+      toast.setAttribute("role", "status");
+      toast.innerHTML =
+        '<div style="position:fixed;bottom:80px;right:24px;z-index:9995;background:linear-gradient(135deg, #1e1b4b, #312e81);color:#fff;padding:12px 18px;border-radius:12px;box-shadow:0 10px 25px rgba(0,0,0,0.25);max-width:340px;font-family:inherit;display:flex;align-items:center;gap:12px;">' +
+        '<span style="font-size:1.5rem;" aria-hidden="true">🏛️</span>' +
+        '<div>' +
+        '<div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#a5b4fc;">Mentor Cameo (Moment of Relevance)</div>' +
+        '<div style="font-size:0.9rem;margin-top:2px;">"' + esc(name || "Emmy Noether") + ' would ' + esc(quote || "look for what stays the same here") + '."</div>' +
+        '</div>' +
+        '</div>';
+
+      document.body.appendChild(toast);
+      setTimeout(function () {
+        if (toast && toast.parentNode) toast.parentNode.removeChild(toast);
+      }, 6000);
+    } catch (_e) {
+      /* ignore */
+    }
+  }
+
   /* ── public API ────────────────────────────────────────────────────────── */
 
   window.NTMentor = {
@@ -715,6 +741,7 @@
       save(state);
       renderPill();
     },
+    triggerCameo: triggerMentorCameo,
     setLang: setLang,
     open: open,
     close: close,

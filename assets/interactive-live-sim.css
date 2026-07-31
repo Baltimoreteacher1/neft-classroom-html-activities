@@ -1,0 +1,71 @@
+/* interactive-live-sim.css — Live simulation drag and re-derivation styles */
+.live-sim-draggable {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
+  margin: 0 2px;
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(124, 58, 237, 0.15));
+  border: 1.5px dashed #6366f1;
+  border-radius: 6px;
+  color: #4338ca;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+
+.live-sim-draggable:hover {
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.2), rgba(124, 58, 237, 0.25));
+  border-style: solid;
+  transform: translateY(-1px);
+}
+
+.live-sim-draggable:active,
+.live-sim-draggable.is-dragging {
+  cursor: grabbing;
+  background: #6366f1;
+  color: #ffffff;
+  border-style: solid;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+  transform: scale(1.05);
+}
+
+.live-sim-derived-value {
+  display: inline-block;
+  padding: 2px 6px;
+  margin: 0 2px;
+  background: rgba(16, 185, 129, 0.12);
+  border-bottom: 2px solid #10b981;
+  border-radius: 4px;
+  color: #047857;
+  font-weight: 700;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.live-sim-derived-value.pulse-update {
+  background: rgba(16, 185, 129, 0.35);
+  transform: scale(1.1);
+}
+
+.live-sim-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 3px 8px;
+  border-radius: 12px;
+  background: #e0e7ff;
+  color: #3730a3;
+  margin-bottom: 8px;
+}
+
+.live-sim-badge::before {
+  content: "⚡";
+  font-size: 0.85rem;
+}

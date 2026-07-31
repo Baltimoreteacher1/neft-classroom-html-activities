@@ -81,6 +81,48 @@
       css: "lesson-mentor.css",
       global: "NTMentor",
     },
+    {
+      name: "liveSim",
+      js: "interactive-live-sim.js",
+      css: "interactive-live-sim.css",
+      global: "NTLiveSim",
+    },
+    {
+      name: "processTelemetry",
+      js: "process-telemetry.js",
+      css: "process-telemetry.css",
+      global: "NTProcessTelemetry",
+    },
+    {
+      name: "inkMath",
+      js: "ink-native-math.js",
+      css: "ink-native-math.css",
+      global: "NTInkMath",
+    },
+    {
+      name: "voiceLesson",
+      js: "voice-native-lesson.js",
+      css: "voice-native-lesson.css",
+      global: "NTVoiceLesson",
+    },
+    {
+      name: "reasoningReplay",
+      js: "reasoning-replay.js",
+      css: "reasoning-replay.css",
+      global: "NTReasoningReplay",
+    },
+    {
+      name: "skeptic",
+      js: "convince-skeptic.js",
+      css: "convince-skeptic.css",
+      global: "NTSkeptic",
+    },
+    {
+      name: "edgeTwins",
+      js: "edge-tuned-twins.js",
+      css: "edge-tuned-twins.css",
+      global: "NTEdgeTwins",
+    },
     /*
     {
       name: "passport",
