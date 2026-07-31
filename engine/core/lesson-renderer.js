@@ -2069,12 +2069,40 @@ function resolveLanguageVisualImg(config) {
 function resolveContentVisualCaption(config) {
   if (config && config.contentVisualCaption) return config.contentVisualCaption;
   const title = (config && config.title) || "the mathematical concept";
+  const unit = (config && config.unit) || 1;
+
+  if (unit === 1) {
+    return `Student avatar actively finding factors and comparing common numbers on her desk grid mat to circle the greatest common factor (GCF).`;
+  }
+  if (unit === 2) {
+    return `Student avatar dividing fraction bar strips on her desk grid mat to solve quotient problems.`;
+  }
+  if (unit === 3) {
+    return `Student avatar plotting ratio points on double number line strips to calculate unit rates.`;
+  }
+  if (unit === 4) {
+    return `Student avatar applying distributive tile arrays on her desk grid mat to evaluate and simplify algebraic expressions.`;
+  }
+  if (unit === 5) {
+    return `Student avatar actively balancing an algebraic scale with variable blocks to isolate x.`;
+  }
+  if (unit === 6) {
+    return `Student avatar laying flat the 3D prism into a 2D net on her desk grid mat to calculate surface area face dimensions.`;
+  }
+  if (unit === 7) {
+    return `Student avatar plotting ordered pairs (x,y) across all 4 quadrants of the Cartesian grid mat.`;
+  }
+  if (unit === 8) {
+    return `Student avatar drawing a 5-number summary box plot on a grid mat to analyze data distributions and median values.`;
+  }
+
   return `Student avatar actively demonstrating ${title} on her desk grid mat.`;
 }
 
 function resolveLanguageVisualCaption(config) {
   if (config && config.languageVisualCaption) return config.languageVisualCaption;
-  return `Student partners pointing to vocabulary callout badges and using academic sentence frames.`;
+  const title = (config && config.title) || "math concepts";
+  return `Student partners pointing to key vocabulary callout badges for ${title} and using academic sentence frames.`;
 }
 
 function renderObjectives(el, config, state) {
