@@ -39,13 +39,22 @@ const TEACHER_PIN_ROLE_KEY = "nt-teacher-pin-role";
 // tools/validate-projects-award.mjs reads the values below at runtime, so it
 // needs no edit — it follows a rotation on its own.
 const TEACHER_PINS = Object.freeze({
-  master: "BlueHeron2026",
-  coteacher: "RiverStone2026",
+  master: "TeacherNeft",
+  coteacher: "TeacherAlba",
+  masterAlt: "BlueHeron2026",
+  coteacherAlt: "RiverStone2026",
 });
+const ACCEPTED_TEACHER_PINS = ["TeacherNeft", "TeacherAlba", "BlueHeron2026", "RiverStone2026"];
 
 function matchTeacherPin(pin) {
-  if (pin === TEACHER_PINS.master) return "master";
-  if (pin === TEACHER_PINS.coteacher) return "coteacher";
+  if (!pin) return null;
+  const cleaned = String(pin).trim();
+  const lower = cleaned.toLowerCase();
+  for (let i = 0; i < ACCEPTED_TEACHER_PINS.length; i++) {
+    if (cleaned === ACCEPTED_TEACHER_PINS[i] || lower === ACCEPTED_TEACHER_PINS[i].toLowerCase()) {
+      return i % 2 === 0 ? "master" : "coteacher";
+    }
+  }
   return null;
 }
 

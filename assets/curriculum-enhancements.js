@@ -156,8 +156,14 @@
   }
 
   function matchTeacherPin(pin) {
-    if (pin === TEACHER_PINS.master) return "master";
-    if (pin === TEACHER_PINS.coteacher) return "coteacher";
+    if (!pin) return null;
+    var cleaned = String(pin).trim();
+    var lower = cleaned.toLowerCase();
+    for (var i = 0; i < ACCEPTED_TEACHER_PINS.length; i++) {
+      if (cleaned === ACCEPTED_TEACHER_PINS[i] || lower === ACCEPTED_TEACHER_PINS[i].toLowerCase()) {
+        return i % 2 === 0 ? "master" : "coteacher";
+      }
+    }
     return null;
   }
 
