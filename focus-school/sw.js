@@ -1,12 +1,13 @@
 /* Focus School — service worker.
  * Offline-first app shell: precache core files, serve them cache-first,
  * fall back to the cached app for navigations when offline. */
-const VERSION = "focus-school-v66";
+const VERSION = "focus-school-v67";
 const CORE = [
   "./",
   "index.html",
   "styles.css?v=57",
   "sports.js?v=4",
+  "app.js?v=60",
   "app.js?v=59",
   "manifest.webmanifest",
   "icons/favicon.svg",
@@ -15,6 +16,30 @@ const CORE = [
   "icons/icon-maskable-512.png",
   "icons/apple-touch-icon.png",
   "assets/mobile-access.css",
+  // Nightly Hebrew is used at bedtime, sometimes on a dead hotel/car connection
+  // — precache the whole thing so all nine innings work fully offline.
+  "hebrew/",
+  "hebrew/hebrew.css",
+  "hebrew/data.js",
+  "hebrew/engine.js",
+  "hebrew/unit-1.html",
+  "hebrew/unit-2.html",
+  "hebrew/unit-3.html",
+  "hebrew/unit-4.html",
+  "hebrew/unit-5.html",
+  "hebrew/unit-6.html",
+  "hebrew/unit-7.html",
+  "hebrew/unit-8.html",
+  "hebrew/unit-9.html",
+  "hebrew/games/unit-1.js",
+  "hebrew/games/unit-2.js",
+  "hebrew/games/unit-3.js",
+  "hebrew/games/unit-4.js",
+  "hebrew/games/unit-5.js",
+  "hebrew/games/unit-6.js",
+  "hebrew/games/unit-7.js",
+  "hebrew/games/unit-8.js",
+  "hebrew/games/unit-9.js",
 ];
 
 // Focus (or open) the app when a reminder/briefing notification is tapped.
@@ -90,7 +115,13 @@ self.addEventListener("fetch", (event) => {
   // network (captive portal, stalled school wifi) can't hang app launch — the
   // fetch only *rejects* when it fails outright, never when it merely stalls.
   if (req.mode === "navigate") {
-    const shell = () => caches.match("index.html").then((r) => r || caches.match("./"));
+    // Prefer the exact page we cached (so /hebrew/unit-3.html opens offline as
+    // itself), and only fall back to the planner shell for anything unknown.
+    const shell = () =>
+      caches
+        .match(req, { ignoreSearch: true })
+        .then((r) => r || caches.match("index.html"))
+        .then((r) => r || caches.match("./"));
     event.respondWith(
       Promise.race([fetch(req), new Promise((resolve) => setTimeout(() => resolve(null), 3500))])
         .then((res) => res || shell().then((s) => s || fetch(req)))

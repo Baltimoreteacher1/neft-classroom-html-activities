@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="dark" />
+    <title>Nightly Hebrew ⚾</title>
+    <meta
+      name="description"
+      content="Nightly Hebrew — nine innings of Hebrew letters and sounds, with baseball games and a $0.20 payout per inning."
+    />
+    <link rel="icon" href="../icons/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700;900&family=Noto+Sans+Hebrew:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="hebrew.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="inner">
+        <span class="ball" aria-hidden="true">⚾</span>
+        <h1>Nightly Hebrew</h1>
+        <span class="scorebug"
+          ><span aria-hidden="true">🏟️</span> <span id="hub-score">0/9</span></span
+        >
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section class="hero">
+        <p class="eyebrow">Nine innings · one a night</p>
+        <h2>Learn to read Hebrew ⚾</h2>
+        <p class="sub">
+          Each inning teaches new letters and vowels, keeps practicing everything from the innings
+          before, and finishes with a baseball game. Finish all seven activities in an inning and it
+          pays <b>$0.20</b> straight into your Allowance.
+        </p>
+        <div class="hebsub">שָׁלוֹם ⚾ בָּרוּךְ הַבָּא</div>
+        <div class="big-idea">
+          <b>Start at the 1st Inning.</b> Each one builds on the last, so going in order is the
+          fastest way to actually read the siddur.
+        </div>
+      </section>
+
+      <div class="inning-list" id="innings"></div>
+
+      <section class="act" style="margin-top: 20px">
+        <header>
+          <div class="num">🔑</div>
+          <div>
+            <h3>Sound key</h3>
+            <p class="how">Every sound spelling on this site uses these five vowel sounds.</p>
+          </div>
+        </header>
+        <div class="card-grid" id="soundkey"></div>
+      </section>
+
+      <nav class="footnav">
+        <a href="/">← Back to Focus School</a>
+      </nav>
+    </main>
+
+    <script src="data.js"></script>
+    <script>
+      (function () {
+        "use strict";
+        const { UNITS } = window.HEB_DATA;
+        const esc = (s) =>
+          String(s).replace(
+            /[&<>"']/g,
+            (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c],
+          );
+        let progress = {};
+        try {
+          progress = JSON.parse(localStorage.getItem("nightly-hebrew:progress") || "{}") || {};
+        } catch {
+          progress = {};
+        }
+
+        const host = document.getElementById("innings");
+        let finished = 0;
+        for (const u of UNITS) {
+          const p = progress["u" + u.id] || {};
+          // "Done" = they have completed this inning at least once, ever —
+          // the nightly reset clears tonight's activities but not the record.
+          const everDone = !!p.finishedOn || (p.finishes || 0) > 0;
+          if (everDone) finished++;
+          const peek = (u.closer[0] || u.words[0] || {}).heb || "";
+          const a = document.createElement("a");
+          a.className = "inning" + (everDone ? " done" : "");
+          a.href = u.slug + ".html";
+          a.innerHTML = `
+            <span class="badge">${everDone ? "✓" : u.id}</span>
+            <span class="body">
+              <span class="eyebrow">${esc(u.inning)}</span>
+              <h3>${esc(u.title)}</h3>
+              <p>${esc(u.subtitle)}</p>
+              ${peek ? `<span class="hebpeek">${peek}</span>` : ""}
+            </span>
+            <span class="go" aria-hidden="true">→</span>`;
+          host.appendChild(a);
+        }
+        document.getElementById("hub-score").textContent = finished + "/" + UNITS.length;
+
+        const KEY = [
+          ["ah", "father", "ָ ַ"],
+          ["ay", "they", "ֵ"],
+          ["eh", "bed", "ֶ"],
+          ["ee", "see", "ִ"],
+          ["oh", "go", "ֹ וֹ"],
+          ["oo", "moon", "ֻ וּ"],
+        ];
+        const sk = document.getElementById("soundkey");
+        for (const [sound, word, marks] of KEY) {
+          const d = document.createElement("div");
+          d.className = "lcard";
+          d.innerHTML = `<div class="glyph" style="font-size:2.6rem">א${marks.split(" ")[0]}</div>
+            <div class="lname" style="color:var(--lights)">${esc(sound)}</div>
+            <div class="lsound" style="color:var(--chalk);font-weight:600">like in “${esc(word)}”</div>
+            <div class="lnote">written ${esc(marks)}</div>`;
+          sk.appendChild(d);
+        }
+      })();
+    </script>
+  </body>
+</html>
