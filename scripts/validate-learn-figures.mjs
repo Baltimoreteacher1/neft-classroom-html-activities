@@ -22,7 +22,7 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { _internals, workedFigure } from "./lib/learn-figures.mjs";
+import { _internals, workedFigure, workedStepFigures } from "./lib/learn-figures.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const lessonsDir = join(root, "lessons");
@@ -132,6 +132,79 @@ for (const text of NON_FIXTURES) {
 if (Object.keys(_internals).length < 6) fail("self-test — reader set shrank unexpectedly");
 console.log(`  ${FIXTURES.length} positive + ${NON_FIXTURES.length} negative fixtures checked`);
 
+/* ---------- self-test: the per-step figures must still build ---------- */
+
+// Some worked examples are a drawing that GROWS — a factor tree is built one
+// split per step, so each step carries its own snapshot. Same rule as above:
+// a picture that disagrees with the paragraph is worse than no picture, so a
+// tree is drawn only when every split multiplies back to its parent and every
+// leaf is prime.
+const STEP_FIXTURE = {
+  name: "factor tree",
+  lines: [
+    "I want the prime factorization of 60. I start by splitting it: 60 = 6 × 10.",
+    "6 is not prime, so I break it: 6 = 2 × 3.",
+    "10 is not prime, so I break it: 10 = 2 × 5.",
+    "Now every factor is prime: 60 = 2 × 2 × 3 × 5.",
+  ],
+  kind: "factor-tree",
+  drawn: 3, // three splits → three snapshots; the summary line adds no branch
+  values: [2, 3, 5, 6, 10, 60],
+};
+
+const STEP_NON_FIXTURES = [
+  // Bad arithmetic — 6 × 11 is not 60. Never draw it.
+  ["I split 60: 60 = 6 × 11.", "6 = 2 × 3.", "11 is prime."],
+  // Only one split: not a tree, and the leaves are not all prime.
+  ["I split 60: 60 = 6 × 10."],
+  // A leaf that never gets broken down is not a finished factorization.
+  ["I split 60: 60 = 6 × 10.", "6 = 2 × 3.", "10 stays as it is."],
+  // Not a factorization at all.
+  ["My data set: 6, 8, 10, 12. First I find the mean."],
+];
+
+{
+  const got = workedStepFigures({
+    launch: { conceptIntro: { iDo: { lines: STEP_FIXTURE.lines } } },
+  });
+  if (!got) fail(`step self-test "${STEP_FIXTURE.name}" — built nothing`);
+  else {
+    if (got.length !== STEP_FIXTURE.lines.length)
+      fail(
+        `step self-test "${STEP_FIXTURE.name}" — ${got.length} entries for ${STEP_FIXTURE.lines.length} steps (they must line up 1:1)`,
+      );
+    const drawn = got.filter(Boolean);
+    if (drawn.length !== STEP_FIXTURE.drawn)
+      fail(
+        `step self-test "${STEP_FIXTURE.name}" — drew ${drawn.length} snapshots, expected ${STEP_FIXTURE.drawn}`,
+      );
+    const last = drawn[drawn.length - 1];
+    if (last && last.kind !== STEP_FIXTURE.kind)
+      fail(`step self-test "${STEP_FIXTURE.name}" — kind ${last.kind}`);
+    if (last && last.values.join(",") !== STEP_FIXTURE.values.join(","))
+      fail(`step self-test "${STEP_FIXTURE.name}" — values [${last.values.join(",")}]`);
+    // The tree must grow: every snapshot draws at least as many circles as the
+    // one before it, and the last one draws the whole tree.
+    let prevNodes = 0;
+    for (const f of drawn) {
+      const n = (f.svg.match(/<circle/g) || []).length;
+      if (n < prevNodes)
+        fail(`step self-test "${STEP_FIXTURE.name}" — the tree shrank between steps`);
+      prevNodes = n;
+    }
+    if (last && !last.svg.includes("60 = 2 × 2 × 3 × 5"))
+      fail(`step self-test "${STEP_FIXTURE.name}" — the finished tree never states the product`);
+  }
+}
+for (const lines of STEP_NON_FIXTURES) {
+  const got = workedStepFigures({ launch: { conceptIntro: { iDo: { lines } } } });
+  if (got && got.some(Boolean))
+    fail(
+      `step self-test — drew a tree for steps that do not describe one: "${lines[0].slice(0, 46)}…"`,
+    );
+}
+console.log(`  1 positive + ${STEP_NON_FIXTURES.length} negative per-step fixtures checked`);
+
 /* ---------- sweep the curriculum ---------- */
 
 // Number-line ticks and grid axis numbers are drawn scale, not claims about
@@ -204,8 +277,77 @@ for (const id of ids) {
     fail(`${id} — a figure was generated but learn.html does not contain it`);
 }
 
+/* ---------- sweep the curriculum: per-step figures ---------- */
+
+let stepLessons = 0;
+let stepSnapshots = 0;
+
+for (const id of ids) {
+  let cfg;
+  try {
+    cfg = JSON.parse(readFileSync(join(lessonsDir, id, "config.json"), "utf8"));
+  } catch {
+    continue; // already reported by the sweep above
+  }
+  const steps = workedStepFigures(cfg);
+  if (!steps || !steps.some(Boolean)) continue;
+  stepLessons++;
+
+  const intro = (cfg.launch && cfg.launch.conceptIntro) || {};
+  const authored = ((intro.iDo && intro.iDo.lines) || []).filter(Boolean);
+  const text = authored.join(" ");
+  const textNums = new Set(numbersIn(text));
+
+  // The figures must line up 1:1 with the steps they annotate — an off-by-one
+  // would caption step 3 with step 2's picture, which is worse than no picture.
+  if (steps.length !== authored.length)
+    fail(`${id} — ${steps.length} step figures for ${authored.length} worked-example steps`);
+
+  let prevNodes = 0;
+  for (const f of steps) {
+    if (!f) continue;
+    stepSnapshots++;
+
+    // Every number the tree prints came out of the lesson's own text.
+    for (const v of f.values) {
+      if (!textNums.has(v))
+        fail(`${id} — step figure claims ${v}, which is not in the worked example`);
+    }
+    const allowed = new Set(f.values);
+    for (const l of f.svg.match(/<text[^>]*>([^<]*)<\/text>/g) || []) {
+      for (const v of numbersIn(l.replace(/<[^>]+>/g, ""))) {
+        if (!allowed.has(v))
+          fail(`${id} — step figure prints "${v}" on a label but never read it from the text`);
+      }
+    }
+
+    // Well-formed, described, and growing.
+    if (!/^<svg [^>]*>[\s\S]*<\/svg>$/.test(f.svg))
+      fail(`${id} — step figure is not a single well-formed svg element`);
+    const o = (f.svg.match(/<(?!\/)(?!!)[a-zA-Z]+/g) || []).length;
+    const sc = (f.svg.match(/\/>/g) || []).length;
+    const c = (f.svg.match(/<\/[a-zA-Z]+>/g) || []).length;
+    if (o !== sc + c) fail(`${id} — step figure has unbalanced svg tags`);
+    if (!f.alt || f.alt.length < 20)
+      fail(`${id} — step figure has no usable accessible description`);
+    if (!f.svg.includes(`aria-label="`)) fail(`${id} — step figure is missing aria-label`);
+    const nodes = (f.svg.match(/<circle/g) || []).length;
+    if (nodes < prevNodes) fail(`${id} — the step diagram shrank from one step to the next`);
+    prevNodes = nodes;
+  }
+
+  // It reached the page.
+  const html = readFileSync(join(lessonsDir, id, "learn.html"), "utf8");
+  const onPage = (html.match(/class="li-stepfig"/g) || []).length;
+  const built = steps.filter(Boolean).length;
+  if (onPage !== built)
+    fail(`${id} — ${built} step figures were built but learn.html contains ${onPage}`);
+}
+
 // A gate that draws nothing is not a passing gate.
 if (drawn === 0) fail("swept the curriculum and found ZERO figures — the readers are dead");
+if (stepSnapshots === 0)
+  fail("swept the curriculum and found ZERO per-step figures — the step builder is dead");
 
 console.log(`\nLearn It worked-example figures — ${drawn} of ${ids.length} lessons`);
 console.log(
@@ -213,6 +355,9 @@ console.log(
     Object.entries(byKind)
       .map(([k, v]) => `${k}:${v}`)
       .join("  "),
+);
+console.log(
+  `Learn It per-step figures — ${stepSnapshots} snapshots across ${stepLessons} lesson(s)`,
 );
 
 if (failures) {

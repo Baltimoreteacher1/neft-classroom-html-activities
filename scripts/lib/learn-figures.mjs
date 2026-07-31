@@ -677,6 +677,200 @@ function readRatioTape(text) {
   return ratioTapeFigure(a, b, m[2].trim(), m[4].trim());
 }
 
+/* ---------------- factor tree (per-step, progressive) ----------------
+   A prime-factorization worked example is not a static picture — it IS the
+   drawing of a tree, one split at a time. Reading "6 is not prime, so I break
+   it: 6 = 2 × 3" without seeing the branch appear is the whole difficulty of
+   the lesson. So this reader does not return one figure for the example; it
+   returns ONE FIGURE PER STEP, each showing the tree exactly as far as that
+   step has built it, with every node pinned to its final position so the tree
+   grows in place instead of jumping around between steps.
+
+   Nothing is drawn unless the arithmetic checks out: every split's two factors
+   must multiply back to their parent, every leaf of the finished tree must be
+   prime, and the leaves must multiply back to the root. A tree that disagrees
+   with the paragraph is worse than no tree. */
+
+const FT_R = 22; // node radius
+const FT_TOP = 64; // centre y of the root row
+const FT_ROW = 84; // vertical distance between rows
+const FT_PAD = 46; // left/right margin for the outermost leaves
+
+function isPrime(n) {
+  if (!Number.isInteger(n) || n < 2) return false;
+  if (n % 2 === 0) return n === 2;
+  for (let d = 3; d * d <= n; d += 2) if (n % d === 0) return false;
+  return true;
+}
+
+// `A = B × C` where B × C is the WHOLE right side — so the summary line
+// "60 = 2 × 2 × 3 × 5" is never mistaken for a two-way split.
+const FT_SPLIT = /(\d+)\s*=\s*(\d+)\s*(?:×|x|X|\*|·)\s*(\d+)(?!\s*(?:×|x|X|\*|·)\s*\d)/g;
+
+// Read the worked example as a sequence of splits. Returns null the moment
+// anything does not add up.
+function readFactorTree(linesArr) {
+  let root = null;
+  const all = [];
+  const splits = []; // { node, step } — step = index of the line that split it
+
+  linesArr.forEach((line, step) => {
+    FT_SPLIT.lastIndex = 0;
+    let m;
+    while ((m = FT_SPLIT.exec(String(line))) !== null) {
+      const parent = num(m[1]);
+      const a = num(m[2]);
+      const b = num(m[3]);
+      if (!parent || !a || !b) continue;
+      if (a < 2 || b < 2 || parent < 4) continue; // 60 = 1 × 60 is not a split
+      if (a * b !== parent) continue; // never draw a false equation
+      let node;
+      if (!root) {
+        root = { value: parent, children: [], depth: 0 };
+        all.push(root);
+        node = root;
+      } else {
+        node = all.find((n) => n.value === parent && !n.children.length);
+      }
+      if (!node || node.children.length) continue;
+      node.children = [a, b].map((v) => ({ value: v, children: [], depth: node.depth + 1 }));
+      all.push(...node.children);
+      splits.push({ node, step });
+    }
+  });
+
+  if (!root || splits.length < 2) return null;
+  const leaves = all.filter((n) => !n.children.length);
+  if (leaves.length < 3 || leaves.length > 8) return null;
+  if (Math.max(...all.map((n) => n.depth)) > 4) return null;
+  if (!leaves.every((n) => isPrime(n.value))) return null;
+  if (leaves.reduce((p, n) => p * n.value, 1) !== root.value) return null;
+
+  // Final positions, computed once from the FINISHED tree: leaves spread
+  // evenly, every parent centred over its own children.
+  const ordered = [];
+  (function walk(n) {
+    if (n.children.length) n.children.forEach(walk);
+    else ordered.push(n);
+  })(root);
+  const span = ordered.length > 1 ? (W - 2 * FT_PAD) / (ordered.length - 1) : 0;
+  ordered.forEach((n, i) => {
+    n.x = ordered.length > 1 ? FT_PAD + i * span : W / 2;
+  });
+  (function setX(n) {
+    if (!n.children.length) return;
+    n.children.forEach(setX);
+    n.x = (n.children[0].x + n.children[n.children.length - 1].x) / 2;
+  })(root);
+  all.forEach((n) => {
+    n.y = FT_TOP + n.depth * FT_ROW;
+  });
+
+  return { root, all, leaves, splits, height: Math.max(...all.map((n) => n.y)) + FT_R + 84 };
+}
+
+function ftNode(n, opts = {}) {
+  const prime = isPrime(n.value);
+  const ring = opts.fresh
+    ? `<circle cx="${Math.round(n.x)}" cy="${Math.round(n.y)}" r="${FT_R + 7}" fill="none" stroke="${TEAL}" stroke-width="3" opacity="0.45" />`
+    : "";
+  const fill = prime ? FILL : "#ffffff";
+  const stroke = prime ? TEAL_INK : NAVY;
+  return `${ring}<circle cx="${Math.round(n.x)}" cy="${Math.round(n.y)}" r="${FT_R}" fill="${fill}" stroke="${stroke}" stroke-width="${prime ? 3 : 2.5}" />
+    <text x="${Math.round(n.x)}" y="${Math.round(n.y + 7)}" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="20" font-weight="800" fill="${prime ? TEAL_INK : NAVY}">${esc(n.value)}</text>`;
+}
+
+function ftEdge(parent, child, fresh) {
+  return `<line x1="${Math.round(parent.x)}" y1="${Math.round(parent.y + FT_R)}" x2="${Math.round(child.x)}" y2="${Math.round(child.y - FT_R)}" stroke="${fresh ? TEAL : LINE}" stroke-width="${fresh ? 3.5 : 2.5}" stroke-linecap="round" />`;
+}
+
+// The tree as of split #`count` (1-based). `fresh` marks the split made by the
+// step being read, so a student can see which branch is new.
+function factorTreeSvg(tree, count) {
+  const applied = tree.splits.slice(0, count);
+  const freshNode = applied.length ? applied[applied.length - 1].node : null;
+  const shown = new Set([tree.root]);
+  applied.forEach(({ node }) => node.children.forEach((c) => shown.add(c)));
+
+  const edges = applied
+    .map(({ node }) => node.children.map((c) => ftEdge(node, c, node === freshNode)).join(""))
+    .join("");
+  const nodes = [...shown]
+    .map((n) => ftNode(n, { fresh: freshNode && freshNode.children.includes(n) }))
+    .join("");
+
+  const done = count >= tree.splits.length;
+  // Smallest prime first — the conventional way the answer is written, and the
+  // way the lesson's own closing line writes it.
+  const product = tree.leaves
+    .map((n) => n.value)
+    .sort((a, b) => a - b)
+    .join(" × ");
+  const capY = Math.max(...tree.all.map((n) => n.y)) + FT_R + 48;
+  const caption = done
+    ? `<rect x="26" y="${Math.round(capY - 24)}" width="${W - 52}" height="38" rx="10" fill="${FILL}" stroke="${TEAL}" stroke-width="1.5" />
+       ${label(W / 2, capY + 2, `${tree.root.value} = ${product}`, { size: 20, color: TEAL_INK })}`
+    : label(W / 2, capY, "Keep splitting every circle that is not prime.", {
+        size: 15,
+        weight: 700,
+        color: MUTED,
+      });
+
+  const legend = `<circle cx="34" cy="22" r="8" fill="#ffffff" stroke="${NAVY}" stroke-width="2" />
+    ${label(48, 27, "not prime yet", { size: 13, weight: 700, color: MUTED, anchor: "start" })}
+    <circle cx="${W - 150}" cy="22" r="8" fill="${FILL}" stroke="${TEAL_INK}" stroke-width="2.5" />
+    ${label(W - 136, 27, "prime — stop here", { size: 13, weight: 700, color: TEAL_INK, anchor: "start" })}`;
+
+  const alt =
+    `Factor tree for ${tree.root.value}. ` +
+    applied
+      .map(
+        ({ node }) =>
+          `${node.value} splits into ${node.children.map((c) => c.value).join(" and ")}`,
+      )
+      .join("; ") +
+    (done ? `. Every branch ends in a prime: ${tree.root.value} = ${product}.` : ".");
+
+  return {
+    kind: "factor-tree",
+    // Every number this snapshot prints — the gate checks each one back against
+    // the lesson's own worked example.
+    values: [...new Set([...shown].map((n) => n.value))].sort((a, b) => a - b),
+    alt,
+    svg: svgWrap(`${legend}${edges}${nodes}${caption}`, alt, tree.height),
+  };
+}
+
+// The public entry point for the paced worked example: one figure per iDo line
+// (null for lines that have not started the tree yet), so every step of the
+// Learn It walkthrough is a step of a factor tree the student can see.
+export function workedStepFigures(cfg = {}) {
+  const intro = (cfg.launch && cfg.launch.conceptIntro) || cfg.conceptIntro;
+  // Same filter the Learn It page applies when it renders the steps, so figure
+  // i always belongs to step i.
+  const linesArr = (
+    intro && intro.iDo && Array.isArray(intro.iDo.lines) ? intro.iDo.lines : []
+  ).filter(Boolean);
+  if (!linesArr.length) return null;
+  let tree = null;
+  try {
+    tree = readFactorTree(linesArr);
+  } catch {
+    tree = null;
+  }
+  if (!tree) return null;
+  // One snapshot per step that actually MOVES the tree. A step that adds no
+  // branch (the closing "so 60 = 2 × 2 × 3 × 5" line) would redraw the picture
+  // directly above it, which teaches nothing and doubles the printout.
+  let prev = 0;
+  return linesArr.map((_l, i) => {
+    const count = tree.splits.filter((s) => s.step <= i).length;
+    if (count === prev) return null;
+    prev = count;
+    return factorTreeSvg(tree, count);
+  });
+}
+
 const READERS = [
   readArea,
   readPrism,
@@ -718,4 +912,6 @@ export const _internals = {
   readCoordinate,
   readEquationTape,
   readRatioTape,
+  readFactorTree,
+  isPrime,
 };
