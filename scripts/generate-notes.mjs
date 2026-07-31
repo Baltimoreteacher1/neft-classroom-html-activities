@@ -7,6 +7,7 @@ import { deriveWorkedSteps } from "../engine/core/worked-steps.js";
 import { EDITORIAL_FONT_IMPORT, EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
 import { workedFigure, workedStepFigures } from "./lib/learn-figures.mjs";
 import { inScope, lessonScope } from "./lib/lesson-scope.mjs";
+import { writeGenerated } from "./lib/preserve-injected.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
@@ -3506,21 +3507,26 @@ function main() {
   let count = 0;
   let flagshipCount = 0;
   for (const { id, cfg, isFlagship } of targets) {
+    // These four pages are also written by the injectors (Save/Resume, mobile
+    // a11y, Math Workbench, enterprise head), so they go out through
+    // writeGenerated — a plain overwrite deletes every injected layer on all 74
+    // lessons at once, and no gate notices. See scripts/lib/preserve-injected.mjs.
+    //
     // Student copy — no answer key.
-    writeFileSync(join(lessonsDir, id, "notes.html"), buildPacket(id, cfg, isFlagship, false));
+    writeGenerated(join(lessonsDir, id, "notes.html"), buildPacket(id, cfg, isFlagship, false));
     // Teacher copy — same packet + Answer Key & Teacher Guide.
-    writeFileSync(
+    writeGenerated(
       join(lessonsDir, id, "notes-teacher.html"),
       buildPacket(id, cfg, isFlagship, true),
     );
     // Standalone "Learn It" teaching page (surfaced as the 📖 Learn It tab).
-    writeFileSync(join(lessonsDir, id, "learn.html"), buildLearnPage(id, cfg, isFlagship));
+    writeGenerated(join(lessonsDir, id, "learn.html"), buildLearnPage(id, cfg, isFlagship));
     // Standalone "Vocab" page (surfaced as the 🔑 Vocab tab).
-    writeFileSync(join(lessonsDir, id, "vocab.html"), buildVocabPage(id, cfg, isFlagship));
+    writeGenerated(join(lessonsDir, id, "vocab.html"), buildVocabPage(id, cfg, isFlagship));
     count++;
     if (isFlagship) flagshipCount++;
   }
-  writeFileSync(join(lessonsDir, "notes-index.html"), buildIndex(lessons));
+  writeGenerated(join(lessonsDir, "notes-index.html"), buildIndex(lessons));
   console.log(
     `Generated ${count} notes packets (${count - flagshipCount} core + ${flagshipCount} flagship) + notes-index.html`,
   );

@@ -30,6 +30,7 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { writeGenerated } from "./lib/preserve-injected.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
@@ -428,7 +429,8 @@ function writeIfSafe(absFile, html, stat) {
   }
   if (!DRY) {
     mkdirSync(dirname(absFile), { recursive: true });
-    writeFileSync(absFile, html);
+    // Preserve any injected layers already on the page — see scripts/lib/preserve-injected.mjs.
+    writeGenerated(absFile, html);
   }
 }
 
