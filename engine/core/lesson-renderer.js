@@ -2054,10 +2054,38 @@ export function observeVocabTerms(container, vocab) {
 // it" text — never the objective sentence — because the objective may contain
 // tappable vocab-term buttons (linkifyObjectiveTerms), and a wrapping <label>
 // would otherwise toggle the checkbox when a student taps a term for its popup.
+function resolveContentVisualImg(config) {
+  if (config && config.contentVisualImg) return config.contentVisualImg;
+  const unit = config && config.unit;
+  if (unit === 5 || unit === 4) return "/assets/algebra_content.jpg";
+  return "/assets/content_with_poster.jpg";
+}
+
+function resolveLanguageVisualImg(config) {
+  if (config && config.languageVisualImg) return config.languageVisualImg;
+  return "/assets/lang_with_poster.jpg";
+}
+
+function resolveContentVisualCaption(config) {
+  if (config && config.contentVisualCaption) return config.contentVisualCaption;
+  const title = (config && config.title) || "the mathematical concept";
+  return `Student avatar actively demonstrating ${title} on her desk grid mat.`;
+}
+
+function resolveLanguageVisualCaption(config) {
+  if (config && config.languageVisualCaption) return config.languageVisualCaption;
+  return `Student partners pointing to vocabulary callout badges and using academic sentence frames.`;
+}
+
 function renderObjectives(el, config, state) {
   const vocab = augmentVocabWithGlossary(config.vocabulary);
   const contentHtml = linkifyObjectiveTerms(resolveContentObjective(config), vocab);
   const languageHtml = linkifyObjectiveTerms(resolveLanguageObjective(config), vocab);
+
+  const contentImg = resolveContentVisualImg(config);
+  const languageImg = resolveLanguageVisualImg(config);
+  const contentCaption = resolveContentVisualCaption(config);
+  const languageCaption = resolveLanguageVisualCaption(config);
 
   const card = (o) => `
     <div class="card ${o.cardClass} launch-objective">
@@ -2070,6 +2098,15 @@ function renderObjectives(el, config, state) {
         </label>
       </div>
       <p style="margin:0; font-weight:600;">${o.text}</p>
+      
+      <!-- PUBLISHER-GRADE VISUAL MODEL CARD DIRECTLY BELOW OBJECTIVE TEXT -->
+      <div class="visual-model-wrapper" style="margin-top:14px; margin-bottom:14px; border-radius:14px; overflow:hidden; border:1px solid rgba(0,0,0,0.1); box-shadow:0 6px 18px rgba(0,0,0,0.06); background:#0b0f19;">
+        <img src="${o.img}" alt="Visual Model Representation" style="width:100%; height:auto; display:block;" />
+        <div style="padding:10px 14px; background:#ffffff; border-top:1px solid #e2e8f0; font-size:13px; color:#1e293b; font-weight:600; line-height:1.4;">
+          ${o.icon} <strong>Visual Representation:</strong> ${o.caption}
+        </div>
+      </div>
+
       <div class="objective-discuss" style="margin-top:var(--sp-3); padding-top:var(--sp-2); border-top:1px dashed rgba(0,0,0,0.12);">
         <span style="display:block; font-size:.82rem; font-weight:800; letter-spacing:.02em; color:${o.ink}; margin-bottom:2px;">💬 Talk about it</span>
         <span style="font-size:.95rem;">${o.discuss}</span>
@@ -2085,6 +2122,9 @@ function renderObjectives(el, config, state) {
       label: "Content Objective",
       key: "content",
       text: contentHtml,
+      img: contentImg,
+      icon: "🎯",
+      caption: contentCaption,
       discuss:
         "In your own words, what will you be able to do by the end of this lesson? Give one example.",
     }) +
@@ -2094,6 +2134,9 @@ function renderObjectives(el, config, state) {
       label: "Language Objective",
       key: "language",
       text: languageHtml,
+      img: languageImg,
+      icon: "🗣️",
+      caption: languageCaption,
       discuss:
         "Which math words in this goal are new to you? How would you explain this goal to a partner?",
     });
