@@ -35,9 +35,9 @@ import { buildToolCard, collectTools } from "./tools-mode.js";
 const STYLE_ID = "nt-tool-drawer-style";
 const CSS = `
 .nt-toolpoint { margin: 18px 0 4px; padding: 12px 14px; border: 1px dashed #cdd9e5; border-radius: 14px; background: rgba(255,255,255,.72); display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
-.nt-toolpoint-label { font: 700 11px/1.3 var(--font-ui, system-ui, sans-serif); letter-spacing: .1em; text-transform: uppercase; color: var(--sg-deep, #1e3358); }
+.nt-toolpoint-label { font: 700 11px/1.3 var(--font-ui, system-ui, sans-serif); letter-spacing: .1em; text-transform: uppercase; color: var(--sg-deep, #0b2540); }
 .nt-toolpoint-hint { font: 400 13px/1.4 var(--font-body, system-ui, sans-serif); color: #5f6f80; flex: 1 1 180px; min-width: 0; }
-.nt-toolchip { display: inline-flex; align-items: center; gap: 7px; font: 700 14px/1 var(--font-ui, system-ui, sans-serif); padding: 10px 16px; border-radius: 999px; cursor: pointer; border: 1px solid var(--sg, #33568f); background: #fff; color: var(--sg-deep, #1e3358); }
+.nt-toolchip { display: inline-flex; align-items: center; gap: 7px; font: 700 14px/1 var(--font-ui, system-ui, sans-serif); padding: 10px 16px; border-radius: 999px; cursor: pointer; border: 1px solid var(--sg, #12355b); background: #fff; color: var(--sg-deep, #0b2540); }
 .nt-toolchip:hover { background: var(--sg-soft, #eef2fa); }
 .nt-toolchip:focus-visible { outline: 3px solid var(--sg-pop, #2f8f7d); outline-offset: 2px; }
 dialog.nt-tool-dialog { width: min(940px, 96vw); max-width: 96vw; max-height: 92vh; padding: 0; border: 0; border-radius: 18px; background: #fff; color: var(--ink, #12355b); box-shadow: 0 24px 64px rgba(18,53,91,.32); overflow: hidden; }
