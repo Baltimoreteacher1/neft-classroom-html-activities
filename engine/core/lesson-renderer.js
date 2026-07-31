@@ -2445,7 +2445,7 @@ function renderWarmupPhase(el, state, ctx, config) {
     timerBar.innerHTML = `
     <span style="font-size:2.6rem; line-height:1;">⏱️</span>
     <span id="warmupTimerDisplay" style="font-size:56px; font-weight:900; color:#0f6d78; font-variant-numeric:tabular-nums; line-height:1;">${fmtWarmupClock(getWarmupSeconds())}</span>
-    <span class="warmup-timer-label" style="font-size:20px; font-weight:700; color:#56627a;">remaining</span>
+    <span class="warmup-timer-label" style="font-size:20px; font-weight:700; color:#56627a;">press Start</span>
   `;
     // Place the timer immediately under the "Phase 1 · Warmup" header (above the
     // intro line) so it's the first thing students and teachers see.
@@ -2502,10 +2502,23 @@ function renderWarmupPhase(el, state, ctx, config) {
     // running/paused state; a no-op until then.
     let syncWarmupControls = () => {};
 
-    // Start (or restart) the countdown from warmupSecondsLeft. Used by the
-    // teacher "Set time" control and the Reset button to relaunch it.
+    // Paint the clock for the current remaining time WITHOUT running it. This is
+    // the state the timer opens in: the warmup countdown is teacher-controlled,
+    // so it never starts on its own — a class that arrives mid-transition should
+    // not find 90 seconds already burned.
+    function showWarmupCountdown() {
+      timerDisplay.style.animation = "none";
+      applyWarmupPalette(warmupSecondsLeft);
+      timerDisplay.textContent = fmtWarmupClock(warmupSecondsLeft);
+      timerLabel.textContent = warmupTimerId ? "remaining" : "press Start";
+      syncWarmupControls();
+    }
+
+    // Start (or restart) the countdown from warmupSecondsLeft — only ever from
+    // the teacher pressing Start.
     function startWarmupCountdown() {
       if (warmupTimerId) clearInterval(warmupTimerId);
+      if (warmupSecondsLeft <= 0) return;
       timerDisplay.style.animation = "none";
       applyWarmupPalette(warmupSecondsLeft);
       timerDisplay.textContent = fmtWarmupClock(warmupSecondsLeft);
@@ -2514,29 +2527,24 @@ function renderWarmupPhase(el, state, ctx, config) {
       syncWarmupControls();
     }
 
-    // Pause the running countdown, keeping the remaining time intact.
-    function pauseWarmupCountdown() {
+    // Stop the running countdown, keeping the remaining time intact so Start
+    // picks up exactly where it left off.
+    function stopWarmupCountdown() {
       if (!warmupTimerId) return;
       clearInterval(warmupTimerId);
       warmupTimerId = null;
       timerDisplay.style.animation = "none";
-      timerLabel.textContent = "paused";
+      timerLabel.textContent = "stopped";
       syncWarmupControls();
     }
 
-    // Resume from where it was paused. No-op if already running or time is up.
-    function resumeWarmupCountdown() {
-      if (warmupTimerId || warmupSecondsLeft <= 0) return;
-      applyWarmupPalette(warmupSecondsLeft);
-      timerLabel.textContent = "remaining";
-      warmupTimerId = setInterval(warmupTick, 1000);
-      syncWarmupControls();
-    }
-
-    // Reset back to the configured warmup duration and start running again.
+    // Reset back to the configured warmup duration, STOPPED — the teacher starts
+    // it again when the class is ready.
     function resetWarmupCountdown() {
+      if (warmupTimerId) clearInterval(warmupTimerId);
+      warmupTimerId = null;
       warmupSecondsLeft = getWarmupSeconds();
-      startWarmupCountdown();
+      showWarmupCountdown();
     }
 
     // Small transient confirmation shown inside the timer bar (its own line).
@@ -2555,42 +2563,52 @@ function renderWarmupPhase(el, state, ctx, config) {
     }
 
     if (!savedAnswers.checked) {
-      startWarmupCountdown();
+      // Deliberately NOT started here — see showWarmupCountdown(). The timer is
+      // armed at the full time and waits for the teacher to press Start.
+      showWarmupCountdown();
 
-      // Pause/Start + Reset controls so the teacher running the lesson can hold the
-      // warmup timer (e.g. to finish a point) and restart it cleanly.
+      // Start/Stop + Reset controls so the teacher running the lesson decides when
+      // the warmup clock runs, can hold it (e.g. to finish a point), and can
+      // restart it cleanly.
       const controlBtnCss =
         "padding:10px 18px; font-size:16px; font-weight:800; color:#0f6d78; background:#ffffff; border:2px solid #0f6d78; border-radius:10px; cursor:pointer;";
 
-      const pauseBtn = document.createElement("button");
-      pauseBtn.type = "button";
-      pauseBtn.className = "warmup-timer-pause";
-      pauseBtn.style.cssText = controlBtnCss;
+      // The primary control. It carries the whole start/stop contract, so it is
+      // styled as the filled button in the bar — at rest it reads "▶ Start",
+      // which is also the instruction for what to do next.
+      const runBtn = document.createElement("button");
+      runBtn.type = "button";
+      runBtn.className = "warmup-timer-pause";
+      runBtn.style.cssText = controlBtnCss;
 
       const resetBtn = document.createElement("button");
       resetBtn.type = "button";
       resetBtn.className = "warmup-timer-reset";
       resetBtn.textContent = "↻ Reset";
-      resetBtn.title = "Restart the warmup timer from the full time";
+      resetBtn.title = "Set the warmup timer back to the full time (stopped)";
       resetBtn.style.cssText = controlBtnCss;
 
-      // Keep the Pause/Start button label in sync with the timer state.
+      // Keep the Start/Stop button label in sync with the timer state.
       syncWarmupControls = () => {
         const running = !!warmupTimerId;
-        pauseBtn.textContent = running ? "⏸ Pause" : "▶ Start";
-        pauseBtn.title = running ? "Pause the warmup timer" : "Start the warmup timer";
-        pauseBtn.disabled = warmupSecondsLeft <= 0;
-        pauseBtn.style.opacity = pauseBtn.disabled ? "0.5" : "1";
-        pauseBtn.style.cursor = pauseBtn.disabled ? "default" : "pointer";
+        runBtn.textContent = running ? "⏹ Stop" : "▶ Start";
+        runBtn.title = running ? "Stop the warmup timer" : "Start the warmup timer";
+        runBtn.disabled = warmupSecondsLeft <= 0;
+        runBtn.style.opacity = runBtn.disabled ? "0.5" : "1";
+        runBtn.style.cursor = runBtn.disabled ? "default" : "pointer";
+        // Filled while stopped so "press Start" is unmissable; outlined while
+        // running so the countdown itself stays the loudest thing on screen.
+        runBtn.style.background = running ? "#ffffff" : "#0f6d78";
+        runBtn.style.color = running ? "#0f6d78" : "#ffffff";
       };
 
-      pauseBtn.addEventListener("click", () => {
-        if (warmupTimerId) pauseWarmupCountdown();
-        else resumeWarmupCountdown();
+      runBtn.addEventListener("click", () => {
+        if (warmupTimerId) stopWarmupCountdown();
+        else startWarmupCountdown();
       });
       resetBtn.addEventListener("click", () => resetWarmupCountdown());
 
-      timerBar.append(pauseBtn, resetBtn);
+      timerBar.append(runBtn, resetBtn);
       syncWarmupControls();
 
       // Adopt the GLOBAL (universal) warmup length. Render started from the local
@@ -2602,7 +2620,11 @@ function renderWarmupPhase(el, state, ctx, config) {
         const elapsed = initialLocalSeconds - warmupSecondsLeft;
         if (g !== warmupSecondsLeft && elapsed <= 3) {
           warmupSecondsLeft = g;
-          startWarmupCountdown();
+          // Adopt the shared time on the clock face only. Late-arriving config
+          // must never start a timer the teacher has not started, and must never
+          // restart one they deliberately stopped.
+          if (warmupTimerId) startWarmupCountdown();
+          else showWarmupCountdown();
         }
       });
 
@@ -2659,7 +2681,10 @@ function renderWarmupPhase(el, state, ctx, config) {
         }
         const seconds = setWarmupSeconds(mins * 60);
         warmupSecondsLeft = seconds;
-        startWarmupCountdown();
+        // Setting the time re-arms the clock; it does not start it. If the timer
+        // was already running, keep it running on the new length.
+        if (warmupTimerId) startWarmupCountdown();
+        else showWarmupCountdown();
         pushGlobal(seconds);
       });
       timerBar.append(editBtn);
