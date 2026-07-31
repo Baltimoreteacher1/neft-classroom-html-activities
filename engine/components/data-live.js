@@ -29,6 +29,10 @@
 // objects.
 const DATA_1 = "#0f8a84"; // teal - primary series
 const DATA_2 = "#c2603f"; // clay - second series
+// The light-only palette is defined in full (DATA_1…DATA_4) so every series
+// colour comes from the same fixed set, whether or not this chart draws a
+// third series.
+// biome-ignore lint/correctness/noUnusedVariables: reserved palette entry
 const DATA_3 = "#b07d12"; // ochre - third series
 const DATA_4 = "#3b6ea5"; // blue - fourth series
 

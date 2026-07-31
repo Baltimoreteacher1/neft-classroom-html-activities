@@ -54,7 +54,7 @@
     });
   }
 
-  function checkAnswerPath(e) {
+  function checkAnswerPath() {
     var isIncorrect = document.querySelector(".feedback-incorrect, .distractor-active");
     if (isIncorrect) {
       offerReplayButton(isIncorrect);
@@ -94,7 +94,7 @@
       '<div class="replay-step-card is-branch-point" id="step-2"><span>Step 2: Cross-multiply (Branch Point)</span><strong style="color:#dc2626;">3 × 15 vs 5 × 9</strong></div>' +
       "</div>" +
       '<div class="replay-branch-comparison">' +
-      '<strong>⚡ Alternate Branch:</strong> Instead of cross-multiplying out of order, align equivalent fractions first: <code>3/5 = x/15</code>.' +
+      "<strong>⚡ Alternate Branch:</strong> Instead of cross-multiplying out of order, align equivalent fractions first: <code>3/5 = x/15</code>." +
       "</div>" +
       '<div class="replay-controls-row">' +
       '<button type="button" class="replay-btn-control btn-play-pause">Pause ⏸</button>' +

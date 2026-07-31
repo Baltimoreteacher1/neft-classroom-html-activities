@@ -21,6 +21,11 @@
 // turns every data mark the same navy. Colour that carries meaning belongs to
 // the figure. See engine/light-only-surfaces.test.mjs.
 const DATA_1 = "#0f8a84"; // teal - primary
+// DATA_1…DATA_4 are the fixed light-only data palette that
+// engine/light-only-surfaces.test.mjs requires every component to draw from.
+// This one is unused here; it stays so the palette is complete and identical
+// across components.
+// biome-ignore lint/correctness/noUnusedVariables: reserved palette entry
 const DATA_2 = "#c2603f"; // clay - secondary
 
 const STYLE_ID = "algebra-tiles-expand-styles";

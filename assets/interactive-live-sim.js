@@ -32,7 +32,7 @@
 
   function setupSimulations() {
     var targets = document.querySelectorAll(
-      ".learn-it, .try-it, .interactive-widget, .math-expression, .live-sim-container"
+      ".learn-it, .try-it, .interactive-widget, .math-expression, .live-sim-container",
     );
     if (!targets.length) return;
 
@@ -92,7 +92,7 @@
       if (currentVal === newVal) return;
 
       el.dataset.simValue = newVal;
-      
+
       // Update text while keeping child tooltip element intact
       var textNode = Array.from(el.childNodes).find(function (n) {
         return n.nodeType === 3; // Text node
@@ -107,7 +107,7 @@
       if (tooltip) tooltip.textContent = "Drag to change: " + newVal;
       el.setAttribute("aria-valuenow", newVal);
 
-      reDeriveContainer(container, el, newVal);
+      reDeriveContainer(container, newVal);
 
       if (global.NTtelemetry && typeof global.NTtelemetry.track === "function") {
         safeCall(function () {
@@ -126,7 +126,8 @@
 
       function onPointerMove(moveEvent) {
         var currentX =
-          moveEvent.clientX || (moveEvent.touches && moveEvent.touches[0] ? moveEvent.touches[0].clientX : 0);
+          moveEvent.clientX ||
+          (moveEvent.touches && moveEvent.touches[0] ? moveEvent.touches[0].clientX : 0);
         var delta = currentX - startX;
         var valDelta = Math.round(delta / 8) * step;
         updateValue(startVal + valDelta);
@@ -161,7 +162,7 @@
     });
   }
 
-  function reDeriveContainer(container, changedEl, newVal) {
+  function reDeriveContainer(container, newVal) {
     var derivedOutputs = container.querySelectorAll("[data-derived-from], .live-sim-derived-value");
     derivedOutputs.forEach(function (output) {
       var formula = output.dataset.formula;
@@ -178,7 +179,7 @@
 
     var svgModels = container.querySelectorAll("svg[data-live-svg]");
     svgModels.forEach(function (svg) {
-      updateSvgModel(svg, changedEl, newVal);
+      updateSvgModel(svg, newVal);
     });
   }
 
@@ -199,7 +200,7 @@
     return typeof res === "number" ? Math.round(res * 100) / 100 : res;
   }
 
-  function updateSvgModel(svg, changedEl, newVal) {
+  function updateSvgModel(svg, newVal) {
     var bar = svg.querySelector(".live-svg-bar");
     if (bar) {
       var widthPct = Math.min(100, Math.max(5, newVal * 10));

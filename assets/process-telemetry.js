@@ -37,7 +37,7 @@
 
   function attachListeners() {
     var inputs = document.querySelectorAll(
-      ".try-it input, .learn-it input, [data-step-input], .answer-input, .ratio-input"
+      ".try-it input, .learn-it input, [data-step-input], .answer-input, .ratio-input",
     );
 
     inputs.forEach(function (input) {
@@ -114,7 +114,7 @@
       if (inputParts[0] === expectedParts[1] && inputParts[1] === expectedParts[0]) {
         showMidSolveIntervention(
           "Check term order",
-          "It looks like your ratio terms might be upside down! Compare part-to-whole or part-to-part."
+          "It looks like your ratio terms might be upside down! Compare part-to-whole or part-to-part.",
         );
         trackProcessEvent("misconception_mid_solve", { type: "inverted_ratio", val: val });
       }

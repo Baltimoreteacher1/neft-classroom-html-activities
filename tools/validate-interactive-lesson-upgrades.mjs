@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { readFileSync, existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -63,22 +63,37 @@ const liveSimJs = read("assets/interactive-live-sim.js");
 check(liveSimJs.includes("reDeriveContainer"), "live-sim engine re-derives calculations");
 
 const processTelemetryJs = read("assets/process-telemetry.js");
-check(processTelemetryJs.includes("misconception_mid_solve"), "process telemetry detects mid-solve misconceptions");
+check(
+  processTelemetryJs.includes("misconception_mid_solve"),
+  "process telemetry detects mid-solve misconceptions",
+);
 
 const inkMathJs = read("assets/ink-native-math.js");
 check(inkMathJs.includes("analyzeStrokes"), "ink-native math analyzes drawn canvas strokes");
 
 const voiceJs = read("assets/voice-native-lesson.js");
-check(voiceJs.includes("SpeechSynthesisUtterance"), "voice assistant supports text-to-speech synthesis");
+check(
+  voiceJs.includes("SpeechSynthesisUtterance"),
+  "voice assistant supports text-to-speech synthesis",
+);
 
 const reasoningJs = read("assets/reasoning-replay.js");
-check(reasoningJs.includes("reasoning-replay-modal"), "reasoning replay renders metacognition modal");
+check(
+  reasoningJs.includes("reasoning-replay-modal"),
+  "reasoning replay renders metacognition modal",
+);
 
 const skepticJs = read("assets/convince-skeptic.js");
-check(skepticJs.includes("Convince the Skeptic Challenge"), "convince skeptic renders AI classmate challenge");
+check(
+  skepticJs.includes("Convince the Skeptic Challenge"),
+  "convince skeptic renders AI classmate challenge",
+);
 
 const twinsJs = read("assets/edge-tuned-twins.js");
-check(twinsJs.includes("Edge-Tuned Twin Problem"), "edge-tuned twins generates parallel practice problems");
+check(
+  twinsJs.includes("Edge-Tuned Twin Problem"),
+  "edge-tuned twins generates parallel practice problems",
+);
 
 // 5. Service Worker Precaching
 const swJs = read("public/sw.js");
