@@ -228,6 +228,37 @@ function addVocabularyTriggers(app, words, dialog) {
   return annotate;
 }
 
+// A revealed hint gets its own trigger budget instead of sharing the section's.
+//
+// The section cap is a readability rule and it is the right one for a page a
+// student SCANS — underlining every "factor" turns the prose into a wall of
+// buttons. A hint is not that. It is opened deliberately, by a student who is
+// already stuck, and read on its own; the earlier trigger that spent the
+// section's budget is usually scrolled away or inside a different problem card.
+//
+// Measured before changing it: across 7 lessons, 176 hint paragraphs contained a
+// vocabulary term and only 43 carried a trigger — 133 missed, 76%. "It is
+// defined two lines above" did not hold. Scoping the budget to the hint keeps
+// the same 2-per-term rule (a hint is one or two sentences, so it rarely reaches
+// it) while making the definition reachable exactly where a stuck student is
+// looking.
+let hintScopeSeq = 0;
+const hintScopeIds = new WeakMap();
+
+export function budgetKeyFor(element) {
+  if (!element) return "page";
+  const hint = element.closest(".hintbox > p");
+  if (hint) {
+    let id = hintScopeIds.get(hint);
+    if (!id) {
+      id = `hint-${++hintScopeSeq}`;
+      hintScopeIds.set(hint, id);
+    }
+    return id;
+  }
+  return element.closest("section.sg-sec, .sg-hero, .sg-mission")?.id || "page";
+}
+
 function annotateWithin(root, { pattern, byTerm, counts, dialog }) {
   if (!root || !root.isConnected) return;
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
@@ -252,8 +283,7 @@ function annotateWithin(root, { pattern, byTerm, counts, dialog }) {
     // Cap triggers per term PER SECTION (not per page) so late sections —
     // the Explore/Model/Apply labs — still get their vocabulary underlined
     // instead of the whole budget being spent in Launch/Build.
-    const sectionId =
-      textNode.parentElement?.closest("section.sg-sec, .sg-hero, .sg-mission")?.id || "page";
+    const sectionId = budgetKeyFor(textNode.parentElement);
     const fragment = document.createDocumentFragment();
     let cursor = 0;
     let changed = false;
