@@ -6,7 +6,7 @@
  * Bump CACHE on any deploy that must purge the precached shell.
  * ========================================================================== */
 
-const CACHE = "eduwonderlab-vms7t1xqc";
+const CACHE = "eduwonderlab-vms8v3ys9";
 const USER_OFFLINE_CACHE = "eduwonderlab-user-offline-v1";
 const PRECACHE_URLS = [
   "/curriculum/",
@@ -45,6 +45,20 @@ const PRECACHE_URLS = [
   "/assets/curriculum-live-signal.js",
   "/assets/curriculum-next-move.js",
   "/assets/curriculum-lesson-merge.js",
+  "/assets/interactive-live-sim.js",
+  "/assets/interactive-live-sim.css",
+  "/assets/process-telemetry.js",
+  "/assets/process-telemetry.css",
+  "/assets/ink-native-math.js",
+  "/assets/ink-native-math.css",
+  "/assets/voice-native-lesson.js",
+  "/assets/voice-native-lesson.css",
+  "/assets/reasoning-replay.js",
+  "/assets/reasoning-replay.css",
+  "/assets/convince-skeptic.js",
+  "/assets/convince-skeptic.css",
+  "/assets/edge-tuned-twins.js",
+  "/assets/edge-tuned-twins.css",
   "/assets/class-board-strip.js",
   "/assets/vendor/minisearch-7.1.2.min.js",
   "/assets/favicon.svg",
