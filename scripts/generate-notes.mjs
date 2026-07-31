@@ -5,7 +5,7 @@ import { deriveTWR } from "../engine/core/twr.js";
 import { resolveVocabImage, vocabImageAlt } from "../engine/core/vocab-images.js";
 import { deriveWorkedSteps } from "../engine/core/worked-steps.js";
 import { EDITORIAL_FONT_IMPORT, EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
-import { workedFigure } from "./lib/learn-figures.mjs";
+import { workedFigure, workedStepFigures } from "./lib/learn-figures.mjs";
 import { inScope, lessonScope } from "./lib/lesson-scope.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -1244,6 +1244,20 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
     ? `<figure class="li-fig"><figcaption class="li-fig-cap">The problem looks like this</figcaption>${fig.svg}</figure>`
     : "";
 
+  // Some worked examples are not ONE picture — they are a drawing that grows.
+  // A prime factorization is the clearest case: every step splits one more
+  // branch, and reading "6 = 2 × 3" without watching the branch appear is the
+  // whole difficulty. When the steps read as a buildable diagram, each step
+  // carries its own snapshot of it, pinned to the finished layout so the
+  // diagram grows in place instead of jumping around.
+  const stepFigs = workedStepFigures(cfg) || [];
+  const stepFigure = (i) =>
+    stepFigs[i]
+      ? `<figure class="li-stepfig">${stepFigs[i].svg}<figcaption class="li-stepfig-cap">${
+          stepFigs[i].kind === "factor-tree" ? "The factor tree so far" : "The diagram so far"
+        }</figcaption></figure>`
+      : "";
+
   // ② Worked example (I do) — read-only model, revealed ONE STEP AT A TIME so
   // the page never opens as a wall of text. Each step prints its own equation
   // as a large display line, and key math words become tap-to-define pop-ups.
@@ -1255,7 +1269,7 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
       label: "Watch me solve it",
       sub: "I do — read one step at a time",
       body: `${figureCard}<p class="li-lead">Read one step, then press the button for the next one. Tap any <span class="li-pop-demo">blue word</span> to see what it means.</p>
-        <ol class="li-steps li-steps-paced">${iLines.map((l) => `<li>${liStepBody(l, vocab)}</li>`).join("")}</ol>
+        <ol class="li-steps li-steps-paced">${iLines.map((l, i) => `<li>${liStepBody(l, vocab)}${stepFigure(i)}</li>`).join("")}</ol>
         <div class="li-pace no-print">
           <button type="button" class="li-pace-next">Show me the next step ▸</button>
           <button type="button" class="li-pace-all">Show all steps</button>
@@ -1883,6 +1897,14 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
   border-left:5px solid var(--teal);border-radius:10px;font-family:Outfit,system-ui,sans-serif;
   font-size:clamp(22px,2.4vw,30px);line-height:1.3;font-weight:800;color:var(--navy);
   font-variant-numeric:tabular-nums;letter-spacing:.01em;overflow-x:auto;}
+/* A step that builds a diagram carries its own snapshot of it. */
+.li-stepfig{margin:14px 0 0;padding:12px 14px 10px;border:1.5px solid var(--teal);
+  border-radius:14px;background:#fbfdfc;}
+.li-stepfig svg{display:block;width:100%;max-width:440px;height:auto;margin:0 auto;}
+.li-stepfig-cap{margin:8px 0 0;text-align:center;font-size:13px;font-weight:800;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--teal-ink);}
+@media print{.li-stepfig{background:#fff;border-color:#000;page-break-inside:avoid;}
+  .li-stepfig-cap{color:#000;}}
 /* Paced worked example — one step at a time, so the page never opens as a wall. */
 .li-steps-paced>li[hidden]{display:none;}
 .li-pace{display:flex;flex-wrap:wrap;gap:12px;margin:4px 0 0;}
