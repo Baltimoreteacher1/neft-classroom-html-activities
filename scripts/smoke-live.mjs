@@ -43,6 +43,17 @@ const PAGES = [
   // it proves the middleware is live. A 200 here would mean the gate is OFF.
   { path: "/teacher-tools/", marker: /<title/i, name: "teacher tools hub", authGated: true },
   { path: "/math/student-board/", marker: /<title/i, name: "class board" },
+  // One page per TEMPLATE, discovered from disk rather than listed here. The
+  // seven paths above are the surfaces a class opens most; these cover the
+  // layouts everything else is built from (games, projects, novels, printables,
+  // family pages, small-group lessons). A deploy that breaks one template
+  // breaks hundreds of URLs, and until this was added the smoke could not see
+  // it — the sample was all hubs and lesson launchers.
+  ...(await import("./lib/page-templates.mjs")).representativePages().map((p) => ({
+    path: p.path,
+    marker: /<title/i,
+    name: `${p.name.toLowerCase()} (template)`,
+  })),
 ];
 
 /**
