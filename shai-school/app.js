@@ -4658,6 +4658,10 @@
   }
 
   function rankNavigation(usage = {}) {
+    // Shai's focused planner intentionally has only four primary destinations.
+    // Keep all four visible; the larger Focus School ranking scheme below
+    // assumes Home/Homework/More entries that are not part of this slim nav.
+    if (TABS.length <= 5) return TABS;
     const pinned = TABS.filter((tab) => ["home", "homework"].includes(tab[0]));
     const candidates = TABS.filter((tab) => !["home", "homework", "more"].includes(tab[0]))
       .sort(
@@ -9852,6 +9856,22 @@ Due May 31"></textarea>
       render();
       const item = api.itemById(itemId);
       if (item) toast(`${item.emoji} ${item.name} on.`);
+    },
+    "sports-buy": (_, itemId) => {
+      const api = sports();
+      if (!api || !itemId) return;
+      const result = api.purchase(state.sport, itemId);
+      if (result.status === "level") return toast(`🔒 Reach level ${result.item.level} first.`);
+      if (result.status === "points") {
+        return toast(`Keep training — you need ${result.item.price - api.gearBalance(state.sport)} more points.`);
+      }
+      if (result.status !== "purchased") return;
+      state.sport = result.sport;
+      save();
+      playSuccessChime();
+      triggerConfetti();
+      render();
+      toast(`${result.item.emoji} ${result.item.name} is yours — equipped!`);
     },
     "view-rewards": () => setView("rewards"),
 

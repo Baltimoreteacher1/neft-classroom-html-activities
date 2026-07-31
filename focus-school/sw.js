@@ -1,13 +1,13 @@
 /* Focus School — service worker.
  * Offline-first app shell: precache core files, serve them cache-first,
  * fall back to the cached app for navigations when offline. */
-const VERSION = "focus-school-v64";
+const VERSION = "focus-school-v65";
 const CORE = [
   "./",
   "index.html",
   "styles.css?v=57",
   "sports.js?v=3",
-  "app.js?v=58",
+  "app.js?v=59",
   "manifest.webmanifest",
   "icons/favicon.svg",
   "icons/icon-192.png",

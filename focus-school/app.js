@@ -9828,6 +9828,22 @@ Due May 31"></textarea>
       const item = api.itemById(itemId);
       if (item) toast(`${item.emoji} ${item.name} on.`);
     },
+    "sports-buy": (_, itemId) => {
+      const api = sports();
+      if (!api || !itemId) return;
+      const result = api.purchase(state.sport, itemId);
+      if (result.status === "level") return toast(`🔒 Reach level ${result.item.level} first.`);
+      if (result.status === "points") {
+        return toast(`Keep training — you need ${result.item.price - api.gearBalance(state.sport)} more points.`);
+      }
+      if (result.status !== "purchased") return;
+      state.sport = result.sport;
+      save();
+      playSuccessChime();
+      triggerConfetti();
+      render();
+      toast(`${result.item.emoji} ${result.item.name} is yours — equipped!`);
+    },
     "view-rewards": () => setView("rewards"),
 
     // Pay out EVERYTHING owed in one hand-over. Opens a parent-gated paystub

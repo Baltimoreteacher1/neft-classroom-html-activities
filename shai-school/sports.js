@@ -59,12 +59,15 @@
     // The locker has more slots than one line of emoji can show, so the
     // player card renders only these — the rest are still worn.
     avatarSlots: ["kit", "boots", "ball", "extra", "pitch"],
-    // Cosmetic gear. `level` is the season level that unlocks it (1-based).
+    avatar: { name: "Shai", number: "10" },
+    // Cosmetic gear. `level` opens the item in the shop; `price` uses training
+    // points already earned. Buying gear never lowers XP or a season level.
     gear: [
       {
         id: "boots_street",
         slot: "boots",
         level: 1,
+        price: 0,
         emoji: "👟",
         name: "Street Trainers",
         note: "Grass, concrete, whatever.",
@@ -81,6 +84,7 @@
         id: "boots_studs",
         slot: "boots",
         level: 3,
+        price: 140,
         emoji: "🔩",
         name: "Screw-In Studs",
         note: "Swap them for a wet pitch.",
@@ -113,6 +117,7 @@
         id: "boots_flame",
         slot: "boots",
         level: 7,
+        price: 360,
         emoji: "🔥",
         name: "Flame Boots",
         note: "Left-foot rocket included.",
@@ -137,6 +142,7 @@
         id: "boots_gold",
         slot: "boots",
         level: 10,
+        price: 650,
         emoji: "🥇",
         name: "Golden Boots",
         note: "Top scorer energy.",
@@ -161,6 +167,7 @@
         id: "ball_worn",
         slot: "ball",
         level: 1,
+        price: 0,
         emoji: "⚽",
         name: "Park Ball",
         note: "Slightly flat. Still perfect.",
@@ -185,6 +192,7 @@
         id: "ball_match",
         slot: "ball",
         level: 4,
+        price: 190,
         emoji: "✨",
         name: "Match Ball",
         note: "Pumped to exactly right.",
@@ -201,6 +209,7 @@
         id: "ball_comet",
         slot: "ball",
         level: 8,
+        price: 430,
         emoji: "☄️",
         name: "Comet Ball",
         note: "Leaves a trail on the volley.",
@@ -217,6 +226,7 @@
         id: "kit_home",
         slot: "kit",
         level: 1,
+        price: 0,
         emoji: "👕",
         name: "Home Shirt",
         note: "Number on the back.",
@@ -225,6 +235,7 @@
         id: "kit_away",
         slot: "kit",
         level: 2,
+        price: 80,
         emoji: "🎽",
         name: "Away Kit",
         note: "For the loud games.",
@@ -241,6 +252,7 @@
         id: "kit_neon",
         slot: "kit",
         level: 6,
+        price: 300,
         emoji: "🟩",
         name: "Neon Third Kit",
         note: "Visible from the stands.",
@@ -257,6 +269,7 @@
         id: "kit_champ",
         slot: "kit",
         level: 11,
+        price: 760,
         emoji: "🏆",
         name: "Champions Kit",
         note: "Earned, not bought.",
@@ -361,6 +374,7 @@
         id: "extra_band",
         slot: "extra",
         level: 1,
+        price: 0,
         emoji: "🦺",
         name: "Training Bib",
         note: "Everyone starts in a bib.",
@@ -377,6 +391,7 @@
         id: "extra_armband",
         slot: "extra",
         level: 5,
+        price: 240,
         emoji: "🅰️",
         name: "Captain's Armband",
         note: "You lead the warm-up now.",
@@ -393,6 +408,7 @@
         id: "extra_crown",
         slot: "extra",
         level: 9,
+        price: 520,
         emoji: "👑",
         name: "Crown",
         note: "Slightly ridiculous. Deserved.",
@@ -441,6 +457,7 @@
         id: "pitch_park",
         slot: "pitch",
         level: 1,
+        price: 0,
         emoji: "🏞️",
         name: "The Park",
         note: "Jumpers for goalposts.",
@@ -457,6 +474,7 @@
         id: "pitch_lights",
         slot: "pitch",
         level: 4,
+        price: 200,
         emoji: "💡",
         name: "Floodlit Pitch",
         note: "Kick-off under the lights.",
@@ -473,6 +491,7 @@
         id: "pitch_stadium",
         slot: "pitch",
         level: 8,
+        price: 450,
         emoji: "🏟️",
         name: "The Big Stadium",
         note: "60,000 singing.",
@@ -481,6 +500,7 @@
         id: "pitch_moon",
         slot: "pitch",
         level: 12,
+        price: 900,
         emoji: "🌙",
         name: "Moonlight Pitch",
         note: "Only legends play here.",
@@ -503,6 +523,15 @@
     ],
   };
 
+  // Catalog entries may be expanded independently, so pricing lives here as
+  // the single fallback rule. Explicit prices still win; every starter is free.
+  const GEAR_PRICE_BY_LEVEL = [0, 80, 140, 190, 240, 300, 360, 430, 520, 650, 760, 900];
+  for (const item of THEME.gear) {
+    if (!Number.isFinite(Number(item.price))) {
+      item.price = GEAR_PRICE_BY_LEVEL[item.level - 1] ?? GEAR_PRICE_BY_LEVEL.at(-1);
+    }
+  }
+
   // --- Points ---------------------------------------------------------------
   // What each kind of finished work is worth. Deliberately flat-ish: the point
   // is consistency, not optimizing which task to do.
@@ -524,6 +553,7 @@
   // A synced or imported blob can carry anything — never trust it into the UI.
   function normalize(s) {
     const src = s && typeof s === "object" ? s : {};
+    const xp = clampInt(src.xp, 0, 10_000_000);
     const equipped = {};
     for (const [slot] of THEME.slots) {
       const id = src.equipped?.[slot];
@@ -531,11 +561,23 @@
         equipped[slot] = id;
       }
     }
+    // Before the shop existed, reaching a level automatically owned every item
+    // at that level. Preserve those lockers once, then use the explicit list.
+    const legacyOwned = THEME.gear
+      .filter((g) => g.level <= levelInfo(xp).level)
+      .map((g) => g.id);
+    const requestedOwned = Array.isArray(src.owned) ? src.owned : legacyOwned;
+    const owned = [...new Set([
+      ...THEME.gear.filter((g) => g.price === 0).map((g) => g.id),
+      ...requestedOwned,
+      ...Object.values(equipped),
+    ])].filter((id) => THEME.gear.some((g) => g.id === id));
     const day = typeof src.lastDay === "string" && /^\d{4}-\d{2}-\d{2}$/.test(src.lastDay)
       ? src.lastDay
       : "";
     return {
-      xp: clampInt(src.xp, 0, 10_000_000),
+      xp,
+      owned,
       equipped,
       // Consecutive days with something finished. Form is a reason to come
       // back tomorrow; it never takes points away, it only adds a bonus.
@@ -559,6 +601,7 @@
     const recent = b.lastDay > a.lastDay ? b : a;
     return {
       xp: Math.max(a.xp, b.xp),
+      owned: [...new Set([...a.owned, ...b.owned])],
       equipped: { ...a.equipped, ...winner.equipped },
       celebrated: Math.max(a.celebrated, b.celebrated),
       streak: recent.streak,
@@ -594,6 +637,12 @@
   const unlockedGear = (xp) => THEME.gear.filter((g) => g.level <= levelInfo(xp).level);
   const lockedGear = (xp) => THEME.gear.filter((g) => g.level > levelInfo(xp).level);
   const nextUnlock = (xp) => lockedGear(xp).sort((a, b) => a.level - b.level)[0] || null;
+  const ownsItem = (sport, itemId) => normalize(sport).owned.includes(itemId);
+  const gearBalance = (sport) => {
+    const s = normalize(sport);
+    const spent = s.owned.reduce((sum, id) => sum + (itemById(id)?.price || 0), 0);
+    return Math.max(0, s.xp - spent);
+  };
 
   // Add points for one finished thing. Returns the new sport object plus what
   // just changed, so the caller can celebrate without recomputing anything.
@@ -634,10 +683,6 @@
     const wasLevel = levelInfo(before.xp).level;
     const nowLevel = levelInfo(after.xp).level;
     const fresh = THEME.gear.filter((g) => g.level > wasLevel && g.level <= nowLevel);
-    // Newly unlocked gear equips itself if that slot is empty, so a kid who
-    // never opens the locker still visibly changes as the season goes on.
-    for (const g of fresh)
-      if (!after.equipped[g.slot]) after.equipped = { ...after.equipped, [g.slot]: g.id };
     return {
       sport: after,
       gain,
@@ -652,8 +697,21 @@
   function equip(sport, itemId) {
     const cur = normalize(sport);
     const item = THEME.gear.find((g) => g.id === itemId);
-    if (!item || item.level > levelInfo(cur.xp).level) return cur;
+    if (!item || !cur.owned.includes(item.id)) return cur;
     return { ...cur, equipped: { ...cur.equipped, [item.slot]: item.id } };
+  }
+
+  function purchase(sport, itemId) {
+    const cur = normalize(sport);
+    const item = THEME.gear.find((g) => g.id === itemId);
+    if (!item) return { sport: cur, status: "missing", item: null };
+    if (cur.owned.includes(item.id)) return { sport: cur, status: "owned", item };
+    if (item.level > levelInfo(cur.xp).level) return { sport: cur, status: "level", item };
+    if (item.price > gearBalance(cur)) return { sport: cur, status: "points", item };
+    const next = { ...cur, owned: [...cur.owned, item.id] };
+    // The new purchase goes straight onto the avatar for an immediate payoff.
+    next.equipped = { ...next.equipped, [item.slot]: item.id };
+    return { sport: next, status: "purchased", item };
   }
 
   const itemById = (id) => THEME.gear.find((g) => g.id === id) || null;
@@ -663,26 +721,47 @@
   // is injected once by app.js rather than shipping a second stylesheet.
   const CSS = `
   .sp-wrap{--sp-accent:${THEME.accent};--sp-soft:${THEME.accentSoft}}
-  .sp-card{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
-  .sp-avatar{font-size:34px;line-height:1;letter-spacing:2px;background:var(--sp-soft);border-radius:16px;padding:10px 12px}
+  .sp-card{display:grid;grid-template-columns:minmax(210px,1.05fr) minmax(210px,.95fr);gap:18px;align-items:center}
+  .sp-stage{position:relative;min-height:280px;overflow:hidden;border-radius:24px;background:linear-gradient(var(--sp-sky,#7dd3fc) 0 57%,var(--sp-ground,#4ade80) 57%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.45),0 18px 38px rgba(15,23,42,.18);isolation:isolate}
+  .sp-stage:before{content:"";position:absolute;inset:56% -15% -40%;background:repeating-linear-gradient(102deg,rgba(255,255,255,.12) 0 24px,transparent 24px 48px);transform:perspective(180px) rotateX(34deg);transform-origin:top}
+  .sp-stage:after{content:"";position:absolute;left:50%;bottom:-70px;width:260px;height:170px;border:4px solid rgba(255,255,255,.75);border-radius:50%;transform:translateX(-50%);z-index:-1}
+  .sp-avatar-svg{display:block;width:100%;height:280px;filter:drop-shadow(0 14px 12px rgba(15,23,42,.24));position:relative;z-index:1}
+  .sp-player-bob{transform-origin:150px 280px;animation:sp-idle 2.8s ease-in-out infinite}
+  .sp-ball{transform-origin:center;animation:sp-ball 2.8s ease-in-out infinite}
+  .sp-card-mini{width:96px;height:102px;flex:0 0 auto;border-radius:18px;min-height:0}
+  .sp-card-mini .sp-avatar-svg{height:102px}
+  .sp-card-mini:after,.sp-card-mini:before{display:none}
+  .sp-stage-tag{position:absolute;left:12px;top:12px;z-index:2;padding:6px 9px;border-radius:999px;background:rgba(15,23,42,.72);color:#fff;font-size:.7rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;backdrop-filter:blur(8px)}
   .sp-meta{flex:1;min-width:180px}
-  .sp-level{font-weight:800;font-size:1.05rem;margin:0}
+  .sp-level{font-weight:900;font-size:1.12rem;margin:0}
   .sp-sub{margin:2px 0 0;opacity:.75;font-size:.86rem}
+  .sp-wallet{display:inline-flex;align-items:center;gap:7px;margin:10px 0 4px;padding:8px 11px;border-radius:12px;background:#0f172a;color:#fff;font-weight:900;box-shadow:0 7px 16px rgba(15,23,42,.18)}
+  .sp-wallet span{color:#fbbf24}
   .sp-bar{height:12px;border-radius:999px;background:rgba(127,127,127,.22);overflow:hidden;margin-top:8px}
-  .sp-bar>span{display:block;height:100%;background:var(--sp-accent);border-radius:999px;transition:width .5s ease}
+  .sp-bar>span{display:block;height:100%;background:linear-gradient(90deg,var(--sp-accent),#fbbf24);border-radius:999px;transition:width .5s ease;position:relative}
+  .sp-bar>span:after{content:"";position:absolute;inset:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.65),transparent);animation:sp-shine 2.8s linear infinite}
   .sp-diamond{display:block;width:100%;max-width:260px;margin:12px auto 0}
   .sp-legs{display:flex;justify-content:space-between;font-size:.75rem;opacity:.7;max-width:260px;margin:4px auto 0}
   .sp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:10px}
-  .sp-item{text-align:left;border:2px solid rgba(127,127,127,.25);border-radius:14px;padding:10px;background:transparent;font:inherit;color:inherit;cursor:pointer}
-  .sp-item[data-on="1"]{border-color:var(--sp-accent);background:var(--sp-soft);color:#1f2937}
+  .sp-item{text-align:left;border:2px solid rgba(127,127,127,.22);border-radius:16px;padding:11px;background:rgba(255,255,255,.04);font:inherit;color:inherit;cursor:pointer;position:relative;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+  button.sp-item:hover:not([disabled]){transform:translateY(-3px);border-color:var(--sp-accent);box-shadow:0 10px 22px rgba(15,23,42,.12)}
+  .sp-item[data-on="1"]{border-color:var(--sp-accent);background:var(--sp-soft);color:#1f2937;box-shadow:0 0 0 3px color-mix(in srgb,var(--sp-accent) 15%,transparent)}
+  .sp-item[data-state="buy"]{border-style:dashed}
   .sp-item[disabled]{opacity:.5;cursor:default}
   .sp-item b{display:block;font-size:.92rem}
   .sp-item small{display:block;opacity:.75;margin-top:2px}
   .sp-emoji{font-size:22px}
+  .sp-price{position:absolute;right:8px;top:8px;border-radius:999px;padding:4px 7px;background:#0f172a;color:#fbbf24;font-size:.7rem;font-weight:900}
+  .sp-owned{color:var(--sp-accent);font-weight:900}
   .sp-ladder{display:flex;flex-direction:column;gap:6px;margin-top:10px}
   .sp-rung{display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:12px;background:rgba(127,127,127,.10)}
   .sp-rung[data-on="1"]{background:var(--sp-soft);color:#1f2937;font-weight:700}
   .sp-rung small{margin-left:auto;opacity:.7}
+  @keyframes sp-idle{0%,100%{transform:translateY(0) rotate(-.4deg)}50%{transform:translateY(-4px) rotate(.4deg)}}
+  @keyframes sp-ball{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-7px) rotate(12deg)}}
+  @keyframes sp-shine{from{transform:translateX(-110%)}to{transform:translateX(110%)}}
+  @media(max-width:620px){.sp-card{grid-template-columns:1fr}.sp-stage{min-height:240px}.sp-avatar-svg{height:240px}.sp-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(prefers-reduced-motion:reduce){.sp-player-bob,.sp-ball,.sp-bar>span:after{animation:none}.sp-item{transition:none}}
   `;
 
   // A pitch with the ball carried further forward as the level fills.
@@ -717,6 +796,54 @@
     return worn.length ? worn.map((g) => g.emoji).join("") : THEME.icon;
   };
 
+  // --- Sport avatar begin --------------------------------------------------
+  function avatarLook(sport) {
+    const s = normalize(sport);
+    const has = (id) => Object.values(s.equipped).includes(id);
+    return {
+      kit: has("kit_neon") ? "#a3e635" : has("kit_champ") ? "#facc15" : has("kit_away") ? "#f97316" : "#2563eb",
+      trim: has("kit_champ") ? "#7c3aed" : has("kit_away") ? "#fff7ed" : "#f8fafc",
+      boots: has("boots_gold") ? "#facc15" : has("boots_flame") ? "#ef4444" : has("boots_studs") ? "#111827" : "#f8fafc",
+      ball: has("ball_comet") ? "#fb7185" : has("ball_match") ? "#facc15" : "#f8fafc",
+      band: has("extra_crown") ? "#facc15" : has("extra_armband") ? "#ef4444" : "#f8fafc",
+      sky: has("pitch_moon") ? "#172554" : has("pitch_stadium") ? "#334155" : has("pitch_lights") ? "#fb923c" : "#7dd3fc",
+      ground: has("pitch_moon") ? "#14532d" : "#22c55e",
+      venue: itemById(s.equipped.pitch)?.name || "The Park",
+    };
+  }
+
+  function avatarSvg(sport, compact = false) {
+    const look = avatarLook(sport);
+    const label = `${THEME.avatar.name}'s soccer avatar at ${look.venue}`;
+    return `<div class="sp-stage${compact ? " sp-card-mini" : ""}" style="--sp-sky:${look.sky};--sp-ground:${look.ground}">
+      ${compact ? "" : `<span class="sp-stage-tag">⚽ ${look.venue}</span>`}
+      <svg class="sp-avatar-svg" viewBox="0 0 300 340" role="img" aria-label="${label}">
+        <g class="sp-player-bob">
+          <ellipse cx="151" cy="304" rx="78" ry="13" fill="rgba(15,23,42,.20)"/>
+          <path d="M130 207 Q116 252 105 288" fill="none" stroke="#1e3a8a" stroke-width="28" stroke-linecap="round"/>
+          <path d="M172 207 Q197 229 225 251" fill="none" stroke="#1e3a8a" stroke-width="28" stroke-linecap="round"/>
+          <path d="M88 291h42" stroke="${look.boots}" stroke-width="18" stroke-linecap="round"/>
+          <path d="M214 253l34 15" stroke="${look.boots}" stroke-width="18" stroke-linecap="round"/>
+          <path d="M119 120 Q87 149 75 187" fill="none" stroke="#d99b72" stroke-width="20" stroke-linecap="round"/>
+          <path d="M181 120 Q213 144 229 177" fill="none" stroke="#d99b72" stroke-width="20" stroke-linecap="round"/>
+          <path d="M105 115 Q150 96 195 116 L183 213 Q150 229 117 213Z" fill="${look.kit}" stroke="${look.trim}" stroke-width="6"/>
+          <path d="M112 132h76" stroke="${look.trim}" stroke-width="5" opacity=".65"/>
+          <text x="150" y="178" text-anchor="middle" font-size="43" font-weight="900" fill="${look.trim}">${THEME.avatar.number}</text>
+          <rect x="207" y="143" width="20" height="10" rx="5" fill="${look.band}" transform="rotate(54 217 148)"/>
+          <circle cx="150" cy="76" r="41" fill="#d99b72"/>
+          <path d="M112 70 Q116 25 153 26 Q187 27 191 72 Q172 51 112 70Z" fill="#3f2d20"/>
+          <circle cx="136" cy="79" r="4" fill="#1f2937"/><circle cx="166" cy="79" r="4" fill="#1f2937"/>
+          <path d="M139 96q12 10 24 0" fill="none" stroke="#7c2d12" stroke-width="4" stroke-linecap="round"/>
+        </g>
+        <g class="sp-ball">
+          <circle cx="253" cy="282" r="23" fill="${look.ball}" stroke="#111827" stroke-width="3"/>
+          <path d="M253 267l10 8-4 12h-12l-4-12Z" fill="#111827"/><path d="M231 277l12-2M263 275l11-5M259 287l8 12M247 287l-7 13" stroke="#111827" stroke-width="3"/>
+        </g>
+      </svg>
+    </div>`;
+  }
+  // --- Sport avatar end ----------------------------------------------------
+
   // Compact home-screen card: level, avatar, progress. Taps into the full view.
   function renderCard(sport, helpers) {
     const esc = helpers?.esc || ((v) => String(v));
@@ -727,13 +854,13 @@
     )}">
       <div class="head"><div><h3>${THEME.icon} ${esc(THEME.title)}</h3><p class="sub">Level ${
         lv.level
-      } · ${esc(lv.name)}</p></div><div class="sp-emoji">${esc(avatarFor(s))}</div></div>
+      } · ${esc(lv.name)}</p></div>${avatarSvg(s, true)}</div>
       <div class="sp-bar"><span style="width:${lv.pct}%"></span></div>
       <p class="sp-sub">${
         s.streak > 1 ? `🔥 ${s.streak} days in a row · ` : ""
-      }${
+      }🪙 ${gearBalance(s)} spendable · ${
         lv.isMax
-          ? `Hall of Fame — every piece of gear is yours. 🏛️`
+          ? `${esc(THEME.maxLine)} Every shop level is unlocked.`
           : `${lv.toNext} more ${THEME.pointWord} to ${esc(lv.nextName)}.`
       }</p>
     </section>`;
@@ -748,16 +875,17 @@
     const next = nextUnlock(s.xp);
 
     const playerHtml = `<div class="sp-card">
-      <div class="sp-avatar">${esc(avatarFor(s))}</div>
+      ${avatarSvg(s)}
       <div class="sp-meta">
         <p class="sp-level">${esc(lv.badge)} Level ${lv.level} — ${esc(lv.name)}</p>
         <p class="sp-sub">${lv.total} ${THEME.pointWord} earned${
           lv.isMax ? "" : ` · ${lv.toNext} to ${esc(lv.nextName)}`
         }</p>
+        <div class="sp-wallet" aria-label="${gearBalance(s)} spendable training points"><span>●</span> ${gearBalance(s)} to spend</div>
         <div class="sp-bar"><span style="width:${lv.pct}%"></span></div>
+        ${pitchSvg(lv.pct)}
       </div>
     </div>
-    ${pitchSvg(lv.pct)}
     <div class="sp-legs">${THEME.legs.map((l) => `<span>${esc(l)}</span>`).join("")}</div>
     <p class="sp-sub" style="text-align:center;margin-top:8px">${
       lv.isMax
@@ -781,14 +909,17 @@
           return `<h4 style="margin:14px 0 0;font-size:.95rem">${esc(label)}</h4>
         <div class="sp-grid">${items
           .map((g) => {
-            const owned = g.level <= lv.level;
+            const owned = s.owned.includes(g.id);
+            const levelReady = g.level <= lv.level;
             const on = s.equipped[slot] === g.id;
-            return `<button class="sp-item" data-on="${on ? 1 : 0}" ${
-              owned ? `data-act="sports-equip" data-arg="${g.id}"` : "disabled"
+            const action = owned ? "sports-equip" : "sports-buy";
+            return `<button class="sp-item" data-on="${on ? 1 : 0}" data-state="${owned ? "owned" : levelReady ? "buy" : "locked"}" ${
+              levelReady ? `data-act="${action}" data-arg="${g.id}"` : "disabled"
             }>
-              <span class="sp-emoji">${owned ? g.emoji : "🔒"}</span>
+              ${!owned && levelReady ? `<span class="sp-price">${g.price} ●</span>` : ""}
+              <span class="sp-emoji">${levelReady ? g.emoji : "🔒"}</span>
               <b>${esc(g.name)}</b>
-              <small>${owned ? esc(g.note) : `Unlocks at level ${g.level}`}</small>
+              <small>${owned ? `<span class="sp-owned">${on ? "Wearing now" : "Owned · tap to wear"}</span>` : levelReady ? `${esc(g.note)} · Buy for ${g.price}` : `Reach level ${g.level}`}</small>
             </button>`;
           })
           .join("")}</div>`;
@@ -832,7 +963,7 @@
       `${THEME.icon} ${esc(THEME.title)}`,
       esc(THEME.tagline),
       playerHtml,
-    )}${wrap("sp-locker", "🎒 Gear locker", "Tap to wear it.", lockerHtml)}${wrap(
+    )}${wrap("sp-locker", "🛍️ Clubhouse shop", "Use training points—not real money. Buy it once, then swap gear anytime.", lockerHtml)}${wrap(
       "sp-trophies",
       "🏆 Trophy case",
       "Won by climbing the ladder.",
@@ -854,7 +985,10 @@
     unlockedGear,
     lockedGear,
     nextUnlock,
+    ownsItem,
+    gearBalance,
     award,
+    purchase,
     equip,
     itemById,
     avatarFor,
