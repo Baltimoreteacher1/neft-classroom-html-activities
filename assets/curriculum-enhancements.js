@@ -18,9 +18,12 @@
   // same Teacher Mode sticky flag; neither is SITE_PASSWORD.
   // ⚠️ KEEP IN SYNC with TEACHER_PINS in engine/core/teacher-mode.js.
   var TEACHER_PINS = {
-    master: "BlueHeron2026",
-    coteacher: "RiverStone2026",
+    master: "TeacherNeft",
+    coteacher: "TeacherAlba",
+    masterAlt: "BlueHeron2026",
+    coteacherAlt: "RiverStone2026",
   };
+  var ACCEPTED_TEACHER_PINS = ["TeacherNeft", "TeacherAlba", "BlueHeron2026", "RiverStone2026"];
   var STORAGE_PROGRESS = "curriculumProgress";
   var FILTER_ALL = "all";
 
