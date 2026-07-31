@@ -2118,26 +2118,26 @@ function renderObjectives(el, config, state) {
   const card = (o) => `
     <div class="card ${o.cardClass} launch-objective">
       <div class="launch-objective-head" style="display:flex; align-items:center; justify-content:space-between; gap:var(--sp-2); margin-bottom:var(--sp-2);">
-        <h4 style="color:${o.ink}; margin:0;">${o.label}</h4>
-        <label class="objective-check" style="display:inline-flex; align-items:center; gap:6px; margin:0; font-size:.8rem; font-weight:800; color:${o.ink}; cursor:pointer; white-space:nowrap;">
+        <h4 style="color:${o.ink}; margin:0; font-size:1.15rem; font-weight:800; letter-spacing:-0.01em;">${o.label}</h4>
+        <label class="objective-check" style="display:inline-flex; align-items:center; gap:6px; margin:0; font-size:.85rem; font-weight:800; color:${o.ink}; cursor:pointer; white-space:nowrap;">
           <input type="checkbox" class="objective-check-box" data-obj-key="${o.key}" aria-label="I understand the ${o.label.toLowerCase()}"
                  style="width:18px; height:18px; accent-color:${o.ink}; cursor:pointer;" />
           Got it
         </label>
       </div>
-      <p style="margin:0; font-weight:600;">${o.text}</p>
+      <p style="margin:0; font-size:1.08rem; font-weight:800; color:#0f172a; line-height:1.65; -webkit-font-smoothing:antialiased;">${o.text}</p>
       
       <!-- PUBLISHER-GRADE VISUAL MODEL CARD DIRECTLY BELOW OBJECTIVE TEXT -->
-      <div class="visual-model-wrapper" style="margin-top:14px; margin-bottom:14px; border-radius:14px; overflow:hidden; border:1px solid rgba(0,0,0,0.1); box-shadow:0 6px 18px rgba(0,0,0,0.06); background:#0b0f19; cursor:zoom-in;">
+      <div class="visual-model-wrapper" style="margin-top:14px; margin-bottom:14px; border-radius:14px; overflow:hidden; border:1px solid rgba(0,0,0,0.12); box-shadow:0 6px 18px rgba(0,0,0,0.06); background:#0b0f19; cursor:zoom-in;">
         <img src="${o.img}" alt="Visual Model Representation" style="width:100%; height:auto; display:block; cursor:zoom-in;" />
-        <div style="padding:10px 14px; background:#ffffff; border-top:1px solid #e2e8f0; font-size:13px; color:#1e293b; font-weight:600; line-height:1.4;">
-          ${o.icon} <strong>Visual Representation:</strong> ${o.caption} <span style="font-size:11px; opacity:0.8; margin-left:6px;">🔍 (Click to enlarge)</span>
+        <div style="padding:10px 14px; background:#ffffff; border-top:1px solid #e2e8f0; font-size:13.5px; color:#0f172a; font-weight:700; line-height:1.45;">
+          ${o.icon} <strong>Visual Representation:</strong> ${o.caption} <span style="font-size:11px; opacity:0.85; margin-left:6px;">🔍 (Click to enlarge)</span>
         </div>
       </div>
 
       <div class="objective-discuss" style="margin-top:var(--sp-3); padding-top:var(--sp-2); border-top:1px dashed rgba(0,0,0,0.12);">
-        <span style="display:block; font-size:.82rem; font-weight:800; letter-spacing:.02em; color:${o.ink}; margin-bottom:2px;">💬 Talk about it</span>
-        <span style="font-size:.95rem;">${o.discuss}</span>
+        <span style="display:block; font-size:.85rem; font-weight:800; letter-spacing:.02em; color:${o.ink}; margin-bottom:3px;">💬 Talk about it</span>
+        <span style="font-size:.98rem; font-weight:700; color:#1e293b; line-height:1.5;">${o.discuss}</span>
       </div>
     </div>`;
 

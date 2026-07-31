@@ -4249,6 +4249,29 @@
 
   function enhanceObjectiveVisuals() {
     try {
+      if (!document.getElementById('objective-contrast-styles')) {
+        const styleEl = document.createElement('style');
+        styleEl.id = 'objective-contrast-styles';
+        styleEl.textContent = `
+          .launch-objective p, .objective-text, .obj-text {
+            font-weight: 800 !important;
+            color: #0F172A !important;
+            font-size: 1.08rem !important;
+            line-height: 1.65 !important;
+            -webkit-font-smoothing: antialiased !important;
+          }
+          .launch-objective h4, .launch-objective-head h4, .obj-card-title {
+            font-weight: 800 !important;
+            letter-spacing: -0.01em !important;
+          }
+          .visual-model-caption {
+            color: #0F172A !important;
+            font-weight: 700 !important;
+          }
+        `;
+        document.head.appendChild(styleEl);
+      }
+
       const path = window.location.pathname;
       let unit = 1;
       const match = path.match(/\/lessons\/(\d+)-/);
