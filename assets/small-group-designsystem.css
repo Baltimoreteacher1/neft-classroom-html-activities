@@ -1,334 +1,469 @@
 /* ============================================================================
    small-group-designsystem.css
-   Retrofits the EduWonderLab shared design system onto small-group pathways
-   (*-group1, *-group2, *-catchup) so they match the interactive lessons.
+   The art direction for the small-group studio (*-group1, *-group2, *-catchup).
 
-   WHY THIS FILE EXISTS
-   The small-group renderer ships a private style island: engine/core/small-group-ui.js
-   injects ~330 of its own rules at runtime under an --sg-* token namespace. The shared
-   bundle (engine/styles/design-system.css) is on the page, but the island never reads a
-   single token from it. Three consequences:
+   WHAT LIVES WHERE
+   engine/core/small-group-ui.js injects a critical <style> (#sg-styles) holding
+   the design tokens and every component's structural defaults. This sheet loads
+   immediately after it and owns the refinements that need the later cascade
+   position: surfaces that must beat a component default, states the base sheet
+   states too weakly, and the density work.
 
-     1. Off-brand palette.  Small group uses hue #33568f / soft #eef2fa (cold
-        slate blue). The site brand is navy #12355b on warm cream #f7f4ec.
-     2. Fallback typography. Small-group CSS asks for "Nunito", which the lesson
-        shell never loads — so it silently renders in the browser's generic
-        sans while interactive lessons render in Outfit / Hanken Grotesk.
-        This is the single biggest "looks unfinished" tell.
-     3. Heavier chrome. Rotating ring pseudo-elements, a floating hero mark,
-        900-weight clamp(30px,5vw,48px) headings, 18px radii and deep shadows,
-        against the restrained section-title / badge / btn system used elsewhere.
+   Both files describe the same design. If a rule here only cancels one there,
+   the rule belongs there — delete it here.
 
-   HOW IT WORKS
-   Overrides the --sg-* custom properties rather than rewriting components, so a
-   single file restyles all 128 small-group pathways at once and survives
-   rebuilds of small-group-renderer.js as long as the token names hold.
-   !important is required on the token declarations because the renderer writes
-   its palette from a JS theme object into an injected <style> at runtime.
+   HISTORY (why this file is smaller than it was)
+   Until 2026-07-31 the studio ran THREE sheets: the base, a "publisher polish"
+   pass, and a "design system" pass. Polish painted the hero white-on-navy;
+   designsystem repainted the same elements navy-on-cream; the base declared a
+   cold slate palette that designsystem then overrode token-by-token with
+   !important. Roughly a third of polish's rules applied to nothing, and no
+   single file described what the page looked like. The brand palette now ships
+   from ACCENTS + the token block in small-group-ui.js, the hero is defined once
+   there, and small-group-publisher-polish.css is deleted.
 
    LOAD ORDER — DO NOT add a <link> to this file in a lesson index.html
-   This sheet is appended at runtime by injectSmallGroupStyles() in
-   engine/core/small-group-ui.js, and it has to stay that way:
-
-     1. Cascade. Its component rules sit at the SAME specificity as the
-        #sg-styles rules they replace, so it must come after that injected
-        <style> and after small-group-publisher-polish.css. A <link> in <head>
-        is always earlier in the cascade and would silently lose — only the
-        !important token block above would survive.
+   It is appended at runtime by injectSmallGroupStyles(), and has to stay that
+   way:
+     1. Cascade. Its rules sit at the SAME specificity as the #sg-styles rules
+        they refine, so it must come after that injected <style>. A <link> in
+        <head> is always earlier and would silently lose.
      2. Vite. build.cssCodeSplit is false, so a <link rel=stylesheet> in a
         lesson index.html entry gets stripped from the page and folded into the
         single shared style-[hash].css that EVERY lesson loads — leaking these
-        !important --sg-* overrides onto all 220 canonical lessons.
-
-   Both were observed, not assumed. See the commit that added this file.
+        studio-only overrides onto all 220 canonical lessons.
+   Both were observed, not assumed.
    ============================================================================ */
 
 /* ---------------------------------------------------------------------------
-   1. TOKEN REMAP — small-group palette -> shared design system
+   1 · SELECTION
    --------------------------------------------------------------------------- */
 
-:root,
-html,
-body,
-[data-sg-scene],
-[class*="sg-"] {
-  /* Core hue: cold slate #33568f -> brand navy */
-  --sg:        #12355b !important;  /* was #33568f */
-  --sg-deep:   #0d2846 !important;  /* was #284164 */
-  --sg-ink:    #12355b !important;
-  --sg-rule:   #12355b !important;
-
-  /* Surfaces: cold blue-grey -> warm cream + white cards */
-  --sg-soft:   #fbf9f4 !important;  /* was #eef2fa — pale brand cream */
-  --sg-card:   #ffffff !important;
-  /* Page behind the cards. Deliberately NOT white: at #ffffff the white cards had
-     no edge to read against, so the page looked like one flat sheet. #f4f1e9 is the
-     warm cream the renderer itself originally used for --sg-paper, so the step
-     down stays on-palette instead of introducing an arbitrary grey. Keep cards at
-     #ffffff — the card/paper contrast is what gives the layout its structure. */
-  --sg-paper:  #f4f1e9 !important;
-  --sg-figure: #ffffff !important;
-  --sg-fill:   #f2f6fa !important;
-
-  /* Lines + text: match --line / --muted / --ink.
-     NOT lightened. An earlier pass took this to #e4ecf3 as part of "lighten the
-     palette" and it cost the manipulatives their edges — draggable number tiles and
-     the prime/composite drop zones are drawn from --sg-line, so they faded into the
-     card behind them. Page chrome can be soft; interactive targets cannot. §6a
-     pushes this further still inside graphics. */
-  --sg-line:   #d7e2ed !important;
-  --sg-muted:  #45535f !important;
-  --sg-text:   #19262f !important;
-
-  /* Status colors: align to shared teal / coral / amber */
-  --sg-good:      #0c6f6b !important;  /* --teal-ink */
-  --sg-good-bg:   #dff2ee !important;  /* --teal-light */
-  --sg-good-ink:  #0a4f4c !important;
-  --sg-bad:       #d9795d !important;  /* --coral */
-  --sg-bad-bg:    #fbeee9 !important;
-  --sg-bad-ink:   #7c3a26 !important;
-  --sg-warn:      #8a5a00 !important;  /* --amber-ink */
-  --sg-warn-bg:   #fdf3e0 !important;
-  --sg-warn-ink:  #8a5a00 !important;
-  --sg-warn-line: #f2c15b !important;  /* --amber */
+::selection {
+  background: color-mix(in srgb, var(--sg-pop) 45%, var(--sg-card));
+  color: var(--sg-text);
 }
-
-/* Per-pathway accent.
-   The renderer writes --sg-pop as an INLINE style on <html> from its JS theme
-   object, so it can only be beaten by !important, and the pathway can only be
-   identified by matching the value it wrote. Substring selectors keep the three
-   pathways visually distinct while pulling each onto a brand accent. */
-html                    { --sg-pop: #1fa6a2 !important; }  /* fallback: teal  */
-html[style*="2f8f7d"]   { --sg-pop: #1fa6a2 !important; }  /* Foundations -> teal  */
-html[style*="e0a63c"]   { --sg-pop: #f2c15b !important; }  /* Challenge   -> amber */
-html[style*="5a9e52"]   { --sg-pop: #d9795d !important; }  /* Catch-Up    -> coral */
 
 /* ---------------------------------------------------------------------------
-   2. TYPOGRAPHY — stop asking for a font the shell never loads
+   2 · TYPE DETAIL
+
+   The base sets the pairing (Outfit display / Atkinson Hyperlegible body). This
+   is the optical work on top of it: running text should not break to an orphan,
+   headings should not break to a one-word last line, and numerals inside math
+   should line up column to column.
    --------------------------------------------------------------------------- */
-
-[class*="sg-"],
-.sg-hero h1,
-.sg-h h2,
-.sg-eyebrow,
-.sg-kicker,
-.sg-step,
-.sg-mode,
-.sg-teacher summary,
-.sg-obj-more > summary,
-.sg-h .n {
-  font-family: var(--fl-body, "Hanken Grotesk", system-ui, -apple-system, sans-serif);
-}
-
-/* Display face for headings, matching the interactive lesson shell. */
-.sg-hero h1,
-.sg-h h2 {
-  font-family: "Outfit", var(--fl-body, system-ui), sans-serif;
-}
-
-/* Type scale: pull back from 900-weight display sizing to .section-title. */
-.sg-hero h1 {
-  font-size: clamp(1.9rem, 1.4rem + 2.2vw, 2.6rem);
-  font-weight: 800;
-  letter-spacing: -.02em;
-}
-
-.sg-h h2 {
-  font-size: 1.7rem;          /* matches .section-title */
-  font-weight: 800;
-  letter-spacing: -.02em;
-  color: var(--navy, #12355b);
-}
-
-.sg-eyebrow {
-  font-size: .78rem;
-  font-weight: 800;
-  letter-spacing: .04em;      /* matches .badge tracking, was .07em */
-  color: var(--teal-ink, #0c6f6b);
-}
-
-.sg-obj      { font-size: 1.05rem; font-weight: 700; }
-.sg-context  { font-size: 1.05rem; font-weight: 600; line-height: 1.6; }
-.sg-tagline  { font-size: 1rem;    font-weight: 600; }
-.sg-build-intro { font-size: 1.05rem; font-weight: 600; line-height: 1.6; }
-
-/* ---------------------------------------------------------------------------
-   3. HERO — flatten to the interactive lesson hero
-   --------------------------------------------------------------------------- */
-
-/* Light hero (chosen 2026-07-29): a pale tinted band with navy text instead of
-   white-on-deep-navy. This is a deliberate departure from mirroring the
-   interactive lesson hero — small-group pathways read softer on purpose.
-
-   EVERY white-on-navy rule below has to be recoloured together. The base sheet
-   and publisher-polish set `color:#fff` (or translucent white borders and
-   backgrounds) on .sg-hero, h1, .sg-obj, .sg-tagline, .sg-kicker,
-   .sg-obj-more>summary, .sg-chip, .sg-hero-scene-chip and .sg-hero-mark. Miss one
-   and it turns white-on-cream — invisible. The per-pathway --sg-pop accent bar
-   along the bottom edge is what keeps the three pathways distinguishable. */
-.sg-hero {
-  padding: 26px 24px 24px;
-  border-radius: var(--radius-lg, 22px);
-  background: linear-gradient(135deg, #eef4fa 0%, #fbf9f4 100%);
-  color: var(--sg-ink);
-  box-shadow: 0 2px 10px #12355b10;
-}
-
-.sg-hero h1 {
-  color: var(--navy, #12355b);
-  text-shadow: none;          /* publisher-polish adds one for dark backgrounds */
-}
 
 .sg-obj,
-.sg-langobj { color: var(--sg-ink); }
-
-.sg-tagline { color: var(--sg-muted); }
-
-/* Remove the rotating ring + radial bloom — the interactive hero has neither. */
-.sg-hero::before,
-.sg-hero::after { content: none !important; }
-
-/* Stop the floating animation on the hero mark, and give it a visible edge now
-   that the translucent-white treatment has nothing dark to sit on. */
-.sg-hero-mark {
-  animation: none !important;
-  border: 1px solid var(--sg-line);
-  background: #ffffff;
-  box-shadow: 0 4px 14px #12355b12;
+.sg-context,
+.sg-build-intro,
+.sg-apply-text,
+.sg-cloze-sentence,
+.sg-buildstep-body,
+.sg-directions,
+.q {
+  text-wrap: pretty;
 }
 
-/* Kicker -> .lesson-hero-badge, on the pathway accent rather than white */
-.sg-kicker {
-  padding: 4px 10px;
-  border: 1px solid #0c6f6b33;
-  border-radius: var(--radius-full, 999px);
-  background: #ffffff;
-  color: var(--teal-ink, #0c6f6b);
-  font-size: .72rem;
-  font-weight: 800;
-  letter-spacing: .04em;
-  text-transform: uppercase;
+.sg-hero h1,
+.sg-h h2,
+.sg-talk-q,
+.sg-map-goal,
+.sg-fill-prompt {
+  text-wrap: balance;
 }
 
-/* Chips -> pill badges rather than square tags */
-.sg-chip,
-.sg-hero-scene-chip {
-  padding: 5px 12px;
-  border: 1px solid var(--sg-line);
-  border-radius: var(--radius-full, 999px);
-  background: #ffffff;
-  color: var(--sg-ink);
-  font-size: .78rem;
-  font-weight: 800;
-  letter-spacing: .04em;
-}
-
-.sg-obj-more > summary {
-  border: 1px solid var(--sg-line);
-  background: #ffffff;
-  color: var(--sg-ink);
+/* Every surface that shows arithmetic: equal-width digits, so a column of
+   answers reads as a column instead of drifting. */
+.colmath,
+.fillin,
+.stepfill,
+.sg-step-input,
+.sg-model-cell,
+.sg-clock,
+.sg-datachip,
+.sg-tree-node,
+.sg-tree-root,
+.sg-model-tcell,
+.sg-value-chip {
+  font-variant-numeric: tabular-nums;
 }
 
 /* ---------------------------------------------------------------------------
-   4. STEP RAIL — quieter, aligned to .phase-btn
+   3 · PAGE RHYTHM
    --------------------------------------------------------------------------- */
 
-.sg-rail,
-.sg-tabs {
-  border-radius: var(--radius-md, 16px);
-  border: 1px solid var(--sg-line);
-  background: #fffffff2;
-  backdrop-filter: blur(6px);
-  box-shadow: 0 2px 10px #12355b12;
+.sg-panel {
+  padding-top: 4px;
 }
 
-.sg-step { border-radius: var(--radius-sm, 12px); font-weight: 700; }
-.sg-step .dot { border-radius: 8px; font-weight: 800; }
-.sg-step[aria-selected="true"] { background: var(--sg); color: #fff; }
-.sg-step[aria-selected="true"] .dot { background: var(--sg-pop); color: var(--sg-deep); }
+/* Progress meter. Its whole job is answering "how much is left?", which the
+   8px hairline it used to be could not do from across a table. */
+.sg-meter {
+  margin-top: 6px;
+  padding: 6px 8px 4px;
+}
+
+.sg-meter-track {
+  height: 10px;
+  background: var(--sg-fill);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--sg) 8%, transparent);
+}
+
+.sg-meter-lab {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--sg-muted);
+}
 
 /* ---------------------------------------------------------------------------
-   5. CARDS + CONTROLS — match shared radii, borders, shadows
+   4 · CARD MATERIAL
+
+   Two shadows, not one: a 1px contact shadow that seats the card on the page,
+   and a wide soft one that lifts it. A single blurred shadow at this radius
+   reads as a smudge rather than a sheet of paper.
    --------------------------------------------------------------------------- */
 
+.card,
 .sg-mission,
 .sg-talk,
 .prob,
-.sg-vcard {
-  border: 1px solid var(--sg-line);
-  border-radius: var(--radius-md, 16px);
-  box-shadow: var(--shadow-md, 0 8px 24px #12355b1a);
+.sg-vcard,
+.sg-map,
+.sg-stage,
+.sg-cloze,
+.sg-reflect,
+.sg-figure,
+.sg-lab-mount .card {
+  box-shadow: var(--sg-shadow);
 }
 
-.sg-vcard-picture { border-radius: var(--radius-sm, 12px); }
-
-/* Section number badge: drop the asymmetric 12/5 corner cut. */
-.sg-h .n {
-  border-radius: var(--radius-sm, 12px);
-  font-weight: 800;
+.prob {
+  padding: 22px;
+  margin-bottom: 16px;
 }
 
-/* Buttons -> .btn-primary / .btn-secondary */
-.sg-next-btn {
-  border-radius: var(--radius-sm, 12px);
-  background: var(--teal-ink, #0c6f6b);
-  color: #fff;
-  font-weight: 800;
-  box-shadow: 0 4px 12px #0c6f6b52;
-}
-.sg-next-btn:hover:not(:disabled) { transform: none; background: #0a5b57; }
-
-.sg-pulse-btn,
-.sg-role-btn,
-.sg-match-btn {
-  border-width: 2px;
-  border-radius: var(--radius-sm, 12px);
-  font-weight: 700;
-}
-.sg-pulse-btn:hover,
-.sg-role-btn:hover,
-.sg-match-btn:hover { border-color: var(--teal, #1fa6a2); }
-
-.sg-ta {
-  border-width: 2px;
-  border-radius: var(--radius-sm, 12px);
+/* The problem a student is on. Given the pathway accent along its leading edge
+   so that, mid-scroll on a page of near-identical cards, the live one is
+   findable without reading any of them. */
+.prob:not([hidden]) {
+  border-left: 4px solid color-mix(in srgb, var(--sg-pop) 70%, var(--sg-card));
 }
 
-/* Sentence frames -> .sentence-frame */
-.sg-frame,
-.sg-word {
-  border-radius: var(--radius-sm, 12px);
-  background: #1fa6a20f;
-  border: 1px dashed #1fa6a240;
-  color: var(--ink, #19262f);
-  font-weight: 700;
+.sg-map {
+  padding: 22px 24px;
+  border-left-width: 6px;
 }
 
-/* Teacher panel: solid border reads more finished than dashed. */
-.sg-teacher details {
-  border: 1px solid var(--sg-line);
-  border-left: 4px solid var(--amber, #f2c15b);
-  border-radius: var(--radius-md, 16px);
+.sg-map-goal {
+  font-size: 19px;
+  line-height: 1.4;
 }
 
-/* Mode bar -> brand navy instead of #28344c */
-.sg-mode { background: var(--sg-deep); }
-.sg-mode--teacher { background: #5c3c05; }
-.sg-mode-action { border-radius: var(--radius-sm, 12px); }
+.sg-path .why {
+  font-size: 15.5px;
+  line-height: 1.45;
+}
+
+.sg-welcome {
+  margin-bottom: 20px;
+  padding: 14px 17px;
+  border-radius: var(--sg-radius-sm);
+  box-shadow: var(--sg-shadow-sm);
+}
+
+.sg-directions {
+  margin: 0 0 18px;
+  padding: 13px 16px;
+  border-left-width: 5px;
+  border-radius: var(--sg-radius-sm);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.sg-stage {
+  padding: 19px 19px 17px;
+  border-radius: var(--sg-radius);
+}
+
+.sg-buildstep-body {
+  font-size: 18px;
+  line-height: 1.55;
+}
+
+.sg-talk,
+.sg-reflect {
+  padding: 24px;
+}
+
+.sg-talk-q {
+  font-size: 20px;
+  line-height: 1.4;
+}
 
 /* ---------------------------------------------------------------------------
-   6a. GRAPHICS NEED FIRMER EDGES THAN PAGE CHROME
+   5 · LOCKED + COMPLETED STATES
 
-   Manipulatives (number tiles, drop zones, factor-tree nodes, model cells) sit on
-   a white card and draw their outlines from --sg-line / --line. At the page-chrome
-   value they read as suggestions rather than objects you can grab — the
-   prime/composite drop zones in particular nearly vanished. Bump the line token
-   *inside graphics only*, so the page stays light while anything a student has to
-   see or drag keeps a definite edge, and give tray fills enough tint to separate
-   from the card.
+   A stage that unlocks later was drawn at opacity .38, which does not read as
+   "not yet" — it reads as a rendering fault, and it drops the text under every
+   contrast threshold there is. Locked steps are now legible and visibly inert:
+   muted text on a flat fill with a dashed edge, no transparency.
+   --------------------------------------------------------------------------- */
 
-   These declarations need !important to beat the token block in §1, and they sit
-   later in this file so the same-specificity tie resolves in their favour.
+.sg-stage.locked,
+.sg-apply-step.locked,
+.gs-row.locked {
+  opacity: 1;
+  filter: none;
+  color: var(--sg-muted);
+  border-style: dashed;
+  border-color: var(--sg-line);
+  background: color-mix(in srgb, var(--sg-fill) 55%, var(--sg-card));
+}
+
+/* NOT the factor tree. A locked branch is a row of circles mid-diagram, not a
+   panel — boxing it draws a dashed rectangle through the middle of the tree and
+   collides with the "split the composite factor" caption. It only needs to
+   recede, and .45 receded so far it read as a rendering fault. */
+.sg-tree-level.locked {
+  opacity: 0.6;
+  filter: none;
+}
+
+.sg-stage.locked {
+  border: 2px dashed var(--sg-line);
+  box-shadow: none;
+}
+
+/* The base sheet already sets pointer-events:none on a locked stage, so its
+   button cannot be pressed — but it was still painted as a full-strength navy
+   primary, which is a button that lies. Paint it as what it is. */
+.sg-stage.locked .btn,
+.sg-apply-step.locked .btn,
+.gs-row.locked .btn {
+  color: var(--sg-muted);
+  border-color: var(--sg-line);
+  border-style: dashed;
+  background: var(--sg-card);
+  box-shadow: none;
+}
+
+.sg-stage.locked .block-lab,
+.sg-apply-step.locked .sg-step-lab {
+  color: var(--sg-muted);
+}
+
+.sg-stage.done {
+  border-color: color-mix(in srgb, var(--sg-good) 45%, var(--sg-line));
+  background: linear-gradient(
+    var(--sg-card),
+    color-mix(in srgb, var(--sg-good-bg) 55%, var(--sg-card))
+  );
+}
+
+.sg-donechip {
+  border-radius: 999px;
+}
+
+/* ---------------------------------------------------------------------------
+   6 · VOCABULARY GRID
+
+   Definition lengths vary by a factor of three, so an auto-height grid left a
+   ragged bottom edge across four columns — the single most "unfinished" thing
+   on the page. Stretch the cards and push the definition block to the bottom;
+   the row squares up whatever the content does.
+   --------------------------------------------------------------------------- */
+
+.sg-vgrid {
+  gap: 14px;
+  align-items: stretch;
+}
+
+.sg-vcard {
+  display: flex;
+  flex-direction: column;
+  padding: 18px;
+  border-radius: var(--sg-radius);
+}
+
+.sg-vcard-picture {
+  flex: none;
+  min-height: 132px;
+  border-radius: var(--sg-radius-sm);
+  background: linear-gradient(
+    160deg,
+    var(--sg-soft),
+    color-mix(in srgb, var(--sg-soft) 55%, var(--sg-card))
+  );
+}
+
+.sg-vterm {
+  font-size: 21px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+/* Not margin-top:auto. Stretching the CARD squares the row up; stretching the
+   gap as well pushes the definition away from the word it defines and leaves a
+   hole in the middle of the short cards. Equal cards, content at the top. */
+.sg-vdef {
+  padding-top: 14px;
+}
+
+.sg-vdef-language {
+  color: var(--sg-good);
+}
+
+.sg-vtranslations {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--sg-muted);
+}
+
+.sg-cloze {
+  padding: 20px;
+  border-radius: var(--sg-radius);
+}
+
+.sg-cloze-sentence {
+  font-size: 18.5px;
+  line-height: 1.7;
+}
+
+/* ---------------------------------------------------------------------------
+   7 · CHOICES + FEEDBACK
+
+   Correctness must never be carried by fill alone (colour-blind students, and
+   the forced-colors case the base sheet handles). Each state gets a fill, a 2px
+   border AND a weight change, so three independent channels say the same thing.
+   --------------------------------------------------------------------------- */
+
+.choice {
+  padding: 13px 16px;
+  min-height: 50px;
+  border-radius: var(--sg-radius-sm);
+  font-size: 16.5px;
+  transition:
+    border-color 0.14s ease,
+    background 0.14s ease,
+    box-shadow 0.14s ease,
+    transform 0.12s ease;
+}
+
+.choice:hover:not(:disabled) {
+  transform: translateX(2px);
+  box-shadow: 0 6px 16px -9px color-mix(in srgb, var(--sg) 80%, transparent);
+}
+
+.choice .k {
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  font-family: var(--sg-display);
+}
+
+.choice.correct,
+.sg-match-btn.correct {
+  border-width: 2px;
+  font-weight: 700;
+}
+
+.choice.correct .k {
+  color: #fff;
+  background: var(--sg-good);
+}
+
+.choice.wrong,
+.sg-match-btn.wrong {
+  border-width: 2px;
+}
+
+.fb {
+  padding: 14px 16px;
+  border-width: 2px;
+  border-left-width: 5px;
+  border-radius: var(--sg-radius-sm);
+  font-size: 15.5px;
+  line-height: 1.5;
+}
+
+/* Selected-state ring, shared by every "I picked this" control. */
+.sg-pulse-btn[aria-pressed="true"],
+.sg-role-btn.active,
+.sg-langbtn[aria-pressed="true"],
+.sg-plan.on,
+.sg-checkstep.on {
+  border-width: 2px;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--sg-pop) 30%, transparent);
+}
+
+.sg-pulse-btn {
+  min-height: 50px;
+  padding: 12px 15px;
+  font-size: 15.5px;
+}
+
+.sg-checkstep {
+  padding: 12px 14px;
+  border-radius: var(--sg-radius-sm);
+  font-size: 16px;
+}
+
+/* ---------------------------------------------------------------------------
+   8 · TYPING SURFACES
+
+   Where a student writes should look like somewhere to write: a real field, a
+   calm focus ring in the pathway accent, and no browser default outline
+   fighting the ring.
+   --------------------------------------------------------------------------- */
+
+.sg-ta {
+  min-height: 100px;
+  padding: 13px 15px;
+  border-radius: var(--sg-radius-sm);
+  line-height: 1.55;
+  background: var(--sg-figure);
+}
+
+.sg-ta::placeholder {
+  color: var(--sg-muted);
+  opacity: 0.75;
+}
+
+.sg-ta:focus,
+.fillin:focus,
+.stepfill:focus,
+.sg-step-input:focus,
+.sg-model-cell:focus {
+  outline: none;
+  border-color: var(--sg);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--sg-pop) 40%, transparent);
+}
+
+.fillin {
+  width: min(160px, 42vw);
+  font-size: 24px;
+}
+
+.sg-fill-prompt {
+  font-size: 18.5px;
+  line-height: 1.4;
+}
+
+.q {
+  font-size: 17.5px;
+  line-height: 1.5;
+}
+
+/* ---------------------------------------------------------------------------
+   9 · MATH FIGURES + MANIPULATIVES
+
+   Manipulatives are interactive controls, so their boundaries fall under WCAG
+   2.1 SC 1.4.11 Non-text Contrast (3:1). Measured against the white card,
+   #b9c9d8 gave 1.69:1 and #8099b2 only 2.95:1 — both fail; #7b93ab is 3.18:1
+   and is the lightest step that clears it (3.02:1 against the paper, for
+   graphics that sit directly on the page). Page chrome can be soft; anything a
+   student has to see or drag cannot.
    --------------------------------------------------------------------------- */
 
 .sg-lab,
@@ -336,20 +471,15 @@ html[style*="5a9e52"]   { --sg-pop: #d9795d !important; }  /* Catch-Up    -> cor
 .sg-figure,
 .sg-problem-visual,
 .sg-problem-model,
-.sg-mission-visual {
-  /* #7b93ab, not a softer grey: manipulatives are interactive controls, so their
-     boundaries fall under WCAG 2.1 SC 1.4.11 Non-text Contrast, which wants 3:1.
-     Measured against the white card — #b9c9d8 gave 1.69:1 and #8099b2 only 2.95:1,
-     both failing; #7b93ab is 3.18:1 and is the lightest step that clears it
-     (3.02:1 against the cream paper for graphics that sit directly on it). */
-  --sg-line: #7b93ab !important;
-  --line:    #7b93ab !important;   /* engine/components/* draw with the generic token */
-  --sg-fill: #e7eef6 !important;
-  --sg-soft: #eef3f9 !important;
+.sg-mission-visual,
+.sg-step-visual {
+  --sg-line: #7b93ab;
+  --line: #7b93ab; /* engine/components/* draw with the generic token */
+  --sg-fill: #e7eef6;
 }
 
-/* Drop targets are the weakest link: a dashed 1px hairline is not a visible
-   "put it here". Give them a real dashed edge and a faint tint. */
+/* Drop targets are the weakest link: a 1px hairline is not a visible
+   "put it here". Give them a real dashed edge. */
 .sg-lab-mount [class*="drop"],
 .sg-lab-mount [class*="zone"],
 .sg-lab-mount [class*="bucket"],
@@ -358,32 +488,147 @@ html[style*="5a9e52"]   { --sg-pop: #d9795d !important; }  /* Catch-Up    -> cor
   border-width: 2px;
 }
 
+/* Figures are the content, not decoration — frame them like a plate in a
+   textbook: warm paper, a defined edge, room around the drawing. */
+.sg-problem-visual,
+.sg-problem-model {
+  border-width: 2px;
+  border-color: color-mix(in srgb, var(--sg) 55%, #fff);
+  border-radius: var(--sg-radius);
+  box-shadow: var(--sg-shadow-sm);
+}
+
+.sg-figure {
+  border-radius: var(--sg-radius);
+  background: var(--sg-figure);
+}
+
+.sg-visual-title {
+  font-size: 19px;
+  font-weight: 800;
+}
+
 /* ---------------------------------------------------------------------------
-   6. FLOATING-CONTROL COLLISION — annotation vs the Learning-Supports dock
+   10 · CALL TO ACTION
 
-   Both want the right edge, vertically centred: .sg-annotation-tools is
-   `right:0; top:50%; translateY(-50%)` at z-index 40, and .ewl-supports-tools-dock
-   lands on the same band at z-index 9998. Once supports were wired into these
-   pathways (tools/inject-supports-pathways.js) the dock covered the "Mark up this
-   page" button outright, silently costing students the highlighter.
-
-   Nudge the annotation rail clear of the dock. Done here rather than in
-   small-group-annotation.css because the dock's height is what sets the offset,
-   and this is the only sheet that loads on exactly the pages that have both.
+   The "next section" button is the only teal fill on the page, which is what
+   makes it findable at the foot of a long scroll without shouting.
    --------------------------------------------------------------------------- */
 
-/* Offsetting from the centre (rather than pinning to a corner) is what keeps this
-   safe on short screens: the rail stays proportionally placed, so it clears the
-   dock above it and the Save/Resume + Math Workbench cluster in the bottom-right.
-   An earlier attempt pinned it to `bottom:8px` under a max-height query and
-   promptly collided with Save/Resume at 1024x540 — verified across 1280x900,
-   1366x768, 1024x540, 1024x420 and 390x844. */
+.sg-next {
+  margin: 32px 0 10px;
+  padding-top: 24px;
+  border-top: 1px solid var(--sg-line);
+}
+
+.sg-next-btn {
+  min-height: 54px;
+  padding: 14px 28px;
+  border-color: var(--sg-good);
+  border-radius: var(--sg-radius-sm);
+  background: var(--sg-good);
+  font-size: 17.5px;
+  box-shadow: 0 6px 16px -6px color-mix(in srgb, var(--sg-good) 80%, transparent);
+}
+
+.sg-next-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: #0a5b57;
+  background: #0a5b57;
+  box-shadow: 0 10px 22px -8px color-mix(in srgb, var(--sg-good) 85%, transparent);
+}
+
+.sg-foot {
+  gap: 12px;
+  margin-top: 36px;
+  padding-top: 20px;
+  border-top: 1px solid var(--sg-line);
+}
+
+.sg-foot .btn {
+  min-width: min(280px, 100%);
+}
+
+.sg-done {
+  margin-top: 24px;
+  padding: 24px;
+  border-style: solid;
+  border-color: color-mix(in srgb, var(--sg-good) 40%, var(--sg-line));
+  border-radius: var(--sg-radius-lg);
+  background: linear-gradient(150deg, var(--sg-good-bg), var(--sg-card));
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+/* ---------------------------------------------------------------------------
+   10a · SHARED CHROME, STUDIO-TONED
+
+   engine/core/tool-drawer.js and the language bar ship their own defaults for
+   the whole lesson engine. Retone them here rather than there — the canonical
+   lessons use the same components and are not part of this pass.
+   --------------------------------------------------------------------------- */
+
+.nt-toolpoint {
+  border: 1px solid var(--sg-line);
+  border-style: solid;
+  border-radius: var(--sg-radius-sm);
+  background: var(--sg-soft);
+}
+
+.nt-toolpoint-label {
+  font-family: var(--sg-display);
+  color: var(--sg-ink);
+}
+
+.nt-toolpoint-hint {
+  font-family: var(--sg-body);
+  color: var(--sg-muted);
+}
+
+.sg-langbar {
+  margin-bottom: 16px;
+}
+
+.sg-langbar > span:first-child {
+  font-family: var(--sg-display);
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--sg-muted);
+}
+
+.sg-langbtn {
+  min-height: 44px;
+  padding: 8px 16px;
+  font-family: var(--sg-display);
+  font-weight: 700;
+}
+
+/* ---------------------------------------------------------------------------
+   11 · FLOATING-CONTROL COLLISION — annotation vs the Learning-Supports dock
+
+   Both want the right edge, vertically centred: .sg-annotation-tools is
+   `right:0; top:50%; translateY(-50%)` at z-index 40, and
+   .ewl-supports-tools-dock lands on the same band at z-index 9998. Once
+   supports were wired into these pathways (tools/inject-supports-pathways.js)
+   the dock covered the "Mark up this page" button outright, silently costing
+   students the highlighter.
+
+   Offsetting from the centre (rather than pinning to a corner) is what keeps
+   this safe on short screens: the rail stays proportionally placed, so it
+   clears the dock above it and the Save/Resume + Math Workbench cluster in the
+   bottom-right. An earlier attempt pinned it to `bottom:8px` under a max-height
+   query and promptly collided with Save/Resume at 1024x540 — verified across
+   1280x900, 1366x768, 1024x540, 1024x420 and 390x844.
+   --------------------------------------------------------------------------- */
+
 .sg-annotation-tools {
   transform: translateY(calc(-50% + 58px));
 }
 
 /* ---------------------------------------------------------------------------
-   7. QUALITY FLOOR — focus + reduced motion
+   12 · QUALITY FLOOR
    --------------------------------------------------------------------------- */
 
 .sg-step:focus-visible,
@@ -397,12 +642,120 @@ html[style*="5a9e52"]   { --sg-pop: #d9795d !important; }  /* Catch-Up    -> cor
   outline-offset: 2px;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .sg-hero-mark,
-  .sg-tabpanel:not([hidden]),
-  .sg-match-btn.correct,
-  .sg-match-btn.wrong {
-    animation: none !important;
+@media (max-width: 760px) {
+  .prob {
+    padding: 17px;
   }
-  .sg-next-btn:hover:not(:disabled) { transform: none !important; }
+
+  .sg-next-btn,
+  .sg-foot .btn {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .sg-map {
+    padding: 18px;
+  }
+
+  .sg-talk,
+  .sg-reflect {
+    padding: 18px;
+  }
+
+  .sg-vcard-picture {
+    min-height: 118px;
+  }
+}
+
+@media (max-width: 420px) {
+  .sg-mode {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+
+  .sg-mode-action {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .sg-step .dot {
+    width: 22px;
+    height: 22px;
+    font-size: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .choice,
+  .sg-pulse-btn,
+  .sg-role-btn,
+  .sg-match-btn,
+  .sg-checkstep,
+  .sg-plan,
+  .wchip,
+  .sg-langbtn,
+  .btn {
+    transition: none;
+  }
+
+  .choice:hover:not(:disabled),
+  .btn:hover:not(:disabled),
+  .sg-next-btn:hover:not(:disabled) {
+    transform: none;
+  }
+}
+
+@media print {
+  .card,
+  .prob,
+  .sg-vcard,
+  .sg-map,
+  .sg-stage,
+  .sg-figure,
+  .sg-problem-visual,
+  .sg-problem-model {
+    box-shadow: none;
+  }
+
+  .prob:not([hidden]) {
+    border-left-width: 1px;
+    border-left-color: var(--sg-line);
+  }
+
+  .sg-next,
+  .sg-foot {
+    border-top: 0;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   13 · AUTHORED ART SLOT (hero + mission). Themes via tokens; art-ready.
+   --------------------------------------------------------------------------- */
+
+.sg-hero-mark.has-art {
+  overflow: hidden;
+  background: var(--sg-soft);
+}
+
+.sg-hero-mark.has-art .sg-art-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+}
+
+.sg-mission-visual.has-art {
+  display: block;
+  padding: 0;
+  overflow: hidden;
+}
+
+.sg-mission-visual.has-art .sg-art-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 200px;
+  object-fit: cover;
 }

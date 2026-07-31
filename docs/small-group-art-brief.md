@@ -15,11 +15,17 @@ generated, to the generator that emits them):
 ```jsonc
 {
   // Shared hero + mission art for the lesson (simplest):
-  "sceneArt": { "src": "/assets/lesson-art/space-station.webp", "alt": "A cargo bay on a space station with crates to sort", "decorative": false },
+  "sceneArt": {
+    "src": "/assets/lesson-art/space-station.webp",
+    "alt": "A cargo bay on a space station with crates to sort",
+    "decorative": false,
+  },
 
   // Or target each surface independently:
-  "heroImage":       { "src": "/assets/lesson-art/space-station-hero.webp", "alt": "…" },
-  "launch": { "sceneImage": { "src": "/assets/lesson-art/space-station-mission.webp", "alt": "…" } }
+  "heroImage": { "src": "/assets/lesson-art/space-station-hero.webp", "alt": "…" },
+  "launch": {
+    "sceneImage": { "src": "/assets/lesson-art/space-station-mission.webp", "alt": "…" },
+  },
 }
 ```
 
@@ -39,9 +45,9 @@ lesson, and a missing file never breaks a page.
 Art is keyed by the lesson `theme` (one illustration serves every lesson sharing
 a theme). Current themes in use — one scene each covers the set:
 
-| Theme slug        | Scene idea                                             |
-| ----------------- | ------------------------------------------------------ |
-| `space-station`   | Cargo bay, crates, friendly maintenance robot          |
+| Theme slug                                                                    | Scene idea                                    |
+| ----------------------------------------------------------------------------- | --------------------------------------------- |
+| `space-station`                                                               | Cargo bay, crates, friendly maintenance robot |
 | (add rows as themes are confirmed via `grep '"theme"' lessons/*/config.json`) |
 
 Run `grep -h '"theme"' lessons/*/config.json | sort | uniq -c` for the live list.
@@ -51,12 +57,16 @@ Run `grep -h '"theme"' lessons/*/config.json | sort | uniq -c` for the live list
 - **Tone:** warm, inclusive, Grade-6 (11–12 yr) — capable and curious, not
   childish. Diverse, non-stereotyped characters; no text baked into the art
   (labels must stay live HTML for translation + a11y).
-- **Palette:** harmonize with the studio's ocean-blue system — primary
-  `#33568f`, deep `#284164`, soft `#eef2fa`, accents teal `#2f8f7d` /
-  amber `#e0a63c` / green `#5a9e52`. Avoid pure-red/green as the only signal.
-- **Works in dark mode:** art sits on a dark page in dark theme. Prefer
-  illustrations with their own background/framing (not transparent PNGs that
-  assume white behind them). Test against `#0e1522`.
+- **Palette:** harmonize with the studio's brand-navy system — primary
+  `#12355b`, deep `#0b2540`, soft `#eaf0f7`, on warm sand paper `#f2eee3`.
+  Pathway accents: Foundations teal `#1fa6a2` / Challenge amber `#e5a63f` /
+  Catch-Up coral `#dd8560`. Avoid pure-red/green as the only signal.
+  (Source of truth: `SG_PALETTE` + `ACCENTS` in
+  `engine/core/small-group-ui.js` — check there before briefing an artist.)
+- **Light page, always:** small-group pathways are light-only regardless of the
+  site theme toggle or OS preference (Joel, 2026-07-23), so art sits on white
+  cards over warm sand. Prefer illustrations with their own background/framing
+  (not transparent PNGs). Test against `#ffffff` and `#f2eee3`.
 - **Contrast-safe:** the art is decorative-supportive; never encode lesson
   information only in the image (that lives in the HTML).
 
