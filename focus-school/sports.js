@@ -762,12 +762,13 @@
   const CSS = `
   .sp-wrap{--sp-accent:${THEME.accent};--sp-soft:${THEME.accentSoft}}
   .sp-card{display:grid;grid-template-columns:minmax(210px,1.05fr) minmax(210px,.95fr);gap:18px;align-items:center}
-  .sp-stage{position:relative;min-height:280px;overflow:hidden;border-radius:24px;background:linear-gradient(var(--sp-sky,#7dd3fc) 0 57%,var(--sp-ground,#4ade80) 57%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.45),0 18px 38px rgba(15,23,42,.18);isolation:isolate}
-  .sp-stage:before{content:"";position:absolute;inset:56% -15% -40%;background:repeating-linear-gradient(102deg,rgba(255,255,255,.12) 0 24px,transparent 24px 48px);transform:perspective(180px) rotateX(34deg);transform-origin:top}
-  .sp-stage:after{content:"";position:absolute;left:50%;bottom:-70px;width:260px;height:170px;border:4px solid rgba(255,255,255,.75);border-radius:50%;transform:translateX(-50%);z-index:-1}
-  .sp-avatar-svg{display:block;width:100%;height:280px;filter:drop-shadow(0 14px 12px rgba(15,23,42,.24));position:relative;z-index:1}
-  .sp-player-bob{transform-origin:150px 280px;animation:sp-idle 2.8s ease-in-out infinite}
+  .sp-stage{position:relative;min-height:320px;overflow:hidden;border:1px solid rgba(255,255,255,.7);border-radius:26px;background:radial-gradient(circle at 78% 13%,#fff7ad 0 3%,rgba(255,247,173,.38) 3.5% 9%,transparent 17%),linear-gradient(165deg,color-mix(in srgb,var(--sp-sky,#38bdf8) 62%,#182c69) 0%,var(--sp-sky,#38bdf8) 52%,var(--sp-ground,#16a34a) 52.5%,color-mix(in srgb,var(--sp-ground,#16a34a) 66%,#06371f) 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.85),inset 0 -55px 90px rgba(4,25,48,.17),0 22px 48px rgba(15,23,42,.24);isolation:isolate}
+  .sp-stage:before{content:"";position:absolute;z-index:0;inset:51% -15% -40%;background:repeating-linear-gradient(102deg,rgba(255,255,255,.16) 0 30px,transparent 30px 60px);transform:perspective(180px) rotateX(34deg);transform-origin:top}
+  .sp-stage:after{content:"";position:absolute;z-index:0;left:50%;bottom:-61px;width:270px;height:180px;border:4px solid rgba(255,255,255,.72);border-radius:50%;transform:translateX(-50%);box-shadow:0 0 24px rgba(255,255,255,.16)}
+  .sp-avatar-svg{display:block;width:100%;height:320px;filter:drop-shadow(0 18px 16px rgba(9,18,42,.32));position:relative;z-index:1}
+  .sp-player-bob{transform-origin:150px 290px;animation:sp-idle 2.8s ease-in-out infinite}
   .sp-ball{transform-origin:center;animation:sp-ball 2.8s ease-in-out infinite}
+  .sp-spark{transform-origin:center;animation:sp-spark 2.2s ease-in-out infinite}
   .sp-card-mini{width:96px;height:102px;flex:0 0 auto;border-radius:18px;min-height:0}
   .sp-card-mini .sp-avatar-svg{height:102px}
   .sp-card-mini:after,.sp-card-mini:before{display:none}
@@ -797,11 +798,12 @@
   .sp-rung{display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:12px;background:rgba(127,127,127,.10)}
   .sp-rung[data-on="1"]{background:var(--sp-soft);color:#1f2937;font-weight:700}
   .sp-rung small{margin-left:auto;opacity:.7}
-  @keyframes sp-idle{0%,100%{transform:translateY(0) rotate(-.4deg)}50%{transform:translateY(-4px) rotate(.4deg)}}
+  @keyframes sp-idle{0%,100%{transform:translateY(0) rotate(-.35deg)}50%{transform:translateY(-4px) rotate(.35deg)}}
   @keyframes sp-ball{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-7px) rotate(12deg)}}
+  @keyframes sp-spark{0%,100%{opacity:.45;transform:scale(.78) rotate(0)}50%{opacity:1;transform:scale(1.12) rotate(18deg)}}
   @keyframes sp-shine{from{transform:translateX(-110%)}to{transform:translateX(110%)}}
-  @media(max-width:620px){.sp-card{grid-template-columns:1fr}.sp-stage{min-height:240px}.sp-avatar-svg{height:240px}.sp-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-  @media(prefers-reduced-motion:reduce){.sp-player-bob,.sp-ball,.sp-bar>span:after{animation:none}.sp-item{transition:none}}
+  @media(max-width:620px){.sp-card{grid-template-columns:1fr}.sp-stage{min-height:270px}.sp-avatar-svg{height:270px}.sp-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(prefers-reduced-motion:reduce){.sp-player-bob,.sp-ball,.sp-spark,.sp-bar>span:after{animation:none}.sp-item{transition:none}}
   `;
 
   // A diamond with the runner placed by progress through the current level.
@@ -852,44 +854,74 @@
     const s = normalize(sport);
     const has = (id) => Object.values(s.equipped).includes(id);
     return {
-      jersey: has("jersey_neon") ? "#a3e635" : has("jersey_champ") ? "#facc15" : "#f8fafc",
-      trim: has("jersey_pin") ? "#dc2626" : has("jersey_champ") ? "#7c3aed" : "#1e3a8a",
-      cap: has("cap_crown") ? "#facc15" : has("cap_star") ? "#ef4444" : "#1e3a8a",
-      bat: has("bat_comet") ? "#fb7185" : has("bat_gold") ? "#facc15" : has("bat_maple") ? "#92400e" : "#d6a665",
-      glove: has("glove_flame") ? "#f97316" : has("glove_web") ? "#6d28d9" : "#a16207",
-      sky: has("park_moon") ? "#172554" : has("park_dome") ? "#334155" : has("park_lights") ? "#fb923c" : "#7dd3fc",
-      ground: has("park_moon") ? "#1e3a5f" : has("park_dome") ? "#15803d" : "#4ade80",
+      jersey: has("jersey_neon") ? "#9be51b" : has("jersey_champ") ? "#ffc928" : has("jersey_throwback") ? "#ef3f52" : has("jersey_road") ? "#64748b" : has("jersey_pin") ? "#f8fafc" : "#2563eb",
+      trim: has("jersey_neon") ? "#102a43" : has("jersey_champ") ? "#6d28d9" : has("jersey_pin") ? "#e11d48" : "#ff4d3d",
+      pants: has("jersey_road") ? "#94a3b8" : "#f8fafc",
+      cap: has("cap_crown") ? "#ffc928" : has("cap_camo") ? "#3f6212" : has("cap_star") ? "#ef3340" : has("cap_flat") ? "#111827" : "#ef3340",
+      cleats: has("cleats_gold") ? "#facc15" : has("cleats_high") ? "#ef3340" : has("cleats_metal") ? "#111827" : "#2563eb",
+      bat: has("bat_comet") ? "#fb4f87" : has("bat_thunder") ? "#6d28d9" : has("bat_gold") ? "#facc15" : has("bat_maple") ? "#8b4513" : "#e7a84b",
+      glove: has("glove_flame") ? "#ff6b24" : has("glove_web") ? "#7c3aed" : has("glove_iweb") ? "#eab308" : "#c86b24",
+      sky: has("park_moon") ? "#172554" : has("park_dome") ? "#334155" : has("park_lights") ? "#f97316" : "#38bdf8",
+      ground: has("park_moon") ? "#17426b" : has("park_dome") ? "#15803d" : "#16a34a",
       venue: itemById(s.equipped.park)?.name || "The Sandlot",
     };
   }
 
   function avatarSvg(sport, compact = false) {
     const look = avatarLook(sport);
+    const uid = compact ? "bb-mini" : "bb-full";
     const label = `${THEME.avatar.name}'s baseball avatar at ${look.venue}`;
     return `<div class="sp-stage${compact ? " sp-card-mini" : ""}" style="--sp-sky:${look.sky};--sp-ground:${look.ground}">
       ${compact ? "" : `<span class="sp-stage-tag">⚾ ${look.venue}</span>`}
       <svg class="sp-avatar-svg" viewBox="0 0 300 340" role="img" aria-label="${label}">
-        <g class="sp-player-bob">
-          <ellipse cx="150" cy="304" rx="69" ry="13" fill="rgba(15,23,42,.20)"/>
-          <path d="M128 204 Q116 250 112 291" fill="none" stroke="#1e3a8a" stroke-width="28" stroke-linecap="round"/>
-          <path d="M172 204 Q190 246 203 283" fill="none" stroke="#1e3a8a" stroke-width="28" stroke-linecap="round"/>
-          <path d="M93 293h43" stroke="#f8fafc" stroke-width="18" stroke-linecap="round"/>
-          <path d="M184 288h43" stroke="#f8fafc" stroke-width="18" stroke-linecap="round"/>
-          <path d="M119 118 Q99 153 86 190" fill="none" stroke="#d99b72" stroke-width="20" stroke-linecap="round"/>
-          <path d="M181 120 Q205 148 218 172" fill="none" stroke="#d99b72" stroke-width="20" stroke-linecap="round"/>
-          <path d="M105 115 Q150 96 195 116 L183 216 Q150 233 117 216Z" fill="${look.jersey}" stroke="${look.trim}" stroke-width="6"/>
-          <path d="M150 108v113" stroke="${look.trim}" stroke-width="5" opacity=".75"/>
-          <text x="150" y="172" text-anchor="middle" font-size="42" font-weight="900" fill="${look.trim}">${THEME.avatar.number}</text>
-          <circle cx="150" cy="76" r="41" fill="#d99b72"/>
-          <path d="M113 68 Q118 25 154 27 Q187 29 190 69 Q170 51 113 68Z" fill="#3f2d20"/>
-          <path d="M109 64 Q150 39 190 61 L187 78 Q150 62 112 78Z" fill="${look.cap}"/>
-          <path d="M175 61q36 3 43 14q-28 3-43 0Z" fill="${look.cap}"/>
-          <circle cx="136" cy="78" r="4" fill="#1f2937"/><circle cx="166" cy="78" r="4" fill="#1f2937"/>
-          <path d="M139 95q12 10 24 0" fill="none" stroke="#7c2d12" stroke-width="4" stroke-linecap="round"/>
-          <path d="M222 170 L256 76" stroke="${look.bat}" stroke-width="14" stroke-linecap="round"/>
-          <path d="M220 169 L207 202" stroke="${look.bat}" stroke-width="8" stroke-linecap="round"/>
-          <path d="M67 174q-18 18 2 39q23 7 31-13q-3-20-33-26Z" fill="${look.glove}" stroke="#713f12" stroke-width="4"/>
-          <path d="M72 183l17 17M65 191l18 15" stroke="#fef3c7" stroke-width="3" opacity=".7"/>
+        <defs>
+          <linearGradient id="${uid}-skin" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#efb07b"/><stop offset=".52" stop-color="#c87548"/><stop offset="1" stop-color="#93462f"/></linearGradient>
+          <linearGradient id="${uid}-jersey" x1="0" y1="0" x2=".9" y2="1"><stop stop-color="#fff" stop-opacity=".38"/><stop offset=".22" stop-color="${look.jersey}"/><stop offset="1" stop-color="${look.jersey}"/></linearGradient>
+          <linearGradient id="${uid}-pants" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="${look.pants}"/></linearGradient>
+          <linearGradient id="${uid}-bat" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#fff" stop-opacity=".6"/><stop offset=".3" stop-color="${look.bat}"/><stop offset="1" stop-color="#542e16"/></linearGradient>
+          <filter id="${uid}-lift" x="-30%" y="-30%" width="160%" height="180%"><feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="#07152e" flood-opacity=".35"/></filter>
+        </defs>
+        <path d="M0 145 Q42 116 86 137 T171 132 T300 137 V188 H0Z" fill="#10254c" opacity=".5"/>
+        <g fill="#f8fafc" opacity=".74"><circle cx="25" cy="139" r="3"/><circle cx="43" cy="132" r="3"/><circle cx="61" cy="141" r="3"/><circle cx="83" cy="133" r="3"/><circle cx="105" cy="139" r="3"/><circle cx="208" cy="136" r="3"/><circle cx="230" cy="130" r="3"/><circle cx="253" cy="140" r="3"/><circle cx="276" cy="132" r="3"/></g>
+        <g stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".86"><path d="M21 113V79m-13 0h26"/><path d="M279 113V79m-13 0h26"/></g>
+        <g class="sp-spark" fill="#fff7ad"><path d="M248 113l4 9 9 4-9 4-4 9-4-9-9-4 9-4Z"/><circle cx="69" cy="105" r="4"/></g>
+        <g class="sp-player-bob" filter="url(#${uid}-lift)">
+          <ellipse cx="151" cy="309" rx="80" ry="14" fill="#07152e" opacity=".28"/>
+          <path d="M214 199L255 62" stroke="#101b36" stroke-width="19" stroke-linecap="round"/>
+          <path d="M214 199L255 62" stroke="url(#${uid}-bat)" stroke-width="12" stroke-linecap="round"/>
+          <path d="M133 207 Q119 246 110 287" fill="none" stroke="#101b36" stroke-width="38" stroke-linecap="round"/>
+          <path d="M133 207 Q119 246 110 287" fill="none" stroke="url(#${uid}-pants)" stroke-width="28" stroke-linecap="round"/>
+          <path d="M168 207 Q186 244 203 281" fill="none" stroke="#101b36" stroke-width="38" stroke-linecap="round"/>
+          <path d="M168 207 Q186 244 203 281" fill="none" stroke="url(#${uid}-pants)" stroke-width="28" stroke-linecap="round"/>
+          <path d="M102 258l20 4M188 255l19-8" stroke="${look.trim}" stroke-width="9" stroke-linecap="round"/>
+          <path d="M88 286q20-8 43 2l7 17H88q-11-7 0-19Z" fill="${look.cleats}" stroke="#101b36" stroke-width="6"/>
+          <path d="M184 280q22-7 43 3l8 17h-49q-10-7-2-20Z" fill="${look.cleats}" stroke="#101b36" stroke-width="6"/>
+          <path d="M104 297h22m76-5h20" stroke="#fff" stroke-width="4" opacity=".65"/>
+          <path d="M119 125 Q91 151 79 190" fill="none" stroke="#101b36" stroke-width="29" stroke-linecap="round"/>
+          <path d="M119 125 Q91 151 79 190" fill="none" stroke="url(#${uid}-skin)" stroke-width="20" stroke-linecap="round"/>
+          <path d="M181 125 Q207 148 218 181" fill="none" stroke="#101b36" stroke-width="29" stroke-linecap="round"/>
+          <path d="M181 125 Q207 148 218 181" fill="none" stroke="url(#${uid}-skin)" stroke-width="20" stroke-linecap="round"/>
+          <path d="M105 120 Q150 97 195 120 L184 214 Q150 234 116 214Z" fill="url(#${uid}-jersey)" stroke="#101b36" stroke-width="7" stroke-linejoin="round"/>
+          <path d="M107 122q16-11 31-14l8 25-28 8Z" fill="${look.trim}"/><path d="M193 122q-16-11-31-14l-8 25 28 8Z" fill="${look.trim}"/>
+          <path d="M150 111v109" stroke="${look.trim}" stroke-width="5" opacity=".8"/><circle cx="150" cy="151" r="4" fill="#fff"/><circle cx="150" cy="184" r="4" fill="#fff"/>
+          <text x="150" y="187" text-anchor="middle" font-size="46" font-family="ui-rounded,system-ui" font-weight="1000" fill="#101b36" opacity=".28">${THEME.avatar.number}</text>
+          <text x="148" y="183" text-anchor="middle" font-size="46" font-family="ui-rounded,system-ui" font-weight="1000" fill="${look.trim}" stroke="#fff" stroke-width="1.5" paint-order="stroke">${THEME.avatar.number}</text>
+          <path d="M132 111v-18h36v18" fill="url(#${uid}-skin)" stroke="#101b36" stroke-width="6"/>
+          <circle cx="109" cy="73" r="12" fill="url(#${uid}-skin)" stroke="#101b36" stroke-width="6"/><circle cx="191" cy="73" r="12" fill="url(#${uid}-skin)" stroke="#101b36" stroke-width="6"/>
+          <circle cx="150" cy="72" r="43" fill="url(#${uid}-skin)" stroke="#101b36" stroke-width="7"/>
+          <path d="M113 66q3-42 39-43 35 0 39 44-17-20-38-18-20-1-40 17Z" fill="#2c1b1b"/>
+          <path d="M109 58q38-27 81-1l-3 22q-37-16-75 1Z" fill="${look.cap}" stroke="#101b36" stroke-width="6" stroke-linejoin="round"/>
+          <path d="M178 60q36 0 44 13-26 7-45 3Z" fill="${look.cap}" stroke="#101b36" stroke-width="5"/>
+          <path d="M119 60q31-16 60-3" stroke="#fff" stroke-width="4" opacity=".36" stroke-linecap="round"/>
+          <path d="M127 73q9-6 18 0m12 0q9-6 18 0" stroke="#3a211b" stroke-width="4" stroke-linecap="round"/>
+          <ellipse cx="137" cy="80" rx="7" ry="8" fill="#fff"/><ellipse cx="165" cy="80" rx="7" ry="8" fill="#fff"/><circle cx="139" cy="82" r="3.5" fill="#101b36"/><circle cx="167" cy="82" r="3.5" fill="#101b36"/><circle cx="140" cy="80" r="1.3" fill="#fff"/><circle cx="168" cy="80" r="1.3" fill="#fff"/>
+          <path d="M151 83l-3 8 7 1" fill="none" stroke="#91462f" stroke-width="3" stroke-linecap="round"/>
+          <path d="M135 98q15 14 31 0-3 19-16 19-12 0-15-19Z" fill="#7d2935" stroke="#101b36" stroke-width="3"/><path d="M140 101q11 6 22 0" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+          <circle cx="123" cy="94" r="5" fill="#ef6f61" opacity=".45"/><circle cx="177" cy="94" r="5" fill="#ef6f61" opacity=".45"/>
+          <path d="M61 179q-18 18-3 40 19 18 41 2 13-15 2-31-17-18-40-11Z" fill="${look.glove}" stroke="#101b36" stroke-width="7" stroke-linejoin="round"/>
+          <path d="M64 188l23 22m-30-10l25 17m10-29l-4 24" stroke="#ffe5b5" stroke-width="3.5" opacity=".8"/>
+          <circle cx="79" cy="202" r="6" fill="#fff" stroke="#e11d48" stroke-width="2"/>
+          <path d="M211 177l15 14" stroke="#fff" stroke-width="9" stroke-linecap="round"/><path d="M207 184l14 14" stroke="${look.trim}" stroke-width="5" stroke-linecap="round"/>
         </g>
       </svg>
     </div>`;

@@ -722,12 +722,13 @@
   const CSS = `
   .sp-wrap{--sp-accent:${THEME.accent};--sp-soft:${THEME.accentSoft}}
   .sp-card{display:grid;grid-template-columns:minmax(210px,1.05fr) minmax(210px,.95fr);gap:18px;align-items:center}
-  .sp-stage{position:relative;min-height:280px;overflow:hidden;border-radius:24px;background:linear-gradient(var(--sp-sky,#7dd3fc) 0 57%,var(--sp-ground,#4ade80) 57%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.45),0 18px 38px rgba(15,23,42,.18);isolation:isolate}
-  .sp-stage:before{content:"";position:absolute;inset:56% -15% -40%;background:repeating-linear-gradient(102deg,rgba(255,255,255,.12) 0 24px,transparent 24px 48px);transform:perspective(180px) rotateX(34deg);transform-origin:top}
-  .sp-stage:after{content:"";position:absolute;left:50%;bottom:-70px;width:260px;height:170px;border:4px solid rgba(255,255,255,.75);border-radius:50%;transform:translateX(-50%);z-index:-1}
-  .sp-avatar-svg{display:block;width:100%;height:280px;filter:drop-shadow(0 14px 12px rgba(15,23,42,.24));position:relative;z-index:1}
-  .sp-player-bob{transform-origin:150px 280px;animation:sp-idle 2.8s ease-in-out infinite}
+  .sp-stage{position:relative;min-height:320px;overflow:hidden;border:1px solid rgba(255,255,255,.7);border-radius:26px;background:radial-gradient(circle at 78% 13%,#fff7ad 0 3%,rgba(255,247,173,.38) 3.5% 9%,transparent 17%),linear-gradient(165deg,color-mix(in srgb,var(--sp-sky,#38bdf8) 62%,#182c69) 0%,var(--sp-sky,#38bdf8) 52%,var(--sp-ground,#16a34a) 52.5%,color-mix(in srgb,var(--sp-ground,#16a34a) 66%,#06371f) 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.85),inset 0 -55px 90px rgba(4,25,48,.17),0 22px 48px rgba(15,23,42,.24);isolation:isolate}
+  .sp-stage:before{content:"";position:absolute;z-index:0;inset:51% -15% -40%;background:repeating-linear-gradient(102deg,rgba(255,255,255,.16) 0 30px,transparent 30px 60px);transform:perspective(180px) rotateX(34deg);transform-origin:top}
+  .sp-stage:after{content:"";position:absolute;z-index:0;left:50%;bottom:-61px;width:270px;height:180px;border:4px solid rgba(255,255,255,.72);border-radius:50%;transform:translateX(-50%);box-shadow:0 0 24px rgba(255,255,255,.16)}
+  .sp-avatar-svg{display:block;width:100%;height:320px;filter:drop-shadow(0 18px 16px rgba(9,18,42,.32));position:relative;z-index:1}
+  .sp-player-bob{transform-origin:150px 290px;animation:sp-idle 2.8s ease-in-out infinite}
   .sp-ball{transform-origin:center;animation:sp-ball 2.8s ease-in-out infinite}
+  .sp-spark{transform-origin:center;animation:sp-spark 2.2s ease-in-out infinite}
   .sp-card-mini{width:96px;height:102px;flex:0 0 auto;border-radius:18px;min-height:0}
   .sp-card-mini .sp-avatar-svg{height:102px}
   .sp-card-mini:after,.sp-card-mini:before{display:none}
@@ -757,11 +758,12 @@
   .sp-rung{display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:12px;background:rgba(127,127,127,.10)}
   .sp-rung[data-on="1"]{background:var(--sp-soft);color:#1f2937;font-weight:700}
   .sp-rung small{margin-left:auto;opacity:.7}
-  @keyframes sp-idle{0%,100%{transform:translateY(0) rotate(-.4deg)}50%{transform:translateY(-4px) rotate(.4deg)}}
+  @keyframes sp-idle{0%,100%{transform:translateY(0) rotate(-.35deg)}50%{transform:translateY(-4px) rotate(.35deg)}}
   @keyframes sp-ball{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-7px) rotate(12deg)}}
+  @keyframes sp-spark{0%,100%{opacity:.45;transform:scale(.78) rotate(0)}50%{opacity:1;transform:scale(1.12) rotate(18deg)}}
   @keyframes sp-shine{from{transform:translateX(-110%)}to{transform:translateX(110%)}}
-  @media(max-width:620px){.sp-card{grid-template-columns:1fr}.sp-stage{min-height:240px}.sp-avatar-svg{height:240px}.sp-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-  @media(prefers-reduced-motion:reduce){.sp-player-bob,.sp-ball,.sp-bar>span:after{animation:none}.sp-item{transition:none}}
+  @media(max-width:620px){.sp-card{grid-template-columns:1fr}.sp-stage{min-height:270px}.sp-avatar-svg{height:270px}.sp-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(prefers-reduced-motion:reduce){.sp-player-bob,.sp-ball,.sp-spark,.sp-bar>span:after{animation:none}.sp-item{transition:none}}
   `;
 
   // A pitch with the ball carried further forward as the level fills.
@@ -801,43 +803,77 @@
     const s = normalize(sport);
     const has = (id) => Object.values(s.equipped).includes(id);
     return {
-      kit: has("kit_neon") ? "#a3e635" : has("kit_champ") ? "#facc15" : has("kit_away") ? "#f97316" : "#2563eb",
-      trim: has("kit_champ") ? "#7c3aed" : has("kit_away") ? "#fff7ed" : "#f8fafc",
-      boots: has("boots_gold") ? "#facc15" : has("boots_flame") ? "#ef4444" : has("boots_studs") ? "#111827" : "#f8fafc",
-      ball: has("ball_comet") ? "#fb7185" : has("ball_match") ? "#facc15" : "#f8fafc",
-      band: has("extra_crown") ? "#facc15" : has("extra_armband") ? "#ef4444" : "#f8fafc",
-      sky: has("pitch_moon") ? "#172554" : has("pitch_stadium") ? "#334155" : has("pitch_lights") ? "#fb923c" : "#7dd3fc",
-      ground: has("pitch_moon") ? "#14532d" : "#22c55e",
+      kit: has("kit_neon") ? "#9be51b" : has("kit_champ") ? "#ffc928" : has("kit_retro") ? "#ef3f52" : has("kit_keeper") ? "#7c3aed" : has("kit_away") ? "#ff6b24" : "#2563eb",
+      trim: has("kit_neon") ? "#102a43" : has("kit_champ") ? "#6d28d9" : has("kit_away") ? "#fff7ed" : "#f8fafc",
+      shorts: has("kit_away") ? "#172554" : has("kit_neon") ? "#102a43" : "#152b5f",
+      boots: has("boots_gold") ? "#facc15" : has("boots_signature") ? "#7c3aed" : has("boots_flame") ? "#ef3340" : has("boots_studs") ? "#111827" : "#ff4d3d",
+      ball: has("ball_comet") ? "#fb4f87" : has("ball_final") ? "#7c3aed" : has("ball_match") ? "#facc15" : has("ball_hivis") ? "#f97316" : "#f8fafc",
+      band: has("extra_crown") ? "#facc15" : has("extra_armband") ? "#ef3340" : "#f8fafc",
+      sky: has("pitch_moon") ? "#172554" : has("pitch_stadium") ? "#334155" : has("pitch_lights") ? "#f97316" : "#38bdf8",
+      ground: has("pitch_moon") ? "#14532d" : "#16a34a",
       venue: itemById(s.equipped.pitch)?.name || "The Park",
     };
   }
 
   function avatarSvg(sport, compact = false) {
     const look = avatarLook(sport);
+    const uid = compact ? "sc-mini" : "sc-full";
     const label = `${THEME.avatar.name}'s soccer avatar at ${look.venue}`;
     return `<div class="sp-stage${compact ? " sp-card-mini" : ""}" style="--sp-sky:${look.sky};--sp-ground:${look.ground}">
       ${compact ? "" : `<span class="sp-stage-tag">⚽ ${look.venue}</span>`}
       <svg class="sp-avatar-svg" viewBox="0 0 300 340" role="img" aria-label="${label}">
-        <g class="sp-player-bob">
-          <ellipse cx="151" cy="304" rx="78" ry="13" fill="rgba(15,23,42,.20)"/>
-          <path d="M130 207 Q116 252 105 288" fill="none" stroke="#1e3a8a" stroke-width="28" stroke-linecap="round"/>
-          <path d="M172 207 Q197 229 225 251" fill="none" stroke="#1e3a8a" stroke-width="28" stroke-linecap="round"/>
-          <path d="M88 291h42" stroke="${look.boots}" stroke-width="18" stroke-linecap="round"/>
-          <path d="M214 253l34 15" stroke="${look.boots}" stroke-width="18" stroke-linecap="round"/>
-          <path d="M119 120 Q87 149 75 187" fill="none" stroke="#d99b72" stroke-width="20" stroke-linecap="round"/>
-          <path d="M181 120 Q213 144 229 177" fill="none" stroke="#d99b72" stroke-width="20" stroke-linecap="round"/>
-          <path d="M105 115 Q150 96 195 116 L183 213 Q150 229 117 213Z" fill="${look.kit}" stroke="${look.trim}" stroke-width="6"/>
-          <path d="M112 132h76" stroke="${look.trim}" stroke-width="5" opacity=".65"/>
-          <text x="150" y="178" text-anchor="middle" font-size="43" font-weight="900" fill="${look.trim}">${THEME.avatar.number}</text>
-          <rect x="207" y="143" width="20" height="10" rx="5" fill="${look.band}" transform="rotate(54 217 148)"/>
-          <circle cx="150" cy="76" r="41" fill="#d99b72"/>
-          <path d="M112 70 Q116 25 153 26 Q187 27 191 72 Q172 51 112 70Z" fill="#3f2d20"/>
-          <circle cx="136" cy="79" r="4" fill="#1f2937"/><circle cx="166" cy="79" r="4" fill="#1f2937"/>
-          <path d="M139 96q12 10 24 0" fill="none" stroke="#7c2d12" stroke-width="4" stroke-linecap="round"/>
+        <defs>
+          <linearGradient id="${uid}-skin" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#efb07b"/><stop offset=".52" stop-color="#c87548"/><stop offset="1" stop-color="#93462f"/></linearGradient>
+          <linearGradient id="${uid}-kit" x1="0" y1="0" x2=".9" y2="1"><stop stop-color="#fff" stop-opacity=".4"/><stop offset=".2" stop-color="${look.kit}"/><stop offset="1" stop-color="${look.kit}"/></linearGradient>
+          <linearGradient id="${uid}-shorts" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff" stop-opacity=".18"/><stop offset=".28" stop-color="${look.shorts}"/><stop offset="1" stop-color="#07152e"/></linearGradient>
+          <radialGradient id="${uid}-ball" cx="35%" cy="28%"><stop stop-color="#fff"/><stop offset=".35" stop-color="${look.ball}"/><stop offset="1" stop-color="${look.ball}"/></radialGradient>
+          <filter id="${uid}-lift" x="-30%" y="-30%" width="160%" height="180%"><feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="#07152e" flood-opacity=".35"/></filter>
+        </defs>
+        <path d="M0 144 Q52 108 102 137 T205 130 T300 137 V188 H0Z" fill="#10254c" opacity=".54"/>
+        <g fill="#f8fafc" opacity=".78"><circle cx="22" cy="138" r="3"/><circle cx="41" cy="130" r="3"/><circle cx="61" cy="140" r="3"/><circle cx="81" cy="132" r="3"/><circle cx="104" cy="139" r="3"/><circle cx="206" cy="136" r="3"/><circle cx="229" cy="128" r="3"/><circle cx="252" cy="138" r="3"/><circle cx="278" cy="131" r="3"/></g>
+        <g stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".88"><path d="M22 112V78M9 78h26"/><path d="M278 112V78m-13 0h26"/></g>
+        <g class="sp-spark" fill="#fff7ad"><path d="M247 108l4 9 9 4-9 4-4 9-4-9-9-4 9-4Z"/><circle cx="70" cy="105" r="4"/></g>
+        <g class="sp-player-bob" filter="url(#${uid}-lift)">
+          <ellipse cx="154" cy="309" rx="88" ry="14" fill="#07152e" opacity=".3"/>
+          <path d="M133 211 Q123 244 116 265" fill="none" stroke="#101b36" stroke-width="37" stroke-linecap="round"/>
+          <path d="M133 211 Q123 244 116 265" fill="none" stroke="url(#${uid}-skin)" stroke-width="27" stroke-linecap="round"/>
+          <path d="M116 259 Q110 278 104 289" fill="none" stroke="#101b36" stroke-width="31" stroke-linecap="round"/>
+          <path d="M116 259 Q110 278 104 289" fill="none" stroke="${look.trim}" stroke-width="21" stroke-linecap="round"/>
+          <path d="M164 211 Q191 222 207 238" fill="none" stroke="#101b36" stroke-width="37" stroke-linecap="round"/>
+          <path d="M164 211 Q191 222 207 238" fill="none" stroke="url(#${uid}-skin)" stroke-width="27" stroke-linecap="round"/>
+          <path d="M204 236 Q219 246 232 252" fill="none" stroke="#101b36" stroke-width="31" stroke-linecap="round"/>
+          <path d="M204 236 Q219 246 232 252" fill="none" stroke="${look.trim}" stroke-width="21" stroke-linecap="round"/>
+          <path d="M83 287q22-8 44 3l4 14H84q-11-6-1-17Z" fill="${look.boots}" stroke="#101b36" stroke-width="6"/>
+          <path d="M222 244q18 3 33 18l-7 13-40-18q-5-9 14-13Z" fill="${look.boots}" stroke="#101b36" stroke-width="6"/>
+          <path d="M98 296h23m106-43l19 10" stroke="#fff" stroke-width="4" opacity=".65"/>
+          <path d="M116 194q34-14 69 0l-2 33q-16 10-32 0-17 10-35 0Z" fill="url(#${uid}-shorts)" stroke="#101b36" stroke-width="7" stroke-linejoin="round"/>
+          <path d="M120 126 Q88 146 73 181" fill="none" stroke="#101b36" stroke-width="29" stroke-linecap="round"/>
+          <path d="M120 126 Q88 146 73 181" fill="none" stroke="url(#${uid}-skin)" stroke-width="20" stroke-linecap="round"/>
+          <path d="M181 126 Q211 143 229 175" fill="none" stroke="#101b36" stroke-width="29" stroke-linecap="round"/>
+          <path d="M181 126 Q211 143 229 175" fill="none" stroke="url(#${uid}-skin)" stroke-width="20" stroke-linecap="round"/>
+          <path d="M104 120 Q150 97 196 120 L184 205 Q150 223 116 205Z" fill="url(#${uid}-kit)" stroke="#101b36" stroke-width="7" stroke-linejoin="round"/>
+          <path d="M107 122q16-11 31-14l8 24-29 9Z" fill="${look.trim}"/><path d="M193 122q-16-11-31-14l-8 24 29 9Z" fill="${look.trim}"/>
+          <path d="M112 139h76" stroke="${look.trim}" stroke-width="6" opacity=".82"/>
+          <path d="M147 111l-12 19 15 10 15-10-12-19Z" fill="${look.trim}" opacity=".9"/>
+          <text x="153" y="188" text-anchor="middle" font-size="47" font-family="ui-rounded,system-ui" font-weight="1000" fill="#101b36" opacity=".28">${THEME.avatar.number}</text>
+          <text x="150" y="184" text-anchor="middle" font-size="47" font-family="ui-rounded,system-ui" font-weight="1000" fill="${look.trim}" stroke="#fff" stroke-width="1.5" paint-order="stroke">${THEME.avatar.number}</text>
+          <rect x="207" y="145" width="22" height="12" rx="6" fill="${look.band}" stroke="#101b36" stroke-width="3" transform="rotate(52 218 151)"/>
+          <path d="M132 111v-18h36v18" fill="url(#${uid}-skin)" stroke="#101b36" stroke-width="6"/>
+          <circle cx="109" cy="73" r="12" fill="url(#${uid}-skin)" stroke="#101b36" stroke-width="6"/><circle cx="191" cy="73" r="12" fill="url(#${uid}-skin)" stroke="#101b36" stroke-width="6"/>
+          <circle cx="150" cy="72" r="43" fill="url(#${uid}-skin)" stroke="#101b36" stroke-width="7"/>
+          <path d="M111 67q-2-32 18-42 20-13 42-1 24 10 20 45-10-14-20-16-6-15-15-3-8-18-17 0-8-14-14 5-8 0-14 12Z" fill="#25191d"/>
+          <g fill="#3a2327"><circle cx="122" cy="38" r="11"/><circle cx="140" cy="28" r="12"/><circle cx="159" cy="27" r="12"/><circle cx="178" cy="40" r="12"/></g>
+          <path d="M127 73q9-6 18 0m12 0q9-6 18 0" stroke="#3a211b" stroke-width="4" stroke-linecap="round"/>
+          <ellipse cx="137" cy="80" rx="7" ry="8" fill="#fff"/><ellipse cx="165" cy="80" rx="7" ry="8" fill="#fff"/><circle cx="139" cy="82" r="3.5" fill="#101b36"/><circle cx="167" cy="82" r="3.5" fill="#101b36"/><circle cx="140" cy="80" r="1.3" fill="#fff"/><circle cx="168" cy="80" r="1.3" fill="#fff"/>
+          <path d="M151 83l-3 8 7 1" fill="none" stroke="#91462f" stroke-width="3" stroke-linecap="round"/>
+          <path d="M135 98q15 14 31 0-3 19-16 19-12 0-15-19Z" fill="#7d2935" stroke="#101b36" stroke-width="3"/><path d="M140 101q11 6 22 0" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+          <circle cx="123" cy="94" r="5" fill="#ef6f61" opacity=".45"/><circle cx="177" cy="94" r="5" fill="#ef6f61" opacity=".45"/>
         </g>
         <g class="sp-ball">
-          <circle cx="253" cy="282" r="23" fill="${look.ball}" stroke="#111827" stroke-width="3"/>
-          <path d="M253 267l10 8-4 12h-12l-4-12Z" fill="#111827"/><path d="M231 277l12-2M263 275l11-5M259 287l8 12M247 287l-7 13" stroke="#111827" stroke-width="3"/>
+          <path d="M219 282h-17m13-12h-11" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".65"/>
+          <circle cx="253" cy="282" r="25" fill="url(#${uid}-ball)" stroke="#101b36" stroke-width="5"/>
+          <path d="M253 266l10 8-4 12h-12l-4-12Z" fill="#101b36"/><path d="M230 276l13-2M263 274l12-5M259 286l9 13M247 286l-8 14" stroke="#101b36" stroke-width="3.5"/>
+          <circle cx="246" cy="273" r="4" fill="#fff" opacity=".75"/>
         </g>
       </svg>
     </div>`;
