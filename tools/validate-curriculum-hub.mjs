@@ -99,9 +99,21 @@ check(
   "missing the per-lesson Canvas (SCORM) download button (scorm-lesson-btn)",
 );
 check(/\/api\/scorm\?activity=/.test(html), "missing /api/scorm download link construction");
+// The hub HTML must be re-checked with the server on every load so new lesson
+// ordering appears immediately. `no-cache` and `no-store` both guarantee that;
+// what must never appear is a positive max-age, which would let a browser show
+// a stale hub without asking. This gate previously demanded `no-store`
+// specifically, which pinned a real cost: no-store forbids storing the response
+// at all, so the 580 KB hub could never be answered with a 304 and re-downloaded
+// in full on every visit. See the header block in _headers.
+const curriculumRule = /(?:^|\n)\/curriculum\/[^\S\n]*\n[^\S\n]+Cache-Control:[^\n]*/i.exec(
+  headers,
+);
 check(
-  /(?:^|\n)\/curriculum\/\s*\n\s+Cache-Control:\s*no-store\b/i.test(headers),
-  "curriculum HTML must use Cache-Control: no-store so new lesson ordering appears immediately",
+  curriculumRule !== null &&
+    /\bno-(cache|store)\b/i.test(curriculumRule[0]) &&
+    !/\bmax-age=[1-9]/i.test(curriculumRule[0]),
+  "curriculum HTML must use a revalidate-always Cache-Control (no-cache or no-store, no positive max-age) so new lesson ordering appears immediately",
 );
 
 if (failures.length) {

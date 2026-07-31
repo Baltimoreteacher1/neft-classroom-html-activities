@@ -1,11 +1,31 @@
 # Cloudflare Pages custom headers for Neft Teacher static activity hub
 # Keep this file in the repository root because the build output directory is the repository root.
 
-# Default for everything: security headers + ALWAYS-REVALIDATE caching.
-# max-age=0, must-revalidate means the browser checks with the server (ETag) on
-# every load and gets a cheap 304 when unchanged — so updated pages, tool scripts
-# (app.js/css), data files, games, and WIDA studios appear immediately, with no
-# hard refresh needed.
+# Default for everything: security headers ONLY. Deliberately NO Cache-Control here.
+#
+# Cloudflare Pages COMBINES every matching rule rather than letting the most
+# specific one win: "An incoming request which matches multiple rules' URL
+# patterns will inherit all rules' headers", and "if a header is applied twice
+# in the _headers file, the values are joined with a comma separator."
+# Because `/*` matches every request, any Cache-Control set here is concatenated
+# onto every per-path Cache-Control below. That is exactly what production was
+# serving on 2026-07-31:
+#
+#   cache-control: public, max-age=0, must-revalidate, no-store, no-cache,
+#                  must-revalidate, max-age=0, no-store, no-cache,
+#                  must-revalidate, max-age=0
+#   expires: 0, 0     pragma: no-cache, no-cache
+#
+# (three overlapping /curriculum rules + this one). A malformed multi-valued
+# Cache-Control is parsed by the strictest directive present, so `no-store` won
+# and the 72 KB brotli hub re-downloaded on EVERY visit with the ETag unusable.
+#
+# Removing Cache-Control here changes nothing about the effective policy for
+# unmatched paths: Pages' own default for cacheable assets is already
+# `public, max-age=0, must-revalidate`, and Pages always sends ETags, so the
+# browser still revalidates on every load and still gets a cheap 304.
+# RULE FOR EDITORS: never set the same header on two rules that can match the
+# same URL. Cache-Control belongs on exactly one matching rule per path.
 /*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
@@ -27,7 +47,6 @@
   # ONLY same-origin pages to REQUEST the mic; the browser still prompts the user
   # for permission. camera/geolocation/payment/usb stay fully blocked.
   Permissions-Policy: camera=(), microphone=(self), geolocation=(), payment=(), usb=()
-  Cache-Control: public, max-age=0, must-revalidate
 
 # /assets/ holds BOTH Vite content-hashed bundles (e.g. lesson-renderer-<hash>.js,
 # safe to cache forever) AND stable-named shared scripts that are hand-edited and
@@ -44,33 +63,48 @@
 /assets/*
   Cache-Control: public, max-age=0, must-revalidate
 
-# Curriculum Hub HTML: never reuse a stored document. The hub's lesson menus
-# are assembled from inline page data, so serving fresh HTML is the cache-bust
-# boundary that guarantees newly organized lessons appear on every visit.
+# Curriculum Hub HTML: must never be USED without checking with the server, so
+# newly organized lessons appear on every visit (the hub's lesson menus are
+# assembled from inline page data, so the HTML itself is the cache-bust
+# boundary).
+#
+# `no-cache` — NOT `no-store` — is what expresses that. Both force a check
+# before the document is used; the difference is that `no-store` forbids
+# keeping a copy at all, so the browser cannot send If-None-Match and Pages
+# can never answer 304. That cost a full 72 KB (brotli) re-download of a
+# 580 KB document on every single page view, for zero freshness benefit.
+# With `no-cache, must-revalidate` the browser still revalidates every time
+# and still shows new lesson ordering immediately — it just gets a ~200-byte
+# 304 when nothing changed. `must-revalidate` additionally forbids serving the
+# stored copy when the revalidation request fails.
+#
+# These three are EXACT paths and cannot match each other; the old
+# `/curriculum*` prefix rule matched all three (and every asset beneath
+# /curriculum/) and was the source of the tripled header value. Assets under
+# /curriculum/ now fall through to the Pages default
+# (public, max-age=0, must-revalidate) — still revalidated on every load,
+# but 304-able.
 /curriculum
-  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
-  Pragma: no-cache
-  Expires: 0
+  Cache-Control: public, no-cache, must-revalidate
 /curriculum/
-  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
-  Pragma: no-cache
-  Expires: 0
+  Cache-Control: public, no-cache, must-revalidate
 /curriculum/index.html
-  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
-  Pragma: no-cache
-  Expires: 0
-/curriculum*
-  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
-  Pragma: no-cache
-  Expires: 0
+  Cache-Control: public, no-cache, must-revalidate
 
-# ACCESS Practice Lab HTML shell: NEVER cache the entry pages, so a deploy is
-# seen immediately (the versioned ?v= app.js/data underneath still cache fine).
-# This is the SPA hub + the clean activity/test URLs served by the Pages Function.
+# ACCESS Practice Lab HTML shell: the entry pages must be re-checked on every
+# load so a deploy is seen immediately (the versioned ?v= app.js/data underneath
+# still cache fine). This is the SPA hub + the clean activity/test URLs served
+# by the Pages Function. Same reasoning as the curriculum hub above: `no-cache`
+# revalidates just as strictly as `no-store` but permits a 304 instead of
+# re-sending the whole shell.
+#
+# NOTE: these are exact paths, so /access-practice-lab/config.json — the public
+# build stamp that ship.sh and smoke:live poll — is NOT matched here and keeps
+# the Pages default. Those pollers append their own cache-buster anyway.
 /access-practice-lab/
-  Cache-Control: no-store
+  Cache-Control: public, no-cache, must-revalidate
 /access-teacher/
-  Cache-Control: no-store
+  Cache-Control: public, no-cache, must-revalidate
 
 # Command Center PWA: service worker and manifest must always revalidate.
 /teacher-tools/neftos-command-center/service-worker.js
