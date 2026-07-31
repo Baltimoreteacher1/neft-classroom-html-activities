@@ -7,8 +7,8 @@
  */
 document.addEventListener("DOMContentLoaded", () => {
   const optionsRoot = document.getElementById("ewl-linkgen-options");
-  const select = document.getElementById("ewl-linkgen-lesson");
-  const copyBtn = document.getElementById("ewl-linkgen-copy");
+  const select = /** @type {HTMLSelectElement} */ (document.getElementById("ewl-linkgen-lesson"));
+  const copyBtn = /** @type {HTMLButtonElement} */ (document.getElementById("ewl-linkgen-copy"));
   const preview = document.getElementById("ewl-linkgen-preview");
   const previewUrl = document.getElementById("ewl-linkgen-preview-url");
   const empty = document.getElementById("ewl-linkgen-empty");
@@ -50,19 +50,14 @@ document.addEventListener("DOMContentLoaded", () => {
     esol: "District ESOL modifications (WIDA)",
   };
   const schema = window.EWLSupportsSchema;
-  const IEP_GROUPS = (schema && Array.isArray(schema.groups) ? schema.groups : []).map(
-    (g) => ({
-      name: `${g.icon ? g.icon + " " : ""}${g.label}`,
-      note: GROUP_NOTES[g.id] || "",
-      items: (g.items || []).map((it) => {
-        const linkKey =
-          it.apply === "interactive" && it.tool ? TOOL_TO_LINK_KEY[it.tool] : null;
-        return linkKey
-          ? { label: it.label, keys: [linkKey] }
-          : { label: it.label, inPerson: true };
-      }),
+  const IEP_GROUPS = (schema && Array.isArray(schema.groups) ? schema.groups : []).map((g) => ({
+    name: `${g.icon ? g.icon + " " : ""}${g.label}`,
+    note: GROUP_NOTES[g.id] || "",
+    items: (g.items || []).map((it) => {
+      const linkKey = it.apply === "interactive" && it.tool ? TOOL_TO_LINK_KEY[it.tool] : null;
+      return linkKey ? { label: it.label, keys: [linkKey] } : { label: it.label, inPerson: true };
     }),
-  );
+  }));
   if (!IEP_GROUPS.length) {
     optionsRoot.innerHTML =
       '<p class="ewl-linkgen-empty" style="display:block">Supports list failed to load. Reload the page to try again.</p>';
@@ -89,9 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 ${it.keys ? `data-keys="${it.keys.join(",")}"` : ""}
                 ${it.inPerson ? 'data-inperson="1"' : ""} />
               <span class="ewl-linkgen-item-label">${it.label}${
-                it.inPerson
-                  ? ' <span class="ewl-linkgen-item-tag">🤝 in-person</span>'
-                  : ""
+                it.inPerson ? ' <span class="ewl-linkgen-item-tag">🤝 in-person</span>' : ""
               }</span>
             </label>`,
             )
@@ -129,8 +122,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // current selection. Copy link / SCORM are disabled until a
   // DIGITAL accommodation is checked so teachers never hand out a
   // link that turns nothing on; Copy list works for any selection.
-  const scormBtn = document.getElementById("ewl-linkgen-scorm");
-  const listBtn = document.getElementById("ewl-linkgen-list");
+  const scormBtn = /** @type {HTMLButtonElement} */ (document.getElementById("ewl-linkgen-scorm"));
+  const listBtn = /** @type {HTMLButtonElement} */ (document.getElementById("ewl-linkgen-list"));
   const refresh = () => {
     const items = selectedItems();
     const profiles = selectedProfiles();
@@ -147,17 +140,14 @@ document.addEventListener("DOMContentLoaded", () => {
   select.addEventListener("change", refresh);
 
   const setAll = (checked) => {
-    optionsRoot.querySelectorAll("input[type=checkbox]").forEach((cb) => {
+    optionsRoot.querySelectorAll("input[type=checkbox]").forEach((el) => {
+      const cb = /** @type {HTMLInputElement} */ (el);
       cb.checked = checked;
     });
     refresh();
   };
-  document
-    .getElementById("ewl-linkgen-all")
-    ?.addEventListener("click", () => setAll(true));
-  document
-    .getElementById("ewl-linkgen-clear")
-    ?.addEventListener("click", () => setAll(false));
+  document.getElementById("ewl-linkgen-all")?.addEventListener("click", () => setAll(true));
+  document.getElementById("ewl-linkgen-clear")?.addEventListener("click", () => setAll(false));
 
   refresh();
 

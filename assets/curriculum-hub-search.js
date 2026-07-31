@@ -2626,7 +2626,7 @@
     var card = cards[uIdx];
     if (!card) return;
 
-    var lessonSelect = card.querySelector(".lesson-select");
+    var lessonSelect = /** @type {HTMLSelectElement} */ (card.querySelector(".lesson-select"));
     if (lessonSelect && lessonId) {
       var targetIdx = 0;
       unitsData[uIdx].lessons.forEach(function (l, i) {
@@ -3094,7 +3094,9 @@
   // 6. Launch Modal Logic
   var modal = document.getElementById("launch-modal");
   var modalTitle = document.getElementById("modal-title-text");
-  var modalLaunchLink = document.getElementById("modal-launch-link");
+  var modalLaunchLink = /** @type {HTMLAnchorElement} */ (
+    document.getElementById("modal-launch-link")
+  );
   var modalCloseBtn = document.getElementById("modal-close-btn");
 
   var modalKeyHandler = null;
