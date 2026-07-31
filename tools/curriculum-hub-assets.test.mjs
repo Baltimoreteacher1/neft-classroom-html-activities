@@ -13,8 +13,8 @@
  * and fails with the exact replacement string, so a stale stamp is caught by
  * `npm test` (and therefore by the pre-push QA loop) instead of in a classroom.
  */
-import { readFileSync } from "node:fs";
 import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -60,7 +60,9 @@ for (const name of ASSETS) {
 // script tag would run them BEFORE the page finished parsing, and each one
 // reads DOM that sits above it.
 for (const name of ASSETS.filter((n) => n.endsWith(".js"))) {
-  const tag = new RegExp(`<script([^>]*)src="/assets/${name.replace(/[.]/g, "\\.")}\\?v=`).exec(hub);
+  const tag = new RegExp(`<script([^>]*)src="/assets/${name.replace(/[.]/g, "\\.")}\\?v=`).exec(
+    hub,
+  );
   if (!tag) {
     fail(`no <script> tag loading /assets/${name}`);
     continue;
@@ -89,4 +91,6 @@ if (failures) {
   console.error(`\n✗ curriculum hub assets: ${failures} failure(s)`);
   process.exit(1);
 }
-console.log(`   ✓ ${ASSETS.length} assets stamped by content hash, defer intact, ${inlineJs} B inline JS`);
+console.log(
+  `   ✓ ${ASSETS.length} assets stamped by content hash, defer intact, ${inlineJs} B inline JS`,
+);

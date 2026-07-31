@@ -1882,12 +1882,8 @@
         href: "/math/unit-10/area-architect/",
       },
     ],
-    "5-2": [
-      { text: "Lesson 5-2: Area of Triangles Game", href: "/math/unit-10/area-architect/" },
-    ],
-    "5-3": [
-      { text: "Lesson 5-3: Area of Trapezoids Game", href: "/math/unit-10/area-architect/" },
-    ],
+    "5-2": [{ text: "Lesson 5-2: Area of Triangles Game", href: "/math/unit-10/area-architect/" }],
+    "5-3": [{ text: "Lesson 5-3: Area of Trapezoids Game", href: "/math/unit-10/area-architect/" }],
     "5-4": [
       { text: "Lesson 5-4: Apply Area Concepts Game", href: "/math/unit-10/area-architect/" },
     ],
@@ -2053,9 +2049,7 @@
         href: "/math/unit-7/subzero-ledger/",
       },
     ],
-    "9-4": [
-      { text: "Lesson 9-4: Rational Numbers Game", href: "/math/unit-7/subzero-ledger/" },
-    ],
+    "9-4": [{ text: "Lesson 9-4: Rational Numbers Game", href: "/math/unit-7/subzero-ledger/" }],
     "9-6": [
       {
         text: "Lesson 9-6: Graph Reflections of Points Game",
@@ -2223,8 +2217,7 @@
     Array.prototype.slice.call(li.children).forEach(function (node) {
       if (
         node.classList &&
-        (node.classList.contains("scorm-dl") ||
-          node.classList.contains("lesson-print-activity"))
+        (node.classList.contains("scorm-dl") || node.classList.contains("lesson-print-activity"))
       ) {
         bodyEl.appendChild(node);
       }
@@ -2419,10 +2412,7 @@
       var key = m ? m[1].replace("-flagship", "") : "__unit__";
       var titleEl = bg.querySelector(".band-game-title");
       var subEl = bg.querySelector(".band-game-sub");
-      var gameTitle = ((titleEl && titleEl.textContent) || "Unit Game").replace(
-        /^Play:\s*/,
-        "",
-      );
+      var gameTitle = ((titleEl && titleEl.textContent) || "Unit Game").replace(/^Play:\s*/, "");
       var gameSub = (subEl && subEl.textContent) || "";
       (bandGamesByLesson[key] = bandGamesByLesson[key] || []).push({
         text: "🎮 " + gameTitle + (gameSub ? " — " + gameSub : ""),
@@ -2690,7 +2680,7 @@
     var grid = document.createElement("div");
     grid.className = "units-grid";
 
-    unitsData.forEach(function (u, uIdx) {
+    unitsData.forEach(function (u) {
       var card = document.createElement("div");
       card.className = "unit-card";
 
@@ -2711,9 +2701,7 @@
         u.blurb +
         "</span>" +
         (u.cluster
-          ? '<span class="badge badge-cluster" style="margin-top:4px;">' +
-            u.cluster +
-            "</span>"
+          ? '<span class="badge badge-cluster" style="margin-top:4px;">' + u.cluster + "</span>"
           : "") +
         "</div>";
       card.appendChild(header);
@@ -2959,8 +2947,7 @@
         if (scormTarget) {
           scormLessonBtn.href = scormDownloadHref(scormTarget, scormTitle);
           scormLessonBtn.textContent = "🎓 Download for Canvas (SCORM)";
-          scormLessonBtn.title =
-            "Download “" + scormTitle + "” as a Canvas-ready SCORM package";
+          scormLessonBtn.title = "Download “" + scormTitle + "” as a Canvas-ready SCORM package";
           scormLessonBtn.setAttribute("aria-label", scormLessonBtn.title);
           scormLessonBtn.style.display = "";
         } else {
@@ -3089,17 +3076,11 @@
     }
   }
 
-  // 5. Wire Search input
-  function handleSearch() {
-    var q = (box.value || "").trim().toLowerCase();
-    if (q) {
-      renderSearchResults(q);
-    } else {
-      renderHub();
-    }
-  }
-
-  // Search input wired by /assets/curriculum-enhancements.js
+  // 5. Search input is wired by /assets/curriculum-enhancements.js, which calls
+  // renderSearchResults()/renderHub() through the CurriculumHub handle below.
+  // (A local handleSearch() lived here until the wiring moved out; it had been
+  // unreachable ever since, and was only visible once this block stopped being
+  // inline HTML that no linter could read.)
 
   window.CurriculumHub = {
     unitsData: unitsData,
