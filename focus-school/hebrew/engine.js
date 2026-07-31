@@ -1040,9 +1040,9 @@
       const prev = UNITS.find((u) => u.id === unit.id - 1);
       const next = UNITS.find((u) => u.id === unit.id + 1);
       nav.innerHTML =
-        (prev ? `<a href="${prev.slug}.html">← ${esc(prev.inning)}</a>` : "") +
+        (prev ? `<a href="${prev.slug}">← ${esc(prev.inning)}</a>` : "") +
         `<a href="./">⚾ All innings</a>` +
-        (next ? `<a href="${next.slug}.html">${esc(next.inning)} →</a>` : "");
+        (next ? `<a href="${next.slug}">${esc(next.inning)} →</a>` : "");
     }
 
     refreshScore();

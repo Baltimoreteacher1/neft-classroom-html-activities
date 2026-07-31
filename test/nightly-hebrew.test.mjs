@@ -135,7 +135,10 @@ test("app drains the outbox on open, on refocus, and cross-tab", () => {
 // --- offline ---------------------------------------------------------------
 test("service worker precaches every Hebrew page and serves it back offline", () => {
   for (let i = 1; i <= UNITS; i++) {
-    assert.ok(sw.includes(`"hebrew/unit-${i}.html"`), `sw precaches unit-${i}.html`);
+    // Extensionless on purpose: Pages 308s "*.html" to the clean URL and
+    // cache.add() rejects a redirect, so a ".html" entry never precaches.
+    assert.ok(sw.includes(`"hebrew/unit-${i}"`), `sw precaches unit-${i} (clean URL)`);
+    assert.ok(!sw.includes(`"hebrew/unit-${i}.html"`), `sw does not precache a redirecting URL`);
     assert.ok(sw.includes(`"hebrew/games/unit-${i}.js"`), `sw precaches game ${i}`);
   }
   for (const f of ["hebrew/", "hebrew/hebrew.css", "hebrew/data.js", "hebrew/engine.js"]) {

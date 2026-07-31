@@ -1,10 +1,15 @@
 /* Focus School — service worker.
  * Offline-first app shell: precache core files, serve them cache-first,
  * fall back to the cached app for navigations when offline. */
-const VERSION = "focus-school-v67";
+const VERSION = "focus-school-v68";
 const CORE = [
+  // Cloudflare Pages serves clean URLs — a request for "index.html" or
+  // "unit-1.html" 308-redirects to the extensionless path, and cache.add()
+  // REJECTS a redirected response. Because install() uses allSettled, such an
+  // entry fails SILENTLY and is simply never precached. Always list the URL
+  // Pages actually serves. ("./" is the shell; "index.html" was the same file
+  // and had been failing this way.)
   "./",
-  "index.html",
   "styles.css?v=57",
   "sports.js?v=4",
   "app.js?v=60",
@@ -22,15 +27,15 @@ const CORE = [
   "hebrew/hebrew.css",
   "hebrew/data.js",
   "hebrew/engine.js",
-  "hebrew/unit-1.html",
-  "hebrew/unit-2.html",
-  "hebrew/unit-3.html",
-  "hebrew/unit-4.html",
-  "hebrew/unit-5.html",
-  "hebrew/unit-6.html",
-  "hebrew/unit-7.html",
-  "hebrew/unit-8.html",
-  "hebrew/unit-9.html",
+  "hebrew/unit-1",
+  "hebrew/unit-2",
+  "hebrew/unit-3",
+  "hebrew/unit-4",
+  "hebrew/unit-5",
+  "hebrew/unit-6",
+  "hebrew/unit-7",
+  "hebrew/unit-8",
+  "hebrew/unit-9",
   "hebrew/games/unit-1.js",
   "hebrew/games/unit-2.js",
   "hebrew/games/unit-3.js",
