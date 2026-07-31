@@ -45,6 +45,7 @@ for (const [app, themeKey] of APPS) {
         `${g.id} sits in an unknown slot ${g.slot}`,
       );
       assert.ok(g.level >= 1 && g.level <= S.THEME.levels.length, `${g.id} unlocks off the ladder`);
+      assert.ok(Number.isFinite(g.price) && g.price >= 0, `${g.id} needs a valid points price`);
     }
     for (const [slot] of S.THEME.slots) {
       assert.ok(
@@ -100,7 +101,11 @@ for (const [app, themeKey] of APPS) {
   });
 
   test(`${app}: the player card avatar only shows the chosen slots`, () => {
-    const maxed = S.award(S.normalize({ xp: 0 }), "task", 99999).sport;
+    let maxed = S.normalize({ xp: 99999 });
+    for (const [slot] of S.THEME.slots) {
+      const item = S.THEME.gear.filter((g) => g.slot === slot).at(-1);
+      maxed = S.equip(maxed, item.id);
+    }
     const avatar = S.avatarFor(maxed);
     assert.equal(
       [...avatar].filter((c) => c.codePointAt(0) > 0x2000).length >= 1,
@@ -146,11 +151,11 @@ for (const [app, themeKey] of APPS) {
     assert.equal(S.award(sport, "task", -50).sport.xp, sport.xp, "negative award is ignored");
   });
 
-  test(`${app}: gear unlocks by level, equips only when owned`, () => {
-    const early = S.normalize({ xp: 0 });
-    const late = S.normalize({ xp: 99999 });
-    assert.ok(S.unlockedGear(early.xp).length > 0, "level 1 owns the starters");
-    assert.equal(S.lockedGear(late.xp).length, 0, "max level owns everything");
+  test(`${app}: gear unlocks by level, purchases with points, and equips only when owned`, () => {
+    const early = S.normalize({ xp: 0, owned: [] });
+    const late = S.normalize({ xp: 99999, owned: [] });
+    assert.ok(S.unlockedGear(early.xp).length > 0, "level 1 opens the starter gear");
+    assert.equal(S.lockedGear(late.xp).length, 0, "max level opens the full shop");
 
     const locked = S.nextUnlock(early.xp);
     assert.ok(locked, "there is something to work toward at level 1");
@@ -161,15 +166,24 @@ for (const [app, themeKey] of APPS) {
     );
 
     const owned = S.unlockedGear(early.xp)[0];
+    assert.ok(S.ownsItem(early, owned.id), "free starter gear is owned");
     assert.equal(S.equip(early, owned.id).equipped[owned.slot], owned.id);
     assert.equal(
       JSON.stringify(S.equip(early, "not-a-real-item").equipped),
       JSON.stringify(early.equipped),
     );
+
+    const levelTwoItem = S.THEME.gear.find((item) => item.level === 2);
+    const shopper = S.normalize({ xp: S.THEME.levels[1].at, owned: [] });
+    const bought = S.purchase(shopper, levelTwoItem.id);
+    assert.equal(bought.status, "purchased");
+    assert.equal(bought.sport.equipped[levelTwoItem.slot], levelTwoItem.id);
+    assert.equal(S.gearBalance(bought.sport), shopper.xp - levelTwoItem.price);
+    assert.equal(S.levelInfo(bought.sport.xp).level, 2, "buying gear never lowers a level");
   });
 
-  test(`${app}: newly unlocked gear auto-equips only an empty slot`, () => {
-    const start = S.normalize({ xp: 0 });
+  test(`${app}: level-ups open the shop without auto-buying or replacing gear`, () => {
+    const start = S.normalize({ xp: 0, owned: [] });
     const chosen = S.THEME.gear.find((g) => g.level === 1);
     const wearing = S.equip(start, chosen.id);
     const jumped = S.award(wearing, "task", 99999);
@@ -178,9 +192,9 @@ for (const [app, themeKey] of APPS) {
       chosen.id,
       "a level-up must never silently change what the kid chose to wear",
     );
-    for (const [slot] of S.THEME.slots) {
-      assert.ok(jumped.sport.equipped[slot], `${slot} should end up filled after unlocking it all`);
-    }
+    const costly = S.THEME.gear.find((item) => item.price > 0);
+    assert.equal(S.ownsItem(jumped.sport, costly.id), false, "leveling up does not auto-buy gear");
+    assert.equal(S.lockedGear(jumped.sport.xp).length, 0, "the full shop is level-unlocked");
   });
 
   test(`${app}: a hostile synced blob cannot poison the season`, () => {
@@ -238,11 +252,20 @@ for (const [app, themeKey] of APPS) {
       assert.ok(t.level >= 1 && t.level <= S.THEME.levels.length, `${t.name} sits off the ladder`);
     }
     const esc = (v) => String(v);
-    const rookie = S.renderView(S.normalize({ xp: 0 }), { esc });
-    const veteran = S.renderView(S.normalize({ xp: 99999 }), { esc });
-    const locks = (html) => (html.match(/Reach level/g) || []).length;
-    assert.equal(locks(rookie), S.THEME.trophies.length, "a new season has every trophy locked");
-    assert.equal(locks(veteran), 0, "the top of the ladder has won them all");
+    const card = (id, _title, _sub, body) =>
+      `<section data-sports-card="${id}">${body}</section>`;
+    const rookie = S.renderView(S.normalize({ xp: 0 }), { esc, card });
+    const veteran = S.renderView(S.normalize({ xp: 99999 }), { esc, card });
+    const trophyLocks = (html) => {
+      const trophySection = html.match(/data-sports-card="sp-trophies">([\s\S]*?)<\/section>/);
+      return (trophySection?.[1].match(/Reach level/g) || []).length;
+    };
+    assert.equal(
+      trophyLocks(rookie),
+      S.THEME.trophies.length,
+      "a new season has every trophy locked",
+    );
+    assert.equal(trophyLocks(veteran), 0, "the top of the ladder has won them all");
   });
 
   test(`${app}: rendering escapes and never leaks a locked item`, () => {
@@ -269,6 +292,7 @@ test("both apps share one engine (only the theme differs)", () => {
       .replace(/^\/\*[\s\S]*?\*\/\n/, "")
       .replace(/const THEME = \{[\s\S]*?\n {2}\};\n/, "")
       .replace(/ {2}\/\/ A (diamond|pitch)[\s\S]*?\n {4}<\/svg>`;\n/, "")
+      .replace(/ {2}\/\/ --- Sport avatar begin[\s\S]*?\/\/ --- Sport avatar end[^\n]*\n/, "")
       .replace(/(diamond|pitch)Svg/g, "trackSvg")
       .replace(/Baseball Season|Soccer Season/g, "Season")
       .replace(/baseball|soccer/g, "sport");
