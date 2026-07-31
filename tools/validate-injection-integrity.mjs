@@ -17,11 +17,25 @@
  * and asserts begin==end per file, per family. No per-injector config to keep in
  * sync — a new injector is covered automatically the moment its sentinel appears.
  *
- * Exit 0 = all balanced; 1 = at least one imbalance (CI-friendly). Read-only.
+ * SECOND CHECK — a layer that VANISHED. Balance alone cannot see the worse bug:
+ * a generator (generate-notes, generate-homework, the support-page builders …)
+ * renders a page from config.json and overwrites it whole, deleting every
+ * injected block on it. Zero blocks balance perfectly, so this validator used to
+ * pass while Save/Resume, the mobile a11y layer, the Math Workbench launcher and
+ * the canonical/OG head were being stripped off 74 lessons at a time.
+ *
+ * So every tracked HTML file is also compared against its committed version: if
+ * HEAD carried a family and the working tree no longer does, that is a
+ * regression, reported by name. No manifest to maintain — git already knows what
+ * the page used to have, and a deliberate removal is one `git commit` away from
+ * becoming the new baseline.
+ *
+ * Exit 0 = all balanced and nothing lost; 1 = otherwise (CI-friendly). Read-only.
  *
  * USAGE: node tools/validate-injection-integrity.mjs
  * ========================================================================== */
 
+import { execFileSync } from "child_process";
 import { readdirSync, readFileSync, statSync } from "fs";
 import { dirname, join, relative } from "path";
 import { fileURLToPath } from "url";
@@ -91,8 +105,54 @@ function check(file) {
   }
 }
 
+/* ---------- did any page LOSE a layer since its last commit? ---------- */
+
+const familiesIn = (html) => {
+  const out = new Set();
+  MARKER_RE.lastIndex = 0;
+  let m;
+  while ((m = MARKER_RE.exec(html))) out.add(m[1].toLowerCase());
+  return out;
+};
+
+const git = (args) =>
+  execFileSync("git", args, { cwd: ROOT, encoding: "utf8", maxBuffer: 1 << 28 });
+
+// Only modified-but-uncommitted files can have lost something since HEAD, so
+// this stays fast no matter how large the site gets.
+function findLostLayers() {
+  const lost = [];
+  let changed;
+  try {
+    changed = git(["diff", "--name-only", "--diff-filter=M", "HEAD", "--", "*.html"])
+      .split("\n")
+      .map((s) => s.trim())
+      .filter(Boolean);
+  } catch {
+    return null; // not a git checkout (or no HEAD yet) — skip, do not fail
+  }
+  for (const rel of changed) {
+    let before;
+    let after;
+    try {
+      before = git(["show", `HEAD:${rel}`]);
+      after = readFileSync(join(ROOT, rel), "utf8");
+    } catch {
+      continue;
+    }
+    if (!before.includes("-injected:")) continue;
+    const had = familiesIn(before);
+    const has = familiesIn(after);
+    const gone = [...had].filter((f) => !has.has(f));
+    if (gone.length) lost.push({ file: rel, gone });
+  }
+  return lost;
+}
+
 console.log("\nInjection-integrity validation\nroot:", ROOT, "\n");
 walk(ROOT);
+
+const lost = findLostLayers();
 
 console.log(`Scanned HTML with injected markers: ${scanned}`);
 console.log("Per-family (files with the marker):");
@@ -107,13 +167,33 @@ if (imbalances.length) {
     .forEach((i) => console.log(`   → ${i.file}  [${i.family}] begin=${i.begin} end=${i.end}`));
 }
 
-const ok = imbalances.length === 0;
-console.log("\nRESULT:", ok ? "PASS ✅" : `FAIL ❌ (${imbalances.length} unbalanced)`);
-if (!ok) {
+if (lost === null) {
+  console.log("Layers lost since HEAD: (not a git checkout — skipped)");
+} else {
+  console.log(`Layers lost since HEAD: ${lost.length}`);
+  lost.slice(0, 40).forEach((l) => console.log(`   → ${l.file}  lost [${l.gone.join(", ")}]`));
+}
+
+const ok = imbalances.length === 0 && (lost === null || lost.length === 0);
+console.log(
+  "\nRESULT:",
+  ok
+    ? "PASS ✅"
+    : `FAIL ❌ (${imbalances.length} unbalanced, ${lost ? lost.length : 0} page(s) lost a layer)`,
+);
+if (imbalances.length) {
   console.log(
     "\n→ An injector left a page half-injected (or double-injected). Re-run that" +
       "\n  layer's injector (tools/inject-<family>-*.js) with --revert then re-inject," +
       "\n  or repair the stray sentinel by hand so begin/end counts match.",
+  );
+}
+if (lost && lost.length) {
+  console.log(
+    "\n→ A generator overwrote a page and deleted its injected layers. Route that" +
+      "\n  generator's writes through writeGenerated() (scripts/lib/preserve-injected.mjs)" +
+      "\n  instead of writeFileSync, then re-run it. If the removal was deliberate," +
+      "\n  commit it — HEAD is the baseline.",
   );
 }
 process.exit(ok ? 0 : 1);

@@ -9,6 +9,7 @@
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { EDITORIAL_FONT_IMPORT, EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
+import { writeGenerated } from "./lib/preserve-injected.mjs";
 
 const root = join(import.meta.dirname, "..");
 const lessonsDir = join(root, "lessons");
@@ -176,7 +177,9 @@ const lessonIds = readdirSync(lessonsDir)
 let count = 0;
 for (const id of lessonIds) {
   const config = JSON.parse(readFileSync(join(lessonsDir, id, "config.json"), "utf8"));
-  writeFileSync(join(lessonsDir, id, "handout.html"), buildHandout(config), "utf8");
+  // handout.html is an injected surface (Save/Resume, mobile a11y, enterprise
+  // head) — a plain overwrite deletes those layers. See scripts/lib/preserve-injected.mjs.
+  writeGenerated(join(lessonsDir, id, "handout.html"), buildHandout(config));
   count++;
 }
 
