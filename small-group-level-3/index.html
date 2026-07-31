@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Level 3 · Adaptive Small Group — Neft Teacher</title>
+    <meta
+      name="description"
+      content="Level 3 Adaptive Small Group workspace — grade-level math with support that adjusts to what you show."
+    />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      :root {
+        --l3-bg: #f7f9fc;
+        --l3-card: #ffffff;
+        --l3-ink: #16233a;
+        --l3-muted: #4a5a75;
+        --l3-line: #d8e0ec;
+        --l3-teal: #0f6d7a;
+        --l3-teal-ink: #08454e;
+        --l3-amber: #8a5a00;
+        --l3-focus: #0b4fd8;
+        --l3-scale: 1;
+      }
+      /* High-contrast student toggle. Both themes keep >= 7:1 on body text. */
+      body.l3-contrast {
+        --l3-bg: #ffffff;
+        --l3-card: #ffffff;
+        --l3-ink: #000000;
+        --l3-muted: #1a1a1a;
+        --l3-line: #000000;
+        --l3-teal: #004650;
+        --l3-teal-ink: #002a30;
+        --l3-amber: #5a3a00;
+      }
+      body.l3 {
+        margin: 0;
+        background: var(--l3-bg);
+        color: var(--l3-ink);
+        font-family:
+          "Hanken Grotesk",
+          system-ui,
+          -apple-system,
+          sans-serif;
+        font-size: calc(1.06rem * var(--l3-scale));
+        line-height: 1.6;
+      }
+      .l3-wrap {
+        max-width: 62rem;
+        margin: 0 auto;
+        padding: 1rem 1rem 4rem;
+      }
+      .l3-card {
+        background: var(--l3-card);
+        border: 2px solid var(--l3-line);
+        border-radius: 14px;
+        padding: 1rem 1.1rem;
+        margin-bottom: 1rem;
+      }
+      .l3-target {
+        border-left: 8px solid var(--l3-teal);
+      }
+      .l3-target h1 {
+        font-size: calc(1.25rem * var(--l3-scale));
+        margin: 0 0 0.25rem;
+        color: var(--l3-teal-ink);
+      }
+      .l3-target p {
+        margin: 0.15rem 0;
+      }
+      .l3-std {
+        color: var(--l3-muted);
+        font-size: 0.92em;
+      }
+      .l3-prompt {
+        font-size: calc(1.15rem * var(--l3-scale));
+        font-weight: 600;
+        margin: 0 0 0.75rem;
+      }
+      .l3-input {
+        font: inherit;
+        padding: 0.6rem 0.7rem;
+        border: 2px solid var(--l3-line);
+        border-radius: 10px;
+        width: min(22rem, 100%);
+        background: #fff;
+        color: var(--l3-ink);
+      }
+      .l3-btn {
+        font: inherit;
+        font-weight: 700;
+        padding: 0.55rem 1rem;
+        border-radius: 10px;
+        border: 2px solid var(--l3-teal);
+        background: var(--l3-teal);
+        color: #fff;
+        cursor: pointer;
+        min-height: 44px;
+      }
+      .l3-btn.secondary {
+        background: #fff;
+        color: var(--l3-teal-ink);
+      }
+      .l3-btn:hover {
+        filter: brightness(1.08);
+      }
+      .l3-btn:focus-visible,
+      .l3-input:focus-visible,
+      select:focus-visible,
+      a:focus-visible {
+        outline: 4px solid var(--l3-focus);
+        outline-offset: 2px;
+      }
+      .l3-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        align-items: center;
+      }
+      .l3-controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        align-items: center;
+      }
+      .l3-controls label {
+        font-size: 0.92em;
+        color: var(--l3-muted);
+        font-weight: 600;
+      }
+      .l3-note {
+        border-left: 6px solid var(--l3-amber);
+        background: #fff8ea;
+        padding: 0.6rem 0.8rem;
+        border-radius: 8px;
+        margin-top: 0.75rem;
+      }
+      body.l3-contrast .l3-note {
+        background: #fff;
+        border-left-color: #000;
+      }
+      .l3-frame {
+        font-style: italic;
+        color: var(--l3-muted);
+      }
+      .l3-vocab {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        margin-top: 0.5rem;
+      }
+      .l3-chip {
+        border: 2px solid var(--l3-line);
+        border-radius: 999px;
+        padding: 0.15rem 0.7rem;
+        font-size: 0.9em;
+        background: #eef4f9;
+      }
+      body.l3-contrast .l3-chip {
+        background: #fff;
+      }
+      .l3-rep {
+        margin-top: 0.6rem;
+        color: var(--l3-muted);
+        font-size: 0.95em;
+      }
+      .l3-teacher {
+        border: 3px dashed var(--l3-teal);
+        background: #f2f8f9;
+      }
+      body.l3-contrast .l3-teacher {
+        background: #fff;
+      }
+      .l3-teacher h2 {
+        margin-top: 0;
+        font-size: calc(1.05rem * var(--l3-scale));
+      }
+      .l3-evidence {
+        color: var(--l3-muted);
+        font-size: 0.93em;
+      }
+      .l3-hidden {
+        display: none !important;
+      }
+      .l3-skip {
+        position: absolute;
+        left: -9999px;
+      }
+      .l3-skip:focus {
+        position: static;
+        display: inline-block;
+        margin-bottom: 0.5rem;
+      }
+      table.l3-table {
+        border-collapse: collapse;
+        margin-top: 0.6rem;
+      }
+      table.l3-table th,
+      table.l3-table td {
+        border: 2px solid var(--l3-line);
+        padding: 0.3rem 0.75rem;
+        text-align: center;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition: none !important;
+          animation: none !important;
+        }
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
+  <!-- nsr-injected:end -->
+</head>
+  <body class="l3">
+    <div class="l3-wrap">
+      <a class="l3-skip" href="#l3-task">Skip to the task</a>
+
+      <section class="l3-card l3-target" aria-labelledby="l3-title">
+        <h1 id="l3-title">Level 3 · Adaptive Small Group</h1>
+        <p id="l3-learning-target"><strong>Learning target:</strong> <span>loading…</span></p>
+        <p class="l3-std">
+          Standard <span id="l3-standard">—</span> · Everyone in this group is working toward the
+          same target. What changes is the support, not the math.
+        </p>
+        <p class="l3-row">
+          <a class="l3-btn secondary" id="l3-back" href="/curriculum/">← Back to the lesson</a>
+        </p>
+      </section>
+
+      <section class="l3-card" aria-label="Your supports">
+        <div class="l3-controls" role="group" aria-label="Student controls">
+          <label for="l3-text-size">Text size</label>
+          <select id="l3-text-size" class="l3-input" style="width: auto">
+            <option value="1">Normal</option>
+            <option value="1.15">Large</option>
+            <option value="1.35">Extra large</option>
+          </select>
+
+          <button type="button" class="l3-btn secondary" id="l3-contrast" aria-pressed="false">
+            High contrast
+          </button>
+          <button type="button" class="l3-btn secondary" id="l3-readaloud">🔊 Read aloud</button>
+
+          <label for="l3-lang">Language</label>
+          <select id="l3-lang" class="l3-input" style="width: auto">
+            <option value="en">English</option>
+            <option value="es">Español</option>
+          </select>
+
+          <label for="l3-rep">Model</label>
+          <select id="l3-rep" class="l3-input" style="width: auto"></select>
+        </div>
+      </section>
+
+      <main class="l3-card" id="l3-task" tabindex="-1" aria-labelledby="l3-prompt">
+        <p class="l3-prompt" id="l3-prompt">Loading your first task…</p>
+        <div id="l3-model" class="l3-rep" aria-live="polite"></div>
+
+        <div class="l3-row" style="margin-top: 0.8rem">
+          <label class="l3-skip" for="l3-answer">Your answer</label>
+          <input
+            class="l3-input"
+            id="l3-answer"
+            type="text"
+            autocomplete="off"
+            placeholder="Type your answer"
+          />
+          <button type="button" class="l3-btn" id="l3-check">Check</button>
+          <button type="button" class="l3-btn secondary" id="l3-hint">Hint</button>
+        </div>
+
+        <p class="l3-frame l3-hidden" id="l3-frame"></p>
+        <div class="l3-vocab l3-hidden" id="l3-vocab" aria-label="Words you can use"></div>
+
+        <div id="l3-feedback" class="l3-note l3-hidden" role="status" aria-live="polite"></div>
+        <div id="l3-hintbox" class="l3-note l3-hidden" role="status" aria-live="polite"></div>
+
+        <p class="l3-row" style="margin-top: 0.9rem">
+          <button type="button" class="l3-btn secondary" id="l3-why">Why am I seeing this?</button>
+          <button type="button" class="l3-btn secondary" id="l3-restore">
+            Bring back a support
+          </button>
+        </p>
+        <div id="l3-why-box" class="l3-note l3-hidden" role="status"></div>
+      </main>
+
+      <section class="l3-card l3-teacher l3-hidden" id="l3-teacher" aria-labelledby="l3-teacher-h">
+        <h2 id="l3-teacher-h">Teacher view</h2>
+        <p id="l3-teacher-target" class="l3-evidence"></p>
+        <p><strong id="l3-teacher-suggestion"></strong></p>
+        <p class="l3-evidence">Evidence: <span id="l3-teacher-evidence"></span></p>
+        <p class="l3-evidence">
+          Group pattern: <span id="l3-teacher-group">—</span> · Support is
+          <span id="l3-teacher-direction">steady</span>
+        </p>
+        <div class="l3-controls">
+          <label for="l3-teacher-rep">Override model</label>
+          <select id="l3-teacher-rep" class="l3-input" style="width: auto"></select>
+          <button type="button" class="l3-btn secondary" id="l3-teacher-clear">
+            Clear override
+          </button>
+        </div>
+        <p class="l3-evidence">
+          Suggestions are based on the current session only. Nothing here is a fixed label.
+        </p>
+      </section>
+    </div>
+
+    <script type="module" src="/assets/level3/workspace.js"></script>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+  <!-- nsr-injected:end -->
+  </body>
+</html>
