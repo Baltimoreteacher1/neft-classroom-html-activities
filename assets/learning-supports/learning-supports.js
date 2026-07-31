@@ -4181,6 +4181,85 @@
     return !!(res && res.ok);
   }
 
+  function enhanceObjectiveVisuals() {
+    try {
+      const path = window.location.pathname;
+      let unit = 1;
+      const match = path.match(/\/lessons\/(\d+)-/);
+      if (match) unit = parseInt(match[1], 10);
+
+      let contentImg = "/assets/content_with_poster.jpg";
+      let languageImg = "/assets/lang_with_poster.jpg";
+      if (unit === 4 || unit === 5) contentImg = "/assets/algebra_content.jpg";
+
+      // 1. Phase 2 Objective Cards in launch-objective
+      document.querySelectorAll('.launch-objective').forEach(card => {
+        if (card.querySelector('.visual-model-wrapper')) return;
+        const textP = card.querySelector('p');
+        if (!textP) return;
+
+        const isContent = card.classList.contains('card-teal') || card.textContent.toLowerCase().includes('content objective');
+        const isLang = card.classList.contains('card-coral') || card.textContent.toLowerCase().includes('language objective');
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'visual-model-wrapper';
+        wrapper.style.cssText = 'margin-top:14px; margin-bottom:14px; border-radius:14px; overflow:hidden; border:1px solid rgba(0,0,0,0.1); box-shadow:0 6px 18px rgba(0,0,0,0.06); background:#0b0f19;';
+
+        if (isContent) {
+          wrapper.innerHTML = `
+            <img src="${contentImg}" alt="Visual Representation" style="width:100%; height:auto; display:block;" />
+            <div style="padding:10px 14px; background:#ffffff; border-top:1px solid #e2e8f0; font-size:13px; color:#1e293b; font-weight:600; line-height:1.4;">
+              🎯 <strong>Visual Representation:</strong> Student avatar actively performing the lesson objective on her desk grid mat.
+            </div>
+          `;
+        } else if (isLang) {
+          wrapper.innerHTML = `
+            <img src="${languageImg}" alt="Visual Representation" style="width:100%; height:auto; display:block;" />
+            <div style="padding:10px 14px; background:#ffffff; border-top:1px solid #e2e8f0; font-size:13px; color:#1e293b; font-weight:600; line-height:1.4;">
+              🗣️ <strong>Visual Representation:</strong> Student partners pointing to key vocabulary callout badges and using academic sentence frames.
+            </div>
+          `;
+        }
+
+        if (wrapper.innerHTML) {
+          textP.insertAdjacentElement('afterend', wrapper);
+        }
+      });
+
+      // 2. Slides / Learn / Presentation view objective panels (.ref-main-panel, .ref-side-body)
+      document.querySelectorAll('.ref-main-panel, .ref-side-body').forEach(panel => {
+        if (panel.querySelector('.visual-model-wrapper')) return;
+        const textP = panel.querySelector('.objective-text');
+        if (!textP) return;
+
+        const isContent = panel.classList.contains('ref-main-panel') || panel.textContent.toLowerCase().includes('content objective');
+        const wrapper = document.createElement('div');
+        wrapper.className = 'visual-model-wrapper';
+        wrapper.style.cssText = 'margin-top:14px; margin-bottom:14px; border-radius:14px; overflow:hidden; border:1px solid rgba(0,0,0,0.1); box-shadow:0 6px 18px rgba(0,0,0,0.06); background:#0b0f19;';
+
+        if (isContent) {
+          wrapper.innerHTML = `
+            <img src="${contentImg}" alt="Visual Representation" style="width:100%; height:auto; display:block;" />
+            <div style="padding:10px 14px; background:#ffffff; border-top:1px solid #e2e8f0; font-size:13px; color:#1e293b; font-weight:600; line-height:1.4;">
+              🎯 <strong>Visual Representation:</strong> Student avatar actively performing the lesson objective on her desk grid mat.
+            </div>
+          `;
+        } else {
+          wrapper.innerHTML = `
+            <img src="${languageImg}" alt="Visual Representation" style="width:100%; height:auto; display:block;" />
+            <div style="padding:10px 14px; background:#ffffff; border-top:1px solid #e2e8f0; font-size:13px; color:#1e293b; font-weight:600; line-height:1.4;">
+              🗣️ <strong>Visual Representation:</strong> Student partners pointing to key vocabulary callout badges and using academic sentence frames.
+            </div>
+          `;
+        }
+
+        textP.insertAdjacentElement('afterend', wrapper);
+      });
+    } catch (_err) {
+      /* ignore DOM enhancement errors */
+    }
+  }
+
   const EWLLearningSupports = {
     version: "2.3.0",
     init,
@@ -4188,13 +4267,29 @@
     parseSettings,
     serializeSettings,
     applyAssignedItems,
+    enhanceObjectiveVisuals,
   };
 
   window.EWLLearningSupports = EWLLearningSupports;
 
+  function runAllVisualEnhancements() {
+    enhanceObjectiveVisuals();
+    setTimeout(enhanceObjectiveVisuals, 300);
+    setTimeout(enhanceObjectiveVisuals, 1000);
+  }
+
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init);
+    document.addEventListener("DOMContentLoaded", () => {
+      init();
+      runAllVisualEnhancements();
+    });
   } else {
     init();
+    runAllVisualEnhancements();
   }
+
+  try {
+    const observer = new MutationObserver(() => enhanceObjectiveVisuals());
+    observer.observe(document.body, { childList: true, subtree: true });
+  } catch (_e) {}
 })();
