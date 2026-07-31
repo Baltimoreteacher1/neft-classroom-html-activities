@@ -9,8 +9,15 @@ const FORBIDDEN_SELECTION =
 // text would strip inline vocabulary from all but the landing tab. Triggers
 // created inside hidden panels/reveals stay hidden until the student opens
 // them, so nothing leaks.
+// Headings are excluded on purpose. The trigger is a <button aria-label="MAD:
+// open definition">, and a button inside an <h2> becomes part of that heading's
+// accessible name — so a screen-reader user navigating by heading heard "MAD:
+// open definition Check Lab" instead of "MAD Check Lab". Headings are how a
+// student using assistive tech moves through a long single-scroll studio, so
+// they stay clean; the acronym still gets its underline and pop-up in the prose
+// directly beneath, which a fleet audit confirmed on every lesson that uses one.
 const VOCAB_EXCLUSIONS =
-  "button, input, textarea, select, option, label, summary, script, style, dialog, .sg-annotation-tools, .sg-vcard, .sg-match, .sg-cloze, .sg-langbar, .sg-welcome, .sg-teacher, .sg-facilitation, .sg-evidence-card";
+  "h1, h2, h3, h4, button, input, textarea, select, option, label, summary, script, style, dialog, .sg-annotation-tools, .sg-vcard, .sg-match, .sg-cloze, .sg-langbar, .sg-welcome, .sg-teacher, .sg-facilitation, .sg-evidence-card";
 
 function elementFor(node) {
   return node?.nodeType === Node.ELEMENT_NODE ? node : node?.parentElement;
@@ -213,10 +220,17 @@ function vocabularyPattern(words) {
 
 function addVocabularyTriggers(app, words, dialog) {
   const pattern = vocabularyPattern(words);
-  if (!pattern) return;
+  if (!pattern) return null;
   const byTerm = new Map(words.map((word) => [word.term.toLocaleLowerCase(), word]));
   const counts = new Map();
-  const walker = document.createTreeWalker(app, NodeFilter.SHOW_TEXT, {
+  const annotate = (root) => annotateWithin(root, { pattern, byTerm, counts, dialog });
+  annotate(app);
+  return annotate;
+}
+
+function annotateWithin(root, { pattern, byTerm, counts, dialog }) {
+  if (!root || !root.isConnected) return;
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
     acceptNode(node) {
       const parent = node.parentElement;
       if (!node.textContent?.trim() || !parent || parent.closest(VOCAB_EXCLUSIONS)) {
@@ -283,5 +297,48 @@ export function installSmallGroupAnnotation(app, config) {
   // Lesson vocabulary plus the shared math glossary, so a math word opens its
   // definition+image popup wherever it appears (not just the first 8 authored
   // terms). The 2-per-section cap in addVocabularyTriggers keeps it readable.
-  addVocabularyTriggers(app, augmentVocabWithGlossary(config.vocabulary), dialog);
+  const annotate = addVocabularyTriggers(app, augmentVocabWithGlossary(config.vocabulary), dialog);
+  if (annotate) watchForLateContent(app, annotate);
+}
+
+// The pass above walks the DOM once, at mount. Everything a student reveals
+// afterwards — the hint ladder above all, but also step feedback, unlocked
+// stages and lab content — was therefore structurally invisible to it: a fleet
+// probe found ZERO vocabulary triggers across 60 hint blocks. Hints are where a
+// stuck student most needs a definition, so the pass has to follow the DOM.
+//
+// Re-entrancy is the whole difficulty: annotating replaces a text node with a
+// fragment containing a <button>, which is itself a mutation. `busy` plus
+// draining the observer's own records after each batch keeps that from looping.
+// (Trigger buttons could not be re-annotated anyway — `button` is in
+// VOCAB_EXCLUSIONS — but the records would still queue up on every reveal.)
+function watchForLateContent(app, annotate) {
+  if (typeof MutationObserver === "undefined") return;
+  let busy = false;
+  let queued = [];
+  const flush = () => {
+    const roots = queued;
+    queued = [];
+    if (!roots.length) return;
+    busy = true;
+    try {
+      for (const root of roots) annotate(root);
+    } finally {
+      observer.takeRecords();
+      busy = false;
+    }
+  };
+  const observer = new MutationObserver((records) => {
+    if (busy) return;
+    for (const record of records) {
+      for (const added of record.addedNodes) {
+        // Element nodes are walked directly; a bare text node is handed to its
+        // parent so the walker still applies VOCAB_EXCLUSIONS to it.
+        const root = added.nodeType === Node.ELEMENT_NODE ? added : added.parentElement;
+        if (root && !queued.includes(root)) queued.push(root);
+      }
+    }
+    if (queued.length) flush();
+  });
+  observer.observe(app, { childList: true, subtree: true });
 }

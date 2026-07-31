@@ -403,6 +403,20 @@ export function mathCheckFor(config = {}) {
   return MATH_CHECKS[lessonKey] || fallbackCheck;
 }
 
+// Lower-case a check title for use mid-sentence ("use the ratio table check")
+// WITHOUT flattening an acronym. Roughly a quarter of MATH_CHECKS are acronyms
+// — MAD, GCF, LCM, IQR, SA — and `.toLowerCase()` turned every one of them into
+// a word a student has never been taught ("use the mad check"). It also cost
+// them the definition: the inline vocabulary pop-up matches acronyms
+// case-sensitively, by design, so "mad" is not a term and gets no underline.
+// Word-by-word, so a future mixed title like "MAD Spread" keeps the acronym and
+// lowercases the rest.
+export const spokenTitle = (title) =>
+  String(title || "")
+    .split(/(\s+)/)
+    .map((word) => (/^[A-Z]{2,}$/.test(word) ? word : word.toLowerCase()))
+    .join("");
+
 function step(label) {
   const card = el("div", "card sg-apply-step");
   card.appendChild(el("div", "sg-step-lab", label));
@@ -427,7 +441,7 @@ export function createMathCheckLab(config, state, onDone, store = null) {
     el(
       "p",
       null,
-      `Solve one challenge, use the ${topic.title.toLowerCase()} check, then explain what your result means.`,
+      `Solve one challenge, use the ${spokenTitle(topic.title)} check, then explain what your result means.`,
     ),
   );
 
@@ -462,7 +476,7 @@ export function createMathCheckLab(config, state, onDone, store = null) {
     solveButton.disabled = true;
     unlock(1);
     solveStatus.className = "fb show info";
-    solveStatus.textContent = `Next, run the ${topic.title.toLowerCase()} check.`;
+    solveStatus.textContent = `Next, run the ${spokenTitle(topic.title)} check.`;
   };
   const solveRow = el("div", "row");
   solveRow.appendChild(solveButton);
@@ -470,7 +484,7 @@ export function createMathCheckLab(config, state, onDone, store = null) {
   section.appendChild(solve);
   cards.push(solve);
 
-  const verify = step(`2 · Run the ${topic.title.toLowerCase()} check`);
+  const verify = step(`2 · Run the ${spokenTitle(topic.title)} check`);
   verify.classList.add("locked");
   verify.append(
     el("p", "sg-talk-q", esc(topic.action)),

@@ -275,6 +275,18 @@ export const MATH_GLOSSARY = [
     definitionEs: "La distancia promedio entre cada dato y la media.",
     visual: "A small one means the data clump near the mean; a big one means they spread out.",
   },
+  {
+    // Unit 2 prose says "Then I use KCF: ___ × ___ = ___" and nothing on the
+    // page said what KCF was — the mnemonic was written as though already
+    // taught. Defining it here wires the acronym everywhere it appears.
+    term: "keep-change-flip",
+    termEs: "mantén-cambia-invierte",
+    definition:
+      "A way to remember dividing by a fraction: keep the first fraction, change ÷ to ×, and flip the second fraction.",
+    definitionEs:
+      "Una forma de recordar cómo dividir entre una fracción: mantén la primera fracción, cambia ÷ por ×, e invierte la segunda fracción.",
+    visual: "3/4 ÷ 2/5 becomes 3/4 × 5/2.",
+  },
   // — two-word math terms —
   // Registered so the WHOLE phrase underlines as one definition+image popup.
   // Without these, a sub-word that is itself a glossary term ("factor", "ratio",
@@ -366,6 +378,10 @@ export const MATH_GLOSSARY = [
 // Only unambiguously-mathematical acronyms belong here: they are matched
 // CASE-SENSITIVELY (uppercase as written), so ordinary words like "mad" or "sa"
 // inside a sentence are never underlined.
+// `es` accepts a string or an array, because Spanish maths writes some of these
+// two ways and the curriculum uses both: "desviación media absoluta" gives DMA,
+// "desviación absoluta media" gives DAM, and Unit 8 has 32 of the first and 9 of
+// the second. Registering only one left the other with no definition behind it.
 export const MATH_ACRONYMS = [
   { acronym: "LCM", term: "least common multiple", es: "MCM", esTerm: "mínimo común múltiplo" },
   { acronym: "GCF", term: "greatest common factor", es: "MCD", esTerm: "máximo común divisor" },
@@ -375,10 +391,11 @@ export const MATH_ACRONYMS = [
   {
     acronym: "MAD",
     term: "mean absolute deviation",
-    es: "DMA",
+    es: ["DMA", "DAM"],
     esTerm: "desviación media absoluta",
   },
   { acronym: "SA", term: "surface area" },
+  { acronym: "KCF", term: "keep-change-flip", es: "MCI", esTerm: "mantén-cambia-invierte" },
 ];
 
 const normTerm = (s) =>
@@ -425,8 +442,10 @@ function acronymEntries(list) {
     add(row.acronym, base, base.term);
     // Spanish lanes write the Spanish acronym; its expansion comes from the
     // acronym row (not the lesson entry) so the title never degenerates into
-    // "MCM — MCM" when a lesson abbreviates its own translation.
-    if (row.es) add(row.es, base, row.esTerm || base.termEs || base.term);
+    // "MCM — MCM" when a lesson abbreviates its own translation. `es` may list
+    // several accepted spellings of the same acronym (see DMA/DAM above).
+    const esForms = Array.isArray(row.es) ? row.es : row.es ? [row.es] : [];
+    for (const form of esForms) add(form, base, row.esTerm || base.termEs || base.term);
   }
   return out;
 }
