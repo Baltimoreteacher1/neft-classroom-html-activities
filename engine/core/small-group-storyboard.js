@@ -51,7 +51,12 @@ export function mountAuthoredArt(host, art, onFallback) {
   return true;
 }
 
-/** Mark a section for scene enter; CSS plays when `.is-scene-in` is added. */
+/**
+ * Mark a section for scene enter; CSS plays when `.is-scene-in` is added.
+ * @param {Element|null} section
+ * @param {string} name
+ * @param {{ enterSelector?: string }} [opts]
+ */
 export function markScene(section, name, { enterSelector } = {}) {
   if (!section) return section;
   section.setAttribute("data-sg-scene", name);

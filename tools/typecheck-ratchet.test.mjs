@@ -1,48 +1,78 @@
 #!/usr/bin/env node
 /**
- * The type-checking debt register may only shrink.
+ * The type-checking debt may only shrink.
  *
- * tsconfig.json turns on checkJs for assets/ and lists the files that do not
- * pass yet in `exclude`. That list is debt, not configuration: the easy way to
- * make a type error go away is to add the file to it, which would quietly undo
- * the gate one line at a time. This test pins the count, so removing a file is
- * a normal green change and adding one fails with an explicit message.
+ * checkJs is on for assets/, engine/ and shared/ — 285 files. The ones that are
+ * not clean yet carry a `// @ts-nocheck` marker at the top, and that marker IS
+ * the debt register: removing one is the unit of work.
  *
- * Raise BASELINE only when you have cleaned files (i.e. lowered it).
+ * The marker lives in the file rather than in a list in tsconfig.json for two
+ * reasons. It is visible to whoever opens the file, and it solves something
+ * `exclude` cannot — tsc follows imports regardless of exclude, so a single
+ * un-typed file re-contaminates every clean file that imports it. engine/ is an
+ * entangled import graph, which is exactly why an exclude list could not work
+ * there and this pass started by replacing one.
+ *
+ * The easy way to make a type error disappear is to add a marker, so this test
+ * pins the count: removing markers is a normal green change, adding one fails.
+ * Lower BASELINE whenever you clean files — that is what locks the win in.
  */
+import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const config = JSON.parse(readFileSync(resolve(ROOT, "tsconfig.json"), "utf8"));
 
-// Files excluded because they are not ours to check (vendor, minified).
-const INFRASTRUCTURE = new Set(["**/vendor/**", "**/*.min.js"]);
-const debt = config.exclude.filter((p) => !INFRASTRUCTURE.has(p));
+const BASELINE = 128;
 
-const BASELINE = 34;
+const checked = execFileSync("git", ["ls-files", "assets", "engine", "shared"], {
+  cwd: ROOT,
+  encoding: "utf8",
+})
+  .split("\n")
+  .filter((f) => f.endsWith(".js") && !f.includes("vendor/") && !f.endsWith(".min.js"));
+
+const marked = checked.filter((f) =>
+  readFileSync(resolve(ROOT, f), "utf8").slice(0, 400).includes("@ts-nocheck"),
+);
 
 console.log("typecheck debt register");
 
-if (debt.length > BASELINE) {
-  const added = debt.length - BASELINE;
+if (marked.length > BASELINE) {
   console.error(
-    `   ✗ ${debt.length} files excluded from type checking, up from ${BASELINE}.\n` +
-      `     ${added} file(s) were added to tsconfig.json "exclude" instead of being fixed.\n` +
-      `     Most failures are one of two shapes:\n` +
-      `       • window.X is unknown        → declare X in types/globals.d.ts\n` +
-      `       • .value/.checked on HTMLElement → JSDoc cast at the lookup, e.g.\n` +
-      `         const el = /** @type {HTMLInputElement} */ (document.getElementById("x"));`,
+    `   ✗ ${marked.length} files carry @ts-nocheck, up from ${BASELINE}.\n` +
+      `     ${marked.length - BASELINE} file(s) were silenced instead of fixed.\n` +
+      `     Most failures are one of these, each fixed at the lookup rather than by\n` +
+      `     loosening a type:\n` +
+      `       window.X unknown            -> declare X in types/globals.d.ts\n` +
+      `       .value/.checked on Element  -> /** @type {HTMLInputElement} */ (el)\n` +
+      `       e.target.value              -> /** @type {HTMLInputElement} */ (e.target)\n` +
+      `       setAttribute(name, number)  -> String(n)`,
   );
   process.exit(1);
 }
 
-if (debt.length < BASELINE) {
+// The tsconfig exclude list must stay infrastructure-only: putting source paths
+// back there would route around the marker mechanism entirely, and silence
+// nothing when the file is imported.
+const config = JSON.parse(readFileSync(resolve(ROOT, "tsconfig.json"), "utf8"));
+const INFRASTRUCTURE = new Set(["**/vendor/**", "**/*.min.js"]);
+const sourceExcludes = config.exclude.filter((p) => !INFRASTRUCTURE.has(p));
+if (sourceExcludes.length) {
+  console.error(
+    `   ✗ tsconfig.json "exclude" lists source paths: ${sourceExcludes.join(", ")}.\n` +
+      `     Use a // @ts-nocheck marker in the file instead.`,
+  );
+  process.exit(1);
+}
+
+const clean = checked.length - marked.length;
+if (marked.length < BASELINE) {
   console.log(
-    `   ✓ ${debt.length} files excluded (down from ${BASELINE}) — ` +
-      `lower BASELINE in ${"tools/typecheck-ratchet.test.mjs"} to lock the win in`,
+    `   ✓ ${clean}/${checked.length} files type-checked; ${marked.length} marked ` +
+      `(down from ${BASELINE}) — lower BASELINE in this file to lock it in`,
   );
 } else {
-  console.log(`   ✓ ${debt.length} files excluded from type checking, unchanged`);
+  console.log(`   ✓ ${clean}/${checked.length} files type-checked, ${marked.length} marked`);
 }

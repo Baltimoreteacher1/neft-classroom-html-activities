@@ -1,3 +1,6 @@
+// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
+// (see tsconfig.json); the marker is the debt, and removing it is the unit of
+// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 // dist-explorer.js — Live distribution explorer. Students build a data set by
 // tapping a number line; the dot plot and the mean / median / mode markers update
 // in real time. The payoff: add a value far to the right and watch the MEAN get

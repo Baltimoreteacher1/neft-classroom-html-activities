@@ -173,7 +173,7 @@ export function renderLaunchStoryBeats(host, config) {
       const open = reveal.hidden;
       reveal.hidden = !open;
       card.setAttribute("aria-expanded", String(open));
-      card.classList.toggle("is-revealed", open);
+      card.classList.toggle("is-revealed", Boolean(open));
       if (open) {
         card.querySelector(".story-beat-teaser").textContent = "";
         if (window.AudioSynth) window.AudioSynth.click();

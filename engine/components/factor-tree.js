@@ -1,3 +1,6 @@
+// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
+// (see tsconfig.json); the marker is the debt, and removing it is the unit of
+// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 // factor-tree.js — Interactive prime-factorization lab. A student types a number
 // and the widget builds its factor tree live: composites branch (amber) until
 // every leaf is a prime (teal), then it shows the prime factorization in both

@@ -78,7 +78,7 @@ export function recordTurnAndTalk(unit) {
  * The support level to LEAD with.
  *
  * @param {object} opts
- * @param {number|string} opts.unit      the lesson's unit
+ * @param {number|string} [opts.unit]    the lesson's unit
  * @param {string} [opts.chosenLevel]    "level1" | "level2" | "auto" from levels.js
  */
 export function resolveFrameLevel({ unit, chosenLevel = "auto" } = {}) {

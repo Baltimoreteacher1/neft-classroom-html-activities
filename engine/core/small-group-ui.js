@@ -1,3 +1,6 @@
+// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
+// (see tsconfig.json); the marker is the debt, and removing it is the unit of
+// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 // One calm, uniform palette across every small-group variant (Joel directive
 // 2026-07-17): shared primary/deep/soft so the page no longer swings between
 // blue, burnt-orange, and teal themes. The ONLY per-variant color is the small

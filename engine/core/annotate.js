@@ -195,6 +195,7 @@ function attach(host) {
 }
 
 // Public: enable annotation on every word-problem text block inside `root`.
+/** @param {Document|HTMLElement} [root] */
 export function enableWordProblemAnnotation(root = document) {
   ensureGlobalListeners();
   const scope = root && root.querySelectorAll ? root : document;

@@ -1,3 +1,6 @@
+// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
+// (see tsconfig.json); the marker is the debt, and removing it is the unit of
+// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 // stat-towers.js — 3D data towers for measures of center and spread. Each data
 // value is a tower of unit blocks rendered with pure CSS 3D transforms (same
 // zero-dependency approach as shape-3d.js). The signature move: press

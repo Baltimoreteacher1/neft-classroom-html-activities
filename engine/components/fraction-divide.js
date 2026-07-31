@@ -1,3 +1,6 @@
+// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
+// (see tsconfig.json); the marker is the debt, and removing it is the unit of
+// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 // fraction-divide.js — Interactive "divide fractions" lab (6.NOS.1). Teaches
 // keep–change–flip in staged, checked steps:
 //   1. Rewrite any whole/mixed numbers as improper fractions (only shown when

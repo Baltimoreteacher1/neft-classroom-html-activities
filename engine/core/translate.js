@@ -101,7 +101,7 @@ export function mountTranslate({ getPhaseEl }) {
   });
 
   menu.addEventListener("click", (e) => {
-    const lang = e.target.closest("button")?.dataset.lang;
+    const lang = /** @type {HTMLElement} */ (e.target).closest("button")?.dataset.lang;
     if (!lang) return;
     closeMenu();
     safeSet(lang);

@@ -1,3 +1,6 @@
+// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
+// (see tsconfig.json); the marker is the debt, and removing it is the unit of
+// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 // combine-like-terms.js — Interactive "combine like terms" lab (6.EE.3/6.EE.4).
 // A one-variable linear expression like "5x + 2 + 3x - 4" is simplified in
 // staged, checked steps: (1) add the x-coefficients, (2) add the constants,

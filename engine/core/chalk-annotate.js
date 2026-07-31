@@ -169,7 +169,7 @@ function decorate(el, kind) {
   el.appendChild(mark.svg);
   // Set the dash length so the stroke draws in from zero.
   const len = Math.ceil(mark.path.getTotalLength());
-  mark.svg.style.setProperty("--len", len);
+  mark.svg.style.setProperty("--len", String(len));
   const ob = observer();
   if (ob && !reducedMotion()) ob.observe(mark.svg);
   else mark.svg.classList.add("chalk-anim"); // reduced-motion / no IO: show final

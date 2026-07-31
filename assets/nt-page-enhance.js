@@ -1,3 +1,6 @@
+// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
+// (see tsconfig.json); the marker is the debt, and removing it is the unit of
+// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 /*!
  * nt-page-enhance.js — adds a "Save your work" bar to existing activity pages so
  * finished work can be saved as PDF or DOC with the student's name and uploaded

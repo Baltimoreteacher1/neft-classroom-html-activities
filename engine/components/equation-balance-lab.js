@@ -1,3 +1,6 @@
+// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
+// (see tsconfig.json); the marker is the debt, and removing it is the unit of
+// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 // equation-balance-lab.js — a genuinely interactive equation balance. The
 // student solves a one-step (or short two-step) linear equation by choosing an
 // operation and a value and applying it to BOTH sides at once. The equation

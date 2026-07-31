@@ -1,3 +1,6 @@
+// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
+// (see tsconfig.json); the marker is the debt, and removing it is the unit of
+// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 // percent-grid-lab.js — interactive hundred-grid EQUIVALENCE explorer. The grid
 // loads with the authored amount shaded (non-destructive, so a display figure
 // stays faithful to the question), and the student can reveal the three

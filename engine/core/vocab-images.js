@@ -299,6 +299,7 @@ const CATEGORY = {
   measurement: "cat-measurement",
 };
 
+/** @type {[RegExp, string][]} */
 const CATEGORY_KEYWORDS = [
   [
     /prism|pyramid|polygon|triangle|trapezoid|parallelogram|net|face|edge|apex|figure|dimension|perpendicular|two-dimensional|shape/,

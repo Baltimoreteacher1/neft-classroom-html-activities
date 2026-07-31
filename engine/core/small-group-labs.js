@@ -1,3 +1,6 @@
+// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
+// (see tsconfig.json); the marker is the debt, and removing it is the unit of
+// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 // small-group-labs.js — the interactive math core of the small-group studio.
 // Three render-time sections derived entirely from existing lesson config
 // (zero new authoring): the hands-on Explore Lab (real manipulatives), the

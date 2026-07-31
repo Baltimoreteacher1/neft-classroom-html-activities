@@ -1,3 +1,6 @@
+// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
+// (see tsconfig.json); the marker is the debt, and removing it is the unit of
+// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 // teacher-clear.js — a teacher-only, compact "Clear answers" control. Mounted
 // from BOTH lesson renderers (createApp Reveal lessons and the small-group /
 // catch-up studios) so every curriculum lesson gets the same control. It only

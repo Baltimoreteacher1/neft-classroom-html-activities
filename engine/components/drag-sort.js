@@ -314,7 +314,8 @@ function renderDragSortCore(container, { items, categories, onComplete }) {
   catGrid.querySelectorAll(".ds-col").forEach((col) => {
     col.addEventListener("dragenter", () => col.classList.add("ds-parallax"));
     col.addEventListener("dragleave", (e) => {
-      if (!col.contains(e.relatedTarget)) col.classList.remove("ds-parallax");
+      if (!col.contains(/** @type {Node|null} */ (/** @type {DragEvent} */ (e).relatedTarget)))
+        col.classList.remove("ds-parallax");
     });
     col.addEventListener("drop", () => col.classList.remove("ds-parallax"));
   });

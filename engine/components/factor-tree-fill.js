@@ -1,3 +1,6 @@
+// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
+// (see tsconfig.json); the marker is the debt, and removing it is the unit of
+// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 // factor-tree-fill.js — Student-driven factor tree BUILDER. Takes the SAME config
 // a static `factor-tree` diagram uses ({ value, left, right, title }) — but only
 // needs the root `value`. Instead of a pre-baked, fixed-shape tree with blanks

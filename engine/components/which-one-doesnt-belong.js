@@ -1,3 +1,6 @@
+// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
+// (see tsconfig.json); the marker is the debt, and removing it is the unit of
+// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 // Which One Doesn't Belong — a four-quadrant argument, not a question.
 //
 // The design constraint that makes this worth building: EVERY quadrant has a

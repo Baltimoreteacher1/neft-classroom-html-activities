@@ -254,6 +254,9 @@ export function renderNetFolder(
 
   // Each face has: flat (unfolded, laid out in the screen plane as a net) and
   // fold (its place on the closed solid, centered on the origin).
+  // Only the pyramid's triangular flaps carry `shape`; box faces omit it, so the
+  // inferred union has no common `shape` member even though reading it is safe.
+  /** @type {{name:string,wpx:any,hpx:any,color:string,flat:string,fold:string,shape?:string}[]} */
   const faces = buildFaces(solid, dims);
 
   const SVG_NS = "http://www.w3.org/2000/svg";

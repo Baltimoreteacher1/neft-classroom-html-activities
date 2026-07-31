@@ -1,3 +1,6 @@
+// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
+// (see tsconfig.json); the marker is the debt, and removing it is the unit of
+// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 /* projects-publication.js — evidence and publishing layer for culminating projects.
  * Additive, local-only, bilingual, and defensive: this layer must never break
  * project navigation, math, save/resume, coaching, or teacher tools.

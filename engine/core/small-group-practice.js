@@ -992,7 +992,7 @@ export function createPracticeSection(
   // unsolved problem in this set — banks and step guides appear at once.
   // More Practice also reorders / promotes items for any path.
   document.addEventListener("sg:adaptive-path", (event) => {
-    const nextPath = event.detail;
+    const nextPath = /** @type {CustomEvent} */ (event).detail;
     if (options.mode === "more") applyPathOrder(nextPath);
     else if (nextPath === "stabilize") {
       for (const card of section.querySelectorAll(":scope > .prob:not(.sg-done-all)"))
