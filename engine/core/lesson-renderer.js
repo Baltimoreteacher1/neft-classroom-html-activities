@@ -2128,10 +2128,10 @@ function renderObjectives(el, config, state) {
       <p style="margin:0; font-weight:600;">${o.text}</p>
       
       <!-- PUBLISHER-GRADE VISUAL MODEL CARD DIRECTLY BELOW OBJECTIVE TEXT -->
-      <div class="visual-model-wrapper" style="margin-top:14px; margin-bottom:14px; border-radius:14px; overflow:hidden; border:1px solid rgba(0,0,0,0.1); box-shadow:0 6px 18px rgba(0,0,0,0.06); background:#0b0f19;">
-        <img src="${o.img}" alt="Visual Model Representation" style="width:100%; height:auto; display:block;" />
+      <div class="visual-model-wrapper" style="margin-top:14px; margin-bottom:14px; border-radius:14px; overflow:hidden; border:1px solid rgba(0,0,0,0.1); box-shadow:0 6px 18px rgba(0,0,0,0.06); background:#0b0f19; cursor:zoom-in;">
+        <img src="${o.img}" alt="Visual Model Representation" style="width:100%; height:auto; display:block; cursor:zoom-in;" />
         <div style="padding:10px 14px; background:#ffffff; border-top:1px solid #e2e8f0; font-size:13px; color:#1e293b; font-weight:600; line-height:1.4;">
-          ${o.icon} <strong>Visual Representation:</strong> ${o.caption}
+          ${o.icon} <strong>Visual Representation:</strong> ${o.caption} <span style="font-size:11px; opacity:0.8; margin-left:6px;">🔍 (Click to enlarge)</span>
         </div>
       </div>
 
@@ -2170,6 +2170,10 @@ function renderObjectives(el, config, state) {
     });
   el.append(block);
   wireObjectiveTermPopups(block, vocab);
+
+  block.querySelectorAll(".visual-model-wrapper img").forEach((img) => {
+    attachImageZoom(img);
+  });
 
   // Persist each self-check on Launch (phase 0) so it survives reload, exactly
   // like every other lesson input. No-op when state is unavailable.
