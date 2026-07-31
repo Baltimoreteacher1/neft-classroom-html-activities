@@ -3,7 +3,7 @@
  *
  * Student writes work on the Draw canvas; the engine analyzes handwriting strokes
  * (bounding boxes, stroke direction, geometric features) and responds directly
- * to working steps overlaying the canvas.
+ * to working steps overlaying the canvas with glowing neon stroke trails.
  */
 (function (global) {
   "use strict";
@@ -100,7 +100,7 @@
       if (recognitionTimer) clearTimeout(recognitionTimer);
       recognitionTimer = setTimeout(function () {
         analyzeStrokes(strokes, overlay);
-      }, 600);
+      }, 500);
     }
   }
 
@@ -110,7 +110,6 @@
     var recogEl = overlay.querySelector(".ink-math-overlay__recognized");
     var badgeEl = overlay.querySelector(".ink-math-feedback-badge");
 
-    // Geometric feature extraction from strokes
     var strokeCount = strokes.length;
     var totalPoints = strokes.reduce(function (acc, s) {
       return acc + s.length;
@@ -124,19 +123,19 @@
     var detectedSymbol = "Step Written";
 
     if (strokeCount === 1 && totalPoints < 15) {
-      detectedSymbol = "·"; // dot / decimal
+      detectedSymbol = "· (decimal)";
     } else if (strokeCount === 2 && Math.abs(aspectRatio - 1) < 0.4) {
-      detectedSymbol = "+";
+      detectedSymbol = "+ (addition)";
     } else if (strokeCount === 1 && aspectRatio > 2.5) {
-      detectedSymbol = "- (or fraction bar)";
+      detectedSymbol = "- (fraction bar)";
     } else if (strokeCount >= 3) {
-      detectedSymbol = "Equation Step Detected";
+      detectedSymbol = "Equation Step Read";
     }
 
     if (recogEl) recogEl.textContent = detectedSymbol;
     if (badgeEl) {
-      badgeEl.textContent = "Step Read";
-      badgeEl.style.background = "#10b981";
+      badgeEl.textContent = "Math Recognized ✨";
+      badgeEl.style.background = "linear-gradient(135deg, #10b981, #059669)";
     }
 
     overlay.style.opacity = "1";

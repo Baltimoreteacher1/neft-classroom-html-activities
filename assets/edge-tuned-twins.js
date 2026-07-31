@@ -3,6 +3,7 @@
  *
  * On-the-fly generated problems with identical structure but numbers/context calibrated
  * to the exact point where that student breaks — infinite practice that never repeats.
+ * Features 3D card flip animations and instant mastery feedback.
  */
 (function (global) {
   "use strict";
@@ -65,7 +66,7 @@
       '<input type="number" class="twin-input" placeholder="Answer..." />' +
       '<button type="button" class="twin-submit">Check Twin</button>' +
       "</div>" +
-      '<div class="twin-feedback" style="margin-top:8px;font-weight:600;"></div>';
+      '<div class="twin-feedback" style="margin-top:10px;font-weight:700;"></div>';
 
     var inputEl = card.querySelector(".twin-input");
     var checkBtn = card.querySelector(".twin-submit");
@@ -77,6 +78,11 @@
       if (val === expectedAns) {
         feedbackEl.style.color = "#047857";
         feedbackEl.textContent = "✨ Correct! Infinite twin problem mastered.";
+        if (global.NTGFX && typeof global.NTGFX.confetti === "function") {
+          safe(function () {
+            global.NTGFX.confetti();
+          });
+        }
       } else {
         feedbackEl.style.color = "#b91c1c";
         feedbackEl.textContent = "Try setting up equivalent ratios: 3/" + currentNum + " = " + (currentNum * 3) + "/x.";
@@ -84,16 +90,23 @@
     });
 
     genBtn.addEventListener("click", function () {
-      currentNum = Math.floor(Math.random() * 10) + 2;
-      expectedAns = currentNum * 4;
-      card.querySelector(".twin-body").textContent =
-        "A recipe uses 3 cups of flour for every " +
-        currentNum +
-        " cups of sugar. How many cups of sugar are needed for " +
-        currentNum * 3 +
-        " cups of flour?";
-      inputEl.value = "";
-      feedbackEl.textContent = "";
+      card.classList.add("card-flip");
+      setTimeout(function () {
+        currentNum = Math.floor(Math.random() * 10) + 2;
+        expectedAns = currentNum * 4;
+        card.querySelector(".twin-body").textContent =
+          "A recipe uses 3 cups of flour for every " +
+          currentNum +
+          " cups of sugar. How many cups of sugar are needed for " +
+          currentNum * 3 +
+          " cups of flour?";
+        inputEl.value = "";
+        feedbackEl.textContent = "";
+      }, 250);
+
+      setTimeout(function () {
+        card.classList.remove("card-flip");
+      }, 500);
 
       if (global.NTtelemetry && typeof global.NTtelemetry.track === "function") {
         safe(function () {

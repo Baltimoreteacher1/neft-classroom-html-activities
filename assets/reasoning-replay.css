@@ -1,4 +1,4 @@
-/* reasoning-replay.css — Metacognition reasoning replay modal UI */
+/* reasoning-replay.css — Metacognition reasoning replay modal UI with speed controls */
 .reasoning-replay-modal {
   position: fixed;
   top: 0;
@@ -6,8 +6,8 @@
   width: 100vw;
   height: 100vh;
   z-index: 10000;
-  background: rgba(15, 23, 42, 0.75);
-  backdrop-filter: blur(6px);
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -17,10 +17,10 @@
 
 .reasoning-replay-card {
   background: #ffffff;
-  border-radius: 16px;
+  border-radius: 20px;
   width: 100%;
-  max-width: 580px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  max-width: 620px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
   overflow: hidden;
   font-family: inherit;
 }
@@ -28,22 +28,22 @@
 .reasoning-replay-header {
   background: linear-gradient(135deg, #1e1b4b, #312e81);
   color: #ffffff;
-  padding: 16px 20px;
+  padding: 18px 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
 .reasoning-replay-title {
-  font-size: 1.1rem;
-  font-weight: 700;
+  font-size: 1.15rem;
+  font-weight: 800;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .reasoning-replay-body {
-  padding: 24px;
+  padding: 26px;
 }
 
 .replay-timeline {
@@ -54,48 +54,74 @@
 }
 
 .replay-step-card {
-  padding: 12px 16px;
-  border-radius: 10px;
-  border: 1px solid #e2e8f0;
+  padding: 14px 18px;
+  border-radius: 12px;
+  border: 1.5px solid #e2e8f0;
   background: #f8fafc;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
 }
 
 .replay-step-card.is-active {
   border-color: #6366f1;
   background: #e0e7ff;
-  box-shadow: 0 0 0 2px #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
 }
 
 .replay-step-card.is-branch-point {
   border-color: #ef4444;
   background: #fef2f2;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
 }
 
 .replay-branch-comparison {
-  margin-top: 16px;
-  padding: 14px;
+  margin-top: 18px;
+  padding: 16px 20px;
   background: #fffbebfb;
   border: 1.5px dashed #f59e0b;
-  border-radius: 10px;
-  font-size: 0.9rem;
+  border-radius: 12px;
+  font-size: 0.92rem;
+  color: #78350f;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.1);
+}
+
+.replay-controls-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 18px;
+  gap: 12px;
+}
+
+.replay-btn-control {
+  background: #e2e8f0;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #334155;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.replay-btn-control:hover {
+  background: #cbd5e1;
 }
 
 .replay-progress-bar {
-  width: 100%;
-  height: 6px;
+  flex: 1;
+  height: 8px;
   background: #e2e8f0;
-  border-radius: 3px;
+  border-radius: 4px;
   overflow: hidden;
-  margin-top: 16px;
 }
 
 .replay-progress-fill {
   height: 100%;
-  background: #6366f1;
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
   width: 0%;
   transition: width 0.1s linear;
 }
@@ -104,9 +130,15 @@
   background: none;
   border: none;
   color: #ffffff;
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   cursor: pointer;
   line-height: 1;
+  opacity: 0.8;
+  transition: opacity 0.15s ease;
+}
+
+.replay-close-btn:hover {
+  opacity: 1;
 }
 
 @keyframes replayFadeIn {
