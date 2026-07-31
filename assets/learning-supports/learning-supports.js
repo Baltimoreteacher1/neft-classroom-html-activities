@@ -4224,7 +4224,11 @@
 
       modal.querySelector("#visual-lightbox-close").addEventListener("click", closeModal);
       modal.addEventListener("click", (e) => {
-        if (e.target === modal || e.target.id === "visual-lightbox-container" || e.target.id === "visual-lightbox-img") {
+        if (
+          e.target === modal ||
+          e.target.id === "visual-lightbox-container" ||
+          e.target.id === "visual-lightbox-img"
+        ) {
           closeModal();
         }
       });
@@ -4249,9 +4253,9 @@
 
   function enhanceObjectiveVisuals() {
     try {
-      if (!document.getElementById('objective-contrast-styles')) {
-        const styleEl = document.createElement('style');
-        styleEl.id = 'objective-contrast-styles';
+      if (!document.getElementById("objective-contrast-styles")) {
+        const styleEl = document.createElement("style");
+        styleEl.id = "objective-contrast-styles";
         styleEl.textContent = `
           .launch-objective p, .objective-text, .obj-text {
             font-weight: 800 !important;
@@ -4282,17 +4286,22 @@
       if (unit === 4 || unit === 5) contentImg = "/assets/algebra_content.jpg";
 
       // 1. Phase 2 Objective Cards in launch-objective
-      document.querySelectorAll('.launch-objective').forEach(card => {
-        if (card.querySelector('.visual-model-wrapper')) return;
-        const textP = card.querySelector('p');
+      document.querySelectorAll(".launch-objective").forEach((card) => {
+        if (card.querySelector(".visual-model-wrapper")) return;
+        const textP = card.querySelector("p");
         if (!textP) return;
 
-        const isContent = card.classList.contains('card-teal') || card.textContent.toLowerCase().includes('content objective');
-        const isLang = card.classList.contains('card-coral') || card.textContent.toLowerCase().includes('language objective');
+        const isContent =
+          card.classList.contains("card-teal") ||
+          card.textContent.toLowerCase().includes("content objective");
+        const isLang =
+          card.classList.contains("card-coral") ||
+          card.textContent.toLowerCase().includes("language objective");
 
-        const wrapper = document.createElement('div');
-        wrapper.className = 'visual-model-wrapper';
-        wrapper.style.cssText = 'margin-top:14px; margin-bottom:14px; border-radius:14px; overflow:hidden; border:1px solid rgba(0,0,0,0.1); box-shadow:0 6px 18px rgba(0,0,0,0.06); background:#0b0f19; cursor:zoom-in; position:relative;';
+        const wrapper = document.createElement("div");
+        wrapper.className = "visual-model-wrapper";
+        wrapper.style.cssText =
+          "margin-top:14px; margin-bottom:14px; border-radius:14px; overflow:hidden; border:1px solid rgba(0,0,0,0.1); box-shadow:0 6px 18px rgba(0,0,0,0.06); background:#0b0f19; cursor:zoom-in; position:relative;";
 
         let captionHtml = "";
         let imgSrc = "";
@@ -4312,21 +4321,24 @@
               ${captionHtml}
             </div>
           `;
-          wrapper.addEventListener('click', () => openVisualLightbox(imgSrc, captionHtml));
-          textP.insertAdjacentElement('afterend', wrapper);
+          wrapper.addEventListener("click", () => openVisualLightbox(imgSrc, captionHtml));
+          textP.insertAdjacentElement("afterend", wrapper);
         }
       });
 
       // 2. Slides / Learn / Presentation view objective panels (.ref-main-panel, .ref-side-body)
-      document.querySelectorAll('.ref-main-panel, .ref-side-body').forEach(panel => {
-        if (panel.querySelector('.visual-model-wrapper')) return;
-        const textP = panel.querySelector('.objective-text');
+      document.querySelectorAll(".ref-main-panel, .ref-side-body").forEach((panel) => {
+        if (panel.querySelector(".visual-model-wrapper")) return;
+        const textP = panel.querySelector(".objective-text");
         if (!textP) return;
 
-        const isContent = panel.classList.contains('ref-main-panel') || panel.textContent.toLowerCase().includes('content objective');
-        const wrapper = document.createElement('div');
-        wrapper.className = 'visual-model-wrapper';
-        wrapper.style.cssText = 'margin-top:14px; margin-bottom:14px; border-radius:14px; overflow:hidden; border:1px solid rgba(0,0,0,0.1); box-shadow:0 6px 18px rgba(0,0,0,0.06); background:#0b0f19; cursor:zoom-in; position:relative;';
+        const isContent =
+          panel.classList.contains("ref-main-panel") ||
+          panel.textContent.toLowerCase().includes("content objective");
+        const wrapper = document.createElement("div");
+        wrapper.className = "visual-model-wrapper";
+        wrapper.style.cssText =
+          "margin-top:14px; margin-bottom:14px; border-radius:14px; overflow:hidden; border:1px solid rgba(0,0,0,0.1); box-shadow:0 6px 18px rgba(0,0,0,0.06); background:#0b0f19; cursor:zoom-in; position:relative;";
 
         let captionHtml = "";
         let imgSrc = "";
@@ -4345,18 +4357,18 @@
             ${captionHtml}
           </div>
         `;
-        wrapper.addEventListener('click', () => openVisualLightbox(imgSrc, captionHtml));
-        textP.insertAdjacentElement('afterend', wrapper);
+        wrapper.addEventListener("click", () => openVisualLightbox(imgSrc, captionHtml));
+        textP.insertAdjacentElement("afterend", wrapper);
       });
 
       // 3. Bind click events to any existing visual-model-wrapper or visual-model-img on the page
-      document.querySelectorAll('.visual-model-wrapper, .visual-model-img').forEach(el => {
+      document.querySelectorAll(".visual-model-wrapper, .visual-model-img").forEach((el) => {
         if (!el.dataset.lbBound) {
           el.dataset.lbBound = "true";
           el.style.cursor = "zoom-in";
-          el.addEventListener('click', () => {
-            const img = el.tagName === 'IMG' ? el : el.querySelector('img');
-            const cap = el.querySelector('.visual-model-caption') || el.nextElementSibling;
+          el.addEventListener("click", () => {
+            const img = el.tagName === "IMG" ? el : el.querySelector("img");
+            const cap = el.querySelector(".visual-model-caption") || el.nextElementSibling;
             if (img) {
               openVisualLightbox(img.src, cap ? cap.innerHTML : "Visual Representation");
             }

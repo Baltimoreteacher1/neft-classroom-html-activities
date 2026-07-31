@@ -33,7 +33,7 @@
 
   function setupSkepticCards() {
     var containers = document.querySelectorAll(
-      ".try-it, .learn-it, .skeptic-container, [data-skeptic-challenge]"
+      ".try-it, .learn-it, .skeptic-container, [data-skeptic-challenge]",
     );
     containers.forEach(function (container) {
       if (container.dataset.skepticEnhanced) return;

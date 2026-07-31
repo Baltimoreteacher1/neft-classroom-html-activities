@@ -78,7 +78,7 @@ assert.equal(budgetKeyFor(null), "page", "a detached node falls back to the page
 
 /* ── A hint nested deeper than one element still resolves to its paragraph ─ */
 
-$("h3").innerHTML = 'Hint 1: a <b><i>factor</i></b> divides evenly.';
+$("h3").innerHTML = "Hint 1: a <b><i>factor</i></b> divides evenly.";
 assert.equal(
   budgetKeyFor($("h3").querySelector("i")),
   h3,

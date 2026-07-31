@@ -22,8 +22,8 @@
  * ========================================================================== */
 
 import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const read = (rel) => readFileSync(join(ROOT, rel), "utf8");
@@ -137,7 +137,9 @@ function functionBody(source, name) {
 function assertGated(body, label, { requireBeforeDb = true } = {}) {
   if (!body) return fail(`showcase.js: could not find ${label}`);
   const gateCall = body.indexOf("teacherGate(");
-  const gateReturn = body.search(/if\s*\(\s*gate\s*!==\s*"ok"\s*\)\s*return\s+gateResponse\(gate\)/);
+  const gateReturn = body.search(
+    /if\s*\(\s*gate\s*!==\s*"ok"\s*\)\s*return\s+gateResponse\(gate\)/,
+  );
   if (gateCall === -1) return fail(`showcase.js: ${label} never calls teacherGate()`);
   if (gateReturn === -1) {
     return fail(`showcase.js: ${label} never returns gateResponse() when the gate fails`);
@@ -162,10 +164,13 @@ if (!getBody) {
 } else {
   const branch = getBody.search(/if\s*\(\s*requestedState\s*!==\s*"approved"\s*\)/);
   const gateCall = getBody.indexOf("teacherGate(");
-  const gateReturn = getBody.search(/if\s*\(\s*gate\s*!==\s*"ok"\s*\)\s*return\s+gateResponse\(gate\)/);
+  const gateReturn = getBody.search(
+    /if\s*\(\s*gate\s*!==\s*"ok"\s*\)\s*return\s+gateResponse\(gate\)/,
+  );
   const firstQuery = getBody.search(/env\.DB\.prepare\(|ensureSchema\(/);
   if (branch === -1) fail('showcase.js: handleGet has no `requestedState !== "approved"` branch');
-  if (gateCall === -1 || gateReturn === -1) fail("showcase.js: handleGet does not gate non-approved reads");
+  if (gateCall === -1 || gateReturn === -1)
+    fail("showcase.js: handleGet does not gate non-approved reads");
   if (branch !== -1 && gateCall !== -1 && gateCall < branch) {
     fail("showcase.js: handleGet calls teacherGate outside the non-approved branch");
   }
@@ -182,7 +187,7 @@ if (!getBody) {
 const normalize = functionBody(api, "normalizeState");
 if (!normalize) fail("showcase.js: normalizeState() is missing");
 else if (!/VALID_STATES\.includes\(s\)\s*\?\s*s\s*:\s*"approved"/.test(normalize)) {
-  fail("showcase.js: normalizeState() must fall back to \"approved\" for unknown input");
+  fail('showcase.js: normalizeState() must fall back to "approved" for unknown input');
 }
 
 // Student submissions must land as pending, never as approved.

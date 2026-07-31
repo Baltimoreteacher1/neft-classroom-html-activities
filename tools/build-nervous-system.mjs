@@ -26,7 +26,7 @@
  *   node tools/build-nervous-system.mjs --check   # verify committed == fresh
  * ========================================================================== */
 import { readFileSync, writeFileSync } from "node:fs";
-import { resolve, dirname } from "node:path";
+import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -131,7 +131,11 @@ function build() {
       (o) => o.id !== n.id && familyKey(o.id) === parentId && o.assetCount > 0,
     );
     n.relatedAssets = relatives.flatMap((o) =>
-      o.assets.map((a) => ({ ...a, relation: o.id === parentId ? "parent" : "sibling", from: o.id })),
+      o.assets.map((a) => ({
+        ...a,
+        relation: o.id === parentId ? "parent" : "sibling",
+        from: o.id,
+      })),
     );
     n.relatedAssetCount = n.relatedAssets.length;
     n.taughtWithin = [...new Set(n.relatedAssets.map((a) => a.from))];

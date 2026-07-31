@@ -33,7 +33,7 @@
 
   function attachTwinGenerators() {
     var practiceSections = document.querySelectorAll(
-      ".try-it, .practice-section, [data-twin-practice]"
+      ".try-it, .practice-section, [data-twin-practice]",
     );
     practiceSections.forEach(function (section) {
       if (section.dataset.twinEnhanced) return;
@@ -56,9 +56,9 @@
       '<button type="button" class="twin-btn-generate">Generate New Twin</button>' +
       "</div>" +
       '<div class="twin-body">' +
-      'A recipe uses 3 cups of flour for every ' +
+      "A recipe uses 3 cups of flour for every " +
       currentNum +
-      ' cups of sugar. How many cups of sugar are needed for ' +
+      " cups of sugar. How many cups of sugar are needed for " +
       currentNum * 3 +
       " cups of flour?" +
       "</div>" +
@@ -85,7 +85,8 @@
         }
       } else {
         feedbackEl.style.color = "#b91c1c";
-        feedbackEl.textContent = "Try setting up equivalent ratios: 3/" + currentNum + " = " + (currentNum * 3) + "/x.";
+        feedbackEl.textContent =
+          "Try setting up equivalent ratios: 3/" + currentNum + " = " + currentNum * 3 + "/x.";
       }
     });
 

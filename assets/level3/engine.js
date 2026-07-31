@@ -124,7 +124,7 @@ function sightings(evidence, misconceptionId) {
 }
 
 /** Evidence AGAINST a hypothesis: correct work on items that target it. */
-function contradictions(evidence, misconceptionId, itemsTargeting) {
+function contradictions(evidence, _misconceptionId, itemsTargeting) {
   let n = 0;
   for (const e of evidence) {
     if (e.correct === true && itemsTargeting.has(e.itemId)) n += 1;

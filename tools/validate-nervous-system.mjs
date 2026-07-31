@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { execFileSync } from "node:child_process";
 /* =============================================================================
  * validate-nervous-system.mjs — integrity gate for the curriculum graph and the
  * six surfaces built on it. Wired into `npm run validate`, so the pre-push QA
@@ -23,7 +24,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { execFileSync } from "node:child_process";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const read = (rel) => JSON.parse(readFileSync(resolve(ROOT, rel), "utf8"));

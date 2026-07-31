@@ -29,7 +29,8 @@ const GOOD = {
   title: "Unit Rate: How Much for Just One?",
   theme: "corner-store",
   themeEmoji: "🏪",
-  contentObjective: "I can find a unit rate by dividing, and say what it means for exactly one item.",
+  contentObjective:
+    "I can find a unit rate by dividing, and say what it means for exactly one item.",
   languageObjective: "I can explain my answer using the words unit rate, per, and divide.",
   noticeAndWonder: {
     context:
@@ -55,7 +56,8 @@ const GOOD = {
     {
       term: "unit price",
       termEs: "precio unitario",
-      definition: "The cost of exactly one item, found by dividing the total cost by how many items.",
+      definition:
+        "The cost of exactly one item, found by dividing the total cost by how many items.",
       definitionEs:
         "El costo de exactamente un artículo, que se halla dividiendo el costo total entre la cantidad de artículos.",
     },
@@ -130,7 +132,8 @@ const GOOD = {
           "Un paquete de 4 bebidas deportivas cuesta $6.00 en la tienda Ruiz. ¿Cuál es el precio de una botella?",
         choices: ["$1.50 per bottle", "$6.00 per bottle", "$24.00 per bottle", "$0.67 per bottle"],
         correctIndex: 0,
-        explanation: "Share $6.00 equally among 4 bottles: 6.00 divided by 4 gives the cost of one bottle.",
+        explanation:
+          "Share $6.00 equally among 4 bottles: 6.00 divided by 4 gives the cost of one bottle.",
         explanationEs:
           "Reparte $6.00 en partes iguales entre 4 botellas: 6.00 dividido entre 4 da el costo de una botella.",
         choiceFeedback: [
@@ -158,7 +161,8 @@ const GOOD = {
         choices: ["4 miles per hour", "12 miles per hour", "36 miles per hour", "3 miles per hour"],
         correctIndex: 0,
         explanation: "Speed compares miles to ONE hour, so divide 12 miles by 3 hours.",
-        explanationEs: "La velocidad compara millas con UNA hora, así que divide 12 millas entre 3 horas.",
+        explanationEs:
+          "La velocidad compara millas con UNA hora, así que divide 12 millas entre 3 horas.",
         choiceFeedback: [
           "",
           "That is the whole distance for the whole ride, not the distance covered in a single hour.",
@@ -238,7 +242,8 @@ const GOOD = {
           "There is not enough information",
         ],
         correctIndex: 0,
-        explanation: "One roll costs $0.70 in the small pack and $0.65 in the large pack, so the large pack is cheaper for each roll.",
+        explanation:
+          "One roll costs $0.70 in the small pack and $0.65 in the large pack, so the large pack is cheaper for each roll.",
         explanationEs:
           "Un rollo cuesta $0.70 en el paquete pequeño y $0.65 en el grande, así que el grande sale más barato por rollo.",
         choiceFeedback: [
@@ -263,7 +268,8 @@ const GOOD = {
         stemEs: "Devon escribe 250 palabras en 5 minutos. ¿Cuántas palabras escribe en un minuto?",
         choices: ["50 words", "250 words", "1250 words", "5 words"],
         correctIndex: 0,
-        explanation: "Divide 250 words by 5 minutes to find how many words fit into a single minute.",
+        explanation:
+          "Divide 250 words by 5 minutes to find how many words fit into a single minute.",
         explanationEs:
           "Divide 250 palabras entre 5 minutos para hallar cuántas palabras caben en un solo minuto.",
         choiceFeedback: [
@@ -295,7 +301,8 @@ const GOOD = {
         stem: "What does one granola bar cost at the warehouse club?",
         choices: ["$0.60", "$0.65", "$1.44", "$2.40"],
         answer: 0,
-        explanation: "14.40 divided by 24 bars gives the cost of a single bar at the warehouse club.",
+        explanation:
+          "14.40 divided by 24 bars gives the cost of a single bar at the warehouse club.",
       },
       {
         stem: "Which place gives the council more bars for every dollar it spends?",
@@ -418,7 +425,8 @@ function withOrphanDragSortItem() {
 
 function withEsol() {
   const c = clone(GOOD);
-  c.languageObjective = "I can explain my answer using the words unit rate, per, and divide (ESOL).";
+  c.languageObjective =
+    "I can explain my answer using the words unit rate, per, and divide (ESOL).";
   return c;
 }
 
@@ -427,17 +435,37 @@ function withEsol() {
 const REJECT_CASES = [
   ["vague distractor feedback", withVagueFeedback, /vague/i],
   ["distractor feedback that is too short", withShortFeedback, /at least 25 characters/i],
-  ["feedback written on the correct choice", withFeedbackOnCorrectChoice, /must be an empty string/i],
-  ["hint containing the correct choice", withHintGivingTheAnswer, /hints\[2\] contains the answer/i],
+  [
+    "feedback written on the correct choice",
+    withFeedbackOnCorrectChoice,
+    /must be an empty string/i,
+  ],
+  [
+    "hint containing the correct choice",
+    withHintGivingTheAnswer,
+    /hints\[2\] contains the answer/i,
+  ],
   ["hint saying 'the answer is'", withHintSayingTheAnswerIs, /hints\[1\] contains the answer/i],
   ["Spanish stem copied from English", withFakeSpanish, /stemEs is identical to stem/i],
-  ["Spanish vocabulary copied from English", withFakeSpanishVocabulary, /termEs is identical to term/i],
+  [
+    "Spanish vocabulary copied from English",
+    withFakeSpanishVocabulary,
+    /termEs is identical to term/i,
+  ],
   ["missing exit ticket", withoutExitTicket, /reflect\.exitTicket is required/i],
-  ["notice & wonder leaking a vocabulary term", withNoticeWonderLeakingVocab, /leaks the vocabulary term/i],
+  [
+    "notice & wonder leaking a vocabulary term",
+    withNoticeWonderLeakingVocab,
+    /leaks the vocabulary term/i,
+  ],
   ["too few items carrying the misconception tag", withUntaggedPractice, /misconceptionTag/i],
   ["lessonId not namespaced to the Forge", withBadLessonId, /lessonId must be a string starting/i],
   ["wrong number of practice items", withWrongPracticeCount, /exactly 6 items/i],
-  ["drag-sort card pointing at no category", withOrphanDragSortItem, /is not one of explore\.categories/i],
+  [
+    "drag-sort card pointing at no category",
+    withOrphanDragSortItem,
+    /is not one of explore\.categories/i,
+  ],
   ['the word "ESOL" in generated content', withEsol, /ESOL/],
 ];
 
@@ -461,7 +489,9 @@ for (const [name, build, expected] of REJECT_CASES) {
     continue;
   }
   if (!errors.some((e) => expected.test(e))) {
-    fail(`${name}: rejected, but not for the expected reason (${expected}) — got: ${errors.join(" | ")}`);
+    fail(
+      `${name}: rejected, but not for the expected reason (${expected}) — got: ${errors.join(" | ")}`,
+    );
   }
 }
 

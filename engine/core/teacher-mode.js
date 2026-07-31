@@ -44,7 +44,17 @@ const TEACHER_PINS = Object.freeze({
   masterAlt: "BlueHeron2026",
   coteacherAlt: "RiverStone2026",
 });
-const ACCEPTED_TEACHER_PINS = ["TeacherNeft", "TeacherAlba", "BlueHeron2026", "RiverStone2026"];
+// Order is load-bearing: matchTeacherPin() derives the role from the index
+// (even = master, odd = co-teacher), so the two roles must keep alternating.
+// Derived from TEACHER_PINS rather than repeated, so a rotation cannot update
+// one and miss the other — and TEACHER_PINS keeps the literal `master:` /
+// `coteacher:` shape that tools/validate-projects-award.mjs reads at runtime.
+const ACCEPTED_TEACHER_PINS = [
+  TEACHER_PINS.master,
+  TEACHER_PINS.coteacher,
+  TEACHER_PINS.masterAlt,
+  TEACHER_PINS.coteacherAlt,
+];
 
 function matchTeacherPin(pin) {
   if (!pin) return null;

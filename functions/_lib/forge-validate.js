@@ -397,4 +397,3 @@ export function validateForgeConfig(config, opts = {}) {
 
   return errs;
 }
-

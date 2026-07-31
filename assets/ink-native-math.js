@@ -33,7 +33,7 @@
 
   function setupInkCanvases() {
     var canvases = document.querySelectorAll(
-      ".draw-canvas, #work-canvas, .scratch-canvas, [data-ink-canvas]"
+      ".draw-canvas, #work-canvas, .scratch-canvas, [data-ink-canvas]",
     );
     canvases.forEach(function (canvas) {
       attachInkEngine(canvas);

@@ -23,7 +23,14 @@
     masterAlt: "BlueHeron2026",
     coteacherAlt: "RiverStone2026",
   };
-  var ACCEPTED_TEACHER_PINS = ["TeacherNeft", "TeacherAlba", "BlueHeron2026", "RiverStone2026"];
+  // Order is load-bearing: matchTeacherPin() derives the role from the index
+  // (even = master, odd = co-teacher), so the two roles must keep alternating.
+  var ACCEPTED_TEACHER_PINS = [
+    TEACHER_PINS.master,
+    TEACHER_PINS.coteacher,
+    TEACHER_PINS.masterAlt,
+    TEACHER_PINS.coteacherAlt,
+  ];
   var STORAGE_PROGRESS = "curriculumProgress";
   var FILTER_ALL = "all";
 
@@ -163,7 +170,10 @@
     var cleaned = String(pin).trim();
     var lower = cleaned.toLowerCase();
     for (var i = 0; i < ACCEPTED_TEACHER_PINS.length; i++) {
-      if (cleaned === ACCEPTED_TEACHER_PINS[i] || lower === ACCEPTED_TEACHER_PINS[i].toLowerCase()) {
+      if (
+        cleaned === ACCEPTED_TEACHER_PINS[i] ||
+        lower === ACCEPTED_TEACHER_PINS[i].toLowerCase()
+      ) {
         return i % 2 === 0 ? "master" : "coteacher";
       }
     }

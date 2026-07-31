@@ -89,7 +89,7 @@
       speak(
         currentLang === "es"
           ? "Asistente en español activado."
-          : "English voice assistant enabled."
+          : "English voice assistant enabled.",
       );
     });
 
@@ -240,7 +240,9 @@
       responseText =
         currentLang === "es"
           ? "Excelente uso del término '" + matchedTerm + "'. ¿Cómo se relaciona con tu cálculo?"
-          : "Great use of the vocabulary term '" + matchedTerm + "'. How does it apply to this step?";
+          : "Great use of the vocabulary term '" +
+            matchedTerm +
+            "'. How does it apply to this step?";
     } else {
       responseText =
         currentLang === "es"
