@@ -87,8 +87,7 @@
           standard: stdFromSearch(ds),
         });
       });
-      if (lessons.length)
-        units.push({ num: u.num || "", name: u.name || "", lessons: lessons });
+      if (lessons.length) units.push({ num: u.num || "", name: u.name || "", lessons: lessons });
     });
     _spine = units;
     return units;
@@ -97,8 +96,7 @@
   function renderPacing(host) {
     var units = spine();
     if (!units.length) {
-      host.innerHTML =
-        '<p class="mf-empty">Curriculum data is not available on this page.</p>';
+      host.innerHTML = '<p class="mf-empty">Curriculum data is not available on this page.</p>';
       return;
     }
     host.innerHTML = '<p class="mf-empty">Building the pacing map…</p>';
@@ -196,8 +194,7 @@
       // Ready readiness, else the first tagged asset.
       function pickLesson(assets) {
         var i;
-        for (i = 0; i < assets.length; i++)
-          if (assets[i].category === "Lesson") return assets[i];
+        for (i = 0; i < assets.length; i++) if (assets[i].category === "Lesson") return assets[i];
         for (i = 0; i < assets.length; i++)
           if (assets[i].category === "Readiness") return assets[i];
         return assets.length ? assets[0] : null;
@@ -213,9 +210,7 @@
             if (a.category === "Lesson") lessonCount++;
           });
           var label =
-            entry && entry.label
-              ? ' <span class="loop-label">' + esc(entry.label) + "</span>"
-              : "";
+            entry && entry.label ? ' <span class="loop-label">' + esc(entry.label) + "</span>" : "";
           var next = lesson
             ? 'Reteach → <a href="' +
               esc(lesson.path) +
