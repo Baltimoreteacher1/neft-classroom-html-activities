@@ -357,8 +357,12 @@ const apply = (a, b, op) => {
  * misconception that produces it. Predictions equal to the CORRECT answer are
  * dropped by the caller — a prediction that coincides with the right answer
  * proves nothing about the student's thinking.
+ *
+ * Exported for misconceptions.deadprediction.test.mjs, which asserts that no
+ * predictor is structurally inert (i.e. can ONLY ever produce the correct
+ * answer, and so is silently dropped by the caller in 100% of cases).
  */
-function predictions(item, correct) {
+export function predictions(item, correct) {
   const stem = item?.stem || item?.title || "";
   const out = [];
   const push = (id, value) => {
@@ -406,9 +410,25 @@ function predictions(item, correct) {
     if (bothFractions) {
       if (op === "+") push("fraction-added-denominators", (left.n + right.n) / (left.d + right.d));
       if (op === "/") {
-        if (right.d !== 0 && right.n !== 0) {
-          push("fraction-straight-across-division", left.n / right.n / (left.d / right.d));
-        }
+        // NOTE: there is deliberately no numeric prediction for
+        // "fraction-straight-across-division". Dividing straight across is
+        // ALGEBRAICALLY VALID for fraction division —
+        //   (a/b) ÷ (c/d) === (a÷c) / (b÷d)
+        // — so a student who does it arrives at the correct answer, and there is
+        // no wrong value to detect. The old predictor pushed
+        // `left.n / right.n / (left.d / right.d)`, which is identically the
+        // correct answer (verified for all 6561 single-digit fraction pairs).
+        // detectMisconception() drops any candidate equal to the correct answer,
+        // so that prediction was inert in 100% of cases: the tag could never fire
+        // from telemetry, and it silently never reached the heatmap, the class
+        // pulse, or the curriculum map.
+        //
+        // The tag itself remains fully supported through AUTHORED distractors
+        // (item.misconceptionTags[choiceIndex]), which detectMisconception()
+        // honours BEFORE any prediction — that is the only honest way to label
+        // this error, because it is diagnosed from the student's WRITTEN METHOD,
+        // not from their answer. misconceptions.deadprediction.test.mjs stops a
+        // structurally-inert predictor from being reintroduced here.
         push("fraction-no-reciprocal", (left.n * right.n) / (left.d * right.d));
       }
     }
