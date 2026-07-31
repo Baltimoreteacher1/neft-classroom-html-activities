@@ -18,9 +18,14 @@ jobs:
           node-version: "22"
           cache: npm
       - run: npm ci
-      - run: npm run build
+      - name: Build and prepare Noam planner
+        run: |
+          npm run build
+          mkdir -p focus-school/curriculum/math-workbench focus-school/assets
+          cp -R curriculum/math-workbench/. focus-school/curriculum/math-workbench/
+          cp assets/favicon.svg focus-school/assets/favicon.svg
       - uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy dist --project-name=neft-classroom-html-activities --branch=main
+          command: pages deploy focus-school --project-name=focus-school --branch=main
