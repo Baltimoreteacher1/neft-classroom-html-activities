@@ -1,49 +1,223 @@
 /*
- * curriculum-supports-identity.css — hub identity chip, the "who's working?"
- * picker, and the hub-side passive accommodations.
+ * curriculum-supports-identity.css — the Learning Supports card on the
+ * curriculum hub, the "who's working?" picker, and the hub-side passive
+ * accommodations.
  *
- * Scoped entirely to .nt-ident-* plus the three shared passive classes the
- * lesson engine already uses (ewl-supports-text-lg / -contrast-active /
- * -comfort-active), so this file composes with learning-supports.css instead
- * of competing with it. Nothing here restyles existing hub furniture.
+ * Scoped entirely to .nt-sup-* / .nt-ident-* plus the three shared passive
+ * classes the lesson engine already uses (ewl-supports-text-lg /
+ * -contrast-active / -comfort-active), so this file composes with
+ * learning-supports.css instead of competing with it. Nothing here restyles
+ * existing hub furniture.
  *
  * z-index: the picker sits at 9000 — above hub content and the teacher side
  * tab, deliberately BELOW the Save/Resume launcher (#nsr-root, ~2147483000)
  * so it can never trap a student behind an un-closable overlay.
  */
 
-/* ---- chip ---------------------------------------------------------------- */
+/* ---- the card ------------------------------------------------------------ */
 
-.nt-ident-chip {
+/* `margin: auto` centres it when mounted as a sibling of the header; inside the
+   header it simply inherits the header's own column. */
+.nt-sup-card {
+  max-width: 1180px;
+  margin: 4px auto 20px;
+  padding: 20px 22px;
+  background: #fff;
+  border: 2px solid var(--teal, #0f766e);
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+
+/* Setup is the teacher's to-do, not a celebration: amber, not brand teal. */
+.nt-sup-card.is-setup {
+  background: #fffbeb;
+  border-color: #d97706;
+}
+
+.nt-sup-card__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.nt-sup-card__icon {
+  flex: none;
+  font-size: 30px;
+  line-height: 1.1;
+}
+
+.nt-sup-card__text {
+  min-width: 0;
+}
+
+.nt-sup-card__title {
+  margin: 0 0 4px;
+  font-size: 21px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: #0f172a;
+}
+
+.nt-sup-card__sub {
+  margin: 0;
+  max-width: 68ch;
+  font-size: 15px;
+  line-height: 1.55;
+  color: #475569;
+}
+
+.nt-sup-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+/* Deliberately large: this is the only tap most students make on this page,
+   and many of the students using it have fine-motor accommodations. */
+.nt-sup-btn {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  margin: 0 0 14px;
-  padding: 9px 16px;
+  justify-content: center;
+  min-height: 48px;
+  padding: 12px 22px;
   font: inherit;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 700;
-  color: var(--teal, #0f766e);
-  background: rgba(255, 255, 255, 0.85);
-  border: 2px dashed var(--teal, #0f766e);
-  border-radius: 999px;
+  color: #fff;
+  text-decoration: none;
+  background: var(--teal, #0f766e);
+  border: 2px solid var(--teal, #0f766e);
+  border-radius: 12px;
   cursor: pointer;
   transition:
-    background 0.15s ease,
+    filter 0.15s ease,
     transform 0.15s ease;
 }
 
-.nt-ident-chip:hover,
-.nt-ident-chip:focus-visible {
-  background: #fff;
+.nt-sup-btn:hover,
+.nt-sup-btn:focus-visible {
+  color: #fff;
+  filter: brightness(1.08);
   transform: translateY(-1px);
 }
 
-/* Claimed reads as settled, not as a call to action. */
-.nt-ident-chip.is-claimed {
-  color: #fff;
-  background: var(--teal, #0f766e);
-  border-style: solid;
+.nt-sup-card.is-setup .nt-sup-btn {
+  background: #b45309;
+  border-color: #b45309;
+}
+
+.nt-sup-btn--ghost {
+  color: #475569;
+  background: transparent;
+  border-color: #cbd5e1;
+}
+
+.nt-sup-btn--ghost:hover,
+.nt-sup-btn--ghost:focus-visible {
+  color: #0f172a;
+  filter: none;
+  border-color: #94a3b8;
+}
+
+/* ---- "your tools are on" chips ------------------------------------------- */
+
+.nt-sup-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nt-sup-tool {
+  padding: 6px 13px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f766e;
+  background: #ecfdf5;
+  border: 1px solid #99f6e4;
+  border-radius: 999px;
+}
+
+/* ---- "picked for you" ----------------------------------------------------- */
+
+.nt-sup-picked {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.nt-sup-picked__title {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #b45309;
+}
+
+.nt-sup-picked__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nt-sup-picked__link {
+  display: inline-block;
+  padding: 9px 15px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #7c2d12;
+  text-decoration: none;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 10px;
+}
+
+.nt-sup-picked__link:hover,
+.nt-sup-picked__link:focus-visible {
+  color: #7c2d12;
+  background: #ffedd5;
+  border-color: #fdba74;
+}
+
+/* ---- teacher strip -------------------------------------------------------- */
+
+.nt-sup-card__teacher {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin-top: 16px;
+  padding-top: 13px;
+  border-top: 1px dashed #cbd5e1;
+  font-size: 13.5px;
+}
+
+.nt-sup-card__teacherstat {
+  font-weight: 700;
+  color: #475569;
+}
+
+.nt-sup-card__teacherlink {
+  padding: 0;
+  font: inherit;
+  font-weight: 700;
+  color: var(--teal, #0f766e);
+  text-decoration: underline;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.nt-sup-card__teacherlink:hover,
+.nt-sup-card__teacherlink:focus-visible {
+  color: #0f172a;
 }
 
 /* ---- picker -------------------------------------------------------------- */
@@ -104,8 +278,6 @@
   gap: 8px;
 }
 
-/* Deliberately large: these are the only two taps a student makes, and many
-   of the students using them have fine-motor accommodations. */
 .nt-ident-opt {
   min-width: 62px;
   min-height: 46px;
@@ -200,13 +372,29 @@ body.ewl-supports-comfort-active * {
   scroll-behavior: auto !important;
 }
 
-@media (max-width: 560px) {
-  .nt-ident-panel {
+@media (prefers-reduced-motion: reduce) {
+  .nt-sup-btn {
+    transition: none;
+  }
+
+  .nt-sup-btn:hover {
+    transform: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .nt-sup-card {
+    margin: 14px 16px 0;
     padding: 18px;
   }
 
-  .nt-ident-chip {
-    width: 100%;
-    justify-content: center;
+  .nt-sup-card__actions .nt-sup-btn {
+    flex: 1 1 100%;
+  }
+}
+
+@media (max-width: 560px) {
+  .nt-ident-panel {
+    padding: 18px;
   }
 }

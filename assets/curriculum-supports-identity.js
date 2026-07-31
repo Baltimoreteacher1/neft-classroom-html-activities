@@ -1,35 +1,43 @@
 /*
- * curriculum-supports-identity.js — claim your identity ONCE, at the hub.
+ * curriculum-supports-identity.js — the Learning Supports CARD on /curriculum.
  *
  * The problem this solves
  * ----------------------
- * Learning Supports v2 already resolves a student's IEP / ESOL accommodations
- * from the D1 roster and applies them on every lesson page. But the "who are
- * you?" self-pick fired INSIDE a lesson, which meant:
- *   - the modal interrupted the lesson instead of preceding it,
- *   - the hub itself (/curriculum) — the page students actually start on —
- *     stayed completely unaware of the student, and
- *   - nothing carried the identity from the hub into the page being opened.
+ * Learning Supports v2 resolves a student's accommodations from the D1 roster
+ * and applies them on every lesson page. Two things kept it from being used:
  *
- * This module moves the claim upstream to the hub and makes the hub itself
- * support-aware. Once a student says who they are:
- *   1. their accommodations are resolved and cached under the SAME key the
- *      lesson engine reads, so the lesson starts already adapted — no flash,
- *      no second modal;
- *   2. the hub applies their passive accommodations (larger text, high
- *      contrast, reduced-motion comfort mode);
- *   3. every outgoing lesson link is stamped "?me=<section>.<initials>" so the
- *      identity travels with the click — including onto a device that has
- *      never seen this student;
- *   4. lessons the teacher assigned to them are badged on the hub.
+ *   1. The "who are you?" claim was a small dashed CHIP tucked into the hub
+ *      header — easy to miss, and it said nothing about what claiming does.
+ *   2. Roster setup lived only at /teacher-tools/learning-supports-manager/,
+ *      which is four clicks away and invisible from the hub. With an empty
+ *      roster the whole layer rendered NOTHING, so there was no path from
+ *      "this exists" to "this is set up".
+ *
+ * So this module renders one clear card at the front of the hub, directly under
+ * the page header, and the card changes shape by who is looking:
+ *
+ *   SET UP    teacher mode + empty roster -> "Set up your students" + one button
+ *             to the manager. This is the only state a student never sees.
+ *   CLAIM     roster exists, nobody claimed -> "Who's working today?" + a big
+ *             button that opens the class/name picker.
+ *   READY     claimed -> the student's tools named in plain language, the
+ *             lessons picked for them, and a way to say "not me".
+ *
+ * Claiming here also:
+ *   - caches the resolved accommodations under the SAME key the lesson engine
+ *     reads, so the lesson opens already adapted — no flash, no second modal;
+ *   - applies the passive accommodations to the hub itself;
+ *   - stamps "?me=<section>.<initials>" onto every lesson link so the identity
+ *     survives the click, even onto a device that never saw this student.
  *
  * Deliberately NOT "?supports=": that transport freezes a COARSE bundle and
  * overrides the roster. "?me=" carries only WHO the student is, so the roster
  * still resolves their real, fine-grained, current accommodations.
  *
  * Hard rules: additive, reversible, never throws into the hub, no new PII
- * (section + initials are what the lesson modal already collected), and a
- * dead/empty roster renders NOTHING rather than nagging students.
+ * (section + initials are what the lesson modal already collected), no IEP /
+ * language-level framing in any student-facing string, and an empty roster
+ * shows a student NOTHING rather than nagging them.
  */
 (function () {
   "use strict";
@@ -37,6 +45,8 @@
   window.__ntHubIdentityBooted = true;
 
   var API = "/api/supports";
+  var MANAGER_URL = "/teacher-tools/learning-supports-manager/";
+  var TEACHER_MODE_KEY = "nt-teacher-mode"; // shared with curriculum-enhancements.js
   var LESSON_HREF_RE = /\/lessons\/(\d+-\d+(?:-group[12]|-catchup)?)\/?(?:[?#]|$)/;
 
   // Passive accommodations that make sense on a browse page. Interactive tools
@@ -47,10 +57,89 @@
     comfort: "ewl-supports-comfort-active",
   };
 
-  var state = { roster: null, items: [], lessons: [] };
+  /*
+   * Student-facing names for what turns on.
+   *
+   * The schema's own labels are the district IEP/ESOL document lines verbatim
+   * ("Text to Speech for the ELA/Literacy Assessments (items, response options,
+   * and passages)"). Those are correct for the teacher's roster editor and
+   * wrong for a card a twelve-year-old reads, so this card never prints them.
+   *
+   * Resolution order for a resolved key:
+   *   1. KEY_LABEL   — legacy passive keys and adaptive behaviours, named directly
+   *   2. TOOL_LABEL  — via the schema's `tool` field, so every interactive item
+   *                    collapses onto the dock control it actually turns on
+   *                    (six different roster lines all mean "Read aloud")
+   *   3. skipped     — teacher planning flags have no student-side effect and
+   *                    must not be advertised as tools
+   */
+  var TOOL_LABEL = {
+    listen: "Read aloud",
+    words: "Word help",
+    explain: "Sentence starters",
+    calculator: "Calculator",
+    translate: "Translate",
+    model: "See a model",
+    organizer: "Graphic organizer",
+    notepad: "Notepad",
+    checklist: "Checklist",
+    checkin: "Check-in",
+    directions: "Directions help",
+    highlighter: "Highlighter",
+    break: "Take a break",
+  };
+
+  var KEY_LABEL = {
+    // legacy v1 presentation keys (in the API allow-list, not in the schema)
+    "text-large": "Bigger text",
+    contrast: "High contrast",
+    tint: "Colour tint",
+    ruler: "Reading ruler",
+    focus: "Focus line",
+    comfort: "Calm mode",
+    numberline: "Number line",
+    multchart: "Multiplication chart",
+    placevalue: "Place value chart",
+    example: "Worked example",
+    misconceptions: "Common mistakes",
+    // adaptive behaviours — real changes to the lesson, so they are named
+    time: "Extra time",
+    "iep-extra-time": "Extra time",
+    "esol-extended-time": "Extra time",
+    fewer: "Shorter set",
+    "esol-selected-portion": "Shorter set",
+    "iep-chunk-text": "One step at a time",
+    "iep-chunk-repeat-verbal": "One step at a time",
+    "iep-positive-praise": "Extra encouragement",
+    "iep-immediate-feedback": "Instant feedback",
+  };
+
+  var state = { roster: null, items: [], lessons: [], teacher: false };
 
   function ident() {
     return window.NTIdentity || null;
+  }
+
+  function schema() {
+    return window.EWLSupportsSchema || null;
+  }
+
+  /*
+   * Teacher Mode, in the same terms curriculum-enhancements.js uses.
+   * `body.teacher-mode` is the live truth once that script has run; before it
+   * has (script order is not guaranteed) fall back to the shared storage key,
+   * honouring the same `?student=1` force-student override so a teacher-shared
+   * student link never exposes the teacher strip.
+   */
+  function isTeacher() {
+    try {
+      if (document.body.classList.contains("teacher-mode")) return true;
+      if (new URLSearchParams(window.location.search).get("student") === "1") return false;
+      var saved = localStorage.getItem(TEACHER_MODE_KEY);
+      return saved === "1" || saved === "true";
+    } catch (_e) {
+      return false;
+    }
   }
 
   async function getJSON(path) {
@@ -61,6 +150,47 @@
     } catch (_e) {
       return null;
     }
+  }
+
+  function rosterCounts() {
+    var sections = (state.roster && state.roster.sections) || {};
+    var classes = 0;
+    var students = 0;
+    for (var s in sections) {
+      if (!Object.prototype.hasOwnProperty.call(sections, s)) continue;
+      var list = sections[s] || [];
+      if (!list.length) continue;
+      classes++;
+      students += list.length;
+    }
+    return { classes: classes, students: students };
+  }
+
+  function hasRoster() {
+    return rosterCounts().students > 0;
+  }
+
+  /*
+   * Resolved keys -> de-duped, student-safe tool names. Order is preserved so
+   * the card reads the same way twice in a row.
+   */
+  function toolNames(items) {
+    var S = schema();
+    var out = [];
+    var seen = {};
+    for (var i = 0; i < items.length; i++) {
+      var key = items[i];
+      var name = KEY_LABEL[key];
+      if (!name && S && S.byKey && S.byKey[key]) {
+        var item = S.byKey[key];
+        if (item.apply === "flag") continue; // teacher planning note, not a tool
+        name = TOOL_LABEL[item.tool];
+      }
+      if (!name || seen[name]) continue;
+      seen[name] = true;
+      out.push(name);
+    }
+    return out;
   }
 
   // ---- applying what we resolved ------------------------------------------
@@ -108,6 +238,7 @@
     var anchors = document.querySelectorAll('a[href*="/lessons/"]');
     for (var j = 0; j < anchors.length; j++) {
       var a = anchors[j];
+      if (a.closest("#nt-supports-card")) continue; // the card labels its own links
       var m = LESSON_HREF_RE.exec(a.getAttribute("href") || "");
       if (!m || !assigned[m[1]]) continue;
       if (a.querySelector(".nt-ident-assigned")) continue;
@@ -118,11 +249,42 @@
     }
   }
 
+  /*
+   * Title for an assigned lesson, taken from the hub's own data so the card
+   * needs no extra fetch and always agrees with the library below it.
+   *
+   * The hub's lesson ANCHORS are labelled by resource ("Interactive Lesson",
+   * "📄 Student Handout"), which would render a "Picked for you" list that says
+   * the same meaningless thing twice — so window.CurriculumHub.unitsData is the
+   * primary source and the anchor text only a fallback. The trailing standard
+   * code ("6.NOS.4") is dropped: it means nothing to a student.
+   */
+  function lessonTitle(id) {
+    var units = (window.CurriculumHub && window.CurriculumHub.unitsData) || [];
+    for (var u = 0; u < units.length; u++) {
+      var lessons = (units[u] && units[u].lessons) || [];
+      for (var l = 0; l < lessons.length; l++) {
+        if (lessons[l].lessonId !== id || !lessons[l].title) continue;
+        return String(lessons[l].title)
+          .replace(/\s*\b\d+\.[A-Z]+\.\d+[a-z]?\s*$/, "")
+          .trim();
+      }
+    }
+    var anchors = document.querySelectorAll('a[href*="/lessons/' + id + '"]');
+    for (var i = 0; i < anchors.length; i++) {
+      var m = LESSON_HREF_RE.exec(anchors[i].getAttribute("href") || "");
+      if (!m || m[1] !== id) continue;
+      var text = (anchors[i].textContent || "").replace(/★ for you/g, "").trim();
+      if (text && text.length < 90) return text;
+    }
+    return "Lesson " + id;
+  }
+
   function refreshPage() {
     applyPassive(state.items);
     stampLinks(document);
     badgeAssignedLessons();
-    renderChip();
+    renderCard();
   }
 
   // ---- resolving the roster assignment -------------------------------------
@@ -148,7 +310,7 @@
     refreshPage();
   }
 
-  // ---- UI -------------------------------------------------------------------
+  // ---- DOM helpers ----------------------------------------------------------
 
   function el(tag, cls, text) {
     var n = document.createElement(tag);
@@ -157,38 +319,208 @@
     return n;
   }
 
-  /*
-   * Mount host. "header.hub" lives inside #hub-side, which the lessons-first
-   * hub keeps HIDDEN on the landing view — a chip mounted there renders but is
-   * never seen. #curriculum-start is the header that is actually on screen when
-   * a student arrives, so it is the primary host and header.hub the fallback.
-   */
-  function chipHost() {
-    return document.getElementById("curriculum-start") || document.querySelector("header.hub");
+  function button(cls, text, onClick) {
+    var b = el("button", cls, text);
+    b.type = "button";
+    b.addEventListener("click", onClick);
+    return b;
   }
 
-  function renderChip() {
-    var host = chipHost();
-    if (!host) return;
-    var chip = document.getElementById("nt-ident-chip");
-    if (!chip) {
-      chip = el("button", "nt-ident-chip");
-      chip.id = "nt-ident-chip";
-      chip.type = "button";
-      chip.addEventListener("click", openPicker);
-      host.insertBefore(chip, host.firstChild);
-    }
-    var me = ident() && ident().get();
-    var named = me && me.initials;
-    chip.classList.toggle("is-claimed", !!named);
-    chip.textContent = named ? "👤 " + me.initials + " · " + me.section : "👤 Who's working today?";
-    chip.setAttribute(
-      "aria-label",
-      named
-        ? "You are signed in as " + me.initials + " in section " + me.section + ". Tap to change."
-        : "Tap to choose who is working, so your learning supports follow you.",
-    );
+  function link(cls, text, href) {
+    var a = el("a", cls, text);
+    a.href = href;
+    return a;
   }
+
+  /*
+   * Mount point, in order of preference:
+   *   1. inside the hub header, directly above the Teach / Plan / Explore row —
+   *      the first thing under the title, above the fold on a Chromebook. The
+   *      header is tall (actions + learning model + links), so mounting AFTER
+   *      it pushed the card ~800px down, which is how the old chip got missed.
+   *   2. after the header, then 3. top of <main> — for any page whose header
+   *      does not carry that row.
+   * header.hub is deliberately not used: it lives inside #hub-side, which the
+   * lessons-first hub keeps hidden on landing, so anything mounted there
+   * renders but is never seen.
+   */
+  function mount() {
+    var existing = document.getElementById("nt-supports-card");
+    if (existing) return existing;
+    var card = el("section", "nt-sup-card");
+    card.id = "nt-supports-card";
+    card.setAttribute("aria-labelledby", "nt-sup-card-title");
+
+    var header = document.getElementById("curriculum-start");
+    var actions = header && header.querySelector(".curriculum-guide__actions");
+    if (actions) {
+      header.insertBefore(card, actions);
+    } else if (header && header.parentNode) {
+      header.parentNode.insertBefore(card, header.nextSibling);
+    } else {
+      var host = document.querySelector("main") || document.body;
+      host.insertBefore(card, host.firstChild);
+    }
+    return card;
+  }
+
+  function unmount() {
+    var card = document.getElementById("nt-supports-card");
+    if (card && card.parentNode) card.parentNode.removeChild(card);
+  }
+
+  // ---- the card -------------------------------------------------------------
+
+  function renderCard() {
+    var me = ident() && ident().get();
+    var claimed = !!(me && me.initials);
+    var ready = hasRoster();
+
+    // Nothing set up and nobody to set it up: render nothing. Never nag.
+    if (!ready && !state.teacher) {
+      unmount();
+      return;
+    }
+
+    var card = mount();
+    card.textContent = "";
+    card.className = "nt-sup-card " + (!ready ? "is-setup" : claimed ? "is-ready" : "is-claim");
+
+    var body = el("div", "nt-sup-card__body");
+    card.appendChild(body);
+
+    if (!ready) {
+      renderSetup(body);
+    } else if (!claimed) {
+      renderClaim(body);
+    } else {
+      renderReady(body, me);
+    }
+
+    // The setup card IS the teacher strip's content — no point printing
+    // "Manage students" twice under a button that already says it.
+    if (state.teacher && ready) card.appendChild(teacherStrip(claimed));
+  }
+
+  function head(body, icon, title, sub) {
+    var top = el("div", "nt-sup-card__head");
+    top.appendChild(el("span", "nt-sup-card__icon", icon));
+    var text = el("div", "nt-sup-card__text");
+    var h = el("h2", "nt-sup-card__title", title);
+    h.id = "nt-sup-card-title";
+    text.appendChild(h);
+    text.appendChild(el("p", "nt-sup-card__sub", sub));
+    top.appendChild(text);
+    body.appendChild(top);
+    return text;
+  }
+
+  /* Teacher, empty roster — the state that used to render nothing at all. */
+  function renderSetup(body) {
+    head(
+      body,
+      "🧰",
+      "Learning Supports — not set up yet",
+      "Add your students once. After that a student picks their name on this page and their tools follow them into every lesson, on any device.",
+    );
+    var actions = el("div", "nt-sup-card__actions");
+    actions.appendChild(link("nt-sup-btn", "Set up my students →", MANAGER_URL));
+    body.appendChild(actions);
+  }
+
+  /* Student, roster exists, nobody claimed. */
+  function renderClaim(body) {
+    head(
+      body,
+      "🎒",
+      "Who's working today?",
+      "Pick your class and your name. Your tools — reading help, word help, calculator — turn on by themselves in every lesson.",
+    );
+    var actions = el("div", "nt-sup-card__actions");
+    actions.appendChild(button("nt-sup-btn", "Choose my name", openPicker));
+    actions.appendChild(
+      button("nt-sup-btn nt-sup-btn--ghost", "Not now", function () {
+        if (ident()) ident().skip();
+        unmount();
+      }),
+    );
+    body.appendChild(actions);
+  }
+
+  /* Claimed — say what is on, and what was picked for them. */
+  function renderReady(body, me) {
+    var names = toolNames(state.items);
+    head(
+      body,
+      "✅",
+      "You're all set, " + me.initials,
+      names.length
+        ? "Your tools are on in every lesson. Look for the Tools button on the side of the page."
+        : "Everything is ready. Open any lesson below.",
+    );
+
+    if (names.length) {
+      var tools = el("ul", "nt-sup-tools");
+      tools.setAttribute("aria-label", "Tools that are turned on for you");
+      names.forEach(function (n) {
+        tools.appendChild(el("li", "nt-sup-tool", n));
+      });
+      body.appendChild(tools);
+    }
+
+    if (state.lessons.length) {
+      var picked = el("div", "nt-sup-picked");
+      picked.appendChild(el("h3", "nt-sup-picked__title", "★ Picked for you"));
+      var list = el("ul", "nt-sup-picked__list");
+      state.lessons.forEach(function (id) {
+        var li = el("li");
+        li.appendChild(link("nt-sup-picked__link", lessonTitle(id), "/lessons/" + id + "/"));
+        list.appendChild(li);
+      });
+      picked.appendChild(list);
+      body.appendChild(picked);
+    }
+
+    var actions = el("div", "nt-sup-card__actions");
+    actions.appendChild(button("nt-sup-btn nt-sup-btn--ghost", "Not me — switch", openPicker));
+    body.appendChild(actions);
+  }
+
+  /* Teacher-only strip. Never rendered outside teacher mode. */
+  function teacherStrip(claimed) {
+    var strip = el("div", "nt-sup-card__teacher");
+    var counts = rosterCounts();
+    strip.appendChild(
+      el(
+        "span",
+        "nt-sup-card__teacherstat",
+        counts.students +
+          " student" +
+          (counts.students === 1 ? "" : "s") +
+          " · " +
+          counts.classes +
+          " class" +
+          (counts.classes === 1 ? "" : "es"),
+      ),
+    );
+    strip.appendChild(link("nt-sup-card__teacherlink", "Manage students", MANAGER_URL));
+    if (!claimed) {
+      strip.appendChild(button("nt-sup-card__teacherlink", "Preview as a student", openPicker));
+    }
+    if (claimed) {
+      strip.appendChild(
+        button("nt-sup-card__teacherlink", "Stop previewing", function () {
+          if (ident()) ident().clear();
+          state.items = [];
+          state.lessons = [];
+          refreshPage();
+        }),
+      );
+    }
+    return strip;
+  }
+
+  // ---- picker ---------------------------------------------------------------
 
   function closePicker() {
     var back = document.getElementById("nt-ident-backdrop");
@@ -240,7 +572,7 @@
     panel.appendChild(iniRow);
 
     function drawInitials() {
-      iniWrap.innerHTML = "";
+      iniWrap.textContent = "";
       var list = sections[chosenSection] || [];
       if (!list.length) {
         iniWrap.appendChild(el("span", "nt-ident-empty", "No names in this class yet."));
@@ -253,7 +585,7 @@
         b.addEventListener("click", function () {
           if (ident()) ident().set({ section: chosenSection, initials: ini });
           closePicker();
-          renderChip();
+          renderCard();
           resolveFor(chosenSection, ini);
         });
         iniWrap.appendChild(b);
@@ -276,26 +608,17 @@
     drawInitials();
 
     var foot = el("div", "nt-ident-foot");
-    var notMe = el("button", "nt-ident-ghost", "Not now");
-    notMe.type = "button";
-    notMe.addEventListener("click", function () {
-      if (ident()) ident().skip();
-      closePicker();
-      renderChip();
-    });
-    foot.appendChild(notMe);
-
+    foot.appendChild(button("nt-ident-ghost", "Cancel", closePicker));
     if (me.initials) {
-      var reset = el("button", "nt-ident-ghost", "This isn't me");
-      reset.type = "button";
-      reset.addEventListener("click", function () {
-        if (ident()) ident().clear();
-        state.items = [];
-        state.lessons = [];
-        closePicker();
-        refreshPage();
-      });
-      foot.appendChild(reset);
+      foot.appendChild(
+        button("nt-ident-ghost", "This isn't me", function () {
+          if (ident()) ident().clear();
+          state.items = [];
+          state.lessons = [];
+          closePicker();
+          refreshPage();
+        }),
+      );
     }
     panel.appendChild(foot);
 
@@ -312,25 +635,41 @@
     var id = ident();
     if (!id) return; // shared-identity.js absent -> stay silent, change nothing
 
+    state.teacher = isTeacher();
+
     // An identity handed to us in the URL wins for THIS device (that is the
     // whole point of the stamped links / a teacher-shared link).
     var fromUrl = id.fromUrl();
     if (fromUrl) id.set(fromUrl);
 
     state.roster = await getJSON("/sections");
-    var sections = (state.roster && state.roster.sections) || {};
-    var hasRoster = Object.keys(sections).some(function (s) {
-      return (sections[s] || []).length;
-    });
-    // No roster built yet -> render nothing at all. Never nag.
-    if (!hasRoster) return;
+    renderCard();
 
-    renderChip();
+    /*
+     * Teacher Mode is toggled without a reload (it flips body.teacher-mode), so
+     * the card follows it in this tab and across tabs. Wired BEFORE the
+     * empty-roster bail-out: a teacher who flips the toggle on a hub with no
+     * roster yet is exactly the person who needs the "Set up my students" card
+     * to appear.
+     */
+    new MutationObserver(function () {
+      var next = isTeacher();
+      if (next === state.teacher) return;
+      state.teacher = next;
+      renderCard();
+    }).observe(document.body, { attributes: true, attributeFilter: ["class"] });
+
+    window.addEventListener("storage", function (e) {
+      if (!e || e.key !== TEACHER_MODE_KEY) return;
+      state.teacher = isTeacher();
+      renderCard();
+    });
+
+    // Nothing rostered: no identity to resolve, no links worth stamping.
+    if (!hasRoster()) return;
 
     var me = id.get();
-    if (me && me.initials) {
-      await resolveFor(me.section, me.initials);
-    }
+    if (me && me.initials) await resolveFor(me.section, me.initials);
 
     // The hub renders unit lists lazily, so newly-inserted lesson links need
     // the same stamping/badging treatment. Throttled to one pass per frame.
@@ -346,7 +685,7 @@
     }).observe(document.body, { childList: true, subtree: true });
 
     id.onChange(function () {
-      renderChip();
+      renderCard();
     });
   }
 
