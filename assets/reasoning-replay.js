@@ -3,6 +3,7 @@
  *
  * After a wrong answer, presents a 20-second animated replay of the student's own path,
  * highlighting the branch point misconception and showing the alternate correct branch.
+ * Includes speed controls (1x, 2x, 4x) and pause/resume timeline controls.
  */
 (function (global) {
   "use strict";
@@ -11,6 +12,9 @@
 
   var studentPath = [];
   var activeModal = null;
+  var isPlaying = true;
+  var speedMultiplier = 1;
+  var timer = null;
   var booted = false;
 
   function safe(fn) {
@@ -33,7 +37,6 @@
   }
 
   function attachReplayTriggers() {
-    // Record student action path in real-time
     document.addEventListener("change", function (e) {
       var target = e.target;
       if (target.matches("input, select, textarea")) {
@@ -45,7 +48,6 @@
       }
     });
 
-    // Tap answer submission attempts
     var forms = document.querySelectorAll("form, .question-card, .try-it");
     forms.forEach(function (form) {
       form.addEventListener("submit", checkAnswerPath);
@@ -53,7 +55,6 @@
   }
 
   function checkAnswerPath(e) {
-    // Check if attempt resulted in distractor / incorrect response
     var isIncorrect = document.querySelector(".feedback-incorrect, .distractor-active");
     if (isIncorrect) {
       offerReplayButton(isIncorrect);
@@ -68,7 +69,7 @@
     btn.type = "button";
     btn.className = "nt-btn-replay";
     btn.style.cssText =
-      "margin-top:10px;padding:8px 14px;background:#4f46e5;color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;";
+      "margin-top:10px;padding:8px 16px;background:linear-gradient(135deg, #4f46e5, #7c3aed);color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;box-shadow:0 4px 12px rgba(79,70,229,0.3);";
     btn.innerHTML = '<span aria-hidden="true">🎬</span> Watch 20s Reasoning Replay';
     btn.addEventListener("click", showReplayModal);
 
@@ -95,13 +96,30 @@
       '<div class="replay-branch-comparison">' +
       '<strong>⚡ Alternate Branch:</strong> Instead of cross-multiplying out of order, align equivalent fractions first: <code>3/5 = x/15</code>.' +
       "</div>" +
+      '<div class="replay-controls-row">' +
+      '<button type="button" class="replay-btn-control btn-play-pause">Pause ⏸</button>' +
       '<div class="replay-progress-bar"><div class="replay-progress-fill" id="replay-fill"></div></div>' +
+      '<button type="button" class="replay-btn-control btn-speed">Speed: 1x</button>' +
+      "</div>" +
       "</div>" +
       "</div>";
 
     modal.querySelector(".replay-close-btn").addEventListener("click", function () {
+      if (timer) clearInterval(timer);
       modal.remove();
       activeModal = null;
+    });
+
+    var playPauseBtn = modal.querySelector(".btn-play-pause");
+    playPauseBtn.addEventListener("click", function () {
+      isPlaying = !isPlaying;
+      playPauseBtn.textContent = isPlaying ? "Pause ⏸" : "Play ▶";
+    });
+
+    var speedBtn = modal.querySelector(".btn-speed");
+    speedBtn.addEventListener("click", function () {
+      speedMultiplier = speedMultiplier === 1 ? 2 : speedMultiplier === 2 ? 4 : 1;
+      speedBtn.textContent = "Speed: " + speedMultiplier + "x";
     });
 
     document.body.appendChild(modal);
@@ -120,11 +138,12 @@
 
   function animateReplay(modal) {
     var fill = modal.querySelector("#replay-fill");
-    var duration = 4000; // 4 second smooth demo step loop
-    var start = Date.now();
+    var duration = 4000;
+    var elapsed = 0;
 
-    var timer = setInterval(function () {
-      var elapsed = Date.now() - start;
+    timer = setInterval(function () {
+      if (!isPlaying) return;
+      elapsed += 50 * speedMultiplier;
       var pct = Math.min(100, (elapsed / duration) * 100);
       if (fill) fill.style.width = pct + "%";
 

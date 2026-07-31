@@ -1,9 +1,8 @@
 /*!
- * interactive-live-sim.js — Neft Lesson Platform · Live Simulation Drag & Re-derivation Engine.
+ * interactive-live-sim.js — Neft Lesson Platform · Ultra-Interactive Live Simulation Engine.
  *
  * Transforms static numbers, figures, and ratios in Learn It / Try It lesson sections
- * into live draggable objects. Re-derives dependent equations, ratio visual models (SVG),
- * and dynamic calculations in real-time as objects are dragged.
+ * into live draggable objects with tooltips, magnet snap feedback, and live re-derivation.
  */
 (function (global) {
   "use strict";
@@ -48,7 +47,6 @@
 
     var draggables = container.querySelectorAll(".sim-drag, [data-sim-value]");
     if (!draggables.length) {
-      // Auto-detect numbers in paragraph / math spans if explicit markers aren't present
       autoDetectNumbers(container);
       draggables = container.querySelectorAll(".live-sim-draggable");
     }
@@ -68,6 +66,12 @@
         node.setAttribute("role", "slider");
         node.setAttribute("aria-valuenow", val);
         node.dataset.simValue = val;
+
+        // Add live drag tooltip
+        var tooltip = document.createElement("span");
+        tooltip.className = "live-sim-tooltip";
+        tooltip.textContent = "Drag to change: " + val;
+        node.appendChild(tooltip);
       }
     });
   }
@@ -78,6 +82,7 @@
     var minVal = parseFloat(el.dataset.min || "1");
     var maxVal = parseFloat(el.dataset.max || "100");
     var step = parseFloat(el.dataset.step || "1");
+    var tooltip = el.querySelector(".live-sim-tooltip");
 
     function updateValue(newVal) {
       newVal = Math.max(minVal, Math.min(maxVal, newVal));
@@ -87,7 +92,19 @@
       if (currentVal === newVal) return;
 
       el.dataset.simValue = newVal;
-      el.textContent = newVal;
+      
+      // Update text while keeping child tooltip element intact
+      var textNode = Array.from(el.childNodes).find(function (n) {
+        return n.nodeType === 3; // Text node
+      });
+      if (textNode) {
+        textNode.nodeValue = newVal;
+      } else {
+        el.textContent = newVal;
+        if (tooltip) el.appendChild(tooltip);
+      }
+
+      if (tooltip) tooltip.textContent = "Drag to change: " + newVal;
       el.setAttribute("aria-valuenow", newVal);
 
       reDeriveContainer(container, el, newVal);
@@ -111,7 +128,7 @@
         var currentX =
           moveEvent.clientX || (moveEvent.touches && moveEvent.touches[0] ? moveEvent.touches[0].clientX : 0);
         var delta = currentX - startX;
-        var valDelta = Math.round(delta / 10) * step;
+        var valDelta = Math.round(delta / 8) * step;
         updateValue(startVal + valDelta);
       }
 
@@ -159,7 +176,6 @@
       }
     });
 
-    // Re-render connected inline SVGs if present
     var svgModels = container.querySelectorAll("svg[data-live-svg]");
     svgModels.forEach(function (svg) {
       updateSvgModel(svg, changedEl, newVal);
@@ -180,7 +196,7 @@
     });
     var fn = new Function(keys.join(","), "return " + formula + ";");
     var res = fn.apply(null, vals);
-    return typeof res === "number" ? (Math.round(res * 100) / 100) : res;
+    return typeof res === "number" ? Math.round(res * 100) / 100 : res;
   }
 
   function updateSvgModel(svg, changedEl, newVal) {
@@ -195,7 +211,7 @@
     el.classList.add("pulse-update");
     setTimeout(function () {
       el.classList.remove("pulse-update");
-    }, 250);
+    }, 300);
   }
 
   global.NTLiveSim = {

@@ -2,7 +2,8 @@
  * convince-skeptic.js — Neft Lesson Platform · "Convince the Skeptic" AI Classmate Engine.
  *
  * An AI classmate who is politely, confidently wrong; the student must argue them
- * into the right answer to build retention through explanation.
+ * into the right answer to build retention through explanation. Includes Convince Meter
+ * and celebration feedback.
  */
 (function (global) {
   "use strict";
@@ -38,7 +39,6 @@
       if (container.dataset.skepticEnhanced) return;
       container.dataset.skepticEnhanced = "true";
 
-      // Insert Skeptic Challenge Card into the section
       renderSkepticCard(container);
     });
   }
@@ -48,8 +48,14 @@
     card.className = "skeptic-card";
     card.innerHTML =
       '<div class="skeptic-header">' +
+      '<div class="skeptic-header-left">' +
       '<div class="skeptic-avatar">🧑‍🎓</div>' +
       '<div><div class="skeptic-name">Sam (AI Classmate)</div><div class="skeptic-subtitle">Convince the Skeptic Challenge</div></div>' +
+      "</div>" +
+      '<div class="convince-meter-container">' +
+      '<div class="convince-meter-label">Convince Meter</div>' +
+      '<div class="convince-meter-track"><div class="convince-meter-fill"></div></div>' +
+      "</div>" +
       "</div>" +
       '<div class="skeptic-quote">"I think if a ratio is 3 to 5, and we double it, the ratio becomes 6 to 10 so the relationship completely changes! Right?"</div>' +
       '<div class="skeptic-options">' +
@@ -60,15 +66,24 @@
       '<div class="skeptic-feedback"></div>';
 
     var feedback = card.querySelector(".skeptic-feedback");
+    var meterFill = card.querySelector(".convince-meter-fill");
     var buttons = card.querySelectorAll(".skeptic-option-btn");
 
     buttons.forEach(function (btn) {
       btn.addEventListener("click", function () {
         var isCorrect = btn.dataset.correct === "true";
         if (isCorrect) {
+          meterFill.style.width = "100%";
           feedback.className = "skeptic-feedback is-convinced";
           feedback.innerHTML =
             '🎉 <strong>Sam:</strong> "Ah! I see now! Because both terms were multiplied by the exact same scale factor, the relationship stays equivalent. You convinced me!"';
+
+          // Trigger particle celebration if game juice / game fx is loaded
+          if (global.NTGFX && typeof global.NTGFX.confetti === "function") {
+            safe(function () {
+              global.NTGFX.confetti();
+            });
+          }
 
           if (global.NTtelemetry && typeof global.NTtelemetry.track === "function") {
             safe(function () {
@@ -76,11 +91,12 @@
             });
           }
         } else {
+          meterFill.style.width = "25%";
           feedback.className = "skeptic-feedback";
           feedback.style.display = "block";
           feedback.style.background = "#fff1f2";
           feedback.style.color = "#9f1239";
-          feedback.style.border = "1px solid #fecdd3";
+          feedback.style.border = "1.5px solid #fecdd3";
           feedback.innerHTML =
             '🤔 <strong>Sam:</strong> "Hmm, I am not convinced yet. Think about scale factors or equivalent ratios!"';
         }
