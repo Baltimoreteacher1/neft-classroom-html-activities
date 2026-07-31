@@ -91,6 +91,9 @@ export const TEMPLATES = [
   {
     id: "lesson-teacher-notes",
     name: "Teacher notes",
+    // Teacher surface: behind Basic Auth, so 401 is the HEALTHY answer in a
+    // production smoke. A 200 here would mean the gate is off.
+    authGated: true,
     resolve: () => {
       const id = first("lessons", (n) =>
         existsSync(resolve(ROOT, "lessons", n, "teacher-notes", "index.html")),
@@ -146,9 +149,12 @@ export const TEMPLATES = [
 
 /** One { path, name } per template that currently has pages. */
 export function representativePages() {
-  return TEMPLATES.map((t) => ({ template: t.id, name: t.name, path: t.resolve() })).filter(
-    (p) => p.path,
-  );
+  return TEMPLATES.map((t) => ({
+    template: t.id,
+    name: t.name,
+    path: t.resolve(),
+    authGated: t.authGated === true,
+  })).filter((p) => p.path);
 }
 
 /** Templates with no representative — an empty result means full coverage. */

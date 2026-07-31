@@ -53,6 +53,8 @@ const PAGES = [
     path: p.path,
     marker: /<title/i,
     name: `${p.name.toLowerCase()} (template)`,
+    // Teacher templates sit behind Basic Auth; 401 is the healthy answer.
+    authGated: p.authGated,
   })),
 ];
 
