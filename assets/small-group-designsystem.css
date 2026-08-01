@@ -1,39 +1,5 @@
-/* ============================================================================
-   small-group-designsystem.css
-   The art direction for the small-group studio (*-group1, *-group2, *-catchup).
-
-   WHAT LIVES WHERE
-   engine/core/small-group-ui.js injects a critical <style> (#sg-styles) holding
-   the design tokens and every component's structural defaults. This sheet loads
-   immediately after it and owns the refinements that need the later cascade
-   position: surfaces that must beat a component default, states the base sheet
-   states too weakly, and the density work.
-
-   Both files describe the same design. If a rule here only cancels one there,
-   the rule belongs there — delete it here.
-
-   HISTORY (why this file is smaller than it was)
-   Until 2026-07-31 the studio ran THREE sheets: the base, a "publisher polish"
-   pass, and a "design system" pass. Polish painted the hero white-on-navy;
-   designsystem repainted the same elements navy-on-cream; the base declared a
-   cold slate palette that designsystem then overrode token-by-token with
-   !important. Roughly a third of polish's rules applied to nothing, and no
-   single file described what the page looked like. The brand palette now ships
-   from ACCENTS + the token block in small-group-ui.js, the hero is defined once
-   there, and small-group-publisher-polish.css is deleted.
-
-   LOAD ORDER — DO NOT add a <link> to this file in a lesson index.html
-   It is appended at runtime by injectSmallGroupStyles(), and has to stay that
-   way:
-     1. Cascade. Its rules sit at the SAME specificity as the #sg-styles rules
-        they refine, so it must come after that injected <style>. A <link> in
-        <head> is always earlier and would silently lose.
-     2. Vite. build.cssCodeSplit is false, so a <link rel=stylesheet> in a
-        lesson index.html entry gets stripped from the page and folded into the
-        single shared style-[hash].css that EVERY lesson loads — leaking these
-        studio-only overrides onto all 220 canonical lessons.
-   Both were observed, not assumed.
-   ============================================================================ */
+/* Small-group studio art direction. Loaded at runtime after #sg-styles so these
+   refinements stay scoped to Group 1, Group 2, and Catch-Up lesson shells. */
 
 /* ---------------------------------------------------------------------------
    1 · SELECTION
@@ -70,6 +36,42 @@
 .sg-map-goal,
 .sg-fill-prompt {
   text-wrap: balance;
+}
+
+.sg-obj {
+  max-width: 72ch;
+  font-size: 19px;
+}
+
+.sg-tagline {
+  max-width: 68ch;
+  font-size: 16.5px;
+}
+
+.sg-kicker {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--sg-card) 70%, transparent);
+}
+
+/* A textbook masthead uses its margin for guidance. On wide screens the math
+   move becomes a true margin note, while group/table controls share one compact
+   utility row. The first lesson step now remains visible on a Chromebook. */
+@media (min-width: 861px) {
+  .sg-hero {
+    display: grid;
+    grid-template-columns: minmax(280px, 0.8fr) minmax(420px, 1.2fr);
+    gap: 12px 14px;
+  }
+
+  .sg-hero-grid {
+    grid-column: 1 / -1;
+    grid-template-columns: minmax(0, 1fr) 292px;
+    align-items: start;
+  }
+
+  .sg-hero-mark { justify-self: end; }
+  .sg-math-move { position: absolute; top: 154px; right: 0; width: 292px; max-width: none; margin: 0; }
+  .sg-room-chip { min-height: 62px; margin: 0; padding: 10px 12px; border: 1px solid var(--sg-line); border-radius: var(--sg-radius-sm); background: color-mix(in srgb, var(--sg-card) 82%, var(--sg-soft)); }
+  .sg-hero > .nt-toolpoint { min-height: 62px; margin: 0; }
 }
 
 /* Every surface that shows arithmetic: equal-width digits, so a column of
@@ -135,6 +137,7 @@
 .sg-figure,
 .sg-lab-mount .card {
   box-shadow: var(--sg-shadow);
+  border-color: color-mix(in srgb, var(--sg-line) 88%, var(--sg-ink));
 }
 
 .prob {
@@ -199,6 +202,35 @@
 .sg-talk-q {
   font-size: 20px;
   line-height: 1.4;
+}
+
+/* Introductory directions read as editorial deck copy, not an orphaned line
+   between the section heading and the activity surface. */
+.sg-sec > .sg-h + p {
+  max-width: 78ch;
+  margin: -2px 0 22px;
+  padding: 12px 16px;
+  border-left: 4px solid var(--sg-pop);
+  border-radius: 0 var(--sg-radius-sm) var(--sg-radius-sm) 0;
+  background: color-mix(in srgb, var(--sg-soft) 70%, var(--sg-card));
+  color: var(--sg-muted);
+}
+
+.sg-tabs {
+  top: 8px;
+  margin-bottom: 34px;
+  border: 1px solid var(--sg-line);
+  border-radius: var(--sg-radius);
+  background: color-mix(in srgb, var(--sg-card) 94%, var(--sg-paper));
+  box-shadow: 0 10px 28px -15px rgba(17, 34, 56, 0.34);
+}
+
+.sg-step {
+  min-height: 52px;
+}
+
+.sg-step[aria-selected="true"] {
+  box-shadow: 0 8px 18px -9px color-mix(in srgb, var(--sg) 85%, transparent);
 }
 
 /* ---------------------------------------------------------------------------
@@ -275,20 +307,25 @@
    --------------------------------------------------------------------------- */
 
 .sg-vgrid {
-  gap: 14px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
   align-items: stretch;
 }
 
 .sg-vcard {
   display: flex;
   flex-direction: column;
-  padding: 18px;
+  overflow: hidden;
+  padding: 18px 18px 20px;
+  border-top: 4px solid color-mix(in srgb, var(--sg-pop) 75%, var(--sg));
   border-radius: var(--sg-radius);
 }
 
 .sg-vcard-picture {
   flex: none;
-  min-height: 132px;
+  aspect-ratio: 16 / 9;
+  min-height: 150px;
+  margin: -5px -5px 17px;
   border-radius: var(--sg-radius-sm);
   background: linear-gradient(
     160deg,
@@ -298,7 +335,7 @@
 }
 
 .sg-vterm {
-  font-size: 21px;
+  font-size: 22px;
   line-height: 1.2;
   letter-spacing: -0.01em;
 }
@@ -307,7 +344,8 @@
    gap as well pushes the definition away from the word it defines and leaves a
    hole in the middle of the short cards. Equal cards, content at the top. */
 .sg-vdef {
-  padding-top: 14px;
+  padding-top: 15px;
+  line-height: 1.55;
 }
 
 .sg-vdef-language {
@@ -315,14 +353,39 @@
 }
 
 .sg-vtranslations {
-  font-size: 14px;
+  font-size: 14.5px;
   font-weight: 700;
   color: var(--sg-muted);
+}
+
+.sg-speak,
+.sg-speak-inline {
+  border-color: color-mix(in srgb, var(--sg-line) 78%, var(--sg));
+  color: var(--sg-ink);
+  background: color-mix(in srgb, var(--sg-card) 88%, var(--sg-soft));
+  box-shadow: var(--sg-shadow-sm);
+}
+
+.sg-speak:hover,
+.sg-speak-inline:hover {
+  border-color: var(--sg);
+  background: var(--sg-soft);
 }
 
 .sg-cloze {
   padding: 20px;
   border-radius: var(--sg-radius);
+}
+
+.sg-match,
+.sg-cloze {
+  border-left-width: 6px;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--sg-soft) 78%, var(--sg-card)),
+    var(--sg-card)
+  );
+  box-shadow: var(--sg-shadow-sm);
 }
 
 .sg-cloze-sentence {
@@ -642,6 +705,12 @@
   outline-offset: 2px;
 }
 
+@media (max-width: 940px) {
+  .sg-vgrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 760px) {
   .prob {
     padding: 17px;
@@ -663,7 +732,34 @@
   }
 
   .sg-vcard-picture {
-    min-height: 118px;
+    min-height: 140px;
+  }
+}
+
+@media (max-width: 560px) {
+  .sg-vgrid {
+    grid-template-columns: 1fr;
+  }
+
+  .sg-sec > .sg-h + p {
+    padding: 11px 13px;
+  }
+
+  /* Keep the support launcher reachable without laying a 96px label across
+     the lesson controls. Its accessible name remains "Show the learning tools
+     bar"; only the narrow-screen presentation collapses to the toolbox mark. */
+  .ewl-supports-dock-reopen {
+    width: 48px;
+    min-width: 48px;
+    padding-inline: 0;
+    overflow: hidden;
+    justify-content: center;
+    font-size: 0;
+  }
+
+  .ewl-supports-dock-reopen::before {
+    content: "🧰";
+    font-size: 18px;
   }
 }
 
@@ -722,6 +818,13 @@
   .prob:not([hidden]) {
     border-left-width: 1px;
     border-left-color: var(--sg-line);
+  }
+
+  .sg-sec > .sg-h + p {
+    padding: 0;
+    border-left: 0;
+    background: transparent;
+    color: #111;
   }
 
   .sg-next,

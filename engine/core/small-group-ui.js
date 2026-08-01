@@ -386,7 +386,7 @@ export function injectSmallGroupStyles(accent) {
       ds.id = "sg-designsystem-styles";
       /** @type {HTMLLinkElement} */ (ds).rel = "stylesheet";
       /** @type {HTMLLinkElement} */ (ds).href =
-        "/assets/small-group-designsystem.css?v=20260731-pub1";
+        "/assets/small-group-designsystem.css?v=20260801-pub4";
       document.head.appendChild(ds);
     } else if (ds.parentNode === document.head) {
       document.head.appendChild(ds);
@@ -429,7 +429,7 @@ export function injectSmallGroupStyles(accent) {
        — so a callout inside a card inside the page read as one flat surface and
        the studio looked unfinished no matter how good the type was. Keep the
        steps visible. */
-    :root{color-scheme:light;--sg:${accent.hue};--sg-deep:${accent.deep};--sg-soft:${accent.soft};--sg-ink:${accent.deep};--sg-rule:${accent.deep};--sg-line:#d5dee8;--sg-paper:#f2eee3;--sg-card:#fff;--sg-text:#1b2733;--sg-muted:#4a5a6b;--sg-good:#0c6f6b;--sg-warn:#7a5205;--sg-good-bg:#e0f2ef;--sg-good-ink:#0a4f4c;--sg-bad:#c25334;--sg-bad-bg:#fdece5;--sg-bad-ink:#8a3a20;--sg-warn-bg:#fdf4e3;--sg-warn-ink:#7a5205;--sg-warn-line:#e0ab3f;--sg-figure:#fffdf9;--sg-fill:#e6edf5;
+    :root{color-scheme:light;--sg:${accent.hue};--sg-deep:${accent.deep};--sg-soft:${accent.soft};--sg-ink:${accent.deep};--sg-rule:${accent.deep};--sg-line:#c8d4e0;--sg-paper:#f6f2e9;--sg-card:#fff;--sg-text:#1d2a36;--sg-muted:#4c5f72;--sg-good:#0b706b;--sg-warn:#7a5205;--sg-good-bg:#e0f3ef;--sg-good-ink:#084f4b;--sg-bad:#bd5032;--sg-bad-bg:#fcede7;--sg-bad-ink:#85381f;--sg-warn-bg:#fdf4e3;--sg-warn-ink:#6f4904;--sg-warn-line:#d9a33a;--sg-figure:#fffdf8;--sg-fill:#e8eff6;
       /* Type pairing. Outfit (the site display face, already loaded by the
          lesson shell) for anything that acts as a heading or a label; Atkinson
          Hyperlegible — chosen for these pathways because it is the most legible
@@ -440,38 +440,34 @@ export function injectSmallGroupStyles(accent) {
       --sg-display:"Outfit","Atkinson Hyperlegible",system-ui,sans-serif;
       --sg-body:"Atkinson Hyperlegible",system-ui,-apple-system,sans-serif;
       --sg-mono:"Outfit",ui-monospace,SFMono-Regular,Menlo,monospace;
-      --sg-shadow-sm:0 1px 2px rgba(17,34,56,.05),0 2px 6px -2px rgba(17,34,56,.08);
-      --sg-shadow:0 1px 2px rgba(17,34,56,.05),0 12px 28px -14px rgba(17,34,56,.24);
-      --sg-shadow-lg:0 2px 4px rgba(17,34,56,.05),0 22px 46px -22px rgba(17,34,56,.3);
-      --sg-radius:16px;--sg-radius-lg:22px;--sg-radius-sm:12px}
+      --sg-shadow-sm:0 1px 2px rgba(17,34,56,.06),0 4px 12px -5px rgba(17,34,56,.15);
+      --sg-shadow:0 1px 2px rgba(17,34,56,.06),0 14px 32px -16px rgba(17,34,56,.3);
+      --sg-shadow-lg:0 2px 5px rgba(17,34,56,.07),0 26px 56px -26px rgba(17,34,56,.38);
+      --sg-radius:14px;--sg-radius-lg:20px;--sg-radius-sm:10px}
     /* Neutralize any global dark theme applied to the shell so the sg tokens
        above always win — light mode only. */
     :root[data-theme="dark"]{color-scheme:light}
     *{box-sizing:border-box}
     html{scroll-behavior:smooth;background:var(--sg-paper)}
-    /* The ground. A flat fill read as "unstyled" at any tone light enough to
-       keep white cards legible, so the page carries three layers instead: a
-       fine 32px graph rule tiled the whole way down (this is a math studio —
-       the grid is the subject), plus two very low-alpha washes anchored to the
-       top and bottom of the DOCUMENT, so the page opens cool in the pathway
-       accent and closes warm.
+    /* The ground uses a restrained 40px math rule and two document-anchored
+       washes. It keeps the studio identity without competing with lesson text.
        Not background-attachment:fixed. A fixed layer repaints on every scroll
        frame — measurable jank on a classroom Chromebook — and at these
        document lengths it also left whole screens unpainted mid-scroll.
        Anchoring to the document costs nothing and paints reliably. */
-    body{margin:0;color:var(--sg-text);font-family:var(--sg-body);font-size:17px;line-height:1.6;background-color:var(--sg-paper);background-image:
-      radial-gradient(120% 100% at 82% 0%,color-mix(in srgb,var(--sg-pop) 16%,transparent),transparent 68%),
-      radial-gradient(100% 100% at 6% 100%,rgba(18,53,91,.08),transparent 66%),
-      linear-gradient(rgba(18,53,91,.05) 1px,transparent 1px),
-      linear-gradient(90deg,rgba(18,53,91,.05) 1px,transparent 1px);
+    body{margin:0;color:var(--sg-text);font-family:var(--sg-body);font-size:17px;line-height:1.62;background-color:var(--sg-paper);background-image:
+      radial-gradient(110% 86% at 88% 0%,color-mix(in srgb,var(--sg-pop) 12%,transparent),transparent 70%),
+      radial-gradient(90% 74% at 4% 100%,rgba(18,53,91,.06),transparent 72%),
+      linear-gradient(rgba(18,53,91,.026) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(18,53,91,.026) 1px,transparent 1px);
       background-position:top right,bottom left,0 0,0 0;
       background-repeat:no-repeat,no-repeat,repeat,repeat;
-      background-size:100% 820px,100% 640px,32px 32px,32px 32px;
+      background-size:100% 780px,100% 620px,40px 40px,40px 40px;
       -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;font-optical-sizing:auto}
     button,input,textarea{font:inherit}
     button,a,input,textarea,summary{outline-offset:4px}
     button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid var(--sg-ink);box-shadow:0 0 0 6px color-mix(in srgb,var(--sg-pop) 45%,transparent)}
-    #app{max-width:1100px;margin:0 auto;padding:0 24px 120px}
+    #app{max-width:1160px;margin:0 auto;padding:0 28px 120px}
     h1,h2,h3{font-family:var(--sg-display);line-height:1.16;letter-spacing:-.015em;margin:0;color:var(--sg-ink)}
     p{margin:0 0 12px}
     /* ── Hero ──────────────────────────────────────────────────────────────
@@ -484,21 +480,19 @@ export function injectSmallGroupStyles(accent) {
        three, exactly as the 2026-07-17 uniform-palette directive requires.
        The whole hero used to be white-on-navy here and navy-on-cream two
        sheets later; it is defined once now. */
-    .sg-hero{position:relative;overflow:hidden;margin:0 0 26px;padding:30px 30px 28px;border:1px solid var(--sg-line);border-radius:var(--sg-radius-lg);background:var(--sg-card);box-shadow:var(--sg-shadow)}
+    .sg-hero{position:relative;overflow:hidden;margin:0 0 28px;padding:34px 36px 32px;border:1px solid var(--sg-line);border-left:7px solid var(--sg-pop);border-radius:var(--sg-radius-lg);background:linear-gradient(118deg,var(--sg-card) 0 72%,color-mix(in srgb,var(--sg-soft) 72%,var(--sg-card)));box-shadow:var(--sg-shadow-lg)}
     /* Corner wash in the pathway accent + the same graph rule as the page, so
        the masthead belongs to the ground it sits on. */
     .sg-hero::before{content:"";position:absolute;inset:0;pointer-events:none;background:
-      radial-gradient(120% 96% at 100% 0%,color-mix(in srgb,var(--sg-pop) 22%,transparent),transparent 58%),
-      radial-gradient(80% 70% at 0% 100%,color-mix(in srgb,var(--sg) 7%,transparent),transparent 62%),
-      linear-gradient(rgba(18,53,91,.035) 1px,transparent 1px),
-      linear-gradient(90deg,rgba(18,53,91,.035) 1px,transparent 1px);
-      background-size:100% 100%,100% 100%,32px 32px,32px 32px}
-    /* Pathway rule. 5px along the top edge, inset to follow the card radius. */
-    .sg-hero::after{content:"";position:absolute;left:0;right:0;top:0;height:5px;background:linear-gradient(90deg,var(--sg-pop),color-mix(in srgb,var(--sg-pop) 45%,var(--sg)))}
+      radial-gradient(92% 110% at 100% 0%,color-mix(in srgb,var(--sg-pop) 17%,transparent),transparent 61%),
+      linear-gradient(rgba(18,53,91,.022) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(18,53,91,.022) 1px,transparent 1px);
+      background-size:100% 100%,40px 40px,40px 40px}
+    .sg-hero::after{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,var(--sg-pop),color-mix(in srgb,var(--sg-pop) 38%,var(--sg)),transparent 88%)}
     .sg-tagline{max-width:760px;margin-top:10px;color:var(--sg-muted);font-size:16px;font-weight:400;line-height:1.5}
-    .sg-hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:26px;align-items:start}
+    .sg-hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:34px;align-items:center}
     .sg-kicker{display:inline-flex;align-items:center;gap:8px;padding:6px 13px;border:1px solid color-mix(in srgb,var(--sg-pop) 42%,transparent);border-radius:999px;background:color-mix(in srgb,var(--sg-pop) 14%,#fff);color:var(--sg-ink);font-family:var(--sg-display);font-size:12.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase}
-    .sg-hero h1{max-width:740px;margin:14px 0 10px;font-size:clamp(29px,4.2vw,42px);font-weight:800;letter-spacing:-.028em;text-wrap:balance}
+    .sg-hero h1{max-width:780px;margin:15px 0 11px;font-size:clamp(31px,4.2vw,46px);font-weight:800;letter-spacing:-.034em;text-wrap:balance}
     .sg-obj{max-width:760px;margin-bottom:10px;color:var(--sg-ink);font-size:18.5px;font-weight:700;line-height:1.45;text-wrap:pretty}
     .sg-obj-more{max-width:760px;margin-top:2px}
     .sg-obj-more>summary{display:inline-flex;align-items:center;min-height:34px;cursor:pointer;padding:4px 13px;border:1px solid var(--sg-line);border-radius:999px;background:var(--sg-card);font-family:var(--sg-display);font-size:12.5px;font-weight:700;letter-spacing:.02em;color:var(--sg-muted);list-style:none}
@@ -510,7 +504,7 @@ export function injectSmallGroupStyles(accent) {
     .sg-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
     .sg-chip{display:inline-flex;align-items:center;padding:5px 12px;border:1px solid var(--sg-line);border-radius:999px;background:var(--sg-card);color:var(--sg-muted);font-size:13px;font-weight:700}
     .sg-hero-scene-chip{display:inline-flex;align-items:center;margin-top:10px;padding:4px 11px;border:1px solid var(--sg-line);border-radius:999px;background:var(--sg-soft);color:var(--sg-muted);font-family:var(--sg-display);font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
-    .sg-hero-mark{display:grid;width:116px;height:116px;place-items:center;overflow:hidden;border:1px solid var(--sg-line);border-radius:20px;background:var(--sg-card);font-size:56px;box-shadow:var(--sg-shadow-sm)}
+    .sg-hero-mark{display:grid;width:132px;height:132px;place-items:center;overflow:hidden;border:1px solid var(--sg-line);border-radius:18px;background:var(--sg-card);font-size:58px;box-shadow:var(--sg-shadow)}
     .sg-hero-mark.has-theme svg,.sg-hero-mark.has-art img{display:block;width:100%;height:100%;object-fit:cover}
     .sg-teacher{margin:0 0 22px}
     .sg-teacher details{border:1px solid var(--sg-line);border-left:4px solid var(--sg-warn-line);border-radius:var(--sg-radius);background:var(--sg-card);box-shadow:var(--sg-shadow-sm)}
