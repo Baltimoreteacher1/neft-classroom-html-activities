@@ -15,10 +15,14 @@ name: master-copy-guard
 on:
   push:
     branches: [main]
-    paths: ["curriculum/index.html"]
+    paths: ["curriculum/index.html", "assets/curriculum-hub*.js", "assets/curriculum-hub.css"]
   pull_request:
     branches: [main]
-    paths: ["curriculum/index.html"]
+    paths: ["curriculum/index.html", "assets/curriculum-hub*.js", "assets/curriculum-hub.css"]
+  # On-demand, so the guard can be proven green without waiting for a push that
+  # happens to touch the hub. It went red for a day after the inline-script
+  # extraction and there was no way to re-run it against a fix.
+  workflow_dispatch:
 
 # Cancel a superseded run when the frequent auto-commit automation pushes again.
 concurrency:
@@ -36,14 +40,41 @@ jobs:
           f=curriculum/index.html
           fail=0
 
+          # The hub's three biggest inline <script> blocks were extracted to
+          # /assets/curriculum-hub-*.js so they could be linted, cached and
+          # tested. They are still the same shipped page, so BEHAVIOURAL
+          # landmarks below are matched against the hub PLUS those assets,
+          # while STRUCTURAL landmarks (cards, links, panels) stay matched
+          # against the HTML alone.
+          #
+          # This is what broke on 2026-07-31: the dropdown is BUILT by the
+          # extracted search script, so grepping only the HTML reported it
+          # missing on a page that renders it correctly.
+          behaviour=$(mktemp)
+          cat "$f" assets/curriculum-hub-search.js assets/curriculum-hub-pacing.js \
+              assets/curriculum-hub-options.js > "$behaviour"
+
+          # Each extracted asset must exist AND still be referenced by the hub,
+          # so "the code is somewhere" cannot satisfy this guard while the page
+          # has stopped loading it.
+          for asset in curriculum-hub-search.js curriculum-hub-pacing.js curriculum-hub-options.js curriculum-hub.css; do
+            if [ ! -f "assets/$asset" ]; then
+              echo "::error file=assets/$asset::Extracted hub asset is missing."
+              fail=1
+            elif ! grep -q "/assets/$asset?v=" "$f"; then
+              echo "::error file=$f::Hub no longer loads /assets/$asset — the extracted asset is orphaned."
+              fail=1
+            fi
+          done
+
           # 1) Retired Vercel Google-Forms launcher must never come back.
-          if grep -q "eduwonderlab.vercel.app/google-forms" "$f"; then
+          if grep -q "eduwonderlab.vercel.app/google-forms" "$behaviour"; then
             echo "::error file=$f::Links to the retired Vercel Google-Forms launcher. Use /teacher-tools/post-forms/?lesson=ID."
             fail=1
           fi
 
           # 2) The activity dropdown must be present (generator --force strips it).
-          if ! grep -q "select-control" "$f"; then
+          if ! grep -q "select-control" "$behaviour"; then
             echo "::error file=$f::Missing the activity dropdown (select-control) — a generator regen likely stripped the hand-maintained hub."
             fail=1
           fi
@@ -61,10 +92,14 @@ jobs:
             fail=1
           fi
 
-          # 5) Size tripwire: stripped version is ~999 lines; healthy master is ~4600.
+          # 5) Size tripwire: the stripped generator output is ~999 lines. The
+          # healthy master was ~13,900 until the inline script/style extraction
+          # of 2026-07-31 moved ~250 KB into /assets/curriculum-hub-*, leaving
+          # ~9,000. The floor stays at 3,000: far above the stripped version,
+          # far below anything healthy.
           lines=$(wc -l < "$f")
           if [ "$lines" -lt 3000 ]; then
-            echo "::error file=$f::Only $lines lines — this looks like the stripped no-dropdown version (healthy master is ~4600)."
+            echo "::error file=$f::Only $lines lines — this looks like the stripped no-dropdown version (healthy master is ~9,000)."
             fail=1
           fi
 

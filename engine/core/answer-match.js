@@ -77,15 +77,18 @@ export const stripLabel = (value) => {
 // answer like "quotient" (nothing left) are never hollowed out.
 const UNIT_TAIL = /[a-z°²³.\s/]+$/i;
 
-export const numericValue = (value) => {
+// "24 sq. ft." → "24". Returns the input unchanged when there is no unit to
+// drop, so it is safe to run over any answer.
+export const stripUnit = (value) => {
   const text = String(value ?? "").trim();
-  const direct = numberOf(text);
-  if (direct != null) return direct;
+  if (numberOf(text) != null) return text;
   const tail = text.match(UNIT_TAIL);
-  if (!tail || !/[a-z]/i.test(tail[0])) return null;
+  if (!tail || !/[a-z]/i.test(tail[0])) return text;
   const head = text.slice(0, text.length - tail[0].length).trim();
-  return head ? numberOf(head) : null;
+  return head && numberOf(head) != null ? head : text;
 };
+
+export const numericValue = (value) => numberOf(stripUnit(value));
 
 function matchesOne(typed, answer) {
   if (answer == null) return false;

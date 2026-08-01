@@ -60,8 +60,17 @@
   display: block;
 }
 
+/* The EN/ES toggle failed WCAG AA at 3.72:1 and it was the BACKGROUND at fault,
+ * not the accent colour. The widget is rgba(15,23,42,.85) over the page, so on a
+ * light lesson the composite is already ~rgb(51,59,74); a white wash on top of
+ * that lifted it to ~rgb(75,81,96) and swallowed the sky-blue text.
+ *
+ * Washing DOWN with the widget's own navy instead darkens the chip, which keeps
+ * #38bdf8 (the brand accent, unchanged) at 6.36:1 at rest and 6.99:1 on hover —
+ * measured against a white page, the worst case for light text. Alpha is kept so
+ * the chip still reads as part of the translucent widget. */
 .voice-lesson-lang-toggle {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(15, 23, 42, 0.35);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 12px;
   padding: 4px 10px;
@@ -73,7 +82,7 @@
 }
 
 .voice-lesson-lang-toggle:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(15, 23, 42, 0.55);
 }
 
 .voice-lesson-status {
@@ -93,8 +102,11 @@
   padding-top: 4px;
 }
 
+/* Same fix as the EN/ES toggle above: the white wash lifted the composite to
+ * ~rgb(72,78,92) and dropped this chip to 3.25:1. Washing down with the
+ * widget's navy puts the existing #94a3b8 at 5.32:1 with no colour change. */
 .voice-chip {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(15, 23, 42, 0.35);
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 12px;
   padding: 3px 10px;
@@ -106,7 +118,12 @@
   transition: all 0.15s ease;
 }
 
+/* Hover lightens the chip with a sky wash (bg becomes ~rgb(52,91,117)), which
+ * would drop the muted #94a3b8 to 2.83:1. Brighten the label on hover to keep
+ * it readable — 5.90:1. axe only samples the rest state, so this one has to be
+ * reasoned about rather than measured by the gate. */
 .voice-chip:hover {
+  color: #e2e8f0;
   background: rgba(56, 189, 248, 0.25);
   color: #38bdf8;
   border-color: #38bdf8;
