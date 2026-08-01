@@ -1319,6 +1319,36 @@
                 setTimeout(boot, 0);
               }
             })();
+
+            // Auto-inject Practice Arcade Game links into EVERY lesson's resource row
+            (function() {
+              function injectLessonArcadeButtons() {
+                document.querySelectorAll("details.lesson").forEach(function(el) {
+                  const search = el.getAttribute("data-search") || "";
+                  const match = search.match(/^(\d{1,2}-\d{1,2})\b/);
+                  if (match) {
+                    const lesId = match[1];
+                    const resRow = el.querySelector(".res-row");
+                    if (resRow && !resRow.querySelector(".res-arcade-btn")) {
+                      const a = document.createElement("a");
+                      a.className = "res res-arcade-btn";
+                      a.href = "/math/games/practice-arcade/?lesson=" + lesId;
+                      a.style.fontWeight = "800";
+                      a.style.color = "#38bdf8";
+                      a.style.background = "rgba(56,189,248,0.12)";
+                      a.style.border = "1px solid rgba(56,189,248,0.3)";
+                      a.innerHTML = "🕹️ Practice Arcade Game";
+                      resRow.appendChild(a);
+                    }
+                  }
+                });
+              }
+              if (document.readyState === "loading") {
+                window.addEventListener("DOMContentLoaded", injectLessonArcadeButtons);
+              } else {
+                injectLessonArcadeButtons();
+              }
+            })();
           </script>
           <style>
             .gradebook-feature .mf-icon {
