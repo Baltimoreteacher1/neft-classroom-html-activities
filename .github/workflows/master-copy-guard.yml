@@ -19,6 +19,10 @@ on:
   pull_request:
     branches: [main]
     paths: ["curriculum/index.html", "assets/curriculum-hub*.js", "assets/curriculum-hub.css"]
+  # On-demand, so the guard can be proven green without waiting for a push that
+  # happens to touch the hub. It went red for a day after the inline-script
+  # extraction and there was no way to re-run it against a fix.
+  workflow_dispatch:
 
 # Cancel a superseded run when the frequent auto-commit automation pushes again.
 concurrency:
