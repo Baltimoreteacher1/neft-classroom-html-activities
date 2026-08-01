@@ -1,5 +1,6 @@
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "fs";
 import { resolve } from "path";
+import { makeCopyFilter } from "./scripts/lib/copy-filter.mjs";
 import { defineConfig } from "vite";
 
 function getLessonEntries() {
@@ -40,9 +41,11 @@ function copyStandaloneHtml() {
   const ROOT_FILES = ["_headers", "_redirects", "404.html", "robots.txt", "sitemap.xml"];
   // Keep dev artifacts out of the published site: nested .claude/.git/node_modules
   // folders and loose markdown docs (QA reports, READMEs) should never ship.
-  const SKIP_COPY_RE =
-    /(^|[\\/])\.(claude|git|wrangler|ruff_cache)([\\/]|$)|(^|[\\/])(node_modules|_engine)([\\/]|$)|\.md$/i;
-  const copyFilter = (src) => !SKIP_COPY_RE.test(src);
+  // Rooted at __dirname on purpose — cpSync passes ABSOLUTE paths, and
+  // scripts/ship.sh builds inside `.claude/worktrees/`, so matching the absolute
+  // path made the whole static copy a silent no-op there. See
+  // scripts/lib/copy-filter.mjs and tools/copy-filter.test.mjs.
+  const copyFilter = makeCopyFilter(__dirname);
 
   // Rollup emits these at fixed (unhashed) names, so a same-named file left in a
   // copied source dir would silently overwrite the real bundle. Snapshot them
