@@ -401,6 +401,9 @@ export function mountInteractiveVisuals(root, opts) {
     if (host.dataset.ivMounted) return;
     const factory = REGISTRY[host.dataset.visual];
     if (!factory) return;
+    // Clear the note left by a previous failed attempt so a retry that works
+    // does not render the model underneath a stale "could not load" line.
+    host.querySelector(":scope > .interactive-visual-error")?.remove();
     host.dataset.ivMounted = "1";
     let cfg = {};
     try {
@@ -414,9 +417,25 @@ export function mountInteractiveVisuals(root, opts) {
         if (handle) host.__ivHandle = handle;
       })
       .catch((err) => {
-        // Never let a manipulative failure break the lesson: log and leave the
-        // (empty) host / noscript fallback in place.
+        // Never let a manipulative failure break the lesson — but never fail
+        // SILENTLY either. The <noscript> fallback does not display when JS is
+        // on, so a thrown factory used to leave a blank gap where the model
+        // should be, and the student had no way to tell a broken tool from a
+        // page that simply had nothing there. Say what happened, and clear the
+        // mounted flag so the next render of this phase can retry (a chunk 404
+        // right after a deploy is transient).
         console.warn(`interactive-visual: failed to mount "${host.dataset.visual}"`, err);
+        delete host.dataset.ivMounted;
+        if (!host.querySelector(":scope > *:not(noscript)")) {
+          const note = document.createElement("p");
+          note.className = "interactive-visual-error";
+          note.setAttribute("role", "status");
+          note.style.cssText =
+            "margin:0; padding:12px 14px; border:1px dashed rgba(0,0,0,.25); border-radius:12px; font-size:0.9rem; font-weight:600; line-height:1.5;";
+          note.textContent =
+            "This model could not load right now. Reload the page to try again — the rest of the lesson still works.";
+          host.appendChild(note);
+        }
       });
   });
 
