@@ -125,7 +125,9 @@
     "generate-support-pages": "node scripts/generate-lesson-support-pages.mjs",
     "generate:families": "node scripts/generate-family-pages.mjs",
     "verify:families": "node scripts/verify-family-pages.mjs",
-    "qa:loop": "bash scripts/qa-loop.sh",
+    "qa:loop": "node scripts/qa-run.mjs",
+    "qa:fast": "node scripts/qa-run.mjs --changed",
+    "qa:loop:serial": "bash scripts/qa-loop.sh",
     "qa:danger": "bash scripts/check-dangerous-commands.sh",
     "qa:install-hooks": "bash scripts/install-git-hooks.sh",
     "generate-reveal-math-nav": "node scripts/generate-reveal-math-nav.mjs",
@@ -182,7 +184,8 @@
     "validate:workflow-yaml": "node scripts/validate-workflow-yaml.selftest.mjs && node scripts/validate-workflow-yaml.mjs",
     "validate:workflow-yaml:selftest": "node scripts/validate-workflow-yaml.selftest.mjs",
     "validate:determinism": "node tools/canvas/build-command-center.mjs --check",
-    "validate:level3": "node tools/validate-level3.mjs"
+    "validate:level3": "node tools/validate-level3.mjs",
+    "new:surface": "node scripts/new-surface.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.3",
