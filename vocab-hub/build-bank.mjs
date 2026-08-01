@@ -16,6 +16,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { resolveVocabImage } from "../engine/core/vocab-images.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, "..");
@@ -142,19 +143,17 @@ const EXTRA_DEDICATED = new Set([
   "operation", "measurement", "number", "bar-model",
 ]);
 
-function resolveVocabImage(term) {
-  const slug = slugify(term);
-  if (!slug) return `${BASE}/${CATEGORY.number}.svg`;
-  if (DEDICATED.has(slug) || EXTRA_DEDICATED.has(slug)) {
-    return `${BASE}/${slug}.svg`;
-  }
-  const syn = SYNONYMS[slug];
-  if (syn && (DEDICATED.has(syn) || EXTRA_DEDICATED.has(syn))) {
-    return `${BASE}/${syn}.svg`;
-  }
-  const cat = categoryFor(slug, term);
-  return `${BASE}/${CATEGORY[cat]}.svg`;
-}
+/* Image resolution is NOT reimplemented here — it is imported from
+ * engine/core/vocab-images.js, the same function the lessons render with.
+ *
+ * This file used to carry its own copy, and the copy drifted in two ways that
+ * both put a WRONG picture in the study hub:
+ *   1. it ignored a vocab entry's per-lesson `image` override entirely, so every
+ *      one of the ~200 concept cards fell through to the generic "#" tile; and
+ *   2. its slug tables aged out of sync — "Dividend" resolved to divide.svg here
+ *      while the lesson showed dividend.svg.
+ * A second implementation of a mapping is a second thing to keep correct, and
+ * nothing was checking that these two agreed. */
 
 /* ----------------------------------------------------------------------------
  * Build
@@ -215,7 +214,9 @@ function main() {
         continue;
       }
 
-      const image = resolveVocabImage(v.term);
+      // Pass the entry's own override: a lesson that pins `image` is saying the
+      // generic term picture shows the wrong example for THIS lesson.
+      const image = resolveVocabImage(v.term, v.image);
       const entry = {
         term: v.term,
         termEs: v.termEs || "",
@@ -265,7 +266,48 @@ function main() {
     items,
   };
 
-  fs.writeFileSync(OUT_FILE, `${JSON.stringify(bank, null, 2)}\n`, "utf8");
+  const current = fs.existsSync(OUT_FILE) ? fs.readFileSync(OUT_FILE, "utf8") : "";
+
+  // `generatedAt` is a clock reading, not content. Comparing it would make the
+  // file differ from itself on every run — which would both defeat --check and
+  // put a spurious one-line diff in every commit that runs the builder.
+  const withoutClock = (text) => {
+    try {
+      const parsed = JSON.parse(text);
+      if (parsed?.meta) parsed.meta = { ...parsed.meta, generatedAt: null };
+      return JSON.stringify(parsed);
+    } catch {
+      return null;
+    }
+  };
+  const unchanged = withoutClock(current) === withoutClock(`${JSON.stringify(bank, null, 2)}\n`);
+
+  // Keep the existing timestamp when nothing else moved, so re-running the
+  // builder is a true no-op on disk.
+  if (unchanged && current) {
+    const prevStamp = JSON.parse(current)?.meta?.generatedAt;
+    if (prevStamp) bank.meta.generatedAt = prevStamp;
+  }
+  const next = `${JSON.stringify(bank, null, 2)}\n`;
+
+  // --check: fail instead of writing when the committed bank is stale. The
+  // Vocabulary Study Hub is a SECOND copy of every lesson's vocabulary, so it
+  // goes wrong silently — it renders fine while showing an old definition or a
+  // picture the lesson no longer uses.
+  if (process.argv.includes("--check")) {
+    if (!unchanged) {
+      console.error(
+        `vocab-hub/vocab-bank.json is stale — run: node vocab-hub/build-bank.mjs\n` +
+          `  committed: ${JSON.parse(current || "{}")?.items?.length ?? 0} terms\n` +
+          `  from configs: ${items.length} terms`,
+      );
+      process.exit(1);
+    }
+    console.log(`vocab bank is up to date (${items.length} terms).`);
+    return;
+  }
+
+  fs.writeFileSync(OUT_FILE, next, "utf8");
 
   console.log(`Wrote ${OUT_FILE}`);
   console.log(

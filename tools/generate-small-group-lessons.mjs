@@ -18,6 +18,7 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { writeGenerated } from "../scripts/lib/preserve-injected.mjs";
 import { LESSON_JS, shellHtml } from "./lib/compact-shell.mjs";
 import { buildParallelPractice } from "./lib/small-group-parallel-practice.mjs";
 
@@ -330,7 +331,12 @@ function writeLesson(id, out) {
   mkdirSync(join(LESSONS, id), { recursive: true });
   writeFileSync(join(LESSONS, id, "config.json"), JSON.stringify(out, null, 2) + "\n");
   if (CONFIGS_ONLY) return;
-  writeFileSync(
+  // writeGenerated, not writeFileSync — see tools/generators-preserve-injected.test.mjs.
+  // All 148 group/catch-up index.html shells carry injected sentinel blocks, and a
+  // plain overwrite strips every one. (`--configs-only` exists as a workaround for
+  // exactly this; preserving the blocks is the actual fix.) On a brand-new lesson
+  // there is nothing to preserve and this behaves identically to a plain write.
+  writeGenerated(
     join(LESSONS, id, "index.html"),
     shellHtml(id, out.title, `Grade 6 Reveal Math small-group lesson — ${out.title}`),
   );
