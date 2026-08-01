@@ -39,39 +39,41 @@ try {
   // actually current. Restored so deploy verification works again.
   writeFileSync(join(dir, "config.json"), JSON.stringify(stamp, null, 2));
 
-  // Stamp Service Worker cache key & curriculum assets with build timestamp
-  const buildStamp =
-    process.env.CF_PAGES_COMMIT_SHA || process.env.GITHUB_SHA || Date.now().toString(36);
-  const swCacheName = `eduwonderlab-v${buildStamp.slice(0, 10)}`;
+  // The stamp for cache keys. On Cloudflare this is the deploying commit, so
+  // every asset URL below changes exactly once per deploy and is reproducible
+  // from the sha. Locally there is no sha, so it degrades to a timestamp —
+  // which is why nothing below may write into the TRACKED tree (see the
+  // dist-only note on currFiles).
+  const stampKey = (
+    process.env.CF_PAGES_COMMIT_SHA ||
+    process.env.GITHUB_SHA ||
+    Date.now().toString(36)
+  ).slice(0, 10);
 
-  const swFiles = [
-    join(root, "public", "sw.js"),
-    join(root, "dist", "sw.js"),
-    join(root, "dist", "public", "sw.js"),
-  ];
-
-  for (const swPath of swFiles) {
-    if (existsSync(swPath)) {
-      try {
-        let swContent = readFileSync(swPath, "utf8");
-        swContent = swContent.replace(
-          /const CACHE = "eduwonderlab-v[^"]+";/,
-          `const CACHE = "${swCacheName}";`,
-        );
-        writeFileSync(swPath, swContent, "utf8");
-      } catch (_e) {}
-    }
-  }
+  // NOTE: Service Worker cache keys are NOT stamped here. `vite.config.js`
+  // (closeBundle → bustSwCaches) already rewrites `const CACHE = "…"` in EVERY
+  // sw.js under dist/, recursively, and it runs before this script — so the
+  // block that used to live here was dead twice over: by the time it ran, the
+  // constant no longer matched its `eduwonderlab-v…` regex, and its only
+  // surviving effect was rewriting the tracked `public/sw.js`, which nothing
+  // reads (Vite copies public/ into dist/, then re-stamps the copy). Two
+  // systems stamping one value is the bug; vite owns it because it finds all of
+  // them, not just the root one.
 
   // Every page that loads a /assets/curriculum-*.{css,js} with a ?v= belongs
   // here. student-launch was missing, so its two assets sat pinned at
   // ?v=20260709 while curriculum-student-launch.js changed three times in July
   // 2026 -- students kept getting the cached July 9 copy. A page absent from
   // this list does not fail loudly; it just silently stops being cache-busted.
+  //
+  // dist/ ONLY. These paths used to include the tracked source copies, which
+  // nothing serves: Cloudflare rebuilds dist/ from a clean checkout, so the
+  // committed ?v= is dead text. All it did was dirty three tracked files on
+  // every local build — in a repo that auto-commits during sessions, which is
+  // how a stamp lands in an unrelated commit made by someone who never ran the
+  // build. Pinned by tools/build-injectors-idempotent.test.mjs.
   const currFiles = [
-    join(root, "curriculum", "index.html"),
     join(root, "dist", "curriculum", "index.html"),
-    join(root, "curriculum", "student-launch", "index.html"),
     join(root, "dist", "curriculum", "student-launch", "index.html"),
   ];
 
@@ -88,16 +90,14 @@ try {
             // file changes and not on every build. Overwriting it here also
             // broke that test, because the stamp in the HTML no longer matched
             // the file it names.
-            /\/assets\/curriculum-hub[^"']*$/.test(asset)
-              ? match
-              : `${asset}?v=${buildStamp.slice(0, 10)}`,
+            /\/assets\/curriculum-hub[^"']*$/.test(asset) ? match : `${asset}?v=${stampKey}`,
         );
         writeFileSync(currPath, currContent, "utf8");
       } catch (_e) {}
     }
   }
 
-  console.log(`stamp-build: wrote config.json and updated SW cache to ${swCacheName}`);
+  console.log(`stamp-build: wrote config.json and stamped curriculum assets ?v=${stampKey}`);
 } catch (e) {
   console.warn("stamp-build: non-fatal —", e.message);
   process.exit(0);
