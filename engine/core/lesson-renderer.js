@@ -56,6 +56,7 @@ import {
   normalizeAcademicWord,
   resolveNoticeWonderAcademicWord,
 } from "./notice-wonder-glossary.js";
+import { studentFirstName, toThirdPersonObjective } from "./objective-voice.js";
 import { mountPeerExchange } from "./peer-exchange.js";
 import {
   buildPhaseTransitionMeta,
@@ -1815,7 +1816,7 @@ function getObjectivePopup() {
   return backdrop;
 }
 
-function openObjectiveTermPopup(entry) {
+function openObjectiveTermPopup(entry, opts = {}) {
   if (!entry) return;
   const backdrop = getObjectivePopup();
   const term = String(entry.term || "").trim();
@@ -1842,8 +1843,11 @@ function openObjectiveTermPopup(entry) {
   // definition but no image, and would otherwise fall back to the generic "#"
   // number-category tile — an unrelated picture. In that case hide the image and
   // let the definition stand alone.
+  // `opts.hideImage` suppresses the picture entirely: on the objective cards the
+  // picture belongs to the visual-model card below the goal (click IT to enlarge),
+  // so tapping an underlined word there should give the meaning and nothing else.
   const img = backdrop.querySelector(".obj-popup-img");
-  const showImg = hasRealVocabImage(term, entry.image);
+  const showImg = !opts.hideImage && hasRealVocabImage(term, entry.image);
   if (showImg) {
     img.src = resolveVocabImage(term, entry.image);
     img.alt = vocabImageAlt(title, entry.definition);
@@ -1902,7 +1906,10 @@ function closeObjectivePopup() {
 }
 
 // Delegate clicks on underlined objective terms to the shared glossary popup.
-export function wireObjectiveTermPopups(block, vocab) {
+// Pass `{ hideImage: true }` on the objective cards: the goal already carries its
+// own visual-model picture (click the picture to enlarge it), so an underlined
+// word there opens the meaning only — two competing pictures confused students.
+export function wireObjectiveTermPopups(block, vocab, opts = {}) {
   if (!block.querySelector(".obj-term")) return;
   block.addEventListener("click", (e) => {
     const btn = e.target.closest(".obj-term");
@@ -1910,8 +1917,13 @@ export function wireObjectiveTermPopups(block, vocab) {
     // Prevent the click from bubbling to an enclosing <label> (e.g. the
     // "Did I get it?" review rows) and toggling its checkbox.
     e.preventDefault();
+    // …and stop it reaching an OUTER delegated handler. underlineVocabTerms
+    // wires the whole phase container, so without this the objective block's
+    // definition-only popup was immediately reopened by the container's
+    // handler — with the picture — and the picture won because it ran last.
+    e.stopPropagation();
     const idx = Number(btn.dataset.termIdx);
-    if (Number.isInteger(idx)) openObjectiveTermPopup(vocab[idx]);
+    if (Number.isInteger(idx)) openObjectiveTermPopup(vocab[idx], opts);
   });
 }
 
@@ -2102,31 +2114,31 @@ function resolveContentVisualCaption(config) {
   const unit = (config && config.unit) || 1;
 
   if (unit === 1) {
-    return `Student avatar actively finding factors and comparing common numbers on her desk grid mat to circle the greatest common factor (GCF).`;
+    return `A student actively finding factors and comparing common numbers on her desk grid mat to circle the greatest common factor (GCF).`;
   }
   if (unit === 2) {
-    return `Student avatar dividing fraction bar strips on her desk grid mat to solve quotient problems.`;
+    return `A student dividing fraction bar strips on her desk grid mat to solve quotient problems.`;
   }
   if (unit === 3) {
-    return `Student avatar plotting ratio points on double number line strips to calculate unit rates.`;
+    return `A student plotting ratio points on double number line strips to calculate unit rates.`;
   }
   if (unit === 4) {
-    return `Student avatar applying distributive tile arrays on her desk grid mat to evaluate and simplify algebraic expressions.`;
+    return `A student applying distributive tile arrays on her desk grid mat to evaluate and simplify algebraic expressions.`;
   }
   if (unit === 5) {
-    return `Student avatar actively balancing an algebraic scale with variable blocks to isolate x.`;
+    return `A student actively balancing an algebraic scale with variable blocks to isolate x.`;
   }
   if (unit === 6) {
-    return `Student avatar laying flat the 3D prism into a 2D net on her desk grid mat to calculate surface area face dimensions.`;
+    return `A student laying flat the 3D prism into a 2D net on her desk grid mat to calculate surface area face dimensions.`;
   }
   if (unit === 7) {
-    return `Student avatar plotting ordered pairs (x,y) across all 4 quadrants of the Cartesian grid mat.`;
+    return `A student plotting ordered pairs (x,y) across all 4 quadrants of the Cartesian grid mat.`;
   }
   if (unit === 8) {
-    return `Student avatar drawing a 5-number summary box plot on a grid mat to analyze data distributions and median values.`;
+    return `A student drawing a 5-number summary box plot on a grid mat to analyze data distributions and median values.`;
   }
 
-  return `Student avatar actively demonstrating ${title} on her desk grid mat.`;
+  return `A student actively demonstrating ${title} on her desk grid mat.`;
 }
 
 function resolveLanguageVisualCaption(config) {
@@ -2135,10 +2147,26 @@ function resolveLanguageVisualCaption(config) {
   return `Student partners pointing to key vocabulary callout badges for ${title} and using academic sentence frames.`;
 }
 
-function renderObjectives(el, config, state) {
+// Renders the two "I can…" goal cards (Content + Language).
+//
+// `opts.review` switches the block into end-of-lesson mode (Phase 8): the goals
+// are restated in the third person using the name the student typed on Launch —
+// "Samuel can now compare ratios using a table." — the discussion prompts look
+// backwards instead of forwards, and the self-checks persist under their own
+// keys so ticking "Did it" at the end does not rewrite the "Got it" the student
+// ticked at the start. With no name entered it degrades to the ordinary
+// first-person wording, so nothing depends on the Name field being filled in.
+function renderObjectives(el, config, state, opts = {}) {
+  const review = !!opts.review;
+  const name = review ? studentFirstName(state) : "";
+  const phrase = (text) => (review ? toThirdPersonObjective(text, name) : text);
+
   const vocab = augmentVocabWithGlossary(config.vocabulary);
-  const contentHtml = linkifyObjectiveTerms(resolveContentObjective(config), vocab);
-  const languageHtml = linkifyObjectiveTerms(resolveLanguageObjective(config), vocab);
+  // Re-phrase BEFORE linkifying: the third-person rewrite matches on the leading
+  // pronoun, and linkifyObjectiveTerms would otherwise be free to wrap part of
+  // that opener in an <button class="obj-term"> and break the match.
+  const contentHtml = linkifyObjectiveTerms(phrase(resolveContentObjective(config)), vocab);
+  const languageHtml = linkifyObjectiveTerms(phrase(resolveLanguageObjective(config)), vocab);
 
   const contentImg = resolveContentVisualImg(config);
   const languageImg = resolveLanguageVisualImg(config);
@@ -2150,9 +2178,9 @@ function renderObjectives(el, config, state) {
       <div class="launch-objective-head" style="display:flex; align-items:center; justify-content:space-between; gap:var(--sp-2); margin-bottom:var(--sp-2);">
         <h4 style="color:${o.ink}; margin:0; font-size:1.15rem; font-weight:800; letter-spacing:-0.01em;">${o.label}</h4>
         <label class="objective-check" style="display:inline-flex; align-items:center; gap:6px; margin:0; font-size:.85rem; font-weight:800; color:${o.ink}; cursor:pointer; white-space:nowrap;">
-          <input type="checkbox" class="objective-check-box" data-obj-key="${o.key}" aria-label="I understand the ${o.label.toLowerCase()}"
+          <input type="checkbox" class="objective-check-box" data-obj-key="${o.key}" aria-label="${o.checkAria}"
                  style="width:18px; height:18px; accent-color:${o.ink}; cursor:pointer;" />
-          Got it
+          ${o.checkLabel}
         </label>
       </div>
       <p style="margin:0; font-size:1.08rem; font-weight:800; color:#0f172a; line-height:1.65; -webkit-font-smoothing:antialiased;">${o.text}</p>
@@ -2171,44 +2199,63 @@ function renderObjectives(el, config, state) {
       </div>
     </div>`;
 
+  // The end-of-lesson block reads as evidence of growth ("Content Objective —
+  // Achieved"), so the labels, self-check wording and talk prompts all shift to
+  // the past tense. `who` is the student's name when we have one and a neutral
+  // stand-in when we do not, so the sentences never read "  can now".
+  const who = name || "You";
   const block = document.createElement("div");
-  block.className = "launch-objectives grid-2";
+  block.className = `launch-objectives grid-2${review ? " launch-objectives-review" : ""}`;
   block.innerHTML =
     card({
       cardClass: "card-teal",
       ink: "var(--teal-ink)",
-      label: "Content Objective",
+      label: review ? "Content Objective — Achieved" : "Content Objective",
       key: "content",
       text: contentHtml,
       img: contentImg,
       icon: "🎯",
       caption: contentCaption,
-      discuss:
-        "In your own words, what will you be able to do by the end of this lesson? Give one example.",
+      checkLabel: review ? "Did it" : "Got it",
+      checkAria: review
+        ? `${who} can now do the content objective`
+        : `I understand the content objective`,
+      discuss: review
+        ? `In your own words, what can ${who} do now that ${who === "You" ? "you" : who} could not do at the start of this lesson? Give one example.`
+        : "In your own words, what will you be able to do by the end of this lesson? Give one example.",
     }) +
     card({
       cardClass: "card-coral",
       ink: "var(--coral)",
-      label: "Language Objective",
+      label: review ? "Language Objective — Achieved" : "Language Objective",
       key: "language",
       text: languageHtml,
       img: languageImg,
       icon: "🗣️",
       caption: languageCaption,
-      discuss:
-        "Which math words in this goal are new to you? How would you explain this goal to a partner?",
+      checkLabel: review ? "Did it" : "Got it",
+      checkAria: review
+        ? `${who} can now do the language objective`
+        : `I understand the language objective`,
+      discuss: review
+        ? "Which math words did you actually use today? Explain one of them to a partner in your own words."
+        : "Which math words in this goal are new to you? How would you explain this goal to a partner?",
     });
   el.append(block);
-  wireObjectiveTermPopups(block, vocab);
+  // Definition-only popups on the goals: the picture for this card is the visual
+  // model below the text, and it opens on its own click (attachImageZoom).
+  wireObjectiveTermPopups(block, vocab, { hideImage: true });
 
   block.querySelectorAll(".visual-model-wrapper img").forEach((img) => {
     attachImageZoom(img);
   });
 
   // Persist each self-check on Launch (phase 0) so it survives reload, exactly
-  // like every other lesson input. No-op when state is unavailable.
+  // like every other lesson input. The review block uses its own key prefix so
+  // the end-of-lesson "Did it" is a separate answer from the opening "Got it".
+  // No-op when state is unavailable.
   block.querySelectorAll(".objective-check-box").forEach((box) => {
-    const key = `objective_understood_${box.dataset.objKey}`;
+    const key = `${review ? "objective_achieved" : "objective_understood"}_${box.dataset.objKey}`;
     if (state && state.getResponse && state.getResponse(0, key) === "1") box.checked = true;
     box.addEventListener("change", () => {
       if (state && state.saveResponse) state.saveResponse(0, key, box.checked ? "1" : "0");
@@ -4636,23 +4683,34 @@ function renderObjectiveReview(state, config) {
 
   // Same treatment as the Launch header and Objectives page: key vocabulary is
   // underlined + tap-to-open the glossary popup (wired on the card below).
+  // On the completion certificate the goals are stated in the third person with
+  // the student's own name — "Samuel can now …" — matching the Phase 8 review.
   const vocab = augmentVocabWithGlossary(config.vocabulary);
+  const name = studentFirstName(state);
+  const phrase = (text) => toThirdPersonObjective(text, name);
   const items = [
     {
       key: "review_content",
       label: t("contentObjective"),
-      html: linkifyObjectiveTerms(resolveContentObjective(config), vocab),
+      html: linkifyObjectiveTerms(phrase(resolveContentObjective(config)), vocab),
     },
     {
       key: "review_language",
       label: t("languageObjective"),
-      html: linkifyObjectiveTerms(resolveLanguageObjective(config), vocab),
+      html: linkifyObjectiveTerms(phrase(resolveLanguageObjective(config)), vocab),
     },
   ];
 
+  const reviewTitle = name
+    ? `✅ ${esc(name)} Can Now…`
+    : `✅ ${stackHtml(t("didIGetIt", "en"), t("didIGetIt", "es"))}`;
+  const reviewNote = name
+    ? `Check off each goal ${esc(name)} can do. Be honest — it helps you know what to practice!`
+    : "Check off each goal you can do. Be honest — it helps you know what to practice!";
+
   card.innerHTML = `
-    <h4 id="obj-review-title" style="color:var(--teal-ink); margin-bottom:var(--sp-2);">✅ ${stackHtml(t("didIGetIt", "en"), t("didIGetIt", "es"))}</h4>
-    <p style="color:var(--muted); margin:0 0 var(--sp-4); font-size:0.92rem;">Check off each goal you can do. Be honest — it helps you know what to practice!</p>
+    <h4 id="obj-review-title" style="color:var(--teal-ink); margin-bottom:var(--sp-2);">${reviewTitle}</h4>
+    <p style="color:var(--muted); margin:0 0 var(--sp-4); font-size:0.92rem;">${reviewNote}</p>
   `;
 
   items.forEach((item) => {
@@ -4666,7 +4724,10 @@ function renderObjectiveReview(state, config) {
     cb.checked = checked;
     cb.style.cssText =
       "width:1.4rem; height:1.4rem; margin-top:2px; flex:0 0 auto; cursor:pointer;";
-    cb.setAttribute("aria-label", `I can do this — ${item.label}`);
+    cb.setAttribute(
+      "aria-label",
+      name ? `${name} can do this — ${item.label}` : `I can do this — ${item.label}`,
+    );
 
     const text = document.createElement("div");
     text.innerHTML = `
@@ -4688,7 +4749,8 @@ function renderObjectiveReview(state, config) {
     card.append(row);
   });
 
-  wireObjectiveTermPopups(card, vocab);
+  // Definition-only, like every other objective surface.
+  wireObjectiveTermPopups(card, vocab, { hideImage: true });
   return card;
 }
 
@@ -4834,22 +4896,31 @@ function renderObjectivesReviewPhase(el, state, _ctx, config) {
   card.style.cssText =
     "margin: 16px 0 24px; border: 2px solid #0f6d78; border-radius: 16px; padding: 22px; background: #ffffff; box-shadow: 0 6px 20px rgba(15,109,120,0.12);";
 
+  // Name the student in the goals themselves: "Samuel can now …" reads as
+  // evidence of growth rather than as the same goal repeated. Falls back to the
+  // original wording when the Name field on Launch was left empty.
+  const name = studentFirstName(state);
+  const heading = name ? `🎯 ${esc(name)} Can Now…` : "🎯 Learning Objectives Mastery Check";
+  const intro = name
+    ? `Look at what ${esc(name)} could not do at the start of today's lesson — and can do now. Read each goal and check off the ones ${esc(name)} can do.`
+    : "Now that you've completed today's lesson, revisit the goals you set at the beginning and check off what you mastered!";
+
   card.innerHTML = `
     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; border-bottom:1px solid #e2e8f0; padding-bottom:12px;">
       <div>
         <span style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; color:#0f6d78; background:#e6f4f6; padding:4px 10px; border-radius:6px;">Phase 8 · Objectives Review</span>
-        <h3 style="margin:6px 0 0; font-size:22px; font-weight:800; color:#14223a;">🎯 Learning Objectives Mastery Check</h3>
+        <h3 style="margin:6px 0 0; font-size:22px; font-weight:800; color:#14223a;">${heading}</h3>
       </div>
       <div style="font-size:13px; font-weight:800; color:#0f6d78; background:#f0fdf4; border:1px solid #bbf7d0; padding:6px 14px; border-radius:10px;">
         Self-Check &amp; Growth
       </div>
     </div>
     <p style="margin:0 0 16px; font-size:15px; color:#56627a;">
-      Now that you've completed today's lesson, revisit the goals you set at the beginning and check off what you mastered!
+      ${intro}
     </p>
   `;
 
-  renderObjectives(card, config, state);
+  renderObjectives(card, config, state, { review: true });
 
   const checkWrap = document.createElement("div");
   checkWrap.style.cssText =
@@ -4857,15 +4928,20 @@ function renderObjectivesReviewPhase(el, state, _ctx, config) {
 
   const savedChecks = state.getResponse(phaseIndex, "objectives_mastery") || {};
 
+  // Third person to match the goal cards above: "Samuel can now demonstrate…".
+  const subject = name ? esc(name) : "I";
+  const verb = name ? "can now" : "can";
+  const usedVerb = name ? `${esc(name)} used` : "I used";
+
   checkWrap.innerHTML = `
-    <div style="font-size:14px; font-weight:800; color:#0f172a;">Track Your Goal Mastery:</div>
+    <div style="font-size:14px; font-weight:800; color:#0f172a;">${name ? `Track ${esc(name)}'s Goal Mastery:` : "Track Your Goal Mastery:"}</div>
     <label style="display:flex; align-items:center; gap:10px; cursor:pointer; font-size:14px; color:#334155;">
       <input type="checkbox" id="chkObjContent" ${savedChecks.content ? "checked" : ""}>
-      <span><strong>Content Goal:</strong> I can demonstrate and apply today's math concept!</span>
+      <span><strong>Content Goal:</strong> ${subject} ${verb} demonstrate and apply today's math concept!</span>
     </label>
     <label style="display:flex; align-items:center; gap:10px; cursor:pointer; font-size:14px; color:#334155;">
       <input type="checkbox" id="chkObjLang" ${savedChecks.lang ? "checked" : ""}>
-      <span><strong>Language Goal:</strong> I used academic vocabulary and clear math reasoning!</span>
+      <span><strong>Language Goal:</strong> ${usedVerb} academic vocabulary and clear math reasoning!</span>
     </label>
   `;
 

@@ -4299,7 +4299,7 @@
 
         if (isContent) {
           imgSrc = contentImg;
-          captionHtml = `🎯 <strong>Visual Representation:</strong> Student avatar actively performing the lesson objective on her desk grid mat. <span style="font-size:11px; opacity:0.8; margin-left:6px;">🔍 (Click to enlarge)</span>`;
+          captionHtml = `🎯 <strong>Visual Representation:</strong> A student actively performing the lesson objective on her desk grid mat. <span style="font-size:11px; opacity:0.8; margin-left:6px;">🔍 (Click to enlarge)</span>`;
         } else if (isLang) {
           imgSrc = languageImg;
           captionHtml = `🗣️ <strong>Visual Representation:</strong> Student partners pointing to key vocabulary callout badges and using academic sentence frames. <span style="font-size:11px; opacity:0.8; margin-left:6px;">🔍 (Click to enlarge)</span>`;
@@ -4333,7 +4333,7 @@
 
         if (isContent) {
           imgSrc = contentImg;
-          captionHtml = `🎯 <strong>Visual Representation:</strong> Student avatar actively performing the lesson objective on her desk grid mat. <span style="font-size:11px; opacity:0.8; margin-left:6px;">🔍 (Click to enlarge)</span>`;
+          captionHtml = `🎯 <strong>Visual Representation:</strong> A student actively performing the lesson objective on her desk grid mat. <span style="font-size:11px; opacity:0.8; margin-left:6px;">🔍 (Click to enlarge)</span>`;
         } else {
           imgSrc = languageImg;
           captionHtml = `🗣️ <strong>Visual Representation:</strong> Student partners pointing to key vocabulary callout badges and using academic sentence frames. <span style="font-size:11px; opacity:0.8; margin-left:6px;">🔍 (Click to enlarge)</span>`;
