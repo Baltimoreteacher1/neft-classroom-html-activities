@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Student Work Gallery — Grade 6 mathematics work, shared with permission and approved by a teacher, used as the real-world example for the standard it illustrates."
+    />
+    <title>Student Work Gallery — Neft Teacher</title>
+    <link rel="canonical" href="https://eduwonderlab.com/curriculum/showcase/" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#15487f" />
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/assets/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Hanken+Grotesk:wght@400;600;700&display=swap"
+    />
+    <link rel="stylesheet" href="./showcase.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#gallery">Skip to the gallery</a>
+
+    <div class="wrap">
+      <a class="backlink" href="/curriculum/">&#8592; Back to curriculum</a>
+
+      <header>
+        <p class="eyebrow">Student work becomes the textbook</p>
+        <h1>Student Work Gallery</h1>
+        <p class="lede">
+          Real Grade 6 mathematics work, shared with permission and read by a teacher before anyone
+          else sees it, standing in as the real-world example for the standard it illustrates. Next
+          year's class learns ratios from work this year's class made.
+        </p>
+      </header>
+
+      <section class="promise" aria-labelledby="promise-h">
+        <h2 id="promise-h">How work gets here &mdash; and how it leaves</h2>
+        <ol>
+          <li>
+            <strong>A teacher approves everything.</strong> A submission starts as
+            <em>pending</em> and is invisible to everyone except a signed-in teacher. Nothing on
+            this page was published automatically.
+          </li>
+          <li>
+            <strong>Names are optional and limited.</strong> The default is anonymous (&ldquo;A
+            Grade 6 mathematician&rdquo;). The most that can ever appear is a first name and a last
+            initial, and only when a student explicitly chose that. Anything unclear is treated as
+            anonymous.
+          </li>
+          <li>
+            <strong>No photos, no files, no uploads.</strong> The gallery accepts a caption, a short
+            written explanation, an optional link to a page already published on this site, and
+            optional numbers &mdash; which this page draws as its own chart.
+          </li>
+          <li>
+            <strong>A teacher can unpublish instantly.</strong> One click returns a piece of work to
+            the pending queue or removes it, and it disappears from this page and from every lesson
+            that shows it.
+          </li>
+        </ol>
+      </section>
+
+      <main id="gallery">
+        <h2 class="visually-hidden">Browse the gallery</h2>
+
+        <div class="toolbar">
+          <div class="field">
+            <span class="field-label" id="groupby-label">Browse by</span>
+            <div class="segmented" role="group" aria-labelledby="groupby-label">
+              <button type="button" id="by-standard" data-group="standard" aria-pressed="true">
+                Standard
+              </button>
+              <button type="button" id="by-unit" data-group="unit" aria-pressed="false">
+                Unit
+              </button>
+              <button type="button" id="by-domain" data-group="domain" aria-pressed="false">
+                Domain
+              </button>
+            </div>
+          </div>
+          <div class="field">
+            <label for="filter-select">Show</label>
+            <select id="filter-select">
+              <option value="">Everything</option>
+            </select>
+          </div>
+        </div>
+        <p class="count-line" id="count-line" role="status">Loading the gallery&hellip;</p>
+
+        <div id="results"></div>
+      </main>
+
+      <!-- ------------------------------------------------------------- submit -->
+      <section class="panel" id="submit" aria-labelledby="submit-h">
+        <h2 id="submit-h">Put your work in the textbook</h2>
+        <p class="lede">
+          If a piece of your work explains a standard better than a made-up example would, send it
+          here. If a teacher approves it, next year's Grade 6 students will learn from it.
+        </p>
+        <p class="what-happens">
+          A teacher reads this before anyone else sees it. Nothing you type appears on this page, in
+          a lesson, or on any other student's screen until a teacher approves it.
+        </p>
+
+        <form id="submit-form" novalidate>
+          <div class="form-grid">
+            <div class="field form-row">
+              <label for="f-standard">Which standard does your work explain?</label>
+              <select id="f-standard" required></select>
+            </div>
+
+            <div class="field form-row">
+              <label for="f-caption">One sentence about your work</label>
+              <input
+                type="text"
+                id="f-caption"
+                maxlength="140"
+                required
+                placeholder="One week of milk cartons: what ratio does our cafeteria actually pour?"
+              />
+              <p class="hint">Up to 140 characters. No links or email addresses.</p>
+            </div>
+
+            <div class="field form-row">
+              <label for="f-explanation">Explain your thinking</label>
+              <textarea id="f-explanation" maxlength="700"></textarea>
+              <p class="hint">
+                Up to 700 characters. Say what you did, what the numbers mean, and what you noticed.
+                Do not include anyone's full name.
+              </p>
+            </div>
+
+            <div class="field form-row">
+              <label for="f-link">Link to your project page on this site (optional)</label>
+              <input type="text" id="f-link" maxlength="180" placeholder="/math/unit-3/projects/" />
+              <p class="hint">
+                Must be a path on this site starting with a slash. Links to other websites are not
+                accepted.
+              </p>
+            </div>
+
+            <div class="form-row">
+              <fieldset>
+                <legend>Numbers to chart (optional)</legend>
+                <p class="hint" style="margin-bottom: 12px">
+                  Give the gallery your numbers and it draws the chart itself. Leave blank if your
+                  work has no numbers.
+                </p>
+                <div class="field" style="margin-bottom: 12px">
+                  <label for="f-chart-title">Chart title</label>
+                  <input type="text" id="f-chart-title" maxlength="60" />
+                </div>
+                <div id="datapoints"></div>
+                <button type="button" class="btn" id="add-point">Add another number</button>
+              </fieldset>
+            </div>
+
+            <div class="form-row">
+              <fieldset>
+                <legend>How should your name appear?</legend>
+                <label class="radio-row">
+                  <input type="radio" name="display" value="anonymous" checked />
+                  <span
+                    ><strong>Anonymous</strong> &mdash; shown as &ldquo;A Grade 6
+                    mathematician&rdquo;. This is the default.</span
+                  >
+                </label>
+                <label class="radio-row">
+                  <input type="radio" name="display" value="firstNameInitial" />
+                  <span
+                    ><strong>First name and last initial</strong> &mdash; for example &ldquo;Jordan
+                    T.&rdquo;. Only choose this if your family agrees.</span
+                  >
+                </label>
+                <div class="name-fields" id="name-fields" hidden>
+                  <div class="field">
+                    <label for="f-firstname">First name</label>
+                    <input type="text" id="f-firstname" maxlength="20" autocomplete="off" />
+                  </div>
+                  <div class="field">
+                    <label for="f-lastinitial">Last initial</label>
+                    <input type="text" id="f-lastinitial" maxlength="1" autocomplete="off" />
+                  </div>
+                </div>
+                <p class="hint">
+                  Full last names are never stored or shown. If anything about this is unclear, the
+                  gallery shows your work anonymously.
+                </p>
+              </fieldset>
+            </div>
+
+            <div class="form-row">
+              <button type="submit" class="btn btn-primary" id="submit-btn">
+                Send to my teacher
+              </button>
+            </div>
+          </div>
+          <p class="status" id="submit-status" role="status" hidden></p>
+        </form>
+      </section>
+
+      <!-- --------------------------------------------------------- moderation -->
+      <section class="panel moderation" id="moderation" aria-labelledby="moderation-h" hidden>
+        <h2 id="moderation-h">Teacher moderation</h2>
+        <p class="lede" id="moderation-lede">
+          Every submission waits here until you approve it. Approving publishes it to the gallery
+          and to any lesson page that shows work for that standard.
+        </p>
+
+        <div class="field" id="key-field">
+          <label for="f-teacher-key">Teacher key</label>
+          <input type="password" id="f-teacher-key" autocomplete="off" />
+          <p class="hint">
+            Stored only in this browser (<code>neft.teacher.key</code>), shared with the other
+            teacher tools.
+          </p>
+          <div class="card-actions">
+            <button type="button" class="btn btn-primary" id="key-save">Unlock queue</button>
+            <button type="button" class="btn" id="key-clear">Forget key</button>
+          </div>
+        </div>
+
+        <p class="status" id="moderation-status" role="status" hidden></p>
+
+        <div id="moderation-body" hidden>
+          <div class="segmented" role="group" aria-label="Moderation view" style="margin: 18px 0 0">
+            <button type="button" data-queue="pending" aria-pressed="true">Pending</button>
+            <button type="button" data-queue="approved" aria-pressed="false">Published</button>
+          </div>
+          <ul class="queue" id="queue"></ul>
+        </div>
+      </section>
+
+      <footer class="page-foot">
+        <p>
+          Student work is published only with consent and only after a teacher approves it. To
+          withdraw a piece of work at any time, ask your teacher &mdash; removal takes effect
+          immediately. &middot; <a href="/curriculum/">Back to curriculum</a>
+        </p>
+      </footer>
+    </div>
+
+    <script type="module" src="./showcase.js"></script>
+  </body>
+</html>

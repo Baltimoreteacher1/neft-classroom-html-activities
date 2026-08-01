@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#173b47" />
+    <!-- The save code travels in the link. no-referrer keeps it out of the
+         Referer header of every outbound click, and noindex keeps a forwarded
+         link out of search results. -->
+    <meta name="referrer" content="no-referrer" />
+    <meta name="robots" content="noindex, nofollow, noarchive" />
+    <meta
+      name="description"
+      content="A short, private weekly recap of one student's math week, in English or Spanish, ending with one five-minute activity for the kitchen table."
+    />
+    <title>Weekly Family Broadcast — Neft Teacher</title>
+    <link rel="stylesheet" href="./broadcast.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content" data-copy="skipLink">Skip to the broadcast</a>
+
+    <header class="bc-header">
+      <div class="bc-header-row">
+        <a class="bc-brand" href="/curriculum/family-connections/">
+          <span class="bc-mark" aria-hidden="true">E</span>
+          <span>
+            <strong data-copy="brandTop">6th-Grade Math</strong>
+            <small data-copy="brandSub">Weekly Family Broadcast</small>
+          </span>
+        </a>
+        <button
+          class="lang-toggle"
+          id="lang-toggle"
+          type="button"
+          lang="es"
+          aria-pressed="false"
+          aria-label="Cambiar a español"
+        >
+          <span class="lang-globe" aria-hidden="true">🌐</span>
+          <span id="lang-toggle-text">Español</span>
+        </button>
+      </div>
+      <a class="bc-back" href="/curriculum/family-connections/" data-copy="backToFamily">
+        ← Back to Family Connections
+      </a>
+    </header>
+
+    <main class="bc-main" id="main-content">
+      <!-- No code in the link: a warm explainer and one field. Never a list. -->
+      <section class="gate" id="gate" aria-labelledby="gate-title">
+        <p class="eyebrow" data-copy="gateEyebrow">Made for one family</p>
+        <h1 id="gate-title" data-copy="gateTitle">A one-minute recap of your student's week.</h1>
+        <p data-copy="gateBody">
+          Mr. Neft sends each family a private link. Open that link and this page plays a short
+          recap of what your student worked on this week, plus one five-minute thing you can do
+          together at the kitchen table.
+        </p>
+        <p class="gate-privacy" data-copy="gatePrivacy">
+          This page only ever shows one student: the one whose code is in the link. It never shows
+          other students, never ranks students, and never shows a grade.
+        </p>
+        <form class="gate-form" id="gate-form" autocomplete="off">
+          <label for="code-input" data-copy="gateLabel">Student code from your link</label>
+          <input
+            id="code-input"
+            name="code"
+            type="text"
+            inputmode="text"
+            autocapitalize="characters"
+            spellcheck="false"
+            maxlength="21"
+            aria-describedby="code-hint"
+            required
+          />
+          <p class="gate-hint" id="code-hint" data-copy="gateHint">
+            It looks something like RATIOS-4K7M. Ask Mr. Neft if you do not have one.
+          </p>
+          <div>
+            <button class="btn-primary" type="submit" data-copy="gateSubmit">
+              Play our broadcast
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <div class="bc-message" id="message" hidden>
+        <h2 id="message-title"></h2>
+        <p id="message-body"></p>
+      </div>
+
+      <section class="stage" id="stage" aria-labelledby="stage-heading" hidden>
+        <h1 class="visually-hidden" id="stage-heading">Weekly Family Broadcast</h1>
+
+        <div class="stage-head">
+          <p class="window-label" id="window-label"></p>
+          <p class="window-label" id="position-label"></p>
+        </div>
+
+        <div class="progress" id="progress" aria-hidden="true"></div>
+
+        <div class="cards mode-story" id="cards"></div>
+
+        <div class="controls" id="controls">
+          <button class="ctrl story-only" id="btn-prev" type="button">
+            <span aria-hidden="true">←</span> <span data-copy="prev">Previous</span>
+          </button>
+          <button
+            class="ctrl ctrl-play story-only"
+            id="btn-play"
+            type="button"
+            aria-pressed="false"
+          >
+            <span aria-hidden="true" id="btn-play-icon">▶</span>
+            <span id="btn-play-text" data-copy="play">Play</span>
+          </button>
+          <button class="ctrl story-only" id="btn-next" type="button">
+            <span data-copy="next">Next</span> <span aria-hidden="true">→</span>
+          </button>
+          <button class="ctrl ctrl-wide" id="btn-mode" type="button" aria-pressed="false">
+            <span aria-hidden="true">☰</span>
+            <span id="btn-mode-text" data-copy="readAll">Read it all at once</span>
+          </button>
+          <button class="ctrl" id="btn-print" type="button">
+            <span aria-hidden="true">🖨</span> <span data-copy="print">Print this week</span>
+          </button>
+        </div>
+      </section>
+
+      <p class="footnote" id="footnote" data-copy="signedOff">EduWonderLab · 6th-Grade Math</p>
+    </main>
+
+    <p class="visually-hidden" id="live-status" role="status" aria-live="polite"></p>
+
+    <script type="module" src="./broadcast.js"></script>
+  </body>
+</html>

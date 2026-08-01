@@ -149,11 +149,12 @@
 
     function renderStats() {
       var n = data.length;
-      var mean = "—",
+      // Placeholders until there is data; they become numbers once computed.
+      var /** @type {string|number} */ mean = "—",
         median = "—",
         mode = "—",
-        range = "—",
-        mad = "—";
+        /** @type {string|number} */ range = "—",
+        /** @type {string|number} */ mad = "—";
       if (n) {
         var sorted = data.slice().sort(function (a, b) {
           return a - b;

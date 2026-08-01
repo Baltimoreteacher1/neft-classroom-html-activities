@@ -377,7 +377,7 @@
           if (state.history.length > MAX_HISTORY * 2) {
             state.history = state.history.slice(-MAX_HISTORY * 2);
           }
-          celebrateIfAllowed(typing);
+          celebrateIfAllowed();
         } else if (res.status === 429) {
           addMessage("error", "You're asking quickly! Give it a few seconds and try again.");
         } else {

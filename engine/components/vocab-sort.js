@@ -287,8 +287,8 @@ export function renderVocabSort(container, { terms, onComplete }) {
       });
 
       chipEl.classList.add("sorted");
-      chipEl.style.opacity = "0.2";
-      chipEl.style.cursor = "default";
+      /** @type {HTMLElement} */ (chipEl).style.opacity = "0.2";
+      /** @type {HTMLElement} */ (chipEl).style.cursor = "default";
       chipEl.setAttribute("draggable", "false");
 
       sorted++;

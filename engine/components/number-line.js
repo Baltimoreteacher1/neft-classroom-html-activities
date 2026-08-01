@@ -519,7 +519,7 @@ function renderSequentialNumberLine(container, config) {
         showTarget();
       }
     } else {
-      targetMarker.setAttribute("cx", toX(Number(t.value)));
+      targetMarker.setAttribute("cx", String(toX(Number(t.value))));
       targetMarker.style.transformOrigin = `${toX(Number(t.value))}px ${TICK_Y}px`;
       targetMarker.style.display = "";
       triggerTargetMarker(targetMarker);

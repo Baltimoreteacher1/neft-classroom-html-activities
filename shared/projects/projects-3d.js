@@ -1,3 +1,6 @@
+// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
+// (see tsconfig.json); the marker is the debt, and removing it is the unit of
+// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 /* ==========================================================================
    Projects 3D — build-in-3D + WebXR AR buildables for the unit culminating
    projects. Companion to projects-3d.css. SAME contract as the VISUALS/PRO/

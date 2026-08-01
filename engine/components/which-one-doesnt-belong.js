@@ -1,4 +1,3 @@
-// Which One Doesn't Belong — a four-quadrant argument, not a question.
 //
 // The design constraint that makes this worth building: EVERY quadrant has a
 // defensible answer. That is not a nicety, it is the entire pedagogy. A student
@@ -137,7 +136,7 @@ const REASON_FRAMES = [
  * @param {(ok: boolean) => void} [def.onComplete] fired once, always with true
  * @param {{ get?: Function, set?: Function }} [def.store] optional {get,set} for resume
  */
-export function renderWhichOneDoesntBelong(container, def = {}) {
+export function renderWhichOneDoesntBelong(container, /** @type {any} */ def = {}) {
   injectStyles();
   const items = Array.isArray(def.items) ? def.items.slice(0, 4) : [];
   const reasons = Array.isArray(def.reasons) ? def.reasons : [];

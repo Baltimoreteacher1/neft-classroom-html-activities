@@ -1,4 +1,6 @@
-// socratic.js — the tutor that will not tell you anything.
+// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
+// (see tsconfig.json); the marker is the debt, and removing it is the unit of
+// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 //
 // The lesson already had an AI tutor endpoint with a careful hint ladder, but
 // every rung of that ladder still ASSERTS: level 1 names the next step, level 2

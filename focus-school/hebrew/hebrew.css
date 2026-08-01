@@ -1,0 +1,947 @@
+/* Nightly Hebrew — shared styles for the hub and all nine innings.
+ *
+ * Night-game palette: it's used after dark, so the page is dark by default
+ * with warm stadium-light accents. Hebrew glyphs are set very large with
+ * generous line-height, because nikud (the vowel marks) are tiny and the
+ * whole point of the app is that the reader can SEE which mark is there.
+ */
+
+:root {
+  --field: #0a1f16;
+  --field-2: #0d2a1e;
+  --night: #071018;
+  --panel: #0f2231;
+  --panel-2: #143043;
+  --line: rgba(255, 255, 255, 0.14);
+  --chalk: #f4f7fb;
+  --muted: #9db3c4;
+  --lights: #ffd166;
+  --lights-2: #ffb703;
+  --clay: #e07a5f;
+  --grass: #4ea16b;
+  --good: #5fd18c;
+  --bad: #ff8f7a;
+  --ink: #071018;
+  --radius: 16px;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  --heb: "Frank Ruhl Libre", "David Libre", "Noto Sans Hebrew", "Times New Roman", serif;
+  --ui:
+    ui-rounded, "SF Pro Rounded", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--ui);
+  color: var(--chalk);
+  background:
+    radial-gradient(1200px 620px at 50% -10%, #1a3b52 0%, transparent 60%),
+    linear-gradient(180deg, var(--night) 0%, #06131b 100%);
+  background-attachment: fixed;
+  min-height: 100vh;
+  line-height: 1.55;
+  font-size: 17px;
+}
+
+.wrap {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 18px 16px 120px;
+}
+
+/* ---------------------------------------------------------------- topbar */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: linear-gradient(180deg, rgba(7, 16, 24, 0.97), rgba(7, 16, 24, 0.86));
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+
+.topbar .inner {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.topbar .ball {
+  font-size: 1.4rem;
+}
+
+.topbar h1 {
+  font-size: 1.02rem;
+  margin: 0;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.topbar .inning-chip {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--lights);
+  padding: 3px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------- headings */
+.hero {
+  background:
+    radial-gradient(600px 240px at 80% -30%, rgba(255, 209, 102, 0.16), transparent 65%),
+    linear-gradient(160deg, var(--field-2), var(--panel));
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  padding: 22px;
+  margin: 16px 0 22px;
+  box-shadow: var(--shadow);
+}
+
+.hero .eyebrow {
+  font-size: 0.74rem;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--lights);
+  font-weight: 800;
+  margin: 0 0 6px;
+}
+
+.hero h2 {
+  margin: 0 0 4px;
+  font-size: 1.7rem;
+  line-height: 1.2;
+  font-weight: 900;
+}
+
+.hero .sub {
+  margin: 0;
+  color: var(--muted);
+  font-size: 1rem;
+}
+
+.hero .hebsub {
+  font-family: var(--heb);
+  font-size: 1.9rem;
+  direction: rtl;
+  margin-top: 8px;
+  line-height: 1.9;
+}
+
+.big-idea {
+  margin: 14px 0 0;
+  padding: 13px 15px;
+  border-radius: 14px;
+  background: rgba(255, 209, 102, 0.1);
+  border: 1px solid rgba(255, 209, 102, 0.34);
+  font-size: 0.98rem;
+}
+
+.big-idea b {
+  color: var(--lights);
+}
+
+/* ------------------------------------------------------------- activities */
+.act {
+  background: linear-gradient(170deg, var(--panel), #0c1c28);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin: 0 0 18px;
+  box-shadow: var(--shadow);
+  scroll-margin-top: 74px;
+}
+
+.act > header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.act .num {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  background: var(--lights);
+  color: var(--ink);
+  font-size: 0.95rem;
+}
+
+.act .num.done {
+  background: var(--good);
+}
+
+.act h3 {
+  margin: 0;
+  font-size: 1.18rem;
+  font-weight: 850;
+  line-height: 1.25;
+}
+
+.act .how {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.act.locked {
+  opacity: 0.55;
+}
+
+.done-flag {
+  margin-left: auto;
+  align-self: center;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--good);
+  white-space: nowrap;
+}
+
+/* -------------------------------------------------------------- Hebrew UI */
+.heb {
+  font-family: var(--heb);
+  direction: rtl;
+  unicode-bidi: isolate;
+  font-feature-settings: "kern" 1;
+}
+
+.glyph {
+  font-family: var(--heb);
+  direction: rtl;
+  unicode-bidi: isolate;
+  line-height: 1.75;
+  display: inline-block;
+}
+
+.glyph.xl {
+  font-size: 5.2rem;
+}
+
+.glyph.lg {
+  font-size: 3.4rem;
+}
+
+.glyph.md {
+  font-size: 2.3rem;
+}
+
+.glyph.sm {
+  font-size: 1.6rem;
+}
+
+/* The transliteration is the teaching channel that never fails, so it is
+ * always split: consonant part in one colour, vowel part in another. */
+.tr {
+  font-weight: 800;
+  letter-spacing: 0.4px;
+}
+
+.tr .c {
+  color: #9fd7ff;
+}
+
+.tr .v {
+  color: var(--lights);
+}
+
+/* --------------------------------------------------------------- letter cards */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 12px;
+}
+
+.lcard {
+  background: linear-gradient(165deg, #16354a, #0e2434);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 14px;
+  text-align: center;
+}
+
+.lcard .glyph {
+  font-size: 4.2rem;
+  line-height: 1.35;
+}
+
+.lcard .lname {
+  font-weight: 900;
+  font-size: 1.05rem;
+  margin-top: 2px;
+}
+
+.lcard .lsound {
+  color: var(--lights);
+  font-weight: 800;
+  font-size: 0.95rem;
+}
+
+.lcard .lnote {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+.lcard .lwatch {
+  margin-top: 8px;
+  font-size: 0.82rem;
+  background: rgba(224, 122, 95, 0.16);
+  border: 1px solid rgba(224, 122, 95, 0.4);
+  border-radius: 10px;
+  padding: 7px 9px;
+  text-align: left;
+  color: #ffd9cf;
+}
+
+/* -------------------------------------------------------------- rule cards */
+.rules {
+  display: grid;
+  gap: 10px;
+}
+
+.rule {
+  display: flex;
+  gap: 11px;
+  align-items: flex-start;
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 13px;
+}
+
+.rule .pin {
+  flex: 0 0 auto;
+  font-size: 1.05rem;
+}
+
+.rule b {
+  display: block;
+  font-size: 0.98rem;
+  margin-bottom: 2px;
+}
+
+.rule span {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+/* ------------------------------------------------------------- blend table */
+.blend-pick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.chip {
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--chalk);
+  border-radius: 11px;
+  padding: 8px 12px;
+  font: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 44px;
+}
+
+.chip .glyph {
+  font-size: 1.7rem;
+  line-height: 1.2;
+}
+
+.chip small {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.chip[aria-pressed="true"] {
+  background: var(--lights);
+  color: var(--ink);
+  border-color: var(--lights);
+  font-weight: 800;
+}
+
+.chip[aria-pressed="true"] small {
+  color: rgba(7, 16, 24, 0.72);
+}
+
+.chip:focus-visible,
+.btn:focus-visible,
+.tile:focus-visible {
+  outline: 3px solid #7fd4ff;
+  outline-offset: 2px;
+}
+
+.blend-stage {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1.25fr;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px dashed var(--line);
+  border-radius: 14px;
+  padding: 14px 10px;
+}
+
+.blend-stage .op {
+  font-size: 1.6rem;
+  color: var(--muted);
+}
+
+.blend-stage .slot small {
+  display: block;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.blend-stage .result .glyph {
+  font-size: 4rem;
+}
+
+.blend-say {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 1.05rem;
+}
+
+/* ------------------------------------------------------------- drill rows */
+.drill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  direction: rtl;
+}
+
+.tile {
+  border: 1px solid var(--line);
+  background: linear-gradient(165deg, #16354a, #0e2434);
+  color: var(--chalk);
+  border-radius: 13px;
+  padding: 8px 14px 10px;
+  min-width: 82px;
+  min-height: 74px;
+  cursor: pointer;
+  font: inherit;
+  display: grid;
+  place-items: center;
+  gap: 2px;
+  transition:
+    transform 0.12s ease,
+    border-color 0.12s ease;
+}
+
+.tile:active {
+  transform: scale(0.97);
+}
+
+.tile .glyph {
+  font-size: 2.4rem;
+}
+
+.tile .peek {
+  font-size: 0.82rem;
+  color: var(--muted);
+  min-height: 1.1em;
+  direction: ltr;
+}
+
+.tile.revealed {
+  border-color: var(--lights);
+}
+
+.tile.revealed .peek {
+  color: var(--lights);
+  font-weight: 800;
+}
+
+.tile.ok {
+  border-color: var(--good);
+  background: linear-gradient(165deg, #16442e, #0e2a1e);
+}
+
+.tile.no {
+  border-color: var(--bad);
+}
+
+/* ------------------------------------------------------------- word lists */
+.words {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
+  gap: 10px;
+}
+
+.word {
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  padding: 11px 13px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: right;
+  width: 100%;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.word .glyph {
+  font-size: 2.15rem;
+  flex: 0 0 auto;
+}
+
+.word .meta {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+}
+
+.word .meta .tr {
+  font-size: 0.95rem;
+}
+
+.word .meta .en {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.word.hide .meta {
+  visibility: hidden;
+}
+
+/* ---------------------------------------------------------------- choices */
+.choices {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.choice {
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--chalk);
+  border-radius: 13px;
+  padding: 14px 10px;
+  font: inherit;
+  font-weight: 800;
+  font-size: 1.1rem;
+  cursor: pointer;
+  min-height: 56px;
+}
+
+.choice.ok {
+  background: rgba(95, 209, 140, 0.2);
+  border-color: var(--good);
+  color: #cdf6de;
+}
+
+.choice.no {
+  background: rgba(255, 143, 122, 0.16);
+  border-color: var(--bad);
+  color: #ffd9d0;
+}
+
+.choice[disabled] {
+  cursor: default;
+}
+
+/* ---------------------------------------------------------------- buttons */
+.btn {
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--chalk);
+  border-radius: 12px;
+  padding: 11px 16px;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  min-height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn:hover:not([disabled]) {
+  border-color: rgba(255, 255, 255, 0.34);
+}
+
+.btn.primary {
+  background: linear-gradient(180deg, var(--lights), var(--lights-2));
+  color: var(--ink);
+  border-color: transparent;
+}
+
+.btn.grass {
+  background: linear-gradient(180deg, #5cb87d, #3d8f5d);
+  color: #04150c;
+  border-color: transparent;
+}
+
+.btn[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn.block {
+  width: 100%;
+}
+
+.btn.sm {
+  padding: 8px 13px;
+  /* 44px is the floor for a finger on the tablet this actually runs on —
+     the small variant is a size change, not a reachability change. */
+  min-height: 44px;
+  font-size: 0.9rem;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.spacer {
+  flex: 1;
+}
+
+/* -------------------------------------------------------------- progress */
+.scorebug {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.bar {
+  height: 9px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+}
+
+.bar > span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--grass), var(--lights));
+  transition: width 0.35s ease;
+}
+
+.feedback {
+  margin-top: 12px;
+  border-radius: 12px;
+  padding: 11px 13px;
+  font-size: 0.95rem;
+  min-height: 1px;
+}
+
+.feedback.ok {
+  background: rgba(95, 209, 140, 0.14);
+  border: 1px solid rgba(95, 209, 140, 0.45);
+}
+
+.feedback.no {
+  background: rgba(255, 143, 122, 0.12);
+  border: 1px solid rgba(255, 143, 122, 0.45);
+}
+
+.feedback.tip {
+  background: rgba(255, 209, 102, 0.12);
+  border: 1px solid rgba(255, 209, 102, 0.4);
+}
+
+.feedback:empty {
+  display: none;
+}
+
+/* ------------------------------------------------------------------ hub */
+.inning-list {
+  display: grid;
+  gap: 12px;
+}
+
+.inning {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  background: linear-gradient(165deg, var(--panel), #0c1c28);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 15px 16px;
+  box-shadow: var(--shadow);
+}
+
+.inning:hover {
+  border-color: rgba(255, 209, 102, 0.5);
+}
+
+.inning .badge {
+  flex: 0 0 auto;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  font-size: 1.3rem;
+  background: radial-gradient(circle at 35% 30%, #fff, #dfe6ee);
+  color: var(--ink);
+  border: 3px solid var(--clay);
+}
+
+.inning.done .badge {
+  background: radial-gradient(circle at 35% 30%, #b9f7d1, #5fd18c);
+  border-color: #2f8f57;
+}
+
+.inning .body {
+  flex: 1;
+  min-width: 0;
+}
+
+.inning .eyebrow {
+  font-size: 0.7rem;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--lights);
+  font-weight: 900;
+}
+
+.inning h3 {
+  margin: 1px 0 2px;
+  font-size: 1.12rem;
+}
+
+.inning p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.inning .hebpeek {
+  font-family: var(--heb);
+  direction: rtl;
+  font-size: 1.5rem;
+  color: var(--chalk);
+  margin-top: 3px;
+  line-height: 1.7;
+}
+
+.inning .go {
+  flex: 0 0 auto;
+  font-size: 1.4rem;
+  color: var(--muted);
+}
+
+/* --------------------------------------------------------------- payout */
+.payout {
+  background:
+    radial-gradient(500px 200px at 20% 0%, rgba(95, 209, 140, 0.18), transparent 70%),
+    linear-gradient(165deg, #123726, #0b2419);
+  border: 1px solid rgba(95, 209, 140, 0.45);
+  border-radius: 18px;
+  padding: 20px;
+  text-align: center;
+  margin-top: 8px;
+}
+
+.payout h3 {
+  margin: 0 0 4px;
+  font-size: 1.25rem;
+}
+
+.payout p {
+  margin: 0 0 14px;
+  color: #bfe6cd;
+  font-size: 0.95rem;
+}
+
+.payout .amount {
+  font-size: 2.6rem;
+  font-weight: 900;
+  color: var(--good);
+  line-height: 1.1;
+}
+
+.payout.paid {
+  border-color: rgba(255, 209, 102, 0.5);
+}
+
+/* ---------------------------------------------------------------- misc */
+.note {
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 26px;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--lights);
+  color: var(--ink);
+  font-weight: 800;
+  padding: 12px 20px;
+  border-radius: 999px;
+  box-shadow: var(--shadow);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+  z-index: 90;
+  max-width: 88vw;
+  text-align: center;
+}
+
+.toast.on {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.footnav {
+  display: flex;
+  gap: 10px;
+  margin-top: 26px;
+  align-items: center;
+}
+
+.footnav a {
+  color: var(--muted);
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.92rem;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  padding: 10px 14px;
+}
+
+.footnav a:hover {
+  color: var(--chalk);
+}
+
+/* --------------------------------------------------------------- games */
+.game {
+  background: linear-gradient(175deg, #0c2a1c, #071a12);
+  border: 1px solid rgba(78, 161, 107, 0.4);
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.game h4 {
+  margin: 0 0 3px;
+  font-size: 1.05rem;
+}
+
+.game .goal {
+  color: #b7d8c4;
+  font-size: 0.9rem;
+  margin: 0 0 12px;
+}
+
+.game .hud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.game .hud .stat {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 5px 12px;
+}
+
+@media (max-width: 560px) {
+  body {
+    font-size: 16px;
+  }
+
+  .wrap {
+    padding: 14px 12px 110px;
+  }
+
+  .hero {
+    padding: 18px;
+  }
+
+  .hero h2 {
+    font-size: 1.42rem;
+  }
+
+  .glyph.xl {
+    font-size: 4.2rem;
+  }
+
+  .blend-stage {
+    grid-template-columns: 1fr auto 1fr;
+    row-gap: 6px;
+  }
+
+  .blend-stage .op.eq,
+  .blend-stage .result {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

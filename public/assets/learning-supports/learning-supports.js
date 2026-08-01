@@ -4181,8 +4181,97 @@
     return !!(res && res.ok);
   }
 
+  function openVisualLightbox(imgSrc, captionText) {
+    let modal = document.getElementById("visual-objective-lightbox-modal");
+    if (!modal) {
+      modal = document.createElement("div");
+      modal.id = "visual-objective-lightbox-modal";
+      modal.style.cssText = `
+        position: fixed; inset: 0; z-index: 999999;
+        background: rgba(11, 15, 25, 0.92); backdrop-filter: blur(12px);
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        padding: 24px; opacity: 0; transition: opacity 0.25s ease-out; pointer-events: none;
+      `;
+      modal.innerHTML = `
+        <button id="visual-lightbox-close" type="button" aria-label="Close enlarged view" style="
+          position: absolute; top: 20px; right: 24px; width: 44px; height: 44px; border-radius: 50%;
+          background: #ffffff; color: #0f172a; border: none; font-size: 22px; font-weight: 800;
+          cursor: pointer; display: flex; align-items: center; justify-content: center;
+          box-shadow: 0 8px 24px rgba(0,0,0,0.4); z-index: 10; transition: transform 0.2s ease;
+        ">✕</button>
+        <div id="visual-lightbox-container" style="
+          max-width: 92vw; max-height: 82vh; border-radius: 16px; overflow: hidden;
+          box-shadow: 0 25px 60px rgba(0,0,0,0.6); border: 2px solid rgba(255,255,255,0.2);
+          display: flex; align-items: center; justify-content: center; background: #000;
+        ">
+          <img id="visual-lightbox-img" src="" alt="Enlarged Visual Model" style="
+            max-width: 100%; max-height: 82vh; object-fit: contain; display: block; cursor: zoom-out;
+          " />
+        </div>
+        <div id="visual-lightbox-caption" style="
+          background: #ffffff; color: #0f172a; padding: 12px 22px; border-radius: 12px;
+          font-weight: 700; font-size: 15px; margin-top: 16px; max-width: 840px;
+          text-align: center; font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.3); line-height: 1.4;
+        "></div>
+      `;
+      document.body.appendChild(modal);
+
+      const closeModal = () => {
+        modal.style.opacity = "0";
+        modal.style.pointerEvents = "none";
+      };
+
+      modal.querySelector("#visual-lightbox-close").addEventListener("click", closeModal);
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal || e.target.id === "visual-lightbox-container" || e.target.id === "visual-lightbox-img") {
+          closeModal();
+        }
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && modal.style.pointerEvents === "auto") {
+          closeModal();
+        }
+      });
+    }
+
+    const img = modal.querySelector("#visual-lightbox-img");
+    const caption = modal.querySelector("#visual-lightbox-caption");
+
+    img.src = imgSrc;
+    caption.innerHTML = captionText || "Visual Representation (Enlarged)";
+
+    modal.style.pointerEvents = "auto";
+    requestAnimationFrame(() => {
+      modal.style.opacity = "1";
+    });
+  }
+
   function enhanceObjectiveVisuals() {
     try {
+      if (!document.getElementById('objective-contrast-styles')) {
+        const styleEl = document.createElement('style');
+        styleEl.id = 'objective-contrast-styles';
+        styleEl.textContent = `
+          .launch-objective p, .objective-text, .obj-text {
+            font-weight: 800 !important;
+            color: #0F172A !important;
+            font-size: 1.08rem !important;
+            line-height: 1.65 !important;
+            -webkit-font-smoothing: antialiased !important;
+          }
+          .launch-objective h4, .launch-objective-head h4, .obj-card-title {
+            font-weight: 800 !important;
+            letter-spacing: -0.01em !important;
+          }
+          .visual-model-caption {
+            color: #0F172A !important;
+            font-weight: 700 !important;
+          }
+        `;
+        document.head.appendChild(styleEl);
+      }
+
       const path = window.location.pathname;
       let unit = 1;
       const match = path.match(/\/lessons\/(\d+)-/);
@@ -4203,25 +4292,27 @@
 
         const wrapper = document.createElement('div');
         wrapper.className = 'visual-model-wrapper';
-        wrapper.style.cssText = 'margin-top:14px; margin-bottom:14px; border-radius:14px; overflow:hidden; border:1px solid rgba(0,0,0,0.1); box-shadow:0 6px 18px rgba(0,0,0,0.06); background:#0b0f19;';
+        wrapper.style.cssText = 'margin-top:14px; margin-bottom:14px; border-radius:14px; overflow:hidden; border:1px solid rgba(0,0,0,0.1); box-shadow:0 6px 18px rgba(0,0,0,0.06); background:#0b0f19; cursor:zoom-in; position:relative;';
+
+        let captionHtml = "";
+        let imgSrc = "";
 
         if (isContent) {
-          wrapper.innerHTML = `
-            <img src="${contentImg}" alt="Visual Representation" style="width:100%; height:auto; display:block;" />
-            <div style="padding:10px 14px; background:#ffffff; border-top:1px solid #e2e8f0; font-size:13px; color:#1e293b; font-weight:600; line-height:1.4;">
-              🎯 <strong>Visual Representation:</strong> Student avatar actively performing the lesson objective on her desk grid mat.
-            </div>
-          `;
+          imgSrc = contentImg;
+          captionHtml = `🎯 <strong>Visual Representation:</strong> A student actively performing the lesson objective on her desk grid mat. <span style="font-size:11px; opacity:0.8; margin-left:6px;">🔍 (Click to enlarge)</span>`;
         } else if (isLang) {
-          wrapper.innerHTML = `
-            <img src="${languageImg}" alt="Visual Representation" style="width:100%; height:auto; display:block;" />
-            <div style="padding:10px 14px; background:#ffffff; border-top:1px solid #e2e8f0; font-size:13px; color:#1e293b; font-weight:600; line-height:1.4;">
-              🗣️ <strong>Visual Representation:</strong> Student partners pointing to key vocabulary callout badges and using academic sentence frames.
-            </div>
-          `;
+          imgSrc = languageImg;
+          captionHtml = `🗣️ <strong>Visual Representation:</strong> Student partners pointing to key vocabulary callout badges and using academic sentence frames. <span style="font-size:11px; opacity:0.8; margin-left:6px;">🔍 (Click to enlarge)</span>`;
         }
 
-        if (wrapper.innerHTML) {
+        if (imgSrc) {
+          wrapper.innerHTML = `
+            <img class="visual-model-img" src="${imgSrc}" alt="Visual Representation" style="width:100%; height:auto; display:block; cursor:zoom-in;" />
+            <div class="visual-model-caption" style="padding:10px 14px; background:#ffffff; border-top:1px solid #e2e8f0; font-size:13px; color:#1e293b; font-weight:600; line-height:1.4;">
+              ${captionHtml}
+            </div>
+          `;
+          wrapper.addEventListener('click', () => openVisualLightbox(imgSrc, captionHtml));
           textP.insertAdjacentElement('afterend', wrapper);
         }
       });
@@ -4235,25 +4326,42 @@
         const isContent = panel.classList.contains('ref-main-panel') || panel.textContent.toLowerCase().includes('content objective');
         const wrapper = document.createElement('div');
         wrapper.className = 'visual-model-wrapper';
-        wrapper.style.cssText = 'margin-top:14px; margin-bottom:14px; border-radius:14px; overflow:hidden; border:1px solid rgba(0,0,0,0.1); box-shadow:0 6px 18px rgba(0,0,0,0.06); background:#0b0f19;';
+        wrapper.style.cssText = 'margin-top:14px; margin-bottom:14px; border-radius:14px; overflow:hidden; border:1px solid rgba(0,0,0,0.1); box-shadow:0 6px 18px rgba(0,0,0,0.06); background:#0b0f19; cursor:zoom-in; position:relative;';
+
+        let captionHtml = "";
+        let imgSrc = "";
 
         if (isContent) {
-          wrapper.innerHTML = `
-            <img src="${contentImg}" alt="Visual Representation" style="width:100%; height:auto; display:block;" />
-            <div style="padding:10px 14px; background:#ffffff; border-top:1px solid #e2e8f0; font-size:13px; color:#1e293b; font-weight:600; line-height:1.4;">
-              🎯 <strong>Visual Representation:</strong> Student avatar actively performing the lesson objective on her desk grid mat.
-            </div>
-          `;
+          imgSrc = contentImg;
+          captionHtml = `🎯 <strong>Visual Representation:</strong> A student actively performing the lesson objective on her desk grid mat. <span style="font-size:11px; opacity:0.8; margin-left:6px;">🔍 (Click to enlarge)</span>`;
         } else {
-          wrapper.innerHTML = `
-            <img src="${languageImg}" alt="Visual Representation" style="width:100%; height:auto; display:block;" />
-            <div style="padding:10px 14px; background:#ffffff; border-top:1px solid #e2e8f0; font-size:13px; color:#1e293b; font-weight:600; line-height:1.4;">
-              🗣️ <strong>Visual Representation:</strong> Student partners pointing to key vocabulary callout badges and using academic sentence frames.
-            </div>
-          `;
+          imgSrc = languageImg;
+          captionHtml = `🗣️ <strong>Visual Representation:</strong> Student partners pointing to key vocabulary callout badges and using academic sentence frames. <span style="font-size:11px; opacity:0.8; margin-left:6px;">🔍 (Click to enlarge)</span>`;
         }
 
+        wrapper.innerHTML = `
+          <img class="visual-model-img" src="${imgSrc}" alt="Visual Representation" style="width:100%; height:auto; display:block; cursor:zoom-in;" />
+          <div class="visual-model-caption" style="padding:10px 14px; background:#ffffff; border-top:1px solid #e2e8f0; font-size:13px; color:#1e293b; font-weight:600; line-height:1.4;">
+            ${captionHtml}
+          </div>
+        `;
+        wrapper.addEventListener('click', () => openVisualLightbox(imgSrc, captionHtml));
         textP.insertAdjacentElement('afterend', wrapper);
+      });
+
+      // 3. Bind click events to any existing visual-model-wrapper or visual-model-img on the page
+      document.querySelectorAll('.visual-model-wrapper, .visual-model-img').forEach(el => {
+        if (!el.dataset.lbBound) {
+          el.dataset.lbBound = "true";
+          el.style.cursor = "zoom-in";
+          el.addEventListener('click', () => {
+            const img = el.tagName === 'IMG' ? el : el.querySelector('img');
+            const cap = el.querySelector('.visual-model-caption') || el.nextElementSibling;
+            if (img) {
+              openVisualLightbox(img.src, cap ? cap.innerHTML : "Visual Representation");
+            }
+          });
+        }
       });
     } catch (_err) {
       /* ignore DOM enhancement errors */

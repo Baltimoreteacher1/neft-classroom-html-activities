@@ -1,7 +1,6 @@
-// unit-rate-builder.js — Interactive unit-rate lab. A student types a quantity
-// pair (e.g. 120 miles in 3 hours) and the widget divides to find the unit rate
-// "per 1" in both directions and shows the reasoning. Reinforces that a unit rate
-// is a ratio scaled so the second quantity is 1.
+// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
+// (see tsconfig.json); the marker is the debt, and removing it is the unit of
+// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 //
 // Pure DOM, no dependencies. Public API:
 //   renderUnitRateBuilder(container, cfg) -> { destroy }

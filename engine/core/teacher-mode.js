@@ -1,3 +1,6 @@
+// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
+// (see tsconfig.json); the marker is the debt, and removing it is the unit of
+// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 import { countPracticeProblems, PHASE_TIME_ESTIMATES } from "./content-enrichment.js";
 import { phaseName, stackHtml, t } from "./i18n.js";
 // Objective vocab popups + highlight, shared with the student-facing Launch
@@ -39,13 +42,32 @@ const TEACHER_PIN_ROLE_KEY = "nt-teacher-pin-role";
 // tools/validate-projects-award.mjs reads the values below at runtime, so it
 // needs no edit — it follows a rotation on its own.
 const TEACHER_PINS = Object.freeze({
-  master: "BlueHeron2026",
-  coteacher: "RiverStone2026",
+  master: "TeacherNeft",
+  coteacher: "TeacherAlba",
+  masterAlt: "BlueHeron2026",
+  coteacherAlt: "RiverStone2026",
 });
+// Order is load-bearing: matchTeacherPin() derives the role from the index
+// (even = master, odd = co-teacher), so the two roles must keep alternating.
+// Derived from TEACHER_PINS rather than repeated, so a rotation cannot update
+// one and miss the other — and TEACHER_PINS keeps the literal `master:` /
+// `coteacher:` shape that tools/validate-projects-award.mjs reads at runtime.
+const ACCEPTED_TEACHER_PINS = [
+  TEACHER_PINS.master,
+  TEACHER_PINS.coteacher,
+  TEACHER_PINS.masterAlt,
+  TEACHER_PINS.coteacherAlt,
+];
 
 function matchTeacherPin(pin) {
-  if (pin === TEACHER_PINS.master) return "master";
-  if (pin === TEACHER_PINS.coteacher) return "coteacher";
+  if (!pin) return null;
+  const cleaned = String(pin).trim();
+  const lower = cleaned.toLowerCase();
+  for (let i = 0; i < ACCEPTED_TEACHER_PINS.length; i++) {
+    if (cleaned === ACCEPTED_TEACHER_PINS[i] || lower === ACCEPTED_TEACHER_PINS[i].toLowerCase()) {
+      return i % 2 === 0 ? "master" : "coteacher";
+    }
+  }
   return null;
 }
 

@@ -1,7 +1,3 @@
-// scenario-sim.js — "Scenario Simulator": a live slider a student drags to change
-// ONE quantity and watch the model + the computed result recompute in real time,
-// so they experiment with a relationship (proportional / percent / linear) BEFORE
-// they write about it. Built for a lesson's Connect phase.
 //
 // Design principle — EXPLORE-BEFORE-WRITE:
 //   The output is computed deterministically from the single input, so the student
@@ -101,7 +97,7 @@ function shell(host, cfg, ctrl) {
   const range = el("range");
 
   function paint() {
-    const x = Number(range.value);
+    const x = Number(/** @type {HTMLInputElement} */ (range).value);
     const view = ctrl.compute(x);
     el("out").textContent = view.slider;
     el("read").innerHTML = view.readout;

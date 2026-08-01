@@ -276,11 +276,11 @@ export function drawQrOnCanvas(ctx, text, x, y, size = 100) {
     img.onload = () => {
       ctx.drawImage(img, x, y, size, size);
       URL.revokeObjectURL(url);
-      resolve();
+      resolve(undefined);
     };
     img.onerror = () => {
       URL.revokeObjectURL(url);
-      resolve();
+      resolve(undefined);
     };
     img.src = url;
   });

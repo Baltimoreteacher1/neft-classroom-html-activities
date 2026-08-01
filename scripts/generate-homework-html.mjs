@@ -12,6 +12,7 @@ import {
   selectMorePracticeProblems,
   selectTieredQuickCheckProblems,
 } from "./homework-alignment.mjs";
+import { ANSWER_MATCH_JS } from "./homework-answer-match.mjs";
 import { HOMEWORK_GAME_JS } from "./homework-games.mjs";
 import {
   displayLessonId,
@@ -3164,20 +3165,7 @@ function loadState() {
   }
 }
 
-// Math normalization for scoring text entries
-function normalizeMath(val) {
-  return String(val || "")
-    .toLowerCase()
-    .trim()
-    .replace(/\\s+/g, "")          // remove all whitespace
-    .replace(/\\*/g, "×")          // asterisk to multiplication
-    .replace(/x/g, "×")          // letter x to multiplication
-    .replace(/\\^2/g, "²")
-    .replace(/\\^3/g, "³")
-    .replace(/\\^4/g, "⁴")
-    .replace(/\\^5/g, "⁵")
-    .replace(/\\^6/g, "⁶");
-}
+${ANSWER_MATCH_JS}
 
 function updateProgress() {
   const problems = Array.from(document.querySelectorAll(".problem-section"))
@@ -3401,7 +3389,7 @@ function checkProblem(idx, options) {
           isProblemCorrect = false;
           input.classList.add("is-incorrect");
           feedbackBadge.classList.add("error-cross");
-        } else if (normalizeMath(studentVal) === normalizeMath(correctVal)) {
+        } else if (NTAnswerMatch.isRight(studentVal, correctVal)) {
           input.classList.add("is-correct");
           feedbackBadge.classList.add("success-check");
         } else {

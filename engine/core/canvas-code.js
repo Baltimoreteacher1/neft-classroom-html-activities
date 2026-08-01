@@ -20,7 +20,9 @@ function ensureUI() {
   if (typeof window === "undefined") return Promise.resolve(null);
   if (window.NeftCanvasCodeUI) return Promise.resolve(window.NeftCanvasCodeUI);
   return new Promise((resolve) => {
-    let s = document.querySelector(`script[src="${UI_SRC}"]`);
+    let s = /** @type {HTMLScriptElement|null} */ (
+      document.querySelector(`script[src="${UI_SRC}"]`)
+    );
     if (!s) {
       s = document.createElement("script");
       s.src = UI_SRC;

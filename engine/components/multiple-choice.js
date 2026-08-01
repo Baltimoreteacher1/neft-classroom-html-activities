@@ -401,7 +401,7 @@ export function renderMultipleChoice(container, opts) {
     wrapper.querySelectorAll(".mc-celebrate-layer").forEach((layer) => layer.remove());
     optionsWrap.querySelectorAll(".mc-option-label").forEach((l) => {
       l.classList.remove("is-correct", "is-incorrect", "is-selected");
-      const inp = l.querySelector('input[type="radio"]');
+      const inp = /** @type {HTMLInputElement|null} */ (l.querySelector('input[type="radio"]'));
       if (inp) inp.checked = false;
     });
     feedbackSlot.className = "problem-check-result";

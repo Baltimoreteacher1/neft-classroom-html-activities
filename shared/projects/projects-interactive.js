@@ -117,10 +117,10 @@
     outs.forEach(function (out) {
       var obs = new MutationObserver(function () {
         var txt = (out.textContent || "").trim();
-        if (txt && txt !== out.dataset.pkiLast) {
-          out.dataset.pkiLast = txt;
+        if (txt && txt !== /** @type {HTMLElement} */ (out).dataset.pkiLast) {
+          /** @type {HTMLElement} */ (out).dataset.pkiLast = txt;
           out.classList.remove("pki-pop");
-          void out.offsetWidth; // restart animation
+          void (/** @type {HTMLElement} */ (out).offsetWidth); // restart animation
           out.classList.add("pki-pop");
         }
       });

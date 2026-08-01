@@ -1,11 +1,3 @@
-// coordinate-plot-lab.js — Interactive coordinate plane. Takes the SAME config the
-// static `coordinate-plane` figure uses ({ max, points:[{x,y,label}], title, caption })
-// and makes it a plot-the-points model: the target coordinates are listed as a
-// checklist, the student taps the grid to place each one, correct plots stick and
-// check off, wrong taps flash, and the relationship (caption) is revealed once
-// every point is plotted. No config changes needed; the static SVG stays as the
-// JS-off / print fallback.
-
 const C = {
   ink: "#333",
   navy: "#264653",
@@ -144,7 +136,7 @@ export function renderCoordinatePlot(host, cfg) {
       status.textContent = "🎉 All points plotted!";
       status.className = "cpl-status ok";
       if (cfg.caption) {
-        reveal.hidden = false;
+        /** @type {HTMLElement} */ (reveal).hidden = false;
         reveal.innerHTML = esc(cfg.caption);
       }
     } else {

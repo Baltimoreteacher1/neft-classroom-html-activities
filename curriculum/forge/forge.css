@@ -1,0 +1,477 @@
+/* =============================================================================
+ * The Forge — console styling
+ * -----------------------------------------------------------------------------
+ * Palette and type are lifted from curriculum/index.html so the console feels
+ * native to the Curriculum Hub: the ACCESS Practice Lab palette (deep blue,
+ * green accent, cool paper) with the lesson shell's Outfit + Hanken Grotesk.
+ *
+ * Two rules this file must never break:
+ *   1. The site is LIGHT ONLY. There is no prefers-color-scheme: dark block
+ *      here and there must never be one.
+ *   2. In ?id= mode this same document is handed to the lesson engine, which
+ *      brings its own design system. So nothing here styles bare `body`,
+ *      `h1`-`h6`, `button`, `input` or any other element selector — every rule
+ *      is scoped to .forge-page (console chrome) or a .forge-* class.
+ * ========================================================================== */
+
+.forge {
+  --navy: #15487f;
+  --teal: #205fa6;
+  --teal-light: #e7eff9;
+  --green: #256b5b;
+  --green-light: #e7f4ef;
+  --cream: #eaf0f7;
+  --ink: #14223a;
+  --muted: #56627a;
+  --line: #d6e0ec;
+  --card: #ffffff;
+  --surface-2: #f3f7fc;
+  --danger: #8c2f2f;
+  --danger-light: #fbeeee;
+  --radius: 18px;
+
+  max-width: 780px;
+  margin: 0 auto;
+  padding: clamp(28px, 5vw, 56px) clamp(16px, 4vw, 32px) 72px;
+  color: var(--ink);
+  font-family: "Hanken Grotesk", system-ui, sans-serif;
+  font-size: 17px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Console-only page chrome (added by forge.js, never in ?id= mode). */
+body.forge-page {
+  margin: 0;
+  background:
+    radial-gradient(1100px 520px at 88% -8%, rgba(37, 107, 91, 0.14), transparent 60%),
+    radial-gradient(1000px 520px at -5% 2%, rgba(32, 95, 166, 0.16), transparent 58%), #eaf0f7;
+  min-height: 100vh;
+}
+
+/* ── Focus: always visible, never removed ─────────────────────────────────── */
+
+.forge :is(a, button, input, select, textarea):focus-visible,
+.forge-fatal a:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.forge-skip {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--card);
+  color: var(--teal);
+  padding: 10px 16px;
+  font-weight: 700;
+  border-radius: 0 0 10px 0;
+}
+.forge-skip:focus {
+  left: 0;
+  z-index: 20;
+}
+
+/* ── Header ───────────────────────────────────────────────────────────────── */
+
+.forge-head {
+  margin: 0 0 28px;
+}
+
+.forge-eyebrow {
+  margin: 0 0 6px;
+  color: var(--teal);
+  font-family: "Outfit", system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.forge-head h1 {
+  margin: 0 0 10px;
+  font-family: "Outfit", system-ui, sans-serif;
+  font-weight: 900;
+  font-size: clamp(34px, 6vw, 48px);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--navy);
+}
+
+.forge-lede {
+  margin: 0;
+  max-width: 62ch;
+  color: var(--muted);
+  font-size: 17px;
+}
+
+/* ── Cards ────────────────────────────────────────────────────────────────── */
+
+.forge-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: clamp(20px, 3.5vw, 30px);
+  margin: 0 0 20px;
+  box-shadow:
+    0 1px 2px rgba(20, 34, 58, 0.04),
+    0 12px 30px -22px rgba(20, 34, 58, 0.35);
+}
+
+.forge-card h2 {
+  margin: 0 0 12px;
+  font-family: "Outfit", system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 21px;
+  color: var(--navy);
+}
+
+/* ── Form ─────────────────────────────────────────────────────────────────── */
+
+.forge-field {
+  margin: 0 0 22px;
+}
+.forge-field:last-of-type {
+  margin-bottom: 4px;
+}
+
+.forge-field > label,
+.forge-fieldset > legend {
+  display: block;
+  margin: 0 0 4px;
+  padding: 0;
+  font-family: "Outfit", system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--navy);
+}
+
+.forge-fieldset {
+  border: 0;
+  margin-inline: 0;
+  padding: 0;
+}
+
+.forge-help {
+  margin: 0 0 10px;
+  color: var(--muted);
+  font-size: 14.5px;
+  line-height: 1.5;
+}
+
+.forge select,
+.forge input[type="text"],
+.forge input[type="password"],
+.forge textarea {
+  width: 100%;
+  padding: 11px 13px;
+  border: 1.5px solid var(--line);
+  border-radius: 11px;
+  background: var(--surface-2);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+.forge textarea {
+  resize: vertical;
+}
+
+.forge select:disabled {
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
+.forge-radios {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.forge-radio {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface-2);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.forge-radio:has(input:checked) {
+  border-color: var(--teal);
+  background: var(--teal-light);
+  color: var(--navy);
+}
+
+.forge-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-top: 22px;
+}
+
+.forge-btn {
+  display: inline-block;
+  padding: 13px 24px;
+  border: 1.5px solid transparent;
+  border-radius: 12px;
+  font-family: "Outfit", system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.forge-btn-primary {
+  background: var(--teal);
+  color: #fff;
+}
+.forge-btn-primary:hover {
+  background: var(--navy);
+}
+.forge-btn-primary:disabled {
+  background: var(--muted);
+  cursor: progress;
+}
+
+.forge-btn-quiet {
+  background: var(--card);
+  border-color: var(--line);
+  color: var(--navy);
+}
+.forge-btn-quiet:hover {
+  border-color: var(--teal);
+  color: var(--teal);
+}
+
+/* ── Progress (never a frozen spinner) ────────────────────────────────────── */
+
+.forge-progress {
+  border-color: var(--teal);
+  background: linear-gradient(180deg, var(--teal-light), var(--card) 70%);
+}
+
+.forge-timer {
+  margin: 0 0 2px;
+  font-family: "Outfit", system-ui, sans-serif;
+  font-weight: 900;
+  font-size: 54px;
+  line-height: 1;
+  color: var(--navy);
+  font-variant-numeric: tabular-nums;
+}
+
+.forge-unit {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--muted);
+  margin-left: 3px;
+}
+
+.forge-status {
+  margin: 0 0 16px;
+  font-weight: 600;
+  color: var(--navy);
+}
+
+.forge-stages {
+  margin: 0 0 14px;
+  padding: 0;
+  list-style: none;
+  counter-reset: forge-stage;
+}
+
+.forge-stages li {
+  counter-increment: forge-stage;
+  position: relative;
+  padding: 7px 0 7px 34px;
+  color: var(--muted);
+  font-size: 15.5px;
+}
+
+.forge-stages li::before {
+  content: counter(forge-stage);
+  position: absolute;
+  left: 0;
+  top: 6px;
+  width: 23px;
+  height: 23px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line);
+  background: var(--card);
+  color: var(--muted);
+  font-family: "Outfit", system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+}
+
+.forge-stages li.is-current {
+  color: var(--navy);
+  font-weight: 700;
+}
+.forge-stages li.is-current::before {
+  border-color: var(--teal);
+  background: var(--teal);
+  color: #fff;
+}
+
+.forge-stages li.is-done::before {
+  content: "✓";
+  border-color: var(--green);
+  background: var(--green-light);
+  color: var(--green);
+}
+
+/* ── Error / quality-gate report ──────────────────────────────────────────── */
+
+.forge-error {
+  border-color: #e0b8b8;
+  background: var(--danger-light);
+}
+.forge-error h2 {
+  color: var(--danger);
+}
+.forge-error p {
+  margin: 0 0 10px;
+}
+.forge-error ul {
+  margin: 12px 0 0;
+  padding-left: 20px;
+  font-size: 15px;
+  color: var(--ink);
+}
+.forge-error li {
+  margin-bottom: 6px;
+}
+
+/* ── Share panel ──────────────────────────────────────────────────────────── */
+
+.forge-share {
+  border-color: var(--green);
+  background: linear-gradient(180deg, var(--green-light), var(--card) 70%);
+}
+.forge-share h2 {
+  color: var(--green);
+}
+
+.forge-share-title {
+  margin: 0 0 16px;
+  font-family: "Outfit", system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 22px;
+  color: var(--navy);
+}
+
+.forge-share-label {
+  display: block;
+  margin: 0 0 6px;
+  font-weight: 700;
+  font-size: 14.5px;
+  color: var(--navy);
+}
+
+.forge-share-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.forge-share-row input {
+  flex: 1 1 260px;
+  background: var(--card);
+}
+
+/* ── Forged-lesson list ───────────────────────────────────────────────────── */
+
+.forge-list-items {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.forge-list-items li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  align-items: baseline;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--line);
+}
+.forge-list-items li:last-child {
+  border-bottom: 0;
+}
+
+.forge-list-items a {
+  font-family: "Outfit", system-ui, sans-serif;
+  font-weight: 700;
+  color: var(--teal);
+  text-decoration: none;
+}
+.forge-list-items a:hover {
+  color: var(--navy);
+  text-decoration: underline;
+}
+
+.forge-list-meta {
+  color: var(--muted);
+  font-size: 13.5px;
+}
+
+/* ── Footer ───────────────────────────────────────────────────────────────── */
+
+.forge-foot {
+  margin: 26px 0 0;
+}
+.forge-foot a {
+  color: var(--teal);
+  font-weight: 600;
+  text-decoration: none;
+}
+.forge-foot a:hover {
+  text-decoration: underline;
+}
+
+/* ── Player-mode states (rendered inside #app, before the engine takes over) ── */
+
+.forge-loading,
+.forge-fatal,
+.forge-noscript {
+  max-width: 560px;
+  margin: 64px auto;
+  padding: 28px;
+  background: #ffffff;
+  border: 1px solid #d6e0ec;
+  border-radius: 16px;
+  font-family: "Hanken Grotesk", system-ui, sans-serif;
+  color: #14223a;
+  text-align: center;
+}
+
+.forge-fatal h1,
+.forge-noscript h1 {
+  margin: 0 0 10px;
+  font-family: "Outfit", system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 23px;
+  color: #15487f;
+}
+
+.forge-fatal p,
+.forge-noscript p {
+  margin: 0 0 12px;
+  color: #56627a;
+}
+
+.forge-fatal a,
+.forge-noscript a {
+  color: #205fa6;
+  font-weight: 600;
+}

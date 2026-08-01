@@ -15,7 +15,7 @@
       }, 120);
       return;
     }
-    tab.click();
+    /** @type {HTMLElement} */ (tab).click();
     panel.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
@@ -56,7 +56,7 @@
   function wireGuideActions() {
     document.querySelectorAll("[data-guide-teacher-view]").forEach(function (button) {
       button.addEventListener("click", function () {
-        showTeacherView(button.dataset.guideTeacherView);
+        showTeacherView(/** @type {HTMLElement} */ (button).dataset.guideTeacherView);
       });
     });
   }
@@ -96,7 +96,8 @@
   // Hiding is enough -- curriculum-enhancements.css forces `details.unit` and
   // `details.lesson` back to `display: block !important` inside @media print.
   function hidePrintFallbackUnits() {
-    document.querySelectorAll("details.unit").forEach(function (unit) {
+    document.querySelectorAll("details.unit").forEach(function (el) {
+      const unit = /** @type {HTMLElement} */ (el);
       unit.hidden = true;
       if ("inert" in unit) unit.inert = true;
     });

@@ -1,10 +1,6 @@
-// stats-data-lab.js — a live data-set workbench. Students build or edit a data
-// set (add a value, tap a chip to remove it, or pick a preset) and every
-// measure updates in real time over a dot plot: the mean shown as a balance
-// point on the line, plus median, mode, range, and MAD. It is the "put your own
-// numbers in and watch what happens" tool for the statistics unit — add an
-// outlier and see the mean lurch while the median barely moves, which is the
-// whole reason a statistician chooses one measure over another.
+// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
+// (see tsconfig.json); the marker is the debt, and removing it is the unit of
+// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 //
 // The `focus` config tunes the emphasis and coaching per lesson:
 //   "variability" (8-1) · "center" (8-2) · "spread" (8-3) · "choose" (8-4)

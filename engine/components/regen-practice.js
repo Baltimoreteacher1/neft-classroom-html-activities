@@ -1,9 +1,3 @@
-// regen-practice.js — "Try another like this": an opt-in infinite-practice tray
-// that appears under a practice problem ONLY when the problem-generator can
-// produce a fresh, correctness-verified variant of the same type. Each variant
-// is checked in-place (open answer or multiple choice); a difficulty toggle
-// lets the student ask for an easier or harder one. Self-contained: it never
-// re-enters the main renderer, so it can't destabilize the host problem.
 //
 // API:  attachRegenPractice(container, item, opts = {}) -> { destroy() } | null
 //   item: { stem, answer, choices?, correctIndex?, visual?, difficulty? }
@@ -93,7 +87,9 @@ export function attachRegenPractice(container, item, opts = {}) {
       difficulty = d;
       root
         .querySelectorAll("[data-diff]")
-        .forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.diff === d)));
+        .forEach((b) =>
+          b.setAttribute("aria-pressed", String(/** @type {HTMLElement} */ (b).dataset.diff === d)),
+        );
     };
 
     const next = () => {
@@ -169,7 +165,7 @@ export function attachRegenPractice(container, item, opts = {}) {
     q('[data-el="go"]').addEventListener("click", next);
     root.querySelectorAll("[data-diff]").forEach((b) =>
       b.addEventListener("click", () => {
-        setDiff(b.dataset.diff);
+        setDiff(/** @type {HTMLElement} */ (b).dataset.diff);
         next();
       }),
     );

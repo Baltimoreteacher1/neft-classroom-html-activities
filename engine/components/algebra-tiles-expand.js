@@ -1,8 +1,6 @@
-// algebra-tiles-expand.js — "Expand It": turns an AUTHORED static distributive-
-// property figure into an interactive area-model / algebra-tiles builder for
-// expanding a(x + c) IN PLACE. It reads the exact same practice `visual` config
-// the static figure builder reads, so an existing item upgrades with zero
-// authoring changes and the static figure stays as the JS-off / print fallback.
+// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
+// (see tsconfig.json); the marker is the debt, and removing it is the unit of
+// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 //
 // Design principle — SEE-WHY / NON-DESTRUCTIVE:
 //   The area model is drawn once and stays visible the whole time so the student
@@ -21,12 +19,7 @@
 // turns every data mark the same navy. Colour that carries meaning belongs to
 // the figure. See engine/light-only-surfaces.test.mjs.
 const DATA_1 = "#0f8a84"; // teal - primary
-// DATA_1…DATA_4 are the fixed light-only data palette that
-// engine/light-only-surfaces.test.mjs requires every component to draw from.
-// This one is unused here; it stays so the palette is complete and identical
-// across components.
-// biome-ignore lint/correctness/noUnusedVariables: reserved palette entry
-const DATA_2 = "#c2603f"; // clay - secondary
+const _DATA_2 = "#c2603f"; // clay - secondary (reserved; documents the palette)
 
 const STYLE_ID = "algebra-tiles-expand-styles";
 

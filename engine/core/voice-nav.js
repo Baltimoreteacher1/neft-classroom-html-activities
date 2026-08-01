@@ -1,12 +1,3 @@
-// voice-nav.js — Hands-free voice control for a lesson. A floating microphone
-// button (only shown where the browser supports the Web Speech API) lets a
-// student say short commands:
-//   "next" / "continue"        → go to the next part
-//   "back" / "previous"        → go to the previous part
-//   "go to explore/practice/…" → jump to a named phase
-//   "read this" / "read aloud" → read the current part out loud
-//   "stop"                     → stop reading
-//   "explain" / "I'm stuck"    → open the stuck-support helper if present
 //
 // Accessibility + access aid (great for emerging readers and ESOL). It never
 // listens until the student taps the mic, and it shows what it heard.
@@ -90,7 +81,7 @@ export function mountVoiceNav(opts) {
         '[data-stuck-support] button, .stuck-support-bar button, [data-tool="explain"], button.nt-stuck-btn',
       );
       if (stuck) {
-        stuck.click();
+        /** @type {HTMLElement} */ (stuck).click();
         showStatus("Opening help…");
       } else {
         showStatus("No helper on this part.");

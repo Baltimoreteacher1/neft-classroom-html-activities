@@ -124,7 +124,7 @@ function sightings(evidence, misconceptionId) {
 }
 
 /** Evidence AGAINST a hypothesis: correct work on items that target it. */
-function contradictions(evidence, itemsTargeting) {
+function contradictions(evidence, _misconceptionId, itemsTargeting) {
   let n = 0;
   for (const e of evidence) {
     if (e.correct === true && itemsTargeting.has(e.itemId)) n += 1;
@@ -155,7 +155,7 @@ export function infer(state, config = {}) {
   const tags = new Set(ev.map((e) => e.misconception).filter(Boolean));
   for (const tag of tags) {
     const seen = sightings(ev, tag);
-    const against = contradictions(ev, targeting.get(tag) || new Set());
+    const against = contradictions(ev, tag, targeting.get(tag) || new Set());
     if (state.verified[tag]) continue;
     if (seen >= CORROBORATION && seen > against) {
       findings.push({

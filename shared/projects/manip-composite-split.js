@@ -118,10 +118,10 @@
     });
 
     dimWrap.addEventListener("click", function (e) {
-      var b = e.target.closest(".pki-cs-btn");
+      var b = /** @type {HTMLElement} */ (e.target).closest(".pki-cs-btn");
       if (!b) return;
-      var k = b.dataset.d;
-      st[k] += Number(b.dataset.s);
+      var k = /** @type {HTMLElement} */ (b).dataset.d;
+      st[k] += Number(/** @type {HTMLElement} */ (b).dataset.s);
       st.w = clamp(st.w, 3, 14);
       st.h = clamp(st.h, 3, 12);
       fix();
@@ -129,9 +129,9 @@
     });
 
     root.querySelector(".pki-cs-modes").addEventListener("click", function (e) {
-      var b = e.target.closest(".pki-cs-mode");
+      var b = /** @type {HTMLElement} */ (e.target).closest(".pki-cs-mode");
       if (!b) return;
-      st.mode = b.dataset.m;
+      st.mode = /** @type {HTMLElement} */ (b).dataset.m;
       render();
     });
 
@@ -149,7 +149,7 @@
         root.querySelector('[data-v="' + k + '"]').textContent = st[k];
       });
       root.querySelectorAll(".pki-cs-mode").forEach(function (b) {
-        b.classList.toggle("on", b.dataset.m === st.mode);
+        b.classList.toggle("on", /** @type {HTMLElement} */ (b).dataset.m === st.mode);
       });
 
       var SC = 26,

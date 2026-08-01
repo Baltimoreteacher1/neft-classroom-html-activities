@@ -26,20 +26,38 @@ const BASE = (
   (argv.includes("--base") ? argv[argv.indexOf("--base") + 1] : null) || "https://eduwonderlab.com"
 ).replace(/\/$/, "");
 
-/** Student-facing surfaces, weighted toward what a class actually opens. */
-const PAGES = [
+/**
+ * What to audit.
+ *
+ * This list used to be twelve hand-picked paths, nine of which were lesson
+ * pages. That reported "0 violations across 12 pages" while saying nothing at
+ * all about a game, a project, a graphic novel, a printable or a family page —
+ * whole page TEMPLATES, each rendering hundreds of URLs from one layout, were
+ * never sampled. A template is the right unit here: a violation in one is a
+ * violation in every page built from it.
+ *
+ * So the sample is one representative page per template, discovered from disk
+ * (see TEMPLATES in scripts/lib/page-templates.mjs) rather than typed out, and
+ * a template that gains pages later is audited without anyone remembering to
+ * add it. tools/a11y-coverage.test.mjs fails if a template has no
+ * representative, so the sample cannot silently fall behind the site again.
+ *
+ * ANCHORS are kept explicit on top: the specific pages a class opens most.
+ */
+const ANCHORS = [
   { path: "/", name: "Home portal" },
   { path: "/curriculum/", name: "Curriculum hub" },
   { path: "/directory/", name: "Activity directory" },
   { path: "/lessons/1-1/", name: "Lesson 1-1 launcher" },
-  { path: "/lessons/1-1/learn.html", name: "Lesson 1-1 Learn It" },
-  { path: "/lessons/1-1/vocab.html", name: "Lesson 1-1 vocabulary" },
-  { path: "/lessons/1-1/homework.html", name: "Lesson 1-1 homework" },
-  { path: "/lessons/2-1/", name: "Lesson 2-1 launcher" },
-  { path: "/lessons/4-2/", name: "Lesson 4-2 launcher" },
   { path: "/math/student-board/", name: "Class board" },
   { path: "/access-practice-lab/", name: "ACCESS practice lab" },
   { path: "/practice-engine/", name: "Practice engine" },
+];
+
+const { representativePages } = await import("./lib/page-templates.mjs");
+const PAGES = [
+  ...ANCHORS,
+  ...representativePages().filter((p) => !ANCHORS.some((a) => a.path === p.path)),
 ];
 
 // Rules that fire on decorative/cosmetic layers and drown the real findings.

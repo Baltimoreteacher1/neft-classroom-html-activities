@@ -1,8 +1,6 @@
-// data-live.js — "Data Live": turns an AUTHORED static data figure (histogram,
-// dot plot, box plot, bar chart) into an interactive, insight-revealing widget
-// IN PLACE. It reads the exact same config the static SVG builders in
-// visual-figures.js read, so every existing figure upgrades with zero authoring
-// changes and the static SVG stays as the JS-off / print fallback.
+// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
+// (see tsconfig.json); the marker is the debt, and removing it is the unit of
+// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 //
 // Design principle — EXPLORE-FIRST / NON-DESTRUCTIVE:
 //   The default view shows the authored data exactly as before, so lesson
@@ -29,11 +27,7 @@
 // objects.
 const DATA_1 = "#0f8a84"; // teal - primary series
 const DATA_2 = "#c2603f"; // clay - second series
-// The light-only palette is defined in full (DATA_1…DATA_4) so every series
-// colour comes from the same fixed set, whether or not this chart draws a
-// third series.
-// biome-ignore lint/correctness/noUnusedVariables: reserved palette entry
-const DATA_3 = "#b07d12"; // ochre - third series
+const _DATA_3 = "#b07d12"; // ochre - third series (reserved; documents the palette)
 const DATA_4 = "#3b6ea5"; // blue - fourth series
 
 const STYLE_ID = "data-live-styles";

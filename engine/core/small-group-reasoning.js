@@ -23,7 +23,7 @@ const ENDPOINT = "/api/reasoning/review";
 /**
  * @param {HTMLTextAreaElement} textarea  the response field to read
  * @param {object} options
- * @param {string} options.prompt         what the student was asked
+ * @param {string} [options.prompt]       what the student was asked
  * @param {string} [options.standard]
  * @param {string} [options.answerShown]  the item's answer, used ONLY as a
  *   client-side guard: if coaching contains it, the coaching is suppressed.

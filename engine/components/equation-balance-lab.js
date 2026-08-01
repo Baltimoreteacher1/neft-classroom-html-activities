@@ -1,12 +1,6 @@
-// equation-balance-lab.js — a genuinely interactive equation balance. The
-// student solves a one-step (or short two-step) linear equation by choosing an
-// operation and a value and applying it to BOTH sides at once. The equation
-// really transforms (x + 2 = 6 → x = 4), the two pans redraw their tokens
-// (an x-box + unit blocks) so the student SEES the same amount leave each pan,
-// and the beam stays level — because doing the same thing to both sides keeps
-// it balanced, which is the whole idea. Picking the wrong operation is safe:
-// the scale stays balanced, the equation just gets no simpler, and Undo steps
-// back. Solved when the variable stands alone.
+// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
+// (see tsconfig.json); the marker is the debt, and removing it is the unit of
+// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 //
 // This is the interactive upgrade of the static balance-scale figure: the
 // operation buttons perform real algebra instead of a decorative wobble.

@@ -360,7 +360,7 @@
 
   function openPalette() {
     buildPalette();
-    var dialog = document.getElementById("cpu-command-palette");
+    var dialog = /** @type {HTMLDialogElement} */ (document.getElementById("cpu-command-palette"));
     if (!dialog.open) dialog.showModal();
     dialog.querySelector("input")?.focus();
   }

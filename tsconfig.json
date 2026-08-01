@@ -1,0 +1,55 @@
+{
+  "//": [
+    "Type checking for the browser code.",
+    "",
+    "checkJs is ON for assets/, engine/ and shared/. Files that are not type-clean",
+    "yet carry a `// @ts-nocheck` marker at the top of the file \u2014 that marker IS the",
+    "debt register, and removing one is the unit of work. Keeping it in the file",
+    "beats a list in this config for two reasons: it is visible to whoever opens the",
+    "file, and it survives a rename.",
+    "",
+    "It also solves a problem `exclude` cannot: tsc follows imports regardless of",
+    "exclude, so one un-typed file in an import graph re-contaminates every clean",
+    "file that imports it. @ts-nocheck silences the file wherever it is reached from.",
+    "",
+    "Run: npm run typecheck   (wired into npm run validate)",
+    "",
+    "Most failures are one of these, and each is fixed at the lookup, not by",
+    "loosening a type:",
+    "  window.X unknown              -> declare X in types/globals.d.ts",
+    "  .value/.checked on Element    -> /** @type {HTMLInputElement} */ (el)",
+    "  e.target.value                -> /** @type {HTMLInputElement} */ (e.target)",
+    "  setAttribute(name, number)    -> String(n)"
+  ],
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true,
+    "strict": false,
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "skipLibCheck": true,
+    "types": [],
+    "paths": {
+      "@engine/*": [
+        "./engine/*"
+      ]
+    }
+  },
+  "include": [
+    "types/globals.d.ts",
+    "assets/**/*.js",
+    "engine/**/*.js",
+    "shared/**/*.js"
+  ],
+  "exclude": [
+    "**/vendor/**",
+    "**/*.min.js"
+  ]
+}

@@ -1,9 +1,3 @@
-// tape-diagram-lab.js — Interactive tape diagram. Takes the SAME config the static
-// `tape-diagram` figure uses ({ title, caption, rows:[{label, parts:[{value,label}]}] })
-// and makes it a counting model: the student taps each equal part to count how many
-// there are in all, a live tally updates, and when every part is counted the diagram
-// confirms the total and reveals the relationship (the caption). Turns "look at a
-// picture" into "count with the model" — no config changes needed.
 //
 // Pure DOM + CSS, no dependencies. Matches the static tapeDiagramSVG palette.
 
@@ -90,12 +84,12 @@ export function renderTapeDiagram(host, cfg) {
     if (counted.size >= total) {
       status.textContent = `🎉 ${total} equal parts in all!`;
       if (cfg.caption) {
-        reveal.hidden = false;
+        /** @type {HTMLElement} */ (reveal).hidden = false;
         reveal.innerHTML = esc(cfg.caption);
       }
     } else {
       status.textContent = "";
-      reveal.hidden = true;
+      /** @type {HTMLElement} */ (reveal).hidden = true;
     }
   }
 

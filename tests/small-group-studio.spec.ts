@@ -82,9 +82,14 @@ test.describe("small-group guided math studio", () => {
     await equation.click();
     const definition = page.getByRole("dialog", { name: "Equation" });
     await expect(definition.getByText(/math sentence with an equal sign/i)).toBeVisible();
+    // The image resolves by SLUG, so a lesson that carries its own artwork for a
+    // term serves that instead of the generic tile ("equation-x-plus-25.svg" for
+    // a lesson whose equation IS x + 25). Assert the term, not the exact file —
+    // pinning the generic name made this test fail the moment the curriculum
+    // gained a better, more specific picture.
     await expect(definition.getByRole("img")).toHaveAttribute(
       "src",
-      /\/assets\/vocab-images\/equation\.svg$/,
+      /\/assets\/vocab-images\/equation[a-z0-9-]*\.svg$/,
     );
     await definition.getByRole("button", { name: "Close definition" }).click();
 

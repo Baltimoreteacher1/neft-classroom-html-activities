@@ -1,14 +1,8 @@
-// small-group-labs.js — the interactive math core of the small-group studio.
-// Three render-time sections derived entirely from existing lesson config
-// (zero new authoring): the hands-on Explore Lab (real manipulatives), the
-// Model Lab (connect-phase diagram + interpretation), and the Apply Lab
-// (Polya-style word-problem workbench). Manipulative components are lazily
-// imported so lessons only pay for the one they use.
-
 import { attachVoiceInput } from "../components/voice-explain.js";
 import { interactiveVisualHost, mountInteractiveVisuals } from "./interactive-visual.js";
 import { markScene } from "./small-group-storyboard.js";
 import {
+  bi,
   celebrate,
   createVoiceMemo,
   el,
@@ -17,6 +11,7 @@ import {
   sectionHeading,
   speak,
 } from "./small-group-ui.js";
+import { toolMeta } from "./tool-catalog.js";
 import {
   barChartSVG,
   boxPlotSVG,
@@ -47,11 +42,49 @@ function dataChipsBlock(v) {
   return `<div class="sg-datachips" role="img" aria-label="${esc(v.title || "Data values")}: ${esc(values.join(", "))}">${v.title ? `<div class="sg-datachips-title">${esc(v.title)}</div>` : ""}<div class="sg-datachips-row">${chips}</div>${v.unit ? `<div class="sg-datachips-unit">${esc(v.unit)}</div>` : ""}</div>`;
 }
 
+// Adapt the studio store to the {saveResponse, getResponse} shape
+// manipulative-state.js expects, so what a small-group student BUILDS in a
+// manipulative survives a tab switch or a reload — the same memory the full
+// lesson already gives its labs. `slot` namespaces one call site's hosts so two
+// figures of the same kind in different labs never overwrite each other.
+function studioManipStore(store, slot) {
+  if (!store?.get || !store?.set) return null;
+  return {
+    saveResponse(_phaseId, key, value) {
+      store.set(`iv:${slot}:${key}`, value);
+    },
+    getResponse(_phaseId, key) {
+      return store.get(`iv:${slot}:${key}`);
+    },
+  };
+}
+
+// The tool's canonical name + purpose, in the studio's bilingual lane style.
+// Empty string for an uncatalogued kind.
+function toolCaptionHtml(diagram) {
+  const meta = toolMeta(diagram);
+  if (!meta.catalogued) return "";
+  return (
+    `<div class="sg-tool-caption">` +
+    `<span class="sg-tool-name"><span aria-hidden="true">🧰</span> ${bi(meta.name, meta.nameEs)}</span>` +
+    (meta.purpose
+      ? `<span class="sg-tool-purpose">${bi(meta.purpose, meta.purposeEs)}</span>`
+      : "") +
+    (meta.instance ? `<span class="sg-tool-instance">${esc(meta.instance)}</span>` : "") +
+    `</div>`
+  );
+}
+
 // Bridge any config `diagram`/`visual` block to a DOM node: interactive kinds
 // (factor-tree-lab, manip, …) mount live via the shared interactive-visual
 // registry; static kinds render as accessible SVG figures. Returns null when
 // the kind is unknown so callers can skip the block instead of rendering blank.
-export function figureBlock(diagram, { ariaLabel, fallback, staticOnly = false } = {}) {
+// Pass `{ store, slot }` to keep the student's work across sessions.
+export function figureBlock(
+  diagram,
+  /** @type {{ ariaLabel?: string, fallback?: string, staticOnly?: boolean, store?: any, slot?: string }} */
+  { ariaLabel, fallback, staticOnly = false, store, slot } = {},
+) {
   if (!diagram || !diagram.kind) return null;
   let html = "";
   let interactive = false;
@@ -69,8 +102,15 @@ export function figureBlock(diagram, { ariaLabel, fallback, staticOnly = false }
     if (!html) html = FIGURES[diagram.kind]?.(diagram) || "";
   }
   if (!html) return null;
-  const host = el("div", "sg-figure", html);
-  if (interactive) mountInteractiveVisuals(host);
+  // Name the tool before it appears — an unlabelled manipulative reads as
+  // decoration. The catalog carries the student-facing name and purpose for
+  // every registered kind (gated by tools/interactive-tools.test.mjs), so an
+  // uncatalogued kind simply gets no caption rather than a title-cased slug.
+  const host = el("div", "sg-figure", interactive ? toolCaptionHtml(diagram) + html : html);
+  if (interactive) {
+    const persist = slot ? studioManipStore(store, slot) : null;
+    mountInteractiveVisuals(host, persist ? { state: persist, phaseId: slot } : undefined);
+  }
   return host;
 }
 
@@ -288,7 +328,7 @@ export function createModelLab(config, variant, { number, store, events, onDone 
   if (store.get("modelDone")) section.appendChild(doneChip("Model explained last session."));
   if (connect.scenario) section.appendChild(el("p", "sg-lab-note", esc(connect.scenario)));
 
-  const figure = figureBlock(connect.diagram);
+  const figure = figureBlock(connect.diagram, { store, slot: "model-lab" });
   if (figure) section.appendChild(figure);
 
   const card = el("div", "card");

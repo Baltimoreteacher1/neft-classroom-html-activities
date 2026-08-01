@@ -1,3 +1,6 @@
+// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
+// (see tsconfig.json); the marker is the debt, and removing it is the unit of
+// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 import {
   renderActivityChooser,
   renderOptionalPracticeOptIn,
@@ -26,6 +29,7 @@ import { attachAnnotator } from "../components/scene-annotate.js";
 import { attachVoiceInput } from "../components/voice-explain.js";
 import { createAdaptiveSequence } from "./adaptive.js";
 import { enableWordProblemAnnotation, observeWordProblemAnnotation } from "./annotate.js";
+import { fullerFormHint, isRight } from "./answer-match.js";
 import { createApp } from "./app.js";
 import { mountCertificateDownload } from "./certificate-export.js";
 import { mountChalkAnnotations } from "./chalk-annotate.js";
@@ -53,6 +57,7 @@ import {
   normalizeAcademicWord,
   resolveNoticeWonderAcademicWord,
 } from "./notice-wonder-glossary.js";
+import { studentFirstName, toThirdPersonObjective } from "./objective-voice.js";
 import { mountPeerExchange } from "./peer-exchange.js";
 import {
   buildPhaseTransitionMeta,
@@ -68,6 +73,7 @@ import { mountQuestionLadderReader } from "./socratic.js";
 import { mountStuckSupport } from "./stuck-support.js";
 import { isTeacherMode } from "./teacher-mode.js";
 import { renderThemeIllustration } from "./theme-illustrations.js";
+import { toolMeta } from "./tool-catalog.js";
 import { isToolsMode, mountToolsMenuItem, renderToolsPage } from "./tools-mode.js";
 import { stampTeachL4Meta } from "./uifr.js";
 import {
@@ -228,13 +234,18 @@ function buildVisual(v) {
         ariaLabel: figureAria(v, "Interactive bar chart"),
         fallback: barChartSVG(v),
       });
-    case "number-line":
-      // Interactive "place the points" when authored with `points`; the static
-      // line stays as the JS-off / print fallback (and the no-points case).
+    case "number-line": {
+      // Three tasks behind one kind: `problems` → the graph-and-read inequality
+      // lab, `points` → "place the points", neither → a static reference line.
+      // The static line stays as the JS-off / print fallback in every case.
+      const isInequality = Array.isArray(v.problems) && v.problems.length > 0;
       return interactiveVisualHost(v, {
-        ariaLabel: figureAria(v, "Number line"),
+        ariaLabel: isInequality
+          ? `Inequality graphs to read: ${v.problems.length} graphed inequalities. For each one, read the circle and the shading, then write the inequality it shows.`
+          : figureAria(v, "Number line"),
         fallback: numberLineSVG(v),
       });
+    }
     case "tape-diagram":
       // Interactive "count the equal parts" tape (interactive-visual bridge).
       // The static SVG stays as the JS-off / print fallback.
@@ -437,6 +448,17 @@ function buildVisual(v) {
         fallback: `Cross-section explorer for a ${shapeName}. Turn on JavaScript to slice it and see the 2D cross-sections.`,
       });
     }
+    case "net-folder": {
+      // Fold a 2D net into a 3D solid. It has been in the interactive-visual
+      // REGISTRY (for small-group labs, which mount via figureBlock) without a
+      // case here, so a lesson that authored it as a `diagram` rendered nothing
+      // at all — scripts/validate-lesson-visuals.mjs is the gate that sees this.
+      const solidName = String(v.solid || v.shape || "cube").replace(/-/g, " ");
+      return interactiveVisualHost(v, {
+        ariaLabel: `Interactive net folder for a ${solidName}. Drag the Fold slider to fold the flat net into the solid and count its faces.`,
+        fallback: `Net folder for a ${solidName}. Turn on JavaScript to fold the flat net into the solid.`,
+      });
+    }
     case "manip": {
       // Any shared/projects manipulative (number-line, fraction-bar,
       // algebra-tiles, …) surfaced via the interactive-visual bridge.
@@ -476,6 +498,16 @@ function buildVisual(v) {
           "Interactive distributive property lab. Type a, b, and c to see an area model of a times the quantity b plus c and how it equals a·b plus a·c.",
         fallback:
           "Interactive distributive property builder. Turn on JavaScript to model a(b + c) = a·b + a·c.",
+      });
+    }
+    case "percent-grid": {
+      // Hundred-square grid: shade squares and reveal the SAME amount written
+      // three ways — percent, decimal, fraction.
+      return interactiveVisualHost(v, {
+        ariaLabel:
+          "Interactive hundred-square percent grid. Tap squares to change how much is shaded, then reveal the same amount as a percent, a decimal, and a fraction.",
+        fallback:
+          "Interactive hundred-square grid. Turn on JavaScript to shade squares and read the amount as a percent, a decimal, and a fraction.",
       });
     }
     case "percent-builder": {
@@ -1785,7 +1817,7 @@ function getObjectivePopup() {
   return backdrop;
 }
 
-function openObjectiveTermPopup(entry) {
+function openObjectiveTermPopup(entry, opts = {}) {
   if (!entry) return;
   const backdrop = getObjectivePopup();
   const term = String(entry.term || "").trim();
@@ -1812,8 +1844,11 @@ function openObjectiveTermPopup(entry) {
   // definition but no image, and would otherwise fall back to the generic "#"
   // number-category tile — an unrelated picture. In that case hide the image and
   // let the definition stand alone.
+  // `opts.hideImage` suppresses the picture entirely: on the objective cards the
+  // picture belongs to the visual-model card below the goal (click IT to enlarge),
+  // so tapping an underlined word there should give the meaning and nothing else.
   const img = backdrop.querySelector(".obj-popup-img");
-  const showImg = hasRealVocabImage(term, entry.image);
+  const showImg = !opts.hideImage && hasRealVocabImage(term, entry.image);
   if (showImg) {
     img.src = resolveVocabImage(term, entry.image);
     img.alt = vocabImageAlt(title, entry.definition);
@@ -1872,7 +1907,10 @@ function closeObjectivePopup() {
 }
 
 // Delegate clicks on underlined objective terms to the shared glossary popup.
-export function wireObjectiveTermPopups(block, vocab) {
+// Pass `{ hideImage: true }` on the objective cards: the goal already carries its
+// own visual-model picture (click the picture to enlarge it), so an underlined
+// word there opens the meaning only — two competing pictures confused students.
+export function wireObjectiveTermPopups(block, vocab, opts = {}) {
   if (!block.querySelector(".obj-term")) return;
   block.addEventListener("click", (e) => {
     const btn = e.target.closest(".obj-term");
@@ -1880,8 +1918,13 @@ export function wireObjectiveTermPopups(block, vocab) {
     // Prevent the click from bubbling to an enclosing <label> (e.g. the
     // "Did I get it?" review rows) and toggling its checkbox.
     e.preventDefault();
+    // …and stop it reaching an OUTER delegated handler. underlineVocabTerms
+    // wires the whole phase container, so without this the objective block's
+    // definition-only popup was immediately reopened by the container's
+    // handler — with the picture — and the picture won because it ran last.
+    e.stopPropagation();
     const idx = Number(btn.dataset.termIdx);
-    if (Number.isInteger(idx)) openObjectiveTermPopup(vocab[idx]);
+    if (Number.isInteger(idx)) openObjectiveTermPopup(vocab[idx], opts);
   });
 }
 
@@ -2072,31 +2115,31 @@ function resolveContentVisualCaption(config) {
   const unit = (config && config.unit) || 1;
 
   if (unit === 1) {
-    return `Student avatar actively finding factors and comparing common numbers on her desk grid mat to circle the greatest common factor (GCF).`;
+    return `A student actively finding factors and comparing common numbers on her desk grid mat to circle the greatest common factor (GCF).`;
   }
   if (unit === 2) {
-    return `Student avatar dividing fraction bar strips on her desk grid mat to solve quotient problems.`;
+    return `A student dividing fraction bar strips on her desk grid mat to solve quotient problems.`;
   }
   if (unit === 3) {
-    return `Student avatar plotting ratio points on double number line strips to calculate unit rates.`;
+    return `A student plotting ratio points on double number line strips to calculate unit rates.`;
   }
   if (unit === 4) {
-    return `Student avatar applying distributive tile arrays on her desk grid mat to evaluate and simplify algebraic expressions.`;
+    return `A student applying distributive tile arrays on her desk grid mat to evaluate and simplify algebraic expressions.`;
   }
   if (unit === 5) {
-    return `Student avatar actively balancing an algebraic scale with variable blocks to isolate x.`;
+    return `A student actively balancing an algebraic scale with variable blocks to isolate x.`;
   }
   if (unit === 6) {
-    return `Student avatar laying flat the 3D prism into a 2D net on her desk grid mat to calculate surface area face dimensions.`;
+    return `A student laying flat the 3D prism into a 2D net on her desk grid mat to calculate surface area face dimensions.`;
   }
   if (unit === 7) {
-    return `Student avatar plotting ordered pairs (x,y) across all 4 quadrants of the Cartesian grid mat.`;
+    return `A student plotting ordered pairs (x,y) across all 4 quadrants of the Cartesian grid mat.`;
   }
   if (unit === 8) {
-    return `Student avatar drawing a 5-number summary box plot on a grid mat to analyze data distributions and median values.`;
+    return `A student drawing a 5-number summary box plot on a grid mat to analyze data distributions and median values.`;
   }
 
-  return `Student avatar actively demonstrating ${title} on her desk grid mat.`;
+  return `A student actively demonstrating ${title} on her desk grid mat.`;
 }
 
 function resolveLanguageVisualCaption(config) {
@@ -2105,10 +2148,26 @@ function resolveLanguageVisualCaption(config) {
   return `Student partners pointing to key vocabulary callout badges for ${title} and using academic sentence frames.`;
 }
 
-function renderObjectives(el, config, state) {
+// Renders the two "I can…" goal cards (Content + Language).
+//
+// `opts.review` switches the block into end-of-lesson mode (Phase 8): the goals
+// are restated in the third person using the name the student typed on Launch —
+// "Samuel can now compare ratios using a table." — the discussion prompts look
+// backwards instead of forwards, and the self-checks persist under their own
+// keys so ticking "Did it" at the end does not rewrite the "Got it" the student
+// ticked at the start. With no name entered it degrades to the ordinary
+// first-person wording, so nothing depends on the Name field being filled in.
+function renderObjectives(el, config, state, opts = {}) {
+  const review = !!opts.review;
+  const name = review ? studentFirstName(state) : "";
+  const phrase = (text) => (review ? toThirdPersonObjective(text, name) : text);
+
   const vocab = augmentVocabWithGlossary(config.vocabulary);
-  const contentHtml = linkifyObjectiveTerms(resolveContentObjective(config), vocab);
-  const languageHtml = linkifyObjectiveTerms(resolveLanguageObjective(config), vocab);
+  // Re-phrase BEFORE linkifying: the third-person rewrite matches on the leading
+  // pronoun, and linkifyObjectiveTerms would otherwise be free to wrap part of
+  // that opener in an <button class="obj-term"> and break the match.
+  const contentHtml = linkifyObjectiveTerms(phrase(resolveContentObjective(config)), vocab);
+  const languageHtml = linkifyObjectiveTerms(phrase(resolveLanguageObjective(config)), vocab);
 
   const contentImg = resolveContentVisualImg(config);
   const languageImg = resolveLanguageVisualImg(config);
@@ -2118,63 +2177,86 @@ function renderObjectives(el, config, state) {
   const card = (o) => `
     <div class="card ${o.cardClass} launch-objective">
       <div class="launch-objective-head" style="display:flex; align-items:center; justify-content:space-between; gap:var(--sp-2); margin-bottom:var(--sp-2);">
-        <h4 style="color:${o.ink}; margin:0;">${o.label}</h4>
-        <label class="objective-check" style="display:inline-flex; align-items:center; gap:6px; margin:0; font-size:.8rem; font-weight:800; color:${o.ink}; cursor:pointer; white-space:nowrap;">
-          <input type="checkbox" class="objective-check-box" data-obj-key="${o.key}" aria-label="I understand the ${o.label.toLowerCase()}"
+        <h4 style="color:${o.ink}; margin:0; font-size:1.15rem; font-weight:800; letter-spacing:-0.01em;">${o.label}</h4>
+        <label class="objective-check" style="display:inline-flex; align-items:center; gap:6px; margin:0; font-size:.85rem; font-weight:800; color:${o.ink}; cursor:pointer; white-space:nowrap;">
+          <input type="checkbox" class="objective-check-box" data-obj-key="${o.key}" aria-label="${o.checkAria}"
                  style="width:18px; height:18px; accent-color:${o.ink}; cursor:pointer;" />
-          Got it
+          ${o.checkLabel}
         </label>
       </div>
-      <p style="margin:0; font-weight:600;">${o.text}</p>
+      <p style="margin:0; font-size:1.08rem; font-weight:800; color:#0f172a; line-height:1.65; -webkit-font-smoothing:antialiased;">${o.text}</p>
       
       <!-- PUBLISHER-GRADE VISUAL MODEL CARD DIRECTLY BELOW OBJECTIVE TEXT -->
-      <div class="visual-model-wrapper" style="margin-top:14px; margin-bottom:14px; border-radius:14px; overflow:hidden; border:1px solid rgba(0,0,0,0.1); box-shadow:0 6px 18px rgba(0,0,0,0.06); background:#0b0f19;">
-        <img src="${o.img}" alt="Visual Model Representation" style="width:100%; height:auto; display:block;" />
-        <div style="padding:10px 14px; background:#ffffff; border-top:1px solid #e2e8f0; font-size:13px; color:#1e293b; font-weight:600; line-height:1.4;">
-          ${o.icon} <strong>Visual Representation:</strong> ${o.caption}
+      <div class="visual-model-wrapper" style="margin-top:14px; margin-bottom:14px; border-radius:14px; overflow:hidden; border:1px solid rgba(0,0,0,0.12); box-shadow:0 6px 18px rgba(0,0,0,0.06); background:#0b0f19; cursor:zoom-in;">
+        <img src="${o.img}" alt="Visual Model Representation" style="width:100%; height:auto; display:block; cursor:zoom-in;" />
+        <div style="padding:10px 14px; background:#ffffff; border-top:1px solid #e2e8f0; font-size:13.5px; color:#0f172a; font-weight:700; line-height:1.45;">
+          ${o.icon} <strong>Visual Representation:</strong> ${o.caption} <span style="font-size:11px; opacity:0.85; margin-left:6px;">🔍 (Click to enlarge)</span>
         </div>
       </div>
 
       <div class="objective-discuss" style="margin-top:var(--sp-3); padding-top:var(--sp-2); border-top:1px dashed rgba(0,0,0,0.12);">
-        <span style="display:block; font-size:.82rem; font-weight:800; letter-spacing:.02em; color:${o.ink}; margin-bottom:2px;">💬 Talk about it</span>
-        <span style="font-size:.95rem;">${o.discuss}</span>
+        <span style="display:block; font-size:.85rem; font-weight:800; letter-spacing:.02em; color:${o.ink}; margin-bottom:3px;">💬 Talk about it</span>
+        <span style="font-size:.98rem; font-weight:700; color:#1e293b; line-height:1.5;">${o.discuss}</span>
       </div>
     </div>`;
 
+  // The end-of-lesson block reads as evidence of growth ("Content Objective —
+  // Achieved"), so the labels, self-check wording and talk prompts all shift to
+  // the past tense. `who` is the student's name when we have one and a neutral
+  // stand-in when we do not, so the sentences never read "  can now".
+  const who = name || "You";
   const block = document.createElement("div");
-  block.className = "launch-objectives grid-2";
+  block.className = `launch-objectives grid-2${review ? " launch-objectives-review" : ""}`;
   block.innerHTML =
     card({
       cardClass: "card-teal",
       ink: "var(--teal-ink)",
-      label: "Content Objective",
+      label: review ? "Content Objective — Achieved" : "Content Objective",
       key: "content",
       text: contentHtml,
       img: contentImg,
       icon: "🎯",
       caption: contentCaption,
-      discuss:
-        "In your own words, what will you be able to do by the end of this lesson? Give one example.",
+      checkLabel: review ? "Did it" : "Got it",
+      checkAria: review
+        ? `${who} can now do the content objective`
+        : `I understand the content objective`,
+      discuss: review
+        ? `In your own words, what can ${who} do now that ${who === "You" ? "you" : who} could not do at the start of this lesson? Give one example.`
+        : "In your own words, what will you be able to do by the end of this lesson? Give one example.",
     }) +
     card({
       cardClass: "card-coral",
       ink: "var(--coral)",
-      label: "Language Objective",
+      label: review ? "Language Objective — Achieved" : "Language Objective",
       key: "language",
       text: languageHtml,
       img: languageImg,
       icon: "🗣️",
       caption: languageCaption,
-      discuss:
-        "Which math words in this goal are new to you? How would you explain this goal to a partner?",
+      checkLabel: review ? "Did it" : "Got it",
+      checkAria: review
+        ? `${who} can now do the language objective`
+        : `I understand the language objective`,
+      discuss: review
+        ? "Which math words did you actually use today? Explain one of them to a partner in your own words."
+        : "Which math words in this goal are new to you? How would you explain this goal to a partner?",
     });
   el.append(block);
-  wireObjectiveTermPopups(block, vocab);
+  // Definition-only popups on the goals: the picture for this card is the visual
+  // model below the text, and it opens on its own click (attachImageZoom).
+  wireObjectiveTermPopups(block, vocab, { hideImage: true });
+
+  block.querySelectorAll(".visual-model-wrapper img").forEach((img) => {
+    attachImageZoom(img);
+  });
 
   // Persist each self-check on Launch (phase 0) so it survives reload, exactly
-  // like every other lesson input. No-op when state is unavailable.
+  // like every other lesson input. The review block uses its own key prefix so
+  // the end-of-lesson "Did it" is a separate answer from the opening "Got it".
+  // No-op when state is unavailable.
   block.querySelectorAll(".objective-check-box").forEach((box) => {
-    const key = `objective_understood_${box.dataset.objKey}`;
+    const key = `${review ? "objective_achieved" : "objective_understood"}_${box.dataset.objKey}`;
     if (state && state.getResponse && state.getResponse(0, key) === "1") box.checked = true;
     box.addEventListener("change", () => {
       if (state && state.saveResponse) state.saveResponse(0, key, box.checked ? "1" : "0");
@@ -3366,8 +3448,10 @@ function renderCommonMistakeCallout(host, config) {
   host.append(box);
 }
 
-// Normalize a typed math answer for comparison: lowercase, strip spaces, unify
-// the many multiplication symbols, and turn unicode superscripts into ^n.
+// Normalize a typed math answer for the "is this simple enough to mark wrong?"
+// heuristic below: lowercase, strip spaces, unify the many multiplication
+// symbols, and turn unicode superscripts into ^n. Equivalence itself is decided
+// by the site-wide matcher in answer-match.js, not here.
 function normalizeAnswer(s) {
   return String(s == null ? "" : s)
     .toLowerCase()
@@ -3383,16 +3467,25 @@ function normalizeAnswer(s) {
 // Decide whether a typed answer can be auto-graded, and if so whether it's
 // correct. Returns {graded:false} for complex expressions (formatting varies too
 // much to grade fairly) so the UI falls back to a self-check reveal.
+//
+// Correctness goes through the shared matcher, so "7", "m = 7" and "7 boxes"
+// all count when the authored answer is "m = 7" — the variable label and the
+// unit are habits worth suggesting, not grounds for a red X. `hint` carries the
+// fuller authored form so the UI can suggest it after crediting the answer.
 function gradeSkillAnswer(student, correct) {
-  const a = normalizeAnswer(student);
-  const b = normalizeAnswer(correct);
-  if (!a) return { graded: false };
-  if (a === b) return { graded: true, correct: true };
-  const isNum = (s) => /^-?\d+(?:\.\d+)?$/.test(s);
-  if (isNum(a) && isNum(b)) return { graded: true, correct: Number(a) === Number(b) };
-  // Short, simple answers (one word/number, no operators) are safe to mark.
+  if (!normalizeAnswer(student)) return { graded: false };
+  if (isRight(student, correct))
+    return { graded: true, correct: true, hint: fullerFormHint(student, correct) };
+  // Short, simple answers (one word/number, no operators) are safe to mark wrong.
+  const b = normalizeAnswer(stripLabelForGrading(correct));
   if (b.length <= 12 && !/[*^/+]/.test(b)) return { graded: true, correct: false };
   return { graded: false };
+}
+
+// "m = 7" is as simple to grade as "7"; judge the value, not the label.
+function stripLabelForGrading(correct) {
+  const first = Array.isArray(correct) ? correct.find((a) => a != null) : correct;
+  return String(first ?? "").replace(/^\s*[a-z][a-z0-9]?\s*=\s*/i, "");
 }
 
 // Real skill practice: a few of the lesson's own problems presented as "solve
@@ -3500,7 +3593,13 @@ function renderSkillPractice(host, config, state) {
       if (r.graded && r.correct) {
         reveal.style.background = "rgba(46,158,91,0.10)";
         reveal.style.borderColor = "#2e9e5b";
-        reveal.innerHTML = `<strong>✅ Correct!</strong> ${esc(answer)}${why}`;
+        // Credit first, coach second: when the authored answer names the
+        // variable or carries a unit the student left off, show it as a next
+        // step, never as a correction.
+        const fuller = r.hint
+          ? `<br><span style="color:var(--muted,#5f6f80);">Nice — mathematicians often write it as <strong>${esc(r.hint)}</strong>. Either way, your answer is correct.</span>`
+          : "";
+        reveal.innerHTML = `<strong>✅ Correct!</strong> ${esc(answer)}${fuller}${why}`;
       } else if (r.graded && spMisses === 0) {
         spMisses = 1;
         reveal.style.background = "rgba(217,83,79,0.08)";
@@ -3569,6 +3668,27 @@ function renderSkillPractice(host, config, state) {
   enableWordProblemAnnotation(card);
 }
 
+// Caption for a practice lab: the tool's canonical name and what it is for,
+// bilingual when the catalog carries Spanish. Returns "" for an uncatalogued
+// kind so the lab still renders rather than showing a title-cased slug.
+function practiceLabHeaderHtml(lab) {
+  const meta = toolMeta(lab);
+  if (!meta.catalogued) return "";
+  const name = meta.nameEs ? stackHtml(meta.name, meta.nameEs) : esc(meta.name);
+  const purpose = meta.purposeEs ? stackHtml(meta.purpose, meta.purposeEs) : esc(meta.purpose);
+  return (
+    `<div class="practice-lab-head" style="margin-bottom:var(--sp-3);">` +
+    `<div style="display:flex; align-items:center; gap:8px; font-weight:800; color:var(--navy,#264653);"><span aria-hidden="true">🧰</span><span>${name}</span></div>` +
+    (meta.purpose
+      ? `<p style="margin:var(--sp-2) 0 0; font-size:0.9rem; color:var(--muted); line-height:1.5;">${purpose}</p>`
+      : "") +
+    (meta.instance
+      ? `<p style="margin:var(--sp-1) 0 0; font-size:0.85rem; font-weight:600; color:var(--navy,#264653);">${esc(meta.instance)}</p>`
+      : "") +
+    `</div>`
+  );
+}
+
 function renderPracticePhase(el, state, ctx, config) {
   phaseHeader(
     el,
@@ -3597,7 +3717,12 @@ function renderPracticePhase(el, state, ctx, config) {
       if (!lab) continue;
       const labCard = document.createElement("div");
       labCard.className = "card";
-      labCard.innerHTML = buildVisual(lab);
+      // Name the tool before it appears. An unlabelled manipulative at the top
+      // of Practice reads as decoration; the catalog already carries a student-
+      // facing name and purpose for every registered kind, so say what it is
+      // and what it is for. Falls back to the bare tool when a kind somehow has
+      // no catalog entry (tools/interactive-tools.test.mjs gates against that).
+      labCard.innerHTML = practiceLabHeaderHtml(lab) + buildVisual(lab);
       el.append(labCard);
       mountInteractiveVisuals(labCard, { state, phaseId: 2 });
     }
@@ -3813,32 +3938,16 @@ function renderPracticePhase(el, state, ctx, config) {
 // whether the friend was right. These helpers make the frame answerable and
 // the answer checkable.
 
-// Tolerant comparison for a single blank. Students type "$16", "16", "16.00",
-// ".6" and "0.6" for the same value, so strip currency/percent/comma/space
-// noise and normalize decimal spelling before comparing. Deliberately NOT a
-// numeric parse: blanks also hold words ("60% off", "decimal").
-function normalizeBlankValue(v) {
-  return String(v ?? "")
-    .toLowerCase()
-    .normalize("NFKD")
-    .replace(/[̀-ͯ]/g, "")
-    .replace(/[\s$,%]/g, "")
-    .replace(/^0+(?=\d)/, "")
-    .replace(/^(?=\.\d)/, "0")
-    .replace(/(\.\d*?)0+$/, "$1")
-    .replace(/\.$/, "")
-    .trim();
-}
-
-// One blank accepts a single string or an array of equivalent strings.
+// One blank accepts a single string or an array of equivalent strings, matched
+// by the site-wide matcher — so "$16", "16", "16.00", "16 dollars" and
+// "c = 16" all count for the same blank, and blanks that hold words
+// ("60% off", "decimal") still compare as text.
 // `null`/omitted means "no authored answer" — the blank is still typed into and
 // still saved, it just is not marked right or wrong.
 function blankIsCorrect(value, accepted) {
   if (accepted == null) return null;
-  const v = normalizeBlankValue(value);
-  if (!v) return false;
-  const list = Array.isArray(accepted) ? accepted : [accepted];
-  return list.some((a) => normalizeBlankValue(a) === v);
+  if (!String(value ?? "").trim()) return false;
+  return isRight(value, accepted);
 }
 
 /**
@@ -4576,23 +4685,34 @@ function renderObjectiveReview(state, config) {
 
   // Same treatment as the Launch header and Objectives page: key vocabulary is
   // underlined + tap-to-open the glossary popup (wired on the card below).
+  // On the completion certificate the goals are stated in the third person with
+  // the student's own name — "Samuel can now …" — matching the Phase 8 review.
   const vocab = augmentVocabWithGlossary(config.vocabulary);
+  const name = studentFirstName(state);
+  const phrase = (text) => toThirdPersonObjective(text, name);
   const items = [
     {
       key: "review_content",
       label: t("contentObjective"),
-      html: linkifyObjectiveTerms(resolveContentObjective(config), vocab),
+      html: linkifyObjectiveTerms(phrase(resolveContentObjective(config)), vocab),
     },
     {
       key: "review_language",
       label: t("languageObjective"),
-      html: linkifyObjectiveTerms(resolveLanguageObjective(config), vocab),
+      html: linkifyObjectiveTerms(phrase(resolveLanguageObjective(config)), vocab),
     },
   ];
 
+  const reviewTitle = name
+    ? `✅ ${esc(name)} Can Now…`
+    : `✅ ${stackHtml(t("didIGetIt", "en"), t("didIGetIt", "es"))}`;
+  const reviewNote = name
+    ? `Check off each goal ${esc(name)} can do. Be honest — it helps you know what to practice!`
+    : "Check off each goal you can do. Be honest — it helps you know what to practice!";
+
   card.innerHTML = `
-    <h4 id="obj-review-title" style="color:var(--teal-ink); margin-bottom:var(--sp-2);">✅ ${stackHtml(t("didIGetIt", "en"), t("didIGetIt", "es"))}</h4>
-    <p style="color:var(--muted); margin:0 0 var(--sp-4); font-size:0.92rem;">Check off each goal you can do. Be honest — it helps you know what to practice!</p>
+    <h4 id="obj-review-title" style="color:var(--teal-ink); margin-bottom:var(--sp-2);">${reviewTitle}</h4>
+    <p style="color:var(--muted); margin:0 0 var(--sp-4); font-size:0.92rem;">${reviewNote}</p>
   `;
 
   items.forEach((item) => {
@@ -4606,7 +4726,10 @@ function renderObjectiveReview(state, config) {
     cb.checked = checked;
     cb.style.cssText =
       "width:1.4rem; height:1.4rem; margin-top:2px; flex:0 0 auto; cursor:pointer;";
-    cb.setAttribute("aria-label", `I can do this — ${item.label}`);
+    cb.setAttribute(
+      "aria-label",
+      name ? `${name} can do this — ${item.label}` : `I can do this — ${item.label}`,
+    );
 
     const text = document.createElement("div");
     text.innerHTML = `
@@ -4628,7 +4751,8 @@ function renderObjectiveReview(state, config) {
     card.append(row);
   });
 
-  wireObjectiveTermPopups(card, vocab);
+  // Definition-only, like every other objective surface.
+  wireObjectiveTermPopups(card, vocab, { hideImage: true });
   return card;
 }
 
@@ -4774,22 +4898,31 @@ function renderObjectivesReviewPhase(el, state, _ctx, config) {
   card.style.cssText =
     "margin: 16px 0 24px; border: 2px solid #0f6d78; border-radius: 16px; padding: 22px; background: #ffffff; box-shadow: 0 6px 20px rgba(15,109,120,0.12);";
 
+  // Name the student in the goals themselves: "Samuel can now …" reads as
+  // evidence of growth rather than as the same goal repeated. Falls back to the
+  // original wording when the Name field on Launch was left empty.
+  const name = studentFirstName(state);
+  const heading = name ? `🎯 ${esc(name)} Can Now…` : "🎯 Learning Objectives Mastery Check";
+  const intro = name
+    ? `Look at what ${esc(name)} could not do at the start of today's lesson — and can do now. Read each goal and check off the ones ${esc(name)} can do.`
+    : "Now that you've completed today's lesson, revisit the goals you set at the beginning and check off what you mastered!";
+
   card.innerHTML = `
     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; border-bottom:1px solid #e2e8f0; padding-bottom:12px;">
       <div>
         <span style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; color:#0f6d78; background:#e6f4f6; padding:4px 10px; border-radius:6px;">Phase 8 · Objectives Review</span>
-        <h3 style="margin:6px 0 0; font-size:22px; font-weight:800; color:#14223a;">🎯 Learning Objectives Mastery Check</h3>
+        <h3 style="margin:6px 0 0; font-size:22px; font-weight:800; color:#14223a;">${heading}</h3>
       </div>
       <div style="font-size:13px; font-weight:800; color:#0f6d78; background:#f0fdf4; border:1px solid #bbf7d0; padding:6px 14px; border-radius:10px;">
         Self-Check &amp; Growth
       </div>
     </div>
     <p style="margin:0 0 16px; font-size:15px; color:#56627a;">
-      Now that you've completed today's lesson, revisit the goals you set at the beginning and check off what you mastered!
+      ${intro}
     </p>
   `;
 
-  renderObjectives(card, config, state);
+  renderObjectives(card, config, state, { review: true });
 
   const checkWrap = document.createElement("div");
   checkWrap.style.cssText =
@@ -4797,15 +4930,20 @@ function renderObjectivesReviewPhase(el, state, _ctx, config) {
 
   const savedChecks = state.getResponse(phaseIndex, "objectives_mastery") || {};
 
+  // Third person to match the goal cards above: "Samuel can now demonstrate…".
+  const subject = name ? esc(name) : "I";
+  const verb = name ? "can now" : "can";
+  const usedVerb = name ? `${esc(name)} used` : "I used";
+
   checkWrap.innerHTML = `
-    <div style="font-size:14px; font-weight:800; color:#0f172a;">Track Your Goal Mastery:</div>
+    <div style="font-size:14px; font-weight:800; color:#0f172a;">${name ? `Track ${esc(name)}'s Goal Mastery:` : "Track Your Goal Mastery:"}</div>
     <label style="display:flex; align-items:center; gap:10px; cursor:pointer; font-size:14px; color:#334155;">
       <input type="checkbox" id="chkObjContent" ${savedChecks.content ? "checked" : ""}>
-      <span><strong>Content Goal:</strong> I can demonstrate and apply today's math concept!</span>
+      <span><strong>Content Goal:</strong> ${subject} ${verb} demonstrate and apply today's math concept!</span>
     </label>
     <label style="display:flex; align-items:center; gap:10px; cursor:pointer; font-size:14px; color:#334155;">
       <input type="checkbox" id="chkObjLang" ${savedChecks.lang ? "checked" : ""}>
-      <span><strong>Language Goal:</strong> I used academic vocabulary and clear math reasoning!</span>
+      <span><strong>Language Goal:</strong> ${usedVerb} academic vocabulary and clear math reasoning!</span>
     </label>
   `;
 

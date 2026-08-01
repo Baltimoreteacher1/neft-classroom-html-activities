@@ -54,7 +54,7 @@
       var s = document.querySelector('script[src="' + BRIDGE_SRC + '"]');
       if (!s) {
         s = document.createElement("script");
-        s.src = BRIDGE_SRC;
+        /** @type {HTMLScriptElement} */ (s).src = BRIDGE_SRC;
         document.body.appendChild(s);
       }
       s.addEventListener("load", function () {

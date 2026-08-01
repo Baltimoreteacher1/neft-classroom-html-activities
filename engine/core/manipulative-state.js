@@ -1,4 +1,3 @@
-// manipulative-state.js — keep what a student BUILT.
 //
 // Every interactive visual in the lesson has been amnesiac: a student who spends
 // four minutes building a tape diagram in Explore, then moves to Practice and
@@ -79,7 +78,7 @@ export function restoreState(host, snapshot) {
   }
   if (!snapshot.fields) return false;
 
-  host.dataset.ivRestoring = "1";
+  /** @type {HTMLElement} */ (host).dataset.ivRestoring = "1";
   try {
     const controls = host.querySelectorAll("input, select, textarea");
     controls.forEach((el, i) => {
@@ -101,7 +100,7 @@ export function restoreState(host, snapshot) {
     }
     return true;
   } finally {
-    delete host.dataset.ivRestoring;
+    delete (/** @type {HTMLElement} */ (host).dataset.ivRestoring);
   }
 }
 
@@ -111,6 +110,9 @@ export function restoreState(host, snapshot) {
  * Idempotent per host. Safe to call before components have finished their async
  * mount: restoration is retried on the first interaction as well as on a short
  * delay, because a host whose fields do not exist yet cannot be filled.
+ *
+ * @param {Element} root
+ * @param {{ state?: any, phaseId?: string }} [opts]
  */
 export function attachManipulativePersistence(root, { state, phaseId } = {}) {
   if (!root || !state?.saveResponse || !state?.getResponse) return 0;
@@ -124,17 +126,17 @@ export function attachManipulativePersistence(root, { state, phaseId } = {}) {
   let wired = 0;
 
   for (const host of hosts) {
-    const kind = host.dataset.visual;
+    const kind = /** @type {HTMLElement} */ (host).dataset.visual;
     const ordinal = seenByKind.get(kind) || 0;
     seenByKind.set(kind, ordinal + 1);
-    if (host.dataset.ivPersist) continue;
-    host.dataset.ivPersist = "1";
+    if (/** @type {HTMLElement} */ (host).dataset.ivPersist) continue;
+    /** @type {HTMLElement} */ (host).dataset.ivPersist = "1";
     wired += 1;
 
     const key = manipulativeKey(host, ordinal);
 
     const save = () => {
-      if (host.dataset.ivRestoring) return;
+      if (/** @type {HTMLElement} */ (host).dataset.ivRestoring) return;
       const snapshot = captureState(host);
       if (snapshot) state.saveResponse(phaseId, key, snapshot);
     };

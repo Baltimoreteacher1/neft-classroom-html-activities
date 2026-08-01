@@ -1,10 +1,6 @@
-// fraction-divide.js — Interactive "divide fractions" lab (6.NOS.1). Teaches
-// keep–change–flip in staged, checked steps:
-//   1. Rewrite any whole/mixed numbers as improper fractions (only shown when
-//      an operand actually has a whole part).
-//   2. Keep–Change–Flip: keep the first fraction, change ÷ to ×, and write the
-//      reciprocal of the divisor.
-//   3. Multiply and simplify to lowest terms (a mixed number when it's > 1).
+// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
+// (see tsconfig.json); the marker is the debt, and removing it is the unit of
+// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 //
 // Students type each answer as text ("5/2", "3 1/3", "4"); every check compares
 // by EXACT integer fraction math, so equivalent forms are accepted and float

@@ -81,7 +81,16 @@ try {
         let currContent = readFileSync(currPath, "utf8");
         currContent = currContent.replace(
           /(\/assets\/curriculum-[^"']+\.(?:css|js))\?v=[^"']+/g,
-          `$1?v=${buildStamp.slice(0, 10)}`,
+          (match, asset) =>
+            // curriculum-hub-*.{js,css} are stamped with their own CONTENT
+            // HASH (see tools/curriculum-hub-assets.test.mjs), which is a
+            // strictly better cache key than a build id: it changes when the
+            // file changes and not on every build. Overwriting it here also
+            // broke that test, because the stamp in the HTML no longer matched
+            // the file it names.
+            /\/assets\/curriculum-hub[^"']*$/.test(asset)
+              ? match
+              : `${asset}?v=${buildStamp.slice(0, 10)}`,
         );
         writeFileSync(currPath, currContent, "utf8");
       } catch (_e) {}

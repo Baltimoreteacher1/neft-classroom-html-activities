@@ -217,7 +217,7 @@
     step.className = "nt-hl-step";
     var n = doc.createElement("span");
     n.className = "nt-hl-step-n";
-    n.textContent = state.rung; // 1-based; incremented before addStep
+    n.textContent = String(state.rung); // 1-based; incremented before addStep
     var body = doc.createElement("p");
     body.className = "nt-hl-step-text";
     body.textContent = text;

@@ -1,4 +1,3 @@
-// tools-mode.js — a standalone "Interactive Tools" practice page for a lesson.
 //
 // Every lesson already authors its manipulatives (equation-balance lab, step
 // solver, balance scale, tape diagram, number lines, …) inside its section
@@ -597,7 +596,7 @@ export function buildToolCard({ v, section }, opts = {}) {
   restart.textContent = "↺ Start this tool over";
   restart.addEventListener("click", () => {
     remount();
-    host.querySelector("button, input, [tabindex]")?.focus?.();
+    /** @type {HTMLElement} */ (host.querySelector("button, input, [tabindex]"))?.focus?.();
   });
   foot.appendChild(restart);
   card.appendChild(foot);
@@ -622,7 +621,8 @@ export function buildToolCard({ v, section }, opts = {}) {
     // A widget that never renders a reset must not leave an observer running.
     // `unref` (Node only, a no-op in browsers) keeps this timer from holding the
     // event loop open when a test boots a card under JSDOM.
-    setTimeout(() => observer.disconnect(), 8000)?.unref?.();
+    // ?.unref?.() is a no-op in browsers; it exists so the same call is safe under Node.
+    /** @type {any} */ (setTimeout(() => observer.disconnect(), 8000))?.unref?.();
   }
   return card;
 }

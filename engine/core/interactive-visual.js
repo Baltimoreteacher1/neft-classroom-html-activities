@@ -1,5 +1,6 @@
-// interactive-visual.js — bridge from a lesson config `diagram` block to a live,
-// interactive manipulative mounted into the lesson flow.
+// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
+// (see tsconfig.json); the marker is the debt, and removing it is the unit of
+// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 //
 // The static `buildVisual()` switch in lesson-renderer.js returns SVG strings for
 // data figures (histogram, dot-plot, …). Interactive kinds instead emit a *mount
@@ -172,9 +173,21 @@ const REGISTRY = {
     import("../components/scenario-sim.js").then((m) => m.renderScenarioSim(host, cfg)),
   // Number line: authored WITH `points` → an interactive "place the points"
   // lab (drag each labeled dot onto its value, checked on the tick). Authored
-  // WITHOUT points → the static reference line, unchanged — so pure displays
-  // never turn into tasks and the figure never blanks.
+  // with `problems:[{inequality,boundary,circleType,direction}]` → the
+  // graph-and-read inequality lab that number-line.js already ships (it was
+  // only reachable from `explore.type:"number-line"`, so a lesson could not
+  // mount it as a practice tool). Authored with NEITHER → the static reference
+  // line, unchanged — so pure displays never turn into tasks and the figure
+  // never blanks.
   "number-line": async (host, cfg) => {
+    const problems = Array.isArray(cfg.problems)
+      ? cfg.problems.filter((p) => p && p.inequality && Number.isFinite(Number(p.boundary)))
+      : [];
+    if (problems.length) {
+      const { renderNumberLine } = await import("../components/number-line.js");
+      renderNumberLine(host, { ...cfg, problems });
+      return null;
+    }
     const pts = Array.isArray(cfg.points)
       ? cfg.points.filter((p) => p && Number.isFinite(Number(p.value)))
       : [];
@@ -222,6 +235,15 @@ const REGISTRY = {
   "distributive-builder": async (host, cfg) => {
     const { renderDistributiveBuilder } = await import("../components/distributive-builder.js");
     return renderDistributiveBuilder(host, cfg);
+  },
+  // Hundred-square percent grid: shade squares and reveal the SAME amount as a
+  // percent, a decimal, and a fraction. Already used by the small-group visual
+  // practice layer; registering it lets a lesson mount it declaratively as the
+  // fraction ↔ decimal ↔ percent tool. `percent` is the authored starting
+  // shade (0–100).
+  "percent-grid": async (host, cfg) => {
+    const { renderPercentGridLab } = await import("../components/percent-grid-lab.js");
+    return renderPercentGridLab(host, cfg);
   },
   // "Percent of a number" double-number-line lab.
   "percent-builder": async (host, cfg) => {
@@ -379,6 +401,9 @@ export function mountInteractiveVisuals(root, opts) {
     if (host.dataset.ivMounted) return;
     const factory = REGISTRY[host.dataset.visual];
     if (!factory) return;
+    // Clear the note left by a previous failed attempt so a retry that works
+    // does not render the model underneath a stale "could not load" line.
+    host.querySelector(":scope > .interactive-visual-error")?.remove();
     host.dataset.ivMounted = "1";
     let cfg = {};
     try {
@@ -392,9 +417,25 @@ export function mountInteractiveVisuals(root, opts) {
         if (handle) host.__ivHandle = handle;
       })
       .catch((err) => {
-        // Never let a manipulative failure break the lesson: log and leave the
-        // (empty) host / noscript fallback in place.
+        // Never let a manipulative failure break the lesson — but never fail
+        // SILENTLY either. The <noscript> fallback does not display when JS is
+        // on, so a thrown factory used to leave a blank gap where the model
+        // should be, and the student had no way to tell a broken tool from a
+        // page that simply had nothing there. Say what happened, and clear the
+        // mounted flag so the next render of this phase can retry (a chunk 404
+        // right after a deploy is transient).
         console.warn(`interactive-visual: failed to mount "${host.dataset.visual}"`, err);
+        delete host.dataset.ivMounted;
+        if (!host.querySelector(":scope > *:not(noscript)")) {
+          const note = document.createElement("p");
+          note.className = "interactive-visual-error";
+          note.setAttribute("role", "status");
+          note.style.cssText =
+            "margin:0; padding:12px 14px; border:1px dashed rgba(0,0,0,.25); border-radius:12px; font-size:0.9rem; font-weight:600; line-height:1.5;";
+          note.textContent =
+            "This model could not load right now. Reload the page to try again — the rest of the lesson still works.";
+          host.appendChild(note);
+        }
       });
   });
 

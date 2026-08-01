@@ -400,7 +400,7 @@
 
   function completion() {
     var completed = required.filter(function (rule) {
-      return String(state[rule[0]] || "").trim().length >= rule[1];
+      return String(state[rule[0]] || "").trim().length >= Number(rule[1]);
     });
     return {
       completed: completed.length,
@@ -427,7 +427,7 @@
   function firstIncomplete() {
     for (var index = 0; index < required.length; index += 1) {
       var rule = required[index];
-      if (String(state[rule[0]] || "").trim().length < rule[1])
+      if (String(state[rule[0]] || "").trim().length < Number(rule[1]))
         return document.querySelector('[data-award-field="' + rule[0] + '"]');
     }
     return null;
@@ -439,7 +439,7 @@
     var details = node.closest("details");
     if (details) details.open = true;
     node.scrollIntoView({ behavior: "smooth", block: "center" });
-    node.focus({ preventScroll: true });
+    /** @type {HTMLElement} */ (node).focus({ preventScroll: true });
   }
 
   function summary() {

@@ -85,8 +85,8 @@
 
   function init() {
     var wrap = document.querySelector(".wrap");
-    if (!wrap || wrap.dataset.seInit === "1") return;
-    wrap.dataset.seInit = "1";
+    if (!wrap || /** @type {HTMLElement} */ (wrap).dataset.seInit === "1") return;
+    /** @type {HTMLElement} */ (wrap).dataset.seInit = "1";
     try {
       buildPrintAction(wrap);
     } catch (_e) {}

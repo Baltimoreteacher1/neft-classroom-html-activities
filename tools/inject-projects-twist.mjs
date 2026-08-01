@@ -9,6 +9,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { hasEquivalentBlock } from "./lib/injection.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DRY_RUN = process.argv.includes("--dry-run");
@@ -51,6 +52,14 @@ function inject(relativePath) {
   const file = path.join(ROOT, relativePath);
   if (!fs.existsSync(file)) throw new Error(`Missing project page: ${relativePath}`);
   const before = fs.readFileSync(file, "utf8");
+  // Already carrying this exact layer? Leave it exactly where it is.
+  //
+  // Without this, strip-then-append moves the block to the end of <head>/<body>
+  // on every run, and the sibling injector that does the same thing moves its
+  // own block back — so the two rewrote all 23 project pages on every single
+  // build, forever. Position is not part of the contract for a <link> or a
+  // deferred <script>.
+  if (hasEquivalentBlock(before, head) && hasEquivalentBlock(before, body)) return false;
   let after = stripExisting(before);
   const headIndex = after.lastIndexOf("</head>");
   const bodyIndex = after.lastIndexOf("</body>");

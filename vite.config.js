@@ -52,11 +52,20 @@ function copyStandaloneHtml() {
   // the interactive-visual mounter, and the model never appeared.)
   const UNHASHED_BUNDLES = ["assets/homework-lesson-models.js", "assets/nt-web-vitals.js"];
 
+  // Rollup-built HTML entries that live INSIDE a directory the static copy walks.
+  // curriculum/ is copied wholesale, so the copy would overwrite Rollup's built
+  // curriculum/forge/index.html (which points at the hashed engine bundle) with
+  // the raw source (which points at an unbundled ./forge.js that imports
+  // @engine/ — a bare specifier the browser cannot resolve). The Forge would
+  // then be a blank page in production and fine in dev. Same snapshot-and-restore
+  // treatment as UNHASHED_BUNDLES, verified by content.
+  const BUILT_HTML_ENTRIES = ["curriculum/forge/index.html"];
+
   return {
     name: "copy-standalone-html",
     closeBundle() {
       const bundleSnapshots = new Map();
-      for (const rel of UNHASHED_BUNDLES) {
+      for (const rel of [...UNHASHED_BUNDLES, ...BUILT_HTML_ENTRIES]) {
         const built = resolve(__dirname, "dist", rel);
         if (existsSync(built)) bundleSnapshots.set(rel, readFileSync(built));
       }
@@ -290,7 +299,7 @@ function copyStandaloneHtml() {
       // Restore any unhashed bundle the static copy just overwrote, then assert
       // by CONTENT — an existence check passes just as happily on a clobbered
       // stub, which is exactly how the dead homework model reached production.
-      for (const rel of UNHASHED_BUNDLES) {
+      for (const rel of [...UNHASHED_BUNDLES, ...BUILT_HTML_ENTRIES]) {
         const dest = resolve(__dirname, "dist", rel);
         const snapshot = bundleSnapshots.get(rel);
         if (!snapshot) {
@@ -301,6 +310,19 @@ function copyStandaloneHtml() {
         }
         if (!existsSync(dest) || !readFileSync(dest).equals(snapshot)) {
           writeFileSync(dest, snapshot);
+        }
+      }
+      // Assert by CONTENT that the restored Forge really is the built entry: the
+      // source HTML references "./forge.js", the built one references a hashed
+      // /assets/ bundle. If this ever reads as the source, the Forge shipped dead.
+      for (const rel of BUILT_HTML_ENTRIES) {
+        const html = readFileSync(resolve(__dirname, "dist", rel), "utf8");
+        if (/src="\.\/[a-z-]+\.js"/.test(html)) {
+          throw new Error(
+            `copy-standalone-html: dist/${rel} still references an unbundled relative script, ` +
+              "so the static copy clobbered the Rollup output. Aborting rather than publishing " +
+              "a page that is blank in production.",
+          );
         }
       }
       const homeworkBundle = readFileSync(
@@ -358,6 +380,11 @@ export default defineConfig({
         "homework-lesson-models": resolve(__dirname, "engine/homework-lesson-models.js"),
         "nt-web-vitals": resolve(__dirname, "assets/nt-web-vitals.js"),
         "teacher-live-snapshot": resolve(__dirname, "teacher-tools/live-snapshot/index.html"),
+        // The Forge renders AI-generated lesson configs through the REAL lesson
+        // engine (bootLesson), so it must be a Rollup entry like the lessons are
+        // — a plain copied static page could not import @engine/. This is what
+        // makes a forged lesson a real lesson rather than a preview of one.
+        "curriculum-forge": resolve(__dirname, "curriculum/forge/index.html"),
         ...getLessonEntries(),
       },
       output: {

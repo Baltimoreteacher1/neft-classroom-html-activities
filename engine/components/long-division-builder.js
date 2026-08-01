@@ -1,8 +1,6 @@
-// long-division-builder.js — Interactive partial-quotients / long-division lab.
-// A student types a dividend and divisor; the widget works the division with the
-// partial-quotients method (subtract friendly multiples by place value), shows
-// each step, and states the quotient and remainder plus the multiplication check
-// (divisor × quotient + remainder = dividend).
+// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
+// (see tsconfig.json); the marker is the debt, and removing it is the unit of
+// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 //
 // Pure DOM, no dependencies. Public API:
 //   renderLongDivisionBuilder(container, cfg) -> { destroy }

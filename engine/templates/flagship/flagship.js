@@ -1,4 +1,3 @@
-// Flagship lesson template.
 //
 // A story/simulation-driven SHELL that wraps the existing 6-phase engine
 // (engine/core/lesson-renderer.js -> bootLesson). It does NOT replace the
@@ -131,7 +130,9 @@ function attachSceneHud(scenes, _fl) {
   }
 
   update(0);
-  document.addEventListener("rma:navigate", (e) => update(e.detail.phase));
+  document.addEventListener("rma:navigate", (e) =>
+    update(/** @type {CustomEvent} */ (e).detail.phase),
+  );
 }
 
 // Watches for full completion and plays a flagship completion sequence on top

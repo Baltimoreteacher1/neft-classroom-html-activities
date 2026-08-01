@@ -10,6 +10,21 @@ const root = join(import.meta.dirname, "..");
 const lessonsDir = join(root, "lessons");
 const LESSON_DIR_RE = /^(\d+)-(\d+)(-flagship)?$/;
 
+// Cases a grade-6 student really types, run against each page's own inlined
+// copy of the shared answer matcher. Accepted forms must all be credited;
+// rejected forms must stay wrong, so "be tolerant" never becomes "accept
+// anything".
+const MATCH_CASES = [
+  { input: "7", answer: "m = 7", want: true },
+  { input: "m = 7", answer: "7", want: true },
+  { input: "24", answer: "24 sq. ft.", want: true },
+  { input: "24 square feet", answer: "24", want: true },
+  { input: ".5", answer: "1/2", want: true },
+  { input: "4", answer: "m = 7", want: false },
+  { input: "42", answer: "2 × 3 × 7", want: false },
+  { input: "", answer: "7", want: false },
+];
+
 // Core Quick Check = the Warm-up tier + the Level-up (challenge) tier.
 // Bonus / Más problems are excluded by design.
 //
@@ -90,7 +105,7 @@ const REQUIRED_MARKERS = [
   "You did it together",
   "Lo lograron juntos",
   "Check This Problem",
-  "normalizeMath",
+  "NTAnswerMatch",
   'class="homework-tab-bar"',
   'class="concept-quick-path"',
   'class="learning-word-chips"',
@@ -213,8 +228,50 @@ for (const id of lessonIds) {
     } catch (e) {
       issues.push({ id, level: "CRITICAL", msg: `Script syntax error: ${e.message}` });
     }
-    if (!html.includes('.replace(/\\s+/g, "")')) {
-      issues.push({ id, level: "CRITICAL", msg: "normalizeMath whitespace regex may be broken" });
+    // Grade the answer matcher on behaviour, not on its source text. The old
+    // gate grepped for one regex inside `normalizeMath`, which pinned that
+    // exact implementation in place: it stayed green while the matcher marked
+    // a correct "7" wrong against an authored "m = 7". Run the page's own
+    // inlined copy and check the cases students actually type.
+    assertAnswerMatcherWorks(id, html);
+  }
+}
+
+function assertAnswerMatcherWorks(id, html) {
+  // Run the matcher IIFE alone. The surrounding page script touches `window`
+  // and the DOM, which this check has no business booting.
+  const start = html.indexOf("var NTAnswerMatch = (function () {");
+  const end = start === -1 ? -1 : html.indexOf("\n})();", start);
+  if (start === -1 || end === -1) {
+    issues.push({ id, level: "CRITICAL", msg: "Shared answer matcher is not inlined" });
+    return;
+  }
+  const block = html.slice(start, end + "\n})();".length);
+  let isRight;
+  try {
+    const context = vm.createContext({});
+    new vm.Script(`${block}\n;globalThis.__isRight = NTAnswerMatch.isRight;`).runInContext(
+      context,
+      {
+        timeout: 5000,
+      },
+    );
+    isRight = context.__isRight;
+  } catch (e) {
+    issues.push({ id, level: "CRITICAL", msg: `Answer matcher did not load: ${e.message}` });
+    return;
+  }
+  if (typeof isRight !== "function") {
+    issues.push({ id, level: "CRITICAL", msg: "NTAnswerMatch.isRight is missing" });
+    return;
+  }
+  for (const { input, answer, want } of MATCH_CASES) {
+    if (isRight(input, answer) !== want) {
+      issues.push({
+        id,
+        level: "CRITICAL",
+        msg: `Answer matcher should ${want ? "accept" : "reject"} ${JSON.stringify(input)} for ${JSON.stringify(answer)}`,
+      });
     }
   }
 }

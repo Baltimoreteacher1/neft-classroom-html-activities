@@ -1,3 +1,6 @@
+// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
+// (see tsconfig.json); the marker is the debt, and removing it is the unit of
+// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 /**
  * Curriculum Hub enhancements — teacher/student mode, progress, search filters,
  * real-world snippets, JSON-LD, and accessibility helpers.
@@ -18,9 +21,19 @@
   // same Teacher Mode sticky flag; neither is SITE_PASSWORD.
   // ⚠️ KEEP IN SYNC with TEACHER_PINS in engine/core/teacher-mode.js.
   var TEACHER_PINS = {
-    master: "BlueHeron2026",
-    coteacher: "RiverStone2026",
+    master: "TeacherNeft",
+    coteacher: "TeacherAlba",
+    masterAlt: "BlueHeron2026",
+    coteacherAlt: "RiverStone2026",
   };
+  // Order is load-bearing: matchTeacherPin() derives the role from the index
+  // (even = master, odd = co-teacher), so the two roles must keep alternating.
+  var ACCEPTED_TEACHER_PINS = [
+    TEACHER_PINS.master,
+    TEACHER_PINS.coteacher,
+    TEACHER_PINS.masterAlt,
+    TEACHER_PINS.coteacherAlt,
+  ];
   var STORAGE_PROGRESS = "curriculumProgress";
   var FILTER_ALL = "all";
 
@@ -156,8 +169,17 @@
   }
 
   function matchTeacherPin(pin) {
-    if (pin === TEACHER_PINS.master) return "master";
-    if (pin === TEACHER_PINS.coteacher) return "coteacher";
+    if (!pin) return null;
+    var cleaned = String(pin).trim();
+    var lower = cleaned.toLowerCase();
+    for (var i = 0; i < ACCEPTED_TEACHER_PINS.length; i++) {
+      if (
+        cleaned === ACCEPTED_TEACHER_PINS[i] ||
+        lower === ACCEPTED_TEACHER_PINS[i].toLowerCase()
+      ) {
+        return i % 2 === 0 ? "master" : "coteacher";
+      }
+    }
     return null;
   }
 

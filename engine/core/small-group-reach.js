@@ -1,5 +1,3 @@
-// small-group-reach.js — measure the one resource this studio cannot make more
-// of: the fifteen minutes a teacher spends at the table.
 //
 // Why this exists: the studio grew across seven feature waves — vocabulary, a
 // build stepper, two labs, guided practice, more practice, a check, a transfer
@@ -25,13 +23,16 @@ const KEY = "reach";
  */
 export function createReachLog(store) {
   const booted = Date.now();
+  // Duck-typed store: callers pass anything with get/set (localStorage wrapper,
+  // the lesson state object, a test double), so it is not one nameable type.
+  const st = /** @type {any} */ (store);
   // Rehydrated so a student who returns tomorrow does not look like they reached
   // everything instantly — the earliest recorded arrival per tab wins.
-  const reach = { ...(store?.get?.(KEY) || {}) };
+  const reach = { ...(st?.get?.(KEY) || {}) };
   let firstProblemAt = Number(reach.__firstProblemMs) || null;
 
   const persist = () => {
-    store?.set?.(KEY, { ...reach, __firstProblemMs: firstProblemAt });
+    st?.set?.(KEY, { ...reach, __firstProblemMs: firstProblemAt });
   };
 
   return {

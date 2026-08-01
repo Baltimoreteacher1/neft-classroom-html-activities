@@ -1,10 +1,3 @@
-// stat-towers.js — 3D data towers for measures of center and spread. Each data
-// value is a tower of unit blocks rendered with pure CSS 3D transforms (same
-// zero-dependency approach as shape-3d.js). The signature move: press
-// "Level them" and watch blocks physically fly from tall towers to short ones
-// until every tower is the SAME height — that height IS the mean. Mean as
-// fair-share/leveling is the core Grade 6 mental model (6.DS.4), and MAD
-// (6.DS.6c) becomes visible as "how far each tower sits from the leveled line".
 //
 // Public API:
 //   renderStatTowers(container, { values, unit, label, mode }) -> { destroy }
@@ -276,7 +269,7 @@ export function renderStatTowers(container, cfg = {}) {
   }
 
   controls.addEventListener("click", (e) => {
-    const act = e.target.closest("button")?.dataset.act;
+    const act = /** @type {HTMLElement} */ (e.target).closest("button")?.dataset.act;
     if (!act) return;
     if (act === "level") level();
     else if (act === "reset") {

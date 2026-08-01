@@ -119,7 +119,7 @@
       for (var k = 0; k < b.parts; k++) {
         var seg = document.createElement("div");
         seg.className = "pki-fb-seg" + (k < b.shaded ? " on" : "");
-        seg.dataset.idx = k;
+        seg.dataset.idx = String(k);
         track.appendChild(seg);
       }
       var pct = Math.round((b.shaded / b.parts) * 1000) / 10;

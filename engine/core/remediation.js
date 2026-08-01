@@ -217,6 +217,7 @@ async function nudgeTier(state, direction) {
   }
 }
 
+/** @param {{ question?: any, state?: any, level?: string }} [opts] */
 export function createRemediation({ question, state, level } = {}) {
   if (!question) throw new Error("createRemediation requires a question");
 

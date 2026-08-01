@@ -1,11 +1,6 @@
-// UIFR — BCPS Instructional Framework Rubric evidence (TEACH · Level 4)
-// ────────────────────────────────────────────────────────────────────────────
-// Single source of truth for how a lesson maps to the Baltimore City Public
-// Schools Instructional Framework Rubric (June 2020), TEACH domain, at
-// Level 4 = "Highly Effective". Every Level 4 descriptor centers STUDENT AGENCY
-// (students select, justify, revise, lead), so the mapping below records the
-// student-facing lesson surfaces that create the CONDITIONS for a Level 4
-// rating on each applicable TEACH indicator.
+// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
+// (see tsconfig.json); the marker is the debt, and removing it is the unit of
+// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 //
 // HONEST FRAMING (do not overclaim): the materials create the conditions for
 // Level 4; the actual rating on any given day depends on OBSERVED student

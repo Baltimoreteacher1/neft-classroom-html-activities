@@ -1,9 +1,3 @@
-// percent-grid-lab.js — interactive hundred-grid EQUIVALENCE explorer. The grid
-// loads with the authored amount shaded (non-destructive, so a display figure
-// stays faithful to the question), and the student can reveal the three
-// equivalent forms of the shaded amount — percent, decimal, and reduced fraction
-// — or tap cells to explore how the forms change. Built for the fraction ↔
-// decimal ↔ percent equivalence problems that author `{kind:"percent-grid", percent}`.
 //
 // API:  renderPercentGridLab(host, cfg) -> { destroy() } | null   (null ⇒ static fallback)
 
@@ -104,7 +98,7 @@ export function renderPercentGridLab(host, cfg = {}) {
 
     root.querySelector('[data-el="reveal"]').addEventListener("click", (e) => {
       const on = root.classList.toggle("show");
-      e.currentTarget.setAttribute("aria-pressed", String(on));
+      /** @type {HTMLElement} */ (e.currentTarget).setAttribute("aria-pressed", String(on));
       if (on) renderForms();
     });
     root.querySelector('[data-el="reset"]').addEventListener("click", () => {

@@ -1,9 +1,3 @@
-// One calm, uniform palette across every small-group variant (Joel directive
-// 2026-07-17): shared primary/deep/soft so the page no longer swings between
-// blue, burnt-orange, and teal themes. The ONLY per-variant color is the small
-// `pop` accent (hero rule, active-tab underline, focus glow), giving a quiet
-// at-a-glance cue for which group you're in without a full theme change. Name +
-// emoji carry the rest of the identity.
 //
 // These are the SITE brand values, not a private small-group palette. Until
 // 2026-07-31 the studio shipped its own cold slate (#33568f) and a separate
@@ -390,8 +384,9 @@ export function injectSmallGroupStyles(accent) {
     if (!ds) {
       ds = document.createElement("link");
       ds.id = "sg-designsystem-styles";
-      ds.rel = "stylesheet";
-      ds.href = "/assets/small-group-designsystem.css?v=20260731-pub1";
+      /** @type {HTMLLinkElement} */ (ds).rel = "stylesheet";
+      /** @type {HTMLLinkElement} */ (ds).href =
+        "/assets/small-group-designsystem.css?v=20260731-pub1";
       document.head.appendChild(ds);
     } else if (ds.parentNode === document.head) {
       document.head.appendChild(ds);
@@ -681,6 +676,10 @@ export function injectSmallGroupStyles(accent) {
     .sg-lab-mount{margin:12px 0}
     .sg-lab-mount .card{border:1px solid var(--sg-line);border-radius:16px;background:var(--sg-card);padding:16px;box-shadow:0 8px 24px rgba(23,32,51,.07)}
     .sg-figure{margin:12px 0;padding:14px;border:1px solid var(--sg-line);border-radius:16px;background:var(--sg-card);box-shadow:0 8px 24px rgba(23,32,51,.07)}
+    .sg-tool-caption{display:flex;flex-direction:column;gap:3px;margin:0 0 12px}
+    .sg-tool-name{color:var(--sg-ink);font-family:var(--sg-display);font-size:17px;font-weight:900}
+    .sg-tool-purpose{color:var(--sg-muted);font-size:14px;font-weight:600;line-height:1.45}
+    .sg-tool-instance{color:var(--sg-ink);font-size:13px;font-weight:700}
     .sg-donechip{display:inline-flex;align-items:center;gap:7px;margin-bottom:12px;padding:7px 12px;border-radius:999px;background:var(--sg-good-bg);border:1px solid var(--sg-good);color:var(--sg-good-ink);font-weight:800;font-size:14px}
     .sg-discourse{margin-top:14px;padding:16px;border:2px solid var(--sg);border-radius:14px;background:var(--sg-soft)}
     .sg-datachips{padding:14px;text-align:center}

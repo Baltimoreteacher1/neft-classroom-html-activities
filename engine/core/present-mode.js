@@ -1,4 +1,6 @@
-// present-mode.js — Presenter engine for interactive + small-group lessons.
+// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
+// (see tsconfig.json); the marker is the debt, and removing it is the unit of
+// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 //
 // One job: put the lesson on the board. Pressing Present turns the current
 // lesson into a projector view (section rail, big type, arrow/keyboard nav) and

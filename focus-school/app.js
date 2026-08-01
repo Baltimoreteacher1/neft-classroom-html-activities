@@ -534,6 +534,7 @@
           routine: 0.25,
           focus: 0.25,
           health: 0.1,
+          hebrew: 0.2,
         },
         dailyCap: 5, // max earnable per day (anti-gaming); 0 = no cap
         weeklyCap: 10, // realistic ceiling on a single week's payout; 0 = none
@@ -727,6 +728,7 @@
         routine: Math.max(0, num(rates.routine, base.rates.routine)),
         focus: Math.max(0, num(rates.focus, base.rates.focus)),
         health: Math.max(0, num(rates.health, base.rates.health)),
+        hebrew: Math.max(0, num(rates.hebrew, base.rates.hebrew)),
       },
       dailyCap: Math.max(0, num(r.dailyCap, base.dailyCap)),
       weeklyCap: Math.max(0, num(r.weeklyCap, base.weeklyCap)),
@@ -1834,6 +1836,7 @@
     ["calming", "Calming", "🧘"],
     ["health", "Health", "💪"],
     ["sports", "Baseball", "⚾"],
+    ["hebrew", "Hebrew", "📖"],
     ["ai", "Academic Help", "🤖"],
     ["more", "More", "⋯"],
   ];
@@ -1862,6 +1865,15 @@
   const expanded = new Set(); // task ids expanded inline
 
   function setView(v) {
+    // Nightly Hebrew is not an in-app view — it is nine standalone lesson pages
+    // under /hebrew/, and that hub is the single source of truth for the inning
+    // list. Send the tap there instead of rendering an empty view. Same origin,
+    // and the service worker precaches the hub, so it opens offline too.
+    if (v === "hebrew") {
+      recordNavUse("hebrew");
+      location.href = "/hebrew/";
+      return;
+    }
     // Leaving the Now screen always exits arrange mode so it can't get "stuck".
     if (v !== "home") arrangeMode = false;
     recordNavUse(v);
@@ -4651,8 +4663,12 @@
   }
 
   function rankNavigation(usage = {}) {
-    const pinned = TABS.filter((tab) => ["home", "homework"].includes(tab[0]));
-    const candidates = TABS.filter((tab) => !["home", "homework", "more"].includes(tab[0]))
+    // Hebrew is pinned rather than usage-ranked: it is a nightly habit, and a
+    // brand-new tab would rank last and fall into "More". Pinned + the 3
+    // most-used + More keeps the bar at the same 7 slots it had before.
+    const PINNED = ["home", "homework", "hebrew"];
+    const pinned = TABS.filter((tab) => PINNED.includes(tab[0]));
+    const candidates = TABS.filter((tab) => ![...PINNED, "more"].includes(tab[0]))
       .sort(
         (a, b) =>
           (Number(usage[b[0]]) || 0) - (Number(usage[a[0]]) || 0) ||
@@ -6178,9 +6194,10 @@ Due May 31"></textarea>
         focus: "▶ Focus sessions",
         reminder: "🔔 Reminders",
         health: "💪 Biking & lifting",
+        hebrew: "⚾ Nightly Hebrew",
       };
       const stub = (w) =>
-        `<div class="pay-stub">${["task", "routine", "focus", "reminder", "health"]
+        `<div class="pay-stub">${["task", "routine", "focus", "reminder", "health", "hebrew"]
           .filter((k) => w.by[k] > 0)
           .map(
             (k) =>
@@ -6402,6 +6419,67 @@ Due May 31"></textarea>
       toast(api.levelUpMessage(res.level));
       triggerConfetti();
     }
+  }
+
+  // ---- Nightly Hebrew ------------------------------------------------------
+  // The lessons are static pages under /hebrew/ (nine "innings" of letters and
+  // sounds), reached from the Hebrew tab. They deliberately do NOT write into
+  // this app's state: the app owns that blob and the sync merge would fight
+  // over it. Instead a finished inning drops a claim into a localStorage outbox
+  // and we convert it into a real ledger entry here. The claim id is
+  // deterministic (unit + calendar day), so draining twice — or on two synced
+  // devices — can never double-pay.
+  const HEBREW_EARN_KEY = "focus-school:hebrew-earnings";
+
+  function drainHebrewEarnings() {
+    let queue = [];
+    try {
+      queue = JSON.parse(localStorage.getItem(HEBREW_EARN_KEY) || "[]");
+      if (!Array.isArray(queue)) queue = [];
+    } catch {
+      queue = [];
+    }
+    if (!queue.length) return false;
+    const r = state.rewards;
+    let paid = 0;
+    if (r && r.enabled) {
+      for (const entry of queue) {
+        if (!entry || typeof entry !== "object" || !entry.id) continue;
+        const id = "e_" + String(entry.id).slice(0, 60);
+        if (r.ledger.some((e) => e.id === id)) continue;
+        const rate = Number(r.rates?.hebrew) || 0;
+        if (rate <= 0) continue;
+        let amt = rate;
+        const cap = Number(r.dailyCap) || 0;
+        if (cap > 0) amt = Math.min(amt, Math.max(0, cap - rewardsEarnedToday()));
+        amt = Math.round(amt * 100) / 100;
+        if (amt <= 0) continue;
+        r.balance = Math.round((r.balance + amt) * 100) / 100;
+        r.ledger.unshift({
+          id,
+          ts: String(entry.ts || new Date().toISOString()),
+          kind: "hebrew",
+          label: String(entry.label || "Nightly Hebrew").slice(0, 80),
+          amount: amt,
+          type: "earn",
+        });
+        paid = Math.round((paid + amt) * 100) / 100;
+      }
+      if (r.ledger.length > 1000) r.ledger.length = 1000;
+    }
+    // Always clear the outbox, even when nothing paid (rewards off, or the
+    // daily cap ate it) — otherwise it would replay forever. The ledger is now
+    // the record, and the deterministic id makes a stray replay harmless.
+    try {
+      localStorage.setItem(HEBREW_EARN_KEY, "[]");
+    } catch {}
+    if (paid > 0) {
+      awardSportPoints("hebrew");
+      save();
+      toast(`${money(paid)} from Nightly Hebrew 💰`);
+      return true;
+    }
+    return false;
   }
 
   function sportsCard() {
@@ -9949,8 +10027,9 @@ Due May 31"></textarea>
         focus: "Focus sessions",
         reminder: "Reminders",
         health: "Biking & lifting",
+        hebrew: "Nightly Hebrew",
       };
-      const lines = ["task", "routine", "focus", "reminder", "health"]
+      const lines = ["task", "routine", "focus", "reminder", "health", "hebrew"]
         .filter((k) => w.by[k] > 0)
         .map(
           (k) =>
@@ -10031,6 +10110,7 @@ Due May 31"></textarea>
           ${rate("Routine", "routine")}
           ${rate("Focus session", "focus")}
           ${rate("Biking / lifting", "health")}
+          ${rate("Nightly Hebrew inning", "hebrew")}
         </div>
         <div class="g2 grid">
           <div class="field"><label>Most per day</label><input id="rwCap" type="number" min="0" step="0.25" value="${
@@ -10063,6 +10143,7 @@ Due May 31"></textarea>
       r.rates.routine = num("rw_routine");
       r.rates.focus = num("rw_focus");
       r.rates.health = num("rw_health");
+      r.rates.hebrew = num("rw_hebrew");
       r.dailyCap = num("rwCap");
       r.weeklyCap = num("rwWeekCap");
       r.bonusPerfectWeek = num("rwBonus");
@@ -12303,6 +12384,20 @@ ${name}`;
       state.settings.sync.enabled = true;
       view = "sync";
     }
+
+    // Collect anything the Hebrew pages finished while we weren't looking:
+    // once on open, again whenever this tab regains focus (the kid navigates
+    // back from /hebrew/), and immediately if another tab writes the outbox.
+    drainHebrewEarnings();
+    addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible" && drainHebrewEarnings()) render();
+    });
+    window.addEventListener("focus", () => {
+      if (drainHebrewEarnings()) render();
+    });
+    window.addEventListener("storage", (e) => {
+      if (e.key === HEBREW_EARN_KEY && drainHebrewEarnings()) render();
+    });
 
     wire();
     render();

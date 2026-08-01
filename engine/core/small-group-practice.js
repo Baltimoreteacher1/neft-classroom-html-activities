@@ -1,5 +1,5 @@
 import { attachRegenPractice } from "../components/regen-practice.js";
-import { isRight, numberOf } from "./small-group-answers.js";
+import { isRight, numberOf } from "./answer-match.js";
 import { mountReasoningReader } from "./small-group-reasoning.js";
 import { createRubricDetails } from "./small-group-rubric.js";
 import { bi, biHtml, celebrate, el, esc, speak } from "./small-group-ui.js";
@@ -992,7 +992,7 @@ export function createPracticeSection(
   // unsolved problem in this set — banks and step guides appear at once.
   // More Practice also reorders / promotes items for any path.
   document.addEventListener("sg:adaptive-path", (event) => {
-    const nextPath = event.detail;
+    const nextPath = /** @type {CustomEvent} */ (event).detail;
     if (options.mode === "more") applyPathOrder(nextPath);
     else if (nextPath === "stabilize") {
       for (const card of section.querySelectorAll(":scope > .prob:not(.sg-done-all)"))

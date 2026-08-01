@@ -145,7 +145,7 @@ export function createRhythmCoach(facilitation) {
   };
 
   root.addEventListener("click", (event) => {
-    const action = event.target?.dataset?.action;
+    const action = /** @type {HTMLElement|null} */ (event.target)?.dataset?.action;
     if (!action) return;
     if (action === "start") {
       if (running) {

@@ -1,7 +1,3 @@
-// teacher-clear.js — a teacher-only, compact "Clear answers" control. Mounted
-// from BOTH lesson renderers (createApp Reveal lessons and the small-group /
-// catch-up studios) so every curriculum lesson gets the same control. It only
-// renders in teacher mode; a student never sees it and can never erase work.
 //
 // The control is a small round 🧹 icon (bottom-LEFT, above the minimap) that
 // stays out of the way. Tapping it opens a compact popover so a teacher can:
@@ -63,7 +59,8 @@ export function mountTeacherClearButton(api) {
   const existing = document.querySelector(".nt-teacher-clear");
   const info = normalizeApi(api);
   if (existing) {
-    if (info.hasPages && existing.dataset.hasPages !== "1") existing.remove();
+    if (info.hasPages && /** @type {HTMLElement} */ (existing).dataset.hasPages !== "1")
+      existing.remove();
     else return existing;
   }
 
@@ -149,7 +146,9 @@ function buildPagePicker(pop, info, close) {
   clearSel.className = "nt-teacher-clear-do";
   clearSel.textContent = "Clear selected pages";
   clearSel.addEventListener("click", () => {
-    const indices = [...list.querySelectorAll("input:checked")].map((c) => Number(c.value));
+    const indices = [...list.querySelectorAll("input:checked")].map((c) =>
+      Number(/** @type {HTMLInputElement} */ (c).value),
+    );
     if (!indices.length) {
       sub.textContent = "Check at least one page first.";
       return;

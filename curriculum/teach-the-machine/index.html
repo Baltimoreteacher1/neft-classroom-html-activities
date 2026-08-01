@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Teach the Machine — explain a Grade 6 math idea to an AI learner that is confused the way your class is actually confused this week. You are scored on your reasoning, never on an answer."
+    />
+    <title>Teach the Machine — Neft Teacher</title>
+    <link rel="canonical" href="https://eduwonderlab.com/curriculum/teach-the-machine/" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#15487f" />
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/assets/favicon.svg" />
+    <link rel="stylesheet" href="./ttm.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <nav class="topbar" aria-label="Page">
+        <a class="back-link" href="/curriculum/">
+          <span aria-hidden="true">&larr;</span>
+          <span data-i18n="back">Back to curriculum</span>
+        </a>
+        <span class="spacer"></span>
+        <div class="lang-toggle" role="group" aria-label="Language / Idioma">
+          <button type="button" id="lang-en" aria-pressed="true" lang="en">EN</button>
+          <button type="button" id="lang-es" aria-pressed="false" lang="es">ES</button>
+        </div>
+      </nav>
+
+      <header class="hero">
+        <h1 data-i18n="title">Teach the Machine</h1>
+        <p class="lede" data-i18n="lede">Loading today&rsquo;s learner&hellip;</p>
+      </header>
+
+      <section class="why-card" id="why" aria-live="polite">
+        <p class="why-kicker" id="why-kicker"></p>
+        <p class="why-text" id="why-text"></p>
+        <p class="why-meta" id="why-meta"></p>
+      </section>
+
+      <div class="grid">
+        <main class="board">
+          <section class="panel" aria-labelledby="learner-heading">
+            <div class="learner-head">
+              <div class="avatar" id="avatar" aria-hidden="true"></div>
+              <div>
+                <h2 class="learner-name" id="learner-heading">&nbsp;</h2>
+                <p class="learner-blurb" id="learner-blurb"></p>
+              </div>
+            </div>
+
+            <div
+              class="log"
+              id="log"
+              role="log"
+              aria-live="polite"
+              aria-relevant="additions text"
+              aria-label="Conversation with your learner"
+            ></div>
+
+            <form class="composer" id="composer">
+              <div class="chip-row" id="starters">
+                <span class="chip-label" id="starters-label"></span>
+              </div>
+              <div class="chip-row" id="wordbank">
+                <span class="chip-label" id="wordbank-label"></span>
+              </div>
+
+              <label class="sr-only" for="entry" id="entry-label">Your explanation</label>
+              <textarea id="entry" rows="6" spellcheck="true"></textarea>
+
+              <div class="actions">
+                <button class="btn" type="submit" id="send"></button>
+                <button class="btn btn-quiet" type="button" id="restart"></button>
+              </div>
+              <p class="coach-note" id="coach" aria-live="polite"></p>
+              <p class="note-offline" id="source-note"></p>
+            </form>
+          </section>
+
+          <section class="panel win" id="win" hidden aria-labelledby="win-heading">
+            <h2 id="win-heading"></h2>
+            <p class="hint" id="win-sub"></p>
+            <div class="summary-card" id="summary">
+              <p class="sc-kicker" id="sc-kicker"></p>
+              <p class="sc-title" id="sc-title"></p>
+              <p id="sc-line"></p>
+              <ul id="sc-list"></ul>
+              <p class="sc-foot" id="sc-foot"></p>
+            </div>
+            <div class="actions">
+              <button class="btn btn-quiet" type="button" id="copy-summary"></button>
+              <button class="btn btn-quiet" type="button" id="print-summary"></button>
+            </div>
+            <details class="model-answer" id="model-answer">
+              <summary id="model-answer-label"></summary>
+              <p id="model-answer-text"></p>
+            </details>
+          </section>
+        </main>
+
+        <aside class="rail">
+          <section class="panel" aria-labelledby="checklist-heading">
+            <h2 id="checklist-heading"></h2>
+            <p class="hint" id="checklist-hint"></p>
+            <ul class="checklist" id="checklist" aria-live="polite" aria-relevant="text"></ul>
+            <p class="progress-line" id="progress-text"></p>
+            <div
+              class="bar"
+              role="progressbar"
+              id="bar"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuenow="0"
+            >
+              <div class="bar-fill" id="bar-fill"></div>
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <p class="footer-note" id="footer-note"></p>
+    </div>
+
+    <script>
+      window.NT_TELEMETRY_CONFIG = {
+        lessonSlug: "curriculum-teach-the-machine",
+        activityTitle: "Teach the Machine",
+      };
+    </script>
+    <script src="/assets/lesson-telemetry.js" defer></script>
+    <script type="module" src="./ttm.js"></script>
+  </body>
+</html>

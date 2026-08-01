@@ -1,3 +1,5 @@
+import { isRight } from "../core/answer-match.js";
+
 const FT_STYLE_ID = "ft-engine-styles";
 
 // Inject the component's scoped polish styles exactly once per document.
@@ -188,7 +190,7 @@ export function renderFillTable(container, config) {
     inputs.forEach((input) => {
       const userVal = input.value.trim();
       const expected = answerByKey.get(input.dataset.key);
-      const isMatch = answersMatch(userVal, expected);
+      const isMatch = isRight(userVal, expected);
 
       input.style.borderColor = isMatch ? "var(--success)" : "var(--error)";
       input.style.background = isMatch ? "var(--success-bg)" : "var(--error-bg)";
@@ -342,42 +344,6 @@ function normalizeFillTable(config = {}) {
   });
 
   return { headers, rows, editableCells, onComplete };
-}
-
-function normalizeAnswer(s) {
-  return (
-    String(s)
-      .trim()
-      .toLowerCase()
-      .replace(/−/g, "-") // unicode minus → ascii hyphen
-      // Canonicalize multiplication so a product-of-primes answer matches however
-      // the student types the operator: "2 × 2 × 3", "2x2x3", "2*2*3", "2·2·3" all
-      // normalize the same. The letter "x" is only treated as times when it sits
-      // between digits (zero-width look-around, so chains like 2x2x2x3 all convert),
-      // leaving an algebraic variable x (e.g. "3x + 2") untouched.
-      .replace(/[×✕✖⋅·∙•]/g, "*") // multiplication glyphs → *
-      .replace(/(?<=\d)\s*x\s*(?=\d)/g, "*") // letter x used as times between digits
-      .replace(/\s*\*\s*/g, "*") // canonicalize spacing around *
-      .replace(/\s+/g, " ")
-  );
-}
-
-// Parse a numeric answer, tolerating thousands separators and a unicode minus.
-// Returns null when the string isn't purely a number.
-function asNumber(s) {
-  const cleaned = String(s).trim().replace(/−/g, "-").replace(/,/g, "");
-  if (cleaned === "" || !/^[-+]?(\d+\.?\d*|\.\d+)$/.test(cleaned)) return null;
-  const n = Number(cleaned);
-  return Number.isFinite(n) ? n : null;
-}
-
-// A math answer matches if it's numerically equal (so "0.5"=".5", "1,000"="1000")
-// or, for non-numeric answers, equal after text normalization.
-function answersMatch(userVal, expected) {
-  const un = asNumber(userVal);
-  const en = asNumber(expected);
-  if (un !== null && en !== null) return un === en;
-  return normalizeAnswer(userVal) === normalizeAnswer(expected);
 }
 
 function showFb(slot, type, msg) {

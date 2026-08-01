@@ -7,16 +7,8 @@
   },
   "files": {
     "includes": [
-      "assets/**/*.js",
-      "engine/**/*.js",
-      "shared/**/*.js",
-      "scripts/**/*.js",
-      "scripts/**/*.mjs",
-      "tools/**/*.js",
-      "tools/**/*.mjs",
-      "functions/**/*.js",
-      "workers/**/*.js",
-      "vite.config.js",
+      "**/*.js",
+      "**/*.mjs",
       "package.json",
       "!!dist",
       "!!node_modules",
@@ -25,27 +17,91 @@
       "!data/curriculum-search-index.json",
       "!**/package-lock.json",
       "!**/*.min.js",
-      "!assets/vendor/**"
+      "!**/vendor/**",
+      "!curriculum/monster-math-academy/assets/**",
+      "!**/canvas-packages/**",
+      "!**/*.bundle.js"
     ],
     "ignoreUnknown": true
   },
   "formatter": {
-    "enabled": true,
+    "enabled": false,
     "indentStyle": "space",
     "indentWidth": 2,
     "lineWidth": 100
   },
   "javascript": {
-    "globals": ["MiniSearch", "Phaser", "Confetti"]
+    "globals": [
+      "MiniSearch",
+      "Phaser",
+      "Confetti",
+      "XLSX",
+      "Chart",
+      "ShiftData",
+      "ShiftMatch",
+      "ShiftGenerate",
+      "renderPlaylistOptions",
+      "switchGeneratorTab",
+      "HEB",
+      "EWL",
+      "ACTIVITIES",
+      "PRAYERS",
+      "LISTENING_TYPES",
+      "EduPulse",
+      "JSZip",
+      "google",
+      "WebSocketPair",
+      "__REACT_DEVTOOLS_GLOBAL_HOOK__"
+    ]
   },
   "linter": {
     "enabled": true,
     "rules": {
       "preset": "none",
       "correctness": {
-        "noUnusedVariables": "warn",
-        "noUnusedFunctionParameters": "warn",
+        "noUnusedVariables": "off",
+        "noUnusedFunctionParameters": "off",
         "noUndeclaredVariables": "error"
+      }
+    }
+  },
+  "overrides": [
+    {
+      "includes": [
+        "assets/**/*.js",
+        "engine/**/*.js",
+        "shared/**/*.js",
+        "scripts/**",
+        "tools/**",
+        "functions/**/*.js",
+        "workers/**/*.js",
+        "vite.config.js",
+        "package.json"
+      ],
+      "formatter": {
+        "enabled": true
+      },
+      "assist": {
+        "actions": {
+          "source": {
+            "organizeImports": "on"
+          }
+        }
+      },
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noUnusedVariables": "warn",
+            "noUnusedFunctionParameters": "warn"
+          }
+        }
+      }
+    }
+  ],
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "off"
       }
     }
   }

@@ -1,8 +1,6 @@
-// voice-explain.js — "Explain Out Loud": lets a student SPEAK a math
-// explanation and have it transcribed into an existing <textarea>, using the
-// browser-native Web Speech API (SpeechRecognition). Built for the ESOL/ELL
-// classroom — speaking is often a stronger channel than typing for a language
-// learner, so this is the flagship "say it in your own words" feature.
+// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
+// (see tsconfig.json); the marker is the debt, and removing it is the unit of
+// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 //
 // Design principle — ADDITIVE / HONOR-SYSTEM FALLBACK:
 //   The textarea keeps working exactly as before. This attaches a mic button, a

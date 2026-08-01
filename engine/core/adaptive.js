@@ -1,6 +1,3 @@
-// Adaptive difficulty engine.
-// Pure helpers + a small live tracker that reads rolling performance from
-// the shared lesson state (state.js) and picks a practice tier.
 //
 // Tiers map to lesson framing:
 //   "level1" -> support / scaffolded (extra hints, simpler items)
@@ -45,6 +42,10 @@ function shiftTier(tier, by) {
 // A negative `remediationBias` (set by the remediation flow after repeated
 // misses) nudges the chosen tier down toward Level 1 (support); a positive
 // bias nudges up toward Level 2 (enrichment) after a recovery.
+/**
+ * @param {{ override?: string, minAttempts?: number, struggleBelow?: number,
+ *   excelAtOrAbove?: number, remediationBias?: number }} [opts]
+ */
 export function decideTier(perf, opts = {}) {
   const cfg = { ...DEFAULTS, ...opts };
   if (cfg.override && TIERS.includes(cfg.override)) return cfg.override;

@@ -107,7 +107,7 @@
       if (tooltip) tooltip.textContent = "Drag to change: " + newVal;
       el.setAttribute("aria-valuenow", newVal);
 
-      reDeriveContainer(container, newVal);
+      reDeriveContainer(container, el, newVal);
 
       if (global.NTtelemetry && typeof global.NTtelemetry.track === "function") {
         safeCall(function () {
@@ -162,7 +162,7 @@
     });
   }
 
-  function reDeriveContainer(container, newVal) {
+  function reDeriveContainer(container, changedEl, newVal) {
     var derivedOutputs = container.querySelectorAll("[data-derived-from], .live-sim-derived-value");
     derivedOutputs.forEach(function (output) {
       var formula = output.dataset.formula;
@@ -179,7 +179,7 @@
 
     var svgModels = container.querySelectorAll("svg[data-live-svg]");
     svgModels.forEach(function (svg) {
-      updateSvgModel(svg, newVal);
+      updateSvgModel(svg, changedEl, newVal);
     });
   }
 
@@ -200,7 +200,7 @@
     return typeof res === "number" ? Math.round(res * 100) / 100 : res;
   }
 
-  function updateSvgModel(svg, newVal) {
+  function updateSvgModel(svg, _changedEl, newVal) {
     var bar = svg.querySelector(".live-svg-bar");
     if (bar) {
       var widthPct = Math.min(100, Math.max(5, newVal * 10));

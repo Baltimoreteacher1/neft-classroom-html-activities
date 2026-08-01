@@ -1,9 +1,6 @@
-// step-solver.js — "Work It Out" step lab. A student solves a problem the way
-// they would on paper: one line at a time. After every line the lab checks that
-// the new line is *mathematically equivalent* to the previous one — same value
-// for expression work (17.4 - 5.75 + 2.1 → 11.65 + 2.1 → 13.75), same solution
-// for equation work (3x = 12 → x = 4) — and says so without ever revealing the
-// answer. Wrong steps get a gentle, actionable nudge instead of a red X wall.
+// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
+// (see tsconfig.json); the marker is the debt, and removing it is the unit of
+// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 //
 // The math engine is dependency-free: a tokenizer + shunting-yard parser
 // (handles decimals, fractions as division, MIXED NUMBERS like "2 1/2",

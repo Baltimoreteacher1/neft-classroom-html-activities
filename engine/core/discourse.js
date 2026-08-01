@@ -1,8 +1,3 @@
-// ── Discussion Moments — clickable discourse pop-ups ─────────────────────────
-// A quiet, opt-in "💬 Discuss & question a partner" trigger that opens ONE
-// accessible modal with a rigorous discourse question, a reciprocal
-// partner-questioning protocol, and tiered supports (Level 1 support / Level 2
-// stretch) tucked behind disclosures so the default view stays calm.
 //
 // Contract: purely formative. Never affects scoring, XP, stars, badges, or phase
 // completion. Confirmation persists via the shared `state` API (Save/Resume).
@@ -300,7 +295,7 @@ export function mountDiscussionMoment(host, opts = {}) {
     });
     dialog.querySelector(".discourse-close").addEventListener("click", close);
     const doneBtn = dialog.querySelector(".discourse-done-btn");
-    const doneNote = dialog.querySelector(".discourse-done-note");
+    const doneNote = /** @type {HTMLElement} */ (dialog.querySelector(".discourse-done-note"));
     if (isDone()) {
       doneNote.hidden = false;
       doneBtn.textContent = "Discussed again ✓";
@@ -313,7 +308,7 @@ export function mountDiscussionMoment(host, opts = {}) {
     });
 
     document.addEventListener("keydown", onKeydown, true);
-    dialog.querySelector(".discourse-close").focus();
+    /** @type {HTMLElement} */ (dialog.querySelector(".discourse-close")).focus();
   };
 
   trigger.addEventListener("click", open);
