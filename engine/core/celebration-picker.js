@@ -1,4 +1,3 @@
-// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
 // celebration-picker.js — Publisher-grade interactive math celebration choice bar & FX engine
 //
 // Gives students 4 creative, math-lesson related celebration choices on lesson completion
@@ -511,7 +510,8 @@ export function renderCelebrationPicker(container, config = null) {
   `;
 
   const btns = wrapper.querySelectorAll(".nt-celebration-btn");
-  btns.forEach((btn) => {
+  btns.forEach((elNode) => {
+    const btn = /** @type {HTMLElement} */ (elNode);
     btn.addEventListener("click", () => {
       btns.forEach((b) => b.classList.remove("active"));
       btn.classList.add("active");
@@ -526,12 +526,15 @@ export function renderCelebrationPicker(container, config = null) {
   });
 
   const replayBtn = wrapper.querySelector(".nt-celebration-replay");
-  replayBtn.addEventListener("click", () => {
-    const activeBtn = wrapper.querySelector(".nt-celebration-btn.active");
-    const fxId = activeBtn?.getAttribute("data-fx") || "polygon_3d";
-    if (window.AudioSynth?.tada) window.AudioSynth.tada();
-    fireCelebrationFX(fxId);
-  });
+  if (replayBtn) {
+    replayBtn.addEventListener("click", () => {
+      const activeEl = wrapper.querySelector(".nt-celebration-btn.active");
+      const activeBtn = /** @type {HTMLElement | null} */ (activeEl);
+      const fxId = activeBtn?.getAttribute("data-fx") || "polygon_3d";
+      if (window.AudioSynth?.tada) window.AudioSynth.tada();
+      fireCelebrationFX(fxId);
+    });
+  }
 
   container.appendChild(wrapper);
 
