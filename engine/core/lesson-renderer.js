@@ -5,6 +5,7 @@ import {
   renderActivityChooser,
   renderOptionalPracticeOptIn,
 } from "../components/activity-chooser.js";
+import { renderCelebrationPicker, fireCelebrationFX } from "./celebration-picker.js";
 import {
   renderAlgebraTiles,
   renderBalanceScale,
@@ -4656,6 +4657,7 @@ function showFinalSummary(el, state, config) {
     <button type="button" class="btn btn-secondary certificate-print-btn" onclick="window.print()">🖨️ ${stackHtml(t("printCertificate", "en"), t("printCertificate", "es"))}</button>`;
   el.append(summary);
   mountCertificateDownload(summary, config, state);
+  renderCelebrationPicker(summary, config);
 
   if (window.fireConfetti) window.fireConfetti();
 

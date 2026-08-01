@@ -23,6 +23,7 @@ import { initPresentMode } from "./present-mode.js";
 import { reportScore } from "./score-reporter.js";
 import { clearLessonStorage, createState, findSavedStudents, normalizeStudentId } from "./state.js";
 import { mountTeacherClearButton } from "./teacher-clear.js";
+import { fireCelebrationFX } from "./celebration-picker.js";
 import {
   buildWelcomeTeacherNotes,
   initTeacherAccess,
@@ -193,48 +194,16 @@ export function createApp(config) {
     },
   };
 
-  window.fireConfetti = function () {
-    const canvas = document.createElement("canvas");
-    canvas.style.position = "fixed";
-    canvas.style.inset = 0;
-    canvas.style.width = "100vw";
-    canvas.style.height = "100vh";
-    canvas.style.pointerEvents = "none";
-    canvas.style.zIndex = 9999;
-    document.body.appendChild(canvas);
-    const ctx = canvas.getContext("2d");
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    const pieces = Array.from({ length: 120 }).map(() => ({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height - canvas.height,
-      vx: (Math.random() - 0.5) * 10,
-      vy: Math.random() * 5 + 5,
-      color: ["#F2A93B", "#387F84", "#C85A3A", "#4A7C6F"][Math.floor(Math.random() * 4)],
-      size: Math.random() * 8 + 4,
-      rot: Math.random() * Math.PI * 2,
-      rotSpeed: (Math.random() - 0.5) * 0.2,
-    }));
-    function loop() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      let active = false;
-      pieces.forEach((p) => {
-        p.x += p.vx;
-        p.y += p.vy;
-        p.vy += 0.1;
-        p.rot += p.rotSpeed;
-        if (p.y < canvas.height) active = true;
-        ctx.save();
-        ctx.translate(p.x, p.y);
-        ctx.rotate(p.rot);
-        ctx.fillStyle = p.color;
-        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
-        ctx.restore();
-      });
-      if (active) requestAnimationFrame(loop);
-      else canvas.remove();
+  window.fireConfetti = function (type) {
+    let pref = type;
+    if (!pref) {
+      try {
+        pref = localStorage.getItem("nt-celebration-style") || "polygon_3d";
+      } catch {
+        pref = "polygon_3d";
+      }
     }
-    loop();
+    fireCelebrationFX(pref);
   };
 
   document.addEventListener("click", (e) => {

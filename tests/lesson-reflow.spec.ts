@@ -59,7 +59,10 @@ test.describe("shared lesson shell reflow", () => {
           return rect.left >= sidebarRect.left - 1 && rect.right <= sidebarRect.right + 1;
         }),
         floatingChromeClear: floatingChrome.every((element) =>
-          buttons.every((button) => !intersects(element.getBoundingClientRect(), button.getBoundingClientRect())),
+          buttons.every(
+            (button) =>
+              !intersects(element.getBoundingClientRect(), button.getBoundingClientRect()),
+          ),
         ),
         toolsClear:
           !utility ||
@@ -84,6 +87,44 @@ test.describe("shared lesson shell reflow", () => {
     );
   });
 
+  // The 320px case above only proved this on phones, where the HUD is
+  // display:none anyway. On a laptop the fixed bottom-left chrome sat ON the
+  // phase rail and hid whichever section label happened to be at that scroll
+  // position — reported 2026-08-01 with the open "Launch" step unreadable.
+  for (const [width, height, label] of [
+    [1280, 800, "laptop"],
+    [1024, 640, "chromebook"],
+    [1000, 560, "short laptop"],
+  ] as const) {
+    test(`keeps floating chrome off the phase rail at ${label} size`, async ({ page }) => {
+      await page.setViewportSize({ width, height });
+      await page.goto(LESSON_PATH, { waitUntil: "networkidle" });
+
+      const clashes = await page.evaluate(() => {
+        const buttons = Array.from(document.querySelectorAll<HTMLElement>(".phase-btn"));
+        const chrome = Array.from(
+          document.querySelectorAll<HTMLElement>(
+            ".minimap-hud, .nt-teacher-clear, .nt-next-phase-btn",
+          ),
+        ).filter((element) => getComputedStyle(element).display !== "none");
+        const intersects = (a: DOMRect, b: DOMRect) =>
+          a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+
+        const out: string[] = [];
+        for (const element of chrome) {
+          for (const button of buttons) {
+            if (intersects(element.getBoundingClientRect(), button.getBoundingClientRect())) {
+              out.push(`${element.className} covers "${(button.textContent || "").trim()}"`);
+            }
+          }
+        }
+        return out;
+      });
+
+      expect(clashes, "floating controls should not cover a phase button").toEqual([]);
+    });
+  }
+
   test("centers the lesson column when browser zoom exposes a wide layout viewport", async ({
     page,
   }) => {
@@ -104,8 +145,9 @@ test.describe("shared lesson shell reflow", () => {
       };
     });
 
-    expect(Math.abs(gaps.left - gaps.right), "wide lesson column should stay centered").toBeLessThan(
-      2,
-    );
+    expect(
+      Math.abs(gaps.left - gaps.right),
+      "wide lesson column should stay centered",
+    ).toBeLessThan(2);
   });
 });
