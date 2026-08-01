@@ -30,10 +30,33 @@ import { chromium } from "playwright";
 const ROOT = resolve(import.meta.dirname, "..");
 const HISTORY = resolve(ROOT, "reports/perf-curriculum.json");
 
-const LIVE = process.argv.includes("--live");
-const RECORD = process.argv.includes("--record");
-const NO_BUDGET = process.argv.includes("--no-budget");
-const BASE = LIVE ? "https://eduwonderlab.com" : "http://localhost:4178";
+const argv = process.argv.slice(2);
+const LIVE = argv.includes("--live");
+const RECORD = argv.includes("--record");
+const NO_BUDGET = argv.includes("--no-budget");
+
+/**
+ * Target origin.
+ *
+ * `--base <url>` is the form every other check here takes (audit:a11y,
+ * smoke:live, monitor:lesson-render), and Production Observability was already
+ * calling this script that way — but the script only understood the boolean
+ * `--live`, so `--base https://eduwonderlab.com` was silently ignored, BASE
+ * stayed at localhost:4178, nothing was listening in that job, and the step
+ * failed on a 60s navigation timeout on every single run. A budget check that
+ * has never once measured production is worse than no budget check, because it
+ * reads as coverage.
+ *
+ * `--live` is kept as a shorthand for the production origin.
+ */
+const baseFlag = argv.indexOf("--base");
+const BASE = (
+  baseFlag !== -1 && argv[baseFlag + 1]
+    ? argv[baseFlag + 1]
+    : LIVE
+      ? "https://eduwonderlab.com"
+      : "http://localhost:4178"
+).replace(/\/$/, "");
 
 /**
  * Budgets are set from the CURRENT measured reality plus headroom, not from a
@@ -130,7 +153,10 @@ async function measure() {
 
   return {
     recordedAt: new Date().toISOString(),
-    target: LIVE ? "live" : "local",
+    // Report the origin actually measured. This said "local" while measuring
+    // production, which is how a run against the wrong target reads as a
+    // healthy one in the history file.
+    target: BASE.includes("localhost") ? "local" : BASE.replace(/^https?:\/\//, ""),
     wallMs: Date.now() - started,
     ...metrics,
   };
