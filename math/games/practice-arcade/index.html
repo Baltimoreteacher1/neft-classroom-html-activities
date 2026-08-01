@@ -110,6 +110,7 @@
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2" />
     <!-- nsr-injected:end -->
     <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css" />
+    <script src="/math/games/shared/arcade-fx-engine.js"></script>
   </head>
   <body>
     <!-- EWL Universal Arcade Enhancements Header -->
@@ -118,11 +119,20 @@
         <span class="ewl-arcade-badge ewl-badge-l1" id="ewl-level-badge"
           >⭐ Level 1: Guided Support</span
         >
-        <span style="font-size: 13px; font-weight: 600; opacity: 0.85"
-          >| EduWonderLab Interactive Arcade</span
+        <span id="ewl-world-badge" style="font-size: 13px; font-weight: 800; color: #38bdf8; background: rgba(56,189,248,0.12); padding: 4px 10px; border-radius: 999px;"
+          >🕹️ Practice Arcade</span
         >
       </div>
-      <div class="ewl-arcade-controls">
+      <div class="ewl-arcade-controls" style="display: flex; align-items: center; gap: 8px;">
+        <span id="arcade-streak-badge" style="font-weight: 900; font-size: 13px; color: #38bdf8; background: rgba(56,189,248,0.15); padding: 4px 10px; border-radius: 999px;">🔥 STREAK: 0</span>
+        <button
+          type="button"
+          class="ewl-btn-toggle"
+          id="ewl-btn-sfx"
+          onclick="if (window.ArcadeFX) { const m = window.ArcadeFX.toggleMute(); this.innerText = m ? '🔇 Muted' : '🔊 SFX ON'; }"
+        >
+          🔊 SFX ON
+        </button>
         <button
           type="button"
           class="ewl-btn-toggle active"
@@ -366,6 +376,11 @@
           worldName = w.name;
           worldGlyphs = w.glyphs;
           worldBoss = w.boss;
+          const wb = document.getElementById("ewl-world-badge");
+          if (wb) {
+            wb.innerHTML = `${w.boss} Unit ${worldUnit}: ${w.name}`;
+            wb.style.color = "#" + w.accent.toString(16).padStart(6, "0");
+          }
         }
         // Pull the unit integer out of a lesson id ("4-3" → 4) or "unit-4" → 4.
         function unitOf(id) {
@@ -2097,6 +2112,12 @@
               // Juice escalates with the streak: more particles, bigger shake,
               // a second burst + confetti once it's rolling.
               JUICE.audio.correct(this.streak);
+              if (window.ArcadeFX) {
+                if (this.streak >= 2) window.ArcadeFX.playSFX("combo", this.streak);
+                else window.ArcadeFX.playSFX("correct", this.streak);
+                window.ArcadeFX.updateStreakBadge(this.streak);
+                window.ArcadeFX.showFloatScore(window.innerWidth / 2, window.innerHeight * 0.35, (doubling ? "⚡ +" : "+") + gained, doubling ? "#facc15" : "#34d399");
+              }
               const n = 18 + Math.min(this.streak, 6) * 4;
               JUICE.burst(this, cx, cy, [0x34d399, PALETTE.accent, 0xffffff], n);
               if (this.streak >= 5) JUICE.burst(this, cx, cy + 60, [0xfacc15, 0xffffff], 16);
@@ -2138,6 +2159,11 @@
               // when an authored explanation exists (teaches, not just "wrong").
               this.tries++;
               this.streak = 0;
+              if (window.ArcadeFX) {
+                window.ArcadeFX.playSFX("error");
+                window.ArcadeFX.screenShake();
+                window.ArcadeFX.updateStreakBadge(0);
+              }
               paSignal(rounds[this.idx], false, this.lastWrongTag || null);
               JUICE.audio.wrong();
               JUICE.shake(this, 0.006);
