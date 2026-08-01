@@ -9,7 +9,7 @@
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { EDITORIAL_FONT_IMPORT, EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
-import { writeGenerated } from "./lib/preserve-injected.mjs";
+import { isGeneratedFresh, writeGenerated } from "./lib/preserve-injected.mjs";
 
 const root = join(import.meta.dirname, "..");
 const lessonsDir = join(root, "lessons");
@@ -174,13 +174,31 @@ const lessonIds = readdirSync(lessonsDir)
   .filter((d) => LESSON_DIR_RE.test(d) && existsSync(join(lessonsDir, d, "config.json")))
   .sort();
 
+const CHECK = process.argv.includes("--check");
+const STALE = [];
 let count = 0;
 for (const id of lessonIds) {
   const config = JSON.parse(readFileSync(join(lessonsDir, id, "config.json"), "utf8"));
   // handout.html is an injected surface (Save/Resume, mobile a11y, enterprise
   // head) — a plain overwrite deletes those layers. See scripts/lib/preserve-injected.mjs.
-  writeGenerated(join(lessonsDir, id, "handout.html"), buildHandout(config));
+  const file = join(lessonsDir, id, "handout.html");
+  const html = buildHandout(config);
+  if (CHECK) {
+    if (!isGeneratedFresh(file, html)) STALE.push(`lessons/${id}/handout.html`);
+    continue;
+  }
+  writeGenerated(file, html);
   count++;
 }
 
-console.log(`Generated ${count} student handouts.`);
+if (CHECK) {
+  if (STALE.length) {
+    console.error(
+      `${STALE.length} handout page(s) are STALE — the committed HTML no longer matches its config.json:\n  ${STALE.slice(0, 15).join("\n  ")}\n\nFix: node scripts/generate-handout-html.mjs`,
+    );
+    process.exit(1);
+  }
+  console.log(`Handouts up to date (${lessonIds.length} lessons).`);
+} else {
+  console.log(`Generated ${count} student handouts.`);
+}

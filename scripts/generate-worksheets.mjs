@@ -28,7 +28,7 @@ import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
-import { writeGenerated } from "./lib/preserve-injected.mjs";
+import { isGeneratedFresh, writeGenerated } from "./lib/preserve-injected.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
@@ -421,6 +421,8 @@ ${pages}
 
 /* ---------- main ---------------------------------------------------------- */
 function main() {
+  const CHECK = process.argv.includes("--check");
+  const stale = [];
   const only = process.argv.slice(2).filter((a) => !a.startsWith("--"));
   const dirs = lessonDirs().filter((d) => (only.length ? only.includes(d) : true));
   let written = 0,
@@ -449,8 +451,26 @@ function main() {
     // deletes every one of them. validate:injection only checks that begin/end
     // sentinels BALANCE, and zero blocks balance perfectly — so the loss is
     // invisible until a student's saved work stops resuming.
-    writeGenerated(join(LESSONS, d, "worksheet.html"), buildWorksheet(cfg));
+    const file = join(LESSONS, d, "worksheet.html");
+    const html = buildWorksheet(cfg);
+    if (CHECK) {
+      if (!isGeneratedFresh(file, html)) stale.push(`lessons/${d}/worksheet.html`);
+      continue;
+    }
+    writeGenerated(file, html);
     written++;
+  }
+  if (CHECK) {
+    if (stale.length) {
+      console.error(
+        `${stale.length} worksheet page(s) are STALE — the committed HTML no longer matches its config.json:\n  ${stale
+          .slice(0, 15)
+          .join("\n  ")}\n\nFix: node scripts/generate-worksheets.mjs`,
+      );
+      process.exit(1);
+    }
+    console.log(`Worksheets up to date (${dirs.length} lessons).`);
+    return;
   }
   console.log(`Worksheets generated: ${written}  (skipped ${skipped})`);
 }
