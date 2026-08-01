@@ -422,6 +422,15 @@ if (staticFailures.length) {
 }
 console.log(`Static: every declared visual kind is renderable and registered.`);
 
+// --static-only stops here: no browser, no preview server, milliseconds. The
+// static half catches the "registered but unrenderable" class on its own —
+// net-folder sat in the REGISTRY with no buildVisual case, so every lesson that
+// authored it as a `diagram` rendered nothing under the full renderer. That is
+// a source-only defect and does not need a browser to see, which is why
+// tools/lesson-visuals-static.test.mjs runs this path on every `npm test`
+// while the full probe stays weekly.
+if (process.argv.includes("--static-only")) process.exit(0);
+
 console.log(`Probing ${ids.length} lesson(s) at ${BASE} (concurrency ${CONCURRENCY})`);
 
 const browser = await chromium.launch();
