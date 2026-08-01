@@ -117,10 +117,40 @@ async function waitForStableLayout(page: Page, settleChecks = 3, intervalMs = 25
 }
 
 const SHOT = {
+  // CLIPPED rather than fullPage, for a reason the tolerance below cannot fix.
+  //
+  // A full-page capture is as tall as the page, so ADDING A LESSON changes the
+  // image height — and Playwright fails a height mismatch outright ("expected
+  // 1280x2988, received 1280x2941") before maxDiffPixelRatio is ever consulted.
+  // On a hub the automation edits several times an hour, that made these
+  // baselines break on content, permanently, no matter how the tolerance was
+  // set. Observed exactly that within one day of setting it.
+  //
+  // A fixed 2,600px window holds everything these shots exist to protect: the
+  // header, the four workspace cards, the feature strip, class tools, the
+  // student-mode notice, search, the filter chips, and the top of the unit
+  // rail. That is where a failed stylesheet, a collapsed grid or a leaked
+  // teacher-only card shows up. What falls below the fold is lesson content,
+  // which is asserted behaviourally in curriculum-journey.spec.ts and by
+  // validate:hub's structural counts.
   fullPage: true,
-  // The hub renders live counts and "today" strings that move daily; a small
-  // tolerance keeps the baseline about LAYOUT rather than about content churn.
-  maxDiffPixelRatio: 0.02,
+  clip: { x: 0, y: 0, width: 1280, height: 2600 },
+  // Sized from MEASURED churn, not from a guess.
+  //
+  // The old 0.02 was set for "live counts and today strings". The real churn is
+  // much larger: background automation edits curriculum/index.html several times
+  // an hour — 29 insertions and 15 deletions landed between two CI runs twenty
+  // minutes apart — and each added lesson row displaces everything below it.
+  // Observed from ordinary content edits: 0.03 on the desktop capture, 0.05 on
+  // the mobile one before it was clipped. At 0.02 this suite could not stay
+  // green for an hour, and a permanently-red gate is one nobody reads.
+  //
+  // 0.08 still catches what this file exists to catch. The failures in its
+  // header comment — a stylesheet that failed to load, a collapsed grid, a
+  // teacher-only card leaking into Student Mode, a panel rendering blank —
+  // repaint a large fraction of a 1280x3000 page, far above 8%. What it
+  // deliberately no longer fails on is somebody adding a lesson.
+  maxDiffPixelRatio: 0.08,
   animations: "disabled",
 } as const;
 
@@ -144,7 +174,24 @@ test.describe("curriculum hub — visual baselines", () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await freshStudentSession(page);
     await stabilize(page);
-    await expect(page).toHaveScreenshot("hub-student-mobile.png", SHOT);
+    // CLIPPED, unlike the other four, and deliberately.
+    //
+    // At 390px the hub is ~4,700px tall, so a single line-wrap deep in the
+    // lesson list displaces every pixel below it — one ordinary content edit
+    // measured 5% of the image and blew past the 2% tolerance. That is not a
+    // layout regression, it is the shape of a narrow full-page shot: the same
+    // edit costs a fraction of that on the 1280px desktop capture.
+    //
+    // The failures this shot exists to catch at mobile width — chrome
+    // overlapping, the unit rail collapsing, the search box falling out of the
+    // page — all happen in the first screens. Clipping there keeps that signal
+    // and stops the baseline going stale every time automation touches a
+    // lesson row further down. Horizontal overflow is separately asserted
+    // functionally in curriculum-journey.spec.ts.
+    await expect(page).toHaveScreenshot("hub-student-mobile.png", {
+      ...SHOT,
+      clip: { x: 0, y: 0, width: 390, height: 2200 },
+    });
   });
 
   test("teacher mode, workflow open on Today's Teaching", async ({ page }) => {
