@@ -122,6 +122,8 @@ the strongest one(s) relevant to what you changed:
 | `npm run validate:canvas`                     | Structurally validates built Canvas Common Cartridges in `canvas-packages/` (hrefs/module refs/tokens/links resolve). `build-library-cartridge` also self-validates before shipping.                                 | Canvas export / cartridge tooling changes (see `docs/canvas-bridge.md`).                        |
 | `npm run validate:canvas-coverage`            | Asserts every assignable surface (catalog activities, injectOnly pages, lesson homework) exists on disk, carries the canvas-bridge sentinel, and has a unique SCORM package slug. Part of `validate`.                | Any change to `activity-catalog.json`, `inject-canvas-bridge.js`, or the SCORM builders.        |
 | `npm run validate:scorm`                      | Builds the SCORM SCO in-memory and asserts its hardening invariants are intact (cross-origin-safe API discovery, `report()` finished/started guards, `session_time`, Canvas identity, `<noscript>`), that the live `functions/_lib/scorm.js` `sco()` and CLI `tools/scorm/template/index.html.tpl` stay in lockstep, and that `functions/api/scorm.js` validates the target exists (fail-open, 404-only). Part of `validate`.                | Any change to the SCORM SCO wrapper, `/api/scorm`, or the CLI template.                          |
+| `npm run typecheck`                           | `tsc --noEmit` with `checkJs` over `assets/`, `engine/` and `shared/`. `npm run typecheck` prints the current coverage; the ratchet test below prints the split. Files not yet clean carry a `// @ts-nocheck` marker at the top — that marker IS the debt register, and removing one is the unit of work. The marker lives in the file rather than in a tsconfig list for a reason `exclude` cannot solve: tsc follows imports regardless of `exclude`, so one un-typed file re-contaminates every clean importer, and `engine/` is an entangled import graph. `types/globals.d.ts` declares the site's `window.*` handles, without which every window property is equally unknown and nothing about them is checkable. Part of `validate`. | Any change under `assets/`, `engine/` or `shared/`; before removing a `@ts-nocheck` marker. |
+| `npm run audit:duplicates`                    | Groups tracked assets by content hash and annotates each copy with how many source files reference it. Duplication alone is not the signal — a vendored library loaded from two paths is fine — so it reports the bytes held by copies **nothing** points at. On first run it found 25.4 MB held in redundant copies, 12.6 MB of which nothing referenced at all (those were removed 2026-08-01; the rest all have live references and need a routing decision, not a delete). **Reports only — never deletes.** → `reports/duplicate-assets.md`. | Debt burn-down; before adding another copy of an asset that may already exist. |
 | `npm run build`                               | Vite production build to `dist/`.                                                                                                                                                                                    | Anything touching Vite-built lesson launchers, config, or before a deploy-affecting change.     |
 | `npm run preview`                             | Serves the built `dist/` for smoke testing.                                                                                                                                                                          | Manual browser/smoke verification after a build.                                                |
 | `npm run ship:verify`                         | Read-only: polls the public build stamp (`/access-practice-lab/config.json`) until production serves the expected commit (default `origin/main`).                                                                     | After any deploy, or when checking whether production is fresh vs frozen.                       |
@@ -136,8 +138,22 @@ the strongest one(s) relevant to what you changed:
 
 > **Note:** `npm test` **does exist** — `node tools/run-tests.mjs`, which walks
 > the repo for `*.test.{mjs,cjs,js}` (ignoring `node_modules`, `dist`, `.git`,
-> `.qa-logs`, `coverage`) and currently runs 65 test scripts green in a few
-> seconds. It is wired into `npm run validate`, so every `ship` gates on it.
+> `.qa-logs`, `coverage`) and runs 108 test scripts green in a few
+> seconds (count as of 2026-08-01 — check `npm test` rather than trusting this
+> number, which is the mistake this note exists to warn about). Several of those are RATCHETS rather than ordinary tests — they pin a
+> number so a regression cannot be absorbed silently, and each one's failure
+> message tells you exactly what to do:
+> `tools/lint-coverage.test.mjs` (every shipped script must be visible to Biome),
+> `tools/typecheck-ratchet.test.mjs` (the `@ts-nocheck` count may only shrink),
+> `tools/curriculum-hub-assets.test.mjs` (the hub's extracted assets are stamped
+> with their own content hash, so editing one without bumping `?v=` fails here
+> instead of in a classroom), `tools/headers-rules.test.mjs` (no two `_headers`
+> rules that can match one URL may set the same header — Pages JOINS them),
+> `tools/redirects-shadowing.test.mjs` (no `_redirects` rule may be unreachable),
+> `tools/build-injectors-idempotent.test.mjs` (`npm run build` must not modify
+> committed source), `tools/a11y-coverage.test.mjs` (the a11y sample must cover
+> every page template), and `functions/api-contract.test.mjs` (a new `/api`
+> endpoint must use the shared handler in `functions/_lib/http.js`). It is wired into `npm run validate`, so every `ship` gates on it.
 > There is also `npm run check` (Biome), `npm run e2e` (Playwright), and
 > `npm run qa` (check + test + e2e).
 >
