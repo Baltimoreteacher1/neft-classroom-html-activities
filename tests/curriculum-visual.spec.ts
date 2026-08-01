@@ -117,7 +117,24 @@ async function waitForStableLayout(page: Page, settleChecks = 3, intervalMs = 25
 }
 
 const SHOT = {
+  // CLIPPED rather than fullPage, for a reason the tolerance below cannot fix.
+  //
+  // A full-page capture is as tall as the page, so ADDING A LESSON changes the
+  // image height — and Playwright fails a height mismatch outright ("expected
+  // 1280x2988, received 1280x2941") before maxDiffPixelRatio is ever consulted.
+  // On a hub the automation edits several times an hour, that made these
+  // baselines break on content, permanently, no matter how the tolerance was
+  // set. Observed exactly that within one day of setting it.
+  //
+  // A fixed 2,600px window holds everything these shots exist to protect: the
+  // header, the four workspace cards, the feature strip, class tools, the
+  // student-mode notice, search, the filter chips, and the top of the unit
+  // rail. That is where a failed stylesheet, a collapsed grid or a leaked
+  // teacher-only card shows up. What falls below the fold is lesson content,
+  // which is asserted behaviourally in curriculum-journey.spec.ts and by
+  // validate:hub's structural counts.
   fullPage: true,
+  clip: { x: 0, y: 0, width: 1280, height: 2600 },
   // Sized from MEASURED churn, not from a guess.
   //
   // The old 0.02 was set for "live counts and today strings". The real churn is
