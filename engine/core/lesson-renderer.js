@@ -29,6 +29,7 @@ import { attachAnnotator } from "../components/scene-annotate.js";
 import { attachVoiceInput } from "../components/voice-explain.js";
 import { createAdaptiveSequence } from "./adaptive.js";
 import { enableWordProblemAnnotation, observeWordProblemAnnotation } from "./annotate.js";
+import { fullerFormHint, isRight } from "./answer-match.js";
 import { createApp } from "./app.js";
 import { mountCertificateDownload } from "./certificate-export.js";
 import { mountChalkAnnotations } from "./chalk-annotate.js";
@@ -3447,8 +3448,10 @@ function renderCommonMistakeCallout(host, config) {
   host.append(box);
 }
 
-// Normalize a typed math answer for comparison: lowercase, strip spaces, unify
-// the many multiplication symbols, and turn unicode superscripts into ^n.
+// Normalize a typed math answer for the "is this simple enough to mark wrong?"
+// heuristic below: lowercase, strip spaces, unify the many multiplication
+// symbols, and turn unicode superscripts into ^n. Equivalence itself is decided
+// by the site-wide matcher in answer-match.js, not here.
 function normalizeAnswer(s) {
   return String(s == null ? "" : s)
     .toLowerCase()
@@ -3464,16 +3467,25 @@ function normalizeAnswer(s) {
 // Decide whether a typed answer can be auto-graded, and if so whether it's
 // correct. Returns {graded:false} for complex expressions (formatting varies too
 // much to grade fairly) so the UI falls back to a self-check reveal.
+//
+// Correctness goes through the shared matcher, so "7", "m = 7" and "7 boxes"
+// all count when the authored answer is "m = 7" — the variable label and the
+// unit are habits worth suggesting, not grounds for a red X. `hint` carries the
+// fuller authored form so the UI can suggest it after crediting the answer.
 function gradeSkillAnswer(student, correct) {
-  const a = normalizeAnswer(student);
-  const b = normalizeAnswer(correct);
-  if (!a) return { graded: false };
-  if (a === b) return { graded: true, correct: true };
-  const isNum = (s) => /^-?\d+(?:\.\d+)?$/.test(s);
-  if (isNum(a) && isNum(b)) return { graded: true, correct: Number(a) === Number(b) };
-  // Short, simple answers (one word/number, no operators) are safe to mark.
+  if (!normalizeAnswer(student)) return { graded: false };
+  if (isRight(student, correct))
+    return { graded: true, correct: true, hint: fullerFormHint(student, correct) };
+  // Short, simple answers (one word/number, no operators) are safe to mark wrong.
+  const b = normalizeAnswer(stripLabelForGrading(correct));
   if (b.length <= 12 && !/[*^/+]/.test(b)) return { graded: true, correct: false };
   return { graded: false };
+}
+
+// "m = 7" is as simple to grade as "7"; judge the value, not the label.
+function stripLabelForGrading(correct) {
+  const first = Array.isArray(correct) ? correct.find((a) => a != null) : correct;
+  return String(first ?? "").replace(/^\s*[a-z][a-z0-9]?\s*=\s*/i, "");
 }
 
 // Real skill practice: a few of the lesson's own problems presented as "solve
@@ -3581,7 +3593,13 @@ function renderSkillPractice(host, config, state) {
       if (r.graded && r.correct) {
         reveal.style.background = "rgba(46,158,91,0.10)";
         reveal.style.borderColor = "#2e9e5b";
-        reveal.innerHTML = `<strong>✅ Correct!</strong> ${esc(answer)}${why}`;
+        // Credit first, coach second: when the authored answer names the
+        // variable or carries a unit the student left off, show it as a next
+        // step, never as a correction.
+        const fuller = r.hint
+          ? `<br><span style="color:var(--muted,#5f6f80);">Nice — mathematicians often write it as <strong>${esc(r.hint)}</strong>. Either way, your answer is correct.</span>`
+          : "";
+        reveal.innerHTML = `<strong>✅ Correct!</strong> ${esc(answer)}${fuller}${why}`;
       } else if (r.graded && spMisses === 0) {
         spMisses = 1;
         reveal.style.background = "rgba(217,83,79,0.08)";
@@ -3920,32 +3938,16 @@ function renderPracticePhase(el, state, ctx, config) {
 // whether the friend was right. These helpers make the frame answerable and
 // the answer checkable.
 
-// Tolerant comparison for a single blank. Students type "$16", "16", "16.00",
-// ".6" and "0.6" for the same value, so strip currency/percent/comma/space
-// noise and normalize decimal spelling before comparing. Deliberately NOT a
-// numeric parse: blanks also hold words ("60% off", "decimal").
-function normalizeBlankValue(v) {
-  return String(v ?? "")
-    .toLowerCase()
-    .normalize("NFKD")
-    .replace(/[̀-ͯ]/g, "")
-    .replace(/[\s$,%]/g, "")
-    .replace(/^0+(?=\d)/, "")
-    .replace(/^(?=\.\d)/, "0")
-    .replace(/(\.\d*?)0+$/, "$1")
-    .replace(/\.$/, "")
-    .trim();
-}
-
-// One blank accepts a single string or an array of equivalent strings.
+// One blank accepts a single string or an array of equivalent strings, matched
+// by the site-wide matcher — so "$16", "16", "16.00", "16 dollars" and
+// "c = 16" all count for the same blank, and blanks that hold words
+// ("60% off", "decimal") still compare as text.
 // `null`/omitted means "no authored answer" — the blank is still typed into and
 // still saved, it just is not marked right or wrong.
 function blankIsCorrect(value, accepted) {
   if (accepted == null) return null;
-  const v = normalizeBlankValue(value);
-  if (!v) return false;
-  const list = Array.isArray(accepted) ? accepted : [accepted];
-  return list.some((a) => normalizeBlankValue(a) === v);
+  if (!String(value ?? "").trim()) return false;
+  return isRight(value, accepted);
 }
 
 /**

@@ -24,7 +24,7 @@
 // A studio that confidently mislabels a student's thinking is worse than one
 // that stays quiet, because a teacher will act on the label.
 
-import { numberOf } from "./small-group-answers.js";
+import { numberOf } from "./answer-match.js";
 
 const EPS = 1e-9;
 const near = (a, b) => Number.isFinite(a) && Number.isFinite(b) && Math.abs(a - b) < EPS;

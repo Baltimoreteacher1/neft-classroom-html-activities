@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { JSDOM } from "jsdom";
-import { isRight } from "../engine/core/small-group-answers.js";
+import { isRight } from "../engine/core/answer-match.js";
 import { resolveVocabImage } from "../engine/core/vocab-images.js";
 import { onRequest as middleware } from "../functions/_middleware.js";
 import { onRequest as teacherRouteHandler } from "../functions/teacher-small-group/[[path]].js";

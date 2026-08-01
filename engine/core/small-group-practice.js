@@ -1,5 +1,5 @@
 import { attachRegenPractice } from "../components/regen-practice.js";
-import { isRight, numberOf } from "./small-group-answers.js";
+import { isRight, numberOf } from "./answer-match.js";
 import { mountReasoningReader } from "./small-group-reasoning.js";
 import { createRubricDetails } from "./small-group-rubric.js";
 import { bi, biHtml, celebrate, el, esc, speak } from "./small-group-ui.js";

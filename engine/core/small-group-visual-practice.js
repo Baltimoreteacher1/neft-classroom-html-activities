@@ -5,7 +5,7 @@ import { renderAlgebraExpand } from "../components/algebra-tiles-expand.js";
 import { renderDataLive } from "../components/data-live.js";
 import { renderEquationBalanceLab } from "../components/equation-balance-lab.js";
 import { renderPercentGridLab } from "../components/percent-grid-lab.js";
-import { isRight } from "./small-group-answers.js";
+import { isRight } from "./answer-match.js";
 
 // Exact data-figure kinds routed to the interactive "Data Live" widget. Exact
 // match (not substring) so bar-MODEL, scale-bars, double-rate-bars, etc. keep
