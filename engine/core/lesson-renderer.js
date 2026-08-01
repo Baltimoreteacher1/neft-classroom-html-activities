@@ -528,9 +528,9 @@ function buildVisual(v) {
     case "long-division-builder": {
       return interactiveVisualHost(v, {
         ariaLabel:
-          "Interactive long-division lab. Type a dividend and divisor to work the division with partial quotients and find the quotient and remainder.",
+          "Interactive long-division lab. Work the standard algorithm one step at a time — divide, multiply, subtract, bring down, repeat — to find the quotient and remainder.",
         fallback:
-          "Interactive long-division builder. Turn on JavaScript to divide with partial quotients.",
+          "Interactive long-division builder. Turn on JavaScript to work the divide, multiply, subtract, bring down cycle.",
       });
     }
     case "ratio-table-builder": {

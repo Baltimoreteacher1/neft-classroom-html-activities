@@ -480,11 +480,12 @@
         "A field trip has 1,248 tickets to pack evenly into 24 envelopes. Decide the number per envelope and verify the result.",
       modelKind: "division",
       scenario: "Field trip ticket team",
-      misconception: "Dropping a zero or skipping a place when a partial quotient is small.",
+      misconception:
+        "Skipping the divide step for a place the divisor does not fit into, so no 0 is written in the quotient.",
       repairMove: "Name the place value of each quotient digit before subtracting.",
       hint: "After each subtraction, ask what place you are dividing next.",
       focus: "Whole-number division and checks",
-      materials: "Partial quotient chart, multiplication check",
+      materials: "Divide/Multiply/Subtract/Bring Down step chart, multiplication check",
       roles: ["Quotient tracker", "Remainder monitor", "Verifier"],
       defenseQuestions: [
         "What does this quotient digit represent?",

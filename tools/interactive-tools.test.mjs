@@ -102,10 +102,10 @@ for (const section of SECTION_ORDER) {
 // toolMeta resolves a canonical name and keeps the lesson's own title as a subtitle.
 const sample = toolMeta({
   kind: "tape-diagram",
-  title: "Breaking 1,344 ÷ 12 with partial quotients",
+  title: "1,344 ÷ 12, one place at a time",
 });
 assert.equal(sample.name, "Tape Diagram");
-assert.equal(sample.instance, "Breaking 1,344 ÷ 12 with partial quotients");
+assert.equal(sample.instance, "1,344 ÷ 12, one place at a time");
 assert.equal(toolMeta({ kind: "manip", manip: "frac-divide" }).name, "Fraction Divider");
 assert.equal(toolMeta({ kind: "manip", manip: "frac-divide" }).catalogued, true);
 
