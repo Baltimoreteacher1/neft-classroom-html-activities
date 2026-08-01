@@ -9,6 +9,7 @@
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { writeGenerated } from "./lib/preserve-injected.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const LESSONS_DIR = join(ROOT, "lessons");
@@ -100,7 +101,11 @@ function main() {
     const out = join(lessonDir, "index.html");
     if (!existsSync(join(lessonDir, "lesson.js"))) continue;
     const html = buildShell(name, readTitle(lessonDir));
-    writeFileSync(out, html);
+    // writeGenerated, not writeFileSync — see tools/generators-preserve-injected.test.mjs.
+    // These 223 lesson index.html shells are the LAUNCHER pages, and every one of
+    // them carries injected sentinel blocks (Save/Resume, mobile-access, the
+    // enterprise head, UIFR). A full-render overwrite deletes all of them.
+    writeGenerated(out, html);
     updated++;
   }
   console.log(`Updated ${updated} lesson index.html shells in lessons/`);

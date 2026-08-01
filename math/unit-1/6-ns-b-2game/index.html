@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Asteroid Miner — 6.NOS.B.2</title>
     <meta
       name="description"
@@ -40,12 +40,7 @@
         z-index: 0;
         overflow: hidden;
         pointer-events: none;
-        background: radial-gradient(
-          130% 90% at 50% 0%,
-          #134a5a 0%,
-          #0f2b3c 55%,
-          #08202c 100%
-        );
+        background: radial-gradient(130% 90% at 50% 0%, #134a5a 0%, #0f2b3c 55%, #08202c 100%);
       }
       .ff-mote {
         position: absolute;
@@ -491,36 +486,66 @@
     <!-- Games-2D metadata source of truth (must load before the game script) -->
     <script src="/assets/games2d-data.js"></script>
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
-  <!-- nsr-injected:end -->
-  <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
-</head>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2" />
+    <!-- nsr-injected:end -->
+    <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css" />
+  </head>
   <body>
     <div id="ff-bg" aria-hidden="true"></div>
     <div id="ff-sr" role="status" aria-live="polite"></div>
 
-    
-      <!-- EWL Universal Arcade Enhancements Header -->
-      <div class="ewl-arcade-header-bar" style="position: relative; z-index: 100;">
-        <div class="ewl-arcade-title-group">
-          <span class="ewl-arcade-badge ewl-badge-l1" id="ewl-level-badge">⭐ Level 1: Guided Support</span>
-          <span style="font-size: 13px; font-weight: 600; opacity: 0.85;">| EduWonderLab Interactive Arcade</span>
-        </div>
-        <div class="ewl-arcade-controls">
-          <button type="button" class="ewl-btn-toggle active" id="ewl-btn-l1" onclick="if(window.ewlSetLevel) window.ewlSetLevel(1)">L1 Support</button>
-          <button type="button" class="ewl-btn-toggle" id="ewl-btn-l2" onclick="if(window.ewlSetLevel) window.ewlSetLevel(2)">L2 Challenge</button>
-          <button type="button" class="ewl-btn-toggle" id="ewl-btn-lang" onclick="if(window.ewlToggleLang) window.ewlToggleLang()">🌐 EN / ES</button>
-        </div>
+    <!-- EWL Universal Arcade Enhancements Header -->
+    <div class="ewl-arcade-header-bar" style="position: relative; z-index: 100">
+      <div class="ewl-arcade-title-group">
+        <span class="ewl-arcade-badge ewl-badge-l1" id="ewl-level-badge"
+          >⭐ Level 1: Guided Support</span
+        >
+        <span style="font-size: 13px; font-weight: 600; opacity: 0.85"
+          >| EduWonderLab Interactive Arcade</span
+        >
       </div>
-  
-<main id="wrap">
+      <div class="ewl-arcade-controls">
+        <button
+          type="button"
+          class="ewl-btn-toggle active"
+          id="ewl-btn-l1"
+          onclick="if (window.ewlSetLevel) window.ewlSetLevel(1);"
+        >
+          L1 Support
+        </button>
+        <button
+          type="button"
+          class="ewl-btn-toggle"
+          id="ewl-btn-l2"
+          onclick="if (window.ewlSetLevel) window.ewlSetLevel(2);"
+        >
+          L2 Challenge
+        </button>
+        <button
+          type="button"
+          class="ewl-btn-toggle"
+          id="ewl-btn-lang"
+          onclick="if (window.ewlToggleLang) window.ewlToggleLang();"
+        >
+          🌐 EN / ES
+        </button>
+      </div>
+    </div>
+
+    <main id="wrap">
       <!-- VOCAB GATE -->
       <section id="screen-vocab" class="screen on" aria-labelledby="vh">
         <h1 id="vh">🛰️ Asteroid Miner</h1>
-        <p class="sub">Multi-digit division · partial quotients · 6.NOS.B.2</p>
+        <p class="sub">
+          Multi-digit division · 6.NOS.B.2 —
+          <em
+            >a second strategy. In Lesson 1.4 you divide, multiply, subtract and bring down; here
+            you blast away chunks instead. Same quotient, different route.</em
+          >
+        </p>
         <div class="card">
           <h2 style="color: #fff; font-size: 1.2rem">Words to know first</h2>
           <div class="vocab" id="vocab-list"></div>
@@ -539,32 +564,23 @@
 
       <!-- PLAY -->
       <section id="screen-play" class="screen" aria-labelledby="ph">
-        <h1 id="ph" style="position: absolute; left: -9999px">
-          Asteroid Miner play
-        </h1>
+        <h1 id="ph" style="position: absolute; left: -9999px">Asteroid Miner play</h1>
         <div class="hud">
           <span class="pill"
-            ><small>Asteroid</small> <span id="hud-round">1</span>/<span
-              id="hud-total"
+            ><small>Asteroid</small> <span id="hud-round">1</span>/<span id="hud-total"
               >4</span
             ></span
           >
+          <span class="pill"><small>Score</small> <span id="hud-score">0</span></span>
           <span class="pill"
-            ><small>Score</small> <span id="hud-score">0</span></span
-          >
-          <span class="pill"
-            ><small>Hull</small>
-            <span class="lives" id="hud-lives">●●●●●</span></span
+            ><small>Hull</small> <span class="lives" id="hud-lives">●●●●●</span></span
           >
         </div>
         <div class="card">
           <div class="target">
-            <div class="nums">
-              Mine this ore into crews of <span id="t-divisor">7</span>
-            </div>
+            <div class="nums">Mine this ore into crews of <span id="t-divisor">7</span></div>
             <div class="prompt" id="t-prompt">
-              How many full crews of <span id="t-divisor2">7</span> can you load
-              right now?
+              How many full crews of <span id="t-divisor2">7</span> can you load right now?
             </div>
           </div>
 
@@ -573,12 +589,7 @@
               <div class="ore-label">ORE LEFT</div>
               <div class="ore-amt" id="ore-amt">336</div>
             </div>
-            <div
-              class="hpbar"
-              role="progressbar"
-              aria-label="Ore remaining"
-              aria-valuemin="0"
-            >
+            <div class="hpbar" role="progressbar" aria-label="Ore remaining" aria-valuemin="0">
               <i id="hpfill" style="width: 100%"></i>
             </div>
           </div>
@@ -593,8 +604,7 @@
 
           <div class="console">
             <p class="blast-label">
-              Pick how many crews of <span id="t-divisor3">7</span> to load,
-              then BLAST:
+              Pick how many crews of <span id="t-divisor3">7</span> to load, then BLAST:
             </p>
             <div
               class="groups"
@@ -604,18 +614,11 @@
             ></div>
             <div class="preview" id="preview" aria-live="polite"></div>
             <div class="console-row">
-              <button class="btn blast-btn big" id="blast" type="button">
-                ⛏️ Blast!
-              </button>
+              <button class="btn blast-btn big" id="blast" type="button">⛏️ Blast!</button>
             </div>
           </div>
 
-          <div
-            class="feedback"
-            id="feedback"
-            role="status"
-            aria-live="assertive"
-          ></div>
+          <div class="feedback" id="feedback" role="status" aria-live="assertive"></div>
           <p class="hint" id="hint"></p>
           <div class="scaffold" id="scaffold"></div>
         </div>
@@ -627,12 +630,8 @@
         <div class="card">
           <div class="result-stars" id="r-stars">★★★</div>
           <div class="result-stat"><span>Score</span><b id="r-score">0</b></div>
-          <div class="result-stat">
-            <span>Asteroids mined</span><b id="r-rounds">0</b>
-          </div>
-          <div class="result-stat">
-            <span>Clean blasts</span><b id="r-clean">0</b>
-          </div>
+          <div class="result-stat"><span>Asteroids mined</span><b id="r-rounds">0</b></div>
+          <div class="result-stat"><span>Clean blasts</span><b id="r-clean">0</b></div>
           <div class="result-stat" id="r-high-row" style="display: none">
             <span>★ New high score!</span><b id="r-high">0</b>
           </div>
@@ -650,8 +649,7 @@
         var host = document.getElementById("ff-bg");
         if (!host) return;
         var reduce =
-          window.matchMedia &&
-          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         var n = reduce ? 10 : 26;
         for (var i = 0; i < n; i++) {
           var d = document.createElement("div");
@@ -688,8 +686,7 @@
 
       // Metadata source of truth: window.Games2DData (assets/games2d-data.js).
       // Inline fallback keeps the page alive if the artifact fails to load.
-      const DATA = (window.Games2DData &&
-        window.Games2DData["6-ns-b-2game"]) || {
+      const DATA = (window.Games2DData && window.Games2DData["6-ns-b-2game"]) || {
         ccss: "6.NOS.B.2",
         title: "Asteroid Miner",
         vocab: [
@@ -709,8 +706,7 @@
         misconceptions: [
           {
             tag: "over-subtract",
-            trigger:
-              "Tries to load more crews than there is ore for, pushing the ore below zero.",
+            trigger: "Tries to load more crews than there is ore for, pushing the ore below zero.",
             feedback:
               "You can't take out more ore than is left. Try fewer crews so the ore stays at zero or above.",
           },
@@ -766,9 +762,7 @@
         init() {
           if (!this.ctx)
             try {
-              this.ctx = new (
-                window.AudioContext || window.webkitAudioContext
-              )();
+              this.ctx = new (window.AudioContext || window.webkitAudioContext)();
             } catch (e) {}
         },
         play(t, f, d, v = 0.2) {
@@ -824,9 +818,7 @@
       };
 
       function show(screen) {
-        document
-          .querySelectorAll(".screen")
-          .forEach((s) => s.classList.remove("on"));
+        document.querySelectorAll(".screen").forEach((s) => s.classList.remove("on"));
         $("screen-" + screen).classList.add("on");
       }
 
@@ -854,8 +846,7 @@
       // positionally guessable. Level 1 = 1..9. Level 2 adds tens for
       // place-value estimation.
       function groupChoices() {
-        const base =
-          S.level === 1 ? [1, 2, 3, 4, 5, 6, 7, 8, 9] : [1, 2, 5, 10, 20, 40];
+        const base = S.level === 1 ? [1, 2, 3, 4, 5, 6, 7, 8, 9] : [1, 2, 5, 10, 20, 40];
         return shuffle(base.slice());
       }
 
@@ -884,11 +875,7 @@
           .join("");
         $("level-list")
           .querySelectorAll("[data-level]")
-          .forEach((el) =>
-            el.addEventListener("click", () =>
-              startGame(Number(el.dataset.level)),
-            ),
-          );
+          .forEach((el) => el.addEventListener("click", () => startGame(Number(el.dataset.level))));
       }
 
       // ── Game flow ──
@@ -915,9 +902,7 @@
         $("hud-round").textContent = i + 1;
         $("hud-score").textContent = S.score;
         $("hud-lives").textContent = "●".repeat(S.lives) || "—";
-        ["t-divisor", "t-divisor2", "t-divisor3"].forEach(
-          (id) => ($(id).textContent = r.divisor),
-        );
+        ["t-divisor", "t-divisor2", "t-divisor3"].forEach((id) => ($(id).textContent = r.divisor));
         $("feedback").textContent = "";
         $("feedback").className = "feedback";
         $("hint").textContent =
@@ -928,9 +913,7 @@
         renderGroups();
         renderLedger();
         renderOre();
-        srSay(
-          `Asteroid ${i + 1}. ${r.ore} ore. Load crews of ${r.divisor} to mine it out.`,
-        );
+        srSay(`Asteroid ${i + 1}. ${r.ore} ore. Load crews of ${r.divisor} to mine it out.`);
       }
 
       function renderScaffold() {
@@ -954,10 +937,7 @@
           b.type = "button";
           b.textContent = n;
           b.dataset.n = n;
-          b.setAttribute(
-            "aria-label",
-            `Load ${n} crew${n === 1 ? "" : "s"} of ${S.cur.divisor}`,
-          );
+          b.setAttribute("aria-label", `Load ${n} crew${n === 1 ? "" : "s"} of ${S.cur.divisor}`);
           b.addEventListener("click", () => selectGroups(n));
           g.appendChild(b);
         });
@@ -968,9 +948,7 @@
         S.selectedGroups = n;
         document
           .querySelectorAll(".grp")
-          .forEach((el) =>
-            el.classList.toggle("sel", Number(el.dataset.n) === n),
-          );
+          .forEach((el) => el.classList.toggle("sel", Number(el.dataset.n) === n));
         const r = S.cur;
         const removed = n * r.divisor;
         $("preview").innerHTML =
@@ -1034,12 +1012,9 @@
         const m = DATA.misconceptions || [];
         if (kind === "over")
           return (
-            (m[0] && m[0].feedback) ||
-            "You can't take out more ore than is left. Try fewer crews."
+            (m[0] && m[0].feedback) || "You can't take out more ore than is left. Try fewer crews."
           );
-        return (
-          (m[1] && m[1].feedback) || "Think bigger — estimate how many fit."
-        );
+        return (m[1] && m[1].feedback) || "Think bigger — estimate how many fit.";
       }
 
       function shakeAsteroid() {
@@ -1155,16 +1130,13 @@
       document.addEventListener("keydown", (e) => {
         if (!$("screen-play").classList.contains("on")) return;
         if (e.key === "Enter" || e.key.toLowerCase() === "b") {
-          if (document.activeElement && document.activeElement.id === "blast")
-            return; // let the button's own handler fire
+          if (document.activeElement && document.activeElement.id === "blast") return; // let the button's own handler fire
           e.preventDefault();
           blast();
           return;
         }
         if (/^[0-9]$/.test(e.key)) {
-          const btn = $("groups").querySelector(
-            `.grp[data-n="${Number(e.key)}"]`,
-          );
+          const btn = $("groups").querySelector(`.grp[data-n="${Number(e.key)}"]`);
           if (btn) {
             e.preventDefault();
             selectGroups(Number(e.key));
@@ -1182,21 +1154,31 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
-<!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
-  <!-- nsr-injected:end -->
-  
-      <!-- EWL Diagnostic Misconception Coach -->
-      <div class="ewl-coach-card" id="ewl-coach-card" style="display: flex; position: relative; z-index: 100;">
-        <div class="ewl-coach-icon">💡</div>
-        <div class="ewl-coach-content">
-          <h4 id="ewl-coach-title">Math Coach Tip / Consejos del Profesor</h4>
-          <p id="ewl-coach-text" data-en="Prime factorization breaks composite numbers into prime leaves. 2 is the smallest prime number!" data-es="La factorización prima descompone números compuestos en hojas primas.">Prime factorization breaks composite numbers into prime leaves. 2 is the smallest prime number!</p>
-        </div>
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+    <!-- nsr-injected:end -->
+
+    <!-- EWL Diagnostic Misconception Coach -->
+    <div
+      class="ewl-coach-card"
+      id="ewl-coach-card"
+      style="display: flex; position: relative; z-index: 100"
+    >
+      <div class="ewl-coach-icon">💡</div>
+      <div class="ewl-coach-content">
+        <h4 id="ewl-coach-title">Math Coach Tip / Consejos del Profesor</h4>
+        <p
+          id="ewl-coach-text"
+          data-en="Prime factorization breaks composite numbers into prime leaves. 2 is the smallest prime number!"
+          data-es="La factorización prima descompone números compuestos en hojas primas."
+        >
+          Prime factorization breaks composite numbers into prime leaves. 2 is the smallest prime
+          number!
+        </p>
       </div>
-  
-</body>
+    </div>
+  </body>
 </html>

@@ -16,6 +16,7 @@ const SLIDES_EDITORIAL = `
 }`;
 
 import { inScope, lessonScope } from "./lib/lesson-scope.mjs";
+import { writeGenerated } from "./lib/preserve-injected.mjs";
 import { REFERENCE_CSS, tokensToCssVars } from "./lib/slide-reference-theme.mjs";
 import { getUnitPalette, paletteToCssVars } from "./lib/slide-theme-palettes.mjs";
 
@@ -3864,7 +3865,12 @@ function main() {
       const html = generateSlidesHtml(id, data, googleSlidesUrl);
 
       const outputPath = path.join(lessonsDir, id, "slides.html");
-      fs.writeFileSync(outputPath, html, "utf8");
+      // writeGenerated, not fs.writeFileSync: the injectors (Save/Resume,
+      // mobile-access, math-workbench) splice sentinel blocks into this page
+      // AFTER it is generated, and a plain overwrite silently deletes them.
+      // validate:injection only checks that begin/end sentinels BALANCE, and
+      // zero blocks balance perfectly — so the loss is invisible.
+      writeGenerated(outputPath, html);
       count++;
     } catch (e) {
       console.error(`Failed to generate slides for lesson ${id}:`, e);

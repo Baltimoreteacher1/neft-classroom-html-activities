@@ -6,6 +6,7 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { writeGenerated } from "../scripts/lib/preserve-injected.mjs";
 import { LESSON_JS, shellHtml } from "./lib/compact-shell.mjs";
 import { buildParallelPractice } from "./lib/small-group-parallel-practice.mjs";
 
@@ -196,7 +197,10 @@ for (const band of bands) {
   if (!DRY) {
     mkdirSync(join(LESSONS, id), { recursive: true });
     writeFileSync(join(LESSONS, id, "config.json"), JSON.stringify(out, null, 2) + "\n");
-    writeFileSync(
+    // writeGenerated, not writeFileSync — see tools/generators-preserve-injected.test.mjs.
+    // These catch-up shells carry injected sentinel blocks; a plain overwrite
+    // strips them. No-op on a brand-new lesson, which has nothing to preserve.
+    writeGenerated(
       join(LESSONS, id, "index.html"),
       shellHtml(id, `${range} Catch-Up`, `Grade 6 Reveal Math catch-up review — Lessons ${range}`),
     );

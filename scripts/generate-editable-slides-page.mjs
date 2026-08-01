@@ -26,6 +26,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { EDITORIAL_FONT_IMPORT, EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
+import { writeGenerated } from "./lib/preserve-injected.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "..");
@@ -234,7 +235,10 @@ function main() {
         contentObjective: cfg.contentObjective || "",
         languageObjective: cfg.languageObjective || "",
       });
-      fs.writeFileSync(path.join(lessonsDir, id, "editable-slides.html"), html, "utf8");
+      // writeGenerated, not fs.writeFileSync — see tools/generators-preserve-injected.test.mjs.
+      // All 74 editable-slides.html pages carry injected sentinel blocks; a plain
+      // overwrite deletes them and no gate notices, because zero blocks balance.
+      writeGenerated(path.join(lessonsDir, id, "editable-slides.html"), html);
       count++;
     } catch (e) {
       skipped.push(id);

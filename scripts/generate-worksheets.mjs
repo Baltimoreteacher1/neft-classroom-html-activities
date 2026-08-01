@@ -28,6 +28,7 @@ import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
+import { writeGenerated } from "./lib/preserve-injected.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
@@ -442,7 +443,13 @@ function main() {
       skipped++;
       continue;
     }
-    writeFileSync(join(LESSONS, d, "worksheet.html"), buildWorksheet(cfg));
+    // writeGenerated, not writeFileSync: the injectors (Save/Resume,
+    // mobile-access, math-workbench, enterprise-head) splice sentinel blocks
+    // into this page AFTER it is generated, and a plain overwrite silently
+    // deletes every one of them. validate:injection only checks that begin/end
+    // sentinels BALANCE, and zero blocks balance perfectly — so the loss is
+    // invisible until a student's saved work stops resuming.
+    writeGenerated(join(LESSONS, d, "worksheet.html"), buildWorksheet(cfg));
     written++;
   }
   console.log(`Worksheets generated: ${written}  (skipped ${skipped})`);

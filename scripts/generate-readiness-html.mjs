@@ -32,6 +32,7 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { writeGenerated } from "./lib/preserve-injected.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
@@ -319,7 +320,10 @@ for (const f of files) {
   const d = JSON.parse(readFileSync(path, "utf8"));
   const outDir = join(root, "lessons", d.lessonId, "readiness");
   if (!existsSync(outDir)) mkdirSync(outDir, { recursive: true });
-  writeFileSync(join(outDir, "index.html"), buildHtml(d));
+  // writeGenerated, not writeFileSync — see tools/generators-preserve-injected.test.mjs.
+  // All 74 lessons/<id>/readiness/index.html pages carry injected sentinel blocks;
+  // a full-render overwrite deletes them and no gate notices.
+  writeGenerated(join(outDir, "index.html"), buildHtml(d));
   count++;
 }
 console.log(`Generated ${count} readiness HTML page(s).`);

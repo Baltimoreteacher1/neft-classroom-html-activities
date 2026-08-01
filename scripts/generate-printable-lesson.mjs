@@ -16,6 +16,7 @@
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { writeGenerated } from "./lib/preserve-injected.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const lessonsDir = join(__dirname, "..", "lessons");
@@ -470,7 +471,11 @@ const targets = argv.length ? argv.filter((d) => all.includes(d)) : all;
 let n = 0;
 for (const id of targets) {
   const config = JSON.parse(readFileSync(join(lessonsDir, id, "config.json"), "utf8"));
-  writeFileSync(join(lessonsDir, id, "printable.html"), buildPrintable(config), "utf8");
+  // writeGenerated, not writeFileSync. printable.html carries no injected blocks
+  // TODAY, so this is a no-op that returns the html unchanged — but the moment an
+  // injector starts targeting it (tools/inject-usage-signal.mjs already names this
+  // page), a plain overwrite would silently strip the layer. Cheap to be correct now.
+  writeGenerated(join(lessonsDir, id, "printable.html"), buildPrintable(config));
   n++;
 }
 console.log(`✓ generated ${n} printable.html file(s)`);
