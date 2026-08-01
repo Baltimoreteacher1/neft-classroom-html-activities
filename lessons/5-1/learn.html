@@ -245,6 +245,18 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .li-input-answer{flex:1;min-width:180px;margin-top:0;}
 .li-list{margin:0 0 16px;padding-left:24px;}
 .li-list>li{font-size:19.5px;line-height:1.7;margin:0 0 8px;color:var(--ink);}
+/* The lesson's own practice table, typeable in place. Scrolls inside its own
+   box so a wide table never pushes the page sideways on a Chromebook. */
+.li-table-wrap{margin:10px 0 16px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.li-table{width:100%;border-collapse:collapse;background:#fff;border:1.5px solid var(--line);
+  border-radius:10px;overflow:hidden;font-size:18.5px;}
+.li-table th{background:var(--teal-light);color:var(--navy);font-weight:800;text-align:left;
+  padding:12px 14px;border-bottom:2px solid var(--teal);white-space:nowrap;}
+.li-table td{padding:11px 14px;border-bottom:1px solid var(--line);color:var(--ink);vertical-align:middle;}
+.li-table tr:last-child td{border-bottom:0;}
+.li-table-input{margin-top:0;min-width:120px;font-size:18.5px;}
+@media print{.li-table-wrap{overflow:visible;}.li-table th{background:#fff;border-bottom-color:#000;}
+  .li-table,.li-table td{border-color:#000;}.li-table-input{border-bottom-color:#000;}}
 .li-problem-q{font-size:21px;line-height:1.65;font-weight:600;color:var(--navy);margin:8px 0 14px;
   padding:16px 20px;background:#fff;border:1px solid var(--line);border-left:6px solid var(--navy);border-radius:0 10px 10px 0;}
 /* Earned hint ladder — one hint at a time, never the answer. */
@@ -1371,6 +1383,7 @@ html.nt-embed .li-stage{padding:clamp(16px,1.8vw,24px)!important;}
         <p class="li-eyebrow"><span class="li-stage-ico" aria-hidden="true">🌍</span><span class="li-stage-label">Apply it</span><span class="li-stage-sub">Use the same math in a real situation</span><button type="button" class="li-say no-print" data-li-say aria-label="Listen to the section: Apply it">🔊</button></p>
         <p class="li-lead"><strong>The Patio Pavers</strong></p>
         <p class="li-problem-q">Claire's architecture firm is laying pavers on a <button type="button" class="li-pop" data-popover data-term="Parallelogram" data-term-es="Paralelogramo" data-def="A four-sided shape with two pairs of parallel sides." data-def-es="Una figura de cuatro lados con dos pares de lados paralelos." data-img="../../assets/vocab-images/parallelogram.svg" aria-label="parallelogram — what does Parallelogram mean?">parallelogram<span class="li-pop-i" aria-hidden="true">ⓘ</span></button>-shaped patio for a client. The patio has a <button type="button" class="li-pop" data-popover data-term="Base" data-term-es="Base" data-def="A side of the shape you use to find the area." data-def-es="Un lado de la figura que usas para hallar el área." data-img="../../assets/vocab-images/base.svg" aria-label="base — what does Base mean?">base<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> of 16 feet and a perpendicular <button type="button" class="li-pop" data-popover data-term="Height" data-term-es="Altura" data-def="The straight-up distance from the base to the top." data-def-es="La distancia recta hacia arriba desde la base hasta la parte de arriba." data-img="../../assets/vocab-images/height.svg" aria-label="height — what does Height mean?">height<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> of 9 feet. The <button type="button" class="li-pop" data-popover data-term="Slanted side" data-term-es="Lado inclinado" data-def="A side that leans instead of going straight up and down. It is not the perpendicular height." data-def-es="Un lado que está inclinado en vez de subir y bajar verticalmente. No es la altura perpendicular." data-img="../../assets/vocab-images/parallelogram.svg" aria-label="slanted side — what does Slanted side mean?">slanted side<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> of the patio measures 11 feet. Each box of pavers covers 12 square feet. How many full boxes of pavers should Claire order to cover the entire patio?</p>
+        <figure class="li-figure"><img src="/lessons/5-1/reveal-assets/word-problem.png" alt="The Patio Pavers" loading="lazy" decoding="async" /></figure>
         <div class="li-work"><label class="li-work-label" for="w-apply">Show your work</label><textarea class="li-work-area" id="w-apply" data-nt-field data-nt-key="apply" rows="3" placeholder="Write or sketch your thinking here…"></textarea></div>
         <p class="li-answer"><span class="li-answer-label">My answer</span><input class="li-input li-input-answer" type="text" data-nt-field data-nt-key="apply-answer" placeholder="Type your answer" /></p>
         <details class="li-check"><summary>Check my answer</summary><div class="li-check-body"><strong>✅ Sample answer:</strong> First find the area: A = base × height = 16 × 9 = 144 square feet (the 11 ft slanted side is not used). Then divide by the box coverage: 144 ÷ 12 = 12 boxes. Claire should order 12 boxes of pavers.</div></details>

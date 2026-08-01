@@ -269,7 +269,10 @@ function renderFillTableFallback(wrapper, config = {}) {
 // priority order; if none match, the last column becomes editable.
 const ANSWER_KEY_PRIORITY = ["answer", "quotient", "solution", "result"];
 
-function normalizeFillTable(config = {}) {
+// Exported so the Learn It generator (scripts/generate-notes.mjs) renders the
+// SAME table shapes this component accepts — a second adapter would drift.
+// DOM-free by construction: it only reshapes the authored config.
+export function normalizeFillTable(config = {}) {
   const onComplete = config.onComplete;
 
   // Already in the standard shape: pass through untouched.

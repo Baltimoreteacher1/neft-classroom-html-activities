@@ -5,6 +5,7 @@ import { createRubricDetails } from "./small-group-rubric.js";
 import { bi, biHtml, celebrate, el, esc, speak } from "./small-group-ui.js";
 import { appendVisualPractice } from "./small-group-visual-practice.js";
 import { renderConversionChip, hasConversionFacts } from "./conversion-chart.js";
+import { renderToolChip } from "./tool-drawer.js";
 
 const firstHint = (item) => item.hints?.[0] || item.hint || null;
 
@@ -39,11 +40,61 @@ function itemStem(item) {
   return item.stem || item.title || item.instructions || item.prompt || "Try this problem.";
 }
 
+function detectConceptTool(stemText) {
+  if (!stemText || typeof stemText !== "string") return null;
+  const str = stemText.toLowerCase();
+
+  if (str.includes("exponent") || str.includes("power") || str.includes("base")) {
+    return { kind: "power-builder", icon: "⚡", label: "Powers & Exponents" };
+  }
+  if (str.includes("factor tree") || str.includes("prime factor")) {
+    return { kind: "factor-tree-lab", icon: "🌳", label: "Factor Tree Lab" };
+  }
+  if (str.includes("lcm") || str.includes("least common multiple")) {
+    return { kind: "lcm-lab", icon: "🔢", label: "LCM Lab" };
+  }
+  if (str.includes("fraction") && (str.includes("divide") || str.includes("÷") || str.includes("kcf"))) {
+    return { kind: "fraction-divide", icon: "🥞", label: "Divide Fractions Lab" };
+  }
+  if (str.includes("decimal") && (str.includes("multiply") || str.includes("product"))) {
+    return { kind: "decimal-product", icon: "🔢", label: "Multiply Decimals Lab" };
+  }
+  if (str.includes("decimal") && (str.includes("divide") || str.includes("quotient"))) {
+    return { kind: "decimal-quotient", icon: "🔢", label: "Divide Decimals Lab" };
+  }
+  if (str.includes("equation") || str.includes("balance scale")) {
+    return { kind: "algebra-balance-scale", icon: "⚖️", label: "Balance Scale" };
+  }
+  if (str.includes("inequality") || str.includes("greater than") || str.includes("less than")) {
+    return { kind: "neon-inequality", icon: "📈", label: "Inequality Lab" };
+  }
+  if (str.includes("surface area") || str.includes("net") || str.includes("prism")) {
+    return { kind: "surface-area-packer", icon: "📦", label: "Surface Area Packer" };
+  }
+  if (str.includes("area of") || str.includes("parallelogram") || str.includes("trapezoid")) {
+    return { kind: "area-morph", icon: "📐", label: "Area Lab" };
+  }
+  if (str.includes("coordinate") || str.includes("quadrant") || str.includes("ordered pair")) {
+    return { kind: "coordinate-navigator", icon: "📍", label: "Coordinate Navigator" };
+  }
+  if (str.includes("box plot") || str.includes("quartile")) {
+    return { kind: "box-plot-detective", icon: "📊", label: "Box Plot Detective" };
+  }
+  if (str.includes("histogram") || str.includes("frequency table")) {
+    return { kind: "histogram-master-lab", icon: "📊", label: "Histogram Lab" };
+  }
+  return null;
+}
+
 function questionCard(index, stem, stemEs, item = {}) {
   const card = el("div", "prob");
   const p = el("p", "q", `<span class="pn">${index + 1}</span><span>${bi(stem, stemEs)}</span>`);
   if (item.hasConversionChart || hasConversionFacts(stem) || hasConversionFacts(item)) {
     renderConversionChip(p, { label: "Conversion Chart", icon: "📋" });
+  }
+  const conceptTool = detectConceptTool(stem) || detectConceptTool(itemStem(item));
+  if (conceptTool) {
+    renderToolChip(p, conceptTool, { label: conceptTool.label, icon: conceptTool.icon });
   }
   card.appendChild(p);
   return card;

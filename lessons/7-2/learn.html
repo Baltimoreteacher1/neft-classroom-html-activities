@@ -245,6 +245,18 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .li-input-answer{flex:1;min-width:180px;margin-top:0;}
 .li-list{margin:0 0 16px;padding-left:24px;}
 .li-list>li{font-size:19.5px;line-height:1.7;margin:0 0 8px;color:var(--ink);}
+/* The lesson's own practice table, typeable in place. Scrolls inside its own
+   box so a wide table never pushes the page sideways on a Chromebook. */
+.li-table-wrap{margin:10px 0 16px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.li-table{width:100%;border-collapse:collapse;background:#fff;border:1.5px solid var(--line);
+  border-radius:10px;overflow:hidden;font-size:18.5px;}
+.li-table th{background:var(--teal-light);color:var(--navy);font-weight:800;text-align:left;
+  padding:12px 14px;border-bottom:2px solid var(--teal);white-space:nowrap;}
+.li-table td{padding:11px 14px;border-bottom:1px solid var(--line);color:var(--ink);vertical-align:middle;}
+.li-table tr:last-child td{border-bottom:0;}
+.li-table-input{margin-top:0;min-width:120px;font-size:18.5px;}
+@media print{.li-table-wrap{overflow:visible;}.li-table th{background:#fff;border-bottom-color:#000;}
+  .li-table,.li-table td{border-color:#000;}.li-table-input{border-bottom-color:#000;}}
 .li-problem-q{font-size:21px;line-height:1.65;font-weight:600;color:var(--navy);margin:8px 0 14px;
   padding:16px 20px;background:#fff;border:1px solid var(--line);border-left:6px solid var(--navy);border-radius:0 10px 10px 0;}
 /* Earned hint ladder — one hint at a time, never the answer. */
@@ -1371,6 +1383,7 @@ html.nt-embed .li-stage{padding:clamp(16px,1.8vw,24px)!important;}
         <p class="li-eyebrow"><span class="li-stage-ico" aria-hidden="true">🌍</span><span class="li-stage-label">Apply it</span><span class="li-stage-sub">Use the same math in a real situation</span><button type="button" class="li-say no-print" data-li-say aria-label="Listen to the section: Apply it">🔊</button></p>
         <p class="li-lead"><strong>The Evidence Locker</strong></p>
         <p class="li-problem-q">Detective Chen logs evidence bags into the agency vault. After she adds 18 new bags from today's case, the vault holds 64 bags in all. The <button type="button" class="li-pop" data-popover data-term="Equation" data-term-es="Ecuación" data-def="A math sentence with an equal sign showing both sides are the same." data-def-es="Una oración matemática con un signo igual que muestra que ambos lados son iguales." data-img="../../assets/vocab-images/equation-x-plus-25.svg" aria-label="equation — what does Equation mean?">equation<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> b + 18 = 64 shows the situation, where b is the number of bags that were already in the vault. How many evidence bags were in the vault before today?</p>
+        <figure class="li-figure"><img src="/lessons/7-2/reveal-assets/word-problem.jpg" alt="The Evidence Locker" loading="lazy" decoding="async" /></figure>
         <div class="li-work"><label class="li-work-label" for="w-apply">Show your work</label><textarea class="li-work-area" id="w-apply" data-nt-field data-nt-key="apply" rows="3" placeholder="Write or sketch your thinking here…"></textarea></div>
         <p class="li-answer"><span class="li-answer-label">My answer</span><input class="li-input li-input-answer" type="text" data-nt-field data-nt-key="apply-answer" placeholder="Type your answer" /></p>
         <details class="li-check"><summary>Check my answer</summary><div class="li-check-body"><strong>✅ Sample answer:</strong> Subtract 18 from both sides: b = 64 − 18 = 46. There were 46 evidence bags in the vault before today. Check: 46 + 18 = 64 ✓</div></details>

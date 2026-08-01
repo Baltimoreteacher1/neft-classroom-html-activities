@@ -245,6 +245,18 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .li-input-answer{flex:1;min-width:180px;margin-top:0;}
 .li-list{margin:0 0 16px;padding-left:24px;}
 .li-list>li{font-size:19.5px;line-height:1.7;margin:0 0 8px;color:var(--ink);}
+/* The lesson's own practice table, typeable in place. Scrolls inside its own
+   box so a wide table never pushes the page sideways on a Chromebook. */
+.li-table-wrap{margin:10px 0 16px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.li-table{width:100%;border-collapse:collapse;background:#fff;border:1.5px solid var(--line);
+  border-radius:10px;overflow:hidden;font-size:18.5px;}
+.li-table th{background:var(--teal-light);color:var(--navy);font-weight:800;text-align:left;
+  padding:12px 14px;border-bottom:2px solid var(--teal);white-space:nowrap;}
+.li-table td{padding:11px 14px;border-bottom:1px solid var(--line);color:var(--ink);vertical-align:middle;}
+.li-table tr:last-child td{border-bottom:0;}
+.li-table-input{margin-top:0;min-width:120px;font-size:18.5px;}
+@media print{.li-table-wrap{overflow:visible;}.li-table th{background:#fff;border-bottom-color:#000;}
+  .li-table,.li-table td{border-color:#000;}.li-table-input{border-bottom-color:#000;}}
 .li-problem-q{font-size:21px;line-height:1.65;font-weight:600;color:var(--navy);margin:8px 0 14px;
   padding:16px 20px;background:#fff;border:1px solid var(--line);border-left:6px solid var(--navy);border-radius:0 10px 10px 0;}
 /* Earned hint ladder — one hint at a time, never the answer. */
@@ -1363,6 +1375,7 @@ html.nt-embed .li-stage{padding:clamp(16px,1.8vw,24px)!important;}
         <p class="li-eyebrow"><span class="li-stage-ico" aria-hidden="true">🌍</span><span class="li-stage-label">Apply it</span><span class="li-stage-sub">Use the same math in a real situation</span><button type="button" class="li-say no-print" data-li-say aria-label="Listen to the section: Apply it">🔊</button></p>
         <p class="li-lead"><strong>Flooring</strong></p>
         <p class="li-problem-q">A designer is tiling an L-shaped lobby floor. The floor <button type="button" class="li-pop" data-popover data-term="Decompose" data-term-es="Descomponer" data-def="To break a shape into smaller, simpler shapes." data-def-es="Separar una figura en figuras más pequeñas y simples." data-img="../../assets/vocab-images/subtract.svg" aria-label="decomposes — what does Decompose mean?">decomposes<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> into a 12 ft by 8 ft rectangle and a 6 ft by 5 ft rectangle. If floor tiles cost $2.89 per square foot, what budget do you recommend the designer have for the tiles?</p>
+        <figure class="li-figure"><img src="/lessons/5-5/reveal-assets/word-problem.svg" alt="Flooring" loading="lazy" decoding="async" /></figure>
         <div class="li-work"><label class="li-work-label" for="w-apply">Show your work</label><textarea class="li-work-area" id="w-apply" data-nt-field data-nt-key="apply" rows="3" placeholder="Write or sketch your thinking here…"></textarea></div>
         <p class="li-answer"><span class="li-answer-label">My answer</span><input class="li-input li-input-answer" type="text" data-nt-field data-nt-key="apply-answer" placeholder="Type your answer" /></p>
         <details class="li-check"><summary>Check my answer</summary><div class="li-check-body"><strong>✅ Sample answer:</strong> Decompose the L-shape: 12 × 8 = 96 sq ft and 6 × 5 = 30 sq ft. The pieces are joined, so add: 96 + 30 = 126 sq ft. Tiles cost $2.89 per sq ft, so 126 × $2.89 = $364.14. I recommend a budget of about $365 for the tiles.</div></details>

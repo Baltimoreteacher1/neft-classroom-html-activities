@@ -278,4 +278,41 @@ export function mountToolDrawer(config, { panels = [], hero = null } = {}) {
   return { points, drawer };
 }
 
+/**
+ * Open any tool configuration in a native modal dialog.
+ */
+export function openToolModal(toolConfig, triggerEl = null, title = null) {
+  ensureStyles();
+  const drawer = createDrawer();
+  const meta = toolMeta(toolConfig);
+  const heading = title || meta?.name || "Math Tool";
+  drawer.open([{ v: toolConfig, section: "practice" }], triggerEl, heading);
+}
+
+/**
+ * Render an additive chip button that opens a tool in a modal dialog when clicked.
+ */
+export function renderToolChip(container, toolConfig, { label = null, icon = "🧰" } = {}) {
+  if (!container || !toolConfig) return null;
+  ensureStyles();
+  const meta = toolMeta(toolConfig);
+  const chipName = label || meta?.name || "Math Tool";
+
+  const chip = document.createElement("button");
+  chip.type = "button";
+  chip.className = "nt-toolchip";
+  chip.setAttribute("aria-label", `Open ${chipName}`);
+  chip.style.cssText = "margin-left: 6px; padding: 6px 12px; font-size: 13px;";
+  chip.innerHTML = `<span>${icon}</span> <span>${chipName}</span>`;
+
+  chip.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    openToolModal(toolConfig, chip, chipName);
+  });
+
+  container.appendChild(chip);
+  return chip;
+}
+
 export default mountToolDrawer;

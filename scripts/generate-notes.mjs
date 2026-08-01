@@ -1,6 +1,7 @@
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { normalizeFillTable } from "../engine/components/fill-table.js";
 import { deriveTWR } from "../engine/core/twr.js";
 import { resolveVocabImage, vocabImageAlt } from "../engine/core/vocab-images.js";
 import { deriveWorkedSteps } from "../engine/core/worked-steps.js";
@@ -1041,6 +1042,66 @@ function liHintLadder(item) {
     .join("")}</div>`;
 }
 
+// Pick the lesson's own fill-table practice item — on-level first, since Learn
+// It is the shared path every student reads. Two authored shapes exist
+// ({headers, rows[][], editableCells} and {columns, rows:[{...}]}); both go
+// through the engine's own adapter, so this never diverges from what the
+// Practice phase renders.
+function liFindFillTable(cfg = {}) {
+  const p = cfg.practice || {};
+  for (const it of [].concat(p.onLevel || [], p.approaching || [], p.extending || [])) {
+    if (!it || it.type !== "fill-table") continue;
+    const t = normalizeFillTable(it);
+    if (t.headers.length && t.rows.length) return { ...it, ...t };
+  }
+  return null;
+}
+
+// Render a fill-table practice item as a REAL, typeable table. The "On your
+// own" coaching lines are authored against the lesson's table ("In the table,
+// use the conversion factor…"), but the step only ever rendered a separate
+// multiple-choice problem — so 25 lessons told the reader to use a table that
+// was not on the page (reported 2026-08-01 on lesson 4-6). Editable cells are
+// blank inputs; every other cell prints as authored, including the worked row
+// that models the move. Answers stay behind the earned reveal below.
+function liFillTable(item, key) {
+  const editable = new Set(
+    (Array.isArray(item.editableCells) ? item.editableCells : []).map((c) => `${c.row}:${c.col}`),
+  );
+  const head = `<tr>${item.headers.map((h) => `<th scope="col">${esc(h)}</th>`).join("")}</tr>`;
+  const body = item.rows
+    .map((row, r) => {
+      const cells = row
+        .map((cell, c) =>
+          editable.has(`${r}:${c}`)
+            ? `<td><input class="li-input li-table-input" type="text" data-nt-field data-nt-key="${esc(key)}-r${r}c${c}" aria-label="${esc(item.headers[c] || `Column ${c + 1}`)}, row ${r + 1}" placeholder="?" /></td>`
+            : `<td>${esc(cell)}</td>`,
+        )
+        .join("");
+      return `<tr>${cells}</tr>`;
+    })
+    .join("");
+  // No <caption>: the visible "Solve:" line above already states the task, and
+  // this page has no sr-only utility class to hide a duplicate with.
+  return `<div class="li-table-wrap"><table class="li-table" aria-label="${esc(item.instructions || "Complete the table.")}"><thead>${head}</thead><tbody>${body}</tbody></table></div>`;
+}
+
+// The completed table, revealed only after the student has tried it.
+function liFillTableAnswers(item) {
+  const cells = (Array.isArray(item.editableCells) ? item.editableCells : []).filter(
+    (c) => c && c.answer,
+  );
+  if (!cells.length) return "";
+  const rows = cells
+    .map((c) => {
+      const label = (item.rows[c.row] || [])[0] || `Row ${c.row + 1}`;
+      const col = (item.headers || [])[c.col] || `Column ${c.col + 1}`;
+      return `<li><strong>${esc(label)}</strong> → ${esc(col)}: ${esc(c.answer)}</li>`;
+    })
+    .join("");
+  return `<details class="li-check"><summary>Check my answer</summary><div class="li-check-body"><strong>✅ Answers:</strong><ul class="li-list">${rows}</ul>${item.explanation ? `<span class="li-check-why">${esc(item.explanation)}</span>` : ""}</div></details>`;
+}
+
 // The lesson already writes, for every wrong answer choice, WHY it is wrong.
 // That is the best misconception data in the file — surfaced here as a
 // "watch out" card so students can check their own work against it.
@@ -1329,7 +1390,23 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
         .map((l) => `<li>${popoverize(l, vocab)}</li>`)
         .join("")}</ul>`
     : "";
-  if (ownProblem) {
+  // When the coaching lines point at "the table", the table has to BE here.
+  const tableItem = /\btables?\b/i.test(coachLines.join(" ")) ? liFindFillTable(cfg) : null;
+  if (tableItem) {
+    stages.push({
+      id: "own",
+      accent: "own",
+      icon: "🚀",
+      label: "On your own",
+      sub: "You do — solve this one by yourself",
+      body: `${ownGuidance}
+        <p class="li-problem-q"><strong>Solve:</strong> ${popoverize(tableItem.instructions || "Complete the table.", vocab)}</p>
+        ${liFillTable(tableItem, "own-table")}
+        ${liWork("own", "Show your work")}
+        ${liHintLadder(tableItem)}
+        ${liFillTableAnswers(tableItem)}`,
+    });
+  } else if (ownProblem) {
     const ownAns =
       Array.isArray(ownProblem.choices) && typeof ownProblem.correctIndex === "number"
         ? ownProblem.choices[ownProblem.correctIndex]
@@ -1373,6 +1450,7 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
       sub: "Use the same math in a real situation",
       body: `${applyTitle ? `<p class="li-lead"><strong>${esc(applyTitle)}</strong></p>` : ""}
         <p class="li-problem-q">${popoverize(apply.text, vocab)}</p>
+        ${apply.image ? `<figure class="li-figure"><img src="${esc(apply.image)}" alt="${esc(applyTitle || "Figure for this problem")}" loading="lazy" decoding="async" /></figure>` : ""}
         ${liWork("apply", "Show your work")}
         <p class="li-answer"><span class="li-answer-label">My answer</span><input class="li-input li-input-answer" type="text" data-nt-field data-nt-key="apply-answer" placeholder="Type your answer" /></p>
         ${apply.sampleAnswer ? `<details class="li-check"><summary>Check my answer</summary><div class="li-check-body"><strong>✅ Sample answer:</strong> ${esc(apply.sampleAnswer)}</div></details>` : ""}`,
@@ -1986,6 +2064,18 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .li-input-answer{flex:1;min-width:180px;margin-top:0;}
 .li-list{margin:0 0 16px;padding-left:24px;}
 .li-list>li{font-size:19.5px;line-height:1.7;margin:0 0 8px;color:var(--ink);}
+/* The lesson's own practice table, typeable in place. Scrolls inside its own
+   box so a wide table never pushes the page sideways on a Chromebook. */
+.li-table-wrap{margin:10px 0 16px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.li-table{width:100%;border-collapse:collapse;background:#fff;border:1.5px solid var(--line);
+  border-radius:10px;overflow:hidden;font-size:18.5px;}
+.li-table th{background:var(--teal-light);color:var(--navy);font-weight:800;text-align:left;
+  padding:12px 14px;border-bottom:2px solid var(--teal);white-space:nowrap;}
+.li-table td{padding:11px 14px;border-bottom:1px solid var(--line);color:var(--ink);vertical-align:middle;}
+.li-table tr:last-child td{border-bottom:0;}
+.li-table-input{margin-top:0;min-width:120px;font-size:18.5px;}
+@media print{.li-table-wrap{overflow:visible;}.li-table th{background:#fff;border-bottom-color:#000;}
+  .li-table,.li-table td{border-color:#000;}.li-table-input{border-bottom-color:#000;}}
 .li-problem-q{font-size:21px;line-height:1.65;font-weight:600;color:var(--navy);margin:8px 0 14px;
   padding:16px 20px;background:#fff;border:1px solid var(--line);border-left:6px solid var(--navy);border-radius:0 10px 10px 0;}
 /* Earned hint ladder — one hint at a time, never the answer. */
