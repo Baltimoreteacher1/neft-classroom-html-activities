@@ -2325,11 +2325,11 @@ function renderWarmupPhase(el, state, ctx, config) {
         <span style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; color:#0f6d78; background:#e6f4f6; padding:4px 10px; border-radius:6px;">Phase 1 · Warmup</span>
         <h3 style="margin:6px 0 0; font-size:22px; font-weight:800; color:#14223a;">⚡ Warmup: Previous Lesson Check${esc(prevTitle)}</h3>
       </div>
-      <div id="warmupScoreBadge" style="font-size:13px; font-weight:800; color:#0f6d78; background:#f0fdf4; border:1px solid #bbf7d0; padding:6px 14px; border-radius:10px;">
+      <div id="warmupScoreBadge" style="font-size:14.5px; font-weight:800; color:#0b5a63; background:#f0fdf4; border:1px solid #bbf7d0; padding:7px 15px; border-radius:10px;">
         ${warmup.questions.length} Questions · Autograded
       </div>
     </div>
-    <p style="margin:0 0 16px; font-size:15px; color:#56627a;">
+    <p style="margin:0 0 16px; font-size:16.5px; font-weight:600; line-height:1.55; color:#3f4a5f;">
       Answer these 3–4 warmup questions reviewing previous lesson material before starting today's lesson.
     </p>
   `;
@@ -2613,9 +2613,12 @@ function renderWarmupPhase(el, state, ctx, config) {
     qBox.style.cssText =
       "border:1px solid #cbd5e1; border-radius:12px; padding:16px; background:#f8fafc;";
 
+    // Warmup text is read from across the room and by students who need larger
+    // print, so the stem is deliberately heavier and larger than body copy.
     const qTitle = document.createElement("div");
-    qTitle.style.cssText = "font-weight:700; font-size:15px; color:#0f172a; margin-bottom:10px;";
-    qTitle.innerHTML = `<span style="color:#0f6d78; font-weight:800; margin-right:6px;">Q${qIdx + 1}.</span> ${esc(q.stem)}`;
+    qTitle.style.cssText =
+      "font-weight:800; font-size:19px; line-height:1.5; color:#0f172a; margin-bottom:12px;";
+    qTitle.innerHTML = `<span style="color:#0f6d78; font-weight:900; margin-right:6px;">Q${qIdx + 1}.</span> ${esc(q.stem)}`;
     qBox.append(qTitle);
 
     const choicesGroup = document.createElement("div");
@@ -2624,19 +2627,21 @@ function renderWarmupPhase(el, state, ctx, config) {
     const feedbackBox = document.createElement("div");
     feedbackBox.className = "warmup-fb-box";
     feedbackBox.style.cssText =
-      "display:none; font-size:13.5px; padding:10px 12px; border-radius:8px; margin-top:10px;";
+      "display:none; font-size:15.5px; font-weight:700; line-height:1.5; padding:11px 14px; border-radius:8px; margin-top:10px;";
 
     const selectedIdx = savedAnswers[qIdx];
 
     q.choices.forEach((choiceText, cIdx) => {
       const choiceLabel = document.createElement("label");
       choiceLabel.style.cssText =
-        "display:flex; align-items:center; gap:10px; padding:9px 12px; border:1px solid #cbd5e1; border-radius:8px; background:#ffffff; cursor:pointer; font-size:14px; transition:all 0.15s;";
+        "display:flex; align-items:center; gap:12px; padding:12px 14px; border:1px solid #cbd5e1; border-radius:8px; background:#ffffff; cursor:pointer; font-size:17px; font-weight:600; line-height:1.45; color:#0f172a; transition:all 0.15s;";
 
       const radio = document.createElement("input");
       radio.type = "radio";
       radio.name = `warmup_q_p0_${qIdx}`;
       radio.value = cIdx;
+      // Larger hit target so the choice is easy to see and tap on a Chromebook.
+      radio.style.cssText = "width:20px; height:20px; flex:0 0 auto; accent-color:#0f6d78;";
       if (selectedIdx === cIdx) radio.checked = true;
 
       radio.addEventListener("change", () => {
@@ -2669,7 +2674,7 @@ function renderWarmupPhase(el, state, ctx, config) {
   checkBtn.type = "button";
   checkBtn.className = "btn btn-primary";
   checkBtn.style.cssText =
-    "padding:10px 20px; font-weight:800; font-size:14px; background:#0f6d78; color:#ffffff; border:none; border-radius:10px; cursor:pointer;";
+    "padding:12px 24px; font-weight:800; font-size:16.5px; background:#0f6d78; color:#ffffff; border:none; border-radius:10px; cursor:pointer;";
   checkBtn.textContent = savedAnswers.checked ? "Score Final (Submitted)" : "Submit Warmup Answers";
   if (savedAnswers.checked) {
     checkBtn.disabled = true;
@@ -2729,7 +2734,7 @@ function renderWarmupPhase(el, state, ctx, config) {
   nextBtn.type = "button";
   nextBtn.className = "btn btn-teal";
   nextBtn.style.cssText =
-    "padding:10px 22px; font-weight:800; font-size:14px; background:#14223a; color:#ffffff; border:none; border-radius:10px; cursor:pointer;";
+    "padding:12px 26px; font-weight:800; font-size:16.5px; background:#14223a; color:#ffffff; border:none; border-radius:10px; cursor:pointer;";
   nextBtn.textContent = "Continue to Phase 2: Objectives 🎯";
   nextBtn.addEventListener("click", () => {
     if (ctx && typeof ctx.nextPhase === "function") {
@@ -2825,12 +2830,12 @@ function renderReteachHelper(container, warmup, _correctCount, _total, config) {
     <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
       <span style="font-size:22px;">💡</span>
       <div>
-        <h4 style="margin:0; font-size:16px; font-weight:800; color:#713f12;">Quick Reteach: ${prevTitle}</h4>
-        <div style="font-size:12.5px; color:#854d0e;">Let's quickly review this step-by-step before moving to Phase 2 Launch!</div>
+        <h4 style="margin:0; font-size:18px; font-weight:800; color:#713f12;">Quick Reteach: ${prevTitle}</h4>
+        <div style="font-size:14.5px; font-weight:600; color:#7c4a0e;">Let's quickly review this step-by-step before moving to Phase 2 Launch!</div>
       </div>
     </div>
-    <div style="background:#ffffff; border:1px solid #fef08a; border-radius:10px; padding:14px; margin-bottom:14px; font-size:14px; color:#334155; line-height:1.6;">
-      <div style="font-weight:700; color:#0f172a; margin-bottom:6px;">📌 Core Strategy Recap:</div>
+    <div style="background:#ffffff; border:1px solid #fef08a; border-radius:10px; padding:14px; margin-bottom:14px; font-size:16px; font-weight:500; color:#293548; line-height:1.6;">
+      <div style="font-weight:800; font-size:16.5px; color:#0f172a; margin-bottom:6px;">📌 Core Strategy Recap:</div>
       <div>To tackle ${prevTitle}, break the problem into clear steps:</div>
       <ul style="margin:6px 0 0 20px; padding:0;">
         <li>Identify what key quantity or relationship the problem asks for.</li>
@@ -2839,17 +2844,17 @@ function renderReteachHelper(container, warmup, _correctCount, _total, config) {
       </ul>
     </div>
     <div id="reteachMiniCheck" style="background:#ffffff; border:1px solid #cbd5e1; border-radius:10px; padding:14px;">
-      <div style="font-weight:700; font-size:13.5px; color:#0f172a; margin-bottom:8px;">
-        <span style="color:#eab308; font-weight:800;">Mini-Check:</span> Try this quick practice item to rebuild your confidence:
+      <div style="font-weight:800; font-size:16px; color:#0f172a; margin-bottom:8px;">
+        <span style="color:#a16207; font-weight:900;">Mini-Check:</span> Try this quick practice item to rebuild your confidence:
       </div>
-      <div style="font-size:14px; color:#334155; margin-bottom:10px;">
+      <div style="font-size:16.5px; font-weight:600; line-height:1.5; color:#293548; margin-bottom:10px;">
         Which strategy helps verify your answer when solving math problems?
       </div>
       <div style="display:flex; flex-direction:column; gap:8px;">
-        <button type="button" class="btn-reteach-opt" data-correct="false" style="text-align:left; padding:8px 12px; border:1px solid #cbd5e1; border-radius:8px; background:#f8fafc; cursor:pointer; font-size:13.5px;">Guessing quickly without writing steps</button>
-        <button type="button" class="btn-reteach-opt" data-correct="true" style="text-align:left; padding:8px 12px; border:1px solid #cbd5e1; border-radius:8px; background:#f8fafc; cursor:pointer; font-size:13.5px;">Modeling the problem and checking key calculations</button>
+        <button type="button" class="btn-reteach-opt" data-correct="false" style="text-align:left; padding:11px 14px; border:1px solid #cbd5e1; border-radius:8px; background:#f8fafc; cursor:pointer; font-size:16px; font-weight:600; line-height:1.45; color:#0f172a;">Guessing quickly without writing steps</button>
+        <button type="button" class="btn-reteach-opt" data-correct="true" style="text-align:left; padding:11px 14px; border:1px solid #cbd5e1; border-radius:8px; background:#f8fafc; cursor:pointer; font-size:16px; font-weight:600; line-height:1.45; color:#0f172a;">Modeling the problem and checking key calculations</button>
       </div>
-      <div id="reteachFb" style="display:none; margin-top:10px; padding:8px 12px; border-radius:8px; font-size:13px; font-weight:700;"></div>
+      <div id="reteachFb" style="display:none; margin-top:10px; padding:9px 14px; border-radius:8px; font-size:15px; font-weight:800;"></div>
     </div>
   `;
 
@@ -2909,7 +2914,7 @@ function evaluateWarmupQuestion(qBox, q, selectedIdx, feedbackBox) {
       if (cIdx === q.correctIndex) {
         lbl.style.borderColor = "#22c55e";
         lbl.style.background = "#f0fdf4";
-        lbl.style.fontWeight = "bold";
+        lbl.style.fontWeight = "800";
       } else {
         lbl.style.borderColor = "#ef4444";
         lbl.style.background = "#fef2f2";
