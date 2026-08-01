@@ -575,6 +575,16 @@
       </div>
   
 <main id="wrap">
+      <div id="arcade-controls-host"></div>
+
+      <div class="arcade-theme-header" style="background: linear-gradient(135deg, rgba(15,43,60,0.9), rgba(6,32,44,0.95)); border: 1px solid #12a596; border-radius: 16px; padding: 14px 18px; margin-bottom: 16px; display: flex; align-items: center; gap: 14px; box-shadow: 0 4px 20px rgba(0,0,0,0.4);">
+        <div style="font-size: 2.2rem; background: rgba(255,255,255,0.06); padding: 8px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">🚀</div>
+        <div>
+          <div style="font-size: 1.15rem; font-weight: 900; color: #ffffff; letter-spacing: 0.5px;">🚀 COSMIC ASTEROID SMASHER</div>
+          <div style="font-size: 0.88rem; color: #94a3b8; margin-top: 2px;">Fire Prime Lasers to smash composite asteroids into glowing prime crystal fragments!</div>
+        </div>
+      </div>
+  
       <!-- VOCAB GATE -->
       <section id="screen-vocab" class="screen on" aria-labelledby="vh">
         <h1 id="vh">⚒️ Factor Frenzy</h1>
@@ -1509,5 +1519,34 @@
       });
     });
   </script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      if (window.ArcadeFX) {
+        window.ArcadeFX.renderControlBar("arcade-controls-host");
+      }
+      const canvas = document.getElementById("fx-canvas");
+      if (canvas) {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        window.addEventListener("resize", () => {
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+        });
+      }
+
+      document.body.addEventListener("click", function(e) {
+        if (window.ArcadeFX) {
+          if (e.target.closest(".btn, button, .bubble, .card, canvas")) {
+            window.ArcadeFX.playSFX("click");
+            if (canvas && (e.target.closest(".btn, button") || e.target.tagName === "BUTTON")) {
+              window.ArcadeFX.spawnParticles(canvas, e.clientX, e.clientY, "#12a596", 22);
+            }
+          }
+        }
+      });
+    });
+  </script>
+  
 </body>
 </html>

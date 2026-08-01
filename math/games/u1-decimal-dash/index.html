@@ -1800,5 +1800,34 @@
       });
     });
   </script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      if (window.ArcadeFX) {
+        window.ArcadeFX.renderControlBar("arcade-controls-host");
+      }
+      const canvas = document.getElementById("fx-canvas");
+      if (canvas) {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        window.addEventListener("resize", () => {
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+        });
+      }
+
+      document.body.addEventListener("click", function(e) {
+        if (window.ArcadeFX) {
+          if (e.target.closest(".btn, button, .bubble, .card, canvas")) {
+            window.ArcadeFX.playSFX("click");
+            if (canvas && (e.target.closest(".btn, button") || e.target.tagName === "BUTTON")) {
+              window.ArcadeFX.spawnParticles(canvas, e.clientX, e.clientY, "#38bdf8", 22);
+            }
+          }
+        }
+      });
+    });
+  </script>
+  
 </body>
 </html>
