@@ -1,176 +1,675 @@
-// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
-// (see tsconfig.json); the marker is the debt, and removing it is the unit of
-// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
+// long-division-builder.js — the Long Division Lab.
 //
-// Pure DOM, no dependencies. Public API:
+// Teaches the STANDARD algorithm as an explicit repeating cycle:
+//   Divide → Multiply → Subtract → Bring Down → repeat
+// It draws real long-division notation (bracket, quotient digits above their
+// own place, products underneath, subtraction rules, brought-down digits) so
+// the place-value alignment is visible rather than implied.
+//
+// Two modes over ONE algorithm:
+//   solve  the student produces every number; the lab only checks and places.
+//   watch  the lab works the same problem itself, one step at a time, saying
+//          what it is doing and why — then hands the problem back to solve.
+// Both walk the identical `plan.steps` list, so they can never disagree.
+//
+// This file is the DOM. The arithmetic lives in ./long-division-steps.js, the
+// watch-mode script in ./long-division-narration.js, and the markup and
+// stylesheet in ./long-division-chrome.js.
+//
+// Public API:
 //   renderLongDivisionBuilder(container, cfg) -> { destroy }
 //     cfg.dividend, cfg.divisor : starting values (default 754, 6)
 //     cfg.presets               : quick-pick "dividend/divisor" strings
+//     cfg.decimal               : opt in to decimal division (moves the point
+//                                 first, then runs the identical cycle)
+//     cfg.maxPlaces             : decimal places to divide to (default 3)
+//     cfg.mode                  : "solve" (default) or "watch"
 
-const C = {
-  navy: "#12355b",
-  accent: "#1d4ed8",
-  teal: "#0d7a76",
-  ink: "#1a2b3c",
-  muted: "#54677c",
-  line: "#d7e2ed",
+import { esc, injectStyles, template } from "./long-division-chrome.js";
+import { buildNarration, createNarrationCursor } from "./long-division-narration.js";
+import {
+  buildLongDivision,
+  CYCLE_LABELS,
+  checkInputs,
+  stepPosition,
+} from "./long-division-steps.js";
+
+const STEP_NOTE = {
+  divide: "Write the digit above the place you are working in.",
+  multiply: "Write the product under the working number.",
+  subtract: "Draw the line and subtract.",
+  bringdown: "Pull the next digit straight down.",
 };
 
-function esc(s) {
-  return String(s).replace(
-    /[&<>"]/g,
-    (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c],
-  );
+/** Auto-advance pace: long enough to read two sentences, short enough to feel live. */
+const PLAY_MS = 3800;
+
+let seq = 0;
+
+/**
+ * @param {ParentNode} scope
+ * @param {string} sel
+ * @returns {HTMLElement}
+ */
+function el(scope, sel) {
+  return /** @type {HTMLElement} */ (scope.querySelector(sel));
 }
 
-// Partial-quotients steps: greedily subtract divisor × (chunk) where chunk is the
-// largest multiple of a descending power of ten that fits. Returns {steps, q, r}.
-function partialQuotients(dividend, divisor) {
-  const steps = [];
-  let remaining = dividend;
-  let quotient = 0;
-  let place = 1;
-  while (divisor * place * 10 <= remaining) place *= 10;
-  while (place >= 1) {
-    const chunk = Math.floor(remaining / (divisor * place)) * place;
-    if (chunk > 0) {
-      const sub = divisor * chunk;
-      steps.push({ remaining, chunk, sub, after: remaining - sub });
-      remaining -= sub;
-      quotient += chunk;
-    }
-    place /= 10;
-  }
-  return { steps, q: quotient, r: remaining };
+/**
+ * @param {ParentNode} scope
+ * @param {string} sel
+ * @returns {HTMLInputElement}
+ */
+function inputEl(scope, sel) {
+  return /** @type {HTMLInputElement} */ (scope.querySelector(sel));
 }
 
-export function renderLongDivisionBuilder(container, cfg = {}) {
-  let dividend = clamp(cfg.dividend ?? 754, 1, 999999);
-  let divisor = clamp(cfg.divisor ?? 6, 1, 999);
-
-  function clamp(v, lo, hi) {
-    v = Math.floor(Number(v) || 0);
-    return Math.max(lo, Math.min(hi, v));
-  }
-
-  const presets =
-    Array.isArray(cfg.presets) && cfg.presets.length
-      ? cfg.presets
-      : ["754/6", "432/8", "1250/5", "987/3"];
-
+/**
+ * @param {HTMLElement} host
+ * @param {{dividend?:unknown, divisor?:unknown, decimal?:boolean, maxPlaces?:number, presets?:unknown, mode?:string}} cfg
+ */
+export function renderLongDivisionBuilder(host, cfg = {}) {
+  const decimal = cfg.decimal === true;
+  const uid = `ldl${++seq}`;
   injectStyles();
 
+  const presets = normalisePresets(cfg.presets, decimal);
+  /** @type {ReturnType<typeof buildLongDivision>} */
+  let plan;
+  /** @type {"solve"|"watch"} */
+  let mode = cfg.mode === "watch" ? "watch" : "solve";
+  let ready = false;
+  let stepIndex = 0;
+  let attempts = 0;
+  let shiftDone = true;
+  let justBrought = -1;
+  /** @type {ReturnType<typeof createNarrationCursor>|null} */
+  let cursor = null;
+  /** @type {import("./long-division-narration.js").LDFrame|null} */
+  let frame = null;
+  let timer = 0;
+
   const root = document.createElement("div");
-  root.className = "ldlab";
-  root.innerHTML =
-    `<div class="ldlab-title">Long Division Lab</div>` +
-    `<p class="ldlab-hint">Divide with <strong>partial quotients</strong>: keep subtracting easy multiples of the divisor, then add up how many you took out.</p>` +
-    `<div class="ldlab-controls">` +
-    `<label class="ldlab-field"><span>Dividend</span><input type="number" min="1" value="${dividend}" data-inp="dividend" aria-label="Dividend"/></label>` +
-    `<span class="ldlab-div">÷</span>` +
-    `<label class="ldlab-field"><span>Divisor</span><input type="number" min="1" value="${divisor}" data-inp="divisor" aria-label="Divisor"/></label>` +
-    `<button type="button" class="ldlab-go">Divide →</button></div>` +
-    `<div class="ldlab-presets" role="group" aria-label="Quick-pick problems">` +
-    presets
-      .map(
-        (p) =>
-          `<button type="button" class="ldlab-chip" data-p="${esc(p)}">${esc(p.replace("/", " ÷ "))}</button>`,
-      )
-      .join("") +
-    `</div>` +
-    `<div class="ldlab-stage"></div>` +
-    `<div class="ldlab-result" aria-live="polite"></div>`;
+  root.className = "ldl";
+  root.innerHTML = template(uid, decimal, presets, mode);
+  host.appendChild(root);
 
-  container.appendChild(root);
+  const inDividend = inputEl(root, `#${uid}-dividend`);
+  const inDivisor = inputEl(root, `#${uid}-divisor`);
+  const shiftBar = el(root, ".ldl-shift");
+  const strip = el(root, ".ldl-strip");
+  const board = el(root, ".ldl-board");
+  const stepBox = el(root, ".ldl-step");
+  const entry = el(root, ".ldl-entry");
+  const answer = inputEl(root, `#${uid}-answer`);
+  const answerLabel = el(root, `label[for="${uid}-answer"]`);
+  const checkBtn = el(root, ".ldl-check");
+  const bringBtn = el(root, ".ldl-bring");
+  const feedback = el(root, ".ldl-feedback");
+  const result = el(root, ".ldl-result");
+  const playBar = el(root, ".ldl-play");
+  const backBtn = /** @type {HTMLButtonElement} */ (el(root, ".ldl-back"));
+  const nextBtn = /** @type {HTMLButtonElement} */ (el(root, ".ldl-next"));
+  const playBtn = /** @type {HTMLButtonElement} */ (el(root, ".ldl-playpause"));
+  const replayBtn = /** @type {HTMLButtonElement} */ (el(root, ".ldl-replay"));
+  const mineBtn = /** @type {HTMLButtonElement} */ (el(root, ".ldl-mine"));
+  const countBox = el(root, ".ldl-count");
 
-  const inD = root.querySelector('[data-inp="dividend"]');
-  const inV = root.querySelector('[data-inp="divisor"]');
-  const stage = root.querySelector(".ldlab-stage");
-  const result = root.querySelector(".ldlab-result");
-
-  function compute() {
-    dividend = clamp(inD.value, 1, 999999);
-    divisor = clamp(inV.value, 1, 999);
-    inD.value = dividend;
-    inV.value = divisor;
-    const { steps, q, r } = partialQuotients(dividend, divisor);
-
-    const rows = steps
-      .map(
-        (s) =>
-          `<tr><td class="ldlab-rem">${s.remaining}</td><td>− ${divisor} × ${s.chunk}</td>` +
-          `<td>= ${s.sub}</td><td class="ldlab-arrow">→</td><td class="ldlab-rem">${s.after}</td>` +
-          `<td class="ldlab-chunk">+${s.chunk}</td></tr>`,
-      )
-      .join("");
-    stage.innerHTML =
-      `<table class="ldlab-table"><thead><tr><th>have</th><th>take out</th><th></th><th></th><th>left</th><th>quotient</th></tr></thead>` +
-      `<tbody>${rows}</tbody></table>`;
-
-    result.innerHTML =
-      `<div class="ldlab-answer">${dividend} ÷ ${divisor} = ${q}${r ? ` R ${r}` : ""}</div>` +
-      `<p class="ldlab-explain">Add the partial quotients: <strong>${q}</strong>${r ? `, with <strong>${r}</strong> left over` : " with nothing left over"}. ` +
-      `Check: ${divisor} × ${q}${r ? ` + ${r}` : ""} = <strong>${divisor * q + r}</strong> = ${dividend}. ✓</p>`;
+  // ── problem setup ────────────────────────────────────────────────────────
+  /** Validate what was typed, build the plan, then start the current mode. */
+  function load(dividend, divisor, announce) {
+    stopPlay();
+    const verdict = checkInputs({ dividend, divisor, decimal });
+    if (!verdict.ok) {
+      clear(verdict.message);
+      const box = verdict.field === "divisor" ? inDivisor : inDividend;
+      if (announce) box.focus();
+      return;
+    }
+    try {
+      plan = buildLongDivision({ dividend, divisor, decimal, maxPlaces: cfg.maxPlaces });
+    } catch (err) {
+      clear(
+        err instanceof RangeError
+          ? `That problem cannot be divided: ${err.message}.`
+          : "That problem cannot be divided. Try different numbers.",
+      );
+      return;
+    }
+    ready = true;
+    restart(announce);
+    if (verdict.message) say(verdict.message, "info");
   }
 
-  root.querySelector(".ldlab-go").addEventListener("click", compute);
-  root.querySelectorAll(".ldlab-chip").forEach((chip) =>
-    chip.addEventListener("click", () => {
-      const [x, y] = chip.dataset.p.split("/");
-      inD.value = x;
-      inV.value = y;
-      compute();
-    }),
+  /**
+   * Wipe every trace of the previous problem and explain why nothing is drawn.
+   * Without this a rejected problem left the old board's strip, prompt and
+   * result on screen, which reads as if the new numbers had been accepted.
+   */
+  function clear(message) {
+    ready = false;
+    cursor = null;
+    frame = null;
+    board.innerHTML = "";
+    board.setAttribute("aria-label", "No problem set up yet.");
+    strip.innerHTML = "";
+    shiftBar.hidden = true;
+    stepBox.textContent = "";
+    entry.hidden = true;
+    playBar.hidden = true;
+    result.hidden = true;
+    result.innerHTML = "";
+    say(message, "bad");
+  }
+
+  /** Restart the CURRENT problem in the CURRENT mode, from the top. */
+  function restart(announce) {
+    if (!ready) return;
+    stopPlay();
+    attempts = 0;
+    justBrought = -1;
+    stepIndex = 0;
+    shiftDone = plan.shift === 0;
+    result.hidden = true;
+    result.innerHTML = "";
+    feedback.className = "ldl-feedback";
+    feedback.textContent = "";
+    playBar.hidden = mode !== "watch";
+    if (mode === "watch") {
+      cursor = createNarrationCursor(buildNarration(plan));
+      entry.hidden = true;
+      showFrame();
+      if (announce) nextBtn.focus();
+      return;
+    }
+    cursor = null;
+    frame = null;
+    entry.hidden = false;
+    renderShift();
+    draw();
+    if (!announce) return;
+    const first = shiftDone ? answer : el(root, ".ldl-shiftgo");
+    if (first) first.focus();
+  }
+
+  function renderShift() {
+    if (!plan.shift) {
+      shiftBar.hidden = true;
+      return;
+    }
+    shiftBar.hidden = false;
+    const places = plan.shift === 1 ? "1 place" : `${plan.shift} places`;
+    // Watch mode moves the point itself, so it never offers the button.
+    const button =
+      mode === "watch"
+        ? ""
+        : ` <button type="button" class="ldl-shiftgo">Move the point ${esc(places)} →</button>`;
+    shiftBar.innerHTML = shiftDone
+      ? `<span class="ldl-shift-done">✓ Point moved ${esc(places)}:</span> ` +
+        `<b>${esc(plan.divisorText)} ⟌ ${esc(plan.dividendText)}</b> → ` +
+        `<b class="ldl-shift-new">${esc(plan.workingDivisorText)} ⟌ ${esc(plan.workingDividendText)}</b>` +
+        ` — now it is a whole-number divisor, so the cycle works exactly the same.`
+      : `<b>Step 0 — MOVE THE POINT.</b> The divisor <b>${esc(plan.divisorText)}</b> is not a whole number. ` +
+        `Slide the point ${esc(places)} to the right in <em>both</em> numbers, then divide as usual.${button}`;
+    const go = shiftBar.querySelector(".ldl-shiftgo");
+    if (go) {
+      go.addEventListener("click", () => {
+        shiftDone = true;
+        renderShift();
+        draw();
+        answer.focus();
+      });
+    }
+  }
+
+  // ── the notation grid ────────────────────────────────────────────────────
+  function draw() {
+    const { digits, pointAt, cycles } = plan;
+    const solving = mode === "solve";
+    const n = digits.length;
+    const hasPoint = pointAt < n;
+    const colOf = (i) => 3 + i + (hasPoint && i >= pointAt ? 1 : 0);
+    const done = progress();
+    // Only solve mode shows "?" slots — watch mode never asks for anything.
+    const step = solving ? plan.steps[stepIndex] || null : null;
+    // Highlight the value watch mode has just written.
+    const fresh = (type, ci) =>
+      !solving && frame && frame.step && frame.step.type === type && frame.step.cycle === ci
+        ? " ldl-fresh"
+        : "";
+
+    const tpl = ["auto", "0.55em"];
+    for (let i = 0; i < n; i += 1) {
+      if (hasPoint && i === pointAt) tpl.push("0.45em");
+      tpl.push("1.55em");
+    }
+    const parts = [];
+    const cell = (row, col, text, cls) =>
+      parts.push(
+        `<span class="${cls}" style="grid-row:${row};grid-column:${col}">${esc(text)}</span>`,
+      );
+
+    // Bracket, vinculum, divisor, dividend.
+    cell(2, 1, plan.workingDivisorText, "ldl-divisor");
+    cell(2, 2, ")", "ldl-bracket");
+    parts.push(
+      `<span class="ldl-vinculum" style="grid-row:1;grid-column:2 / ${colOf(n - 1) + 1}"></span>`,
+    );
+    for (let i = 0; i < n; i += 1) {
+      const used = done.brought.has(i) || i <= (cycles[0] ? cycles[0].index : 0);
+      cell(2, colOf(i), digits[i], `ldl-digit${used ? " ldl-used" : ""}`);
+    }
+    if (hasPoint) {
+      cell(2, 3 + pointAt, ".", "ldl-point");
+      cell(1, 3 + pointAt, ".", "ldl-point ldl-qpoint");
+    }
+
+    // Quotient digits that have been earned, and the slot for the next one.
+    cycles.forEach((c, ci) => {
+      if (done.divide.has(ci))
+        cell(1, colOf(c.index), c.quotientDigit, `ldl-q${fresh("divide", ci)}`);
+    });
+    if (step && step.type === "divide" && shiftDone) {
+      cell(1, colOf(step.index), "?", "ldl-slot");
+    }
+
+    // One product row + one difference row per cycle.
+    cycles.forEach((c, ci) => {
+      const prow = 3 + ci * 2;
+      const drow = prow + 1;
+      const prodStart = c.index - String(c.product).length + 1;
+      const diffStart = c.index - String(c.difference).length + 1;
+      if (done.multiply.has(ci)) {
+        String(c.product)
+          .split("")
+          .forEach((ch, j) =>
+            cell(
+              prow,
+              colOf(prodStart + j),
+              ch,
+              `ldl-prod${j === 0 ? " ldl-minus" : ""}${fresh("multiply", ci)}`,
+            ),
+          );
+      } else if (step && step.type === "multiply" && step.cycle === ci) {
+        cell(prow, colOf(c.index), "?", "ldl-slot ldl-minus");
+      }
+      if (done.subtract.has(ci)) {
+        const from = colOf(Math.min(prodStart, diffStart));
+        parts.push(
+          `<span class="ldl-rule" style="grid-row:${prow};grid-column:${from} / ${colOf(c.index) + 1}"></span>`,
+        );
+        String(c.difference)
+          .split("")
+          .forEach((ch, j) =>
+            cell(drow, colOf(diffStart + j), ch, `ldl-diff${fresh("subtract", ci)}`),
+          );
+      } else if (step && step.type === "subtract" && step.cycle === ci) {
+        parts.push(
+          `<span class="ldl-rule" style="grid-row:${prow};grid-column:${colOf(prodStart)} / ${colOf(c.index) + 1}"></span>`,
+        );
+        cell(drow, colOf(c.index), "?", "ldl-slot");
+      }
+      if (c.bringDown && done.bring.has(ci)) {
+        cell(
+          drow,
+          colOf(c.bringDown.index),
+          c.bringDown.digit,
+          `ldl-brought${justBrought === ci ? " ldl-drop" : ""}`,
+        );
+      } else if (c.bringDown && step && step.type === "bringdown" && step.cycle === ci) {
+        cell(drow, colOf(c.bringDown.index), "↓", "ldl-ghost");
+      }
+    });
+
+    board.classList.toggle("is-waiting", !shiftDone);
+    board.style.gridTemplateColumns = tpl.join(" ");
+    board.innerHTML = parts.join("");
+    board.setAttribute("aria-label", describe(done));
+    // Watch mode lights the step it is narrating; before the point moves there
+    // is no step yet, so the strip shows cycle 1 with nothing lit.
+    drawStrip(solving ? step : frame && frame.step ? frame.step : shiftDone ? null : plan.steps[0]);
+    if (solving) drawPrompt(step);
+  }
+
+  /** Which pieces of the board have been earned so far. */
+  function progress() {
+    const out = {
+      divide: new Set(),
+      multiply: new Set(),
+      subtract: new Set(),
+      bring: new Set(),
+      brought: new Set(),
+    };
+    for (let i = 0; i < stepIndex; i += 1) {
+      const s = plan.steps[i];
+      if (s.type === "divide") out.divide.add(s.cycle);
+      else if (s.type === "multiply") out.multiply.add(s.cycle);
+      else if (s.type === "subtract") out.subtract.add(s.cycle);
+      else {
+        out.bring.add(s.cycle);
+        out.brought.add(s.index + 1);
+      }
+    }
+    return out;
+  }
+
+  /** A plain-text reading of the board, for screen readers. */
+  function describe(done) {
+    const written = plan.cycles
+      .filter((_, ci) => done.divide.has(ci))
+      .map((c) => c.quotientDigit)
+      .join("");
+    return (
+      `Long division: ${plan.workingDividendText} divided by ${plan.workingDivisorText}. ` +
+      (written
+        ? `Quotient digits written so far: ${written.split("").join(" ")}.`
+        : "No quotient digits written yet.")
+    );
+  }
+
+  function drawStrip(step) {
+    const total = plan.cycles.length;
+    const cycleNo = step ? step.cycle + 1 : shiftDone ? total : 1;
+    strip.innerHTML =
+      `<span class="ldl-cycle">Cycle ${cycleNo} of ${total}</span>` +
+      CYCLE_LABELS.map((name, i) => {
+        const active = step && shiftDone && stepPosition(step.type) === i;
+        const passed = step ? stepPosition(step.type) > i : shiftDone;
+        return (
+          `<span class="ldl-pill${active ? " is-on" : ""}${passed ? " is-done" : ""}">` +
+          `<b>${i + 1}</b>${esc(name)}</span>`
+        );
+      }).join("") +
+      `<span class="ldl-loop" aria-hidden="true">↻ repeat</span>`;
+  }
+
+  function drawPrompt(step) {
+    if (!shiftDone) {
+      stepBox.textContent = "First move the decimal point, then the cycle begins.";
+      entry.hidden = true;
+      return;
+    }
+    if (!step) {
+      entry.hidden = true;
+      stepBox.innerHTML =
+        `<b class="ldl-stepname">Cycle complete.</b> Every digit has been divided, so there is ` +
+        `nothing left to bring down — the last difference is the remainder.`;
+      finish();
+      return;
+    }
+    entry.hidden = false;
+    stepBox.innerHTML =
+      `<b class="ldl-stepname">Step ${stepPosition(step.type) + 1} — ${esc(step.label.toUpperCase())}:</b> ` +
+      `${esc(step.prompt)} <span class="ldl-note">${esc(STEP_NOTE[step.type])}</span>`;
+    const bring = step.type === "bringdown";
+    answer.hidden = bring;
+    answerLabel.hidden = bring;
+    checkBtn.hidden = bring;
+    bringBtn.hidden = !bring;
+    if (bring) {
+      bringBtn.textContent = `Bring down the ${step.expected} ↓`;
+    } else {
+      answer.value = "";
+      answerLabel.textContent = `${step.label} — your answer`;
+      answer.setAttribute("aria-label", `${step.label}. ${step.prompt}`);
+    }
+  }
+
+  // ── watch mode ───────────────────────────────────────────────────────────
+  /** Paint the frame the cursor is sitting on. Never scrolls, never steals focus. */
+  function showFrame() {
+    if (!ready || !cursor) return;
+    frame = cursor.frame();
+    shiftDone = frame.shiftDone;
+    stepIndex = frame.shown;
+    justBrought = frame.step && frame.step.type === "bringdown" ? frame.step.cycle : -1;
+    entry.hidden = true;
+    renderShift();
+    draw();
+    stepBox.innerHTML =
+      `<b class="ldl-stepname">${esc(frame.headline)}:</b> ${esc(frame.text)}` +
+      (frame.cycleRestart ? ` <span class="ldl-repeat">↻ Cycle restarts.</span>` : "");
+    countBox.textContent = `${cursor.index + 1} of ${cursor.length}`;
+    if (frame.kind === "finish") {
+      stopPlay();
+      finish();
+    } else {
+      result.hidden = true;
+      result.innerHTML = "";
+    }
+    // Move focus off a control that is about to go disabled, or it lands on
+    // <body> mid-playback and the keyboard user loses their place. preventScroll
+    // because watch mode must never yank the page under a reader.
+    const active = document.activeElement;
+    const losing =
+      (active === backBtn && cursor.atStart()) || (active === nextBtn && cursor.atEnd());
+    backBtn.disabled = cursor.atStart();
+    nextBtn.disabled = cursor.atEnd();
+    if (losing) replayBtn.focus({ preventScroll: true });
+  }
+
+  function stopPlay() {
+    if (timer) clearInterval(timer);
+    timer = 0;
+    playBtn.textContent = "▶ Play";
+    playBtn.setAttribute("aria-pressed", "false");
+  }
+
+  function togglePlay() {
+    if (timer) {
+      stopPlay();
+      return;
+    }
+    if (!cursor) return;
+    if (cursor.atEnd()) cursor.reset();
+    playBtn.textContent = "⏸ Pause";
+    playBtn.setAttribute("aria-pressed", "true");
+    showFrame();
+    timer = setInterval(() => {
+      if (!cursor || cursor.atEnd()) {
+        stopPlay();
+        return;
+      }
+      cursor.next();
+      showFrame();
+    }, PLAY_MS);
+  }
+
+  /** Flip between the two modes over the SAME problem. */
+  function setMode(next, announce) {
+    mode = next === "watch" ? "watch" : "solve";
+    for (const b of root.querySelectorAll(".ldl-mode")) {
+      const on = /** @type {HTMLElement} */ (b).dataset.mode === mode;
+      b.classList.toggle("is-on", on);
+      b.setAttribute("aria-pressed", on ? "true" : "false");
+    }
+    restart(announce);
+    if (announce && ready) {
+      say(
+        mode === "watch"
+          ? "Watch mode: press Next step, or Play to let it run."
+          : "Your turn — same problem, and you write every number this time.",
+        mode === "watch" ? "info" : "repeat",
+      );
+    }
+  }
+
+  // ── checking ─────────────────────────────────────────────────────────────
+  function submit() {
+    if (!ready || mode !== "solve") return;
+    const step = plan.steps[stepIndex];
+    if (!step || !shiftDone) return;
+    if (step.type === "bringdown") {
+      advance(step);
+      return;
+    }
+    const raw = answer.value.trim();
+    if (raw === "") {
+      say("Type your answer for this step first.", "warn");
+      return;
+    }
+    const value = Number(raw);
+    if (!Number.isFinite(value)) {
+      say("Enter a number.", "warn");
+      return;
+    }
+    if (value === step.expected) {
+      advance(step);
+      return;
+    }
+    attempts += 1;
+    say(diagnose(step, value), attempts >= 3 ? "warn" : "bad");
+    if (attempts >= 3) {
+      answer.value = String(step.expected);
+      answer.select();
+    }
+  }
+
+  /** Name the error, not just the answer. */
+  function diagnose(step, value) {
+    const c = plan.cycles[step.cycle];
+    const v = plan.divisor;
+    let why = "";
+    if (step.type === "divide") {
+      if (value * v > c.current) {
+        why = `${value} × ${v} = ${value * v}, and that is bigger than ${c.current}. Choose a smaller digit. `;
+      } else if (c.current - value * v >= v) {
+        why = `${value} × ${v} = ${value * v}, which leaves ${c.current - value * v} — another ${v} still fits. Choose a bigger digit. `;
+      } else if (value > 9 || value < 0) {
+        why = "This step is one digit, 0 to 9. ";
+      }
+    } else if (step.type === "multiply") {
+      if (value === c.quotientDigit + v)
+        why = "That is what you get by ADDING. This step multiplies. ";
+    } else if (step.type === "subtract") {
+      if (value === c.current + c.product)
+        why = "That is what you get by ADDING. This step subtracts. ";
+      else if (value >= v)
+        why = `A difference of ${value} is not smaller than the divisor ${v}, so something is off. `;
+    }
+    const tail =
+      attempts >= 3
+        ? `The answer is ${step.expected} — it is filled in for you. Read why, then press Check to place it.`
+        : step.hint;
+    return `Not yet. ${why}${tail}`;
+  }
+
+  function advance(step) {
+    attempts = 0;
+    justBrought = step.type === "bringdown" ? step.cycle : -1;
+    stepIndex += 1;
+    const next = plan.steps[stepIndex];
+    draw();
+    if (step.type === "bringdown") {
+      say(
+        `Cycle ${step.cycle + 1} complete — there are still digits to divide, so REPEAT the cycle: divide again.`,
+        "repeat",
+      );
+    } else if (next) {
+      say(`✓ ${step.label} done. Next: ${next.label}.`, "good");
+    } else {
+      say("✓ Every digit is divided — the division is finished.", "good");
+    }
+    if (next && next.type === "bringdown") bringBtn.focus();
+    else if (next) answer.focus();
+  }
+
+  function say(text, tone) {
+    feedback.className = `ldl-feedback ldl-${tone || "info"}`;
+    feedback.textContent = text;
+  }
+
+  function finish() {
+    const { quotientText, remainder, remainderText, checkText, workingDivisorText } = plan;
+    const shown = plan.decimal
+      ? `${esc(plan.dividendText)} ÷ ${esc(plan.divisorText)}`
+      : `${esc(plan.workingDividendText)} ÷ ${esc(workingDivisorText)}`;
+    const words = remainder
+      ? `${shown} is <b>${esc(quotientText)}</b> with <b>${esc(remainderText)}</b> left over.`
+      : `${shown} is exactly <b>${esc(quotientText)}</b> — nothing left over.`;
+    const againLabel = mode === "watch" ? "Watch it again" : "Work it again";
+    result.hidden = false;
+    result.innerHTML =
+      `<div class="ldl-final">${esc(plan.dividendText)} ÷ ${esc(plan.divisorText)} = ${esc(quotientText)}` +
+      `${remainder && !plan.decimal ? ` R ${esc(remainderText)}` : ""}</div>` +
+      `<p class="ldl-words">${words}</p>` +
+      `<p class="ldl-verify"><b>Check by multiplying back:</b> ${esc(checkText)} ✓</p>` +
+      (plan.decimal && remainder
+        ? `<p class="ldl-words">It does not come out even, so this quotient is rounded down at that last place.</p>`
+        : "") +
+      `<button type="button" class="ldl-again">${esc(againLabel)}</button>`;
+    const again = result.querySelector(".ldl-again");
+    if (again) again.addEventListener("click", () => restart(true));
+  }
+
+  // ── wiring ───────────────────────────────────────────────────────────────
+  checkBtn.addEventListener("click", submit);
+  bringBtn.addEventListener("click", submit);
+  answer.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      submit();
+    }
+  });
+  backBtn.addEventListener("click", () => {
+    stopPlay();
+    cursor?.back();
+    showFrame();
+  });
+  nextBtn.addEventListener("click", () => {
+    stopPlay();
+    cursor?.next();
+    showFrame();
+  });
+  playBtn.addEventListener("click", togglePlay);
+  replayBtn.addEventListener("click", () => {
+    stopPlay();
+    cursor?.reset();
+    showFrame();
+  });
+  mineBtn.addEventListener("click", () => setMode("solve", true));
+  for (const b of root.querySelectorAll(".ldl-mode")) {
+    b.addEventListener("click", () => setMode(/** @type {HTMLElement} */ (b).dataset.mode, true));
+  }
+  el(root, ".ldl-go").addEventListener("click", () =>
+    load(inDividend.value, inDivisor.value, true),
   );
-  [inD, inV].forEach((inp) =>
+  for (const inp of [inDividend, inDivisor]) {
     inp.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
         e.preventDefault();
-        compute();
+        load(inDividend.value, inDivisor.value, true);
       }
-    }),
-  );
+    });
+  }
+  for (const chip of root.querySelectorAll(".ldl-chip")) {
+    chip.addEventListener("click", () => {
+      const [a, b] = String(/** @type {HTMLElement} */ (chip).dataset.p).split("/");
+      inDividend.value = a;
+      inDivisor.value = b;
+      load(a, b, true);
+    });
+  }
 
-  compute();
-  return { destroy: () => root.remove() };
+  load(cfg.dividend ?? (decimal ? 12.6 : 754), cfg.divisor ?? (decimal ? 4 : 6), false);
+  inDividend.value = ready ? plan.dividendText : "";
+  inDivisor.value = ready ? plan.divisorText : "";
+
+  return {
+    destroy: () => {
+      stopPlay();
+      root.remove();
+    },
+  };
 }
 
-let injected = false;
-function injectStyles() {
-  if (injected || document.getElementById("ldlab-styles")) {
-    injected = true;
-    return;
-  }
-  injected = true;
-  const s = document.createElement("style");
-  s.id = "ldlab-styles";
-  s.textContent = `
-  .ldlab{max-width:600px;margin:0 auto;background:#fff;border:1px solid ${C.line};border-radius:16px;padding:16px 16px 18px;box-shadow:0 2px 12px rgba(12,27,42,.08);font-family:"Hanken Grotesk",system-ui,sans-serif;color:${C.ink};}
-  .ldlab-title{font-family:"Outfit",system-ui,sans-serif;font-weight:800;color:${C.navy};font-size:1.05rem;}
-  .ldlab-hint{margin:4px 0 12px;color:${C.muted};font-size:.9rem;line-height:1.4;}
-  .ldlab-controls{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px;}
-  .ldlab-field{display:flex;flex-direction:column;gap:3px;font-size:.72rem;font-weight:700;color:${C.muted};text-transform:uppercase;}
-  .ldlab-field input{width:104px;padding:8px 10px;font-size:1.1rem;font-weight:700;color:${C.ink};border:2px solid ${C.line};border-radius:10px;background:#fbfcfe;}
-  .ldlab-field input:focus-visible{outline:3px solid ${C.accent};outline-offset:1px;border-color:${C.accent};}
-  .ldlab-div{align-self:center;padding-bottom:9px;font-weight:800;color:${C.navy};font-size:1.2rem;}
-  .ldlab-go{padding:9px 16px;font-size:.95rem;font-weight:800;color:#fff;background:linear-gradient(135deg,#4f46e5,#0e8a7d);border:0;border-radius:10px;cursor:pointer;}
-  .ldlab-go:hover{filter:brightness(1.08);}
-  .ldlab-go:focus-visible,.ldlab-chip:focus-visible{outline:3px solid ${C.accent};outline-offset:2px;}
-  .ldlab-presets{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 0;}
-  .ldlab-chip{padding:5px 12px;font-size:.88rem;font-weight:700;color:${C.navy};background:#f4f8ff;border:1.5px solid ${C.line};border-radius:999px;cursor:pointer;}
-  .ldlab-chip:hover{background:#e2ecff;border-color:${C.accent};}
-  .ldlab-stage{margin:14px 0 8px;padding:8px;background:#f8fbff;border:1px solid ${C.line};border-radius:14px;overflow-x:auto;}
-  .ldlab-table{width:100%;border-collapse:collapse;font-size:.92rem;}
-  .ldlab-table th{font-size:.68rem;text-transform:uppercase;letter-spacing:.03em;color:${C.muted};padding:4px 8px;text-align:left;}
-  .ldlab-table td{padding:5px 8px;border-top:1px solid ${C.line};white-space:nowrap;}
-  .ldlab-rem{font-weight:800;color:${C.navy};}
-  .ldlab-arrow{color:${C.muted};}
-  .ldlab-chunk{font-weight:800;color:${C.teal};text-align:right;}
-  .ldlab-result{text-align:center;}
-  .ldlab-answer{font-family:"Outfit",system-ui,sans-serif;font-weight:900;font-size:1.25rem;color:${C.teal};}
-  .ldlab-explain{margin:6px auto 0;max-width:520px;color:${C.ink};font-size:.9rem;line-height:1.5;}
-  `;
-  document.head.appendChild(s);
+/** @param {unknown} raw @param {boolean} decimal */
+function normalisePresets(raw, decimal) {
+  const list = Array.isArray(raw) ? raw.map(String).filter((p) => p.includes("/")) : [];
+  if (list.length) return list;
+  return decimal
+    ? ["12.6/4", "45.6/8", "7.5/0.25", "9.66/2.1"]
+    : ["754/6", "1344/12", "2408/8", "1680/24"];
 }
 
 export default renderLongDivisionBuilder;

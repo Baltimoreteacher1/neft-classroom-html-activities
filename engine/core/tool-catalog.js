@@ -103,20 +103,20 @@ export const TOOL_CATALOG = {
     ],
   },
   "long-division-builder": {
-    name: "Partial Quotients Lab",
-    nameEs: "Laboratorio de cocientes parciales",
+    name: "Long Division Lab",
+    nameEs: "Laboratorio de división larga",
     purpose:
-      "Divide big numbers in friendly chunks: take out easy multiples of the divisor, then add the chunks up.",
+      "Work the standard algorithm one step at a time — divide, multiply, subtract, bring down, repeat — or watch the lab work it and explain every step.",
     purposeEs:
-      "Divide números grandes por partes: quita múltiplos fáciles del divisor y luego suma las partes.",
+      "Trabaja el algoritmo estándar paso a paso —divide, multiplica, resta, baja el siguiente dígito y repite— o mira cómo el laboratorio lo resuelve y explica cada paso.",
     howTo: [
-      "Choose a multiple of the divisor that fits inside what is left.",
-      "Subtract it and record that chunk of the quotient.",
-      "Repeat until nothing (or a remainder) is left, then add your chunks.",
+      "Type any dividend and divisor, or tap one of the quick-pick problems.",
+      "Pick “Watch it solved” to see it worked step by step, or “I'll solve it” to work it yourself.",
+      "DIVIDE, MULTIPLY, SUBTRACT, then BRING DOWN the next digit — and repeat until no digits remain.",
     ],
     tryThis: [
-      "Solve one division two ways — big chunks, then small chunks. Same answer?",
-      "Estimate the quotient first, then check how close you were.",
+      "Watch 2408 ÷ 8, then solve it yourself. What has to happen in the quotient when a step gives 0?",
+      "Predict the remainder before you start, then check with divisor × quotient + remainder.",
     ],
   },
   "decimal-columns": {
@@ -962,8 +962,8 @@ function titleCase(slug) {
  * Resolved presentation metadata for one authored tool block.
  *
  * `name` is the CANONICAL tool name (from the catalog) rather than the config's
- * `title`: a lesson's `title` describes that instance ("Breaking 1,344 ÷ 12 with
- * partial quotients"), which is useful as a subtitle but reads as a problem
+ * `title`: a lesson's `title` describes that instance ("1,344 ÷ 12, one place at
+ * a time"), which is useful as a subtitle but reads as a problem
  * statement where a tool name belongs. Both are returned so a surface can show
  * the tool's name AND what this lesson set it up to do.
  *
