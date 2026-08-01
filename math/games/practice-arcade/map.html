@@ -472,6 +472,31 @@
           <p id="ewl-coach-text" data-en="Choose any unit world on the Arcade Map to practice self-paced lesson challenges!" data-es="¡Elige cualquier mundo de la unidad en el Mapa Arcade para practicar desafíos a tu propio ritmo!">Choose any unit world on the Arcade Map to practice self-paced lesson challenges!</p>
         </div>
       </div>
-  
+
+  <!-- Shared Arcade FX Engine & Particles -->
+  <canvas id="fx-canvas" style="position:fixed; top:0; left:0; width:100vw; height:100vh; pointer-events:none; z-index:9999;"></canvas>
+  <script src="/math/games/shared/arcade-fx-engine.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const canvas = document.getElementById("fx-canvas");
+      if (canvas) {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        window.addEventListener("resize", () => {
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+        });
+      }
+
+      document.body.addEventListener("click", function(e) {
+        if (window.ArcadeFX) {
+          window.ArcadeFX.playSFX("click");
+          if (canvas) {
+            window.ArcadeFX.spawnParticles(canvas, e.clientX, e.clientY, "#38bdf8", 15);
+          }
+        }
+      });
+    });
+  </script>
 </body>
 </html>
