@@ -40,9 +40,25 @@ if (AUDIT_TOPIC_SIGNALS.test(source)) {
   );
 }
 
-export const ANSWER_MATCH_JS = `// ── Shared answer matcher — generated from engine/core/answer-match.js.
-// Do not edit here; edit that file and re-run scripts/generate-homework-html.mjs.
-var NTAnswerMatch = (function () {
-${source}
-  return { ${EXPORTED.join(", ")} };
-})();`;
+// `indent` is the column the block sits at in its host file. Homework pages
+// drop it at the top level of an inline script (0); the Study Pack engine puts
+// it inside an IIFE (2). Getting this right matters because the host file is
+// then formatted by Biome, and a mis-indented generated block fails
+// `npm run check`.
+export function answerMatchBlock(indent = 0) {
+  const pad = " ".repeat(indent);
+  const body = source
+    .split("\n")
+    .map((line) => (line ? `${pad}  ${line}` : line))
+    .join("\n");
+  return [
+    `${pad}// ── Shared answer matcher — generated from engine/core/answer-match.js.`,
+    `${pad}// Do not edit here; edit that file and re-run the generator that emits it.`,
+    `${pad}var NTAnswerMatch = (function () {`,
+    body,
+    `${pad}  return { ${EXPORTED.join(", ")} };`,
+    `${pad}})();`,
+  ].join("\n");
+}
+
+export const ANSWER_MATCH_JS = answerMatchBlock(0);

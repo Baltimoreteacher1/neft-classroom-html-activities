@@ -201,6 +201,13 @@ function findCompiled(id) {
     "reversed-ratio-order",
     "reversal is diagnosed, not just wrong",
   );
+  // A label or a unit the student adds must not cost them the item: the
+  // digests are built from the same canonical form the runtime hashes.
+  // A decimal, though, is NOT a ratio — the checker deliberately stops short
+  // of full numeric equivalence so "0.6" cannot answer "3:5".
+  assert.equal((await checkAnswer(item, "r = 3:5")).correct, true, "a variable label is optional");
+  assert.equal((await checkAnswer(item, "0.6")).correct, false, "a decimal is not a ratio");
+
   const nonsense = await checkAnswer(item, "banana");
   assert.equal(nonsense.correct, false);
   assert.equal(

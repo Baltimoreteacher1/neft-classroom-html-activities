@@ -18,15 +18,24 @@
  * code path is exercised by tools/level3-adaptive.test.mjs.
  */
 
+import { stripLabel, stripUnit } from "../../engine/core/answer-match.js";
+
 /**
  * Normalize a response so trivial formatting differences don't read as wrong.
  * Deliberately conservative: it lowercases, collapses whitespace, drops commas
  * in numbers and a single trailing period, and normalizes a few ratio spellings.
  * It does NOT try to do algebra — an item whose answers need real equivalence
  * checking should ship every accepted form as its own digest.
+ *
+ * It also drops an optional variable label and an optional unit, using the
+ * site-wide rules in engine/core/answer-match.js, so "8", "c = 8" and "8 cups"
+ * hash the same and a student is not required to guess which form was
+ * authored. Only those two rules are borrowed: full numeric equivalence is
+ * deliberately NOT applied here, because collapsing "3/5" to 0.6 would let a
+ * student answer a ratio question with a decimal.
  */
 export function normalizeResponse(raw) {
-  let s = String(raw == null ? "" : raw)
+  let s = stripUnit(stripLabel(String(raw == null ? "" : raw)))
     .trim()
     .toLowerCase();
   s = s.replace(/\s+/g, " ");
