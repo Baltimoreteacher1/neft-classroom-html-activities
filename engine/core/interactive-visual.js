@@ -173,9 +173,21 @@ const REGISTRY = {
     import("../components/scenario-sim.js").then((m) => m.renderScenarioSim(host, cfg)),
   // Number line: authored WITH `points` → an interactive "place the points"
   // lab (drag each labeled dot onto its value, checked on the tick). Authored
-  // WITHOUT points → the static reference line, unchanged — so pure displays
-  // never turn into tasks and the figure never blanks.
+  // with `problems:[{inequality,boundary,circleType,direction}]` → the
+  // graph-and-read inequality lab that number-line.js already ships (it was
+  // only reachable from `explore.type:"number-line"`, so a lesson could not
+  // mount it as a practice tool). Authored with NEITHER → the static reference
+  // line, unchanged — so pure displays never turn into tasks and the figure
+  // never blanks.
   "number-line": async (host, cfg) => {
+    const problems = Array.isArray(cfg.problems)
+      ? cfg.problems.filter((p) => p && p.inequality && Number.isFinite(Number(p.boundary)))
+      : [];
+    if (problems.length) {
+      const { renderNumberLine } = await import("../components/number-line.js");
+      renderNumberLine(host, { ...cfg, problems });
+      return null;
+    }
     const pts = Array.isArray(cfg.points)
       ? cfg.points.filter((p) => p && Number.isFinite(Number(p.value)))
       : [];
@@ -223,6 +235,15 @@ const REGISTRY = {
   "distributive-builder": async (host, cfg) => {
     const { renderDistributiveBuilder } = await import("../components/distributive-builder.js");
     return renderDistributiveBuilder(host, cfg);
+  },
+  // Hundred-square percent grid: shade squares and reveal the SAME amount as a
+  // percent, a decimal, and a fraction. Already used by the small-group visual
+  // practice layer; registering it lets a lesson mount it declaratively as the
+  // fraction ↔ decimal ↔ percent tool. `percent` is the authored starting
+  // shade (0–100).
+  "percent-grid": async (host, cfg) => {
+    const { renderPercentGridLab } = await import("../components/percent-grid-lab.js");
+    return renderPercentGridLab(host, cfg);
   },
   // "Percent of a number" double-number-line lab.
   "percent-builder": async (host, cfg) => {

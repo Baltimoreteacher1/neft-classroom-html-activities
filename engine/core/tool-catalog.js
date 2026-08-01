@@ -274,6 +274,23 @@ export const TOOL_CATALOG = {
       "Set the percent above 100%. What does that mean here?",
     ],
   },
+  "percent-grid": {
+    name: "Hundred Grid",
+    nameEs: "Cuadrícula de cien",
+    purpose:
+      "Shade squares out of 100 and read the SAME amount three ways — as a percent, a decimal, and a fraction.",
+    purposeEs:
+      "Sombrea cuadros de 100 y lee la MISMA cantidad de tres formas: como porcentaje, como decimal y como fracción.",
+    howTo: [
+      "Tap squares to change how much of the grid is shaded.",
+      "Read the count: that many squares out of 100.",
+      "Press Reveal the forms to see the percent, decimal, and fraction together.",
+    ],
+    tryThis: [
+      "Shade 60 squares. Why is that 0.6 and 3/5 as well as 60%?",
+      "Find two different shadings whose fractions reduce to the same thing.",
+    ],
+  },
 
   // ── Expressions & equations ──────────────────────────────────────────────
   "algebra-expand": {
@@ -836,6 +853,57 @@ export const TOOL_CATALOG = {
     tryThis: [
       "Plot (3, −2) and (−2, 3). Are they the same point?",
       "Plot four points that make a rectangle.",
+    ],
+  },
+  "manip:composite-split": {
+    name: "Composite Splitter",
+    nameEs: "Divisor de figuras compuestas",
+    purpose:
+      "Cut an L-shaped figure into rectangles — or subtract the missing corner — and see both routes reach the same area.",
+    purposeEs:
+      "Corta una figura en forma de L en rectángulos —o resta la esquina que falta— y comprueba que ambos caminos dan la misma área.",
+    howTo: [
+      "Set the outer width and height, then the size of the missing corner.",
+      "Pick a split: vertical, horizontal, or subtract the corner.",
+      "Read each piece's area and the total the pieces add to.",
+    ],
+    tryThis: [
+      "Solve the same figure by splitting AND by subtracting. Do the totals match?",
+      "Make the corner as big as the whole figure. What area is left?",
+    ],
+  },
+  "manip:expr-machine": {
+    name: "Expression Machine",
+    nameEs: "Máquina de expresiones",
+    purpose:
+      "Feed a value into ax + b and watch the words, the expression, and the result stay in step with each other.",
+    purposeEs:
+      "Introduce un valor en ax + b y observa cómo las palabras, la expresión y el resultado cambian juntos.",
+    howTo: [
+      "Set the coefficient a — the amount for each one.",
+      "Set the variable x — how many.",
+      "Set the constant b — the part that never changes. Read the total.",
+    ],
+    tryThis: [
+      "Set b to 0. What does the expression become, and what does that mean in the story?",
+      "Double x. Does the total double? Why not?",
+    ],
+  },
+  "manip:net-surface": {
+    name: "Net Surface Area",
+    nameEs: "Área total con la red",
+    purpose:
+      "Change a box's length, width, and height and watch every face of its net resize — surface area as six areas you add.",
+    purposeEs:
+      "Cambia el largo, el ancho y la altura de una caja y observa cómo cambia cada cara de su red: el área total es la suma de seis áreas.",
+    howTo: [
+      "Set the length, width, and height.",
+      "Find the area of each face in the net.",
+      "Add all six faces — that total is the surface area.",
+    ],
+    tryThis: [
+      "Make all three edges equal. How many DIFFERENT face areas are there now?",
+      "Double just the height. Which faces change, and which stay the same?",
     ],
   },
 };
