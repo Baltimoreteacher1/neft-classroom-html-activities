@@ -232,13 +232,18 @@ function buildVisual(v) {
         ariaLabel: figureAria(v, "Interactive bar chart"),
         fallback: barChartSVG(v),
       });
-    case "number-line":
-      // Interactive "place the points" when authored with `points`; the static
-      // line stays as the JS-off / print fallback (and the no-points case).
+    case "number-line": {
+      // Three tasks behind one kind: `problems` → the graph-and-read inequality
+      // lab, `points` → "place the points", neither → a static reference line.
+      // The static line stays as the JS-off / print fallback in every case.
+      const isInequality = Array.isArray(v.problems) && v.problems.length > 0;
       return interactiveVisualHost(v, {
-        ariaLabel: figureAria(v, "Number line"),
+        ariaLabel: isInequality
+          ? `Inequality graphs to read: ${v.problems.length} graphed inequalities. For each one, read the circle and the shading, then write the inequality it shows.`
+          : figureAria(v, "Number line"),
         fallback: numberLineSVG(v),
       });
+    }
     case "tape-diagram":
       // Interactive "count the equal parts" tape (interactive-visual bridge).
       // The static SVG stays as the JS-off / print fallback.

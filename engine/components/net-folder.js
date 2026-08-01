@@ -198,6 +198,22 @@ export function renderNetFolder(
     dims.d = dims.w; // the base is square; only w and h are meaningful
   }
 
+  // `size` is in PIXELS (the faces are CSS-transformed divs), but a lesson's
+  // solid is described in inches or centimetres — authoring `{w:6,h:2,d:4}` for
+  // a 6×2×4 in prism drew a six-pixel net, a dark speck in the middle of an
+  // empty stage. Nothing threw and the fold slider still worked, so no gate saw
+  // it. Scale any too-small solid up to a legible size, preserving its ratios,
+  // so both authoring styles produce a net a student can actually read.
+  const MIN_LONGEST_EDGE = 40;
+  const TARGET_LONGEST_EDGE = 140;
+  const longest = Math.max(dims.w, dims.h, dims.d);
+  if (longest > 0 && longest < MIN_LONGEST_EDGE) {
+    const scale = TARGET_LONGEST_EDGE / longest;
+    dims.w = Math.round(dims.w * scale);
+    dims.h = Math.round(dims.h * scale);
+    dims.d = Math.round(dims.d * scale);
+  }
+
   const wrapper = document.createElement("div");
   wrapper.className = "card";
 
