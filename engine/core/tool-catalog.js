@@ -204,6 +204,26 @@ export const TOOL_CATALOG = {
       "Which two points are farthest apart?",
     ],
   },
+  // Same `number-line` kind, different task: authored with `problems` it is the
+  // graph-and-read inequality lab, not the place-the-points line. See
+  // catalogKey() — one kind, two tools, and a caption that says which.
+  "number-line-inequality": {
+    name: "Inequality Graph Reader",
+    nameEs: "Lector de gráficas de desigualdad",
+    purpose:
+      "Read a graphed inequality — open or closed circle, shaded left or right — and write the inequality it shows.",
+    purposeEs:
+      "Lee una desigualdad graficada —círculo abierto o cerrado, sombreado a la izquierda o a la derecha— y escribe la desigualdad que muestra.",
+    howTo: [
+      "Look at the circle: open means the boundary is NOT a solution, closed means it is.",
+      "Look at the shading: right means greater, left means less.",
+      "Write the inequality with the symbol those two facts give you.",
+    ],
+    tryThis: [
+      "Change only the circle in your head. Which symbol does the inequality become?",
+      "Name one number that IS a solution and one that is not — right next to the boundary.",
+    ],
+  },
   "number-line-explorer": {
     name: "Absolute Value Explorer",
     nameEs: "Explorador del valor absoluto",
@@ -921,6 +941,13 @@ export const SECTION_LABEL = {
 export function catalogKey(v) {
   if (!v || typeof v !== "object") return "";
   if (v.kind === "manip") return v.manip ? `manip:${v.manip}` : "";
+  // `number-line` is two different tools behind one kind: with `points` it is
+  // the place-the-values line, with `problems` it is the graph-and-read
+  // inequality lab. Naming both "Number Line" would tell a student to drag
+  // dots onto ticks in a task that asks them to write an inequality.
+  if (v.kind === "number-line" && Array.isArray(v.problems) && v.problems.length) {
+    return "number-line-inequality";
+  }
   return typeof v.kind === "string" ? v.kind : "";
 }
 
