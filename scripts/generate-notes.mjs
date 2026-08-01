@@ -1718,13 +1718,14 @@ html.nt-embed .vx-term{font-size:clamp(16px,1.25vw,19px)!important;}
 html.nt-embed .vx-def{font-size:clamp(14px,1.05vw,16px)!important;line-height:1.5!important;}
 html.nt-embed .vx-mcols{
   grid-template-columns:minmax(0,1fr) minmax(0,1.35fr)!important;
-  gap:clamp(12px,1.6vw,18px)!important;
+  gap:clamp(8px,1.6vw,18px)!important;
 }
 html.nt-embed .vx-mterm,
 html.nt-embed .vx-mdef{
   font-size:clamp(14px,1.1vw,16.5px)!important;
   padding:clamp(10px,1.2vw,14px)!important;
   min-height:44px;
+  overflow-wrap:anywhere;
 }
 html.nt-embed header.packet h1{font-size:clamp(22px,2vw,28px)!important;}
 html.nt-embed .li-title{font-size:clamp(24px,2.3vw,32px)!important;}
@@ -1735,7 +1736,11 @@ html.nt-embed .li-stage{padding:clamp(16px,1.8vw,24px)!important;}
     grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),280px))!important;
     justify-content:center!important;
   }
-  html.nt-embed .vx-mcols{grid-template-columns:1fr!important;}
+  /* "Match it" deliberately does NOT collapse here. It used to become
+     grid-template-columns:1fr, which stacked every meaning underneath every
+     word — the pairing the activity teaches disappeared the moment a student
+     zoomed in or opened the Vocab tab on a phone. Two columns always; the
+     type and padding shrink instead (see the base .vx-mterm/.vx-mdef rules). */
 }`;
 
 function styles(printTitle = "") {
@@ -2048,10 +2053,22 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .vx-def-es{margin:6px 0 0;padding-left:10px;border-left:2px solid var(--teal-light);
   font-size:13.5px;line-height:1.5;color:var(--muted);font-style:italic;}
 .vx-match{margin-top:6px;}
-.vx-mcols{display:grid;grid-template-columns:1fr 1.5fr;gap:12px;}
-.vx-mcol{display:flex;flex-direction:column;gap:10px;}
+/* "Match it" is a two-sided word ↔ meaning activity: words on the left, meanings
+   on the right, ALWAYS. Two explicit tracks (never auto-fit, never a media-query
+   collapse) so it survives a 390px phone and a 200% browser zoom, which shrinks
+   the effective viewport exactly the way a narrow screen does. minmax(0, …) on
+   both tracks lets a long word wrap instead of widening its column and pushing
+   the page sideways. */
+.vx-mcols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);gap:12px;}
+.vx-mcol{display:flex;flex-direction:column;gap:10px;min-width:0;}
 .vx-mterm,.vx-mdef{text-align:left;border:2px solid var(--line);background:#fff;border-radius:10px;
-  padding:11px 14px;font:inherit;font-size:15px;color:var(--ink);cursor:pointer;transition:border-color .12s,background .12s;}
+  padding:11px 14px;font:inherit;font-size:15px;color:var(--ink);cursor:pointer;min-width:0;min-height:44px;
+  overflow-wrap:anywhere;hyphens:auto;transition:border-color .12s,background .12s;}
+/* Narrow / zoomed: tighter, but still two columns and still a 44px tap target. */
+@media (max-width:560px){
+  .vx-mcols{gap:8px;}
+  .vx-mterm,.vx-mdef{padding:10px;font-size:14px;}
+}
 .vx-mterm{font-weight:800;color:var(--navy);}
 .vx-mterm:hover,.vx-mdef:hover{border-color:var(--teal);}
 .vx-sel{border-color:var(--teal)!important;background:var(--teal-light)!important;}
@@ -3381,6 +3398,93 @@ function vocabExplorerScripts() {
 </script>`;
 }
 
+// Click-to-enlarge for the vocabulary pictures on the generated Vocab Explorer
+// page. This page is ALSO the "Vocab" tab of the interactive lesson (it is
+// iframed at /lessons/<id>/vocab.html?embed=1), so a student tapping a word's
+// picture there gets the same enlarge behaviour as the glossary picture in the
+// lesson body. Kept self-contained — this page loads none of the engine modules
+// — but it mirrors engine/core/image-zoom.js exactly: data-zoomable="1",
+// role="button", tabindex="0", a "Click to enlarge" title, Enter/Space support,
+// Escape/backdrop to close, and focus returned to the picture that opened it.
+function vocabImageZoomStyles() {
+  return `.is-zoomable{cursor:zoom-in;}
+.is-zoomable:focus-visible{outline:3px solid var(--teal);outline-offset:2px;}
+.nt-lightbox{position:fixed;inset:0;z-index:10000;width:auto;height:auto;max-width:none;max-height:none;
+  margin:0;padding:24px;border:0;box-sizing:border-box;background:rgba(15,23,42,.86);overflow:hidden;}
+.nt-lightbox[open]{display:flex;align-items:center;justify-content:center;}
+.nt-lightbox:not([open]){display:none;}
+.nt-lightbox::backdrop{background:rgba(15,23,42,.86);}
+.nt-lightbox img{max-width:96%;max-height:92%;width:auto;height:auto;border-radius:8px;background:#fff;
+  box-shadow:0 24px 60px rgba(0,0,0,.5);cursor:zoom-out;}
+.nt-lightbox button{position:absolute;top:16px;right:20px;width:44px;height:44px;border:0;border-radius:10px;
+  background:rgba(255,255,255,.22);color:#fff;font-size:20px;line-height:1;cursor:pointer;}
+@media print{.nt-lightbox{display:none!important;}}`;
+}
+
+function vocabImageZoomScript() {
+  return `<script>
+  (function(){
+    var SEL = '.vx-figure img, .vocab-figure img';
+    var box = null, big = null, opener = null;
+    function build(){
+      if (box) return box;
+      box = document.createElement('dialog');
+      box.className = 'nt-lightbox';
+      box.setAttribute('aria-label','Enlarged picture');
+      big = document.createElement('img');
+      big.alt = '';
+      var close = document.createElement('button');
+      close.type = 'button';
+      close.setAttribute('aria-label','Close enlarged picture');
+      close.textContent = '\\u2715';
+      box.appendChild(big); box.appendChild(close);
+      document.body.appendChild(box);
+      close.addEventListener('click', hide);
+      big.addEventListener('click', hide);
+      box.addEventListener('click', function(e){ if (e.target === box) hide(); });
+      box.addEventListener('close', function(){
+        big.removeAttribute('src');
+        if (opener && opener.focus) { try { opener.focus(); } catch(_){} }
+        opener = null;
+      });
+      return box;
+    }
+    function hide(){ if (box && box.open) { box.close(); } }
+    function show(img){
+      var src = img.currentSrc || img.getAttribute('src');
+      if (!src) return;
+      var b = build();
+      opener = img;
+      big.src = src;
+      big.alt = img.alt || '';
+      if (typeof b.showModal === 'function') { if (!b.open) b.showModal(); }
+      else { b.setAttribute('open',''); }
+      var btn = b.querySelector('button');
+      setTimeout(function(){ try { btn.focus(); } catch(_){} }, 0);
+    }
+    function wire(root){
+      var imgs = (root || document).querySelectorAll(SEL), n = 0;
+      for (var i = 0; i < imgs.length; i++) {
+        var img = imgs[i];
+        if (img.getAttribute('data-zoomable') === '1') continue;
+        img.setAttribute('data-zoomable','1');
+        img.className = (img.className ? img.className + ' ' : '') + 'is-zoomable';
+        img.setAttribute('role','button');
+        img.setAttribute('tabindex','0');
+        if (!img.getAttribute('title')) img.setAttribute('title','Click to enlarge');
+        img.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); show(this); });
+        img.addEventListener('keydown', function(e){
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); show(this); }
+        });
+        n++;
+      }
+      return n;
+    }
+    document.addEventListener('DOMContentLoaded', function(){ wire(document); });
+  })();
+</script>`;
+}
+
 function buildVocabPage(id, cfg, isFlagship) {
   const standard = cfg.standard ? `Standard ${esc(cfg.standard)}` : "";
   const standardPlain = cfg.standard ? `Standard ${cfg.standard}` : "";
@@ -3396,12 +3500,14 @@ function buildVocabPage(id, cfg, isFlagship) {
 ${styles(`${cfg.title}${standardPlain ? " · " + standardPlain : ""}`)}
 <style>
 ${EMBED_CSS}
+${vocabImageZoomStyles()}
 </style>
 <script>
   if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}
 </script>
 ${autoSaveScript(`nt-vocab:${esc(id)}`)}
 ${vocabExplorerScripts()}
+${vocabImageZoomScript()}
 </head>
 <body>
 <div class="topbar no-print">

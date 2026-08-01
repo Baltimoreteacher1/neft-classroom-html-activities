@@ -162,6 +162,14 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
   border-left:5px solid var(--teal);border-radius:10px;font-family:Outfit,system-ui,sans-serif;
   font-size:clamp(22px,2.4vw,30px);line-height:1.3;font-weight:800;color:var(--navy);
   font-variant-numeric:tabular-nums;letter-spacing:.01em;overflow-x:auto;}
+/* A step that builds a diagram carries its own snapshot of it. */
+.li-stepfig{margin:14px 0 0;padding:12px 14px 10px;border:1.5px solid var(--teal);
+  border-radius:14px;background:#fbfdfc;}
+.li-stepfig svg{display:block;width:100%;max-width:440px;height:auto;margin:0 auto;}
+.li-stepfig-cap{margin:8px 0 0;text-align:center;font-size:13px;font-weight:800;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--teal-ink);}
+@media print{.li-stepfig{background:#fff;border-color:#000;page-break-inside:avoid;}
+  .li-stepfig-cap{color:#000;}}
 /* Paced worked example — one step at a time, so the page never opens as a wall. */
 .li-steps-paced>li[hidden]{display:none;}
 .li-pace{display:flex;flex-wrap:wrap;gap:12px;margin:4px 0 0;}
@@ -304,10 +312,22 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .vx-def-es{margin:6px 0 0;padding-left:10px;border-left:2px solid var(--teal-light);
   font-size:13.5px;line-height:1.5;color:var(--muted);font-style:italic;}
 .vx-match{margin-top:6px;}
-.vx-mcols{display:grid;grid-template-columns:1fr 1.5fr;gap:12px;}
-.vx-mcol{display:flex;flex-direction:column;gap:10px;}
+/* "Match it" is a two-sided word ↔ meaning activity: words on the left, meanings
+   on the right, ALWAYS. Two explicit tracks (never auto-fit, never a media-query
+   collapse) so it survives a 390px phone and a 200% browser zoom, which shrinks
+   the effective viewport exactly the way a narrow screen does. minmax(0, …) on
+   both tracks lets a long word wrap instead of widening its column and pushing
+   the page sideways. */
+.vx-mcols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);gap:12px;}
+.vx-mcol{display:flex;flex-direction:column;gap:10px;min-width:0;}
 .vx-mterm,.vx-mdef{text-align:left;border:2px solid var(--line);background:#fff;border-radius:10px;
-  padding:11px 14px;font:inherit;font-size:15px;color:var(--ink);cursor:pointer;transition:border-color .12s,background .12s;}
+  padding:11px 14px;font:inherit;font-size:15px;color:var(--ink);cursor:pointer;min-width:0;min-height:44px;
+  overflow-wrap:anywhere;hyphens:auto;transition:border-color .12s,background .12s;}
+/* Narrow / zoomed: tighter, but still two columns and still a 44px tap target. */
+@media (max-width:560px){
+  .vx-mcols{gap:8px;}
+  .vx-mterm,.vx-mdef{padding:10px;font-size:14px;}
+}
 .vx-mterm{font-weight:800;color:var(--navy);}
 .vx-mterm:hover,.vx-mdef:hover{border-color:var(--teal);}
 .vx-sel{border-color:var(--teal)!important;background:var(--teal-light)!important;}
@@ -905,13 +925,14 @@ html.nt-embed .vx-term{font-size:clamp(16px,1.25vw,19px)!important;}
 html.nt-embed .vx-def{font-size:clamp(14px,1.05vw,16px)!important;line-height:1.5!important;}
 html.nt-embed .vx-mcols{
   grid-template-columns:minmax(0,1fr) minmax(0,1.35fr)!important;
-  gap:clamp(12px,1.6vw,18px)!important;
+  gap:clamp(8px,1.6vw,18px)!important;
 }
 html.nt-embed .vx-mterm,
 html.nt-embed .vx-mdef{
   font-size:clamp(14px,1.1vw,16.5px)!important;
   padding:clamp(10px,1.2vw,14px)!important;
   min-height:44px;
+  overflow-wrap:anywhere;
 }
 html.nt-embed header.packet h1{font-size:clamp(22px,2vw,28px)!important;}
 html.nt-embed .li-title{font-size:clamp(24px,2.3vw,32px)!important;}
@@ -922,7 +943,11 @@ html.nt-embed .li-stage{padding:clamp(16px,1.8vw,24px)!important;}
     grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),280px))!important;
     justify-content:center!important;
   }
-  html.nt-embed .vx-mcols{grid-template-columns:1fr!important;}
+  /* "Match it" deliberately does NOT collapse here. It used to become
+     grid-template-columns:1fr, which stacked every meaning underneath every
+     word — the pairing the activity teaches disappeared the moment a student
+     zoomed in or opened the Vocab tab on a phone. Two columns always; the
+     type and padding shrink instead (see the base .vx-mterm/.vx-mdef rules). */
 }
   .learn-intro-note{display:flex;gap:12px;align-items:flex-start;background:var(--teal-light);
     border:1px solid var(--teal);border-radius:10px;padding:12px 14px;margin:0 0 16px;}
@@ -1303,8 +1328,8 @@ html.nt-embed .li-stage{padding:clamp(16px,1.8vw,24px)!important;}
     <section class="li-block li-stage li-stage-see" id="li-see">
         <p class="li-eyebrow"><span class="li-stage-ico" aria-hidden="true">👁️</span><span class="li-stage-label">Picture it</span><span class="li-stage-sub">See what the math looks like before you read about it</span><button type="button" class="li-say no-print" data-li-say aria-label="Listen to the section: Picture it">🔊</button></p>
         <figure class="li-photo">
-          <img src="../../lessons/4-3/reveal-assets/notice-wonder.jpg" alt="The arcade leaderboard shows one player scored 150% of the weekly goal, while a rare bonus round only adds a 0.5% point boost. How can a score be more than the whole goal, and how tiny is a 0.5% boost?" loading="lazy" onerror="this.closest('.li-photo').style.display='none'" />
-          <figcaption><span class="li-photo-label">Where you see this in real life</span>The arcade leaderboard shows one player scored 150% of the weekly goal, while a rare bonus round only adds a 0.5% point boost. How can a score be more than the whole goal, and how tiny is a 0.5% boost?</figcaption>
+          <img src="../../lessons/4-3/reveal-assets/notice-wonder.jpg" alt="The arcade leaderboard shows one player scored 150% of the weekly goal. A rare bonus round adds a 0.5% point boost." loading="lazy" onerror="this.closest('.li-photo').style.display='none'" />
+          <figcaption><span class="li-photo-label">Where you see this in real life</span>The arcade leaderboard shows one player scored 150% of the weekly goal. A rare bonus round adds a 0.5% point boost.</figcaption>
         </figure>
           
           <p class="li-lead">These are the words you will use today.</p>

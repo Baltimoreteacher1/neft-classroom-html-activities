@@ -1,4 +1,4 @@
-import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { interactiveVisualHost } from "../engine/core/interactive-visual.js";
@@ -37,6 +37,7 @@ import {
 } from "./homework-guided-notes.mjs";
 import { renderVisualMathLab, VISUAL_LABS_CSS, VISUAL_LABS_JS } from "./homework-visual-labs.mjs";
 import { EDITORIAL_FONT_IMPORT, EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
+import { writeGenerated } from "./lib/preserve-injected.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
@@ -4054,7 +4055,13 @@ function main() {
     const homeworkHtml = localizeBilingualLabels(generateHtml(id, config));
     const lessonPath = join(lessonsDir, id, "homework.html");
     const normalizedHtml = `${homeworkHtml.replace(/^ {12}$/gm, "").trimEnd()}\n`;
-    writeFileSync(lessonPath, normalizedHtml);
+    // writeGenerated, NOT writeFileSync: this generator rebuilds the page from
+    // the config alone, so a raw write drops every sentinel layer injected into
+    // it afterwards. Each homework.html carries five (mobile-access, nsr, mwb,
+    // enthead, canvas-bridge), and losing them is invisible here — the page
+    // still renders — but `npm run validate:injection` fails with "N page(s)
+    // lost a layer" and the Canvas/mobile/save-resume wiring is gone in class.
+    writeGenerated(lessonPath, normalizedHtml);
     count++;
   }
 
