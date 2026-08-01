@@ -63,10 +63,23 @@ export function readInjectedBlocks(html) {
     const lineStart = src.lastIndexOf("\n", m.index) + 1;
     const lead = src.slice(lineStart, m.index);
     const zone = headEnd >= 0 && m.index < headEnd ? "head" : "body";
+    // Blank lines separating this block from the one above belong to the block
+    // too. Without them, re-splicing two adjacent blocks joins them tight and
+    // every page differs from itself by a blank line — 437 shells of whitespace
+    // noise that would drown the one real content change, and would make an
+    // "is this page stale?" check permanently, uselessly red.
+    let blankStart = lineStart;
+    while (blankStart > 0) {
+      const prevEnd = blankStart - 1; // the "\n" ending the previous line
+      const prevStart = src.lastIndexOf("\n", prevEnd - 1) + 1;
+      if (!/^[ \t]*$/.test(src.slice(prevStart, prevEnd))) break;
+      blankStart = prevStart;
+    }
     out.push({
       family: m[1],
       zone,
       indent: /^[ \t]*$/.test(lead) ? lead : "",
+      blankBefore: src.slice(blankStart, lineStart),
       anchorIndent: anchors[zone],
       text: m[0],
     });
@@ -106,17 +119,43 @@ export function preserveInjected(html, blocks) {
     // Restore the anchor tag's own indentation too, when the source had one and
     // the freshly rendered page does not.
     const anchor = ownLine && !here ? add[0].anchorIndent || "" : "";
-    const payload = `${add.map((b) => (b.indent || "") + b.text).join("\n")}\n${anchor}`;
+    const payload = `${add
+      .map((b, i) => (i === 0 ? "" : b.blankBefore || "") + (b.indent || "") + b.text)
+      .join("\n")}\n${anchor}`;
     out = out.slice(0, cut) + payload + out.slice(cut);
   }
   return out;
 }
 
+// The exact bytes `writeGenerated` would put on disk, without writing them.
+// Split out so a generator's --check mode and its write path can never disagree
+// about what "up to date" means.
+export function renderGenerated(file, html) {
+  const prev = existsSync(file) ? readFileSync(file, "utf8") : "";
+  return prev ? preserveInjected(html, readInjectedBlocks(prev)) : String(html);
+}
+
 // Drop-in replacement for writeFileSync(file, html) in any generator that
 // overwrites a page the injectors also write to.
 export function writeGenerated(file, html) {
-  const prev = existsSync(file) ? readFileSync(file, "utf8") : "";
-  const next = prev ? preserveInjected(html, readInjectedBlocks(prev)) : String(html);
+  const next = renderGenerated(file, html);
   writeFileSync(file, next);
   return next;
+}
+
+// True when the committed page already equals what the generator would produce.
+//
+// This is the ONLY sound way to ask "is this page stale?". The obvious
+// alternative — grep the page for a field's text from config.json — is not an
+// invariant here and produces false alarms: slides.html renders `commonMistake`
+// REWORDED, learn.html renders Notice & Wonder CONDITIONALLY (present in 1-4,
+// absent in 1-1), and a naive presence check flagged 74 lessons that were
+// perfectly in sync. Comparing against the generator's own output has no such
+// ambiguity, and it covers every field at once instead of a hand-listed few.
+//
+// Injected blocks are excluded from the comparison by construction, because
+// renderGenerated re-splices the ones already on disk.
+export function isGeneratedFresh(file, html) {
+  if (!existsSync(file)) return false;
+  return readFileSync(file, "utf8") === renderGenerated(file, html);
 }

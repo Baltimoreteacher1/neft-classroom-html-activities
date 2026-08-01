@@ -14,7 +14,14 @@
 //   node tools/generate-small-group-lessons.mjs            # all base lessons
 //   node tools/generate-small-group-lessons.mjs --dry      # report only
 //   node tools/generate-small-group-lessons.mjs --only 1-3 # single lesson (PoC)
-//   node tools/generate-small-group-lessons.mjs --configs-only # preserve generated shells
+//   node tools/generate-small-group-lessons.mjs --configs-only # configs only, skip shells
+//
+// NOTE on --configs-only: it used to be a SAFETY flag ("preserve generated
+// shells") because writing index.html with a plain writeFileSync deleted every
+// injected layer on it. That is fixed — the shells now go through
+// writeGenerated(), which re-splices the injected blocks. The flag survives
+// only as a SCOPE option: skip index.html and lesson.js when you just want the
+// configs refreshed. It is no longer protecting anything.
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -333,9 +340,8 @@ function writeLesson(id, out) {
   if (CONFIGS_ONLY) return;
   // writeGenerated, not writeFileSync — see tools/generators-preserve-injected.test.mjs.
   // All 148 group/catch-up index.html shells carry injected sentinel blocks, and a
-  // plain overwrite strips every one. (`--configs-only` exists as a workaround for
-  // exactly this; preserving the blocks is the actual fix.) On a brand-new lesson
-  // there is nothing to preserve and this behaves identically to a plain write.
+  // plain overwrite strips every one. On a brand-new lesson there is nothing to
+  // preserve and this behaves identically to a plain write.
   writeGenerated(
     join(LESSONS, id, "index.html"),
     shellHtml(id, out.title, `Grade 6 Reveal Math small-group lesson — ${out.title}`),
