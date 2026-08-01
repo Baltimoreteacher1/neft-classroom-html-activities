@@ -165,6 +165,12 @@ function buildGroup1(base, u, m) {
     p.extending || [],
   ).slice(0, 12);
   out.practice = {
+    // The base lesson's interactive practice lab (factor-tree, area-morph,
+    // equation-balance-lab, …). small-group-renderer.js already mounts
+    // `practice.diagram` at the top of the Practice & Check tab; rebuilding
+    // `out.practice` from scratch used to drop it, so every small group lost
+    // the one put-your-own-numbers-in tool the full lesson gives students.
+    diagram: p.diagram,
     approaching: practice.slice(0, 6),
     onLevel: practice.slice(6),
     extending: [],
@@ -255,6 +261,8 @@ function buildGroup2(base, u, m) {
     p.approaching || [],
   ).slice(0, 12);
   out.practice = {
+    // Same rehearsal tool the full lesson mounts — see buildGroup1.
+    diagram: p.diagram,
     approaching: [],
     onLevel: practice.slice(0, 4),
     extending: practice.slice(4),

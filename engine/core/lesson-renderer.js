@@ -71,6 +71,7 @@ import { mountQuestionLadderReader } from "./socratic.js";
 import { mountStuckSupport } from "./stuck-support.js";
 import { isTeacherMode } from "./teacher-mode.js";
 import { renderThemeIllustration } from "./theme-illustrations.js";
+import { toolMeta } from "./tool-catalog.js";
 import { isToolsMode, mountToolsMenuItem, renderToolsPage } from "./tools-mode.js";
 import { stampTeachL4Meta } from "./uifr.js";
 import {
@@ -440,6 +441,17 @@ function buildVisual(v) {
         fallback: `Cross-section explorer for a ${shapeName}. Turn on JavaScript to slice it and see the 2D cross-sections.`,
       });
     }
+    case "net-folder": {
+      // Fold a 2D net into a 3D solid. It has been in the interactive-visual
+      // REGISTRY (for small-group labs, which mount via figureBlock) without a
+      // case here, so a lesson that authored it as a `diagram` rendered nothing
+      // at all — scripts/validate-lesson-visuals.mjs is the gate that sees this.
+      const solidName = String(v.solid || v.shape || "cube").replace(/-/g, " ");
+      return interactiveVisualHost(v, {
+        ariaLabel: `Interactive net folder for a ${solidName}. Drag the Fold slider to fold the flat net into the solid and count its faces.`,
+        fallback: `Net folder for a ${solidName}. Turn on JavaScript to fold the flat net into the solid.`,
+      });
+    }
     case "manip": {
       // Any shared/projects manipulative (number-line, fraction-bar,
       // algebra-tiles, …) surfaced via the interactive-visual bridge.
@@ -479,6 +491,16 @@ function buildVisual(v) {
           "Interactive distributive property lab. Type a, b, and c to see an area model of a times the quantity b plus c and how it equals a·b plus a·c.",
         fallback:
           "Interactive distributive property builder. Turn on JavaScript to model a(b + c) = a·b + a·c.",
+      });
+    }
+    case "percent-grid": {
+      // Hundred-square grid: shade squares and reveal the SAME amount written
+      // three ways — percent, decimal, fraction.
+      return interactiveVisualHost(v, {
+        ariaLabel:
+          "Interactive hundred-square percent grid. Tap squares to change how much is shaded, then reveal the same amount as a percent, a decimal, and a fraction.",
+        fallback:
+          "Interactive hundred-square grid. Turn on JavaScript to shade squares and read the amount as a percent, a decimal, and a fraction.",
       });
     }
     case "percent-builder": {
@@ -3576,6 +3598,27 @@ function renderSkillPractice(host, config, state) {
   enableWordProblemAnnotation(card);
 }
 
+// Caption for a practice lab: the tool's canonical name and what it is for,
+// bilingual when the catalog carries Spanish. Returns "" for an uncatalogued
+// kind so the lab still renders rather than showing a title-cased slug.
+function practiceLabHeaderHtml(lab) {
+  const meta = toolMeta(lab);
+  if (!meta.catalogued) return "";
+  const name = meta.nameEs ? stackHtml(meta.name, meta.nameEs) : esc(meta.name);
+  const purpose = meta.purposeEs ? stackHtml(meta.purpose, meta.purposeEs) : esc(meta.purpose);
+  return (
+    `<div class="practice-lab-head" style="margin-bottom:var(--sp-3);">` +
+    `<div style="display:flex; align-items:center; gap:8px; font-weight:800; color:var(--navy,#264653);"><span aria-hidden="true">🧰</span><span>${name}</span></div>` +
+    (meta.purpose
+      ? `<p style="margin:var(--sp-2) 0 0; font-size:0.9rem; color:var(--muted); line-height:1.5;">${purpose}</p>`
+      : "") +
+    (meta.instance
+      ? `<p style="margin:var(--sp-1) 0 0; font-size:0.85rem; font-weight:600; color:var(--navy,#264653);">${esc(meta.instance)}</p>`
+      : "") +
+    `</div>`
+  );
+}
+
 function renderPracticePhase(el, state, ctx, config) {
   phaseHeader(
     el,
@@ -3604,7 +3647,12 @@ function renderPracticePhase(el, state, ctx, config) {
       if (!lab) continue;
       const labCard = document.createElement("div");
       labCard.className = "card";
-      labCard.innerHTML = buildVisual(lab);
+      // Name the tool before it appears. An unlabelled manipulative at the top
+      // of Practice reads as decoration; the catalog already carries a student-
+      // facing name and purpose for every registered kind, so say what it is
+      // and what it is for. Falls back to the bare tool when a kind somehow has
+      // no catalog entry (tools/interactive-tools.test.mjs gates against that).
+      labCard.innerHTML = practiceLabHeaderHtml(lab) + buildVisual(lab);
       el.append(labCard);
       mountInteractiveVisuals(labCard, { state, phaseId: 2 });
     }

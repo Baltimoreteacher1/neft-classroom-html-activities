@@ -676,6 +676,10 @@ export function injectSmallGroupStyles(accent) {
     .sg-lab-mount{margin:12px 0}
     .sg-lab-mount .card{border:1px solid var(--sg-line);border-radius:16px;background:var(--sg-card);padding:16px;box-shadow:0 8px 24px rgba(23,32,51,.07)}
     .sg-figure{margin:12px 0;padding:14px;border:1px solid var(--sg-line);border-radius:16px;background:var(--sg-card);box-shadow:0 8px 24px rgba(23,32,51,.07)}
+    .sg-tool-caption{display:flex;flex-direction:column;gap:3px;margin:0 0 12px}
+    .sg-tool-name{color:var(--sg-ink);font-family:var(--sg-display);font-size:17px;font-weight:900}
+    .sg-tool-purpose{color:var(--sg-muted);font-size:14px;font-weight:600;line-height:1.45}
+    .sg-tool-instance{color:var(--sg-ink);font-size:13px;font-weight:700}
     .sg-donechip{display:inline-flex;align-items:center;gap:7px;margin-bottom:12px;padding:7px 12px;border-radius:999px;background:var(--sg-good-bg);border:1px solid var(--sg-good);color:var(--sg-good-ink);font-weight:800;font-size:14px}
     .sg-discourse{margin-top:14px;padding:16px;border:2px solid var(--sg);border-radius:14px;background:var(--sg-soft)}
     .sg-datachips{padding:14px;text-align:center}

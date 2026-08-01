@@ -899,7 +899,7 @@ function renderStudio(config) {
           ? (Array.isArray(config.practice.diagram)
               ? config.practice.diagram
               : [config.practice.diagram]
-            ).map((d) => figureBlock(d))
+            ).map((d, i) => figureBlock(d, { store, slot: `practice-lab-${i}` }))
           : []),
         practice,
         talk,
