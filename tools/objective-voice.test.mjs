@@ -6,8 +6,8 @@
 //      again at the end of the lesson,
 //   2. the name is spliced in unescaped, so a name is free to inject markup
 //      into a sentence that already contains vocabulary <button> elements,
-//   3. a wired-up surface loses `hideImage`, and tapping an underlined word on
-//      an objective pops the term picture back up over the visual model.
+//   3. an objective surface starts suppressing the term illustration again, so
+//      tapping an underlined word there gives a picture-less popup.
 // This file pins all three.
 
 import assert from "node:assert/strict";
@@ -111,17 +111,19 @@ assert.match(
   "Phase 8 must render the objectives in review (third-person) mode",
 );
 
-// Every objective surface opens the definition ONLY; the objective's picture is
-// the visual-model card below it, which opens on its own click.
-for (const [label, src, expected] of [
-  ["lesson-renderer.js", renderer, 2],
-  ["app.js", app, 2],
+// Every vocab popup shows the term's illustration when the term HAS one — the
+// goal cards included. They used to pass `{ hideImage: true }`, which made the
+// objectives the only place on the site where tapping an underlined word gave a
+// definition with no picture; it read as a broken popup, not a design choice.
+// (The generic "#" category tile is still suppressed — see hasRealVocabImage.)
+for (const [label, src] of [
+  ["lesson-renderer.js", renderer],
+  ["app.js", app],
 ]) {
-  const hidden = (src.match(/wireObjectiveTermPopups\([^;]*hideImage: true/g) || []).length;
   assert.equal(
-    hidden,
-    expected,
-    `${label}: expected ${expected} definition-only objective wirings`,
+    (src.match(/hideImage/g) || []).length,
+    0,
+    `${label}: objective popups must not suppress the term illustration`,
   );
 }
 
