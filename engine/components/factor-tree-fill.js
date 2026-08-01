@@ -1,16 +1,6 @@
 // @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
 // (see tsconfig.json); the marker is the debt, and removing it is the unit of
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
-// factor-tree-fill.js — Student-driven factor tree BUILDER. Takes the SAME config
-// a static `factor-tree` diagram uses ({ value, left, right, title }) — but only
-// needs the root `value`. Instead of a pre-baked, fixed-shape tree with blanks
-// locked to config's one factorization, the student starts from the number and
-// picks their OWN factors at every step. Each split they enter grows two new
-// branches; composite branches keep offering a split; prime branches lock in as
-// leaves. Any valid factor path is accepted (84 = 2×42, 4×21, 6×14, …) — the tree
-// literally builds out with each number the student puts into it. When every leaf
-// is prime, the factorization is shown and a second stage rewrites it with
-// exponents.
 //
 // Pure DOM + CSS (no SVG coordinate math, so the tree grows to any shape). Matches
 // the static factor-tree palette so the live exercise and printed diagrams read as

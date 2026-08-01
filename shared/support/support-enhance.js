@@ -1,6 +1,3 @@
-// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
-// (see tsconfig.json); the marker is the debt, and removing it is the unit of
-// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 /* ==========================================================================
    Support-page enhancement — progressive JS for the generated
    lessons/<id>/{family,student-help,teacher-notes}/ pages.
@@ -88,8 +85,8 @@
 
   function init() {
     var wrap = document.querySelector(".wrap");
-    if (!wrap || wrap.dataset.seInit === "1") return;
-    wrap.dataset.seInit = "1";
+    if (!wrap || /** @type {HTMLElement} */ (wrap).dataset.seInit === "1") return;
+    /** @type {HTMLElement} */ (wrap).dataset.seInit = "1";
     try {
       buildPrintAction(wrap);
     } catch (_e) {}

@@ -1,6 +1,3 @@
-// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
-// (see tsconfig.json); the marker is the debt, and removing it is the unit of
-// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 /* Curriculum product upgrades: teacher, student, family, and privacy workflows. */
 (function () {
   "use strict";
@@ -363,7 +360,7 @@
 
   function openPalette() {
     buildPalette();
-    var dialog = document.getElementById("cpu-command-palette");
+    var dialog = /** @type {HTMLDialogElement} */ (document.getElementById("cpu-command-palette"));
     if (!dialog.open) dialog.showModal();
     dialog.querySelector("input")?.focus();
   }

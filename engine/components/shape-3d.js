@@ -1,11 +1,6 @@
 // @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
 // (see tsconfig.json); the marker is the debt, and removing it is the unit of
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
-// shape-3d.js — Interactive 3D solid explorer built with pure CSS 3D transforms.
-// No three.js, no dependencies. Spin by drag (pointer) or arrow keys, with a
-// slow auto-rotate that pauses on interaction and honors prefers-reduced-motion.
-// Tap a face / edge / vertex to highlight it and show its name + live counts.
-// "Unfold net" animates the solid flattening into its 2D net and back.
 //
 // Public API:
 //   renderShape3D(container, { shape, label }) -> { destroy }
@@ -282,6 +277,7 @@ function squarePyramid(b, ph) {
 
 export function renderShape3D(
   container,
+  /** @type {{ shape?: string, label?: string, taskDriven?: boolean }} */
   { shape = "cube", label: _label, taskDriven = false } = {},
 ) {
   const def = shapeDef(shape);
@@ -499,7 +495,7 @@ export function renderShape3D(
     inertiaId = requestAnimationFrame(step);
   }
   stage.addEventListener("pointerdown", (e) => {
-    if (e.target.classList.contains("shape3d-face")) return; // let clicks select
+    if (/** @type {HTMLElement} */ (e.target).classList.contains("shape3d-face")) return; // let clicks select
     dragging = true;
     stopAuto();
     stopInertia();

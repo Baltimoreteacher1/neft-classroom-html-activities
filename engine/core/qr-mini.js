@@ -1,6 +1,3 @@
-// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
-// (see tsconfig.json); the marker is the debt, and removing it is the unit of
-// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 /**
  * Minimal QR code SVG generator (byte mode, error correction L).
  * No dependencies — suitable for certificate lesson URLs.
@@ -279,11 +276,11 @@ export function drawQrOnCanvas(ctx, text, x, y, size = 100) {
     img.onload = () => {
       ctx.drawImage(img, x, y, size, size);
       URL.revokeObjectURL(url);
-      resolve();
+      resolve(undefined);
     };
     img.onerror = () => {
       URL.revokeObjectURL(url);
-      resolve();
+      resolve(undefined);
     };
     img.src = url;
   });

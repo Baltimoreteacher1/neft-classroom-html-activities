@@ -1,6 +1,3 @@
-// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
-// (see tsconfig.json); the marker is the debt, and removing it is the unit of
-// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 /*!
  * lesson-platform.js — Neft Lesson Platform · single loader / bootstrap.
  *
@@ -246,9 +243,10 @@
           var g = window[layer.global];
           // Most layers auto-boot on load; if a layer exposes an idempotent
           // init() (e.g. NTJuice), calling it is safe and a no-op if already up.
-          if (g && typeof g.init === "function") {
+          const gg = /** @type {any} */ (g);
+          if (gg && typeof gg.init === "function") {
             try {
-              g.init();
+              gg.init();
             } catch (e) {
               logWarn("init() threw for " + layer.name, e);
             }

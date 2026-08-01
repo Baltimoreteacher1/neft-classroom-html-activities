@@ -1,13 +1,3 @@
-// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
-// (see tsconfig.json); the marker is the debt, and removing it is the unit of
-// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
-// small-group-labs.js — the interactive math core of the small-group studio.
-// Three render-time sections derived entirely from existing lesson config
-// (zero new authoring): the hands-on Explore Lab (real manipulatives), the
-// Model Lab (connect-phase diagram + interpretation), and the Apply Lab
-// (Polya-style word-problem workbench). Manipulative components are lazily
-// imported so lessons only pay for the one they use.
-
 import { attachVoiceInput } from "../components/voice-explain.js";
 import { interactiveVisualHost, mountInteractiveVisuals } from "./interactive-visual.js";
 import { markScene } from "./small-group-storyboard.js";
@@ -54,7 +44,11 @@ function dataChipsBlock(v) {
 // (factor-tree-lab, manip, …) mount live via the shared interactive-visual
 // registry; static kinds render as accessible SVG figures. Returns null when
 // the kind is unknown so callers can skip the block instead of rendering blank.
-export function figureBlock(diagram, { ariaLabel, fallback, staticOnly = false } = {}) {
+export function figureBlock(
+  diagram,
+  /** @type {{ ariaLabel?: string, fallback?: string, staticOnly?: boolean }} */
+  { ariaLabel, fallback, staticOnly = false } = {},
+) {
   if (!diagram || !diagram.kind) return null;
   let html = "";
   let interactive = false;

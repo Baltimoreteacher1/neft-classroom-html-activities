@@ -1,13 +1,6 @@
 // @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
 // (see tsconfig.json); the marker is the debt, and removing it is the unit of
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
-// small-group-passport.js — bridges the small-group studio into the site-wide
-// Student Passport economy (assets/lesson-passport.js → window.NTPassport, the
-// same lifetime XP/level/badge profile the full lessons and unit games feed).
-// It never forks the economy: it lazy-loads the canonical passport layer (which
-// self-mounts its top-left pill — the platform's designated free corner; the
-// studio's bottom-right slot belongs to the Math Workbench launcher) and awards
-// through window.NTPassport.award().
 //
 // Award map (all idempotent per lesson+event via the studio's device store):
 //   - each solved problem ................ small XP  (derived from persisted

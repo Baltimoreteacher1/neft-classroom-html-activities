@@ -1,9 +1,6 @@
 // @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
 // (see tsconfig.json); the marker is the debt, and removing it is the unit of
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
-// vocab-explore.js — Active, exploratory "Explore" experience for the vocab
-// Word Wall. Instead of a passive flip-card, each term opens a guided
-// sense-making loop where the student DOES something and gets feedback:
 //
 //   Step 1  Predict → Reveal      (activate prior knowledge)
 //   Step 2  Example vs Non-example (instant feedback + one-line why)  [if data]

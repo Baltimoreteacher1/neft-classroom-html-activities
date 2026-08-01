@@ -1,11 +1,3 @@
-// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
-// (see tsconfig.json); the marker is the debt, and removing it is the unit of
-// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
-// dist-explorer.js — Live distribution explorer. Students build a data set by
-// tapping a number line; the dot plot and the mean / median / mode markers update
-// in real time. The payoff: add a value far to the right and watch the MEAN get
-// pulled toward it while the MEDIAN barely moves — the core Grade 6 idea about
-// outliers and which measure of center to trust. Pure SVG, no dependencies.
 //
 // Public API:
 //   renderDistExplorer(container, { max, unit, label }) -> { destroy }
@@ -30,7 +22,11 @@ function esc(s) {
   );
 }
 
-export function renderDistExplorer(container, { max = 20, unit = "", label: _label } = {}) {
+export function renderDistExplorer(
+  container,
+  /** @type {{ max?: number, unit?: string, label?: string }} */
+  { max = 20, unit = "", label: _label } = {},
+) {
   const MAX = Math.max(4, max);
   let values = [];
 
@@ -277,7 +273,7 @@ export function renderDistExplorer(container, { max = 20, unit = "", label: _lab
   });
 
   controls.addEventListener("click", (e) => {
-    const act = e.target.closest("button")?.dataset.act;
+    const act = /** @type {HTMLElement} */ (e.target).closest("button")?.dataset.act;
     if (!act) return;
     if (act === "clear") values = [];
     else if (act === "sym")

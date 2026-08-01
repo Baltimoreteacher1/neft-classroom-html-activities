@@ -1,11 +1,6 @@
 // @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
 // (see tsconfig.json); the marker is the debt, and removing it is the unit of
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
-// decimal-product.js — Guided "multiply decimals" exercise. Teaches the standard
-// algorithm for 6.NOS.3: multiply as whole numbers, then place the decimal point
-// by counting decimal places. Three fill-in stages unlock in sequence — each one
-// reveals the next only after it is answered correctly — mirroring the
-// progressive-reveal (exponent-stage) pattern in factor-tree-fill.js.
 //
 // All arithmetic is done with INTEGER math so float error (0.1*0.2 problems)
 // never reaches the student or the answer key.

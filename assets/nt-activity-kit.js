@@ -1,6 +1,3 @@
-// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
-// (see tsconfig.json); the marker is the debt, and removing it is the unit of
-// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 /*!
  * Neft Teacher — Activity Kit (nt-activity-kit.js)
  * Reusable student-identity + auto-grading + PDF/DOC export for every activity.
@@ -139,8 +136,8 @@
     var n = state.mountEl && $("#ntkit-saved", state.mountEl);
     if (!n) return;
     n.textContent = "Saved";
-    clearTimeout(flashSaved._t);
-    flashSaved._t = setTimeout(function () {
+    clearTimeout(/** @type {any} */ (flashSaved)._t);
+    /** @type {any} */ (flashSaved)._t = setTimeout(function () {
       n.textContent = "";
     }, 1200);
   }
@@ -685,7 +682,9 @@
       if (document.querySelector('link[href*="nt-activity-kit.css"]')) return;
       var scr =
         (document.currentScript &&
-          /nt-activity-kit\.js/.test(document.currentScript.src || "") &&
+          /nt-activity-kit\.js/.test(
+            /** @type {HTMLScriptElement} */ (document.currentScript).src || "",
+          ) &&
           document.currentScript) ||
         document.querySelector('script[src*="nt-activity-kit.js"]');
       var href = "/assets/nt-activity-kit.css";

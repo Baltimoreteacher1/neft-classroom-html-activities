@@ -1,10 +1,6 @@
 // @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
 // (see tsconfig.json); the marker is the debt, and removing it is the unit of
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
-// decimal-quotient.js — Guided "divide decimals" lab (6.NOS.3). Teaches the core
-// move: make the divisor a WHOLE number by shifting BOTH decimals the same number
-// of places, then divide as usual. Three fill-in stages reveal one at a time, so
-// each idea is checked before the next unlocks (mirrors the factor-tree stages).
 //
 // All arithmetic is done on integer/fraction representations so no float error
 // ever creeps in (0.1 + 0.2 problems). Author even-dividing pairs for the cleanest

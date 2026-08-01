@@ -334,3 +334,23 @@ declare var toggleMathScratchpad: any;
 declare var toggleVoiceInput: any;
 declare var winGame: any;
 declare var winLevel: any;
+
+/**
+ * Browser globals the TS DOM lib does not declare.
+ *
+ * The webkit-prefixed pair are real: Safari and older Chrome expose speech
+ * recognition and the audio context only under those names, and the code
+ * deliberately falls back to them. Declaring them is not a fiction — it is the
+ * platform.
+ */
+interface Window {
+  SpeechRecognition: any;
+  webkitSpeechRecognition: any;
+  webkitAudioContext: any;
+}
+
+/**
+ * Vite resolves side-effect CSS imports (`import "./flagship.css"`) at build
+ * time; there is no type to import, so declare the shape as a module.
+ */
+declare module "*.css";

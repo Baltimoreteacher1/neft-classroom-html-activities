@@ -1,6 +1,3 @@
-// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
-// (see tsconfig.json); the marker is the debt, and removing it is the unit of
-// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 /* =============================================================================
  * Neft Game Hint Ladder — Socratic, escalating hints for math games.
  * -----------------------------------------------------------------------------
@@ -220,7 +217,7 @@
     step.className = "nt-hl-step";
     var n = doc.createElement("span");
     n.className = "nt-hl-step-n";
-    n.textContent = state.rung; // 1-based; incremented before addStep
+    n.textContent = String(state.rung); // 1-based; incremented before addStep
     var body = doc.createElement("p");
     body.className = "nt-hl-step-text";
     body.textContent = text;

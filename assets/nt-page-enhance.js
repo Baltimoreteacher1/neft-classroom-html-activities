@@ -1,6 +1,3 @@
-// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
-// (see tsconfig.json); the marker is the debt, and removing it is the unit of
-// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 /*!
  * nt-page-enhance.js — adds a "Save your work" bar to existing activity pages so
  * finished work can be saved as PDF or DOC with the student's name and uploaded
@@ -238,9 +235,12 @@
       return;
     }
     var clone = document.body.cloneNode(true);
-    Array.prototype.forEach.call(clone.querySelectorAll(".nt-pe-bar"), function (n) {
-      n.remove();
-    });
+    Array.prototype.forEach.call(
+      /** @type {HTMLElement} */ (clone).querySelectorAll(".nt-pe-bar"),
+      function (n) {
+        n.remove();
+      },
+    );
     var html =
       "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>" +
       "<head><meta charset='utf-8'><title>" +
@@ -248,7 +248,7 @@
       "</title></head><body>" +
       header() +
       maybeGrade() +
-      clone.innerHTML +
+      /** @type {HTMLElement} */ (clone).innerHTML +
       "</body></html>";
     var blob = new Blob(["﻿", html], { type: "application/msword" });
     var url = URL.createObjectURL(blob);

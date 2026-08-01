@@ -1,7 +1,3 @@
-// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
-// (see tsconfig.json); the marker is the debt, and removing it is the unit of
-// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
-// misconceptions.js — turn a wrong answer into a NAMED misconception.
 //
 // Why this exists: until now the studio could only ever say "not right". Every
 // judgment ran through isRight(), which is a boolean, so the richest signal in
@@ -549,8 +545,9 @@ function correctAnswerText(item) {
 export function detectMisconception(item, typed, choiceIndex = null) {
   // Authored tag first: an author who named the error for this distractor knows
   // more than any predictor can.
-  if (Number.isInteger(choiceIndex) && Array.isArray(item?.misconceptionTags)) {
-    const authored = AUTHORED_TAGS[item.misconceptionTags[choiceIndex]];
+  const it = /** @type {any} */ (item);
+  if (Number.isInteger(choiceIndex) && Array.isArray(it?.misconceptionTags)) {
+    const authored = AUTHORED_TAGS[it.misconceptionTags[choiceIndex]];
     if (authored) return authored;
   }
   const answer = numberOf(correctAnswerText(item));

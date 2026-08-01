@@ -1,13 +1,6 @@
 // @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
 // (see tsconfig.json); the marker is the debt, and removing it is the unit of
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
-// box-plot-builder.js — Interactive box-plot construction lab. Students don't
-// just *read* a box plot here — they build one: sort the data, then drag the
-// five-number-summary handles (min, Q1, median, Q3, max) onto a number line
-// that shows the data as a dot plot. The box-and-whisker drawing follows their
-// handles live, and "Check my box plot" coaches each statistic separately
-// (what to recount, never the value itself). When all five are right the plot
-// locks in and the lab surfaces range + IQR from *their* box.
 //
 // Quartile convention matches Grade 6 / Reveal Math: order the data, the
 // median splits it, and when n is odd the median itself belongs to neither

@@ -1,12 +1,3 @@
-// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
-// (see tsconfig.json); the marker is the debt, and removing it is the unit of
-// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
-// One calm, uniform palette across every small-group variant (Joel directive
-// 2026-07-17): shared primary/deep/soft so the page no longer swings between
-// blue, burnt-orange, and teal themes. The ONLY per-variant color is the small
-// `pop` accent (hero rule, active-tab underline, focus glow), giving a quiet
-// at-a-glance cue for which group you're in without a full theme change. Name +
-// emoji carry the rest of the identity.
 //
 // These are the SITE brand values, not a private small-group palette. Until
 // 2026-07-31 the studio shipped its own cold slate (#33568f) and a separate
@@ -393,8 +384,9 @@ export function injectSmallGroupStyles(accent) {
     if (!ds) {
       ds = document.createElement("link");
       ds.id = "sg-designsystem-styles";
-      ds.rel = "stylesheet";
-      ds.href = "/assets/small-group-designsystem.css?v=20260731-pub1";
+      /** @type {HTMLLinkElement} */ (ds).rel = "stylesheet";
+      /** @type {HTMLLinkElement} */ (ds).href =
+        "/assets/small-group-designsystem.css?v=20260731-pub1";
       document.head.appendChild(ds);
     } else if (ds.parentNode === document.head) {
       document.head.appendChild(ds);

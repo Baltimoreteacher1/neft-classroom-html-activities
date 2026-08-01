@@ -1,11 +1,6 @@
 // @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
 // (see tsconfig.json); the marker is the debt, and removing it is the unit of
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
-// algebra-tiles-expand.js — "Expand It": turns an AUTHORED static distributive-
-// property figure into an interactive area-model / algebra-tiles builder for
-// expanding a(x + c) IN PLACE. It reads the exact same practice `visual` config
-// the static figure builder reads, so an existing item upgrades with zero
-// authoring changes and the static figure stays as the JS-off / print fallback.
 //
 // Design principle — SEE-WHY / NON-DESTRUCTIVE:
 //   The area model is drawn once and stays visible the whole time so the student

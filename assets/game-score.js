@@ -1,6 +1,3 @@
-// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
-// (see tsconfig.json); the marker is the debt, and removing it is the unit of
-// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 /* =============================================================================
  * game-score.js — the ONE place that turns gameplay into a game_scores row.
  * -----------------------------------------------------------------------------
@@ -57,7 +54,7 @@
       var s = document.querySelector('script[src="' + BRIDGE_SRC + '"]');
       if (!s) {
         s = document.createElement("script");
-        s.src = BRIDGE_SRC;
+        /** @type {HTMLScriptElement} */ (s).src = BRIDGE_SRC;
         document.body.appendChild(s);
       }
       s.addEventListener("load", function () {

@@ -1,10 +1,6 @@
 // @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
 // (see tsconfig.json); the marker is the debt, and removing it is the unit of
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
-// decimal-columns.js — Interactive vertical decimal addition / subtraction with
-// hands-on regrouping. The student sees two numbers stacked and aligned by the
-// decimal point (each place value in its own column, short numbers zero-padded so
-// the places line up) and works the problem the way they would on paper:
 //
 //   • Addition  → a "Carry" row above the top number. When a column's digits sum
 //     to 10 or more, the student writes the carried 1 (or 2) above the next

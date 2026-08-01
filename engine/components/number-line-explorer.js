@@ -1,14 +1,6 @@
 // @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
 // (see tsconfig.json); the marker is the debt, and removing it is the unit of
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
-// number-line-explorer.js — a hands-on horizontal number line for integers and
-// rational numbers. The student drags a point (pointer or arrow keys) and the
-// lab shows, live:
-//   • absolute value as a highlighted segment from 0 to the point, with the
-//     distance called out ( |-6| = 6, "6 units from zero" );
-//   • the opposite of the number, marked as a hollow point at −n;
-//   • in compare mode, a second point, which number is greater and why, and a
-//     side-by-side of their absolute values.
 //
 // This is the interactive absolute-value / integer tool: distance-from-zero is
 // something you SEE and move, not just a rule to memorize.

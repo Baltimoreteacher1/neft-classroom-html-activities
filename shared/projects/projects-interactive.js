@@ -1,6 +1,3 @@
-// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
-// (see tsconfig.json); the marker is the debt, and removing it is the unit of
-// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 /* ==========================================================================
    Neft Teacher — Projects Interactive Layer (shared)
    Makes the culminating projects feel alive without touching per-page logic:
@@ -120,10 +117,10 @@
     outs.forEach(function (out) {
       var obs = new MutationObserver(function () {
         var txt = (out.textContent || "").trim();
-        if (txt && txt !== out.dataset.pkiLast) {
-          out.dataset.pkiLast = txt;
+        if (txt && txt !== /** @type {HTMLElement} */ (out).dataset.pkiLast) {
+          /** @type {HTMLElement} */ (out).dataset.pkiLast = txt;
           out.classList.remove("pki-pop");
-          void out.offsetWidth; // restart animation
+          void (/** @type {HTMLElement} */ (out).offsetWidth); // restart animation
           out.classList.add("pki-pop");
         }
       });

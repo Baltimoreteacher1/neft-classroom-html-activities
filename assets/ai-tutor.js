@@ -1,6 +1,3 @@
-// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
-// (see tsconfig.json); the marker is the debt, and removing it is the unit of
-// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 /* Neft Teacher — AI Tutor client (additive, deploy-safe).
  *
  * Pairs with ai-tutor.css. Adds a floating, accessible tutor panel to any
@@ -380,7 +377,7 @@
           if (state.history.length > MAX_HISTORY * 2) {
             state.history = state.history.slice(-MAX_HISTORY * 2);
           }
-          celebrateIfAllowed(typing);
+          celebrateIfAllowed();
         } else if (res.status === 429) {
           addMessage("error", "You're asking quickly! Give it a few seconds and try again.");
         } else {

@@ -1,12 +1,6 @@
 // @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
 // (see tsconfig.json); the marker is the debt, and removing it is the unit of
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
-// ar-solid.js — "View in your space" WebXR augmented-reality companion for the
-// 3D solid explorer. Progressive enhancement only: the button renders *solely*
-// on devices that report immersive-ar + hit-test support (Android Chrome / AR
-// headsets). On desktop and iOS Safari (no WebXR AR) nothing is added, so the
-// existing on-screen 3D explorer is the complete experience there and there is
-// zero regression.
 //
 // three.js is loaded lazily from the vendored copy the first time AR is actually
 // launched, so its ~1.2 MB never touches the lesson bundle or non-AR devices.

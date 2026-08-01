@@ -1,6 +1,3 @@
-// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
-// (see tsconfig.json); the marker is the debt, and removing it is the unit of
-// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 /*!
  * lesson-shell-guard.js — friendly recovery card if a lesson app fails to boot.
  *
@@ -25,7 +22,10 @@
     "error",
     function (e) {
       // Track resource/script failures so we can show the card sooner.
-      if (e && (e.filename || (e.target && e.target.tagName === "SCRIPT"))) {
+      if (
+        e &&
+        (e.filename || (e.target && /** @type {HTMLElement} */ (e.target).tagName === "SCRIPT"))
+      ) {
         sawScriptError = true;
       }
     },

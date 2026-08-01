@@ -1,9 +1,6 @@
 // @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
 // (see tsconfig.json); the marker is the debt, and removing it is the unit of
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
-// Shared composition layer for differentiated 15–20 minute small-group lessons.
-// Lesson configs remain the content source of truth; focused modules own the
-// engagement interactions, math practice, and visual system.
 
 import { createRhythmCoach } from "./facilitation-rhythm.js";
 import { createGoDeeper } from "./go-deeper.js";

@@ -1,7 +1,6 @@
 // @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
 // (see tsconfig.json); the marker is the debt, and removing it is the unit of
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
-// small-group-room.js — the shared table.
 //
 // The studio's name promises four students working together; its code promised
 // nothing of the kind. State lived in localStorage under nt-sg:<lessonId>, the
@@ -117,7 +116,7 @@ export function createRoom(lessonId) {
       return true;
     },
 
-    /** @returns {string|null} an error code for display, or null on success. */
+    /** @returns {Promise<string|null>} an error code for display, or null on success. */
     async join(code) {
       const clean = String(code || "")
         .trim()

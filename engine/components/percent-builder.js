@@ -1,11 +1,6 @@
 // @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
 // (see tsconfig.json); the marker is the debt, and removing it is the unit of
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
-// percent-builder.js — Interactive "percent of a number" lab. A student types a
-// percent and a whole; the widget draws a double number line (0 → whole on top,
-// 0% → 100% on the bottom) with a marker at the chosen percent, and shows
-// p% of w = (p / 100) × w. Reinforces that "percent" means "out of 100" and that
-// finding a percent of a number is scaling along the same line.
 //
 // Pure SVG + DOM, no dependencies. Public API:
 //   renderPercentBuilder(container, cfg) -> { destroy }

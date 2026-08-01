@@ -24,7 +24,7 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
-const BASELINE = 128;
+const BASELINE = 89;
 
 const checked = execFileSync("git", ["ls-files", "assets", "engine", "shared"], {
   cwd: ROOT,

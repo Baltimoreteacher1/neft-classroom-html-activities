@@ -1,6 +1,3 @@
-// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
-// (see tsconfig.json); the marker is the debt, and removing it is the unit of
-// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 /* ==========================================================================
    Neft Teacher — Dot Plot Builder manipulative (self-contained)
    Drop a container on the page:
@@ -152,11 +149,12 @@
 
     function renderStats() {
       var n = data.length;
-      var mean = "—",
+      // Placeholders until there is data; they become numbers once computed.
+      var /** @type {string|number} */ mean = "—",
         median = "—",
         mode = "—",
-        range = "—",
-        mad = "—";
+        /** @type {string|number} */ range = "—",
+        /** @type {string|number} */ mad = "—";
       if (n) {
         var sorted = data.slice().sort(function (a, b) {
           return a - b;
