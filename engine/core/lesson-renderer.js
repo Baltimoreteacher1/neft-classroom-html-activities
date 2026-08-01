@@ -47,6 +47,7 @@ import { buildGradeCard } from "./grade.js";
 import { recommendedNext } from "./grade-emit.js";
 import { mountHintLadder } from "./hint-ladder.js";
 import { badgeName, phaseName, stackHtml, t } from "./i18n.js";
+import { attachImageZoom, isLightboxOpen } from "./image-zoom.js";
 import { interactiveVisualHost, mountInteractiveVisuals } from "./interactive-visual.js";
 import { mountLevel3Launch } from "./level3-launch.js";
 import { getLevel, levelOverride, mountLevelSelector } from "./levels.js";
@@ -57,6 +58,7 @@ import {
   normalizeAcademicWord,
   resolveNoticeWonderAcademicWord,
 } from "./notice-wonder-glossary.js";
+import { resolveObjectiveVisuals } from "./objective-visuals.js";
 import { studentFirstName, toThirdPersonObjective } from "./objective-voice.js";
 import { mountPeerExchange } from "./peer-exchange.js";
 import {
@@ -1270,80 +1272,11 @@ function renderRevealSlides(host, config, placements) {
 }
 
 // ── Click-to-zoom for lesson content images ─────────────────────────────────
-// Photo figures (Notice & Wonder, Reveal Math slides, word-problem images) open
-// in a shared, accessible full-screen lightbox on click / Enter / Space. The
-// overlay is created lazily on first use, so this does nothing until a student
-// actually enlarges an image.
-let _lessonLightbox = null;
-function ensureLessonLightbox() {
-  if (_lessonLightbox) return _lessonLightbox;
-  const lb = document.createElement("div");
-  lb.className = "lesson-lightbox";
-  lb.hidden = true;
-  lb.setAttribute("role", "dialog");
-  lb.setAttribute("aria-modal", "true");
-  lb.setAttribute("aria-label", "Enlarged image");
-  const big = document.createElement("img");
-  big.className = "lesson-lightbox-img";
-  big.alt = "";
-  const close = document.createElement("button");
-  close.type = "button";
-  close.className = "lesson-lightbox-close";
-  close.setAttribute("aria-label", "Close enlarged image");
-  close.textContent = "✕";
-  lb.append(big, close);
-  document.body.append(lb);
-  let lastFocus = null;
-  const hide = () => {
-    lb.hidden = true;
-    document.body.classList.remove("lesson-lightbox-open");
-    big.removeAttribute("src");
-    if (lastFocus && lastFocus.focus) {
-      try {
-        lastFocus.focus();
-      } catch {}
-    }
-  };
-  close.addEventListener("click", hide);
-  big.addEventListener("click", hide); // clicking the enlarged image closes it
-  lb.addEventListener("click", (e) => {
-    if (e.target === lb) hide(); // backdrop click
-  });
-  document.addEventListener("keydown", (e) => {
-    if (!lb.hidden && e.key === "Escape") hide();
-  });
-  _lessonLightbox = {
-    open(src, alt, opener) {
-      lastFocus = opener || null;
-      big.src = src;
-      big.alt = alt || "";
-      lb.hidden = false;
-      document.body.classList.add("lesson-lightbox-open");
-      setTimeout(() => {
-        try {
-          close.focus();
-        } catch {}
-      }, 0);
-    },
-  };
-  return _lessonLightbox;
-}
-function attachImageZoom(img) {
-  if (!img || img.dataset.zoomable === "1") return;
-  img.dataset.zoomable = "1";
-  img.classList.add("is-zoomable");
-  img.setAttribute("role", "button");
-  img.setAttribute("tabindex", "0");
-  if (!img.getAttribute("title")) img.setAttribute("title", "Click to enlarge");
-  const open = () => ensureLessonLightbox().open(img.currentSrc || img.src, img.alt, img);
-  img.addEventListener("click", open);
-  img.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      open();
-    }
-  });
-}
+// Photo figures (Notice & Wonder, Reveal Math slides, word-problem images) and
+// vocabulary illustrations open in a shared, accessible full-screen lightbox on
+// click / Enter / Space. The implementation lives in ./image-zoom.js so the
+// vocabulary surfaces that never load this file (the small-group word wall and
+// the generated vocab.html page) can use the very same affordance.
 
 // ── Notice & Wonder (Reveal data-context) ───────────────────────────────────
 // Opt-in card driven by `config.noticeAndWonder`. Rendered immediately after the
@@ -1853,6 +1786,10 @@ function openObjectiveTermPopup(entry, opts = {}) {
     img.src = resolveVocabImage(term, entry.image);
     img.alt = vocabImageAlt(title, entry.definition);
     img.hidden = false;
+    // Tap the picture to blow it up. The lightbox is a top-layer <dialog>, so it
+    // paints above this pop-up's z-index:1100 backdrop, and closing it returns
+    // focus to the picture rather than to the top of the document.
+    attachImageZoom(img);
   } else {
     img.removeAttribute("src");
     img.alt = "";
@@ -1887,7 +1824,10 @@ function openObjectiveTermPopup(entry, opts = {}) {
   document.body.classList.add("obj-popup-open");
   backdrop.querySelector(".obj-popup-close").focus();
   objectivePopupKeyHandler = (e) => {
-    if (e.key === "Escape") closeObjectivePopup();
+    // One Escape closes ONE thing. While the enlarged picture is open it owns
+    // the key; without this guard a single press dismissed the lightbox and the
+    // definition underneath it together.
+    if (e.key === "Escape" && !isLightboxOpen()) closeObjectivePopup();
   };
   document.addEventListener("keydown", objectivePopupKeyHandler);
 }
@@ -2097,57 +2037,11 @@ export function observeVocabTerms(container, vocab) {
 // it" text — never the objective sentence — because the objective may contain
 // tappable vocab-term buttons (linkifyObjectiveTerms), and a wrapping <label>
 // would otherwise toggle the checkbox when a student taps a term for its popup.
-function resolveContentVisualImg(config) {
-  if (config && config.contentVisualImg) return config.contentVisualImg;
-  const unit = config && config.unit;
-  if (unit === 5 || unit === 4) return "/assets/algebra_content.jpg";
-  return "/assets/content_with_poster.jpg";
-}
-
-function resolveLanguageVisualImg(config) {
-  if (config && config.languageVisualImg) return config.languageVisualImg;
-  return "/assets/lang_with_poster.jpg";
-}
-
-function resolveContentVisualCaption(config) {
-  if (config && config.contentVisualCaption) return config.contentVisualCaption;
-  const title = (config && config.title) || "the mathematical concept";
-  const unit = (config && config.unit) || 1;
-
-  if (unit === 1) {
-    return `A student actively finding factors and comparing common numbers on her desk grid mat to circle the greatest common factor (GCF).`;
-  }
-  if (unit === 2) {
-    return `A student dividing fraction bar strips on her desk grid mat to solve quotient problems.`;
-  }
-  if (unit === 3) {
-    return `A student plotting ratio points on double number line strips to calculate unit rates.`;
-  }
-  if (unit === 4) {
-    return `A student applying distributive tile arrays on her desk grid mat to evaluate and simplify algebraic expressions.`;
-  }
-  if (unit === 5) {
-    return `A student actively balancing an algebraic scale with variable blocks to isolate x.`;
-  }
-  if (unit === 6) {
-    return `A student laying flat the 3D prism into a 2D net on her desk grid mat to calculate surface area face dimensions.`;
-  }
-  if (unit === 7) {
-    return `A student plotting ordered pairs (x,y) across all 4 quadrants of the Cartesian grid mat.`;
-  }
-  if (unit === 8) {
-    return `A student drawing a 5-number summary box plot on a grid mat to analyze data distributions and median values.`;
-  }
-
-  return `A student actively demonstrating ${title} on her desk grid mat.`;
-}
-
-function resolveLanguageVisualCaption(config) {
-  if (config && config.languageVisualCaption) return config.languageVisualCaption;
-  const title = (config && config.title) || "math concepts";
-  return `Student partners pointing to key vocabulary callout badges for ${title} and using academic sentence frames.`;
-}
-
+// The picture under each goal card, its alt text and its caption all come from
+// engine/core/objective-visuals.js — see that file for why the old unit-number
+// caption ladder had to go (it described manipulatives that are not in any of
+// the three photographs, against a unit numbering that has since been re-cut).
+//
 // Renders the two "I can…" goal cards (Content + Language).
 //
 // `opts.review` switches the block into end-of-lesson mode (Phase 8): the goals
@@ -2169,10 +2063,7 @@ function renderObjectives(el, config, state, opts = {}) {
   const contentHtml = linkifyObjectiveTerms(phrase(resolveContentObjective(config)), vocab);
   const languageHtml = linkifyObjectiveTerms(phrase(resolveLanguageObjective(config)), vocab);
 
-  const contentImg = resolveContentVisualImg(config);
-  const languageImg = resolveLanguageVisualImg(config);
-  const contentCaption = resolveContentVisualCaption(config);
-  const languageCaption = resolveLanguageVisualCaption(config);
+  const visuals = resolveObjectiveVisuals(config);
 
   const card = (o) => `
     <div class="card ${o.cardClass} launch-objective">
@@ -2188,9 +2079,9 @@ function renderObjectives(el, config, state, opts = {}) {
       
       <!-- PUBLISHER-GRADE VISUAL MODEL CARD DIRECTLY BELOW OBJECTIVE TEXT -->
       <div class="visual-model-wrapper" style="margin-top:14px; margin-bottom:14px; border-radius:14px; overflow:hidden; border:1px solid rgba(0,0,0,0.12); box-shadow:0 6px 18px rgba(0,0,0,0.06); background:#0b0f19; cursor:zoom-in;">
-        <img src="${o.img}" alt="Visual Model Representation" style="width:100%; height:auto; display:block; cursor:zoom-in;" />
+        <img src="${o.img}" alt="${esc(o.alt)}" style="width:100%; height:auto; display:block; cursor:zoom-in;" />
         <div style="padding:10px 14px; background:#ffffff; border-top:1px solid #e2e8f0; font-size:13.5px; color:#0f172a; font-weight:700; line-height:1.45;">
-          ${o.icon} <strong>Visual Representation:</strong> ${o.caption} <span style="font-size:11px; opacity:0.85; margin-left:6px;">🔍 (Click to enlarge)</span>
+          ${o.icon} <strong>Visual Representation:</strong> ${esc(o.caption)} <span style="font-size:11px; opacity:0.85; margin-left:6px;">🔍 (Click to enlarge)</span>
         </div>
       </div>
 
@@ -2214,9 +2105,10 @@ function renderObjectives(el, config, state, opts = {}) {
       label: review ? "Content Objective — Achieved" : "Content Objective",
       key: "content",
       text: contentHtml,
-      img: contentImg,
+      img: visuals.content.src,
+      alt: visuals.content.alt,
       icon: "🎯",
-      caption: contentCaption,
+      caption: visuals.content.caption,
       checkLabel: review ? "Did it" : "Got it",
       checkAria: review
         ? `${who} can now do the content objective`
@@ -2231,9 +2123,10 @@ function renderObjectives(el, config, state, opts = {}) {
       label: review ? "Language Objective — Achieved" : "Language Objective",
       key: "language",
       text: languageHtml,
-      img: languageImg,
+      img: visuals.language.src,
+      alt: visuals.language.alt,
       icon: "🗣️",
-      caption: languageCaption,
+      caption: visuals.language.caption,
       checkLabel: review ? "Did it" : "Got it",
       checkAria: review
         ? `${who} can now do the language objective`

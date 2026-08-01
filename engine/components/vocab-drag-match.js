@@ -28,24 +28,34 @@ function injectVocabDragMatchStyles() {
       outline-offset: 2px;
     }
 
-    /* Layout aid (not motion): on narrow screens collapse the three-column
-       term → arrow → definition board into a single full-width stack so cards
-       and drop targets stay big and tappable. Arrows rotate to point downward. */
+    /* Long terms and definitions wrap instead of widening their track, so the
+       board never forces the page to scroll sideways. */
+    .vocab-dm-term,
+    .vocab-dm-def {
+      min-width: 0;
+      overflow-wrap: anywhere;
+      hyphens: auto;
+    }
+
+    /* Layout aid (not motion): TWO COLUMNS ALWAYS — terms on one side,
+       definitions on the other, at every viewport width and every zoom level.
+       This used to collapse to a single full-width stack below 560px, which put
+       every definition underneath every term and destroyed the left↔right
+       pairing the activity is built on. Instead the decorative arrow column is
+       dropped (it is redundant once the two columns sit side by side) and the
+       cards get tighter padding, keeping a 44px+ tap target. */
     @media (max-width: 560px) {
       .vdm-board {
-        grid-template-columns: 1fr !important;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+        gap: var(--sp-2, 8px) !important;
       }
       .vdm-arrow-col {
-        flex-direction: row !important;
-        justify-content: center;
-        padding-top: 0 !important;
-      }
-      .vdm-arrow {
-        transform: rotate(90deg);
+        display: none !important;
       }
       .vocab-dm-term,
       .vocab-dm-def {
-        font-size: 1rem;
+        font-size: 0.95rem;
+        padding: 10px 12px !important;
       }
     }
 
@@ -137,10 +147,10 @@ export function renderVocabDragMatch(container, { terms, onComplete }) {
   const board = document.createElement("div");
   board.className = "vdm-board";
   board.style.cssText =
-    "display:grid; grid-template-columns:1fr 40px 1fr; gap:var(--sp-3); align-items:start;";
+    "display:grid; grid-template-columns:minmax(0, 1fr) 40px minmax(0, 1fr); gap:var(--sp-3); align-items:start;";
 
   const termsCol = document.createElement("div");
-  termsCol.style.cssText = "display:flex; flex-direction:column; gap:var(--sp-2);";
+  termsCol.style.cssText = "display:flex; flex-direction:column; gap:var(--sp-2); min-width:0;";
 
   const arrowCol = document.createElement("div");
   arrowCol.className = "vdm-arrow-col";
@@ -148,7 +158,7 @@ export function renderVocabDragMatch(container, { terms, onComplete }) {
     "display:flex; flex-direction:column; gap:var(--sp-2); align-items:center; padding-top:12px;";
 
   const defsCol = document.createElement("div");
-  defsCol.style.cssText = "display:flex; flex-direction:column; gap:var(--sp-2);";
+  defsCol.style.cssText = "display:flex; flex-direction:column; gap:var(--sp-2); min-width:0;";
 
   let selectedTerm = null;
   let selectedTermEl = null;

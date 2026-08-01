@@ -18,12 +18,29 @@ import "./flagship.css";
 // The editorial design layer is now loaded engine-wide by createApp
 // (engine/styles/editorial.css); flagship inherits it like every lesson.
 import { stackHtml, t } from "../../core/i18n.js";
+import { isToolsMode } from "../../core/tools-mode.js";
 
 const PHASE_KEYS = ["launch", "vocab", "explore", "practice", "connect", "reflect"];
 
 export function bootFlagship(config) {
   const fl = config.flagship || {};
   const scenes = normalizeScenes(fl.scenes);
+
+  // Interactive Tools (?mode=tools) is a standalone practice surface with no
+  // phases — so none of the flagship narrative shell applies to it. Hand it
+  // straight to the engine, which renders the tools page and returns.
+  //
+  // Without this, a flagship lesson's tools link was reachable only THROUGH the
+  // mission briefing: bootFlagship showed the full-screen "Mission Briefing"
+  // overlay first and did not call bootLesson (where the isToolsMode() check
+  // lives) until the student pressed Start. A student following the 🧰 link
+  // landed on a story screen for a lesson they were not starting, and the scene
+  // HUD + completion watcher then attached to a page that never navigates
+  // phases. The 10 flagship lessons were the only ones with that gate.
+  if (isToolsMode()) {
+    bootLesson(config);
+    return;
+  }
 
   // If the flagship block defines a simulation, route it into the Explore
   // phase by overriding config.explore.type (additive — only when provided).

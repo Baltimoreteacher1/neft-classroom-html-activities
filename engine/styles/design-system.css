@@ -4251,58 +4251,11 @@ html.projector .main {
   border-radius: var(--radius-md);
   background: var(--card);
 }
-/* Click-to-zoom affordance for lesson content images. */
-.is-zoomable {
-  cursor: zoom-in;
-}
-.is-zoomable:focus-visible {
-  outline: 3px solid var(--teal);
-  outline-offset: 2px;
-}
-.lesson-lightbox {
-  position: fixed;
-  inset: 0;
-  z-index: 10000;
-  background: rgba(15, 23, 42, 0.86);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  box-sizing: border-box;
-}
-.lesson-lightbox[hidden] {
-  display: none;
-}
-.lesson-lightbox-img {
-  max-width: 96vw;
-  max-height: 92vh;
-  width: auto;
-  height: auto;
-  border-radius: 8px;
-  background: #fff;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
-  cursor: zoom-out;
-}
-.lesson-lightbox-close {
-  position: absolute;
-  top: 16px;
-  right: 20px;
-  width: 44px;
-  height: 44px;
-  border: none;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.2);
-  color: #fff;
-  font-size: 1.3rem;
-  line-height: 1;
-  cursor: pointer;
-}
-.lesson-lightbox-close:hover {
-  background: rgba(255, 255, 255, 0.34);
-}
-body.lesson-lightbox-open {
-  overflow: hidden;
-}
+/* Click-to-zoom affordance for lesson content images: the `.is-zoomable` /
+   `.lesson-lightbox` rules are injected at runtime by engine/core/image-zoom.js,
+   which is the single source of truth for them. They must NOT be duplicated
+   here — the small-group pages and the generated vocab.html page never load this
+   stylesheet, and two copies drift. */
 /* The notice + wonder boxes sit side by side in the remaining two columns. */
 .nw-grid {
   display: grid;

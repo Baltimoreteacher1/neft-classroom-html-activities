@@ -9,6 +9,14 @@
  * phrasings, every set must be substantial and carry a fill-in blank, and no two
  * different lessons may share a set (a shared set means someone pasted generic
  * copy instead of writing about the actual image).
+ *
+ * The opposite failure is just as bad and is what the corpus drifted into next:
+ * starters that are complete observations. "I notice the route length is a mixed
+ * number but each segment is a fraction" is not a sentence starter — it is the
+ * noticing, done for the student, and there is nothing left to say out loud. A
+ * starter hands over the opening and the grammar and stops. So every starter is
+ * also held to a SHAPE contract: it opens with its frame, it is short enough to
+ * read off a chip in one breath, and it ENDS in the blank the student fills.
  */
 import assert from "node:assert/strict";
 import { readdirSync, readFileSync, statSync } from "node:fs";
@@ -96,6 +104,50 @@ assert.ok(configs.length > 150, `expected the whole lesson corpus, found ${confi
 }
 
 {
+  // THE STARTER CONTRACT. A starter opens the sentence and then gets out of the
+  // way. Each clause below is one way the corpus has actually broken:
+  //   opener   — the chip is captioned "I notice…"/"I wonder…", so a starter
+  //              that opens any other way reads as a stray sentence.
+  //   blank    — no ___ means nothing was left for the student.
+  //   trailing — a blank in the MIDDLE lets the author finish the thought after
+  //              it ("I notice the route is ___ miles but each segment is a
+  //              fraction"), which is the defect wearing a blank as a disguise.
+  //   length   — 12-19 words was the old median/max, and every one of those was
+  //              a full explanation. Nine is the ceiling; most sit at 6-8.
+  //   distinct — three identical frames in one array is one frame, not three.
+  const LIMIT = 9;
+  const FRAMES = { noticeStarters: "I notice", wonderStarters: "I wonder" };
+  const offenders = [];
+  let checked = 0;
+  for (const { dir, doc } of configs) {
+    for (const [key, opener] of Object.entries(FRAMES)) {
+      const arr = doc.noticeAndWonder[key] || [];
+      const seen = new Set();
+      for (const s of arr) {
+        if (typeof s !== "string") continue;
+        checked += 1;
+        const where = `${dir}:${key}`;
+        if (!s.startsWith(opener)) offenders.push(`${where} → must open "${opener}…": "${s}"`);
+        if (!s.includes("___")) offenders.push(`${where} → no ___ for the student: "${s}"`);
+        else if (!/___\s*[.?!]?$/.test(s)) {
+          offenders.push(`${where} → the blank must come last, not mid-sentence: "${s}"`);
+        }
+        const words = s.trim().split(/\s+/).length;
+        if (words > LIMIT) {
+          offenders.push(`${where} → ${words} words (max ${LIMIT}) — that is an explanation: "${s}"`);
+        }
+        if (seen.has(s)) offenders.push(`${where} → repeats "${s}"`);
+        seen.add(s);
+      }
+    }
+  }
+  assert.deepEqual(offenders, [], `starters are not sentence starters:\n${offenders.join("\n")}`);
+  // A sweep that silently matches nothing reports a clean corpus forever.
+  assert.ok(checked > 1000, `expected the whole corpus of starters, checked only ${checked}`);
+  ok(`every starter opens its frame, stays ≤${LIMIT} words, and ends in ___ (${checked} starters)`);
+}
+
+{
   // Variants of one lesson share an image, so they should share the starters.
   // Different lessons must not — an identical set across two lessons means the
   // copy is generic, which is exactly the bug this test exists to prevent.
@@ -150,4 +202,5 @@ assert.ok(configs.length > 150, `expected the whole lesson corpus, found ${confi
   ok("every starter set is grounded in its own lesson's prompt, title, or vocabulary");
 }
 
-console.log(`\nlesson notice/wonder starters: ${passed}/4 checks passed`);
+console.log(`\nlesson notice/wonder starters: ${passed}/5 checks passed`);
+assert.equal(passed, 5, `expected 5 checks to run, ${passed} did`);

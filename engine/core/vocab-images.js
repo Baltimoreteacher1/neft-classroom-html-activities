@@ -1,3 +1,5 @@
+import { attachImageZoom } from "./image-zoom.js";
+
 const BASE = "/assets/vocab-images";
 
 export function slugify(term) {
@@ -414,6 +416,12 @@ export function configureVocabImage(image, word, { eager = false } = {}) {
     }
   };
   image.src = primary;
+  // Every vocabulary picture a student can see enlarges on click / Enter / Space.
+  // Doing it here rather than at each call site is what makes the small-group
+  // word wall AND its <dialog> pop-up behave like the glossary picture in the
+  // interactive lesson. The lightbox is a top-layer <dialog>, so it paints above
+  // the small-group pop-up instead of behind it.
+  attachImageZoom(image);
   return image;
 }
 

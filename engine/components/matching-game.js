@@ -12,12 +12,17 @@ function injectStyle() {
   if (MG_STYLE_INJECTED) return;
   MG_STYLE_INJECTED = true;
   const css = `
-  .mg-board { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-3, 12px); align-items:start; }
-  .mg-col { display:flex; flex-direction:column; gap:var(--sp-2, 8px); }
+  /* TWO COLUMNS ALWAYS — terms on the left, matches on the right, at every
+     viewport width and every browser zoom level. minmax(0, 1fr) rather than a
+     bare 1fr so a long term cannot push its track past the container and give
+     the page a horizontal scrollbar. */
+  .mg-board { display:grid; grid-template-columns:minmax(0, 1fr) minmax(0, 1fr); gap:var(--sp-3, 12px); align-items:start; }
+  .mg-col { display:flex; flex-direction:column; gap:var(--sp-2, 8px); min-width:0; }
   .mg-col-head { font-size:0.78rem; font-weight:800; letter-spacing:0.04em; text-transform:uppercase; color:var(--muted, #5b6773); margin:0 0 2px 2px; }
-  .mg-item { width:100%; text-align:left; font:inherit; font-weight:700; font-size:1rem; line-height:1.3;
+  .mg-item { width:100%; min-width:0; text-align:left; font:inherit; font-weight:700; font-size:1rem; line-height:1.3;
     min-height:54px; padding:12px 14px; border:2px solid var(--line, #d8dfdc); border-radius:var(--radius-md, 12px);
     background:var(--surface, #fff); color:var(--ink, #17202a); cursor:pointer; display:flex; align-items:center;
+    overflow-wrap:anywhere; hyphens:auto;
     transition:border-color .15s ease, background .15s ease, transform .12s ease, box-shadow .15s ease; }
   .mg-item:hover:not([data-matched]) { border-color:var(--teal, #0f766e); box-shadow:0 4px 14px rgba(15,118,110,0.14); }
   .mg-item:focus-visible { outline:3px solid rgba(15,118,110,0.35); outline-offset:2px; }
@@ -26,7 +31,10 @@ function injectStyle() {
   .mg-item[data-matched]::after { content:"✓"; margin-left:auto; font-weight:900; }
   .mg-item[data-wrong] { border-color:var(--danger, #dc2626); background:#fdeced; animation:mg-shake .32s ease; }
   @keyframes mg-shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
-  @media (max-width:520px){ .mg-board{ grid-template-columns:1fr 1fr; gap:8px; } .mg-item{ font-size:0.9rem; min-height:48px; padding:10px; } }
+  /* Narrow / zoomed-in: tighten the gutter and padding, keep BOTH columns and a
+     44px+ tap target. Never collapse to one column — a matcher that stacks the
+     answers under the prompts stops being a matcher. */
+  @media (max-width:520px){ .mg-board{ grid-template-columns:minmax(0, 1fr) minmax(0, 1fr); gap:8px; } .mg-item{ font-size:0.9rem; min-height:48px; padding:10px; } }
   @media (prefers-reduced-motion:reduce){ .mg-item{ transition:none } .mg-item[data-wrong]{ animation:none } }
   `;
   const style = document.createElement("style");

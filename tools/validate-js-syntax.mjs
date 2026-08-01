@@ -62,7 +62,10 @@ function parseError(src, { esm }) {
   if (esm) {
     // vm can't parse ESM without an experimental flag, so shell out to
     // `node --check`, which understands .mjs. Only ESM pays this cost.
-    const tmp = path.join(ROOT, ".js-syntax-check.mjs");
+    // Per-process temp name: two concurrent runs sharing one fixed path race on
+    // the write/unlink and report bogus "Cannot find module" errors against
+    // whichever unrelated file happened to be mid-check.
+    const tmp = path.join(ROOT, `.js-syntax-check.${process.pid}.mjs`);
     try {
       fs.writeFileSync(tmp, src);
       execFileSync(process.execPath, ["--check", tmp], { stdio: "pipe" });
