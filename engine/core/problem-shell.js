@@ -3,6 +3,7 @@
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 
 import { renderMathText } from "./math-typography.js";
+import { renderConversionChip, hasConversionFacts } from "./conversion-chart.js";
 
 const TYPE_LABELS = {
   "multiple-choice": "Multiple Choice",
@@ -29,7 +30,7 @@ export function problemTypeLabel(def = {}) {
 /**
  * Create a premium problem card. Returns { card, body, coinSlot, setResult }.
  */
-export function createProblemCard({ number, total, tier, typeLabel, stem } = {}) {
+export function createProblemCard({ number, total, tier, typeLabel, stem, hasConversionChart } = {}) {
   const card = document.createElement("article");
   card.className = "problem-card";
   card.setAttribute("aria-label", `Problem ${number} of ${total}`);
@@ -64,6 +65,10 @@ export function createProblemCard({ number, total, tier, typeLabel, stem } = {})
     typeEl.className = "problem-type-badge";
     typeEl.textContent = typeLabel;
     right.append(typeEl);
+  }
+
+  if (hasConversionChart || hasConversionFacts(stem)) {
+    renderConversionChip(right, { label: "Conversion Chart", icon: "📋" });
   }
 
   const coinSlot = document.createElement("span");

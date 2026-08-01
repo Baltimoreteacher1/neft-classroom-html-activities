@@ -89,10 +89,20 @@ h4 {
 }
 
 /* ── App Layout ── */
+/* `--nt-rail-w` is the phase rail's width, declared once here and mirrored by
+   every breakpoint below. Bottom-LEFT floating chrome (minimap HUD, teacher
+   "Clear answers" FAB) offsets by it so it docks beside the rail instead of on
+   top of it — a fixed pill at left:16 sat over the phase buttons and hid the
+   section wording and number badge of whichever phase happened to be at that
+   scroll position (reported 2026-08-01: "Launch" unreadable while open). */
+:root {
+  --nt-rail-w: 300px;
+}
+
 .app {
   display: grid;
   /* 300px (was 260) — larger, more readable phase rail (per Joel 2026-07-20) */
-  grid-template-columns: 300px minmax(0, 1fr);
+  grid-template-columns: var(--nt-rail-w) minmax(0, 1fr);
   min-height: 100vh;
 }
 
@@ -1430,8 +1440,11 @@ body.obj-popup-open {
 }
 
 @media (min-width: 769px) {
+  body.nt-sidebar-collapsed {
+    --nt-rail-w: 76px;
+  }
   body.nt-sidebar-collapsed .app {
-    grid-template-columns: 76px minmax(0, 1fr);
+    grid-template-columns: var(--nt-rail-w) minmax(0, 1fr);
   }
   body.nt-sidebar-collapsed .app .sidebar {
     padding: var(--sp-6) 10px;
@@ -1469,6 +1482,10 @@ body.obj-popup-open {
 
 /* ── Mobile / Tablet ── */
 @media (max-width: 768px) {
+  /* Rail stacks above the lesson, so bottom-left chrome has no rail to clear. */
+  :root {
+    --nt-rail-w: 0px;
+  }
   .nt-sb-toggle {
     display: none;
   }
@@ -1556,8 +1573,11 @@ body.obj-popup-open {
    is declared after the max-width:768px stack rule above, would override it —
    pinning a 220px sidebar on phones and squeezing content to a sliver. */
 @media (min-width: 769px) and (max-width: 1100px) {
+  :root {
+    --nt-rail-w: 220px;
+  }
   .app {
-    grid-template-columns: 220px minmax(0, 1fr);
+    grid-template-columns: var(--nt-rail-w) minmax(0, 1fr);
   }
   .main {
     padding: var(--sp-5);
@@ -4979,13 +4999,20 @@ html.nt-extra-fullpage-open body {
   background: #fef2f2;
 }
 
+/* Minimap HUD — the phase-dot pill. app.js sets everything BUT `left`; the
+   offset lives here so the pill docks beside the phase rail rather than over
+   it (see --nt-rail-w). */
+.minimap-hud {
+  left: calc(var(--nt-rail-w, 0px) + 16px);
+}
+
 /* Teacher-only, compact "Clear answers" control. A small round 🧹 icon
    bottom-LEFT, just above the minimap HUD (bottom:16), that opens a popover to
    clear the current page, selected pages, or all pages. Teacher-mode only — the
    module never mounts it for students. See engine/core/teacher-clear.js. */
 .nt-teacher-clear {
   position: fixed;
-  left: 16px;
+  left: calc(var(--nt-rail-w, 0px) + 16px);
   bottom: 72px;
   z-index: 9998;
 }

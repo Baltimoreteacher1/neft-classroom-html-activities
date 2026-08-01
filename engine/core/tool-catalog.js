@@ -32,6 +32,24 @@
  * @type {Record<string, {name:string, nameEs?:string, purpose:string, purposeEs?:string, howTo:string[], tryThis:string[]}>}
  */
 export const TOOL_CATALOG = {
+  "conversion-chart": {
+    name: "Conversion Chart",
+    nameEs: "Tabla de conversiones",
+    purpose:
+      "Look up measurement conversion facts for customary units, metric units, time, and fraction/decimal/percent benchmarks.",
+    purposeEs:
+      "Consulta los datos de conversión de medidas para el sistema usual, métrico, tiempo y equivalencias de fracciones/decimales/porcentajes.",
+    howTo: [
+      "Select a category tab (Customary, Metric, Time, or Percents).",
+      "Type a unit name in the filter box to quickly find your fact.",
+      "Use the Unit Conversion Check tool to test conversion factors.",
+    ],
+    tryThis: [
+      "Find how many inches are in 1 yard.",
+      "Find how many milliliters equal 1 liter.",
+      "Look up the percent equivalent of 3/4.",
+    ],
+  },
   // ── Number system ────────────────────────────────────────────────────────
   "factor-tree-lab": {
     name: "Factor Tree Lab",

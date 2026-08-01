@@ -31,6 +31,7 @@
 
 import { toolMeta } from "./tool-catalog.js";
 import { buildToolCard, collectTools } from "./tools-mode.js";
+import { renderConversionChip, hasConversionFacts } from "./conversion-chart.js";
 
 const STYLE_ID = "nt-tool-drawer-style";
 const CSS = `
@@ -267,6 +268,9 @@ export function mountToolDrawer(config, { panels = [], hero = null } = {}) {
     chip.textContent = tools.length === 1 ? "Open the tool" : "Open the tools";
     chip.addEventListener("click", () => drawer.open(tools, chip, "Math Tools"));
     row.append(label, hint, chip);
+    if (hasConversionFacts(config)) {
+      renderConversionChip(row, { label: "Conversion Chart", icon: "📋" });
+    }
     hero.appendChild(row);
     points += 1;
   }

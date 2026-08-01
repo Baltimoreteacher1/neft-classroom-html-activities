@@ -1038,7 +1038,10 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
   minimapHUD.style.cssText =
     // Bottom-LEFT: the bottom-right corner belongs to the Save/Resume pill
     // and the next-phase button (see the dock contract in design-system.css).
-    "position:fixed; bottom:16px; left:16px; background:rgba(255,255,255,0.85); backdrop-filter:blur(12px); border:1px solid rgba(0,0,0,0.1); border-radius:50px; padding:10px 14px; display:flex; gap:8px; z-index:9999; box-shadow:0 10px 30px rgba(0,0,0,0.15); transition:0.3s;";
+    // `left` is deliberately NOT set here — design-system.css offsets it past
+    // the phase rail (--nt-rail-w) so the pill cannot cover a phase button's
+    // label. An inline left would beat that rule and re-break it.
+    "position:fixed; bottom:16px; background:rgba(255,255,255,0.85); backdrop-filter:blur(12px); border:1px solid rgba(0,0,0,0.1); border-radius:50px; padding:10px 14px; display:flex; gap:8px; z-index:9999; box-shadow:0 10px 30px rgba(0,0,0,0.15); transition:0.3s;";
   document.body.append(minimapHUD);
 
   function updateMinimap() {

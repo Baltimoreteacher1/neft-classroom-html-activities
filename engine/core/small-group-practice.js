@@ -4,6 +4,7 @@ import { mountReasoningReader } from "./small-group-reasoning.js";
 import { createRubricDetails } from "./small-group-rubric.js";
 import { bi, biHtml, celebrate, el, esc, speak } from "./small-group-ui.js";
 import { appendVisualPractice } from "./small-group-visual-practice.js";
+import { renderConversionChip, hasConversionFacts } from "./conversion-chart.js";
 
 const firstHint = (item) => item.hints?.[0] || item.hint || null;
 
@@ -38,11 +39,13 @@ function itemStem(item) {
   return item.stem || item.title || item.instructions || item.prompt || "Try this problem.";
 }
 
-function questionCard(index, stem, stemEs) {
+function questionCard(index, stem, stemEs, item = {}) {
   const card = el("div", "prob");
-  card.appendChild(
-    el("p", "q", `<span class="pn">${index + 1}</span><span>${bi(stem, stemEs)}</span>`),
-  );
+  const p = el("p", "q", `<span class="pn">${index + 1}</span><span>${bi(stem, stemEs)}</span>`);
+  if (item.hasConversionChart || hasConversionFacts(stem) || hasConversionFacts(item)) {
+    renderConversionChip(p, { label: "Conversion Chart", icon: "📋" });
+  }
+  card.appendChild(p);
   return card;
 }
 
