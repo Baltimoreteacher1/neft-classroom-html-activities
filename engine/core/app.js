@@ -628,11 +628,9 @@ function showIdentityScreen(root, config) {
   root.append(screen);
 
   // Cover objectives share the Launch/Objectives glossary popups: tapping an
-  // underlined vocab word opens the same EN/ES explanation card — the meaning
-  // only, since on an objective the picture belongs to the visual-model card.
-  wireObjectiveTermPopups(screen, augmentVocabWithGlossary(config.vocabulary), {
-    hideImage: true,
-  });
+  // underlined vocab word opens the same EN/ES explanation card — definition in
+  // English and Spanish plus the term's illustration.
+  wireObjectiveTermPopups(screen, augmentVocabWithGlossary(config.vocabulary));
 
   mountWelcomeGoogleSlidesLink(
     config.lessonId,
@@ -1416,7 +1414,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       // Make the underlined vocab terms tap-to-open the glossary popup here too,
       // exactly like the Launch objectives (shared engine machinery) —
       // definition only; the objective's picture opens from the picture itself.
-      wireObjectiveTermPopups(el, objectiveVocab, { hideImage: true });
+      wireObjectiveTermPopups(el, objectiveVocab);
 
       // Persist the before/after self-check on this device.
       const objKey = "nt-obj:" + config.lessonId;

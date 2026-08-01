@@ -51,7 +51,7 @@ import { attachImageZoom, isLightboxOpen } from "./image-zoom.js";
 import { interactiveVisualHost, mountInteractiveVisuals } from "./interactive-visual.js";
 import { mountLevel3Launch } from "./level3-launch.js";
 import { getLevel, levelOverride, mountLevelSelector } from "./levels.js";
-import { augmentVocabWithGlossary, surfaceMatchesEntry } from "./math-glossary.js";
+import { augmentVocabWithGlossary } from "./math-glossary.js";
 import { renderMathText } from "./math-typography.js";
 import { diagnoseChoice } from "./misconceptions.js";
 import {
@@ -90,6 +90,7 @@ import {
   tapeDiagramSVG,
 } from "./visual-figures.js";
 import resolveVocabImage, { hasRealVocabImage, vocabImageAlt } from "./vocab-images.js";
+import { buildVocabMatcher } from "./vocab-match.js";
 import { mountWodbOpener } from "./wodb.js";
 import { deriveWorkedSteps } from "./worked-steps.js";
 
@@ -1663,11 +1664,6 @@ function renderLaunchHeader(el, state, config) {
   });
 }
 
-// Escape a string for safe use inside a RegExp.
-function escapeRegExp(s) {
-  return String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
 // Underline every lesson-vocabulary term that appears inside an objective and
 // turn it into a tap-to-open button. `escapedText` is the already-HTML-escaped
 // objective string (from resolveContentObjective / resolveLanguageObjective);
@@ -1677,34 +1673,17 @@ function escapeRegExp(s) {
 // present in the objective are simply left untouched.
 export function linkifyObjectiveTerms(escapedText, vocab) {
   if (!escapedText || !Array.isArray(vocab) || !vocab.length) return escapedText;
-  // Only linkify terms that actually have something to show in the popup —
-  // otherwise students tap an underlined word and get an empty/dead popup. A
-  // term needs a definition (EN or ES) or an authored visual/example to qualify.
-  const hasPopupContent = (v) => !!(v && (v.definition || v.definitionEs || v.visual || v.example));
-  // Skip very short terms to avoid noisy matches inside ordinary words — except
-  // acronym entries (LCM, SA…), which are matched case-sensitively and so are
-  // safe at two letters.
-  const entries = vocab
-    .map((v, i) => ({ i, term: String((v && v.term) || "").trim() }))
-    .filter((e) => (e.term.length > 2 || vocab[e.i]?.caseSensitive) && hasPopupContent(vocab[e.i]));
-  if (!entries.length) return escapedText;
-  // Normalize for lookup: lowercase and drop a single trailing plural "s".
-  const norm = (s) => s.toLowerCase().replace(/s$/, "").trim();
-  const lookup = new Map();
-  for (const e of entries) {
-    if (!lookup.has(norm(e.term))) lookup.set(norm(e.term), e.i);
-  }
-  // Longest term first so "composite number" wins over "number".
-  const alt = [...entries]
-    .sort((a, b) => b.term.length - a.term.length)
-    .map((e) => escapeRegExp(e.term))
-    .join("|");
-  const re = new RegExp(`\\b(?:${alt})(?:es|s)?\\b`, "gi");
+  // Same index the phase bodies use (engine/core/vocab-match.js): whole terms,
+  // explicit `aliases`, the auto-derived short forms ("prime", "commutative"),
+  // and plural heads including "-y" → "-ies". An objective is where a lesson is
+  // MOST likely to write a term in its natural short form, so the naive
+  // whole-term match this used to do left the goal card's key words dead.
+  const matcher = buildVocabMatcher(vocab);
+  if (!matcher) return escapedText;
+  const re = matcher.createRegex();
   const linked = escapedText.replace(re, (match) => {
-    const idx = lookup.has(norm(match)) ? lookup.get(norm(match)) : -1;
+    const idx = matcher.resolveIndex(match);
     if (idx < 0) return match;
-    // Acronym entries only match their exact uppercase form.
-    if (!surfaceMatchesEntry(match, vocab[idx])) return match;
     return `<button type="button" class="obj-term" data-term-idx="${idx}" aria-haspopup="dialog">${match}</button>`;
   });
   // Glue trailing punctuation to the term: buttons are atomic inline boxes,
@@ -1750,7 +1729,7 @@ function getObjectivePopup() {
   return backdrop;
 }
 
-function openObjectiveTermPopup(entry, opts = {}) {
+function openObjectiveTermPopup(entry) {
   if (!entry) return;
   const backdrop = getObjectivePopup();
   const term = String(entry.term || "").trim();
@@ -1777,11 +1756,14 @@ function openObjectiveTermPopup(entry, opts = {}) {
   // definition but no image, and would otherwise fall back to the generic "#"
   // number-category tile — an unrelated picture. In that case hide the image and
   // let the definition stand alone.
-  // `opts.hideImage` suppresses the picture entirely: on the objective cards the
-  // picture belongs to the visual-model card below the goal (click IT to enlarge),
-  // so tapping an underlined word there should give the meaning and nothing else.
+  // The objective cards used to suppress this picture on the theory that the
+  // goal's own visual-model card was picture enough. It read as a bug: the term
+  // has a drawing (commutative-property.svg and friends are dedicated art), the
+  // popup is a modal over the card, and a definition-only popup on a goal looked
+  // broken next to the same word's illustrated popup in the phase body. The
+  // picture now rides along everywhere the term actually has one.
   const img = backdrop.querySelector(".obj-popup-img");
-  const showImg = !opts.hideImage && hasRealVocabImage(term, entry.image);
+  const showImg = hasRealVocabImage(term, entry.image);
   if (showImg) {
     img.src = resolveVocabImage(term, entry.image);
     img.alt = vocabImageAlt(title, entry.definition);
@@ -1847,10 +1829,12 @@ function closeObjectivePopup() {
 }
 
 // Delegate clicks on underlined objective terms to the shared glossary popup.
-// Pass `{ hideImage: true }` on the objective cards: the goal already carries its
-// own visual-model picture (click the picture to enlarge it), so an underlined
-// word there opens the meaning only — two competing pictures confused students.
-export function wireObjectiveTermPopups(block, vocab, opts = {}) {
+// Every surface — goal cards, cover screen, review restatement, phase bodies —
+// opens the SAME card: EN/ES definition plus the term's illustration when it has
+// a real one (see openObjectiveTermPopup). The objective cards used to suppress
+// the picture; that made the goal card's words the only place on the site where
+// a vocab popup had no image.
+export function wireObjectiveTermPopups(block, vocab) {
   if (!block.querySelector(".obj-term")) return;
   block.addEventListener("click", (e) => {
     const btn = e.target.closest(".obj-term");
@@ -1864,7 +1848,7 @@ export function wireObjectiveTermPopups(block, vocab, opts = {}) {
     // handler — with the picture — and the picture won because it ran last.
     e.stopPropagation();
     const idx = Number(btn.dataset.termIdx);
-    if (Number.isInteger(idx)) openObjectiveTermPopup(vocab[idx], opts);
+    if (Number.isInteger(idx)) openObjectiveTermPopup(vocab[idx]);
   });
 }
 
@@ -1885,56 +1869,12 @@ const VOCAB_BODY_EXCLUSIONS =
 export function underlineVocabTerms(container, vocab) {
   if (!container) return;
   const list = Array.isArray(vocab) ? vocab : [];
-  const hasPopupContent = (v) => !!(v && (v.definition || v.definitionEs || v.visual || v.example));
-  // Acronym entries (LCM, GCF, SA…) are matched case-sensitively, so they are
-  // allowed below the 3-character floor that keeps ordinary short words out.
-  const entries = list
-    .map((v, i) => ({ i, term: String((v && v.term) || "").trim() }))
-    .filter((e) => (e.term.length > 2 || list[e.i]?.caseSensitive) && hasPopupContent(list[e.i]));
-  if (!entries.length) return;
-  const norm = (s) => s.toLowerCase().replace(/s$/, "").trim();
-  const lookup = new Map();
-  for (const e of entries) {
-    if (!lookup.has(norm(e.term))) lookup.set(norm(e.term), e.i);
-  }
-
-  // Also wire short natural surface forms of a term so a math word still opens
-  // its glossary popup when it appears on its own — e.g. "prime"/"composite" for
-  // the vocab terms "Prime number"/"Composite number". Two sources:
-  //   1. an explicit `aliases: [...]` array on the vocab entry (full control), and
-  //   2. an auto-derived modifier for two-word "<modifier> number(s)" terms,
-  //      limited to a curated allowlist of unambiguously-mathematical modifiers
-  //      so common adjectives ("whole", "even", "mixed") are never linked inside
-  //      ordinary sentences. The "number(s)" head requirement also disambiguates
-  //      (standalone "prime" → "Prime number", not "Prime factorization").
-  const SAFE_TERM_MODIFIERS = new Set(["prime", "composite", "rational", "irrational"]);
-  const surfaces = entries.map((e) => ({ surface: e.term, i: e.i }));
-  const addAlias = (surface, i) => {
-    const s = String(surface || "").trim();
-    if (s.length <= 2) return;
-    const key = norm(s);
-    if (lookup.has(key)) return; // never override a real term sharing this key
-    lookup.set(key, i);
-    surfaces.push({ surface: s, i });
-  };
-  for (const e of entries) {
-    const v = list[e.i] || {};
-    if (Array.isArray(v.aliases)) for (const a of v.aliases) addAlias(a, e.i);
-    const words = e.term.split(/\s+/);
-    if (
-      words.length === 2 &&
-      /^numbers?$/i.test(words[1]) &&
-      SAFE_TERM_MODIFIERS.has(words[0].toLowerCase())
-    ) {
-      addAlias(words[0], e.i);
-    }
-  }
-
-  const alt = [...surfaces]
-    .sort((a, b) => b.surface.length - a.surface.length)
-    .map((s) => escapeRegExp(s.surface))
-    .join("|");
-  const re = new RegExp(`\\b(?:${alt})(?:es|s)?\\b`, "gi");
+  // Term index, aliases, plural handling and acronym case rules all live in
+  // engine/core/vocab-match.js — shared with linkifyObjectiveTerms so the goal
+  // cards and the phase bodies can never again underline different words.
+  const matcher = buildVocabMatcher(list);
+  if (!matcher) return;
+  const re = matcher.createRegex();
 
   const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, {
     acceptNode(node) {
@@ -1960,21 +1900,17 @@ export function underlineVocabTerms(container, vocab) {
     let changed = false;
     re.lastIndex = 0;
     for (const match of text.matchAll(re)) {
-      const idx = lookup.has(norm(match[0])) ? lookup.get(norm(match[0])) : -1;
+      // resolveIndex also enforces the acronym rule, so "MAD" opens the
+      // mean-absolute-deviation popup and "mad" in a sentence never does.
+      const idx = matcher.resolveIndex(match[0]);
       if (idx < 0) continue;
-      // Acronym entries only match their exact uppercase form, so "MAD" opens
-      // the mean-absolute-deviation popup and "mad" in a sentence never does.
-      if (!surfaceMatchesEntry(match[0], list[idx])) continue;
       fragment.append(text.slice(cursor, match.index));
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "obj-term";
       btn.dataset.termIdx = String(idx);
       btn.setAttribute("aria-haspopup", "dialog");
-      btn.setAttribute(
-        "aria-label",
-        `${entries.find((e) => e.i === idx)?.term || match[0]}: open definition`,
-      );
+      btn.setAttribute("aria-label", `${matcher.termFor(idx) || match[0]}: open definition`);
       btn.textContent = match[0];
       fragment.appendChild(btn);
       cursor = match.index + match[0].length;
@@ -2138,7 +2074,7 @@ function renderObjectives(el, config, state, opts = {}) {
   el.append(block);
   // Definition-only popups on the goals: the picture for this card is the visual
   // model below the text, and it opens on its own click (attachImageZoom).
-  wireObjectiveTermPopups(block, vocab, { hideImage: true });
+  wireObjectiveTermPopups(block, vocab);
 
   block.querySelectorAll(".visual-model-wrapper img").forEach((img) => {
     attachImageZoom(img);
@@ -4645,7 +4581,7 @@ function renderObjectiveReview(state, config) {
   });
 
   // Definition-only, like every other objective surface.
-  wireObjectiveTermPopups(card, vocab, { hideImage: true });
+  wireObjectiveTermPopups(card, vocab);
   return card;
 }
 
