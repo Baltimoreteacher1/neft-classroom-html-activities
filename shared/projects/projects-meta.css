@@ -14,26 +14,77 @@
    Injected by tools/inject-projects-meta.mjs.
    ========================================================================== */
 
+/* --------------------------------------------------- sticky step rail */
+
+/* Every project page lays the rail out ~700px down, behind the hero, so a
+   student who scrolls into the work has no way back to an earlier step. The
+   rail pins instead. The sentinel (a zero-height marker projects-meta.js puts
+   directly above the rail) is what tells us the rail has left its resting
+   place; `.is-pinned` then compacts it so it costs a strip, not a third of a
+   laptop screen. z-index stays under the fixed launchers (9000+) and the
+   read-progress bar (9998) so nothing it covers is interactive. */
+body.pro-projects .ntm-trail-sentinel {
+  height: 0;
+}
+
+body.pro-projects .wizard .step-trail {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  margin-left: -16px;
+  margin-right: -16px;
+  padding: 10px 16px;
+  background: #f7f9fc;
+  transition:
+    box-shadow 0.18s ease,
+    padding 0.18s ease;
+}
+
+/* Pinned it is a floating chip bar, so it gets an edge on the three sides
+   that are no longer flush with anything. */
+body.pro-projects .wizard .step-trail.is-pinned {
+  padding-top: 7px;
+  padding-bottom: 7px;
+  border: 1px solid #e2e9f3;
+  border-top: 0;
+  border-radius: 0 0 14px 14px;
+  box-shadow: 0 8px 20px -12px rgba(15, 30, 60, 0.5);
+}
+
+/* Pinned, the rail is a wayfinder, not a legend: numbers carry the position
+   and the labels would wrap to two rows on a laptop. */
+body.pro-projects .wizard .step-trail.is-pinned .s-label {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.pro-projects .wizard .step-trail {
+    transition: none;
+  }
+}
+
 /* ------------------------------------------------------- standards strip */
 
+/* This is the project's opening statement, so it sits in the project's own
+   column directly under the rail — not as a wider white card floating between
+   the hero and the navigation, which is what made it read as an inserted
+   information panel. Tinted surface + hairline, no shadow: it reads as part of
+   the same band as the rail above it. */
 body.pro-projects .ntm-standards {
-  max-width: 1080px;
-  margin: 18px auto 0;
-  padding: 16px 20px;
-  background: #fff;
-  border: 1px solid #dbe4ef;
-  border-left: 6px solid #2563eb;
+  margin: 14px 0 4px;
+  padding: 14px 18px 16px;
+  background: linear-gradient(180deg, #f4f8ff 0%, #fbfcfe 100%);
+  border: 1px solid #e0e8f4;
   border-radius: 14px;
-  box-shadow: 0 1px 3px rgba(15, 30, 60, 0.06);
 }
 
 body.pro-projects .ntm-std-head {
   margin: 0 0 10px;
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 800;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #24344d;
+  color: #5a6b84;
 }
 
 body.pro-projects .ntm-std-chips {
@@ -149,7 +200,8 @@ body.pro-projects .ntm-l0-done {
 /* Level 1 keeps the core wizard and the unit's main interactive, but removes
    the many secondary studios that made each step feel like several projects
    at once. Level 2 remains the full experience. */
-body.pro-projects:is(.level-0, .level-1) :is(
+body.pro-projects:is(.level-0, .level-1)
+  :is(
     .viz-card,
     .mw-card,
     .sa-card,
@@ -328,13 +380,32 @@ body.pro-projects .ntm-l0-starters li {
 /* ------------------------------------------------------------ responsive */
 
 @media (max-width: 640px) {
+  /* The brief now lives inside the wizard column, which already carries the
+     page gutter — the old 12px side margin double-inset it. */
   body.pro-projects .ntm-standards {
-    margin: 14px 12px 0;
+    margin: 12px 0 4px;
     padding: 14px;
   }
 
   body.pro-projects .ntm-chip {
     font-size: 13px;
+  }
+}
+
+/* A phone has no vertical room to lend: the rail wraps to several rows there,
+   so it stays in normal flow and the page scrolls as it always has. */
+@media (max-width: 759px) {
+  body.pro-projects .wizard .step-trail {
+    position: static;
+    margin-left: 0;
+    margin-right: 0;
+    padding: 0;
+    background: none;
+    box-shadow: none;
+  }
+
+  body.pro-projects .wizard .step-trail.is-pinned .s-label {
+    display: inline;
   }
 }
 

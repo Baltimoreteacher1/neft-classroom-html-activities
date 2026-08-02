@@ -154,6 +154,64 @@ for (const route of ROUTES) {
       await expect(page.locator("#btn-lv0").locator("xpath=..")).toBeHidden();
       await expect(page.locator("body")).toHaveAttribute("data-level-locked", "1");
 
+      // STEP RAIL: the only way back to an earlier step. Presence is not the
+      // contract — reachability is. Asserting the element exists is exactly
+      // what let the standards brief get dropped between the hero and the
+      // rail on all 23 pages, pushing the rail ~700px down and off a laptop
+      // screen while every static check stayed green. So: it must be inside
+      // the first viewport at load, and it must pin when scrolled past.
+      await page.waitForFunction(
+        () => (document.querySelectorAll(".wizard .step-trail .step-trail-item") || []).length > 0,
+        { timeout: 10_000 },
+      );
+      const rail = await page.evaluate(() => {
+        const t = document.querySelector(".wizard .step-trail") as HTMLElement | null;
+        const brief = document.querySelector(".ntm-standards");
+        if (!t) return null;
+        const r = t.getBoundingClientRect();
+        return {
+          top: Math.round(r.top),
+          bottom: Math.round(r.bottom),
+          width: Math.round(r.width),
+          vh: window.innerHeight,
+          briefParent: brief ? (brief.parentElement?.className ?? "") : null,
+          briefWidth: brief ? Math.round(brief.getBoundingClientRect().width) : null,
+        };
+      });
+      expect(rail, `step rail missing on ${route.url}`).not.toBeNull();
+      expect(
+        rail!.bottom,
+        `step rail starts below the fold on ${route.url} (top ${rail!.top}, viewport ${rail!.vh})`,
+      ).toBeLessThanOrEqual(rail!.vh);
+
+      await page.evaluate(() => window.scrollTo(0, 1800));
+      const pinned = await page.evaluate(() => {
+        const t = document.querySelector(".wizard .step-trail") as HTMLElement | null;
+        if (!t) return null;
+        const r = t.getBoundingClientRect();
+        return { top: Math.round(r.top), height: Math.round(r.height) };
+      });
+      expect(
+        pinned!.top,
+        `step rail scrolled out of reach on ${route.url} (top ${pinned!.top} after scrolling)`,
+      ).toBeLessThanOrEqual(4);
+      expect(pinned!.height, `step rail collapsed when pinned on ${route.url}`).toBeGreaterThan(20);
+      await page.evaluate(() => window.scrollTo(0, 0));
+
+      // The standards brief introduces the project, so it belongs in the
+      // project's own column — not as a wider card floating above the rail,
+      // which is what made it read as an inserted panel.
+      if (rail!.briefParent !== null) {
+        expect(
+          rail!.briefParent,
+          `standards brief is outside the wizard column on ${route.url}`,
+        ).toContain("wizard");
+        expect(
+          Math.abs(rail!.briefWidth! - rail!.width),
+          `standards brief width ${rail!.briefWidth} does not match the step column ${rail!.width} on ${route.url}`,
+        ).toBeLessThanOrEqual(40);
+      }
+
       // VISUALS layer invariants: every version page ships a ./visuals.json,
       // so at least one interactive math-tool card must mount inside a step
       // panel and its manip widget must actually render (async fetch + lazy
@@ -198,7 +256,9 @@ for (const route of ROUTES) {
         quality: document.querySelectorAll(".pps-quality").length,
         studio: document.querySelectorAll(".pps-studio").length,
         dialog: document.querySelectorAll(".pps-dialog").length,
-        live: document.querySelectorAll('.pps-ledger__status[aria-live="polite"], .pps-studio__status[aria-live="polite"]').length,
+        live: document.querySelectorAll(
+          '.pps-ledger__status[aria-live="polite"], .pps-studio__status[aria-live="polite"]',
+        ).length,
       }));
       expect(publication.ledgers, `publication ledgers missing on ${route.url}`).toBe(
         publication.researchBlocks,
@@ -206,14 +266,22 @@ for (const route of ROUTES) {
       expect(publication.quality, `publication quality check missing on ${route.url}`).toBe(1);
       expect(publication.studio, `publication studio missing on ${route.url}`).toBe(1);
       expect(publication.dialog, `publication preview missing on ${route.url}`).toBe(1);
-      expect(publication.live, `publication live statuses missing on ${route.url}`).toBeGreaterThan(1);
+      expect(publication.live, `publication live statuses missing on ${route.url}`).toBeGreaterThan(
+        1,
+      );
 
       await page.evaluate(() => {
         const block = document.querySelector<HTMLElement>(".step-research");
         const values: Array<[HTMLInputElement | HTMLTextAreaElement | null, string]> = [
           [block?.querySelector("[data-research-find]") ?? null, "A specific fact from the source"],
-          [block?.querySelector('[data-pps-field="claim"]') ?? null, "This evidence supports my project decision."],
-          [block?.querySelector('[data-pps-field="credibility"]') ?? null, "The named organization publishes the original information."],
+          [
+            block?.querySelector('[data-pps-field="claim"]') ?? null,
+            "This evidence supports my project decision.",
+          ],
+          [
+            block?.querySelector('[data-pps-field="credibility"]') ?? null,
+            "The named organization publishes the original information.",
+          ],
           [block?.querySelector('[data-pps-field="accessed"]') ?? null, "2026-07-14"],
         ];
         values.forEach(([field, value]) => {

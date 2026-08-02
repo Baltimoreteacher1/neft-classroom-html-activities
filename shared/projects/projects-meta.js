@@ -141,9 +141,45 @@
       sec.appendChild(p);
     }
 
+    /* The brief belongs to the project, not to the gap between the masthead
+       and the navigation. Dropped after the hero it pushed the step rail past
+       the fold on a laptop (rail top ~700-750px on every page), and its 1080px
+       card floated wider than the 860px column it introduces — which is what
+       made it read as an inserted panel rather than part of the project.
+       Inside the wizard, under the rail, it lands in the content column and in
+       reading order: hero -> steps -> what this proves -> step 1. */
+    var anchor =
+      document.querySelector(".wizard .prog-wrap") || document.querySelector(".wizard .step-trail");
+    if (anchor && anchor.parentNode) {
+      anchor.parentNode.insertBefore(sec, anchor.nextSibling);
+      return;
+    }
     var hero = document.querySelector("header.hero") || document.querySelector(".hero");
     if (hero && hero.parentNode) hero.parentNode.insertBefore(sec, hero.nextSibling);
     else document.body.insertBefore(sec, document.body.firstChild);
+  }
+
+  /* ------------------------------------------------- 1b. sticky step rail */
+
+  /* The rail is the only way back to an earlier step, and every page starts it
+     below the fold. Pinning it keeps it reachable for the whole project; the
+     sentinel tells CSS when it is pinned so the pinned state can compact
+     itself instead of eating 85px of a laptop screen. */
+  function installStickyTrail() {
+    var trail = document.querySelector(".wizard .step-trail");
+    if (!trail || trail.dataset.ntmSticky === "1") return;
+    trail.dataset.ntmSticky = "1";
+
+    if (typeof IntersectionObserver !== "function") return;
+    var sentinel = el("div", "ntm-trail-sentinel");
+    sentinel.setAttribute("aria-hidden", "true");
+    trail.parentNode.insertBefore(sentinel, trail);
+    new IntersectionObserver(
+      function (entries) {
+        trail.classList.toggle("is-pinned", !entries[0].isIntersecting);
+      },
+      { threshold: 0 },
+    ).observe(sentinel);
   }
 
   /* ---------------------------------------------------- 2. Spanish parity */
@@ -410,6 +446,7 @@
     document.body.dataset.ntMetaInit = "1";
     STATE.key = key;
     installLevel0Navigation();
+    installStickyTrail();
 
     fetch(CONFIG_URL, { cache: "no-cache" })
       .then(function (r) {
