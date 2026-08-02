@@ -298,7 +298,49 @@ ${STYLE}
 
       setTrack(1);
     </script>
+    <script src="/assets/formula-popup.js" defer></script>
     <script src="/assets/nt-page-enhance.js" defer></script>
+    <script>
+      window.addEventListener("DOMContentLoaded", function() {
+        setTimeout(function() {
+          if (typeof window.openVocabModal !== "function") return;
+          var terms = ["base", "bases", "height", "area", "trapezoid", "parallelogram", "rectangle", "triangle", "parallel", "ratio", "unit rate", "proportion", "fraction", "decimal", "percent", "equation", "expression", "variable", "perimeter", "volume", "surface area", "polygon", "quadrilateral", "factor", "multiple", "exponent", "half", "add", "subtract", "multiply", "divide"];
+          var re = new RegExp("\\b(" + terms.join("|") + ")\\b", "gi");
+          
+          function linkifyTextNodes(parent) {
+            var walker = document.createTreeWalker(parent, NodeFilter.SHOW_TEXT, null, false);
+            var node;
+            var nodes = [];
+            while (node = walker.nextNode()) {
+              if (node.parentNode && !["SCRIPT", "STYLE", "BUTTON", "A", "INPUT", "TEXTAREA"].includes(node.parentNode.nodeName) && !node.parentNode.classList.contains("ewl-vocab-link")) {
+                re.lastIndex = 0;
+                if (re.test(node.nodeValue)) {
+                  nodes.push(node);
+                }
+              }
+            }
+            nodes.forEach(function(n) {
+              var span = document.createElement("span");
+              span.innerHTML = n.nodeValue.replace(re, function(match) {
+                return '<button type="button" class="ewl-vocab-link" data-term="' + match.toLowerCase() + '" style="background:rgba(13,148,136,0.08); border:none; border-bottom:2px dashed #0d9488; color:#0d9488; font-weight:800; padding:1px 5px; border-radius:4px; cursor:pointer;">' + match + ' 🔍</button>';
+              });
+              n.parentNode.replaceChild(span, n);
+            });
+          }
+          
+          var targets = document.querySelectorAll(".wrap, .phero, .why, .sec, .handoff");
+          targets.forEach(linkifyTextNodes);
+
+          document.addEventListener("click", function(e) {
+            var btn = e.target.closest(".ewl-vocab-link");
+            if (btn && btn.dataset.term && typeof window.openVocabModal === "function") {
+              e.preventDefault();
+              window.openVocabModal(btn.dataset.term);
+            }
+          });
+        }, 200);
+      });
+    </script>
   </body>
 </html>
 `;

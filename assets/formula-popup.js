@@ -296,6 +296,64 @@
         <text x="140" y="62" text-anchor="middle" fill="#FFF" font-weight="900" font-size="32">x</text>
         <text x="140" y="105" text-anchor="middle" fill="#1E40AF" font-weight="800" font-size="12">Unknown letter value</text>
       </svg>`
+    },
+    "factor": {
+      title: "Factor",
+      def: "A whole number that divides another number evenly with zero remainder.",
+      example: "The factors of 12 are 1, 2, 3, 4, 6, and 12.",
+      svg: `<svg viewBox="0 0 280 120" style="background:#F0FDF4; border-radius:12px; border:1px solid #BBF7D0; width:100%;">
+        <text x="140" y="45" text-anchor="middle" fill="#166534" font-weight="900" font-size="20">3 × 4 = 12</text>
+        <text x="140" y="85" text-anchor="middle" fill="#15803D" font-weight="800" font-size="14">3 and 4 are factors of 12</text>
+      </svg>`
+    },
+    "multiple": {
+      title: "Multiple",
+      def: "The product of multiplying a number by any whole number (1, 2, 3...).",
+      example: "Multiples of 5 are 5, 10, 15, 20, 25, 30...",
+      svg: `<svg viewBox="0 0 280 120" style="background:#FFFBEB; border-radius:12px; border:1px solid #FDE68A; width:100%;">
+        <text x="140" y="45" text-anchor="middle" fill="#92400E" font-weight="900" font-size="18">5, 10, 15, 20, 25...</text>
+        <text x="140" y="85" text-anchor="middle" fill="#B45309" font-weight="800" font-size="13">Skip counting by 5s</text>
+      </svg>`
+    },
+    "height": {
+      title: "Height",
+      def: "The perpendicular (straight 90°) distance from the base to the top vertex or side of a shape.",
+      example: "Height must always meet the base at a right angle (90°).",
+      svg: `<svg viewBox="0 0 280 120" style="background:#F0FDFA; border-radius:12px; border:1px solid #99F6E4; width:100%;">
+        <polygon points="60,85 200,85 150,25" fill="rgba(13,148,136,0.15)" stroke="#0D9488" stroke-width="3"/>
+        <line x1="150" y1="25" x2="150" y2="85" stroke="#EA580C" stroke-width="3" stroke-dasharray="4"/>
+        <rect x="150" y="75" width="10" height="10" fill="none" stroke="#EA580C" stroke-width="1.5"/>
+        <text x="165" y="60" fill="#EA580C" font-weight="900" font-size="14">h (90°)</text>
+      </svg>`
+    },
+    "exponent": {
+      title: "Exponent",
+      def: "A small number placed above and to the right of a base showing how many times to multiply the base by itself.",
+      example: "In 2³, 3 is the exponent (2 × 2 × 2 = 8).",
+      svg: `<svg viewBox="0 0 280 120" style="background:#EFF6FF; border-radius:12px; border:1px solid #BFDBFE; width:100%;">
+        <text x="120" y="75" fill="#1D4ED8" font-weight="900" font-size="44">2</text>
+        <text x="150" y="45" fill="#DC2626" font-weight="900" font-size="28">3</text>
+        <text x="140" y="105" text-anchor="middle" fill="#1E40AF" font-weight="800" font-size="12">Multiply 2 three times: 2 · 2 · 2 = 8</text>
+      </svg>`
+    },
+    "percent": {
+      title: "Percent",
+      def: "A ratio or fraction comparing a quantity out of 100, written with the % symbol.",
+      example: "25% means 25 out of 100, or ¼.",
+      svg: `<svg viewBox="0 0 280 120" style="background:#FEF2F2; border-radius:12px; border:1px solid #FCA5A5; width:100%;">
+        <rect x="80" y="25" width="120" height="50" fill="#DC2626" rx="8"/>
+        <text x="140" y="58" text-anchor="middle" fill="#FFF" font-weight="900" font-size="24">75%</text>
+        <text x="140" y="105" text-anchor="middle" fill="#991B1B" font-weight="800" font-size="12">75 per 100 (75/100)</text>
+      </svg>`
+    },
+    "polygon": {
+      title: "Polygon",
+      def: "A closed 2D shape made up of 3 or more straight line segments that meet at corners.",
+      example: "Triangles, rectangles, pentagons, and hexagons are all polygons.",
+      svg: `<svg viewBox="0 0 280 120" style="background:#F0FDF4; border-radius:12px; border:1px solid #BBF7D0; width:100%;">
+        <polygon points="60,80 100,25 180,25 220,80 140,105" fill="rgba(22,163,74,0.2)" stroke="#16A34A" stroke-width="3"/>
+        <text x="140" y="65" text-anchor="middle" fill="#15803D" font-weight="900" font-size="14">Straight Sides & Closed</text>
+      </svg>`
     }
   };
 
