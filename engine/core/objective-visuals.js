@@ -348,6 +348,42 @@ function joinCaption(scene, lead, goalPhrase) {
  * @param {LessonConfig} config
  * @returns {{ say: string, sayEs?: string, listen: string, listenEs?: string, keyWords?: string[] }}
  */
+export function resolveContentTalkPrompts(config) {
+  const cfg = config || {};
+  const contentObj = String(cfg.contentObjective || cfg.objective || cfg.launch?.objective || "");
+  const title = String(cfg.title || "this math topic");
+  const vocabList = Array.isArray(cfg.vocabulary)
+    ? cfg.vocabulary
+        .map((v) => (typeof v === "object" && v ? v.term || v.word || "" : String(v || "")))
+        .filter(Boolean)
+    : [];
+
+  let say = "";
+  if (contentObj) {
+    const cleaned = contentObj.replace(/^\s*I\s+can\s+/i, "").replace(/\.\s*$/, "");
+    say = `To solve this, I can ${cleaned}.`;
+  } else {
+    say = `I solved this problem by explaining my math steps clearly.`;
+  }
+
+  let sayEs = contentObj
+    ? `Para resolver esto, puedo explicar los pasos de la lección sobre ${title}.`
+    : `Resolví este problema explicando mis pasos matemáticos claramente.`;
+
+  let listen = "";
+  if (contentObj.toLowerCase().includes("step") || contentObj.toLowerCase().includes("find") || contentObj.toLowerCase().includes("solve")) {
+    listen = `My partner explaining each mathematical step in order and showing why their final answer is correct.`;
+  } else if (vocabList.length >= 1) {
+    listen = `My partner explaining how their visual model proves their solution using ${vocabList[0]}.`;
+  } else {
+    listen = `My partner describing their problem-solving strategy and checking that their work makes sense.`;
+  }
+
+  let listenEs = `Mi compañero explicando cada paso matemático en orden y demostrando por qué su respuesta final es correcta.`;
+
+  return { say, sayEs, listen, listenEs };
+}
+
 export function resolveLanguageTalkPrompts(config) {
   const cfg = config || {};
   const langObj = String(cfg.languageObjective || "");
@@ -358,6 +394,7 @@ export function resolveLanguageTalkPrompts(config) {
     : [];
 
   let stemSay = "";
+  let stemSayEs = "";
   if (Array.isArray(cfg.turnAndTalk)) {
     for (const item of cfg.turnAndTalk) {
       if (Array.isArray(item.stems) && item.stems.length > 0) {
@@ -365,21 +402,11 @@ export function resolveLanguageTalkPrompts(config) {
         const rawStem = typeof firstStem === "object" && firstStem ? firstStem.en : firstStem;
         if (rawStem && typeof rawStem === "string") {
           stemSay = rawStem.replace(/^I\s+/i, "I ").trim();
-          break;
         }
-      }
-    }
-  }
-
-  let stemSayEs = "";
-  if (Array.isArray(cfg.turnAndTalk)) {
-    for (const item of cfg.turnAndTalk) {
-      if (Array.isArray(item.stems) && item.stems.length > 0) {
-        const firstStem = item.stems[0];
         if (typeof firstStem === "object" && firstStem && firstStem.es) {
           stemSayEs = firstStem.es;
-          break;
         }
+        if (stemSay) break;
       }
     }
   }
@@ -391,16 +418,20 @@ export function resolveLanguageTalkPrompts(config) {
     const cleaned = langObj.replace(/^\s*I\s+can\s+/i, "").replace(/\.\s*$/, "");
     say = `I can ${cleaned}.`;
   } else if (vocabList.length >= 2) {
-    say = `I used ${vocabList[0]} and ${vocabList[1]} to explain my math strategy.`;
+    say = `I used the academic terms "${vocabList[0]}" and "${vocabList[1]}" to explain my strategy.`;
+  } else if (vocabList.length === 1) {
+    say = `I used the math term "${vocabList[0]}" to describe my work to my partner.`;
   } else {
-    say = "I know my solution is correct because I can explain each step clearly.";
+    say = "I know my solution is correct because I can explain each step clearly to my partner.";
   }
 
-  let sayEs = stemSayEs || (langObj ? `Puedo explicar mi razonamiento usando el vocabulario matemático de hoy.` : "Sé que mi solución es correcta porque puedo explicar cada paso.");
+  let sayEs = stemSayEs || (langObj ? `Puedo explicar mi razonamiento usando el vocabulario matemático de hoy.` : "Sé que mi solución es correcta porque puedo explicar cada paso claramente.");
 
   let listen = "";
   if (vocabList.length >= 2) {
-    listen = `My partner using terms like "${vocabList[0]}" and "${vocabList[1]}" to justify their reasoning.`;
+    listen = `My partner using academic terms like "${vocabList[0]}" and "${vocabList[1]}" to justify their reasoning.`;
+  } else if (vocabList.length === 1) {
+    listen = `My partner using the word "${vocabList[0]}" while describing how they solved the problem.`;
   } else if (langObj.toLowerCase().includes("words") || langObj.toLowerCase().includes("using")) {
     const match = langObj.match(/words?\s+([^\.]+)/i);
     const wordClause = match ? match[1].trim() : "academic vocabulary";
@@ -411,29 +442,13 @@ export function resolveLanguageTalkPrompts(config) {
     listen = "My partner naming the mathematical model and describing how their steps connect to it.";
   }
 
-  let listenEs = vocabList.length >= 2
-    ? `Mi compañero usando términos como "${vocabList[0]}" para justificar su razonamiento.`
-    : "Mi compañero explicando POR QUÉ funciona su estrategia.";
+  let listenEs = vocabList.length >= 1
+    ? `Mi compañero usando términos del vocabulario como "${vocabList[0]}" para justificar su razonamiento.`
+    : "Mi compañero explicando POR QUÉ funciona su estrategia y usando el vocabulario matemático.";
 
   return { say, sayEs, listen, listenEs, keyWords: vocabList };
 }
 
-/**
- * Everything the two goal cards need to render their picture truthfully.
- *
- * An author-supplied `contentVisualImg` / `contentVisualCaption` /
- * `languageVisualImg` / `languageVisualCaption` always wins — this only fills in
- * what nobody wrote by hand.
- *
- * `scene` and `caption` are returned separately on purpose: `scene` is this
- * module's claim ABOUT THE PICTURE and is what the banned-phrase gate checks,
- * while `caption` also carries the lesson's own objective, which may name any
- * manipulative it likes.
- *
- * @param {LessonConfig} config lesson config.json
- * @returns {{ content: {src:string, alt:string, scene:string, goalPhrase:string, caption:string},
- *             language: {src:string, alt:string, scene:string, goalPhrase:string, caption:string, talkPrompts:{say:string, sayEs?:string, listen:string, listenEs?:string, keyWords?:string[]}} }}
- */
 export function resolveObjectiveVisuals(config) {
   const cfg = config || {};
   const topic = TOPICS[lessonTopic(cfg)] || TOPICS.expressions;
@@ -455,6 +470,7 @@ export function resolveObjectiveVisuals(config) {
       goalPhrase: contentPhrase,
       caption:
         cfg.contentVisualCaption || joinCaption(contentScene, "Today's goal:", contentPhrase),
+      talkPrompts: resolveContentTalkPrompts(cfg),
     },
     language: {
       src: languageImage.src,

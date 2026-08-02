@@ -2069,6 +2069,7 @@ function renderObjectives(el, config, state, opts = {}) {
       alt: visuals.content.alt,
       icon: "🎯",
       caption: visuals.content.caption,
+      talkPrompts: visuals.content.talkPrompts,
       checkLabel: review ? "Did it" : "Got it",
       checkAria: review
         ? `${who} can now do the content objective`
