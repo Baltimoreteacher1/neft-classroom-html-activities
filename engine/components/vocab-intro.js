@@ -1,6 +1,7 @@
 import { resolveVocabImage, vocabImageAlt } from "../core/vocab-images.js";
 import { exploreLabel, openExplorer } from "./vocab-explore.js";
 import { buildSayItRow, speechSupported } from "./vocab-explore-tasks.js";
+import { speakText } from "../core/speech-voice.js";
 
 // Compact tap-to-hear row for a flip-card face. Reuses the shared bilingual
 // "Say it" control (en-US + es-US voices via pickVoice) and swallows the click
@@ -102,14 +103,7 @@ export function openVocabPopOut(t) {
   `;
 
   const speak = () => {
-    try {
-      if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
-      window.speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(`${term}. ${defEn}`);
-      u.lang = "en-US";
-      u.rate = 0.9;
-      window.speechSynthesis.speak(u);
-    } catch (_) {}
+    speakText(`${term}. ${defEn}`, "en-US");
   };
 
   modal.querySelector(".vocab-popout-speech-btn").addEventListener("click", speak);

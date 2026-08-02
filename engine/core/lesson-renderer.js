@@ -61,6 +61,7 @@ import {
   resolveNoticeWonderAcademicWord,
 } from "./notice-wonder-glossary.js";
 import { resolveObjectiveVisuals } from "./objective-visuals.js";
+import { speakText } from "./speech-voice.js";
 import { studentFirstName, toThirdPersonObjective } from "./objective-voice.js";
 import { mountPeerExchange } from "./peer-exchange.js";
 import {
@@ -2110,12 +2111,9 @@ function renderObjectives(el, config, state, opts = {}) {
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
       const text = btn.getAttribute("data-talk-text");
-      if (text && "speechSynthesis" in window) {
-        window.speechSynthesis.cancel();
-        const u = new SpeechSynthesisUtterance(text);
-        u.rate = 0.9;
-        window.speechSynthesis.speak(u);
-      }
+      const cardEl = btn.closest(".language-talk-card");
+      const isEs = cardEl?.getAttribute("data-lang") === "es";
+      if (text) speakText(text, isEs ? "es-US" : "en-US");
     });
   });
 

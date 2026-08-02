@@ -13,16 +13,7 @@ function escHtml(s) {
     .replace(/"/g, "&quot;");
 }
 
-function speakText(text, lang = "en-US") {
-  try {
-    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = lang;
-    u.rate = 0.92;
-    window.speechSynthesis.speak(u);
-  } catch (_) {}
-}
+import { speakText } from "../core/speech-voice.js";
 
 function openVisualLightbox(imgSrc, captionText) {
   if (typeof document === "undefined") return;
