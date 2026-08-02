@@ -477,6 +477,15 @@ export function renderNetFolder(
     wrapper.append(checkBtn);
   }
 
+  const launch3DBtn = document.createElement("a");
+  launch3DBtn.className = "btn btn-outline";
+  launch3DBtn.href = "/netfold-pro/";
+  launch3DBtn.target = "_blank";
+  launch3DBtn.rel = "noopener";
+  launch3DBtn.style.cssText = "display:inline-flex; align-items:center; gap:6px; font-weight:700; color:#0d9488; border:1.5px solid #0d9488; background:rgba(13,148,136,0.06); border-radius:10px; padding:8px 14px; text-decoration:none; margin-top:12px; font-size:0.88rem;";
+  launch3DBtn.innerHTML = "<span>📦 Open NetFold Pro 3D Studio</span> <span aria-hidden='true'>↗</span>";
+  wrapper.append(launch3DBtn);
+
   container.append(wrapper);
 }
 

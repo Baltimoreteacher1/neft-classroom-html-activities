@@ -181,6 +181,26 @@
     document.body.appendChild(a);
     lessonAwareHref(a);
 
+    // Geometry lessons (Unit 10 / 3D solids / nets) mount a twin NetFold 3D
+    // floating launcher so students can open NetFold Pro from any 3D lesson.
+    var isGeometryLesson =
+      /\/lessons\/10-/i.test(location.pathname) ||
+      /\/math\/unit-10\//i.test(location.pathname) ||
+      /\/curriculum\/math-workbench/i.test(location.pathname);
+    if (isGeometryLesson && !document.getElementById("netfold-launcher")) {
+      var nfBtn = document.createElement("a");
+      nfBtn.id = "netfold-launcher";
+      nfBtn.href = "/netfold-pro/";
+      nfBtn.target = "_blank";
+      nfBtn.rel = "noopener";
+      nfBtn.setAttribute("aria-label", "Open NetFold Pro 3D Net Simulator in a new tab");
+      nfBtn.setAttribute("title", "NetFold Pro — Interactive 3D Shape Net Simulator");
+      nfBtn.style.cssText =
+        "position:fixed;right:max(6px,env(safe-area-inset-right));bottom:max(110px,env(safe-area-inset-bottom));z-index:2147483000;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;padding:8px 14px;border-radius:999px;font:700 12px/1 system-ui,-apple-system,sans-serif;color:#fff;background:linear-gradient(135deg,#0d9488,#0f766e);box-shadow:0 4px 16px rgba(0,0,0,.28);border:2px solid rgba(255,255,255,.85);cursor:pointer;";
+      nfBtn.innerHTML = '<span aria-hidden="true">📦</span><span>NetFold 3D</span>';
+      document.body.appendChild(nfBtn);
+    }
+
     // Dedupe: if the Save/Resume engine mounted before this script, it
     // rendered its own plain Math Workbench chip — remove it in favor of
     // this lesson-aware launcher (single entry point). The engine performs
