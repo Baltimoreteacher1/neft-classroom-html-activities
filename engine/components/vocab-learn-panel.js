@@ -1080,8 +1080,10 @@ export function renderLearnItPanel(container, config, options = {}) {
     <div class="vl-tryit-feedback" style="margin-top:16px; padding:14px; border-radius:14px; font-weight:800; font-size:1rem; display:none;"></div>
   `;
 
-  const tryOpts = tryItCard.querySelectorAll(".vl-tryit-opt");
-  const tryFb = tryItCard.querySelector(".vl-tryit-feedback");
+  const tryOpts = /** @type {NodeListOf<HTMLButtonElement>} */ (
+    tryItCard.querySelectorAll(".vl-tryit-opt")
+  );
+  const tryFb = /** @type {HTMLElement} */ (tryItCard.querySelector(".vl-tryit-feedback"));
 
   tryOpts.forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -1177,7 +1179,10 @@ export function renderLearnItPanel(container, config, options = {}) {
       speakText(qText, currentLangEs ? "es-US" : "en-US");
     });
 
-    ttContainer.querySelectorAll(".vl-starter-chip").forEach((chip) => {
+    const starterChips = /** @type {NodeListOf<HTMLElement>} */ (
+      ttContainer.querySelectorAll(".vl-starter-chip")
+    );
+    starterChips.forEach((chip) => {
       chip.addEventListener("click", () => {
         ttContainer.querySelectorAll(".vl-starter-chip").forEach((c) => c.classList.remove("active"));
         chip.classList.add("active");
@@ -1222,8 +1227,10 @@ export function renderLearnItPanel(container, config, options = {}) {
     <div class="vl-conf-feedback" style="margin-top:16px; font-weight:800; font-size:1.02rem; padding:12px 16px; border-radius:12px; display:none;"></div>
   `;
 
-  const confButtons = confWidget.querySelectorAll(".vl-conf-btn");
-  const confFb = confWidget.querySelector(".vl-conf-feedback");
+  const confButtons = /** @type {NodeListOf<HTMLButtonElement>} */ (
+    confWidget.querySelectorAll(".vl-conf-btn")
+  );
+  const confFb = /** @type {HTMLElement} */ (confWidget.querySelector(".vl-conf-feedback"));
 
   confButtons.forEach((b) => {
     b.addEventListener("click", () => {
