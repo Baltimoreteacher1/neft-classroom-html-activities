@@ -140,6 +140,28 @@
         <text x="140" y="102" fill="#0284C7" font-weight="900" font-size="12">Base (b)</text>
       </svg>`
     },
+    "base": {
+      title: "Base",
+      def: "A side of a flat shape (or one of the parallel top/bottom sides in a trapezoid) used as a foundation to measure length and height.",
+      example: "In a trapezoid, there are two parallel bases: Base 1 (b₁) and Base 2 (b₂).",
+      svg: `<svg viewBox="0 0 280 120" style="background:#FFF7ED; border-radius:12px; border:1px solid #FFEDD5; width:100%;">
+        <polygon points="80,25 200,25 240,85 40,85" fill="rgba(234,88,12,0.18)" stroke="#EA580C" stroke-width="3"/>
+        <text x="140" y="20" text-anchor="middle" fill="#C2410C" font-weight="900" font-size="12">Top Base (b₁)</text>
+        <text x="140" y="102" text-anchor="middle" fill="#C2410C" font-weight="900" font-size="12">Bottom Base (b₂)</text>
+        <line x1="80" y1="25" x2="200" y2="25" stroke="#0284C7" stroke-width="4"/>
+        <line x1="40" y1="85" x2="240" y2="85" stroke="#0284C7" stroke-width="4"/>
+      </svg>`
+    },
+    "bases": {
+      title: "Bases",
+      def: "Plural of base. The parallel sides of a polygon (such as a trapezoid) used to compute area.",
+      example: "A trapezoid's bases are added together: (b₁ + b₂).",
+      svg: `<svg viewBox="0 0 280 120" style="background:#FFF7ED; border-radius:12px; border:1px solid #FFEDD5; width:100%;">
+        <polygon points="80,25 200,25 240,85 40,85" fill="rgba(234,88,12,0.18)" stroke="#EA580C" stroke-width="3"/>
+        <text x="140" y="20" text-anchor="middle" fill="#C2410C" font-weight="900" font-size="12">Base 1 (b₁)</text>
+        <text x="140" y="102" text-anchor="middle" fill="#C2410C" font-weight="900" font-size="12">Base 2 (b₂)</text>
+      </svg>`
+    },
     "area": {
       title: "Area",
       def: "The total amount of 2D surface space enclosed inside a shape (measured in square units).",
