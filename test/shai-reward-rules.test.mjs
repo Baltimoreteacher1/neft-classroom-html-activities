@@ -1,8 +1,11 @@
 import "../shai-school/reward-rules.js";
 import assert from "node:assert/strict";
 
-const { pushupRewardIncrement, pushupWeeklyTarget, normalizePushupTiers } =
+const { pushupRewardIncrement, pushupWeeklyTarget, normalizePushupTiers, READING_RATE_DEFAULT, READING_ITEM_ID } =
   globalThis.ShaiRewardRules;
+
+assert.equal(READING_RATE_DEFAULT, 0.25);
+assert.equal(READING_ITEM_ID, "reading");
 
 // --- factory defaults (no tiers passed) -------------------------------------
 assert.equal(pushupWeeklyTarget(0), 0);

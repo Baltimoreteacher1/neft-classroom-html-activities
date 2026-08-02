@@ -4485,6 +4485,37 @@
     { base: "Home Base 🏆", title: "Safe at Home! Mind Centered", prompt: "Safe at home plate! Take one final slow breath. Your mind is calm, clear, and ready!" },
   ];
 
+  // NeeDoh Squishy Fidget State
+  let neeDohSqueezes = 0;
+  let neeDohColorIdx = 0;
+  const NEEDOH_COLORS = [
+    { name: "Neon Groovy Pink", bg: "radial-gradient(circle at 35% 35%, #ff77bc, #ec4899 60%, #be185d)" },
+    { name: "Electric Blue", bg: "radial-gradient(circle at 35% 35%, #38bdf8, #0284c7 60%, #0369a1)" },
+    { name: "Nice Cube Lime", bg: "radial-gradient(circle at 35% 35%, #a3e635, #65a30d 60%, #3f6212)" },
+    { name: "Super Sunburst Orange", bg: "radial-gradient(circle at 35% 35%, #fbbf24, #f97316 60%, #c2410c)" },
+    { name: "Glitter Purple", bg: "radial-gradient(circle at 35% 35%, #c084fc, #9333ea 60%, #581c87)" },
+  ];
+
+  function playNeeDohSquishSound() {
+    try {
+      initAudio();
+      if (!audioCtx) return;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = "sine";
+      const startFreq = 220 + Math.random() * 80;
+      const endFreq = 420 + Math.random() * 120;
+      osc.frequency.setValueAtTime(startFreq, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(endFreq, audioCtx.currentTime + 0.12);
+      gain.gain.setValueAtTime(0.35, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.14);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.14);
+    } catch {}
+  }
+
   // Sensory Bubble Wrap State
   let bubblesPoppedState = Array(16).fill(false);
 
@@ -5901,19 +5932,97 @@
         '<ul class="ground-list"><li>Roll your shoulders back 5 times.</li><li>Press your feet into the floor and count to 10.</li><li>Get a sip of water. 💧</li><li>Look out a window for 20 seconds.</li></ul>',
       );
 
+      const stretch7thHtml = card(
+        "calm-stretch-7th",
+        "⚾ 7th Inning Stretch & Reset",
+        "Stand up in the batter's box and clear physical tension step-by-step.",
+        '<div style="display:flex;flex-direction:column;gap:10px">' +
+          '<div style="display:flex;align-items:center;gap:12px;background:var(--bg-2,#1e293b);padding:12px;border-radius:10px">' +
+          '<span style="font-size:1.6rem">🧍</span>' +
+          '<div><b>Step 1: Stand Tall</b><br><small style="color:var(--muted)">Stand up straight, feet shoulder-width apart like stepping to the plate.</small></div>' +
+          '</div>' +
+          '<div style="display:flex;align-items:center;gap:12px;background:var(--bg-2,#1e293b);padding:12px;border-radius:10px">' +
+          '<span style="font-size:1.6rem">🌟</span>' +
+          '<div><b>Step 2: Reach for the Stadium Lights</b><br><small style="color:var(--muted)">Raise both arms high, inhale for 4 seconds, hold for 2 seconds.</small></div>' +
+          '</div>' +
+          '<div style="display:flex;align-items:center;gap:12px;background:var(--bg-2,#1e293b);padding:12px;border-radius:10px">' +
+          '<span style="font-size:1.6rem">🔄</span>' +
+          '<div><b>Step 3: Double Play Twist</b><br><small style="color:var(--muted)">Gently twist your torso left, then right. Exhale slowly for 4 seconds.</small></div>' +
+          '</div>' +
+          '<div style="display:flex;align-items:center;gap:12px;background:var(--bg-2,#1e293b);padding:12px;border-radius:10px">' +
+          '<span style="font-size:1.6rem">😮‍💨</span>' +
+          '<div><b>Step 4: Shoulder Drop & Reset</b><br><small style="color:var(--muted)">Roll shoulders back twice, release all muscle tension. Safe at home!</small></div>' +
+          '</div>' +
+          '</div>',
+      );
+
+      let gloveCatches = window._gloveCatches || 0;
+      const gloveCatchHtml = card(
+        "calm-glove-catch",
+        "🧢 Catcher's Mitt Target Catch",
+        "Tap the catcher's mitt to catch incoming pitches and anchor your focus.",
+        '<div style="text-align:center;padding:12px">' +
+          '<div style="font-size:0.9rem;margin-bottom:10px;color:var(--muted)">Catches today: <b id="gloveCount" style="color:var(--accent,#38bdf8)">' + gloveCatches + '</b></div>' +
+          '<div style="height:120px;display:flex;align-items:center;justify-content:center">' +
+          '<button type="button" id="gloveTarget" data-act="glove-catch" style="font-size:3.5rem;background:none;border:none;cursor:pointer;transition:transform 0.1s ease;user-select:none" aria-label="Catch Baseball">' +
+          '🧤' +
+          '</button>' +
+          '</div>' +
+          '<p id="gloveMessage" style="font-size:0.85rem;font-weight:600;margin:6px 0 0;color:var(--accent,#38bdf8)">Tap the mitt when you are ready for a fastball reset!</p>' +
+          '</div>',
+      );
+
+      const outfieldTrackingHtml = card(
+        "calm-outfield-tracking",
+        "⚾ Outfield Eye Tracking Visualizer",
+        "Follow the smooth moving baseball with your eyes to rest eye muscles and reset focus.",
+        '<div style="background:linear-gradient(180deg,#15803d 0%,#166534 100%);border-radius:12px;padding:16px;text-align:center;overflow:hidden;position:relative;height:120px;display:flex;align-items:center;justify-content:center">' +
+          '<div class="outfield-tracking-ball" style="font-size:2rem;position:absolute;animation:trackBall 4s ease-in-out infinite alternate">⚾</div>' +
+          '<p style="position:absolute;bottom:8px;font-size:0.75rem;color:#fef08a;font-weight:700;margin:0">Keep your head still and follow the ball with your eyes</p>' +
+          '</div>',
+      );
+
+      const needohHtml = card(
+        "calm-needoh",
+        "🟡 NeeDoh Squishy Fidget",
+        "Squish, stretch, and deform your NeeDoh ball to relieve tension and calm your mind.",
+        '<div style="text-align:center;padding:10px">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">' +
+          '<b style="font-size:0.9rem">NeeDoh Style: <span id="needohColorBadge" style="color:var(--accent,#38bdf8)">' + NEEDOH_COLORS[neeDohColorIdx % NEEDOH_COLORS.length].name + '</span></b>' +
+          '</div>' +
+          '<div style="height:170px;display:flex;align-items:center;justify-content:center;position:relative">' +
+          '<div id="needohBall" class="needoh-ball" data-act="needoh-squish" role="button" tabindex="0" aria-label="Squish NeeDoh Ball"' +
+          ' style="width:115px;height:115px;border-radius:50%;background:' + NEEDOH_COLORS[neeDohColorIdx % NEEDOH_COLORS.length].bg + ';box-shadow:0 10px 25px rgba(0,0,0,0.28),inset 0 -8px 15px rgba(0,0,0,0.2);cursor:pointer;transition:transform 0.15s cubic-bezier(0.175,0.885,0.32,1.275);user-select:none;touch-action:manipulation;display:flex;align-items:center;justify-content:center;font-size:2rem">' +
+          '🟡' +
+          '</div>' +
+          '</div>' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;flex-wrap:wrap;gap:8px">' +
+          '<div style="font-weight:700;font-size:0.9rem">Squeezes: <span id="needohCount">' + neeDohSqueezes + '</span></div>' +
+          '<div style="display:flex;gap:8px">' +
+          '<button type="button" class="btn primary sm" data-act="needoh-squish">💥 Squish!</button>' +
+          '<button type="button" class="btn sm" data-act="needoh-color">🎨 Color</button>' +
+          '</div>' +
+          '</div>' +
+          '</div>',
+      );
+
       let cardsContent = "";
       if (calmSubTab === "baseball") {
-        cardsContent = quoteCardHtml + pitchBreathingHtml + stressPitchHtml + diamondHtml;
+        cardsContent = quoteCardHtml + pitchBreathingHtml + stretch7thHtml + gloveCatchHtml + outfieldTrackingHtml + stressPitchHtml + diamondHtml;
       } else if (calmSubTab === "sensory") {
-        cardsContent = bubbleWrapHtml + zenCanvasHtml + stressPitchHtml;
+        cardsContent = needohHtml + bubbleWrapHtml + zenCanvasHtml + stressPitchHtml;
       } else if (calmSubTab === "sounds") {
         cardsContent = soundscapesHtml + balloonBreatheHtml;
       } else if (calmSubTab === "body") {
-        cardsContent = balloonBreatheHtml + pitchBreathingHtml + groundingHtml + gratitudeHtml + resetsHtml;
+        cardsContent = balloonBreatheHtml + pitchBreathingHtml + stretch7thHtml + groundingHtml + gratitudeHtml + resetsHtml;
       } else {
         cardsContent =
           quoteCardHtml +
+          needohHtml +
           pitchBreathingHtml +
+          stretch7thHtml +
+          gloveCatchHtml +
+          outfieldTrackingHtml +
           stressPitchHtml +
           diamondHtml +
           bubbleWrapHtml +
@@ -11346,6 +11455,47 @@ Due May 31"></textarea>
       triggerConfetti();
       toast("Dropped into your jar! 🫙✨");
       render();
+    },
+    "glove-catch": () => {
+      window._gloveCatches = (window._gloveCatches || 0) + 1;
+      playBaseballHitSound();
+      try { navigator.vibrate?.(35); } catch {}
+      const btn = document.getElementById("gloveTarget");
+      if (btn) {
+        btn.style.transform = "scale(1.3) rotate(-10deg)";
+        setTimeout(() => { if (btn) btn.style.transform = "scale(1) rotate(0deg)"; }, 150);
+      }
+      const countEl = document.getElementById("gloveCount");
+      if (countEl) countEl.textContent = String(window._gloveCatches);
+      const msgs = [
+        "Pop! Nice catch! Mind focused. 🎯",
+        "Smack! Right in the pocket. ⚾",
+        "Stolen strike! You are locked in. 🧢",
+        "Strike three! High heat reset complete! ⚡",
+      ];
+      const msgEl = document.getElementById("gloveMessage");
+      if (msgEl) msgEl.textContent = msgs[window._gloveCatches % msgs.length];
+    },
+    "needoh-squish": () => {
+      neeDohSqueezes++;
+      playNeeDohSquishSound();
+      try { navigator.vibrate?.(35); } catch {}
+      const ball = document.getElementById("needohBall");
+      if (ball) {
+        ball.style.transform = `scale(${1.25 + Math.random() * 0.1}, ${0.68 + Math.random() * 0.1}) translateY(10px) rotate(${(Math.random() - 0.5) * 16}deg)`;
+        setTimeout(() => { if (ball) ball.style.transform = "scale(1, 1) translateY(0) rotate(0deg)"; }, 180);
+      }
+      const countEl = document.getElementById("needohCount");
+      if (countEl) countEl.textContent = String(neeDohSqueezes);
+    },
+    "needoh-color": () => {
+      neeDohColorIdx = (neeDohColorIdx + 1) % NEEDOH_COLORS.length;
+      playCalmPopSound();
+      const col = NEEDOH_COLORS[neeDohColorIdx];
+      const ball = document.getElementById("needohBall");
+      if (ball) ball.style.background = col.bg;
+      const badge = document.getElementById("needohColorBadge");
+      if (badge) badge.textContent = col.name;
     },
     // ---- Routine day-of-week toggles (in the routine editor) ----
     "toggle-routine-day": (id, arg, ev) => {

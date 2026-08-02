@@ -10,6 +10,8 @@
   "use strict";
 
   const PUSHUP_ITEM_ID = "pushups";
+  const READING_ITEM_ID = "reading";
+  const READING_RATE_DEFAULT = 0.25;
   const PUSHUP_TARGETS = Object.freeze([
     Object.freeze({ days: 4, total: 5 }),
     Object.freeze({ days: 2, total: 2 }),
@@ -42,6 +44,8 @@
 
   root.ShaiRewardRules = Object.freeze({
     PUSHUP_ITEM_ID,
+    READING_ITEM_ID,
+    READING_RATE_DEFAULT,
     PUSHUP_TARGETS,
     normalizePushupTiers,
     pushupRewardIncrement,

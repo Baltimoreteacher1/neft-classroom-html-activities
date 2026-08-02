@@ -137,6 +137,7 @@
   // day and are never required; finishing one pays a small allowance.
   // [id, emoji, label, hint]
   const HEALTH_ITEMS = [
+    ["reading", "📚", "20 minutes of reading", "$0.25 for every 20 min (check multiple times)"],
     ["bikeRide", "🚴", "Went for a bike ride", "15 minutes or more outside"],
     ["bikeLoop", "🚲", "Quick bike loop", "A spin around the block counts"],
     ["lift", "🏋️", "Lifted weights", "Dumbbells or a strength set"],
@@ -160,6 +161,12 @@
     if (pushups && pushups[2] === "Push-ups or sit-ups") {
       pushups[2] = "10 push-ups";
       pushups[3] = "$0.50 · $2 at 2 days · $5 at 4 days";
+    }
+    const reading = state.health.items.find((item) => item[0] === "reading");
+    if (!reading) {
+      state.health.items.unshift(["reading", "📚", "20 minutes of reading", "$0.25 for every 20 min (check multiple times)"]);
+    } else {
+      reading[3] = "$0.25 for every 20 min (check multiple times)";
     }
     return state.health.items;
   }
@@ -539,6 +546,7 @@
           routine: 0.25,
           focus: 0.25,
           health: 0.1,
+          reading: 0.25,
         },
         // Push-up payment ladder, parent-editable in Parent settings. Highest
         // day requirement first; the kid is paid the first tier they reach.
@@ -653,6 +661,8 @@
       checkins: x.checkins && typeof x.checkins === "object" ? x.checkins : {},
       reflections: x.reflections && typeof x.reflections === "object" ? x.reflections : {},
       deletedIds: x.deletedIds && typeof x.deletedIds === "object" ? x.deletedIds : {},
+      readingSessions:
+        x.readingSessions && typeof x.readingSessions === "object" ? x.readingSessions : {},
       readingProgress:
         x.readingProgress && typeof x.readingProgress === "object" ? x.readingProgress : {},
       readingPlan: (Array.isArray(x.readingPlan) ? x.readingPlan : [])
@@ -751,6 +761,7 @@
         routine: Math.max(0, num(rates.routine, base.rates.routine)),
         focus: Math.max(0, num(rates.focus, base.rates.focus)),
         health: Math.max(0, num(rates.health, base.rates.health)),
+        reading: Math.max(0, num(rates.reading, base.rates.reading)),
       },
       pushupTiers: (globalThis.ShaiRewardRules?.normalizePushupTiers || ((t) => t || []))(
         Array.isArray(r.pushupTiers) && r.pushupTiers.length ? r.pushupTiers : base.pushupTiers,
@@ -4397,6 +4408,37 @@
     "It's okay to pause. Resting is part of working.",
   ];
   let calmIdx = 0;
+
+  // NeeDoh Squishy Fidget State
+  let neeDohSqueezes = 0;
+  let neeDohColorIdx = 0;
+  const NEEDOH_COLORS = [
+    { name: "Neon Groovy Pink", bg: "radial-gradient(circle at 35% 35%, #ff77bc, #ec4899 60%, #be185d)" },
+    { name: "Electric Blue", bg: "radial-gradient(circle at 35% 35%, #38bdf8, #0284c7 60%, #0369a1)" },
+    { name: "Nice Cube Lime", bg: "radial-gradient(circle at 35% 35%, #a3e635, #65a30d 60%, #3f6212)" },
+    { name: "Super Sunburst Orange", bg: "radial-gradient(circle at 35% 35%, #fbbf24, #f97316 60%, #c2410c)" },
+    { name: "Glitter Purple", bg: "radial-gradient(circle at 35% 35%, #c084fc, #9333ea 60%, #581c87)" },
+  ];
+
+  function playNeeDohSquishSound() {
+    try {
+      initAudio();
+      if (!audioCtx) return;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = "sine";
+      const startFreq = 220 + Math.random() * 80;
+      const endFreq = 420 + Math.random() * 120;
+      osc.frequency.setValueAtTime(startFreq, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(endFreq, audioCtx.currentTime + 0.12);
+      gain.gain.setValueAtTime(0.35, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.14);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.14);
+    } catch {}
+  }
   // Guided breathing balloon: tap to start an in / hold / out cycle.
   let breatheOn = false;
   let breatheTimer = null;
@@ -4754,6 +4796,30 @@
 
   function renderReadingEditor() {
     const plan = state.readingPlan || [];
+    const today = todayKey();
+    const todaySessions = Number(state.readingSessions?.[today]) || 0;
+    const rate = Number(state.rewards?.rates?.reading) ?? 0.25;
+
+    const rewardCard = `
+      <section class="card reading-reward-card" style="background: linear-gradient(135deg, rgba(20, 124, 120, 0.12) 0%, rgba(13, 148, 136, 0.22) 100%); border: 2px solid var(--teal, #147c78); border-radius: 12px; padding: 18px; margin-bottom: 18px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
+          <div>
+            <h3 style="margin: 0 0 6px 0; font-size: 1.15rem; color: var(--text); display: flex; align-items: center; gap: 8px;">
+              📖 20-Minute Reading Log
+            </h3>
+            <p style="margin: 0 0 6px 0; font-size: 0.92rem; color: var(--muted);">
+              Earn <strong>${money(rate)}</strong> for every 20 minutes of reading! Check off each 20-minute session as you finish it (can be done multiple times per day).
+            </p>
+            <div style="font-size: 0.88rem; font-weight: 700; color: var(--teal, #147c78);">
+              Today: ${todaySessions} session${todaySessions === 1 ? "" : "s"} (${todaySessions * 20} mins) · ${money(todaySessions * rate)} earned
+            </div>
+          </div>
+          <button class="btn primary" data-act="log-reading-session" style="font-size: 1rem; padding: 12px 20px; font-weight: 700; border-radius: 8px; cursor: pointer;">
+            📚 Log 20 Min Reading (+${money(rate)})
+          </button>
+        </div>
+      </section>`;
+
     const rows = plan.length
       ? plan
           .map(
@@ -4782,13 +4848,14 @@
           </section>`,
           )
           .join("")
-      : emptyState("📖", "No reading assignments yet. Add the first one when you are ready.");
+      : emptyState("📖", "No specific reading assignments listed yet. Use the button above to log 20-minute reading sessions!");
     return `
       <div class="view-head">
         <h2 class="view-title">📚 Shai's Reading</h2>
-        <button class="btn primary" data-act="reading-plan-add">＋ Add reading</button>
+        <button class="btn primary" data-act="reading-plan-add">＋ Add assignment</button>
       </div>
-      <p class="view-intro">This list is yours to edit. Add the book, pages, directions, and notes that match Shai's current reading.</p>
+      <p class="view-intro">Log your 20-minute reading blocks to earn allowance, and track your active books and reading assignments below.</p>
+      ${rewardCard}
       ${rows}`;
   }
 
@@ -5416,9 +5483,33 @@
 
     calming() {
       const phrase = CALM_PHRASES[calmIdx % CALM_PHRASES.length];
+      const needohHtml = card(
+        "calm-needoh",
+        "🟡 NeeDoh Squishy Fidget",
+        "Squish, stretch, and deform your NeeDoh ball to relieve tension and reset focus.",
+        '<div style="text-align:center;padding:10px">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">' +
+          '<b style="font-size:0.9rem">NeeDoh Style: <span id="needohColorBadge" style="color:var(--teal,#147c78)">' + NEEDOH_COLORS[neeDohColorIdx % NEEDOH_COLORS.length].name + '</span></b>' +
+          '</div>' +
+          '<div style="height:170px;display:flex;align-items:center;justify-content:center;position:relative">' +
+          '<div id="needohBall" class="needoh-ball" data-act="needoh-squish" role="button" tabindex="0" aria-label="Squish NeeDoh Ball"' +
+          ' style="width:115px;height:115px;border-radius:50%;background:' + NEEDOH_COLORS[neeDohColorIdx % NEEDOH_COLORS.length].bg + ';box-shadow:0 10px 25px rgba(0,0,0,0.28),inset 0 -8px 15px rgba(0,0,0,0.2);cursor:pointer;transition:transform 0.15s cubic-bezier(0.175,0.885,0.32,1.275);user-select:none;touch-action:manipulation;display:flex;align-items:center;justify-content:center;font-size:2rem">' +
+          '🟡' +
+          '</div>' +
+          '</div>' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;flex-wrap:wrap;gap:8px">' +
+          '<div style="font-weight:700;font-size:0.9rem">Squeezes: <span id="needohCount">' + neeDohSqueezes + '</span></div>' +
+          '<div style="display:flex;gap:8px">' +
+          '<button type="button" class="btn primary sm" data-act="needoh-squish">💥 Squish!</button>' +
+          '<button type="button" class="btn sm" data-act="needoh-color">🎨 Color</button>' +
+          '</div>' +
+          '</div>' +
+          '</div>',
+      );
       return (
         '<div class="view-head"><h2 class="view-title">🧘 Calming</h2></div>' +
         '<p class="view-intro">Feeling stressed or stuck? Take a minute here. You\'re okay.</p>' +
+        needohHtml +
         '<button type="button" class="card calm-phrase" data-act="calm-next" aria-label="Show another calming phrase"><span class="calm-quote">“' +
         esc(phrase) +
         '”</span><span class="calm-tap">Tap for another →</span></button>' +
@@ -6228,9 +6319,10 @@ Due May 31"></textarea>
         focus: "▶ Focus sessions",
         reminder: "🔔 Reminders",
         health: "💪 Biking & lifting",
+        reading: "📚 20 min reading",
       };
       const stub = (w) =>
-        `<div class="pay-stub">${["pushups", "task", "routine", "focus", "reminder", "health"]
+        `<div class="pay-stub">${["pushups", "task", "routine", "focus", "reminder", "health", "reading"]
           .filter((k) => w.by[k] > 0)
           .map(
             (k) =>
@@ -10082,6 +10174,7 @@ Due May 31"></textarea>
           ${rate("Routine", "routine")}
           ${rate("Focus session", "focus")}
           ${rate("Biking / lifting", "health")}
+          ${rate("Reading (20 min)", "reading")}
         </div>
         <div class="g2 grid">
           <div class="field"><label>Most per day</label><input id="rwCap" type="number" min="0" step="0.25" value="${
@@ -10114,6 +10207,7 @@ Due May 31"></textarea>
       r.rates.routine = num("rw_routine");
       r.rates.focus = num("rw_focus");
       r.rates.health = num("rw_health");
+      r.rates.reading = num("rw_reading");
       // Read the push-up ladder back in the same fewest-days-first order the
       // modal rendered it, then re-normalize (which re-sorts highest-first).
       const tierDays = pushupTiers()
@@ -10690,7 +10784,50 @@ Due May 31"></textarea>
       const n = Math.max(1, Math.min(180, Math.round(Number(v) || 0)));
       if (n) hwStart(id, n);
     },
-    // ---- Calming ----
+    // ---- Calming & NeeDoh ----
+    "needoh-open": () => {
+      openModal(
+        "🟡 Shai's NeeDoh Squishy Fidget",
+        `<div style="text-align:center; padding: 10px;">
+          <p style="font-size:0.92rem; color:var(--muted); margin-bottom:16px;">
+            Tap or click to squish, stretch, and deform your NeeDoh ball! Great for focus & resetting.
+          </p>
+          <div style="height: 190px; display:flex; align-items:center; justify-content:center; position:relative; margin: 12px 0;">
+            <div id="needohBall" class="needoh-ball" data-act="needoh-squish" role="button" tabindex="0" aria-label="Squish NeeDoh Ball"
+                 style="width: 130px; height: 130px; border-radius: 50%; background: ${NEEDOH_COLORS[neeDohColorIdx % NEEDOH_COLORS.length].bg}; box-shadow: 0 12px 28px rgba(0,0,0,0.28), inset 0 -10px 18px rgba(0,0,0,0.2); cursor: pointer; transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275); user-select: none; touch-action: manipulation; display:flex; align-items:center; justify-content:center; font-size: 2.2rem;">
+              🟡
+            </div>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:16px; flex-wrap:wrap; gap:8px;">
+            <div style="font-weight:700; font-size:0.95rem;">Squeezes: <span id="needohCount">${neeDohSqueezes}</span></div>
+            <div style="display:flex; gap:8px;">
+              <button type="button" class="btn primary" data-act="needoh-squish">💥 Squish!</button>
+              <button type="button" class="btn" data-act="needoh-color">🎨 Change Color</button>
+            </div>
+          </div>
+        </div>`
+      );
+    },
+    "needoh-squish": () => {
+      neeDohSqueezes++;
+      playNeeDohSquishSound();
+      try { navigator.vibrate?.(35); } catch {}
+      const ball = document.getElementById("needohBall");
+      if (ball) {
+        ball.style.transform = `scale(${1.25 + Math.random() * 0.1}, ${0.68 + Math.random() * 0.1}) translateY(10px) rotate(${(Math.random() - 0.5) * 16}deg)`;
+        setTimeout(() => { if (ball) ball.style.transform = "scale(1, 1) translateY(0) rotate(0deg)"; }, 180);
+      }
+      const countEl = document.getElementById("needohCount");
+      if (countEl) countEl.textContent = String(neeDohSqueezes);
+    },
+    "needoh-color": () => {
+      neeDohColorIdx = (neeDohColorIdx + 1) % NEEDOH_COLORS.length;
+      const col = NEEDOH_COLORS[neeDohColorIdx];
+      const ball = document.getElementById("needohBall");
+      if (ball) ball.style.background = col.bg;
+      const badge = document.getElementById("needohColorBadge");
+      if (badge) badge.textContent = col.name;
+    },
     "calm-next": () => {
       calmIdx = (calmIdx + 1) % CALM_PHRASES.length;
       render();
@@ -10867,6 +11004,25 @@ Due May 31"></textarea>
     },
     "study-pack": () => {
       openStudyPack();
+    },
+    "log-reading-session": () => {
+      const rate = Number(state.rewards?.rates?.reading) || 0.25;
+      state.readingSessions = state.readingSessions || {};
+      const today = todayKey();
+      state.readingSessions[today] = (state.readingSessions[today] || 0) + 1;
+      const count = state.readingSessions[today];
+
+      state.health = state.health || { log: {} };
+      const day = (state.health.log[today] = state.health.log[today] || {});
+      day["reading"] = count;
+
+      awardRewardAmount("reading", `20 min reading session #${count}`, rate);
+      addPoints(5);
+      bumpActivity("tasks");
+      triggerConfetti();
+      toast(`Logged 20 min of reading! Earned +${money(rate)} 📚 (Session #${count})`);
+      save({ immediate: true });
+      render();
     },
     "reading-plan-add": () => {
       state.readingPlan = state.readingPlan || [];
@@ -11848,6 +12004,11 @@ ${name}`;
           render();
         }
       } else if (kind === "health") {
+        if (id === "reading") {
+          ACTIONS["log-reading-session"]();
+          box.checked = false;
+          return;
+        }
         // Daily movement check-ins (biking/lifting). Optional; reset each day.
         // Paid at most once per item per day (tracked in day.__paid) so they
         // can't be farmed by un/re-checking; money already earned is kept.
