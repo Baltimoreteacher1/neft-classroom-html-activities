@@ -346,7 +346,7 @@ function joinCaption(scene, lead, goalPhrase) {
  * or key academic vocabulary.
  *
  * @param {LessonConfig} config
- * @returns {{ say: string, listen: string }}
+ * @returns {{ say: string, sayEs?: string, listen: string, listenEs?: string, keyWords?: string[] }}
  */
 export function resolveLanguageTalkPrompts(config) {
   const cfg = config || {};
@@ -371,6 +371,19 @@ export function resolveLanguageTalkPrompts(config) {
     }
   }
 
+  let stemSayEs = "";
+  if (Array.isArray(cfg.turnAndTalk)) {
+    for (const item of cfg.turnAndTalk) {
+      if (Array.isArray(item.stems) && item.stems.length > 0) {
+        const firstStem = item.stems[0];
+        if (typeof firstStem === "object" && firstStem && firstStem.es) {
+          stemSayEs = firstStem.es;
+          break;
+        }
+      }
+    }
+  }
+
   let say = "";
   if (stemSay) {
     say = stemSay;
@@ -382,6 +395,8 @@ export function resolveLanguageTalkPrompts(config) {
   } else {
     say = "I know my solution is correct because I can explain each step clearly.";
   }
+
+  let sayEs = stemSayEs || (langObj ? `Puedo explicar mi razonamiento usando el vocabulario matemático de hoy.` : "Sé que mi solución es correcta porque puedo explicar cada paso.");
 
   let listen = "";
   if (vocabList.length >= 2) {
@@ -396,7 +411,11 @@ export function resolveLanguageTalkPrompts(config) {
     listen = "My partner naming the mathematical model and describing how their steps connect to it.";
   }
 
-  return { say, listen };
+  let listenEs = vocabList.length >= 2
+    ? `Mi compañero usando términos como "${vocabList[0]}" para justificar su razonamiento.`
+    : "Mi compañero explicando POR QUÉ funciona su estrategia.";
+
+  return { say, sayEs, listen, listenEs, keyWords: vocabList };
 }
 
 /**
@@ -413,7 +432,7 @@ export function resolveLanguageTalkPrompts(config) {
  *
  * @param {LessonConfig} config lesson config.json
  * @returns {{ content: {src:string, alt:string, scene:string, goalPhrase:string, caption:string},
- *             language: {src:string, alt:string, scene:string, goalPhrase:string, caption:string, talkPrompts:{say:string, listen:string}} }}
+ *             language: {src:string, alt:string, scene:string, goalPhrase:string, caption:string, talkPrompts:{say:string, sayEs?:string, listen:string, listenEs?:string, keyWords?:string[]}} }}
  */
 export function resolveObjectiveVisuals(config) {
   const cfg = config || {};

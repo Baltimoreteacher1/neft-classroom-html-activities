@@ -1,6 +1,10 @@
-import { escHtml } from "../core/i18n.js";
+import { getPreferredLang } from "../core/i18n.js";
 import { renderMathText } from "../core/math-typography.js";
 import { renderVocabIntro } from "./vocab-intro.js";
+
+function escHtml(s) {
+  return String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
 
 let injectedStyles = false;
 
@@ -14,68 +18,69 @@ function injectVocabLearnStyles() {
   s.id = "vl-panel-styles";
   s.textContent = `
     .vl-container {
-      max-width: 860px;
+      max-width: 880px;
       margin: 0 auto;
-      padding: 12px 16px 32px;
-      font-family: "Hanken Grotesk", system-ui, sans-serif;
+      padding: 16px 20px 36px;
+      font-family: "Hanken Grotesk", system-ui, -apple-system, sans-serif;
       color: #0f172a;
     }
     .vl-hero {
       background: linear-gradient(135deg, #0f2b48 0%, #134074 100%);
       color: #ffffff;
-      border-radius: 16px;
-      padding: 24px 28px;
-      margin-bottom: 24px;
-      box-shadow: 0 8px 24px rgba(15, 43, 72, 0.18);
+      border-radius: 20px;
+      padding: 26px 30px;
+      margin-bottom: 28px;
+      box-shadow: 0 10px 28px rgba(15, 43, 72, 0.2);
     }
     .vl-hero-badge {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 5px 14px;
+      padding: 6px 16px;
       border-radius: 999px;
       background: rgba(255, 255, 255, 0.18);
-      backdrop-filter: blur(4px);
-      font-size: 0.82rem;
+      backdrop-filter: blur(6px);
+      font-size: 0.84rem;
       font-weight: 900;
       letter-spacing: 0.05em;
       text-transform: uppercase;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
     .vl-hero-title {
       font-family: "Outfit", system-ui, sans-serif;
-      font-size: 1.6rem;
+      font-size: 1.7rem;
       font-weight: 900;
-      margin: 0 0 6px;
+      margin: 0 0 8px;
       line-height: 1.25;
+      letter-spacing: -0.01em;
     }
     .vl-hero-sub {
-      font-size: 1rem;
-      opacity: 0.92;
+      font-size: 1.02rem;
+      opacity: 0.94;
       margin: 0;
       line-height: 1.5;
     }
     .vl-section-card {
       background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 16px;
-      padding: 24px;
-      margin-bottom: 24px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+      border: 1.5px solid #e2e8f0;
+      border-radius: 20px;
+      padding: 26px;
+      margin-bottom: 28px;
+      box-shadow: 0 6px 20px rgba(15, 23, 42, 0.04);
     }
     .vl-section-header {
       display: flex;
       align-items: center;
-      gap: 12px;
-      margin-bottom: 18px;
-      padding-bottom: 14px;
+      gap: 14px;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
       border-bottom: 2px solid #f1f5f9;
     }
     .vl-section-tag {
       flex: 0 0 auto;
-      padding: 4px 12px;
+      padding: 5px 14px;
       border-radius: 999px;
-      font-size: 0.78rem;
+      font-size: 0.8rem;
       font-weight: 900;
       text-transform: uppercase;
       letter-spacing: 0.05em;
@@ -84,55 +89,56 @@ function injectVocabLearnStyles() {
     .vl-tag-teal { background: #ccfbf1; color: #0f766e; }
     .vl-section-title {
       font-family: "Outfit", system-ui, sans-serif;
-      font-size: 1.3rem;
+      font-size: 1.35rem;
       font-weight: 800;
       color: #0f172a;
       margin: 0;
     }
     .vl-section-desc {
-      font-size: 0.92rem;
+      font-size: 0.94rem;
       color: #64748b;
       margin: 2px 0 0;
+      line-height: 1.4;
     }
     .vl-key-idea-card {
       background: linear-gradient(135deg, #fffbe6 0%, #fef3c7 100%);
       border: 2px solid #f59e0b;
-      border-radius: 14px;
-      padding: 18px 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 8px rgba(245, 158, 11, 0.12);
+      border-radius: 16px;
+      padding: 20px 22px;
+      margin-bottom: 22px;
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.14);
     }
     .vl-key-idea-label {
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       font-weight: 900;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.06em;
       color: #b45309;
       margin-bottom: 6px;
       display: block;
     }
     .vl-key-idea-text {
-      font-size: 1.08rem;
+      font-size: 1.1rem;
       font-weight: 700;
       color: #78350f;
       margin: 0;
-      line-height: 1.5;
+      line-height: 1.55;
     }
     .vl-demo-box {
       background: #f8fbff;
       border: 1.5px solid #cbd5e1;
-      border-radius: 14px;
-      padding: 20px;
+      border-radius: 16px;
+      padding: 22px;
     }
     .vl-demo-title {
       font-family: "Outfit", system-ui, sans-serif;
-      font-size: 1.1rem;
+      font-size: 1.12rem;
       font-weight: 800;
       color: #0f2b48;
-      margin-bottom: 14px;
+      margin-bottom: 16px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
     .vl-demo-steps {
       display: flex;
@@ -141,65 +147,72 @@ function injectVocabLearnStyles() {
     }
     .vl-demo-step {
       display: flex;
-      gap: 12px;
+      gap: 14px;
       align-items: flex-start;
-      padding: 12px 14px;
+      padding: 14px 16px;
       background: #ffffff;
       border: 1px solid #e2e8f0;
-      border-radius: 10px;
-      border-left: 4px solid #0d7a76;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+      border-radius: 12px;
+      border-left: 5px solid #0d7a76;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
     }
     .vl-step-num {
       flex: 0 0 auto;
-      padding: 4px 10px;
-      border-radius: 6px;
+      padding: 5px 12px;
+      border-radius: 8px;
       background: #0d7a76;
       color: #ffffff;
-      font-size: 0.78rem;
+      font-size: 0.8rem;
       font-weight: 900;
+      letter-spacing: 0.02em;
     }
     .vl-step-text {
-      font-size: 0.98rem;
+      font-size: 1.02rem;
       line-height: 1.5;
       color: #0f172a;
       font-weight: 600;
     }
     .vl-actions {
       text-align: center;
-      padding: 20px 0 32px;
+      padding: 24px 0 36px;
     }
     .vl-continue-btn {
-      padding: 16px 36px;
-      font-size: 1.15rem;
+      padding: 18px 40px;
+      font-size: 1.18rem;
       font-weight: 800;
       color: #ffffff;
       background: linear-gradient(135deg, #0d7a76 0%, #0f4c81 100%);
       border: none;
-      border-radius: 14px;
-      box-shadow: 0 6px 20px rgba(13, 122, 118, 0.3);
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(13, 122, 118, 0.32);
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .vl-continue-btn:hover {
       filter: brightness(1.08);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(13, 122, 118, 0.4);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(13, 122, 118, 0.42);
+    }
+    .vl-continue-btn:active {
+      transform: translateY(-1px);
     }
     @media (max-width: 600px) {
-      .vl-container { padding: 8px 10px 24px; }
-      .vl-hero { padding: 18px 20px; }
-      .vl-hero-title { font-size: 1.35rem; }
-      .vl-section-card { padding: 16px; }
-      .vl-continue-btn { width: 100%; padding: 16px 20px; font-size: 1.05rem; }
+      .vl-container { padding: 10px 12px 28px; }
+      .vl-hero { padding: 20px; }
+      .vl-hero-title { font-size: 1.4rem; }
+      .vl-section-card { padding: 18px; }
+      .vl-continue-btn { width: 100%; padding: 18px 24px; font-size: 1.08rem; }
     }
   `;
   document.head.appendChild(s);
 }
 
-export function renderVocabAndLearnIt(container, config, { onComplete, state } = {}) {
+export function renderVocabAndLearnIt(container, config, options) {
+  const { onComplete = () => {}, state = null } = options || {};
   injectVocabLearnStyles();
   container.innerHTML = "";
+
+  const isEs = getPreferredLang() === "es";
 
   const wrap = document.createElement("div");
   wrap.className = "vl-container";
@@ -208,9 +221,15 @@ export function renderVocabAndLearnIt(container, config, { onComplete, state } =
   const hero = document.createElement("div");
   hero.className = "vl-hero";
   hero.innerHTML = `
-    <div class="vl-hero-badge">🔑📖 Vocab & Learn It</div>
+    <div class="vl-hero-badge">${isEs ? "🔑📖 Vocabulario y Aprendizaje" : "🔑📖 Vocab & Learn It"}</div>
     <h2 class="vl-hero-title">${escHtml(config.title)}</h2>
-    <p class="vl-hero-sub">Study the key vocabulary words, read the big math idea, and review the worked demonstration.</p>
+    <p class="vl-hero-sub">
+      ${
+        isEs
+          ? "Estudia las palabras clave de vocabulario, lee la idea matemática principal y repasa la demostración resuelta."
+          : "Study the key vocabulary words, read the big math idea, and review the worked demonstration."
+      }
+    </p>
   `;
   wrap.append(hero);
 
@@ -220,17 +239,23 @@ export function renderVocabAndLearnIt(container, config, { onComplete, state } =
     part1.className = "vl-section-card";
     part1.innerHTML = `
       <div class="vl-section-header">
-        <span class="vl-section-tag vl-tag-amber">Part 1</span>
+        <span class="vl-section-tag vl-tag-amber">${isEs ? "Parte 1" : "Part 1"}</span>
         <div>
-          <h3 class="vl-section-title">🔑 Key Vocabulary</h3>
-          <p class="vl-section-desc">Tap each card to flip and study its definition, visual model, and audio.</p>
+          <h3 class="vl-section-title">${isEs ? "🔑 Vocabulario Clave" : "🔑 Key Vocabulary"}</h3>
+          <p class="vl-section-desc">
+            ${
+              isEs
+                ? "Toca cada tarjeta para voltearla y estudiar su definición, modelo visual y audio."
+                : "Tap each card to flip and study its definition, visual model, and audio."
+            }
+          </p>
         </div>
       </div>
       <div class="vl-vocab-target"></div>
     `;
     wrap.append(part1);
     const vocabTarget = part1.querySelector(".vl-vocab-target");
-    renderVocabIntro(vocabTarget, { terms: config.vocabulary });
+    renderVocabIntro(vocabTarget, { terms: config.vocabulary, onComplete: () => {} });
   }
 
   // PART 2: Learn It (Concept Notes & Worked Demonstration)
@@ -244,33 +269,45 @@ export function renderVocabAndLearnIt(container, config, { onComplete, state } =
   part2.className = "vl-section-card";
   part2.innerHTML = `
     <div class="vl-section-header">
-      <span class="vl-section-tag vl-tag-teal">Part 2</span>
+      <span class="vl-section-tag vl-tag-teal">${isEs ? "Parte 2" : "Part 2"}</span>
       <div>
-        <h3 class="vl-section-title">💡 How the Math Works (Learn It)</h3>
+        <h3 class="vl-section-title">${isEs ? "💡 Cómo Funciona la Matemática" : "💡 How the Math Works (Learn It)"}</h3>
         <p class="vl-section-desc">${escHtml(heading)}</p>
       </div>
     </div>
-    ${intro ? `<p style="font-size:1.02rem; line-height:1.55; color:#1e293b; font-weight:600; margin:0 0 16px;">${renderMathText(intro)}</p>` : ""}
-    ${keyIdea ? `
+    ${intro ? `<p style="font-size:1.04rem; line-height:1.55; color:#1e293b; font-weight:600; margin:0 0 18px;">${renderMathText(intro)}</p>` : ""}
+    ${
+      keyIdea
+        ? `
       <div class="vl-key-idea-card">
-        <span class="vl-key-idea-label">💡 Key Math Idea</span>
+        <span class="vl-key-idea-label">${isEs ? "💡 Idea Clave" : "💡 Key Math Idea"}</span>
         <p class="vl-key-idea-text">${renderMathText(keyIdea)}</p>
-      </div>` : ""}
-    ${Array.isArray(iDo.lines) && iDo.lines.length > 0 ? `
+      </div>`
+        : ""
+    }
+    ${
+      Array.isArray(iDo.lines) && iDo.lines.length > 0
+        ? `
       <div class="vl-demo-box">
         <div class="vl-demo-title">
-          <span>👀 Worked Demonstration:</span>
-          <span>${escHtml(iDo.title || "Watch Me")}</span>
+          <span>${isEs ? "👀 Demostración Resuelta:" : "👀 Worked Demonstration:"}</span>
+          <span>${escHtml(iDo.title || (isEs ? "Mira cómo se hace" : "Watch Me"))}</span>
         </div>
         <div class="vl-demo-steps">
-          ${iDo.lines.map((line, idx) => `
+          ${iDo.lines
+            .map(
+              (line, idx) => `
             <div class="vl-demo-step">
-              <span class="vl-step-num">Step ${idx + 1}</span>
+              <span class="vl-step-num">${isEs ? "Paso" : "Step"} ${idx + 1}</span>
               <span class="vl-step-text">${renderMathText(line)}</span>
             </div>
-          `).join("")}
+          `,
+            )
+            .join("")}
         </div>
-      </div>` : ""}
+      </div>`
+        : ""
+    }
   `;
   wrap.append(part2);
 
@@ -280,7 +317,11 @@ export function renderVocabAndLearnIt(container, config, { onComplete, state } =
   const btn = document.createElement("button");
   btn.type = "button";
   btn.className = "btn btn-primary btn-lg vl-continue-btn";
-  btn.innerHTML = `<span>I've studied the words & concept — let's explore!</span> <span aria-hidden="true">🚀 →</span>`;
+  btn.innerHTML = `<span>${
+    isEs
+      ? "¡He estudiado las palabras y el concepto, a explorar!"
+      : "I've studied the words & concept — let's explore!"
+  }</span> <span aria-hidden="true">🚀 →</span>`;
   btn.addEventListener("click", () => {
     try {
       if (state) state.set({ notesVisited: true, vocabVisited: true });

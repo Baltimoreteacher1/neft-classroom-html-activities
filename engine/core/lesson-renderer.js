@@ -2023,18 +2023,22 @@ function renderObjectives(el, config, state, opts = {}) {
           ${o.icon} <strong>Visual Representation:</strong> ${esc(o.caption)} <span style="display:inline-block; font-size:0.78rem; font-weight:800; color:#0284c7; background:rgba(2,132,199,0.08); padding:3px 8px; border-radius:6px; margin-left:6px; border:1px solid rgba(2,132,199,0.2);">🔍 Click to enlarge</span>
         </div>
         ${o.talkPrompts ? `
-        <div style="padding:14px 16px; background:#fff7ed; border-top:2px solid #fdba74; font-size:0.95rem; color:#0f172a; line-height:1.55; -webkit-font-smoothing:antialiased;">
-          <div style="font-weight:900; font-size:0.82rem; color:#c2410c; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+        <div class="language-talk-card" data-lang="en" data-say-en="${esc(o.talkPrompts.say)}" data-say-es="${esc(o.talkPrompts.sayEs || o.talkPrompts.say)}" data-listen-en="${esc(o.talkPrompts.listen)}" data-listen-es="${esc(o.talkPrompts.listenEs || o.talkPrompts.listen)}" style="padding:14px 16px; background:#fff7ed; border-top:2px solid #fdba74; font-size:0.95rem; color:#0f172a; line-height:1.55; -webkit-font-smoothing:antialiased;">
+          <div style="font-weight:900; font-size:0.82rem; color:#c2410c; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px; display:flex; align-items:center; justify-content:space-between; gap:6px; flex-wrap:wrap;">
             <span>🗣️ Student Talk Targets (What to Say & Listen For):</span>
+            <div style="display:inline-flex; align-items:center; gap:6px;">
+              <button type="button" class="talk-audio-btn btn btn-xs btn-outline" data-talk-text="${esc(o.talkPrompts.say)}" title="Listen to pronunciation" style="padding:2px 8px; font-size:0.75rem; font-weight:800; border-radius:6px; background:white; color:#c2410c; border:1px solid #fdba74; cursor:pointer;">🔊 Listen</button>
+              <button type="button" class="talk-lang-toggle btn btn-xs btn-outline" title="Switch English / Spanish" style="padding:2px 8px; font-size:0.75rem; font-weight:800; border-radius:6px; background:white; color:#0369a1; border:1px solid #7dd3fc; cursor:pointer;">🇲🇽 ES</button>
+            </div>
           </div>
           <div style="display:flex; flex-direction:column; gap:8px;">
             <div style="background:rgba(234,88,12,0.06); padding:9px 12px; border-radius:8px; border-left:4px solid #ea580c;">
               <strong style="color:#c2410c; font-weight:900; font-size:0.95rem;">What to Say:</strong> 
-              <span style="font-weight:750; font-size:0.98rem; color:#0f172a; font-style:italic;">"${esc(o.talkPrompts.say)}"</span>
+              <span class="talk-say-text" style="font-weight:750; font-size:0.98rem; color:#0f172a; font-style:italic;">"${esc(o.talkPrompts.say)}"</span>
             </div>
             <div style="background:rgba(2,132,199,0.06); padding:9px 12px; border-radius:8px; border-left:4px solid #0284c7;">
               <strong style="color:#0369a1; font-weight:900; font-size:0.95rem;">What to Listen For:</strong> 
-              <span style="font-weight:750; font-size:0.98rem; color:#0f172a;">"${esc(o.talkPrompts.listen)}"</span>
+              <span class="talk-listen-text" style="font-weight:750; font-size:0.98rem; color:#0f172a;">"${esc(o.talkPrompts.listen)}"</span>
             </div>
           </div>
         </div>
@@ -2099,6 +2103,38 @@ function renderObjectives(el, config, state, opts = {}) {
 
   block.querySelectorAll(".visual-model-wrapper img").forEach((img) => {
     attachImageZoom(img);
+  });
+
+  block.querySelectorAll(".talk-audio-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const text = btn.getAttribute("data-talk-text");
+      if (text && "speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        u.rate = 0.9;
+        window.speechSynthesis.speak(u);
+      }
+    });
+  });
+
+  block.querySelectorAll(".talk-lang-toggle").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const cardEl = btn.closest(".language-talk-card");
+      if (!cardEl) return;
+      const isEs = cardEl.getAttribute("data-lang") === "es";
+      cardEl.setAttribute("data-lang", isEs ? "en" : "es");
+      const sayEl = cardEl.querySelector(".talk-say-text");
+      const listenEl = cardEl.querySelector(".talk-listen-text");
+      const audioBtn = cardEl.querySelector(".talk-audio-btn");
+      const sayText = isEs ? cardEl.getAttribute("data-say-en") : cardEl.getAttribute("data-say-es");
+      const listenText = isEs ? cardEl.getAttribute("data-listen-en") : cardEl.getAttribute("data-listen-es");
+      if (sayEl) sayEl.textContent = `"${sayText}"`;
+      if (listenEl) listenEl.textContent = `"${listenText}"`;
+      if (audioBtn && sayText) audioBtn.setAttribute("data-talk-text", sayText);
+      btn.textContent = isEs ? "🇲🇽 ES" : "🇺🇸 EN";
+    });
   });
 
   // Persist each self-check on Launch (phase 0) so it survives reload, exactly
@@ -3112,10 +3148,13 @@ function renderLaunchPhase(el, state, ctx, config) {
     enableWordProblemAnnotation(learnHost);
   };
 
+  const isEs = getPreferredLang() === "es";
   const btn = document.createElement("button");
   btn.className = "btn btn-primary btn-lg mt-6";
   const isStudied = (state.get() || {}).vocabVisited || (state.get() || {}).notesVisited;
-  btn.textContent = isStudied ? "Continue to Phase 4: Explore 🔍 →" : "🔑📖 Vocab & Learn It 🚀 →";
+  btn.textContent = isStudied
+    ? (isEs ? "Continuar a la Fase 4: Explorar 🔍 →" : "Continue to Phase 4: Explore 🔍 →")
+    : (isEs ? "🔑📖 Vocabulario y Aprendizaje 🚀 →" : "🔑📖 Vocab & Learn It 🚀 →");
 
   btn.addEventListener("click", async () => {
     if (

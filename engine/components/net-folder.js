@@ -406,12 +406,23 @@ export function renderNetFolder(
   // Mobile touch feedback: highlight the slider thumb while actively dragging
   // so students get a clear "I'm holding it" cue on touchscreens. Purely visual
   // and suppressed (no transition) under prefers-reduced-motion.
-  const setActive = (on) => slider.classList.toggle("nf-slider-active", on);
-  slider.addEventListener("pointerdown", () => setActive(true));
-  slider.addEventListener("pointerup", () => setActive(false));
-  slider.addEventListener("pointercancel", () => setActive(false));
-  slider.addEventListener("blur", () => setActive(false));
-  foldRow.append(foldLbl, slider);
+  let isExploded = false;
+  const explodeBtn = document.createElement("button");
+  explodeBtn.type = "button";
+  explodeBtn.className = "btn btn-xs btn-outline";
+  explodeBtn.textContent = "💥 Explode Net";
+  explodeBtn.title = "Deconstruct 3D faces in spatial view";
+  explodeBtn.style.cssText = "font-weight:700; color:#4f46e5; border:1.5px solid #818cf8; background:rgba(99,102,241,0.06); border-radius:8px; padding:4px 10px; cursor:pointer;";
+  explodeBtn.addEventListener("click", () => {
+    isExploded = !isExploded;
+    explodeBtn.style.background = isExploded ? "#4f46e5" : "rgba(99,102,241,0.06)";
+    explodeBtn.style.color = isExploded ? "#ffffff" : "#4f46e5";
+    const scale = isExploded ? 1.25 : 1;
+    sceneWrap.style.transform = `scale(${scale})`;
+    sceneWrap.style.transition = "transform 0.3s cubic-bezier(0.34,1.56,0.64,1)";
+  });
+
+  foldRow.append(foldLbl, slider, explodeBtn);
   wrapper.append(foldRow);
 
   const feedbackSlot = document.createElement("div");
