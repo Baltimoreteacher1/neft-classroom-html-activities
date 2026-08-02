@@ -1,5 +1,5 @@
 /* ==========================================================================
-   EDUWONDERLAB FORMULA POPUP & SCROLL TOP RESET SYSTEM
+   EDUWONDERLAB FORMULA & VOCABULARY POPUP + SCROLL RESET SYSTEM
    ========================================================================== */
 
 (function() {
@@ -16,132 +16,269 @@
     document.body.scrollTop = 0;
   });
 
-  // 2. Formula Database with Abstract Visual SVG Diagrams (No specific numbers)
-  const FORMULA_DB = {
-    "area_rectangle": {
-      title: "Area of a Rectangle",
-      formula: "A = l × w",
-      vars: [
-        { symbol: "A", desc: "Total area (square units inside)" },
-        { symbol: "l", desc: "Length of base" },
-        { symbol: "w", desc: "Width / Height" }
-      ],
-      svg: `<svg viewBox="0 0 280 140" style="background:#F8FAFC; border-radius:12px; border:1px solid #E2E8F0; width:100%;">
-        <rect x="50" y="30" width="180" height="70" fill="rgba(2,132,199,0.15)" stroke="#0284C7" stroke-width="2.5" rx="6"/>
-        <line x1="50" y1="112" x2="230" y2="112" stroke="#0284C7" stroke-width="2" marker-start="url(#arrowS)" marker-end="url(#arrowE)"/>
-        <text x="140" y="126" text-anchor="middle" fill="#0284C7" font-weight="800" font-size="12">Length (l)</text>
-        <line x1="38" y1="30" x2="38" y2="100" stroke="#0D9488" stroke-width="2"/>
-        <text x="24" y="68" text-anchor="middle" fill="#0D9488" font-weight="800" font-size="12">w</text>
-        <text x="140" y="70" text-anchor="middle" fill="#0F172A" font-weight="800" font-size="14">Area = l × w</text>
+  // 2. Comprehensive Vocabulary & Formula Database with SVG Diagrams
+  const VOCAB_DB = {
+    "add": {
+      title: "Add",
+      def: "To combine two or more numbers or quantities to find a total sum.",
+      example: "If you have 6 blocks and add 4 more, 6 + 4 = 10.",
+      svg: `<svg viewBox="0 0 280 120" style="background:#F0FDF4; border-radius:12px; border:1px solid #BBF7D0; width:100%;">
+        <rect x="30" y="35" width="45" height="45" fill="#16A34A" rx="8"/>
+        <text x="52" y="62" text-anchor="middle" fill="#FFF" font-weight="900" font-size="18">6</text>
+        <text x="100" y="65" text-anchor="middle" fill="#16A34A" font-weight="900" font-size="24">+</text>
+        <rect x="120" y="35" width="45" height="45" fill="#16A34A" rx="8"/>
+        <text x="142" y="62" text-anchor="middle" fill="#FFF" font-weight="900" font-size="18">4</text>
+        <text x="190" y="65" text-anchor="middle" fill="#16A34A" font-weight="900" font-size="24">=</text>
+        <rect x="210" y="30" width="55" height="55" fill="#047857" rx="10"/>
+        <text x="237" y="65" text-anchor="middle" fill="#FFF" font-weight="900" font-size="22">10</text>
+        <text x="140" y="105" text-anchor="middle" fill="#166534" font-weight="800" font-size="12">Combine parts ➜ Total Sum</text>
       </svg>`
     },
-    "area_triangle": {
-      title: "Area of a Triangle",
-      formula: "A = ½ × b × h",
-      vars: [
-        { symbol: "A", desc: "Total enclosed triangle area" },
-        { symbol: "b", desc: "Length of triangle base" },
-        { symbol: "h", desc: "Perpendicular height (at 90° to base)" }
-      ],
-      svg: `<svg viewBox="0 0 280 140" style="background:#F8FAFC; border-radius:12px; border:1px solid #E2E8F0; width:100%;">
-        <polygon points="40,105 240,105 170,25" fill="rgba(13,148,136,0.18)" stroke="#0D9488" stroke-width="2.5"/>
-        <line x1="170" y1="25" x2="170" y2="105" stroke="#EA580C" stroke-width="2" stroke-dasharray="4"/>
-        <rect x="162" y="97" width="8" height="8" fill="none" stroke="#EA580C" stroke-width="1.5"/>
-        <text x="182" y="65" fill="#EA580C" font-weight="800" font-size="12">h</text>
-        <text x="140" y="122" fill="#0D9488" font-weight="800" font-size="12">Base (b)</text>
-        <text x="110" y="65" fill="#0F172A" font-weight="800" font-size="13">A = ½ · b · h</text>
+    "subtract": {
+      title: "Subtract",
+      def: "To take one number away from another to find the difference.",
+      example: "If you have 10 counters and take away 4, 10 - 4 = 6.",
+      svg: `<svg viewBox="0 0 280 120" style="background:#FEF2F2; border-radius:12px; border:1px solid #FCA5A5; width:100%;">
+        <rect x="30" y="30" width="55" height="55" fill="#DC2626" rx="10"/>
+        <text x="57" y="65" text-anchor="middle" fill="#FFF" font-weight="900" font-size="22">10</text>
+        <text x="110" y="65" text-anchor="middle" fill="#DC2626" font-weight="900" font-size="24">−</text>
+        <rect x="130" y="35" width="45" height="45" fill="#EF4444" rx="8"/>
+        <text x="152" y="62" text-anchor="middle" fill="#FFF" font-weight="900" font-size="18">4</text>
+        <text x="200" y="65" text-anchor="middle" fill="#DC2626" font-weight="900" font-size="24">=</text>
+        <rect x="220" y="35" width="45" height="45" fill="#B91C1C" rx="8"/>
+        <text x="242" y="62" text-anchor="middle" fill="#FFF" font-weight="900" font-size="18">6</text>
+        <text x="140" y="105" text-anchor="middle" fill="#991B1B" font-weight="800" font-size="12">Take away ➜ Difference</text>
       </svg>`
     },
-    "area_trapezoid": {
-      title: "Area of a Trapezoid",
-      formula: "A = ½ × (b₁ + b₂) × h",
-      vars: [
-        { symbol: "b₁", desc: "Top parallel base length" },
-        { symbol: "b₂", desc: "Bottom parallel base length" },
-        { symbol: "h", desc: "Perpendicular distance between bases" }
-      ],
-      svg: `<svg viewBox="0 0 280 140" style="background:#F8FAFC; border-radius:12px; border:1px solid #E2E8F0; width:100%;">
-        <polygon points="80,30 200,30 240,105 40,105" fill="rgba(234,88,12,0.15)" stroke="#EA580C" stroke-width="2.5"/>
-        <text x="140" y="22" text-anchor="middle" fill="#0284C7" font-weight="800" font-size="12">b₁</text>
-        <text x="140" y="122" text-anchor="middle" fill="#0284C7" font-weight="800" font-size="12">b₂</text>
-        <line x1="140" y1="30" x2="140" y2="105" stroke="#0D9488" stroke-width="2" stroke-dasharray="4"/>
-        <text x="152" y="68" fill="#0D9488" font-weight="800" font-size="12">h</text>
-        <text x="140" y="70" text-anchor="middle" fill="#0F172A" font-weight="800" font-size="12">A = ½(b₁ + b₂)h</text>
+    "multiply": {
+      title: "Multiply",
+      def: "To add a number to itself a specific number of times (repeated addition).",
+      example: "6 × 8 means 6 groups of 8, which equals 48.",
+      svg: `<svg viewBox="0 0 280 120" style="background:#F0F9FF; border-radius:12px; border:1px solid #BAE6FD; width:100%;">
+        <g fill="#0284C7">
+          <circle cx="50" cy="40" r="8"/><circle cx="70" cy="40" r="8"/><circle cx="90" cy="40" r="8"/>
+          <circle cx="50" cy="60" r="8"/><circle cx="70" cy="60" r="8"/><circle cx="90" cy="40" r="8"/>
+        </g>
+        <text x="140" y="55" text-anchor="middle" fill="#0369A1" font-weight="900" font-size="20">3 × 4 = 12</text>
+        <rect x="180" y="25" width="70" height="50" fill="none" stroke="#0284C7" stroke-width="2" stroke-dasharray="4" rx="6"/>
+        <text x="215" y="55" text-anchor="middle" fill="#0284C7" font-weight="800" font-size="12">Array Grid</text>
+        <text x="140" y="105" text-anchor="middle" fill="#0369A1" font-weight="800" font-size="12">Equal groups ➜ Product</text>
       </svg>`
     },
-    "volume_prism": {
-      title: "Volume of a Rectangular Prism",
-      formula: "V = l × w × h",
-      vars: [
-        { symbol: "V", desc: "3D space capacity inside" },
-        { symbol: "l", desc: "Length" },
-        { symbol: "w", desc: "Width" },
-        { symbol: "h", desc: "Height" }
-      ],
-      svg: `<svg viewBox="0 0 280 140" style="background:#F8FAFC; border-radius:12px; border:1px solid #E2E8F0; width:100%;">
-        <polygon points="50,95 170,95 210,45 90,45" fill="rgba(79,70,229,0.15)" stroke="#4F46E5" stroke-width="2"/>
-        <polygon points="90,45 210,45 210,15 90,15" fill="rgba(79,70,229,0.25)" stroke="#4F46E5" stroke-width="2"/>
-        <polygon points="50,95 90,45 90,15 50,65" fill="rgba(79,70,229,0.35)" stroke="#4F46E5" stroke-width="2"/>
-        <text x="110" y="112" fill="#4F46E5" font-weight="800" font-size="12">Length (l)</text>
-        <text x="200" y="80" fill="#0D9488" font-weight="800" font-size="12">w</text>
-        <text x="35" y="60" fill="#EA580C" font-weight="800" font-size="12">h</text>
-        <text x="140" y="35" text-anchor="middle" fill="#0F172A" font-weight="800" font-size="13">V = l × w × h</text>
+    "divide": {
+      title: "Divide",
+      def: "To split a number into equal parts or groups.",
+      example: "12 ÷ 3 means sharing 12 items into 3 equal groups of 4.",
+      svg: `<svg viewBox="0 0 280 120" style="background:#FAF5FF; border-radius:12px; border:1px solid #E9D5FF; width:100%;">
+        <circle cx="50" cy="45" r="20" fill="#9333EA"/>
+        <circle cx="100" cy="45" r="20" fill="#9333EA"/>
+        <circle cx="150" cy="45" r="20" fill="#9333EA"/>
+        <text x="50" y="50" text-anchor="middle" fill="#FFF" font-weight="900" font-size="14">4</text>
+        <text x="100" y="50" text-anchor="middle" fill="#FFF" font-weight="900" font-size="14">4</text>
+        <text x="150" y="50" text-anchor="middle" fill="#FFF" font-weight="900" font-size="14">4</text>
+        <text x="220" y="50" text-anchor="middle" fill="#7E22CE" font-weight="900" font-size="18">12 ÷ 3 = 4</text>
+        <text x="140" y="105" text-anchor="middle" fill="#6B21A8" font-weight="800" font-size="12">Split equally ➜ Quotient</text>
       </svg>`
     },
-    "distributive": {
-      title: "Distributive Property",
-      formula: "a(b + c) = ab + ac",
-      vars: [
-        { symbol: "a", desc: "Multiplier outside parentheses" },
-        { symbol: "b, c", desc: "Terms inside parentheses" }
-      ],
-      svg: `<svg viewBox="0 0 280 140" style="background:#F8FAFC; border-radius:12px; border:1px solid #E2E8F0; width:100%;">
-        <rect x="40" y="35" width="90" height="60" fill="#0D9488" rx="6"/>
-        <text x="85" y="70" text-anchor="middle" fill="#FFF" font-weight="800" font-size="13">a × b</text>
-        <rect x="140" y="35" width="100" height="60" fill="#EA580C" rx="6"/>
-        <text x="190" y="70" text-anchor="middle" fill="#FFF" font-weight="800" font-size="13">+ a × c</text>
-        <text x="140" y="120" text-anchor="middle" fill="#0F172A" font-weight="800" font-size="13">a(b + c) = ab + ac</text>
+    "half": {
+      title: "Half",
+      def: "One of two equal parts of a whole; the same as dividing by 2 (or multiplying by ½).",
+      example: "Half of 12 is 6, because 12 ÷ 2 = 6.",
+      svg: `<svg viewBox="0 0 280 120" style="background:#FFFBEB; border-radius:12px; border:1px solid #FDE68A; width:100%;">
+        <circle cx="80" cy="50" r="32" fill="#F59E0B"/>
+        <path d="M 80,18 A 32,32 0 0,1 80,82 Z" fill="#D97706"/>
+        <line x1="80" y1="18" x2="80" y2="82" stroke="#FFF" stroke-width="3"/>
+        <text x="185" y="55" text-anchor="middle" fill="#B45309" font-weight="900" font-size="18">½ of Total</text>
+        <text x="140" y="105" text-anchor="middle" fill="#92400E" font-weight="800" font-size="12">Split in 2 equal pieces</text>
       </svg>`
     },
-    "equation_solve": {
-      title: "One-Step Equation Isolation",
-      formula: "x + a = b  ➜  x = b - a",
-      vars: [
-        { symbol: "x", desc: "Unknown variable to isolate" },
-        { symbol: "a", desc: "Constant term added to x" },
-        { symbol: "b", desc: "Total sum value" }
-      ],
-      svg: `<svg viewBox="0 0 280 140" style="background:#F8FAFC; border-radius:12px; border:1px solid #E2E8F0; width:100%;">
-        <rect x="30" y="40" width="70" height="40" fill="#0D9488" rx="6"/>
-        <text x="65" y="65" text-anchor="middle" fill="#FFF" font-weight="800" font-size="14">x</text>
-        <rect x="110" y="40" width="30" height="40" fill="#EA580C" rx="6"/>
-        <text x="125" y="65" text-anchor="middle" fill="#FFF" font-weight="800" font-size="13">+a</text>
-        <text x="155" y="66" text-anchor="middle" fill="#0284C7" font-weight="800" font-size="20">=</text>
-        <rect x="175" y="40" width="75" height="40" fill="#0284C7" rx="6"/>
-        <text x="212" y="65" text-anchor="middle" fill="#FFF" font-weight="800" font-size="14">b</text>
-        <text x="140" y="115" text-anchor="middle" fill="#0F172A" font-weight="800" font-size="13">Isolate x: Subtract a from both sides</text>
+    "rectangle": {
+      title: "Rectangle",
+      def: "A 4-sided flat shape with 4 right angles (90°) and opposite sides equal.",
+      example: "A door, smartphone screen, or book cover is shaped like a rectangle.",
+      svg: `<svg viewBox="0 0 280 120" style="background:#F8FAFC; border-radius:12px; border:1px solid #CBD5E1; width:100%;">
+        <rect x="50" y="25" width="180" height="60" fill="rgba(2,132,199,0.15)" stroke="#0284C7" stroke-width="3" rx="4"/>
+        <rect x="50" y="25" width="10" height="10" fill="none" stroke="#0284C7" stroke-width="1.5"/>
+        <rect x="220" y="25" width="10" height="10" fill="none" stroke="#0284C7" stroke-width="1.5"/>
+        <rect x="50" y="75" width="10" height="10" fill="none" stroke="#0284C7" stroke-width="1.5"/>
+        <rect x="220" y="75" width="10" height="10" fill="none" stroke="#0284C7" stroke-width="1.5"/>
+        <text x="140" y="60" text-anchor="middle" fill="#0F172A" font-weight="900" font-size="14">4 Right Angles (90°)</text>
+        <text x="140" y="105" text-anchor="middle" fill="#475569" font-weight="800" font-size="12">Opposite sides are parallel & equal</text>
+      </svg>`
+    },
+    "trapezoid": {
+      title: "Trapezoid",
+      def: "A 4-sided flat shape with exactly one pair of parallel sides (called bases).",
+      example: "A trapezoid has a top base b₁ and a bottom base b₂ with height h.",
+      svg: `<svg viewBox="0 0 280 120" style="background:#FFF7ED; border-radius:12px; border:1px solid #FFEDD5; width:100%;">
+        <polygon points="80,25 200,25 240,85 40,85" fill="rgba(234,88,12,0.18)" stroke="#EA580C" stroke-width="3"/>
+        <text x="140" y="20" text-anchor="middle" fill="#C2410C" font-weight="900" font-size="12">Base 1 (b₁)</text>
+        <text x="140" y="100" text-anchor="middle" fill="#C2410C" font-weight="900" font-size="12">Base 2 (b₂)</text>
+        <line x1="140" y1="25" x2="140" y2="85" stroke="#0D9488" stroke-width="2" stroke-dasharray="4"/>
+        <text x="152" y="60" fill="#0D9488" font-weight="900" font-size="12">h</text>
+      </svg>`
+    },
+    "parallelogram": {
+      title: "Parallelogram",
+      def: "A 4-sided flat shape with both pairs of opposite sides parallel and equal in length.",
+      example: "Area of a parallelogram = base × height (A = b × h).",
+      svg: `<svg viewBox="0 0 280 120" style="background:#F0FDFA; border-radius:12px; border:1px solid #CCFBF1; width:100%;">
+        <polygon points="70,25 220,25 180,85 30,85" fill="rgba(13,148,136,0.18)" stroke="#0D9488" stroke-width="3"/>
+        <line x1="70" y1="25" x2="70" y2="85" stroke="#EA580C" stroke-width="2" stroke-dasharray="4"/>
+        <text x="82" y="60" fill="#EA580C" font-weight="900" font-size="12">Height (h)</text>
+        <text x="110" y="102" fill="#0D9488" font-weight="900" font-size="12">Base (b)</text>
+      </svg>`
+    },
+    "triangle": {
+      title: "Triangle",
+      def: "A 3-sided flat polygon with three interior angles adding up to 180°.",
+      example: "Area = ½ × base × height.",
+      svg: `<svg viewBox="0 0 280 120" style="background:#F0F9FF; border-radius:12px; border:1px solid #BAE6FD; width:100%;">
+        <polygon points="40,85 240,85 160,20" fill="rgba(2,132,199,0.18)" stroke="#0284C7" stroke-width="3"/>
+        <line x1="160" y1="20" x2="160" y2="85" stroke="#EA580C" stroke-width="2" stroke-dasharray="4"/>
+        <text x="172" y="55" fill="#EA580C" font-weight="900" font-size="12">Height (h)</text>
+        <text x="140" y="102" fill="#0284C7" font-weight="900" font-size="12">Base (b)</text>
+      </svg>`
+    },
+    "area": {
+      title: "Area",
+      def: "The total amount of 2D surface space enclosed inside a shape (measured in square units).",
+      example: "A 4cm × 5cm rectangle has an area of 20 square centimeters (cm²).",
+      svg: `<svg viewBox="0 0 280 120" style="background:#F0FDF4; border-radius:12px; border:1px solid #BBF7D0; width:100%;">
+        <rect x="60" y="20" width="160" height="70" fill="rgba(22,163,74,0.15)" stroke="#16A34A" stroke-width="3" rx="4"/>
+        <g stroke="#16A34A" stroke-width="1" opacity="0.4">
+          <line x1="100" y1="20" x2="100" y2="90"/><line x1="140" y1="20" x2="140" y2="90"/><line x1="180" y1="20" x2="180" y2="90"/>
+          <line x1="60" y1="43" x2="220" y2="43"/><line x1="60" y1="66" x2="220" y2="66"/>
+        </g>
+        <text x="140" y="60" text-anchor="middle" fill="#15803D" font-weight="900" font-size="14">Covered Grid Squares</text>
+        <text x="140" y="108" text-anchor="middle" fill="#166534" font-weight="800" font-size="12">Inside space (square units)</text>
+      </svg>`
+    },
+    "perimeter": {
+      title: "Perimeter",
+      def: "The total length of the outer boundary edge around a 2D shape.",
+      example: "Adding all side lengths around a garden fence gives its perimeter.",
+      svg: `<svg viewBox="0 0 280 120" style="background:#EFF6FF; border-radius:12px; border:1px solid #BFDBFE; width:100%;">
+        <rect x="60" y="25" width="160" height="60" fill="none" stroke="#2563EB" stroke-width="4" stroke-dasharray="6" rx="4"/>
+        <text x="140" y="60" text-anchor="middle" fill="#1D4ED8" font-weight="900" font-size="14">Distance Around Outside</text>
+        <text x="140" y="105" text-anchor="middle" fill="#1E40AF" font-weight="800" font-size="12">P = Side₁ + Side₂ + Side₃ + Side₄</text>
+      </svg>`
+    },
+    "volume": {
+      title: "Volume",
+      def: "The total 3D space occupied inside a 3D solid object (measured in cubic units).",
+      example: "Volume of a prism = length × width × height (V = l × w × h).",
+      svg: `<svg viewBox="0 0 280 120" style="background:#FAF5FF; border-radius:12px; border:1px solid #E9D5FF; width:100%;">
+        <polygon points="60,80 180,80 220,40 100,40" fill="rgba(147,51,234,0.2)" stroke="#9333EA" stroke-width="2"/>
+        <polygon points="100,40 220,40 220,15 100,15" fill="rgba(147,51,234,0.3)" stroke="#9333EA" stroke-width="2"/>
+        <polygon points="60,80 100,40 100,15 60,55" fill="rgba(147,51,234,0.4)" stroke="#9333EA" stroke-width="2"/>
+        <text x="140" y="60" text-anchor="middle" fill="#6B21A8" font-weight="900" font-size="14">3D Cube Space (V = l · w · h)</text>
+      </svg>`
+    },
+    "fraction": {
+      title: "Fraction",
+      def: "A number representing part of a whole, written as numerator over denominator.",
+      example: "¾ means 3 equal parts out of 4 total parts.",
+      svg: `<svg viewBox="0 0 280 120" style="background:#F0F9FF; border-radius:12px; border:1px solid #BAE6FD; width:100%;">
+        <rect x="40" y="30" width="120" height="40" fill="#FFF" stroke="#0284C7" stroke-width="2" rx="4"/>
+        <rect x="40" y="30" width="90" height="40" fill="#0284C7"/>
+        <line x1="70" y1="30" x2="70" y2="70" stroke="#FFF"/>
+        <line x1="100" y1="30" x2="100" y2="70" stroke="#FFF"/>
+        <line x1="130" y1="30" x2="130" y2="70" stroke="#0284C7"/>
+        <text x="210" y="48" text-anchor="middle" fill="#0369A1" font-weight="900" font-size="20">3</text>
+        <line x1="190" y1="54" x2="230" y2="54" stroke="#0369A1" stroke-width="3"/>
+        <text x="210" y="76" text-anchor="middle" fill="#0369A1" font-weight="900" font-size="20">4</text>
+        <text x="140" y="105" text-anchor="middle" fill="#0284C7" font-weight="800" font-size="12">Shaded Parts / Total Parts</text>
+      </svg>`
+    },
+    "ratio": {
+      title: "Ratio",
+      def: "A relationship comparing two quantities by division (written as a:b, a to b, or a/b).",
+      example: "If there are 2 blue stars and 3 orange circles, the ratio of stars to circles is 2:3.",
+      svg: `<svg viewBox="0 0 280 120" style="background:#FEF3C7; border-radius:12px; border:1px solid #FDE68A; width:100%;">
+        <circle cx="50" cy="45" r="16" fill="#0284C7"/>
+        <circle cx="90" cy="45" r="16" fill="#0284C7"/>
+        <circle cx="150" cy="45" r="16" fill="#EA580C"/>
+        <circle cx="190" cy="45" r="16" fill="#EA580C"/>
+        <circle cx="230" cy="45" r="16" fill="#EA580C"/>
+        <text x="140" y="92" text-anchor="middle" fill="#92400E" font-weight="900" font-size="16">Ratio = 2 : 3</text>
+      </svg>`
+    },
+    "unit rate": {
+      title: "Unit Rate",
+      def: "A rate simplified so that the second quantity is 1 unit (e.g., miles per hour, price per pound).",
+      example: "$12 for 3 shirts ➜ $4 per 1 shirt.",
+      svg: `<svg viewBox="0 0 280 120" style="background:#F0FDF4; border-radius:12px; border:1px solid #BBF7D0; width:100%;">
+        <rect x="40" y="30" width="200" height="40" fill="#16A34A" rx="8"/>
+        <text x="140" y="56" text-anchor="middle" fill="#FFF" font-weight="900" font-size="18">$4.00 for 1 Item</text>
+        <text x="140" y="100" text-anchor="middle" fill="#15803D" font-weight="800" font-size="12">Denominator is always 1</text>
+      </svg>`
+    },
+    "equation": {
+      title: "Equation",
+      def: "A mathematical statement showing that two expressions are equal with an equals sign (=).",
+      example: "x + 5 = 12 (Solve for x: x = 7).",
+      svg: `<svg viewBox="0 0 280 120" style="background:#F8FAFC; border-radius:12px; border:1px solid #CBD5E1; width:100%;">
+        <rect x="30" y="35" width="80" height="45" fill="#0D9488" rx="8"/>
+        <text x="70" y="63" text-anchor="middle" fill="#FFF" font-weight="900" font-size="16">x + 5</text>
+        <text x="140" y="65" text-anchor="middle" fill="#0284C7" font-weight="900" font-size="24">=</text>
+        <rect x="170" y="35" width="80" height="45" fill="#0284C7" rx="8"/>
+        <text x="210" y="63" text-anchor="middle" fill="#FFF" font-weight="900" font-size="16">12</text>
+        <text x="140" y="105" text-anchor="middle" fill="#334155" font-weight="800" font-size="12">Balanced on both sides</text>
+      </svg>`
+    },
+    "expression": {
+      title: "Expression",
+      def: "A mathematical phrase with numbers, variables, and operation symbols (no equals sign).",
+      example: "3x + 7 is an algebraic expression.",
+      svg: `<svg viewBox="0 0 280 120" style="background:#FDF4FF; border-radius:12px; border:1px solid #F5D0FE; width:100%;">
+        <rect x="40" y="30" width="200" height="45" fill="#C026D3" rx="8"/>
+        <text x="140" y="58" text-anchor="middle" fill="#FFF" font-weight="900" font-size="20">3x + 7</text>
+        <text x="140" y="102" text-anchor="middle" fill="#86198F" font-weight="800" font-size="12">No equals sign (=)</text>
+      </svg>`
+    },
+    "variable": {
+      title: "Variable",
+      def: "A symbol or letter (like x or n) representing an unknown number or value.",
+      example: "In x + 3 = 8, x is the variable representing 5.",
+      svg: `<svg viewBox="0 0 280 120" style="background:#EFF6FF; border-radius:12px; border:1px solid #BFDBFE; width:100%;">
+        <rect x="100" y="25" width="80" height="55" fill="#2563EB" rx="12"/>
+        <text x="140" y="62" text-anchor="middle" fill="#FFF" font-weight="900" font-size="32">x</text>
+        <text x="140" y="105" text-anchor="middle" fill="#1E40AF" font-weight="800" font-size="12">Unknown letter value</text>
       </svg>`
     }
   };
 
-  // 3. Inject Modal Card for Formula Display
-  function initFormulaModal() {
+  // 3. Inject Universal Modal Card
+  function initVocabModal() {
     if (document.getElementById('formula-popup-modal')) return;
     const modalHtml = `
       <div id="formula-popup-modal" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,23,42,0.65); backdrop-filter:blur(4px); z-index:99999; display:none; align-items:center; justify-content:center;">
-        <div style="background:#FFF; width:480px; max-width:92vw; border-radius:20px; padding:24px; box-shadow:0 20px 50px rgba(0,0,0,0.25); border:1px solid #E2E8F0; font-family:'Nunito', sans-serif;">
+        <div style="background:#FFF; width:480px; max-width:92vw; border-radius:20px; padding:24px; box-shadow:0 20px 50px rgba(0,0,0,0.25); border:1px solid #E2E8F0; font-family:'Nunito', 'Outfit', sans-serif;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
             <div style="display:flex; align-items:center; gap:8px;">
-              <span style="background:#F0F9FF; color:#0284C7; font-size:1.2rem; padding:4px 10px; border-radius:10px; font-weight:900;">📐</span>
-              <h3 id="formula-modal-title" style="margin:0; font-size:1.25rem; font-weight:900; color:#0F172A;">Formula Reference</h3>
+              <span style="background:#F0F9FF; color:#0284C7; font-size:1.2rem; padding:4px 10px; border-radius:10px; font-weight:900;">📖</span>
+              <h3 id="formula-modal-title" style="margin:0; font-size:1.25rem; font-weight:900; color:#0F172A;">Vocabulary Reference</h3>
             </div>
             <button onclick="closeFormulaModal()" style="background:#F1F5F9; border:none; width:32px; height:32px; border-radius:50%; font-weight:800; cursor:pointer;">✕</button>
           </div>
-          <div id="formula-modal-equation" style="background:#F8FAFC; border:1px solid #CBD5E1; border-radius:12px; padding:12px; text-anchor:middle; text-align:center; font-size:1.35rem; font-weight:900; color:#0284C7; margin-bottom:14px;"></div>
+          
           <div id="formula-modal-svg" style="margin-bottom:14px;"></div>
-          <div style="font-size:0.84rem; font-weight:800; color:#0F172A; margin-bottom:6px;">Variable Key:</div>
-          <div id="formula-modal-vars" style="font-size:0.82rem; color:#475569; line-height:1.6; background:#F8FAFC; padding:10px 14px; border-radius:10px; margin-bottom:16px;"></div>
-          <button onclick="closeFormulaModal()" style="width:100%; background:#0284C7; color:#FFF; border:none; padding:10px; border-radius:12px; font-weight:800; font-size:0.9rem; cursor:pointer;">Got it!</button>
+          
+          <div style="background:#F8FAFC; border:1px solid #E2E8F0; border-radius:12px; padding:14px; margin-bottom:14px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <span style="font-size:0.75rem; font-weight:900; background:#0284C7; color:#FFF; padding:2px 8px; border-radius:6px; text-transform:uppercase;">Simple Definition</span>
+              <button id="vocab-tts-btn" style="background:#E0F2FE; color:#0369A1; border:none; padding:4px 10px; border-radius:8px; font-size:0.8rem; font-weight:800; cursor:pointer; display:flex; align-items:center; gap:4px;">🗣️ Listen</button>
+            </div>
+            <p id="formula-modal-def" style="margin:0; font-size:0.95rem; color:#0F172A; line-height:1.5; font-weight:700;"></p>
+          </div>
+
+          <div style="background:#FFFBEB; border:1px solid #FDE68A; border-radius:12px; padding:12px 14px; margin-bottom:16px;">
+            <div style="font-size:0.75rem; font-weight:900; color:#B45309; text-transform:uppercase; margin-bottom:4px;">Example</div>
+            <p id="formula-modal-example" style="margin:0; font-size:0.88rem; color:#78350F; line-height:1.4;"></p>
+          </div>
+
+          <button onclick="closeFormulaModal()" style="width:100%; background:#0284C7; color:#FFF; border:none; padding:12px; border-radius:12px; font-weight:800; font-size:0.95rem; cursor:pointer;">Got it!</button>
         </div>
       </div>
     `;
@@ -150,27 +287,57 @@
     document.body.appendChild(div);
   }
 
-  window['openFormulaModal'] = function(key) {
-    initFormulaModal();
-    const data = FORMULA_DB[key] || FORMULA_DB.area_rectangle;
+  // 4. Global Handler Functions
+  window['openVocabModal'] = function(termOrKey) {
+    initVocabModal();
+    const key = (termOrKey || '').toLowerCase().trim();
+    const data = VOCAB_DB[key] || {
+      title: termOrKey.charAt(0).toUpperCase() + termOrKey.slice(1),
+      def: "A mathematical term used to represent quantitative relationships, measurements, or operations.",
+      example: `Applying the term "${termOrKey}" step-by-step in mathematical problem solving.`,
+      svg: `<svg viewBox="0 0 280 120" style="background:#F0F9FF; border-radius:12px; border:1px solid #BAE6FD; width:100%;">
+        <rect x="40" y="30" width="200" height="50" fill="#0284C7" rx="10"/>
+        <text x="140" y="62" text-anchor="middle" fill="#FFF" font-weight="900" font-size="18">${termOrKey.toUpperCase()}</text>
+      </svg>`
+    };
+
     document.getElementById('formula-modal-title').innerText = data.title;
-    document.getElementById('formula-modal-equation').innerText = data.formula;
+    document.getElementById('formula-modal-def').innerText = data.def;
+    document.getElementById('formula-modal-example').innerText = data.example;
     document.getElementById('formula-modal-svg').innerHTML = data.svg;
 
-    const varsBox = document.getElementById('formula-modal-vars');
-    varsBox.innerHTML = data.vars.map(v => `<div><strong>${v.symbol}:</strong> ${v.desc}</div>`).join('');
+    // Attach Speech Synthesis to Listen button
+    const ttsBtn = document.getElementById('vocab-tts-btn');
+    if (ttsBtn) {
+      ttsBtn.onclick = function() {
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+          const text = `${data.title}. ${data.def} Example: ${data.example}`;
+          const u = new SpeechSynthesisUtterance(text);
+          u.rate = 0.92;
+          window.speechSynthesis.speak(u);
+        }
+      };
+    }
 
     const modal = document.getElementById('formula-popup-modal');
-    modal.style.display = 'flex';
+    if (modal) modal.style.display = 'flex';
+  };
+
+  window['openFormulaModal'] = function(key) {
+    window['openVocabModal'](key);
   };
 
   window['closeFormulaModal'] = function() {
     const modal = document.getElementById('formula-popup-modal');
-    if (modal) modal.style.display = 'none';
+    if (modal) {
+      modal.style.display = 'none';
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    }
   };
 
-  // 4. Auto-detect formula references in page body
+  // 5. Auto-bind events on DOM Content Loaded
   window.addEventListener('DOMContentLoaded', function() {
-    initFormulaModal();
+    initVocabModal();
   });
 })();
