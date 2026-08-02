@@ -101,7 +101,7 @@ const SYNONYMS = {
   dividend: "divide", divisor: "divide", divisible: "divide",
   quotient: "divide", remainder: "divide", "partial-quotients": "divide",
   "equivalent-division": "divide", add: "operation", subtract: "operation",
-  combine: "operation", decompose: "operation",
+  combine: "operation", decompose: "decompose",
   "greatest-common-factor": "factor", "common-factor": "factor",
   "common-multiple": "multiple", "least-common-multiple": "multiple",
   "factor-tree": "factor", "prime-factorization": "factor",
@@ -140,6 +140,8 @@ function categoryFor(slug, term) {
 
 const EXTRA_DEDICATED = new Set([
   "regular-polygon",
+  "area-of-regular-polygons",
+  "decompose",
   "dimensions", "pyramid", "spread", "pattern", "multiply", "divide",
   "operation", "measurement", "number", "bar-model",
 ]);

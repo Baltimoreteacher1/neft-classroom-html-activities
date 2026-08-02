@@ -159,7 +159,7 @@ const SYNONYMS = {
   "area-of-parallelograms": "parallelogram",
   "area-of-trapezoids": "trapezoid",
   "area-of-triangles": "triangle",
-  "area-of-regular-polygons": "regular-polygon",
+  "area-of-regular-polygons": "area-of-regular-polygons",
   "area-of-composite-figures": "composite-figure",
   "volume-with-whole-number-edges": "volume",
   "volume-of-rectangular-prisms": "volume",
@@ -260,7 +260,7 @@ const SYNONYMS = {
   sum: "sum",
   difference: "difference",
   combine: "add",
-  decompose: "subtract",
+  decompose: "decompose",
   "greatest-common-factor": "greatest-common-factor",
   gcf: "greatest-common-factor",
   "common-factor": "greatest-common-factor",
@@ -338,6 +338,8 @@ export function resolveVocabFallback(term) {
 // Slugs that have dedicated SVGs but are referenced only via the synonym map.
 const EXTRA_DEDICATED = new Set([
   "regular-polygon",
+  "area-of-regular-polygons",
+  "decompose",
   "dimensions",
   "pyramid",
   "spread",
