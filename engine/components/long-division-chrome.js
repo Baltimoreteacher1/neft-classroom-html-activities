@@ -46,8 +46,13 @@ export function template(uid, decimal, presets, mode) {
   const on = (m) => (m === mode ? " is-on" : "");
   return (
     `<div class="ldl-title">Long Division Lab</div>` +
-    `<p class="ldl-sub">Repeat the cycle <b>Divide → Multiply → Subtract → Bring down</b> until every ` +
-    `digit is used. Solve it yourself, or watch the lab work it one step at a time.</p>` +
+    `<p class="ldl-sub">Follow the standard algorithm: <b>Divide → Multiply → Subtract → Bring down (DMSB)</b> until every digit is divided.</p>` +
+    `<div class="ldl-dmsb-banner" aria-label="Algorithm steps: Divide, Multiply, Subtract, Bring down">` +
+    `<span class="ldl-dmsb-chip d"><b class="ldl-dmsb-badge">D</b> <span class="ldl-dmsb-op">÷</span> Divide</span>` +
+    `<span class="ldl-dmsb-chip m"><b class="ldl-dmsb-badge">M</b> <span class="ldl-dmsb-op">×</span> Multiply</span>` +
+    `<span class="ldl-dmsb-chip s"><b class="ldl-dmsb-badge">S</b> <span class="ldl-dmsb-op">−</span> Subtract</span>` +
+    `<span class="ldl-dmsb-chip b"><b class="ldl-dmsb-badge">B</b> <span class="ldl-dmsb-op">↓</span> Bring down</span>` +
+    `</div>` +
     `<div class="ldl-modes" role="group" aria-label="How do you want to use the lab?">` +
     `<button type="button" class="ldl-mode${on("solve")}" data-mode="solve" aria-pressed="${pressed("solve")}">✏️ I'll solve it</button>` +
     `<button type="button" class="ldl-mode${on("watch")}" data-mode="watch" aria-pressed="${pressed("watch")}">👀 Watch it solved</button>` +
@@ -101,7 +106,11 @@ export function injectStyles() {
   .ldl{max-width:640px;margin:0 auto;background:#fff;border:1px solid ${C.line};border-radius:16px;padding:16px 16px 18px;box-shadow:0 2px 12px rgba(12,27,42,.08);font-family:"Hanken Grotesk",system-ui,sans-serif;color:${C.ink};}
   .ldl [hidden]{display:none!important;}
   .ldl-title{font-family:"Outfit",system-ui,sans-serif;font-weight:800;color:${C.navy};font-size:1.05rem;}
-  .ldl-sub{margin:4px 0 10px;color:${C.muted};font-size:.9rem;line-height:1.45;}
+  .ldl-sub{margin:4px 0 8px;color:${C.muted};font-size:.9rem;line-height:1.45;}
+  .ldl-dmsb-banner{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px;padding:8px 12px;background:#f8fafc;border:1px solid ${C.line};border-radius:12px;}
+  .ldl-dmsb-chip{display:inline-flex;align-items:center;gap:5px;font-size:.82rem;font-weight:800;color:${C.navy};}
+  .ldl-dmsb-badge{display:inline-grid;place-items:center;width:1.55em;height:1.55em;border-radius:50%;background:#ef4444;color:#fff;font-size:.78rem;font-weight:900;}
+  .ldl-dmsb-op{font-weight:900;color:#dc2626;}
   .ldl-modes{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px;}
   .ldl-mode{padding:9px 15px;font:inherit;font-size:.92rem;font-weight:800;color:${C.navy};background:#f2f6fb;border:2px solid ${C.line};border-radius:999px;cursor:pointer;}
   .ldl-mode:hover{background:#e6eefb;border-color:${C.accent};}
@@ -121,15 +130,18 @@ export function injectStyles() {
   .ldl-shift-done{color:${C.good};font-weight:800;}
   .ldl-shift-new{color:${C.teal};}
   .ldl-shiftgo{margin-top:6px;display:inline-block;}
-  .ldl-strip{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:14px 0 6px;}
-  .ldl-cycle{padding:4px 10px;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:#fff;background:${C.navy};border-radius:999px;}
-  .ldl-pill{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;font-size:.8rem;font-weight:800;color:${C.muted};background:#f2f6fb;border:1.5px solid ${C.line};border-radius:999px;}
-  .ldl-pill b{display:inline-grid;place-items:center;width:1.15em;height:1.15em;font-size:.72rem;border-radius:50%;background:${C.line};color:${C.navy};}
-  .ldl-pill.is-done{color:${C.good};border-color:#bfe3cf;background:#eefaf3;}
-  .ldl-pill.is-done b{background:${C.good};color:#fff;}
-  .ldl-pill.is-on{color:#fff;background:${C.accent};border-color:${C.accent};box-shadow:0 0 0 3px rgba(29,78,216,.18);}
-  .ldl-pill.is-on b{background:#fff;color:${C.accent};}
-  .ldl-loop{font-size:.78rem;font-weight:800;color:${C.teal};}
+  .ldl-strip{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:14px 0 10px;}
+  .ldl-cycle{padding:5px 12px;font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:#fff;background:${C.navy};border-radius:999px;}
+  .ldl-pill{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;font-size:.85rem;font-weight:800;color:${C.muted};background:#f8fafc;border:2px solid ${C.line};border-radius:12px;transition:all 0.2s ease;}
+  .ldl-badge{display:inline-grid;place-items:center;width:1.45em;height:1.45em;font-size:.78rem;font-weight:900;border-radius:50%;background:#e2e8f0;color:${C.navy};}
+  .ldl-op-symbol{font-weight:900;font-size:.95rem;color:${C.navy};}
+  .ldl-pill-label{font-weight:700;}
+  .ldl-pill.is-done{color:${C.good};border-color:#a7f3d0;background:#ecfdf5;}
+  .ldl-pill.is-done .ldl-badge{background:${C.good};color:#fff;}
+  .ldl-pill.is-on{color:#0f172a;background:#fef08a;border-color:#eab308;box-shadow:0 0 0 3px rgba(234,179,8,.3),0 4px 12px rgba(0,0,0,.08);transform:translateY(-1px);}
+  .ldl-pill.is-on .ldl-badge{background:#dc2626;color:#fff;}
+  .ldl-pill.is-on .ldl-op-symbol{color:#dc2626;}
+  .ldl-loop{font-size:.82rem;font-weight:800;color:${C.teal};margin-left:auto;}
   .ldl-board{display:grid;justify-content:center;align-items:end;margin:10px 0 4px;padding:14px 10px 10px;background:#f8fbff;border:1px solid ${C.line};border-radius:14px;overflow-x:auto;font-family:"Outfit",ui-monospace,monospace;font-variant-numeric:tabular-nums;font-size:1.5rem;font-weight:800;line-height:1.25;color:${C.navy};}
   .ldl-board>span{text-align:center;}
   .ldl-board.is-waiting{opacity:.4;}
@@ -148,7 +160,7 @@ export function injectStyles() {
   .ldl-minus::before{content:"−";position:absolute;left:-.72em;color:${C.warn};}
   .ldl-rule{border-bottom:2.5px solid ${C.warn};align-self:stretch;}
   .ldl-diff{color:${C.navy};}
-  .ldl-brought{color:#b45309;}
+  .ldl-brought{color:#b45309;font-weight:900;}
   .ldl-drop{animation:ldlDrop .45s ease-out;}
   @keyframes ldlDrop{from{transform:translateY(-2.1em);opacity:0;}to{transform:none;opacity:1;}}
   .ldl-ghost{color:#b45309;opacity:.55;animation:ldlPulse 1.1s ease-in-out infinite;}

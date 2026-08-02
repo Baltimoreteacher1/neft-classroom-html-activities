@@ -36,6 +36,18 @@
 /** The four step names, in the order they repeat. */
 export const CYCLE_LABELS = Object.freeze(["Divide", "Multiply", "Subtract", "Bring Down"]);
 
+/**
+ * The DMSB mnemonic letter and the operator symbol for each cycle position, so
+ * the live step strip can carry the same badges as the DMSB banner above the
+ * board. Same order and same index as CYCLE_LABELS — one list, one numbering.
+ */
+export const CYCLE_BADGES = Object.freeze([
+  Object.freeze({ letter: "D", op: "÷" }),
+  Object.freeze({ letter: "M", op: "×" }),
+  Object.freeze({ letter: "S", op: "−" }),
+  Object.freeze({ letter: "B", op: "↓" }),
+]);
+
 /** The step types, in the order they repeat — the index IS the position. */
 const CYCLE_TYPES = Object.freeze(["divide", "multiply", "subtract", "bringdown"]);
 

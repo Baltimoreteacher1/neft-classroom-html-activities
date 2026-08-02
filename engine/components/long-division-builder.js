@@ -29,6 +29,7 @@ import { esc, injectStyles, template } from "./long-division-chrome.js";
 import { buildNarration, createNarrationCursor } from "./long-division-narration.js";
 import {
   buildLongDivision,
+  CYCLE_BADGES,
   CYCLE_LABELS,
   checkInputs,
   stepPosition,
@@ -375,9 +376,15 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
       CYCLE_LABELS.map((name, i) => {
         const active = step && shiftDone && stepPosition(step.type) === i;
         const passed = step ? stepPosition(step.type) > i : shiftDone;
+        // Letter badge + operator, matching the DMSB banner above the board:
+        // the strip and the banner have to teach the same mnemonic, or the
+        // student is tracking two different labels for one step.
+        const badge = CYCLE_BADGES[i] || { letter: String(i + 1), op: "" };
         return (
           `<span class="ldl-pill${active ? " is-on" : ""}${passed ? " is-done" : ""}">` +
-          `<b>${i + 1}</b>${esc(name)}</span>`
+          `<b class="ldl-badge">${esc(badge.letter)}</b>` +
+          `<span class="ldl-op-symbol" aria-hidden="true">${esc(badge.op)}</span>` +
+          `<span class="ldl-pill-label">${esc(name)}</span></span>`
         );
       }).join("") +
       `<span class="ldl-loop" aria-hidden="true">↻ repeat</span>`;
