@@ -5717,7 +5717,6 @@
             "</div></section>"
           : "") +
         '<button class="btn navy block" data-act="study-pack">📝 Turn my notes into a study pack</button>' +
-        '<a class="btn navy block" href="/curriculum/math-workbench/" target="_blank" rel="noopener">📐 Open Math Workbench</a>' +
         // Ask first (chips + input), then the conversation grows below it.
         '<div class="ai-chips">' +
         chipGroups +
