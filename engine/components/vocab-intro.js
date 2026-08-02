@@ -1,19 +1,6 @@
 import { resolveVocabImage, vocabImageAlt } from "../core/vocab-images.js";
-import { exploreLabel, openExplorer } from "./vocab-explore.js";
-import { buildSayItRow, speechSupported } from "./vocab-explore-tasks.js";
+import { openExplorer } from "./vocab-explore.js";
 import { speakText } from "../core/speech-voice.js";
-
-// Compact tap-to-hear row for a flip-card face. Reuses the shared bilingual
-// "Say it" control (en-US + es-US voices via pickVoice) and swallows the click
-// so pressing 🔊 never flips the card underneath it.
-function sayItFor(en, es, face) {
-  if (!speechSupported()) return;
-  const row = buildSayItRow({ en, es });
-  row.classList.add("vocab-say-row");
-  row.addEventListener("click", (e) => e.stopPropagation());
-  row.addEventListener("keydown", (e) => e.stopPropagation());
-  face.append(row);
-}
 
 function _esc(s) {
   const d = document.createElement("div");
@@ -250,8 +237,6 @@ export function renderVocabIntro(container, { terms, onComplete }) {
       front.append(es);
     }
 
-    sayItFor(t.term, termEs, front);
-
     const flipPrompt = document.createElement("span");
     flipPrompt.className = "flip-prompt";
     flipPrompt.textContent = "Tap to flip →";
@@ -273,8 +258,6 @@ export function renderVocabIntro(container, { terms, onComplete }) {
       defEsEl.textContent = defEs;
       back.append(defEsEl);
     }
-
-    sayItFor(t.definition, defEs, back);
 
     const exampleText = t.visual || t.example;
     if (exampleText) {
@@ -299,7 +282,7 @@ export function renderVocabIntro(container, { terms, onComplete }) {
     card.append(inner);
 
     const flipCard = (evt) => {
-      if (evt && (evt.target.closest(".vocab-say-row") || evt.target.closest(".vocab-thumb-wrap") || evt.target.closest(".btn"))) {
+      if (evt && (evt.target.closest(".vocab-thumb-wrap") || evt.target.closest(".btn"))) {
         return;
       }
       card.classList.add("vi-flipping");
@@ -326,7 +309,7 @@ export function renderVocabIntro(container, { terms, onComplete }) {
     const expBtn = document.createElement("button");
     expBtn.className = "btn primary lg vocab-explore-btn";
     expBtn.type = "button";
-    expBtn.innerHTML = `<span>${exploreLabel(terms.length)}</span>`;
+    expBtn.textContent = `🧠 Explore all ${terms.length} words`;
     expBtn.addEventListener("click", () => {
       openExplorer({ terms, onComplete });
     });
