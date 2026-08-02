@@ -1,5 +1,5 @@
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "fs";
-import { resolve } from "path";
+import { dirname, resolve } from "path";
 import { makeCopyFilter } from "./scripts/lib/copy-filter.mjs";
 import { defineConfig } from "vite";
 
