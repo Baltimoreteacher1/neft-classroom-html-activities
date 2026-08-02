@@ -1,7 +1,7 @@
 /* Focus School — service worker.
  * Offline-first app shell: precache core files, serve them cache-first,
  * fall back to the cached app for navigations when offline. */
-const VERSION = "focus-school-v69";
+const VERSION = "focus-school-v70";
 const CORE = [
   // Cloudflare Pages serves clean URLs — a request for "index.html" or
   // "unit-1.html" 308-redirects to the extensionless path, and cache.add()
@@ -26,7 +26,16 @@ const CORE = [
   "hebrew/",
   "hebrew/hebrew.css",
   "hebrew/data.js",
+  "hebrew/units.js",
   "hebrew/engine.js",
+  "hebrew/activities/warmup.js",
+  "hebrew/activities/letters.js",
+  "hebrew/activities/vowels.js",
+  "hebrew/activities/blend.js",
+  "hebrew/activities/fluency.js",
+  "hebrew/activities/words.js",
+  "hebrew/activities/read.js",
+  "hebrew/activities/prove.js",
   "hebrew/unit-1",
   "hebrew/unit-2",
   "hebrew/unit-3",

@@ -1,20 +1,26 @@
-/* Nightly Hebrew — shared engine.
+/* Nightly Hebrew — shared engine (core + page shell).
  *
- * Every inning page is the same seven-activity shell; only the DATA (data.js)
- * and the GAME (games/unit-N.js) change. Keeping the shell here means the
- * teaching moves — "letter first, then vowel", hide-the-answer-until-you-try,
- * always review what came before — are defined once and can't drift between
- * pages.
+ * Every inning page is the same long practice session; only the DATA
+ * (data.js + units.js) and the GAME (games/unit-N.js) change. Keeping the
+ * shell here means the teaching moves — "letter first, then vowel",
+ * hide-the-answer-until-you-try, always review what came before — are defined
+ * once and can't drift between pages.
+ *
+ * The activities themselves live in activities/*.js. Each one calls
+ * HEB.registerActivity({ id, title, how, mount }) and the shell decides where
+ * it lands, whether it counts toward the payout, and how it is numbered — so
+ * a new activity is one file, not an edit to nine pages.
  *
  * Page contract:
- *   <body data-unit="N">  →  <script src="data.js">  →  <script src="engine.js">
- *   →  <script src="games/unit-N.js">  →  HEB.boot()
+ *   <body data-unit="N">
+ *     → data.js → units.js → engine.js → activities/*.js → games/unit-N.js
+ *     → HEB.boot()
  */
 (function (global) {
   "use strict";
 
   const D = global.HEB_DATA;
-  const { LETTERS, VOWELS, UNITS } = D;
+  const { LETTERS, VOWELS, UNITS, CONFUSABLES } = D;
 
   // ------------------------------------------------------------- utilities
   const $ = (sel, root) => (root || document).querySelector(sel);
@@ -76,6 +82,185 @@
       s.v === "'" ? "'" : s.v,
     )}</span></span>`;
 
+  // ----------------------------------------------------------- word pieces
+  // Break a written word into the pieces a reader actually decodes: one base
+  // letter plus whatever marks are stuck to it. This is NOT linguistic
+  // syllabification — a silent sheva really closes the syllable before it —
+  // and the UI never calls it that. It is "letter + its mark", which is the
+  // exact unit the blending machine teaches, so the two agree.
+  const DAGESH = "ּ";
+  const SHIN_DOT = "ׁ";
+  const SIN_DOT = "ׂ";
+  const isVowelMark = (ch) => (ch >= "ְ" && ch <= "ֻ") || ch === "ׇ" || ch === "ֺ";
+  const isMark = (ch) =>
+    isVowelMark(ch) ||
+    ch === DAGESH ||
+    ch === SHIN_DOT ||
+    ch === SIN_DOT ||
+    ch === "ֽ" ||
+    (ch >= "֑" && ch <= "֯");
+  const isBase = (ch) => ch >= "א" && ch <= "ת";
+  // vowel mark character → vowel key (single-character forms only; the malei
+  // forms are recognised by the mater letter that follows).
+  const MARK_TO_VOWEL = {};
+  for (const [k, v] of Object.entries(VOWELS)) {
+    if (v.ch.length === 1) MARK_TO_VOWEL[v.ch] = k;
+  }
+  MARK_TO_VOWEL["ֺ"] = "cholam"; // cholam haser for vav
+  MARK_TO_VOWEL["ׇ"] = "kamatz"; // kamatz katan reads as an oh/ah kamatz here
+
+  function pieces(word) {
+    const s = String(word || "");
+    const out = [];
+    let i = 0;
+    while (i < s.length) {
+      const ch = s[i];
+      if (!isBase(ch)) {
+        // Spaces and punctuation separate words inside a line.
+        if (!/\s/.test(ch) && !isMark(ch)) out.push({ sep: true, heb: ch });
+        else if (/\s/.test(ch)) out.push({ sep: true, heb: " " });
+        i++;
+        continue;
+      }
+      let base = ch;
+      let vowelKey = null;
+      let dagesh = false;
+      i++;
+      while (i < s.length && isMark(s[i])) {
+        const m = s[i];
+        if (m === DAGESH) dagesh = true;
+        else if (m === SHIN_DOT || m === SIN_DOT) base += m;
+        else if (isVowelMark(m) && MARK_TO_VOWEL[m]) vowelKey = MARK_TO_VOWEL[m];
+        i++;
+      }
+      // A dagesh only changes the SOUND for the bet/kaf/pey family (and the
+      // primer's dotted tav). Everywhere else it just means "press the
+      // letter", so it must not send the lookup off a cliff.
+      let key = base;
+      if (dagesh && LETTERS[base + DAGESH]) key = base + DAGESH;
+      else if (!LETTERS[key] && LETTERS[base]) key = base;
+
+      const prev = out.length ? out[out.length - 1] : null;
+      const prevOpen = prev && !prev.sep && !prev.vowelKey;
+      // Mater lectionis: a ו or י that is really finishing the sound of the
+      // letter BEFORE it rather than starting a sound of its own. Merge it in
+      // — "toh", not "t-oh"; "kee", not "kee-y".
+      //   וֹ  = vav carrying a cholam   → oh
+      //   וּ  = vav carrying a dagesh    → oo
+      //   ִי / ֵי = bare yud after chirik/tzere → still ee / ay
+      const vavAsOh = base === "ו" && vowelKey === "cholam";
+      const vavAsOo = base === "ו" && !vowelKey && dagesh;
+      if ((vavAsOh || vavAsOo) && prevOpen) {
+        prev.vowelKey = vavAsOo ? "shuruk" : "cholamMalei";
+        prev.heb += vavAsOo ? "ו" + DAGESH : "וֹ";
+        prev.mater = true;
+        recompute(prev);
+        continue;
+      }
+      if (base === "י" && !vowelKey && !dagesh && prev && !prev.sep) {
+        if (prev.vowelKey === "chirik" || prev.vowelKey === "tzere") {
+          prev.vowelKey = prev.vowelKey === "chirik" ? "chirikMalei" : "tzereYud";
+          prev.heb += "י";
+          prev.mater = true;
+          recompute(prev);
+          continue;
+        }
+        // A bare Yud landing on an ah turns the pair into "ai" — דַי is "dai",
+        // חַי is "chai". Reading it as two beats ("dah-y") is the mistake this
+        // merge exists to prevent. But a Yud that is about to be handed a Vav
+        // of its own (הַיוֹם) is a plain consonant, not half of a diphthong.
+        const vavNext = s[i] === "ו" && (s[i + 1] === "ֹ" || s[i + 1] === DAGESH);
+        if (!vavNext && (prev.vowelKey === "patach" || prev.vowelKey === "kamatz")) {
+          prev.heb += "י";
+          prev.mater = true;
+          prev.diphthong = true;
+          recompute(prev);
+          continue;
+        }
+      }
+
+      const p = { key, vowelKey, dagesh };
+      if ((vavAsOh || vavAsOo) && !prevOpen) {
+        // A shuruk or cholam-malei with nothing to lean on (start of a word,
+        // or after an already-closed sound) is a pure vowel — "oo", not "voo".
+        p.vowelKey = vavAsOo ? "shuruk" : "cholamMalei";
+        p.vowelOnly = true;
+        p.heb = vavAsOo ? "ו" + DAGESH : "וֹ";
+      } else {
+        p.heb = base + (dagesh ? DAGESH : "") + (vowelKey ? VOWELS[vowelKey].ch : "");
+      }
+      recompute(p);
+      out.push(p);
+    }
+    // Word-final rules. They only make sense once a word is known to have
+    // ended, so they run as a second pass over each word in the line.
+    let start = 0;
+    for (let k = 0; k <= out.length; k++) {
+      if (k === out.length || out[k].sep) {
+        finishWord(out.slice(start, k));
+        start = k + 1;
+      }
+    }
+    return out;
+  }
+
+  // Three things only happen at the END of a word, and getting them wrong is
+  // how a reader ends up saying "chah-yah-h" or "sah-may-chah".
+  function finishWord(seg) {
+    if (seg.length < 2) return;
+    const last = seg[seg.length - 1];
+    if (last.vowelOnly) return;
+    const c = last.L ? last.L.c : "";
+    if (!last.vowelKey && (last.key === "ה" || last.key === "א")) {
+      last.silent = true;
+      last.c = "";
+      last.tr = "(silent)";
+      last.hint = "Silent at the end of a word — it just marks the ending.";
+      return;
+    }
+    if (last.vowelKey === "patach" && (last.key === "ח" || last.key === "ע")) {
+      last.sneaky = true;
+      last.tr = "a" + c;
+      last.hint = "The sneaky patach: say the ah BEFORE the letter, not after it.";
+      return;
+    }
+    if (last.vowelKey === "sheva") {
+      last.tr = c;
+      last.hint = "A Sheva at the very end of a word is silent.";
+    }
+  }
+
+  function recompute(p) {
+    const L = p.vowelOnly ? null : LETTERS[p.key];
+    const V = p.vowelKey ? VOWELS[p.vowelKey] : null;
+    p.L = L;
+    p.V = V;
+    p.c = p.vowelOnly ? "" : L ? L.c : "";
+    p.v = V ? V.v : "";
+    if (p.vowelOnly) {
+      p.tr = V ? V.v : "";
+      return;
+    }
+    if (!L) {
+      p.tr = "";
+      return;
+    }
+    if (!V) p.tr = L.c || "(silent)";
+    else if (p.diphthong) p.tr = (L.c || "") + "ai";
+    else if (V.v === "'") p.tr = (L.c || "") + "'";
+    else p.tr = (L.c || "") + V.v;
+    if (p.diphthong) p.v = "ai";
+  }
+
+  // The last piece of a word being חַ / עַ / הַ is the "sneaky patach": the ah
+  // is said BEFORE the letter. Worth flagging wherever a word is broken down.
+  function sneakyPatach(ps) {
+    const real = ps.filter((p) => !p.sep);
+    const last = real[real.length - 1];
+    if (!last || last.vowelKey !== "patach") return false;
+    return ["ח", "ע", "ה"].includes(last.key);
+  }
+
   // ---------------------------------------------------------------- speech
   // Best effort: a real Hebrew voice if the device has one, otherwise speak
   // the sound-spelling slowly. The WRITTEN sound-spelling is always on screen,
@@ -135,10 +320,70 @@
     toastTimer = setTimeout(() => toastEl.classList.remove("on"), 2600);
   }
 
+  // -------------------------------------------------------------- the plan
+  // Order and grouping of the whole session. `req` activities gate the $0.20;
+  // the rest are marked "Extra Innings" — real practice, freely skippable, so
+  // a long page never becomes a hostage situation on a school night.
+  const PLAN = [
+    {
+      key: "warm",
+      name: "Warm-Up",
+      blurb: "Loosen the arm on everything you already own.",
+      acts: ["warmup", "rollcall"],
+    },
+    {
+      key: "learn",
+      name: "Tonight's New Material",
+      blurb: "Meet it, look at it closely, and learn the rule behind it.",
+      acts: ["letters", "lookalike", "rules", "vowelradar"],
+    },
+    {
+      key: "drill",
+      name: "Drill It In",
+      blurb: "Reps. This is the part that turns thinking into reading.",
+      acts: ["blender", "reverse", "batting", "ladder", "minimal"],
+    },
+    {
+      key: "words",
+      name: "Real Words",
+      blurb: "Stop reading pieces. Start reading words.",
+      acts: ["workshop", "builder", "meaning"],
+    },
+    { key: "play", name: "Tonight's Game", blurb: "Earned it.", acts: ["game"] },
+    {
+      key: "read",
+      name: "Read For Real",
+      blurb: "Whole lines, out loud, the way you would in shul.",
+      acts: ["sentences", "closer"],
+    },
+    {
+      key: "prove",
+      name: "Prove It",
+      blurb: "Last at-bat. Show that tonight stuck.",
+      acts: ["spot", "final"],
+    },
+  ];
+
+  // The payout gate. Every id here must be registered by an activity module.
+  const ACT_IDS = [
+    "warmup",
+    "letters",
+    "lookalike",
+    "rules",
+    "vowelradar",
+    "blender",
+    "batting",
+    "workshop",
+    "game",
+    "sentences",
+    "closer",
+    "final",
+  ];
+  const BONUS_IDS = ["rollcall", "reverse", "ladder", "minimal", "builder", "meaning", "spot"];
+
   // -------------------------------------------------------------- progress
   const PROGRESS_KEY = "nightly-hebrew:progress";
   const EARN_KEY = "focus-school:hebrew-earnings";
-  const ACT_IDS = ["warmup", "letters", "rules", "blender", "batting", "game", "closer"];
 
   function readProgress() {
     try {
@@ -214,8 +459,14 @@
   let unit = null;
   let progress = null;
   let gameSpec = null;
+  const registry = new Map();
+
   const registerGame = (spec) => {
     gameSpec = spec;
+  };
+  const registerActivity = (spec) => {
+    if (!spec || !spec.id) return;
+    registry.set(spec.id, spec);
   };
 
   function done(actId) {
@@ -224,45 +475,55 @@
     saveUnitProgress(unit.id, progress);
     const card = document.getElementById("act-" + actId);
     if (card) {
-      card.classList.remove("locked");
+      card.classList.add("finished");
       const num = $(".num", card);
       if (num) {
         num.classList.add("done");
         num.textContent = "✓";
       }
-      let flag = $(".done-flag", card);
-      if (!flag) {
-        flag = el('<span class="done-flag">✓ Done</span>');
-        $("header", card).appendChild(flag);
+      if (!$(".done-flag", card)) {
+        $("header", card).appendChild(el('<span class="done-flag">✓ Done</span>'));
       }
     }
+    const step = document.getElementById("toc-" + actId);
+    if (step) step.classList.add("done");
     refreshScore();
   }
 
   function refreshScore() {
-    const n = ACT_IDS.filter((k) => progress.acts[k]).length;
+    const req = ACT_IDS.filter((k) => progress.acts[k]).length;
+    const bonus = BONUS_IDS.filter((k) => progress.acts[k]).length;
     const bug = document.getElementById("scorebug");
-    if (bug) bug.textContent = `${n}/7`;
+    if (bug) bug.textContent = `${req}/${ACT_IDS.length}${bonus ? ` +${bonus}` : ""}`;
     const bar = document.getElementById("topbar-bar");
-    if (bar) bar.style.width = `${Math.round((n / ACT_IDS.length) * 100)}%`;
-    renderPayout(n === ACT_IDS.length);
+    if (bar) bar.style.width = `${Math.round((req / ACT_IDS.length) * 100)}%`;
+    const tally = document.getElementById("toc-tally");
+    if (tally) {
+      tally.textContent =
+        `${req} of ${ACT_IDS.length} done` +
+        (bonus ? ` · ${bonus} of ${BONUS_IDS.length} extra innings` : "");
+    }
+    renderPayout(req === ACT_IDS.length);
   }
 
   // Standard activity card frame. Everything a unit page shows goes through
   // here so numbering, done-state and scroll anchors stay consistent.
-  function actCard(id, num, title, how, bodyHtml) {
+  function actCard(id, num, title, how, bonus) {
     const isDone = !!progress.acts[id];
-    return el(`<section class="act" id="act-${id}">
+    const card = el(`<section class="act${isDone ? " finished" : ""}${
+      bonus ? " bonus" : ""
+    }" id="act-${id}">
       <header>
         <div class="num${isDone ? " done" : ""}">${isDone ? "✓" : num}</div>
         <div>
-          <h3>${title}</h3>
+          <h3>${title}${bonus ? ' <span class="tag">Extra Innings</span>' : ""}</h3>
           <p class="how">${how}</p>
         </div>
         ${isDone ? '<span class="done-flag">✓ Done</span>' : ""}
       </header>
-      <div class="act-body">${bodyHtml}</div>
+      <div class="act-body"></div>
     </section>`);
+    return card;
   }
 
   const fb = (node, kind, msg) => {
@@ -270,682 +531,73 @@
     node.innerHTML = msg;
   };
 
-  // ------------------------------------------------------ 1. Dugout warm-up
-  // Spaced review. Unit 1 has nothing behind it, so it becomes the "how
-  // Hebrew works" orientation instead of a review of nothing.
-  function buildWarmup() {
-    if (unit.id === 1) return buildOrientation();
-    const pool = [];
-    for (const L of unit.prevLetters) {
-      for (const V of unit.prevVowels.length ? unit.prevVowels : unit.vowelPool) {
-        const s = syl(L, V);
-        if (s) pool.push(s);
-      }
-    }
-    const items = sample(pool, 8);
-    const body = `
-      <p class="note">Say each one out loud, <b>then</b> tap it to check. Letter first, vowel second.</p>
-      <div class="drill-row" id="wu-row"></div>
-      <div class="feedback" id="wu-fb"></div>`;
-    const card = actCard(
-      "warmup",
-      1,
-      "⚾ Dugout Warm-Up",
-      "Everything you already own — 8 quick reps before tonight's new stuff.",
-      body,
-    );
-    const row = $("#wu-row", card);
-    const fbn = $("#wu-fb", card);
-    let checked = 0;
-    items.forEach((s) => {
-      const t = el(
-        `<button class="tile" type="button"><span class="glyph">${s.heb}</span><span class="peek">?</span></button>`,
-      );
-      t.addEventListener("click", () => {
-        if (t.classList.contains("revealed")) {
-          say(s.heb, s.tr);
-          return;
-        }
-        t.classList.add("revealed");
-        $(".peek", t).innerHTML = trHtml(s);
-        say(s.heb, s.tr);
-        checked++;
-        if (checked === items.length) {
-          fb(fbn, "ok", "Warm-up complete — arm's loose. ⚾");
-          done("warmup");
-        } else {
-          fbn.className = "feedback tip";
-          fbn.textContent = `${checked} of ${items.length} checked.`;
-        }
-      });
-      row.appendChild(t);
-    });
-    return card;
-  }
-
-  function buildOrientation() {
-    const steps = [
-      [
-        "➡️",
-        "Hebrew reads RIGHT to left",
-        "Start on the right edge of the line and move left — the opposite of English.",
-      ],
-      [
-        "🔤",
-        "A letter is a SOUND",
-        "Every letter carries one consonant sound. ד is d. ז is z. That never changes.",
-      ],
-      [
-        "🔻",
-        "The vowel lives UNDERNEATH",
-        "The little mark below the letter tells you which vowel to say.",
-      ],
-      [
-        "🗣️",
-        "Say the letter, then the vowel",
-        'ד + ָ is not "ah-d". It\'s <b>dah</b> — letter first, vowel second, every time.',
-      ],
-    ];
-    const body = `
-      <p class="note">Tap each card. These four ideas are the whole game.</p>
-      <div class="rules" id="or-list"></div>
-      <div class="feedback" id="or-fb"></div>`;
-    const card = actCard(
-      "warmup",
-      1,
-      "⚾ How Hebrew Works",
-      "Four ground rules before your first at-bat.",
-      body,
-    );
-    const list = $("#or-list", card);
-    const fbn = $("#or-fb", card);
-    let n = 0;
-    steps.forEach(([pin, t, d]) => {
-      const r = el(
-        `<button class="rule" type="button" style="text-align:left;cursor:pointer"><span class="pin">${pin}</span><span><b>${t}</b><span>${d}</span></span></button>`,
-      );
-      r.addEventListener(
-        "click",
-        () => {
-          r.style.borderColor = "var(--good)";
-          n++;
-          if (n === steps.length) {
-            fb(fbn, "ok", "You've got the ground rules. Play ball!");
-            done("warmup");
-          }
+  // ---------------------------------------------------------------- the game
+  // The one activity the shell owns directly, because it is the hand-off point
+  // to the per-inning bespoke module.
+  registerActivity({
+    id: "game",
+    title: () => "🎮 " + (gameSpec ? gameSpec.name : "Tonight's Game"),
+    how: () => (gameSpec ? gameSpec.blurb || gameSpec.goal : "Tonight's game."),
+    mount(root, api) {
+      const spec = gameSpec || {
+        name: "Coming up",
+        goal: "This inning's game is still in the bullpen.",
+        mount(r, a) {
+          r.innerHTML = '<p class="note">No game loaded for this inning.</p>';
+          a.win();
         },
-        { once: true },
-      );
-      list.appendChild(r);
-    });
-    return card;
-  }
-
-  // ------------------------------------------------------- 2. Meet the players
-  function buildLetters() {
-    const showing = unit.newLetters.length ? unit.newLetters : unit.letterPool.slice(-6);
-    const isReview = !unit.newLetters.length;
-    const body = `
-      <p class="note">Tap a card to hear it. Read the <b>sound</b> line out loud before you move on.</p>
-      <div class="card-grid" id="lt-grid"></div>
-      <div class="feedback" id="lt-fb"></div>`;
-    const card = actCard(
-      "letters",
-      2,
-      isReview ? "🧢 Scouting Report" : "🧢 Meet the Players",
-      isReview
-        ? "No new letters tonight — check the roster you already have."
-        : `${showing.length} new letter${showing.length === 1 ? "" : "s"} joining the roster.`,
-      body,
-    );
-    const grid = $("#lt-grid", card);
-    const fbn = $("#lt-fb", card);
-    let tapped = 0;
-    showing.forEach((ch) => {
-      const L = LETTERS[ch];
-      if (!L) return;
-      const c = el(`<button class="lcard" type="button" style="cursor:pointer">
-        <div class="glyph">${ch}</div>
-        <div class="lname">${esc(L.name)}</div>
-        <div class="lsound">${L.c ? "says " + esc(L.c) : "SILENT"} — ${esc(L.say)}</div>
-        <div class="lnote">${esc(L.note)}</div>
-        ${L.watch ? `<div class="lwatch">👀 Don't mix up: ${esc(L.watch)}</div>` : ""}
-      </button>`);
-      c.addEventListener("click", () => {
-        say(ch, L.c || L.name);
-        if (!c.dataset.seen) {
-          c.dataset.seen = "1";
-          c.style.borderColor = "var(--good)";
-          tapped++;
-          if (tapped === showing.length) {
-            fb(fbn, "ok", "Roster memorised. On to the vowels.");
-            done("letters");
-          } else {
-            fbn.className = "feedback tip";
-            fbn.textContent = `${tapped} of ${showing.length} cards read.`;
-          }
-        }
-      });
-      grid.appendChild(c);
-    });
-    return card;
-  }
-
-  // ------------------------------------------------------ 3. Coach's chalk talk
-  function buildRules() {
-    const vowelRows = unit.newVowels
-      .map((k) => {
-        const V = VOWELS[k];
-        return `<div class="rule"><span class="pin glyph" style="font-size:2rem">א${V.ch}</span><span><b>${esc(
-          V.name,
-        )} — says <span style="color:var(--lights)">${esc(V.v)}</span></b><span>${esc(
-          V.say,
-        )}. Look for ${esc(V.art)}.</span></span></div>`;
-      })
-      .join("");
-    const body = `
-      ${vowelRows ? `<div class="rules" style="margin-bottom:12px">${vowelRows}</div>` : ""}
-      <div class="rules" id="rl-list"></div>
-      <div class="feedback" id="rl-fb"></div>`;
-    const card = actCard(
-      "rules",
-      3,
-      "📋 Coach's Chalk Talk",
-      "The rules that make the sounds work. Tap each one once you've read it.",
-      body,
-    );
-    const list = $("#rl-list", card);
-    const fbn = $("#rl-fb", card);
-    let n = 0;
-    unit.rules.forEach(([t, d]) => {
-      const r = el(
-        `<button class="rule" type="button" style="text-align:left;cursor:pointer"><span class="pin">📌</span><span><b>${esc(
-          t,
-        )}</b><span>${d}</span></span></button>`,
-      );
-      r.addEventListener(
-        "click",
-        () => {
-          r.style.borderColor = "var(--good)";
-          n++;
-          if (n === unit.rules.length) {
-            fb(fbn, "ok", "Chalk talk done. Now go make some sounds.");
-            done("rules");
-          }
-        },
-        { once: true },
-      );
-      list.appendChild(r);
-    });
-    return card;
-  }
-
-  // --------------------------------------------------------- 4. The blender
-  // Explore freely, then prove it. The challenge half hides the answer until
-  // an attempt is made, and hints arrive in tiers instead of all at once.
-  function buildBlender() {
-    const letters = unit.letterPool;
-    const vowels = unit.vowelPool;
-    const body = `
-      <div class="blend-pick" id="bl-letters" role="group" aria-label="Pick a letter"></div>
-      <div class="blend-pick" id="bl-vowels" role="group" aria-label="Pick a vowel"></div>
-      <div class="blend-stage">
-        <div class="slot"><small>letter</small><span class="glyph lg" id="bl-l"></span></div>
-        <div class="op">+</div>
-        <div class="slot"><small>vowel</small><span class="glyph lg" id="bl-v"></span></div>
-        <div class="op eq">=</div>
-        <div class="slot result"><small>says</small><span class="glyph" id="bl-r"></span></div>
-      </div>
-      <div class="blend-say" id="bl-say"></div>
-      <div class="row" style="margin-top:12px">
-        <button class="btn sm" type="button" id="bl-hear">🔊 Hear it</button>
-        <button class="btn sm" type="button" id="bl-roll">🎲 Surprise me</button>
-        <span class="spacer"></span>
-        <button class="btn primary sm" type="button" id="bl-start">Start the 8-pitch challenge →</button>
-      </div>
-      <div id="bl-challenge" hidden style="margin-top:16px;border-top:1px solid var(--line);padding-top:14px">
-        <div class="row" style="margin-bottom:8px"><b id="bl-count">Pitch 1 of 8</b><span class="spacer"></span><span class="note" id="bl-score"></span></div>
-        <div style="text-align:center"><span class="glyph xl" id="bl-q"></span></div>
-        <div class="choices" id="bl-choices"></div>
-        <div class="feedback" id="bl-fb"></div>
+      };
+      root.innerHTML = `<div class="game">
+        <h4>⚾ ${esc(spec.name)}</h4>
+        <p class="goal">${esc(spec.goal)}</p>
+        <div class="hud" id="gm-hud"></div>
+        <div id="gm-root"></div>
+        <div class="feedback" id="gm-fb"></div>
       </div>`;
-    const card = actCard(
-      "blender",
-      4,
-      "⚙️ The Blending Machine",
-      "Snap any letter onto any vowel and watch the sound come out. Then prove you can do it without looking.",
-      body,
-    );
-
-    let curL = letters[letters.length - 1];
-    let curV = vowels[vowels.length - 1];
-    const lWrap = $("#bl-letters", card);
-    const vWrap = $("#bl-vowels", card);
-
-    letters.forEach((ch) => {
-      const b = el(
-        `<button class="chip" type="button" data-l="${ch}" aria-pressed="false"><span class="glyph">${ch}</span><small>${esc(
-          LETTERS[ch].c || "silent",
-        )}</small></button>`,
-      );
-      b.addEventListener("click", () => {
-        curL = ch;
-        paint();
+      const gr = $("#gm-root", root);
+      const hud = $("#gm-hud", root);
+      const fbn = $("#gm-fb", root);
+      let won = false;
+      const gameApi = Object.assign({}, api, {
+        setHud(html) {
+          hud.innerHTML = html;
+        },
+        // Each game owns its own layout CSS instead of everyone editing one
+        // shared stylesheet — nine games, nine independent files, no
+        // collisions.
+        style(css) {
+          const sid = "gm-style-" + (unit.id || 0);
+          if (document.getElementById(sid)) return;
+          const s = document.createElement("style");
+          s.id = sid;
+          s.textContent = css;
+          document.head.appendChild(s);
+        },
+        feedback(kind, msg) {
+          fb(fbn, kind, msg);
+        },
+        clearFeedback() {
+          fbn.className = "feedback";
+          fbn.innerHTML = "";
+        },
+        win(msg) {
+          if (won) return;
+          won = true;
+          fb(fbn, "ok", msg || "🏆 Game over — you won it. Nice reading.");
+          api.done();
+        },
       });
-      lWrap.appendChild(b);
-    });
-    vowels.forEach((k) => {
-      const V = VOWELS[k];
-      const b = el(
-        `<button class="chip" type="button" data-v="${k}" aria-pressed="false"><span class="glyph">א${V.ch}</span><small>${esc(
-          V.v,
-        )}</small></button>`,
-      );
-      b.addEventListener("click", () => {
-        curV = k;
-        paint();
-      });
-      vWrap.appendChild(b);
-    });
-
-    function paint() {
-      const s = syl(curL, curV);
-      $("#bl-l", card).textContent = curL;
-      $("#bl-v", card).textContent = "א" + VOWELS[curV].ch;
-      $("#bl-r", card).textContent = s.heb;
-      $("#bl-r", card).className = "glyph";
-      $("#bl-say", card).innerHTML =
-        `${trHtml(s)} &nbsp;·&nbsp; <span class="note">${esc(LETTERS[curL].c ? LETTERS[curL].name + " says " + LETTERS[curL].c : LETTERS[curL].name + " is silent")}, ${esc(
-          VOWELS[curV].name,
-        )} says ${esc(VOWELS[curV].v)}</span>`;
-      lWrap.querySelectorAll("[data-l]").forEach((b) => {
-        b.setAttribute("aria-pressed", String(b.dataset.l === curL));
-      });
-      vWrap.querySelectorAll("[data-v]").forEach((b) => {
-        b.setAttribute("aria-pressed", String(b.dataset.v === curV));
-      });
-    }
-    paint();
-    $("#bl-hear", card).addEventListener("click", () => {
-      const s = syl(curL, curV);
-      say(s.heb, s.tr);
-    });
-    $("#bl-roll", card).addEventListener("click", () => {
-      curL = pick(letters);
-      curV = pick(vowels);
-      paint();
-      const s = syl(curL, curV);
-      say(s.heb, s.tr);
-    });
-
-    // ---- challenge ----
-    const TOTAL = 8;
-    let qn = 0;
-    let right = 0;
-    let misses = 0;
-    let current = null;
-    const wrap = $("#bl-challenge", card);
-    const fbn = $("#bl-fb", card);
-
-    $("#bl-start", card).addEventListener("click", () => {
-      wrap.hidden = false;
-      $("#bl-start", card).disabled = true;
-      nextQ();
-      wrap.scrollIntoView({ behavior: "smooth", block: "center" });
-    });
-
-    // Distractors are deliberately CLOSE: same consonant/different vowel, and
-    // same vowel/different consonant. Guessing by elimination shouldn't work.
-    function distractors(s) {
-      const out = new Set();
-      for (const k of shuffle(vowels)) {
-        if (k === s.vowel) continue;
-        const d = syl(s.letter, k);
-        if (d && d.tr !== s.tr) out.add(d.tr);
-        if (out.size >= 2) break;
+      // A game that throws must not take the whole page down with it.
+      try {
+        spec.mount(gr, gameApi);
+      } catch (err) {
+        gr.innerHTML =
+          '<p class="note">This game hit a snag. Everything else on the page still works — tap below to skip it.</p><button class="btn sm" type="button" id="gm-skip">Skip this game</button>';
+        $("#gm-skip", gr)?.addEventListener("click", () => gameApi.win("Game skipped."));
+        if (global.console) console.error("[nightly-hebrew] game failed to mount", err);
       }
-      for (const ch of shuffle(letters)) {
-        if (ch === s.letter) continue;
-        const d = syl(ch, s.vowel);
-        if (d && d.tr !== s.tr) out.add(d.tr);
-        if (out.size >= 3) break;
-      }
-      return [...out].slice(0, 3);
-    }
-
-    function nextQ() {
-      if (qn >= TOTAL) {
-        const pct = Math.round((right / TOTAL) * 100);
-        fb(
-          fbn,
-          right >= TOTAL - 2 ? "ok" : "tip",
-          right >= TOTAL - 2
-            ? `<b>${right}/${TOTAL} — that's a solid inning.</b> You're reading the vowel, not guessing.`
-            : `<b>${right}/${TOTAL}.</b> Good reps. Scroll back up to the machine and play with the ones that tripped you.`,
-        );
-        $("#bl-q", card).textContent = pct >= 0 ? "⚾" : "";
-        $("#bl-choices", card).innerHTML = "";
-        $("#bl-count", card).textContent = "Challenge complete";
-        done("blender");
-        return;
-      }
-      qn++;
-      misses = 0;
-      // Prefer the unit's NEW material, but keep a third of the pitches from
-      // earlier units so review is baked in rather than optional.
-      const useNew = unit.newLetters.length || unit.newVowels.length;
-      const wantNew = useNew && qn % 3 !== 0;
-      const L =
-        wantNew && unit.newLetters.length
-          ? pick(unit.newLetters.filter((x) => letters.includes(x)))
-          : pick(letters);
-      const V = wantNew && unit.newVowels.length ? pick(unit.newVowels) : pick(vowels);
-      current = syl(L || pick(letters), V || pick(vowels));
-      $("#bl-count", card).textContent = `Pitch ${qn} of ${TOTAL}`;
-      $("#bl-score", card).textContent = `${right} clean`;
-      $("#bl-q", card).textContent = current.heb;
-      fbn.className = "feedback";
-      fbn.innerHTML = "";
-      const opts = shuffle([current.tr, ...distractors(current)]);
-      const ch = $("#bl-choices", card);
-      ch.innerHTML = "";
-      opts.forEach((t) => {
-        const b = el(`<button class="choice" type="button">${esc(t)}</button>`);
-        b.addEventListener("click", () => answer(b, t, ch));
-        ch.appendChild(b);
-      });
-    }
-
-    function answer(btn, text, ch) {
-      if (text === current.tr) {
-        btn.classList.add("ok");
-        [...ch.children].forEach((b) => (b.disabled = true));
-        if (misses === 0) right++;
-        say(current.heb, current.tr);
-        fb(
-          fbn,
-          "ok",
-          `<b>${esc(current.tr)}</b> — ${esc(current.L.name)} says <b>${esc(
-            current.c || "nothing",
-          )}</b>, ${esc(current.V.name)} says <b>${esc(current.v)}</b>.`,
-        );
-        setTimeout(nextQ, 950);
-        return;
-      }
-      btn.classList.add("no");
-      btn.disabled = true;
-      misses++;
-      if (misses === 1) {
-        // Tier 1 — name the move, not the answer.
-        fb(
-          fbn,
-          "no",
-          `Not that one. Look at the mark <b>under</b> the letter first — which vowel is it? Then say the letter's sound in front of it.`,
-        );
-      } else if (misses === 2) {
-        // Tier 2 — give one half away, never both.
-        fb(
-          fbn,
-          "tip",
-          `Hint: the vowel is <b>${esc(current.V.name)}</b>, and it says <b>${esc(
-            current.v,
-          )}</b>. Now which letter is in front of it?`,
-        );
-      } else {
-        fb(
-          fbn,
-          "tip",
-          `Hint: the letter is <b>${esc(current.L.name)}</b> (${esc(
-            current.c || "silent",
-          )}) and the vowel says <b>${esc(current.v)}</b>.`,
-        );
-      }
-    }
-
-    return card;
-  }
-
-  // ------------------------------------------------------ 5. Batting practice
-  // Fluency: a full page of reps with the answer hidden, no clock anywhere.
-  function buildBatting() {
-    const letters = unit.letterPool;
-    const vowels = unit.vowelPool;
-    const rows = [];
-    for (let r = 0; r < 4; r++) {
-      const row = [];
-      const rowV = r < 2 && unit.newVowels.length ? pick(unit.newVowels) : null;
-      const rowL = r >= 2 && unit.newLetters.length ? pick(unit.newLetters) : null;
-      for (let i = 0; i < 6; i++) {
-        const L = rowL || pick(letters);
-        const V = rowV || pick(vowels);
-        row.push(syl(L, V));
-      }
-      rows.push(row);
-    }
-    const body = `
-      <p class="note">Read a whole row out loud <b>before</b> you tap anything. Then tap each one to check yourself. No clock — go at your speed.</p>
-      <div id="bp-rows"></div>
-      <div class="row" style="margin-top:12px">
-        <button class="btn sm" type="button" id="bp-reveal">👁 Show every answer</button>
-        <button class="btn sm" type="button" id="bp-new">🔄 Fresh set of pitches</button>
-      </div>
-      <div class="feedback" id="bp-fb"></div>`;
-    const card = actCard(
-      "batting",
-      5,
-      "🏏 Batting Practice",
-      "Four rows of reps. Reading a whole row without stopping is the goal.",
-      body,
-    );
-    const host = $("#bp-rows", card);
-    const fbn = $("#bp-fb", card);
-    let rowsDone = 0;
-
-    function drawRows() {
-      host.innerHTML = "";
-      rowsDone = 0;
-      rows.forEach((row, i) => {
-        const wrap = el(
-          `<div style="margin-bottom:12px"><div class="note" style="margin-bottom:5px">Row ${i + 1}</div><div class="drill-row"></div></div>`,
-        );
-        const line = $(".drill-row", wrap);
-        let tapped = 0;
-        row.forEach((s) => {
-          const t = el(
-            `<button class="tile" type="button"><span class="glyph">${s.heb}</span><span class="peek">?</span></button>`,
-          );
-          t.addEventListener("click", () => {
-            if (!t.classList.contains("revealed")) {
-              t.classList.add("revealed");
-              $(".peek", t).innerHTML = trHtml(s);
-              tapped++;
-              if (tapped === row.length) {
-                rowsDone++;
-                if (rowsDone === rows.length) {
-                  fb(fbn, "ok", "All four rows checked. That's a full round of BP. ⚾");
-                  done("batting");
-                }
-              }
-            }
-            say(s.heb, s.tr);
-          });
-          line.appendChild(t);
-        });
-        host.appendChild(wrap);
-      });
-    }
-    drawRows();
-
-    $("#bp-reveal", card).addEventListener("click", () => {
-      host.querySelectorAll(".tile:not(.revealed)").forEach((t) => t.click());
-    });
-    $("#bp-new", card).addEventListener("click", () => {
-      rows.forEach((row, r) => {
-        const rowV = r < 2 && unit.newVowels.length ? pick(unit.newVowels) : null;
-        const rowL = r >= 2 && unit.newLetters.length ? pick(unit.newLetters) : null;
-        for (let i = 0; i < row.length; i++) {
-          row[i] = syl(rowL || pick(letters), rowV || pick(vowels));
-        }
-      });
-      drawRows();
-      fbn.className = "feedback";
-      fbn.innerHTML = "";
-    });
-    return card;
-  }
-
-  // ---------------------------------------------------------------- 6. Game
-  function buildGame() {
-    const spec = gameSpec || {
-      name: "Coming up",
-      goal: "This inning's game is still in the bullpen.",
-      mount(root, api) {
-        root.innerHTML = '<p class="note">No game loaded for this inning.</p>';
-        api.win();
-      },
-    };
-    const body = `<div class="game">
-      <h4>⚾ ${esc(spec.name)}</h4>
-      <p class="goal">${esc(spec.goal)}</p>
-      <div class="hud" id="gm-hud"></div>
-      <div id="gm-root"></div>
-      <div class="feedback" id="gm-fb"></div>
-    </div>`;
-    const card = actCard("game", 6, "🎮 Tonight's Game", esc(spec.blurb || spec.goal), body);
-    const root = $("#gm-root", card);
-    const hud = $("#gm-hud", card);
-    const fbn = $("#gm-fb", card);
-    let won = false;
-    const api = {
-      unit,
-      LETTERS,
-      VOWELS,
-      syl,
-      trHtml,
-      say,
-      toast,
-      shuffle,
-      sample,
-      pick,
-      randInt,
-      el,
-      esc,
-      setHud(html) {
-        hud.innerHTML = html;
-      },
-      // Each game owns its own layout CSS instead of everyone editing one
-      // shared stylesheet — nine games, nine independent files, no collisions.
-      style(css) {
-        const id = "gm-style-" + (unit.id || 0);
-        if (document.getElementById(id)) return;
-        const s = document.createElement("style");
-        s.id = id;
-        s.textContent = css;
-        document.head.appendChild(s);
-      },
-      feedback(kind, msg) {
-        fb(fbn, kind, msg);
-      },
-      clearFeedback() {
-        fbn.className = "feedback";
-        fbn.innerHTML = "";
-      },
-      win(msg) {
-        if (won) return;
-        won = true;
-        fb(fbn, "ok", msg || "🏆 Game over — you won it. Nice reading.");
-        done("game");
-      },
-    };
-    // A game that throws must not take the whole page down with it.
-    try {
-      spec.mount(root, api);
-    } catch (err) {
-      root.innerHTML =
-        '<p class="note">This game hit a snag. Everything else on the page still works — tap below to skip it.</p><button class="btn sm" type="button" id="gm-skip">Skip this game</button>';
-      $("#gm-skip", root)?.addEventListener("click", () => api.win("Game skipped."));
-      if (global.console) console.error("[nightly-hebrew] game failed to mount", err);
-    }
-    return card;
-  }
-
-  // ------------------------------------------------------------- 7. Game day
-  function buildCloser() {
-    const words = unit.words;
-    const siddur = unit.siddur;
-    const body = `
-      <p class="note">Real words, built only from letters you already own. Tap one to check the sound and the meaning.</p>
-      <div class="words" id="cl-words"></div>
-      ${
-        siddur.length
-          ? `<h4 style="margin:18px 0 4px">📖 Straight from the siddur</h4>
-             <p class="note" style="margin-top:0">These exact lines are in your prayer book. Read them out loud.</p>
-             <div id="cl-siddur"></div>`
-          : ""
-      }
-      <div class="feedback" id="cl-fb"></div>`;
-    const card = actCard(
-      "closer",
-      7,
-      "📖 Game Day",
-      "Put it together: whole words, and real lines from davening.",
-      body,
-    );
-    const wWrap = $("#cl-words", card);
-    const fbn = $("#cl-fb", card);
-    let read = 0;
-    const need = words.length + siddur.length;
-
-    const tick = () => {
-      read++;
-      if (read >= need) {
-        fb(fbn, "ok", "That's the game. You just read real Hebrew. 🏆");
-        done("closer");
-      } else {
-        fbn.className = "feedback tip";
-        fbn.textContent = `${read} of ${need} read.`;
-      }
-    };
-
-    words.forEach((w) => {
-      const b = el(`<button class="word hide" type="button">
-        <span class="glyph">${w.heb}</span>
-        <span class="meta"><span class="tr"><span class="c">${esc(w.tr)}</span></span><br><span class="en">${esc(
-          w.en,
-        )}</span></span>
-      </button>`);
-      b.addEventListener("click", () => {
-        if (b.classList.contains("hide")) {
-          b.classList.remove("hide");
-          tick();
-        }
-        say(w.heb, w.tr);
-      });
-      wWrap.appendChild(b);
-    });
-
-    if (siddur.length) {
-      const sWrap = $("#cl-siddur", card);
-      siddur.forEach((s) => {
-        const b =
-          el(`<button class="word hide" type="button" style="display:block;text-align:right">
-          <span class="glyph" style="font-size:1.9rem;display:block">${s.heb}</span>
-          <span class="meta" style="text-align:left;display:block;margin-top:6px"><span class="tr"><span class="c">${esc(
-            s.tr,
-          )}</span></span><br><span class="en">${esc(s.en)}</span></span>
-        </button>`);
-        b.addEventListener("click", () => {
-          if (b.classList.contains("hide")) {
-            b.classList.remove("hide");
-            tick();
-          }
-          say(s.heb, s.tr);
-        });
-        sWrap.appendChild(b);
-      });
-    }
-    return card;
-  }
+    },
+  });
 
   // --------------------------------------------------------------- payout
   function renderPayout(unlocked) {
@@ -953,11 +605,15 @@
     if (!host) return;
     const day = todayKey();
     const paid = alreadyClaimedToday(unit.id, day);
+    const bonus = BONUS_IDS.filter((k) => progress.acts[k]).length;
+    const perfect = bonus === BONUS_IDS.length;
     if (paid) {
       host.className = "payout paid";
       host.innerHTML = `<div class="amount">$0.20</div>
         <h3>Paid — nice work tonight ⚾</h3>
-        <p>It's on its way to your <b>Allowance</b> page. Open Focus School and it'll be sitting in your balance.</p>
+        <p>It's on its way to your <b>Allowance</b> page. Open Focus School and it'll be sitting in your balance.${
+          perfect ? " And you cleared every extra inning — perfect game. 🏆" : ""
+        }</p>
         <a class="btn sm" href="/">Open Focus School →</a>`;
       return;
     }
@@ -966,14 +622,16 @@
       host.className = "payout";
       host.innerHTML = `<div class="amount" style="opacity:.45">$0.20</div>
         <h3>Finish the inning to get paid</h3>
-        <p>${n} of 7 activities done. Clear all seven and this button unlocks.</p>
+        <p>${n} of ${ACT_IDS.length} main activities done. Extra Innings are optional — they don't hold up your pay.</p>
         <button class="btn block" type="button" disabled>🔒 Locked</button>`;
       return;
     }
     host.className = "payout";
     host.innerHTML = `<div class="amount">$0.20</div>
       <h3>Inning complete — collect your pay</h3>
-      <p>All seven activities done. Tap once and it syncs straight to your Allowance.</p>
+      <p>All ${ACT_IDS.length} main activities done.${
+        perfect ? " Every extra inning too — that's a perfect game. 🏆" : ""
+      } Tap once and it syncs straight to your Allowance.</p>
       <button class="btn grass block" type="button" id="pay-btn">💰 Claim $0.20</button>`;
     $("#pay-btn", host).addEventListener("click", () => {
       const ok = queueEarning(unit, day);
@@ -985,6 +643,187 @@
       else toast("Already claimed for tonight — come back tomorrow.");
       renderPayout(true);
     });
+  }
+
+  // -------------------------------------------------------- shared widgets
+  // Nineteen activities would otherwise grow nineteen slightly different
+  // multiple-choice widgets — and nineteen slightly different ideas about how
+  // a wrong answer is handled. There is exactly one, here, and it always
+  // tiers the hint (name the move → give one half → give the other half)
+  // instead of printing the answer on the first miss.
+  function quiz(host, opts) {
+    const total = opts.total || 8;
+    const wrap = el(`<div class="quiz">
+      <div class="row quiz-top"><b class="qcount"></b><span class="spacer"></span><span class="note qscore"></span></div>
+      <div class="qstage"></div>
+      <div class="choices"></div>
+      <div class="feedback"></div>
+    </div>`);
+    host.appendChild(wrap);
+    const countEl = $(".qcount", wrap);
+    const scoreEl = $(".qscore", wrap);
+    const stage = $(".qstage", wrap);
+    const choicesEl = $(".choices", wrap);
+    const fbn = $(".feedback", wrap);
+    let n = 0;
+    let right = 0;
+    let misses = 0;
+    let cur = null;
+
+    function next() {
+      if (n >= total) {
+        stage.innerHTML = `<div class="qdone">${right >= total - 2 ? "🏆" : "⚾"}</div>`;
+        choicesEl.innerHTML = "";
+        countEl.textContent = "Round complete";
+        scoreEl.textContent = "";
+        fb(
+          fbn,
+          right >= total - 2 ? "ok" : "tip",
+          right >= total - 2
+            ? `<b>${right} of ${total} clean.</b> ${opts.winNote || "You are reading, not guessing."}`
+            : `<b>${right} of ${total} clean.</b> ${
+                opts.tryNote || "Good reps — the misses are the ones worth another look."
+              }`,
+        );
+        opts.onFinish?.(right, total);
+        return;
+      }
+      n++;
+      misses = 0;
+      cur = opts.next(n - 1);
+      if (!cur) {
+        n = total;
+        return next();
+      }
+      countEl.textContent = `${opts.unitWord || "Question"} ${n} of ${total}`;
+      scoreEl.textContent = `${right} clean`;
+      stage.innerHTML = cur.qHtml;
+      fbn.className = "feedback";
+      fbn.innerHTML = "";
+      choicesEl.innerHTML = "";
+      choicesEl.className = "choices" + (cur.wide ? " wide" : "");
+      for (const c of shuffle(cur.choices.slice())) {
+        const b = el(`<button class="choice" type="button">${c.html || esc(c.text || c)}</button>`);
+        const text = c.text != null ? c.text : c;
+        b.addEventListener("click", () => answer(b, text));
+        choicesEl.appendChild(b);
+      }
+      if (cur.saySound) say(cur.sayHeb, cur.sayTr);
+    }
+
+    function answer(btn, text) {
+      if (text === cur.answer) {
+        btn.classList.add("ok");
+        [...choicesEl.children].forEach((b) => (b.disabled = true));
+        if (misses === 0) right++;
+        opts.onAnswer?.(misses === 0, cur.meta);
+        if (cur.sayHeb || cur.sayTr) say(cur.sayHeb, cur.sayTr);
+        fb(fbn, "ok", cur.explain || "That's it.");
+        setTimeout(next, cur.pause || 1000);
+        return;
+      }
+      btn.classList.add("no");
+      btn.disabled = true;
+      misses++;
+      const tiers = [cur.hint1, cur.hint2, cur.hint3].filter(Boolean);
+      const msg = tiers[Math.min(misses, tiers.length) - 1] || cur.explain;
+      fb(fbn, misses === 1 ? "no" : "tip", msg);
+    }
+
+    next();
+    return wrap;
+  }
+
+  // A row of "read it, then tap to check yourself" tiles. The answer is hidden
+  // until the reader commits, which is the whole difference between practice
+  // and looking at a list of answers.
+  function tileRow(items, opts) {
+    const o = opts || {};
+    const row = el('<div class="drill-row"></div>');
+    let tapped = 0;
+    items.forEach((it) => {
+      const t = el(
+        `<button class="tile" type="button"><span class="glyph${
+          o.small ? " sm" : ""
+        }">${it.heb}</span><span class="peek">?</span></button>`,
+      );
+      t.addEventListener("click", () => {
+        if (!t.classList.contains("revealed")) {
+          t.classList.add("revealed");
+          $(".peek", t).innerHTML =
+            it.trHtml || `<span class="tr"><span class="c">${esc(it.tr)}</span></span>`;
+          tapped++;
+          if (tapped === items.length) o.onAll?.();
+        }
+        say(it.heb, it.tr);
+      });
+      row.appendChild(t);
+    });
+    row.revealAll = () => row.querySelectorAll(".tile:not(.revealed)").forEach((t) => t.click());
+    return row;
+  }
+
+  // --------------------------------------------------------- activity api
+  // Everything an activity module is allowed to touch. Handing this out
+  // explicitly (rather than letting modules reach into the shell) is what
+  // keeps nineteen activities from quietly growing nineteen private contracts.
+  function apiFor(id) {
+    return {
+      unit,
+      LETTERS,
+      VOWELS,
+      UNITS,
+      CONFUSABLES,
+      syl,
+      trHtml,
+      pieces,
+      sneakyPatach,
+      say,
+      toast,
+      shuffle,
+      sample,
+      pick,
+      randInt,
+      el,
+      esc,
+      $,
+      confusableGroups,
+      vowelFamilies,
+      allWords,
+      quiz,
+      tileRow,
+      done: () => done(id),
+      isDone: () => !!progress.acts[id],
+      fb,
+    };
+  }
+
+  // Confusable groups whose every member is already taught tonight — never
+  // ask a reader to rule out a letter he has not met.
+  function confusableGroups() {
+    const known = new Set(unit.allLetters);
+    return CONFUSABLES.filter((g) => g.chars.every((c) => known.has(c)));
+  }
+  // Vowel keys grouped by the sound they make, for "which ones say ah?".
+  function vowelFamilies() {
+    const out = {};
+    for (const k of unit.vowelPool) {
+      const f = VOWELS[k].family;
+      (out[f] = out[f] || []).push(k);
+    }
+    return out;
+  }
+  // Everything readable tonight, de-duplicated, longest first — the pool the
+  // word activities draw from.
+  function allWords() {
+    const seen = new Set();
+    const out = [];
+    for (const w of unit.words) {
+      if (seen.has(w.heb)) continue;
+      seen.add(w.heb);
+      out.push(w);
+    }
+    return out;
   }
 
   // ----------------------------------------------------------------- boot
@@ -1020,18 +859,45 @@
         <h2>${esc(unit.title)}</h2>
         <p class="sub">${esc(unit.subtitle)}</p>
         ${peek ? `<div class="hebsub">${peek}</div>` : ""}
-        <div class="big-idea"><b>Tonight's big idea:</b> ${esc(unit.bigIdea)}</div>`;
+        <div class="big-idea"><b>Tonight's big idea:</b> ${esc(unit.bigIdea)}</div>
+        ${unit.why ? `<div class="big-idea why"><b>Why it matters:</b> ${esc(unit.why)}</div>` : ""}`;
     }
 
     const acts = document.getElementById("acts");
     if (acts) {
-      acts.appendChild(buildWarmup());
-      acts.appendChild(buildLetters());
-      acts.appendChild(buildRules());
-      acts.appendChild(buildBlender());
-      acts.appendChild(buildBatting());
-      acts.appendChild(buildGame());
-      acts.appendChild(buildCloser());
+      const toc = buildToc();
+      acts.appendChild(toc);
+      let num = 0;
+      for (const sec of PLAN) {
+        const live = sec.acts.filter((a) => registry.has(a));
+        if (!live.length) continue;
+        acts.appendChild(
+          el(`<div class="section-head" id="sec-${sec.key}">
+            <h2>${esc(sec.name)}</h2>
+            <p>${esc(sec.blurb)}</p>
+          </div>`),
+        );
+        for (const actId of live) {
+          const spec = registry.get(actId);
+          const bonus = BONUS_IDS.includes(actId);
+          if (!bonus) num++;
+          const label = bonus ? "＋" : num;
+          const title = typeof spec.title === "function" ? spec.title(unit) : spec.title;
+          const how = typeof spec.how === "function" ? spec.how(unit) : spec.how;
+          const card = actCard(actId, label, title, how, bonus);
+          acts.appendChild(card);
+          const body = $(".act-body", card);
+          try {
+            spec.mount(body, apiFor(actId));
+          } catch (err) {
+            body.innerHTML =
+              '<p class="note">This activity hit a snag and skipped itself. Everything else on the page still works.</p>';
+            if (global.console) console.error("[nightly-hebrew] activity failed: " + actId, err);
+            // A broken activity must not be able to lock the payout.
+            done(actId);
+          }
+        }
+      }
     }
 
     // Previous / next inning links.
@@ -1048,11 +914,47 @@
     refreshScore();
   }
 
+  // A nineteen-activity page needs a map. The card list doubles as a progress
+  // board and as jump links, so nobody has to scroll to find where they left
+  // off.
+  function buildToc() {
+    const wrap = el(`<nav class="toc" aria-label="Tonight's activities">
+      <div class="toc-head">
+        <h3>Tonight's lineup</h3>
+        <span class="note" id="toc-tally"></span>
+      </div>
+      <ol class="toc-list"></ol>
+      <p class="note toc-foot">Main activities unlock the $0.20. <b>Extra Innings</b> are optional bonus practice.</p>
+    </nav>`);
+    const list = $(".toc-list", wrap);
+    let num = 0;
+    for (const sec of PLAN) {
+      const live = sec.acts.filter((a) => registry.has(a));
+      if (!live.length) continue;
+      for (const actId of live) {
+        const spec = registry.get(actId);
+        const bonus = BONUS_IDS.includes(actId);
+        if (!bonus) num++;
+        const title = typeof spec.title === "function" ? spec.title(unit) : spec.title;
+        const li = el(`<li class="toc-step${progress.acts[actId] ? " done" : ""}${
+          bonus ? " bonus" : ""
+        }" id="toc-${actId}">
+          <a href="#act-${actId}"><span class="dot">${bonus ? "＋" : num}</span><span class="lbl">${title}</span></a>
+        </li>`);
+        list.appendChild(li);
+      }
+    }
+    return wrap;
+  }
+
   global.HEB = {
     boot,
     registerGame,
+    registerActivity,
     syl,
     trHtml,
+    pieces,
+    sneakyPatach,
     say,
     toast,
     shuffle,
@@ -1066,5 +968,7 @@
     UNITS,
     readProgress,
     ACT_IDS,
+    BONUS_IDS,
+    PLAN,
   };
 })(window);

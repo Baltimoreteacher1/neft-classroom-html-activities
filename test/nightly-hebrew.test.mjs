@@ -16,7 +16,24 @@ const sw = read("focus-school/sw.js");
 const engine = read("focus-school/hebrew/engine.js");
 
 const UNITS = 9;
-const ACTS = ["warmup", "letters", "rules", "blender", "batting", "game", "closer"];
+// The twelve activities that gate the $0.20, in the order the shell renders
+// them. Extra Innings (BONUS) are real practice but must never hold up pay.
+const ACTS = [
+  "warmup",
+  "letters",
+  "lookalike",
+  "rules",
+  "vowelradar",
+  "blender",
+  "batting",
+  "workshop",
+  "game",
+  "sentences",
+  "closer",
+  "final",
+];
+const BONUS = ["rollcall", "reverse", "ladder", "minimal", "builder", "meaning", "spot"];
+const MODULES = ["warmup", "letters", "vowels", "blend", "fluency", "words", "read", "prove"];
 
 // --- the pages exist and are wired to their own game ------------------------
 test("nine inning pages, each loading its own game module", () => {
@@ -28,9 +45,54 @@ test("nine inning pages, each loading its own game module", () => {
     const html = read(page);
     assert.match(html, new RegExp(`data-unit="${i}"`), `unit-${i}.html declares its unit`);
     assert.match(html, new RegExp(`games/unit-${i}\\.js`), `unit-${i}.html loads game ${i}`);
-    assert.match(html, /src="data\.js"/, `unit-${i}.html loads the curriculum`);
+    assert.match(html, /src="data\.js"/, `unit-${i}.html loads the alphabet`);
+    assert.match(html, /src="units\.js"/, `unit-${i}.html loads the curriculum`);
     assert.match(html, /src="engine\.js"/, `unit-${i}.html loads the engine`);
     assert.match(html, /id="payout"/, `unit-${i}.html has the payout slot`);
+    // Every activity module must be on every page: the shell only renders an
+    // activity that registered itself, so a missing <script> silently drops a
+    // required activity and the payout could never unlock.
+    for (const m of MODULES) {
+      assert.ok(
+        html.includes(`activities/${m}.js`),
+        `unit-${i}.html loads activities/${m}.js`,
+      );
+    }
+    // Load order is load-bearing: data → units → engine → activities → game.
+    const order = [
+      html.indexOf('src="data.js"'),
+      html.indexOf('src="units.js"'),
+      html.indexOf('src="engine.js"'),
+      html.indexOf('activities/warmup.js'),
+      html.indexOf(`games/unit-${i}.js`),
+      html.indexOf("HEB.boot()"),
+    ];
+    assert.deepEqual(
+      order.slice().sort((a, b) => a - b),
+      order,
+      `unit-${i}.html loads its scripts in dependency order`,
+    );
+  }
+});
+
+// --- every activity the shell asks for actually exists ----------------------
+test("every required and bonus activity is registered by a module", () => {
+  const src = MODULES.map((m) => read(`focus-school/hebrew/activities/${m}.js`)).join("\n");
+  for (const id of [...ACTS, ...BONUS]) {
+    if (id === "game") continue; // the shell registers this one itself
+    assert.match(
+      src,
+      new RegExp(`id: "${id}"`),
+      `activity "${id}" is registered — the shell lists it in PLAN`,
+    );
+  }
+  assert.match(engine, /id: "game"/, "the shell owns the game hand-off");
+  // Each id appears exactly once across all modules: two registrations of the
+  // same id would silently replace each other in the registry Map.
+  for (const id of [...ACTS, ...BONUS]) {
+    const hits = (src.match(new RegExp(`id: "${id}"`, "g")) || []).length;
+    if (id === "game") continue;
+    assert.equal(hits, 1, `activity "${id}" is registered exactly once`);
   }
 });
 
@@ -39,6 +101,7 @@ test("curriculum data: every unit's pools are built from real letters/vowels", (
   const sandbox = { window: {} };
   createContext(sandbox);
   runInContext(read("focus-school/hebrew/data.js"), sandbox);
+  runInContext(read("focus-school/hebrew/units.js"), sandbox);
   const { LETTERS, VOWELS, UNITS: units, FINALS } = sandbox.window.HEB_DATA;
   assert.equal(units.length, UNITS, "nine innings");
 
@@ -64,14 +127,78 @@ test("curriculum data: every unit's pools are built from real letters/vowels", (
     for (const ch of u.letterPool) assert.ok(!FINALS.has(ch), `pool excludes final ${ch}`);
     if (u.id > 1) assert.ok(u.prevLetters.length > 0, `unit ${u.id} reviews earlier letters`);
   }
-  // Every word must be spellable from letters taught by that inning.
+  // Every word, sentence and closer line must be spellable from letters AND
+  // markable with vowels already taught by that inning. A word the reader
+  // cannot decode is not practice, it is a wall.
   const strip = (s) => [...s].filter((c) => c >= "א" && c <= "ת");
+  const marks = (s) => [...s].filter((c) => c >= "\u05B0" && c <= "\u05BB");
+  const markToVowel = {};
+  for (const [k, v] of Object.entries(VOWELS)) if (v.ch.length === 1) markToVowel[v.ch] = k;
   for (const u of units) {
     const allowed = new Set(u.allLetters.map((ch) => ch[0]));
-    for (const w of u.words) {
+    const vAllowed = new Set(u.vowelPool);
+    for (const w of [...u.words, ...u.sentences, ...u.closer]) {
       for (const ch of strip(w.heb)) {
         assert.ok(allowed.has(ch), `unit ${u.id}: "${w.heb}" uses ${ch} before it is taught`);
       }
+      for (const m of marks(w.heb)) {
+        const key = markToVowel[m];
+        assert.ok(key, `unit ${u.id}: "${w.heb}" carries an unknown mark`);
+        // The malei forms are the same vowel wearing a mater letter, so a
+        // plain chirik counts as taught once chirik-malei is.
+        const ok =
+          vAllowed.has(key) ||
+          (key === "chirik" && vAllowed.has("chirikMalei")) ||
+          (key === "tzere" && vAllowed.has("tzereYud"));
+        assert.ok(ok, `unit ${u.id}: "${w.heb}" uses vowel ${key} before it is taught`);
+      }
+    }
+    // Depth: the whole point of this build-out. A thin inning is a regression.
+    assert.ok(u.words.length >= 9, `unit ${u.id} has at least nine words`);
+    assert.ok(u.rules.length >= 4, `unit ${u.id} has at least four rules`);
+    assert.ok(u.why, `unit ${u.id} says why tonight matters`);
+    if (u.id > 1) assert.ok(u.sentences.length >= 4, `unit ${u.id} has connected reading`);
+  }
+});
+
+// --- the word splitter, which every word activity is built on --------------
+test("word pieces decode the way the page teaches them to", () => {
+  const sandbox = { window: {}, console };
+  sandbox.window.window = sandbox.window;
+  createContext(sandbox);
+  for (const f of ["data.js", "units.js", "engine.js"]) {
+    runInContext(read(`focus-school/hebrew/${f}`), sandbox);
+  }
+  const { pieces } = sandbox.window.HEB;
+  const tr = (w) =>
+    pieces(w)
+      .filter((p) => !p.sep)
+      .map((p) => p.tr)
+      .join("-");
+
+  // A mater is part of the sound before it, never a consonant of its own.
+  assert.equal(tr("תּוֹרָה"), "toh-rah-(silent)", "cholam-malei rides the letter before it");
+  assert.equal(tr("בָּרוּךְ"), "bah-roo-ch", "shuruk rides the letter before it");
+  assert.equal(tr("מִי"), "mee", "chirik + yud is still just ee");
+  // A bare yud on an ah is a diphthong, not a second beat.
+  assert.equal(tr("חַי"), "chai", "patach + bare yud is 'ai'");
+  // ...unless the yud has a vav of its own coming, in which case it is a real
+  // consonant. This is the case that made the naive rule wrong.
+  assert.equal(tr("הַיוֹם"), "hah-yoh-m", "a yud with its own vav is a consonant");
+  // The sneaky patach says the ah BEFORE the letter.
+  assert.equal(tr("שָׂמֵחַ"), "sah-may-ach", "final chet + patach is 'ach'");
+  // A vav that already has a full sound in front of it is a plain v.
+  assert.equal(tr("וָו"), "vah-v", "a closed sound before a bare vav keeps the v");
+
+  // And nothing in the curriculum may fail to split at all.
+  for (const u of sandbox.window.HEB_DATA.UNITS) {
+    for (const w of u.words) {
+      const ps = pieces(w.heb).filter((p) => !p.sep);
+      assert.ok(ps.length > 0, `unit ${u.id}: "${w.heb}" splits into pieces`);
+      assert.ok(
+        ps.every((p) => p.tr !== ""),
+        `unit ${u.id}: every piece of "${w.heb}" has a readable sound`,
+      );
     }
   }
 });
@@ -87,10 +214,20 @@ test("engine writes the outbox the app drains, with a deterministic id", () => {
     /if \(r\.ledger\.some\(\(e\) => e\.id === id\)\) continue;/,
     "app skips a claim already in the ledger — draining twice cannot double-pay",
   );
-  // All seven activities must be required before the payout unlocks.
-  const ids = ACTS.map((a) => `"${a}"`).join(", ");
-  assert.ok(engine.includes(`const ACT_IDS = [${ids}];`), "seven activities gate the payout");
-  assert.match(engine, /n === ACT_IDS\.length/, "payout unlocks only at 7/7");
+  // Every main activity must be required before the payout unlocks, and the
+  // bonus ones must NOT be — a nineteen-activity page that withheld pay until
+  // all nineteen were cleared would be a trap on a school night.
+  const beforeBonus = engine.split("const BONUS_IDS")[0];
+  const afterBonus = (engine.split("const BONUS_IDS")[1] || "").split("\n")[0];
+  for (const id of ACTS) {
+    assert.ok(new RegExp(`^\\s*"${id}",$`, "m").test(beforeBonus), `"${id}" is in ACT_IDS`);
+  }
+  assert.match(engine, /const BONUS_IDS = \[/, "bonus activities are listed separately");
+  for (const id of BONUS) {
+    assert.ok(afterBonus.includes(`"${id}"`), `"${id}" is a bonus activity, not a payout gate`);
+    assert.ok(!new RegExp(`^\\s*"${id}",$`, "m").test(beforeBonus), `"${id}" is not in ACT_IDS`);
+  }
+  assert.match(engine, /req === ACT_IDS\.length/, "payout unlocks at the full required set");
 });
 
 test("app pays the Hebrew rate and reports it on the paystub", () => {
@@ -144,7 +281,8 @@ test("service worker precaches every Hebrew page and serves it back offline", ()
     assert.ok(!sw.includes(`"hebrew/unit-${i}.html"`), `sw does not precache a redirecting URL`);
     assert.ok(sw.includes(`"hebrew/games/unit-${i}.js"`), `sw precaches game ${i}`);
   }
-  for (const f of ["hebrew/", "hebrew/hebrew.css", "hebrew/data.js", "hebrew/engine.js"]) {
+  const core = ["hebrew/", "hebrew/hebrew.css", "hebrew/data.js", "hebrew/units.js", "hebrew/engine.js"];
+  for (const f of [...core, ...MODULES.map((m) => `hebrew/activities/${m}.js`)]) {
     assert.ok(sw.includes(`"${f}"`), `sw precaches ${f}`);
   }
   // Without this, an offline navigation to /hebrew/unit-3.html would fall all
