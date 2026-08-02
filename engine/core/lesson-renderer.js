@@ -4004,12 +4004,15 @@ function renderConnectPhase(el, state, ctx, config) {
   el.append(card);
   mountInteractiveVisuals(card, { state, phaseId: 3 });
 
-  // Turn & Talk primes the written response below. Non-graded; does not gate
-  // the Connect submit, so phase completion/scoring are unaffected.
+  // "Check Your Thinking": auto-graded questions about the scenario itself,
+  // placed BEFORE the written response so the student settles the math first.
+  const check = renderConnectCheck(cfg, state);
+  if (check) el.append(check.el);
+
+  // Turn & Talk primes the written response below. Non-graded.
   renderTurnAndTalk(el, resolveTurnTalk("connect", config), state, 4, undefined, config);
 
-  // The Writing Revolution (TWR) writing step. Auto-derived from config; shows
-  // on every lesson. Formative only — persisted but never gates phase scoring.
+  // The Writing Revolution (TWR) writing step — directly matches the Connect scenario right above it!
   renderTwrWriting(el, config, {
     getResponse: (key) => state.getResponse(3, key),
     saveResponse: (key, val) => state.saveResponse(3, key, val),
@@ -4018,15 +4021,9 @@ function renderConnectPhase(el, state, ctx, config) {
   // Inline Reveal Math slides for the Connect section.
   renderRevealSlides(el, config, "connect");
 
-  // "Check Your Thinking": auto-graded questions about the scenario itself,
-  // placed BEFORE the written response so the student settles the math (is the
-  // friend right? what is the sale price?) before explaining it.
-  const check = renderConnectCheck(cfg, state);
-  if (check) el.append(check.el);
-
   // Editable response box (core-owned), mirroring Launch/Reflect persistence.
   const minLength = 25;
-  const promptText = cfg.promptQuestion || "How does this connect to what we learned?";
+  const promptText = cfg.promptQuestion || `Explain your mathematical solution for ${config.title || "this scenario"}:`;
 
   const respCard = document.createElement("div");
   respCard.className = "card card-teal";
@@ -4036,6 +4033,7 @@ function renderConnectPhase(el, state, ctx, config) {
   const label = document.createElement("label");
   label.setAttribute("for", fieldId);
   label.className = "connect-prompt-label";
+  label.style.cssText = "font-weight:800; font-size:1.1rem; color:var(--teal-ink); margin-bottom:10px; display:block;";
   label.textContent = promptText;
   respCard.append(label);
 

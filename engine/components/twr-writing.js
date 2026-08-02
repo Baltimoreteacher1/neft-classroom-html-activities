@@ -205,9 +205,10 @@ function writeRow(parent, { key, frameEn, frameEs, rows = 2, getResponse, saveRe
   ta.placeholder = "Write your sentence...";
   ta.setAttribute("aria-label", frameEn || key);
   // Margin now lives on the counter badge below (kept consistent via --sp-3).
-  ta.style.cssText = "margin-bottom:var(--sp-1);";
-  if (getResponse) ta.value = getResponse(key) || "";
-  parent.append(ta);
+  if (getResponse) {
+    const val = getResponse(key);
+    ta.value = val ? val : (getResponse("connect") || "");
+  }
 
   // Additive character-count badge under each box (cosmetic; aria-hidden).
   const counter = document.createElement("span");
@@ -219,6 +220,13 @@ function writeRow(parent, { key, frameEn, frameEs, rows = 2, getResponse, saveRe
     counter.style.color = n > 0 ? "var(--teal)" : "var(--muted)";
   };
   updateCounter();
+  // Attach voice-to-text support to the writing textarea
+  try {
+    if (typeof window !== "undefined" && typeof window.attachVoiceInput === "function") {
+      window.attachVoiceInput(ta);
+    }
+  } catch (_) {}
+
   ta.addEventListener("input", () => {
     if (saveResponse) saveResponse(key, ta.value);
     updateCounter();

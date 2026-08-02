@@ -74,8 +74,20 @@ function ensureQuestion(value) {
 }
 
 function selectWritingSource(config) {
+  const connectCfg = config.connect || {};
+  const connectPrompt = connectCfg.promptQuestion || connectCfg.scenario;
+  if (connectPrompt) {
+    return {
+      phase: "connect",
+      question: connectPrompt,
+      questionEs: connectCfg.promptQuestionEs || "",
+      stems: connectCfg.stems || (connectCfg.prompt ? [{ en: connectCfg.prompt }] : []),
+      wordBank: connectCfg.wordBank || [],
+    };
+  }
   const blocks = Array.isArray(config.turnAndTalk) ? config.turnAndTalk : [];
   return (
+    blocks.find((block) => block?.phase === "connect" && block.question) ||
     blocks.find((block) => block?.phase === "explore" && block.question) ||
     blocks.find((block) => block?.question) ||
     null
