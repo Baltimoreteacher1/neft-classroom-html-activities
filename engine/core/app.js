@@ -1266,17 +1266,14 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         });
       }
 
-      // ── Curated forward flow: Vocab → Learn It → Lesson ──────────────────────
-      // The Vocab panel gets a "Continue to Learn It" button; the Learn It panel
-      // hosts the moved Launch scenario + Show Your Work (via renderLearnItExtras)
-      // and a "Continue to the Lesson" button that returns to the current graded
-      // phase (Explore). Non-graded: these never touch phase state, XP, or stars.
+      // ── Curated forward flow: Launch → Vocab → Notes → Launch → Explore ──────
       const addContinue = (label, onClick) => {
         const wrap = document.createElement("div");
-        wrap.style.cssText = "margin-top:var(--sp-4, 16px); text-align:center;";
+        wrap.style.cssText = "margin-top:var(--sp-4, 16px); text-align:center; padding-bottom:24px;";
         const b = document.createElement("button");
         b.type = "button";
         b.className = "btn btn-primary btn-lg";
+        b.style.cssText = "padding:14px 28px; font-weight:800; font-size:1.05rem; background:#14223a; color:#fff; border:none; border-radius:12px; cursor:pointer;";
         b.textContent = label;
         b.addEventListener("click", onClick);
         wrap.append(b);
@@ -1284,14 +1281,18 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       };
 
       if (kind === "vocab") {
-        addContinue("Continue to Learn It →", () => this.openExtra("learn"));
+        addContinue("Continue to Guided Notes 📝 →", () => this.openExtra("notes"));
+      } else if (kind === "notes") {
+        addContinue("Continue to Launch 🚀 →", () => {
+          try {
+            state.set({ notesVisited: true });
+          } catch (_) {}
+          this.navigateTo(2);
+        });
       } else if (kind === "learn") {
-        // Render the moved Launch problems (scenario + guided solve) BELOW the
-        // Learn It iframe. The hook is set by renderLaunchPhase; guard for the
-        // resume case where Launch has not rendered this session.
         this.renderLearnItExtras?.(el);
-        addContinue("Continue to the Lesson →", () =>
-          this.navigateTo(state.get().currentPhase ?? 1),
+        addContinue("Continue to Explore 🔍 →", () =>
+          this.navigateTo(3),
         );
       }
 

@@ -3112,7 +3112,13 @@ function renderLaunchPhase(el, state, ctx, config) {
 
   const btn = document.createElement("button");
   btn.className = "btn btn-primary btn-lg mt-6";
-  btn.textContent = "Continue to Vocab →";
+  const sState = state.get() || {};
+  if (sState.notesVisited) {
+    btn.textContent = "Continue to Phase 4: Explore 🔍 →";
+  } else {
+    btn.textContent = "Continue to Vocab 🔑 →";
+  }
+
   btn.addEventListener("click", async () => {
     if (
       noticeTA &&
@@ -3131,11 +3137,18 @@ function renderLaunchPhase(el, state, ctx, config) {
       return;
     }
     el.querySelector(".launch-fb")?.remove();
-    // Quietly complete Launch (advances the phase underneath, no "up next"
-    // celebration), then open Vocab on top — the student steps through
-    // Vocab → Learn It before landing back in the lesson at Explore.
-    await completePhase(el, ctx, state, 0, "Launch", 1, 1, { quiet: true });
-    ctx.openExtra("vocab");
+    const isNotesDone = (state.get() || {}).notesVisited;
+    if (isNotesDone) {
+      await completePhase(el, ctx, state, 2, "Launch", 1, 1, { quiet: true });
+      if (typeof ctx.navigateTo === "function") {
+        ctx.navigateTo(3);
+      } else if (typeof ctx.nextPhase === "function") {
+        ctx.nextPhase();
+      }
+    } else {
+      await completePhase(el, ctx, state, 2, "Launch", 1, 1, { quiet: true });
+      ctx.openExtra("vocab");
+    }
   });
   el.append(btn);
 }
