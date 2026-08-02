@@ -1,6 +1,8 @@
 import { getPreferredLang } from "../core/i18n.js";
 import { renderMathText } from "../core/math-typography.js";
 import { renderVocabIntro } from "./vocab-intro.js";
+import { resolveObjectiveVisuals } from "../core/objective-visuals.js";
+import { interactiveVisualHost, mountInteractiveVisuals } from "../core/interactive-visual.js";
 
 function escHtml(s) {
   return String(s || "")
@@ -19,6 +21,30 @@ function speakText(text, lang = "en-US") {
     u.rate = 0.92;
     window.speechSynthesis.speak(u);
   } catch (_) {}
+}
+
+function openVisualLightbox(imgSrc, captionText) {
+  if (typeof document === "undefined") return;
+  const modal = document.createElement("div");
+  modal.style.cssText = `
+    position: fixed; inset: 0; z-index: 99999;
+    background: rgba(11, 15, 25, 0.92); backdrop-filter: blur(8px);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 24px; cursor: zoom-out;
+  `;
+  modal.innerHTML = `
+    <div style="max-width: 90vw; max-height: 85vh; text-align: center; color: white;">
+      <img src="${imgSrc}" style="max-width: 100%; max-height: 70vh; border-radius: 14px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); background: white; padding: 12px;" />
+      <div style="margin-top: 16px; font-size: 1.1rem; font-weight: 700; line-height: 1.5; color: #f8fafc; max-width: 600px;">
+        ${escHtml(captionText)}
+      </div>
+      <button style="margin-top: 16px; padding: 10px 28px; border-radius: 999px; border: none; background: #ffffff; color: #0f172a; font-weight: 800; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+        ✕ Close
+      </button>
+    </div>
+  `;
+  modal.addEventListener("click", () => modal.remove());
+  document.body.append(modal);
 }
 
 let injectedStyles = false;
@@ -139,6 +165,50 @@ function injectVocabLearnStyles() {
       color: #78350f;
       margin: 0;
       line-height: 1.55;
+    }
+    .vl-visual-card {
+      margin-bottom: 22px;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1.5px solid #cbd5e1;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+      background: #0f172a;
+    }
+    .vl-visual-img-wrap {
+      cursor: zoom-in;
+      background: #0b0f19;
+      text-align: center;
+      padding: 12px;
+    }
+    .vl-visual-img-wrap img {
+      max-width: 100%;
+      height: auto;
+      max-height: 320px;
+      display: inline-block;
+      border-radius: 8px;
+    }
+    .vl-visual-caption {
+      padding: 14px 18px;
+      background: #ffffff;
+      border-top: 1.5px solid #e2e8f0;
+      font-size: 0.96rem;
+      color: #0f172a;
+      font-weight: 800;
+      line-height: 1.5;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .vl-zoom-badge {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: #0284c7;
+      background: rgba(2, 132, 199, 0.08);
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(2, 132, 199, 0.2);
     }
     .vl-demo-box {
       background: #f8fbff;
@@ -379,7 +449,7 @@ export function renderVocabPanel(container, config, options = {}) {
   container.append(wrap);
 }
 
-// ─── 2. SEPARATE LEARN IT PANEL (EXPLANATION + EXAMPLE + TURN AND TALK) ──────
+// ─── 2. SEPARATE LEARN IT PANEL (EXPLANATION + INTERACTIVE VISUAL + TURN AND TALK) ──
 export function renderLearnItPanel(container, config, options = {}) {
   const { onComplete = () => {}, state = null } = options;
   injectVocabLearnStyles();
@@ -399,8 +469,8 @@ export function renderLearnItPanel(container, config, options = {}) {
     <p class="vl-hero-sub">
       ${
         isEs
-          ? "Lee la explicación sencilla y el ejemplo resuelto. Luego habla con tu compañero."
-          : "Read the simple math explanation and worked example below. Then turn & talk with your partner."
+          ? "Lee la explicación sencilla, explora el modelo visual interactivo y repasa los pasos. Luego habla con tu compañero."
+          : "Read the simple math explanation, explore the interactive visual model, and review the steps. Then turn & talk with your partner."
       }
     </p>
   `;
@@ -412,6 +482,15 @@ export function renderLearnItPanel(container, config, options = {}) {
   const keyIdea = concept.keyIdea || config.contentObjective || "";
   const iDo = concept.iDo || {};
 
+  // Resolve visual model & interactive manipulative
+  const visuals = resolveObjectiveVisuals(config);
+  const ivConfig =
+    config.conceptIntro?.interactiveVisual ||
+    config.interactiveVisual ||
+    config.visualModel ||
+    config.explore?.visual ||
+    null;
+
   const mainCard = document.createElement("div");
   mainCard.className = "vl-section-card";
   mainCard.innerHTML = `
@@ -421,6 +500,8 @@ export function renderLearnItPanel(container, config, options = {}) {
         <h3 class="vl-section-title">${escHtml(heading)}</h3>
       </div>
     </div>
+
+    <!-- SIMPLE EXPLANATION -->
     ${intro ? `<p style="font-size:1.05rem; line-height:1.55; color:#1e293b; font-weight:600; margin:0 0 18px;">${renderMathText(intro)}</p>` : ""}
     ${
       keyIdea
@@ -431,6 +512,26 @@ export function renderLearnItPanel(container, config, options = {}) {
       </div>`
         : ""
     }
+
+    <!-- INTERACTIVE MATH VISUAL MODEL CARD -->
+    <div class="vl-visual-card">
+      <div class="vl-visual-img-wrap" id="vlVisualZoomTarget" title="Click to enlarge visual model">
+        <img src="${visuals.content.src}" alt="${escHtml(visuals.content.alt)}" />
+      </div>
+      <div class="vl-visual-caption">
+        <span>📊 <strong>${isEs ? "Modelo Visual:" : "Interactive Math Visual:"}</strong> ${escHtml(visuals.content.caption)}</span>
+        <span class="vl-zoom-badge">🔍 ${isEs ? "Toca para ampliar" : "Click to enlarge"}</span>
+      </div>
+    </div>
+
+    <!-- OPTIONAL MOUNT HOST FOR INTERACTIVE MANIPULATIVE -->
+    ${
+      ivConfig && ivConfig.kind
+        ? interactiveVisualHost(ivConfig, visuals.content.caption)
+        : ""
+    }
+
+    <!-- STEP-BY-STEP WORKED EXAMPLE -->
     ${
       Array.isArray(iDo.lines) && iDo.lines.length > 0
         ? `
@@ -456,23 +557,31 @@ export function renderLearnItPanel(container, config, options = {}) {
     }
   `;
 
+  // Attach Lightbox Zoom for Visual Model
+  const zoomTarget = mainCard.querySelector("#vlVisualZoomTarget");
+  if (zoomTarget) {
+    zoomTarget.addEventListener("click", () => {
+      openVisualLightbox(visuals.content.src, visuals.content.caption);
+    });
+  }
+
   // ─── BUILT-IN TURN AND TALK SECTION ─────────────────────────────────────────
   const turnAndTalkData = (Array.isArray(config.turnAndTalk) && config.turnAndTalk[0]) || {};
   let currentLangEs = isEs;
 
   const defaultQuestionEn = turnAndTalkData.question ||
-    `Turn and talk with your partner: In your own words, how does this math example work? What step did you notice first?`;
+    `Turn and talk with your partner: How does this math visual and example work? What step did you notice first?`;
   const defaultQuestionEs = turnAndTalkData.questionEs ||
-    `Habla con tu compañero: En tus propias palabras, ¿cómo funciona este ejemplo matemático? ¿Qué paso notaste primero?`;
+    `Habla con tu compañero: ¿Cómo funciona este modelo visual y ejemplo? ¿Qué paso notaste primero?`;
 
   const defaultStartersEn = [
-    `First, I noticed that ______ in Step 1.`,
-    `This math example works because ______.`,
+    `Looking at the visual, I notice that ______ in Step 1.`,
+    `This math model shows ______ because ______.`,
     `My partner and I agree that the key step is ______.`,
   ];
   const defaultStartersEs = [
-    `Primero, noté que ______ en el Paso 1.`,
-    `Este ejemplo funciona porque ______.`,
+    `Mirando el modelo visual, noté que ______ en el Paso 1.`,
+    `Este modelo matemático muestra ______ porque ______.`,
     `Mi compañero y yo estamos de acuerdo en que el paso clave es ______.`,
   ];
 
@@ -552,6 +661,9 @@ export function renderLearnItPanel(container, config, options = {}) {
   wrap.append(actions);
 
   container.append(wrap);
+
+  // Hydrate any mounted interactive manipulative hosts live!
+  mountInteractiveVisuals(mainCard, { state });
 }
 
 // ─── 3. COMBINED PANEL FOR BACKWARD COMPATIBILITY ───────────────────────────
