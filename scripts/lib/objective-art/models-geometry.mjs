@@ -11,7 +11,10 @@ import {
   curveArrow,
   ln,
   numberLine,
+  path,
   plotPoint,
+  poly,
+  rect,
   T,
 } from "./kit.mjs";
 
@@ -207,10 +210,85 @@ export function distance() {
   return s;
 }
 
+// ── 3D Solids, Nets, Surface Area and Volume ────────────────────────────────
+export function solids() {
+  let s = T(600, 48, 30, C.navy, "3D Rectangular Prism & Unfolded 2D Net", { weight: 800 });
+
+  // 1. 3D Isometric Rectangular Prism (Left side, cx=200, cy=240)
+  s += poly("80,200 220,200 290,155 150,155", { fill: C.tealLight, stroke: C.teal, sw: 2.5 });
+  s += poly("220,200 290,155 290,275 220,320", { fill: C.amberLight, stroke: C.amber, sw: 2.5 });
+  s += poly("80,200 220,200 220,320 80,320", { fill: C.coralLight, stroke: C.coral, sw: 2.5 });
+
+  // Hidden rear edges (dashed for true 3D depth perception)
+  s += ln(150, 155, 150, 275, { stroke: C.muted, sw: 2, dash: "6 4" });
+  s += ln(80, 320, 150, 275, { stroke: C.muted, sw: 2, dash: "6 4" });
+  s += ln(290, 275, 150, 275, { stroke: C.muted, sw: 2, dash: "6 4" });
+
+  // Face labels on 3D solid
+  s += T(150, 260, 20, C.coralInk, "Front", { weight: 800 });
+  s += T(185, 182, 18, C.tealInk, "Top", { weight: 800 });
+  s += T(255, 235, 18, C.amberInk, "Right", { weight: 800 });
+
+  // Dimension lines on 3D solid
+  s += arrow(80, 342, 220, 342, { stroke: C.navy, sw: 2 });
+  s += arrow(220, 342, 80, 342, { stroke: C.navy, sw: 2 });
+  s += T(150, 368, 22, C.navy, "l = 8 in", { weight: 800 });
+
+  s += arrow(62, 200, 62, 320, { stroke: C.navy, sw: 2 });
+  s += arrow(62, 320, 62, 200, { stroke: C.navy, sw: 2 });
+  s += T(42, 266, 22, C.navy, "h = 5 in", { weight: 800 });
+
+  s += arrow(232, 330, 302, 285, { stroke: C.navy, sw: 2 });
+  s += arrow(302, 285, 232, 330, { stroke: C.navy, sw: 2 });
+  s += T(280, 320, 22, C.navy, "w = 4 in", { weight: 800 });
+
+  s += T(185, 410, 24, C.navy, "3D Solid Prism", { weight: 800 });
+
+  // 2. Connector folding arrow
+  s += curveArrow(330, 240, 420, 240, -40, { stroke: C.teal, sw: 3.5 });
+  s += T(375, 180, 22, C.tealInk, "Unfold / Fold", { weight: 800 });
+
+  // 3. 2D Net Unfolding (Center, cx=580, cy=240)
+  s += rect(530, 90, 100, 60, { fill: C.tealLight, stroke: C.teal, sw: 2 });
+  s += T(580, 126, 22, C.tealInk, "Top (1)", { weight: 800 });
+
+  s += rect(530, 150, 100, 70, { fill: C.coralLight, stroke: C.coral, sw: 2 });
+  s += T(580, 192, 22, C.coralInk, "Back (2)", { weight: 800 });
+
+  s += rect(470, 150, 60, 70, { fill: C.amberLight, stroke: C.amber, sw: 2 });
+  s += T(500, 192, 20, C.amberInk, "L (3)", { weight: 800 });
+
+  s += rect(630, 150, 60, 70, { fill: C.amberLight, stroke: C.amber, sw: 2 });
+  s += T(660, 192, 20, C.amberInk, "R (4)", { weight: 800 });
+
+  s += rect(530, 220, 100, 60, { fill: C.tealLight, stroke: C.teal, sw: 2 });
+  s += T(580, 256, 22, C.tealInk, "Bottom (5)", { weight: 800 });
+
+  s += rect(530, 280, 100, 70, { fill: C.coralLight, stroke: C.coral, sw: 2 });
+  s += T(580, 322, 22, C.coralInk, "Front (6)", { weight: 800 });
+
+  s += T(580, 410, 24, C.navy, "Unfolded 2D Net (6 Faces)", { weight: 800 });
+
+  // 4. Mathematical Readouts & Formulas (Right side, cx=940)
+  s += chip(930, 120, "Volume (Space Inside)", { fill: C.tealLight, stroke: C.teal, textFill: C.tealInk, size: 26 });
+  s += T(930, 175, 26, C.navy, "V = length × width × height", { weight: 800 });
+  s += T(930, 215, 26, C.tealInk, "V = 8 × 4 × 5 = 160 cu in", { weight: 800 });
+
+  s += chip(930, 275, "Surface Area (All 6 Faces)", { fill: C.coralLight, stroke: C.coral, textFill: C.coralInk, size: 26 });
+  s += T(930, 330, 26, C.navy, "SA = 2(lw + lh + wh)", { weight: 800 });
+  s += T(930, 370, 26, C.coralInk, "SA = 2(32 + 40 + 20) = 184 sq in", { weight: 800 });
+
+  s += chip(930, 420, "2D net area = 3D surface area", { fill: C.amberLight, stroke: C.amber, textFill: C.amberInk, size: 24 });
+
+  return s;
+}
+
 export const GEOMETRY_MODELS = {
   rationalNumberLine,
   integers,
   coordinatePlaneModel,
   quadrants,
   distance,
+  solids,
 };
+

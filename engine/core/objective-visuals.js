@@ -90,7 +90,7 @@ export const TOPICS = {
   quadrants: { content: "quadrantsContent", language: "quadrantsTalk" },
   distance: { content: "distanceContent", language: "distanceTalk" },
   planeArea: { content: "planeAreaContent", language: "planeAreaTalk" },
-  solids: { content: "net", language: "partners" },
+  solids: { content: "solidsContent", language: "solidsTalk" },
 };
 
 /**

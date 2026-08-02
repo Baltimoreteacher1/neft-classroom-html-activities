@@ -4880,6 +4880,37 @@
           host.appendChild(m);
         });
       }
+      function addShape3DMarks(host, o) {
+        o.marks = o.marks || {};
+        const dims = {
+          cube: [{ key: "l", label: "l =", default: "6 in" }, { key: "w", label: "w =", default: "6 in" }, { key: "h", label: "h =", default: "6 in" }, { key: "v", label: "V =", default: "216 cu in" }],
+          rectprism: [{ key: "l", label: "l =", default: "8 in" }, { key: "w", label: "w =", default: "4 in" }, { key: "h", label: "h =", default: "5 in" }, { key: "v", label: "V =", default: "160 cu in" }],
+          triprism: [{ key: "b", label: "b =", default: "6 in" }, { key: "h", label: "h =", default: "4 in" }, { key: "l", label: "l =", default: "10 in" }, { key: "v", label: "V =", default: "120 cu in" }],
+          sqpyramid: [{ key: "b", label: "b =", default: "6 in" }, { key: "h", label: "h =", default: "8 in" }, { key: "v", label: "V =", default: "96 cu in" }],
+          cylinder: [{ key: "r", label: "r =", default: "3 in" }, { key: "h", label: "h =", default: "7 in" }, { key: "v", label: "V =", default: "197.9 cu in" }],
+          cone: [{ key: "r", label: "r =", default: "3 in" }, { key: "h", label: "h =", default: "6 in" }, { key: "v", label: "V =", default: "56.5 cu in" }],
+          sphere: [{ key: "r", label: "r =", default: "4 in" }, { key: "v", label: "V =", default: "268.1 cu in" }],
+        }[o.shape] || [{ key: "v", label: "V =", default: "" }];
+
+        const container = document.createElement("div");
+        container.className = "shape3d-marks-row";
+        container.style.cssText = "display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-top:6px;";
+
+        dims.forEach((d) => {
+          const chip = document.createElement("div");
+          chip.className = "shape-mark shape3d-mark";
+          chip.style.cssText = "font-size:11px;font-weight:700;padding:2px 6px;border-radius:6px;background:rgba(32,95,166,0.1);border:1px solid rgba(32,95,166,0.3);color:#12355b;";
+          chip.setAttribute("role", "textbox");
+          chip.setAttribute("aria-label", "Dimension " + d.key);
+          chip.contentEditable = "true";
+          chip.textContent = o.marks[d.key] || (d.label + " " + d.default);
+          bindEditable(chip, (val) => {
+            o.marks[d.key] = val;
+          });
+          container.appendChild(chip);
+        });
+        host.appendChild(container);
+      }
       function buildObjEl(o) {
         normScale(o);
         const el = document.createElement("div");
@@ -7630,19 +7661,19 @@
             )
             .join("") +
           '<line data-stroke x1="60" y1="10" x2="60" y2="110" stroke="#205fa6" stroke-width="2.5"/><line data-stroke x1="10" y1="60" x2="110" y2="60" stroke="#205fa6" stroke-width="2.5"/></svg>',
-        // --- 3D (isometric) ---
-        cube: '<svg viewBox="0 0 110 110" width="100" height="100"><g data-stroke fill="rgba(32,95,166,.10)" stroke="#205fa6" stroke-width="3" stroke-linejoin="round"><polygon points="30,30 80,30 80,80 30,80"/><polygon points="30,30 50,12 100,12 80,30"/><polygon points="80,30 100,12 100,62 80,80"/></g></svg>',
+        // --- 3D (isometric publisher-quality with face gradients & depth) ---
+        cube: '<svg viewBox="0 0 120 120" width="108" height="108"><defs><linearGradient id="wbCubeTop" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="rgba(59,130,246,0.35)"/><stop offset="100%" stop-color="rgba(59,130,246,0.18)"/></linearGradient><linearGradient id="wbCubeFront" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="rgba(37,99,235,0.45)"/><stop offset="100%" stop-color="rgba(29,78,216,0.25)"/></linearGradient><linearGradient id="wbCubeSide" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="rgba(30,58,138,0.35)"/><stop offset="100%" stop-color="rgba(30,58,138,0.15)"/></linearGradient></defs><g data-stroke stroke="#205fa6" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><line x1="24" y1="52" x2="24" y2="94" stroke="#205fa6" stroke-width="1.8" stroke-dasharray="4 4" opacity="0.6"/><line x1="24" y1="94" x2="66" y2="94" stroke="#205fa6" stroke-width="1.8" stroke-dasharray="4 4" opacity="0.6"/><line x1="24" y1="94" x2="54" y2="110" stroke="#205fa6" stroke-width="1.8" stroke-dasharray="4 4" opacity="0.6"/><polygon points="24,52 66,28 96,52 54,76" fill="url(#wbCubeTop)"/><polygon points="96,52 96,94 54,110 54,76" fill="url(#wbCubeSide)"/><polygon points="24,52 54,76 54,110 24,94" fill="url(#wbCubeFront)"/><circle cx="54" cy="76" r="2.5" fill="#205fa6"/></g></svg>',
         rectprism:
-          '<svg viewBox="0 0 130 110" width="118" height="100"><g data-stroke fill="rgba(32,95,166,.10)" stroke="#205fa6" stroke-width="3" stroke-linejoin="round"><polygon points="24,40 96,40 96,84 24,84"/><polygon points="24,40 44,20 116,20 96,40"/><polygon points="96,40 116,20 116,64 96,84"/></g></svg>',
+          '<svg viewBox="0 0 140 120" width="128" height="108"><defs><linearGradient id="wbRpTop" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="rgba(59,130,246,0.35)"/><stop offset="100%" stop-color="rgba(59,130,246,0.18)"/></linearGradient><linearGradient id="wbRpFront" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="rgba(37,99,235,0.45)"/><stop offset="100%" stop-color="rgba(29,78,216,0.25)"/></linearGradient><linearGradient id="wbRpSide" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="rgba(30,58,138,0.35)"/><stop offset="100%" stop-color="rgba(30,58,138,0.15)"/></linearGradient></defs><g data-stroke stroke="#205fa6" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><line x1="18" y1="44" x2="18" y2="88" stroke="#205fa6" stroke-width="1.8" stroke-dasharray="4 4" opacity="0.6"/><line x1="18" y1="88" x2="90" y2="88" stroke="#205fa6" stroke-width="1.8" stroke-dasharray="4 4" opacity="0.6"/><line x1="18" y1="88" x2="50" y2="104" stroke="#205fa6" stroke-width="1.8" stroke-dasharray="4 4" opacity="0.6"/><polygon points="18,44 90,20 122,44 50,68" fill="url(#wbRpTop)"/><polygon points="122,44 122,88 50,104 50,68" fill="url(#wbRpSide)"/><polygon points="18,44 50,68 50,104 18,88" fill="url(#wbRpFront)"/></g></svg>',
         cylinder:
-          '<svg viewBox="0 0 100 120" width="92" height="108"><g data-stroke fill="rgba(44,125,107,.10)" stroke="#205fa6" stroke-width="3"><path d="M24 28 L24 92 A26 11 0 0 0 76 92 L76 28" fill="rgba(44,125,107,.10)"/><ellipse cx="50" cy="28" rx="26" ry="11"/><path d="M24 92 A26 11 0 0 0 76 92" fill="none"/></g></svg>',
-        cone: '<svg viewBox="0 0 100 120" width="92" height="108"><g data-stroke fill="rgba(217,119,6,.10)" stroke="#205fa6" stroke-width="3" stroke-linejoin="round"><path d="M50 14 L78 96 A28 11 0 0 1 22 96 Z"/><path d="M22 96 A28 11 0 0 0 78 96" fill="none"/></g></svg>',
+          '<svg viewBox="0 0 100 120" width="92" height="108"><defs><linearGradient id="wbCylBody" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="rgba(14,165,233,0.35)"/><stop offset="50%" stop-color="rgba(56,189,248,0.15)"/><stop offset="100%" stop-color="rgba(3,105,161,0.4)"/></linearGradient><linearGradient id="wbCylTop" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="rgba(186,230,253,0.5)"/><stop offset="100%" stop-color="rgba(56,189,248,0.2)"/></linearGradient></defs><g data-stroke stroke="#205fa6" stroke-width="2.5"><path d="M22 28 L22 92 A28 12 0 0 0 78 92 L78 28 Z" fill="url(#wbCylBody)"/><ellipse cx="50" cy="28" rx="28" ry="12" fill="url(#wbCylTop)"/><path d="M22 92 A28 12 0 0 1 78 92" fill="none" stroke-dasharray="4 4" opacity="0.6"/><path d="M22 92 A28 12 0 0 0 78 92" fill="none"/><line x1="50" y1="28" x2="50" y2="92" stroke="#205fa6" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.7"/></g></svg>',
+        cone: '<svg viewBox="0 0 100 120" width="92" height="108"><defs><linearGradient id="wbConeBody" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="rgba(245,158,11,0.35)"/><stop offset="40%" stop-color="rgba(251,191,36,0.15)"/><stop offset="100%" stop-color="rgba(180,83,9,0.4)"/></linearGradient></defs><g data-stroke stroke="#205fa6" stroke-width="2.5" stroke-linejoin="round"><path d="M50 16 L78 92 A28 12 0 0 1 22 92 Z" fill="url(#wbConeBody)"/><path d="M22 92 A28 12 0 0 1 78 92" fill="none" stroke-dasharray="4 4" opacity="0.6"/><path d="M22 92 A28 12 0 0 0 78 92" fill="none"/><line x1="50" y1="16" x2="50" y2="92" stroke="#205fa6" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.7"/><circle cx="50" cy="16" r="2.5" fill="#205fa6"/></g></svg>',
         sphere:
-          '<svg viewBox="0 0 110 110" width="100" height="100"><g data-stroke stroke="#205fa6" stroke-width="3" fill="rgba(124,58,237,.10)"><circle cx="55" cy="55" r="42"/><ellipse cx="55" cy="55" rx="42" ry="15" fill="none" stroke-width="2"/></g></svg>',
+          '<svg viewBox="0 0 110 110" width="100" height="100"><defs><radialGradient id="wbSphBody" cx="35%" cy="35%" r="65%"><stop offset="0%" stop-color="rgba(196,181,253,0.5)"/><stop offset="50%" stop-color="rgba(139,92,246,0.25)"/><stop offset="100%" stop-color="rgba(91,33,182,0.45)"/></radialGradient></defs><g data-stroke stroke="#205fa6" stroke-width="2.5"><circle cx="55" cy="55" r="44" fill="url(#wbSphBody)"/><ellipse cx="55" cy="55" rx="44" ry="16" fill="none" stroke-width="1.8" stroke-dasharray="4 4" opacity="0.6"/><path d="M11 55 A44 16 0 0 0 99 55" fill="none" stroke-width="2"/><circle cx="55" cy="55" r="3" fill="#205fa6"/></g></svg>',
         sqpyramid:
-          '<svg viewBox="0 0 120 110" width="110" height="100"><g data-stroke fill="rgba(32,95,166,.10)" stroke="#205fa6" stroke-width="3" stroke-linejoin="round"><polygon points="60,14 104,86 16,86"/><polygon points="16,86 60,98 104,86" fill="rgba(32,95,166,.05)"/><line x1="60" y1="14" x2="60" y2="98" stroke-width="2" stroke-dasharray="4 4"/></g></svg>',
+          '<svg viewBox="0 0 120 110" width="110" height="100"><defs><linearGradient id="wbPyrLeft" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="rgba(245,158,11,0.4)"/><stop offset="100%" stop-color="rgba(180,83,9,0.2)"/></linearGradient><linearGradient id="wbPyrRight" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="rgba(251,191,36,0.35)"/><stop offset="100%" stop-color="rgba(217,119,6,0.15)"/></linearGradient></defs><g data-stroke stroke="#205fa6" stroke-width="2.5" stroke-linejoin="round"><line x1="20" y1="78" x2="60" y2="60" stroke="#205fa6" stroke-width="1.8" stroke-dasharray="4 4" opacity="0.6"/><line x1="100" y1="78" x2="60" y2="60" stroke="#205fa6" stroke-width="1.8" stroke-dasharray="4 4" opacity="0.6"/><line x1="60" y1="16" x2="60" y2="60" stroke="#205fa6" stroke-width="1.8" stroke-dasharray="4 4" opacity="0.6"/><polygon points="60,16 20,78 60,94" fill="url(#wbPyrLeft)"/><polygon points="60,16 60,94 100,78" fill="url(#wbPyrRight)"/><circle cx="60" cy="16" r="3" fill="#205fa6"/></g></svg>',
         triprism:
-          '<svg viewBox="0 0 130 100" width="118" height="92"><g data-stroke fill="rgba(44,125,107,.10)" stroke="#205fa6" stroke-width="3" stroke-linejoin="round"><polygon points="20,30 50,18 50,78 20,90"/><polygon points="20,30 50,18 110,18 80,30"/><polygon points="20,90 50,78 110,78 80,90"/><line x1="80" y1="30" x2="80" y2="90"/></g></svg>',
+          '<svg viewBox="0 0 130 110" width="118" height="100"><defs><linearGradient id="wbTpFront" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="rgba(16,185,129,0.4)"/><stop offset="100%" stop-color="rgba(15,118,110,0.2)"/></linearGradient><linearGradient id="wbTpTop" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="rgba(52,211,153,0.35)"/><stop offset="100%" stop-color="rgba(16,185,129,0.15)"/></linearGradient><linearGradient id="wbTpSide" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="rgba(6,78,59,0.35)"/><stop offset="100%" stop-color="rgba(6,78,59,0.15)"/></linearGradient></defs><g data-stroke stroke="#205fa6" stroke-width="2.5" stroke-linejoin="round"><line x1="20" y1="80" x2="60" y2="40" stroke="#205fa6" stroke-width="1.8" stroke-dasharray="4 4" opacity="0.6"/><polygon points="45,20 105,20 120,80 60,80" fill="url(#wbTpTop)"/><polygon points="20,80 45,20 60,80" fill="url(#wbTpFront)"/><polygon points="80,80 105,20 120,80" fill="url(#wbTpSide)"/></g></svg>',
         // --- measurement / number-sense tools ---
         protractor: protractorSVG(),
         ruler: rulerSVG(),

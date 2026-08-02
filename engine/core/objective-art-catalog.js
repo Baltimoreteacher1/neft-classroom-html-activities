@@ -442,6 +442,24 @@ const RAW = {
       "Two partners read the same three figures and name the parts out loud — base, height, and " +
       "why the height has to meet the base at a right angle.",
   },
+  solidsContent: {
+    shows: ["net", "prism"],
+    alt:
+      "A 3D isometric rectangular prism alongside its unfolded 2D paper net with 6 numbered faces. " +
+      "Dimensions length 8 inches, width 4 inches, height 5 inches are labeled, and formulas read " +
+      "Volume = 8 × 4 × 5 = 160 cubic inches and Surface Area = 2(32 + 40 + 20) = 184 square inches.",
+    scene:
+      "A 3D solid rectangular prism stands beside its unfolded 6-face 2D net, showing how the 2D net area equals the 3D surface area (184 sq in) and volume equals 160 cu in.",
+  },
+  solidsTalk: {
+    shows: ["net", "prism"],
+    alt:
+      "The same 3D rectangular prism and unfolded 2D net with two partners drawn beneath it. Their speech " +
+      "bubbles explain that the 6 flat faces of the 2D net fold into the 6 faces of the 3D prism, and surface area adds all 6 faces while volume multiplies length × width × height.",
+    scene:
+      "Two partners discuss the 3D rectangular prism and unfolded 2D net out loud — length, width, height, surface area, volume, and how net faces fold into solid faces.",
+  },
+
 
   // ── Statistics ────────────────────────────────────────────────────────────
   statQuestionsContent: {

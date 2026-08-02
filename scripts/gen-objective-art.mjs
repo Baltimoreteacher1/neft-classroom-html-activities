@@ -405,7 +405,23 @@ const TOPICS = [
       ["The triangle is half the parallelogram on the same", "base and height, so its area is 20."],
     ],
   },
-  { key: "solids", photoOnly: true },
+  {
+    key: "solids",
+    model: M.solids,
+    heading: "3D shapes, nets, surface area and volume",
+    note: "V = l × w × h   ·   SA = 2(lw + lh + wh)",
+    talkHeading: "Naming the parts of a 3D shape and its net",
+    lines: [
+      [
+        "The 6 flat faces of the 2D net fold up to make the 6",
+        "rectangular faces of the 3D prism.",
+      ],
+      [
+        "Surface area adds the area of all 6 faces, and volume",
+        "multiplies length × width × height.",
+      ],
+    ],
+  },
 ];
 
 function contentCard(topic) {

@@ -229,7 +229,7 @@ assert.equal(
 );
 assert.equal(
   resolveObjectiveVisuals({ standard: "6.GR.4", contentObjective: "I can use a net." }).content.src,
-  OBJECTIVE_IMAGES.net.src,
+  OBJECTIVE_IMAGES.solidsContent.src,
 );
 {
   const v = resolveObjectiveVisuals({
