@@ -311,6 +311,7 @@ function copyStandaloneHtml() {
               "Check build.rollupOptions.input / output.entryFileNames.",
           );
         }
+        mkdirSync(dirname(dest), { recursive: true });
         if (!existsSync(dest) || !readFileSync(dest).equals(snapshot)) {
           writeFileSync(dest, snapshot);
         }
