@@ -150,7 +150,7 @@
     document.body.appendChild(div);
   }
 
-  window.openFormulaModal = function(key) {
+  window['openFormulaModal'] = function(key) {
     initFormulaModal();
     const data = FORMULA_DB[key] || FORMULA_DB.area_rectangle;
     document.getElementById('formula-modal-title').innerText = data.title;
@@ -164,7 +164,7 @@
     modal.style.display = 'flex';
   };
 
-  window.closeFormulaModal = function() {
+  window['closeFormulaModal'] = function() {
     const modal = document.getElementById('formula-popup-modal');
     if (modal) modal.style.display = 'none';
   };
