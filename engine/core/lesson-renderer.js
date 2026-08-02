@@ -2020,6 +2020,17 @@ function renderObjectives(el, config, state, opts = {}) {
         <div style="padding:10px 14px; background:#ffffff; border-top:1px solid #e2e8f0; font-size:13.5px; color:#0f172a; font-weight:700; line-height:1.45;">
           ${o.icon} <strong>Visual Representation:</strong> ${esc(o.caption)} <span style="font-size:11px; opacity:0.85; margin-left:6px;">🔍 (Click to enlarge)</span>
         </div>
+        ${o.talkPrompts ? `
+        <div style="padding:11px 14px; background:#fff7ed; border-top:1.5px solid #ffedd5; font-size:13px; color:#1e293b; line-height:1.5;">
+          <div style="font-weight:800; font-size:11px; color:#c2410c; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:6px; display:flex; align-items:center; gap:5px;">
+            <span>🗣️ Student Talk Targets (What to Say & Listen For):</span>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:5px;">
+            <div><strong style="color:#ea580c; font-weight:800;">What to Say:</strong> <span style="font-style:italic; font-weight:600;">"${esc(o.talkPrompts.say)}"</span></div>
+            <div><strong style="color:#0284c7; font-weight:800;">What to Listen For:</strong> <span style="font-weight:600;">"${esc(o.talkPrompts.listen)}"</span></div>
+          </div>
+        </div>
+        ` : ""}
       </div>
 
       <div class="objective-discuss" style="margin-top:var(--sp-3); padding-top:var(--sp-2); border-top:1px dashed rgba(0,0,0,0.12);">
@@ -2064,6 +2075,7 @@ function renderObjectives(el, config, state, opts = {}) {
       alt: visuals.language.alt,
       icon: "🗣️",
       caption: visuals.language.caption,
+      talkPrompts: visuals.language.talkPrompts,
       checkLabel: review ? "Did it" : "Got it",
       checkAria: review
         ? `${who} can now do the language objective`

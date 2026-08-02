@@ -340,6 +340,62 @@ function joinCaption(scene, lead, goalPhrase) {
 }
 
 /**
+ * Generate 1-2 concrete, student-facing "What to Say" and "What to Listen For"
+ * prompts derived directly from the lesson's language objective, sentence stems,
+ * or key academic vocabulary.
+ *
+ * @param {LessonConfig} config
+ * @returns {{ say: string, listen: string }}
+ */
+export function resolveLanguageTalkPrompts(config) {
+  const cfg = config || {};
+  const langObj = String(cfg.languageObjective || "");
+  const vocabList = Array.isArray(cfg.vocabulary)
+    ? cfg.vocabulary.map((v) => (typeof v === "object" ? v.term || v.word : v)).filter(Boolean)
+    : [];
+
+  let stemSay = "";
+  if (Array.isArray(cfg.turnAndTalk)) {
+    for (const item of cfg.turnAndTalk) {
+      if (Array.isArray(item.stems) && item.stems.length > 0) {
+        const rawStem = typeof item.stems[0] === "object" ? item.stems[0].en : item.stems[0];
+        if (rawStem && typeof rawStem === "string") {
+          stemSay = rawStem.replace(/^I\s+/i, "I ").trim();
+          break;
+        }
+      }
+    }
+  }
+
+  let say = "";
+  if (stemSay) {
+    say = stemSay;
+  } else if (langObj) {
+    const cleaned = langObj.replace(/^\s*I\s+can\s+/i, "").replace(/\.\s*$/, "");
+    say = `I can ${cleaned}.`;
+  } else if (vocabList.length >= 2) {
+    say = `I used ${vocabList[0]} and ${vocabList[1]} to explain my math strategy.`;
+  } else {
+    say = "I know my solution is correct because I can explain each step clearly.";
+  }
+
+  let listen = "";
+  if (vocabList.length >= 2) {
+    listen = `My partner using terms like "${vocabList[0]}" and "${vocabList[1]}" to justify their reasoning.`;
+  } else if (langObj.toLowerCase().includes("words") || langObj.toLowerCase().includes("using")) {
+    const match = langObj.match(/words?\s+([^\.]+)/i);
+    const wordClause = match ? match[1].trim() : "academic vocabulary";
+    listen = `My partner explaining their strategy using ${wordClause}.`;
+  } else if (langObj.toLowerCase().includes("explain") || langObj.toLowerCase().includes("justify")) {
+    listen = "My partner explaining WHY their strategy works, not just sharing the final answer.";
+  } else {
+    listen = "My partner naming the mathematical model and describing how their steps connect to it.";
+  }
+
+  return { say, listen };
+}
+
+/**
  * Everything the two goal cards need to render their picture truthfully.
  *
  * An author-supplied `contentVisualImg` / `contentVisualCaption` /
@@ -353,7 +409,7 @@ function joinCaption(scene, lead, goalPhrase) {
  *
  * @param {LessonConfig} config lesson config.json
  * @returns {{ content: {src:string, alt:string, scene:string, goalPhrase:string, caption:string},
- *             language: {src:string, alt:string, scene:string, goalPhrase:string, caption:string} }}
+ *             language: {src:string, alt:string, scene:string, goalPhrase:string, caption:string, talkPrompts:{say:string, listen:string}} }}
  */
 export function resolveObjectiveVisuals(config) {
   const cfg = config || {};
@@ -385,6 +441,7 @@ export function resolveObjectiveVisuals(config) {
       caption:
         cfg.languageVisualCaption ||
         joinCaption(languageScene, "Today's talking goal:", languagePhrase),
+      talkPrompts: resolveLanguageTalkPrompts(cfg),
     },
   };
 }
