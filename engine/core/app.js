@@ -1241,18 +1241,14 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
 
       if (kind === "vocab") {
         addContinue("Continue to Guided Notes 📝 →", () => this.openExtra("notes"));
-      } else if (kind === "notes") {
+      } else if (kind === "notes" || kind === "learn") {
+        if (kind === "learn") this.renderLearnItExtras?.(el);
         addContinue("Continue to Launch 🚀 →", () => {
           try {
             state.set({ notesVisited: true });
           } catch (_) {}
           this.navigateTo(2);
         });
-      } else if (kind === "learn") {
-        this.renderLearnItExtras?.(el);
-        addContinue("Continue to Explore 🔍 →", () =>
-          this.navigateTo(3),
-        );
       }
 
       el.scrollIntoView({ block: "start" });

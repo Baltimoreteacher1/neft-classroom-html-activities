@@ -3114,12 +3114,7 @@ function renderLaunchPhase(el, state, ctx, config) {
 
   const btn = document.createElement("button");
   btn.className = "btn btn-primary btn-lg mt-6";
-  const sState = state.get() || {};
-  if (sState.notesVisited) {
-    btn.textContent = "Continue to Phase 4: Explore 🔍 →";
-  } else {
-    btn.textContent = "Continue to Vocab 🔑 →";
-  }
+  btn.textContent = "Continue to Phase 4: Explore 🔍 →";
 
   btn.addEventListener("click", async () => {
     if (
@@ -3139,17 +3134,11 @@ function renderLaunchPhase(el, state, ctx, config) {
       return;
     }
     el.querySelector(".launch-fb")?.remove();
-    const isNotesDone = (state.get() || {}).notesVisited;
-    if (isNotesDone) {
-      await completePhase(el, ctx, state, 2, "Launch", 1, 1, { quiet: true });
-      if (typeof ctx.navigateTo === "function") {
-        ctx.navigateTo(3);
-      } else if (typeof ctx.nextPhase === "function") {
-        ctx.nextPhase();
-      }
-    } else {
-      await completePhase(el, ctx, state, 2, "Launch", 1, 1, { quiet: true });
-      ctx.openExtra("vocab");
+    await completePhase(el, ctx, state, 2, "Launch", 1, 1, { quiet: true });
+    if (typeof ctx.navigateTo === "function") {
+      ctx.navigateTo(3);
+    } else if (typeof ctx.nextPhase === "function") {
+      ctx.nextPhase();
     }
   });
   el.append(btn);
