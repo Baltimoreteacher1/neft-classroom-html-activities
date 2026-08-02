@@ -107,108 +107,126 @@ const THEME_SVGS = {
   </svg>`,
 
   "architecture-firm": `<svg viewBox="0 0 320 200" role="img" aria-hidden="true" class="theme-hero-svg">
-    <defs><linearGradient id="arch-bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#12355b"/><stop offset="100%" stop-color="#1b4a7a"/></linearGradient></defs>
+    <defs><linearGradient id="arch-bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0f172a"/><stop offset="100%" stop-color="#1e293b"/></linearGradient></defs>
     <rect width="320" height="200" rx="16" fill="url(#arch-bg)"/>
-    <g stroke="#7fb0dd" stroke-width="1" opacity="0.35">
+    <g stroke="#334155" stroke-width="1" opacity="0.35">
       <line x1="0" y1="40" x2="320" y2="40"/><line x1="0" y1="80" x2="320" y2="80"/>
       <line x1="0" y1="120" x2="320" y2="120"/><line x1="0" y1="160" x2="320" y2="160"/>
       <line x1="60" y1="0" x2="60" y2="200"/><line x1="120" y1="0" x2="120" y2="200"/>
       <line x1="180" y1="0" x2="180" y2="200"/><line x1="240" y1="0" x2="240" y2="200"/>
     </g>
-    <rect x="70" y="55" width="180" height="110" fill="none" stroke="#e8edfe" stroke-width="2"/>
-    <polygon points="70,165 160,55 250,165" fill="rgba(42,157,143,0.28)" stroke="#2a9d8f" stroke-width="2.5"/>
-    <line x1="160" y1="55" x2="160" y2="165" stroke="#e9c46a" stroke-width="2" stroke-dasharray="5,4"/>
-    <text x="118" y="120" font-size="12" font-weight="800" fill="#e8edfe" text-anchor="middle">b</text>
-    <text x="168" y="115" font-size="12" font-weight="800" fill="#e9c46a" text-anchor="start">h</text>
-    <rect x="152" y="157" width="8" height="8" fill="none" stroke="#e8edfe" stroke-width="1.5"/>
-    <text x="160" y="185" font-size="12" font-weight="700" fill="#e8edfe" text-anchor="middle">base × height</text>
+    <polygon points="60,150 220,150 260,110 100,110" fill="rgba(56,189,248,0.15)" stroke="#38bdf8" stroke-width="2"/>
+    <polygon points="100,110 260,110 200,45 40,45" fill="rgba(45,212,191,0.25)" stroke="#2dd4bf" stroke-width="2.5"/>
+    <line x1="120" y1="45" x2="180" y2="130" stroke="#fde047" stroke-width="2" stroke-dasharray="5,4"/>
+    <text x="130" y="100" font-size="12" font-weight="800" fill="#e0f2fe" text-anchor="middle">b</text>
+    <text x="160" y="85" font-size="12" font-weight="800" fill="#fde047" text-anchor="start">h</text>
+    <text x="160" y="24" font-size="11" font-weight="800" fill="#38bdf8" text-anchor="middle" letter-spacing="1">3D ARCHITECT BLUEPRINT MODEL</text>
+    <text x="160" y="188" font-size="13" font-weight="800" fill="#fef08a" text-anchor="middle">3D Structure: Area = b × h  ·  Vol = b × h × depth</text>
   </svg>`,
 
-  // Per-topic area figures (Unit 5). Selected via config.heroFigure so each
-  // lesson shows its own shape + correct area formula, independent of theme.
+  // Per-topic 3D isometric area & volume figures (Units 5 & 10). Selected via config.heroFigure
+  // so every lesson shows an isometric 3D shape + correct area/volume formula.
   "figure-parallelogram": `<svg viewBox="0 0 320 200" role="img" aria-hidden="true" class="theme-hero-svg">
-    <defs><linearGradient id="par-bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#12355b"/><stop offset="100%" stop-color="#1b4a7a"/></linearGradient></defs>
+    <defs>
+      <linearGradient id="par-bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0f172a"/><stop offset="100%" stop-color="#1e293b"/></linearGradient>
+      <linearGradient id="par-top" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#38bdf8"/><stop offset="100%" stop-color="#0284c7"/></linearGradient>
+      <linearGradient id="par-front" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0369a1"/><stop offset="100%" stop-color="#075985"/></linearGradient>
+      <linearGradient id="par-side" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#0c4a6e"/><stop offset="100%" stop-color="#082f49"/></linearGradient>
+    </defs>
     <rect width="320" height="200" rx="16" fill="url(#par-bg)"/>
-    <g stroke="#7fb0dd" stroke-width="1" opacity="0.35">
+    <g stroke="#334155" stroke-width="1" opacity="0.35">
       <line x1="0" y1="40" x2="320" y2="40"/><line x1="0" y1="80" x2="320" y2="80"/>
       <line x1="0" y1="120" x2="320" y2="120"/><line x1="0" y1="160" x2="320" y2="160"/>
-      <line x1="60" y1="0" x2="60" y2="200"/><line x1="120" y1="0" x2="120" y2="200"/>
-      <line x1="180" y1="0" x2="180" y2="200"/><line x1="240" y1="0" x2="240" y2="200"/>
     </g>
-    <polygon points="80,150 200,150 230,70 110,70" fill="rgba(42,157,143,0.28)" stroke="#2a9d8f" stroke-width="2.5"/>
-    <line x1="140" y1="70" x2="140" y2="150" stroke="#e9c46a" stroke-width="2" stroke-dasharray="5,4"/>
-    <rect x="132" y="142" width="8" height="8" fill="none" stroke="#e8edfe" stroke-width="1.5"/>
-    <text x="140" y="168" font-size="12" font-weight="800" fill="#e8edfe" text-anchor="middle">b</text>
-    <text x="150" y="115" font-size="12" font-weight="800" fill="#e9c46a" text-anchor="start">h</text>
-    <text x="160" y="190" font-size="12" font-weight="700" fill="#e8edfe" text-anchor="middle">A = b × h</text>
+    <line x1="80" y1="60" x2="80" y2="100" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.5"/>
+    <polygon points="120,110 240,110 240,145 120,145" fill="url(#par-front)" stroke="#38bdf8" stroke-width="2"/>
+    <polygon points="200,60 240,110 240,145 200,95" fill="url(#par-side)" stroke="#38bdf8" stroke-width="2"/>
+    <polygon points="80,60 200,60 240,110 120,110" fill="url(#par-top)" stroke="#7dd3fc" stroke-width="2.5" stroke-linejoin="round"/>
+    <line x1="140" y1="60" x2="140" y2="110" stroke="#fde047" stroke-width="2" stroke-dasharray="5 4"/>
+    <text x="180" y="130" font-size="12" font-weight="800" fill="#e0f2fe" text-anchor="middle">b</text>
+    <text x="148" y="90" font-size="12" font-weight="800" fill="#fde047" text-anchor="start">h</text>
+    <text x="160" y="24" font-size="11" font-weight="800" fill="#38bdf8" text-anchor="middle" letter-spacing="1">3D PARALLELOGRAM PRISM</text>
+    <text x="160" y="188" font-size="13" font-weight="800" fill="#fef08a" text-anchor="middle">Base Area A = b × h  ·  Vol = b × h × d</text>
   </svg>`,
 
   "figure-trapezoid": `<svg viewBox="0 0 320 200" role="img" aria-hidden="true" class="theme-hero-svg">
-    <defs><linearGradient id="tra-bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#12355b"/><stop offset="100%" stop-color="#1b4a7a"/></linearGradient></defs>
+    <defs>
+      <linearGradient id="tra-bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0f172a"/><stop offset="100%" stop-color="#1e293b"/></linearGradient>
+      <linearGradient id="tra-top" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#fb923c"/><stop offset="100%" stop-color="#ea580c"/></linearGradient>
+      <linearGradient id="tra-front" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#c2410c"/><stop offset="100%" stop-color="#9a3412"/></linearGradient>
+      <linearGradient id="tra-side" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#7c2d12"/><stop offset="100%" stop-color="#431407"/></linearGradient>
+    </defs>
     <rect width="320" height="200" rx="16" fill="url(#tra-bg)"/>
-    <g stroke="#7fb0dd" stroke-width="1" opacity="0.35">
-      <line x1="0" y1="40" x2="320" y2="40"/><line x1="0" y1="80" x2="320" y2="80"/>
-      <line x1="0" y1="120" x2="320" y2="120"/><line x1="0" y1="160" x2="320" y2="160"/>
-      <line x1="60" y1="0" x2="60" y2="200"/><line x1="120" y1="0" x2="120" y2="200"/>
-      <line x1="180" y1="0" x2="180" y2="200"/><line x1="240" y1="0" x2="240" y2="200"/>
-    </g>
-    <polygon points="70,150 250,150 205,78 115,78" fill="rgba(42,157,143,0.28)" stroke="#2a9d8f" stroke-width="2.5"/>
-    <line x1="160" y1="78" x2="160" y2="150" stroke="#e9c46a" stroke-width="2" stroke-dasharray="5,4"/>
-    <rect x="152" y="142" width="8" height="8" fill="none" stroke="#e8edfe" stroke-width="1.5"/>
-    <text x="160" y="70" font-size="12" font-weight="800" fill="#e8edfe" text-anchor="middle">b₂</text>
-    <text x="160" y="168" font-size="12" font-weight="800" fill="#e8edfe" text-anchor="middle">b₁</text>
-    <text x="170" y="118" font-size="12" font-weight="800" fill="#e9c46a" text-anchor="start">h</text>
-    <text x="160" y="190" font-size="12" font-weight="700" fill="#e8edfe" text-anchor="middle">A = ½(b₁ + b₂)h</text>
+    <polygon points="70,110 250,110 250,145 70,145" fill="url(#tra-front)" stroke="#fb923c" stroke-width="2"/>
+    <polygon points="205,60 250,110 250,145 205,95" fill="url(#tra-side)" stroke="#fb923c" stroke-width="2"/>
+    <polygon points="115,60 205,60 250,110 70,110" fill="url(#tra-top)" stroke="#ffedd5" stroke-width="2.5" stroke-linejoin="round"/>
+    <line x1="160" y1="60" x2="160" y2="110" stroke="#fde047" stroke-width="2" stroke-dasharray="5 4"/>
+    <text x="160" y="52" font-size="12" font-weight="800" fill="#ffedd5" text-anchor="middle">b₂</text>
+    <text x="160" y="130" font-size="12" font-weight="800" fill="#ffedd5" text-anchor="middle">b₁</text>
+    <text x="170" y="90" font-size="12" font-weight="800" fill="#fde047" text-anchor="start">h</text>
+    <text x="160" y="24" font-size="11" font-weight="800" fill="#fb923c" text-anchor="middle" letter-spacing="1">3D TRAPEZOIDAL PRISM</text>
+    <text x="160" y="188" font-size="13" font-weight="800" fill="#fef08a" text-anchor="middle">Base Area A = ½(b₁ + b₂)h  ·  Vol = A × d</text>
   </svg>`,
 
   "figure-triangle": `<svg viewBox="0 0 320 200" role="img" aria-hidden="true" class="theme-hero-svg">
-    <defs><linearGradient id="tri-bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#12355b"/><stop offset="100%" stop-color="#1b4a7a"/></linearGradient></defs>
+    <defs>
+      <linearGradient id="tri-bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0f172a"/><stop offset="100%" stop-color="#1e293b"/></linearGradient>
+      <linearGradient id="tri-top" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#a7f3d0"/><stop offset="100%" stop-color="#10b981"/></linearGradient>
+      <linearGradient id="tri-front" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#047857"/><stop offset="100%" stop-color="#065f46"/></linearGradient>
+      <linearGradient id="tri-side" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#064e3b"/><stop offset="100%" stop-color="#022c22"/></linearGradient>
+    </defs>
     <rect width="320" height="200" rx="16" fill="url(#tri-bg)"/>
-    <g stroke="#7fb0dd" stroke-width="1" opacity="0.35">
-      <line x1="0" y1="40" x2="320" y2="40"/><line x1="0" y1="80" x2="320" y2="80"/>
-      <line x1="0" y1="120" x2="320" y2="120"/><line x1="0" y1="160" x2="320" y2="160"/>
-      <line x1="60" y1="0" x2="60" y2="200"/><line x1="120" y1="0" x2="120" y2="200"/>
-      <line x1="180" y1="0" x2="180" y2="200"/><line x1="240" y1="0" x2="240" y2="200"/>
-    </g>
-    <polygon points="75,150 245,150 165,62" fill="rgba(42,157,143,0.28)" stroke="#2a9d8f" stroke-width="2.5"/>
-    <line x1="165" y1="62" x2="165" y2="150" stroke="#e9c46a" stroke-width="2" stroke-dasharray="5,4"/>
-    <rect x="157" y="142" width="8" height="8" fill="none" stroke="#e8edfe" stroke-width="1.5"/>
-    <text x="160" y="168" font-size="12" font-weight="800" fill="#e8edfe" text-anchor="middle">b</text>
-    <text x="174" y="112" font-size="12" font-weight="800" fill="#e9c46a" text-anchor="start">h</text>
-    <text x="160" y="190" font-size="12" font-weight="700" fill="#e8edfe" text-anchor="middle">A = ½ b × h</text>
+    <polygon points="165,35 245,110 280,140 200,65" fill="url(#tri-side)" stroke="#34d399" stroke-width="2"/>
+    <polygon points="75,110 245,110 280,140 110,140" fill="url(#tri-front)" stroke="#34d399" stroke-width="2"/>
+    <polygon points="75,110 245,110 165,35" fill="url(#tri-top)" stroke="#6ee7b7" stroke-width="2.5" stroke-linejoin="round"/>
+    <line x1="165" y1="35" x2="165" y2="110" stroke="#fde047" stroke-width="2" stroke-dasharray="5 4"/>
+    <text x="160" y="130" font-size="12" font-weight="800" fill="#ecfdf5" text-anchor="middle">b</text>
+    <text x="175" y="78" font-size="12" font-weight="800" fill="#fde047" text-anchor="start">h</text>
+    <text x="160" y="24" font-size="11" font-weight="800" fill="#34d399" text-anchor="middle" letter-spacing="1">3D TRIANGULAR PRISM</text>
+    <text x="160" y="188" font-size="13" font-weight="800" fill="#fef08a" text-anchor="middle">Base Area A = ½ b × h  ·  Vol = A × l</text>
   </svg>`,
 
   "figure-regular-polygon": `<svg viewBox="0 0 320 200" role="img" aria-hidden="true" class="theme-hero-svg">
-    <defs><linearGradient id="pol-bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#12355b"/><stop offset="100%" stop-color="#1b4a7a"/></linearGradient></defs>
-    <rect width="320" height="200" rx="16" fill="url(#pol-bg)"/>
-    <g stroke="#7fb0dd" stroke-width="1" opacity="0.35">
+    <defs>
+      <linearGradient id="rpol-bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0f172a"/><stop offset="100%" stop-color="#1e293b"/></linearGradient>
+      <linearGradient id="rpol-top" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#2dd4bf"/><stop offset="100%" stop-color="#0d9488"/></linearGradient>
+      <linearGradient id="rpol-front" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0f766e"/><stop offset="100%" stop-color="#115e59"/></linearGradient>
+      <linearGradient id="rpol-side" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#134e4a"/><stop offset="100%" stop-color="#042f2e"/></linearGradient>
+    </defs>
+    <rect width="320" height="200" rx="16" fill="url(#rpol-bg)"/>
+    <g stroke="#334155" stroke-width="1" opacity="0.35">
       <line x1="0" y1="40" x2="320" y2="40"/><line x1="0" y1="80" x2="320" y2="80"/>
       <line x1="0" y1="120" x2="320" y2="120"/><line x1="0" y1="160" x2="320" y2="160"/>
-      <line x1="60" y1="0" x2="60" y2="200"/><line x1="120" y1="0" x2="120" y2="200"/>
-      <line x1="180" y1="0" x2="180" y2="200"/><line x1="240" y1="0" x2="240" y2="200"/>
     </g>
-    <polygon points="160,50 205,76 205,124 160,150 115,124 115,76" fill="rgba(42,157,143,0.28)" stroke="#2a9d8f" stroke-width="2.5"/>
-    <line x1="160" y1="100" x2="205" y2="100" stroke="#e9c46a" stroke-width="2" stroke-dasharray="5,4"/>
-    <circle cx="160" cy="100" r="2.5" fill="#e8edfe"/>
-    <text x="182" y="94" font-size="12" font-weight="800" fill="#e9c46a" text-anchor="middle">a</text>
-    <text x="160" y="190" font-size="12" font-weight="700" fill="#e8edfe" text-anchor="middle">A = ½ a × P</text>
+    <line x1="160" y1="35" x2="160" y2="65" stroke="#2dd4bf" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.5"/>
+    <line x1="110" y1="60" x2="110" y2="90" stroke="#2dd4bf" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.5"/>
+    <line x1="210" y1="60" x2="210" y2="90" stroke="#2dd4bf" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.5"/>
+    <polygon points="110,105 160,130 160,165 110,140" fill="url(#rpol-front)" stroke="#2dd4bf" stroke-width="2"/>
+    <polygon points="160,130 210,105 210,140 160,165" fill="url(#rpol-side)" stroke="#2dd4bf" stroke-width="2"/>
+    <polygon points="160,35 210,60 210,105 160,130 110,105 110,60" fill="url(#rpol-top)" stroke="#5eead4" stroke-width="2.5" stroke-linejoin="round"/>
+    <circle cx="160" cy="82.5" r="3" fill="#fef08a"/>
+    <line x1="160" y1="82.5" x2="210" y2="82.5" stroke="#fde047" stroke-width="2" stroke-dasharray="4 3"/>
+    <text x="186" y="78" font-size="12" font-weight="800" fill="#fde047" text-anchor="middle">a</text>
+    <text x="160" y="24" font-size="11" font-weight="800" fill="#2dd4bf" text-anchor="middle" letter-spacing="1">3D REGULAR POLYGON PRISM</text>
+    <text x="160" y="188" font-size="13" font-weight="800" fill="#fef08a" text-anchor="middle">3D Base Area A = ½ a × P  ·  Vol = A × h</text>
   </svg>`,
 
   "figure-composite": `<svg viewBox="0 0 320 200" role="img" aria-hidden="true" class="theme-hero-svg">
-    <defs><linearGradient id="com-bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#12355b"/><stop offset="100%" stop-color="#1b4a7a"/></linearGradient></defs>
+    <defs>
+      <linearGradient id="com-bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0f172a"/><stop offset="100%" stop-color="#1e293b"/></linearGradient>
+      <linearGradient id="com-b1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#818cf8"/><stop offset="100%" stop-color="#4f46e5"/></linearGradient>
+      <linearGradient id="com-b2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#fbbf24"/><stop offset="100%" stop-color="#d97706"/></linearGradient>
+    </defs>
     <rect width="320" height="200" rx="16" fill="url(#com-bg)"/>
-    <g stroke="#7fb0dd" stroke-width="1" opacity="0.35">
-      <line x1="0" y1="40" x2="320" y2="40"/><line x1="0" y1="80" x2="320" y2="80"/>
-      <line x1="0" y1="120" x2="320" y2="120"/><line x1="0" y1="160" x2="320" y2="160"/>
-      <line x1="60" y1="0" x2="60" y2="200"/><line x1="120" y1="0" x2="120" y2="200"/>
-      <line x1="180" y1="0" x2="180" y2="200"/><line x1="240" y1="0" x2="240" y2="200"/>
-    </g>
-    <rect x="110" y="95" width="100" height="55" fill="rgba(42,157,143,0.28)" stroke="#2a9d8f" stroke-width="2.5"/>
-    <polygon points="110,95 210,95 160,58" fill="rgba(233,196,106,0.28)" stroke="#e9c46a" stroke-width="2.5"/>
-    <line x1="110" y1="95" x2="210" y2="95" stroke="#e8edfe" stroke-width="1.5" stroke-dasharray="5,4"/>
-    <text x="160" y="128" font-size="13" font-weight="800" fill="#e8edfe" text-anchor="middle">A₁</text>
-    <text x="160" y="86" font-size="12" font-weight="800" fill="#e9c46a" text-anchor="middle">A₂</text>
-    <text x="160" y="190" font-size="12" font-weight="700" fill="#e8edfe" text-anchor="middle">A = A₁ + A₂</text>
+    <polygon points="90,105 210,105 250,135 130,135" fill="rgba(99,102,241,0.3)" stroke="#818cf8" stroke-width="2"/>
+    <polygon points="90,105 130,135 130,165 90,135" fill="url(#com-b1)" stroke="#818cf8" stroke-width="2"/>
+    <polygon points="130,135 250,135 250,165 130,165" fill="url(#com-b1)" opacity="0.8" stroke="#818cf8" stroke-width="2"/>
+    <polygon points="90,105 210,105 150,55" fill="url(#com-b2)" stroke="#fbbf24" stroke-width="2"/>
+    <polygon points="210,105 250,135 190,85 150,55" fill="url(#com-b2)" opacity="0.7" stroke="#fbbf24" stroke-width="2"/>
+    <text x="160" y="130" font-size="13" font-weight="800" fill="#e0e7ff" text-anchor="middle">A₁ (3D Box)</text>
+    <text x="160" y="88" font-size="12" font-weight="800" fill="#fef3c7" text-anchor="middle">A₂ (3D Roof)</text>
+    <text x="160" y="24" font-size="11" font-weight="800" fill="#818cf8" text-anchor="middle" letter-spacing="1">3D COMPOSITE PRISM STRUCTURE</text>
+    <text x="160" y="188" font-size="13" font-weight="800" fill="#fef08a" text-anchor="middle">Total Area A = A₁ + A₂  ·  Total Vol = V₁ + V₂</text>
   </svg>`,
 };
 

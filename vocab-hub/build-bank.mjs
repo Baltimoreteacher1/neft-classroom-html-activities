@@ -74,7 +74,7 @@ const SYNONYMS = {
   "lateral-area": "surface-area", "lateral-face": "surface-area",
   face: "rectangular-prism", edge: "rectangular-prism", apex: "pyramid",
   pyramid: "pyramid", "triangular-prism": "rectangular-prism",
-  "regular-polygon": "triangle", "two-dimensional": "square-unit",
+  "regular-polygon": "regular-polygon", "two-dimensional": "square-unit",
   composite: "composite-figure", perpendicular: "triangle",
   "base-1-b1": "trapezoid", "base-2-b2": "trapezoid",
   "mean-absolute-deviation": "mean", deviation: "mean", variability: "spread",
@@ -139,6 +139,7 @@ function categoryFor(slug, term) {
 }
 
 const EXTRA_DEDICATED = new Set([
+  "regular-polygon",
   "dimensions", "pyramid", "spread", "pattern", "multiply", "divide",
   "operation", "measurement", "number", "bar-model",
 ]);

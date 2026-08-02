@@ -159,7 +159,7 @@ const SYNONYMS = {
   "area-of-parallelograms": "parallelogram",
   "area-of-trapezoids": "trapezoid",
   "area-of-triangles": "triangle",
-  "area-of-regular-polygons": "triangle",
+  "area-of-regular-polygons": "regular-polygon",
   "area-of-composite-figures": "composite-figure",
   "volume-with-whole-number-edges": "volume",
   "volume-of-rectangular-prisms": "volume",
@@ -175,7 +175,7 @@ const SYNONYMS = {
   apex: "pyramid",
   pyramid: "pyramid",
   "triangular-prism": "rectangular-prism",
-  "regular-polygon": "triangle",
+  "regular-polygon": "regular-polygon",
   "two-dimensional": "square-unit",
   composite: "composite-figure",
   perpendicular: "triangle",
@@ -337,6 +337,7 @@ export function resolveVocabFallback(term) {
 
 // Slugs that have dedicated SVGs but are referenced only via the synonym map.
 const EXTRA_DEDICATED = new Set([
+  "regular-polygon",
   "dimensions",
   "pyramid",
   "spread",
