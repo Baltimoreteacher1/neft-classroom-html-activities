@@ -45,7 +45,8 @@ export { MANIPULATIVES, OBJECTIVE_IMAGES } from "./objective-art-catalog.js";
  * @property {string} [languageObjective]
  * @property {string} [objective]
  * @property {{ objective?: string }} [launch]
- * @property {{ term?: string }[]} [vocabulary]
+ * @property {{ term?: string, word?: string }[]} [vocabulary]
+ * @property {{ stems?: (string | { en?: string, es?: string })[] }[]} [turnAndTalk]
  * @property {string} [contentVisualImg]
  * @property {string} [languageVisualImg]
  * @property {string} [contentVisualCaption]
@@ -351,14 +352,17 @@ export function resolveLanguageTalkPrompts(config) {
   const cfg = config || {};
   const langObj = String(cfg.languageObjective || "");
   const vocabList = Array.isArray(cfg.vocabulary)
-    ? cfg.vocabulary.map((v) => (typeof v === "object" ? v.term || v.word : v)).filter(Boolean)
+    ? cfg.vocabulary
+        .map((v) => (typeof v === "object" && v ? v.term || v.word || "" : String(v || "")))
+        .filter(Boolean)
     : [];
 
   let stemSay = "";
   if (Array.isArray(cfg.turnAndTalk)) {
     for (const item of cfg.turnAndTalk) {
       if (Array.isArray(item.stems) && item.stems.length > 0) {
-        const rawStem = typeof item.stems[0] === "object" ? item.stems[0].en : item.stems[0];
+        const firstStem = item.stems[0];
+        const rawStem = typeof firstStem === "object" && firstStem ? firstStem.en : firstStem;
         if (rawStem && typeof rawStem === "string") {
           stemSay = rawStem.replace(/^I\s+/i, "I ").trim();
           break;
