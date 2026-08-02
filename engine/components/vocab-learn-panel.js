@@ -54,7 +54,8 @@ function openVisualLightbox(imgSrc, captionText) {
 }
 
 /**
- * Resolve or derive the appropriate interactive math tool configuration for any lesson.
+ * Comprehensive Interactive Math Tool Resolver.
+ * Guarantees a rich, hands-on interactive math manipulative for EVERY lesson in the curriculum.
  */
 export function resolveInteractiveToolForLesson(config) {
   const cfg = config || {};
@@ -72,6 +73,33 @@ export function resolveInteractiveToolForLesson(config) {
 
   const text = `${cfg.title || ""} ${cfg.standard || ""} ${cfg.contentObjective || ""} ${cfg.objective || ""}`.toLowerCase();
 
+  // Lesson 2-1 & Ratio Tables / Equivalent Ratios
+  if (text.includes("ratio table") || text.includes("equivalent ratio") || text.includes("table of ratios") || (text.includes("ratio") && text.includes("table")) || text.includes("2-1")) {
+    return {
+      kind: "ratio-table-builder",
+      label: "Interactive Ratio Table Explorer: Scale quantities up and down to find equivalent ratios!",
+    };
+  }
+
+  // Unit Rates & Constant of Proportionality
+  if (text.includes("unit rate") || text.includes("constant of proportionality") || text.includes("per 1") || text.includes("rate")) {
+    return {
+      kind: "unit-rate-builder",
+      label: "Interactive Unit Rate Builder: Calculate 'per 1' unit rates live on double number lines!",
+    };
+  }
+
+  // Tape Diagrams
+  if (text.includes("tape diagram") || text.includes("ratio")) {
+    return {
+      kind: "tape-diagram",
+      parts: [3, 5],
+      labels: ["Quantity A", "Quantity B"],
+      label: "Interactive Tape Diagram Explorer: Count and compare equal parts!",
+    };
+  }
+
+  // Factor Trees & Prime Factorization
   if (text.includes("factor tree") || text.includes("prime factor") || text.includes("prime factorization") || text.includes("factorization")) {
     return {
       kind: "factor-tree-lab",
@@ -80,6 +108,7 @@ export function resolveInteractiveToolForLesson(config) {
     };
   }
 
+  // Least Common Multiple (LCM) & GCF
   if (text.includes("least common multiple") || text.includes("lcm")) {
     return {
       kind: "lcm-lab",
@@ -97,7 +126,8 @@ export function resolveInteractiveToolForLesson(config) {
     };
   }
 
-  if (text.includes("exponent") || text.includes("power") || text.includes("base")) {
+  // Exponents & Powers
+  if (text.includes("exponent") || text.includes("power") || text.includes("base") || text.includes("squared") || text.includes("cubed")) {
     return {
       kind: "power-builder",
       base: 2,
@@ -106,6 +136,7 @@ export function resolveInteractiveToolForLesson(config) {
     };
   }
 
+  // Fraction Division
   if (text.includes("divide fraction") || text.includes("fraction division") || text.includes("dividing fraction")) {
     return {
       kind: "fraction-divide",
@@ -115,15 +146,15 @@ export function resolveInteractiveToolForLesson(config) {
     };
   }
 
-  if (text.includes("tape diagram") || text.includes("ratio")) {
+  // Long Division
+  if (text.includes("long division") || text.includes("partial quotient")) {
     return {
-      kind: "tape-diagram",
-      parts: [3, 5],
-      labels: ["Quantity A", "Quantity B"],
-      label: "Interactive Tape Diagram Explorer",
+      kind: "long-division-builder",
+      label: "Interactive Long Division & Partial Quotients Lab",
     };
   }
 
+  // Decimal Operations
   if (text.includes("divide decimal") || text.includes("decimal division")) {
     return {
       kind: "decimal-quotient",
@@ -145,19 +176,11 @@ export function resolveInteractiveToolForLesson(config) {
     };
   }
 
-  if (text.includes("area of") || text.includes("parallelogram") || text.includes("triangle area") || text.includes("trapezoid")) {
+  // Percents
+  if (text.includes("percent of") || text.includes("percentage of")) {
     return {
-      kind: "area-morph",
-      shape: text.includes("triangle") ? "triangle" : text.includes("trapezoid") ? "trapezoid" : "parallelogram",
-      label: "Interactive Area Morph & Transformation Explorer",
-    };
-  }
-
-  if (text.includes("net") || text.includes("surface area") || text.includes("3d") || text.includes("prism") || text.includes("pyramid")) {
-    return {
-      kind: "solid-3d",
-      shape: text.includes("pyramid") ? "triangular-pyramid" : text.includes("triangular") ? "triangular-prism" : "cube",
-      label: "Interactive 3D Solid & Net Explorer",
+      kind: "percent-builder",
+      label: "Interactive Percent of a Quantity Builder",
     };
   }
 
@@ -169,6 +192,15 @@ export function resolveInteractiveToolForLesson(config) {
     };
   }
 
+  // Equations & Balance Scale
+  if (text.includes("balance") || text.includes("solve equation") || text.includes("one-step equation") || text.includes("equation")) {
+    return {
+      kind: "equation-balance-lab",
+      label: "Interactive Equation Pan Balance: Keep both sides equal!",
+    };
+  }
+
+  // Expressions & Distributive Property
   if (text.includes("distribut") || text.includes("expand")) {
     return {
       kind: "distributive-builder",
@@ -183,6 +215,14 @@ export function resolveInteractiveToolForLesson(config) {
     return {
       kind: "combine-like-terms",
       label: "Interactive Combine Like Terms Lab",
+    };
+  }
+
+  // Absolute Value & Rational Numbers
+  if (text.includes("absolute value") || text.includes("distance from zero") || text.includes("opposite")) {
+    return {
+      kind: "number-line-explorer",
+      label: "Interactive Absolute Value & Number Line Explorer",
     };
   }
 
@@ -205,7 +245,72 @@ export function resolveInteractiveToolForLesson(config) {
     };
   }
 
-  return null;
+  // Geometry, Area, Surface Area & Volume
+  if (text.includes("area of") || text.includes("parallelogram") || text.includes("triangle area") || text.includes("trapezoid")) {
+    return {
+      kind: "area-morph",
+      shape: text.includes("triangle") ? "triangle" : text.includes("trapezoid") ? "trapezoid" : "parallelogram",
+      label: "Interactive Area Morph & Transformation Explorer",
+    };
+  }
+
+  if (text.includes("net") || text.includes("surface area") || text.includes("fold")) {
+    return {
+      kind: "net-folder",
+      solid: "cube",
+      label: "Interactive 3D Net Folder: Fold 2D nets into 3D solids!",
+    };
+  }
+
+  if (text.includes("3d") || text.includes("prism") || text.includes("pyramid") || text.includes("volume")) {
+    return {
+      kind: "solid-3d",
+      shape: text.includes("pyramid") ? "triangular-pyramid" : text.includes("triangular") ? "triangular-prism" : "cube",
+      label: "Interactive 3D Solid & Net Explorer",
+    };
+  }
+
+  if (text.includes("cross section") || text.includes("slice")) {
+    return {
+      kind: "cross-section",
+      label: "Interactive 3D Cross-Section Slicing Tool",
+    };
+  }
+
+  // Statistics & Data Analysis
+  if (text.includes("mean") || text.includes("median") || text.includes("mad") || text.includes("data set") || text.includes("variability")) {
+    return {
+      kind: "stats-data-lab",
+      label: "Interactive Statistics & Live Data Explorer",
+    };
+  }
+
+  if (text.includes("box plot") || text.includes("quartile")) {
+    return {
+      kind: "box-plot-builder",
+      label: "Interactive Box Plot & Five-Number Summary Builder",
+    };
+  }
+
+  if (text.includes("histogram")) {
+    return {
+      kind: "histogram-builder",
+      label: "Interactive Histogram Bar Builder",
+    };
+  }
+
+  if (text.includes("dot plot")) {
+    return {
+      kind: "dot-plot",
+      label: "Interactive Dot Plot Explorer",
+    };
+  }
+
+  // Default fallback interactive manipulative for any math lesson:
+  return {
+    kind: "step-solver",
+    label: "Interactive Math Step Solver & Equivalence Checker",
+  };
 }
 
 function resolveLessonMisconception(config) {
@@ -217,6 +322,12 @@ function resolveLessonMisconception(config) {
     return {
       en: "Don't stop factoring until all numbers at the bottom of the tree are prime numbers (numbers like 2, 3, 5, 7)! Composite numbers like 4 or 6 must be factored further.",
       es: "¡No pares de factorizar hasta que todos los números en la parte inferior del árbol sean números primos (como 2, 3, 5, 7)! Los números compuestos como 4 o 6 deben factorizarse más.",
+    };
+  }
+  if (text.includes("ratio") || text.includes("rate")) {
+    return {
+      en: "Keep the order of quantities consistent! If the ratio compares apples to oranges (3:5), do not mix up the order when scaling up equivalent ratios.",
+      es: "¡Mantén constante el orden de las cantidades! Si la razón compara manzanas con naranjas (3:5), no confundas el orden al calcular razones equivalentes.",
     };
   }
   if (text.includes("fraction") && text.includes("divide")) {
@@ -237,12 +348,6 @@ function resolveLessonMisconception(config) {
       es: "Al calcular el área de un triángulo o paralelogramo, la altura DEBE ser perpendicular (formar un ángulo recto de 90°) a la base. ¡No uses el lado inclinado!",
     };
   }
-  if (text.includes("ratio") || text.includes("rate")) {
-    return {
-      en: "Keep the order of quantities consistent! If the ratio compares apples to oranges (3:5), do not mix up the order when scaling up equivalent ratios.",
-      es: "¡Mantén constante el orden de las cantidades! Si la razón compara manzanas con naranjas (3:5), no confundas el orden al calcular razones equivalentes.",
-    };
-  }
   return {
     en: "Double check your math steps in order! Make sure to verify your solution by substituting your answer back into the original problem.",
     es: "¡Verifica tus pasos matemáticos en orden! Asegúrate de comprobar tu solución probando tu respuesta en el problema original.",
@@ -253,6 +358,17 @@ function resolveTryItChallenge(config) {
   const cfg = config || {};
   const text = `${cfg.title || ""} ${cfg.standard || ""}`.toLowerCase();
 
+  if (text.includes("ratio") || text.includes("2-1")) {
+    return {
+      question: "In a ratio table comparing flour to sugar as 3 : 2, if you use 9 cups of flour, how much sugar do you need?",
+      questionEs: "En una tabla de razones que compara harina y azúcar como 3 : 2, si usas 9 tazas de harina, ¿cuánta azúcar necesitas?",
+      options: [
+        { text: "6 cups of sugar (scaled up by ×3)", correct: true, explain: "Correct! Both quantities scaled up by ×3 (3×3=9 and 2×3=6)!" },
+        { text: "5 cups of sugar", correct: false, explain: "Not quite: Remember to multiply both terms of the ratio by the SAME factor (3×3=9, so 2×3=6)." },
+        { text: "12 cups of sugar", correct: false, explain: "Not quite: Scale 2 by ×3 to get 6 cups." },
+      ],
+    };
+  }
   if (text.includes("factor tree") || text.includes("prime factor")) {
     return {
       question: "Which of the following is the correct prime factorization of 12?",
@@ -483,7 +599,7 @@ function injectVocabLearnStyles() {
       background: rgba(2, 132, 199, 0.1);
       padding: 6px 14px;
       border-radius: 8px;
-      border: 1.5.px solid rgba(2, 132, 199, 0.25);
+      border: 1.5px solid rgba(2, 132, 199, 0.25);
     }
     .vl-demo-box {
       background: #f8fbff;
