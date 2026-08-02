@@ -557,14 +557,6 @@ function showIdentityScreen(root, config) {
         <div class="lesson-cover-extras" id="cover-extras"></div>
       </div>
       <div class="identity-body">
-        ${
-          config.readiness
-            ? `<a class="identity-readiness" href="/lessons/${encodeURIComponent(config.lessonId)}/readiness/" style="display:flex; align-items:center; gap:10px; text-decoration:none; color:inherit; background:var(--cream,#fdf3e0); border:1px solid var(--gold,#d4952a); border-radius:12px; padding:12px 16px; margin:0 0 16px; text-align:left;">
-                <span style="font-size:1.5rem;" aria-hidden="true">📚</span>
-                <span><strong>${t("newToTopic")}</strong> ${t("getReadyDesc")} <span style="white-space:nowrap; font-weight:700; color:#155fa0;">${t("startArrow")}</span></span>
-              </a>`
-            : ""
-        }
         <p class="instruction-callout" style="margin-bottom:var(--sp-4); font-size:0.88rem;">
           <span class="instruction-callout-icon" aria-hidden="true">👋</span>
           <span>${t("enterNamePrompt")}</span>
@@ -572,7 +564,6 @@ function showIdentityScreen(root, config) {
             style="margin-left:auto;flex:none;padding:6px 12px;border-radius:999px;border:1px solid #cbd5e1;background:${getPreferredLang() === "es" ? "var(--teal-ink,#0f766e)" : "#fff"};color:${getPreferredLang() === "es" ? "#fff" : "var(--teal-ink,#0f766e)"};font:inherit;font-size:0.8rem;font-weight:700;cursor:pointer;"
             title="Cambiar el idioma de la lección / Switch lesson language">🌎 Español</button>
         </p>
-        ${formsCardHtml(config)}
         <div id="welcome-teacher-slot"></div>
         <div class="identity-form">
           <label for="id-name">${stackHtml(t("yourName", "en"), t("yourName", "es"))}</label>
@@ -582,14 +573,6 @@ function showIdentityScreen(root, config) {
           <button id="id-start" class="identity-btn" disabled>${stackHtml(t("startActivity", "en"), t("startActivity", "es"))}</button>
         </div>
         <div id="identity-teacher-slot"></div>
-        <p id="welcome-resource-links" style="margin:var(--sp-4) 0 0; font-size:0.82rem; text-align:center;">
-          <a href="${homeworkHtmlHref}" style="color:var(--teal-ink); font-weight:700;">🏠 ${stackHtml(t("familyHomework", "en"), t("familyHomework", "es"))}</a>
-          · <a href="/lessons/${encodeURIComponent(config.lessonId)}/notes.html" style="color:var(--navy); font-weight:700;">📝 ${stackHtml(t("guidedNotes", "en"), t("guidedNotes", "es"))}</a>
-          · <a href="${slidesHref}" target="_blank" rel="noopener" style="color:#155fa0; font-weight:700;">📊 ${stackHtml(t("lessonSlides", "en"), t("lessonSlides", "es"))}</a>
-          <span id="welcome-google-slides-slot"></span>
-          · <a href="${handoutHref}" target="_blank" rel="noopener" style="color:var(--amber-ink); font-weight:700;">📄 ${stackHtml(t("studentHandout", "en"), t("studentHandout", "es"))}</a>
-          · <a href="/lessons/${encodeURIComponent(config.lessonId)}/printable.html" target="_blank" rel="noopener" style="color:var(--navy); font-weight:700;">🖨️ ${stackHtml(t("printableLesson", "en"), t("printableLesson", "es"))}</a>
-        </p>
         ${saved.length ? `<div class="identity-saved" id="id-saved-list"></div>` : ""}
       </div>
     </div>
@@ -633,30 +616,6 @@ function showIdentityScreen(root, config) {
     coverExtras.innerHTML = buildLessonCoverExtras(config, savedMatch);
     const artSlot = coverExtras.querySelector(".lesson-cover-art");
     if (artSlot) mountCoverArt(artSlot, config);
-    const stdBtn = coverExtras.querySelector('[data-action="standards-explainer"]');
-    if (stdBtn) {
-      // Show the standard explainer by default (no click required); the button
-      // remains a toggle so it can be collapsed.
-      const buildStandardsPanel = () => {
-        let panel = coverExtras.querySelector(".standards-explainer-panel");
-        if (!panel) {
-          panel = document.createElement("div");
-          panel.className = "standards-explainer-panel";
-          panel.innerHTML = `
-            <p><strong>${escHtml(config.standard)}</strong> — This lesson aligns to Grade 6 Reveal Math standards.</p>
-            <p>${escHtml(resolveContentObjective(config))}</p>`;
-          stdBtn.after(panel);
-        }
-        return panel;
-      };
-      buildStandardsPanel();
-      stdBtn.setAttribute("aria-expanded", "true");
-      stdBtn.addEventListener("click", () => {
-        const open = stdBtn.getAttribute("aria-expanded") === "true";
-        stdBtn.setAttribute("aria-expanded", String(!open));
-        buildStandardsPanel().hidden = open;
-      });
-    }
   }
 
   const nameInput = screen.querySelector("#id-name");

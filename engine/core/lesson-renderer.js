@@ -1,6 +1,7 @@
 // @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
 // (see tsconfig.json); the marker is the debt, and removing it is the unit of
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
+import { extractDivisionDiagram } from "./division-helper.js";
 import {
   renderActivityChooser,
   renderOptionalPracticeOptIn,
@@ -1005,13 +1006,14 @@ export function renderComponent(container, problemDef, onAnswer, shellOpts) {
     onAnswer?.(isCorrect);
   };
 
-  // Optional per-item visual: a `diagram` authored on an individual practice
-  // item renders its figure (factor-tree builder, tape-diagram, …) above the
-  // component, through the same buildVisual bridge the section-level slots use.
-  if (problemDef.diagram?.kind) {
+  // Optional per-item visual: an explicit or auto-extracted `diagram`
+  // (long-division-builder, factor-tree, tape-diagram, …) renders above the
+  // component through the buildVisual bridge.
+  const itemDiagram = problemDef.diagram || extractDivisionDiagram(problemDef);
+  if (itemDiagram?.kind) {
     const fig = document.createElement("div");
     fig.className = "problem-item-figure";
-    fig.innerHTML = buildVisual(problemDef.diagram);
+    fig.innerHTML = buildVisual(itemDiagram);
     if (fig.firstElementChild) {
       body.append(fig);
       mountInteractiveVisuals(fig);

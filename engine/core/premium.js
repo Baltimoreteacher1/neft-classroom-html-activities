@@ -98,39 +98,7 @@ export function getBadgeDefs() {
 
 /** Enhanced identity/cover screen markup injected into identity-hero. */
 export function buildLessonCoverExtras(config, savedProgress) {
-  const vocabCount = config.vocabulary?.length || 0;
-  const problemCount = countPracticeProblems(config);
-  const phaseCount = PHASE_TIME_ESTIMATES.length;
-  const pct = savedProgress ? Math.round((savedProgress.phasesCompleted / phaseCount) * 100) : 0;
-
-  const phaseChips = PHASE_TIME_ESTIMATES.map(
-    (p, i) =>
-      `<span class="cover-phase-chip" title="~${p.minutes} min"><span aria-hidden="true">${p.icon}</span> ${stackHtml(phaseName(i, "en"), phaseName(i, "es"))}</span>`,
-  ).join("");
-
-  return `
-    <div class="lesson-cover-art" aria-hidden="true"></div>
-    <div class="cover-learning-goal card-compact">
-      <span class="cover-goal-label">${stackHtml(t("todaysGoal", "en"), t("todaysGoal", "es"))}</span>
-      <p class="cover-goal-text">${renderMathText(config.contentObjective || `Master ${config.title}`)}</p>
-    </div>
-    <div class="cover-stats-row">
-      <span class="cover-stat"><strong>${vocabCount}</strong> ${stackHtml(t("vocabWords", "en"), t("vocabWords", "es"))}</span>
-      <span class="cover-stat"><strong>${problemCount}</strong> ${stackHtml(t("practiceItems", "en"), t("practiceItems", "es"))}</span>
-      <span class="cover-stat"><strong>${phaseCount}</strong> ${stackHtml(t("phases", "en"), t("phases", "es"))}</span>
-    </div>
-    ${
-      pct > 0
-        ? `<div class="cover-progress-ring" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100">
-            <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="20" class="ring-bg"/><circle cx="24" cy="24" r="20" class="ring-fill" style="stroke-dasharray:${pct * 1.26} 126"/></svg>
-            <span class="ring-label">${pct}%</span>
-          </div>`
-        : ""
-    }
-    <div class="cover-phase-preview">${phaseChips}</div>
-    <button type="button" class="cover-standards-btn" data-action="standards-explainer" aria-expanded="true">
-      📋 ${esc(config.standard)} — standard details
-    </button>`;
+  return `<div class="lesson-cover-art" aria-hidden="true"></div>`;
 }
 
 /** Mount animated theme art into cover slot. */

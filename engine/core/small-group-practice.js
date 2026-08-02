@@ -6,6 +6,8 @@ import { bi, biHtml, celebrate, el, esc, speak } from "./small-group-ui.js";
 import { appendVisualPractice } from "./small-group-visual-practice.js";
 import { renderConversionChip, hasConversionFacts } from "./conversion-chart.js";
 import { renderToolChip } from "./tool-drawer.js";
+import { extractDivisionDiagram } from "./division-helper.js";
+import { figureBlock } from "./small-group-labs.js";
 
 const firstHint = (item) => item.hints?.[0] || item.hint || null;
 
@@ -97,6 +99,13 @@ function questionCard(index, stem, stemEs, item = {}) {
     renderToolChip(p, conceptTool, { label: conceptTool.label, icon: conceptTool.icon });
   }
   card.appendChild(p);
+
+  const diagramDef = item.diagram || extractDivisionDiagram(item);
+  if (diagramDef?.kind) {
+    const fig = figureBlock(diagramDef);
+    if (fig) card.appendChild(fig);
+  }
+
   return card;
 }
 
