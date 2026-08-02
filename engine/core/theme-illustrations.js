@@ -1,6 +1,16 @@
 // Theme-specific SVG hero illustrations for Launch phase context visuals.
 // Replaces plain-text contextImage placeholders with real graphics.
 
+import { resolveObjectiveVisuals } from "./objective-visuals.js";
+
+function esc(s) {
+  return String(s || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
 const THEME_SVGS = {
   "culinary-academy": `<svg viewBox="0 0 320 200" role="img" aria-hidden="true" class="theme-hero-svg">
     <defs><linearGradient id="chef-bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#fce6de"/><stop offset="100%" stop-color="#fdf6ec"/></linearGradient></defs>
@@ -124,8 +134,6 @@ const THEME_SVGS = {
     <text x="160" y="188" font-size="13" font-weight="800" fill="#fef08a" text-anchor="middle">3D Structure: Area = b × h  ·  Vol = b × h × depth</text>
   </svg>`,
 
-  // Per-topic 3D isometric area & volume figures (Units 5 & 10). Selected via config.heroFigure
-  // so every lesson shows an isometric 3D shape + correct area/volume formula.
   "figure-parallelogram": `<svg viewBox="0 0 320 200" role="img" aria-hidden="true" class="theme-hero-svg">
     <defs>
       <linearGradient id="par-bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0f172a"/><stop offset="100%" stop-color="#1e293b"/></linearGradient>
@@ -239,20 +247,59 @@ const DEFAULT_SVG = `<svg viewBox="0 0 320 200" role="img" aria-hidden="true" cl
 
 // `figure` (config.heroFigure) takes precedence over the theme default so a
 // lesson can pin a topic-correct shape/formula regardless of its visual theme.
-export function themeIllustration(theme, figure) {
+export function themeIllustration(theme, figure, config) {
+  if (config) {
+    try {
+      const visuals = resolveObjectiveVisuals(config);
+      if (visuals && visuals.content && visuals.content.src) {
+        return `<div class="theme-hero-artwork" style="background:#ffffff; padding:12px; border-radius:14px; border:1.5px solid #cbd5e1; box-shadow:0 4px 14px rgba(0,0,0,0.06); text-align:center;">
+          <img src="${visuals.content.src}" alt="${esc(visuals.content.alt || config.title || '')}" class="theme-hero-img cover-svg-animate" style="max-width:100%; max-height:210px; height:auto; object-fit:contain; display:block; margin:0 auto;" />
+        </div>`;
+      }
+    } catch (e) {
+      // Fallback
+    }
+  }
   return THEME_SVGS[figure] || THEME_SVGS[theme] || DEFAULT_SVG;
 }
 
-export function renderThemeIllustration(host, theme, caption, figure) {
+export function renderThemeIllustration(host, theme, caption, figure, config) {
   const wrap = document.createElement("figure");
   wrap.className = "theme-illustration";
-  wrap.innerHTML = themeIllustration(theme, figure);
-  if (caption) {
+
+  let svgHtml = "";
+  let cleanCaption = caption;
+
+  if (config) {
+    try {
+      const visuals = resolveObjectiveVisuals(config);
+      if (visuals && visuals.content && visuals.content.src) {
+        svgHtml = `<div class="theme-hero-artwork" style="background:#ffffff; padding:12px; border-radius:14px; border:1.5px solid #cbd5e1; box-shadow:0 4px 14px rgba(0,0,0,0.06); text-align:center;">
+          <img src="${visuals.content.src}" alt="${esc(visuals.content.alt || config.title || '')}" class="theme-hero-img cover-svg-animate" style="max-width:100%; max-height:210px; height:auto; object-fit:contain; display:block; margin:0 auto;" />
+        </div>`;
+        if (visuals.content.caption) {
+          cleanCaption = visuals.content.caption;
+        }
+      }
+    } catch (e) {
+      // Fallback
+    }
+  }
+
+  if (!svgHtml) {
+    svgHtml = themeIllustration(theme, figure);
+  }
+
+  wrap.innerHTML = svgHtml;
+
+  if (cleanCaption && typeof cleanCaption === "string" && cleanCaption.trim()) {
     const figcap = document.createElement("figcaption");
     figcap.className = "theme-illustration-caption";
-    figcap.textContent = caption;
+    figcap.style.cssText = "margin-top:10px; font-size:0.92rem; font-weight:700; color:#334155; text-align:center; line-height:1.45;";
+    figcap.textContent = cleanCaption;
     wrap.append(figcap);
   }
+
   host.append(wrap);
   return wrap;
 }
