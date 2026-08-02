@@ -48,7 +48,7 @@ import { createGoDeeper } from "./go-deeper.js";
 import { buildGradeCard } from "./grade.js";
 import { recommendedNext } from "./grade-emit.js";
 import { mountHintLadder } from "./hint-ladder.js";
-import { badgeName, phaseName, stackHtml, t } from "./i18n.js";
+import { badgeName, getPreferredLang, phaseName, stackHtml, t } from "./i18n.js";
 import { attachImageZoom, isLightboxOpen } from "./image-zoom.js";
 import { interactiveVisualHost, mountInteractiveVisuals } from "./interactive-visual.js";
 import { mountLevel3Launch } from "./level3-launch.js";
