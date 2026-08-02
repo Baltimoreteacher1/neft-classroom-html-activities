@@ -10879,13 +10879,8 @@ Due May 31"></textarea>
     // ---- Calming & NeeDoh ----
     "needoh-open": () => {
       openModal(
-            <div style="font-weight:700; font-size:0.95rem;">Squeezes: <span id="needohCount">${neeDohSqueezes}</span></div>
-            <div style="display:flex; gap:8px;">
-              <button type="button" class="btn primary" data-act="needoh-squish">💥 Squish!</button>
-              <button type="button" class="btn" data-act="needoh-color">🎨 Change Color</button>
-            </div>
-          </div>
-        </div>`
+        "🟡 Shai's Next-Level NeeDoh Studio",
+        renderNeeDohStudioHtml(),
       );
     },
     "needoh-squish": () => {
