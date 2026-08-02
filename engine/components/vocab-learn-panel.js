@@ -3,6 +3,7 @@ import { renderMathText } from "../core/math-typography.js";
 import { renderVocabIntro } from "./vocab-intro.js";
 import { resolveObjectiveVisuals } from "../core/objective-visuals.js";
 import { interactiveVisualHost, mountInteractiveVisuals } from "../core/interactive-visual.js";
+import { underlineVocabTerms } from "../core/lesson-renderer.js";
 
 function escHtml(s) {
   return String(s || "")
@@ -28,17 +29,17 @@ function openVisualLightbox(imgSrc, captionText) {
   const modal = document.createElement("div");
   modal.style.cssText = `
     position: fixed; inset: 0; z-index: 99999;
-    background: rgba(11, 15, 25, 0.92); backdrop-filter: blur(8px);
+    background: rgba(11, 15, 25, 0.94); backdrop-filter: blur(10px);
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     padding: 24px; cursor: zoom-out;
   `;
   modal.innerHTML = `
-    <div style="max-width: 90vw; max-height: 85vh; text-align: center; color: white;">
-      <img src="${imgSrc}" style="max-width: 100%; max-height: 70vh; border-radius: 14px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); background: white; padding: 12px;" />
-      <div style="margin-top: 16px; font-size: 1.1rem; font-weight: 700; line-height: 1.5; color: #f8fafc; max-width: 600px;">
+    <div style="max-width: 90vw; max-height: 88vh; text-align: center; color: white;">
+      <img src="${imgSrc}" style="max-width: 100%; max-height: 72vh; border-radius: 16px; box-shadow: 0 25px 50px rgba(0,0,0,0.6); background: white; padding: 12px;" />
+      <div style="margin-top: 18px; font-size: 1.15rem; font-weight: 700; line-height: 1.5; color: #f8fafc; max-width: 640px;">
         ${escHtml(captionText)}
       </div>
-      <button style="margin-top: 16px; padding: 10px 28px; border-radius: 999px; border: none; background: #ffffff; color: #0f172a; font-weight: 800; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+      <button style="margin-top: 18px; padding: 12px 32px; border-radius: 999px; border: none; background: #ffffff; color: #0f172a; font-weight: 800; font-size: 1.05rem; cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,0.25);">
         ✕ Close
       </button>
     </div>
@@ -59,170 +60,164 @@ function injectVocabLearnStyles() {
   s.id = "vl-panel-styles";
   s.textContent = `
     .vl-container {
-      max-width: 880px;
+      max-width: 900px;
       margin: 0 auto;
-      padding: 16px 20px 36px;
+      padding: 18px 22px 40px;
       font-family: "Hanken Grotesk", system-ui, -apple-system, sans-serif;
       color: #0f172a;
     }
     .vl-hero {
       background: linear-gradient(135deg, #0f2b48 0%, #134074 100%);
       color: #ffffff;
-      border-radius: 20px;
-      padding: 26px 30px;
-      margin-bottom: 28px;
-      box-shadow: 0 10px 28px rgba(15, 43, 72, 0.2);
+      border-radius: 22px;
+      padding: 28px 32px;
+      margin-bottom: 30px;
+      box-shadow: 0 12px 32px rgba(15, 43, 72, 0.22);
     }
     .vl-hero-badge {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 6px 16px;
+      padding: 6px 18px;
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.18);
-      backdrop-filter: blur(6px);
-      font-size: 0.84rem;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
+      font-size: 0.86rem;
       font-weight: 900;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
     }
     .vl-hero-title {
       font-family: "Outfit", system-ui, sans-serif;
-      font-size: 1.7rem;
+      font-size: 1.85rem;
       font-weight: 900;
-      margin: 0 0 8px;
+      margin: 0 0 10px;
       line-height: 1.25;
       letter-spacing: -0.01em;
     }
     .vl-hero-sub {
-      font-size: 1.02rem;
-      opacity: 0.94;
+      font-size: 1.08rem;
+      opacity: 0.95;
       margin: 0;
-      line-height: 1.5;
+      line-height: 1.55;
     }
     .vl-section-card {
       background: #ffffff;
-      border: 1.5px solid #e2e8f0;
-      border-radius: 20px;
-      padding: 26px;
-      margin-bottom: 28px;
-      box-shadow: 0 6px 20px rgba(15, 23, 42, 0.04);
+      border: 2px solid #cbd5e1;
+      border-radius: 22px;
+      padding: 28px;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
     }
     .vl-section-header {
       display: flex;
       align-items: center;
-      gap: 14px;
-      margin-bottom: 20px;
-      padding-bottom: 16px;
-      border-bottom: 2px solid #f1f5f9;
+      gap: 16px;
+      margin-bottom: 22px;
+      padding-bottom: 18px;
+      border-bottom: 2px solid #e2e8f0;
     }
     .vl-section-tag {
       flex: 0 0 auto;
-      padding: 5px 14px;
+      padding: 6px 16px;
       border-radius: 999px;
-      font-size: 0.8rem;
+      font-size: 0.84rem;
       font-weight: 900;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.06em;
     }
-    .vl-tag-amber { background: #fef3c7; color: #b45309; }
+    .vl-tag-amber { background: #fef3c7; color: #92400e; }
     .vl-tag-teal { background: #ccfbf1; color: #0f766e; }
-    .vl-tag-coral { background: #ffedd5; color: #c2410c; }
+    .vl-tag-coral { background: #ffedd5; color: #9a3412; }
     .vl-section-title {
       font-family: "Outfit", system-ui, sans-serif;
-      font-size: 1.35rem;
+      font-size: 1.45rem;
       font-weight: 800;
       color: #0f172a;
       margin: 0;
     }
-    .vl-section-desc {
-      font-size: 0.94rem;
-      color: #64748b;
-      margin: 2px 0 0;
-      line-height: 1.4;
-    }
     .vl-key-idea-card {
       background: linear-gradient(135deg, #fffbe6 0%, #fef3c7 100%);
-      border: 2px solid #f59e0b;
-      border-radius: 16px;
-      padding: 20px 22px;
-      margin-bottom: 22px;
-      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.14);
+      border: 2.5px solid #f59e0b;
+      border-radius: 18px;
+      padding: 22px 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 6px 16px rgba(245, 158, 11, 0.15);
     }
     .vl-key-idea-label {
-      font-size: 0.82rem;
+      font-size: 0.85rem;
       font-weight: 900;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      color: #b45309;
-      margin-bottom: 6px;
+      color: #92400e;
+      margin-bottom: 8px;
       display: block;
     }
     .vl-key-idea-text {
-      font-size: 1.1rem;
+      font-size: 1.15rem;
       font-weight: 700;
       color: #78350f;
       margin: 0;
-      line-height: 1.55;
+      line-height: 1.6;
     }
     .vl-visual-card {
-      margin-bottom: 22px;
-      border-radius: 16px;
+      margin-bottom: 24px;
+      border-radius: 18px;
       overflow: hidden;
-      border: 1.5px solid #cbd5e1;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+      border: 2px solid #cbd5e1;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
       background: #0f172a;
     }
     .vl-visual-img-wrap {
       cursor: zoom-in;
       background: #0b0f19;
       text-align: center;
-      padding: 12px;
+      padding: 16px;
     }
     .vl-visual-img-wrap img {
       max-width: 100%;
       height: auto;
-      max-height: 320px;
+      max-height: 340px;
       display: inline-block;
-      border-radius: 8px;
+      border-radius: 10px;
     }
     .vl-visual-caption {
-      padding: 14px 18px;
+      padding: 16px 20px;
       background: #ffffff;
-      border-top: 1.5px solid #e2e8f0;
-      font-size: 0.96rem;
+      border-top: 2px solid #e2e8f0;
+      font-size: 1.02rem;
       color: #0f172a;
       font-weight: 800;
       line-height: 1.5;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
+      gap: 12px;
       flex-wrap: wrap;
     }
     .vl-zoom-badge {
-      font-size: 0.78rem;
+      font-size: 0.82rem;
       font-weight: 800;
       color: #0284c7;
-      background: rgba(2, 132, 199, 0.08);
-      padding: 4px 10px;
-      border-radius: 6px;
-      border: 1px solid rgba(2, 132, 199, 0.2);
+      background: rgba(2, 132, 199, 0.1);
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(2, 132, 199, 0.25);
     }
     .vl-demo-box {
       background: #f8fbff;
-      border: 1.5px solid #cbd5e1;
-      border-radius: 16px;
-      padding: 22px;
-      margin-bottom: 22px;
+      border: 2px solid #cbd5e1;
+      border-radius: 18px;
+      padding: 24px;
+      margin-bottom: 24px;
     }
     .vl-demo-title {
       font-family: "Outfit", system-ui, sans-serif;
-      font-size: 1.12rem;
+      font-size: 1.2rem;
       font-weight: 800;
       color: #0f2b48;
-      margin-bottom: 16px;
+      margin-bottom: 18px;
       display: flex;
       align-items: center;
       gap: 10px;
@@ -230,54 +225,54 @@ function injectVocabLearnStyles() {
     .vl-demo-steps {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 14px;
     }
     .vl-demo-step {
       display: flex;
-      gap: 14px;
+      gap: 16px;
       align-items: flex-start;
-      padding: 14px 16px;
+      padding: 16px 18px;
       background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      border-left: 5px solid #0d7a76;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+      border: 1.5px solid #e2e8f0;
+      border-radius: 14px;
+      border-left: 6px solid #0d7a76;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.03);
     }
     .vl-step-num {
       flex: 0 0 auto;
-      padding: 5px 12px;
-      border-radius: 8px;
+      padding: 6px 14px;
+      border-radius: 10px;
       background: #0d7a76;
       color: #ffffff;
-      font-size: 0.8rem;
+      font-size: 0.84rem;
       font-weight: 900;
-      letter-spacing: 0.02em;
+      letter-spacing: 0.03em;
     }
     .vl-step-text {
-      font-size: 1.02rem;
-      line-height: 1.5;
+      font-size: 1.08rem;
+      line-height: 1.55;
       color: #0f172a;
-      font-weight: 600;
+      font-weight: 700;
     }
     .vl-turntalk-card {
       background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
-      border: 2px solid #ea580c;
-      border-radius: 18px;
-      padding: 22px;
-      margin-top: 24px;
-      box-shadow: 0 6px 20px rgba(234, 88, 12, 0.08);
+      border: 2.5px solid #ea580c;
+      border-radius: 20px;
+      padding: 24px;
+      margin-top: 26px;
+      box-shadow: 0 8px 24px rgba(234, 88, 12, 0.1);
     }
     .vl-turntalk-head {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 14px;
+      margin-bottom: 16px;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 12px;
     }
     .vl-turntalk-title {
       font-family: "Outfit", system-ui, sans-serif;
-      font-size: 1.15rem;
+      font-size: 1.22rem;
       font-weight: 900;
       color: #9a3412;
       display: flex;
@@ -286,14 +281,14 @@ function injectVocabLearnStyles() {
     }
     .vl-turntalk-controls {
       display: flex;
-      gap: 8px;
+      gap: 10px;
     }
     .vl-tt-btn {
-      padding: 4px 12px;
-      border-radius: 8px;
-      font-size: 0.82rem;
+      padding: 6px 14px;
+      border-radius: 10px;
+      font-size: 0.86rem;
       font-weight: 800;
-      border: 1.5px solid #fdba74;
+      border: 2px solid #fdba74;
       background: #ffffff;
       color: #c2410c;
       cursor: pointer;
@@ -305,42 +300,42 @@ function injectVocabLearnStyles() {
       border-color: #ea580c;
     }
     .vl-turntalk-question {
-      font-size: 1.08rem;
+      font-size: 1.12rem;
       font-weight: 800;
       color: #431407;
-      line-height: 1.5;
-      margin-bottom: 16px;
-      background: rgba(255, 255, 255, 0.7);
-      padding: 12px 16px;
-      border-radius: 12px;
-      border-left: 4px solid #ea580c;
+      line-height: 1.55;
+      margin-bottom: 18px;
+      background: rgba(255, 255, 255, 0.85);
+      padding: 14px 18px;
+      border-radius: 14px;
+      border-left: 5px solid #ea580c;
     }
     .vl-starters-label {
-      font-size: 0.84rem;
+      font-size: 0.88rem;
       font-weight: 900;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       color: #9a3412;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
     .vl-starters-grid {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
     }
     .vl-starter-chip {
-      padding: 10px 14px;
-      border-radius: 10px;
+      padding: 12px 16px;
+      border-radius: 12px;
       background: #ffffff;
-      border: 1px solid #fed7aa;
-      font-size: 0.96rem;
+      border: 1.5px solid #fed7aa;
+      font-size: 1.02rem;
       font-weight: 700;
       color: #292524;
       cursor: pointer;
       transition: all 0.15s ease;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
     .vl-starter-chip:hover {
       border-color: #ea580c;
@@ -354,34 +349,34 @@ function injectVocabLearnStyles() {
     }
     .vl-actions {
       text-align: center;
-      padding: 24px 0 36px;
+      padding: 26px 0 40px;
     }
     .vl-continue-btn {
-      padding: 18px 40px;
-      font-size: 1.18rem;
+      padding: 20px 44px;
+      font-size: 1.22rem;
       font-weight: 800;
       color: #ffffff;
       background: linear-gradient(135deg, #0d7a76 0%, #0f4c81 100%);
       border: none;
-      border-radius: 16px;
-      box-shadow: 0 8px 24px rgba(13, 122, 118, 0.32);
+      border-radius: 18px;
+      box-shadow: 0 10px 28px rgba(13, 122, 118, 0.35);
       cursor: pointer;
       transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .vl-continue-btn:hover {
       filter: brightness(1.08);
       transform: translateY(-3px);
-      box-shadow: 0 12px 30px rgba(13, 122, 118, 0.42);
+      box-shadow: 0 14px 34px rgba(13, 122, 118, 0.45);
     }
     .vl-continue-btn:active {
       transform: translateY(-1px);
     }
     @media (max-width: 600px) {
-      .vl-container { padding: 10px 12px 28px; }
-      .vl-hero { padding: 20px; }
-      .vl-hero-title { font-size: 1.4rem; }
-      .vl-section-card { padding: 18px; }
-      .vl-continue-btn { width: 100%; padding: 18px 24px; font-size: 1.08rem; }
+      .vl-container { padding: 12px 14px 32px; }
+      .vl-hero { padding: 22px; }
+      .vl-hero-title { font-size: 1.5rem; }
+      .vl-section-card { padding: 20px; }
+      .vl-continue-btn { width: 100%; padding: 18px 24px; font-size: 1.1rem; }
     }
   `;
   document.head.appendChild(s);
@@ -429,6 +424,11 @@ export function renderVocabPanel(container, config, options = {}) {
       onComplete?.();
     },
   });
+
+  // Highlight vocabulary terms throughout
+  if (vocabList.length > 0) {
+    try { underlineVocabTerms(cardSection, vocabList); } catch (_) {}
+  }
 
   const actions = document.createElement("div");
   actions.className = "vl-actions";
@@ -502,7 +502,7 @@ export function renderLearnItPanel(container, config, options = {}) {
     </div>
 
     <!-- SIMPLE EXPLANATION -->
-    ${intro ? `<p style="font-size:1.05rem; line-height:1.55; color:#1e293b; font-weight:600; margin:0 0 18px;">${renderMathText(intro)}</p>` : ""}
+    ${intro ? `<p style="font-size:1.1rem; line-height:1.6; color:#0f172a; font-weight:600; margin:0 0 20px;">${renderMathText(intro)}</p>` : ""}
     ${
       keyIdea
         ? `
@@ -538,7 +538,7 @@ export function renderLearnItPanel(container, config, options = {}) {
       <div class="vl-demo-box">
         <div class="vl-demo-title">
           <span>👀 ${isEs ? "Ejemplo Resuelto Paso a Paso:" : "Step-by-Step Worked Example:"}</span>
-          <span style="font-weight:600; color:#64748b;">(${escHtml(iDo.title || (isEs ? "Mira cómo se hace" : "Watch Me"))})</span>
+          <span style="font-weight:700; color:#475569;">(${escHtml(iDo.title || (isEs ? "Mira cómo se hace" : "Watch Me"))})</span>
         </div>
         <div class="vl-demo-steps">
           ${iDo.lines
@@ -641,6 +641,12 @@ export function renderLearnItPanel(container, config, options = {}) {
   renderTurnAndTalk();
   mainCard.append(ttContainer);
   wrap.append(mainCard);
+
+  // Underline vocabulary terms throughout Learn It for definition & image popups
+  const vocabList = Array.isArray(config.vocabulary) ? config.vocabulary : [];
+  if (vocabList.length > 0) {
+    try { underlineVocabTerms(mainCard, vocabList); } catch (_) {}
+  }
 
   // Bottom Continue Action Button
   const actions = document.createElement("div");

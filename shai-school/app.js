@@ -4409,35 +4409,145 @@
   ];
   let calmIdx = 0;
 
-  // NeeDoh Squishy Fidget State
+  // Next-Level NeeDoh Studio State & Data
   let neeDohSqueezes = 0;
-  let neeDohColorIdx = 0;
-  const NEEDOH_COLORS = [
-    { name: "Neon Groovy Pink", bg: "radial-gradient(circle at 35% 35%, #ff77bc, #ec4899 60%, #be185d)" },
-    { name: "Electric Blue", bg: "radial-gradient(circle at 35% 35%, #38bdf8, #0284c7 60%, #0369a1)" },
-    { name: "Nice Cube Lime", bg: "radial-gradient(circle at 35% 35%, #a3e635, #65a30d 60%, #3f6212)" },
-    { name: "Super Sunburst Orange", bg: "radial-gradient(circle at 35% 35%, #fbbf24, #f97316 60%, #c2410c)" },
-    { name: "Glitter Purple", bg: "radial-gradient(circle at 35% 35%, #c084fc, #9333ea 60%, #581c87)" },
+  let neeDohShapeIdx = 0;
+  let neeDohMaterialIdx = 0;
+
+  const NEEDOH_SHAPES = [
+    { id: "ball", name: "Groovy Ball", emoji: "🟡", borderRadius: "50%", clipPath: "none" },
+    { id: "cube", name: "Nice Cube", emoji: "🧊", borderRadius: "24px", clipPath: "none" },
+    { id: "star", name: "Super Star", emoji: "🌟", borderRadius: "0", clipPath: "polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)" },
+    { id: "cat", name: "Squish Cat", emoji: "🐱", borderRadius: "38% 38% 48% 48%", clipPath: "none" },
+    { id: "donut", name: "Gummy Donut", emoji: "🍩", borderRadius: "50%", clipPath: "none" },
+    { id: "gem", name: "Crystal Gem", emoji: "💎", borderRadius: "0", clipPath: "polygon(50% 0%, 90% 25%, 90% 75%, 50% 100%, 10% 75%, 10% 25%)" },
   ];
 
-  function playNeeDohSquishSound() {
+  const NEEDOH_MATERIALS = [
+    { id: "jelly", name: "Gummy Jelly", bg: "radial-gradient(circle at 35% 35%, #ff77bc, #ec4899 60%, #be185d)", shadow: "0 12px 28px rgba(236,72,153,0.35)", sound: "jelly" },
+    { id: "ice", name: "Nice Cube Ice", bg: "linear-gradient(135deg, #a5f3fc 0%, #38bdf8 50%, #0284c7 100%)", shadow: "0 12px 28px rgba(56,189,248,0.4)", sound: "ice" },
+    { id: "glitter", name: "Glitter Magic", bg: "radial-gradient(circle at 35% 35%, #f5d0fe, #c084fc 50%, #7e22ce 100%)", shadow: "0 12px 28px rgba(168,85,247,0.4)", sound: "glitter" },
+    { id: "bead", name: "Micro-Bead Crunch", bg: "radial-gradient(circle at 35% 35%, #fef08a, #eab308 60%, #ca8a04 100%)", shadow: "0 12px 28px rgba(234,179,8,0.35)", sound: "bead" },
+    { id: "rainbow", name: "Rainbow Swirl", bg: "linear-gradient(135deg, #f43f5e, #fb923c, #facc15, #4ade80, #38bdf8, #c084fc)", shadow: "0 12px 28px rgba(244,63,94,0.35)", sound: "rainbow" },
+    { id: "neon", name: "Neon Glow", bg: "radial-gradient(circle at 35% 35%, #86efac, #22c55e 60%, #15803d 100%)", shadow: "0 0 35px #4ade80, 0 10px 25px rgba(34,197,94,0.4)", sound: "neon" },
+  ];
+
+  function getNeeDohRank(squeezes) {
+    if (squeezes >= 100) return "👑 NeeDoh Grand Master";
+    if (squeezes >= 50) return "⚡ Master Squisher";
+    if (squeezes >= 25) return "🔥 Pro Squisher";
+    if (squeezes >= 10) return "🌟 Groovy Squisher";
+    return "🐣 Beginner Squisher";
+  }
+
+  function playNeeDohMaterialSound(matId = "jelly") {
     try {
       initAudio();
       if (!audioCtx) return;
+      const now = audioCtx.currentTime;
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
-      osc.type = "sine";
-      const startFreq = 220 + Math.random() * 80;
-      const endFreq = 420 + Math.random() * 120;
-      osc.frequency.setValueAtTime(startFreq, audioCtx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(endFreq, audioCtx.currentTime + 0.12);
-      gain.gain.setValueAtTime(0.35, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.14);
+
+      if (matId === "ice") {
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(110, now);
+        osc.frequency.exponentialRampToValueAtTime(35, now + 0.18);
+        gain.gain.setValueAtTime(0.4, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+      } else if (matId === "glitter") {
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(660, now);
+        osc.frequency.exponentialRampToValueAtTime(1200, now + 0.14);
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+      } else if (matId === "bead") {
+        osc.type = "square";
+        osc.frequency.setValueAtTime(340, now);
+        osc.frequency.setValueAtTime(180, now + 0.04);
+        osc.frequency.setValueAtTime(420, now + 0.09);
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+      } else if (matId === "rainbow") {
+        osc.type = "sawtooth";
+        osc.frequency.setValueAtTime(260, now);
+        osc.frequency.exponentialRampToValueAtTime(520, now + 0.16);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+      } else if (matId === "neon") {
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(180, now);
+        osc.frequency.exponentialRampToValueAtTime(540, now + 0.18);
+        gain.gain.setValueAtTime(0.35, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+      } else {
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(220, now);
+        osc.frequency.exponentialRampToValueAtTime(480, now + 0.12);
+        gain.gain.setValueAtTime(0.35, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+      }
+
       osc.connect(gain);
       gain.connect(audioCtx.destination);
       osc.start();
-      osc.stop(audioCtx.currentTime + 0.14);
+      osc.stop(now + 0.22);
     } catch {}
+  }
+
+  function renderNeeDohStudioHtml() {
+    const sh = NEEDOH_SHAPES[neeDohShapeIdx % NEEDOH_SHAPES.length];
+    const mat = NEEDOH_MATERIALS[neeDohMaterialIdx % NEEDOH_MATERIALS.length];
+    const rank = getNeeDohRank(neeDohSqueezes);
+
+    const shapeBtns = NEEDOH_SHAPES.map(
+      (s, idx) =>
+        '<button type="button" class="btn sm' + (idx === (neeDohShapeIdx % NEEDOH_SHAPES.length) ? " primary" : "") + '" data-act="needoh-select-shape" data-arg="' + idx + '">' + s.emoji + ' ' + s.name + '</button>'
+    ).join(" ");
+
+    const matBtns = NEEDOH_MATERIALS.map(
+      (m, idx) =>
+        '<button type="button" class="btn sm' + (idx === (neeDohMaterialIdx % NEEDOH_MATERIALS.length) ? " primary" : "") + '" data-act="needoh-select-mat" data-arg="' + idx + '">' + m.name + '</button>'
+    ).join(" ");
+
+    return (
+      '<div class="needoh-studio-wrap" style="text-align:center; padding:6px;">' +
+        '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">' +
+          '<div style="font-weight:800; font-size:0.85rem; color:var(--muted);">' +
+            'Rank: <span id="needohRank" style="color:var(--teal,#147c78); font-weight:900;">' + rank + '</span>' +
+          '</div>' +
+          '<div style="font-weight:800; font-size:0.85rem;">' +
+            'Squeezes: <span id="needohCount" style="color:var(--teal,#147c78); font-size:1.05rem;">' + neeDohSqueezes + '</span>' +
+          '</div>' +
+        '</div>' +
+
+        '<div style="margin-bottom:10px;">' +
+          '<div style="font-size:0.75rem; font-weight:900; text-transform:uppercase; letter-spacing:0.05em; color:var(--muted); margin-bottom:4px;">1. Choose Shape</div>' +
+          '<div style="display:flex; gap:6px; overflow-x:auto; padding-bottom:4px; justify-content:center; flex-wrap:wrap;">' +
+            shapeBtns +
+          '</div>' +
+        '</div>' +
+
+        '<div style="margin-bottom:12px;">' +
+          '<div style="font-size:0.75rem; font-weight:900; text-transform:uppercase; letter-spacing:0.05em; color:var(--muted); margin-bottom:4px;">2. Choose Material / Filling</div>' +
+          '<div style="display:flex; gap:6px; overflow-x:auto; padding-bottom:4px; justify-content:center; flex-wrap:wrap;">' +
+            matBtns +
+          '</div>' +
+        '</div>' +
+
+        '<div style="height:180px; display:flex; align-items:center; justify-content:center; position:relative; margin:10px 0; background:rgba(0,0,0,0.04); border-radius:16px;">' +
+          '<div id="needohBall" class="needoh-ball" data-act="needoh-squish" role="button" tabindex="0" aria-label="Squish NeeDoh Fidget"' +
+               ' style="width:120px; height:120px; border-radius:' + sh.borderRadius + '; clip-path:' + sh.clipPath + '; background:' + mat.bg + '; box-shadow:' + mat.shadow + '; cursor:pointer; transition:transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275); user-select:none; touch-action:manipulation; display:flex; align-items:center; justify-content:center; font-size:2.6rem; position:relative;">' +
+            sh.emoji +
+          '</div>' +
+        '</div>' +
+
+        '<div style="display:flex; justify-content:center; gap:8px; margin-top:10px; flex-wrap:wrap;">' +
+          '<button type="button" class="btn primary sm" data-act="needoh-squish">💥 Squish!</button>' +
+          '<button type="button" class="btn sm" data-act="needoh-stretch">↔️ Stretch!</button>' +
+          '<button type="button" class="btn sm" data-act="needoh-twist">🔄 Twist!</button>' +
+        '</div>' +
+      '</div>'
+    );
   }
   // Guided breathing balloon: tap to start an in / hold / out cycle.
   let breatheOn = false;
@@ -5485,26 +5595,9 @@
       const phrase = CALM_PHRASES[calmIdx % CALM_PHRASES.length];
       const needohHtml = card(
         "calm-needoh",
-        "🟡 NeeDoh Squishy Fidget",
-        "Squish, stretch, and deform your NeeDoh ball to relieve tension and reset focus.",
-        '<div style="text-align:center;padding:10px">' +
-          '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">' +
-          '<b style="font-size:0.9rem">NeeDoh Style: <span id="needohColorBadge" style="color:var(--teal,#147c78)">' + NEEDOH_COLORS[neeDohColorIdx % NEEDOH_COLORS.length].name + '</span></b>' +
-          '</div>' +
-          '<div style="height:170px;display:flex;align-items:center;justify-content:center;position:relative">' +
-          '<div id="needohBall" class="needoh-ball" data-act="needoh-squish" role="button" tabindex="0" aria-label="Squish NeeDoh Ball"' +
-          ' style="width:115px;height:115px;border-radius:50%;background:' + NEEDOH_COLORS[neeDohColorIdx % NEEDOH_COLORS.length].bg + ';box-shadow:0 10px 25px rgba(0,0,0,0.28),inset 0 -8px 15px rgba(0,0,0,0.2);cursor:pointer;transition:transform 0.15s cubic-bezier(0.175,0.885,0.32,1.275);user-select:none;touch-action:manipulation;display:flex;align-items:center;justify-content:center;font-size:2rem">' +
-          '🟡' +
-          '</div>' +
-          '</div>' +
-          '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;flex-wrap:wrap;gap:8px">' +
-          '<div style="font-weight:700;font-size:0.9rem">Squeezes: <span id="needohCount">' + neeDohSqueezes + '</span></div>' +
-          '<div style="display:flex;gap:8px">' +
-          '<button type="button" class="btn primary sm" data-act="needoh-squish">💥 Squish!</button>' +
-          '<button type="button" class="btn sm" data-act="needoh-color">🎨 Color</button>' +
-          '</div>' +
-          '</div>' +
-          '</div>',
+        "🟡 Next-Level NeeDoh Studio",
+        "Choose custom shapes & materials! Squish, stretch, and twist your NeeDoh fidget.",
+        renderNeeDohStudioHtml(),
       );
       return (
         '<div class="view-head"><h2 class="view-title">🧘 Calming</h2></div>' +
@@ -10786,18 +10879,6 @@ Due May 31"></textarea>
     // ---- Calming & NeeDoh ----
     "needoh-open": () => {
       openModal(
-        "🟡 Shai's NeeDoh Squishy Fidget",
-        `<div style="text-align:center; padding: 10px;">
-          <p style="font-size:0.92rem; color:var(--muted); margin-bottom:16px;">
-            Tap or click to squish, stretch, and deform your NeeDoh ball! Great for focus & resetting.
-          </p>
-          <div style="height: 190px; display:flex; align-items:center; justify-content:center; position:relative; margin: 12px 0;">
-            <div id="needohBall" class="needoh-ball" data-act="needoh-squish" role="button" tabindex="0" aria-label="Squish NeeDoh Ball"
-                 style="width: 130px; height: 130px; border-radius: 50%; background: ${NEEDOH_COLORS[neeDohColorIdx % NEEDOH_COLORS.length].bg}; box-shadow: 0 12px 28px rgba(0,0,0,0.28), inset 0 -10px 18px rgba(0,0,0,0.2); cursor: pointer; transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275); user-select: none; touch-action: manipulation; display:flex; align-items:center; justify-content:center; font-size: 2.2rem;">
-              🟡
-            </div>
-          </div>
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:16px; flex-wrap:wrap; gap:8px;">
             <div style="font-weight:700; font-size:0.95rem;">Squeezes: <span id="needohCount">${neeDohSqueezes}</span></div>
             <div style="display:flex; gap:8px;">
               <button type="button" class="btn primary" data-act="needoh-squish">💥 Squish!</button>
