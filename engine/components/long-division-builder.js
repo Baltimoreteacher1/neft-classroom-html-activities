@@ -649,6 +649,52 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
       }
     });
   }
+  const factToggle = el(root, ".ldl-fact-toggle");
+  const factHelper = el(root, ".ldl-fact-helper");
+
+  function renderFactHelper() {
+    if (!plan || !plan.divisor) return;
+    const d = plan.divisor;
+    let html = `<strong style="font-weight:900;">Multiplication Facts for ${d}:</strong><div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:6px;">`;
+    for (let i = 1; i <= 9; i++) {
+      const prod = d * i;
+      html += `<button type="button" class="ldl-fact-chip" data-val="${prod}" style="padding:4px 8px; font-size:0.82rem; font-weight:800; color:#15803d; background:#ffffff; border:1px solid #86efac; border-radius:6px; cursor:pointer;">${d} × ${i} = ${prod}</button>`;
+    }
+    html += `</div>`;
+    factHelper.innerHTML = html;
+    factHelper.querySelectorAll(".ldl-fact-chip").forEach((chip) => {
+      chip.addEventListener("click", () => {
+        const val = chip.getAttribute("data-val");
+        if (val) {
+          answer.value = val;
+          answer.focus();
+        }
+      });
+    });
+  }
+
+  if (factToggle) {
+    factToggle.addEventListener("click", () => {
+      const isHidden = factHelper.hidden;
+      factHelper.hidden = !isHidden;
+      if (isHidden) renderFactHelper();
+    });
+  }
+
+  root.querySelectorAll(".ldl-key").forEach((keyBtn) => {
+    keyBtn.addEventListener("click", () => {
+      const k = keyBtn.getAttribute("data-key");
+      if (k === "⌫") {
+        answer.value = answer.value.slice(0, -1);
+      } else if (k === "Clear") {
+        answer.value = "";
+      } else if (k) {
+        answer.value += k;
+      }
+      answer.focus();
+    });
+  });
+
   for (const chip of root.querySelectorAll(".ldl-chip")) {
     chip.addEventListener("click", () => {
       const [a, b] = String(/** @type {HTMLElement} */ (chip).dataset.p).split("/");
