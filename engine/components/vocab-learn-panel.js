@@ -35,8 +35,8 @@ function openVisualLightbox(imgSrc, captionText) {
   `;
   modal.innerHTML = `
     <div style="max-width: 92vw; max-height: 90vh; text-align: center; color: white;" onclick="event.stopPropagation()">
-      <div style="background: #0f172a; padding: 18px; border-radius: 20px; border: 2px solid #38bdf8; box-shadow: 0 25px 60px rgba(0,0,0,0.7);">
-        <img src="${imgSrc}" style="max-width: 100%; max-height: 68vh; border-radius: 12px; background: white; padding: 14px; display: inline-block;" />
+      <div style="background: #0f172a; padding: 20px; border-radius: 24px; border: 2.5px solid #38bdf8; box-shadow: 0 25px 60px rgba(0,0,0,0.75);">
+        <img src="${imgSrc}" style="max-width: 100%; max-height: 68vh; border-radius: 14px; background: white; padding: 14px; display: inline-block;" />
         <div style="margin-top: 18px; font-size: 1.15rem; font-weight: 800; line-height: 1.5; color: #f8fafc; max-width: 680px; margin-left: auto; margin-right: auto;">
           ${escHtml(captionText)}
         </div>
@@ -208,6 +208,84 @@ export function resolveInteractiveToolForLesson(config) {
   return null;
 }
 
+function resolveLessonMisconception(config) {
+  const cfg = config || {};
+  if (cfg.misconception) return cfg.misconception;
+  const text = `${cfg.title || ""} ${cfg.standard || ""} ${cfg.contentObjective || ""}`.toLowerCase();
+
+  if (text.includes("factor tree") || text.includes("prime factor")) {
+    return {
+      en: "Don't stop factoring until all numbers at the bottom of the tree are prime numbers (numbers like 2, 3, 5, 7)! Composite numbers like 4 or 6 must be factored further.",
+      es: "¡No pares de factorizar hasta que todos los números en la parte inferior del árbol sean números primos (como 2, 3, 5, 7)! Los números compuestos como 4 o 6 deben factorizarse más.",
+    };
+  }
+  if (text.includes("fraction") && text.includes("divide")) {
+    return {
+      en: "Remember to Keep the first fraction, Change division to multiplication, and Flip the second fraction (reciprocal)! Do not flip the first fraction.",
+      es: "¡Recuerda Mantener la primera fracción, Cambiar división a multiplicación y Voltear la segunda fracción! No voltees la primera fracción.",
+    };
+  }
+  if (text.includes("decimal")) {
+    return {
+      en: "Always align the decimal points vertically before adding or subtracting decimals, so you are adding digits in the same place value!",
+      es: "¡Siempre alinea los puntos decimales verticalmente antes de sumar o restar decimales para sumar dígitos en el mismo valor posicional!",
+    };
+  }
+  if (text.includes("area")) {
+    return {
+      en: "When finding the area of a triangle or parallelogram, the height MUST be perpendicular (forms a 90° right angle) to the base. Do not use the slanted side length!",
+      es: "Al calcular el área de un triángulo o paralelogramo, la altura DEBE ser perpendicular (formar un ángulo recto de 90°) a la base. ¡No uses el lado inclinado!",
+    };
+  }
+  if (text.includes("ratio") || text.includes("rate")) {
+    return {
+      en: "Keep the order of quantities consistent! If the ratio compares apples to oranges (3:5), do not mix up the order when scaling up equivalent ratios.",
+      es: "¡Mantén constante el orden de las cantidades! Si la razón compara manzanas con naranjas (3:5), no confundas el orden al calcular razones equivalentes.",
+    };
+  }
+  return {
+    en: "Double check your math steps in order! Make sure to verify your solution by substituting your answer back into the original problem.",
+    es: "¡Verifica tus pasos matemáticos en orden! Asegúrate de comprobar tu solución probando tu respuesta en el problema original.",
+  };
+}
+
+function resolveTryItChallenge(config) {
+  const cfg = config || {};
+  const text = `${cfg.title || ""} ${cfg.standard || ""}`.toLowerCase();
+
+  if (text.includes("factor tree") || text.includes("prime factor")) {
+    return {
+      question: "Which of the following is the correct prime factorization of 12?",
+      questionEs: "¿Cuál de las siguientes es la factorización prima correcta de 12?",
+      options: [
+        { text: "2 × 2 × 3", correct: true, explain: "Correct! 2 × 2 × 3 = 12, and 2 and 3 are both prime numbers!" },
+        { text: "2 × 6", correct: false, explain: "Not quite: 6 is not a prime number (6 = 2 × 3)." },
+        { text: "3 × 4", correct: false, explain: "Not quite: 4 is not a prime number (4 = 2 × 2)." },
+      ],
+    };
+  }
+  if (text.includes("fraction") && text.includes("divide")) {
+    return {
+      question: "When computing 3/4 ÷ 1/2, what is the first step?",
+      questionEs: "Al calcular 3/4 ÷ 1/2, ¿cuál es el primer paso?",
+      options: [
+        { text: "Multiply 3/4 by 2/1 (Keep, Change, Flip)", correct: true, explain: "Correct! Flip 1/2 into 2/1 and multiply: 3/4 × 2/1 = 6/4 = 1 1/2!" },
+        { text: "Divide 3 by 1 and 4 by 2 directly", correct: false, explain: "Incorrect: Remember the rule: Keep, Change, Flip!" },
+        { text: "Flip 3/4 into 4/3", correct: false, explain: "Incorrect: Always keep the first fraction unchanged!" },
+      ],
+    };
+  }
+  return {
+    question: "Which statement best describes how to check if your math reasoning is correct?",
+    questionEs: "¿Qué afirmación describe mejor cómo comprobar si tu razonamiento matemático es correcto?",
+    options: [
+      { text: "Explain each step and prove why the visual model matches your math", correct: true, explain: "Exactly! Explaining each step and connecting to a visual model proves accuracy!" },
+      { text: "Only write down the final number without showing steps", correct: false, explain: "Showing steps and explaining reasoning is essential for deep math learning." },
+      { text: "Guess the answer without checking the math model", correct: false, explain: "Always verify your answer using the visual representation." },
+    ],
+  };
+}
+
 let injectedStyles = false;
 
 function injectVocabLearnStyles() {
@@ -261,8 +339,22 @@ function injectVocabLearnStyles() {
     .vl-hero-sub {
       font-size: 1.12rem;
       opacity: 0.96;
-      margin: 0;
+      margin: 0 0 16px;
       line-height: 1.6;
+    }
+    .vl-hero-speak-btn {
+      padding: 8px 18px;
+      border-radius: 999px;
+      border: 1.5px solid rgba(255,255,255,0.35);
+      background: rgba(255,255,255,0.18);
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      backdrop-filter: blur(6px);
     }
     .vl-section-card {
       background: #ffffff;
@@ -323,6 +415,32 @@ function injectVocabLearnStyles() {
       margin: 0;
       line-height: 1.65;
     }
+    .vl-misconception-card {
+      background: linear-gradient(135deg, #fef2f2 0%, #ffe4e6 100%);
+      border: 2.5px solid #e11d48;
+      border-radius: 20px;
+      padding: 22px 26px;
+      margin-bottom: 26px;
+      box-shadow: 0 8px 20px rgba(225, 29, 72, 0.14);
+    }
+    .vl-misconception-label {
+      font-size: 0.88rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: #9f1239;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .vl-misconception-text {
+      font-size: 1.08rem;
+      font-weight: 750;
+      color: #881337;
+      margin: 0;
+      line-height: 1.6;
+    }
     .vl-visual-card {
       margin-bottom: 26px;
       border-radius: 20px;
@@ -365,7 +483,7 @@ function injectVocabLearnStyles() {
       background: rgba(2, 132, 199, 0.1);
       padding: 6px 14px;
       border-radius: 8px;
-      border: 1.5px solid rgba(2, 132, 199, 0.25);
+      border: 1.5.px solid rgba(2, 132, 199, 0.25);
     }
     .vl-demo-box {
       background: #f8fbff;
@@ -427,6 +545,47 @@ function injectVocabLearnStyles() {
       font-weight: 800;
       font-size: 0.82rem;
       cursor: pointer;
+    }
+    .vl-tryit-card {
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      border: 2.5px solid #0284c7;
+      border-radius: 22px;
+      padding: 26px;
+      margin-top: 28px;
+      box-shadow: 0 10px 28px rgba(2, 132, 199, 0.12);
+    }
+    .vl-tryit-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .vl-tryit-title {
+      font-family: "Outfit", system-ui, sans-serif;
+      font-size: 1.3rem;
+      font-weight: 900;
+      color: #0369a1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .vl-tryit-opt {
+      padding: 14px 18px;
+      border-radius: 14px;
+      background: #ffffff;
+      border: 2px solid #bae6fd;
+      font-size: 1.05rem;
+      font-weight: 750;
+      color: #0c4a6e;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-align: left;
+      width: 100%;
+    }
+    .vl-tryit-opt:hover {
+      border-color: #0284c7;
+      background: #f0f9ff;
+      transform: translateY(-2px);
     }
     .vl-turntalk-card {
       background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
@@ -634,7 +793,16 @@ export function renderLearnItPanel(container, config, options = {}) {
   const wrap = document.createElement("div");
   wrap.className = "vl-container";
 
-  // Top Header Banner
+  const concept = config.conceptIntro || config.launch?.conceptIntro || {};
+  const heading = concept.heading || config.contentObjective || `Understanding ${config.title}`;
+  const intro = concept.intro || config.contentObjective || "";
+  const keyIdea = concept.keyIdea || config.contentObjective || "";
+  const iDo = concept.iDo || {};
+
+  const misconception = resolveLessonMisconception(config);
+  const tryIt = resolveTryItChallenge(config);
+
+  // Top Header Banner with Full Audio Read-Aloud
   const hero = document.createElement("div");
   hero.className = "vl-hero";
   hero.innerHTML = `
@@ -647,14 +815,17 @@ export function renderLearnItPanel(container, config, options = {}) {
           : "Read the simple math explanation, explore the interactive visual model, and review the steps. Then turn & talk with your partner."
       }
     </p>
+    <button type="button" class="vl-hero-speak-btn" id="vlHeroSpeakBtn">
+      🔊 ${isEs ? "Escuchar Concepto Completo" : "Listen to Concept Summary"}
+    </button>
   `;
-  wrap.append(hero);
 
-  const concept = config.conceptIntro || config.launch?.conceptIntro || {};
-  const heading = concept.heading || config.contentObjective || `Understanding ${config.title}`;
-  const intro = concept.intro || config.contentObjective || "";
-  const keyIdea = concept.keyIdea || config.contentObjective || "";
-  const iDo = concept.iDo || {};
+  hero.querySelector("#vlHeroSpeakBtn").addEventListener("click", () => {
+    const fullText = `${config.title}. ${intro || keyIdea}`;
+    speakText(fullText, isEs ? "es-US" : "en-US");
+  });
+
+  wrap.append(hero);
 
   const visuals = resolveObjectiveVisuals(config);
   const ivConfig = resolveInteractiveToolForLesson(config);
@@ -680,6 +851,14 @@ export function renderLearnItPanel(container, config, options = {}) {
       </div>`
         : ""
     }
+
+    <!-- COMMON MATHEMATICAL MISCONCEPTION WARNING -->
+    <div class="vl-misconception-card">
+      <span class="vl-misconception-label">
+        <span>⚠️</span> <span>${isEs ? "Atención: Error Común a Evitar" : "Watch Out: Common Math Pitfall"}</span>
+      </span>
+      <p class="vl-misconception-text">${renderMathText(isEs ? misconception.es : misconception.en)}</p>
+    </div>
 
     <!-- INTERACTIVE MATH VISUAL MODEL CARD -->
     <div class="vl-visual-card">
@@ -748,6 +927,67 @@ export function renderLearnItPanel(container, config, options = {}) {
       openVisualLightbox(visuals.content.src, visuals.content.caption);
     });
   }
+
+  // ─── MINI PRACTICE CHECKPOINT (TRY IT!) ─────────────────────────────────────
+  const tryItCard = document.createElement("div");
+  tryItCard.className = "vl-tryit-card";
+  tryItCard.innerHTML = `
+    <div class="vl-tryit-head">
+      <div class="vl-tryit-title">
+        <span>✏️ ${isEs ? "¡Pruébalo! Verificación Rápida de Práctica" : "Try It! Quick Concept Practice"}</span>
+      </div>
+    </div>
+    <div style="font-size:1.12rem; font-weight:800; color:#0c4a6e; margin-bottom:16px;">
+      "${escHtml(isEs ? tryIt.questionEs : tryIt.question)}"
+    </div>
+    <div style="display:flex; flex-direction:column; gap:12px;" class="vl-tryit-opts">
+      ${tryIt.options
+        .map(
+          (opt, idx) => `
+        <button type="button" class="vl-tryit-opt" data-correct="${opt.correct}" data-explain="${escHtml(opt.explain)}">
+          <span>${idx === 0 ? "A" : idx === 1 ? "B" : "C"}. ${escHtml(opt.text)}</span>
+        </button>
+      `,
+        )
+        .join("")}
+    </div>
+    <div class="vl-tryit-feedback" style="margin-top:16px; padding:14px; border-radius:14px; font-weight:800; font-size:1rem; display:none;"></div>
+  `;
+
+  const tryOpts = tryItCard.querySelectorAll(".vl-tryit-opt");
+  const tryFb = tryItCard.querySelector(".vl-tryit-feedback");
+
+  tryOpts.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const isCorrect = btn.dataset.correct === "true";
+      const explain = btn.dataset.explain;
+
+      tryOpts.forEach((b) => {
+        b.style.background = "#ffffff";
+        b.style.borderColor = "#bae6fd";
+      });
+
+      if (isCorrect) {
+        btn.style.background = "#dcfce7";
+        btn.style.borderColor = "#16a34a";
+        tryFb.style.background = "#f0fdf4";
+        tryFb.style.color = "#14532d";
+        tryFb.style.border = "2px solid #22c55e";
+        tryFb.textContent = `🎉 ${explain}`;
+      } else {
+        btn.style.background = "#fef2f2";
+        btn.style.borderColor = "#ef4444";
+        tryFb.style.background = "#fff1f2";
+        tryFb.style.color = "#9f1239";
+        tryFb.style.border = "2px solid #f43f5e";
+        tryFb.textContent = `💡 ${explain}`;
+      }
+      tryFb.style.display = "block";
+      speakText(explain, isEs ? "es-US" : "en-US");
+    });
+  });
+
+  mainCard.append(tryItCard);
 
   // ─── BUILT-IN TURN AND TALK SECTION ─────────────────────────────────────────
   const turnAndTalkData = (Array.isArray(config.turnAndTalk) && config.turnAndTalk[0]) || {};

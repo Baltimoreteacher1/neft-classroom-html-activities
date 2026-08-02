@@ -4440,6 +4440,10 @@
     return "🐣 Beginner Squisher";
   }
 
+  function playCalmPopSound() {
+    playNeeDohMaterialSound("jelly");
+  }
+
   function playNeeDohMaterialSound(matId = "jelly") {
     try {
       initAudio();
@@ -10883,25 +10887,67 @@ Due May 31"></textarea>
         renderNeeDohStudioHtml(),
       );
     },
+    "needoh-select-shape": (id, arg) => {
+      const idx = Number(arg);
+      if (!isNaN(idx)) neeDohShapeIdx = idx;
+      playCalmPopSound();
+      const mb = document.getElementById("modalBody");
+      if (mb) mb.innerHTML = renderNeeDohStudioHtml();
+      render();
+    },
+    "needoh-select-mat": (id, arg) => {
+      const idx = Number(arg);
+      if (!isNaN(idx)) neeDohMaterialIdx = idx;
+      const mat = NEEDOH_MATERIALS[neeDohMaterialIdx % NEEDOH_MATERIALS.length];
+      playNeeDohMaterialSound(mat.sound);
+      const mb = document.getElementById("modalBody");
+      if (mb) mb.innerHTML = renderNeeDohStudioHtml();
+      render();
+    },
     "needoh-squish": () => {
       neeDohSqueezes++;
-      playNeeDohSquishSound();
+      const mat = NEEDOH_MATERIALS[neeDohMaterialIdx % NEEDOH_MATERIALS.length];
+      playNeeDohMaterialSound(mat.sound);
       try { navigator.vibrate?.(35); } catch {}
       const ball = document.getElementById("needohBall");
       if (ball) {
-        ball.style.transform = `scale(${1.25 + Math.random() * 0.1}, ${0.68 + Math.random() * 0.1}) translateY(10px) rotate(${(Math.random() - 0.5) * 16}deg)`;
+        ball.style.transform = `scale(${1.32 + Math.random() * 0.1}, ${0.62 + Math.random() * 0.1}) translateY(12px) rotate(${(Math.random() - 0.5) * 18}deg)`;
         setTimeout(() => { if (ball) ball.style.transform = "scale(1, 1) translateY(0) rotate(0deg)"; }, 180);
       }
       const countEl = document.getElementById("needohCount");
       if (countEl) countEl.textContent = String(neeDohSqueezes);
+      const rankEl = document.getElementById("needohRank");
+      if (rankEl) rankEl.textContent = getNeeDohRank(neeDohSqueezes);
     },
-    "needoh-color": () => {
-      neeDohColorIdx = (neeDohColorIdx + 1) % NEEDOH_COLORS.length;
-      const col = NEEDOH_COLORS[neeDohColorIdx];
+    "needoh-stretch": () => {
+      neeDohSqueezes++;
+      const mat = NEEDOH_MATERIALS[neeDohMaterialIdx % NEEDOH_MATERIALS.length];
+      playNeeDohMaterialSound(mat.sound);
+      try { navigator.vibrate?.(45); } catch {}
       const ball = document.getElementById("needohBall");
-      if (ball) ball.style.background = col.bg;
-      const badge = document.getElementById("needohColorBadge");
-      if (badge) badge.textContent = col.name;
+      if (ball) {
+        ball.style.transform = `scale(${1.6 + Math.random() * 0.1}, ${0.5 + Math.random() * 0.1}) rotate(0deg)`;
+        setTimeout(() => { if (ball) ball.style.transform = "scale(1, 1) translateY(0) rotate(0deg)"; }, 220);
+      }
+      const countEl = document.getElementById("needohCount");
+      if (countEl) countEl.textContent = String(neeDohSqueezes);
+      const rankEl = document.getElementById("needohRank");
+      if (rankEl) rankEl.textContent = getNeeDohRank(neeDohSqueezes);
+    },
+    "needoh-twist": () => {
+      neeDohSqueezes++;
+      const mat = NEEDOH_MATERIALS[neeDohMaterialIdx % NEEDOH_MATERIALS.length];
+      playNeeDohMaterialSound(mat.sound);
+      try { navigator.vibrate?.(40); } catch {}
+      const ball = document.getElementById("needohBall");
+      if (ball) {
+        ball.style.transform = `scale(0.85, 1.25) rotate(45deg)`;
+        setTimeout(() => { if (ball) ball.style.transform = "scale(1, 1) translateY(0) rotate(0deg)"; }, 220);
+      }
+      const countEl = document.getElementById("needohCount");
+      if (countEl) countEl.textContent = String(neeDohSqueezes);
+      const rankEl = document.getElementById("needohRank");
+      if (rankEl) rankEl.textContent = getNeeDohRank(neeDohSqueezes);
     },
     "calm-next": () => {
       calmIdx = (calmIdx + 1) % CALM_PHRASES.length;
