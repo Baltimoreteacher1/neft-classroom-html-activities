@@ -78,8 +78,7 @@ function copyStandaloneHtml() {
           continue;
         const src = resolve(__dirname, entry.name);
         const dest = resolve(__dirname, "dist", entry.name);
-        mkdirSync(dest, { recursive: true });
-        cpSync(src, dest, { recursive: true, filter: copyFilter });
+        cpSync(src, dest, { recursive: true, force: true, filter: copyFilter });
       }
       for (const file of ROOT_FILES) {
         const src = resolve(__dirname, file);
