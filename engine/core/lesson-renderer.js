@@ -2015,19 +2015,25 @@ function renderObjectives(el, config, state, opts = {}) {
       <p style="margin:0; font-size:1.08rem; font-weight:800; color:#0f172a; line-height:1.65; -webkit-font-smoothing:antialiased;">${o.text}</p>
       
       <!-- PUBLISHER-GRADE VISUAL MODEL CARD DIRECTLY BELOW OBJECTIVE TEXT -->
-      <div class="visual-model-wrapper" style="margin-top:14px; margin-bottom:14px; border-radius:14px; overflow:hidden; border:1px solid rgba(0,0,0,0.12); box-shadow:0 6px 18px rgba(0,0,0,0.06); background:#0b0f19; cursor:zoom-in;">
+      <div class="visual-model-wrapper" style="margin-top:16px; margin-bottom:16px; border-radius:14px; overflow:hidden; border:1.5px solid rgba(15,23,42,0.18); box-shadow:0 6px 20px rgba(0,0,0,0.08); background:#0b0f19; cursor:zoom-in;">
         <img src="${o.img}" alt="${esc(o.alt)}" style="width:100%; height:auto; display:block; cursor:zoom-in;" />
-        <div style="padding:10px 14px; background:#ffffff; border-top:1px solid #e2e8f0; font-size:13.5px; color:#0f172a; font-weight:700; line-height:1.45;">
-          ${o.icon} <strong>Visual Representation:</strong> ${esc(o.caption)} <span style="font-size:11px; opacity:0.85; margin-left:6px;">🔍 (Click to enlarge)</span>
+        <div style="padding:12px 16px; background:#ffffff; border-top:1.5px solid #e2e8f0; font-size:0.96rem; color:#0f172a; font-weight:800; line-height:1.5; -webkit-font-smoothing:antialiased;">
+          ${o.icon} <strong>Visual Representation:</strong> ${esc(o.caption)} <span style="display:inline-block; font-size:0.78rem; font-weight:800; color:#0284c7; background:rgba(2,132,199,0.08); padding:3px 8px; border-radius:6px; margin-left:6px; border:1px solid rgba(2,132,199,0.2);">🔍 Click to enlarge</span>
         </div>
         ${o.talkPrompts ? `
-        <div style="padding:11px 14px; background:#fff7ed; border-top:1.5px solid #ffedd5; font-size:13px; color:#1e293b; line-height:1.5;">
-          <div style="font-weight:800; font-size:11px; color:#c2410c; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:6px; display:flex; align-items:center; gap:5px;">
+        <div style="padding:14px 16px; background:#fff7ed; border-top:2px solid #fdba74; font-size:0.95rem; color:#0f172a; line-height:1.55; -webkit-font-smoothing:antialiased;">
+          <div style="font-weight:900; font-size:0.82rem; color:#c2410c; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
             <span>🗣️ Student Talk Targets (What to Say & Listen For):</span>
           </div>
-          <div style="display:flex; flex-direction:column; gap:5px;">
-            <div><strong style="color:#ea580c; font-weight:800;">What to Say:</strong> <span style="font-style:italic; font-weight:600;">"${esc(o.talkPrompts.say)}"</span></div>
-            <div><strong style="color:#0284c7; font-weight:800;">What to Listen For:</strong> <span style="font-weight:600;">"${esc(o.talkPrompts.listen)}"</span></div>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <div style="background:rgba(234,88,12,0.06); padding:9px 12px; border-radius:8px; border-left:4px solid #ea580c;">
+              <strong style="color:#c2410c; font-weight:900; font-size:0.95rem;">What to Say:</strong> 
+              <span style="font-weight:750; font-size:0.98rem; color:#0f172a; font-style:italic;">"${esc(o.talkPrompts.say)}"</span>
+            </div>
+            <div style="background:rgba(2,132,199,0.06); padding:9px 12px; border-radius:8px; border-left:4px solid #0284c7;">
+              <strong style="color:#0369a1; font-weight:900; font-size:0.95rem;">What to Listen For:</strong> 
+              <span style="font-weight:750; font-size:0.98rem; color:#0f172a;">"${esc(o.talkPrompts.listen)}"</span>
+            </div>
           </div>
         </div>
         ` : ""}
