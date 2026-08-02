@@ -3114,7 +3114,8 @@ function renderLaunchPhase(el, state, ctx, config) {
 
   const btn = document.createElement("button");
   btn.className = "btn btn-primary btn-lg mt-6";
-  btn.textContent = "Continue to Phase 4: Explore 🔍 →";
+  const isStudied = (state.get() || {}).vocabVisited || (state.get() || {}).notesVisited;
+  btn.textContent = isStudied ? "Continue to Phase 4: Explore 🔍 →" : "🔑📖 Vocab & Learn It 🚀 →";
 
   btn.addEventListener("click", async () => {
     if (
@@ -3135,10 +3136,14 @@ function renderLaunchPhase(el, state, ctx, config) {
     }
     el.querySelector(".launch-fb")?.remove();
     await completePhase(el, ctx, state, 2, "Launch", 1, 1, { quiet: true });
-    if (typeof ctx.navigateTo === "function") {
-      ctx.navigateTo(3);
-    } else if (typeof ctx.nextPhase === "function") {
-      ctx.nextPhase();
+    if (isStudied) {
+      if (typeof ctx.navigateTo === "function") {
+        ctx.navigateTo(3);
+      } else if (typeof ctx.nextPhase === "function") {
+        ctx.nextPhase();
+      }
+    } else {
+      ctx.openExtra("vocab");
     }
   });
   el.append(btn);
