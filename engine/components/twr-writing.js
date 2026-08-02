@@ -227,6 +227,7 @@ function writeRow(parent, { key, frameEn, frameEs, rows = 2, getResponse, saveRe
     }
   } catch (_) {}
 
+  parent.append(ta);
   ta.addEventListener("input", () => {
     if (saveResponse) saveResponse(key, ta.value);
     updateCounter();
