@@ -140,6 +140,34 @@
         <text x="140" y="102" fill="#0284C7" font-weight="900" font-size="12">Base (b)</text>
       </svg>`
     },
+    "parallel": {
+      title: "Parallel",
+      def: "Lines or sides in the same plane that stay the exact same distance apart and never cross or intersect.",
+      example: "The top and bottom bases of a trapezoid (or opposite sides of a rectangle) are parallel lines.",
+      svg: `<svg viewBox="0 0 280 120" style="background:#F0F9FF; border-radius:12px; border:1px solid #BAE6FD; width:100%;">
+        <line x1="40" y1="35" x2="240" y2="35" stroke="#0284C7" stroke-width="4"/>
+        <line x1="40" y1="85" x2="240" y2="85" stroke="#0284C7" stroke-width="4"/>
+        <!-- Parallel line arrows -->
+        <polygon points="135,30 145,35 135,40" fill="#0284C7"/>
+        <polygon points="135,80 145,85 135,90" fill="#0284C7"/>
+        <!-- Distance indicator -->
+        <line x1="70" y1="35" x2="70" y2="85" stroke="#EA580C" stroke-width="2" stroke-dasharray="4"/>
+        <text x="82" y="64" fill="#EA580C" font-weight="900" font-size="12">Equal distance</text>
+        <text x="180" y="64" fill="#0369A1" font-weight="900" font-size="14">Never intersect (∥)</text>
+      </svg>`
+    },
+    "parallel lines": {
+      title: "Parallel Lines",
+      def: "Two or more straight lines that lie in the same plane and never touch or intersect no matter how far extended.",
+      example: "Railroad tracks or opposite sides of a window frame are parallel lines.",
+      svg: `<svg viewBox="0 0 280 120" style="background:#F0F9FF; border-radius:12px; border:1px solid #BAE6FD; width:100%;">
+        <line x1="40" y1="35" x2="240" y2="35" stroke="#0284C7" stroke-width="4"/>
+        <line x1="40" y1="85" x2="240" y2="85" stroke="#0284C7" stroke-width="4"/>
+        <polygon points="135,30 145,35 135,40" fill="#0284C7"/>
+        <polygon points="135,80 145,85 135,90" fill="#0284C7"/>
+        <text x="140" y="64" text-anchor="middle" fill="#0369A1" font-weight="900" font-size="14">Always Same Distance Apart</text>
+      </svg>`
+    },
     "base": {
       title: "Base",
       def: "A side of a flat shape (or one of the parallel top/bottom sides in a trapezoid) used as a foundation to measure length and height.",
