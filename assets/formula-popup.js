@@ -386,8 +386,89 @@
     }
   };
 
-  // 5. Auto-bind events on DOM Content Loaded
+  // 5. Docked Notice/Wonder Scaffold & Word Bank Toolbar Auto-Injector
+  function initNoticeWonderScaffolds() {
+    const textareas = document.querySelectorAll('textarea.ref-lined-input, .ref-nw-panel textarea, .notice-wonder textarea, .talk-about-it textarea, .discourse textarea, textarea[placeholder*="notice"], textarea[placeholder*="wonder"], textarea[placeholder*="Notice"], textarea[placeholder*="Wonder"]');
+    
+    textareas.forEach((ta) => {
+      if (ta.dataset.nwScaffoldInjected) return;
+      ta.dataset.nwScaffoldInjected = "true";
+
+      const placeholder = (ta.placeholder || '').toLowerCase();
+      const parentText = (ta.parentElement ? ta.parentElement.innerText : '').toLowerCase();
+      const isWonder = placeholder.includes('wonder') || parentText.includes('wonder');
+
+      const starters = isWonder ? [
+        'I wonder why...',
+        'What would happen if...',
+        'How does...',
+        'Why are...'
+      ] : [
+        'I notice that...',
+        'I observe...',
+        'The shape has...',
+        'The dimensions show...'
+      ];
+
+      const vocabWords = ['base', 'trapezoid', 'height', 'area', 'parallel', 'formula', 'dimension'];
+
+      const bar = document.createElement('div');
+      bar.className = 'nw-scaffold-toolbar';
+      bar.style.cssText = 'background:#F8FAFC; border:1px solid #CBD5E1; border-bottom:none; border-radius:12px 12px 0 0; padding:8px 12px; margin-top:10px; display:flex; flex-direction:column; gap:6px; font-family:"Nunito", sans-serif; box-shadow:0 -2px 10px rgba(0,0,0,0.03);';
+      
+      let startersHtml = starters.map(s => `<button type="button" class="nw-starter-btn" style="background:#FFF; border:1px solid #BAE6FD; color:#0369A1; font-weight:800; font-size:0.75rem; padding:3px 9px; border-radius:16px; cursor:pointer;" data-insert="${s}">${s}</button>`).join('');
+      let vocabHtml = vocabWords.map(w => `<button type="button" class="nw-vocab-btn" style="background:#F0FDFA; border:1px solid #99F6E4; color:#0D9488; font-weight:900; font-size:0.75rem; padding:2px 8px; border-radius:8px; cursor:pointer;" data-word="${w}">${w} 🔍</button>`).join('');
+
+      bar.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
+          <span style="font-size:0.72rem; font-weight:900; color:#0369A1; text-transform:uppercase;">⚡ Quick Response Helpers (Click to insert):</span>
+        </div>
+        <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+          <span style="font-size:0.72rem; font-weight:900; color:#0284C7; background:#E0F2FE; padding:1px 6px; border-radius:4px;">Starters:</span>
+          ${startersHtml}
+        </div>
+        <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+          <span style="font-size:0.72rem; font-weight:900; color:#0D9488; background:#CCFBF1; padding:1px 6px; border-radius:4px;">Word Bank:</span>
+          ${vocabHtml}
+        </div>
+      `;
+
+      ta.style.borderTopLeftRadius = '0px';
+      ta.style.borderTopRightRadius = '0px';
+      ta.parentNode.insertBefore(bar, ta);
+
+      bar.querySelectorAll('.nw-starter-btn').forEach(btn => {
+        btn.onclick = function(e) {
+          e.preventDefault();
+          const txt = btn.getAttribute('data-insert');
+          if (!ta.value.trim()) {
+            ta.value = txt + " ";
+          } else {
+            ta.value += " " + txt + " ";
+          }
+          ta.focus();
+        };
+      });
+
+      bar.querySelectorAll('.nw-vocab-btn').forEach(btn => {
+        btn.onclick = function(e) {
+          e.preventDefault();
+          const word = btn.getAttribute('data-word');
+          const start = ta.selectionStart || ta.value.length;
+          const end = ta.selectionEnd || ta.value.length;
+          const val = ta.value;
+          ta.value = val.substring(0, start) + (start > 0 && val[start-1] !== ' ' ? ' ' : '') + word + ' ' + val.substring(end);
+          ta.focus();
+          if (window.openVocabModal) window.openVocabModal(word);
+        };
+      });
+    });
+  }
+
+  // 6. Auto-bind events on DOM Content Loaded
   window.addEventListener('DOMContentLoaded', function() {
     initVocabModal();
+    initNoticeWonderScaffolds();
+    setTimeout(initNoticeWonderScaffolds, 1000);
   });
 })();
