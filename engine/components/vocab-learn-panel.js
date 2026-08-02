@@ -1126,23 +1126,36 @@ export function renderLearnItPanel(container, config, options = {}) {
   const defaultQuestionEs = turnAndTalkData.questionEs ||
     `Habla con tu compañero: ¿Cómo funciona este modelo visual y ejemplo? ¿Qué paso notaste primero?`;
 
-  const defaultStartersEn = [
-    `Looking at the visual, I notice that ______ in Step 1.`,
-    `This math model shows ______ because ______.`,
-    `My partner and I agree that the key step is ______.`,
-  ];
-  const defaultStartersEs = [
-    `Mirando el modelo visual, noté que ______ en el Paso 1.`,
-    `Este modelo matemático muestra ______ porque ______.`,
-    `Mi compañero y yo estamos de acuerdo en que el paso clave es ______.`,
-  ];
+  // 202 of 222 lesson configs author `turnAndTalk[].stems` — bilingual starters
+  // written against THAT lesson's problem and visual. Reading them is the point:
+  // the generic trio below talks about "the visual" and "Step 1" in the abstract,
+  // so when it renders next to a specific figure the two disagree.
+  const authoredStems = Array.isArray(turnAndTalkData.stems) ? turnAndTalkData.stems : [];
+  const stemText = (stem, lang) => (typeof stem === "string" ? stem : stem?.[lang]);
+  const authoredEn = authoredStems.map((st) => stemText(st, "en")).filter(Boolean);
+  const authoredEs = authoredStems.map((st) => stemText(st, "es")).filter(Boolean);
+
+  const startersEn = authoredEn.length
+    ? authoredEn
+    : [
+        `Looking at the visual, I notice that ______ in Step 1.`,
+        `This math model shows ______ because ______.`,
+        `My partner and I agree that the key step is ______.`,
+      ];
+  const startersEs = authoredEs.length
+    ? authoredEs
+    : [
+        `Mirando el modelo visual, noté que ______ en el Paso 1.`,
+        `Este modelo matemático muestra ______ porque ______.`,
+        `Mi compañero y yo estamos de acuerdo en que el paso clave es ______.`,
+      ];
 
   const ttContainer = document.createElement("div");
   ttContainer.className = "vl-turntalk-card";
 
   function renderTurnAndTalk() {
     const qText = currentLangEs ? defaultQuestionEs : defaultQuestionEn;
-    const starters = currentLangEs ? defaultStartersEs : defaultStartersEn;
+    const starters = currentLangEs ? startersEs : startersEn;
 
     ttContainer.innerHTML = `
       <div class="vl-turntalk-head">
