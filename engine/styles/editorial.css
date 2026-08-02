@@ -23,23 +23,23 @@ body.editorial {
   --fl-serif: "Fraunces", Georgia, "Times New Roman", serif;
   --fl-body: var(--font-body);
 
-  /* Modular type scale (1.25 minor-third), fluid where it matters */
-  --fl-caption: 0.78rem;
-  --fl-small: 0.9rem;
-  --fl-base: 1.0625rem; /* 17px reading body */
-  --fl-h4: 1.2rem;
-  --fl-h3: clamp(1.35rem, 1.1rem + 1vw, 1.6rem);
-  --fl-h2: clamp(1.7rem, 1.3rem + 1.6vw, 2.1rem);
-  --fl-h1: clamp(2.2rem, 1.6rem + 2.6vw, 3rem);
+  /* Modular type scale — bold, high-contrast, student-clear */
+  --fl-caption: 0.88rem;
+  --fl-small: 1.0rem;
+  --fl-base: 1.15rem; /* 18.4px reading body — clear & highly legible */
+  --fl-h4: 1.3rem;
+  --fl-h3: clamp(1.45rem, 1.2rem + 1.1vw, 1.75rem);
+  --fl-h2: clamp(1.85rem, 1.4rem + 1.8vw, 2.25rem);
+  --fl-h1: clamp(2.35rem, 1.7rem + 2.8vw, 3.15rem);
 
-  /* Paper palette + AA-safe ink overrides */
+  /* High contrast, ultra-legible ink colors for grade 6 students */
   --fl-paper: #f5f0e6;
   --fl-paper-2: #efe8da;
   --fl-page: #fffdf8;
-  --ink: #19262f; /* darker → strong AA on paper */
-  --muted: #45535f; /* AA-safe muted (>= 7:1 on paper) */
-  --fl-rule: #e4d9c2; /* warm hairline */
-  --fl-rule-strong: #d8c9a8;
+  --ink: #0b1520; /* ultra-dark jet black ink for maximum legibility */
+  --muted: #1e293b; /* high-contrast dark slate */
+  --fl-rule: #d8cba8; /* warm hairline */
+  --fl-rule-strong: #c8b998;
   --fl-measure: 100%; /* fill the card — lessons use the whole page width */
 
   background:
@@ -47,6 +47,7 @@ body.editorial {
     radial-gradient(circle at 92% 6%, rgba(242, 193, 91, 0.07), transparent 34%), var(--fl-paper);
   color: var(--ink);
   font-family: var(--fl-body);
+  font-weight: 700; /* Bold body weight for crisp student readability */
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -150,8 +151,8 @@ body.editorial .phase .card {
    them by descendant across heading levels. */
 body.editorial .phase .card :is(h2, h3, h4, .card-title) {
   font-family: var(--fl-serif);
-  font-weight: 600;
-  line-height: 1.15;
+  font-weight: 850;
+  line-height: 1.2;
   letter-spacing: -0.01em;
   color: var(--navy);
 }
@@ -164,18 +165,21 @@ body.editorial .phase .card h3 {
 body.editorial .phase .card h4 {
   font-size: var(--fl-h4);
 }
-/* Keep the teal / coral objective accents — just adopt the serif face */
+/* Keep the teal / coral objective accents — bold, clear contrast */
 body.editorial .phase .card-teal :is(h3, h4) {
-  color: #0e6f6b;
+  color: #0c5a57;
+  font-weight: 850;
 }
 body.editorial .phase .card-coral :is(h3, h4) {
-  color: #b4503a;
+  color: #9f3e28;
+  font-weight: 850;
 }
-/* Body copy: comfortable reading measure & rhythm */
+/* Body copy: comfortable reading measure, high contrast & bold weight */
 body.editorial .phase .card p,
 body.editorial .phase .card li {
   font-size: var(--fl-base);
-  line-height: 1.7;
+  font-weight: 700;
+  line-height: 1.65;
   max-width: var(--fl-measure);
   color: var(--ink);
 }

@@ -332,25 +332,66 @@ export function renderAreaMorph(container, cfg = {}) {
     "; border-radius:12px; padding:8px 12px; margin-bottom:12px; font-family:ui-monospace,Menlo,monospace;";
   root.appendChild(formula);
 
-  // The one control: a big, labeled transform slider.
+  // Step Navigation Controls: Watch all vs Step 1 / Step 2 / Step 3
+  const stepBar = document.createElement("div");
+  stepBar.style.cssText = "display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px; margin-bottom:14px;";
+  stepBar.innerHTML = `
+    <button type="button" class="morph-step-btn" data-step="0" style="padding:7px 14px; border:2px solid ${C.line}; border-radius:10px; background:#fff; color:${C.navy}; font-size:0.88rem; font-weight:800; cursor:pointer;">Step 1: Start 📐</button>
+    <button type="button" class="morph-step-btn" data-step="1" style="padding:7px 14px; border:2px solid ${C.line}; border-radius:10px; background:#fff; color:${C.navy}; font-size:0.88rem; font-weight:800; cursor:pointer;">Step 2: Transform ✂️</button>
+    <button type="button" class="morph-step-btn" data-step="2" style="padding:7px 14px; border:2px solid ${C.line}; border-radius:10px; background:#fff; color:${C.navy}; font-size:0.88rem; font-weight:800; cursor:pointer;">Step 3: Formula 🏁</button>
+  `;
+  root.appendChild(stepBar);
+
+  // The main control row: Slider + Prev/Next + Watch
   const controls = document.createElement("div");
-  controls.style.cssText = "display:flex; align-items:center; gap:12px;";
+  controls.style.cssText = "display:flex; flex-wrap:wrap; align-items:center; gap:10px;";
   controls.innerHTML =
-    '<span style="font-size:.85rem; font-weight:700; color:' +
-    C.muted +
-    ';">Transform</span>' +
-    '<input type="range" min="0" max="1000" value="0" step="1" aria-label="Transform the figure" style="flex:1; min-height:44px; accent-color:' +
+    '<button type="button" data-act="prev" aria-label="Previous step" style="min-height:42px; padding:0 12px; border:2px solid ' +
+    C.line +
+    '; border-radius:10px; background:#fff; color:' +
+    C.navy +
+    '; font-weight:800; cursor:pointer;">⏮ Prev</button>' +
+    '<input type="range" min="0" max="1000" value="0" step="1" aria-label="Transform the figure" style="flex:1; min-width:140px; min-height:44px; accent-color:' +
     C.teal +
     ';" />' +
-    '<button type="button" data-act="play" aria-label="Play the transformation" style="min-height:44px; min-width:44px; padding:0 14px; border:2px solid ' +
+    '<button type="button" data-act="next" aria-label="Next step" style="min-height:42px; padding:0 12px; border:2px solid ' +
     C.line +
-    "; border-radius:12px; background:#fff; color:" +
+    '; border-radius:10px; background:#fff; color:' +
     C.navy +
-    '; font-weight:700; cursor:pointer;">▶ Watch</button>';
+    '; font-weight:800; cursor:pointer;">Next ⏭</button>' +
+    '<button type="button" data-act="play" aria-label="Play full transformation animation" style="min-height:42px; padding:0 16px; border:2px solid ' +
+    C.teal +
+    '; border-radius:10px; background:' +
+    C.teal +
+    '; color:#fff; font-weight:800; cursor:pointer;">▶ Watch All</button>';
   root.appendChild(controls);
 
   const slider = controls.querySelector("input");
-  const playBtn = controls.querySelector("button");
+  const playBtn = controls.querySelector('[data-act="play"]');
+  const prevBtn = controls.querySelector('[data-act="prev"]');
+  const nextBtn = controls.querySelector('[data-act="next"]');
+  const stepBtns = stepBar.querySelectorAll(".morph-step-btn");
+
+  const stepValues = [0, 0.5, 1];
+  let currentStepIdx = 0;
+
+  function updateStepUI(t) {
+    if (t < 0.25) currentStepIdx = 0;
+    else if (t < 0.75) currentStepIdx = 1;
+    else currentStepIdx = 2;
+
+    stepBtns.forEach((btn, idx) => {
+      if (idx === currentStepIdx) {
+        btn.style.background = C.navy;
+        btn.style.color = "#ffffff";
+        btn.style.borderColor = C.navy;
+      } else {
+        btn.style.background = "#ffffff";
+        btn.style.color = C.navy;
+        btn.style.borderColor = C.line;
+      }
+    });
+  }
 
   const ux = (x) => PAD + (x - minX) * scale;
   const uy = (y) => PAD + (y - minY) * scale;
@@ -391,13 +432,14 @@ export function renderAreaMorph(container, cfg = {}) {
       "aria-label",
       `${figure} area transformation, ${Math.round(t * 100)}% complete. ${def.caption(t)}`,
     );
+    updateStepUI(tRaw);
   }
 
   let raf = 0;
   function playDemo() {
     cancelAnimationFrame(raf);
     const t0 = performance.now();
-    const DUR = 2600;
+    const DUR = 3000;
     const step = (now) => {
       if (!root.isConnected) return; // self-cancel when detached
       const t = Math.min(1, (now - t0) / DUR);
@@ -408,13 +450,37 @@ export function renderAreaMorph(container, cfg = {}) {
     raf = requestAnimationFrame(step);
   }
 
+  function goToStep(idx) {
+    cancelAnimationFrame(raf);
+    const targetT = stepValues[idx];
+    slider.value = String(Math.round(targetT * 1000));
+    draw(targetT);
+  }
+
+  stepBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const idx = parseInt(btn.dataset.step, 10);
+      goToStep(idx);
+    });
+  });
+
+  prevBtn.addEventListener("click", () => {
+    const nextIdx = Math.max(0, currentStepIdx - 1);
+    goToStep(nextIdx);
+  });
+
+  nextBtn.addEventListener("click", () => {
+    const nextIdx = Math.min(stepValues.length - 1, currentStepIdx + 1);
+    goToStep(nextIdx);
+  });
+
   slider.addEventListener("input", () => {
     cancelAnimationFrame(raf);
     draw(Number(slider.value) / 1000);
   });
+
   playBtn.addEventListener("click", () => {
     if (reduceMotion) {
-      // Respect reduced motion: jump straight to the finished decomposition.
       slider.value = "1000";
       draw(1);
     } else {
