@@ -446,7 +446,9 @@
 
   // 5. Docked Notice/Wonder Scaffold & Word Bank Toolbar Auto-Injector
   function initNoticeWonderScaffolds() {
-    const textareas = document.querySelectorAll('textarea.ref-lined-input, .ref-nw-panel textarea, .notice-wonder textarea, .talk-about-it textarea, .discourse textarea, textarea[placeholder*="notice"], textarea[placeholder*="wonder"], textarea[placeholder*="Notice"], textarea[placeholder*="Wonder"]');
+    const textareas = /** @type {NodeListOf<HTMLTextAreaElement>} */ (
+      document.querySelectorAll('textarea.ref-lined-input, .ref-nw-panel textarea, .notice-wonder textarea, .talk-about-it textarea, .discourse textarea, textarea[placeholder*="notice"], textarea[placeholder*="wonder"], textarea[placeholder*="Notice"], textarea[placeholder*="Wonder"]')
+    );
     
     textareas.forEach((ta) => {
       if (ta.dataset.nwScaffoldInjected) return;
@@ -495,7 +497,10 @@
       ta.style.borderTopRightRadius = '0px';
       ta.parentNode.insertBefore(bar, ta);
 
-      bar.querySelectorAll('.nw-starter-btn').forEach(btn => {
+      const starterButtons = /** @type {NodeListOf<HTMLButtonElement>} */ (
+        bar.querySelectorAll('.nw-starter-btn')
+      );
+      starterButtons.forEach(btn => {
         btn.onclick = function(e) {
           e.preventDefault();
           const txt = btn.getAttribute('data-insert');
@@ -508,7 +513,10 @@
         };
       });
 
-      bar.querySelectorAll('.nw-vocab-btn').forEach(btn => {
+      const vocabButtons = /** @type {NodeListOf<HTMLButtonElement>} */ (
+        bar.querySelectorAll('.nw-vocab-btn')
+      );
+      vocabButtons.forEach(btn => {
         btn.onclick = function(e) {
           e.preventDefault();
           const word = btn.getAttribute('data-word');
@@ -517,7 +525,7 @@
           const val = ta.value;
           ta.value = val.substring(0, start) + (start > 0 && val[start-1] !== ' ' ? ' ' : '') + word + ' ' + val.substring(end);
           ta.focus();
-          if (window.openVocabModal) window.openVocabModal(word);
+          if (window['openVocabModal']) window['openVocabModal'](word);
         };
       });
     });

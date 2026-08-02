@@ -4,14 +4,22 @@
  * no-cache so fixes go live instantly, and this worker preserves that — every
  * request tries the network and only falls back to the last good cached copy
  * when the student is offline (school wifi drop, bus, home without internet).
- * Never intercepts /api/ calls or non-GET requests, so Turn In, the Math
- * Coach, and Live Board behave exactly as before.
+ * Never intercepts /api/ calls or non-GET requests, so the optional reasoning
+ * coach and Live Board always use current network responses.
  */
-const CACHE = "mwb-v1";
+const CACHE = "mwb-v2";
 // GeoGebra's web app is large but fully static+versioned: cache-first means
 // the Graphing calculator keeps working offline after one online use.
 const GGB_CACHE = "mwb-ggb-v1";
-const PRECACHE = ["./", "./index.html", "/assets/mobile-access.css", "/assets/favicon.svg"];
+const PRECACHE = [
+  "./",
+  "./index.html",
+  "./reasoning-data.js",
+  "./reasoning-studio.js",
+  "./reasoning-studio.css",
+  "/assets/mobile-access.css",
+  "/assets/favicon.svg",
+];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(

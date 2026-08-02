@@ -13,6 +13,10 @@
  *     watch it live and full-fidelity. Roles: "sharer" (student), "monitor"
  *     (teacher). Only a student who opts in ever transmits their work.
  *
+ * Privileged teacher/monitor sockets must also present a 256-bit host
+ * capability generated on the teacher device. Knowing the short class code is
+ * therefore not enough to watch, annotate, push, or broadcast.
+ *
  * State is ephemeral (kept in the Durable Object; no KV/database). Per-sharer
  * snapshot + thumbnail live in DO storage so a late-joining monitor and a
  * freshly-watched board hydrate instantly, and are deleted when the sharer
@@ -61,6 +65,13 @@ const MAX_THUMB = 400_000; // small downscaled JPEG data URL
 const MAX_PLAY = 8_000; // serialized Class Play question (text only)
 const MAX_ANNOTATE = 150_000; // serialized teacher annotation strokes
 const ROLES = new Set(["teacher", "student", "monitor", "sharer"]);
+const HOST_ROLES = new Set(["teacher", "monitor"]);
+const HOST_TOKEN_RE = /^[a-f0-9]{64}$/;
+const ALLOWED_HOSTS = new Set([
+  "eduwonderlab.com",
+  "www.eduwonderlab.com",
+  "neft-classroom-html-activities.pages.dev",
+]);
 
 function normCode(code) {
   return String(code || "")
@@ -78,13 +89,41 @@ function cleanName(v) {
     .trim()
     .slice(0, 32);
 }
+function allowedOrigin(value) {
+  if (!value) return false;
+  try {
+    const origin = new URL(value);
+    if (origin.protocol !== "https:" && origin.protocol !== "http:") return false;
+    if (
+      ALLOWED_HOSTS.has(origin.hostname) ||
+      origin.hostname.endsWith(".neft-classroom-html-activities.pages.dev")
+    ) {
+      return origin.protocol === "https:";
+    }
+    return (
+      origin.protocol === "http:" &&
+      (origin.hostname === "127.0.0.1" || origin.hostname === "localhost")
+    );
+  } catch {
+    return false;
+  }
+}
+async function digestToken(token) {
+  const bytes = new TextEncoder().encode(token);
+  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join(
+    "",
+  );
+}
 function corsHeaders(request) {
-  const origin = request.headers.get("Origin") || "*";
-  return {
-    "Access-Control-Allow-Origin": origin,
+  const origin = request.headers.get("Origin");
+  const headers = {
     "Access-Control-Allow-Methods": "GET,OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type,Upgrade",
+    Vary: "Origin",
   };
+  if (allowedOrigin(origin)) headers["Access-Control-Allow-Origin"] = origin;
+  return headers;
 }
 
 export class BoardRoom extends DurableObject {
@@ -94,6 +133,21 @@ export class BoardRoom extends DurableObject {
     }
     const url = new URL(request.url);
     const role = normRole(url.searchParams.get("role"));
+
+    if (HOST_ROLES.has(role)) {
+      const token = String(url.searchParams.get("host") || "").toLowerCase();
+      if (!HOST_TOKEN_RE.test(token)) {
+        return new Response("host capability required", { status: 403 });
+      }
+      const digest = await digestToken(token);
+      const authorized = await this.ctx.storage.transaction(async (txn) => {
+        const current = await txn.get("host-token");
+        if (current && current !== digest) return false;
+        if (!current) await txn.put("host-token", digest);
+        return true;
+      });
+      if (!authorized) return new Response("host capability rejected", { status: 403 });
+    }
 
     const pair = new WebSocketPair();
     const [client, server] = Object.values(pair);
@@ -485,6 +539,12 @@ export class BoardRoom extends DurableObject {
             /* ignore */
           }
         }
+        this.latest = null;
+        try {
+          await this.ctx.storage.delete(["latest", "play"]);
+        } catch {
+          /* best-effort expiry at the end of a broadcast */
+        }
       }
     } else if (role === "student") {
       this.broadcastCount();
@@ -497,6 +557,26 @@ export class BoardRoom extends DurableObject {
         /* best effort */
       }
       this.toMonitors({ type: "gone", sid: att.sid });
+    }
+
+    if (HOST_ROLES.has(role)) {
+      let privilegedLeft = 0;
+      try {
+        privilegedLeft = ["teacher", "monitor"].reduce(
+          (count, tag) =>
+            count + this.ctx.getWebSockets(tag).filter((socket) => socket !== ws).length,
+          0,
+        );
+      } catch {
+        privilegedLeft = 0;
+      }
+      if (privilegedLeft === 0) {
+        try {
+          await this.ctx.storage.delete("host-token");
+        } catch {
+          /* a new host can claim the room after the prior host leaves */
+        }
+      }
     }
   }
 
@@ -516,6 +596,9 @@ export default {
       return new Response(null, { status: 204, headers: corsHeaders(request) });
     }
     if (url.pathname === "/live") {
+      if (!allowedOrigin(request.headers.get("Origin"))) {
+        return new Response("origin not allowed", { status: 403, headers: corsHeaders(request) });
+      }
       const code = normCode(url.searchParams.get("code"));
       if (!code)
         return new Response("invalid code", { status: 400, headers: corsHeaders(request) });

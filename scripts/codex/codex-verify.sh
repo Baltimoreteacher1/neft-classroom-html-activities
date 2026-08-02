@@ -46,6 +46,7 @@ root = Path.cwd()
 errors: list[str] = []
 warnings: list[str] = []
 skip_parts = {".git", "node_modules", "dist", ".wrangler", ".claude", ".serena", ".codex"}
+vite_emitted_assets = {"/assets/homework-lesson-models.js"}
 
 class LinkParser(html.parser.HTMLParser):
     def __init__(self) -> None:
@@ -100,6 +101,8 @@ for page in html_files:
     if re.search(r"\b(lorem ipsum|todo:|placeholder)\b", text, flags=re.I):
         warnings.append(f"Placeholder/TODO marker found in {rel}")
     for attr, ref in parser.refs:
+        if ref in vite_emitted_assets:
+            continue
         parsed = urlparse(ref)
         if parsed.scheme in {"http", "https", "mailto", "tel", "data", "javascript"} or ref.startswith("#"):
             continue
