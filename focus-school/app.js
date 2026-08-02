@@ -3601,6 +3601,9 @@
         }
       });
     }
+    if (view === "calming") {
+      initCalmingView();
+    }
   }
 
   function renderTabbar() {
@@ -4383,19 +4386,25 @@
   }
 
   // ---- Calming content ----
+  let calmSubTab = "all";
   const CALM_PHRASES = [
     "This feeling will pass. I just have to breathe.",
+    "Every strike brings me closer to the next home run. — Babe Ruth",
     "I can do hard things, one small step at a time.",
+    "You can't control the pitch, but you can control your swing. Focus on right now.",
     "Right now, I am safe. Right now, I am okay.",
+    "It's okay to take a pause. Even championship pitchers take a deep breath before every pitch.",
     "I don't have to be perfect. I just have to start.",
     "My brain is allowed to take a break.",
     "Slow breath in… slow breath out. I've got this.",
-    "One thing at a time. That's all I need to do.",
+    "Clear your mind, plant your feet, and watch the ball come to you.",
+    "One pitch at a time. One task at a time.",
     "Mistakes help me learn. They don't make me less.",
     "I am calm. I am steady. I am ready.",
     "It's okay to pause. Resting is part of working.",
   ];
   let calmIdx = 0;
+
   // Guided breathing balloon: tap to start an in / hold / out cycle.
   let breatheOn = false;
   let breatheTimer = null;
@@ -4429,6 +4438,313 @@
     p.textContent = label;
     breatheTimer = setTimeout(() => breatheRun(i + 1), ms);
   }
+
+  // Baseball Windup Pitch Breathing Trainer
+  let pitchBreatheOn = false;
+  let pitchBreatheTimer = null;
+  const PITCH_BREATHE_STEPS = [
+    ["Windup & Breathe In… 🌬️", 4000, "windup"],
+    ["Set & Pause ⚾", 2000, "set"],
+    ["Pitch Across the Plate… 💨", 4000, "pitch"],
+    ["Catch & Hold 🧤", 2000, "catch"],
+  ];
+  function pitchBreatheStop() {
+    pitchBreatheOn = false;
+    if (pitchBreatheTimer) {
+      clearTimeout(pitchBreatheTimer);
+      pitchBreatheTimer = null;
+    }
+    const ball = document.getElementById("pitchBall");
+    if (ball) ball.className = "baseball-pitch-ball";
+    const lbl = document.getElementById("pitchStepLabel");
+    if (lbl) lbl.textContent = "Tap to start Windup Breathing";
+    const btn = document.getElementById("pitchBreatheBtn");
+    if (btn) btn.textContent = "▶ Start Windup Pitching";
+  }
+  function pitchBreatheRun(i) {
+    if (!pitchBreatheOn) return;
+    const ball = document.getElementById("pitchBall");
+    const lbl = document.getElementById("pitchStepLabel");
+    if (!ball || !lbl) {
+      pitchBreatheStop();
+      return;
+    }
+    const [label, ms, cls] = PITCH_BREATHE_STEPS[i % PITCH_BREATHE_STEPS.length];
+    ball.className = "baseball-pitch-ball " + cls;
+    lbl.textContent = label;
+    pitchBreatheTimer = setTimeout(() => pitchBreatheRun(i + 1), ms);
+  }
+
+  // Baseball Diamond Grounding Walk State
+  let diamondBaseStep = 0;
+  const DIAMOND_PROMPTS = [
+    { base: "Home Plate 🏠", title: "Step into the Batter's Box", prompt: "Take a slow, deep breath in for 4 seconds, hold for 2, then breathe out. You are safe, steady, and focused right here." },
+    { base: "1st Base ⚾", title: "Grounding Your Feet in the Clay", prompt: "Press your feet firmly into the floor like a runner digging into 1st base. Feel the solid earth beneath you." },
+    { base: "2nd Base 🧢", title: "Shoulders & Posture Release", prompt: "Shrug your shoulders up to your ears, hold for 3 seconds, then drop them completely. Relax your hands and jaw like a shortstop waiting for the pitch." },
+    { base: "3rd Base 🌟", title: "Notice Your Surroundings", prompt: "Look around the room: spot 3 blue or green objects. Listen for 2 quiet sounds." },
+    { base: "Home Base 🏆", title: "Safe at Home! Mind Centered", prompt: "Safe at home plate! Take one final slow breath. Your mind is calm, clear, and ready!" },
+  ];
+
+  // Sensory Bubble Wrap State
+  let bubblesPoppedState = Array(16).fill(false);
+
+  // Soundscape Studio Audio Generator State
+  let soundscapeNodes = {};
+  function playCalmPopSound() {
+    try {
+      initAudio();
+      if (!audioCtx) return;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.08);
+      gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.08);
+    } catch {}
+  }
+
+  function playBaseballHitSound() {
+    try {
+      initAudio();
+      if (!audioCtx) return;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(160, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.12);
+      gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.15);
+    } catch {}
+  }
+
+  function toggleSoundscape(type) {
+    try {
+      initAudio();
+      if (!audioCtx) return;
+      if (soundscapeNodes[type]) {
+        soundscapeNodes[type].stop();
+        delete soundscapeNodes[type];
+        render();
+        return;
+      }
+      const gain = audioCtx.createGain();
+      gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+      gain.connect(audioCtx.destination);
+
+      if (type === "rain") {
+        const buf = createPinkNoiseBuffer(audioCtx, 4);
+        const src = audioCtx.createBufferSource();
+        src.buffer = buf;
+        src.loop = true;
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = "lowpass";
+        filter.frequency.value = 1000;
+        src.connect(filter);
+        filter.connect(gain);
+        src.start();
+        soundscapeNodes.rain = { stop: () => { try { src.stop(); src.disconnect(); } catch {} } };
+      } else if (type === "waves") {
+        const buf = createBrownNoiseBuffer(audioCtx, 4);
+        const src = audioCtx.createBufferSource();
+        src.buffer = buf;
+        src.loop = true;
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = "bandpass";
+        filter.frequency.value = 400;
+        src.connect(filter);
+        filter.connect(gain);
+        src.start();
+        soundscapeNodes.waves = { stop: () => { try { src.stop(); src.disconnect(); } catch {} } };
+      } else if (type === "ballpark") {
+        const osc1 = audioCtx.createOscillator();
+        const osc2 = audioCtx.createOscillator();
+        osc1.type = "sine";
+        osc2.type = "sine";
+        osc1.frequency.value = 432;
+        osc2.frequency.value = 540;
+        osc1.connect(gain);
+        osc2.connect(gain);
+        osc1.start();
+        osc2.start();
+        soundscapeNodes.ballpark = { stop: () => { try { osc1.stop(); osc2.stop(); osc1.disconnect(); osc2.disconnect(); } catch {} } };
+      } else if (type === "bowl") {
+        const osc = audioCtx.createOscillator();
+        osc.type = "sine";
+        osc.frequency.value = 216;
+        osc.connect(gain);
+        osc.start();
+        soundscapeNodes.bowl = { stop: () => { try { osc.stop(); osc.disconnect(); } catch {} } };
+      }
+      render();
+    } catch (e) {}
+  }
+
+  // Good Vibes Vault State
+  const GOOD_VIBE_BANK = [
+    "⭐ 'Every strike brings me closer to the next home run.' — Babe Ruth",
+    "🌟 'You don't have to be great to start, but you have to start to be great.'",
+    "⚾ 'Clear your mind, take a deep breath, and focus on the pitch right in front of you.'",
+    "🏆 'Small steady steps every day turn into big wins over time.'",
+    "✨ 'It's okay to take a break. Even all-star players rest between innings.'",
+    "🧢 'Believe you can and you're halfway there.'",
+  ];
+  let currentGoodVibe = GOOD_VIBE_BANK[0];
+
+  // Zen Sand & Ripple Canvas Logic
+  let zenMode = "ripples";
+  function initZenCanvas() {
+    const cvs = document.getElementById("zenCanvas");
+    if (!cvs) return;
+    const ctx = cvs.getContext("2d");
+    const rect = cvs.getBoundingClientRect();
+    cvs.width = rect.width || 300;
+    cvs.height = rect.height || 220;
+
+    let particles = [];
+    ctx.fillStyle = "#0f172a";
+    ctx.fillRect(0, 0, cvs.width, cvs.height);
+
+    function addPoint(x, y) {
+      if (zenMode === "ripples") {
+        particles.push({ x, y, r: 5, maxR: 40 + Math.random() * 20, alpha: 0.9, color: "#38bdf8" });
+      } else if (zenMode === "sand") {
+        particles.push({ x, y, r: 8, maxR: 12, alpha: 0.8, color: "#fef08a" });
+      } else {
+        particles.push({ x, y, r: 3, maxR: 15, alpha: 1, color: "#c084fc", vx: (Math.random() - 0.5) * 2, vy: (Math.random() - 0.5) * 2 });
+      }
+    }
+
+    cvs.onpointerdown = (e) => {
+      const r = cvs.getBoundingClientRect();
+      addPoint(e.clientX - r.left, e.clientY - r.top);
+      playCalmPopSound();
+    };
+    cvs.onpointermove = (e) => {
+      if (e.buttons > 0) {
+        const r = cvs.getBoundingClientRect();
+        addPoint(e.clientX - r.left, e.clientY - r.top);
+      }
+    };
+
+    let animId;
+    function loop() {
+      ctx.fillStyle = "rgba(15, 23, 42, 0.15)";
+      ctx.fillRect(0, 0, cvs.width, cvs.height);
+
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.strokeStyle = p.color;
+        ctx.globalAlpha = p.alpha;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+
+        p.r += 0.8;
+        p.alpha -= 0.025;
+        if (p.vx) { p.x += p.vx; p.y += p.vy; }
+        if (p.alpha <= 0 || p.r >= p.maxR) {
+          particles.splice(i, 1);
+        }
+      }
+      if (document.getElementById("zenCanvas")) {
+        animId = requestAnimationFrame(loop);
+      }
+    }
+    loop();
+  }
+
+  // Stress Out of the Park Pitch Animation
+  function triggerStressPitch(text) {
+    const cvs = document.getElementById("stressCanvas");
+    if (!cvs) return;
+    const ctx = cvs.getContext("2d");
+    cvs.width = cvs.clientWidth || 300;
+    cvs.height = cvs.clientHeight || 180;
+
+    playBaseballHitSound();
+
+    let x = 30;
+    let y = cvs.height - 30;
+    let vx = (cvs.width - 60) / 45;
+    let vy = -6.5;
+    let gravity = 0.12;
+    let frame = 0;
+    let sparkles = [];
+
+    function anim() {
+      ctx.fillStyle = "#0f172a";
+      ctx.fillRect(0, 0, cvs.width, cvs.height);
+
+      ctx.fillStyle = "#ffffff";
+      for (let i = 0; i < 15; i++) {
+        ctx.fillRect((i * 47) % cvs.width, (i * 23) % cvs.height, 2, 2);
+      }
+
+      if (frame < 50) {
+        x += vx;
+        y += vy;
+        vy += gravity;
+
+        ctx.font = "24px sans-serif";
+        ctx.fillText("⚾", x, y);
+
+        sparkles.push({ x, y, alpha: 1, r: Math.random() * 4 + 2 });
+      } else {
+        if (frame === 50) {
+          triggerConfetti();
+          for (let i = 0; i < 30; i++) {
+            const angle = (Math.PI * 2 * i) / 30;
+            const spd = Math.random() * 4 + 2;
+            sparkles.push({
+              x, y,
+              vx: Math.cos(angle) * spd,
+              vy: Math.sin(angle) * spd,
+              alpha: 1,
+              color: ["#fef08a", "#38bdf8", "#f472b6", "#a7f3d0"][i % 4],
+            });
+          }
+        }
+      }
+
+      for (let i = sparkles.length - 1; i >= 0; i--) {
+        const s = sparkles[i];
+        ctx.fillStyle = s.color || "#38bdf8";
+        ctx.globalAlpha = s.alpha;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r || 3, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+
+        if (s.vx) { s.x += s.vx; s.y += s.vy; }
+        s.alpha -= 0.03;
+        if (s.alpha <= 0) sparkles.splice(i, 1);
+      }
+
+      frame++;
+      if (frame < 80 && document.getElementById("stressCanvas")) {
+        requestAnimationFrame(anim);
+      } else if (frame >= 80) {
+        toast("💥 '" + (text || "Stress") + "' pitched out of the park! Clear mind!");
+      }
+    }
+    anim();
+  }
+
+  function initCalmingView() {
+    initZenCanvas();
+  }
+
 
   // ---- Daily goal suggestions (the visible set rotates each week) ----
   const GOAL_BANK = [
@@ -5379,30 +5695,241 @@
 
     calming() {
       const phrase = CALM_PHRASES[calmIdx % CALM_PHRASES.length];
-      return (
-        '<div class="view-head"><h2 class="view-title">🧘 Calming</h2></div>' +
-        '<p class="view-intro">Feeling stressed or stuck? Take a minute here. You\'re okay.</p>' +
+
+      const subTabs = [
+        ["all", "✨ All"],
+        ["baseball", "⚾ Baseball Zen"],
+        ["sensory", "🫧 Sensory & Games"],
+        ["sounds", "🎧 Soundscapes"],
+        ["body", "🧘 Mind & Body"],
+      ];
+      const filterBar =
+        '<div class="calm-filter-bar" role="tablist" aria-label="Calming Categories">' +
+        subTabs
+          .map(
+            ([id, label]) =>
+              '<button type="button" class="calm-filter-btn' +
+              (calmSubTab === id ? " active" : "") +
+              '" data-act="calm-tab" data-arg="' +
+              id +
+              '">' +
+              label +
+              '</button>',
+          )
+          .join("") +
+        '</div>';
+
+      const quoteCardHtml =
         '<button type="button" class="card calm-phrase" data-act="calm-next" aria-label="Show another calming phrase"><span class="calm-quote">“' +
         esc(phrase) +
-        '”</span><span class="calm-tap">Tap for another →</span></button>' +
-        card(
-          "calm-breathe",
-          "🫧 Balloon breathing",
-          "Follow the circle.",
-          '<div class="breathe-wrap"><button type="button" class="breathe-bubble" data-act="breathe-toggle" id="breatheBubble" aria-label="Start or stop the breathing exercise"><span id="breathePhase">Tap to start</span></button></div><p class="muted" style="text-align:center;margin:12px 0 0">Tap the balloon. Breathe in as it grows, hold, then out as it shrinks.</p>',
-        ) +
-        card(
-          "calm-ground",
-          "🖐 5-4-3-2-1 grounding",
-          "Notice what's around you.",
-          '<ul class="ground-list"><li><b>5</b> things you can see 👀</li><li><b>4</b> things you can touch ✋</li><li><b>3</b> things you can hear 👂</li><li><b>2</b> things you can smell 👃</li><li><b>1</b> slow, deep breath 😮‍💨</li></ul>',
-        ) +
-        card(
-          "calm-reset",
-          "🌟 Quick resets",
-          "Pick one and do it right now.",
-          '<ul class="ground-list"><li>Roll your shoulders back 5 times.</li><li>Press your feet into the floor and count to 10.</li><li>Get a sip of water. 💧</li><li>Look out a window for 20 seconds.</li></ul>',
+        '”</span><span class="calm-tap">Tap for another quote →</span></button>';
+
+      const pitchBreathingHtml = card(
+        "calm-pitch-breathe",
+        "⚾ Baseball Windup Breathing",
+        "Breathe in on the windup, hold, then pitch across the plate.",
+        '<div class="baseball-breathe-wrap">' +
+          '<div class="baseball-pitch-stage">' +
+          '<div class="baseball-pitch-ball" id="pitchBall">⚾</div>' +
+          '</div>' +
+          '<div class="pitch-step-label" id="pitchStepLabel">Tap to start Windup Pitching</div>' +
+          '<button type="button" class="btn primary" id="pitchBreatheBtn" data-act="pitch-breathe-toggle">▶ Start Windup Pitching</button>' +
+          '<p class="muted" style="font-size:0.8rem;margin:4px 0 0">Sync your breath with the pitch: Windup (In 4s) → Set (Hold 2s) → Pitch (Out 4s) → Catch (Hold 2s).</p>' +
+          '</div>',
+      );
+
+      const stressPitchHtml = card(
+        "calm-stress-pitch",
+        "💥 Pitch Stress Out of the Park!",
+        "Type or select a worry, then pitch it over the outfield fence into space.",
+        '<div class="stress-pitch-box">' +
+          '<div class="stress-preset-chips">' +
+          '<span>Quick pick:</span>' +
+          '<button type="button" class="stress-chip" data-act="pitch-stress-preset" data-arg="Big math test">Math Test 📝</button>' +
+          '<button type="button" class="stress-chip" data-act="pitch-stress-preset" data-arg="Too much homework">Too Much Homework 📚</button>' +
+          '<button type="button" class="stress-chip" data-act="pitch-stress-preset" data-arg="Feeling overwhelmed">Overwhelmed 🧠</button>' +
+          '<button type="button" class="stress-chip" data-act="pitch-stress-preset" data-arg="Tired & distracted">Tired / Distracted 💤</button>' +
+          '</div>' +
+          '<div class="stress-input-group">' +
+          '<input type="text" class="stress-input" id="stressInput" placeholder="What is stressing you right now?" value="Homework stress" aria-label="Worry or stressor text">' +
+          '<button type="button" class="btn primary" data-act="pitch-stress-submit">⚾ Pitch It Away! 💥</button>' +
+          '</div>' +
+          '<div class="stress-canvas-wrap"><canvas id="stressCanvas"></canvas></div>' +
+          '</div>',
+      );
+
+      const prompt = DIAMOND_PROMPTS[Math.min(diamondBaseStep, DIAMOND_PROMPTS.length - 1)];
+      const diamondHtml = card(
+        "calm-diamond-walk",
+        "⚾ Baseball Diamond 4-Base Stroll",
+        "Tap base by base around the diamond for a complete reset.",
+        '<div class="baseball-field-container">' +
+          '<div class="base-prompt-card">' +
+          '<h4>' + prompt.base + ' — ' + esc(prompt.title) + '</h4>' +
+          '<p>' + esc(prompt.prompt) + '</p>' +
+          '</div>' +
+          '<svg class="diamond-field-svg" viewBox="0 0 200 200">' +
+          '<polygon points="100,20 180,100 100,180 20,100" fill="#15803d" stroke="#fef08a" stroke-width="4"/>' +
+          '<line x1="100" y1="180" x2="180" y2="100" stroke="#fef08a" stroke-width="2"/>' +
+          '<line x1="180" y1="100" x2="100" y2="20" stroke="#fef08a" stroke-width="2"/>' +
+          '<line x1="100" y1="20" x2="20" y2="100" stroke="#fef08a" stroke-width="2"/>' +
+          '<line x1="20" y1="100" x2="100" y2="180" stroke="#fef08a" stroke-width="2"/>' +
+          '<rect x="92" y="172" width="16" height="12" fill="#ffffff" stroke="#94a3b8" stroke-width="2" class="base-interactive" data-act="base-tap" data-arg="0"/>' +
+          '<rect x="172" y="92" width="16" height="16" fill="' + (diamondBaseStep >= 1 ? '#38bdf8' : '#ffffff') + '" stroke="#94a3b8" stroke-width="2" class="base-interactive" data-act="base-tap" data-arg="1"/>' +
+          '<rect x="92" y="12" width="16" height="16" fill="' + (diamondBaseStep >= 2 ? '#38bdf8' : '#ffffff') + '" stroke="#94a3b8" stroke-width="2" class="base-interactive" data-act="base-tap" data-arg="2"/>' +
+          '<rect x="12" y="92" width="16" height="16" fill="' + (diamondBaseStep >= 3 ? '#38bdf8' : '#ffffff') + '" stroke="#94a3b8" stroke-width="2" class="base-interactive" data-act="base-tap" data-arg="3"/>' +
+          '</svg>' +
+          '<div style="display:flex;gap:8px">' +
+          '<button type="button" class="btn sm primary" data-act="base-tap" data-arg="' + ((diamondBaseStep + 1) % 5) + '">Next Base → (' + (diamondBaseStep + 1) + '/5)</button>' +
+          '<button type="button" class="btn sm" data-act="base-reset">↺ Start Over</button>' +
+          '</div>' +
+          '</div>',
+      );
+
+      const poppedCount = bubblesPoppedState.filter(Boolean).length;
+      const bubblesGrid = bubblesPoppedState
+        .map(
+          (popped, i) =>
+            '<button type="button" class="bubble-pop-btn' +
+            (popped ? " popped" : "") +
+            '" data-act="bubble-pop" data-arg="' +
+            i +
+            '" aria-label="Pop bubble ' +
+            (i + 1) +
+            '">' +
+            (popped ? "✨" : "🫧") +
+            '</button>',
         )
+        .join("");
+
+      const bubbleWrapHtml = card(
+        "calm-bubble-wrap",
+        "🫧 Pop & Calm Bubble Wrap",
+        "Tap bubbles to pop them! Satisfying & relaxing.",
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b>Popped: ' +
+          poppedCount +
+          ' / 16</b><button type="button" class="btn sm" data-act="bubble-refill">Refill All 🫧</button></div>' +
+          '<div class="bubble-wrap-grid">' +
+          bubblesGrid +
+          '</div>',
+      );
+
+      const zenCanvasHtml = card(
+        "calm-zen-canvas",
+        "🌊 Interactive Zen Sand & Wave Canvas",
+        "Drag or tap on the canvas to draw peaceful ripples & glowing sand patterns.",
+        '<div class="zen-canvas-wrap"><canvas id="zenCanvas"></canvas></div>' +
+          '<div class="zen-toolbar">' +
+          '<div>' +
+          '<button type="button" class="btn sm' + (zenMode === "ripples" ? " primary" : "") + '" data-act="zen-mode" data-arg="ripples">🌊 Ripples</button> ' +
+          '<button type="button" class="btn sm' + (zenMode === "sand" ? " primary" : "") + '" data-act="zen-mode" data-arg="sand">🪵 Zen Sand</button> ' +
+          '<button type="button" class="btn sm' + (zenMode === "orbs" ? " primary" : "") + '" data-act="zen-mode" data-arg="orbs">✨ Glow Orbs</button>' +
+          '</div>' +
+          '<button type="button" class="btn sm" data-act="zen-clear">Clear 🧼</button>' +
+          '</div>',
+      );
+
+      const sounds = [
+        ["rain", "🌧 Rain", "Gentle Drops"],
+        ["waves", "🌊 Ocean", "Shore Sweep"],
+        ["ballpark", "⚾ Ballpark", "Organ Chimes"],
+        ["bowl", "🧘 Singing Bowl", "216Hz Resonant"],
+      ];
+      const soundCardsHtml = sounds
+        .map(([id, title, sub]) => {
+          const playing = !!soundscapeNodes[id];
+          return (
+            '<button type="button" class="sound-card' +
+            (playing ? " playing" : "") +
+            '" data-act="soundscape-toggle" data-arg="' +
+            id +
+            '">' +
+            '<span class="sound-icon">' + title.split(" ")[0] + '</span>' +
+            '<span class="sound-title">' + esc(title.split(" ").slice(1).join(" ")) + '</span>' +
+            '<span class="sound-status">' + (playing ? "▶ Playing" : "Tap to Play") + '</span>' +
+            '</button>'
+          );
+        })
+        .join("");
+
+      const soundscapesHtml = card(
+        "calm-soundscapes",
+        "🎧 Ambient Soundscape Studio",
+        "Real-time synthesized calming background sounds.",
+        '<div class="soundscape-grid">' + soundCardsHtml + '</div>',
+      );
+
+      const customNotes = (state.calmingGratitude || [])
+        .slice(-3)
+        .map((n) => '<li>✨ ' + esc(n) + '</li>')
+        .join("");
+
+      const gratitudeHtml = card(
+        "calm-gratitude-vault",
+        "🌟 Good Vibes & Gratitude Vault",
+        "Pull an inspiring note or add your own win to the jar.",
+        '<div class="gratitude-jar-wrap">' +
+          '<div class="vibe-jar-visual">🫙✨</div>' +
+          '<div class="vibe-card-display">' + esc(currentGoodVibe) + '</div>' +
+          '<button type="button" class="btn primary" data-act="vibe-pull">Pull Another Good Vibe 🌟</button>' +
+          '<div style="width:100%;margin-top:10px;display:flex;gap:6px">' +
+          '<input type="text" class="stress-input" id="vibeInput" placeholder="Add a positive thought or win..." aria-label="Custom positive note">' +
+          '<button type="button" class="btn sm" data-act="vibe-add">Drop into Jar ✏️</button>' +
+          '</div>' +
+          (customNotes ? '<ul class="ground-list" style="margin-top:10px;font-size:0.85rem">' + customNotes + '</ul>' : '') +
+          '</div>',
+      );
+
+      const balloonBreatheHtml = card(
+        "calm-breathe",
+        "🫧 Balloon Breathing",
+        "Follow the expanding and shrinking bubble.",
+        '<div class="breathe-wrap"><button type="button" class="breathe-bubble" data-act="breathe-toggle" id="breatheBubble" aria-label="Start or stop breathing exercise"><span id="breathePhase">Tap to start</span></button></div><p class="muted" style="text-align:center;margin:12px 0 0">Breathe in as it grows, hold, then breathe out as it shrinks.</p>',
+      );
+
+      const groundingHtml = card(
+        "calm-ground",
+        "🖐 5-4-3-2-1 Sensory Grounding",
+        "Notice what is around you right now.",
+        '<ul class="ground-list"><li><b>5</b> things you can see 👀</li><li><b>4</b> things you can touch ✋</li><li><b>3</b> things you can hear 👂</li><li><b>2</b> things you can smell 👃</li><li><b>1</b> slow, deep breath 😮‍💨</li></ul>',
+      );
+
+      const resetsHtml = card(
+        "calm-reset",
+        "🌟 Quick Physical Resets",
+        "Pick one and do it right now.",
+        '<ul class="ground-list"><li>Roll your shoulders back 5 times.</li><li>Press your feet into the floor and count to 10.</li><li>Get a sip of water. 💧</li><li>Look out a window for 20 seconds.</li></ul>',
+      );
+
+      let cardsContent = "";
+      if (calmSubTab === "baseball") {
+        cardsContent = quoteCardHtml + pitchBreathingHtml + stressPitchHtml + diamondHtml;
+      } else if (calmSubTab === "sensory") {
+        cardsContent = bubbleWrapHtml + zenCanvasHtml + stressPitchHtml;
+      } else if (calmSubTab === "sounds") {
+        cardsContent = soundscapesHtml + balloonBreatheHtml;
+      } else if (calmSubTab === "body") {
+        cardsContent = balloonBreatheHtml + pitchBreathingHtml + groundingHtml + gratitudeHtml + resetsHtml;
+      } else {
+        cardsContent =
+          quoteCardHtml +
+          pitchBreathingHtml +
+          stressPitchHtml +
+          diamondHtml +
+          bubbleWrapHtml +
+          zenCanvasHtml +
+          soundscapesHtml +
+          gratitudeHtml +
+          balloonBreatheHtml +
+          groundingHtml +
+          resetsHtml;
+      }
+
+      return (
+        '<div class="view-head"><h2 class="view-title">🧘 Calming & Focus Space</h2></div>' +
+        '<p class="view-intro">Feeling stressed or stuck? Take a minute here to reset your mind and regain focus.</p>' +
+        filterBar +
+        cardsContent
       );
     },
 
@@ -10731,6 +11258,10 @@ Due May 31"></textarea>
       if (n) hwStart(id, n);
     },
     // ---- Calming ----
+    "calm-tab": (id, arg) => {
+      calmSubTab = arg || "all";
+      render();
+    },
     "calm-next": () => {
       calmIdx = (calmIdx + 1) % CALM_PHRASES.length;
       render();
@@ -10742,6 +11273,79 @@ Due May 31"></textarea>
       }
       breatheOn = true;
       breatheRun(0);
+    },
+    "pitch-breathe-toggle": () => {
+      if (pitchBreatheOn) {
+        pitchBreatheStop();
+        return;
+      }
+      pitchBreatheOn = true;
+      const btn = document.getElementById("pitchBreatheBtn");
+      if (btn) btn.textContent = "⏹ Stop Pitching";
+      pitchBreatheRun(0);
+    },
+    "pitch-stress-preset": (id, arg) => {
+      const inp = document.getElementById("stressInput");
+      if (inp) inp.value = arg || "Math test";
+    },
+    "pitch-stress-submit": () => {
+      const inp = document.getElementById("stressInput");
+      const val = (inp?.value || "").trim() || "Stress";
+      triggerStressPitch(val);
+    },
+    "base-tap": (id, arg) => {
+      diamondBaseStep = Number(arg) || 0;
+      playCalmPopSound();
+      if (diamondBaseStep === 4) {
+        triggerConfetti();
+        addPoints(1);
+        toast("Safe at Home! Mind centered & clear! 🏆 (+1 pt)");
+      }
+      render();
+    },
+    "base-reset": () => {
+      diamondBaseStep = 0;
+      render();
+    },
+    "bubble-pop": (id, arg) => {
+      const idx = Number(arg);
+      if (isNaN(idx) || idx < 0 || idx >= 16) return;
+      bubblesPoppedState[idx] = !bubblesPoppedState[idx];
+      playCalmPopSound();
+      render();
+    },
+    "bubble-refill": () => {
+      bubblesPoppedState = Array(16).fill(false);
+      playCalmPopSound();
+      render();
+    },
+    "zen-mode": (id, arg) => {
+      zenMode = arg || "ripples";
+      render();
+    },
+    "zen-clear": () => {
+      initZenCanvas();
+    },
+    "soundscape-toggle": (id, arg) => {
+      toggleSoundscape(arg);
+    },
+    "vibe-pull": () => {
+      const idx = Math.floor(Math.random() * GOOD_VIBE_BANK.length);
+      currentGoodVibe = GOOD_VIBE_BANK[idx];
+      playCalmPopSound();
+      render();
+    },
+    "vibe-add": () => {
+      const inp = document.getElementById("vibeInput");
+      const v = (inp?.value || "").trim();
+      if (!v) return;
+      state.calmingGratitude = state.calmingGratitude || [];
+      state.calmingGratitude.push(v);
+      currentGoodVibe = "✨ '" + v + "'";
+      save();
+      triggerConfetti();
+      toast("Dropped into your jar! 🫙✨");
+      render();
     },
     // ---- Routine day-of-week toggles (in the routine editor) ----
     "toggle-routine-day": (id, arg, ev) => {
