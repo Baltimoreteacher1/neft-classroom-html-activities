@@ -3154,7 +3154,7 @@ function renderLaunchPhase(el, state, ctx, config) {
   const isStudied = (state.get() || {}).vocabVisited || (state.get() || {}).notesVisited;
   btn.textContent = isStudied
     ? (isEs ? "Continuar a la Fase 4: Explorar 🔍 →" : "Continue to Phase 4: Explore 🔍 →")
-    : (isEs ? "🔑📖 Vocabulario y Aprendizaje 🚀 →" : "🔑📖 Vocab & Learn It 🚀 →");
+    : (isEs ? "🔑 Vocabulario 🚀 →" : "🔑 Vocabulary 🚀 →");
 
   btn.addEventListener("click", async () => {
     if (

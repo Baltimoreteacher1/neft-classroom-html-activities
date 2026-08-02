@@ -3,7 +3,22 @@ import { renderMathText } from "../core/math-typography.js";
 import { renderVocabIntro } from "./vocab-intro.js";
 
 function escHtml(s) {
-  return String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  return String(s || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function speakText(text, lang = "en-US") {
+  try {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = lang;
+    u.rate = 0.92;
+    window.speechSynthesis.speak(u);
+  } catch (_) {}
 }
 
 let injectedStyles = false;
@@ -87,6 +102,7 @@ function injectVocabLearnStyles() {
     }
     .vl-tag-amber { background: #fef3c7; color: #b45309; }
     .vl-tag-teal { background: #ccfbf1; color: #0f766e; }
+    .vl-tag-coral { background: #ffedd5; color: #c2410c; }
     .vl-section-title {
       font-family: "Outfit", system-ui, sans-serif;
       font-size: 1.35rem;
@@ -129,6 +145,7 @@ function injectVocabLearnStyles() {
       border: 1.5px solid #cbd5e1;
       border-radius: 16px;
       padding: 22px;
+      margin-bottom: 22px;
     }
     .vl-demo-title {
       font-family: "Outfit", system-ui, sans-serif;
@@ -172,6 +189,99 @@ function injectVocabLearnStyles() {
       color: #0f172a;
       font-weight: 600;
     }
+    .vl-turntalk-card {
+      background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+      border: 2px solid #ea580c;
+      border-radius: 18px;
+      padding: 22px;
+      margin-top: 24px;
+      box-shadow: 0 6px 20px rgba(234, 88, 12, 0.08);
+    }
+    .vl-turntalk-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .vl-turntalk-title {
+      font-family: "Outfit", system-ui, sans-serif;
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: #9a3412;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .vl-turntalk-controls {
+      display: flex;
+      gap: 8px;
+    }
+    .vl-tt-btn {
+      padding: 4px 12px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      border: 1.5px solid #fdba74;
+      background: #ffffff;
+      color: #c2410c;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .vl-tt-btn:hover {
+      background: #ea580c;
+      color: #ffffff;
+      border-color: #ea580c;
+    }
+    .vl-turntalk-question {
+      font-size: 1.08rem;
+      font-weight: 800;
+      color: #431407;
+      line-height: 1.5;
+      margin-bottom: 16px;
+      background: rgba(255, 255, 255, 0.7);
+      padding: 12px 16px;
+      border-radius: 12px;
+      border-left: 4px solid #ea580c;
+    }
+    .vl-starters-label {
+      font-size: 0.84rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #9a3412;
+      margin-bottom: 10px;
+    }
+    .vl-starters-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .vl-starter-chip {
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: #ffffff;
+      border: 1px solid #fed7aa;
+      font-size: 0.96rem;
+      font-weight: 700;
+      color: #292524;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .vl-starter-chip:hover {
+      border-color: #ea580c;
+      background: #fff7ed;
+      transform: translateX(4px);
+    }
+    .vl-starter-chip.active {
+      border-color: #ea580c;
+      background: #ea580c;
+      color: #ffffff;
+    }
     .vl-actions {
       text-align: center;
       padding: 24px 0 36px;
@@ -207,8 +317,71 @@ function injectVocabLearnStyles() {
   document.head.appendChild(s);
 }
 
-export function renderVocabAndLearnIt(container, config, options) {
-  const { onComplete = () => {}, state = null } = options || {};
+// ─── 1. SEPARATE VOCABULARY PANEL ───────────────────────────────────────────
+export function renderVocabPanel(container, config, options = {}) {
+  const { onComplete = () => {}, state = null } = options;
+  injectVocabLearnStyles();
+  container.innerHTML = "";
+
+  const isEs = getPreferredLang() === "es";
+
+  const wrap = document.createElement("div");
+  wrap.className = "vl-container";
+
+  // Top Header Banner
+  const hero = document.createElement("div");
+  hero.className = "vl-hero";
+  hero.style.background = "linear-gradient(135deg, #78350f 0%, #b45309 100%)";
+  hero.innerHTML = `
+    <div class="vl-hero-badge">${isEs ? "🔑 Vocabulario Clave" : "🔑 Key Vocabulary"}</div>
+    <h2 class="vl-hero-title">${escHtml(config.title)}</h2>
+    <p class="vl-hero-sub">
+      ${
+        isEs
+          ? "Explora las tarjetas de vocabulario, sus modelos visuales y pronunciación antes de aprender el concepto."
+          : "Explore key math terms, visual models, and pronunciation audio before learning the concept."
+      }
+    </p>
+  `;
+  wrap.append(hero);
+
+  const cardSection = document.createElement("div");
+  cardSection.className = "vl-section-card";
+  cardSection.innerHTML = `<div class="vl-vocab-target"></div>`;
+  wrap.append(cardSection);
+
+  const vocabTarget = cardSection.querySelector(".vl-vocab-target");
+  const vocabList = Array.isArray(config.vocabulary) ? config.vocabulary : [];
+  renderVocabIntro(vocabTarget, {
+    terms: vocabList,
+    onComplete: () => {
+      try { if (state) state.set({ vocabVisited: true }); } catch (_) {}
+      onComplete?.();
+    },
+  });
+
+  const actions = document.createElement("div");
+  actions.className = "vl-actions";
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "btn btn-primary btn-lg vl-continue-btn";
+  btn.style.background = "linear-gradient(135deg, #b45309 0%, #0d7a76 100%)";
+  btn.innerHTML = `<span>${
+    isEs ? "Siguiente: Aprender el Concepto 💡 →" : "Next: Learn It (How the Math Works) 💡 →"
+  }</span>`;
+  btn.addEventListener("click", () => {
+    try { if (state) state.set({ vocabVisited: true }); } catch (_) {}
+    onComplete?.();
+  });
+  actions.append(btn);
+  wrap.append(actions);
+
+  container.append(wrap);
+}
+
+// ─── 2. SEPARATE LEARN IT PANEL (EXPLANATION + EXAMPLE + TURN AND TALK) ──────
+export function renderLearnItPanel(container, config, options = {}) {
+  const { onComplete = () => {}, state = null } = options;
   injectVocabLearnStyles();
   container.innerHTML = "";
 
@@ -221,66 +394,39 @@ export function renderVocabAndLearnIt(container, config, options) {
   const hero = document.createElement("div");
   hero.className = "vl-hero";
   hero.innerHTML = `
-    <div class="vl-hero-badge">${isEs ? "🔑📖 Vocabulario y Aprendizaje" : "🔑📖 Vocab & Learn It"}</div>
+    <div class="vl-hero-badge">${isEs ? "💡 Cómo Funciona la Matemática" : "💡 How the Math Works (Learn It)"}</div>
     <h2 class="vl-hero-title">${escHtml(config.title)}</h2>
     <p class="vl-hero-sub">
       ${
         isEs
-          ? "Estudia las palabras clave de vocabulario, lee la idea matemática principal y repasa la demostración resuelta."
-          : "Study the key vocabulary words, read the big math idea, and review the worked demonstration."
+          ? "Lee la explicación sencilla y el ejemplo resuelto. Luego habla con tu compañero."
+          : "Read the simple math explanation and worked example below. Then turn & talk with your partner."
       }
     </p>
   `;
   wrap.append(hero);
 
-  // PART 1: Key Vocabulary
-  if (Array.isArray(config.vocabulary) && config.vocabulary.length > 0) {
-    const part1 = document.createElement("div");
-    part1.className = "vl-section-card";
-    part1.innerHTML = `
-      <div class="vl-section-header">
-        <span class="vl-section-tag vl-tag-amber">${isEs ? "Parte 1" : "Part 1"}</span>
-        <div>
-          <h3 class="vl-section-title">${isEs ? "🔑 Vocabulario Clave" : "🔑 Key Vocabulary"}</h3>
-          <p class="vl-section-desc">
-            ${
-              isEs
-                ? "Toca cada tarjeta para voltearla y estudiar su definición, modelo visual y audio."
-                : "Tap each card to flip and study its definition, visual model, and audio."
-            }
-          </p>
-        </div>
-      </div>
-      <div class="vl-vocab-target"></div>
-    `;
-    wrap.append(part1);
-    const vocabTarget = part1.querySelector(".vl-vocab-target");
-    renderVocabIntro(vocabTarget, { terms: config.vocabulary, onComplete: () => {} });
-  }
-
-  // PART 2: Learn It (Concept Notes & Worked Demonstration)
   const concept = config.conceptIntro || config.launch?.conceptIntro || {};
   const heading = concept.heading || config.contentObjective || `Understanding ${config.title}`;
   const intro = concept.intro || config.contentObjective || "";
-  const keyIdea = concept.keyIdea || "";
+  const keyIdea = concept.keyIdea || config.contentObjective || "";
   const iDo = concept.iDo || {};
 
-  const part2 = document.createElement("div");
-  part2.className = "vl-section-card";
-  part2.innerHTML = `
+  const mainCard = document.createElement("div");
+  mainCard.className = "vl-section-card";
+  mainCard.innerHTML = `
     <div class="vl-section-header">
-      <span class="vl-section-tag vl-tag-teal">${isEs ? "Parte 2" : "Part 2"}</span>
+      <span class="vl-section-tag vl-tag-teal">${isEs ? "Concepto" : "Concept"}</span>
       <div>
-        <h3 class="vl-section-title">${isEs ? "💡 Cómo Funciona la Matemática" : "💡 How the Math Works (Learn It)"}</h3>
-        <p class="vl-section-desc">${escHtml(heading)}</p>
+        <h3 class="vl-section-title">${escHtml(heading)}</h3>
       </div>
     </div>
-    ${intro ? `<p style="font-size:1.04rem; line-height:1.55; color:#1e293b; font-weight:600; margin:0 0 18px;">${renderMathText(intro)}</p>` : ""}
+    ${intro ? `<p style="font-size:1.05rem; line-height:1.55; color:#1e293b; font-weight:600; margin:0 0 18px;">${renderMathText(intro)}</p>` : ""}
     ${
       keyIdea
         ? `
       <div class="vl-key-idea-card">
-        <span class="vl-key-idea-label">${isEs ? "💡 Idea Clave" : "💡 Key Math Idea"}</span>
+        <span class="vl-key-idea-label">${isEs ? "💡 Explicación Sencilla" : "💡 Simple Explanation"}</span>
         <p class="vl-key-idea-text">${renderMathText(keyIdea)}</p>
       </div>`
         : ""
@@ -290,8 +436,8 @@ export function renderVocabAndLearnIt(container, config, options) {
         ? `
       <div class="vl-demo-box">
         <div class="vl-demo-title">
-          <span>${isEs ? "👀 Demostración Resuelta:" : "👀 Worked Demonstration:"}</span>
-          <span>${escHtml(iDo.title || (isEs ? "Mira cómo se hace" : "Watch Me"))}</span>
+          <span>👀 ${isEs ? "Ejemplo Resuelto Paso a Paso:" : "Step-by-Step Worked Example:"}</span>
+          <span style="font-weight:600; color:#64748b;">(${escHtml(iDo.title || (isEs ? "Mira cómo se hace" : "Watch Me"))})</span>
         </div>
         <div class="vl-demo-steps">
           ${iDo.lines
@@ -309,7 +455,83 @@ export function renderVocabAndLearnIt(container, config, options) {
         : ""
     }
   `;
-  wrap.append(part2);
+
+  // ─── BUILT-IN TURN AND TALK SECTION ─────────────────────────────────────────
+  const turnAndTalkData = (Array.isArray(config.turnAndTalk) && config.turnAndTalk[0]) || {};
+  let currentLangEs = isEs;
+
+  const defaultQuestionEn = turnAndTalkData.question ||
+    `Turn and talk with your partner: In your own words, how does this math example work? What step did you notice first?`;
+  const defaultQuestionEs = turnAndTalkData.questionEs ||
+    `Habla con tu compañero: En tus propias palabras, ¿cómo funciona este ejemplo matemático? ¿Qué paso notaste primero?`;
+
+  const defaultStartersEn = [
+    `First, I noticed that ______ in Step 1.`,
+    `This math example works because ______.`,
+    `My partner and I agree that the key step is ______.`,
+  ];
+  const defaultStartersEs = [
+    `Primero, noté que ______ en el Paso 1.`,
+    `Este ejemplo funciona porque ______.`,
+    `Mi compañero y yo estamos de acuerdo en que el paso clave es ______.`,
+  ];
+
+  const ttContainer = document.createElement("div");
+  ttContainer.className = "vl-turntalk-card";
+
+  function renderTurnAndTalk() {
+    const qText = currentLangEs ? defaultQuestionEs : defaultQuestionEn;
+    const starters = currentLangEs ? defaultStartersEs : defaultStartersEn;
+
+    ttContainer.innerHTML = `
+      <div class="vl-turntalk-head">
+        <div class="vl-turntalk-title">
+          <span>🗣️ ${currentLangEs ? "Habla con tu Compañero (Turn & Talk)" : "Turn and Talk with Your Partner"}</span>
+        </div>
+        <div class="vl-turntalk-controls">
+          <button type="button" class="vl-tt-btn" id="ttListenBtn">🔊 ${currentLangEs ? "Escuchar" : "Listen"}</button>
+          <button type="button" class="vl-tt-btn" id="ttLangBtn">${currentLangEs ? "🇺🇸 English" : "🇲🇽 Español"}</button>
+        </div>
+      </div>
+      <div class="vl-turntalk-question">"${escHtml(qText)}"</div>
+      <div class="vl-starters-label">${currentLangEs ? "💬 Frases de Inicio (Toca para seleccionar):" : "💬 Sentence Starters (Tap to speak & practice):"}</div>
+      <div class="vl-starters-grid">
+        ${starters
+          .map(
+            (st, idx) => `
+          <div class="vl-starter-chip" data-idx="${idx}" tabindex="0" role="button">
+            <span>💬</span>
+            <span>"${escHtml(st)}"</span>
+          </div>
+        `,
+          )
+          .join("")}
+      </div>
+    `;
+
+    ttContainer.querySelector("#ttLangBtn").addEventListener("click", () => {
+      currentLangEs = !currentLangEs;
+      renderTurnAndTalk();
+    });
+
+    ttContainer.querySelector("#ttListenBtn").addEventListener("click", () => {
+      speakText(qText, currentLangEs ? "es-US" : "en-US");
+    });
+
+    ttContainer.querySelectorAll(".vl-starter-chip").forEach((chip) => {
+      chip.addEventListener("click", () => {
+        ttContainer.querySelectorAll(".vl-starter-chip").forEach((c) => c.classList.remove("active"));
+        chip.classList.add("active");
+        const idx = Number(chip.dataset.idx);
+        const text = starters[idx];
+        speakText(text, currentLangEs ? "es-US" : "en-US");
+      });
+    });
+  }
+
+  renderTurnAndTalk();
+  mainCard.append(ttContainer);
+  wrap.append(mainCard);
 
   // Bottom Continue Action Button
   const actions = document.createElement("div");
@@ -319,17 +541,33 @@ export function renderVocabAndLearnIt(container, config, options) {
   btn.className = "btn btn-primary btn-lg vl-continue-btn";
   btn.innerHTML = `<span>${
     isEs
-      ? "¡He estudiado las palabras y el concepto, a explorar!"
-      : "I've studied the words & concept — let's explore!"
-  }</span> <span aria-hidden="true">🚀 →</span>`;
+      ? "¡He aprendido el concepto — a explorar! 🚀 →"
+      : "I've learned the concept — let's explore! 🚀 →"
+  }</span>`;
   btn.addEventListener("click", () => {
-    try {
-      if (state) state.set({ notesVisited: true, vocabVisited: true });
-    } catch (_) {}
+    try { if (state) state.set({ notesVisited: true }); } catch (_) {}
     onComplete?.();
   });
   actions.append(btn);
   wrap.append(actions);
 
   container.append(wrap);
+}
+
+// ─── 3. COMBINED PANEL FOR BACKWARD COMPATIBILITY ───────────────────────────
+export function renderVocabAndLearnIt(container, config, options = {}) {
+  const { onComplete = () => {}, state = null } = options;
+  injectVocabLearnStyles();
+  container.innerHTML = "";
+
+  renderVocabPanel(container, config, {
+    state,
+    onComplete: () => {
+      renderLearnItPanel(container, config, {
+        state,
+        onComplete,
+      });
+      container.scrollIntoView({ block: "start" });
+    },
+  });
 }

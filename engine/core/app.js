@@ -2,7 +2,11 @@
 // (see tsconfig.json); the marker is the debt, and removing it is the unit of
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 import { runComponentList } from "../components/activity-chooser.js";
-import { renderVocabAndLearnIt } from "../components/vocab-learn-panel.js";
+import {
+  renderVocabAndLearnIt,
+  renderVocabPanel,
+  renderLearnItPanel,
+} from "../components/vocab-learn-panel.js";
 import { createEngagement } from "../engagement/engagement.js";
 import { PHASE_TIME_ESTIMATES } from "./content-enrichment.js";
 import { mountExportToolbar } from "./export.js";
@@ -1116,15 +1120,31 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       if (kind === "activity") return this.openActivity();
       if (kind === "objectives") return this.openObjectives();
 
-      if (kind === "vocab" || kind === "notes" || kind === "learn") {
+      if (kind === "vocab") {
         this.setExtraActive("vocab");
         phaseContainer.innerHTML = "";
         const el = document.createElement("div");
         el.className = "phase active extra-panel extra-panel--fullpage";
         el.setAttribute("role", "region");
-        el.setAttribute("aria-label", "Vocab & Learn It");
+        el.setAttribute("aria-label", "Vocabulary");
         phaseContainer.append(el);
-        renderVocabAndLearnIt(el, config, {
+        renderVocabPanel(el, config, {
+          state,
+          onComplete: () => this.openExtra("learn"),
+        });
+        el.scrollIntoView({ block: "start" });
+        return;
+      }
+
+      if (kind === "learn" || kind === "notes") {
+        this.setExtraActive(kind);
+        phaseContainer.innerHTML = "";
+        const el = document.createElement("div");
+        el.className = "phase active extra-panel extra-panel--fullpage";
+        el.setAttribute("role", "region");
+        el.setAttribute("aria-label", "Learn It");
+        phaseContainer.append(el);
+        renderLearnItPanel(el, config, {
           state,
           onComplete: () => this.navigateTo(3),
         });
@@ -1913,7 +1933,8 @@ function updateSidebar(sidebar, state, phaseConfigs) {
   // the data-bound phase nav so they sit immediately beneath Launch; click is
   // delegated via rma:openextra.
   const launchSubTabs = [
-    { extra: "vocab", icon: "🔑📖", label: "Vocab & Learn It" },
+    { extra: "vocab", icon: "🔑", label: "Vocab" },
+    { extra: "learn", icon: "💡", label: "Learn It" },
   ]
     .map(
       (t) =>
