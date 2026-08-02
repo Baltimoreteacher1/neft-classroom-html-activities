@@ -1,7 +1,7 @@
 /* Focus School — service worker.
  * Offline-first app shell: precache core files, serve them cache-first,
  * fall back to the cached app for navigations when offline. */
-const VERSION = "focus-school-v72";
+const VERSION = "focus-school-v73";
 const CORE = [
   // Cloudflare Pages serves clean URLs — a request for "index.html" or
   // "unit-1.html" 308-redirects to the extensionless path, and cache.add()
@@ -12,7 +12,7 @@ const CORE = [
   "./",
   "styles.css?v=57",
   "sports.js?v=4",
-  "app.js?v=62",
+  "app.js?v=63",
   "app.js?v=59",
   "manifest.webmanifest",
   "icons/favicon.svg",
